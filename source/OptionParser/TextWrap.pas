@@ -33,11 +33,11 @@ uses
 const
   sLineBreak = {$IFDEF LINUX} #10 {$ENDIF} {$IFDEF WIN32} #13#10 {$ENDIF};
   
+  
 { LeadBytes is a char set that indicates which char values are lead bytes
   in multibyte character sets (Japanese, Chinese, etc).
   This set is always empty for western locales. }
-var
-  LeadBytes: set of Char = [];
+  LeadBytes: set of char =  [];
 
 function CharLength(const S: string; Index: Integer): Integer;
 begin
