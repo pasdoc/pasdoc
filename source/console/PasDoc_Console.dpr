@@ -17,8 +17,8 @@
   Hint:
 
   Whenever you use PasDoc for documentations, make sure the program file
-  - like this is one - contains no code except for a call to a main routine in
-  another unit or the instantiation of an object / class that does all the work
+  contains no code except for a call to a main routine in another unit or
+  the instantiation of an object / class that does all the work
   (usually TApplication).
 
   Pasdoc is restricted to work on unit files only, that's why the program file
