@@ -67,7 +67,8 @@ var
   GOption_Language: TStringOption;
   GOption_StarOnly,
   GOption_Generator,
-  GOption_NumericFilenames: TBoolOption;
+  GOption_NumericFilenames,
+  GOption_WriteUsesList: TBoolOption;
   GOption_VisibleMembers: TSetOption;
 
   { ---------------------------------------------------------------------------- }
@@ -165,6 +166,10 @@ begin
   GOption_VisibleMembers.PossibleValues := 'private,protected,public,published,automated';
   GOption_VisibleMembers.Values := 'protected,public,published,automated';
   GOptionParser.AddOption(GOption_VisibleMembers);
+
+  GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list');
+  GOption_WriteUsesList.Explanation := 'put uses list into output';
+  GOptionParser.AddOption(GOption_WriteUsesList);
 end;
 
 procedure PrintUsage;
@@ -183,7 +188,6 @@ begin
   GOptionParser.ParseOptions;
   if GOption_Help.TurnedOn then begin
     PrintUsage;
-    writeln(GOption_VisibleMembers.Value);
     exit;
   end;
 
@@ -243,6 +247,7 @@ begin
     end;
 
     THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;
+    THTMLDocGenerator(GPasDoc.Generator).WriteUsesClause := GOption_WriteUsesList.TurnedOn;
   end;
 
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
