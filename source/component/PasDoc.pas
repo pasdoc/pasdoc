@@ -216,6 +216,7 @@ begin
 
   FGenerator := nil;
   FCommentMarkers := TStringList.Create;
+  FUnits := TPasUnits.Create(True);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -267,7 +268,7 @@ begin
     end;
     
     if LParseSuccessful then begin
-      if FUnits = nil then FUnits := TPasUnits.Create(True);
+      FUnits.clear;
 
       if FUnits.ExistsUnit(U) then begin
         DoMessage(2, mtWarning,
