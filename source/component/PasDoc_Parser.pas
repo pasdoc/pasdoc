@@ -497,6 +497,7 @@ begin
     with no ancestor or class members listed after the word class. }
   if t.IsSymbol(SYM_SEMICOLON) then begin
     Result := True; // No error, continue the parsing.
+    t.Free;
     Exit;
   end;
 
@@ -647,6 +648,10 @@ begin
               M.State := State;
               if State in ClassMembers then begin
                 i.Methods.Add(M);
+              end
+              else
+              begin
+                M.Free;
               end;
             end;
           KEY_END: Finished := True;
@@ -713,6 +718,8 @@ begin
               f.DetailedDescription := GetLastComment(False);
               if State in ClassMembers then begin
                 i.Fields.Add(f);
+              end else begin
+                f.Free;
               end;
               FreeAndNil(t);
 
@@ -780,6 +787,7 @@ begin
     FreeAndNil(t);
   until Finished;
   while true do begin
+    try
     if (not GetNextNonWCToken(t)) then begin
       i.Free;
       try
@@ -825,9 +833,15 @@ begin
         end;
       end;
     end;
+    finally
     FreeAndNil(t);
   end;
-  if Assigned(U) then U.AddCIO(i);
+  end;
+  if Assigned(U) then U.AddCIO(i)
+  else
+  begin
+    i.Free;
+  end;
   Result := True;
 end;
 
@@ -903,6 +917,7 @@ begin
     if not GetNextNonWCToken(t) then
       DoError('Could not get next non-whitespace, non-comment token in file %s', [Scanner.GetStreamInfo], 0);
 
+    try
     case t.MyType of
       TOK_IDENTIFIER: begin
           // s := t.Data;
@@ -951,7 +966,9 @@ begin
           end;
         end;
     end;
+    finally
     FreeAndNil(t);
+    end;
   until Finished;
   Result := True;
 end;
@@ -1338,6 +1355,7 @@ begin
     DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
   { now parse the interface section of that unit }
   Result := ParseInterfaceSection(U);
+  FreeAndNil(t);
 end;
 
 { ---------------------------------------------------------------------------- }

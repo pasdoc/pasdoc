@@ -1377,6 +1377,7 @@ begin
   FLanguage.Free;
   FClassHierarchy.Free;
   FAbbreviations.Free;
+  FCurrentStream.Free;
   inherited;
 end;
 
