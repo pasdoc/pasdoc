@@ -46,7 +46,12 @@ uses
   PasDoc_Items,
   OptionParser,
   PasDoc_Types,
-  PasDoc_RunHelp;
+  PasDoc_RunHelp,
+  Hashes,
+  PasDoc_Parser,
+  PasDoc_Tokenizer,
+  PasDoc_Serialize,
+  PasDoc_Scanner;
 
 var
   GPasDoc: TPasDoc;
@@ -139,7 +144,7 @@ begin
   GOptionParser.AddOption(GOption_Title);
 
   GOption_Format := TStringOption.Create('O', 'format', True, False);
-  GOption_Format.Explanation := 'output format: html, latex or htmlhelp';
+  GOption_Format.Explanation := 'output format: html, latex, latex2rtf or htmlhelp';
   GOption_Format.Value := 'html';
   GOptionParser.AddOption(GOption_Format);
 
@@ -228,12 +233,15 @@ var
 begin
   Result := false;
   GOptionParser.ParseOptions;
+
   if GOption_Help.TurnedOn then begin
     PrintUsage;
     exit;
   end;
 
   GOption_Format.Value := LowerCase(GOption_Format.Value);
+  { install a default generator }
+  GPasDoc.Generator:=THTMLDocGenerator.Create(GPasDoc);
   if GOption_Format.Value = 'html' then begin
     GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
   end else 
@@ -241,13 +249,18 @@ begin
   begin
     GPasDoc.Generator := TTEXDocGenerator.Create(GPasDoc);
   end else 
+  if GOption_Format.Value = 'latex2rtf' then 
+  begin
+    GPasDoc.Generator := TTEXDocGenerator.Create(GPasDoc);
+    TTexDocGenerator(GPasDoc.Generator).Latex2rtf := True;
+  end else 
   begin
     if GOption_Format.Value = 'htmlhelp' then begin
       GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
       THTMLDocGenerator(GPasDoc.Generator).HtmlHelp := True;
       THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
     end else begin
-      GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), skipping.',
+      GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), using defaults.',
         [GOption_Format.Value]);
     end;
   end;
@@ -353,6 +366,7 @@ begin
   WriteLn('warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.');
   WriteLn;
   CreateOptions;
+
   try
     GPasDoc := TPasDoc.Create(nil);
     try
