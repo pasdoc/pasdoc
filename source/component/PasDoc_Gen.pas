@@ -1523,7 +1523,7 @@ begin
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
         if Length(LNode.Parent.Name) > 0 then begin
-          WriteConverted('  '+LNode.Name + ' -> '+LNode.Parent.Name, true);
+          WriteDirect('  '+LNode.Name + ' -> '+LNode.Parent.Name, true);
         end;
       end;
       LNode := FClassHierarchy.NextItem(LNode);
@@ -1547,7 +1547,7 @@ begin
         U := TPasUnit(FUnits.PasItemAt[i]);
         if not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
           for j := 0 to U.UsesUnits.Count-1 do begin
-            WriteConverted('  '+U.Name+' -> '+U.UsesUnits[j], true);
+            WriteDirect('  '+U.Name+' -> '+U.UsesUnits[j], true);
           end;
         end;
       end;
