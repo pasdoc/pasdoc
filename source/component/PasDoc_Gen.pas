@@ -615,7 +615,7 @@ begin
   CloseStream;
   DoMessage(4, mtInformation, 'Creating output stream "' + AName + '".', []);
   Result := csError;
-  if FileExists(AName) and not AOverwrite then begin
+  if FileExists(DestinationDirectory + AName) and not AOverwrite then begin
     Result := csExisted;
   end else begin
     try
@@ -676,7 +676,6 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
   end;
 
 var
-  Ancestor: TPasItem;
   Run: Integer;
   Offs1: Integer;
   Offs2: Integer;
@@ -685,6 +684,8 @@ var
   s: string;
   t: string;
   l: Integer;
+  TheObject: TPasCio;
+  Ancestor: TPasItem;
 begin
   Result := True;
   { check for cases "no id" and "id is empty" }
@@ -735,7 +736,9 @@ begin
           if IsMacro(d, l, 'CLASSNAME', Run) then begin
             if Assigned(Item.MyObject) then begin
               t := t + CodeString(ConvertString(Item.MyObject.Name));
-            end;
+            end else if Item is TPasCio then begin
+              t := t + CodeString(ConvertString(Item.Name));
+            end
           end
           else
               { Is it @True? }
@@ -753,18 +756,29 @@ begin
                   t := t + CodeString('nil');
                 end
                 else
-                  if Assigned(Item.MyObject) and
-                    IsMacro(d, l, 'INHERITED', Run) then begin
+                  if IsMacro(d, l, 'INHERITED', Run) then begin
+                    if Assigned(Item.MyObject) then
+                      TheObject := Item.MyObject
+                    else if Item is TPasCio then
+                      TheObject := TPasCio(Item)
+                    else
+                      TheObject := nil;
                     // Try to find inherited property of item.
                     // Updated 14 Jun 2002
 
-                    if not StringVectorIsNilOrEmpty(Item.MyObject.Ancestors) then begin
-                      s := Item.MyObject.Ancestors.FirstName;
+                    if Assigned(TheObject)
+                      and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
+                      s := TheObject.Ancestors.FirstName;
                       Ancestor := SearchItem(s, Item);
                       if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
                         then begin
                         repeat
-                          TheLink := SearchLink(s + '.' + Item.Name, Item);
+                          if Item.MyObject = nil then
+                            // we are looking for the ancestor itself
+                            TheLink := SearchLink(s, Item)
+                          else
+                            // we are looking for an ancestor's property or method
+                            TheLink := SearchLink(s + '.' + Item.Name, Item);
                           if TheLink <> '' then Break;
 
                           if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
