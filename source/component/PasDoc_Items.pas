@@ -684,6 +684,7 @@ begin
         begin
           { we found one, remove it from the description and add it to the author list }
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      l := Length(DetailedDescription);
       if s <> '' then begin
         if Authors = nil then FAuthors := NewStringVector;
         Authors.Add(s);
