@@ -163,6 +163,8 @@ type
     procedure WriteLink(const href, caption, css, target: string); overload;
     procedure WriteAnchor(ItemName, Link: string);
   public
+    function FormatPascalCode(const Line: string): string; override;
+
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
@@ -261,6 +263,13 @@ begin
   Result:=outstr;
 end;
 { }
+
+
+function TTexDocGenerator.FormatPascalCode(const Line: string): string;
+begin
+  result := '\begin{verbatim}' + inherited FormatPascalCode(Line) + '\end{verbatim}';
+end;
+
 
 function TTexDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
 var
@@ -813,7 +822,7 @@ begin
   if FLatex2rtf then
     begin
       WriteDirect('\begin{list}{}{',true);
-      WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+      WriteDirect('\settowidth{\tmplength}{\textbf{'+convertstring(s)+'}}',true);
       WriteDirect('\setlength{\itemindent}{0cm}',true);
       WriteDirect('\setlength{\listparindent}{0cm}',true);
       WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
@@ -826,7 +835,7 @@ begin
   else
     begin
       WriteDirect('\begin{list}{}{',true);
-      WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+      WriteDirect('\settowidth{\tmplength}{\textbf{'+convertstring(s)+'}}',true);
       WriteDirect('\setlength{\itemindent}{0cm}',true);
       WriteDirect('\setlength{\listparindent}{0cm}',true);
       WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
@@ -848,14 +857,14 @@ begin
   if FLatex2rtf then
     begin
       WriteStartFlushLeft;
-      WriteDirect('\item[\textbf{'+itemname+'}\hfill]',true);
+      WriteDirect('\item[\textbf{'+convertstring(itemname)+'}\hfill]',true);
       WriteCodeWithLinks(p, itemdesc, '');
       WriteDirect('',true);
       WriteEndFlushLeft;
     end
   else
     begin
-      WriteDirect('\item[\textbf{'+itemname+'}\hfill]',true);
+      WriteDirect('\item[\textbf{'+convertstring(itemname)+'}\hfill]',true);
       WriteStartFlushLeft;
       WriteCodeWithLinks(p, itemdesc, '');
       WriteEndFlushLeft;
@@ -2139,6 +2148,10 @@ end.
 
 {
   $Log$
+  Revision 1.8  2004/03/19 15:55:09  ccodere
+    * bugfix with parsing field names with _ charactersa
+    + added longcode support
+
   Revision 1.7  2004/03/17 05:06:03  ccodere
     bugfix with return values, title was not in correct font.
 
