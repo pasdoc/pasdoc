@@ -1266,7 +1266,7 @@ begin
   if Assigned(t) then begin
     if (t.MyType = TOK_RESERVED) then begin
       if t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, False) then begin
+        if ParseCDFP(M, d, t.Data, t.Info.ReservedKey, d, False) then begin
           M.Name := n;
           U.AddType(M);
           Result := True;
