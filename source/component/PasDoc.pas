@@ -93,8 +93,12 @@ type
       If the collection is empty after removal of all items, it is disposed
       of and the variable is set to nil. }
     procedure RemoveExcludedItems(const c: TPasItems);
+    
+    (*
     { Searches for descr tags in the comments of all TPasItem objects in C. }
     procedure SearchDescrFileTags(const c: TPasItems);
+    *)
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
@@ -404,6 +408,13 @@ begin
   i := 0;
   while (i < c.Count) do begin
     p := c.PasItemAt[i];
+    
+    { TODO -- code below checks for @exclude tag too trivially,
+      it accidentaly excludes items with comments like '@@exclude'
+      or '@html(@exclude)'. Checking for exclude should be
+      incorporated into doing TTagManager.Execute
+      in ExpandDescription. }
+
     if Assigned(p) and (StrPosIA('@EXCLUDE', p.DetailedDescription) > 0) then begin
       DoMessage(3, mtInformation, 'Excluding item %s', [p.Name]);
       c.DeleteAt(i);
@@ -502,6 +513,18 @@ begin
   ReplaceStr := '';
 end;
 
+(*
+TODO -- this code is not decided to be removed, but it needs to be 
+rearranged (by someone who knows what is the intended purpose
+of DescriptionFileNames, as they don't seem to be used now
+and SearchDescrFileTags of this object is never called)
+to use TTagManager.Execute inside TDocGenerator.ExpandDescription.
+
+That's because current use of TTagManager.Execute is too simple
+-- it will catch @descrfile also inside @html() and @longcode()
+and it will complain to user about unknown tags,
+since it will know only about @descrfile tag.
+
 procedure TPasDoc.SearchDescrFileTags(const c: TPasItems);
 var
   i: Integer;
@@ -518,9 +541,8 @@ begin
     if p.DetailedDescription <> '' then begin
       TagManager := TTagManager.Create;
       try
-        TagManager.AddHandler('descrfile', {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag);
-        s := p.Description;
-        TagManager.Execute(s);
+        TagManager.AddHandler('descrfile', {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag, false, false);
+        s := TagManager.Execute(p.Description);
       finally
         TagManager.Free;
       end;
@@ -541,7 +563,7 @@ begin
     end;
   end;
 end;
-
+*)
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDoc.DoError(const AMessage: string; const AArguments: array of

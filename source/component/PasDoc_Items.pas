@@ -73,16 +73,13 @@ type
     FMyUnit: TPasUnit;
     FDeprecated: boolean;
     FPlatform: boolean;
-    FAbbreviations: TStringList;
     { list of strings, each representing one author of this item }
     FAuthors: TStringVector;
     { if assigned, contains string with date of creation }
     FCreated: string;
-    procedure Unabbreviate(var s: string);
     procedure SetAuthors(const Value: TStringVector);
     procedure Serialize(const ADestination: TStream); override;
-    procedure Deserialize(const ASource: TStream); override;
-    procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
+    procedure Deserialize(const ASource: TStream); override;    
     procedure StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreAuthorTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreCreatedTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -95,6 +92,11 @@ type
     { }
     constructor Create; override;
     destructor Destroy; override;
+    
+    { It registers handlers that init @link(Description), @link(Authors), 
+      @link(Created), @link(LastMod) and remove relevant tags from description. 
+      You can override it to add more handlers. }
+    procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
 
     function FindItem(const ItemName: string): TPasItem; virtual;
     { }
@@ -102,8 +104,6 @@ type
     { Returns DetailedDescription if available, otherwise Description,
       otherwise nil. }
     function GetDescription: string;
-    procedure HandleTags;
-    property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
     { returns the qualified name of the item }
@@ -114,7 +114,10 @@ type
     { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
     property MyObject: TPasCio read FMyObject write FMyObject;
 
-    { description of this item, a single sentence }
+    { description of this item, a single sentence.
+    
+      Note that this is already in the form suitable for final output,
+      with tags expanded, chars converted etc. }
     property Description: string read FDescription write FDescription;
     { more detailed description of this item, mostly more than one
       sentence }
@@ -177,17 +180,29 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure SetParams(const Value: TStringVector);
-    procedure RegisterTagHandlers(TagManager: TTagManager); override;
     procedure StoreRaisesTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreParamTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreReturnsTag(const TagName, TagDesc: string; var ReplaceStr: string);
   public
     constructor Create; override;
     destructor Destroy; override;
+    
+    { In addition to inherited, this also registers handlers
+      that init @link(Params), @link(Returns) and @link(Raises)
+      and remove according tags from description. }
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
+    
     { full declaration, including parameter list and procedural directives }
     property FullDeclaration: string read FFullDecl write FFullDecl;
     { }
     property What: TMethodType read FWhat write FWhat;
+    
+    { Note that Params, Returns, Raises are already in the form processed by
+      @link(TTagManager.Execute), i.e. with links resolved,
+      html characters escaped etc. So *don't* convert them (e.g. before
+      writing to the final docs) once again (by some ExpandDescription or
+      ConvertString or anything like that). }
+    { }
     property Params: TStringVector read FParams write SetParams;
     property Returns: string read FReturns;
     property Raises: TStringVector read FRaises;
@@ -617,30 +632,13 @@ end;
 
 { ---------- }
 
-procedure TPasItem.HandleTags;
-var
-  TagManager: TTagManager;
-  s: string;
-begin
-  TagManager := TTagManager.Create;
-  try
-    TagManager.Abbreviations := Abbreviations;
-    RegisterTagHandlers(TagManager);
-    s := DetailedDescription;
-    TagManager.Execute(s);
-    DetailedDescription := s;
-  finally
-    TagManager.Free;
-  end;
-end;
-
 procedure TPasItem.RegisterTagHandlers(TagManager: TTagManager);
 begin
-  TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag);
-  TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag);
-  TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag);
-  TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag);
-  TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag);
+  TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag, true, true);
+  TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag, false, true);
+  TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag, false, true);
+  TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag, false, true);
+  TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag, false, true);
 end;
 
 procedure TPasItem.StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -1029,18 +1027,6 @@ begin
   end;
 end;
 
-procedure TPasItem.Unabbreviate(var s: string);
-var
-  idx: Integer;
-begin
-  if Assigned(Abbreviations) then begin
-    idx := Abbreviations.IndexOfName(s);
-    if idx>=0 then begin
-      s := Abbreviations.Values[s];
-    end;
-  end;
-end;
-
 constructor TPasCio.Create;
 begin
   inherited;
@@ -1214,10 +1200,10 @@ end;
 procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag);
-  TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag);
-  TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag);
-  TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag);
+  TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag, true, true);
+  TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag, true, true);
+  TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag, true, true);
+  TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag, true, true);
 end;
 
 { TPasVarConst }

@@ -40,7 +40,6 @@ type
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
-    function ExpandDescription(Item: TPasItem; var d: string): Boolean; override;  // GSk
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -103,11 +102,8 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
-    { Return the text within the parentheses after the @HTML field.  The user
-      is required to provided correctly formatted html text within the
-      parentheses  and to have matching parentheses.  If no parentheses are found
-      after @HTML, the string '@HTML' is returned instead. }
-    function HtmlString(const Desc: string; Len: integer; var CurPos: integer): string; override;
+
+    function HtmlString(const S: string): string; override;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
@@ -163,6 +159,8 @@ type
     procedure WriteLink(const href, caption, css: string); overload;
     procedure WriteLink(const href, caption, css, target: string); overload;
     procedure WriteAnchor(ItemName, Link: string);
+    
+    function InsertParagraphs(const S: string): string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -182,7 +180,7 @@ type
    private
     procedure WriteParameter(const ParamName: string; const Desc: string);
     procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-      List: TStringVector);
+      List: TStringVector; LinkToParamNames: boolean);
     procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
     { PDF Conditional support routines }
     procedure WriteStartFlushLeft;
@@ -262,41 +260,9 @@ begin
 end;
 
 
-function TTexDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
-var
-  ParenthesesLevel: integer;
-  CharPos: integer;
+function TTexDocGenerator.HtmlString(const S: string): string;
 begin
-  CharPos := CurPos;
-  if (CharPos > Len) or (Desc[CharPos] <> '(') then
-  begin
-    result := '@HTML';
-  end
-  else
-  begin
-    ParenthesesLevel := 1;
-    while (ParenthesesLevel <> 0) and (CharPos <= Len) do
-    begin
-      Inc(CharPos);
-      if Desc[CharPos] = '(' then
-      begin
-        Inc(ParenthesesLevel)
-      end
-      else if Desc[CharPos] = ')' then
-      begin
-        Dec(ParenthesesLevel)
-      end;
-    end;
-    if ParenthesesLevel = 0 then
-    begin
-      result := RemoveHTMLChars(Copy(Desc, CurPos + 1, CharPos - CurPos - 1));
-      CurPos := CharPos + 1;
-    end
-    else
-    begin
-      result := '@HTML';
-    end;
-  end;
+  Result := ConvertString(RemoveHTMLChars(S));
 end;
 
 function TTexDocGenerator.CodeString(const s: string): string;
@@ -434,11 +400,11 @@ begin
     Include(SectionsAvailable, dsDescription);
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
     Include(SectionsAvailable, dsHierarchy);
-  if (not (ObjectVectorIsNilOrEmpty(CIO.Fields))) and (HasDescriptions(CIO.Fields)) then
+  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
     Include(SectionsAvailable, dsFields);
-  if (not ObjectVectorIsNilOrEmpty(CIO.Methods)) and (HasDescriptions(CIO.Methods)) then
+  if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
     Include(SectionsAvailable, dsMethods);
-  if (not ObjectVectorIsNilOrEmpty(CIO.Properties)) and (HasDescriptions(CIO.Properties)) then
+  if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
     Include(SectionsAvailable, dsProperties);
 
   if SectionsAvailable = [] then exit;
@@ -456,7 +422,7 @@ begin
         begin
           WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
 
-          WriteDirect(CIO.Name);
+          WriteConverted(CIO.Name);
           WriteConverted(' > ');
           s := CIO.Ancestors.FirstName;
           Item := SearchItem(s, CIO);
@@ -533,21 +499,15 @@ procedure TTexDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 var
   j: Integer;
   CIO: TPasCio;
-  begin_written: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
   if c.Count = 0 then exit;
-  begin_written := False;
+  
+  WriteDirect('\begin{description}',true);
+  
   for j := 0 to c.Count - 1 do 
     begin
       CIO := TPasCio(c.PasItemAt[j]);
-      { skip any CIO which has no description, as well as all records }
-      if (not HasDescription(CIO)) or (CIO.MyType in [CIO_Record,CIO_PackedRecord]) then
-        continue;
-      if not begin_written then begin
-        WriteDirect('\begin{description}',true);
-        begin_written := True;
-      end;
       WriteDirect('\item[\texttt{');
       WriteLink(CIO.FullLink, CodeString(ConvertString(CIO.Name)), 'bold');
       { name of class/interface/object and unit }
@@ -561,8 +521,7 @@ begin
         WriteWithURLs(CIO.Description);
       WriteDirect('',true);
     end;
-  if begin_written then
-    WriteDirect('\end{description}',true);
+  WriteDirect('\end{description}',true);
 end;
 
 procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
@@ -757,7 +716,7 @@ begin
     OutputFileName := ProjectName + '.tex'
   else
     OutputFileName := 'docs.tex';
-  case CreateStream('docs.tex', true) of
+  case CreateStream(OutputFileName, true) of
     csError: begin
       DoMessage(1, mtError, 'Could not create doc file %s',[Outputfilename]);
       Exit;
@@ -885,26 +844,8 @@ var
   j: Integer;
   Item: TPasItem;
   s: string;
-  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(Fields) then Exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to Fields.Count - 1 do 
-    begin
-      Item := Fields.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
   
   WriteHeading(Order, FLanguage.Translation[trFields]);
   
@@ -923,12 +864,9 @@ begin
     if length(s) < length(FLanguage.Translation[trExceptions])  then
        s:=FLanguage.Translation[trExceptions];
 
-
     for j := 0 to Fields.Count - 1 do 
       begin
         Item := Fields.PasItemAt[j];
-        if not HasDescription(Item) then
-          continue;
 
         WriteHeading(Order+1, Item.Name);
         WriteAnchor(Item.Name,Item.FullLink);
@@ -943,10 +881,14 @@ begin
           WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration], 
           AccessibilityStr[Item.State]+' '+Item.name);
           
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-        WriteStartOfParagraph;
-        WriteItemDetailedDescription(Item);
-        WriteEndOfParagraph;
+        if HasDescription(Item) then
+        begin
+          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+          WriteStartOfParagraph;
+          WriteItemDetailedDescription(Item);
+          WriteEndOfParagraph;
+        end;
+
         WriteEndList;
       end;
     end
@@ -968,8 +910,6 @@ begin
     for j := 0 to Fields.Count - 1 do 
       begin
         Item := Fields.PasItemAt[j];
-        if not HasDescription(Item) then
-          continue;
         WriteAnchor(Item.Name,Item.FullLink);
         if Item is TPasVarConst then 
         begin
@@ -1015,7 +955,7 @@ end;
   procedure TTexDocGenerator.WriteParameter(const ParamName: string; const Desc: string);
   begin
     WriteDirect('\item[');
-    WriteConverted(ParamName);
+    WriteDirect(ParamName);
     WriteDirect('] ');
     WriteWithURLs(Desc);
     WriteDirect('',true);
@@ -1023,7 +963,7 @@ end;
 
   { writes the parameters or exceptions list }
   procedure TTexDocgenerator.WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector);
+    List: TStringVector; LinkToParamNames: boolean);
   var
     i: integer;
     s: string;
@@ -1041,8 +981,39 @@ end;
 {    WriteDirect('\item',true);}
     for i := 0 to List.Count - 1 do begin
       s := List[i];
+      
+      { TODO -- splitting S to ParamName and the rest should be done
+        inside TTagManager.Execute, working with raw text, instead
+        of here, where the text is already expanded and converted.
+        
+        TPasMethod should provide properties Params and Raises 
+        as a TStringPairVector, holding pairs of strings: 
+        for each item, 
+        a string being the name of raised exception (or paramater name)
+        and and accompanying description (description that is of course 
+        already expanded recursively).
+        
+        Actually, current approach works for now perfectly,
+        but only because neighter html generator nor LaTeX generator
+        change text in such way that first word of the text
+        (assuming it's a normal valid Pascal identifier) is changed.
+        
+        E.g. '@raises(EFoo with some link @link(Blah))'
+        is expanded to 'EFoo with some link <a href="...">Blah</a>'
+        so the 1st word ('EFoo') is preserved.
+        
+        But this is obviously unclean approach. 
+        It's also unclean that mechanics of splitting (ExtractFirstWord)
+        must be called from each generator class. Such thing like 
+        ExtractFirstWord should not only be implemented once,
+        but should also be called from only one place in code. }
+
       ParamName := ExtractFirstWord(s);
-      ExpandDescription(Func, s);
+
+      if LinkToParamNames then
+       ParamName := SearchLinkOrWarning(ParamName, Func, 
+         'Could not resolve link to "%s" from description of item "%s"');
+
       WriteParameter(ParamName, s);
     end;
     WriteDirect('\end{description}',true);
@@ -1053,7 +1024,6 @@ end;
     if ReturnDesc = '' then
       exit;
     WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
-    ExpandDescription(Func, ReturnDesc);
     WriteWithURLs(ReturnDesc);
     WriteDirect('',true);
   end;
@@ -1065,42 +1035,21 @@ var
   p: TPasMethod;
   Item: TPasItem;
   s: string;
-  SomeDescriptions: boolean;
-  begin_written: Boolean;
 begin
+  if FuncsProcs.Count = 0 then Exit;
+  
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to FuncsProcs.Count - 1 do 
-    begin
-      Item := FuncsProcs.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
+
+  WriteDirect('\begin{description}',true);
+
   // two passes, in the first (i=0) we write the overview
   // in the second (i=1) we write the descriptions
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  begin_written := False;
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
-    { skip this entry if there is no description }
-    if not HasDescription(p) then
-      continue;
-    if not begin_written then begin
-      WriteDirect('\begin{description}',true);
-      begin_written := True;    
-    end;
+
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
@@ -1121,8 +1070,7 @@ begin
 
     WriteItemDescription(p);
   end;
-  if begin_written then
-    WriteDirect('\end{description}',true);
+  WriteDirect('\end{description}',true);
 end;
 
 procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
@@ -1130,28 +1078,10 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
-  SomeDescriptions: boolean;
   item: TPasitem;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to FuncsProcs.Count - 1 do 
-    begin
-      Item := FuncsProcs.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
 
   WriteHeading(HL, FLanguage.Translation[trMethods]);
 
@@ -1172,31 +1102,31 @@ begin
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
-      { skip this entry if there is no description }
-      if not HasDescription(p) then
-        continue;
+      
       { overview of functions and procedures }
+      WriteHeading(HL+1,p.Name);
+      WriteAnchor(p.Name,p.FullLink);
+
+      WriteStartList(s);
+
+      WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
+        AccessibilityStr[p.State]+' '+p.FullDeclaration);
+
+      if HasDescription(p) then
       begin
-
-        WriteHeading(HL+1,p.Name);
-        WriteAnchor(p.Name,p.FullLink);
-        
-        WriteStartList(s);
-
-        WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
-          AccessibilityStr[p.State]+' '+p.FullDeclaration);
-
         WriteStartOfParagraph;
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
         WriteItemDetailedDescription(p);
         WriteEndOfParagraph;
-
-        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
-        WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
-        
-        WriteEndList;
       end;
+
+      WriteParamsOrRaises(p, FLanguage.Translation[trParameters], 
+        p.Params, false);
+      WriteReturnDesc(p, p.Returns);
+      WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], 
+        p.Raises, true);
+
+      WriteEndList;
   end;
 end;
  
@@ -1208,43 +1138,19 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
-  SomeDescriptions: boolean;
   Item: TPasItem;
-  begin_written: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to FuncsProcs.Count - 1 do 
-    begin
-      Item := FuncsProcs.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
-  
+
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
-  begin_written := False;
+  WriteDirect('\begin{description}',true);
+
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
-    { skip empty entries }
-    if not HasDescription(p) then continue;
     
-    if not begin_written then begin
-      WriteDirect('\begin{description}',true);
-      begin_written := True;
-    end;
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
@@ -1262,8 +1168,7 @@ begin
     WriteDirect('}]');
     WriteItemDescription(p);
   end;
-  if begin_written then
-    WriteDirect('\end{description}',true);
+  WriteDirect('\end{description}',true);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1277,27 +1182,9 @@ var
   Item: TPasItem;
   s: string;
   procstr: string;
-  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to FuncsProcs.Count - 1 do 
-    begin
-      Item := FuncsProcs.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
 
   WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
 
@@ -1316,8 +1203,6 @@ begin
   for j := 0 to FuncsProcs.Count - 1 do
   begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
-      { skip empty entries }
-      if not HasDescription(p) then continue;
       { overview of functions and procedures }
       begin
         { Check if this is a function or a procedure }
@@ -1338,14 +1223,19 @@ begin
         WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
           p.FullDeclaration);
 
-        WriteStartOfParagraph;
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-        WriteItemDetailedDescription(p);
-        WriteEndOfParagraph;
+        if HasDescription(p) then
+        begin
+          WriteStartOfParagraph;
+          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+          WriteItemDetailedDescription(p);
+          WriteEndOfParagraph;
+        end;
 
-        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
+        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], 
+          p.Params, false);
         WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
+        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], 
+          p.Raises, true);
         
         WriteEndList;
         
@@ -1498,27 +1388,10 @@ var
   j, k: Integer;
   Item: TPasItem;
   s: string;
-  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
   if i.count = 0 then exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to i.Count - 1 do 
-    begin
-      Item := i.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
+
   WriteHeading(HL, Heading);
   
   s:=FLanguage.Translation[trDescription];
@@ -1532,33 +1405,6 @@ begin
   
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
-    { skip the item entirely if it does not have any description
-      
-    }
-    if not HasDescription(Item) then
-      begin
-        SomeDescriptions:=false;
-        { If this is not an enumeration, then skip it entirely }
-        if not (Item is TPasEnum) then
-          continue
-        else
-        { for an enumeration we must verify if one of the subentries
-          has a description - if so continue 
-        }
-        for k := 0 to TPasEnum(Item).Members.Count-1 do 
-          begin
-            if HasDescription(TPasItem(TPasEnum(Item).Members.PasItemAt[k])) then
-              begin
-                SomeDescriptions:=true;
-                break;
-              end;
-          end;
-        { If no descriptions at all, skip to next }  
-        if not SomeDescriptions then
-          begin
-            continue; 
-          end;
-      end;
 
     if Item is TPasEnum then
       WriteHeading(HL+1, Item.Name+' '+LowerCase(FLanguage.Translation[trEnum]))
@@ -1584,9 +1430,12 @@ begin
     
     if not (Item is TPasEnum) then
       begin
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-        WriteItemDetailedDescription(Item);
-        WriteDirect('\par ',true);
+        if HasDescription(Item) then
+        begin
+          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+          WriteItemDetailedDescription(Item);
+          WriteDirect('\par ',true);
+        end;
       end
     else
      begin
@@ -1772,26 +1621,8 @@ var
   Prop: TPasProperty;
   s: string;
   Item: TPasItem;
-  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
-  
-  { verify if at least one item has a description, if so then
-    add the heading, otherwise simply ignore it and exit.
-  } 
-  SomeDescriptions:=false;
-  for j := 0 to p.Count - 1 do 
-    begin
-      Item := p.PasItemAt[j];
-      if HasDescription(Item) then
-        begin
-          SomeDescriptions := true;
-          break;
-        end;
-    end;
-  
-  if not SomeDescriptions then exit;
-  
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   
@@ -1814,22 +1645,23 @@ begin
     for j := 0 to p.Count - 1 do 
       begin
         Prop := TpasProperty(p.PasItemAt[j]);
-        if not HasDescription(Prop) then
-          continue;
 
         WriteHeading(HL+1, Prop.Name);
         WriteAnchor(Prop.Name,Prop.FullLink);
-        WriteStartList(s);
-        
+        WriteStartList(s);        
         
         WriteDeclarationItem(Prop, FLanguage.Translation[trDeclaration], 
           AccessibilityStr[Prop.State]+ ' '+Prop.Fulldeclaration);
           
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-        WriteStartOfParagraph;
-        WriteItemDetailedDescription(Prop);
-        WriteEndOfParagraph;
-        WriteEndList;
+        if HasDescription(Prop) then
+        begin
+          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+          WriteStartOfParagraph;
+          WriteItemDetailedDescription(Prop);
+          WriteEndOfParagraph;
+        end;
+        
+        WriteEndList;        
       end;
     end
    else
@@ -1852,8 +1684,6 @@ begin
     for j := 0 to p.Count - 1 do 
       begin
         Prop := TPasProperty(p.PasItemAt[j]);
-        if not HasDescription(Prop) then
-          continue;
         WriteAnchor(Prop.Name,Prop.FullLink);
         WriteDeclarationItem(Prop, Prop.Name, AccessibilityStr[Prop.State]+' '+
            Prop.FullDeclaration);
@@ -2046,6 +1876,7 @@ begin
 
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
+  WriteAnchor(U.Name, U.FullLink);
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   if HasDescription(U) then
@@ -2355,15 +2186,22 @@ begin
   EscapeURL := AString;
 end;
 
-function TTexDocGenerator.ExpandDescription(Item: TPasItem;    // GSk: override
-                                            var d: string): Boolean;
+function TTexDocGenerator.InsertParagraphs(const S: string): string; 
 begin
-  Result := inherited ExpandDescription(Item, d);
-  InsertParagraphs(d, LineEnding + LineEnding);
+  Result := S;
+  Utils.InsertParagraphs(Result, LineEnding + LineEnding);
 end;
 
 (*
   $Log$
+  Revision 1.20  2005/04/04 21:14:10  kambi
+  Commiting my fixes sent to pasdoc-main.
+  "Trailer of my next patch" [http://sourceforge.net/mailarchive/forum.php?thread_id=6919292&forum_id=4647]
+  "Fixes to TTagManager.Execute" [http://sourceforge.net/mailarchive/forum.php?thread_id=6934185&forum_id=4647]
+  "Small fix for LaTeX output" [http://sourceforge.net/mailarchive/forum.php?thread_id=6946611&forum_id=4647]
+  "Fix for LaTeX genetator omitting some things" [http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&forum_id=4647]
+  "Fix for --name parameter with Latex generator" [http://sourceforge.net/mailarchive/forum.php?thread_id=6959580&forum_id=4647]
+
   Revision 1.19  2005/03/29 06:55:48  johill
   patches from Michalis Kamburelis
 

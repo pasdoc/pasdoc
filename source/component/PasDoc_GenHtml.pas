@@ -55,7 +55,6 @@ type
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
-    function ExpandDescription(Item: TPasItem; var d: string): Boolean; override;  // GSk
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -131,11 +130,7 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
-    { Return the text within the parentheses after the @HTML field.  The user
-      is required to provided correctly formatted html text within the
-      parentheses  and to have matching parentheses.  If no parentheses are found
-      after @HTML, the string '@HTML' is returned instead. }
-    function HtmlString(const Desc: string; Len: integer; var CurPos: integer): string; override;
+    function HtmlString(const S: string): string; override;
     // FormatPascalCode will cause Line to be formatted in
     // the way that Pascal code is formatted in Delphi.
     function FormatPascalCode(const Line: string): string; override;
@@ -207,6 +202,8 @@ type
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
     procedure WriteEndOfLink;
+    
+    function InsertParagraphs(const S: string): string; override;
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -274,41 +271,10 @@ const
     '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
     '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
 
-function THTMLDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
-var
-  ParenthesesLevel: integer;
-  CharPos: integer;
+
+function THTMLDocGenerator.HtmlString(const S: string): string; 
 begin
-  CharPos := CurPos;
-  if (CharPos > Len) or (Desc[CharPos] <> '(') then
-  begin
-    result := '@HTML';
-  end
-  else
-  begin
-    ParenthesesLevel := 1;
-    while (ParenthesesLevel <> 0) and (CharPos <= Len) do
-    begin
-      Inc(CharPos);
-      if Desc[CharPos] = '(' then
-      begin
-        Inc(ParenthesesLevel)
-      end
-      else if Desc[CharPos] = ')' then
-      begin
-        Dec(ParenthesesLevel)
-      end;
-    end;
-    if ParenthesesLevel = 0 then
-    begin
-      result := Copy(Desc, CurPos + 1, CharPos - CurPos - 1);
-      CurPos := CharPos + 1;
-    end
-    else
-    begin
-      result := '@HTML';
-    end;
-  end;
+  Result := S;
 end;
 
 function THTMLDocGenerator.FormatString(AString: string): string;
@@ -911,7 +877,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   procedure WriteParameter(const ParamName: string; const Desc: string);
   begin
     WriteDirect('<dt class="parameters">', true);
-    WriteConverted(ParamName);
+    WriteDirect(ParamName);
     WriteDirect('</dt>', true);
     WriteDirect('<dd class="parameters">', true);
     WriteWithURLs(Desc);
@@ -920,7 +886,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector);
+    List: TStringVector; LinkToParamNames: boolean);
   var
     i: integer;
     s: string;
@@ -933,8 +899,18 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     WriteDirect('<dl class="parameters">', true);
     for i := 0 to List.Count - 1 do begin
       s := List[i];
+
+      { TODO -- splitting S to ParamName and the rest should be done
+        inside TTagManager.Execute, not here. See analogous place in
+        TTexDocgenerator.WriteParamsOrRaises for more comments
+        about why & how. }
+ 
       ParamName := ExtractFirstWord(s);
-      ExpandDescription(Func, s);
+      
+      if LinkToParamNames then
+       ParamName := SearchLinkOrWarning(ParamName, Func, 
+         'Could not resolve link to "%s" from description of item "%s"');
+      
       WriteParameter(ParamName, s);
     end;
     WriteDirect('</dl>', true);
@@ -945,7 +921,6 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     if ReturnDesc = '' then
       exit;
     WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
-    ExpandDescription(Func, ReturnDesc);
     WriteDirect('<p class="return">');
     WriteWithURLs(ReturnDesc);
     WriteDirect('</p>');
@@ -1025,9 +1000,11 @@ begin
         WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
 
-        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), p.Params);
+        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
+          p.Params, false);
         WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), p.Raises);
+        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), 
+          p.Raises, true);
       end;
     end;
     if (i = 0) then WriteEndOfTable;
@@ -2837,14 +2814,14 @@ end;
 
 function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
-  result := '<pre class="longcode">' + inherited FormatPascalCode(Line) + '</pre>';
+  result := '<pre class="longcode">' + 
+    inherited FormatPascalCode(ConvertString(Line)) + '</pre>';
 end;
 
-function THTMLDocGenerator.ExpandDescription(Item: TPasItem;   // GSk: override
-                                             var d: string): Boolean;
+function THTMLDocGenerator.InsertParagraphs(const S: string): string; 
 begin
-  Result := inherited ExpandDescription(Item, d);
-  InsertParagraphs(d, '<p>');
+  Result := S;
+  Utils.InsertParagraphs(Result, '<p>');
 end;
 
 end.

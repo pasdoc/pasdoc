@@ -66,6 +66,14 @@ const
      by one Paragraph string. }
 procedure InsertParagraphs(var d:string; const Paragraph:string);
 
+{$ifdef VER1_0}
+{ This is only for compatibity with FPC 1.0.x.
+  FPC 1.9.x and Delphi/Kylix have this is StrUtils unit.
+  Implementation of this is copied from FPC 1.9.9 RTL sources. }
+Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
+Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
+{$endif}
+
 implementation
 uses
   SysUtils,
@@ -168,27 +176,11 @@ const
   { Note that these WhiteSpaces include all possible newline characters }
   WhiteSpaces = [#10, #13, ' ', #9];
 var
-  BeginPos, EndPos, Done, LineEndingPos, I:Integer;
+  Done, LineEndingPos, I: Integer;
   TempString: string;
   LenD: integer;
 begin
   d := AdjustLineBreaks(d);
-  
-  { Code below does work assuming that Length(d)>=1. 
-    So Exit now if Length(d) = 0. }
-  if d = '' then Exit;
-  
-  { Eliminate whitespace at beginning and ending of d }
-  BeginPos := 1;
-  while d[BeginPos] in WhiteSpaces do Inc(BeginPos);
-  EndPos := Length(d);
-  while d[  EndPos] in WhiteSpaces do Dec(  EndPos);
-  if (BeginPos > 1) or (EndPos < Length(d)) then
-  begin
-    if BeginPos<=EndPos then
-      d := Copy(d, BeginPos, EndPos - BeginPos + 1) else
-      d := '';
-  end;
   
   { Look for a sequences of blank lines. 
     Blank line is line filled only with spaces (' ') or tabs (#9), 
@@ -231,5 +223,38 @@ begin
     end;
   end;
 end;
+
+{$ifdef VER1_0}
+Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
+
+var i : pchar;
+begin
+  if (offset<1) or (offset>length(s)) then exit(0);
+  i:=strpos(@s[offset],@substr[1]);
+  if i=nil then
+    PosEx:=0
+  else
+    PosEx:=succ(i-pchar(s));
+end;
+
+Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
+
+var l : longint;
+begin
+  if (offset<1) or (offset>length(s)) then exit(0);
+  l:=length(s);
+{$ifndef useindexbyte}
+  while (offset<=l) and (s[offset]<>c) do inc(offset);
+  if offset>l then
+   posex:=0
+  else
+   posex:=offset;
+{$else}
+  posex:=offset+indexbyte(s[offset],l-offset+1);
+  if posex=(offset-1) then
+    posex:=0;
+{$endif}
+end;
+{$endif}
 
 end.

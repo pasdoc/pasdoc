@@ -143,7 +143,6 @@ end;
     procedure HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleLiteralTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleDoubleAt(const TagName, TagDesc: string; var ReplaceStr: string);
 
   protected
     FAbbreviations: TStringList;
@@ -201,11 +200,7 @@ end;
       @param(s is the string to format)
       @returns(the formatted string) 
     }
-    function CodeString(const s: string): string; virtual;
-
-    { Called when an @html tag is encountered. }
-    function HtmlString(const Desc: string; Len: integer;
-      var CurPos: integer): string; virtual;
+    function CodeString(const s: string): string; virtual; abstract;
 
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
@@ -244,7 +239,17 @@ end;
 
     { Takes description D of the item Item, expands links (using Item),
       converts output-specific characters.
-      Returns true on success, false otherwise (not enough memory?). }
+      Returns true on success, false otherwise (not enough memory?). 
+      
+      Note that you can't call this function more than once on the
+      same Item, because this function processes the Item "in place",
+      i.e. it replaces some members of Item with their processed form
+      ("processed" means here "ready to be included in final doc output").
+      
+      Note that you can call it only when not Item.WasDeserialized.
+      That's because the current approach to cache stores in the cache
+      items in the state already processed by this function,
+      and, as said above, you shouldn't process Item twice by this function. }
     function ExpandDescription(Item: TPasItem; var d: string): Boolean; virtual;  // GSk: changed to virtual
 
     { Searches for an email address in String S. Searches for first appearance
@@ -277,6 +282,17 @@ end;
       units using @link(FindGlobal).
       Returns a link as String on success or an empty String on failure. }
     function SearchLink(s: string; const Item: TPasItem): string;
+
+    { This calls SearchLink(Identifier, Item).
+      If SearchLink succeeds (returns something <> ''), it simply returns
+      what SearchLink returned.
+
+      But if SearchLink fails, it
+      - gives a warning to a user
+        Format(WarningFormat, [Identifier, Item.QualifiedName]
+      - returns CodeString(ConvertString(Identifier)) }
+    function SearchLinkOrWarning(const Identifier: string; 
+      Item: TPasItem; const WarningFormat: string): string;
 
     { A link provided in a tag can be made up of up to three parts,
       separated by dots.
@@ -425,8 +441,11 @@ end;
 
     { closes the spellchecker }
     procedure EndSpellChecking;
-    // FormatPascalCode will cause Line to be formatted in
-    // the way that Pascal code is formatted in Delphi.
+    { FormatPascalCode will cause Line to be formatted in
+      the way that Pascal code is formatted in Delphi.
+      Note that given Line is taken directly from what user put
+      inside @longcode(), it is not even processed by ConvertString.
+      You should process it with ConvertString if you want. }
     function FormatPascalCode(const Line: string): string; virtual;
     // FormatCode will cause AString to be formatted in the
     // way that Pascal statements are in Delphi.
@@ -444,6 +463,26 @@ end;
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; virtual;
+    
+    { This should insert paragraphs into S.
+      Note that S will already be in the form processed by ConvertString. 
+      
+      Note that this shouldn't trim S, i.e. if S begins or ends with 
+      two consecutive newlines -- this means that paragraph marker 
+      should be inserted at the beginning or end of string.
+      
+      In this class, this function simply returns S, so no paragraphs
+      are inserted. }
+    function InsertParagraphs(const S: string): string; virtual;
+    
+    { S is guaranteed (guaranteed by the user) to be correct html content,
+      this is taken directly from parameters of @html tag.
+      Override this function to decide what to put in output on such thing.
+      
+      Note that S is not processed in any way, even with ConvertString
+      -- unless you're overriding this function in html generator, 
+      you will probably want to process S with ConvertString. }
+    function HtmlString(const S: string): string; virtual; abstract; 
   public
 
     { Creates anchors and links for all items in all units. }
@@ -539,10 +578,6 @@ procedure TDocGenerator.BuildLinks;
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
       p.FullLink := CreateLink(p);
-      if not p.WasDeserialized then begin
-        p.Abbreviations := FAbbreviations;
-        p.HandleTags;
-      end;
     end;
   end;
 
@@ -559,10 +594,7 @@ begin
     U := Units.UnitAt[i];
     U.FullLink := CreateLink(U);
     U.OutputFileName := U.FullLink;
-    U.Abbreviations := FAbbreviations;
-    if not U.WasDeserialized then begin
-      U.HandleTags;
-    end;
+
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
     AssignLinks(U, nil, U.FullLink, U.Types);
@@ -576,10 +608,6 @@ begin
         if not CO.WasDeserialized then begin
           CO.FullLink := CreateLink(CO);
           CO.OutputFileName := CO.FullLink;
-
-          CO.Abbreviations := FAbbreviations;
-
-          CO.HandleTags;
         end;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
@@ -628,18 +656,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.CodeString(const s: string): string;
-begin
-  Result := '<pre>' + CodeString(s) + '</pre>';
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.HandleDoubleAt(const TagName, TagDesc: string; var ReplaceStr: string);
-begin
-  ReplaceStr := '@';
-end;
-
 procedure TDocGenerator.HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then
@@ -647,13 +663,12 @@ begin
   // Trim off "marker" characters at the beginning and end of TagDesc.
   // Then trim or white space.
   // Then format pascal code.
-  ReplaceStr := FormatPascalCode(ConvertString(Copy(TagDesc,2,Length(TagDesc)-2)));
+  ReplaceStr := FormatPascalCode(Copy(TagDesc,2,Length(TagDesc)-2));
 end;
 
 procedure TDocGenerator.HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  { HTML goes right throu }
-  ReplaceStr := TagDesc;
+  ReplaceStr := HtmlString(TagDesc);
 end;
 
 procedure TDocGenerator.HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -728,30 +743,35 @@ begin
   end;
 end;
 
-procedure TDocGenerator.HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
-var
-  TheLink: string;
+function TDocGenerator.SearchLinkOrWarning(const Identifier: string; 
+  Item: TPasItem; const WarningFormat: string): string;
 begin
-  TheLink := SearchLink(TagDesc, FCurrentItem);
+  Result := SearchLink(Identifier, Item);
 
-  if TheLink <> '' then
-    ReplaceStr := TheLink
-  else
-    begin
-      DoMessage(1, mtWarning, 'Could not resolve "@Link(%s)" (%s)', [TagDesc, fCurrentItem.QualifiedName]);
-      ReplaceStr := CodeString(ConvertString(TagDesc));
-    end;
+  if Result = '' then
+  begin
+    DoMessage(1, mtWarning, WarningFormat, [Identifier, Item.QualifiedName]);
+    Result := CodeString(ConvertString(Identifier));
+  end;
+end;
+
+procedure TDocGenerator.HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := SearchLinkOrWarning(TagDesc, FCurrentItem,
+    'Could not resolve "@Link(%s)" (%s)');
 end;
 
 procedure TDocGenerator.HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  ReplaceStr := CodeString(ConvertString(TagDesc));
+  ReplaceStr := CodeString(TagDesc);
 end;
 
 function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string): Boolean;
 var
   TagManager: TTagManager;
 begin
+  Assert(not Item.WasDeserialized);
+  
   Result := True;
   { check for cases "no id" and "id is empty" }
   if d = '' then
@@ -764,20 +784,28 @@ begin
   try
     TagManager.Abbreviations := Abbreviations;
     TagManager.StringConverter := {$IFDEF FPC}@{$ENDIF}ConvertString;
-    TagManager.AddHandler('@',{$IFDEF FPC}@{$ENDIF} HandleDoubleAt);
-    TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag);
-//    TagManager.AddHandler('link', HandleLinkTag);
-    TagManager.AddHandler('HTML',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag);
-    TagManager.AddHandler('NAME',{$IFDEF FPC}@{$ENDIF} HandleNameTag);
-    TagManager.AddHandler('CLASSNAME',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag);
-    TagManager.AddHandler('TRUE',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
-    TagManager.AddHandler('FALSE',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
-    TagManager.AddHandler('NIL',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
-    TagManager.AddHandler('INHERITED',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag);
-    TagManager.AddHandler('LINK',{$IFDEF FPC}@{$ENDIF} HandleLinkTag);
-    TagManager.AddHandler('CODE',{$IFDEF FPC}@{$ENDIF} HandleCodeTag);
+    TagManager.OnMessage := OnMessage;
+    TagManager.InsertParagraphs := {$IFDEF FPC}@{$ENDIF}InsertParagraphs;
+    
+    Item.RegisterTagHandlers(TagManager);
 
-    TagManager.Execute(d);
+    { Tags without params }
+    TagManager.AddHandler('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, false, false);
+    TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
+    TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
+    TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
+    TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, false, false);    
+    TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, false, false);
+
+    { Tags with non-recursive params }
+    TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag, false, true);
+    TagManager.AddHandler('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag, false, true);
+    TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag, false, true);
+
+    { Tags with recursive params }
+    TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag, true, true);
+
+    d := TagManager.Execute(d);
   finally
     TagManager.Free;
   end;
@@ -1716,44 +1744,6 @@ begin
   end;
 end;*)
 
-function TDocGenerator.HtmlString(const Desc: string; Len: integer;
-  var CurPos: integer): string;
-var
-  ParenthesesLevel: integer;
-  CharPos: integer;
-begin
-  CharPos := CurPos;
-  if (CharPos > Len) or (Desc[CharPos] <> '(') then
-  begin
-    result := '@HTML';
-  end
-  else
-  begin
-    ParenthesesLevel := 1;
-    while (ParenthesesLevel <> 0) and (CharPos <= Len) do
-    begin
-      Inc(CharPos);
-      if Desc[CharPos] = '(' then
-      begin
-        Inc(ParenthesesLevel)
-      end
-      else if Desc[CharPos] = ')' then
-      begin
-        Dec(ParenthesesLevel)
-      end;
-    end;
-    if ParenthesesLevel = 0 then
-    begin
-      result := '';
-      CurPos := CharPos + 1;
-    end
-    else
-    begin
-      result := '@HTML';
-    end;
-  end;
-end;
-
 function TDocGenerator.FormatPascalCode(const Line: string): string;
 var
   CharIndex: integer;
@@ -2077,6 +2067,11 @@ end;
 function TDocGenerator.FormatString(AString: string): string;
 begin
   result := AString;
+end;
+
+function TDocGenerator.InsertParagraphs(const S: string): string; 
+begin
+  Result := S;
 end;
 
 initialization
