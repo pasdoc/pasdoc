@@ -1389,7 +1389,11 @@ end;
 
 procedure TDocGenerator.SetDestDir(const Value: string);
 begin
-  FDestDir := IncludeTrailingPathDelimiter(Value);
+  if Value <> '' then begin
+    FDestDir := IncludeTrailingPathDelimiter(Value);
+  end else begin
+    FDestDir := '';
+  end;
 end;
 
 function TDocGenerator.GetLanguage: TLanguageID;
