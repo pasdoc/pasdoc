@@ -197,6 +197,7 @@ implementation
 
 uses
   PasDoc_GenHtml,
+  PasDoc_GenLatex,
   PasDoc_Parser,
   ObjectVector,
   Utils, PasDoc_Serialize;

@@ -41,6 +41,7 @@ uses
   StringVector,
   ObjectVector,
   PasDoc_GenHtml,
+  PasDoc_GenLatex,
   PasDoc_Gen,
   PasDoc_Items,
   OptionParser,
@@ -138,7 +139,7 @@ begin
   GOptionParser.AddOption(GOption_Title);
 
   GOption_Format := TStringOption.Create('O', 'format', True, False);
-  GOption_Format.Explanation := 'output format: html or htmlhelp';
+  GOption_Format.Explanation := 'output format: html, latex or htmlhelp';
   GOption_Format.Value := 'html';
   GOptionParser.AddOption(GOption_Format);
 
@@ -235,7 +236,12 @@ begin
   GOption_Format.Value := LowerCase(GOption_Format.Value);
   if GOption_Format.Value = 'html' then begin
     GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
-  end else begin
+  end else 
+  if GOption_Format.Value = 'latex' then 
+  begin
+    GPasDoc.Generator := TTEXDocGenerator.Create(GPasDoc);
+  end else 
+  begin
     if GOption_Format.Value = 'htmlhelp' then begin
       GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
       THTMLDocGenerator(GPasDoc.Generator).HtmlHelp := True;
