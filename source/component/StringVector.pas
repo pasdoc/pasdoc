@@ -31,7 +31,6 @@ function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
 
 implementation
 uses
-  Utils,
   SysUtils;
 
 function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;

@@ -146,7 +146,7 @@ type
       interface or object, otherwise they're considered functions or procedures
       of a unit.
       The functions are stored in the FuncsProcs argument. }
-      procedure WriteFuncsProcs(const HL: integer; const FuncsProcs: TPasMethods);
+    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const FuncsProcs: TPasMethods); override;
       
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
@@ -438,14 +438,10 @@ const
     'record',
     'packed record');
 var
-  i: Integer;
   s: string;
   Item: TPasItem;
-  TheLink: string;
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
-  Section: TSections;
-  j: integer;
 begin
   if not Assigned(CIO) then Exit;
   
@@ -468,8 +464,6 @@ begin
     Include(SectionsAvailable, dsProperties);
 
   if SectionsAvailable = [] then exit;
-  WriteLN(longint(SectionsAvailable));
-  WriteLn(CIO.Name);
 
   CIO.SortPasItems;
   
@@ -543,14 +537,8 @@ type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
 var
-  i,j: Integer;
+  j: Integer;
   CIO: TPasCio;
-  s: string;
-  Item: TPasItem;
-  TheLink: string;
-  SectionsAvailable: TSectionSet;
-  SectionHeads: array[TSections] of string;
-  Section: TSections;
 begin
   if c = nil then Exit;
   if c.Count = 0 then Exit;
@@ -569,10 +557,7 @@ end;
 procedure TTexDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 var
   j: Integer;
-  p: TPasCio;
   CIO: TPasCio;
-  s: string;
-  Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
   if c.Count = 0 then exit;
@@ -829,8 +814,6 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteLink(const href, caption, css, target: string);
-var
-  s: string;
 begin
   WriteDirect(caption);
 end;
@@ -1097,7 +1080,6 @@ end;
 
 procedure TTexDocGenerator.WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
 var
-  i: Integer;
   j: Integer;
   p: TPasMethod;
   Item: TPasItem;
@@ -1159,7 +1141,6 @@ end;
 
 procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
 var
-  i: Integer;
   j: Integer;
   p: TPasMethod;
   s: string;
@@ -1238,7 +1219,6 @@ end;
 
 procedure TTexDocGenerator.WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 var
-  i: Integer;
   j: Integer;
   p: TPasMethod;
   s: string;
@@ -1297,11 +1277,10 @@ var
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const FuncsProcs: TPasMethods);
+procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods: boolean; const FuncsProcs: TPasMethods);
 
 
 var
-  i: Integer;
   j: Integer;
   p: TPasMethod;
   Item: TPasItem;
@@ -1384,8 +1363,6 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteHeading(Level: integer; const s: string);
-var
-  c: string;
 begin
   if (Level < 1) then Level := 1;
   if Level > 5 then begin
@@ -1898,9 +1875,6 @@ end;
 
 procedure TTexDocGenerator.WritePropertiesSummary(HL: integer; p:
   TPasProperties);
-var
-  j: Integer;
-  Prop: TPasProperty;
 begin
 end;
 
@@ -1927,9 +1901,6 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteStartOfDocument(AName: string);
-var
- i : integer;
- Localtitle: string;
 begin
   { write basic header }
   WriteAppInfo;
@@ -2027,8 +1998,6 @@ end;
 
 
 procedure TTexDocGenerator.WriteStartOfTableCell(const Params, css: string);
-var
-  s: string;
 begin
 end;
 
@@ -2043,8 +2012,6 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteStartOfTableRow(const CssClass: string);
-var
-  s: string;
 begin
   CellCounter := 0;
 end;
@@ -2069,7 +2036,6 @@ const
 var
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
-  Section: TSections;
 
   procedure ConditionallyAddSection(Section: TSections; Condition: boolean);
   begin
@@ -2111,7 +2077,7 @@ begin
   
   WriteCIOs(HL + 1, U.CIOs);
 
-  WriteFuncsProcs(HL + 1, U.FuncsProcs);
+  WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
 
   WriteTypes(HL + 1, U.Types);
 
@@ -2378,7 +2344,6 @@ const
 
 var
   i: Integer;
-  Ent: string;
 begin
   i := 1;
   Result := '';
@@ -2402,8 +2367,6 @@ begin
 end;
 
 function TTexDocGenerator.EscapeURL(const AString: string): string;
-var
-  i: Integer;
 begin
   EscapeURL := AString;
 end;
@@ -2412,6 +2375,9 @@ end.
 
 {
   $Log$
+  Revision 1.11  2004/05/06 19:50:27  johill
+  clean up source a bit, fix warnings and some hints
+
   Revision 1.10  2004/04/20 01:58:20  ccodere
   + now all non-documented items will not be output, there is still a bug with the CIO Heading though that might appear with an empty section.
 

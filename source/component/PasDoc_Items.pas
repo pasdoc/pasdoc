@@ -415,8 +415,7 @@ const
 implementation
 
 uses
-  SysUtils,
-  Utils;
+  SysUtils;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
