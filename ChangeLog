@@ -1,3 +1,13 @@
+2004-03-09 v0.8.8 Johannes Berg, Richard B Winston, Carl Eric Codere
+ + fix a lot of tiny bugs, range check errors, etc
+ + implement consolidation for // style comments so that you can now
+   use // style comments in multiple lines like this:
+   // @abstract(something)
+   // and a real comment
+   and both lines will be added to the documentation.
+ + @longcode tag implemented (fixes bug #802469)
+ + \LaTeX output
+
 2003-11-20 v0.8.8-pre6 Johannes Berg
  + fix 3 logged bugs
    [ pasdoc-Bugs-842325 ] bug in function IsMacro
