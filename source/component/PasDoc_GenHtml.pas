@@ -209,32 +209,26 @@ begin
   if (not Assigned(Item)) then Exit;
   if Assigned(Item.MyUnit) then begin
     if Assigned(Item.MyObject) then begin
-          { it's a method, a field or a property - only those have MyObject initialized }
-          // Result := Item.MyObject.Name + GetFileExtension + '#' + AnchorToString(Item.AnchorNumber);
-      Result := Item.MyObject.FullLink + '#' +
-        AnchorToString(Item.AnchorNumber);
+      { it's a method, a field or a property - only those have MyObject initialized }
+      Result := Item.MyObject.FullLink + '#' + AnchorToString(Item.AnchorNumber);
     end
     else begin
-          // if (TypeOf(TPasCio) = TypeOf(Item^)) then
       if Item.ClassType = TPasCio then begin
-              { it's an object / a class }
-              // Result := Item.Name + GetFileExtension;
+        { it's an object / a class }
         Result := Item.Name + GetFileExtension;
         i := 0;
         while ExistsFullPath(Result) do begin
           Inc(i);
           Result := Item.Name + IntToStr(i) + GetFileExtension;
         end;
-      end
-      else begin
-              { it's a constant, a variable, a type or a function / procedure }
+      end else begin
+        { it's a constant, a variable, a type or a function / procedure }
         Result := Item.MyUnit.FullLink + '#' +
           AnchorToString(Item.AnchorNumber);
       end;
     end;
-  end
-  else begin
-      { it's a unit - only units don't have a MyUnit pointer }
+  end else begin
+    { it's a unit - only units don't have a MyUnit pointer }
     Result := Item.Name + GetFileExtension;
   end;
 end;
