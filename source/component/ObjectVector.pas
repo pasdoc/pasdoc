@@ -22,7 +22,7 @@ type
     destructor Destroy; override;
     function Count: Integer;
     procedure Sort(Compare: TListSortCompare);
-    procedure Clear;       
+    procedure Clear; virtual;       
     procedure Insert(const AObject: TObject);
     property Items[AIndex: Integer]: TObject read GetItem write SetItem;
   end;
