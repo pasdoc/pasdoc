@@ -7,13 +7,13 @@ unit PasDoc_HierarchyTree;
 
 interface
 uses
-  Contnrs,
+  Classes,
   PasDoc_Items;
 
 type
   TPasItemNode = class(TObject)
   protected
-    FChildren: TObjectList;
+    FChildren: TList;
     FParent: TPasItemNode;
     FItem: TPasItem;
     FName: string;
@@ -66,7 +66,6 @@ function NewStringCardinalTree: TStringCardinalTree;
 implementation
 uses
   Utils,
-  Classes,
   SysUtils;
 
 function SortProc(A, B: Pointer): Integer;
@@ -230,14 +229,17 @@ end;
 constructor TPasItemNode.Create;
 begin
   FParent := nil;
-  FChildren := TObjectList.Create;
-  FChildren.OwnsObjects := False;
+  FChildren := TList.Create;
   FItem := nil;
 end;
 
 destructor TPasItemNode.Destroy;
+var
+  i: Integer;
 begin
-  FChildren.OwnsObjects := True;
+  for i := 0 to FChildren.Count-1 do begin
+    TObject(FChildren.Items[i]).Free;
+  end;
   FChildren.Free;
   inherited;
 end;
