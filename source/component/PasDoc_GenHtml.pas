@@ -283,9 +283,9 @@ begin
   if NoGeneratorInfo then Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
   WriteLine('<HR noshade size=1><EM>' +
-    Translation[trGeneratedBy] +
+    FLanguage.Translation[trGeneratedBy] +
     ' <A href="' + PASDOC_HOMEPAGE + '">' +
-    PASDOC_NAME_AND_VERSION + '</A> ' + Translation[trOnDateTime] + ' ' +
+    PASDOC_NAME_AND_VERSION + '</A> ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('ddd dd/ mmm yyyy hh:mm:ss', Now) + '</EM>');
 end;
 
@@ -298,9 +298,9 @@ begin
   if IsNilOrEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
-    WriteHeading(HL, Translation[trAuthor])
+    WriteHeading(HL, FLanguage.Translation[trAuthor])
   else
-    WriteHeading(HL, Translation[trAuthors]);
+    WriteHeading(HL, FLanguage.Translation[trAuthors]);
 
   for i := 0 to Authors.Count - 1 do begin
     s := Authors[i];
@@ -333,10 +333,10 @@ begin
   CIO.SortPasItems;
 
   case CIO.MyType of
-    CIO_CLASS: s := Translation[trClass];
-    CIO_SPINTERFACE: s := Translation[trDispInterface];
-    CIO_INTERFACE: s := Translation[trInterface];
-    CIO_OBJECT: s := Translation[trObject];
+    CIO_CLASS: s := FLanguage.Translation[trClass];
+    CIO_SPINTERFACE: s := FLanguage.Translation[trDispInterface];
+    CIO_INTERFACE: s := FLanguage.Translation[trInterface];
+    CIO_OBJECT: s := FLanguage.Translation[trObject];
   else
     s := '';
   end;
@@ -351,12 +351,12 @@ begin
   WriteHeading(HL, s);
   { write unit link }
   if Assigned(CIO.MyUnit) then begin
-    WriteHeading(HL + 1, Translation[trUnit]);
+    WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
     WriteString('<A href="' + CIO.MyUnit.FullLink + '">' + CIO.MyUnit.Name + '</A><BR>');
   end;
 
   { write declaration link }
-  WriteHeading(HL + 1, Translation[trDeclaration]);
+  WriteHeading(HL + 1, FLanguage.Translation[trDeclaration]);
   WriteString('<P>');
   WriteStartOfCode;
   WriteString('type ' + CIO.Name + ' = ');
@@ -383,7 +383,7 @@ begin
   WriteString('</P>');
 
   { Write Description }
-  WriteHeading(HL + 1, Translation[trDescription]);
+  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
   WriteItemDetailedDescription(CIO);
 
   { Write Hierarchy }
@@ -391,7 +391,7 @@ begin
     s := CIO.Ancestors.FirstName;
     Item := SearchItem(s, CIO);
     if Assigned(Item) and (Item is TPasCio) then begin
-      WriteHeading(HL + 1, Translation[trHierarchy]);
+      WriteHeading(HL + 1, FLanguage.Translation[trHierarchy]);
       repeat
         s := CreateReferencedLink(Item.Name, Item.FullLink);
         WriteString(s);
@@ -459,8 +459,8 @@ begin
   if HtmlHelp then
     WriteString('<A name=Classes></A>');
 
-  WriteHeading(HL, Translation[trCio]);
-  WriteStartOfTable2Columns(Translation[trName], Translation[trDescription]);
+  WriteHeading(HL, FLanguage.Translation[trCio]);
+  WriteStartOfTable2Columns(FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
   for j := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[j]);
     WriteStartOfTableRow;
@@ -565,13 +565,13 @@ procedure THTMLDocGenerator.WriteDates(const HL: Byte; const Created,
   LastMod: string);
 begin
   if Created <> '' then begin
-    WriteHeading(HL, Translation[trCreated]);
+    WriteHeading(HL, FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
     WriteString(Created);
     WriteEndOfParagraph;
   end;
   if LastMod <> '' then begin
-    WriteHeading(HL, Translation[trLastModified]);
+    WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
     WriteLine(LastMod);
     WriteEndOfParagraph;
@@ -621,14 +621,14 @@ begin
     WriteString('<TD><A href="' + OverviewFilenames[i] +
       GetFileExtension + '"><CENTER>');
     case i of
-      0: WriteString(Translation[trUnits]);
-      1: WriteString(Translation[trClassHierarchy]);
-      2: WriteString(Translation[trCio]);
-      3: WriteString(Translation[trTypes]);
-      4: WriteString(Translation[trVariables]);
-      5: WriteString(Translation[trConstants]);
-      6: WriteString(Translation[trFunctionsAndProcedures]);
-      7: WriteString(Translation[trIdentifiers]);
+      0: WriteString(FLanguage.Translation[trUnits]);
+      1: WriteString(FLanguage.Translation[trClassHierarchy]);
+      2: WriteString(FLanguage.Translation[trCio]);
+      3: WriteString(FLanguage.Translation[trTypes]);
+      4: WriteString(FLanguage.Translation[trVariables]);
+      5: WriteString(FLanguage.Translation[trConstants]);
+      6: WriteString(FLanguage.Translation[trFunctionsAndProcedures]);
+      7: WriteString(FLanguage.Translation[trIdentifiers]);
     end;
     WriteLine('</CENTER></A></TD>');
   end;
@@ -693,15 +693,15 @@ begin
   if IsNilOrEmpty(Fields) then Exit;
 
   WriteString('<A name=Fields></A>');
-  WriteHeading(Order, Translation[trFields]);
+  WriteHeading(Order, FLanguage.Translation[trFields]);
 
   WriteString('<TABLE cellspacing=' +
     HTML_TABLE_CELLSPACING + ' cellpadding=' + HTML_TABLE_CELLPADNG +
     ' width=100%>');
   WriteString('<TR bgcolor="#' +
     HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteLine('<TH>&nbsp;</TH><TH>' + Translation[trName] +
-    '</TH><TH>' + Translation[trDescription] + '</TH></TR>');
+  WriteLine('<TH>&nbsp;</TH><TH>' + FLanguage.Translation[trName] +
+    '</TH><TH>' + FLanguage.Translation[trDescription] + '</TH></TR>');
 
   for j := 0 to Fields.Count - 1 do begin
     Item := Fields.PasItemAt[j];
@@ -750,23 +750,23 @@ begin
   if Methods then begin
     if HtmlHelp then
       WriteString('<A name=Methods></A>');
-    WriteHeading(HL, Translation[trMethods]);
+    WriteHeading(HL, FLanguage.Translation[trMethods]);
   end
   else begin
     if HtmlHelp then
       WriteString('<A name=FuncsProcs></A>');
-    WriteHeading(HL, Translation[trFunctionsAndProcedures]);
+    WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
   FuncsProcs.SortByPasItemName;
 
   for i := 0 to 1 do begin
     if (i = 0) then begin
-      WriteHeading(HL + 1, Translation[trOverview]);
+      WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
       WriteStartOfTable1Column('');
     end
     else
-      WriteHeading(HL + 1, Translation[trDescription]);
+      WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
 
     for j := 0 to FuncsProcs.Count - 1 do begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
@@ -901,8 +901,8 @@ begin
     ' width=100%>');
   WriteString('<TR bgcolor="#' +
     HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteLine('<TH>' + Translation[trName] + '</TH><TH>' +
-    Translation[trDescription] + '</TH></TR>');
+  WriteLine('<TH>' + FLanguage.Translation[trName] + '</TH><TH>' +
+    FLanguage.Translation[trDescription] + '</TH></TR>');
 
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
@@ -959,23 +959,23 @@ begin
       OverviewFilenames[i] + '...', []);
 
     case i of
-      2: WriteStartOfDocument(Translation[trHeadlineCio]);
-      3: WriteStartOfDocument(Translation[trHeadlineTypes]);
-      4: WriteStartOfDocument(Translation[trHeadlineVariables]);
-      5: WriteStartOfDocument(Translation[trHeadlineConstants]);
-      6: WriteStartOfDocument(Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteStartOfDocument(Translation[trHeadlineIdentifiers]);
+      2: WriteStartOfDocument(FLanguage.Translation[trHeadlineCio]);
+      3: WriteStartOfDocument(FLanguage.Translation[trHeadlineTypes]);
+      4: WriteStartOfDocument(FLanguage.Translation[trHeadlineVariables]);
+      5: WriteStartOfDocument(FLanguage.Translation[trHeadlineConstants]);
+      6: WriteStartOfDocument(FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
+      7: WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
     end;
 
     if not HtmlHelp then WriteDocumentHeadline;
 
     case i of
-      2: WriteHeading(1, Translation[trHeadlineCio]);
-      3: WriteHeading(1, Translation[trHeadlineTypes]);
-      4: WriteHeading(1, Translation[trHeadlineVariables]);
-      5: WriteHeading(1, Translation[trHeadlineConstants]);
-      6: WriteHeading(1, Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteHeading(1, Translation[trHeadlineIdentifiers]);
+      2: WriteHeading(1, FLanguage.Translation[trHeadlineCio]);
+      3: WriteHeading(1, FLanguage.Translation[trHeadlineTypes]);
+      4: WriteHeading(1, FLanguage.Translation[trHeadlineVariables]);
+      5: WriteHeading(1, FLanguage.Translation[trHeadlineConstants]);
+      6: WriteHeading(1, FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
+      7: WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
     end;
 
       // Make sure we don't free the Itmes when we free the container.
@@ -996,8 +996,8 @@ begin
     end;
 
     if not IsNilOrEmpty(PartialItems) then begin
-      WriteStartOfTable3Columns(Translation[trName], Translation[trUnit],
-        Translation[trDescription]);
+      WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
+        FLanguage.Translation[trDescription]);
 
       PartialItems.SortByPasItemName;
 
@@ -1030,7 +1030,7 @@ begin
     end
     else begin
       WriteStartOfParagraph;
-      WriteString(Translation[trNone]);
+      WriteString(FLanguage.Translation[trNone]);
       WriteEndOfParagraph;
     end;
 
@@ -1050,11 +1050,11 @@ begin
   end;
   DoMessage(3, mtInformation, 'Writing overview file ' + OverviewFilenames[7]
     + '...', []);
-  WriteStartOfDocument(Translation[trHeadlineIdentifiers]);
+  WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
   if not HtmlHelp then WriteDocumentHeadline;
-  WriteHeading(1, Translation[trHeadlineIdentifiers]);
-  WriteStartOfTable3Columns(Translation[trName], Translation[trUnit],
-    Translation[trDescription]);
+  WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
+  WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
+    FLanguage.Translation[trDescription]);
 
   TotalItems.SortByPasItemName;
   for j := 0 to TotalItems.Count - 1 do begin
@@ -1109,7 +1109,7 @@ var
 begin
   if IsNilOrEmpty(p) then Exit;
 
-  WriteHeading(HL + 1, Translation[trDescription]);
+  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
   for j := 0 to p.Count - 1 do begin
     Prop := TPasProperty(p.PasItemAt[j]);
 
@@ -1145,8 +1145,8 @@ begin
   if HtmlHelp then
     WriteString('<A name=Properties></A>');
 
-  WriteHeading(HL, Translation[trProperties]);
-  WriteHeading(HL + 1, Translation[trOverview]);
+  WriteHeading(HL, FLanguage.Translation[trProperties]);
+  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
 
   WriteStartOfTable1Column('');
   for j := 0 to p.Count - 1 do begin
@@ -1191,8 +1191,8 @@ begin
   WriteLine('<HEAD>');
   WriteLine('<META name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
   // Check if we need to specify character sets
-  if LANGUAGE_ARRAY[Language].CharSet <> '' then begin
-    WriteLine('<META http-equiv="content-type" content="text/html; charset=' + LANGUAGE_ARRAY[Language].CharSet + '">');
+  if FLanguage.CharSet <> '' then begin
+    WriteLine('<META http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '">');
   end;
   // Title
   WriteString('<TITLE>');
@@ -1384,7 +1384,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, OverviewFilenames[0] + GetFileExtension)
     else
-      WriteLiObject(Translation[trUnits], OverviewFilenames[0] +
+      WriteLiObject(FLanguage.Translation[trUnits], OverviewFilenames[0] +
         GetFileExtension);
     WriteLine('<UL>');
 
@@ -1397,7 +1397,7 @@ var
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
-        WriteLiObject(Translation[trClasses], PU.FullLink + '#Classes');
+        WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#Classes');
         WriteLine('<UL>');
 
         for k := 0 to c.Count - 1 do
@@ -1407,13 +1407,13 @@ var
       end;
 
         // For each unit, write Functions & Procedures.
-      WriteItemHeadingCollection(Translation[trFunctionsAndProcedures],
+      WriteItemHeadingCollection(FLanguage.Translation[trFunctionsAndProcedures],
         PU.FullLink + '#FuncsProcs', PU.FuncsProcs);
         // For each unit, write Types.
-      WriteItemHeadingCollection(Translation[trTypes], PU.FullLink +
+      WriteItemHeadingCollection(FLanguage.Translation[trTypes], PU.FullLink +
         '#Types', PU.Types);
         // For each unit, write Constants.
-      WriteItemHeadingCollection(Translation[trConstants], PU.FullLink +
+      WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink +
         '#Constants', PU.Constants);
 
       WriteLine('</UL>');
@@ -1433,7 +1433,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, OverviewFilenames[2] + GetFileExtension)
     else
-      WriteLiObject(Translation[trClasses], OverviewFilenames[2] +
+      WriteLiObject(FLanguage.Translation[trClasses], OverviewFilenames[2] +
         GetFileExtension);
     WriteLine('<UL>');
 
@@ -1458,7 +1458,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, OverviewFilenames[1] + GetFileExtension)
     else
-      WriteLiObject(Translation[trClassHierarchy], OverviewFilenames[1] +
+      WriteLiObject(FLanguage.Translation[trClassHierarchy], OverviewFilenames[1] +
         GetFileExtension);
   end;
 
@@ -1471,27 +1471,27 @@ var
     if Text <> '' then
       WriteLiObject(Text, '')
     else
-      WriteLiObject(Translation[trOverview], '');
+      WriteLiObject(FLanguage.Translation[trOverview], '');
     WriteLine('<UL>');
     for j := 0 to NUM_OVERVIEW_FILES - 1 do begin
       WriteLine('<LI><OBJECT type="text/sitemap">');
       case j of
         0: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineUnits] + '">');
+          FLanguage.Translation[trHeadlineUnits] + '">');
         1: WriteLine('<PARAM name="Name" value="' +
-          Translation[trClassHierarchy] + '">');
-        2: WriteLine('<PARAM name="Name" value="' + Translation[trHeadlineCio]
+          FLanguage.Translation[trClassHierarchy] + '">');
+        2: WriteLine('<PARAM name="Name" value="' + FLanguage.Translation[trHeadlineCio]
           + '">');
         3: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineTypes] + '">');
+          FLanguage.Translation[trHeadlineTypes] + '">');
         4: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineVariables] + '">');
+          FLanguage.Translation[trHeadlineVariables] + '">');
         5: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineConstants] + '">');
+          FLanguage.Translation[trHeadlineConstants] + '">');
         6: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineFunctionsAndProcedures] + '">');
+          FLanguage.Translation[trHeadlineFunctionsAndProcedures] + '">');
         7: WriteLine('<PARAM name="Name" value="' +
-          Translation[trHeadlineIdentifiers] + '">');
+          FLanguage.Translation[trHeadlineIdentifiers] + '">');
       end;
       WriteLine('<PARAM name="Local" value="' + OverviewFilenames[j] +
         '.htm">');
@@ -1507,7 +1507,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, 'Legend.htm')
     else
-      WriteLiObject(Translation[trLegend], 'Legend.htm');
+      WriteLiObject(FLanguage.Translation[trLegend], 'Legend.htm');
   end;
 
   { ---------- }
@@ -1552,12 +1552,12 @@ var
           (CompareText(Item.MyObject.Name, PreviousItem.MyObject.Name) = 0))
           then
         WriteLiObject(Item.MyObject.Name + ' - ' + Item.MyUnit.Name + #32 +
-          Translation[trUnit], Item.FullLink)
+          FLanguage.Translation[trUnit], Item.FullLink)
       else
         WriteLiObject(Item.MyObject.Name, Item.FullLink);
     end
     else begin
-      WriteLiObject(Item.MyUnit.Name + #32 + Translation[trUnit],
+      WriteLiObject(Item.MyUnit.Name + #32 + FLanguage.Translation[trUnit],
         Item.FullLink);
     end;
   end;
@@ -1644,7 +1644,7 @@ begin
 
   if not DefaultContentsWritten then begin
     ContentWriteUnits('');
-    ContentWriteClassHierarchy(Translation[trClassHierarchy]);
+    ContentWriteClassHierarchy(FLanguage.Translation[trClassHierarchy]);
     ContentWriteClasses('');
     ContentWriteOverview('');
     ContentWriteLegend('');
@@ -1831,15 +1831,15 @@ begin
   WriteStartOfDocument('Legend');
   WriteHeading(1, 'Legend');
   WriteString('<TABLE cellpadding=5>');
-  WriteString('<TR><TD><IMG src="private.gif" alt="' + Translation[trPrivate]
-    + '"></TD><TD>' + Translation[trPrivate] + '</TD></TR>');
+  WriteString('<TR><TD><IMG src="private.gif" alt="' + FLanguage.Translation[trPrivate]
+    + '"></TD><TD>' + FLanguage.Translation[trPrivate] + '</TD></TR>');
   WriteString('<TR><TD><IMG src="protected.gif" alt="' +
-    Translation[trProtected] + '"></TD><TD>' + Translation[trProtected] +
+    FLanguage.Translation[trProtected] + '"></TD><TD>' + FLanguage.Translation[trProtected] +
     '</TD></TR>');
-  WriteString('<TR><TD><IMG src="public.gif" alt="' + Translation[trPublic] +
-    '"></TD><TD>' + Translation[trPublic] + '</TD></TR>');
+  WriteString('<TR><TD><IMG src="public.gif" alt="' + FLanguage.Translation[trPublic] +
+    '"></TD><TD>' + FLanguage.Translation[trPublic] + '</TD></TR>');
   WriteString('<TR><TD><IMG src="published.gif" alt="' +
-    Translation[trPublished] + '"></TD><TD>' + Translation[trPublished] +
+    FLanguage.Translation[trPublished] + '"></TD><TD>' + FLanguage.Translation[trPublished] +
     '</TD></TR>');
   WriteString('</TABLE>');
   WriteFooter;
@@ -1869,7 +1869,7 @@ begin
   WriteStartOfDocument(U.Name);
 
   if not HtmlHelp then WriteDocumentHeadline;
-  WriteHeading(HL, Translation[trUnit] + ' ' + U.Name);
+  WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   WriteUnitDescription(HL + 1, U);
   WriteCIOSummary(HL + 1, U.CIOs);
@@ -1888,7 +1888,7 @@ end;
 
 procedure THTMLDocGenerator.WriteUnitDescription(HL: Byte; U: TPasUnit);
 begin
-  WriteHeading(HL, Translation[trDescription]);
+  WriteHeading(HL, FLanguage.Translation[trDescription]);
   WriteItemDetailedDescription(U);
 end;
 
@@ -1907,12 +1907,12 @@ begin
   end;
   DoMessage(3, mtInformation, 'Writing unit overview file "%s" ...',
     [OverviewFilenames[0]]);
-  WriteStartOfDocument(Translation[trHeadlineUnits]);
+  WriteStartOfDocument(FLanguage.Translation[trHeadlineUnits]);
   if not HtmlHelp then WriteDocumentHeadline;
-  WriteHeading(1, Translation[trHeadlineUnits]);
+  WriteHeading(1, FLanguage.Translation[trHeadlineUnits]);
   if Assigned(c) and (c.Count > 0) then begin
-    WriteStartOfTable2Columns(Translation[trName],
-      Translation[trDescription]);
+    WriteStartOfTable2Columns(FLanguage.Translation[trName],
+      FLanguage.Translation[trDescription]);
     for j := 0 to c.Count - 1 do begin
       Item := c.PasItemAt[j];
       WriteStartOfTableRow;
@@ -1944,16 +1944,16 @@ begin
   case Item.State of
     STATE_PRIVATE:
       WriteString('<IMG src="private.gif" alt="' +
-        Translation[trPrivate] + '">');
+        FLanguage.Translation[trPrivate] + '">');
     STATE_PROTECTED:
       WriteString('<IMG src="protected.gif" alt="' +
-        Translation[trProtected] + '">');
+        FLanguage.Translation[trProtected] + '">');
     STATE_PUBLIC:
       WriteString('<IMG src="public.gif" alt="' +
-        Translation[trPublic] + '">');
+        FLanguage.Translation[trPublic] + '">');
     STATE_PUBLISHED:
       WriteString('<IMG src="published.gif" alt="' +
-        Translation[trPublished] + '">');
+        FLanguage.Translation[trPublished] + '">');
   end;
   WriteEndOfTableCell;
 end;
@@ -1973,13 +1973,13 @@ begin
     Abort;
   end;
 
-  WriteStartOfDocument(Translation[trClassHierarchy]);
+  WriteStartOfDocument(FLanguage.Translation[trClassHierarchy]);
   if not HtmlHelp then WriteDocumentHeadline;
-  WriteHeading(1, Translation[trClassHierarchy]);
+  WriteHeading(1, FLanguage.Translation[trClassHierarchy]);
 
   if FClassHierarchy.IsEmpty then begin
     WriteStartOfParagraph;
-    WriteString(Translation[trNone]);
+    WriteString(FLanguage.Translation[trNone]);
     WriteEndOfParagraph;
   end else begin
     OldLevel := -1;

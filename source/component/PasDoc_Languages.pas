@@ -1,4 +1,5 @@
 { @abstract(PasDoc language definitions and translations.)
+  @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker <delphi@zeitungsjunge.de>)
   @author(Alexander Lisnevsky <alisnevsky@yandex.ru> (Russian translation))
   @author(Hendy Irawan <ceefour@gauldong.net> (Indonesian and Javanese translation))
@@ -17,51 +18,9 @@ unit PasDoc_Languages;
 
 interface
 
-{ Defines translations for English (the default). }
-procedure SetLanguageEnglish;
-
-{ Defines translations for Bosnian. }
-procedure SetLanguageBosnian;
-{ Defines translations for Brasilian. }
-procedure SetLanguageBrasilian;
-{ Defines translations for Catalan. }
-procedure SetLanguageCatalan;
-{ Defines translations for Chinese (Codepage 950). }
-procedure SetLanguageChinese_950;
-{ Defines translations for Danish. }
-procedure SetLanguageDanish;
-{ Defines translations for Dutch. }
-procedure SetLanguageDutch;
-{ Defines translations for French. }
-procedure SetLanguageFrench;
-{ Defines translations for German }
-procedure SetLanguageGerman;
-{ Defines translations for Indonesian. }
-procedure SetLanguageIndonesian;
-{ Defines translations for Italian. }
-procedure SetLanguageItalian;
-{ Defines translations for Javanese. }
-procedure SetLanguageJavanese;
-{ Defines translations for Polish. }
-procedure SetLanguagePolish;
-{ Defines translations for Russian (Codepage 1251). }
-procedure SetLanguageRussian_1251;
-{ Defines translations for Russian (Codepage 866). }
-procedure SetLanguageRussian_866;
-{ Defines translations for Russian (KOI-8). }
-procedure SetLanguageRussian_koi8;
-{ Defines translations for Slovak. }
-procedure SetLanguageSlovak;
-{ Defines translations for Spanish. }
-procedure SetLanguageSpanish;
-{ Defines translations for Swedish. }
-procedure SetLanguageSwedish;
-
 type
-  { An enumeration type of all supported languages.
-    Should always be kept in alphabetical order. }
+  { An enumeration type of all supported languages }
   TLanguageID = (
-    lgDefault,
     lgBosnian,
     lgBrasilian,
     lgCatalan,
@@ -82,49 +41,6 @@ type
     lgSpanish,
     lgSwedish);
 
-  TSetLanguageProc = procedure;
-
-  TLanguageRecord = record
-    Name: string;
-    Syntax: string;
-    CharSet: string;
-    proc: TSetLanguageProc;
-  end;
-
-const
-  LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
-    (Name: ''; Syntax: ''; CharSet: ''; proc: nil),
-      // Dummy entry for default language
-    (Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250';
-      proc: SetLanguageBosnian),
-    (Name: 'Brasilian'; Syntax: 'br'; CharSet: ''; proc:
-      SetLanguageBrasilian),
-    (Name: 'Catalan'; Syntax: 'ct'; CharSet: ''; proc: SetLanguageCatalan),
-    (Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'; proc:
-      SetLanguageChinese_950),
-    (Name: 'Danish'; Syntax: 'dk'; CharSet: ''; proc: SetLanguageDanish),
-    (Name: 'Dutch'; Syntax: 'nl'; CharSet: ''; proc: SetLanguageDutch),
-    (Name: 'English'; Syntax: 'en'; CharSet: ''; proc: SetLanguageEnglish),
-    (Name: 'Frensh'; Syntax: 'fr'; CharSet: ''; proc: SetLanguageFrench),
-    (Name: 'German'; Syntax: 'de'; CharSet: ''; proc: SetLanguageGerman),
-    (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''; proc:
-      SetLanguageIndonesian),
-    (Name: 'Italian'; Syntax: 'it'; CharSet: ''; proc: SetLanguageItalian),
-    (Name: 'Javanese'; Syntax: 'jv'; CharSet: ''; proc: SetLanguageJavanese),
-    (Name: 'Polish'; Syntax: 'pl'; CharSet: ''; proc: SetLanguagePolish),
-    (Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet:
-      'windows-1251'; proc: SetLanguageRussian_1251),
-    (Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866';
-      proc: SetLanguageRussian_866),
-    (Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'; proc:
-      SetLanguageRussian_koi8),
-    (Name: 'Slovak'; Syntax: 'sk'; CharSet: ''; proc: SetLanguageSlovak),
-    (Name: 'Spanish'; Syntax: 'es'; CharSet: ''; proc: SetLanguageSpanish),
-    (Name: 'Swedish'; Syntax: 'se'; CharSet: ''; proc: SetLanguageSwedish));
-
-  DEFAULT_LANGUAGE = lgEnglish;
-
-type
   { An enumeration type of all static output texts. }
   TTranslationID = (
     trAuthor,
@@ -178,1047 +94,1169 @@ type
     trGeneratedBy,
     trOnDateTime);
 
-var
-  Translation: array[TTranslationID] of string;
+
+  { Language class to hold all translated strings }
+  TPasDocLanguages = class
+  private
+    FLanguage: TLanguageID;
+    procedure SetLanguage(const Value: TLanguageID);
+  protected
+    FTranslation: array[TTranslationID] of string;
+    FCharSet: string;
+    function GetTranslation(const ATranslationID: TTranslationID): string;
+    { Defines translations for English (the default). }
+    procedure SetLanguageEnglish;
+    { Defines translations for Bosnian. }
+    procedure SetLanguageBosnian;
+    { Defines translations for Brasilian. }
+    procedure SetLanguageBrasilian;
+    { Defines translations for Catalan. }
+    procedure SetLanguageCatalan;
+    { Defines translations for Chinese (Codepage 950). }
+    procedure SetLanguageChinese_950;
+    { Defines translations for Danish. }
+    procedure SetLanguageDanish;
+    { Defines translations for Dutch. }
+    procedure SetLanguageDutch;
+    { Defines translations for French. }
+    procedure SetLanguageFrench;
+    { Defines translations for German }
+    procedure SetLanguageGerman;
+    { Defines translations for Indonesian. }
+    procedure SetLanguageIndonesian;
+    { Defines translations for Italian. }
+    procedure SetLanguageItalian;
+    { Defines translations for Javanese. }
+    procedure SetLanguageJavanese;
+    { Defines translations for Polish. }
+    procedure SetLanguagePolish;
+    { Defines translations for Russian (Codepage 1251). }
+    procedure SetLanguageRussian_1251;
+    { Defines translations for Russian (Codepage 866). }
+    procedure SetLanguageRussian_866;
+    { Defines translations for Russian (KOI-8). }
+    procedure SetLanguageRussian_koi8;
+    { Defines translations for Slovak. }
+    procedure SetLanguageSlovak;
+    { Defines translations for Spanish. }
+    procedure SetLanguageSpanish;
+    { Defines translations for Swedish. }
+    procedure SetLanguageSwedish;
+  public
+    { Charset for current language }
+    property CharSet: string read FCharSet;
+    property Translation[const ATranslationID: TTranslationID]: string read GetTranslation;
+    constructor Create;
+    property Language: TLanguageID read FLanguage write SetLanguage;
+  end;
+
+type
+  TLanguageRecord = record
+    Name: string;
+    Syntax: string;
+    CharSet: string;
+  end;
+
+const
+  LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
+    (Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
+    (Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
+    (Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
+    (Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
+    (Name: 'Danish'; Syntax: 'dk'; CharSet: ''),
+    (Name: 'Dutch'; Syntax: 'nl'; CharSet: ''),
+    (Name: 'English'; Syntax: 'en'; CharSet: ''),
+    (Name: 'Frensh'; Syntax: 'fr'; CharSet: ''),
+    (Name: 'German'; Syntax: 'de'; CharSet: ''),
+    (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
+    (Name: 'Italian'; Syntax: 'it'; CharSet: ''),
+    (Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
+    (Name: 'Polish'; Syntax: 'pl'; CharSet: ''),
+    (Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
+    (Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
+    (Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
+    (Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
+    (Name: 'Spanish'; Syntax: 'es'; CharSet: ''),
+    (Name: 'Swedish'; Syntax: 'se'; CharSet: ''));
 
 implementation
+const
+  DEFAULT_LANGUAGE = lgEnglish;
 
-procedure SetLanguageEnglish;
+procedure TPasDocLanguages.SetLanguageEnglish;
 begin
-  Translation[trAuthor] := 'Author';
-  Translation[trAuthors] := 'Authors';
-  Translation[trCio] := 'Classes, Interfaces and Objects';
-  Translation[trClass] := 'Class';
-  Translation[trClasses] := 'Classes';
-  Translation[trClassHierarchy] := 'Class Hierarchy';
-  Translation[trConstants] := 'Constants';
-  Translation[trCreated] := 'Created';
-  Translation[trDeclaration] := 'Declaration';
-  Translation[trDescription] := 'Description';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Fields';
-  Translation[trFunctionsAndProcedures] := 'Functions and Procedures';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Hierarchy';
-  Translation[trIdentifiers] := 'Identifiers';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Legend';
-  Translation[trMethods] := 'Methods';
-  Translation[trLastModified] := 'Last Modified';
-  Translation[trName] := 'Name';
-  Translation[trNone] := 'None';
-  Translation[trObject] := 'Object';
-  Translation[trObjects] := 'Objects';
-  Translation[trOverview] := 'Overview';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Properties';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Type';
-  Translation[trTypes] := 'Types';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Units';
-  Translation[trVariables] := 'Variables';
+  FTranslation[trAuthor] := 'Author';
+  FTranslation[trAuthors] := 'Authors';
+  FTranslation[trCio] := 'Classes, Interfaces and Objects';
+  FTranslation[trClass] := 'Class';
+  FTranslation[trClasses] := 'Classes';
+  FTranslation[trClassHierarchy] := 'Class Hierarchy';
+  FTranslation[trConstants] := 'Constants';
+  FTranslation[trCreated] := 'Created';
+  FTranslation[trDeclaration] := 'Declaration';
+  FTranslation[trDescription] := 'Description';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Fields';
+  FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Hierarchy';
+  FTranslation[trIdentifiers] := 'Identifiers';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Legend';
+  FTranslation[trMethods] := 'Methods';
+  FTranslation[trLastModified] := 'Last Modified';
+  FTranslation[trName] := 'Name';
+  FTranslation[trNone] := 'None';
+  FTranslation[trObject] := 'Object';
+  FTranslation[trObjects] := 'Objects';
+  FTranslation[trOverview] := 'Overview';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Properties';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Type';
+  FTranslation[trTypes] := 'Types';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Units';
+  FTranslation[trVariables] := 'Variables';
 
-  Translation[trHeadlineCio] := 'All Classes, Interfaces and Objects';
-  Translation[trHeadlineConstants] := 'All Constants';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'All Classes, Interfaces and Objects';
+  FTranslation[trHeadlineConstants] := 'All Constants';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'All Functions and Procedures';
-  Translation[trHeadlineIdentifiers] := 'All Identifiers';
-  Translation[trHeadlineTypes] := 'All Types';
-  Translation[trHeadlineUnits] := 'All Units';
-  Translation[trHeadlineVariables] := 'All Variables';
+  FTranslation[trHeadlineIdentifiers] := 'All Identifiers';
+  FTranslation[trHeadlineTypes] := 'All Types';
+  FTranslation[trHeadlineUnits] := 'All Units';
+  FTranslation[trHeadlineVariables] := 'All Variables';
 
-  Translation[trSummaryCio] := 'Summary of Classes, Interfaces and Objects';
+  FTranslation[trSummaryCio] := 'Summary of Classes, Interfaces and Objects';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Warning: Do not edit - this file has been created automatically and is likely be overwritten';
 
-  Translation[trGeneratedBy] := 'Generated by';
-  Translation[trOnDateTime] := 'on';
+  FTranslation[trGeneratedBy] := 'Generated by';
+  FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageBosnian;
+procedure TPasDocLanguages.SetLanguageBosnian;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autori';
-  Translation[trCio] := 'Klase, Interfejsi i Objekti';
-  Translation[trClass] := 'Klasa';
-  Translation[trClasses] := 'Klase';
-  Translation[trConstants] := 'Konstante';
-  Translation[trCreated] := 'Kreirano';
-  Translation[trDeclaration] := 'Deklaracija';
-  Translation[trDescription] := 'Opis';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Polja';
-  Translation[trFunctionsAndProcedures] := 'Funkcije i Procedure';
-  Translation[trHelp] := 'Pomoæ';
-  Translation[trHierarchy] := 'Hijerarhija';
-  Translation[trIdentifiers] := 'Identifikatori';
-  Translation[trInterface] := 'Interfejs';
-  Translation[trLegend] := 'Legenda';
-  Translation[trMethods] := 'Metode';
-  Translation[trLastModified] := 'Zadnja promjena';
-  Translation[trName] := 'Ime';
-  Translation[trNone] := 'Ništa';
-  Translation[trObject] := 'Objekt';
-  Translation[trObjects] := 'Objekti';
-  Translation[trOverview] := 'Pregled';
-  Translation[trPrivate] := 'Privatni';
-  Translation[trProperties] := 'Osibine';
-  Translation[trProtected] := 'Zaštiæen';
-  Translation[trPublic] := 'Publikovan';
-  Translation[trPublished] := 'Javan';
-  Translation[trType] := 'Tip';
-  Translation[trTypes] := 'Tipovi';
-  Translation[trUnit] := 'Fajl';
-  Translation[trUnits] := 'Fajlovi';
-  Translation[trVariables] := 'Promjenjive';
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autori';
+  FTranslation[trCio] := 'Klase, Interfejsi i Objekti';
+  FTranslation[trClass] := 'Klasa';
+  FTranslation[trClasses] := 'Klase';
+  FTranslation[trConstants] := 'Konstante';
+  FTranslation[trCreated] := 'Kreirano';
+  FTranslation[trDeclaration] := 'Deklaracija';
+  FTranslation[trDescription] := 'Opis';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Polja';
+  FTranslation[trFunctionsAndProcedures] := 'Funkcije i Procedure';
+  FTranslation[trHelp] := 'Pomoæ';
+  FTranslation[trHierarchy] := 'Hijerarhija';
+  FTranslation[trIdentifiers] := 'Identifikatori';
+  FTranslation[trInterface] := 'Interfejs';
+  FTranslation[trLegend] := 'Legenda';
+  FTranslation[trMethods] := 'Metode';
+  FTranslation[trLastModified] := 'Zadnja promjena';
+  FTranslation[trName] := 'Ime';
+  FTranslation[trNone] := 'Ništa';
+  FTranslation[trObject] := 'Objekt';
+  FTranslation[trObjects] := 'Objekti';
+  FTranslation[trOverview] := 'Pregled';
+  FTranslation[trPrivate] := 'Privatni';
+  FTranslation[trProperties] := 'Osibine';
+  FTranslation[trProtected] := 'Zaštiæen';
+  FTranslation[trPublic] := 'Publikovan';
+  FTranslation[trPublished] := 'Javan';
+  FTranslation[trType] := 'Tip';
+  FTranslation[trTypes] := 'Tipovi';
+  FTranslation[trUnit] := 'Fajl';
+  FTranslation[trUnits] := 'Fajlovi';
+  FTranslation[trVariables] := 'Promjenjive';
 
-  Translation[trHeadlineCio] := 'Sve Klase, Interfejsi i Objekti';
-  Translation[trHeadlineConstants] := 'Sve Konstante';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Sve Klase, Interfejsi i Objekti';
+  FTranslation[trHeadlineConstants] := 'Sve Konstante';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Sve Funkcije i Procedure';
-  Translation[trHeadlineIdentifiers] := 'Svi Identifikatoti';
-  Translation[trHeadlineTypes] := 'Svi Tipovi';
-  Translation[trHeadlineUnits] := 'Svi Fajlovi';
-  Translation[trHeadlineVariables] := 'Sve Varijable';
+  FTranslation[trHeadlineIdentifiers] := 'Svi Identifikatoti';
+  FTranslation[trHeadlineTypes] := 'Svi Tipovi';
+  FTranslation[trHeadlineUnits] := 'Svi Fajlovi';
+  FTranslation[trHeadlineVariables] := 'Sve Varijable';
 
-  Translation[trSummaryCio] := 'Zbirno od Klasa, Interfejsa i Objekata';
+  FTranslation[trSummaryCio] := 'Zbirno od Klasa, Interfejsa i Objekata';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Upozorenje: Ne mjenjajte fajl - ovaj fajl je kreiran automatski i velika je vjerovatnoæa da æe biti prepisan';
 
-  // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  FTranslation[trGeneratedBy] := 'Generated by (PLEASE TRANSLATE THIS STRING)';
+  FTranslation[trOnDateTime] := 'on (PLEASE TRANSLATE THIS STRING)';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageBrasilian;
+procedure TPasDocLanguages.SetLanguageBrasilian;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autores';
-  Translation[trCio] := 'Classes, Interfaces e Objetos';
-  Translation[trClass] := 'Classe';
-  Translation[trClasses] := 'Classes';
-  Translation[trConstants] := 'Constantes';
-  Translation[trCreated] := 'Criado';
-  Translation[trDeclaration] := 'Declaração';
-  Translation[trDescription] := 'Descrição';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Campos';
-  Translation[trFunctionsAndProcedures] := 'Funções e Procedimentos';
-  Translation[trHelp] := 'Ajuda';
-  Translation[trHierarchy] := 'Hierarquia';
-  Translation[trIdentifiers] := 'Identificadores';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Legenda';
-  Translation[trLastModified] := 'Última modificação';
-  Translation[trMethods] := 'Métodos';
-  Translation[trName] := 'Nome';
-  Translation[trNone] := 'Nenhum';
-  Translation[trObject] := 'Objeto';
-  Translation[trObjects] := 'Objetos';
-  Translation[trOverview] := 'Visão geral';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Propriedades';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Tipo';
-  Translation[trTypes] := 'Tipos';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Unit';
-  Translation[trVariables] := 'Variáveis';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autores';
+  FTranslation[trCio] := 'Classes, Interfaces e Objetos';
+  FTranslation[trClass] := 'Classe';
+  FTranslation[trClasses] := 'Classes';
+  FTranslation[trConstants] := 'Constantes';
+  FTranslation[trCreated] := 'Criado';
+  FTranslation[trDeclaration] := 'Declaração';
+  FTranslation[trDescription] := 'Descrição';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Campos';
+  FTranslation[trFunctionsAndProcedures] := 'Funções e Procedimentos';
+  FTranslation[trHelp] := 'Ajuda';
+  FTranslation[trHierarchy] := 'Hierarquia';
+  FTranslation[trIdentifiers] := 'Identificadores';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Legenda';
+  FTranslation[trLastModified] := 'Última modificação';
+  FTranslation[trMethods] := 'Métodos';
+  FTranslation[trName] := 'Nome';
+  FTranslation[trNone] := 'Nenhum';
+  FTranslation[trObject] := 'Objeto';
+  FTranslation[trObjects] := 'Objetos';
+  FTranslation[trOverview] := 'Visão geral';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Propriedades';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Tipo';
+  FTranslation[trTypes] := 'Tipos';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Unit';
+  FTranslation[trVariables] := 'Variáveis';
+  FTranslation[trWarningOverwrite] :=
     'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito';
 
-  Translation[trHeadlineCio] := 'Todas as classes, interfaces e objetos';
-  Translation[trHeadlineConstants] := 'Todas as constantes';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Todas as classes, interfaces e objetos';
+  FTranslation[trHeadlineConstants] := 'Todas as constantes';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Todas as funções e procedimentos';
-  Translation[trHeadlineIdentifiers] := 'Todos os identificadores';
-  Translation[trHeadlineTypes] := 'Todos os tipos';
-  Translation[trHeadlineUnits] := 'Todos as units';
-  Translation[trHeadlineVariables] := 'Todas as variáveis';
+  FTranslation[trHeadlineIdentifiers] := 'Todos os identificadores';
+  FTranslation[trHeadlineTypes] := 'Todos os tipos';
+  FTranslation[trHeadlineUnits] := 'Todos as units';
+  FTranslation[trHeadlineVariables] := 'Todas as variáveis';
 
-  Translation[trSummaryCio] := 'Lista de classes, interfaces e objetos';
+  FTranslation[trSummaryCio] := 'Lista de classes, interfaces e objetos';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageCatalan;
+procedure TPasDocLanguages.SetLanguageCatalan;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autors';
-  Translation[trCio] := 'Clases, interfaces i objectes';
-  Translation[trClass] := 'Clase';
-  Translation[trClasses] := 'Clases';
-  Translation[trConstants] := 'Constants';
-  Translation[trCreated] := 'Creat';
-  Translation[trDeclaration] := 'Declaraci¢';
-  Translation[trDescription] := 'Descripci¢';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Camps';
-  Translation[trFunctionsAndProcedures] := 'Funcions i procediments';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Hierarchy';
-  Translation[trIdentifiers] := 'Identificadors';
-  Translation[trInterface] := 'Interface';
-  Translation[trLastModified] := 'Éltima modificaci¢';
-  Translation[trLegend] := 'Legend';
-  Translation[trMethods] := 'MŠtodes';
-  Translation[trName] := 'Nom';
-  Translation[trNone] := 'Ningu';
-  Translation[trObject] := 'Objecte';
-  Translation[trObjects] := 'Objectes';
-  Translation[trOverview] := 'Resum';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Propietats';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Tipus';
-  Translation[trTypes] := 'Tipus';
-  Translation[trUnit] := 'Unitat';
-  Translation[trUnits] := 'Unitats';
-  Translation[trVariables] := 'Variables';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autors';
+  FTranslation[trCio] := 'Clases, interfaces i objectes';
+  FTranslation[trClass] := 'Clase';
+  FTranslation[trClasses] := 'Clases';
+  FTranslation[trConstants] := 'Constants';
+  FTranslation[trCreated] := 'Creat';
+  FTranslation[trDeclaration] := 'Declaraci¢';
+  FTranslation[trDescription] := 'Descripci¢';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Camps';
+  FTranslation[trFunctionsAndProcedures] := 'Funcions i procediments';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Hierarchy';
+  FTranslation[trIdentifiers] := 'Identificadors';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLastModified] := 'Éltima modificaci¢';
+  FTranslation[trLegend] := 'Legend';
+  FTranslation[trMethods] := 'MŠtodes';
+  FTranslation[trName] := 'Nom';
+  FTranslation[trNone] := 'Ningu';
+  FTranslation[trObject] := 'Objecte';
+  FTranslation[trObjects] := 'Objectes';
+  FTranslation[trOverview] := 'Resum';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Propietats';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Tipus';
+  FTranslation[trTypes] := 'Tipus';
+  FTranslation[trUnit] := 'Unitat';
+  FTranslation[trUnits] := 'Unitats';
+  FTranslation[trVariables] := 'Variables';
+  FTranslation[trWarningOverwrite] :=
     'Atenci¢, no editar - aquest fitxer ha estat creat automaticament i ser… sobrescrit';
 
-  Translation[trHeadlineCio] := 'Totes les clases, interfaces i objectes';
-  Translation[trHeadlineConstants] := 'Totes les constants';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Totes les clases, interfaces i objectes';
+  FTranslation[trHeadlineConstants] := 'Totes les constants';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Totes les funcions i procediments';
-  Translation[trHeadlineIdentifiers] := 'Tot els indentificadors';
-  Translation[trHeadlineTypes] := 'Tots els tipus';
-  Translation[trHeadlineUnits] := 'Totes les unitats';
-  Translation[trHeadlineVariables] := 'Totes les variables';
+  FTranslation[trHeadlineIdentifiers] := 'Tot els indentificadors';
+  FTranslation[trHeadlineTypes] := 'Tots els tipus';
+  FTranslation[trHeadlineUnits] := 'Totes les unitats';
+  FTranslation[trHeadlineVariables] := 'Totes les variables';
 
-  Translation[trSummaryCio] := 'Llista de clases, interfaces i objectes';
+  FTranslation[trSummaryCio] := 'Llista de clases, interfaces i objectes';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageChinese_950;
+procedure TPasDocLanguages.SetLanguageChinese_950;
 begin
-  Translation[trAuthor] := '§@ªÌ';
-  Translation[trAuthors] := '§@ªÌ¸s';
+  FTranslation[trAuthor] := '§@ªÌ';
+  FTranslation[trAuthors] := '§@ªÌ¸s';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageDanish;
+procedure TPasDocLanguages.SetLanguageDanish;
 begin
-  Translation[trAuthor] := 'Forfatter';
-  Translation[trAuthors] := 'Forfatre';
-  Translation[trCio] := 'Klasser, interfaces og objekter';
-  Translation[trClass] := 'Klasse';
-  Translation[trClasses] := 'Klasser';
-  Translation[trConstants] := 'Konstanter';
-  Translation[trCreated] := 'Udført';
-  Translation[trDeclaration] := 'Declaration';
-  Translation[trDescription] := 'Beskrivelse';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Felter';
-  Translation[trFunctionsAndProcedures] := 'Funktioner og prosedurer';
-  Translation[trHelp] := 'Hjælp';
-  Translation[trHierarchy] := 'Herarki';
-  Translation[trIdentifiers] := 'Identifiers';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Legende';
-  Translation[trLastModified] := 'Sidst Modificieret';
-  Translation[trMethods] := 'Metoder';
-  Translation[trName] := 'Navn';
-  Translation[trNone] := 'Ingen';
-  Translation[trObject] := 'Objekt';
-  Translation[trObjects] := 'Objekter';
-  Translation[trOverview] := 'Sammendrag';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Egenskaber';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Type';
-  Translation[trTypes] := 'Typer';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Units';
-  Translation[trVariables] := 'Variable';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Forfatter';
+  FTranslation[trAuthors] := 'Forfatre';
+  FTranslation[trCio] := 'Klasser, interfaces og objekter';
+  FTranslation[trClass] := 'Klasse';
+  FTranslation[trClasses] := 'Klasser';
+  FTranslation[trConstants] := 'Konstanter';
+  FTranslation[trCreated] := 'Udført';
+  FTranslation[trDeclaration] := 'Declaration';
+  FTranslation[trDescription] := 'Beskrivelse';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Felter';
+  FTranslation[trFunctionsAndProcedures] := 'Funktioner og prosedurer';
+  FTranslation[trHelp] := 'Hjælp';
+  FTranslation[trHierarchy] := 'Herarki';
+  FTranslation[trIdentifiers] := 'Identifiers';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Legende';
+  FTranslation[trLastModified] := 'Sidst Modificieret';
+  FTranslation[trMethods] := 'Metoder';
+  FTranslation[trName] := 'Navn';
+  FTranslation[trNone] := 'Ingen';
+  FTranslation[trObject] := 'Objekt';
+  FTranslation[trObjects] := 'Objekter';
+  FTranslation[trOverview] := 'Sammendrag';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Egenskaber';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Type';
+  FTranslation[trTypes] := 'Typer';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Units';
+  FTranslation[trVariables] := 'Variable';
+  FTranslation[trWarningOverwrite] :=
     'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret';
 
-  Translation[trHeadlineCio] := 'Alle Klasesr, Interfaces og Objekter';
-  Translation[trHeadlineConstants] := 'Alle Konstanter';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Alle Klasesr, Interfaces og Objekter';
+  FTranslation[trHeadlineConstants] := 'Alle Konstanter';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Alle Functioner and Procedurer';
-  Translation[trHeadlineIdentifiers] := 'Alle Identifiers';
-  Translation[trHeadlineTypes] := 'Alle Typer';
-  Translation[trHeadlineUnits] := 'Alle Units';
-  Translation[trHeadlineVariables] := 'Alle Variable';
+  FTranslation[trHeadlineIdentifiers] := 'Alle Identifiers';
+  FTranslation[trHeadlineTypes] := 'Alle Typer';
+  FTranslation[trHeadlineUnits] := 'Alle Units';
+  FTranslation[trHeadlineVariables] := 'Alle Variable';
 
-  Translation[trSummaryCio] :=
+  FTranslation[trSummaryCio] :=
     'Oversigt over klasser, interfaces & objekter';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageDutch;
+procedure TPasDocLanguages.SetLanguageDutch;
 begin
-  Translation[trAuthor] := 'Auteur';
-  Translation[trAuthors] := 'Auteurs';
-  Translation[trCio] := 'Classes, interfaces and objecten';
-  Translation[trClass] := 'Class';
-  Translation[trClasses] := 'Classes';
-  Translation[trConstants] := 'Constanten';
-  Translation[trCreated] := 'Gemaakt';
-  Translation[trDeclaration] := 'Declaratie';
-  Translation[trDescription] := 'Omschrijving';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Velden';
-  Translation[trFunctionsAndProcedures] := 'Functies en procedures';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Hierarchie';
-  Translation[trIdentifiers] := 'Identifiers';
-  Translation[trInterface] := 'Interface';
-  Translation[trLastModified] := 'Laatste wijziging';
-  Translation[trLegend] := 'Legend';
-  Translation[trMethods] := 'Methods';
-  Translation[trName] := 'Naam';
-  Translation[trNone] := 'Geen';
-  Translation[trObject] := 'Object';
-  Translation[trObjects] := 'Objecten';
-  Translation[trOverview] := 'Overzicht';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Eigenschappen';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Type';
-  Translation[trTypes] := 'Typen';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Units';
-  Translation[trVariables] := 'Variabelen';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Auteur';
+  FTranslation[trAuthors] := 'Auteurs';
+  FTranslation[trCio] := 'Classes, interfaces and objecten';
+  FTranslation[trClass] := 'Class';
+  FTranslation[trClasses] := 'Classes';
+  FTranslation[trConstants] := 'Constanten';
+  FTranslation[trCreated] := 'Gemaakt';
+  FTranslation[trDeclaration] := 'Declaratie';
+  FTranslation[trDescription] := 'Omschrijving';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Velden';
+  FTranslation[trFunctionsAndProcedures] := 'Functies en procedures';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Hierarchie';
+  FTranslation[trIdentifiers] := 'Identifiers';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLastModified] := 'Laatste wijziging';
+  FTranslation[trLegend] := 'Legend';
+  FTranslation[trMethods] := 'Methods';
+  FTranslation[trName] := 'Naam';
+  FTranslation[trNone] := 'Geen';
+  FTranslation[trObject] := 'Object';
+  FTranslation[trObjects] := 'Objecten';
+  FTranslation[trOverview] := 'Overzicht';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Eigenschappen';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Type';
+  FTranslation[trTypes] := 'Typen';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Units';
+  FTranslation[trVariables] := 'Variabelen';
+  FTranslation[trWarningOverwrite] :=
     'Waarschuwing, wijzig niets - dit bestand is automatisch gegenereerd en zal worden overschreven';
 
-  Translation[trHeadlineCio] := 'Alle classes, interfaces en objecten';
-  Translation[trHeadlineConstants] := 'Alle constanten';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Alle classes, interfaces en objecten';
+  FTranslation[trHeadlineConstants] := 'Alle constanten';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Alle functies en procedures';
-  Translation[trHeadlineIdentifiers] := 'Alle identifiers';
-  Translation[trHeadlineTypes] := 'Alle typen';
-  Translation[trHeadlineUnits] := 'Alle units';
-  Translation[trHeadlineVariables] := 'Alle variabelen';
+  FTranslation[trHeadlineIdentifiers] := 'Alle identifiers';
+  FTranslation[trHeadlineTypes] := 'Alle typen';
+  FTranslation[trHeadlineUnits] := 'Alle units';
+  FTranslation[trHeadlineVariables] := 'Alle variabelen';
 
-  Translation[trSummaryCio] :=
+  FTranslation[trSummaryCio] :=
     'Overzicht van classes, interfaces & objecten';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageFrench;
+procedure TPasDocLanguages.SetLanguageFrench;
 begin
-  Translation[trAuthor] := 'Auteur';
-  Translation[trAuthors] := 'Auteurs';
-  Translation[trCio] := 'Classes, interfaces and objects';
-  Translation[trClass] := 'Classe';
-  Translation[trClasses] := 'Classes';
-  Translation[trConstants] := 'Constantes';
-  Translation[trCreated] := 'Crée';
-  Translation[trDeclaration] := 'Déclaration';
-  Translation[trDescription] := 'Description';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Champs';
-  Translation[trFunctionsAndProcedures] := 'Fonctions et procédures';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Hierarchy';
-  Translation[trIdentifiers] := 'Identificateurs';
-  Translation[trInterface] := 'Interface';
-  Translation[trLastModified] := 'Dernière modification';
-  Translation[trLegend] := 'Legend';
-  Translation[trMethods] := 'Méthodes';
-  Translation[trName] := 'Nom';
-  Translation[trNone] := 'Aucun(e)(s)';
-  Translation[trObject] := 'Objet';
-  Translation[trObjects] := 'Objets';
-  Translation[trOverview] := 'Aperçu';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Propriétés';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Type';
-  Translation[trTypes] := 'Types';
-  Translation[trUnit] := 'Unité';
-  Translation[trUnits] := 'Unités';
-  Translation[trVariables] := 'Variables';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Auteur';
+  FTranslation[trAuthors] := 'Auteurs';
+  FTranslation[trCio] := 'Classes, interfaces and objects';
+  FTranslation[trClass] := 'Classe';
+  FTranslation[trClasses] := 'Classes';
+  FTranslation[trConstants] := 'Constantes';
+  FTranslation[trCreated] := 'Crée';
+  FTranslation[trDeclaration] := 'Déclaration';
+  FTranslation[trDescription] := 'Description';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Champs';
+  FTranslation[trFunctionsAndProcedures] := 'Fonctions et procédures';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Hierarchy';
+  FTranslation[trIdentifiers] := 'Identificateurs';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLastModified] := 'Dernière modification';
+  FTranslation[trLegend] := 'Legend';
+  FTranslation[trMethods] := 'Méthodes';
+  FTranslation[trName] := 'Nom';
+  FTranslation[trNone] := 'Aucun(e)(s)';
+  FTranslation[trObject] := 'Objet';
+  FTranslation[trObjects] := 'Objets';
+  FTranslation[trOverview] := 'Aperçu';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Propriétés';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Type';
+  FTranslation[trTypes] := 'Types';
+  FTranslation[trUnit] := 'Unité';
+  FTranslation[trUnits] := 'Unités';
+  FTranslation[trVariables] := 'Variables';
+  FTranslation[trWarningOverwrite] :=
     'Attention, ne pas édtier - ce fichier est créé automatiquement et va être écrasé';
 
-  Translation[trHeadlineCio] := 'Toutes les classes, interfaces et objets';
-  Translation[trHeadlineConstants] := 'Toutes les constants';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Toutes les classes, interfaces et objets';
+  FTranslation[trHeadlineConstants] := 'Toutes les constants';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Toutes les fonctions et procédures';
-  Translation[trHeadlineIdentifiers] := 'Tous les identificateurs';
-  Translation[trHeadlineTypes] := 'Tous les types';
-  Translation[trHeadlineUnits] := 'Toutes les unités';
-  Translation[trHeadlineVariables] := 'Toutes les variables';
+  FTranslation[trHeadlineIdentifiers] := 'Tous les identificateurs';
+  FTranslation[trHeadlineTypes] := 'Tous les types';
+  FTranslation[trHeadlineUnits] := 'Toutes les unités';
+  FTranslation[trHeadlineVariables] := 'Toutes les variables';
 
-  Translation[trSummaryCio] := 'Classes, interfaces & objets';
+  FTranslation[trSummaryCio] := 'Classes, interfaces & objets';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageGerman;
+procedure TPasDocLanguages.SetLanguageGerman;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autoren';
-  Translation[trCio] := 'Klassen, Schnittstellen und Objekte';
-  Translation[trClass] := 'Klasse';
-  Translation[trClasses] := 'Klassen';
-  Translation[trClassHierarchy] := 'Klassenhierarchie';
-  Translation[trConstants] := 'Konstanten';
-  Translation[trCreated] := 'Erstellt';
-  Translation[trDeclaration] := 'Deklaration';
-  Translation[trDescription] := 'Beschreibung';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Felder';
-  Translation[trFunctionsAndProcedures] := 'Funktionen und Prozeduren';
-  Translation[trHelp] := 'Hilfe';
-  Translation[trHierarchy] := 'Hierarchie';
-  Translation[trIdentifiers] := 'Bezeichner';
-  Translation[trInterface] := 'Schnittstelle';
-  Translation[trLastModified] := 'Letzte Änderung';
-  Translation[trLegend] := 'Legende';
-  Translation[trMethods] := 'Methoden';
-  Translation[trName] := 'Name';
-  Translation[trNone] := 'Keine';
-  Translation[trObject] := 'Objekt';
-  Translation[trObjects] := 'Objekte';
-  Translation[trOverview] := 'Übersicht';
-  Translation[trPrivate] := 'Privat';
-  Translation[trProperties] := 'Eigenschaften';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trTypes] := 'Typen';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Units';
-  Translation[trVariables] := 'Variablen';
-  Translation[trType] := 'Typ';
-  Translation[trTypes] := 'Typen';
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autoren';
+  FTranslation[trCio] := 'Klassen, Schnittstellen und Objekte';
+  FTranslation[trClass] := 'Klasse';
+  FTranslation[trClasses] := 'Klassen';
+  FTranslation[trClassHierarchy] := 'Klassenhierarchie';
+  FTranslation[trConstants] := 'Konstanten';
+  FTranslation[trCreated] := 'Erstellt';
+  FTranslation[trDeclaration] := 'Deklaration';
+  FTranslation[trDescription] := 'Beschreibung';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Felder';
+  FTranslation[trFunctionsAndProcedures] := 'Funktionen und Prozeduren';
+  FTranslation[trHelp] := 'Hilfe';
+  FTranslation[trHierarchy] := 'Hierarchie';
+  FTranslation[trIdentifiers] := 'Bezeichner';
+  FTranslation[trInterface] := 'Schnittstelle';
+  FTranslation[trLastModified] := 'Letzte Änderung';
+  FTranslation[trLegend] := 'Legende';
+  FTranslation[trMethods] := 'Methoden';
+  FTranslation[trName] := 'Name';
+  FTranslation[trNone] := 'Keine';
+  FTranslation[trObject] := 'Objekt';
+  FTranslation[trObjects] := 'Objekte';
+  FTranslation[trOverview] := 'Übersicht';
+  FTranslation[trPrivate] := 'Privat';
+  FTranslation[trProperties] := 'Eigenschaften';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trTypes] := 'Typen';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Units';
+  FTranslation[trVariables] := 'Variablen';
+  FTranslation[trType] := 'Typ';
+  FTranslation[trTypes] := 'Typen';
 
-  Translation[trHeadlineCio] := 'Alle Klassen, Schnittstellen und Objekte';
-  Translation[trHeadlineConstants] := 'Alle Konstanten';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Alle Klassen, Schnittstellen und Objekte';
+  FTranslation[trHeadlineConstants] := 'Alle Konstanten';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Alle Funktionen und Prozeduren';
-  Translation[trHeadlineIdentifiers] := 'Alle Bezeichner';
-  Translation[trHeadlineTypes] := 'Alle Typen';
-  Translation[trHeadlineUnits] := 'Alle Units';
-  Translation[trHeadlineVariables] := 'Alle Variablen';
+  FTranslation[trHeadlineIdentifiers] := 'Alle Bezeichner';
+  FTranslation[trHeadlineTypes] := 'Alle Typen';
+  FTranslation[trHeadlineUnits] := 'Alle Units';
+  FTranslation[trHeadlineVariables] := 'Alle Variablen';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben';
 
-  Translation[trGeneratedBy] := 'Erstellt von';
-  Translation[trOnDateTime] := 'am';
+  FTranslation[trGeneratedBy] := 'Erstellt von';
+  FTranslation[trOnDateTime] := 'am';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageIndonesian;
+procedure TPasDocLanguages.SetLanguageIndonesian;
 begin
-  Translation[trAuthor] := 'Pembuat';
-  Translation[trAuthors] := 'Pembuat';
-  Translation[trCio] := 'Kelas, Interface, dan Objek';
-  Translation[trClass] := 'Kelas';
-  Translation[trClasses] := 'Kelas';
-  Translation[trConstants] := 'Konstanta';
-  Translation[trCreated] := 'Dibuat';
-  Translation[trDeclaration] := 'Deklarasi';
-  Translation[trDescription] := 'Definisi';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Field';
-  Translation[trFunctionsAndProcedures] := 'Fungsi dan Prosedur';
-  Translation[trHelp] := 'Bantuan';
-  Translation[trHierarchy] := 'Hirarki';
-  Translation[trIdentifiers] := 'Identifier';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Legenda';
-  Translation[trMethods] := 'Method';
-  Translation[trLastModified] := 'Terakhir Dimodifikasi';
-  Translation[trName] := 'Nama';
-  Translation[trNone] := 'Tidak Ada';
-  Translation[trObject] := 'Objek';
-  Translation[trObjects] := 'Objek';
-  Translation[trOverview] := 'Sekilas';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Property';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Tipe Bentukan';
-  Translation[trTypes] := 'Tipe Bentukan';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Unit';
-  Translation[trVariables] := 'Variabel';
+  FTranslation[trAuthor] := 'Pembuat';
+  FTranslation[trAuthors] := 'Pembuat';
+  FTranslation[trCio] := 'Kelas, Interface, dan Objek';
+  FTranslation[trClass] := 'Kelas';
+  FTranslation[trClasses] := 'Kelas';
+  FTranslation[trConstants] := 'Konstanta';
+  FTranslation[trCreated] := 'Dibuat';
+  FTranslation[trDeclaration] := 'Deklarasi';
+  FTranslation[trDescription] := 'Definisi';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Field';
+  FTranslation[trFunctionsAndProcedures] := 'Fungsi dan Prosedur';
+  FTranslation[trHelp] := 'Bantuan';
+  FTranslation[trHierarchy] := 'Hirarki';
+  FTranslation[trIdentifiers] := 'Identifier';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Legenda';
+  FTranslation[trMethods] := 'Method';
+  FTranslation[trLastModified] := 'Terakhir Dimodifikasi';
+  FTranslation[trName] := 'Nama';
+  FTranslation[trNone] := 'Tidak Ada';
+  FTranslation[trObject] := 'Objek';
+  FTranslation[trObjects] := 'Objek';
+  FTranslation[trOverview] := 'Sekilas';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Property';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Tipe Bentukan';
+  FTranslation[trTypes] := 'Tipe Bentukan';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Unit';
+  FTranslation[trVariables] := 'Variabel';
 
-  Translation[trHeadlineCio] := 'Semua Kelas, Interface, dan Objek';
-  Translation[trHeadlineConstants] := 'Semua Konstanta';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Semua Kelas, Interface, dan Objek';
+  FTranslation[trHeadlineConstants] := 'Semua Konstanta';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Semua Fungsi dan Prosedur';
-  Translation[trHeadlineIdentifiers] := 'Semua Identifier';
-  Translation[trHeadlineTypes] := 'Semua Tipe Bentukan';
-  Translation[trHeadlineUnits] := 'Semua Unit';
-  Translation[trHeadlineVariables] := 'Semua Variabel';
+  FTranslation[trHeadlineIdentifiers] := 'Semua Identifier';
+  FTranslation[trHeadlineTypes] := 'Semua Tipe Bentukan';
+  FTranslation[trHeadlineUnits] := 'Semua Unit';
+  FTranslation[trHeadlineVariables] := 'Semua Variabel';
 
-  Translation[trSummaryCio] := 'Ringkasan Kelas, Interface, dan Objek';
+  FTranslation[trSummaryCio] := 'Ringkasan Kelas, Interface, dan Objek';
 
-  Translation[trWarningOverwrite] := 'Perhatian: Jangan dimodifikasi - '
+  FTranslation[trWarningOverwrite] := 'Perhatian: Jangan dimodifikasi - '
     + 'file ini dihasilkan secara otomatis dan mungkin saja ditimpa ulang';
 
-  Translation[trGeneratedBy] := 'Dihasilkan oleh';
-  Translation[trOnDateTime] := 'pada';
+  FTranslation[trGeneratedBy] := 'Dihasilkan oleh';
+  FTranslation[trOnDateTime] := 'pada';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageItalian;
+procedure TPasDocLanguages.SetLanguageItalian;
 begin
-  Translation[trAuthor] := 'Autore';
-  Translation[trAuthors] := 'Autori';
-  Translation[trCio] := 'Classi, Interfacce ed Oggetti';
-  Translation[trClass] := 'Classe';
-  Translation[trClasses] := 'Classi';
-  Translation[trConstants] := 'Costanti';
-  Translation[trCreated] := 'Creato';
-  Translation[trDeclaration] := 'Dichiarazione';
-  Translation[trDescription] := 'Descrizione';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Campi';
-  Translation[trFunctionsAndProcedures] := 'Funzioni e Procedure';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Gerarchia';
-  Translation[trIdentifiers] := 'Identificatori';
-  Translation[trInterface] := 'Interfacce';
-  Translation[trLegend] := 'Legenda';
-  Translation[trMethods] := 'Metodi';
-  Translation[trLastModified] := 'Ultima Variazione';
-  Translation[trName] := 'Nome';
-  Translation[trNone] := 'Nessuno';
-  Translation[trObject] := 'Oggetto';
-  Translation[trObjects] := 'Oggetti';
-  Translation[trOverview] := 'Sommario';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Proprietà';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Tipo';
-  Translation[trTypes] := 'Tipi';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Units';
-  Translation[trVariables] := 'Variabili';
+  FTranslation[trAuthor] := 'Autore';
+  FTranslation[trAuthors] := 'Autori';
+  FTranslation[trCio] := 'Classi, Interfacce ed Oggetti';
+  FTranslation[trClass] := 'Classe';
+  FTranslation[trClasses] := 'Classi';
+  FTranslation[trConstants] := 'Costanti';
+  FTranslation[trCreated] := 'Creato';
+  FTranslation[trDeclaration] := 'Dichiarazione';
+  FTranslation[trDescription] := 'Descrizione';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Campi';
+  FTranslation[trFunctionsAndProcedures] := 'Funzioni e Procedure';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Gerarchia';
+  FTranslation[trIdentifiers] := 'Identificatori';
+  FTranslation[trInterface] := 'Interfacce';
+  FTranslation[trLegend] := 'Legenda';
+  FTranslation[trMethods] := 'Metodi';
+  FTranslation[trLastModified] := 'Ultima Variazione';
+  FTranslation[trName] := 'Nome';
+  FTranslation[trNone] := 'Nessuno';
+  FTranslation[trObject] := 'Oggetto';
+  FTranslation[trObjects] := 'Oggetti';
+  FTranslation[trOverview] := 'Sommario';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Proprietà';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Tipo';
+  FTranslation[trTypes] := 'Tipi';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Units';
+  FTranslation[trVariables] := 'Variabili';
 
-  Translation[trHeadlineCio] := 'Tutte le Classi, Interfacce ed Oggetti';
-  Translation[trHeadlineConstants] := 'Tutte le Costanti';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Tutte le Classi, Interfacce ed Oggetti';
+  FTranslation[trHeadlineConstants] := 'Tutte le Costanti';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Tutte le Funzioni e Procedure';
-  Translation[trHeadlineIdentifiers] := 'Tutti gli Identificatori';
-  Translation[trHeadlineTypes] := 'Tutti i Tipi';
-  Translation[trHeadlineUnits] := 'Tutte le Units';
-  Translation[trHeadlineVariables] := 'Tutte le Variabili';
+  FTranslation[trHeadlineIdentifiers] := 'Tutti gli Identificatori';
+  FTranslation[trHeadlineTypes] := 'Tutti i Tipi';
+  FTranslation[trHeadlineUnits] := 'Tutte le Units';
+  FTranslation[trHeadlineVariables] := 'Tutte le Variabili';
 
-  Translation[trSummaryCio] := 'Sommario di Classi, Interfacce ed Oggetti';
+  FTranslation[trSummaryCio] := 'Sommario di Classi, Interfacce ed Oggetti';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Attenzione: Non modificare - questo file è stato generato automaticamente e verrà probabilmente sovrascritto';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageJavanese;
+procedure TPasDocLanguages.SetLanguageJavanese;
 begin
-  Translation[trAuthor] := 'Sing Nggawe';
-  Translation[trAuthors] := 'Sing Nggawe';
-  Translation[trCio] := 'Kelas, Interface, lan Objek';
-  Translation[trClass] := 'Kelas';
-  Translation[trClasses] := 'Kelas';
-  Translation[trConstants] := 'Konstanta';
-  Translation[trCreated] := 'Digawe';
-  Translation[trDeclaration] := 'Deklarasi';
-  Translation[trDescription] := 'Katrangan';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Field';
-  Translation[trFunctionsAndProcedures] := 'Fungsi lan Prosedur';
-  Translation[trHelp] := 'Tulung';
-  Translation[trHierarchy] := 'Hirarki';
-  Translation[trIdentifiers] := 'Identifier';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Katrangan';
-  Translation[trMethods] := 'Method';
-  Translation[trLastModified] := 'Terakhir Diowahi';
-  Translation[trName] := 'Jeneng';
-  Translation[trNone] := 'Mboten Wonten';
-  Translation[trObject] := 'Objek';
-  Translation[trObjects] := 'Objek';
-  Translation[trOverview] := 'Pambuka';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Property';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Macem Gawean';
-  Translation[trTypes] := 'Macem Gawean';
-  Translation[trUnit] := 'Unit';
-  Translation[trUnits] := 'Unit';
-  Translation[trVariables] := 'Variabel';
+  FTranslation[trAuthor] := 'Sing Nggawe';
+  FTranslation[trAuthors] := 'Sing Nggawe';
+  FTranslation[trCio] := 'Kelas, Interface, lan Objek';
+  FTranslation[trClass] := 'Kelas';
+  FTranslation[trClasses] := 'Kelas';
+  FTranslation[trConstants] := 'Konstanta';
+  FTranslation[trCreated] := 'Digawe';
+  FTranslation[trDeclaration] := 'Deklarasi';
+  FTranslation[trDescription] := 'Katrangan';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Field';
+  FTranslation[trFunctionsAndProcedures] := 'Fungsi lan Prosedur';
+  FTranslation[trHelp] := 'Tulung';
+  FTranslation[trHierarchy] := 'Hirarki';
+  FTranslation[trIdentifiers] := 'Identifier';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Katrangan';
+  FTranslation[trMethods] := 'Method';
+  FTranslation[trLastModified] := 'Terakhir Diowahi';
+  FTranslation[trName] := 'Jeneng';
+  FTranslation[trNone] := 'Mboten Wonten';
+  FTranslation[trObject] := 'Objek';
+  FTranslation[trObjects] := 'Objek';
+  FTranslation[trOverview] := 'Pambuka';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Property';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Macem Gawean';
+  FTranslation[trTypes] := 'Macem Gawean';
+  FTranslation[trUnit] := 'Unit';
+  FTranslation[trUnits] := 'Unit';
+  FTranslation[trVariables] := 'Variabel';
 
-  Translation[trHeadlineCio] := 'Kabeh Kelas, Interface, lan Objek';
-  Translation[trHeadlineConstants] := 'Kabeh Konstanta';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Kabeh Kelas, Interface, lan Objek';
+  FTranslation[trHeadlineConstants] := 'Kabeh Konstanta';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Kabeh Fungsi lan Prosedur';
-  Translation[trHeadlineIdentifiers] := 'Kabeh Identifier';
-  Translation[trHeadlineTypes] := 'Kabeh Macem Gawean';
-  Translation[trHeadlineUnits] := 'Kabeh Unit';
-  Translation[trHeadlineVariables] := 'Kabeh Variabel';
+  FTranslation[trHeadlineIdentifiers] := 'Kabeh Identifier';
+  FTranslation[trHeadlineTypes] := 'Kabeh Macem Gawean';
+  FTranslation[trHeadlineUnits] := 'Kabeh Unit';
+  FTranslation[trHeadlineVariables] := 'Kabeh Variabel';
 
-  Translation[trSummaryCio] := 'Ringkesan Kelas, Interface, lan Objek';
+  FTranslation[trSummaryCio] := 'Ringkesan Kelas, Interface, lan Objek';
 
-  Translation[trWarningOverwrite] := 'Ati-ati: Ojo diowahi - '
+  FTranslation[trWarningOverwrite] := 'Ati-ati: Ojo diowahi - '
     + 'file iki digawe otomatis dadi iso ilang owahanmu';
 
-  Translation[trGeneratedBy] := 'Dihasilne karo';
-  Translation[trOnDateTime] := 'ing';
+  FTranslation[trGeneratedBy] := 'Dihasilne karo';
+  FTranslation[trOnDateTime] := 'ing';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguagePolish;
+procedure TPasDocLanguages.SetLanguagePolish;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autorzy';
-  Translation[trCio] := 'Klasy, Interfejsy i Obiekty';
-  Translation[trClass] := 'Klasa';
-  Translation[trClasses] := 'Klasy';
-  Translation[trConstants] := 'Sta³e';
-  Translation[trCreated] := 'Utworzony';
-  Translation[trDeclaration] := 'Deklaracja';
-  Translation[trDescription] := 'Opis';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Pola';
-  Translation[trFunctionsAndProcedures] := 'Funkcje i Procedury';
-  Translation[trHelp] := 'Pomoc';
-  Translation[trHierarchy] := 'Hierarchia';
-  Translation[trIdentifiers] := 'Identyfikatory';
-  Translation[trInterface] := 'Interfejs';
-  Translation[trLegend] := 'Legenda';
-  Translation[trMethods] := 'Metody';
-  Translation[trLastModified] := 'Ostatnia modyfikacja';
-  Translation[trName] := 'Nazwa';
-  Translation[trNone] := 'Brak';
-  Translation[trObject] := 'Obiekt';
-  Translation[trObjects] := 'Obiekty';
-  Translation[trOverview] := 'Przegl¹d';
-  Translation[trPrivate] := 'Prywatne';
-  Translation[trProperties] := 'W³aœciwoœci';
-  Translation[trProtected] := 'Chronione';
-  Translation[trPublic] := 'Publiczne';
-  Translation[trPublished] := 'Publikowane';
-  Translation[trType] := 'Typ';
-  Translation[trTypes] := 'Typy';
-  Translation[trUnit] := 'Modu³';
-  Translation[trUnits] := 'Modu³y';
-  Translation[trVariables] := 'Zmienne';
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autorzy';
+  FTranslation[trCio] := 'Klasy, Interfejsy i Obiekty';
+  FTranslation[trClass] := 'Klasa';
+  FTranslation[trClasses] := 'Klasy';
+  FTranslation[trConstants] := 'Sta³e';
+  FTranslation[trCreated] := 'Utworzony';
+  FTranslation[trDeclaration] := 'Deklaracja';
+  FTranslation[trDescription] := 'Opis';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Pola';
+  FTranslation[trFunctionsAndProcedures] := 'Funkcje i Procedury';
+  FTranslation[trHelp] := 'Pomoc';
+  FTranslation[trHierarchy] := 'Hierarchia';
+  FTranslation[trIdentifiers] := 'Identyfikatory';
+  FTranslation[trInterface] := 'Interfejs';
+  FTranslation[trLegend] := 'Legenda';
+  FTranslation[trMethods] := 'Metody';
+  FTranslation[trLastModified] := 'Ostatnia modyfikacja';
+  FTranslation[trName] := 'Nazwa';
+  FTranslation[trNone] := 'Brak';
+  FTranslation[trObject] := 'Obiekt';
+  FTranslation[trObjects] := 'Obiekty';
+  FTranslation[trOverview] := 'Przegl¹d';
+  FTranslation[trPrivate] := 'Prywatne';
+  FTranslation[trProperties] := 'W³aœciwoœci';
+  FTranslation[trProtected] := 'Chronione';
+  FTranslation[trPublic] := 'Publiczne';
+  FTranslation[trPublished] := 'Publikowane';
+  FTranslation[trType] := 'Typ';
+  FTranslation[trTypes] := 'Typy';
+  FTranslation[trUnit] := 'Modu³';
+  FTranslation[trUnits] := 'Modu³y';
+  FTranslation[trVariables] := 'Zmienne';
 
-  Translation[trHeadlineCio] := 'Wszystkie Klasy, Interfejsy i Obiekty';
-  Translation[trHeadlineConstants] := 'Wszystkie Sta³e';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Wszystkie Klasy, Interfejsy i Obiekty';
+  FTranslation[trHeadlineConstants] := 'Wszystkie Sta³e';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Wszystkie Funkcje i Procedury';
-  Translation[trHeadlineIdentifiers] := 'Wszystkie Identyfikatory';
-  Translation[trHeadlineTypes] := 'Wszystkie typy';
-  Translation[trHeadlineUnits] := 'Wszystkie modu³y';
-  Translation[trHeadlineVariables] := 'Wszystkie zmienne';
+  FTranslation[trHeadlineIdentifiers] := 'Wszystkie Identyfikatory';
+  FTranslation[trHeadlineTypes] := 'Wszystkie typy';
+  FTranslation[trHeadlineUnits] := 'Wszystkie modu³y';
+  FTranslation[trHeadlineVariables] := 'Wszystkie zmienne';
 
-  Translation[trSummaryCio] := 'Strzeszczenie Klas, Interfejsów i Obiektów';
+  FTranslation[trSummaryCio] := 'Strzeszczenie Klas, Interfejsów i Obiektów';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Uwaga, nie edytuj - ten plik zosta³ wygenerowany przez automat i mo¿e zostaæ nadpisany';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageRussian_1251;
+procedure TPasDocLanguages.SetLanguageRussian_1251;
 begin
-  Translation[trAuthor] := 'Àâòîğ';
-  Translation[trAuthors] := 'Àâòîğû';
-  Translation[trCio] := 'Êëàññû, èíòåğôåéñû è îáúåêòû';
-  Translation[trClass] := 'Êëàññ';
-  Translation[trClasses] := 'Êëàññû';
-  Translation[trConstants] := 'Êîíñòàíòû';
-  Translation[trCreated] := 'Ñîçäàíî';
-  Translation[trDeclaration] := 'Îáúÿâëåíèÿ';
-  Translation[trDescription] := 'Îïèñàíèå';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Ïîëÿ';
-  Translation[trFunctionsAndProcedures] := 'Ïğîöåäóğû è ôóíêöèè';
-  Translation[trHelp] := 'Help';
+  FTranslation[trAuthor] := 'Àâòîğ';
+  FTranslation[trAuthors] := 'Àâòîğû';
+  FTranslation[trCio] := 'Êëàññû, èíòåğôåéñû è îáúåêòû';
+  FTranslation[trClass] := 'Êëàññ';
+  FTranslation[trClasses] := 'Êëàññû';
+  FTranslation[trConstants] := 'Êîíñòàíòû';
+  FTranslation[trCreated] := 'Ñîçäàíî';
+  FTranslation[trDeclaration] := 'Îáúÿâëåíèÿ';
+  FTranslation[trDescription] := 'Îïèñàíèå';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Ïîëÿ';
+  FTranslation[trFunctionsAndProcedures] := 'Ïğîöåäóğû è ôóíêöèè';
+  FTranslation[trHelp] := 'Help';
     // Untranslated to avoid Russian file name for css
-  Translation[trHierarchy] := 'Èåğàğõèÿ';
-  Translation[trIdentifiers] := 'Èäåíòèôèêàòîğû';
-  Translation[trInterface] := 'Èíòåğôåéñ';
-  Translation[trLegend] := 'Îáîçíà÷åíèÿ';
-  Translation[trLastModified] := 'Ïîñëåäíåå èçìåíåíèå';
-  Translation[trMethods] := 'Ìåòîäû';
-  Translation[trName] := 'Èìÿ';
-  Translation[trNone] := 'Íåò';
-  Translation[trObject] := 'Îáúåêò';
-  Translation[trObjects] := 'Îáúåêòû';
-  Translation[trOverview] := 'Îáçîğ';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Ñâîéñòâà';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Òèï';
-  Translation[trTypes] := 'Òèïû';
-  Translation[trUnit] := 'Ìîäóëü';
-  Translation[trUnits] := 'Ìîäóëè';
-  Translation[trVariables] := 'Ïåğåìåííûå';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trHierarchy] := 'Èåğàğõèÿ';
+  FTranslation[trIdentifiers] := 'Èäåíòèôèêàòîğû';
+  FTranslation[trInterface] := 'Èíòåğôåéñ';
+  FTranslation[trLegend] := 'Îáîçíà÷åíèÿ';
+  FTranslation[trLastModified] := 'Ïîñëåäíåå èçìåíåíèå';
+  FTranslation[trMethods] := 'Ìåòîäû';
+  FTranslation[trName] := 'Èìÿ';
+  FTranslation[trNone] := 'Íåò';
+  FTranslation[trObject] := 'Îáúåêò';
+  FTranslation[trObjects] := 'Îáúåêòû';
+  FTranslation[trOverview] := 'Îáçîğ';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Ñâîéñòâà';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Òèï';
+  FTranslation[trTypes] := 'Òèïû';
+  FTranslation[trUnit] := 'Ìîäóëü';
+  FTranslation[trUnits] := 'Ìîäóëè';
+  FTranslation[trVariables] := 'Ïåğåìåííûå';
+  FTranslation[trWarningOverwrite] :=
     'Ïğåäóïğåæäåíèå: íå ğåäàêòèğîâàòü - ıòîò ôàéë ñîçäàí àâòîìàòè÷åñêè è ìîæåò áûòü èçìåí¸í áåç ïğåäóïğåæäåíèÿ';
 
-  Translation[trHeadlineCio] := 'Âñå êëàññû, èíòåğôåéñû è îáúåêòû';
-  Translation[trHeadlineConstants] := 'Âñå êîíñòàíòû';
-  Translation[trHeadlineFunctionsAndProcedures] := 'Âñå ïğîöåäóğû è ôóíêöèè';
-  Translation[trHeadlineIdentifiers] := 'Âñå èäåíòèôèêàòîğû';
-  Translation[trHeadlineTypes] := 'Âñå òèïû';
-  Translation[trHeadlineUnits] := 'Âñå ìîäóëè';
-  Translation[trHeadlineVariables] := 'Âñå ïåğåìåííûå';
+  FTranslation[trHeadlineCio] := 'Âñå êëàññû, èíòåğôåéñû è îáúåêòû';
+  FTranslation[trHeadlineConstants] := 'Âñå êîíñòàíòû';
+  FTranslation[trHeadlineFunctionsAndProcedures] := 'Âñå ïğîöåäóğû è ôóíêöèè';
+  FTranslation[trHeadlineIdentifiers] := 'Âñå èäåíòèôèêàòîğû';
+  FTranslation[trHeadlineTypes] := 'Âñå òèïû';
+  FTranslation[trHeadlineUnits] := 'Âñå ìîäóëè';
+  FTranslation[trHeadlineVariables] := 'Âñå ïåğåìåííûå';
 
-  Translation[trSummaryCio] := 'Ñïèñîê êëàññîâ, èíòåğôåéñîâ è îáúåêòîâ';
+  FTranslation[trSummaryCio] := 'Ñïèñîê êëàññîâ, èíòåğôåéñîâ è îáúåêòîâ';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageRussian_866;
+procedure TPasDocLanguages.SetLanguageRussian_866;
 begin
-  Translation[trAuthor] := '€¢â®à';
-  Translation[trAuthors] := '€¢â®àë';
-  Translation[trCio] := 'Š« ááë, ¨­â¥àä¥©áë ¨ ®¡ê¥ªâë';
-  Translation[trClass] := 'Š« áá';
-  Translation[trClasses] := 'Š« ááë';
-  Translation[trConstants] := 'Š®­áâ ­âë';
-  Translation[trCreated] := '‘®§¤ ­®';
-  Translation[trDeclaration] := '¡êï¢«¥­¨ï';
-  Translation[trDescription] := '¯¨á ­¨¥';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := '®«ï';
-  Translation[trFunctionsAndProcedures] := 'à®æ¥¤ãàë ¨ äã­ªæ¨¨';
-  Translation[trHelp] := 'Help';
+  FTranslation[trAuthor] := '€¢â®à';
+  FTranslation[trAuthors] := '€¢â®àë';
+  FTranslation[trCio] := 'Š« ááë, ¨­â¥àä¥©áë ¨ ®¡ê¥ªâë';
+  FTranslation[trClass] := 'Š« áá';
+  FTranslation[trClasses] := 'Š« ááë';
+  FTranslation[trConstants] := 'Š®­áâ ­âë';
+  FTranslation[trCreated] := '‘®§¤ ­®';
+  FTranslation[trDeclaration] := '¡êï¢«¥­¨ï';
+  FTranslation[trDescription] := '¯¨á ­¨¥';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := '®«ï';
+  FTranslation[trFunctionsAndProcedures] := 'à®æ¥¤ãàë ¨ äã­ªæ¨¨';
+  FTranslation[trHelp] := 'Help';
     // Untranslated to avoid Russian file name for css
-  Translation[trHierarchy] := 'ˆ¥à àå¨ï';
-  Translation[trIdentifiers] := 'ˆ¤¥­â¨ä¨ª â®àë';
-  Translation[trInterface] := 'ˆ­â¥àä¥©á';
-  Translation[trLegend] := '¡®§­ ç¥­¨ï';
-  Translation[trLastModified] := '®á«¥¤­¥¥ ¨§¬¥­¥­¨¥';
-  Translation[trMethods] := 'Œ¥â®¤ë';
-  Translation[trName] := 'ˆ¬ï';
-  Translation[trNone] := '¥â';
-  Translation[trObject] := '¡ê¥ªâ';
-  Translation[trObjects] := '¡ê¥ªâë';
-  Translation[trOverview] := '¡§®à';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := '‘¢®©áâ¢ ';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := '’¨¯';
-  Translation[trTypes] := '’¨¯ë';
-  Translation[trUnit] := 'Œ®¤ã«ì';
-  Translation[trUnits] := 'Œ®¤ã«¨';
-  Translation[trVariables] := '¥à¥¬¥­­ë¥';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trHierarchy] := 'ˆ¥à àå¨ï';
+  FTranslation[trIdentifiers] := 'ˆ¤¥­â¨ä¨ª â®àë';
+  FTranslation[trInterface] := 'ˆ­â¥àä¥©á';
+  FTranslation[trLegend] := '¡®§­ ç¥­¨ï';
+  FTranslation[trLastModified] := '®á«¥¤­¥¥ ¨§¬¥­¥­¨¥';
+  FTranslation[trMethods] := 'Œ¥â®¤ë';
+  FTranslation[trName] := 'ˆ¬ï';
+  FTranslation[trNone] := '¥â';
+  FTranslation[trObject] := '¡ê¥ªâ';
+  FTranslation[trObjects] := '¡ê¥ªâë';
+  FTranslation[trOverview] := '¡§®à';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := '‘¢®©áâ¢ ';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := '’¨¯';
+  FTranslation[trTypes] := '’¨¯ë';
+  FTranslation[trUnit] := 'Œ®¤ã«ì';
+  FTranslation[trUnits] := 'Œ®¤ã«¨';
+  FTranslation[trVariables] := '¥à¥¬¥­­ë¥';
+  FTranslation[trWarningOverwrite] :=
     'à¥¤ã¯à¥¦¤¥­¨¥: ­¥ à¥¤ ªâ¨à®¢ âì - íâ®â ä ©« á®§¤ ­  ¢â®¬ â¨ç¥áª¨ ¨ ¬®¦¥â ¡ëâì ¨§¬¥­ñ­ ¡¥§ ¯à¥¤ã¯à¥¦¤¥­¨ï';
 
-  Translation[trHeadlineCio] := '‚á¥ ª« ááë, ¨­â¥àä¥©áë ¨ ®¡ê¥ªâë';
-  Translation[trHeadlineConstants] := '‚á¥ ª®­áâ ­âë';
-  Translation[trHeadlineFunctionsAndProcedures] := '‚á¥ ¯à®æ¥¤ãàë ¨ äã­ªæ¨¨';
-  Translation[trHeadlineIdentifiers] := '‚á¥ ¨¤¥­â¨ä¨ª â®àë';
-  Translation[trHeadlineTypes] := '‚á¥ â¨¯ë';
-  Translation[trHeadlineUnits] := '‚á¥ ¬®¤ã«¨';
-  Translation[trHeadlineVariables] := '‚á¥ ¯¥à¥¬¥­­ë¥';
+  FTranslation[trHeadlineCio] := '‚á¥ ª« ááë, ¨­â¥àä¥©áë ¨ ®¡ê¥ªâë';
+  FTranslation[trHeadlineConstants] := '‚á¥ ª®­áâ ­âë';
+  FTranslation[trHeadlineFunctionsAndProcedures] := '‚á¥ ¯à®æ¥¤ãàë ¨ äã­ªæ¨¨';
+  FTranslation[trHeadlineIdentifiers] := '‚á¥ ¨¤¥­â¨ä¨ª â®àë';
+  FTranslation[trHeadlineTypes] := '‚á¥ â¨¯ë';
+  FTranslation[trHeadlineUnits] := '‚á¥ ¬®¤ã«¨';
+  FTranslation[trHeadlineVariables] := '‚á¥ ¯¥à¥¬¥­­ë¥';
 
-  Translation[trSummaryCio] := '‘¯¨á®ª ª« áá®¢, ¨­â¥àä¥©á®¢ ¨ ®¡ê¥ªâ®¢';
+  FTranslation[trSummaryCio] := '‘¯¨á®ª ª« áá®¢, ¨­â¥àä¥©á®¢ ¨ ®¡ê¥ªâ®¢';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageRussian_koi8;
+procedure TPasDocLanguages.SetLanguageRussian_koi8;
 begin
-  Translation[trAuthor] := 'á×ÔÏÒ';
-  Translation[trAuthors] := 'á×ÔÏÒÙ';
-  Translation[trCio] := 'ëÌÁÓÓÙ, ÉÎÔÅÒÆÅÊÓÙ É ÏÂßÅËÔÙ';
-  Translation[trClass] := 'ëÌÁÓÓ';
-  Translation[trClasses] := 'ëÌÁÓÓÙ';
-  Translation[trConstants] := 'ëÏÎÓÔÁÎÔÙ';
-  Translation[trCreated] := 'óÏÚÄÁÎÏ';
-  Translation[trDeclaration] := 'ïÂßÑ×ÌÅÎÉÑ';
-  Translation[trDescription] := 'ïĞÉÓÁÎÉÅ';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'ğÏÌÑ';
-  Translation[trFunctionsAndProcedures] := 'ğÒÏÃÅÄÕÒÙ É ÆÕÎËÃÉÉ';
-  Translation[trHelp] := 'Help';
+  FTranslation[trAuthor] := 'á×ÔÏÒ';
+  FTranslation[trAuthors] := 'á×ÔÏÒÙ';
+  FTranslation[trCio] := 'ëÌÁÓÓÙ, ÉÎÔÅÒÆÅÊÓÙ É ÏÂßÅËÔÙ';
+  FTranslation[trClass] := 'ëÌÁÓÓ';
+  FTranslation[trClasses] := 'ëÌÁÓÓÙ';
+  FTranslation[trConstants] := 'ëÏÎÓÔÁÎÔÙ';
+  FTranslation[trCreated] := 'óÏÚÄÁÎÏ';
+  FTranslation[trDeclaration] := 'ïÂßÑ×ÌÅÎÉÑ';
+  FTranslation[trDescription] := 'ïĞÉÓÁÎÉÅ';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'ğÏÌÑ';
+  FTranslation[trFunctionsAndProcedures] := 'ğÒÏÃÅÄÕÒÙ É ÆÕÎËÃÉÉ';
+  FTranslation[trHelp] := 'Help';
     // Untranslated to avoid Russian file name for css
-  Translation[trHierarchy] := 'éÅÒÁÒÈÉÑ';
-  Translation[trIdentifiers] := 'éÄÅÎÔÉÆÉËÁÔÏÒÙ';
-  Translation[trInterface] := 'éÎÔÅÒÆÅÊÓ';
-  Translation[trLegend] := 'ïÂÏÚÎÁŞÅÎÉÑ';
-  Translation[trLastModified] := 'ğÏÓÌÅÄÎÅÅ ÉÚÍÅÎÅÎÉÅ';
-  Translation[trMethods] := 'íÅÔÏÄÙ';
-  Translation[trName] := 'éÍÑ';
-  Translation[trNone] := 'îÅÔ';
-  Translation[trObject] := 'ïÂßÅËÔ';
-  Translation[trObjects] := 'ïÂßÅËÔÙ';
-  Translation[trOverview] := 'ïÂÚÏÒ';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'ó×ÏÊÓÔ×Á';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'ôÉĞ';
-  Translation[trTypes] := 'ôÉĞÙ';
-  Translation[trUnit] := 'íÏÄÕÌØ';
-  Translation[trUnits] := 'íÏÄÕÌÉ';
-  Translation[trVariables] := 'ğÅÒÅÍÅÎÎÙÅ';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trHierarchy] := 'éÅÒÁÒÈÉÑ';
+  FTranslation[trIdentifiers] := 'éÄÅÎÔÉÆÉËÁÔÏÒÙ';
+  FTranslation[trInterface] := 'éÎÔÅÒÆÅÊÓ';
+  FTranslation[trLegend] := 'ïÂÏÚÎÁŞÅÎÉÑ';
+  FTranslation[trLastModified] := 'ğÏÓÌÅÄÎÅÅ ÉÚÍÅÎÅÎÉÅ';
+  FTranslation[trMethods] := 'íÅÔÏÄÙ';
+  FTranslation[trName] := 'éÍÑ';
+  FTranslation[trNone] := 'îÅÔ';
+  FTranslation[trObject] := 'ïÂßÅËÔ';
+  FTranslation[trObjects] := 'ïÂßÅËÔÙ';
+  FTranslation[trOverview] := 'ïÂÚÏÒ';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'ó×ÏÊÓÔ×Á';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'ôÉĞ';
+  FTranslation[trTypes] := 'ôÉĞÙ';
+  FTranslation[trUnit] := 'íÏÄÕÌØ';
+  FTranslation[trUnits] := 'íÏÄÕÌÉ';
+  FTranslation[trVariables] := 'ğÅÒÅÍÅÎÎÙÅ';
+  FTranslation[trWarningOverwrite] :=
     'ğÒÅÄÕĞÒÅÖÄÅÎÉÅ: ÎÅ ÒÅÄÁËÔÉÒÏ×ÁÔØ - ÜÔÏÔ ÆÁÊÌ ÓÏÚÄÁÎ Á×ÔÏÍÁÔÉŞÅÓËÉ É ÍÏÖÅÔ ÂÙÔØ ÉÚÍÅÎ£Î ÂÅÚ ĞÒÅÄÕĞÒÅÖÄÅÎÉÑ';
 
-  Translation[trHeadlineCio] := '÷ÓÅ ËÌÁÓÓÙ, ÉÎÔÅÒÆÅÊÓÙ É ÏÂßÅËÔÙ';
-  Translation[trHeadlineConstants] := '÷ÓÅ ËÏÎÓÔÁÎÔÙ';
-  Translation[trHeadlineFunctionsAndProcedures] := '÷ÓÅ ĞÒÏÃÅÄÕÒÙ É ÆÕÎËÃÉÉ';
-  Translation[trHeadlineIdentifiers] := '÷ÓÅ ÉÄÅÎÔÉÆÉËÁÔÏÒÙ';
-  Translation[trHeadlineTypes] := '÷ÓÅ ÔÉĞÙ';
-  Translation[trHeadlineUnits] := '÷ÓÅ ÍÏÄÕÌÉ';
-  Translation[trHeadlineVariables] := '÷ÓÅ ĞÅÒÅÍÅÎÎÙÅ';
+  FTranslation[trHeadlineCio] := '÷ÓÅ ËÌÁÓÓÙ, ÉÎÔÅÒÆÅÊÓÙ É ÏÂßÅËÔÙ';
+  FTranslation[trHeadlineConstants] := '÷ÓÅ ËÏÎÓÔÁÎÔÙ';
+  FTranslation[trHeadlineFunctionsAndProcedures] := '÷ÓÅ ĞÒÏÃÅÄÕÒÙ É ÆÕÎËÃÉÉ';
+  FTranslation[trHeadlineIdentifiers] := '÷ÓÅ ÉÄÅÎÔÉÆÉËÁÔÏÒÙ';
+  FTranslation[trHeadlineTypes] := '÷ÓÅ ÔÉĞÙ';
+  FTranslation[trHeadlineUnits] := '÷ÓÅ ÍÏÄÕÌÉ';
+  FTranslation[trHeadlineVariables] := '÷ÓÅ ĞÅÒÅÍÅÎÎÙÅ';
 
-  Translation[trSummaryCio] := 'óĞÉÓÏË ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ× É ÏÂßÅËÔÏ×';
+  FTranslation[trSummaryCio] := 'óĞÉÓÏË ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ× É ÏÂßÅËÔÏ×';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageSlovak;
+procedure TPasDocLanguages.SetLanguageSlovak;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autori';
-  Translation[trCio] := 'Triedy, interfejsy a objekty';
-  Translation[trClass] := 'Trieda';
-  Translation[trClasses] := 'Triedy';
-  Translation[trConstants] := 'Konštanty';
-  Translation[trCreated] := 'Vytvorené';
-  Translation[trDeclaration] := 'Deklarácie';
-  Translation[trDescription] := 'Popis';
-  Translation[trFields] := 'Poloky';
-  Translation[trFunctionsAndProcedures] := 'Funkcie a procedúry';
-  Translation[trHierarchy] := 'Hierarchia';
-  Translation[trIdentifiers] := 'Identifikátory';
-  Translation[trInterface] := 'Interfejs';
-  Translation[trLastModified] := 'Posledná zmena';
-  Translation[trMethods] := 'Metódy';
-  Translation[trName] := 'Meno';
-  Translation[trNone] := 'Niè';
-  Translation[trObject] := 'Objekt';
-  Translation[trObjects] := 'Objekty';
-  Translation[trOverview] := 'Overview';
-  Translation[trProperties] := 'Monosti';
-  Translation[trType] := 'Typ';
-  Translation[trTypes] := 'Typy';
-  Translation[trUnit] := 'Jednotka';
-  Translation[trUnits] := 'Jednotky';
-  Translation[trVariables] := 'Premenné';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autori';
+  FTranslation[trCio] := 'Triedy, interfejsy a objekty';
+  FTranslation[trClass] := 'Trieda';
+  FTranslation[trClasses] := 'Triedy';
+  FTranslation[trConstants] := 'Konštanty';
+  FTranslation[trCreated] := 'Vytvorené';
+  FTranslation[trDeclaration] := 'Deklarácie';
+  FTranslation[trDescription] := 'Popis';
+  FTranslation[trFields] := 'Poloky';
+  FTranslation[trFunctionsAndProcedures] := 'Funkcie a procedúry';
+  FTranslation[trHierarchy] := 'Hierarchia';
+  FTranslation[trIdentifiers] := 'Identifikátory';
+  FTranslation[trInterface] := 'Interfejs';
+  FTranslation[trLastModified] := 'Posledná zmena';
+  FTranslation[trMethods] := 'Metódy';
+  FTranslation[trName] := 'Meno';
+  FTranslation[trNone] := 'Niè';
+  FTranslation[trObject] := 'Objekt';
+  FTranslation[trObjects] := 'Objekty';
+  FTranslation[trOverview] := 'Overview';
+  FTranslation[trProperties] := 'Monosti';
+  FTranslation[trType] := 'Typ';
+  FTranslation[trTypes] := 'Typy';
+  FTranslation[trUnit] := 'Jednotka';
+  FTranslation[trUnits] := 'Jednotky';
+  FTranslation[trVariables] := 'Premenné';
+  FTranslation[trWarningOverwrite] :=
     'Upozornenie: Needitujte - tento súbor bol vytvorenı automaticky a je pravdepodobné, e bude prepísanı';
 
-  Translation[trHeadlineCio] := 'Všetky triedy, interfejsy a objekty';
-  Translation[trHeadlineConstants] := 'Všetky konštanty';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Všetky triedy, interfejsy a objekty';
+  FTranslation[trHeadlineConstants] := 'Všetky konštanty';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Všetky funkcie a procedúry';
-  Translation[trHeadlineIdentifiers] := 'Všetky identifikátory';
-  Translation[trHeadlineTypes] := 'Všetky typy';
-  Translation[trHeadlineUnits] := 'Všetky jednotky';
-  Translation[trHeadlineVariables] := 'Všetky premenné';
+  FTranslation[trHeadlineIdentifiers] := 'Všetky identifikátory';
+  FTranslation[trHeadlineTypes] := 'Všetky typy';
+  FTranslation[trHeadlineUnits] := 'Všetky jednotky';
+  FTranslation[trHeadlineVariables] := 'Všetky premenné';
 
-  Translation[trSummaryCio] := 'Zoznam tried, interfejsov a objektov';
+  FTranslation[trSummaryCio] := 'Zoznam tried, interfejsov a objektov';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageSpanish;
+procedure TPasDocLanguages.SetLanguageSpanish;
 begin
-  Translation[trAuthor] := 'Autor';
-  Translation[trAuthors] := 'Autores';
-  Translation[trCio] := 'Clases, interfaces y objetos';
-  Translation[trClass] := 'Clase';
-  Translation[trClasses] := 'Clases';
-  Translation[trConstants] := 'Constantes';
-  Translation[trCreated] := 'Creado';
-  Translation[trDeclaration] := 'Declaraci¢n';
-  Translation[trDescription] := 'Descripcion';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Campos';
-  Translation[trFunctionsAndProcedures] := 'Funciones y procedimientos';
-  Translation[trHelp] := 'Help';
-  Translation[trHierarchy] := 'Hierarchy';
-  Translation[trIdentifiers] := 'Identificadores';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Legend';
-  Translation[trLastModified] := 'éltima modificaci¢n';
-  Translation[trMethods] := 'M‚todos';
-  Translation[trName] := 'Nombre';
-  Translation[trNone] := 'Ninguno';
-  Translation[trObject] := 'Objeto';
-  Translation[trObjects] := 'Objetos';
-  Translation[trOverview] := 'Resumen';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Propiedades';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trUnit] := 'Unidad';
-  Translation[trUnits] := 'Unidades';
-  Translation[trType] := 'Tipo';
-  Translation[trTypes] := 'Tipos';
-  Translation[trVariables] := 'Variables';
-  Translation[trWarningOverwrite] :=
+  FTranslation[trAuthor] := 'Autor';
+  FTranslation[trAuthors] := 'Autores';
+  FTranslation[trCio] := 'Clases, interfaces y objetos';
+  FTranslation[trClass] := 'Clase';
+  FTranslation[trClasses] := 'Clases';
+  FTranslation[trConstants] := 'Constantes';
+  FTranslation[trCreated] := 'Creado';
+  FTranslation[trDeclaration] := 'Declaraci¢n';
+  FTranslation[trDescription] := 'Descripcion';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Campos';
+  FTranslation[trFunctionsAndProcedures] := 'Funciones y procedimientos';
+  FTranslation[trHelp] := 'Help';
+  FTranslation[trHierarchy] := 'Hierarchy';
+  FTranslation[trIdentifiers] := 'Identificadores';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Legend';
+  FTranslation[trLastModified] := 'éltima modificaci¢n';
+  FTranslation[trMethods] := 'M‚todos';
+  FTranslation[trName] := 'Nombre';
+  FTranslation[trNone] := 'Ninguno';
+  FTranslation[trObject] := 'Objeto';
+  FTranslation[trObjects] := 'Objetos';
+  FTranslation[trOverview] := 'Resumen';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Propiedades';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trUnit] := 'Unidad';
+  FTranslation[trUnits] := 'Unidades';
+  FTranslation[trType] := 'Tipo';
+  FTranslation[trTypes] := 'Tipos';
+  FTranslation[trVariables] := 'Variables';
+  FTranslation[trWarningOverwrite] :=
     'Atenci¢n, no editar - este fichero ha sido creado automaticamente y ser sobrescrito';
 
-  Translation[trHeadlineCio] := 'Todas las clases, interfaces y objetos';
-  Translation[trHeadlineConstants] := 'Todas las constantes';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Todas las clases, interfaces y objetos';
+  FTranslation[trHeadlineConstants] := 'Todas las constantes';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Todos las funciones y procedimientos';
-  Translation[trHeadlineIdentifiers] := 'Todos los indentificadores';
-  Translation[trHeadlineTypes] := 'Todos los tipos';
-  Translation[trHeadlineUnits] := 'Todas las unidades';
-  Translation[trHeadlineVariables] := 'Todas las variables';
+  FTranslation[trHeadlineIdentifiers] := 'Todos los indentificadores';
+  FTranslation[trHeadlineTypes] := 'Todos los tipos';
+  FTranslation[trHeadlineUnits] := 'Todas las unidades';
+  FTranslation[trHeadlineVariables] := 'Todas las variables';
 
-  Translation[trSummaryCio] := 'Lista de clases, interfaces y objetos';
+  FTranslation[trSummaryCio] := 'Lista de clases, interfaces y objetos';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure SetLanguageSwedish;
+procedure TPasDocLanguages.SetLanguageSwedish;
 begin
-  Translation[trAuthor] := 'Författare';
-  Translation[trAuthors] := 'Författare';
-  Translation[trCio] := 'Klasser, interface och objekt';
-  Translation[trClass] := 'Klass';
-  Translation[trClasses] := 'Klasser';
-  Translation[trConstants] := 'Constants';
-  Translation[trCreated] := 'Skapad';
-  Translation[trDeclaration] := 'Deklarationer';
-  Translation[trDescription] := 'Beskrivning';
-  Translation[trDispInterface] := 'DispInterface';
-  Translation[trFields] := 'Fält';
-  Translation[trFunctionsAndProcedures] := 'Functions and Procedures';
-  Translation[trHelp] := 'Help';
+  FTranslation[trAuthor] := 'Författare';
+  FTranslation[trAuthors] := 'Författare';
+  FTranslation[trCio] := 'Klasser, interface och objekt';
+  FTranslation[trClass] := 'Klass';
+  FTranslation[trClasses] := 'Klasser';
+  FTranslation[trConstants] := 'Constants';
+  FTranslation[trCreated] := 'Skapad';
+  FTranslation[trDeclaration] := 'Deklarationer';
+  FTranslation[trDescription] := 'Beskrivning';
+  FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trFields] := 'Fält';
+  FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
+  FTranslation[trHelp] := 'Help';
     // Untranslated to avoid Swedish file name for css
-  Translation[trHierarchy] := 'Hierarki';
-  Translation[trIdentifiers] := 'Identifiers';
-  Translation[trInterface] := 'Interface';
-  Translation[trLegend] := 'Förklaring';
-  Translation[trMethods] := 'Metoder';
-  Translation[trLastModified] := 'Senast ändrad';
-  Translation[trName] := 'Namn';
-  Translation[trNone] := 'Ingen/inget.';
-  Translation[trObject] := 'Objekt';
-  Translation[trObjects] := 'Objekt';
-  Translation[trOverview] := 'Översikt';
-  Translation[trPrivate] := 'Private';
-  Translation[trProperties] := 'Properties';
-  Translation[trProtected] := 'Protected';
-  Translation[trPublic] := 'Public';
-  Translation[trPublished] := 'Published';
-  Translation[trType] := 'Typer';
-  Translation[trTypes] := 'Typer';
-  Translation[trUnit] := 'Enhet';
-  Translation[trUnits] := 'Enheter';
-  Translation[trVariables] := 'Variabler';
+  FTranslation[trHierarchy] := 'Hierarki';
+  FTranslation[trIdentifiers] := 'Identifiers';
+  FTranslation[trInterface] := 'Interface';
+  FTranslation[trLegend] := 'Förklaring';
+  FTranslation[trMethods] := 'Metoder';
+  FTranslation[trLastModified] := 'Senast ändrad';
+  FTranslation[trName] := 'Namn';
+  FTranslation[trNone] := 'Ingen/inget.';
+  FTranslation[trObject] := 'Objekt';
+  FTranslation[trObjects] := 'Objekt';
+  FTranslation[trOverview] := 'Översikt';
+  FTranslation[trPrivate] := 'Private';
+  FTranslation[trProperties] := 'Properties';
+  FTranslation[trProtected] := 'Protected';
+  FTranslation[trPublic] := 'Public';
+  FTranslation[trPublished] := 'Published';
+  FTranslation[trType] := 'Typer';
+  FTranslation[trTypes] := 'Typer';
+  FTranslation[trUnit] := 'Enhet';
+  FTranslation[trUnits] := 'Enheter';
+  FTranslation[trVariables] := 'Variabler';
 
-  Translation[trHeadlineCio] := 'Alla klasser, interface och objekt';
-  Translation[trHeadlineConstants] := 'All Constants';
-  Translation[trHeadlineFunctionsAndProcedures] :=
+  FTranslation[trHeadlineCio] := 'Alla klasser, interface och objekt';
+  FTranslation[trHeadlineConstants] := 'All Constants';
+  FTranslation[trHeadlineFunctionsAndProcedures] :=
     'Alla funktioner och procedurer';
-  Translation[trHeadlineIdentifiers] := 'Alla identifierare';
-  Translation[trHeadlineTypes] := 'Alla typer';
-  Translation[trHeadlineUnits] := 'Alla enheter';
-  Translation[trHeadlineVariables] := 'Alla variabler';
+  FTranslation[trHeadlineIdentifiers] := 'Alla identifierare';
+  FTranslation[trHeadlineTypes] := 'Alla typer';
+  FTranslation[trHeadlineUnits] := 'Alla enheter';
+  FTranslation[trHeadlineVariables] := 'Alla variabler';
 
-  Translation[trSummaryCio] :=
+  FTranslation[trSummaryCio] :=
     'Sammanfattning av Klasser, Interface, Objekt';
 
-  Translation[trWarningOverwrite] :=
+  FTranslation[trWarningOverwrite] :=
     'Varning: ändra inte denna fil manuellt - filen har skapats automatiskt och kommer troligen att skrivas över vid ett senare tilfälle';
 
   // Please translate
-  // Translation[trGeneratedBy] := 'Generated by';
-  // Translation[trOnDateTime] := 'on';
+  // FTranslation[trGeneratedBy] := 'Generated by';
+  // FTranslation[trOnDateTime] := 'on';
+end;
+
+function TPasDocLanguages.GetTranslation(
+  const ATranslationID: TTranslationID): string;
+begin
+  Result := FTranslation[ATranslationID];
+end;
+
+constructor TPasDocLanguages.Create;
+begin
+  inherited;
+  SetLanguage(DEFAULT_LANGUAGE);
+end;
+
+procedure TPasDocLanguages.SetLanguage(const Value: TLanguageID);
+begin
+  FLanguage := Value;
+  FCharSet := LANGUAGE_ARRAY[Value].Charset;
+  case Value of
+    lgBosnian: SetLanguageBosnian;
+    lgBrasilian: SetLanguageBrasilian;
+    lgCatalan: SetLanguageCatalan;
+    lgChinese_950: SetLanguageChinese_950;
+    lgDanish: SetLanguageDanish;
+    lgDutch: SetLanguageDutch;
+    lgEnglish: SetLanguageEnglish;
+    lgFrench: SetLanguageFrench;
+    lgGerman: SetLanguageGerman;
+    lgIndonesian: SetLanguageIndonesian;
+    lgItalian: SetLanguageItalian;
+    lgJavanese: SetLanguageJavanese;
+    lgPolish: SetLanguagePolish;
+    lgRussian_1251: SetLanguageRussian_1251;
+    lgRussian_866: SetLanguageRussian_866;
+    lgRussian_koi8: SetLanguageRussian_koi8;
+    lgSlovak: SetLanguageSlovak;
+    lgSpanish: SetLanguageSpanish;
+    lgSwedish: SetLanguageSwedish;
+  end;
 end;
 
 end.

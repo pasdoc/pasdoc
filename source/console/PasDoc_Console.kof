@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=-E/home/johannes/public_html/IndyDoc -I/home/johannes/Projects/Indy/source/ -I/home/johannes/Projects/Indy/source/Core/ /home/johannes/Projects/Indy/source/IdBlockCipherIntercept.pas
+RunParams=-E/home/johannes/public_html/IndyDoc -I/home/johannes/Projects/Indy/source/ -I/home/johannes/Projects/Indy/source/Core/ /home/johannes/Projects/Indy/source/IdBlockCipherIntercept.pas --language=de
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1

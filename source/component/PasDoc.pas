@@ -374,9 +374,6 @@ begin
     DoError('No Source Files have been specified.', [], 1);
   end;
 
-  { Set default language in case a language does not provide a translation. }
-  LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Proc;
-
   { Make sure all IncludeDirectories end with a Path Separator. }
   FIncludeDirectories.Iterate(IterateIncludeTrailingPathDelimiter);
 
@@ -392,7 +389,7 @@ begin
   if FProjectName <> '' then begin
     Generator.ProjectName := FProjectName
   end else begin
-    Generator.ProjectName := Translation[trHelp];
+    Generator.ProjectName := 'Help Project';
   end;
 
   Generator.Title := Title;

@@ -59,11 +59,13 @@ type
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
+  private
+    function GetLanguage: TLanguageID;
   protected
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
       default language is @link(DEFAULT_LANGUAGE) }
-    FLanguage: TLanguageID;
+    FLanguage: TPasDocLanguages;
     { Name of the project to create. }
     FProjectName: string;
     { if true, no link to pasdoc homepage will be included at the bottom of
@@ -85,6 +87,9 @@ type
 
     FClassHierarchy: TStringCardinalTree;
 
+    procedure SetLanguage(const Value: TLanguageID);
+    procedure SetDestDir(const Value: string);
+    
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -192,7 +197,7 @@ type
     procedure WriteCIOSummary(HL: Byte; c: TPasItems); virtual;
 
     { Writes collection T, which is supposed to contain constant items only
-      to output at heading level HL with heading Translation[trTYPES) calling
+      to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten by descendants. }
     procedure WriteConstants(HL: Byte; c: TPasItems); virtual;
@@ -245,7 +250,7 @@ type
     { Abstract method, must be overwritten by descendants to implement
       functionality.
       Writes a list of properties P to output.
-      Heading level HL is used for the heading Translation[trPROPERTIES). }
+      Heading level HL is used for the heading FLanguage.Translation[trPROPERTIES). }
     procedure WriteProperties(HL: Byte; const p: TPasProperties); virtual;
       abstract;
       
@@ -261,7 +266,7 @@ type
     procedure WriteText(const t: string); virtual;
     
     { Writes collection T, which is supposed to contain type items (TPasItem) to
-      output at heading level HL with heading Translation[trTYPES) calling
+      output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
     procedure WriteTypes(const HL: Byte; const t: TPasItems); virtual;
@@ -277,7 +282,7 @@ type
 
     { Abstract method to be implemented by descendant objects.
       Writes the (detailed, if available) description T of a unit to output,
-      including a Translation[trDESCRIPTION) headline at heading level HL. }
+      including a FLanguage.Translation[trDESCRIPTION) headline at heading level HL. }
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); virtual; abstract;
 
     { Writes documentation for all units, calling @link(WriteUnit) for each
@@ -285,7 +290,7 @@ type
     procedure WriteUnits(const HL: Byte);
     
     { Writes collection V, which is supposed to contain variable items (TPasItem)
-      to output at heading level HL with heading Translation[trTYPES) calling
+      to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
     procedure WriteVariables(const HL: Byte; const V: TPasItems); virtual;
@@ -319,7 +324,7 @@ type
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
       default language is @link(DEFAULT_LANGUAGE) }
-    property Language: TLanguageID read FLanguage write FLanguage;
+    property Language: TLanguageID read GetLanguage write SetLanguage;
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;
     { if true, no link to pasdoc homepage will be included at the bottom of
@@ -337,7 +342,7 @@ type
     { destination directory for documentation; must include terminating
       forward slash or backslash so that valid file names can be created
       by concatenating DestinationDirectory and a pathless file name }
-    property DestinationDirectory: string read FDestDir write FDestDir;
+    property DestinationDirectory: string read FDestDir write SetDestDir;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     
@@ -897,10 +902,10 @@ end;
 function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
   case MyType of
-    CIO_CLASS: Result := Translation[trClass];
-    CIO_SPINTERFACE: Result := Translation[trDispInterface];
-    CIO_INTERFACE: Result := Translation[trInterface];
-    CIO_OBJECT: Result := Translation[trObject];
+    CIO_CLASS: Result := FLanguage.Translation[trClass];
+    CIO_SPINTERFACE: Result := FLanguage.Translation[trDispInterface];
+    CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
+    CIO_OBJECT: Result := FLanguage.Translation[trObject];
   else
     Result := '';
   end;
@@ -1155,14 +1160,14 @@ end;
 
 procedure TDocGenerator.WriteCIOSummary(HL: Byte; c: TPasItems);
 begin
-  WriteItems(HL, Translation[trSummaryCio], 'Classes', c);
+  WriteItems(HL, FLanguage.Translation[trSummaryCio], 'Classes', c);
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.WriteConstants(HL: Byte; c: TPasItems);
 begin
-  WriteItems(HL, Translation[trConstants], 'Constants', c);
+  WriteItems(HL, FLanguage.Translation[trConstants], 'Constants', c);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1236,7 +1241,7 @@ end;
 
 procedure TDocGenerator.WriteTypes(const HL: Byte; const t: TPasItems);
 begin
-  WriteItems(HL, Translation[trTypes], 'Types', t);
+  WriteItems(HL, FLanguage.Translation[trTypes], 'Types', t);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1255,7 +1260,7 @@ end;
 
 procedure TDocGenerator.WriteVariables(const HL: Byte; const V: TPasItems);
 begin
-  WriteItems(HL, Translation[trVariables], 'Variables', V);
+  WriteItems(HL, FLanguage.Translation[trVariables], 'Variables', V);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1287,6 +1292,7 @@ begin
   inherited;
   FClassHierarchy := nil;
   FNoGeneratorInfo := False;
+  FLanguage := TPasDocLanguages.Create;
 end;
 
 procedure TDocGenerator.CreateClassHierarchy;
@@ -1338,6 +1344,7 @@ end;
 
 destructor TDocGenerator.Destroy;
 begin
+  FLanguage.Free;
   FClassHierarchy.Free;
   inherited;
 end;
@@ -1354,7 +1361,21 @@ end;
 
 procedure TDocGenerator.WriteDocumentation;
 begin
-  FDestDir := IncludeTrailingPathDelimiter(FDestDir);
+end;
+
+procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
+begin
+  FLanguage.Language := Value;
+end;
+
+procedure TDocGenerator.SetDestDir(const Value: string);
+begin
+  FDestDir := IncludeTrailingPathDelimiter(Value);
+end;
+
+function TDocGenerator.GetLanguage: TLanguageID;
+begin
+  Result := FLanguage.Language;
 end;
 
 end.

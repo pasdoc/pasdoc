@@ -143,9 +143,8 @@ begin
   GOptionParser.AddOption(GOption_Generator);
 
   GOption_Language := TStringOption.Create('L', 'language');
-  GOption_Language.Explanation := 'Output language. Valid languages are: ' +
-    #10;
-  for l := Succ(lgDefault) to High(LANGUAGE_ARRAY) do
+  GOption_Language.Explanation := 'Output language. Valid languages are: ' + #10;
+  for l := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
     GOption_Language.Explanation := GOption_Language.Explanation + '  ' +
       LANGUAGE_ARRAY[l].Syntax + ': ' + LANGUAGE_ARRAY[l].Name + #10;
   GOptionParser.AddOption(GOption_Language);
