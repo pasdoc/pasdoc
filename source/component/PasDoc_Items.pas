@@ -23,6 +23,9 @@ uses
 
 type
   { Accessibility of a field/method }
+  { DO NOT CHANGE THE ORDER OF THESE FIELDS WITHOUT ADAPTING THE STRING
+    TABLE BELOW - Carl
+  }
   TAccessibility = (
     { indicates field or method is published }
     STATE_PUBLISHED,
@@ -37,6 +40,16 @@ type
     );
 
   TAccessibilities = set of TAccessibility;
+  
+const
+  AccessibilityStr: Array[STATE_PUBLISHED..STATE_AUTOMATED] of string[16] =
+  (
+   'published',
+   'public',
+   'protected',
+   'private',
+   'automated'
+  );
 
 type
   TPasCio = class;
