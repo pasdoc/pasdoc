@@ -1,5 +1,5 @@
 {
-  @lastmod(2003-03-29)
+  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @abstract(Some utility functions)
   This unit contains some utility functions for string handling
@@ -30,6 +30,7 @@ function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
 {$IFDEF FPC}
 function IncludeTrailingPathDelimiter(const S: string): string;
+function SameText(const A, B: string): boolean;
 {$ENDIF}
 
 implementation
@@ -37,8 +38,8 @@ uses
   SysUtils,
   Classes;
 
-function StrSameIA(const A, B: string): boolean;
 {$IFDEF FPC}
+function SameText(const A, B: string): boolean;
 var
   i: Integer;
 begin  
@@ -50,11 +51,8 @@ begin
       end;
     end;
   end;
-{$ELSE}
-begin
-  Result := SameText(A, B);
-{$ENDIF}
 end;
+{$ENDIF}
 
 function StrCompIA(const A, B: string): Integer;
 begin
