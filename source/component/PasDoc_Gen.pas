@@ -61,7 +61,9 @@ type
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
+  private
   protected
+    FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
     FGraphVizUses: boolean;
     { the (human) output language of the documentation file(s);
@@ -89,6 +91,7 @@ type
 
     FClassHierarchy: TStringCardinalTree;
 
+    procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
     procedure SetDestDir(const Value: string);
@@ -326,6 +329,11 @@ type
 
     property Units: TPasUnits read FUnits write FUnits;
 
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure ParseAbbreviationsFile(const AFileName: string);
+
   published
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
@@ -342,9 +350,6 @@ type
       store all documentation }
     property Title: string read FTitle write FTitle;
 
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
     { destination directory for documentation; must include terminating
       forward slash or backslash so that valid file names can be created
       by concatenating DestinationDirectory and a pathless file name }
@@ -354,6 +359,8 @@ type
 
     property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses;
     property OutputGraphVizClassHierarchy: boolean read FGraphVizClasses write FGraphVizClasses;
+
+    property Abbreviations: TStringList read FAbbreviations write SetAbbreviations;
   end;
 
 implementation
@@ -382,6 +389,7 @@ procedure TDocGenerator.BuildLinks;
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
       p.FullLink := CreateLink(p);
+      p.Abbreviations := FAbbreviations;
       p.HandleAuthorTags;
       p.HandleCreatedTag;
       p.HandleLastModTag;
@@ -402,6 +410,7 @@ begin
     U := Units.UnitAt[i];
     U.FullLink := CreateLink(U);
     U.OutputFileName := DestinationDirectory + U.FullLink;
+    U.Abbreviations := FAbbreviations;
     U.HandleAuthorTags;
     U.HandleCreatedTag;
     U.HandleLastModTag;
@@ -418,6 +427,8 @@ begin
 
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := DestinationDirectory + CO.FullLink;
+        
+        CO.Abbreviations := FAbbreviations;
 
         CO.HandleAuthorTags;
         CO.HandleCreatedTag;
@@ -638,13 +649,6 @@ begin
                                 Offs3, s);
                               t := t + ConvertString(Copy(d, Run, Offs1 -
                                 Run));
-{
-                                    while Run < Offs1 do
-                                      begin
-                                        t := t + ConvertString(d[Run]);
-                                        Inc(Run);
-                                      end;
-}
                               Run := Offs3 + 1;
                               TheLink := SearchLink(s, Item);
 
@@ -663,23 +667,11 @@ begin
                                   Offs2, Offs3, s);
                                 t := t + ConvertString(Copy(d, Run, Offs1 -
                                   Run));
-{
-                                        while Run < Offs1 do
-                                          begin
-                                            t := t + ConvertString(d[Run]);
-                                            Inc(Run);
-                                          end;
-}
                                 Run := Offs3 + 1;
                                 t := t + CodeString(s);
                               end
                               else begin
                                 Inc(Run);
-                                        // s := d^.GetTagName(Run);
-                                        // if //(s <> 'ABSTRACT') and
-                                        //  (s <> 'AUTHOR') and
-                                        //  (s <> 'EXCLUDE') then
-                                        //   begin
                                 if Assigned(Item.MyUnit) then
                                   DoMessage(2, mtWarning,
                                     'Found non-link tag when expanding descriptions of "' +
@@ -699,9 +691,6 @@ begin
     else begin
       if (d[Run] in [#9, #13, #10]) then d[Run] := ' ';
       t := t + ConvertString(d[Run]);
-{
-        t := t + ConvertChar(d[Run]);
-}
       Inc(Run);
     end;
   until (Run > l);
@@ -1278,6 +1267,9 @@ begin
   FClassHierarchy := nil;
   FNoGeneratorInfo := False;
   FLanguage := TPasDocLanguages.Create;
+  FAbbreviations := TStringList.Create;
+  FAbbreviations.CaseSensitive := False;
+  FAbbreviations.Duplicates := dupIgnore;
 end;
 
 procedure TDocGenerator.CreateClassHierarchy;
@@ -1332,6 +1324,7 @@ destructor TDocGenerator.Destroy;
 begin
   FLanguage.Free;
   FClassHierarchy.Free;
+  FAbbreviations.Free;
   inherited;
 end;
 
@@ -1410,6 +1403,40 @@ begin
     end;
     WriteLine('}');
     CloseStream;
+  end;
+end;
+
+procedure TDocGenerator.SetAbbreviations(const Value: TStringList);
+begin
+  FAbbreviations.Assign(Value);
+end;
+
+procedure TDocGenerator.ParseAbbreviationsFile(const AFileName: string);
+var
+  L: TStringList;
+  i, p: Integer;
+  s, name, value: string;
+begin
+  if FileExists(AFileName) then begin
+    L := TStringList.Create;
+    try
+      L.LoadFromFile(AFileName);
+      for i := 0 to L.Count-1 do begin
+        s := Trim(L[i]);
+        if length(s)>0 then begin
+          if s[1] = '[' then begin
+            p := pos(']', s);
+            if p>=0 then begin
+              name := Trim(copy(s, 2, p-2));
+              value := Trim(copy(s,p+1,MaxInt));
+              FAbbreviations.Values[name] := value;
+            end;
+          end;
+        end;
+      end;
+    finally
+      L.Free;
+    end;
   end;
 end;
 

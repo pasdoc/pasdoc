@@ -18,7 +18,8 @@ interface
 uses
   StringVector,
   ObjectVector,
-  Hashes;
+  Hashes,
+  Classes;
 
 type
   { Accessibility of a field/method }
@@ -49,10 +50,10 @@ type
 
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class
-  private
+  protected
     FDeprecated: boolean;
     FPlatform: boolean;
-  protected
+    FAbbreviations: TStringList;
     { list of strings, each representing one author of this item }
     FAuthors: TStringVector;
     { if assigned, contains string with date of creation }
@@ -126,6 +127,8 @@ type
     property IsDeprecated: boolean read FDeprecated write FDeprecated;
     { is this item platform specific? }
     property IsPlatform: boolean read FPlatform write FPlatform;
+
+    property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
   end;
 
   { @abstract(used for constants/variables) }
@@ -361,8 +364,16 @@ end;
 
 procedure TPasItem.DescriptionExtractTag(var ADescription: string; const
   Offs1, Offs2, Offs3: Integer; out s: string);
+var
+  idx: Integer;
 begin
   DescriptionGetTag(ADescription, True, Offs1, Offs2, Offs3, s);
+  if Assigned(Abbreviations) then begin
+    idx := Abbreviations.IndexOfName(s);
+    if idx>=0 then begin
+      s := Abbreviations.Values[s];
+    end;
+  end;
 end;
 
 function TPasItem.DescriptionFindTag(const ADescription, TagName: string; var

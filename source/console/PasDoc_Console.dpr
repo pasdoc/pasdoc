@@ -55,7 +55,8 @@ var
   GOption_Descriptions,
   GOption_ConditionalFile,
   GOption_IncludePaths,
-  GOption_SourceList: TStringOptionList;
+  GOption_SourceList,
+  GOption_AbbrevFiles: TStringOptionList;
   GOption_ContentFile,
   GOption_Footer,
   GOption_Header,
@@ -175,6 +176,10 @@ begin
   GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes');
   GOption_WriteGVClasses.Explanation := 'write a GVClasses.gviz file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
   GOptionParser.AddOption(GOption_WriteGVClasses);
+
+  GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations');
+  GOption_AbbrevFiles.Explanation := 'abbreviation file, format is "[name]  value", value is trimmed, lines that do not start with ''['' (or whitespace before that) are ignored';
+  GOptionParser.AddOption(GOption_AbbrevFiles);
 end;
 
 procedure PrintUsage;
@@ -267,6 +272,10 @@ begin
 
   GPasDoc.Generator.OutputGraphVizUses := GOption_WriteGVUses.TurnedOn;
   GPasDoc.Generator.OutputGraphVizClassHierarchy := GOption_WriteGVClasses.TurnedOn;
+
+  for i := 0 to GOption_AbbrevFiles.Values.Count-1 do begin
+    GPasDoc.Generator.ParseAbbreviationsFile(GOption_AbbrevFiles.Values[i]);
+  end;
 
   Result := True;
 end;
