@@ -919,7 +919,9 @@ begin
     Result := CIOs.FindName(ItemName);
     if Result <> nil then Exit;
   end;
-
+{ // JMB: I removed this so that no cross-linking between units would occur
+  // for simple properties etc. Yes, it means you have to do more typing,
+  // but it also makes linking much more sensible
   if CIOs <> nil then
     for i := 0 to CIOs.Count - 1 do begin
       CioItem := TPasCio(CIOs.PasItemAt[i]);
@@ -928,7 +930,7 @@ begin
         if Result <> nil then Exit;
       end;
     end;
-
+}
   Result := nil;
 end;
 
