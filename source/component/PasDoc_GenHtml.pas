@@ -2251,7 +2251,7 @@ begin
     if (ord(Result[i]) > 127) or (Result[i] in ['<','>','&','"']) then begin
       Ent := Entity(Result[i]);
       delete(Result, i, 1);
-      insert (Ent, Result, i);
+      System.Insert(Ent, Result, i);
       inc (i, Length (ent));
     end else begin
       inc(i);

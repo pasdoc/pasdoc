@@ -285,10 +285,14 @@ type
 
     { Writes String S to output, converting each character using
       @link(ConvertChar). }
-    procedure WriteConverted(const s: string; Newline: boolean = false); virtual;
+    procedure WriteConverted(const s: string; Newline: boolean); overload; virtual;
+
+    procedure WriteConverted(const s: string); overload; virtual;
 
     { Simply copies characters in text T to output. }
-    procedure WriteDirect(const t: string; Newline: boolean = false); virtual;
+    procedure WriteDirect(const t: string; Newline: boolean); overload; virtual;
+
+    procedure WriteDirect(const t: string); overload; virtual; 
     
     { Writes collection T, which is supposed to contain type items (TPasItem) to
       output at heading level HL with heading FLanguage.Translation[trTYPES) calling
@@ -1227,14 +1231,14 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean = false);
+procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean);
 begin
   WriteDirect(ConvertString(s), Newline);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean = false);
+procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean);
 begin
   CurrentStream.WriteBuffer(t[1], Length(t));
   if Newline then
@@ -1604,6 +1608,16 @@ function TDocGenerator.ParameterString(const ParamType,
   Param: string): string;
 begin
   Result := #10 + ParamType + ' ' + Param;
+end;
+
+procedure TDocGenerator.WriteDirect(const t: string);
+begin
+  WriteDirect(t, false);
+end;
+
+procedure TDocGenerator.WriteConverted(const s: string);
+begin
+  WriteConverted(s, false);
 end;
 
 end.
