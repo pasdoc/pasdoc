@@ -151,7 +151,7 @@ begin
 
   GOption_StarOnly := TBoolOption.Create(#0, 'staronly');
   GOption_StarOnly.Explanation :=
-    'Parse only {**, (**** and //** style comments';
+    'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
 end;
 

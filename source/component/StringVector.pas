@@ -12,7 +12,7 @@ unit StringVector;
 interface
 uses
   Classes;
-
+    
 type
   TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
