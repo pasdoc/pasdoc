@@ -158,7 +158,7 @@ type
     procedure WriteFuncsProcs(const HL: Byte; const Methods: Boolean; const
       FuncsProcs: TPasMethods); override;
 
-    { output all the necessary images }
+    { output all the necessary images and the CSS }
     procedure WriteBinaryFiles;
   public
     { The method that does everything - writes documentation for all units
@@ -203,7 +203,8 @@ uses
   ObjectVector,
   Utils,
   PasDoc_Tokenizer,
-  PasDoc_HierarchyTree;
+  PasDoc_HierarchyTree,
+  StreamUtils;
 
 { HTML things to be customized:
     - standard background color (white)
@@ -2106,7 +2107,7 @@ begin
   { TODO -cfixme -otwm :
     This should probably be something like
     <div type="parameter"> ... </div> to be used with CSS }
-  Result := '<br>' + ParamType + ' <span type="parameter">' + Param + '</span>';
+  Result := '<br>' + ParamType + ' <span class="parameter">' + Param + '</span>';
 end;
 
 procedure THTMLDocGenerator.WriteBinaryFiles;
@@ -2130,6 +2131,13 @@ begin
   CreateStream('published.gif');
   CurrentStream.Write(img_published[0], High(img_published)+1);
   CloseStream;
+
+  if not FileExists(DestinationDirectory+ProjectName+'.css') then begin
+    CreateStream(ProjectName + '.css');
+    StreamUtils.WriteLine(CurrentStream, 'BODY { font-family:"Verdana","Arial"; }');
+    StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
+    CloseStream;
+  end;
 end;
 
 end.

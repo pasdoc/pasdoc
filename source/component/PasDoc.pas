@@ -180,7 +180,7 @@ const
   { }
   PASDOC_DATE = '2003-05-01';
   { }
-  PASDOC_VERSION = '0.8.7';
+  PASDOC_VERSION = '0.8.8-pre1';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
@@ -256,9 +256,12 @@ begin
       DoMessage(2, mtWarning, 'Could not parse unit %s, but continuing anyway', [U.Name]);
       U.Free;
     end;
-  finally
-    p.Free;
+  except
+     on e: Exception do begin
+       DoMessage(2, mtWarning, 'Error %s: %s parsing unit %s, continuing...', [e.ClassName, e.Message, u.Name]); 
+     end;
   end;
+  p.Free;
 end;
 
 { ---------------------------------------------------------------------------- }
