@@ -490,7 +490,7 @@ begin
     if p.DetailedDescription <> '' then begin
       TagManager := TTagManager.Create;
       try
-        TagManager.AddHandler('descrfile', HandleDescrfileTag);
+        TagManager.AddHandler('descrfile', {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag);
         s := p.Description;
         TagManager.Execute(s);
       finally

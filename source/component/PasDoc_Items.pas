@@ -636,11 +636,11 @@ end;
 
 procedure TPasItem.RegisterTagHandlers(TagManager: TTagManager);
 begin
-  TagManager.AddHandler('abstract', StoreAbstractTag);
-  TagManager.AddHandler('author', StoreAuthorTag);
-  TagManager.AddHandler('created', StoreCreatedTag);
-  TagManager.AddHandler('lastmod', StoreLastModTag);
-  TagManager.AddHandler('cvs', StoreCVSTag);
+  TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag);
+  TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag);
+  TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag);
+  TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag);
+  TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag);
 end;
 
 procedure TPasItem.StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -1214,10 +1214,10 @@ end;
 procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddHandler('raises', StoreRaisesTag);
-  TagManager.AddHandler('param', StoreParamTag);
-  TagManager.AddHandler('returns', StoreReturnsTag);
-  TagManager.AddHandler('return', StoreReturnsTag);
+  TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag);
+  TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag);
+  TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag);
+  TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag);
 end;
 
 { TPasVarConst }

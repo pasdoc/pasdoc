@@ -741,7 +741,7 @@ end;
 
 procedure TDocGenerator.HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  ReplaceStr := CodeString(TagDesc);
+  ReplaceStr := CodeString(ConvertString(TagDesc));
 end;
 
 function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string): Boolean;
@@ -759,19 +759,19 @@ begin
   TagManager := TTagManager.Create;
   try
     TagManager.Abbreviations := Abbreviations;
-    TagManager.StringConverter := ConvertString;
-    TagManager.AddHandler('@', HandleDoubleAt);
-    TagManager.AddHandler('longcode', HandleLongCodeTag);
+    TagManager.StringConverter := {$IFDEF FPC}@{$ENDIF}ConvertString;
+    TagManager.AddHandler('@',{$IFDEF FPC}@{$ENDIF} HandleDoubleAt);
+    TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag);
 //    TagManager.AddHandler('link', HandleLinkTag);
-    TagManager.AddHandler('HTML', HandleHtmlTag);
-    TagManager.AddHandler('NAME', HandleNameTag);
-    TagManager.AddHandler('CLASSNAME', HandleClassnameTag);
-    TagManager.AddHandler('TRUE', HandleLiteralTag);
-    TagManager.AddHandler('FALSE', HandleLiteralTag);
-    TagManager.AddHandler('NIL', HandleLiteralTag);
-    TagManager.AddHandler('INHERITED', HandleInheritedTag);
-    TagManager.AddHandler('LINK', HandleLinkTag);
-    TagManager.AddHandler('CODE', HandleCodeTag);
+    TagManager.AddHandler('HTML',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag);
+    TagManager.AddHandler('NAME',{$IFDEF FPC}@{$ENDIF} HandleNameTag);
+    TagManager.AddHandler('CLASSNAME',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag);
+    TagManager.AddHandler('TRUE',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
+    TagManager.AddHandler('FALSE',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
+    TagManager.AddHandler('NIL',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag);
+    TagManager.AddHandler('INHERITED',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag);
+    TagManager.AddHandler('LINK',{$IFDEF FPC}@{$ENDIF} HandleLinkTag);
+    TagManager.AddHandler('CODE',{$IFDEF FPC}@{$ENDIF} HandleCodeTag);
 
     TagManager.Execute(d);
   finally
