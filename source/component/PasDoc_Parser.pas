@@ -565,9 +565,23 @@ begin
         DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo]);
     end else begin
       Scanner.UnGetToken(t);
-      if i.MyType = CIO_class then begin
-        i.Ancestors := NewStringVector;
-        i.Ancestors.Add('TObject');
+      case i.MyType of
+        CIO_CLASS: begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('TObject');
+        end;
+        CIO_SPINTERFACE: begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('IDispInterface');
+        end;
+        CIO_INTERFACE: begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('IInterface');
+        end;
+        CIO_OBJECT: begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('object');
+        end;
       end;
     end;
   end;
