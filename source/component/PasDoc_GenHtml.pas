@@ -210,8 +210,6 @@ type
     procedure WriteDocumentation; override;
     procedure LoadFooterFromFile(const AFileName: string);
     procedure LoadHeaderFromFile(const AFileName: string);
-    { Open external file }
-    procedure LoadCSSFromFile(const AFileName: string);
     procedure BuildLinks; override;
 
     function EscapeURL(const AString: string): string; virtual;
@@ -2419,11 +2417,6 @@ begin
   LoadStrFromFileA(AFileName, FHeader);
 end;
 
-procedure THTMLDocGenerator.LoadCSSFromFile(const AFileName: string);
-begin
-  FCSS:=AFileName;
-end;
-
 procedure THTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
 var
   i: Integer;
@@ -2504,21 +2497,24 @@ procedure THTMLDocGenerator.WriteBinaryFiles;
   end;
 
 var
-  Fin, Fout:TFileStream; { If external CSS file specified, copy set CSS file to pasdoc.css.
-                           Fin: open external file, Fout: target file (pasdoc.css). }
-
+  { If external CSS file specified, copy set CSS file to pasdoc.css.
+    Fin: open external file, Fout: target file (pasdoc.css). }
+  Fin, Fout:TFileStream; 
+  PasdocCssFileName: string;
 begin
   WriteGifFile(img_automated, 'automated.gif');
   WriteGifFile(img_private, 'private.gif');
   WriteGifFile(img_protected, 'protected.gif');
   WriteGifFile(img_public, 'public.gif');
   WriteGifFile(img_published, 'published.gif');
+  
+  PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
 
-  if not FileExists(DestinationDirectory+'pasdoc.css') then begin
-    { If external CSS specified, copying to pasdoc.css file. }
-    if ((FCSS<>'') and (FileExists(FCSS)=True)) then begin
+  if not FileExists(PasdocCssFileName) then begin
+    { If external CSS specified, copy it to pasdoc.css file. }
+    if FCSS <> '' then begin
       FIn := TFileStream.Create(FCSS, fmOpenRead);
-      FOut := TFileStream.Create(DestinationDirectory+'pasdoc.css', fmCreate or fmOpenWrite);
+      FOut := TFileStream.Create(PasdocCssFileName, fmCreate or fmOpenWrite);
       FOut.CopyFrom(FIn, FIn.Size);
       FIn.Free;
       FOut.Free;
@@ -2597,7 +2593,8 @@ begin
       CloseStream;
     end;
   end else
-    DoMessage(2, mtInformation, '"pasdoc.css" file already exists, not overwriting', []);
+    DoMessage(2, mtInformation, '"%s" file already exists, not overwriting', 
+      [PasdocCssFileName]);
 end;
 
 procedure THTMLDocGenerator.WriteFramesetFiles;

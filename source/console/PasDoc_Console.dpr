@@ -328,7 +328,7 @@ begin
 
     { If external CSS file was specified }
     if GOption_CSS.WasSpecified then begin
-     THTMLDocGenerator(GPasDoc.Generator).LoadCSSFromFile(GOption_CSS.Value);
+     THTMLDocGenerator(GPasDoc.Generator).CSS := GOption_CSS.Value;
     end;
 
     THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;
