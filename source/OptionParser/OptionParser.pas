@@ -2,9 +2,15 @@ unit OptionParser;
 
 interface
 uses
-  Classes;
-  
+  Classes,
+  Variants;
+
+const
+  DefShortOptionChar = '-';
+  DefLongOptionString = '--';
+
 type
+  TOptionParser = class;
   TOption = class
   protected
     FShort: char;
@@ -13,7 +19,10 @@ type
     FLongSens: boolean;
     FExplanation: string;
     FWasSpecified: boolean;
+    FParser: TOptionParser;
     function ParseOption(const AWords: TStrings): boolean; virtual; abstract;
+    function GetValue: Variant; virtual; abstract;
+    procedure SetValue(const AValue: Variant); virtual; abstract;
   public
     constructor Create(const AShort:char; const ALong: string = ''; const AShortCaseSensitive: boolean = True; const ALongCaseSensitive: boolean = false); virtual;
 
@@ -26,12 +35,15 @@ type
     property LongCaseSensitive: boolean read FLongSens write FLongSens;
     property WasSpecified: boolean read FWasSpecified;
     property Explanation: string read FExplanation write FExplanation;
+    property Value: Variant read GetValue write SetValue;
   end;
 
   TBoolOption = class(TOption)
   protected
     FTurnedOn: boolean;
     function ParseOption(const AWords: TStrings): boolean; override;
+    function GetValue: Variant; override;
+    procedure SetValue(const AValue: Variant); override;
   public
     property TurnedOn: boolean read FTurnedOn;
   end;
@@ -46,6 +58,8 @@ type
   protected
     FValue: Integer;
     function CheckValue(const AString: String): boolean; override;
+    function GetValue: Variant; override;
+    procedure SetValue(const AValue: Variant); override;
   public
     property Value: Integer read FValue write FValue;
   end;
@@ -54,6 +68,8 @@ type
   protected
     FValue: String;
     function CheckValue(const AString: String): boolean; override;
+    function GetValue: Variant; override;
+    procedure SetValue(const AValue: Variant); override;
   public
     property Value: String read FValue write FValue;
   end;
@@ -62,6 +78,8 @@ type
   protected
     FValues: TStringList;
     function CheckValue(const AString: String): Boolean; override;
+    function GetValue: Variant; override;
+    procedure SetValue(const AValue: Variant); override;
   public
     property Values: TStringList read FValues;
     constructor Create(const AShort: Char; const ALong: String = '';
@@ -75,8 +93,12 @@ type
     FParams: TStringList;
     FOptions: TList;
     FLeftList: TStringList;
-    function GetOptionsCount: Integer;
+    FShortOptionChar: Char;
+    FLongOptionString: string;
     function GetOption(const AIndex: Integer): TOption;
+    function GetOptionsCount: Integer;
+    function GetOptionByLongName(const AName: string): TOption;
+    function GetOptionByShortname(const AName: char): TOption;
   public
     constructor Create; overload; virtual;
     constructor Create(const AParams: TStrings); overload; virtual;
@@ -89,15 +111,16 @@ type
     property LeftList: TStringList read FLeftList;
     property OptionsCount: Integer read GetOptionsCount;
     property Options[const AIndex: Integer]: TOption read GetOption;
+    property ByName[const AName: string]: TOption read GetOptionByLongName;
+    property ByShortName[const AName: char]: TOption read GetOptionByShortname;
+
+    property ShortOptionStart: Char read FShortOptionChar write FShortOptionChar default DefShortOptionChar;
+    property LongOptionStart: String read FLongOptionString write FLongOptionString;
   end;
 
 implementation
 uses
   SysUtils;
-
-const
-  ShortOptionChar = '-';
-  LongOptionString = '--';
 
 { TOptionParser }
 
@@ -110,6 +133,7 @@ function TOptionParser.AddOption(const AOption: TOption): TOption;
 begin
   FOptions.Add(AOption);
   Result := AOption;
+  AOption.FParser := Self;
 end;
 
 constructor TOptionParser.Create(const AParams: TStrings);
@@ -128,6 +152,9 @@ begin
 
   FLeftList := TStringList.Create;
   FOptions := TList.Create;
+
+  FLongOptionString := DefLongOptionString;
+  FShortOptionChar := DefShortOptionChar;
 end;
 
 destructor TOptionParser.Destroy;
@@ -200,6 +227,34 @@ begin
   end;
 end;
 
+function TOptionParser.GetOptionByLongName(const AName: string): TOption;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := GetOptionsCount-1 downto 0 do begin
+    if  (Options[i].LongForm = AName)
+        OR (Options[i].LongCaseSensitive AND (LowerCase(Options[i].LongForm) = LowerCase(AName))) then begin
+      Result := Options[i];
+      break;  
+    end;
+  end;
+end;
+
+function TOptionParser.GetOptionByShortname(const AName: char): TOption;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := GetOptionsCount-1 downto 0 do begin
+    if  (Options[i].ShortForm = AName)
+        OR (Options[i].LongCaseSensitive AND (LowerCase(Options[i].ShortForm) = LowerCase(AName))) then begin
+      Result := Options[i];
+      break;  
+    end;
+  end;
+end;
+
 { TOption }
 
 constructor TOption.Create(const AShort: char; const ALong: string;
@@ -219,7 +274,7 @@ begin
     Inc(Result, 4); // "-x, "
   end;
   if Length(LongForm)>0 then begin
-    Inc(Result, Length(LongForm)+Length(LongOptionString));
+    Inc(Result, Length(LongForm)+Length(FParser.LongOptionStart));
   end else begin
     Dec(Result, 2);
   end;
@@ -243,7 +298,7 @@ begin
   Write('  ');
   LWritten := 2;
   if ShortForm <> #0 then begin
-    Write(ShortOptionChar, ShortForm);
+    Write(FParser.ShortOptionStart, ShortForm);
     Inc(LWritten, 2);
     if Length(LongForm)>0  then begin
       Write(', ');
@@ -251,8 +306,8 @@ begin
     end;
   end;
   if Length(LongForm)>0 then begin
-    Write(LongOptionString, LongForm);
-    Inc(LWritten, Length(LongOptionString) + Length(LongForm));
+    Write(FParser.LongOptionStart, LongForm);
+    Inc(LWritten, Length(FParser.LongOptionStart) + Length(LongForm));
   end;
   Write(' ');
   Inc(LWritten, 1);
@@ -274,17 +329,22 @@ end;
 
 { TBoolOption }
 
+function TBoolOption.GetValue: Variant;
+begin
+  Result := FTurnedOn;
+end;
+
 function TBoolOption.ParseOption(const AWords: TStrings): boolean;
 begin
   Result := False;
   if ShortForm <> #0 then begin
-    if AWords[0] = ShortOptionChar+ShortForm then begin
+    if AWords[0] = FParser.ShortOptionStart+ShortForm then begin
       FTurnedOn := True;
       Result := True;
       AWords.Delete(0);
       FWasSpecified := True;
     end else begin
-      if (not ShortCaseSensitive) and (LowerCase(AWords[0]) = ShortOptionChar+LowerCase(ShortForm)) then begin
+      if (not ShortCaseSensitive) and (LowerCase(AWords[0]) = FParser.ShortOptionStart+LowerCase(ShortForm)) then begin
         FTurnedOn := True;
         Result := True;
         AWords.Delete(0);
@@ -294,13 +354,13 @@ begin
   end;
   
   if (not Result) and (Length(LongForm) > 0) then begin
-    if AWords[0] = LongOptionString+LongForm then begin
+    if AWords[0] = FParser.LongOptionStart+LongForm then begin
       FTurnedOn := True;
       Result := True;
       AWords.Delete(0);
       FWasSpecified := True;
     end else begin
-      if (not LongCaseSensitive) and (LowerCase(AWords[0]) = LongOptionString+LowerCase(LongForm)) then begin
+      if (not LongCaseSensitive) and (LowerCase(AWords[0]) = FParser.LongOptionStart+LowerCase(LongForm)) then begin
         FTurnedOn := True;
         Result := True;
         AWords.Delete(0);
@@ -308,6 +368,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TBoolOption.SetValue(const AValue: Variant);
+begin
+  FTurnedOn := AValue;
 end;
 
 { TValueOption }
@@ -318,9 +383,9 @@ var
 begin
   Result := False;
   if ShortForm <> #0 then begin
-    if (Copy(AWords[0],1,Length(ShortOptionChar+ShortForm)) = ShortOptionChar+ShortForm)
-      OR ((not ShortCaseSensitive) and (LowerCase(Copy(AWords[0],1,Length(ShortOptionChar+ShortForm))) = ShortOptionChar+LowerCase(ShortForm))) then begin
-      LValue := Copy(AWords[0], Length(ShortOptionChar+ShortForm)+1, MaxInt);
+    if (Copy(AWords[0],1,Length(FParser.ShortOptionStart+ShortForm)) = FParser.ShortOptionStart+ShortForm)
+      OR ((not ShortCaseSensitive) and (LowerCase(Copy(AWords[0],1,Length(FParser.ShortOptionStart+ShortForm))) = FParser.ShortOptionStart+LowerCase(ShortForm))) then begin
+      LValue := Copy(AWords[0], Length(FParser.ShortOptionStart+ShortForm)+1, MaxInt);
       if LValue = '' then begin
         if AWords.Count>1 then begin
           LValue := AWords[1];
@@ -344,9 +409,9 @@ begin
   end;
   if Result then FWasSpecified := True;
   if (not Result) and (Length(LongForm) > 0) then begin
-    if (Copy(AWords[0],1,Length(LongOptionString+LongForm)) = LongOptionString+LongForm)
-      OR ((not LongCaseSensitive) AND (LowerCase(Copy(AWords[0],1,Length(LongOptionString+LongForm))) = LongOptionString+LowerCase(LongForm))) then begin
-      if Length(AWords[0]) = Length(LongOptionString+LongForm) then begin
+    if (Copy(AWords[0],1,Length(FParser.LongOptionStart+LongForm)) = FParser.LongOptionStart+LongForm)
+      OR ((not LongCaseSensitive) AND (LowerCase(Copy(AWords[0],1,Length(FParser.LongOptionStart+LongForm))) = FParser.LongOptionStart+LowerCase(LongForm))) then begin
+      if Length(AWords[0]) = Length(FParser.LongOptionStart+LongForm) then begin
         if AWords.Count>1 then begin
           LValue := AWords[1];
         end else begin
@@ -358,8 +423,8 @@ begin
           if AWords.Count>0 then AWords.Delete(0);
         end;
       end else begin
-        if Copy(AWords[0], Length(LongOptionString+LongForm)+1, 1) = '=' then begin
-          LValue := Copy(AWords[0], Length(LongOptionString+LongForm)+2, MaxInt);
+        if Copy(AWords[0], Length(FParser.LongOptionStart+LongForm)+1, 1) = '=' then begin
+          LValue := Copy(AWords[0], Length(FParser.LongOptionStart+LongForm)+2, MaxInt);
           Result := CheckValue(LValue);
           if Result then AWords.Delete(0);
         end;
@@ -379,12 +444,32 @@ begin
   if Result then FValue := LValue;
 end;
 
+function TIntegerOption.GetValue: Variant;
+begin
+  Result := FValue;
+end;
+
+procedure TIntegerOption.SetValue(const AValue: Variant);
+begin
+  FValue := AValue;
+end;
+
 { TStringOption }
 
 function TStringOption.CheckValue(const AString: String): boolean;
 begin
   FValue := AString;
   Result := True;
+end;
+
+function TStringOption.GetValue: Variant;
+begin
+  Result := FValue;
+end;
+
+procedure TStringOption.SetValue(const AValue: Variant);
+begin
+  FValue := AValue;
 end;
 
 { TStringOptionList }
@@ -407,6 +492,16 @@ destructor TStringOptionList.Destroy;
 begin
   FValues.Free;
   inherited;
+end;
+
+function TStringOptionList.GetValue: Variant;
+begin
+  Result := FValues.Text;
+end;
+
+procedure TStringOptionList.SetValue(const AValue: Variant);
+begin
+  FValues.Text := AValue;
 end;
 
 end.
