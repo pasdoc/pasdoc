@@ -241,7 +241,7 @@ end;
 
     { Searches for a link in string S, signified by
       xxx://xxxx/.../ }
-    function ExtractLink(s: string; var S1,S2,Link: string): Boolean;
+    function ExtractLink(s: string; var S1,S2,Link: string): Boolean; virtual;
 
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
