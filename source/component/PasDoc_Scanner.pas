@@ -562,7 +562,7 @@ end;
 procedure TScanner.DoMessage(const AVerbosity: Cardinal; const MessageType:
   TMessageType; const AMessage: string; const AArguments: array of const);
 begin
-  if (AVerbosity < FVerbosity) and Assigned(FOnMessage) then
+  if Assigned(FOnMessage) then
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
