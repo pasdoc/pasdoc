@@ -330,7 +330,7 @@ begin
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
   WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
-    FormatDateTime('ddd dd/ mmm yyyy hh:mm:ss', Now));
+    FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirect('</em>', true);
 end;
 
@@ -884,7 +884,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   begin
     if ReturnDesc = '' then
       exit;
-    WriteHeading(6, 'return value');
+    WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
     ExpandDescription(Func, ReturnDesc);
     WriteDirect('<p class="return">');
     WriteWithURLs(ReturnDesc);
@@ -966,9 +966,9 @@ begin
         WriteItemDetailedDescription(p);
         WriteEndOfParagraph;
 
-        WriteParamsOrRaises(p, 'parameters', p.Params);
+        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), p.Params);
         WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, 'exceptions raised', p.Raises);
+        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), p.Raises);
       end;
     end;
     if (i = 0) then WriteEndOfTable;
