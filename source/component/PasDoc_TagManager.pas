@@ -164,6 +164,7 @@ begin
     end;
     Inc(FOffset);
   end;
+  Convert;
   Description := FDescription;
 end;
 
