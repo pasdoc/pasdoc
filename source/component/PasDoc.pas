@@ -90,7 +90,7 @@ type
     procedure AddSourceFileNamesFromFile(const FileName: string);
     { Raises an exception. }
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
+      const; const AExitCode: Integer);
     { Forwards a message to the @link(OnMessage) event. }
     procedure DoMessage(const AVerbosity: Cardinal; const AMessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
@@ -153,6 +153,10 @@ const
 
 {$IFDEF DELPHI_4}
   COMPILER_NAME = 'DELPHI 4';
+{$ENDIF}
+
+{$IFDEF FPC}
+  COMPILER_NAME = 'FPC';
 {$ENDIF}
 
   COMPILER_BITS = '32';
@@ -359,7 +363,7 @@ begin
   RemoveExcludedItems(TPasItems(FUnits));
   { check if parsing was successful }
 
-  if IsNilOrEmpty(FUnits) then begin
+  if ObjectVectorIsNilOrEmpty(FUnits) then begin
     DoError('At least one unit must have been successfully parsed to write docs.', [], 1);
   end;
 
@@ -434,7 +438,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDoc.DoError(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer = 0);
+  const; const AExitCode: Integer);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;
