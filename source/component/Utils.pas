@@ -56,8 +56,10 @@ const
 {$endif}
 
 { 1. AdjustLineBreaks in d
+
   2. Trim any whitespaces (also newline characters, #10 and #13) 
      at the beginning and end of d
+
   3. Finally replace each sequence of blank lines
      (i.e. LineEnding + some optional spaces/tabs + LineEnding
      + some optional LineEndings and spaces/tabs)
