@@ -66,11 +66,12 @@ var
   GOption_OutputPath,
   GOption_Language: TStringOption;
   GOption_StarOnly,
-  GOption_Generator: TBoolOption;
+  GOption_Generator,
+  GOption_NumericFilenames: TBoolOption;
 
   { ---------------------------------------------------------------------------- }
 
-procedure CreateOptions;
+procedure CreateOptions; 
 var
   l: TLanguageID;
 begin
@@ -153,6 +154,10 @@ begin
   GOption_StarOnly.Explanation :=
     'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
+
+  GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames');
+  GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
+  GOptionParser.AddOption(GOption_NumericFilenames);
 end;
 
 procedure PrintUsage;
@@ -228,6 +233,8 @@ begin
     if GOption_Header.WasSpecified then begin
       THTMLDocGenerator(GPasDoc.Generator).LoadHeaderFromFile(GOption_Header.Value);
     end;
+
+    THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;
   end;
 
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;

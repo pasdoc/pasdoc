@@ -48,9 +48,9 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=../component
+SearchPath=../component:/tmp
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
-Conditionals=
+Conditionals=PROFILE
 DebugSourceDirs=
 UsePackages=0
 
@@ -70,9 +70,10 @@ Count=1
 Item0=PROFILE
 
 [HistoryLists\hlSearchPath]
-Count=4
-Item0=../component
-Item1=../Component
-Item2=$(DELPHI)/lib/debug:../Component
-Item3=../Component:/tmp
+Count=5
+Item0=../component:/tmp
+Item1=../component
+Item2=../Component
+Item3=$(DELPHI)/lib/debug:../Component
+Item4=../Component:/tmp
 
