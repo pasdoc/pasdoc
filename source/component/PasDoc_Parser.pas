@@ -773,7 +773,9 @@ begin
                   end;
                 else begin
                     FreeAndNil(t);
-                    exit;
+                    if not SkipDeclaration(nil) then begin
+                      exit;
+                    end;
                   end;
                 end;
             end else begin
