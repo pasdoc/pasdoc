@@ -1016,7 +1016,7 @@ end;
   begin
     if ReturnDesc = '' then
       exit;
-    WriteDirect('\item['+FLanguage.Translation[trReturns]+']');
+    WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
     ExpandDescription(Func, ReturnDesc);
     WriteWithURLs(ReturnDesc);
     WriteDirect('',true);
@@ -2139,6 +2139,9 @@ end.
 
 {
   $Log$
+  Revision 1.7  2004/03/17 05:06:03  ccodere
+    bugfix with return values, title was not in correct font.
+
   Revision 1.6  2004/03/16 07:11:57  ccodere
   + if no project is defined, the document will be called docs
   + htmlstring now works as expected
