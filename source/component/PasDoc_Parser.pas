@@ -43,7 +43,7 @@ type
     FClassMembers: TAccessibilities;
 
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
+      const; const AExitCode: Integer);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
@@ -54,7 +54,7 @@ type
     { Returns the last comment that was found in input. If there was none, the
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
-    function GetLastComment(const ClearLastComment: Boolean = True): String;
+    function GetLastComment(const ClearLastComment: Boolean): String;
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. }
     function GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean; overload;
@@ -79,7 +79,7 @@ type
     function ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
       TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
     { }
-    function ParseRecordCase(const R: TPasCio; const SubCase: boolean = false): boolean;
+    function ParseRecordCase(const R: TPasCio; const SubCase: boolean): boolean;
     function ParseConstant(const U: TPasUnit; t: TToken): Boolean;
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
     function ParseProperty(var p: TPasProperty): Boolean;
@@ -102,7 +102,7 @@ type
       const AStreamName: string);
     { Release all dynamically allocated memory. }
     destructor Destroy; override;
-    function ParseUnit(out U: TPasUnit): Boolean;
+    function ParseUnit(var U: TPasUnit): Boolean;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property StarStyleOnly: boolean read FStarOnly write FStarOnly default False;
@@ -328,12 +328,12 @@ begin
   if NeedName then begin
     if (not GetNextNonWCToken(t)) then begin
       M.Free;
-      DoError('Could not get next non white space token', []);
+      DoError('Could not get next non white space token', [], 0);
     end;
     if (t.MyType <> TOK_IDENTIFIER) then begin
       M.Free;
       FreeAndNil(t);
-      DoError('Could not get next identifier', []);
+      DoError('Could not get next identifier', [], 0);
     end;
     if (Length(CS) > 0) then CS := CS + ' ';
     M.Name := t.Data;
@@ -347,7 +347,7 @@ begin
   repeat
     if (not Scanner.GetToken(t)) then begin
       M.Free;
-      DoError('Could not get next token', []);
+      DoError('Could not get next token', [], 0);
     end;
     if (t.MyType = TOK_COMMENT) then
     else if (t.MyType = TOK_WHITESPACE) then begin
@@ -374,7 +374,7 @@ begin
     FreeAndNil(t);
     if (not GetNextNonWCToken(t)) then begin
       M.Free;
-      DoError('Could not get next non white space token', []);
+      DoError('Could not get next non white space token', [], 0);
     end;
     if (t.MyType <> TOK_IDENTIFIER) then begin
       Scanner.UnGetToken(t);
@@ -409,7 +409,7 @@ begin
           repeat
             if not GetNextNonWCToken(t) then begin
               M.Free;
-              DoError('Could not get next non white space token', []);
+              DoError('Could not get next non white space token', [], 0);
             end;
                                                                                                                                
             if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
@@ -544,7 +544,7 @@ begin
           FreeAndNil(t);
           s := s + '.';
           if not Scanner.GetToken(t) or (t.MyType <> TOK_IDENTIFIER) then
-            DoError('%s: expected class, object or interface in ancestor declaration.', [Scanner.GetStreamInfo]);
+            DoError('%s: expected class, object or interface in ancestor declaration.', [Scanner.GetStreamInfo], 0);
 
           s := s + t.Data;
         until False;
@@ -557,7 +557,7 @@ begin
           Finished := t.IsSymbol(SYM_RIGHT_PARENTHESIS);
           FreeAndNil(t);
           if not Finished then
-            DoError('%s: Error - ")" expected.', [Scanner.GetStreamInfo]);
+            DoError('%s: Error - ")" expected.', [Scanner.GetStreamInfo], 0);
         end;
       end;
     until Finished;
@@ -569,13 +569,13 @@ begin
         Exit;
       end;
       if (t.MyType <> TOK_STRING) then
-        DoError('%s: Error - literal String as interface ID expected.', [Scanner.GetStreamInfo]);
+        DoError('%s: Error - literal String as interface ID expected.', [Scanner.GetStreamInfo], 0);
       FreeAndNil(t);
       if not GetNextNonWCToken(t) then begin
         Exit;
       end;
       if not t.IsSymbol(SYM_RIGHT_BRACKET) then
-        DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo]);
+        DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
     end else begin
       Scanner.UnGetToken(t);
       case i.MyType of
@@ -647,7 +647,7 @@ begin
             KEY_DESTRUCTOR,
             KEY_FUNCTION,
             KEY_PROCEDURE: begin
-              d := GetLastComment;
+              d := GetLastComment(True);
               if (not ParseCDFP(M, CS, t.Data, t.Info.ReservedKey, d, True))
                 then begin
                 i.Free;
@@ -672,7 +672,7 @@ begin
               end;
             end;
           KEY_CASE: begin
-              if not ParseRecordCase(i) then begin
+              if not ParseRecordCase(i, false) then begin
                 FreeAndNil(t);
                 i.Free;
                 Exit;
@@ -682,7 +682,7 @@ begin
             i.Free;
             try
               DoError('%s: Error, unexpected reserved keyword "%s".',
-                [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]]);
+                [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]], 0);
             finally
               FreeAndNil(t);
             end;
@@ -695,7 +695,7 @@ begin
           case Ind of
             SD_DEFAULT: begin
                 if not SkipDeclaration(nil) then begin
-                  DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo]);
+                  DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo], 0);
                 end;
                 DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
               end;
@@ -714,7 +714,7 @@ begin
               end else begin
                 if not GetNextNonWCToken(t) then Exit;
                 if t.MyType <> TOK_IDENTIFIER then begin
-                  DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
+                  DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
                 end;
                 f.Name := t.Data;
               end;
@@ -743,7 +743,7 @@ begin
               end;
               // We reach here only if token is not a comma or a colon.
               FreeAndNil(t);
-              DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo]);
+              DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
             until False;
             ClearLastComment;
             FreeAndNil(t);
@@ -793,7 +793,7 @@ begin
     if (not GetNextNonWCToken(t)) then begin
       i.Free;
       try
-        DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo]);
+        DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo], 0);
       finally
         FreeAndNil(t);
       end;
@@ -805,7 +805,7 @@ begin
           else begin
             i.Free;
             try
-              DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data]);
+              DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data], 0);
             finally
               FreeAndNil(t);
             end;
@@ -820,12 +820,12 @@ begin
             end else begin
               i.Free;
               FreeAndNil(t);
-              DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo]);
+              DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo], 0);
             end;
           end else begin
             i.Free;
             try
-              DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo]);
+              DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo], 0);
             finally
               FreeAndNil(t);
             end;
@@ -851,13 +851,13 @@ begin
   i := TPasVarConst.Create;
   i.Name := t.Data;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
-  i.DetailedDescription := GetLastComment;
+  i.DetailedDescription := GetLastComment(True);
   if SkipDeclaration(i) then begin
     U.AddConstant(i);
     Result := True;
   end
   else
-    DoError('Could not skip declaration of constant "%s".', [i.Name]);
+    DoError('Could not skip declaration of constant "%s".', [i.Name], 0);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -882,7 +882,7 @@ begin
   t := nil;
   repeat
     if not GetNextNonWCToken(t) then
-      DoError('Could not get next non-whitespace, non-comment token in file %s', [Scanner.GetStreamInfo]);
+      DoError('Could not get next non-whitespace, non-comment token in file %s', [Scanner.GetStreamInfo], 0);
 
     case t.MyType of
       TOK_IDENTIFIER: begin
@@ -896,7 +896,7 @@ begin
               if (not ParseVariables(U, t)) then Exit;
           else
             DoError('%s: Error, unexpected identifier "%s".',
-              [Scanner.GetStreamInfo, t.Data]);
+              [Scanner.GetStreamInfo, t.Data], 0);
           end;
         end;
       TOK_RESERVED: begin
@@ -906,7 +906,7 @@ begin
               Mode := MODE_CONST;
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
-                d := GetLastComment;
+                d := GetLastComment(True);
                 if (not ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, True))
                   then begin
                   Exit;
@@ -925,7 +925,7 @@ begin
               Mode := MODE_VAR;
           else
             DoError('%s: Unexpected keyword %s.', [Scanner.GetStreamInfo,
-              t.Data]);
+              t.Data], 0);
           end;
         end;
     end;
@@ -947,7 +947,7 @@ begin
   if (t.MyType <> TOK_IDENTIFIER) then begin
     FreeAndNil(t);
     DoError('%s: expected identifier as property name.',
-      [Scanner.GetStreamInfo]);
+      [Scanner.GetStreamInfo], 0);
   end;
   p := TPasProperty.Create;
   p.Name := t.Data;
@@ -955,7 +955,7 @@ begin
   p.IndexDecl := '';
   p.Proptype := '';
   FreeAndNil(t);
-  p.Description := GetLastComment;
+  p.Description := GetLastComment(True);
   if (not GetNextNonWCToken(t)) then Exit;
   { get index }
   if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
@@ -963,7 +963,7 @@ begin
     p.IndexDecl := '[';
     repeat
       if not Scanner.GetToken(t) then
-        DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo]);
+        DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo], 0);
 
       if (t.MyType <> TOK_COMMENT) and (t.MyType <> TOK_DIRECTIVE) then
         p.IndexDecl := p.IndexDecl + t.Data;
@@ -990,7 +990,7 @@ begin
     if (not GetNextNonWCToken(t)) then Exit;
     if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_RESERVED) then
       DoError('Identifier expected, found %s in file %s',
-        [TokenTypeNames[t.MyType], Scanner.GetStreamInfo]);
+        [TokenTypeNames[t.MyType], Scanner.GetStreamInfo], 0);
 
     p.Proptype := t.Data;
     FreeAndNil(t);
@@ -1001,7 +1001,7 @@ begin
 
   { simply skipping the rest of declaration }
   if not SkipDeclaration(nil) then
-    DoError('Could not skip rest of declaration in file %s', [Scanner.GetStreamInfo]);
+    DoError('Could not skip rest of declaration in file %s', [Scanner.GetStreamInfo], 0);
 
   Result := True;
 end;
@@ -1041,7 +1041,7 @@ begin
       GetNextNonWCToken(t2);
       P := TPasItem.Create;
       p.Name := t1.Data;
-      p.Description := GetLastComment;
+      p.Description := GetLastComment(True);
       p.InsertItem(p, R.Fields);
     end else begin
       // case Type of
@@ -1094,7 +1094,7 @@ begin
       while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
         if t1.MyType = TOK_IDENTIFIER then begin
           P := TPasItem.Create;
-          p.Description := GetLastComment;
+          p.Description := GetLastComment(True);
           P.Name:=t1.Data;
           p.InsertItem(p, R.Fields);
           FreeAndNil(t1);
@@ -1104,7 +1104,7 @@ begin
             if (t1.MyType = TOK_IDENTIFIER) then begin
               if LLastWasComma then begin
                 p := TPasItem.Create;
-                p.Description := GetLastComment;
+                p.Description := GetLastComment(True);
                 p.Name := t1.data;
                 p.InsertItem(p, R.Fields);
               end;
@@ -1167,7 +1167,7 @@ begin
   n := t.Data;
   DoMessage(5, mtInformation, 'Parsing type "%s"', [n]);
   FreeAndNil(t);
-  d := GetLastComment;
+  d := GetLastComment(True);
   if (not GetNextNonWCToken(t, LCollected)) then
     Exit;
 
@@ -1179,7 +1179,7 @@ begin
       Exit;
     end;
     FreeAndNil(t);
-    DoError('"=" expected in file %s', [Scanner.GetStreamInfo]);
+    DoError('"=" expected in file %s', [Scanner.GetStreamInfo], 0);
   end;
   LCollected := LCollected + t.Data;
   FreeAndNil(t);
@@ -1271,7 +1271,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseUnit(out U: TPasUnit): Boolean;
+function TParser.ParseUnit(var U: TPasUnit): Boolean;
 var
   t: TToken;
 begin
@@ -1280,30 +1280,30 @@ begin
   { get 'unit' keyword }
   if not GetNextNonWCToken(t) then Exit;
   if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_UNIT) then
-    DoError(Scanner.GetStreamInfo + ': keyword "unit" expected.', []);
+    DoError(Scanner.GetStreamInfo + ': keyword "unit" expected.', [], 0);
   
   FreeAndNil(t);
 
   U := TPasUnit.Create;
-  U.DetailedDescription := GetLastComment;
+  U.DetailedDescription := GetLastComment(True);
   if not GetNextNonWCToken(t) then Exit;
 
   { get unit name identifier }
   if t.MyType <> TOK_IDENTIFIER then
     DoError(Scanner.GetStreamInfo + ': identifier (unit name) expected.',
-      []);
+      [], 0);
   U.Name := t.Data;
   FreeAndNil(t);
   { skip semicolon }
   if not GetNextNonWCToken(t) then Exit;
   if not t.IsSymbol(SYM_SEMICOLON) then
-    DoError(Scanner.GetStreamInfo + ': semicolon expected.', []);
+    DoError(Scanner.GetStreamInfo + ': semicolon expected.', [], 0);
   FreeAndNil(t);
   if not GetNextNonWCToken(t) then Exit;
 
   { get 'interface' keyword }
   if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INTERFACE) then
-    DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', []);
+    DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
   { now parse the interface section of that unit }
   Result := ParseInterfaceSection(U);
 end;
@@ -1324,7 +1324,7 @@ begin
     if not GetNextNonWCToken(t) then Exit;
     if t.MyType <> TOK_IDENTIFIER then
       DoError('%s: Error, unit name expected (found %s, %s.',
-        [Scanner.GetStreamInfo, t.GetTypeName, t.Data]);
+        [Scanner.GetStreamInfo, t.GetTypeName, t.Data], 0);
     U.UsesUnits.Add(t.Data);
     FreeAndNil(t);
     if not GetNextNonWCToken(t) then Exit;
@@ -1332,7 +1332,7 @@ begin
       (t.Info.SymbolType <> SYM_COMMA) and
       (t.Info.SymbolType <> SYM_SEMICOLON) then
       DoError('%s: Error, comma or semicolon expected.',
-        [Scanner.GetStreamInfo]);
+        [Scanner.GetStreamInfo], 0);
 
     Finished := t.Info.SymbolType = SYM_SEMICOLON;
     FreeAndNil(t);
@@ -1367,7 +1367,7 @@ begin
         if (not GetNextNonWCToken(t, LCollector)) then Exit;
         dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
         if (t.MyType <> TOK_IDENTIFIER) then
-          DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
+          DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
         i.Name := t.Data;
       end;
       i.DetailedDescription := GetLastComment(False);
@@ -1380,7 +1380,7 @@ begin
         ((t.Info.SymbolType <> SYM_COMMA) and
         (t.Info.SymbolType <> SYM_COLON)) then
         DoError('%s: Expected comma or colon in var declaration.',
-          [Scanner.GetStreamInfo]);
+          [Scanner.GetStreamInfo], 0);
 
       Finished := (t.Info.SymbolType = SYM_COLON);
       if (t.MyType <> TOK_SYMBOL) OR (t.Info.SymbolType <> SYM_COMMA) then begin
