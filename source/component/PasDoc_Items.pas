@@ -1,6 +1,6 @@
 { @abstract(defines all items that can appear within a Pascal unit's interface)
   @created(11 Mar 1999)
-  @lastmod(2003-04-20)
+  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
