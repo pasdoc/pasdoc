@@ -667,7 +667,7 @@ procedure TPasItems.CopyItems(const c: TPasItems);
 var
   i: Integer;
 begin
-  if IsNilOrEmpty(c) then Exit;
+  if ObjectVectorIsNilOrEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
     InsertObjectLast(TPasItem(c.GetPasItemAt(i)));
 end;
@@ -737,7 +737,7 @@ procedure TPasItems.InsertItems(const c: TPasItems);
 var
   i: Integer;
 begin
-  if IsNilOrEmpty(c) then Exit;
+  if ObjectVectorIsNilOrEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
     InsertObjectLast(TPasItem(c.ObjectAt[i]));
 end;
