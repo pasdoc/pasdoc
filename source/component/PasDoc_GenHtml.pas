@@ -121,14 +121,14 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
-    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html. }
     { Return the text within the parentheses after the @HTML field.  The user
       is required to provided correctly formatted html text within the
       parentheses  and to have matching parentheses.  If no parentheses are found
       after @HTML, the string '@HTML' is returned instead. }
     function HtmlString(const Desc: string; Len: integer; var CurPos: integer): string; override;
 
+    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
+      in Html. }
     function CodeString(const s: string): string; override;
     { Returns a link to an anchor within a document. HTML simply concatenates
       the strings with a "#" character between them. }
