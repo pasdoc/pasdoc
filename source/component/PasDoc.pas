@@ -239,7 +239,7 @@ begin
     p.StarStyleOnly := StarStyleOnly;
 
     if p.ParseUnit(U) then begin
-      if FUnits = nil then FUnits := NewPasUnits(True);
+      if FUnits = nil then FUnits := TPasUnits.Create(True);
 
       if FUnits.ExistsUnit(U) then begin
         DoMessage(2, mtWarning,

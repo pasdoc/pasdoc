@@ -121,6 +121,12 @@ type
     function QualifiedName: String;
   end;
 
+  { @abstract(used for constants/variables) }
+  TPasVarConst = class(TPasItem)
+    { full declaration, including type, default values, etc }
+    FullDeclaration: string;
+  end;
+
   { ---------------------------------------------------------------------------- }
 
   { Methodtype for @link(TPasMethod) }
@@ -292,11 +298,6 @@ type
 
 const
   CIO_NonHierarchy = [CIO_RECORD];
-
-function NewPasItems(const AOwnsObjects: boolean): TPasItems;
-function NewPasMethods(const AOwnsObjects: boolean): TPasMethods;
-function NewPasProperties(const AOwnsObjects: boolean): TPasProperties;
-function NewPasUnits(const AOwnsObjects: boolean): TPasUnits;
 
 implementation
 
@@ -623,7 +624,7 @@ end;
 procedure TPasItem.InsertItem(const Item: TPasItem; var c: TPasItems);
 begin
   if Item = nil then Exit;
-  if c = nil then c := NewPasItems(True);
+  if c = nil then c := TPasItems.Create(True);
   c.InsertObjectLast(Item);
 end;
 
@@ -633,7 +634,7 @@ procedure TPasItem.InsertMethod(const Method: TPasMethod; var c:
   TPasMethods);
 begin
   if Method = nil then Exit;
-  if c = nil then c := NewPasMethods(True);
+  if c = nil then c := TPasMethods.Create(True);
   c.InsertObjectLast(Method);
 end;
 
@@ -643,7 +644,7 @@ procedure TPasItem.InsertProperty(const Prop: TPasProperty; var c:
   TPasProperties);
 begin
   if Prop = nil then Exit;
-  if c = nil then c := NewPasProperties(True);
+  if c = nil then c := TPasProperties.Create(True);
   c.InsertObjectLast(Prop);
 end;
 
@@ -753,37 +754,7 @@ begin
   end;
 end;
 
-{ ---------------------------------------------------------------------------- }
-
-function NewPasItems(const AOwnsObjects: boolean): TPasItems;
-begin
-  Result := TPasItems.Create(AOwnsObjects);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function NewPasMethods(const AOwnsObjects: boolean): TPasMethods;
-begin
-  Result := TPasMethods.Create(AOwnsObjects);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function NewPasProperties(const AOwnsObjects: boolean): TPasProperties;
-begin
-  Result := TPasProperties.Create(AOwnsObjects);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function NewPasUnits(const AOwnsObjects: boolean): TPasUnits;
-begin
-  Result := TPasUnits.Create(AOwnsObjects);
-end;
-
-{ ---------------------------------------------------------------------------- }
-{ Class TPasCio
-{ ---------------------------------------------------------------------------- }
+{ TPasCio }
 
 destructor TPasCio.Destroy;
 begin
@@ -851,7 +822,7 @@ end;
 
 procedure TPasUnit.AddCIO(const i: TPasCio);
 begin
-  if CIOs = nil then CIOs := NewPasItems(True);
+  if CIOs = nil then CIOs := TPasItems.Create(True);
   CIOs.InsertObjectLast(i);
 end;
 
@@ -859,7 +830,7 @@ end;
 
 procedure TPasUnit.AddConstant(const i: TPasItem);
 begin
-  if Constants = nil then Constants := NewPasItems(True);
+  if Constants = nil then Constants := TPasItems.Create(True);
   Constants.InsertObjectLast(i);
 end;
 
@@ -867,7 +838,7 @@ end;
 
 procedure TPasUnit.AddType(const i: TPasItem);
 begin
-  if Types = nil then Types := NewPasItems(True);
+  if Types = nil then Types := TPasItems.Create(True);
   Types.InsertObjectLast(i);
 end;
 
@@ -875,7 +846,7 @@ end;
 
 procedure TPasUnit.AddVariable(const i: TPasItem);
 begin
-  if Variables = nil then Variables := NewPasItems(True);
+  if Variables = nil then Variables := TPasItems.Create(True);
   Variables.InsertObjectLast(i);
 end;
 
