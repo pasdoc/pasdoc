@@ -815,6 +815,7 @@ begin
               FreeAndNil(Result);
             end;
           end;
+        #10: Inc(Row);
       end
     else
       DoError('Could not read character from %s', [GetStreamInfo], 0);
