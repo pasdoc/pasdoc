@@ -1,3 +1,7 @@
+{ @cvs($Date$)
+  @author(Johannes Berg <johannes@sipsolutions.de>)
+  @abstract(help running programs)
+  To be used for spell-checking }
 unit PasDoc_RunHelp;
 
 interface

@@ -1,3 +1,6 @@
+{ @cvs($Date$)
+  @author(Johannes Berg <johannes@sipsolutions.de>)
+  @abstract(basic types used in PasDoc) }
 unit PasDoc_Types;
 
 interface
