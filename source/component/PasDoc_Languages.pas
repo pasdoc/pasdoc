@@ -55,6 +55,9 @@ type
     trCreated,
     trDeclaration,
     trDescription,
+    trParameters,
+    trReturns,
+    trExceptions,
     trDispInterface,
     trFields,
     trFunctionsAndProcedures,
@@ -199,6 +202,9 @@ begin
   FTranslation[trCreated] := 'Created';
   FTranslation[trDeclaration] := 'Declaration';
   FTranslation[trDescription] := 'Description';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Fields';
   FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
@@ -256,6 +262,9 @@ begin
   FTranslation[trCreated] := 'Kreirano';
   FTranslation[trDeclaration] := 'Deklaracija';
   FTranslation[trDescription] := 'Opis';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Polja';
   FTranslation[trFunctionsAndProcedures] := 'Funkcije i Procedure';
@@ -313,6 +322,9 @@ begin
   FTranslation[trCreated] := 'Criado';
   FTranslation[trDeclaration] := 'DeclaraÁ„o';
   FTranslation[trDescription] := 'DescriÁ„o';
+  FTranslation[trParameters] := 'Par‚metros';
+  FTranslation[trReturns] := 'Retornos';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
   FTranslation[trFunctionsAndProcedures] := 'FunÁıes e Procedimentos';
@@ -370,6 +382,9 @@ begin
   FTranslation[trCreated] := 'Creat';
   FTranslation[trDeclaration] := 'Declaraci¢';
   FTranslation[trDescription] := 'Descripci¢';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Camps';
   FTranslation[trFunctionsAndProcedures] := 'Funcions i procediments';
@@ -439,6 +454,9 @@ begin
   FTranslation[trCreated] := 'Udf¯rt';
   FTranslation[trDeclaration] := 'Declaration';
   FTranslation[trDescription] := 'Beskrivelse';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felter';
   FTranslation[trFunctionsAndProcedures] := 'Funktioner og prosedurer';
@@ -497,6 +515,9 @@ begin
   FTranslation[trCreated] := 'Gemaakt';
   FTranslation[trDeclaration] := 'Declaratie';
   FTranslation[trDescription] := 'Omschrijving';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Velden';
   FTranslation[trFunctionsAndProcedures] := 'Functies en procedures';
@@ -548,33 +569,36 @@ procedure TPasDocLanguages.SetLanguageFrench;
 begin
   FTranslation[trAuthor] := 'Auteur';
   FTranslation[trAuthors] := 'Auteurs';
-  FTranslation[trCio] := 'Classes, interfaces and objects';
+  FTranslation[trCio] := 'Classes, interfaces et objets';
   FTranslation[trClass] := 'Classe';
   FTranslation[trClasses] := 'Classes';
   FTranslation[trConstants] := 'Constantes';
   FTranslation[trCreated] := 'CrÈe';
   FTranslation[trDeclaration] := 'DÈclaration';
   FTranslation[trDescription] := 'Description';
+  FTranslation[trParameters] := 'ParamËtres';
+  FTranslation[trReturns] := 'Retourne';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Champs';
   FTranslation[trFunctionsAndProcedures] := 'Fonctions et procÈdures';
-  FTranslation[trHelp] := 'Help';
-  FTranslation[trHierarchy] := 'Hierarchy';
+  FTranslation[trHelp] := 'Aide';
+  FTranslation[trHierarchy] := 'Hierarchie';
   FTranslation[trIdentifiers] := 'Identificateurs';
   FTranslation[trInterface] := 'Interface';
   FTranslation[trLastModified] := 'DerniËre modification';
-  FTranslation[trLegend] := 'Legend';
+  FTranslation[trLegend] := 'LÈgende';
   FTranslation[trMethods] := 'MÈthodes';
   FTranslation[trName] := 'Nom';
   FTranslation[trNone] := 'Aucun(e)(s)';
   FTranslation[trObject] := 'Objet';
   FTranslation[trObjects] := 'Objets';
   FTranslation[trOverview] := 'AperÁu';
-  FTranslation[trPrivate] := 'Private';
+  FTranslation[trPrivate] := 'PrivÈ';
   FTranslation[trProperties] := 'PropriÈtÈs';
-  FTranslation[trProtected] := 'Protected';
+  FTranslation[trProtected] := 'ProtÈgÈ';
   FTranslation[trPublic] := 'Public';
-  FTranslation[trPublished] := 'Published';
+  FTranslation[trPublished] := 'PubliÈs';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Types';
   FTranslation[trUnit] := 'UnitÈ';
@@ -613,6 +637,9 @@ begin
   FTranslation[trCreated] := 'Erstellt';
   FTranslation[trDeclaration] := 'Deklaration';
   FTranslation[trDescription] := 'Beschreibung';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felder';
   FTranslation[trFunctionsAndProcedures] := 'Funktionen und Prozeduren';
@@ -669,6 +696,9 @@ begin
   FTranslation[trCreated] := 'Dibuat';
   FTranslation[trDeclaration] := 'Deklarasi';
   FTranslation[trDescription] := 'Definisi';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
   FTranslation[trFunctionsAndProcedures] := 'Fungsi dan Prosedur';
@@ -726,6 +756,9 @@ begin
   FTranslation[trCreated] := 'Creato';
   FTranslation[trDeclaration] := 'Dichiarazione';
   FTranslation[trDescription] := 'Descrizione';
+  FTranslation[trParameters] := 'Parametri';
+  FTranslation[trReturns] := 'Ritorni';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campi';
   FTranslation[trFunctionsAndProcedures] := 'Funzioni e Procedure';
@@ -784,6 +817,9 @@ begin
   FTranslation[trCreated] := 'Digawe';
   FTranslation[trDeclaration] := 'Deklarasi';
   FTranslation[trDescription] := 'Katrangan';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
   FTranslation[trFunctionsAndProcedures] := 'Fungsi lan Prosedur';
@@ -841,6 +877,9 @@ begin
   FTranslation[trCreated] := 'Utworzony';
   FTranslation[trDeclaration] := 'Deklaracja';
   FTranslation[trDescription] := 'Opis';
+  FTranslation[trParameters] := 'Parametry';
+  FTranslation[trReturns] := 'Powroty';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Pola';
   FTranslation[trFunctionsAndProcedures] := 'Funkcje i Procedury';
@@ -898,6 +937,9 @@ begin
   FTranslation[trConstants] := ' ÓÌÒÚ‡ÌÚ˚';
   FTranslation[trCreated] := '—ÓÁ‰‡ÌÓ';
   FTranslation[trDeclaration] := 'Œ·˙ˇ‚ÎÂÌËˇ';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDescription] := 'ŒÔËÒ‡ÌËÂ';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'œÓÎˇ';
@@ -956,6 +998,9 @@ begin
   FTranslation[trCreated] := 'ëÆß§†≠Æ';
   FTranslation[trDeclaration] := 'é°ÍÔ¢´•≠®Ô';
   FTranslation[trDescription] := 'éØ®·†≠®•';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'èÆ´Ô';
   FTranslation[trFunctionsAndProcedures] := 'è‡ÆÊ•§„‡Î ® ‰„≠™Ê®®';
@@ -1014,6 +1059,9 @@ begin
   FTranslation[trDeclaration] := 'Ô¬ﬂ—◊Ã≈Œ…—';
   FTranslation[trDescription] := 'Ô–…”¡Œ…≈';
   FTranslation[trDispInterface] := 'DispInterface';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trReturns] := 'Returns';
   FTranslation[trFields] := 'œÃ—';
   FTranslation[trFunctionsAndProcedures] := '“œ√≈ƒ’“Ÿ … ∆’ŒÀ√……';
   FTranslation[trHelp] := 'Help';
@@ -1070,6 +1118,9 @@ begin
   FTranslation[trCreated] := 'VytvorenÈ';
   FTranslation[trDeclaration] := 'Deklar·cie';
   FTranslation[trDescription] := 'Popis';
+  FTranslation[trParameters] := 'Parameters';
+  FTranslation[trReturns] := 'Returns';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trFields] := 'Poloûky';
   FTranslation[trFunctionsAndProcedures] := 'Funkcie a proced˙ry';
   FTranslation[trHierarchy] := 'Hierarchia';
@@ -1122,6 +1173,9 @@ begin
   FTranslation[trCreated] := 'Creado';
   FTranslation[trDeclaration] := 'DeclaraciÛn';
   FTranslation[trDescription] := 'DescripciÛn';
+  FTranslation[trParameters] := 'Par·metros';
+  FTranslation[trReturns] := 'Vueltas';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
   FTranslation[trFunctionsAndProcedures] := 'Funciones y procedimientos';
@@ -1173,6 +1227,9 @@ begin
   FTranslation[trCreated] := 'Skapad';
   FTranslation[trDeclaration] := 'Deklarationer';
   FTranslation[trDescription] := 'Beskrivning';
+  FTranslation[trParameters] := 'Se parameter';
+  FTranslation[trReturns] := 'Retur';
+  FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'F‰lt';
   FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
