@@ -541,7 +541,7 @@ begin
   CloseStream;
   DoMessage(4, mtInformation, 'Creating output stream "' + AName + '".', []);
   Result := csError;
-  if FileExists(Name) and not AOverwrite then begin
+  if FileExists(AName) and not AOverwrite then begin
     Result := csExisted;
   end else begin
     try
