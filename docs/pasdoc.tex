@@ -240,6 +240,8 @@ The following tags are supported:
 \item[@lastmod] last modified date of item 
 \item[@link]  The argument is the name of another entity, PasDoc will 
 add a link to it here. 
+\item[@longcode] Format the text and output it in fixed width font,
+ with correct formatting.
 \item[@name]  PasDoc inserts the name of the item (class, object, function, variable...) 
 here 
 \item[@nil]  PasDoc inserts the specially formatted text 'nil' here. 
@@ -398,6 +400,37 @@ enclose the name of the mentioned item in a link tag, e.g.\\
 {\tt @link(GetName)}.\\
 This will result in a hyperlink in HTML and a page reference in
 \LaTeX.
+
+\subsection{longcode}
+
+Use this tag to output code, and pre-formatted text. The output
+text will closely ressemble the text typed, and will be represented
+in a fixed width font. In the case of pascal code typed within this
+tag, it will be pretty-printed first.
+
+To be able to put special characters in this tag, the
+tag should be followed by a \# and finished with a \# before
+the closing parentheses.
+
+Example:
+\begin{verbatim}
+      @longCode(#
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  // Note that your comments are formatted.
+  {$H+} // You can even include compiler directives.
+  // reserved words are formatted in bold.
+  for i := 1 to 10 do
+  begin
+    It is OK to include pseudo-code like this line.
+    // It will be formatted as if it were meaningful pascal code.
+  end;
+end;
+      #)
+\end{verbatim}      
+
 
 \subsection{nil}
 
