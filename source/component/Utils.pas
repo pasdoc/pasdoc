@@ -119,7 +119,12 @@ const
   
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
-  if S[Length(S)] <> PathDelim then Result := S + PathDelim else Result := S;
+  Result := S;
+  if Length(S)>0 then begin
+    if S[Length(S)] <> PathDelim then begin
+      Result := S + PathDelim;
+    end;
+  end;
 end;
 {$ENDIF}
 
