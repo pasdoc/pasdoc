@@ -112,6 +112,8 @@ type
       Will convert special characters to their html escape sequence
       -> test }
     function ConvertString(const s: string): string; override;
+    function ConvertChar(c: char): string; override;
+    
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     procedure WriteUnitUses(const HL: integer; U: TPasUnit);
@@ -2608,6 +2610,13 @@ begin
       inc(i);
     end;
 end;
+
+
+function THTMLDocGenerator.ConvertChar(c: char): String;
+begin
+  ConvertChar := ConvertString(c);
+end;
+
 
 procedure THTMLDocGenerator.BuildLinks;
 begin
