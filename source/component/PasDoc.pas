@@ -419,7 +419,7 @@ begin
   { Do a couple of tests before we actually start processing the source files. }
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
-  edn;
+  end;
 
   if not DirectoryExists(FOutputFolder) then begin
     DoError('Output Folder does not exist (%s).', [FOutputFolder]);
