@@ -58,6 +58,7 @@ type
     trParameters,
     trReturns,
     trExceptions,
+    trEnum,
     trDispInterface,
     trFields,
     trFunctionsAndProcedures,
@@ -205,6 +206,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Fields';
   FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
@@ -265,6 +267,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Polja';
   FTranslation[trFunctionsAndProcedures] := 'Funkcije i Procedure';
@@ -325,6 +328,7 @@ begin
   FTranslation[trParameters] := 'Par‚metros';
   FTranslation[trReturns] := 'Retornos';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
   FTranslation[trFunctionsAndProcedures] := 'FunÁıes e Procedimentos';
@@ -385,6 +389,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Camps';
   FTranslation[trFunctionsAndProcedures] := 'Funcions i procediments';
@@ -457,6 +462,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felter';
   FTranslation[trFunctionsAndProcedures] := 'Funktioner og prosedurer';
@@ -518,6 +524,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Velden';
   FTranslation[trFunctionsAndProcedures] := 'Functies en procedures';
@@ -579,6 +586,7 @@ begin
   FTranslation[trParameters] := 'ParamËtres';
   FTranslation[trReturns] := 'Retourne';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Champs';
   FTranslation[trFunctionsAndProcedures] := 'Fonctions et procÈdures';
@@ -640,6 +648,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felder';
   FTranslation[trFunctionsAndProcedures] := 'Funktionen und Prozeduren';
@@ -699,6 +708,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
   FTranslation[trFunctionsAndProcedures] := 'Fungsi dan Prosedur';
@@ -759,6 +769,7 @@ begin
   FTranslation[trParameters] := 'Parametri';
   FTranslation[trReturns] := 'Ritorni';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campi';
   FTranslation[trFunctionsAndProcedures] := 'Funzioni e Procedure';
@@ -820,6 +831,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
   FTranslation[trFunctionsAndProcedures] := 'Fungsi lan Prosedur';
@@ -880,6 +892,7 @@ begin
   FTranslation[trParameters] := 'Parametry';
   FTranslation[trReturns] := 'Powroty';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Pola';
   FTranslation[trFunctionsAndProcedures] := 'Funkcje i Procedury';
@@ -940,6 +953,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDescription] := 'ŒÔËÒ‡ÌËÂ';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'œÓÎˇ';
@@ -1001,6 +1015,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'èÆ´Ô';
   FTranslation[trFunctionsAndProcedures] := 'è‡ÆÊ•§„‡Î ® ‰„≠™Ê®®';
@@ -1062,6 +1077,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trExceptions] := 'Exceptions';
   FTranslation[trReturns] := 'Returns';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trFields] := 'œÃ—';
   FTranslation[trFunctionsAndProcedures] := '“œ√≈ƒ’“Ÿ … ∆’ŒÀ√……';
   FTranslation[trHelp] := 'Help';
@@ -1121,6 +1137,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trFields] := 'Poloûky';
   FTranslation[trFunctionsAndProcedures] := 'Funkcie a proced˙ry';
   FTranslation[trHierarchy] := 'Hierarchia';
@@ -1176,6 +1193,7 @@ begin
   FTranslation[trParameters] := 'Par·metros';
   FTranslation[trReturns] := 'Vueltas';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
   FTranslation[trFunctionsAndProcedures] := 'Funciones y procedimientos';
@@ -1230,6 +1248,7 @@ begin
   FTranslation[trParameters] := 'Se parameter';
   FTranslation[trReturns] := 'Retur';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'F‰lt';
   FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
