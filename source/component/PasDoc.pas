@@ -233,7 +233,7 @@ var
 begin
   DoMessage(3, mtInformation, 'Now parsing file %s...', [SourceFileName]);
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    FOnMessage, FVerbosity);
+    FOnMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
   try
     p.StarStyleOnly := StarStyleOnly;

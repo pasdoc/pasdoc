@@ -154,6 +154,7 @@ type
     Row: Integer;
     { the input stream this tokenizer is working on }
     Stream: TStream;
+    FStreamName: string;
     
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
@@ -177,7 +178,8 @@ type
     constructor Create(
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
-      const VerbosityLevel: Cardinal);
+      const VerbosityLevel: Cardinal;
+      const AStreamName: string);
     { Releases all dynamically allocated memory. }
     destructor Destroy; override;
     function HasData: Boolean;
@@ -188,6 +190,7 @@ type
     
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
+    property StreamName: string read FStreamName;
   end;
 
 const
@@ -366,13 +369,15 @@ end;
 constructor TTokenizer.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
-  const VerbosityLevel: Cardinal);
+  const VerbosityLevel: Cardinal;
+  const AStreamName: string);
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
   Row := 1;
   Stream := s;
+  FStreamName := AStreamName;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -454,7 +459,7 @@ end;
 
 function TTokenizer.GetStreamInfo: string;
 begin
-  GetStreamInfo := 'fake stream info' + '(' + IntToStr(Row) + ')';
+  GetStreamInfo := FStreamName + '(' + IntToStr(Row) + ')';
 end;
 
 { ---------------------------------------------------------------------------- }

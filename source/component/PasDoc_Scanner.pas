@@ -73,7 +73,8 @@ type
     constructor Create(
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
-      const VerbosityLevel: Cardinal);
+      const VerbosityLevel: Cardinal;
+      const AStreamName: string);
     destructor Destroy; override;
 
     { Adds all directives in the parameter String collection by calling
@@ -176,7 +177,8 @@ end;
 constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
-  const VerbosityLevel: Cardinal);
+  const VerbosityLevel: Cardinal;
+  const AStreamName: string);
 var
   c: TUpperCaseLetter;
 begin
@@ -200,7 +202,7 @@ begin
   FSwitchOptions['V'] := True;
   FSwitchOptions['X'] := True;
 
-  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel);
+  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel, AStreamName);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;
 end;
@@ -468,7 +470,7 @@ begin
 
   { create new tokenizer with stream }
   Inc(FCurrentTokenizer);
-  FTokenizers[FCurrentTokenizer] := TTokenizer.Create(s, FOnMessage, FVerbosity);
+  FTokenizers[FCurrentTokenizer] := TTokenizer.Create(s, FOnMessage, FVerbosity, Name);
 
   Result := True;
 end;

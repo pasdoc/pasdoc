@@ -97,7 +97,8 @@ type
       const Directives: TStringVector;
       const IncludeFilePaths: TStringVector;
       const OnMessageEvent: TPasDocMessageEvent;
-      const VerbosityLevel: Cardinal);
+      const VerbosityLevel: Cardinal;
+      const AStreamName: string);
     { Release all dynamically allocated memory. }
     destructor Destroy; override;
     function ParseUnit(out U: TPasUnit): Boolean;
@@ -131,13 +132,14 @@ constructor TParser.Create(
   const Directives: TStringVector;
   const IncludeFilePaths: TStringVector;
   const OnMessageEvent: TPasDocMessageEvent;
-  const VerbosityLevel: Cardinal);
+  const VerbosityLevel: Cardinal;
+  const AStreamName: string);
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
 
-  Scanner := TScanner.Create(InputStream, OnMessageEvent, VerbosityLevel);
+  Scanner := TScanner.Create(InputStream, OnMessageEvent, VerbosityLevel, AStreamName);
   Scanner.AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   StarStyleOnly := True;
