@@ -36,8 +36,8 @@ type
     lgIndonesian,
     lgItalian,
     lgJavanese,
-    lgPolish_CP1250,       // GSk: renamed
-    lgPolish_ISO_8859_2,   // GSk: added
+    lgPolish_CP1250,       
+    lgPolish_ISO_8859_2,   
     lgRussian_1251,
     lgRussian_866,
     lgRussian_koi8,
@@ -143,9 +143,9 @@ type
     { Defines translations for Javanese. }
     procedure SetLanguageJavanese;
     { Defines translations for Polish (Codepage 1250. }
-    procedure SetLanguagePolish_CP1250;           // GSk: renamed
+    procedure SetLanguagePolish_CP1250;           
     { Defines translations for Polish (Codepage ISO 8859-2. }
-    procedure SetLanguagePolish_ISO_8859_2;       // GSk: added
+    procedure SetLanguagePolish_ISO_8859_2;       
     { Defines translations for Russian (Codepage 1251). }
     procedure SetLanguageRussian_1251;
     { Defines translations for Russian (Codepage 866). }
@@ -191,8 +191,8 @@ const
     (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
     (Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
     (Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
-    (Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),         // GSk: renamed, added CharSet
-    (Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'), // GSk: added
+    (Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),       
+    (Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'), 
     (Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
     (Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
     (Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
@@ -212,7 +212,7 @@ begin
   FTranslation[trAuthor] := 'Author';
   FTranslation[trAuthors] := 'Authors';
   FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Classes, Interfaces and Objects';
+  FTranslation[trCio] := 'Classes, Interfaces, Objects and Records';
   FTranslation[trClass] := 'Class';
   FTranslation[trClasses] := 'Classes';
   FTranslation[trClassHierarchy] := 'Class Hierarchy';
@@ -252,7 +252,7 @@ begin
   FTranslation[trGvUses] := 'Unit dependency graph';
   FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
-  FTranslation[trHeadlineCio] := 'All Classes, Interfaces and Objects';
+  FTranslation[trHeadlineCio] := 'All Classes, Interfaces, Objects and Records';
   FTranslation[trHeadlineConstants] := 'All Constants';
   FTranslation[trHeadlineFunctionsAndProcedures] := 'All Functions and Procedures';
   FTranslation[trHeadlineIdentifiers] := 'All Identifiers';
@@ -260,7 +260,8 @@ begin
   FTranslation[trHeadlineUnits] := 'All Units';
   FTranslation[trHeadlineVariables] := 'All Variables';
 
-  FTranslation[trSummaryCio] := 'Summary of Classes, Interfaces and Objects';
+  FTranslation[trSummaryCio] := 
+    'Summary of Classes, Interfaces, Objects and Records';
 
   FTranslation[trWarningOverwrite] :=
     'Warning: Do not edit - this file has been created automatically and is likely be overwritten';
@@ -934,12 +935,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDocLanguages.SetLanguagePolish_CP1250;   // GSk: updated, renamed method name
+procedure TPasDocLanguages.SetLanguagePolish_CP1250;
 begin
   FTranslation[trAuthor] := 'Autor';
   FTranslation[trAuthors] := 'Autorzy';
   FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Klasy, interfejsy i obiekty';
+  FTranslation[trCio] := 'Klasy, interfejsy, obiekty i rekordy';
   FTranslation[trClass] := 'Klasa';
   FTranslation[trClasses] := 'Klasy';
   FTranslation[trClassHierarchy] := 'Hierarchia klas';
@@ -976,11 +977,10 @@ begin
   FTranslation[trUnit] := 'Modu³';
   FTranslation[trUnits] := 'Modu³y';
   FTranslation[trVariables] := 'Zmienne';
-  { TODO : add translation }
-//  FTranslation[trGvUses] := 'Unit dependency graph';
-//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+  FTranslation[trGvUses] := 'Graf zale¿noœci modu³ów';
+  FTranslation[trGvClasses] := 'Graf dziedziczenia klas';
 
-  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy i obiekty';
+  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy, obiekty i rekordy';
   FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
   FTranslation[trHeadlineFunctionsAndProcedures] := 'Wszystkie podprogramy';
   FTranslation[trHeadlineIdentifiers] := 'Wszystkie identyfikatory';
@@ -988,21 +988,22 @@ begin
   FTranslation[trHeadlineUnits] := 'Wszystkie modu³y';
   FTranslation[trHeadlineVariables] := 'Wszystkie zmienne';
 
-  FTranslation[trSummaryCio] := 'Podsumowanie klas, interfejsów i obiektów';
+  FTranslation[trSummaryCio] := 
+    'Podsumowanie klas, interfejsów, obiektów i rekordów';
 
   FTranslation[trWarningOverwrite] :=
-    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany przez automat i mo¿e zostaæ nadpisany';
+    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany';
 
   FTranslation[trGeneratedBy] := 'Wygenerowane przez';
-  FTranslation[trOnDateTime] := ' — ';
+  FTranslation[trOnDateTime] := ' - ';
 end;
 
-procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;   // GSk
+procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
 begin
   FTranslation[trAuthor] := 'Autor';
   FTranslation[trAuthors] := 'Autorzy';
   FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Klasy, interfejsy i obiekty';
+  FTranslation[trCio] := 'Klasy, interfejsy, obiekty i rekordy';
   FTranslation[trClass] := 'Klasa';
   FTranslation[trClasses] := 'Klasy';
   FTranslation[trClassHierarchy] := 'Hierarchia klas';
@@ -1039,11 +1040,10 @@ begin
   FTranslation[trUnit] := 'Modu³';
   FTranslation[trUnits] := 'Modu³y';
   FTranslation[trVariables] := 'Zmienne';
-  { TODO : add translation }
-//  FTranslation[trGvUses] := 'Unit dependency graph';
-//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+  FTranslation[trGvUses] := 'Graf zale¿no¶ci modu³ów';
+  FTranslation[trGvClasses] := 'Graf dziedziczenia klas';
 
-  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy i obiekty';
+  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy, obiekty i rekordy';
   FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
   FTranslation[trHeadlineFunctionsAndProcedures] := 'Wszystkie podprogramy';
   FTranslation[trHeadlineIdentifiers] := 'Wszystkie identyfikatory';
@@ -1051,10 +1051,11 @@ begin
   FTranslation[trHeadlineUnits] := 'Wszystkie modu³y';
   FTranslation[trHeadlineVariables] := 'Wszystkie zmienne';
 
-  FTranslation[trSummaryCio] := 'Podsumowanie klas, interfejsów i obiektów';
+  FTranslation[trSummaryCio] := 
+    'Podsumowanie klas, interfejsów, obiektów i rekordów';
 
   FTranslation[trWarningOverwrite] :=
-    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany przez automat i mo¿e zostaæ nadpisany';
+    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany';
 
   FTranslation[trGeneratedBy] := 'Wygenerowane przez';
   FTranslation[trOnDateTime] := ' - ';
@@ -1531,8 +1532,8 @@ begin
     lgIndonesian: SetLanguageIndonesian;
     lgItalian: SetLanguageItalian;
     lgJavanese: SetLanguageJavanese;
-    lgPolish_CP1250: SetLanguagePolish_CP1250;          // GSk: renamed
-    lgPolish_ISO_8859_2: SetLanguagePolish_ISO_8859_2;  // GSk: added
+    lgPolish_CP1250: SetLanguagePolish_CP1250;         
+    lgPolish_ISO_8859_2: SetLanguagePolish_ISO_8859_2; 
     lgRussian_1251: SetLanguageRussian_1251;
     lgRussian_866: SetLanguageRussian_866;
     lgRussian_koi8: SetLanguageRussian_koi8;
@@ -1547,6 +1548,13 @@ end;
 
 {
   $Log$
+  Revision 1.14  2005/04/06 13:34:36  kambi
+  * Added "and Records" to FTranslation[trCio], FTranslation[trHeadlineCio],
+    FTranslation[trSummaryCio] for English and two Polish versions
+  * trGvUses/Classes in Polish translation and minor fixes for Polish translation,
+    removed "//GSk" (this was a leftover from patch of Grzegorz Skoczylas,
+    but these comments belonged to cvs logs, not to clutter source code)
+
   Revision 1.13  2005/03/30 10:18:59  johill
   add charsets to languages
 
