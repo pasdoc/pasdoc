@@ -31,6 +31,7 @@ function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 {$IFDEF FPC}
 function IncludeTrailingPathDelimiter(const S: string): string;
 function SameText(const A, B: string): boolean;
+function DirectoryExists(const name: string): boolean;
 {$ENDIF}
 
 implementation
@@ -119,6 +120,11 @@ begin
       Result := S + DirectorySeparator;
     end;
   end;
+end;
+
+function DirectoryExists(const name: string): boolean;
+begin
+  Result := FileGetAttr(name) or faAnyFile <> 0;
 end;
 {$ENDIF}
 

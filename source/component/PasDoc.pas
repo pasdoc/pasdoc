@@ -385,6 +385,12 @@ begin
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
   end;
+  CacheDir := IncludeTrailingPathDelimiter(CacheDir);
+  if not DirectoryExists(CacheDir) then begin
+    if not CreateDir(CacheDir) then begin
+      DoError('Cache directory does not exist and could not be created', [], 1);
+    end;
+  end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
   FIncludeDirectories.Iterate(IncludeTrailingPathDelimiter);
