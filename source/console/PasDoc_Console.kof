@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=/tmp/test.pas -E/tmp --aspell=en /home/johannes/Projects/MetaNet/source/common/core/MNBaseObject.pas
+RunParams=/tmp/test.pas -E/tmp --aspell=en
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1

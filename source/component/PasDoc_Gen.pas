@@ -1517,14 +1517,18 @@ function TDocGenerator.CheckWord(const AWord: string;
   end;
 
 var
-  s: string;
+  s, s2: string;
 begin
   Result := True;
   if FCheckSpelling and FSpellCheckStarted and wordisword(AWord) then begin
     PasDoc_RunHelp.WriteLine('^'+AWord, FAspellPipe);
     s := ReadLine(FAspellPipe);
     if s <> '' then begin
-      ReadLine(FAspellPipe);
+      s2 := ReadLine(FAspellPipe);
+      while Length(s2)>0 do begin
+        s2 := ReadLine(FAspellPipe);
+        if s = '*' then s := s2;
+      end;
       Result := (Length(s) > 0) and (s[1] = '*');
       if not Result then begin
         DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [AWord]);
