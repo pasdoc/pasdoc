@@ -45,7 +45,6 @@ type
       Otherwise, PasDoc will look for HCC.exe in the registry and
       compile the project.  }
     FNoHHC: Boolean;
-    function ExistsFullPath(s: string): Boolean;
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -205,8 +204,6 @@ begin
 end;
 
 function THTMLDocGenerator.CreateLink(const Item: TPasItem): string;
-var
-  i: Integer;
 begin
   Result := '';
   if (not Assigned(Item)) then Exit;
@@ -214,16 +211,10 @@ begin
     if Assigned(Item.MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
       Result := Item.MyObject.FullLink + '#' + IntToStr(Item.AnchorNumber);
-    end
-    else begin
+    end else begin
       if Item.ClassType = TPasCio then begin
         { it's an object / a class }
-        Result := Item.Name + GetFileExtension;
-        i := 0;
-        while ExistsFullPath(Result) do begin
-          Inc(i);
-          Result := Item.Name + IntToStr(i) + GetFileExtension;
-        end;
+        Result := Item.MyUnit.Name + '.' + Item.Name + GetFileExtension;
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
         Result := Item.MyUnit.FullLink + '#' + IntToStr(Item.AnchorNumber);
@@ -241,40 +232,9 @@ begin
   Result := CodeString('<A href="' + Link + '">' + ItemName + '</A>');
 end;
 
-function THTMLDocGenerator.ExistsFullPath(s: string): Boolean;
-var
-  i, j: Integer;
-  CO: TPasCio;
-  U: TPasUnit;
-begin
-  Result := False;
-
-  if IsNilOrEmpty(Units) then Exit;
-
-  for i := 0 to Units.Count - 1 do begin
-    U := Units.UnitAt[i];
-    Result := CompareText(U.FullLink, s) = 0;
-    if Result then Exit;
-
-    if not IsNilOrEmpty(U.CIOs) then begin
-      for j := 0 to U.CIOs.Count - 1 do begin
-        CO := TPasCio(U.CIOs.PasItemAt[j]);
-        Result := CompareText(CO.FullLink, s) = 0;
-        if Result then Exit;
-      end;
-    end;
-  end;
-end;
-
 function THTMLDocGenerator.GetFileExtension: string;
 begin
-  { '.html' makes DOS version unhappy - welcome to the past ;-) }
-  GetFileExtension :=
-{$IFDEF OS_DOS}
-  '.htm';
-{$ELSE}
-  '.html';
-{$ENDIF}
+  Result := '.html';
 end;
 
 procedure THTMLDocGenerator.WriteAppInfo;
@@ -1998,8 +1958,7 @@ begin
       if Node.Item = nil then
         WriteString('<LI>' + Node.Name + '</LI>')
       else
-        WriteString('<LI><A href="' + Node.Name + GetFileExtension + '">' +
-          Node.Name + '</A></LI>');
+        WriteString('<LI><A href="' + Node.Item.FullLink + '">' + Node.Name + '</A></LI>');
 
       Node := FClassHierarchy.NextItem(Node);
     end;
