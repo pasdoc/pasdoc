@@ -197,8 +197,8 @@ type
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
     procedure WriteImage(const src, alt, localcss: string);
-    procedure WriteLink(const href, caption, localcss: string); overload;
-    procedure WriteLink(const href, caption, localcss, target: string); overload;
+    procedure WriteLink(const href, caption, localcss: string);
+    procedure WriteLinkTarget(const href, caption, localcss, target: string);
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
     procedure WriteEndOfLink;
@@ -246,7 +246,6 @@ uses
   ObjectVector,
   StreamUtils,
   Utils,
-  PasDoc_Tokenizer,
   PasDoc_HierarchyTree;
 
 { HTML things to be customized:
@@ -351,7 +350,7 @@ begin
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
   WriteDirect('<hr noshade size="1"><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
+  WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirect('</em>', true);
@@ -602,96 +601,11 @@ begin
   WriteEndOfTable;
 end;
 
-procedure THTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
-  string; const ItemLink: string);
-var
-  NameFound, SearchForLink: Boolean;
-  FoundItem: TPasItem;
-  i, j, l: Integer;
-  s: string;
-  pl: TStandardDirective;
-  n, ncstart: Integer;
-  S1: string;
-  S2: string;
-  S3: string;
+procedure THTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+  const Code: string; const ItemLink: string);
 begin
-  WriteStartOfCode;
-  i := 1;
-  NameFound := false;
-  SearchForLink := False;
-  l := Length(Code);
-  ncstart := i;
-  while i <= l do begin
-    case Code[i] of
-      '_', 'A'..'Z', 'a'..'z': begin
-          WriteConverted(Copy(Code, ncstart, i - ncstart));
-          { assemble item }
-          j := i;
-          repeat
-            Inc(i);
-          until (i > l) or (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
-          s := Copy(Code, j, i - j);
-
-           { Special processing for standard directives. }
-          pl := StandardDirectiveByName(s);
-          case pl of
-            SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-              SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-              SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
-              begin
-                WriteConverted(s);
-                SearchForLink := False;
-                ncstart := i;
-                Continue;
-              end;
-            SD_EXTERNAL:
-              begin
-                WriteConverted(s);
-                SearchForLink := True;
-                ncstart := i;
-                Continue;
-              end;
-          end;
-          if not NameFound and (s = p.Name) then begin
-            if ItemLink <> '' then begin
-              WriteLink(ItemLink, '<b>' + ConvertString(s) + '</b>', '');
-            end else begin
-              WriteDirect('<b>');
-              WriteConverted(s);
-              WriteDirect('</b>')
-            end;
-            NameFound := True;
-          end else begin
-            { search for item of name  L }
-            if SearchForLink and (SplitLink(s, S1, S2, S3, n)) then begin
-              FoundItem := p.FindName(S1, S2, S3, n);
-              if not Assigned(FoundItem) then
-                FoundItem := FindGlobal(S1, S2, S3, n);
-            end
-            else
-              FoundItem := nil;
-
-            if Assigned(FoundItem) then
-              WriteLink(FoundItem.FullLink, ConvertString(s), '')
-            else begin
-              WriteConverted(s);
-            end;
-          end;
-          ncstart := i;
-          Continue; // We don't want to miss out on any ':' or ';' for SearchForLink
-        end;
-      ':',
-      '=': SearchForLink := True;
-      ';': SearchForLink := False;
-      '''': begin
-          Inc(i);
-          while (i<=l) and (Code[i] <> '''') do Inc(i);
-        end;
-    end;
-    Inc(i);
-  end;
-  WriteConverted(Copy(Code, ncstart, i - ncstart));
-  WriteEndOfCode;
+  WriteCodeWithLinksCommon(p, Code, ItemLink, '<b>', '</b>', 
+    {$ifdef FPC}@{$endif} WriteLink);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -758,10 +672,11 @@ end;
 
 procedure THTMLDocGenerator.WriteLink(const href, caption, localcss: string);
 begin
-  WriteLink(href, caption, localcss, '');
+  WriteLinkTarget(href, caption, localcss, '');
 end;
 
-procedure THTMLDocGenerator.WriteLink(const href, caption, localcss, target: string);
+procedure THTMLDocGenerator.WriteLinkTarget(
+  const href, caption, localcss, target: string);
 var
   s: string;
 begin
@@ -2445,7 +2360,7 @@ var
 begin
   while ExtractLink(s, s1, s2, link) do begin
     WriteSpellChecked(S1);
-    WriteLink(link, Link, '', '_new');
+    WriteLinkTarget(link, Link, '', '_new');
     s := s2;
   end;
   WriteSpellChecked(s);

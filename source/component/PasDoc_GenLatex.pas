@@ -156,8 +156,7 @@ type
     procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 
     procedure WriteImage(const src, alt, css: string);
-    procedure WriteLink(const href, caption, css: string); overload;
-    procedure WriteLink(const href, caption, css, target: string); overload;
+    procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
     
     function InsertParagraphs(const S: string): string; override;
@@ -215,8 +214,7 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
-  Utils,
-  PasDoc_Tokenizer;
+  Utils;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -489,95 +487,9 @@ end;
 
 procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
   string; const ItemLink: string);
-var
-  NameFound,SearchForLink: Boolean;
-  FoundItem: TPasItem;
-  i, j, l: Integer;
-  s: string;
-  pl: TStandardDirective;
-  n, ncstart: Integer;
-  S1: string;
-  S2: string;
-  S3: string;
 begin
-  WriteStartOfCode;
-  i := 1;
-  NameFound := false;
-  SearchForLink := false;
-  l := Length(Code);
-  ncstart := i;
-  
-  while i <= l do
-  begin
-    case Code[i] of
-      '_', 'A'..'Z', 'a'..'z':
-         begin
-          WriteConverted(Copy(Code, ncstart, i - ncstart));
-          { assemble item }
-          j := i;
-          repeat
-            Inc(i);
-          until (i > l) or (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
-          s := Copy(Code, j, i - j);
-
-           { Special processing for standard directives. }
-          pl := StandardDirectiveByName(s);
-          case pl of
-            SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-              SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-              SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
-              begin
-                WriteConverted(s);
-                SearchForLink := False;
-                ncstart := i;
-                Continue;
-              end;
-            SD_EXTERNAL:
-              begin
-                WriteConverted(s);
-                SearchForLink := False;
-                ncstart := i;
-                Continue;
-              end;
-          end;
-          if not NameFound and (s = p.Name) then begin
-            if ItemLink <> '' then begin
-              WriteLink(ItemLink,ConvertString(s), '');
-            end else begin
-              WriteConverted(s);
-            end;
-            NameFound := True;
-          end else begin
-            { search for item of name  L }
-            if SearchForLink and (SplitLink(s, S1, S2, S3, n)) then begin
-              FoundItem := p.FindName(S1, S2, S3, n);
-              if not Assigned(FoundItem) then
-                FoundItem := FindGlobal(S1, S2, S3, n);
-            end
-            else
-              FoundItem := nil;
-
-            if Assigned(FoundItem) then
-              WriteLink(FoundItem.FullLink, ConvertString(s), '')
-            else begin
-              WriteConverted(s);
-            end;
-          end;
-          ncstart := i;
-          Continue; // We don't want to miss out on any ':' or ';' for SearchForLink
-        end;
-      ':',
-      '=': SearchForLink := True;
-      ';': SearchForLink := False;
-      '''': begin
-          Inc(i);
-          while (i<=l) and (Code[i] <> '''') do Inc(i);
-        end;
-    end;
-    Inc(i);
-  end;
-  WriteConverted(Copy(Code, ncstart, i - ncstart));
-  WriteEndOfCode;
+  WriteCodeWithLinksCommon(p, Code, ItemLink, '', '', 
+    {$ifdef FPC}@{$endif} WriteLink);
   WriteDirect('',true);
 end;
 
@@ -712,11 +624,6 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteLink(const href, caption, css: string);
-begin
-  WriteLink(href, caption, css, '');
-end;
-
-procedure TTexDocGenerator.WriteLink(const href, caption, css, target: string);
 begin
   WriteDirect(caption);
 end;
@@ -1980,7 +1887,7 @@ var
 begin
   while ExtractLink(s, s1, s2, link) do begin
     WriteSpellChecked(S1);
-    WriteLink('',link,'','');
+    WriteLink('',link,'');
     s:=s2;
   end;
   WriteSpellChecked(s);
@@ -2157,6 +2064,14 @@ end;
 
 (*
   $Log$
+  Revision 1.22  2005/04/06 12:52:42  kambi
+  * Two similiar implementations of WriteCodeWithLinks in tex and html generator
+    merged to one code in TDocGenerator.WriteCodeWithLinksCommon
+  * WriteLink(4 args) renamed to WriteLinkTarget,
+    to be able to take address of WriteLink
+  * WriteCodeWithLinksCommon does check whether S = P.Name before checking
+    whether S in a Pascal directive
+
   Revision 1.21  2005/04/05 07:36:15  kambi
   * @html tag is ignored in non-html output, @latex tag implemented
 

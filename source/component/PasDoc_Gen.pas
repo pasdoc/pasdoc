@@ -82,6 +82,18 @@ type
     csError
   );
 
+  { This is a temporary thing, needed to implement WriteCodeWithLinksCommon,
+    that replaces previous THTMLDocGenerator.WriteCodeWithLinks
+    and TTexGenerator.WriteCodeWithLinks that previously shared some
+    copy&pasted code.
+    
+    This will be replaced with a protected virtual method of TDocGenerator 
+    later, and with a different parameter list (for now, noone knows
+    what href and localcss params should do in latex output (actually
+    they are ignored in latex output),  but I'll try to not fix everything 
+    at once, to not break some things). }
+  TWriteLinkProc = procedure (const href, caption, localcss: string) of object;
+
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
     This abstract object will do the complete process of writing
@@ -189,6 +201,14 @@ end;
 
     procedure CreateClassHierarchy;
 
+    { This is used in descendants in their WriteCodeWithLinks routines.
+      Sorry, no better docs for it yet, because this is a work-in-progress
+      on merging code that was previously copy&pasted between html and latex
+      generator. See also comments at @link(TWriteLinkProc) }
+    procedure WriteCodeWithLinksCommon(const p: TPasItem;
+      const Code: string; const ItemLink: string;
+      const NameLinkBegin, NameLinkEnd: string;
+      WriteLink: TWriteLinkProc);
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
@@ -570,6 +590,7 @@ uses
   SysUtils,
   StreamUtils,
   Utils,
+  PasDoc_Tokenizer,
   PasDoc_TagManager;
 
 { ---------------------------------------------------------------------------- }
@@ -2100,6 +2121,151 @@ end;
 function TDocGenerator.LatexString(const S: string): string;
 begin
   Result := '';
+end;
+
+procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem; 
+  const Code: string; const ItemLink: string;
+  const NameLinkBegin, NameLinkEnd: string;
+  WriteLink: TWriteLinkProc);
+
+  { Tries to find a link from string S. 
+    Tries to split S using SplitLink, if succeeds then tries using p.FindName,
+    if that does not resolve the link that tries using FindGlobal.
+    
+    Returns nil if S couldn't be resolved. 
+    
+    TODO -- this should be merged with @link(SearchLink) method
+    for clarity. But this should never display a warning for user. }
+  function DoSearchForLink(const S: string): TPasItem;
+  var
+    S1: string;
+    S2: string;
+    S3: string;
+    n: Integer;
+  begin
+    if SplitLink(s, S1, S2, S3, n) then 
+    begin
+      Result := p.FindName(S1, S2, S3, n);
+      if not Assigned(Result) then
+        Result := FindGlobal(S1, S2, S3, n);
+    end else
+      Result := nil;
+  end;
+
+var
+  NameFound, SearchForLink: Boolean;
+  FoundItem: TPasItem;
+  i, j, l: Integer;
+  s: string;
+  pl: TStandardDirective;  
+  { ncstart marks what part of Code was already written:
+    Code[1..ncstart - 1] is already written to output stream. }
+  ncstart: Integer;
+begin
+  WriteStartOfCode;
+  i := 1;
+  NameFound := false;
+  SearchForLink := False;
+  l := Length(Code);
+  ncstart := i;
+  while i <= l do begin
+    case Code[i] of
+      '_', 'A'..'Z', 'a'..'z': 
+        begin
+          WriteConverted(Copy(Code, ncstart, i - ncstart));
+          { assemble item }
+          j := i;
+          repeat
+            Inc(i);
+          until (i > l) or 
+            (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
+          s := Copy(Code, j, i - j);
+
+          if not NameFound and (s = p.Name) then 
+          begin
+            WriteDirect(NameLinkBegin);
+            if ItemLink <> '' then
+              WriteLink(ItemLink, ConvertString(s), '') else
+              WriteConverted(s);
+            WriteDirect(NameLinkEnd);
+            NameFound := True;
+          end else
+          begin
+            { Special processing for standard directives.
+            
+              Note that we check whether S is standard directive *after*
+              we checked whether S matches P.Name, otherwise we would
+              mistakenly think that 'register' is a standard directive
+              in Code
+                'procedure Register;'
+              This shouldn't cause another problem (accidentaly
+              making standard directive a link, e.g. in code like
+                'procedure Foo; register'
+              or even
+                'procedure Register; register;'
+              ) because we safeguard against it using NameFound and 
+              SearchForLink state variables.
+              
+              That said, WriteCodeWithLinksCommon still remains a hackish 
+              excuse to not implement a real Pascal parser logic...
+              Improve this if you know how. }
+              
+            pl := StandardDirectiveByName(s);
+            case pl of
+              SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                begin
+                  WriteConverted(s);
+                  SearchForLink := False;
+                end;
+              SD_EXTERNAL:
+                begin
+                  WriteConverted(s);
+                  SearchForLink := true;
+                end;
+              else
+                begin
+                  if SearchForLink then
+                    FoundItem := DoSearchForLink(S) else
+                    FoundItem := nil;
+
+                  if Assigned(FoundItem) then
+                    WriteLink(FoundItem.FullLink, ConvertString(s), '') else
+                    WriteConverted(s);
+                end;
+            end;
+          end;
+          
+          ncstart := i;          
+        end;
+      ':', '=': 
+        begin
+          SearchForLink := True;
+          Inc(i);
+        end;
+      ';':
+        begin
+          SearchForLink := False;
+          Inc(i);
+        end;
+      '''':
+        begin
+          { No need to worry here about the fact that 'foo''bar' is actually
+            one string, "foo'bar". We will parse it in this procedure as
+            two strings, 'foo', then 'bar' (missing the fact that ' is
+            a part of string), but this doesn't harm us (as we don't
+            need here the value of parsed string). }
+          repeat
+            Inc(i);
+          until (i > l) or (Code[i] = '''');
+          Inc(i);
+        end;
+      else Inc(i);
+    end;
+  end;
+  WriteConverted(Copy(Code, ncstart, i - ncstart));
+  WriteEndOfCode;
 end;
 
 initialization
