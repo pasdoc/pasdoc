@@ -6,6 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Hendy Irawan (ceefour@gauldong.net))
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
+  @author(Thomas W. Mueller <no-email>)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
@@ -44,7 +45,7 @@ type
     FHtmlHelp: Boolean;
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
-    procedure WriteAppInfo;               
+    procedure WriteAppInfo;
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -818,6 +819,66 @@ end;
 
 procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   Boolean; const FuncsProcs: TPasMethods);
+
+  function ExtractFirstWord(var s: string): string;
+  var
+    p: integer;
+    Len: integer;
+  begin
+    Result := '';
+    Len := Length(s);
+    p := 1;
+    while (p < Len) and (s[p] in [' ', #9, #13, #10]) do
+      Inc(p);
+    while (p < Len) and not (s[p] in [' ', #9, #13, #10]) do
+      begin
+        Result := Result + s[p];
+        Inc(p);
+      end;
+    s := Copy(s, p, Length(s));
+  end;
+
+  procedure WriteParameter(const ParamName: string; const Desc: string);
+  begin
+    WriteDirect('<dt class="parameters">', true);
+    WriteConverted(ParamName);
+    WriteDirect('</dt>', true);
+    WriteDirect('<dd class="parameters">', true);
+    WriteWithURLs(Desc);
+    WriteDirect('</dd>', true);
+  end;
+
+  { writes the parameters or exceptions list }
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+    List: TStringVector);
+  var
+    i: integer;
+    s: string;
+    ParamName: string;
+  begin
+    if StringVectorIsNilOrEmpty(List) then
+      exit;
+
+    WriteHeading(6, Caption);
+    WriteDirect('<dl class="parameters">', true);
+    for i := 0 to List.Count - 1 do begin
+      s := List[i];
+      ParamName := ExtractFirstWord(s);
+      ExpandDescription(Func, s);
+      WriteParameter(ParamName, s);
+    end;
+    WriteDirect('</dl>', true);
+  end;
+
+  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  begin
+    if ReturnDesc = '' then
+      exit;
+    WriteHeading(6, 'return value');
+    ExpandDescription(Func, ReturnDesc);
+    WriteWithURLs(ReturnDesc);
+  end;
+
 var
   i: Integer;
   j: Integer;
@@ -837,22 +898,26 @@ begin
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
-  FuncsProcs.SortByPasItemName;
-
+  // two passes, in the first (i=0) we write the overview
+  // in the second (i=1) we write the descriptions
   for i := 0 to 1 do begin
     if (i = 0) then begin
       WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
       WriteStartOfTable1Column('');
     end
     else
+    begin
+      // now resort the list alphabetically
+      FuncsProcs.SortByPasItemName;
       WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+    end;
 
     for j := 0 to FuncsProcs.Count - 1 do begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
       if (i = 0) then begin
         WriteStartOfTableRow('');
 
-              { Only write visibility for methods of classes and objects. }
+        { Only write visibility for methods of classes and objects. }
         if Methods then WriteVisibilityCell(p);
 
         if j = 0 then
@@ -888,6 +953,10 @@ begin
         WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
         WriteEndOfParagraph;
+
+        WriteParamsOrRaises(p, 'parameters', p.Params);
+        WriteReturnDesc(p, p.Returns);
+        WriteParamsOrRaises(p, 'exceptions raised', p.Raises);
       end;
     end;
     if (i = 0) then WriteEndOfTable;
@@ -926,8 +995,10 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem:
-  TPasItem);
+procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+var
+  Ancestor: TPasCio;
+  AncestorName: string;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -942,7 +1013,19 @@ begin
     if AItem.DetailedDescription <> '' then begin
       WriteWithURLs(AItem.DetailedDescription)
     end else begin
-      WriteDirect('&nbsp;');
+      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
+        AncestorName := TPasCio(AItem).Ancestors.FirstName;
+        Ancestor := TPasCio(SearchItem(AncestorName, AItem));
+        if Assigned(Ancestor) then
+          begin
+            WriteDirect('<div class="nodescription">');
+            WriteConverted(Format('no description available, %s description follows', [AncestorName]));
+            WriteDirect('</div>');
+            WriteItemDetailedDescription(Ancestor);
+          end;
+      end else begin
+        WriteDirect('&nbsp;');
+      end;
     end;
   end;
 end;
@@ -1585,7 +1668,7 @@ var
 
     procedure WriteParam(Id: TTranslationId);
     begin
-      WriteDirect('<PARAM name="Name" value="');
+      WriteDirect('<param name="Name" value="');
       WriteConverted(FLanguage.Translation[Id]);
       WriteDirect('">', true);
     end;
@@ -1599,7 +1682,7 @@ var
       WriteLiObject(FLanguage.Translation[trOverview], '');
     WriteDirect('<ul>', true);
     for j := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
-      WriteDirect('<LI><object type="text/sitemap">', true);
+      WriteDirect('<li><object type="text/sitemap">', true);
       case j of
         0: WriteParam(trHeadlineUnits);
         1: WriteParam(trClassHierarchy);
@@ -2368,6 +2451,7 @@ procedure THTMLDocGenerator.WriteBinaryFiles;begin
       'text-decoration:none;}');
     StreamUtils.WriteLine(CurrentStream, 'a:active {' +
       'color:#FF0000;}');
+    { TODO -otwm : no longer used??? }
     StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
     StreamUtils.WriteLine(CurrentStream, 'table.headline {' +
       'padding:4pt; background-color:white;}');
@@ -2379,6 +2463,13 @@ procedure THTMLDocGenerator.WriteBinaryFiles;begin
       'color:green;text-decoration:underlined;background-color:white;}');
     StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
       'white-space:nowrap;}');
+    StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
+      'color:red;}');
+    StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
+    StreamUtils.WriteLine(CurrentStream, 'dt.parameters {' +
+      'color:blue;}');
+    StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
+
     CloseStream;
   end;
 end;

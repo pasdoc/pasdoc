@@ -23,14 +23,14 @@ uses
 type
   { Accessibility of a field/method }
   TAccessibility = (
+    { indicates field or method is published }
+    STATE_PUBLISHED,
     { indicates field or method is public }
     STATE_PUBLIC,
     { indicates field or method is protected }
     STATE_PROTECTED,
     { indicates field or method is private }
     STATE_PRIVATE,
-    { indicates field or method is published }
-    STATE_PUBLISHED,
     { indicates field or method is automated }
     STATE_AUTOMATED
     );
@@ -105,7 +105,12 @@ type
     procedure HandleLastModTag;
     { }
     procedure HandleCVSTag;
-
+    { handles a @@param tag }
+    procedure HandleParamTag; virtual;
+    { handles a @@returns tag }
+    procedure HandleReturnsTag; virtual;
+    { handles a @@raises tag }
+    procedure HandleRaisesTag; virtual;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
@@ -169,13 +174,23 @@ type
     information }
   TPasMethod = class(TPasItem)
   protected
+    FParams: TStringVector;
+    FReturns: string;
+    FRaises: TStringVector;
     FFullDecl: string;
     FWhat: TMethodType;
   published
+    destructor Destroy; override;
+    procedure HandleParamTag; override;
+    procedure HandleReturnsTag; override;
+    procedure HandleRaisesTag; override;
     { full declaration, including parameter list and procedural directives }
     property FullDeclaration: string read FFullDecl write FFullDecl;
     { }
     property What: TMethodType read FWhat write FWhat;
+    property Params: TStringVector read FParams;
+    property Returns: string read FReturns;
+    property Raises: TStringVector read FRaises;
   end;
 
   TPasProperty = class(TPasItem)
@@ -264,7 +279,6 @@ type
     FFuncsProcs: TPasMethods;
     FUsesUnits: TStringVector;
   protected
-    FIsCached: boolean;
     FSourceFilename: string;
     FOutputFileName: string;
   public
@@ -278,8 +292,6 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
-                     
-    property IsCachedVersion: boolean read FIsCached;
   published
     { list of classes and objects defined in this unit }
     property CIOs: TPasItems read FCIOs;
@@ -399,10 +411,18 @@ var
 begin
   P1 := TPasMethod(PItem1);
   P2 := TPasMethod(PItem2);
-  { compare 'method type', order is constructor > destructor > function, procedure }
+  { compare 'method type', order is constructor > destructor > visibility > function, procedure }
   if P1.What = P2.What then begin
     { if 'method type' is equal, compare names }
-    Result := CompareText(P1.Name, P2.Name)
+    if P1.State = P2.State then begin
+      Result := CompareText(P1.Name, P2.Name)
+    end else begin
+      if P1.State < P2.State then begin
+        Result := -1
+      end else begin
+        Result := 1;
+      end;
+    end;
   end else begin
     if P1.What < P2.What then begin
       Result := -1
@@ -608,6 +628,21 @@ begin
     end;
     Inc(Offs1);
   end;
+end;
+
+procedure TPasItem.HandleParamTag;
+begin
+  // does nothing for a normal TPasItem, but only for a TPasMethod
+end;
+
+procedure TPasItem.HandleReturnsTag;
+begin
+  // does nothing for a normal TPasItem, but only for a TPasMethod
+end;
+
+procedure TPasItem.HandleRaisesTag;
+begin
+  // does nothing for a normal TPasItem, but only for a TPasMethod
 end;
 
 { ---------- }
@@ -1102,6 +1137,91 @@ end;
 constructor TPasItem.Create;
 begin
   inherited Create;
+end;
+
+{ TPasMethod }
+
+destructor TPasMethod.Destroy;
+begin
+  FParams.Free;
+  inherited Destroy;
+end;
+
+procedure TPasMethod.HandleRaisesTag;
+var
+  Offs1: Integer;
+  Offs2: Integer;
+  Offs3: Integer;
+  s: string;
+  l: Integer;
+begin
+  if DetailedDescription = '' then Exit;
+  Offs1 := 1;
+  l := Length(DetailedDescription);
+  { we could have more than one parameter, so repeat until we have all }
+  while Offs1 < l do begin
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'RAISES', Offs1, Offs2, Offs3) then
+    begin
+      { we found one, remove it from the description and add it to the parameter list }
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      if s <> '' then begin
+        if not Assigned(FRaises) then FRaises := NewStringVector;
+        FRaises.Add(s);
+      end;
+    end;
+    Inc(Offs1);
+  end;
+end;
+
+procedure TPasMethod.HandleParamTag;
+var
+  Offs1: Integer;
+  Offs2: Integer;
+  Offs3: Integer;
+  s: string;
+  l: Integer;
+begin
+  if DetailedDescription = '' then Exit;
+  Offs1 := 1;
+  l := Length(DetailedDescription);
+  { we could have more than one exception, so repeat until we have all }
+  while Offs1 < l do begin
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'PARAM', Offs1, Offs2, Offs3) then
+    begin
+      { we found one, remove it from the description and add it to the parameter list }
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      if s <> '' then begin
+        if not Assigned(FParams) then FParams := NewStringVector;
+        FParams.Add(s);
+      end;
+    end;
+    Inc(Offs1);
+  end;
+end;
+
+procedure TPasMethod.HandleReturnsTag;
+var
+  Offs1: Integer;
+  Offs2: Integer;
+  Offs3: Integer;
+  s: string;
+begin
+  if DetailedDescription = '' then Exit;
+  Offs1 := 1;
+
+  while Offs1 < Length(DetailedDescription) do begin
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'RETURNS', Offs1, Offs2, Offs3) then
+    begin
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      if (Length(s) <= 0) then Continue;
+        FReturns := s;
+      Exit;
+    end;
+    Inc(Offs1);
+  end;
 end;
 
 end.

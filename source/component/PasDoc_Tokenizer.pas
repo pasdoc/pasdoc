@@ -98,9 +98,10 @@ type
     KEY_XOR);
 
 const
+  { Names of the token types }
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
-  ('Whitespace', 'Comment', 'Identifier', 'Number', 'String', 'Symbol',
-    'Directive', 'Reserved');
+  ('Whitespace', 'Comment', 'Identifier', 'Number', 'String',
+    'Symbol', 'Directive', 'Reserved');
 
 type
   { }
@@ -193,26 +194,26 @@ type
     property StreamName: string read FStreamName;
   end;
 
-const
-  TokenTypeNames: array[TOK_WHITESPACE..TOK_RESERVED] of string =
-  ('whitespace', 'comment', 'identifier', 'number', 'string', 'symbol',
-    'directive', 'reserved');
+//const
+//  {: names of the token types }
+//  TokenTypeNames: array[TOK_WHITESPACE..TOK_RESERVED] of string =
+//  ('whitespace', 'comment', 'identifier', 'number', 'string',
+//    'symbol', 'directive', 'reserved');
 
 const
+  { all Object Pascal keywords }
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'SPINTERFACE', 'V', 'DO', 'DOWNTO', 'ELSE',
-      'END',
-    'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION', 'FINALLY', 'FOR',
-      'FUNCTION',
-    'GOTO', 'IF', 'IMPLEMENTATION', 'IN', 'INHERITED', 'INITIALIZATION',
-    'INLINE', 'INTERFACE', 'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT',
-    'OBJECT', 'OF', 'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
-    'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL', 'SHR',
-    'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE', 'UNIT', 'UNTIL',
-      'USES',
-    'VAR', 'WHILE', 'WITH', 'XOR');
+    'CONSTRUCTOR', 'DESTRUCTOR', 'SPINTERFACE', 'V', 'DO', 'DOWNTO',
+    'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
+    'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
+    'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
+    'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
+    'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
+    'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
+    'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
+    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
 
 type
   TStandardDirective = (
@@ -256,22 +257,16 @@ type
     SD_VARARGS);
 
 const
+  { Object Pascal directives }
   StandardDirectiveArray:
     array[Low(TStandardDirective)..High(TStandardDirective)] of PChar =
   ('x', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
-    'CDECL',
-    'DEFAULT', 'SPID', 'DYNAMIC',
-    'EXPORT', 'EXTERNAL',
-    'FAR', 'FORWARD',
-    'INDEX',
-    'MESSAGE',
-    'NAME', 'NEAR', 'NODEFAULT',
-    'OVERLOAD', 'OVERRIDE',
-    'PASCAL', 'PRIVATE', 'PROTECTED', 'PUBLIC', 'PUBLISHED',
-    'READ', 'REGISTER', 'REINTRODUCE', 'RESIDENT',
-    'STDCALL', 'STORED',
-    'VIRTUAL',
+    'CDECL', 'DEFAULT', 'SPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
+    'FAR', 'FORWARD', 'INDEX', 'MESSAGE', 'NAME', 'NEAR',
+    'NODEFAULT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
+    'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',
+    'REINTRODUCE', 'RESIDENT', 'STDCALL', 'STORED', 'VIRTUAL',
     'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS');
 
 function StandardDirectiveByName(const Name: string): TStandardDirective;

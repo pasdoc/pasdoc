@@ -129,11 +129,6 @@ type
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
 
-    { Checks if D is assigned and empty - if so, disposes of D and sets it to
-      nil.
-      If there are characters in D, it is checked whether at least one
-      non-whitespace character is present - if all characters are whitespace,
-      disposes of D. }
     { If field @link(Stream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
@@ -181,7 +176,7 @@ type
     { Searches for a link in string S, signified by
       xxx://xxxx/.../ }
     function ExtractLink(s: string; var S1,S2,Link: string): Boolean;
-    
+
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
       Returns a pointer to the item on success, nil otherwise. }
@@ -196,7 +191,7 @@ type
     { Loads descriptions from file N and replaces or fills the corresponding
       comment sections of items. }
     procedure LoadDescriptionFile(n: string);
-    
+
     function SearchItem(s: string; const Item: TPasItem): TPasItem;
 
     { Searches for an item of name S which was linked in the description
@@ -256,7 +251,7 @@ type
       However, this is dependent on the output format. }
     procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const
       FuncsProcs: TPasMethods); virtual; abstract;
-      
+
     { Abstract procedure that must be overwritten by descendants.
       Writes a heading S at level HL to output.
       In HTML, heading levels are regarded by choosing the appropriate
@@ -276,7 +271,7 @@ type
       In HTML, this results in a table with two columns. }
     procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
       const i: TPasItems); virtual; abstract;
-      
+
     { Abstract method, must be overwritten by descendants to implement
       functionality.
       Writes a list of properties P to output.
@@ -441,6 +436,9 @@ procedure TDocGenerator.BuildLinks;
       p.HandleLastModTag;
       p.HandleCVSTag;
       p.HandleAbstractTag;
+      p.HandleParamTag;
+      p.HandleReturnsTag;
+      p.HandleRaisesTag;
     end;
   end;
 
@@ -463,6 +461,9 @@ begin
     U.HandleLastModTag;
     U.HandleCVSTag;
     U.HandleAbstractTag;
+    U.HandleParamTag;
+    U.HandleReturnsTag;
+    U.HandleRaisesTag;
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
     AssignLinks(U, nil, U.FullLink, U.Types);
@@ -475,7 +476,7 @@ begin
 
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := CO.FullLink;
-        
+
         CO.Abbreviations := FAbbreviations;
 
         CO.HandleAuthorTags;
@@ -483,6 +484,9 @@ begin
         CO.HandleLastModTag;
         CO.HandleCVSTag;
         CO.HandleAbstractTag;
+        CO.HandleParamTag;
+        CO.HandleReturnsTag;
+        CO.HandleRaisesTag;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
         AssignLinks(U, CO, CO.FullLink, CO.Properties);
@@ -538,15 +542,15 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
   function GetNextWord(const Desc: string; Len: integer; var CurPos: integer): string;
   begin
     Result := '';
-    while (CurPos < Len) and (Desc[CurPos] = ' ') do
+    while (CurPos < Len) and (Desc[CurPos] in ['(', ' ', #9]) do
       Inc(CurPos);
-    while (CurPos < Len) and (Desc[CurPos] <> ' ') do
+    while (CurPos < Len) and not (Desc[CurPos] in [')', ' ', #9]) do
       begin
         Result := Result + Desc[CurPos];
         Inc(CurPos);
       end;
   end;
-  
+
   function IsMacro(const Desc: string; Len: integer;
     const Macro: string; var CurPos: integer): boolean;
   var
@@ -566,7 +570,7 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
         exit;
 
     { TODO -cfixme -otwm : this should probably also check for other whitespace characters }
-    if (CurPos + l = Len) or (Desc[CurPos + l + 1] = ' ') then begin
+    if (CurPos + l = Len) or (Desc[CurPos + l + 1] in ['(', ' ', #9]) then begin
       Inc(CurPos, l + 1);
       Result := true;
     end;
