@@ -8,11 +8,20 @@ unit Utils;
 
 interface
 
-{$IFDEF FPC}
+{$I DEFINES.INC}
+
+{$IFNDEF DELPHI_6_UP}
 type
   TMethod = record
     code, data: Pointer;
   end;
+{$ENDIF}
+
+{$IFNDEF DELPHI_6_UP}
+{$IFNDEF FPC}
+const
+  DirectorySeparator = '\';
+{$ENDIF}
 {$ENDIF}
 
 { string empty means it contains only whitespace }
@@ -28,8 +37,10 @@ function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
-{$IFDEF FPC}
+{$IFNDEF DELPHI_6_UP}
 function IncludeTrailingPathDelimiter(const S: string): string;
+{$ENDIF}
+{$IFDEF FPC}
 function SameText(const A, B: string): boolean;
 function DirectoryExists(const name: string): boolean;
 {$ENDIF}
@@ -110,8 +121,7 @@ begin
   Result.Data := AObject;
 end;
 
-{$IFDEF FPC}
-
+{$IFNDEF DELPHI_6_UP}
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
@@ -121,7 +131,9 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF FPC}
 function DirectoryExists(const name: string): boolean;
 begin
   Result := FileGetAttr(name) or faAnyFile <> 0;

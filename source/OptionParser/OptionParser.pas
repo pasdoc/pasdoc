@@ -223,10 +223,13 @@ type
   end;
 
 implementation
-{$IFDEF FPC}
 uses
+{$IFDEF FPC}
   TextWrap;
-  
+{$ELSE}
+  SysUtils;
+{$ENDIF}
+
 function TryStrToInt(const AString: string; var AValue: Integer): Boolean;
 var
   LError: Integer;
@@ -234,10 +237,6 @@ begin
   Val(AString, AValue, LError);
   Result := LError = 0;
 end;
-{$ELSE}
-uses
-  SysUtils;
-{$ENDIF}
 
 { TOptionParser }
 
