@@ -10,7 +10,6 @@
 
 unit PasDoc;
 
-{$I VERSIONS.INC}
 {$I DEFINES.INC}
 
 interface
