@@ -53,9 +53,9 @@ var
   GOption_Verbosity: TIntegerOption;
   GOption_Define: TStringOptionList;
   GOption_Help: TBoolOption;
+  GOption_IncludePaths: TPathListOption;
   GOption_Descriptions,
   GOption_ConditionalFile,
-  GOption_IncludePaths,
   GOption_SourceList,
   GOption_AbbrevFiles: TStringOptionList;
   GOption_ContentFile,
@@ -108,7 +108,7 @@ begin
   GOption_ConditionalFile.Explanation := 'read conditionals from this file';
   GOptionParser.AddOption(GOption_ConditionalFile);
 
-  GOption_IncludePaths := TStringOptionList.Create('I', 'include', True, False);
+  GOption_IncludePaths := TPathListOption.Create('I', 'include', True, False);
   GOption_IncludePaths.Explanation := 'includes search path';
   GOptionParser.AddOption(GOption_IncludePaths);
 
