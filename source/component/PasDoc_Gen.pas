@@ -592,7 +592,7 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
       if UpCase(Desc[CurPos+i]) <> s[i] then
         exit;
 
-    { TODO -cfixme -ojmb: is NOT {a..z,A..Z} ok? I don't see what difference it makes... }
+    { TODO -cfixme -ojmb: is NOT (a..z,A..Z) ok? I don't see what difference it makes... }
     if (CurPos + l = Len) or (not (Desc[CurPos + l + 1] in ['a'..'z','A'..'Z'])) then begin
       Inc(CurPos, l + 1);
       Result := true;
