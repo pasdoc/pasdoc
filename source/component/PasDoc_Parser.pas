@@ -39,7 +39,7 @@ type
     Scanner: TScanner;
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
-    FStarOnly: boolean;
+    FCommentMarker: string;
     FClassMembers: TAccessibilities;
 
     procedure DoError(const AMessage: string; const AArguments: array of
@@ -108,7 +108,7 @@ type
     function ParseUnit(var U: TPasUnit): Boolean;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    property StarStyleOnly: boolean read FStarOnly write FStarOnly default False;
+    property CommentMarker: string read FCommentMarker write FCommentMarker;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
   end;
 
@@ -146,7 +146,7 @@ begin
   Scanner := TScanner.Create(InputStream, OnMessageEvent, VerbosityLevel, AStreamName);
   Scanner.AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
-  StarStyleOnly := True;
+  FCommentMarker := '**';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -180,9 +180,7 @@ end;
 function TParser.GetLastComment(const ClearLastComment: Boolean): string;
 var
   l: Integer;
-  LBSComment: Integer;
 begin
-  LBSComment := 0;
   if Assigned(LastCommentToken) then begin
     Result := LastCommentToken.Data;
     if ClearLastComment then begin
@@ -199,24 +197,22 @@ begin
             begin
               Delete(Result, 1, 1);
               Dec(l);
- 
+
               if (l > 0) and (Result[l] = '}') then
                 Delete(Result, Length(Result), 1);
             end;
- 
+
           '/':
             if (l > 1) and (Result[2] = '/') then
               begin
                 Delete(Result, 1, 2);
-                Exit;
               end;
- 
+
           '(':
             if (l > 1) and (Result[2] = '*') then
               begin
                 Delete(Result, 1, 2);
                 Dec(l, 2);
-                LBSComment := 1;
                 if (l > 1) and (Result[l - 1] = '*') and (Result[l] = ')') then
                   Delete(Result, l - 1, 2);
               end;
@@ -225,19 +221,13 @@ begin
   else
     Result := '';
 
-  if StarStyleOnly then begin
-    if (Length(Result) < 2-LBSComment) or (Result[1] <> '*') or ((Result[2] <> '*') and (LBSComment=0)) then
+  if CommentMarker <> '' then begin
+    if (Length(Result) < Length(CommentMarker)) or (Copy(Result, 1, Length(CommentMarker)) <> CommentMarker) then
       begin
       Result := '';
       exit;
-    end else begin
-      Delete(Result, 1, 2-LBSComment);
     end;
-  end else begin
-    if (Length(Result) >= 2-LBSComment) and (Result[1] = '*') and ((Result[2] = '*') or (LBSComment=1)) then
-      begin
-      Delete(Result, 1, 2-LBSComment);
-    end;
+    Delete(Result, 1, Length(CommentMarker));
   end;
 end;
 

@@ -143,6 +143,9 @@ type
       in Html. }
     function CodeString(const s: string): string; virtual;
 
+    { Mark the string as a parameter, e.g. <b>TheString</b> }
+    function ParameterString(const ParamType, Param: string): string; virtual;
+
     { Calls @link(ConvertChar) for each character in S, thus assembling a
       String that is returned and can be written to the documentation file. }
     function ConvertString(const s: string): string; virtual;
@@ -527,6 +530,44 @@ end;
 
 function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
   Boolean;
+
+  function GetNextWord(const Desc: string; Len: integer; var CurPos: integer): string;
+  begin
+    Result := '';
+    while (CurPos < Len) and (Desc[CurPos] = ' ') do
+      Inc(CurPos);
+    while (CurPos < Len) and (Desc[CurPos] <> ' ') do
+      begin
+        Result := Result + Desc[CurPos];
+        Inc(CurPos);
+      end;
+  end;
+  
+  function IsMacro(const Desc: string; Len: integer;
+    const Macro: string; var CurPos: integer): boolean;
+  var
+    i: integer;
+    l: integer;
+    s: string;
+  begin
+    Result := false;
+    s := UpperCase(Macro);
+    l := Length(s);
+
+    if CurPos + l >= Len then
+      exit;
+
+    for i:=1 to l do
+      if UpCase(Desc[CurPos+i]) <> s[i] then
+        exit;
+
+    { TODO -cfixme -otwm : this should probably also check for other whitespace characters }
+    if (CurPos + l = Len) or (Desc[CurPos + l + 1] = ' ') then begin
+      Inc(CurPos, l + 1);
+      Result := true;
+    end;
+  end;
+
 var
   Ancestor: TPasItem;
   Run: Integer;
@@ -555,74 +596,49 @@ begin
         Inc(Run, 2);
       end
       else
+        if IsMacro(d, l, 'RAISES', Run) then begin
+          t := t + ParameterString('Raises', GetNextWord(d, l, Run)) + ' ';
+        end
+        else
+        if IsMacro(d, l, 'PARAM', Run) then begin
+          t := t + ParameterString('', GetNextWord(d, l, Run)) + ' ';
+        end
+        else
+        if IsMacro(d, l, 'RETURN', Run) or
+          IsMacro(d, l, 'RETURNS', Run) then begin
+          t := t + ParameterString('', 'Returns') + ' ';
+        end
+        else
           { Is it @Name?
             * Name must follow directly after @.
             * There are no brackets after @Name. }
-        if (Run <= l - 4) and
-          ((d[Run + 1] = 'N') or (d[Run + 1] = 'n')) and
-          ((d[Run + 2] = 'A') or (d[Run + 2] = 'a')) and
-          ((d[Run + 3] = 'M') or (d[Run + 3] = 'm')) and
-          ((d[Run + 4] = 'E') or (d[Run + 4] = 'e')) then begin
+        if IsMacro(d, l, 'NAME', Run) then begin
           t := t + CodeString(Item.Name);
-          Inc(Run, 5);
         end
         else
-          if (Run <= l - 9) and
-            ((d[Run + 1] = 'C') or (d[Run + 1] = 'c')) and
-            ((d[Run + 2] = 'L') or (d[Run + 2] = 'l')) and
-            ((d[Run + 3] = 'A') or (d[Run + 3] = 'a')) and
-            ((d[Run + 4] = 'S') or (d[Run + 4] = 's')) and
-            ((d[Run + 5] = 'S') or (d[Run + 5] = 's')) and
-            ((d[Run + 6] = 'N') or (d[Run + 6] = 'n')) and
-            ((d[Run + 7] = 'A') or (d[Run + 7] = 'a')) and
-            ((d[Run + 8] = 'M') or (d[Run + 8] = 'm')) and
-            ((d[Run + 9] = 'E') or (d[Run + 9] = 'e')) and
-            Assigned(Item.MyObject) then begin
-            t := t + CodeString(Item.MyObject.Name);
-            Inc(Run, 10);
+          if IsMacro(d, l, 'CLASSNAME', Run) then begin
+            if Assigned(Item.MyObject) then begin
+              t := t + CodeString(Item.MyObject.Name);
+            end;
           end
           else
               { Is it @True? }
-            if (Run <= l - 4) and
-              ((d[Run + 1] = 'T') or (d[Run + 1] = 't')) and
-              ((d[Run + 2] = 'R') or (d[Run + 2] = 'r')) and
-              ((d[Run + 3] = 'U') or (d[Run + 3] = 'u')) and
-              ((d[Run + 4] = 'E') or (d[Run + 4] = 'e')) then begin
+            if IsMacro(d, l, 'TRUE', Run) then begin
               t := t + CodeString('True');
-              Inc(Run, 5);
             end
             else
                 { Is it @False ? }
-              if (Run <= l - 5) and
-                ((d[Run + 1] = 'F') or (d[Run + 1] = 'f')) and
-                ((d[Run + 2] = 'A') or (d[Run + 2] = 'a')) and
-                ((d[Run + 3] = 'L') or (d[Run + 3] = 'l')) and
-                ((d[Run + 4] = 'S') or (d[Run + 4] = 's')) and
-                ((d[Run + 5] = 'E') or (d[Run + 5] = 'e')) then begin
+              if IsMacro(d, l, 'FALSE', Run) then begin
                 t := t + CodeString('False');
-                Inc(Run, 6);
               end
               else
                   { Is it @nil ? }
-                if (Run <= l - 3) and
-                  ((d[Run + 1] = 'N') or (d[Run + 1] = 'n')) and
-                  ((d[Run + 2] = 'I') or (d[Run + 2] = 'i')) and
-                  ((d[Run + 3] = 'L') or (d[Run + 3] = 'l')) then begin
+                if IsMacro(d, l, 'NIL', Run) then begin
                   t := t + CodeString('nil');
-                  Inc(Run, 4);
                 end
                 else
-                  if (Run <= l - 9) and
-                    ((d[Run + 1] = 'I') or (d[Run + 1] = 'i')) and
-                    ((d[Run + 2] = 'N') or (d[Run + 2] = 'n')) and
-                    ((d[Run + 3] = 'H') or (d[Run + 3] = 'h')) and
-                    ((d[Run + 4] = 'E') or (d[Run + 4] = 'e')) and
-                    ((d[Run + 5] = 'R') or (d[Run + 5] = 'r')) and
-                    ((d[Run + 6] = 'I') or (d[Run + 6] = 'i')) and
-                    ((d[Run + 7] = 'T') or (d[Run + 7] = 't')) and
-                    ((d[Run + 8] = 'E') or (d[Run + 8] = 'e')) and
-                    ((d[Run + 9] = 'D') or (d[Run + 9] = 'd')) and
-                    Assigned(Item.MyObject) then begin
+                  if Assigned(Item.MyObject) and
+                    IsMacro(d, l, 'INHERITED', Run) then begin
                     // Try to find inherited property of item.
                     // Updated 14 Jun 2002
 
@@ -646,7 +662,6 @@ begin
                       end;
                     end;
 
-                    Inc(Run, 10);
                     if TheLink <> '' then begin
                       t := t + TheLink;
                     end else begin
@@ -1592,6 +1607,12 @@ begin
       end;
     end;
   end;
+end;
+
+function TDocGenerator.ParameterString(const ParamType,
+  Param: string): string;
+begin
+  Result := #10 + ParamType + ' ' + Param;
 end;
 
 end.

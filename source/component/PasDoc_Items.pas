@@ -583,7 +583,7 @@ begin
       DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
         if Authors = nil then FAuthors := NewStringVector;
-        Authors.AddNotExisting(s);
+        Authors.Add(s);
       end;
     end;
     Inc(Offs1);

@@ -1,5 +1,5 @@
 { @abstract(Contains the main TPasDoc component. )
-  @lastmodified(2003-03-28)
+  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
@@ -50,7 +50,7 @@ type
       during the parsing. }
     FUnits: TPasUnits;
     FVerbosity: Cardinal;
-    FStarStyle: boolean;
+    FCommentMarker: string;
     FGenerator: TDocGenerator;
     FClassMembers: TAccessibilities;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
@@ -58,6 +58,8 @@ type
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
     procedure SetSourceFileNames(const ASourceFileNames: TStringVector);
     procedure SetGenerator(const Value: TDocGenerator);
+    procedure SetStarStyle(const Value: boolean);
+    function GetStarStyle: boolean;
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(Units). }
@@ -116,7 +118,8 @@ type
       SetSourceFileNames;
     property Title: string read FTitle write FTitle;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
-    property StarStyleOnly: boolean read FStarStyle write FStarStyle;
+    property StarStyleOnly: boolean read GetStarStyle write SetStarStyle;
+    property CommentMarker: string read FCommentMarker write FCommentMarker;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers; 
@@ -235,7 +238,7 @@ begin
     GenMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
   try
-    p.StarStyleOnly := StarStyleOnly;
+    p.CommentMarker := CommentMarker;
 
     if p.ParseUnit(U) then begin
       if FUnits = nil then FUnits := TPasUnits.Create(True);
@@ -536,6 +539,20 @@ begin
     end;
     SysUtils.FindClose(SR);
   end;
+end;
+
+procedure TPasDoc.SetStarStyle(const Value: boolean);
+begin
+  if Value then begin
+    FCommentMarker := '**';
+  end else begin
+    FCommentMarker := '';
+  end;
+end;
+
+function TPasDoc.GetStarStyle: boolean;
+begin
+  Result := FCommentMarker = '**';
 end;
 
 end.

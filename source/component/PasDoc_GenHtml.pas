@@ -118,6 +118,8 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
+    { Mark the string as a parameter, e.g. <b>TheString</b> }
+    function ParameterString(const ParamType, Param: string): string; override;
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -2089,6 +2091,15 @@ begin
     writestring(s);
   end;
   LErrors.Free;
+end;
+
+function THTMLDocGenerator.ParameterString(const ParamType,
+  Param: string): string;
+begin
+  { TODO -cfixme -otwm :
+    This should probably be something like
+    <div type="parameter"> ... </div> to be used with CSS }
+  Result := '<br>' + ParamType + ' <span type="parameter">' + Param + '</span>';
 end;
 
 end.
