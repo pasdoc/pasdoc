@@ -152,51 +152,10 @@ type
   { Compiler Identification Constants }
   { ---------------------------------------------------------------------------- }
 
-{$IFDEF KYLIX_1}
-const
-  COMPILER_NAME = 'KYLIX 1';
-{$ENDIF}
-
-{$IFDEF KYLIX_2}
-const
-  COMPILER_NAME = 'KYLIX 2';
-{$ENDIF}
-
-{$IFDEF KYLIX_3}
-const
-  COMPILER_NAME = 'KYLIX 3';
-{$ENDIF}
-
-{$IFDEF DELPHI_9}
-  COMPILER_NAME = 'DELPHI 9';
-{$ENDIF}
-
-{$IFDEF DELPHI_7}
-const
-  COMPILER_NAME = 'DELPHI 7';
-{$ENDIF}
-
-{$IFDEF DELPHI_6}
-const
-  COMPILER_NAME = 'DELPHI 6';
-{$ENDIF}
-
-{$IFDEF DELPHI_5}
-const
-  COMPILER_NAME = 'DELPHI 5';
-{$ENDIF}
-
-{$IFDEF DELPHI_4}
-const
-  COMPILER_NAME = 'DELPHI 4';
-{$ENDIF}
-
-{$IFDEF FPC}
 { This is a function only because we can't nicely declare it as a constant.
   But this behaves like a constant, i.e. every time you call it
   it returns the same thing (as long as this is the same binary). }
 function COMPILER_NAME: string;
-{$ENDIF}
 
 const
   COMPILER_BITS = '32';
@@ -700,13 +659,23 @@ end;
 
 { non-object routines -------------------------------------------------------- }
 
-{$ifdef FPC}
 function COMPILER_NAME: string;
 begin
-  COMPILER_NAME := 'FPC ' +
-    Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
+  COMPILER_NAME := 
+    {$IFDEF FPC}
+    'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
+    {$ENDIF}
+
+    {$IFDEF KYLIX_1} 'KYLIX 1'; {$ENDIF}
+    {$IFDEF KYLIX_2} 'KYLIX 2'; {$ENDIF}
+    {$IFDEF KYLIX_3} 'KYLIX 3'; {$ENDIF}
+
+    {$IFDEF DELPHI_9} 'DELPHI 9'; {$ENDIF}
+    {$IFDEF DELPHI_7} 'DELPHI 7'; {$ENDIF}
+    {$IFDEF DELPHI_6} 'DELPHI 6'; {$ENDIF}
+    {$IFDEF DELPHI_5} 'DELPHI 5'; {$ENDIF}
+    {$IFDEF DELPHI_4} 'DELPHI 4'; {$ENDIF}
 end;
-{$endif}
 
 function PASDOC_FULL_INFO: string;
 begin
