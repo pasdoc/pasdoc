@@ -218,14 +218,14 @@ begin
     if Assigned(Item.MyUnit) then begin
       if Assigned(Item.MyObject) then begin
         { it's a method, a field or a property - only those have MyObject initialized }
-        Result := Item.MyObject.FullLink + '#' + IntToStr(Item.AnchorNumber);
+        Result := Item.MyObject.FullLink + '#' + Item.Name;
       end else begin
         if Item.ClassType = TPasCio then begin
           { it's an object / a class }
           Result := Item.MyUnit.Name + '.' + Item.Name + GetFileExtension;
         end else begin
           { it's a constant, a variable, a type or a function / procedure }
-          Result := Item.MyUnit.FullLink + '#' + IntToStr(Item.AnchorNumber);
+          Result := Item.MyUnit.FullLink + '#' + Item.Name;
         end;
       end;
     end else begin
@@ -316,7 +316,7 @@ begin
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
   if not HtmlHelp then WriteDocumentHeadline;
 
-  WriteStartOfAnchor(IntToStr(CIO.AnchorNumber));
+  WriteStartOfAnchor(CIO.Name);
   WriteEndOfAnchor;
   WriteHeading(HL, s);
   { write unit link }
@@ -699,7 +699,7 @@ begin
     WriteVisibilityCell(Item);
 
     WriteStartOfTableCell;
-    WriteStartOfAnchor(IntToStr(Item.AnchorNumber));
+    WriteStartOfAnchor(Item.Name);
     WriteEndOfAnchor;
     WriteString(CodeString(Item.Name));
     WriteEndOfTableCell;
@@ -788,7 +788,7 @@ begin
         if Methods then WriteVisibilityCell(p);
 
         WriteString('<TD width=100%>');
-        WriteStartOfAnchor(IntToStr(p.AnchorNumber));
+        WriteStartOfAnchor(p.Name);
         WriteEndOfAnchor;
 
               // s := StringReplace(s, p^.Name, '<B>' + p^.Name + '</B>', [rfIgnoreCase]);
@@ -899,7 +899,7 @@ begin
     WriteStartOfTableRow;
 
     WriteStartOfTableCell;
-    WriteStartOfAnchor(IntToStr(Item.AnchorNumber));
+    WriteStartOfAnchor(Item.Name);
     WriteEndOfAnchor;
     WriteString(Item.Name);
     WriteEndOfTableCell;
@@ -1109,7 +1109,7 @@ begin
     WriteVisibilityCell(Prop);
 
     WriteString('<TD width=100%>');
-    WriteStartOfAnchor(IntToStr(Prop.AnchorNumber));
+    WriteStartOfAnchor(Prop.Name);
     WriteEndOfAnchor;
     WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration, '');
 
