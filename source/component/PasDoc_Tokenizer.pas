@@ -472,8 +472,6 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.GetToken: TToken;
-label
-  Error;
 var
   c: Char;
   I: TKeyword;
@@ -489,7 +487,7 @@ begin
             caveat: will fail on Mac files (row is 13) }
         Inc(Row, StrCountCharA(Result.Data, #10))
       else
-        goto Error;
+        DoError('Error: tokenizer: could not read character.', []);
     end
     else
       if c in IdentifierStart then begin
@@ -517,7 +515,7 @@ begin
               end;
             '(': begin
                 c := ' ';
-                if HasData and not PeekChar(c) then goto Error;
+                if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', []);
                 case c of
                   '*': begin
                       ConsumeChar;
@@ -612,7 +610,6 @@ begin
             end;
           end
       else
-        Error:
         DoError('Error: tokenizer: could not read character.', []);
 end;
 

@@ -904,6 +904,9 @@ begin
     WriteStartOfAnchor(Item.Name);
     WriteEndOfAnchor;
     WriteString(Item.Name);
+    if Item is TPasVarConst then begin
+      WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
+    end;
     WriteEndOfTableCell;
 
     if j = 0 then

@@ -57,7 +57,8 @@ type
     function GetLastComment(const ClearLastComment: Boolean = True): String;
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. }
-    function GetNextNonWCToken(var t: TToken): Boolean;
+    function GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean; overload;
+    function GetNextNonWCToken(var t: TToken): Boolean; overload;
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting PMethod item will be returned in M.
@@ -85,10 +86,10 @@ type
     function ParseType(const U: TPasUnit; var t: TToken): Boolean;
     function ParseUses(const U: TPasUnit): Boolean;
     function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
-    function SkipDeclaration: Boolean;
+    function SkipDeclaration(const VC: TPasVarConst): Boolean;
     { Reads tokens and throws them away as long as they are either whitespace
       or comments. Returns true on success, false if there were any errors. }
-    function SkipWhitespaceAndComments: Boolean;
+    function SkipWhitespaceAndComments(var LCollector: string): Boolean;
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -239,17 +240,27 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetNextNonWCToken(var t: TToken): Boolean;
+function TParser.GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean;
 begin
   Assert(t=nil);
-  if SkipWhitespaceAndComments then begin
+  if SkipWhitespaceAndComments(LCollector) then begin
     Result := Scanner.GetToken(t)
   end else begin
     Result := False;
   end;
 end;
 
-{ ---------------------------------------------------------------------------- }
+function TParser.GetNextNonWCToken(var t: TToken): Boolean;
+var
+  LDummy: string;
+begin
+  Assert(t=nil);
+  if SkipWhitespaceAndComments(LDummy) then begin
+    Result := Scanner.GetToken(t)
+  end else begin
+    Result := False;
+  end;
+end;
 
 function TParser.ParseArguments(var a: string): Boolean;
 var
@@ -674,7 +685,7 @@ begin
           Ind := StandardDirectiveByName(CS);
           case Ind of
             SD_DEFAULT: begin
-                if not SkipDeclaration then begin
+                if not SkipDeclaration(nil) then begin
                   DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo]);
                 end;
                 DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
@@ -727,7 +738,7 @@ begin
             until False;
             ClearLastComment;
 
-            if not SkipDeclaration then begin
+            if not SkipDeclaration(nil) then begin
               Exit;
             end;
           end;
@@ -749,14 +760,14 @@ end;
 
 function TParser.ParseConstant(const U: TPasUnit; t: TToken): Boolean;
 var
-  i: TPasItem;
+  i: TPasVarConst;
 begin
   Result := False;
-  i := TPasItem.Create;
+  i := TPasVarConst.Create;
   i.Name := t.Data;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
   i.DetailedDescription := GetLastComment;
-  if SkipDeclaration then begin
+  if SkipDeclaration(i) then begin
     U.AddConstant(i);
     Result := True;
   end
@@ -867,8 +878,7 @@ begin
     p.IndexDecl := '[';
     repeat
       if not Scanner.GetToken(t) then
-        DoError('Error, could not parse property in file %s',
-          [Scanner.GetStreamInfo]);
+        DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo]);
 
       if (t.MyType <> TOK_COMMENT) and (t.MyType <> TOK_DIRECTIVE) then
         p.IndexDecl := p.IndexDecl + t.Data;
@@ -905,9 +915,8 @@ begin
     p.FullDeclaration := p.Name + ';';
 
   { simply skipping the rest of declaration }
-  if not SkipDeclaration then
-    DoError('Could not skip rest of declaration in file %s',
-      [Scanner.GetStreamInfo]);
+  if not SkipDeclaration(nil) then
+    DoError('Could not skip rest of declaration in file %s', [Scanner.GetStreamInfo]);
 
   Result := True;
 end;
@@ -1030,13 +1039,14 @@ var
   d: string;
   i: TPasItem;
   n: string;
+  LCollected, LTemp: string;
 begin
   Result := False;
   n := t.Data;
   DoMessage(5, mtInformation, 'Parsing type "%s"', [n]);
   FreeAndNil(t);
   d := GetLastComment;
-  if (not GetNextNonWCToken(t)) then
+  if (not GetNextNonWCToken(t, LCollected)) then
     Exit;
 
   if (not t.IsSymbol(SYM_EQUAL)) then begin
@@ -1049,10 +1059,12 @@ begin
     FreeAndNil(t);
     DoError('"=" expected in file %s', [Scanner.GetStreamInfo]);
   end;
-
+  LCollected := LCollected + t.Data;
   FreeAndNil(t);
-  if (not GetNextNonWCToken(t)) then
+
+  if (not GetNextNonWCToken(t, LTemp)) then
     Exit;
+  LCollected := LCollected + LTemp + t.Data;
 
   if (t.MyType = TOK_RESERVED) then
     case t.Info.ReservedKey of
@@ -1099,18 +1111,20 @@ begin
           Exit;
         end;
     end;
-
+  SetLength(LCollected, Length(LCollected)-Length(t.Data));
   Scanner.UnGetToken(t);
 
   t := nil; { so that calling function will not try to dispose of it }
-  if (not SkipDeclaration) then
-    Exit;
-
-  i := TPasItem.Create;
-  i.Name := n;
-  i.DetailedDescription := d;
-  U.AddType(i);
-  Result := True;
+  i := TPasVarConst.Create;
+  TPasVarConst(i).FullDeclaration := LCollected;
+  if not SkipDeclaration(TPasVarConst(i)) then begin
+    i.Free;
+  end else begin
+    i.Name := n;
+    i.DetailedDescription := d;
+    U.AddType(i);
+    Result := True;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1191,69 +1205,95 @@ function TParser.ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
 var
   Finished: Boolean;
   FirstLoop: Boolean;
-  i: TPasItem;
+  i, dummy: TPasVarConst;
   m: TPasMethod;
+  LNew: TPasItems;
+  j: Integer;
+  LCollector: string;
 begin
   Result := False;
+  dummy := TPasVarConst.Create;
+  LNew := TPasItems.Create(false);
   FirstLoop := True;
-  repeat
-    i := TPasItem.Create;
-    if FirstLoop then begin
-      i.Name := t.Data;
-      FirstLoop := False;
-    end else begin
-      if (not GetNextNonWCToken(t)) then Exit;
-      if (t.MyType <> TOK_IDENTIFIER) then
-        DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
-      i.Name := t.Data;
-    end;
-    i.DetailedDescription := GetLastComment(False);
-    U.AddVariable(i);
-    FreeAndNil(t);
-    if (not GetNextNonWCToken(t)) then Exit;
-    if (t.MyType <> TOK_SYMBOL) or
-      ((t.Info.SymbolType <> SYM_COMMA) and
-      (t.Info.SymbolType <> SYM_COLON)) then
-      DoError('%s: Expected comma or colon in var declaration.',
-        [Scanner.GetStreamInfo]);
+  try
+    repeat
+      i := TPasVarConst.Create;
+      if FirstLoop then begin
+        i.Name := t.Data;
+        FirstLoop := False;
+      end else begin
+        if (not GetNextNonWCToken(t, LCollector)) then Exit;
+        dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
+        if (t.MyType <> TOK_IDENTIFIER) then
+          DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
+        i.Name := t.Data;
+      end;
+      i.DetailedDescription := GetLastComment(False);
+      U.AddVariable(i);
+      LNew.InsertObjectLast(i);
+      FreeAndNil(t);
+      if (not GetNextNonWCToken(t, LCollector)) then Exit;
+      dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
+      if (t.MyType <> TOK_SYMBOL) or
+        ((t.Info.SymbolType <> SYM_COMMA) and
+        (t.Info.SymbolType <> SYM_COLON)) then
+        DoError('%s: Expected comma or colon in var declaration.',
+          [Scanner.GetStreamInfo]);
 
-    Finished := (t.Info.SymbolType = SYM_COLON);
-    FreeAndNil(t);
-  until Finished;
-  ClearLastComment;
-  GetNextNonWCToken(t);
-  if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
-    ParseCDFP(m, '', t.Data, t.Info.ReservedKey, '', False);
-    m.Free;
-    FreeAndNil(t);
-    GetNextNonWCToken(t);
-    if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then begin
-      SkipDeclaration;
+      Finished := (t.Info.SymbolType = SYM_COLON);
+      if (t.MyType <> TOK_SYMBOL) OR (t.Info.SymbolType <> SYM_COMMA) then begin
+        dummy.FullDeclaration := dummy.FullDeclaration + t.Data;
+      end;
+      FreeAndNil(t);
+    until Finished;
+    ClearLastComment;
+    GetNextNonWCToken(t, LCollector);
+    dummy.FullDeclaration := dummy.FullDeclaration + LCollector + t.Data;
+    if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
+      ParseCDFP(m, '', t.Data, t.Info.ReservedKey, '', False);
+      dummy.FullDeclaration := dummy.FullDeclaration + m.FullDeclaration;
+      m.Free;
+      FreeAndNil(t);
+      GetNextNonWCToken(t, LCollector);
+      dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
+      if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then begin
+        dummy.FullDeclaration := dummy.FullDeclaration + t.Data;
+        SkipDeclaration(dummy);
+      end else begin
+        Scanner.UnGetToken(t);
+      end;
     end else begin
-      Scanner.UnGetToken(t);
+      if not SkipDeclaration(dummy) then Exit;
     end;
-  end else begin
-    if not SkipDeclaration then Exit;
+    Result := True;
+    for j := LNew.Count-1 downto 0 do begin
+      TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := dummy.FullDeclaration;
+    end;
+  finally
+    dummy.free;
+    LNew.Free;
   end;
-
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.SkipDeclaration: Boolean;
+function TParser.SkipDeclaration(const VC: TPasVarConst): Boolean;
 var
   EndLevel: Integer;
   IsSemicolon: Boolean;
   PLevel: Integer;
   t: TToken;
+  LCollector: string;
 begin
   Result := False;
   EndLevel := 0;
   PLevel := 0;
   t := nil;
   repeat
-    if not GetNextNonWCToken(t) then Exit;
+    if not GetNextNonWCToken(t, LCollector) then Exit;
+    if Assigned(VC) then begin
+      VC.FullDeclaration := VC.FullDeclaration + LCollector;
+    end;
     case t.MyType of
       TOK_SYMBOL:
         case t.Info.SymbolType of
@@ -1268,6 +1308,7 @@ begin
     end;
     IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
       SYM_SEMICOLON);
+    if Assigned(VC) then VC.FullDeclaration := VC.FullDeclaration + t.Data;
     FreeAndNil(t);
   until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
   Result := True;
@@ -1275,16 +1316,18 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.SkipWhitespaceAndComments: Boolean;
+function TParser.SkipWhitespaceAndComments(var LCollector: string): Boolean;
 var
   t: TToken;
 begin
   Result := False;
   t := nil;
+  LCollector := '';
   repeat
     if not Scanner.PeekToken(t) then break;
     if t.MyType = TOK_WHITESPACE then begin
       Scanner.ConsumeToken;
+      LCollector := LCollector + t.Data;
       FreeAndNil(t);
     end else begin
       if t.MyType = TOK_COMMENT then begin

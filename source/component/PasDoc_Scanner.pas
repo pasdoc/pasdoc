@@ -283,7 +283,7 @@ var
 begin
   Assert(t = nil);
   if Assigned(FBufferedToken) then begin
-      { we have a token buffered, we'll return this one }
+    { we have a token buffered, we'll return this one }
     t := FBufferedToken;
     FBufferedToken := nil;
     Result := True;
@@ -479,16 +479,11 @@ end;
 
 function TScanner.PeekToken(var t: TToken): Boolean;
 begin
-  if Assigned(FBufferedToken) then begin
-    t := FBufferedToken;
+  if GetToken(t) then begin
+    FBufferedToken := t;
     Result := True;
   end else begin
-    if GetToken(t) then begin
-      FBufferedToken := t;
-      Result := True;
-    end else begin
-      Result := False;
-    end;
+    Result := False;
   end;
 end;
 
