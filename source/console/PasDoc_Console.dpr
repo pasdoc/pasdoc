@@ -78,6 +78,7 @@ var
   GOption_CommentMarker: TStringOptionList;
   GOption_MarkerOptional: TBoolOption;
   GOption_CacheDir: TStringOption;
+  GOption_FullLink: TBoolOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -206,6 +207,10 @@ begin
   GOption_CacheDir := TStringOption.Create(#0, 'cache-dir');
   GOption_CacheDir.Explanation := 'Cache directory for parsed files (default not set)';
   GOptionParser.AddOption(GOption_CacheDir);
+
+  GOption_FullLink := TBoolOption.Create(#0, 'full-link');
+  GOption_FullLink.Explanation := 'if set, @link() always writes the qualified procedure name "unit.proc" instead of just "proc" and links the "unit" part to the unit only';
+  GOptionParser.AddOption(GOption_FullLink);
 end;
 
 procedure PrintUsage;
@@ -305,6 +310,7 @@ begin
 
   GPasDoc.Generator.OutputGraphVizUses := GOption_WriteGVUses.TurnedOn;
   GPasDoc.Generator.OutputGraphVizClassHierarchy := GOption_WriteGVClasses.TurnedOn;
+  GPasDoc.Generator.FullLink := GOption_FullLink.TurnedOn;
 
   for i := 0 to GOption_AbbrevFiles.Values.Count-1 do begin
     GPasDoc.Generator.ParseAbbreviationsFile(GOption_AbbrevFiles.Values[i]);

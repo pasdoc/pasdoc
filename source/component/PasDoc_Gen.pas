@@ -93,6 +93,7 @@ type
     FAspellPipe: TRunRecord;
     FIgnoreWordsFile,
     FAspellMode: string;
+    FFullLink: boolean;
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -415,6 +416,7 @@ type
     property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling;
     property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
+    property FullLink: boolean read FFullLink write FFullLink;
   end;
 
 implementation
@@ -1102,6 +1104,18 @@ begin
     Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink)
   else
     Result := '';
+
+  if FullLink then begin
+    if (S3 <> '') and (result <> '') then begin
+      FoundItem := FindGlobal(S1, S2, '', 1);
+      Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+    end;
+
+    if (S2 <> '') and (result <> '') then begin
+      FoundItem := FindGlobal(S1, '', '', 0);
+      Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+    end;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
