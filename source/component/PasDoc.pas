@@ -1,4 +1,5 @@
 { @abstract(Contains the main TPasDoc component. )
+  @lastmodified(2003-03-28)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
@@ -39,8 +40,8 @@ type
 { }
   EPasDoc = class(Exception)
   public
-    constructor Create(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
+    constructor Create(const AMessage: string;
+      const AArguments: array of const; const AExitCode: Integer = 0);
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -416,11 +417,13 @@ var
   t1, t2: TDateTime;
 begin
   { Do a couple of tests before we actually start processing the source files. }
-  if FSourceFileNames.IsEmpty then
+  if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
+  edn;
 
-  if not DirectoryExists(FOutputFolder) then
+  if not DirectoryExists(FOutputFolder) then begin
     DoError('Output Folder does not exist (%s).', [FOutputFolder]);
+  end;
   FOutputFolder := IncludeTrailingPathDelimiter(FOutputFolder);
 
   { If no output format has been defined on the command line, pick
@@ -450,11 +453,13 @@ begin
   RemoveExcludedItems(TPasItems(FUnits));
   { check if parsing was successful }
 
-  if IsNilOrEmpty(FUnits) then
+  if IsNilOrEmpty(FUnits) then begin
     DoError('At least one unit must have been successfully parsed to write docs.', [], 1);
+  end;
 
   DoMessage(3, mtInformation, 'Creating %s documentation file(s)...',
     [OUTPUT_FORMAT_NAMES[OutputFormat]]);
+    
   { create desired output generator }
   case OutputFormat of
     ofHtml, ofHtmlHelp: begin
