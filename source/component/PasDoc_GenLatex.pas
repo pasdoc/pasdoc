@@ -558,16 +558,21 @@ procedure TTexDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 var
   j: Integer;
   CIO: TPasCio;
+  begin_written: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
   if c.Count = 0 then exit;
-  WriteDirect('\begin{description}',true);
+  begin_written := False;
   for j := 0 to c.Count - 1 do 
     begin
       CIO := TPasCio(c.PasItemAt[j]);
       { skip any CIO which has no description, as well as all records }
       if (not HasDescription(CIO)) or (CIO.MyType in [CIO_Record,CIO_PackedRecord]) then
         continue;
+      if not begin_written then begin
+        WriteDirect('\begin{description}',true);
+        begin_written := True;
+      end;
       WriteDirect('\item[\texttt{');
       WriteLink(CIO.FullLink, CodeString(ConvertString(CIO.Name)), 'bold');
       { name of class/interface/object and unit }
@@ -581,7 +586,8 @@ begin
         WriteWithURLs(CIO.Description);
       WriteDirect('',true);
     end;
-  WriteDirect('\end{description}',true);
+  if begin_written then
+    WriteDirect('\end{description}',true);
 end;
 
 procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
@@ -1085,6 +1091,7 @@ var
   Item: TPasItem;
   s: string;
   SomeDescriptions: boolean;
+  begin_written: Boolean;
 begin
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
@@ -1108,14 +1115,17 @@ begin
   // two passes, in the first (i=0) we write the overview
   // in the second (i=1) we write the descriptions
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  WriteDirect('\begin{description}',true);
+  begin_written := False;
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
     { skip this entry if there is no description }
     if not HasDescription(p) then
       continue;
-    
+    if not begin_written then begin
+      WriteDirect('\begin{description}',true);
+      begin_written := True;    
+    end;
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
@@ -1136,7 +1146,8 @@ begin
 
     WriteItemDescription(p);
   end;
-  WriteDirect('\end{description}',true);
+  if begin_written then
+    WriteDirect('\end{description}',true);
 end;
 
 procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
@@ -1224,7 +1235,8 @@ var
   s: string;
   SomeDescriptions: boolean;
   Item: TPasItem;
- begin
+  begin_written: boolean;
+begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
   
@@ -1247,14 +1259,17 @@ var
   
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
-  WriteDirect('\begin{description}',true);
+  begin_written := False;
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
     { skip empty entries }
     if not HasDescription(p) then continue;
     
-    
+    if not begin_written then begin
+      WriteDirect('\begin{description}',true);
+      begin_written := True;
+    end;
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
@@ -1272,8 +1287,9 @@ var
     WriteDirect('}]');
     WriteItemDescription(p);
   end;
-  WriteDirect('\end{description}',true);
- end;
+  if begin_written then
+    WriteDirect('\end{description}',true);
+end;
 
 { ---------------------------------------------------------------------------- }
 
@@ -1605,17 +1621,19 @@ begin
       }
       if HasDescription(Item) then
         WriteItemDetailedDescription(Item);
-      WriteDirect('\begin{description}', true);
-      for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-        WriteDirect('\item[\texttt{');
-        { add the first character for enums }
-        WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
-        { add the end characters for enums }
-        WriteDirect('}] ');
-        WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
-        WriteDirect('', true);
+      if TPasEnum(Item).Members.Count > 0 then begin
+        WriteDirect('\begin{description}', true);
+        for k := 0 to TPasEnum(Item).Members.Count-1 do begin
+          WriteDirect('\item[\texttt{');
+          { add the first character for enums }
+          WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
+          { add the end characters for enums }
+          WriteDirect('}] ');
+          WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
+          WriteDirect('', true);
+        end;
+        WriteDirect('\end{description}', true);
       end;
-      WriteDirect('\end{description}', true);
     end;
     WriteEndList;
   end;
@@ -2375,6 +2393,9 @@ end.
 
 {
   $Log$
+  Revision 1.12  2004/05/07 07:14:27  johill
+  fix bug: write \begin{description} only if it will be non-empty, achieved by writing it lazily only when real output comes. Something like this should possibly be done in more places.
+
   Revision 1.11  2004/05/06 19:50:27  johill
   clean up source a bit, fix warnings and some hints
 
