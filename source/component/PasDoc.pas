@@ -267,8 +267,6 @@ begin
     end;
     
     if LParseSuccessful then begin
-      FUnits.clear;
-
       if FUnits.ExistsUnit(U) then begin
         DoMessage(2, mtWarning,
           'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
@@ -312,6 +310,8 @@ var
   p: string;
   InputStream: TStream;
 begin
+  FUnits.clear;
+
   DoMessage(1, mtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
