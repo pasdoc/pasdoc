@@ -674,10 +674,10 @@ begin
           Ind := StandardDirectiveByName(CS);
           case Ind of
             SD_DEFAULT: begin
-                if not SkipDeclaration then
+                if not SkipDeclaration then begin
                   DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo]);
-                DoMessage(5, mtInformation,
-                  'Skipped default property keyword.', []);
+                end;
+                DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
               end;
             SD_PUBLIC: State := STATE_PUBLIC;
             SD_PUBLISHED: State := STATE_PUBLISHED;
