@@ -8,7 +8,7 @@
 The @link(TTokenizer) object creates @link(TToken) objects (tokens) for the
 Pascal programming language from a character input stream.
 
-<P>The @link(Scanning) unit does the same (it actually uses this unit's
+<P>The @link(PasDoc_Scanner) unit does the same (it actually uses this unit's
 tokenizer), with the exception that it evaluates compiler directives,
 which are comments that start with a dollar sign. }
 
@@ -121,7 +121,7 @@ type
     SYM_RIGHT_BRACE, SYM_DOLLAR, SYM_NUMBER, SYM_ASSIGN, SYM_RANGE, SYM_POWER);
 
   { Stores the exact type and additional information on one token.
-    Additionally, @link(Data) stores the array of characters }
+    Additionally, @link(TToken.Data) stores the array of characters }
   TToken = class(TObject)
     { the exact character representation of this token as it was found in the
       input file }
@@ -142,7 +142,7 @@ type
     function IsSymbol(const st: TSymbolType): Boolean;
   end;
 
-  { @abstract(Converts a @link(TInputStream) to a sequence of @link(TToken) objects.) }
+  { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
   protected
     FOnMessage: TPasDocMessageEvent;
@@ -180,7 +180,7 @@ type
       t: TToken): Boolean;
 
   public
-    { Creates a TTokenizer and associates it with given @link(TInputStream). }
+    { Creates a TTokenizer and associates it with given input TStream. }
     constructor Create(
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;

@@ -7,7 +7,7 @@
   @abstract(Provides a simplified Pascal scanner.)
   
   The scanner object @link(TScanner) returns tokens from a Pascal language
-  character input stream. It uses the @link(Tokenizi) unit to get tokens,
+  character input stream. It uses the @link(PasDoc_Tokenizer) unit to get tokens,
   regarding conditional directives that might lead to including another files
   or will add or delete conditional directives. So, this scanner is a combined
   tokenizer and pre-processor. }
