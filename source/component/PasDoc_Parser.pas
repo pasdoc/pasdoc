@@ -1,6 +1,8 @@
 { @abstract(provides all the parsing functionality of pasdoc)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
+  @author(Johannes Berg <johannes@sipsolutions.de>)
+  @cvs($Date$)
 
   Parsing implements most of the functionality of the pasdoc program.
 
@@ -120,7 +122,6 @@ implementation
 
 uses
   SysUtils,
-
   Utils;
 
 { ---------------------------------------------------------------------------- }
@@ -523,6 +524,9 @@ begin
     TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
     All class ancestors are supposed to be included in the docs!
   }
+  { TODO -otwm :
+    That's not quite true since multiple inheritance is not supported by Delphi/Kylix
+    (does FreePascal???). Every entry but the first must be an interface. }
   if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
       { optional ancestor introduced by ( }
     FreeAndNil(t);
@@ -580,32 +584,31 @@ begin
       end;
       if not t.IsSymbol(SYM_RIGHT_BRACKET) then
         DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
-    end else begin
-      Scanner.UnGetToken(t);
-      case i.MyType of
-        CIO_CLASS: begin
-          if LowerCase(i.Name) <> 'tobject' then begin
-            i.Ancestors := NewStringVector;
-            i.Ancestors.Add('TObject');
-          end;
+    end;
+    Scanner.UnGetToken(t);
+    case i.MyType of
+      CIO_CLASS: begin
+        if not SameText(i.Name, 'tobject') then begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('TObject');
         end;
-        CIO_SPINTERFACE: begin
-          if LowerCase(i.Name) <> 'idispinterface' then begin
-            i.Ancestors := NewStringVector;
-            i.Ancestors.Add('IDispInterface');
-          end;
+      end;
+      CIO_SPINTERFACE: begin
+        if not SameText(i.Name, 'idispinterface') then begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('IDispInterface');
         end;
-        CIO_INTERFACE: begin
-          if LowerCase(i.Name) <> 'iinterface' then begin
-            i.Ancestors := NewStringVector;
-            i.Ancestors.Add('IInterface');
-          end;
+      end;
+      CIO_INTERFACE: begin
+        if not SameText(i.Name, 'iinterface') then begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('IInterface');
         end;
-        CIO_OBJECT: begin
-          if LowerCase(i.Name) <> 'object' then begin
-            i.Ancestors := NewStringVector;
-            i.Ancestors.Add('object');
-          end;
+      end;
+      CIO_OBJECT: begin
+        if not SameText(i.Name, 'tobject') then begin
+          i.Ancestors := NewStringVector;
+          i.Ancestors.Add('TObject');
         end;
       end;
     end;
