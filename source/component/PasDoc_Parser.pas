@@ -308,7 +308,7 @@ const
   [SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
     SD_EXTERNAL, SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD,
     SD_OVERRIDE, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-    SD_DEPRECATED, SD_PASCAL, SD_REGISTER, SD_SAFECALL];
+    SD_DEPRECATED, SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_PLATFORM];
 var
   IsSemicolon: Boolean;
   pl: TStandardDirective;
@@ -444,6 +444,11 @@ begin
         FreeAndNil(t);
         GetNextNonWCToken(t);
       end;
+      SD_PLATFORM: begin
+        M.IsPlatform := True;
+        FreeAndNil(t);
+        GetNextNonWCToken(t);
+      end;
     else
       Scanner.UnGetToken(t);
       Break;
@@ -569,8 +574,8 @@ begin
         Exit;
       end;
       if (t.MyType <> TOK_STRING) then
-        DoError('%s: Error - literal String as interface ID expected.',
-          [Scanner.GetStreamInfo]);
+        DoError('%s: Error - literal String as interface ID expected.', [Scanner.GetStreamInfo]);
+      FreeAndNil(t);
       if not GetNextNonWCToken(t) then begin
         Exit;
       end;
@@ -580,20 +585,28 @@ begin
       Scanner.UnGetToken(t);
       case i.MyType of
         CIO_CLASS: begin
-          i.Ancestors := NewStringVector;
-          i.Ancestors.Add('TObject');
+          if LowerCase(i.Name) <> 'tobject' then begin
+            i.Ancestors := NewStringVector;
+            i.Ancestors.Add('TObject');
+          end;
         end;
         CIO_SPINTERFACE: begin
-          i.Ancestors := NewStringVector;
-          i.Ancestors.Add('IDispInterface');
+          if LowerCase(i.Name) <> 'idispinterface' then begin
+            i.Ancestors := NewStringVector;
+            i.Ancestors.Add('IDispInterface');
+          end;
         end;
         CIO_INTERFACE: begin
-          i.Ancestors := NewStringVector;
-          i.Ancestors.Add('IInterface');
+          if LowerCase(i.Name) <> 'iinterface' then begin
+            i.Ancestors := NewStringVector;
+            i.Ancestors.Add('IInterface');
+          end;
         end;
         CIO_OBJECT: begin
-          i.Ancestors := NewStringVector;
-          i.Ancestors.Add('object');
+          if LowerCase(i.Name) <> 'object' then begin
+            i.Ancestors := NewStringVector;
+            i.Ancestors.Add('object');
+          end;
         end;
       end;
     end;
@@ -616,6 +629,7 @@ begin
   Finished := False;
   repeat
     CSFound := False;
+    FreeAndNil(t);
     if not GetNextNonWCToken(t) then begin
       i.Free;
       Exit;
@@ -623,7 +637,7 @@ begin
     if (t.IsSymbol(SYM_SEMICOLON)) then begin
         { A forward declaration of type "name = class(ancestor);" }
       FreeAndNil(t);
-      U.AddCIO(i);
+      if Assigned(U) then U.AddCIO(i);
       Result := True;
       Exit;
     end
@@ -737,22 +751,85 @@ begin
               DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo]);
             until False;
             ClearLastComment;
-
-            if not SkipDeclaration(nil) then begin
-              Exit;
+            FreeAndNil(t);
+            GetNextNonWCToken(t);
+            if (t.MyType = TOK_RESERVED) then begin
+              case t.Info.ReservedKey of
+                KEY_FUNCTION, KEY_PROCEDURE: begin
+                    if ParseCDFP(M,'','',t.Info.ReservedKey,d,false) then begin
+                      M.Free;
+                      FreeAndNil(t);
+                    end else begin
+                      FreeAndNil(t);
+                      exit;
+                    end;
+                  end;
+                KEY_RECORD: begin
+                  ParseCIO(nil, '', CIO_RECORD, '');
+                  end;
+                KEY_PACKED: begin
+                    FreeAndNil(t);
+                    GetNextNonWCToken(t);
+                    if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_RECORD) then begin
+                      ParseCIO(nil, '', CIO_PACKEDRECORD, '');
+                    end else begin
+                      SkipDeclaration(nil);
+                    end;
+                  end;
+                else begin
+                    FreeAndNil(t);
+                    exit;
+                  end;
+                end;
+            end else begin
+              FreeAndNil(t);
+              if not SkipDeclaration(nil) then begin
+                Exit;
+              end;
             end;
           end;
         end;
     if (not CSFound) then CS := '';
     FreeAndNil(t);
   until Finished;
-  if (not GetNextNonWCToken(t)) or (not t.IsSymbol(SYM_SEMICOLON)) then begin
-    i.Free;
-    DoError('%s: Semicolon at the end of Class/Object/Interface expected.',
-      [Scanner.GetStreamInfo]);
+  while true do begin
+    if (not GetNextNonWCToken(t)) then begin
+      i.Free;
+      try
+        DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo]);
+      finally
+        FreeAndNil(t);
+      end;
+    end else begin
+      if t.MyType = TOK_IDENTIFIER then begin
+        case StandardDirectiveByName(t.Data) of
+          SD_PLATFORM: i.IsPlatform := True;
+          SD_DEPRECATED: i.IsDeprecated := True;
+          else begin
+            i.Free;
+            try
+              DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data]);
+            finally
+              FreeAndNil(t);
+            end;
+          end;
+        end;
+      end else begin
+        if not t.IsSymbol(SYM_SEMICOLON) then begin
+          i.Free;
+          try
+            DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo]);
+          finally
+            FreeAndNil(t);
+          end;
+        end else begin
+          break;
+        end;
+      end;
+    end;
+    FreeAndNil(t);
   end;
-  FreeAndNil(t);
-  U.AddCIO(i);
+  if Assigned(U) then U.AddCIO(i);
   Result := True;
 end;
 
@@ -939,6 +1016,8 @@ var
   t1, t2: TToken;
   P: TPasItem;
   LLastWasComma: boolean;
+  s: string;
+  LNeedId: boolean;
 begin
   Result := True;
   t1:=nil; t2:=nil;
@@ -969,13 +1048,33 @@ begin
     end;
     FreeAndNil(t1);
     GetNextNonWCToken(t1);
+    LNeedId := True;
     repeat
-      FreeAndNil(t1);
-      GetNextNonWCToken(t1);
-      if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_COLON) then begin
+      while true do begin
+        case t1.MyType of
+          TOK_SYMBOL: begin
+              case t1.Info.SymbolType of
+                SYM_COLON: break;
+                SYM_COMMA: LNeedId := True;
+              end;
+            end;
+          TOK_IDENTIFIER,
+          TOK_NUMBER: if not LNeedId then begin
+                        s := t1.Data;
+                        FreeAndNil(t1);
+                        DoError('did not expect identifier %s here!', [s], 1);
+                      end;
+          else begin
+            s := t1.Data;
+            FreeAndNil(t1);
+            DoError('unexpected token: %s', [s], 1);
+          end;
+        end;
         FreeAndNil(t1);
-        DoError(': expected', [], 1);
+        GetNextNonWCToken(t1);
       end;
+      // read all identifiers before colon
+
       FreeAndNil(t1);
       GetNextNonWCToken(t1);
       if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
@@ -1070,10 +1169,10 @@ begin
     case t.Info.ReservedKey of
       KEY_CLASS: begin
           FreeAndNil(t);
-          if (not GetNextNonWCToken(t)) then Exit;
-          if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_OF) then
-            begin
-              { include "identifier = class of something;" as standard type }
+          if (not GetNextNonWCToken(t, LTemp)) then Exit;
+          LCollected := LCollected + LTemp + t.Data;
+          if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_OF) then begin
+            { include "identifier = class of something;" as standard type }
           end else begin
             Scanner.UnGetToken(t);
             t := nil;
@@ -1118,8 +1217,10 @@ begin
           end;
         end;
     end;
-  SetLength(LCollected, Length(LCollected)-Length(t.Data));
-  Scanner.UnGetToken(t);
+  if Assigned(t) then begin
+    SetLength(LCollected, Length(LCollected)-Length(t.Data));
+    Scanner.UnGetToken(t);
+  end;
 
   t := nil; { so that calling function will not try to dispose of it }
   i := TPasVarConst.Create;

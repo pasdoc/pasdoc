@@ -49,6 +49,9 @@ type
 
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class
+  private
+    FDeprecated: boolean;
+    FPlatform: boolean;
   protected
     { list of strings, each representing one author of this item }
     FAuthors: TStringVector;
@@ -119,6 +122,10 @@ type
     procedure InsertProperty(const Prop: TPasProperty; var c: TPasProperties);
     { returns the qualified name of the item }
     function QualifiedName: String;
+    { is this item deprecated? }
+    property IsDeprecated: boolean read FDeprecated write FDeprecated;
+    { is this item platform specific? }
+    property IsPlatform: boolean read FPlatform write FPlatform;
   end;
 
   { @abstract(used for constants/variables) }
@@ -140,8 +147,6 @@ type
     FullDeclaration: string;
     { }
     What: TMethodType;
-    { is this method deprecated? }
-    IsDeprecated: boolean;
   end;
 
   TPasProperty = class(TPasItem)

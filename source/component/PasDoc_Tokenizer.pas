@@ -251,7 +251,8 @@ type
     SD_VIRTUAL,
     SD_WRITE,
     SD_DEPRECATED,
-    SD_SAFECALL);
+    SD_SAFECALL,
+    SD_PLATFORM);
 
 const
   StandardDirectiveArray:
@@ -270,7 +271,7 @@ const
     'READ', 'REGISTER', 'REINTRODUCE', 'RESIDENT',
     'STDCALL', 'STORED',
     'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL');
+    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM');
 
 function StandardDirectiveByName(const Name: string): TStandardDirective;
 function KeyWordByName(const Name: string): TKeyword;
