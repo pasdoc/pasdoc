@@ -48,7 +48,7 @@ type
   TPasProperties = class;
 
   { basic linkable item in pasdoc hierarchy }
-  TPasItem = class
+  TPasItem = class(TPersistent)
   private
   protected
     FFullLink: string;
@@ -172,10 +172,14 @@ type
   { extends @link(TPasItem) to store method and function-/procedure-specific
     information }
   TPasMethod = class(TPasItem)
+  protected
+    FFullDecl: string;
+    FWhat: TMethodType;
+  published
     { full declaration, including parameter list and procedural directives }
-    FullDeclaration: string;
+    property FullDeclaration: string read FFullDecl write FFullDecl;
     { }
-    What: TMethodType;
+    property What: TMethodType read FWhat write FWhat;
   end;
 
   TPasProperty = class(TPasItem)
@@ -250,10 +254,13 @@ type
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit }
   TPasUnit = class(TPasItem)
-  private
   protected
+    FIsCached: boolean;
     FSourceFilename: string;
     FOutputFileName: string;
+    procedure DefineProperties(Filer: TFiler); override;
+    procedure LoadCachedProperty(Reader: TReader);
+    procedure StoreCachedProperty(Writer: TWriter);
   public
     { dispose of all dynamically allocated memory in this object }
     destructor Destroy; override;
@@ -265,6 +272,8 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
+
+    property IsCachedVersion: boolean read FIsCached;
   published
     { list of classes and objects defined in this unit }
     CIOs: TPasItems;
@@ -1104,6 +1113,21 @@ destructor TPasEnum.Destroy;
 begin
   FMembers.Free;
   inherited;
+end;
+
+procedure TPasUnit.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineProperty('Cached', LoadCachedProperty, StoreCachedProperty, True);
+end;
+
+procedure TPasUnit.LoadCachedProperty(Reader: TReader);
+begin
+  FIsCached := True;
+end;
+
+procedure TPasUnit.StoreCachedProperty(Writer: TWriter);
+begin
 end;
 
 end.
