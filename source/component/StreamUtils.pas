@@ -50,13 +50,17 @@ end;
 
 procedure WriteLine(const AStream: TStream; const AString: string);
 begin
-  AStream.WriteBuffer(AString[1], Length(AString));
+  if length(AString) > 0 then begin
+    AStream.WriteBuffer(AString[1], Length(AString));
+  end;
   AStream.Write(LINETERMINATOR[1], Length(LINETERMINATOR));
 end;
 
 procedure WriteString(const AStream: TStream; const AString: string);
 begin
-  AStream.WriteBuffer(AString[1], Length(AString));
+  if length(AString) > 0 then begin
+    AStream.WriteBuffer(AString[1], Length(AString));
+  end;
 end;
 
 end.
