@@ -1113,8 +1113,10 @@ var
   LLastWasComma: boolean;
   s: string;
   LNeedId: boolean;
+  ParenCount: integer;
 begin
   Result := True;
+  ParenCount := 0;
   t1:=nil; t2:=nil;
   GetNextNonWCToken(t1);
   if t1.MyType <> TOK_IDENTIFIER then begin
@@ -1179,15 +1181,22 @@ begin
       FreeAndNil(t1);
       GetNextNonWCToken(t1);
       while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
-        if t1.MyType = TOK_IDENTIFIER then begin
+        if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
           P := TPasItem.Create;
           p.Description := GetLastComment(True);
           P.Name:=t1.Data;
           R.Fields.Add(p);
-          FreeAndNil(t1);
-          GetNextNonWCToken(t1);
+          if (ParenCount = 0) then
+          begin
+            FreeAndNil(t1);
+            GetNextNonWCToken(t1);
+          end;
           LLastWasComma := false;
-          while (t1.MyType <> TOK_SYMBOL) OR ((t1.Info.SymbolType <> SYM_SEMICOLON) and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS)) do begin
+          while (t1.MyType <> TOK_SYMBOL)
+            OR ((t1.Info.SymbolType <> SYM_SEMICOLON)
+            and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS))
+            or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
+            and (ParenCount > 0)) do begin
             if (t1.MyType = TOK_IDENTIFIER) then begin
               if LLastWasComma then begin
                 p := TPasItem.Create;
@@ -1212,10 +1221,25 @@ begin
             if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
               LLastWasComma := True;
             end;
+            if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
+              or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and
+              (ParenCount > 0)) then begin
+
+              if t1.Info.SymbolType = SYM_LEFT_PARENTHESIS then
+              begin
+                Inc(ParenCount)
+              end
+              else if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then
+              begin
+                Dec(ParenCount)
+              end;
+            end;
             FreeAndNil(t1);
             GetNextNonWCToken(t1);
           end;
-          if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then begin
+          if (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
+            and (ParenCount = 0) then
+          begin
             Scanner.UnGetToken(t1);
           end;
         end else begin
