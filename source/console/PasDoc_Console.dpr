@@ -93,7 +93,7 @@ begin
 
   GOption_Verbosity := TIntegerOption.Create('v', 'verbosity', True, False);
   GOption_Verbosity.Value := DEFAULT_VERBOSITY_LEVEL;
-  GOption_Verbosity.Explanation := 'set log verbosity (0-5) ['+IntToStr(DEFAULT_VERBOSITY_LEVEL)+']';
+  GOption_Verbosity.Explanation := 'set log verbosity (0-6) ['+IntToStr(DEFAULT_VERBOSITY_LEVEL)+']';
   GOptionParser.AddOption(GOption_Verbosity);
 
   GOption_Define := TStringOptionList.Create('D', 'define', True, False);
