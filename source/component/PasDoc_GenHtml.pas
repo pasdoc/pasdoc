@@ -2278,7 +2278,7 @@ begin
     s := Format('<img class="%s"', [localcss])
   else
     s := '<img border="0"';
-  WriteDirect(Format('%s src="%s" alt="%s"/>', [s, src, alt]));
+  WriteDirect(Format('%s src="%s" alt="%s" title="%s">', [s, src, alt, alt]));
 end;
 
 procedure THTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
