@@ -123,6 +123,12 @@ type
     procedure WriteWithURLs(s: string);
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
+    { Return the text within the parentheses after the @HTML field.  The user
+      is required to provided correctly formatted html text within the
+      parentheses  and to have matching parentheses.  If no parentheses are found
+      after @HTML, the string '@HTML' is returned instead. }
+    function HtmlString(const Desc: string; Len: integer; var CurPos: integer): string; override;
+
     function CodeString(const s: string): string; override;
     { Returns a link to an anchor within a document. HTML simply concatenates
       the strings with a "#" character between them. }
@@ -225,6 +231,43 @@ uses
     - normal font (Times Roman)
     - heading font (Helvetica)
     - code font (Courier New) }
+
+function THTMLDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
+var
+  ParenthesesLevel: integer;
+  CharPos: integer;
+begin
+  CharPos := CurPos;
+  if (CharPos > Len) or (Desc[CharPos] <> '(') then
+  begin
+    result := '@HTML';
+  end
+  else
+  begin
+    ParenthesesLevel := 1;
+    while (ParenthesesLevel <> 0) and (CharPos <= Len) do
+    begin
+      Inc(CharPos);
+      if Desc[CharPos] = '(' then
+      begin
+        Inc(ParenthesesLevel)
+      end
+      else if Desc[CharPos] = ')' then
+      begin
+        Dec(ParenthesesLevel)
+      end;
+    end;
+    if ParenthesesLevel = 0 then
+    begin
+      result := Copy(Desc, CurPos + 1, CharPos - CurPos - 1);
+      CurPos := CharPos + 1;
+    end
+    else
+    begin
+      result := '@HTML';
+    end;
+  end;
+end;
 
 function THTMLDocGenerator.CodeString(const s: string): string;
 begin

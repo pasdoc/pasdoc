@@ -151,6 +151,9 @@ type
       @return the formatted string }
     function CodeString(const s: string): string; virtual;
 
+    { Called when an @html tag is encountered. }
+    function HtmlString(const Desc: string; Len: integer;
+      var CurPos: integer): string; virtual;
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
 
@@ -629,6 +632,10 @@ begin
         Inc(Run, 2);
       end
       else
+        if IsMacro(d, l, 'HTML', Run) then begin
+          t := t + HtmlString(d, l, Run) + ' ';
+        end
+        else
         if IsMacro(d, l, 'RAISES', Run) then begin
           t := t + ParameterString('Raises', GetNextWord(d, l, Run)) + ' ';
         end
@@ -1642,6 +1649,44 @@ end;
 procedure TDocGenerator.WriteConverted(const s: string);
 begin
   WriteConverted(s, false);
+end;
+
+function TDocGenerator.HtmlString(const Desc: string; Len: integer;
+  var CurPos: integer): string; 
+var
+  ParenthesesLevel: integer;
+  CharPos: integer;
+begin
+  CharPos := CurPos;
+  if (CharPos > Len) or (Desc[CharPos] <> '(') then
+  begin
+    result := '@HTML';
+  end
+  else
+  begin
+    ParenthesesLevel := 1;
+    while (ParenthesesLevel <> 0) and (CharPos <= Len) do
+    begin
+      Inc(CharPos);
+      if Desc[CharPos] = '(' then
+      begin
+        Inc(ParenthesesLevel)
+      end
+      else if Desc[CharPos] = ')' then
+      begin
+        Dec(ParenthesesLevel)
+      end;
+    end;
+    if ParenthesesLevel = 0 then
+    begin
+      result := '';
+      CurPos := CharPos + 1;
+    end
+    else
+    begin
+      result := '@HTML';
+    end;
+  end;
 end;
 
 end.
