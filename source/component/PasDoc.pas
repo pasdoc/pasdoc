@@ -10,7 +10,6 @@
 
 unit PasDoc;
 
-{$R BinData.res}
 {$I VERSIONS.INC}
 {$I DEFINES.INC}
 
@@ -500,8 +499,6 @@ begin
   Generator.ExpandDescriptions;
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
 
-  // Write Binary Files first, ...
-  Generator.WriteBinaryFiles;
   // ... because WriteDocumentation may need them (i.e. when calling HHC.exe).
   Generator.WriteDocumentation;
 

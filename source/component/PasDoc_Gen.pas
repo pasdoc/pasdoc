@@ -22,6 +22,7 @@ uses
   PasDoc_Items,
   PasDoc_Languages,
   StringVector,
+  PasDoc_HierarchyTree,
   Classes;
 
 const
@@ -84,6 +85,8 @@ type
 
     FOnMessage: TPasDocMessageEvent;
 
+    FClassHierarchy: TStringCardinalTree;
+
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -91,12 +94,14 @@ type
 
     property CurrentStream: TStream read FCurrentStream;
 
+    procedure CreateClassHierarchy;
+
   public
     { list of all units that were successfully parsed }
     Units: TPasUnits;
     { Creates anchors and links for all items in all units. }
-
     procedure BuildLinks;
+    
     { Checks if D is assigned and empty - if so, disposes of D and sets it to
       nil.
       If there are characters in D, it is checked whether at least one
@@ -104,17 +109,21 @@ type
       disposes of D. }
     { If field @link(Stream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
+
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; virtual;
+
     { Calls @link(ConvertChar) for each character in S, thus assembling a
       String that is returned and can be written to the documentation file. }
     function ConvertString(const s: string): string; virtual;
+    
     { Abstract function to be overwritten in descendants.
       This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
       HTML or a page number in Tex. }
     function CreateLink(const Item: TPasItem): string; virtual;
+
     { If field @link(Stream) still exists (@<@> nil), it is closed.
       Then, a new output stream in the destination directory with given
       name and file extension typical for this document format is created and
@@ -123,81 +132,99 @@ type
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
     function CreateStream(const Name: string): Boolean;
+
     { Must be overwritten.
       From an item name and its link, this creates a language-specific
       reference to that item. }
-    function CreateReferencedLink(ItemName, Link: string): string; virtual;
-      abstract;
+    function CreateReferencedLink(ItemName, Link: string): string; virtual; abstract;
+
     { Takes description D of the item Item, expands links (using Item),
       converts output-specific characters.
       Returns true on success, false otherwise (not enough memory?). }
     function ExpandDescription(Item: TPasItem; var d: string): Boolean;
+
     { Calls @link(ExpandDescription) for each item in each unit of
       @link(Units). }
     procedure ExpandDescriptions;
+
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
-    function ExtractEmailAddress(s: string; out S1, S2, EmailAddress:
-      string): Boolean;
+    function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
+    
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
       Returns a pointer to the item on success, nil otherwise. }
-    function FindGlobal(const S1, S2, S3: string; n: Integer): TPasItem;
+    function FindGlobal(const S1, S2, S3: string; const n: Integer): TPasItem;
+
     function GetCIOTypeName(MyType: TCIOType): string;
+
     { Abstract function that provides file extension for documentation format.
       Must be overwritten by descendants. }
     function GetFileExtension: string; virtual; abstract;
+
     { Loads descriptions from file N and replaces or fills the corresponding
       comment sections of items. }
     procedure LoadDescriptionFile(n: string);
+    
     { Assumes C contains file names as PString variables.
       Calls @link(LoadDescriptionFile) with each file name. }
     procedure LoadDescriptionFiles(const c: TStringVector);
+
     function SearchItem(s: string; const Item: TPasItem): TPasItem;
+
     { Searches for an item of name S which was linked in the description
       of Item. Starts search within item, then does a search on all items in all
       units using @link(FindGlobal).
       Returns a link as String on success or an empty String on failure. }
     function SearchLink(s: string; const Item: TPasItem): string;
+
     { A link provided in a tag can be made up of up to three parts,
       separated by dots.
       If this link is not a valid identifier or if it has more than
       three parts, false is returned, true otherwise.
       The parts are returned in S1, S2 and S3, with the number of
       parts minus one being returned in N. }
-    function SplitLink(s: string; var S1, S2, S3: string; var n: Integer):
-      Boolean;
+    function SplitLink(s: string; var S1, S2, S3: string; var n: Integer): Boolean;
+
     procedure StoreDescription(ItemName: string; var t: string);
+
     { Writes all information on a class, object or interface (CIO) to output,
       at heading level HL. }
     procedure WriteCIO(HL: Byte; const CIO: TPasCio); virtual; abstract;
+
     { Writes all classes, interfaces and objects in C to output, calling
       @link(WriteCIO) with each, at heading level HL. }
     procedure WriteCIOs(HL: Byte; c: TPasItems); virtual;
+
     { Abstract procedure, must be overwritten by descendants.
       Writes a list of all classes, interfaces and objects in C at heading
       level HL to output. }
     procedure WriteCIOSummary(HL: Byte; c: TPasItems); virtual;
+
     { Writes collection T, which is supposed to contain constant items only
       to output at heading level HL with heading Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten by descendants. }
     procedure WriteConstants(HL: Byte; c: TPasItems); virtual;
+
     { If they are assigned, the date values for creation time and time of last
       modification are written to output at heading level HL. }
     procedure WriteDates(const HL: Byte; const Created, LastMod: string);
       virtual; abstract;
+
     { Writes an already-converted description T to output.
       Takes @link(TPasItem.DetailedDescription) if available,
       @link(TPasItem.Description) otherwise.
       If none of them is assigned, nothing is written. }
     procedure WriteDescription(HL: Byte; const Heading: string; const Item:
       TPasItem);
+
     { Abstract procedure, must be overwritten.
       Writes all documentation.
       Will create either a single file or one file for each unit and each
       class, interface or object, depending on output format. }
     procedure WriteDocumentation; virtual; abstract;
+
     { Writes a list of functions / procedure or constructors / destructors /
       methods I to output.
       Heading level HL is used.
@@ -208,6 +235,7 @@ type
       However, this is dependent on the output format. }
     procedure WriteFuncsProcs(const HL: Byte; const Methods: Boolean; const
       FuncsProcs: TPasMethods); virtual; abstract;
+      
     { Abstract procedure that must be overwritten by descendants.
       Writes a heading S at level HL to output.
       In HTML, heading levels are regarded by choosing the appropriate
@@ -222,7 +250,6 @@ type
       e.g. by assigning subsubsection to all Tex headings >= 4. }
     procedure WriteHeading(HL: Byte; const s: string); virtual; abstract;
 
-    procedure WriteBinaryFiles; virtual; abstract;
     { Writes items in I to output, including a heading of level HL and text
       Heading.
       Each item in I should be written with its short description and a
@@ -230,6 +257,7 @@ type
       In HTML, this results in a table with two columns. }
     procedure WriteItems(HL: Byte; Heading: string; const Anchor: string;
       const i: TPasItems); virtual; abstract;
+      
     { Calls @link(WriteString) with S, then writes a line feed. }
     procedure WriteLine(const s: string);
     { Abstract method, must be overwritten by descendants to implement
@@ -291,6 +319,10 @@ type
       output format, more than one output stream will be necessary to
       store all documentation }
     property Title: string read FTitle write FTitle;
+
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
     { destination directory for documentation; must include terminating
       forward slash or backslash so that valid file names can be created
       by concatenating DestinationDirectory and a pathless file name }
@@ -789,8 +821,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.FindGlobal(const S1, S2, S3: string; n: Integer):
-  TPasItem;
+function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer): TPasItem;
 var
   i: Integer;
   Item: TPasItem;
@@ -800,6 +831,7 @@ begin
   Result := nil;
 
   if IsNilOrEmpty(Units) then Exit;
+  
   case n of
     0: { }
       for i := 0 to Units.Count - 1 do begin
@@ -811,7 +843,6 @@ begin
         end;
       end;
     1: begin
-
         { object.field_method_property }
         for i := 0 to Units.Count - 1 do begin
           U := Units.UnitAt[i];
@@ -827,7 +858,6 @@ begin
             end;
           end;
         end;
-
         { unit.cio_var_const_type }
         U := TPasUnit(Units.FindName(S1));
         if Assigned(U) then begin
@@ -1085,17 +1115,14 @@ begin
         DoMessage(2, mtWarning, 'More than one description for ' + ItemName,
           []);
         t := '';
-      end
-      else begin
+      end else begin
         Item.Description := t;
       end;
-    end
-    else begin
+    end else begin
       DoMessage(2, mtWarning, 'Could not find item ' + ItemName, []);
       t := '';
     end;
-  end
-  else begin
+  end else begin
     DoMessage(2, mtWarning, 'Could not split item "' + ItemName + '"', []);
   end;
   t := '';
@@ -1241,6 +1268,65 @@ end;
 function TDocGenerator.ConvertString(const s: string): string;
 begin
   Result := s;
+end;
+
+constructor TDocGenerator.Create(AOwner: TComponent);
+begin
+  inherited;
+  FClassHierarchy := nil;
+end;
+
+procedure TDocGenerator.CreateClassHierarchy;
+var
+  unitLoop: Integer;
+  classLoop: Integer;
+  PU: TPasUnit;
+  ACIO: TPasCio;
+  ParentItem: TPasItem;
+  Parent, Child: TPasItemNode;
+begin
+  FClassHierarchy := TStringCardinalTree.Create;
+  for unitLoop := 0 to Units.Count - 1 do begin
+    PU := Units.UnitAt[unitLoop];
+    if PU.CIOs = nil then Continue;
+    for classLoop := 0 to PU.CIOs.Count - 1 do begin
+      ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
+
+      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
+        ParentItem := FindGlobal(ACIO.Ancestors.FirstName, '', '', 0);
+        if Assigned(ParentItem) then begin
+          Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
+          // Add parent if not already there.
+          if Parent = nil then begin
+            Parent := FClassHierarchy.InsertItem(ParentItem);
+          end;
+        end else begin
+          Parent := FClassHierarchy.ItemOfName(ACIO.Ancestors.FirstName);
+          if Parent = nil then begin
+            Parent := FClassHierarchy.InsertName(ACIO.Ancestors.FirstName);
+          end;
+        end;
+      end else begin
+        Parent := nil;
+      end;
+
+      Child := FClassHierarchy.ItemOfName(ACIO.Name);
+      if Child = nil then begin
+        FClassHierarchy.InsertItemParented(Parent, ACIO)
+      end else begin
+        if Parent <> nil then begin
+          FClassHierarchy.MoveChildLast(Child, Parent);
+        end;
+      end;
+    end;
+  end;
+  FClassHierarchy.Sort;
+end;
+
+destructor TDocGenerator.Destroy;
+begin
+  FClassHierarchy.Free;
+  inherited;
 end;
 
 end.

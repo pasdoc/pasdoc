@@ -13,6 +13,8 @@
 
 unit PasDoc_GenHtml;
 
+{$R BinData.res}
+
 interface
 
 uses
@@ -100,6 +102,7 @@ type
     procedure WriteUnitOverviewFile;
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
+    procedure WriteBinaryFiles;
   public
     procedure WriteUnit(const HL: Byte; const U: TPasUnit); override;
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); override;
@@ -139,7 +142,6 @@ type
     procedure WriteHeading(Level: Byte; const s: string); override;
     { Reads the default HTML Images from the PasDoc executable and writes
       them to the Output Directory. Existing files will not be overwritten. }
-    procedure WriteBinaryFiles; override;
     procedure WriteEndOfCode; override;
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
@@ -172,10 +174,10 @@ implementation
 uses
   SysUtils,
   PasDoc,
-  StringCardinalTree,
   ObjectVector,
   Types,
-  Utils;
+  Utils,
+  PasDoc_HierarchyTree;
 
 { HTML things to be customized:
     - standard background color (white)
@@ -576,6 +578,7 @@ var
   HhcPath: string;
 {$ENDIF}
 begin
+  WriteBinaryFiles;
   WriteUnits(1);
   WriteHierachy;
   WriteOverviewFiles;
@@ -815,9 +818,7 @@ var
 begin
   if (Level < 1) then Level := 1;
   if Level > 6 then begin
-    DoMessage(2, mtWarning,
-      'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.',
-      []);
+    DoMessage(2, mtWarning, 'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.', []);
     Level := 6;
   end;
   c := IntToStr(Level);
@@ -1952,67 +1953,30 @@ end;
 
 procedure THTMLDocGenerator.WriteHierachy;
 var
-  unitLoop: Integer;
-  classLoop: Integer;
-  PU: TPasUnit;
-  ACIO: TPasCio;
-  ParentName: string;
-  Tree: TStringCardinalTree;
   Level, OldLevel: Integer;
-  Node, Parent, Child: TStringCardinalTreeNode;
+  Node: TPasItemNode;
 begin
-  { First build an internal tree of the class hierarchy.
-    This is necessary since we don't know yet which class is a parent of which. }
-  Tree := NewStringCardinalTree;
-  for unitLoop := 0 to Units.Count - 1 do begin
-    PU := Units.UnitAt[unitLoop];
-    if PU.CIOs = nil then Continue;
-    for classLoop := 0 to PU.CIOs.Count - 1 do begin
-      ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
-
-      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
-        ParentName := ACIO.Ancestors.FirstName;
-        Parent := Tree.PItemOfNameCI(ParentName);
-              // Add parent if not already there.
-        if Parent = nil then
-          Parent := Tree.InsertNameLast(ParentName);
-      end
-      else
-        Parent := nil;
-
-      Child := Tree.PItemOfNameCI(ACIO.Name);
-      if Child = nil then
-        Tree.InsertNameNumberChildLast(Parent, ACIO.Name, 1)
-      else begin
-        if Parent <> nil then
-          Tree.MoveChildLast(Child, Parent);
-        Child.Number := 1;
-      end;
-    end;
-  end;
-
-  if not CreateStream(DestinationDirectory + OverviewFilenames[1] + GetFileExtension) then
-    begin
+  CreateClassHierarchy;
+  
+  if not CreateStream(DestinationDirectory + OverviewFilenames[1] + GetFileExtension) then begin
     DoMessage(1, mtError, 'Could not create output file "%s".',
       [OverviewFilenames[1] + GetFileExtension]);
-    Exit;
+    Abort;
   end;
 
   WriteStartOfDocument(Translation[trClassHierarchy]);
   if not HtmlHelp then WriteDocumentHeadline;
   WriteHeading(1, Translation[trClassHierarchy]);
 
-  if Tree.IsEmpty then begin
+  if FClassHierarchy.IsEmpty then begin
     WriteStartOfParagraph;
     WriteString(Translation[trNone]);
     WriteEndOfParagraph;
-  end
-  else begin
-    Tree.SortRecurseByNameCI; // Make sure we sort the output.
+  end else begin
     OldLevel := -1;
-    Node := Tree.PFirstItem;
+    Node := FClassHierarchy.FirstItem;
     while Node <> nil do begin
-      Level := Tree.Level(Node);
+      Level := Node.Level;
       if Level > OldLevel then
         WriteString('<UL>')
       else
@@ -2022,13 +1986,13 @@ begin
         end;
       OldLevel := Level;
 
-      if Node.Number = 0 then
+      if Node.Item = nil then
         WriteString('<LI>' + Node.Name + '</LI>')
       else
         WriteString('<LI><A href="' + Node.Name + GetFileExtension + '">' +
           Node.Name + '</A></LI>');
 
-      Node := Tree.PNextItem(Node);
+      Node := FClassHierarchy.NextItem(Node);
     end;
 
     while OldLevel >= 0 do begin
@@ -2036,8 +2000,6 @@ begin
       Dec(OldLevel);
     end;
   end;
-
-  Tree.Free;
 
   WriteFooter;
   WriteAppInfo;
