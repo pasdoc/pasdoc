@@ -382,7 +382,7 @@ begin
         begin
           M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
           FreeAndNil(t);
-                                                                                                                               
+
           if not GetNextNonWCToken(t) then begin
             M.Free;
             Exit;
