@@ -80,7 +80,8 @@ type
     FSpellCheckStarted: boolean;
     FAspellLanguage: string;
     FAspellPipe: TRunRecord;
-    FIgnoreWordsFile: string;
+    FIgnoreWordsFile,
+    FAspellMode: string;
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -1523,6 +1524,10 @@ begin
   if FCheckSpelling and FSpellCheckStarted then begin
     s := StringReplace(AString, #10, ' ', [rfReplaceAll]);
     s := StringReplace(AString, #13, ' ', [rfReplaceAll]);
+    if Length(FAspellMode) > 0 then begin
+      PasDoc_RunHelp.WriteLine('-', FAspellPipe);
+      PasDoc_RunHelp.WriteLine('+'+FAspellMode, FAspellPipe);
+    end;
     PasDoc_RunHelp.WriteLine('^'+s, FAspellPipe);
     s := ReadLine(FAspellPipe);
     while Length(s) > 0 do begin
@@ -1574,6 +1579,7 @@ begin
   FSpellCheckStarted := False;
   if FCheckSpelling then begin
     try
+      FAspellMode := AMode;
       if AMode <> '' then begin
         FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage, '--mode='+AMode]);
       end else begin
