@@ -140,7 +140,9 @@ type
     procedure CloseStream;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html. }
+      in Html.
+      @param s is the string to format
+      @return the formatted string }
     function CodeString(const s: string): string; virtual;
 
     { Mark the string as a parameter, e.g. <b>TheString</b> }
