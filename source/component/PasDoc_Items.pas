@@ -35,6 +35,8 @@ type
     STATE_AUTOMATED
     );
 
+  TAccessibilities = set of TAccessibility;
+
 type
   TPasCio = class;
   TPasMethod = class;

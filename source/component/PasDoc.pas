@@ -23,7 +23,7 @@ uses
   PasDoc_Gen,
   PasDoc_Types,
   StringVector;
-
+  
 const
   DEFAULT_VERBOSITY_LEVEL = 3;
 
@@ -53,6 +53,7 @@ type
     FVerbosity: Cardinal;
     FStarStyle: boolean;
     FGenerator: TDocGenerator;
+    FClassMembers: TAccessibilities;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -122,7 +123,8 @@ type
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property StarStyleOnly: boolean read FStarStyle write FStarStyle;
 
-    property Generator: TDocGenerator read FGenerator write SetGenerator; 
+    property Generator: TDocGenerator read FGenerator write SetGenerator;
+    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers; 
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -232,6 +234,7 @@ begin
   DoMessage(3, mtInformation, 'Now parsing file %s...', [SourceFileName]);
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     FOnMessage, FVerbosity);
+  p.ClassMembers := ClassMembers;
   try
     p.StarStyleOnly := StarStyleOnly;
 

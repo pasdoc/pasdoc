@@ -31,16 +31,17 @@ type
     Otherwise a description of the error should be found in
     @link(ErrorMessage). }
   TParser = class
+  protected
     { Last comment found in input or nil if no comment available.
     Will be modified by @link(GetLastComment). }
     LastCommentToken: TToken;
     { The underlying scanner object. }
     Scanner: TScanner;
-  private
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FStarOnly: boolean;
-  protected
+    FClassMembers: TAccessibilities;
+
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -102,8 +103,8 @@ type
     function ParseUnit(out U: TPasUnit): Boolean;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    property StarStyleOnly: boolean read FStarOnly write FStarOnly default
-      False;
+    property StarStyleOnly: boolean read FStarOnly write FStarOnly default False;
+    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
   end;
 
 implementation
@@ -618,7 +619,9 @@ begin
                 Exit;
               end;
               M.State := State;
-              M.InsertMethod(M, i.Methods);
+              if State in ClassMembers then begin
+                M.InsertMethod(M, i.Methods);
+              end;
             end;
           KEY_END: Finished := True;
           KEY_PROPERTY: begin
@@ -628,7 +631,9 @@ begin
                 Exit;
               end;
               p.State := State;
-              p.InsertProperty(p, i.Properties);
+              if State in ClassMembers then begin
+                p.InsertProperty(p, i.Properties);
+              end;
             end;
           KEY_CASE: begin
               if not ParseRecordCase(i) then begin
@@ -680,7 +685,9 @@ begin
 
               f.State := State;
               f.DetailedDescription := GetLastComment(False);
-              f.InsertItem(f, i.Fields);
+              if State in ClassMembers then begin
+                f.InsertItem(f, i.Fields);
+              end;
               FreeAndNil(t);
 
               if not GetNextNonWCToken(t) then Exit;
