@@ -112,17 +112,13 @@ begin
 end;
 
 {$IFDEF FPC}
-const
-  {$IFDEF LINUX}
-  PathDelim = '/';
-  {$ENDIF}
-  
+
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
   if Length(S)>0 then begin
-    if S[Length(S)] <> PathDelim then begin
-      Result := S + PathDelim;
+    if S[Length(S)] <> DirectorySeparator then begin
+      Result := S + DirectorySeparator;
     end;
   end;
 end;
