@@ -1447,8 +1447,9 @@ end;
 function TDocGenerator.ExtractLink(s: string; out S1, S2,
   Link: string): Boolean;
 const
-  FullLinkChars = ['A'..'Z', 'a'..'z', '_', '%', '/', '\', '#'];
-  HalfLinkChars = ['.', ',', '-'];
+  AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
+  FullLinkChars = AlphaNum + ['_', '%', '/', '#'];
+  HalfLinkChars = ['.', ',', '-', ':', ';'];
 var
   p, i: Integer;
   scheme, url: string;
@@ -1457,7 +1458,7 @@ begin
   p := Pos('://', s);
   if p > 0 then begin
     i := p-1;
-    while (i>0) and (s[i] in FullLinkChars) do Dec(i); // find beginning of scheme
+    while (i>0) and (s[i] in AlphaNum) do Dec(i); // find beginning of scheme
     scheme := Copy(s, i+1, p-i+2);
     S1 := Copy(s, 1, i);
     i := p+2;
