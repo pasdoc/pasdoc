@@ -23,7 +23,8 @@ uses
   PasDoc_Languages,
   StringVector,
   PasDoc_Types,
-  Classes;
+  Classes,
+  MNStringFunctions;
 
 type
   { @abstract(generates HTML documentation)
@@ -113,6 +114,8 @@ type
     procedure WriteUnitUses(const HL:Byte; U: TPasUnit); 
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); override;
     procedure WriteProperties(HL: Byte; const p: TPasProperties); override;
+
+    procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
@@ -575,6 +578,7 @@ var
   HhcPath: string;
 {$ENDIF}
 begin
+  StartSpellChecking;
   FLinkCount := 1;
   inherited;
   WriteBinaryFiles;
@@ -595,6 +599,7 @@ begin
       DoMessage(1, mtError, 'Could not compile HtmlHelp.', []);
   end;
 {$ENDIF}
+  EndSpellChecking;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2051,7 +2056,7 @@ var
   s1, s2, link: string;
 begin
   while ExtractLink(s, s1, s2, link) do begin
-    WriteText(S1);
+    WriteSpellChecked(S1);
     WriteText('<a href="');
     WriteText(link);
     WriteText('" target="_new">');
@@ -2059,7 +2064,42 @@ begin
     WriteText('</a>');
     s := s2;
   end;
-  WriteText(s);
+  WriteSpellChecked(s);
+end;
+
+procedure THTMLDocGenerator.WriteSpellChecked(const AString: string);
+var
+  tok: TMNTokenizeRec;
+  s, t: string;
+  slen, i: Integer;
+  sug: TStringList;
+begin
+  s:= AString;
+  slen := Length(s);
+  t := Token(s, ' ', tok, False);
+  sug := TStringList.Create;
+  while (tok.CurrentPos < slen) or (length(t)>0) do begin
+    sug.Clear;
+    if CheckWord(t, sug) then begin
+      WriteString(t+' ');
+    end else begin
+      writestring('<a style="#0000FF; border-bottom: 1px solid crimson" ');
+      if sug.count>0 then begin
+        writestring('title="suggestions: ');
+        for i := 0 to sug.count-2 do begin
+          writestring(sug[i]);
+          writestring(', ');
+        end;
+        writestring(sug[sug.count-1]);
+        writestring('"');
+      end else begin
+        writestring('title="no suggestions found"');
+      end;
+      writestring('>'+t+'</a> ');
+    end;
+    t := NextToken(s, tok);
+  end;
+  sug.free;
 end;
 
 end.

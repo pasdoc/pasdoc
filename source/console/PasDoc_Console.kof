@@ -48,14 +48,14 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)/lib/debug:../component
+SearchPath=../component
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=PasDoc /tmp/test/testfile -E/tmp
+RunParams=/tmp/test.pas -E/tmp --aspell=en /home/johannes/Projects/MetaNet/source/common/core/MNBaseObject.pas
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
@@ -71,9 +71,9 @@ Item0=PROFILE
 
 [HistoryLists\hlSearchPath]
 Count=6
-Item0=$(DELPHI)/lib/debug:../component
-Item1=../component:/tmp
-Item2=../component
+Item0=../component
+Item1=$(DELPHI)/lib/debug:../component
+Item2=../component:/tmp
 Item3=../Component
 Item4=$(DELPHI)/lib/debug:../Component
 Item5=../Component:/tmp

@@ -44,7 +44,10 @@ uses
   PasDoc_Gen in '../component/PasDoc_Gen.pas',
   PasDoc_Items in '../component/PasDoc_Items.pas',
   OptionParser in '../OptionParser/OptionParser.pas',
-  PasDoc_Types in '../component/PasDoc_Types.pas';
+  PasDoc_Types in '../component/PasDoc_Types.pas',
+  PasDoc_RunHelp in '../component/PasDoc_RunHelp.pas',
+  MNStringFunctions in '../../../MetaNet/source/common/misc/MNStringFunctions.pas',
+  MNMemFunctions in '../../../MetaNet/source/common/misc/MNMemFunctions.pas';
 
 var
   GPasDoc: TPasDoc;
@@ -64,7 +67,8 @@ var
   GOption_Title,
   GOption_Format,
   GOption_OutputPath,
-  GOption_Language: TStringOption;
+  GOption_Language,
+  GOption_ASPELL: TStringOption;
   GOption_StarOnly,
   GOption_Generator,
   GOption_NumericFilenames,
@@ -180,6 +184,10 @@ begin
   GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations');
   GOption_AbbrevFiles.Explanation := 'abbreviation file, format is "[name]  value", value is trimmed, lines that do not start with ''['' (or whitespace before that) are ignored';
   GOptionParser.AddOption(GOption_AbbrevFiles);
+
+  GOption_ASPELL := TStringOption.Create(#0, 'aspell');
+  GOption_ASPELL.Explanation := 'enable aspell, giving language as parameter, only for HTML output currently';
+  GOptionParser.AddOption(GOption_ASPELL);
 end;
 
 procedure PrintUsage;
@@ -276,6 +284,9 @@ begin
   for i := 0 to GOption_AbbrevFiles.Values.Count-1 do begin
     GPasDoc.Generator.ParseAbbreviationsFile(GOption_AbbrevFiles.Values[i]);
   end;
+
+  GPasDoc.Generator.CheckSpelling := GOption_ASPELL.WasSpecified;
+  GPasDoc.Generator.AspellLanguage := GOption_ASPELL.Value;
 
   Result := True;
 end;

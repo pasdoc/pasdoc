@@ -23,6 +23,7 @@ uses
   StringVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
+  PasDoc_RunHelp,
   Classes;
 
 const
@@ -62,6 +63,10 @@ type
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
   private
+    FCheckSpelling,
+    FSpellCheckStarted: boolean;
+    FAspellLanguage: string;
+    FAspellPipe: TRunRecord;
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -312,6 +317,14 @@ type
     { output graphviz class tree }
     procedure WriteGVClasses;
 
+    { starts the spell checker - currently linux only }
+    procedure StartSpellChecking;
+
+    { checks a word and returns suggestions }
+    function CheckWord(const AWord: string; const ASuggestions: TStrings): boolean;
+
+    { closes the spellchecker }
+    procedure EndSpellChecking;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -365,6 +378,9 @@ type
     property OutputGraphVizClassHierarchy: boolean read FGraphVizClasses write FGraphVizClasses;
 
     property Abbreviations: TStringList read FAbbreviations write SetAbbreviations;
+
+    property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling;
+    property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
   end;
 
 implementation
@@ -1470,6 +1486,90 @@ begin
     url := Copy(s, p+3, i - p-3);
     link := scheme + url;
     Result := True; 
+  end;
+end;
+
+function TDocGenerator.CheckWord(const AWord: string;
+  const ASuggestions: TStrings): boolean;
+
+  function wordisword(const AWord: string): boolean;
+  const
+    upper = ['A'..'Z'];
+    lower = ['a'..'z'];
+    half = ['-'];
+  var
+    i : Integer;
+    haslower: boolean;
+  begin
+    Result := Length(AWord) > 0;
+    if not result then exit;
+    haslower := false;
+    for i := 1 to length(AWord) do begin
+      haslower := haslower or (AWord[i] in lower);
+      if not (AWord[i] in (lower + upper + half)) then begin
+        Result := false;
+        exit;
+      end;
+    end;
+    Result := (AWord[1] in (lower+upper));
+    if Result and (length(aword)>1) then Result := (AWord[2] in (lower+upper));
+    if Result then Result := haslower;
+  end;
+
+var
+  s: string;
+begin
+  Result := True;
+  if FCheckSpelling and FSpellCheckStarted and wordisword(AWord) then begin
+    PasDoc_RunHelp.WriteLine('^'+AWord, FAspellPipe);
+    s := ReadLine(FAspellPipe);
+    if s <> '' then begin
+      ReadLine(FAspellPipe);
+      Result := (Length(s) > 0) and (s[1] = '*');
+      if not Result then begin
+        DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [AWord]);
+      end;
+      if not Result and Assigned(ASuggestions) And (Length(s) > 0) and (s[1] = '&') then begin
+        ASuggestions.CommaText := s;
+        if ASuggestions.Count>4 then begin
+          ASuggestions.Delete(0);
+          ASuggestions.Delete(0);
+          ASuggestions.Delete(0);
+          ASuggestions.Delete(0);
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TDocGenerator.EndSpellChecking;
+begin
+  if FCheckSpelling and FSpellCheckStarted then begin
+    CloseProgram(FAspellPipe);
+  end;
+end;
+
+procedure TDocGenerator.StartSpellChecking;
+var
+  s: string;
+begin
+  FSpellCheckStarted := False;
+  if FCheckSpelling then begin
+    try
+      FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage]);
+      FSpellCheckStarted := True;
+    except
+      DoMessage(1, mtWarning, 'spell checking is not supported yet, disabling', []);
+      FSpellCheckStarted := False;
+    end;
+    s := ReadLine(FAspellPipe);
+    if copy(s,1,4) <> '@(#)' then begin
+      CloseProgram(FAspellPipe);
+      FSpellCheckStarted := False;
+      DoError('Could not initialize aspell: "%s"', [s], 1);
+    end else begin
+      PasDoc_RunHelp.WriteLine('!', FAspellPipe);
+    end;
   end;
 end;
 
