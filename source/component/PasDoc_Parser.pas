@@ -168,7 +168,7 @@ end;
 procedure TParser.DoMessage(const AVerbosity: Cardinal; const MessageType:
   TMessageType; const AMessage: string; const AArguments: array of const);
 begin
-  if (AVerbosity < FVerbosity) and Assigned(FOnMessage) then
+  if (AVerbosity <= FVerbosity) and Assigned(FOnMessage) then
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
@@ -1243,7 +1243,7 @@ begin
   if Assigned(t) then begin
     if (t.MyType = TOK_RESERVED) then begin
       if t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(M, '', t.Data, t.Info.ReservedKey, '', False) then begin
+        if ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, False) then begin
           M.Name := n;
           U.AddType(M);
           Result := True;

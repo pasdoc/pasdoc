@@ -404,7 +404,7 @@ begin
       DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
       Continue;
     end;
-    DoMessage(2, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
+    DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
     WriteCIO(HL, p);
   end;
   CloseStream;

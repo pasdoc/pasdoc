@@ -25,7 +25,7 @@ uses
   StringVector;
   
 const
-  DEFAULT_VERBOSITY_LEVEL = 3;
+  DEFAULT_VERBOSITY_LEVEL = 2;
 
 type
   { The main object in the pasdoc application; first scans parameters, then
@@ -226,9 +226,9 @@ var
   p: TParser;
   U: TPasUnit;
 begin
-  DoMessage(3, mtInformation, 'Now parsing file %s...', [SourceFileName]);
+  DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    FOnMessage, FVerbosity, SourceFileName);
+    GenMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
   try
     p.StarStyleOnly := StarStyleOnly;
@@ -276,7 +276,7 @@ var
   p: string;
   InputStream: TStream;
 begin
-  DoMessage(2, mtInformation, 'Starting Source File Parsing ...', []);
+  DoMessage(1, mtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
   Count := 0;
