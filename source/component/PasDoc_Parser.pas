@@ -303,12 +303,6 @@ end;
 
 function TParser.ParseCDFP(var M: TPasMethod; CS, CDFPS: string; Key:
   TKeyword; d: string; const NeedName: boolean): Boolean;
-const
-  SDSet: set of TStandardDirective =
-  [SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-    SD_EXTERNAL, SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD,
-    SD_OVERRIDE, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-    SD_DEPRECATED, SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_PLATFORM];
 var
   IsSemicolon: Boolean;
   pl: TStandardDirective;
@@ -391,7 +385,8 @@ begin
     case pl of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
         SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+        SD_VARARGS:
         begin
           M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
           FreeAndNil(t);
