@@ -1778,6 +1778,24 @@ var
 
   { ---------- }
 
+  procedure ContentWriteGVUses();
+  begin
+    if (LinkGraphVizUses <> '') then
+      WriteLiObject(FLanguage.Translation[trGvUses],
+        OverviewFilenames[8] + '.' + LinkGraphVizUses);
+  end;
+
+  { ---------- }
+
+  procedure ContentWriteGVClasses();
+  begin
+    if (LinkGraphVizClasses <> '') then
+      WriteLiObject(FLanguage.Translation[trGvClasses],
+        OverviewFilenames[9] + '.' + LinkGraphVizClasses);
+  end;
+
+  { ---------- }
+
   procedure ContentWriteCustom(const Text, Link: string);
   begin
     if CompareText('@Classes', Link) = 0 then begin
@@ -1915,6 +1933,8 @@ begin
     ContentWriteClasses('');
     ContentWriteOverview('');
     ContentWriteLegend('');
+    ContentWriteGVClasses();
+    ContentWriteGVUses();
   end;
 
   // End of File
@@ -2060,6 +2080,12 @@ begin
     So there is no need to specify them in the FILES section. }
 
   WriteDirect('Legend.html', true);
+
+  if (LinkGraphVizClasses <> '') then
+    WriteDirect(OverviewFilenames[9]+'.'+LinkGraphVizClasses, true);
+  if (LinkGraphVizUses <> '') then
+    WriteDirect(OverviewFilenames[8]+'.'+LinkGraphVizUses, true);
+
   for k := 0 to NUM_OVERVIEW_FILES_USED - 1 do
     WriteDirect(OverviewFilenames[k] + '.html', true);
 
@@ -2623,8 +2649,10 @@ begin
     + '" width="100%">', true);
   for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do 
     WriteLink(OverviewFilenames[i] + GetFileExtension, TRANSLATION_IDS[i]);
-  WriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
-  WriteLink(OverviewFilenames[9] + '.' + LinkGraphVizUses , trGvClasses);
+  if (LinkGraphVizUses <> '') then
+    WriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
+  if (LinkGraphVizClasses <> '') then
+    WriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
   WriteDirect('</table>', true);
   WriteLine(CurrentStream, '</body></html>');
   CloseStream;
