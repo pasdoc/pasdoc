@@ -1423,7 +1423,7 @@ end;
 
 function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
 var
-  Ancestor: TPasCio;
+  Ancestor: TPasItem;
   AncestorName: string;
 begin
   HasDescription := false;
@@ -1442,7 +1442,7 @@ begin
   if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
   begin
     AncestorName := TPasCio(AItem).Ancestors.FirstName;
-    Ancestor := TPasCio(SearchItem(AncestorName, AItem));
+    Ancestor := SearchItem(AncestorName, AItem);
     if Assigned(Ancestor) then
       begin
         HasDescription:=HasDescription(Ancestor);
@@ -1453,7 +1453,7 @@ end;
 
 procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 var
-  Ancestor: TPasCio;
+  Ancestor: TPasItem;
   AncestorName: string;
 begin
   if not Assigned(AItem) then Exit;
@@ -1478,7 +1478,7 @@ begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := TPasCio(SearchItem(AncestorName, AItem));
+        Ancestor := SearchItem(AncestorName, AItem);
         if Assigned(Ancestor) then
           begin
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));
@@ -2364,6 +2364,9 @@ end;
 
 (*
   $Log$
+  Revision 1.19  2005/03/29 06:55:48  johill
+  patches from Michalis Kamburelis
+
   Revision 1.18  2005/01/22 13:03:17  twm
   moved description comment of ConvertChar from ConvertString to where it belongs
 

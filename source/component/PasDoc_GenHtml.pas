@@ -34,6 +34,10 @@ type
     computer, as a reference manual that does not have to be printed.
     For printed output, use @link(Tex.TTexDocGenerator). }
   THTMLDocGenerator = class(TDocGenerator)
+  private
+    { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
+      html element describing current charset (from FLanguage). }
+    procedure WriteMetaContentType;
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -262,6 +266,14 @@ uses
     - heading font (Helvetica)
     - code font (Courier New) }
 
+const
+  DoctypeFrameset = '<!DOCTYPE HTML PUBLIC ' +
+    '"-//W3C//DTD HTML 4.01 Frameset//EN" ' +
+    '"http://www.w3.org/TR/1999/REC-html401-19991224/frameset.dtd">';
+  DoctypeNormal = '<!DOCTYPE HTML PUBLIC ' +
+    '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
+    '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
+
 function THTMLDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
 var
   ParenthesesLevel: integer;
@@ -301,22 +313,22 @@ end;
 
 function THTMLDocGenerator.FormatString(AString: string): string;
 begin
-  result := '<font color = "#000080">' + AString + ' </font>';
+  result := '<span class="pascal_string">' + AString + '</span>';
 end;
 
 function THTMLDocGenerator.FormatKeyWord(AString: string): string;
 begin
-  result := '<b>' + AString + '</b>';
+  result := '<span class="pascal_keyword">' + AString + '</span>';
 end;
 
 function THTMLDocGenerator.FormatComment(AString: string): string;
 begin
-  result := '<i><font color = "#000080">' + AString + ' </font></i>';
+  result := '<span class="pascal_comment">' + AString + '</span>';
 end;
 
 function THTMLDocGenerator.FormatCompilerComment(AString: string): string;
 begin
-  result := '<font color = "#008000">' + AString + ' </font>';
+  result := '<span class="pascal_compiler_comment">' + AString + '</span>';
 end;
 
 function THTMLDocGenerator.CodeString(const s: string): string;
@@ -373,7 +385,7 @@ begin
   { check if user does not want a link to the pasdoc homepage }
   if NoGeneratorInfo then Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-  WriteDirect('<hr noshade="1" size="1"/><em>');
+  WriteDirect('<hr noshade size="1"><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
   WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
@@ -483,7 +495,7 @@ begin
   if Assigned(CIO.MyUnit) then begin
     WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
     WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), 'bold');
-    WriteDirect('<br/>');
+    WriteDirect('<br>');
   end;
 
   { write declaration link }
@@ -1012,7 +1024,6 @@ begin
 
         WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
-        WriteEndOfParagraph;
 
         WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), p.Params);
         WriteReturnDesc(p, p.Returns);
@@ -1057,7 +1068,7 @@ end;
 
 procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 var
-  Ancestor: TPasCio;
+  Ancestor: TPasItem;
   AncestorName: string;
 begin
   if not Assigned(AItem) then Exit;
@@ -1068,17 +1079,15 @@ begin
     if AItem.DetailedDescription <> '' then begin
       WriteStartOfParagraph;
       WriteWithURLs(AItem.DetailedDescription);
-      WriteEndOfParagraph;
     end;
   end else begin
     if AItem.DetailedDescription <> '' then begin
       WriteStartOfParagraph;
       WriteWithURLs(AItem.DetailedDescription);
-      WriteEndOfParagraph;
     end else begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := TPasCio(SearchItem(AncestorName, AItem));
+        Ancestor := SearchItem(AncestorName, AItem);
         if Assigned(Ancestor) then
           begin
             WriteDirect('<div class="nodescription">');
@@ -1404,16 +1413,21 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure THTMLDocGenerator.WriteMetaContentType;
+begin
+  if FLanguage.CharSet <> '' then begin
+    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' 
+      + FLanguage.CharSet + '">', true);
+  end;
+end;
+
 procedure THTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
-  WriteDirect('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1 Strict//EN" "http://www.w3.org/TR/REC-html4/strict.dtd">', true);
+  WriteDirect(DoctypeNormal, true);
   WriteDirect('<html>', true);
   WriteDirect('<head>', true);
-  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '"/>', true);
-  // Check if we need to specify character sets
-  if FLanguage.CharSet <> '' then begin
-    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '"/>', true);
-  end;
+  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
+  WriteMetaContentType;
   // Title
   WriteDirect('<title>');
   if {not HtmlHelp and}(Title <> '') then begin
@@ -1424,7 +1438,7 @@ begin
   // StyleSheet
   WriteDirect('<link rel="StyleSheet" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirect('"/>', true);
+  WriteDirect('">', true);
 
   WriteDirect('</head>', true);
   WriteDirect('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">', true);
@@ -1876,7 +1890,7 @@ begin
   WriteDirect('<html>', true);
   WriteDirect('<head>', true);
   WriteDirect('<meta name="GENERATOR" content="' +
-    PASDOC_NAME_AND_VERSION + '"/>', true);
+    PASDOC_NAME_AND_VERSION + '">', true);
   WriteDirect('</head><body>', true);
   WriteDirect('<ul>', true);
 
@@ -2394,18 +2408,14 @@ begin
         end;
       OldLevel := Level;
 
+      WriteDirect('<li>');
       if Node.Item = nil then
-        begin
-          WriteDirect('<li>');
-          WriteConverted(Node.Name);
-          WriteDirect('</li>');
-        end
-      else
-        begin
-          WriteDirect('<li>');
-          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
-          WriteDirect('</li>');
-        end;
+        WriteConverted(Node.Name) else
+        WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
+      { We can't simply write here an explicit '</li>' because current 
+        list item may be not finished yet (in case next Nodes 
+        (with larger Level) will follow in the FClassHierarchy). }
+
       Node := FClassHierarchy.NextItem(Node);
     end;
 
@@ -2596,6 +2606,17 @@ begin
         'color:blue;}');
       StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
 
+      { Style applied to Pascal code in documentation 
+        (e.g. produced by @longcode tag) }
+      StreamUtils.WriteLine(CurrentStream,
+        'span.pascal_string { color: #000080; }');
+      StreamUtils.WriteLine(CurrentStream,
+        'span.pascal_keyword { font-weight: bolder; }');
+      StreamUtils.WriteLine(CurrentStream,
+        'span.pascal_comment { color: #000080; font-style: italic; }');
+      StreamUtils.WriteLine(CurrentStream,
+        'span.pascal_compiler_comment { color: #008000; }');
+
       CloseStream;
     end;
   end;
@@ -2626,21 +2647,24 @@ var
   i: Integer;
 begin
   CreateStream('index.html', True);
-  WriteLine(CurrentStream, '<html><head><title>'+Title+'</title>');
-  WriteLine(CurrentStream, '</head><frameset cols="200,*" border="1">');
-  WriteLine(CurrentStream, '<frame src="navigation.html"/>');
-  WriteLine(CurrentStream, '<frame src="AllUnits.html" name="content"/>');
+  WriteLine(CurrentStream, DoctypeFrameset);
+  WriteLine(CurrentStream, '<html><head>');
+  WriteMetaContentType;
+  WriteLine(CurrentStream, '<title>'+Title+'</title>');
+  WriteLine(CurrentStream, '</head><frameset cols="200,*">');
+  WriteLine(CurrentStream, '<frame src="navigation.html" frameborder="0">');
+  WriteLine(CurrentStream, '<frame src="AllUnits.html" frameborder="0" name="content">');
   WriteLine(CurrentStream, '</frameset></html>');
   CloseStream;
 
   CreateStream('navigation.html', True);
+  WriteLine(CurrentStream, DoctypeNormal);
   WriteLine(CurrentStream, '<html><head>');
   WriteDirect('<link rel="StyleSheet" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirect('"/>', true);
-  if FLanguage.CharSet <> '' then begin   // GSk - START
-    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '"/>', true);
-  end;                                    // GSk - STOP
+  WriteDirect('">', true);
+  WriteMetaContentType;
+  WriteLine(CurrentStream, '<title>Navigation</title>');
   WriteLine(CurrentStream, '</head>');
   WriteLine(CurrentStream, '<body class="navigationframe">');
   WriteDirect('<h2>'+Title+'</h2>');
@@ -2813,14 +2837,14 @@ end;
 
 function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
-  result := '<pre><code>' + inherited FormatPascalCode(Line) + '</pre></code>';
+  result := '<pre class="longcode">' + inherited FormatPascalCode(Line) + '</pre>';
 end;
 
 function THTMLDocGenerator.ExpandDescription(Item: TPasItem;   // GSk: override
                                              var d: string): Boolean;
 begin
   Result := inherited ExpandDescription(Item, d);
-  InsertParagraphs(d, '</p><p>');
+  InsertParagraphs(d, '<p>');
 end;
 
 end.
