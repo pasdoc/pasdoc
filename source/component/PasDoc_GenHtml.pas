@@ -113,6 +113,8 @@ type
     procedure WriteUnitUses(const HL:Byte; U: TPasUnit); 
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); override;
     procedure WriteProperties(HL: Byte; const p: TPasProperties); override;
+
+    procedure WriteWithURLs(s: string);
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -279,15 +281,14 @@ begin
     WriteStartOfParagraph;
 
     if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
-      WriteString(S1);
+      WriteWithURLs(S1);
       WriteString('<A href="mailto:' + EmailAddress +
         '">');
       WriteString(EmailAddress);
       WriteString('</A>');
-      WriteString(S2);
-    end
-    else begin
-      WriteString(s);
+      WriteWithURLs(S2);
+    end else begin
+      WriteWithURLs(s);
     end;
 
     WriteEndOfParagraph;
@@ -443,7 +444,7 @@ begin
       { Write only the description and do not opt for DetailedDescription,
         like WriteItemDescription does. }
     if p.Description <> '' then
-      WriteText(p.Description)
+      WriteWithURLs(p.Description)
     else
       WriteString('&nbsp;');
 
@@ -840,16 +841,20 @@ end;
 { ---------- }
 
 procedure THTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
+var
+  s, s1, s2, link: string;
 begin
   if AItem = nil then Exit;
 
-  if AItem.Description <> '' then
-    WriteText(AItem.Description)
-  else
-    if AItem.DetailedDescription <> '' then
-      WriteText(AItem.DetailedDescription)
-    else
+  if AItem.Description <> '' then begin
+    WriteWithURLs(AItem.Description);
+  end else begin
+    if AItem.DetailedDescription <> '' then begin
+      WriteWithURLs(AItem.DetailedDescription)
+    end else begin
       WriteString('&nbsp;');
+    end;
+  end;
 end;
 
 procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem:
@@ -858,19 +863,19 @@ begin
   if not Assigned(AItem) then Exit;
 
   if AItem.Description <> '' then begin
-    WriteText(AItem.Description);
+    WriteWithURLs(AItem.Description);
 
     if AItem.DetailedDescription <> '' then begin
       WriteString('<P>');
-      WriteText(AItem.DetailedDescription);
+      WriteWithURLs(AItem.DetailedDescription);
     end;
-  end
-  else
-    if AItem.DetailedDescription <> '' then
-      WriteText(AItem.DetailedDescription)
-    else
+  end else begin
+    if AItem.DetailedDescription <> '' then begin
+      WriteWithURLs(AItem.DetailedDescription)
+    end else begin
       WriteString('&nbsp;');
-
+    end;
+  end;
 end;
 
 procedure THTMLDocGenerator.WriteItems(HL: Byte; Heading: string; const
@@ -1090,7 +1095,7 @@ begin
   // if (not Assigned(t)) or (t.Content < 1) then Exit;
   WriteHeading(HL, s);
   WriteLine('<P>');
-  WriteString(t);
+  WriteWithURLs(t);
   WriteLine('</P>');
 end;
 
@@ -1203,7 +1208,7 @@ begin
   WriteLine('<BODY bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">');
 
   if Length(Header) > 0 then begin
-    WriteString(Header);
+    WriteWithURLs(Header);
   end;
 end;
 
@@ -2041,6 +2046,22 @@ begin
     end;   
     WriteString('</ul>');
   end;
+end;
+
+procedure THTMLDocGenerator.WriteWithURLs(s: string);
+var
+  s1, s2, link: string;
+begin
+  while ExtractLink(s, s1, s2, link) do begin
+    WriteText(S1);
+    WriteText('<a href="');
+    WriteText(link);
+    WriteText('">');
+    WriteText(link);
+    WriteText('</a>');
+    s := s2;
+  end;
+  WriteText(s);
 end;
 
 end.

@@ -155,6 +155,10 @@ type
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
+
+    { Searches for a link in string S, signified by
+      xxx://xxxx/.../ }
+    function ExtractLink(s: string; out S1,S2,Link: string): Boolean;
     
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
@@ -1437,6 +1441,34 @@ begin
     finally
       L.Free;
     end;
+  end;
+end;
+
+function TDocGenerator.ExtractLink(s: string; out S1, S2,
+  Link: string): Boolean;
+const
+  FullLinkChars = ['A'..'Z', 'a'..'z', '_', '%', '/', '\', '#'];
+  HalfLinkChars = ['.', ',', '-'];
+var
+  p, i: Integer;
+  scheme, url: string;
+begin
+  Result := False;
+  p := Pos('://', s);
+  if p > 0 then begin
+    i := p-1;
+    while (i>0) and (s[i] in FullLinkChars) do Dec(i); // find beginning of scheme
+    scheme := Copy(s, i+1, p-i+2);
+    S1 := Copy(s, 1, i);
+    i := p+2;
+    while (i<=length(s)) and (s[i] in FullLinkChars + HalfLinkChars) do Inc(i);
+    Dec(i);
+    while (s[i] in HalfLinkChars) do Dec(i);
+    Inc(i);
+    S2 := Copy(s, i, MaxInt);
+    url := Copy(s, p+3, i - p-3);
+    link := scheme + url;
+    Result := True; 
   end;
 end;
 
