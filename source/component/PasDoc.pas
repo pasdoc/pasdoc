@@ -246,6 +246,7 @@ begin
         FUnits.InsertObjectLast(U);
       end;
     end else begin
+      DoMessage(2, mtWarning, 'Could not parse unit %s, but continuing anyway', [U.Name]);
       U.Free;
     end;
   finally
