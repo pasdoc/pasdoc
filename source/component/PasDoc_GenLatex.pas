@@ -102,8 +102,8 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
-
-    function HtmlString(const S: string): string; override;
+    
+    function LatexString(const S: string): string; override;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
@@ -217,52 +217,15 @@ uses
   ObjectVector,
   Utils,
   PasDoc_Tokenizer;
-  
-{ Remove all HTML characters }
-function RemoveHTMLChars(s: string):string;
-var
- CharPos: integer;
- outstr : string;
-begin
- Result := s;
- if Length(s) = 0 then exit;
- CharPos := 1;
- if (Pos('<',s) > 0) and (Pos('>',s) > 0) then
-  begin
-    outstr := '';
-    while (CharPos <= length(s)) do
-     begin
-       if s[CharPos] = '<' then
-        begin
-          Inc(CharPos);
-          while s[CharPos] <> '>' do
-          begin
-              if CharPos >= length(s) then break;
-              inc(CharPos);
-          end;
-          inc(CharPos);
-        end
-       else
-       begin
-         outstr := outstr + s[charpos];
-         inc(CharPos);
-       end;
-     end;
-  end;
-  Result:=outstr;
-end;
-{ }
 
+function TTexDocGenerator.LatexString(const S: string): string;
+begin
+  Result := S;
+end;
 
 function TTexDocGenerator.FormatPascalCode(const Line: string): string;
 begin
   result := '\begin{verbatim}' + inherited FormatPascalCode(Line) + '\end{verbatim}';
-end;
-
-
-function TTexDocGenerator.HtmlString(const S: string): string;
-begin
-  Result := ConvertString(RemoveHTMLChars(S));
 end;
 
 function TTexDocGenerator.CodeString(const s: string): string;
@@ -2194,6 +2157,9 @@ end;
 
 (*
   $Log$
+  Revision 1.21  2005/04/05 07:36:15  kambi
+  * @html tag is ignored in non-html output, @latex tag implemented
+
   Revision 1.20  2005/04/04 21:14:10  kambi
   Commiting my fixes sent to pasdoc-main.
   "Trailer of my next patch" [http://sourceforge.net/mailarchive/forum.php?thread_id=6919292&forum_id=4647]
