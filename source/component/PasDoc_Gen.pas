@@ -124,9 +124,6 @@ type
 
     procedure CreateClassHierarchy;
 
-    { Calls @link(WriteString) with S, then writes a line feed. }
-    procedure WriteLine(const s: string);
-    
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
@@ -219,33 +216,33 @@ type
 
     { Writes all information on a class, object or interface (CIO) to output,
       at heading level HL. }
-    procedure WriteCIO(HL: Byte; const CIO: TPasCio); virtual; abstract;
+    procedure WriteCIO(HL: integer; const CIO: TPasCio); virtual; abstract;
 
     { Writes all classes, interfaces and objects in C to output, calling
       @link(WriteCIO) with each, at heading level HL. }
-    procedure WriteCIOs(HL: Byte; c: TPasItems); virtual;
+    procedure WriteCIOs(HL: integer; c: TPasItems); virtual;
 
     { Abstract procedure, must be overwritten by descendants.
       Writes a list of all classes, interfaces and objects in C at heading
       level HL to output. }
-    procedure WriteCIOSummary(HL: Byte; c: TPasItems); virtual;
+    procedure WriteCIOSummary(HL: integer; c: TPasItems); virtual;
 
     { Writes collection T, which is supposed to contain constant items only
       to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten by descendants. }
-    procedure WriteConstants(HL: Byte; c: TPasItems); virtual;
+    procedure WriteConstants(HL: integer; c: TPasItems); virtual;
 
     { If they are assigned, the date values for creation time and time of last
       modification are written to output at heading level HL. }
-    procedure WriteDates(const HL: Byte; const Created, LastMod: string);
+    procedure WriteDates(const HL: integer; const Created, LastMod: string);
       virtual; abstract;
 
     { Writes an already-converted description T to output.
       Takes @link(TPasItem.DetailedDescription) if available,
       @link(TPasItem.Description) otherwise.
       If none of them is assigned, nothing is written. }
-    procedure WriteDescription(HL: Byte; const Heading: string; const Item:
+    procedure WriteDescription(HL: integer; const Heading: string; const Item:
       TPasItem);
 
     { Writes a list of functions / procedure or constructors / destructors /
@@ -256,7 +253,7 @@ type
       Usually, a list of all items is written first, followed by detailed
       descriptions of each item.
       However, this is dependent on the output format. }
-    procedure WriteFuncsProcs(const HL: Byte; const Methods: Boolean; const
+    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const
       FuncsProcs: TPasMethods); virtual; abstract;
       
     { Abstract procedure that must be overwritten by descendants.
@@ -269,35 +266,35 @@ type
       five or six.
       Anyway, a descendant should be able to deal with to large HL values,
       e.g. by assigning subsubsection to all Tex headings >= 4. }
-    procedure WriteHeading(HL: Byte; const s: string); virtual; abstract;
+    procedure WriteHeading(HL: integer; const s: string); virtual; abstract;
 
     { Writes items in I to output, including a heading of level HL and text
       Heading.
       Each item in I should be written with its short description and a
       reference.
       In HTML, this results in a table with two columns. }
-    procedure WriteItems(HL: Byte; Heading: string; const Anchor: string;
+    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
       const i: TPasItems); virtual; abstract;
       
     { Abstract method, must be overwritten by descendants to implement
       functionality.
       Writes a list of properties P to output.
       Heading level HL is used for the heading FLanguage.Translation[trPROPERTIES). }
-    procedure WriteProperties(HL: Byte; const p: TPasProperties); virtual;
+    procedure WriteProperties(HL: integer; const p: TPasProperties); virtual;
       abstract;
-      
+
     { Writes String S to output, converting each character using
       @link(ConvertChar). }
-    procedure WriteString(const s: string);
+    procedure WriteConverted(const s: string; Newline: boolean = false); virtual;
 
     { Simply copies characters in text T to output. }
-    procedure WriteText(const t: string); virtual;
+    procedure WriteDirect(const t: string; Newline: boolean = false); virtual;
     
     { Writes collection T, which is supposed to contain type items (TPasItem) to
       output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
-    procedure WriteTypes(const HL: Byte; const t: TPasItems); virtual;
+    procedure WriteTypes(const HL: integer; const t: TPasItems); virtual;
 
     { Abstract method that writes all documentation for a single unit U to
       output, starting at heading level HL.
@@ -305,23 +302,23 @@ type
       on output format.
       Will call some of the WriteXXX methods like @link(WriteHeading),
       @link(WriteCIOs) or @link(WriteUnitDescription). }
-    procedure WriteUnit(const HL: Byte; const U: TPasUnit); virtual;
+    procedure WriteUnit(const HL: integer; const U: TPasUnit); virtual;
       abstract;
 
     { Abstract method to be implemented by descendant objects.
       Writes the (detailed, if available) description T of a unit to output,
       including a FLanguage.Translation[trDESCRIPTION) headline at heading level HL. }
-    procedure WriteUnitDescription(HL: Byte; U: TPasUnit); virtual; abstract;
+    procedure WriteUnitDescription(HL: integer; U: TPasUnit); virtual; abstract;
 
     { Writes documentation for all units, calling @link(WriteUnit) for each
       unit. }
-    procedure WriteUnits(const HL: Byte);
+    procedure WriteUnits(const HL: integer);
     
     { Writes collection V, which is supposed to contain variable items (TPasItem)
       to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
-    procedure WriteVariables(const HL: Byte; const V: TPasItems); virtual;
+    procedure WriteVariables(const HL: integer; const V: TPasItems); virtual;
 
     procedure WriteStartOfCode; virtual;
 
@@ -1186,7 +1183,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteCIOs(HL: Byte; c: TPasItems);
+procedure TDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
 var
   i: Integer;
 begin
@@ -1197,21 +1194,21 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteCIOSummary(HL: Byte; c: TPasItems);
+procedure TDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 begin
   WriteItems(HL, FLanguage.Translation[trSummaryCio], 'Classes', c);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteConstants(HL: Byte; c: TPasItems);
+procedure TDocGenerator.WriteConstants(HL: integer; c: TPasItems);
 begin
   WriteItems(HL, FLanguage.Translation[trConstants], 'Constants', c);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteDescription(HL: Byte; const Heading: string;
+procedure TDocGenerator.WriteDescription(HL: integer; const Heading: string;
   const Item: TPasItem);
 var
   d: string;
@@ -1225,44 +1222,35 @@ begin
       Exit;
 
   if Length(Heading) > 0 then WriteHeading(HL, Heading);
-  WriteText(d);
+  WriteDirect(d);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteLine(const s: string);
+procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean = false);
 begin
-  WriteString(s);
-  StreamUtils.WriteLine(CurrentStream, '');
+  WriteDirect(ConvertString(s), Newline);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteString(const s: string);
-var
-  t: string;
-begin
-  t := ConvertString(s);
-  CurrentStream.WriteBuffer(t[1], Length(t));
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.WriteText(const t: string);
+procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean = false);
 begin
   CurrentStream.WriteBuffer(t[1], Length(t));
+  if Newline then
+    StreamUtils.WriteLine(CurrentStream, '');
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteTypes(const HL: Byte; const t: TPasItems);
+procedure TDocGenerator.WriteTypes(const HL: integer; const t: TPasItems);
 begin
   WriteItems(HL, FLanguage.Translation[trTypes], 'Types', t);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteUnits(const HL: Byte);
+procedure TDocGenerator.WriteUnits(const HL: integer);
 var
   i: Integer;
 begin
@@ -1274,7 +1262,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteVariables(const HL: Byte; const V: TPasItems);
+procedure TDocGenerator.WriteVariables(const HL: integer; const V: TPasItems);
 begin
   WriteItems(HL, FLanguage.Translation[trVariables], 'Variables', V);
 end;
@@ -1409,17 +1397,17 @@ begin
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
     CreateStream(OverviewFilenames[9]+'.gviz');
-    WriteLine('DiGraph Classes {');
+    WriteConverted('DiGraph Classes {', true);
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
         if Length(LNode.Parent.Name) > 0 then begin
-          WriteLine('  '+LNode.Name + ' -> '+LNode.Parent.Name);
+          WriteConverted('  '+LNode.Name + ' -> '+LNode.Parent.Name, true);
         end;
       end;
       LNode := FClassHierarchy.NextItem(LNode);
     end;
 
-    WriteLine('}');
+    WriteConverted('}', true);
     CloseStream;
   end;
 end;
@@ -1431,18 +1419,18 @@ var
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
     CreateStream(OverviewFilenames[8]+'.gviz');
-    WriteLine('DiGraph Uses {');
+    WriteConverted('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin
         U := TPasUnit(FUnits.PasItemAt[i]);
         if not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
           for j := 0 to U.UsesUnits.Count-1 do begin
-            writeline('  '+U.Name+' -> '+U.UsesUnits[j]);
+            WriteConverted('  '+U.Name+' -> '+U.UsesUnits[j], true);
           end;
         end;
       end;
     end;
-    WriteLine('}');
+    WriteConverted('}', true);
     CloseStream;
   end;
 end;
