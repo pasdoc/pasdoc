@@ -138,20 +138,12 @@ type
 
   { @abstract(Converts a @link(TInputStream) to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
-  private
+  protected
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
-  protected
-    procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
-    procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
-      TMessageType; const AMessage: string; const AArguments: array of const);
-  public
     { if @link(IsCharBuffered) is true, this field contains the buffered
-   character }
+      character }
     BufferedChar: Char;
-    { the last error message }
-    // ErrorMessage: String;
     { true if end of stream @link(Stream) has been reached, false otherwise }
     EOS: Boolean;
     { if this is true, @link(BufferedChar) contains a buffered character;
@@ -162,20 +154,16 @@ type
     Row: Integer;
     { the input stream this tokenizer is working on }
     Stream: TStream;
-    { Creates a TTokenizer and associates it with given @link(TInputStream). }
-    constructor Create(
-      const s: TStream;
-      const OnMessageEvent: TPasDocMessageEvent;
-      const VerbosityLevel: Cardinal);
-    { Releases all dynamically allocated memory. }
-    destructor Destroy; override;
+    
+    procedure DoError(const AMessage: string; const AArguments: array of
+      const; const AExitCode: Integer = 0);
+    procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
+      TMessageType; const AMessage: string; const AArguments: array of const);
+
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
     function CreateSymbolToken(const st: TSymbolType; const s: string): TToken;
     function GetChar(out c: Char): Boolean;
-    function HasData: Boolean;
-    function GetStreamInfo: string;
-    function GetToken: TToken;
     function PeekChar(var c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
@@ -184,6 +172,17 @@ type
     function ReadToken(c: Char; const s: TCharSet; const TT: TTokenType; var
       t: TToken): Boolean;
 
+  public
+    { Creates a TTokenizer and associates it with given @link(TInputStream). }
+    constructor Create(
+      const s: TStream;
+      const OnMessageEvent: TPasDocMessageEvent;
+      const VerbosityLevel: Cardinal);
+    { Releases all dynamically allocated memory. }
+    destructor Destroy; override;
+    function HasData: Boolean;
+    function GetStreamInfo: string;
+    function GetToken: TToken;
     { Skips all chars until it encounters either $ELSE or $ENDIF compiler defines. }
     function SkipUntilCompilerDirective: TToken;
     
