@@ -8,6 +8,8 @@
   After parsing, examine your option objects. }
 unit OptionParser;
 
+{$I DEFINES.INC}
+
 interface
 uses
   Classes
@@ -144,6 +146,15 @@ type
     destructor Destroy; override;
   end;
 
+  { @abstract(pathlist option)
+    accepts multiple strings paths and collates them
+    even if the option itself is specified more than one time.
+    Paths in a single option can be separated by the
+    DirectorySeparator }
+  TPathListOption = class(TStringOptionList)
+    function CheckValue(const AString: String): Boolean; override;
+  end;
+
   { @abstract(useful for making a choice of things)
     Values must not
     have a + or - sign as the last character as that can be used
@@ -225,10 +236,9 @@ type
 implementation
 uses
 {$IFDEF FPC}
-  TextWrap;
-{$ELSE}
-  SysUtils;
+  TextWrap,
 {$ENDIF}
+  SysUtils;
 
 function TryStrToInt(const AString: string; var AValue: Integer): Boolean;
 var
@@ -771,6 +781,33 @@ end;
 procedure TSetOption.SetValues(const Value: string);
 begin
   FValues.CommaText := Value;
+end;
+
+{ TPathListOption }
+
+{$IFNDEF DELPHI_6_UP}
+{$IFDEF FPC}
+const
+  sLineBreak = LineEnding;
+  PathSep    = PathSeparator;
+{$ELSE}
+{$IFNDEF KYLIX}
+const
+  sLineBreak = #13#10;
+  PathSep    = ';';
+{$ENDIF}
+{$ENDIF}
+{$ENDIF}
+
+function TPathListOption.CheckValue(const AString: String): Boolean;
+var
+  LValues: TStringList;
+begin
+  Result := true;
+  LValues := TStringList.Create;
+  LValues.Text := StringReplace(AString, PathSep, sLineBreak, [rfReplaceAll]);
+  FValues.AddStrings(LValues);
+  LValues.Free;
 end;
 
 end.
