@@ -6,7 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michael van Canneyt (michael@tfdec1.fys.kuleuven.ac.be))
   @created(24 Sep 1999)
-  }
+}
 
 unit PasDoc;
 
@@ -54,6 +54,7 @@ type
     FGenerator: TDocGenerator;
     FClassMembers: TAccessibilities;
     FMarkerOptional: boolean;
+    FCacheDir: string;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -125,7 +126,8 @@ type
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
-    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers; 
+    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
+    property CacheDir: string read FCacheDir write FCacheDir; 
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -198,7 +200,7 @@ uses
   PasDoc_GenHtml,
   PasDoc_Parser,
   ObjectVector,
-  Utils;
+  Utils, PasDoc_Serialize;
 
 constructor TPasDoc.Create(AOwner: TComponent);
 begin
@@ -237,8 +239,11 @@ procedure TPasDoc.HandleStream(
 var
   p: TParser;
   U: TPasUnit;
+  LParseSuccessful,
+  LLoaded: boolean;
+  LCacheFileName: string;
 begin
-  DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
+  LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     GenMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
@@ -246,7 +251,22 @@ begin
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;
 
-    if p.ParseUnit(U) then begin
+    LLoaded := false;
+    LParseSuccessful := false;
+
+    if (CacheDir <> '') and FileExists(LCacheFileName) then begin
+      DoMessage(2, mtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
+      U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
+      LParseSuccessful := True;
+      LLoaded := True;
+    end;
+
+    if not LLoaded then begin
+      DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
+      LParseSuccessful := p.ParseUnit(U);
+    end;
+    
+    if LParseSuccessful then begin
       if FUnits = nil then FUnits := TPasUnits.Create(True);
 
       if FUnits.ExistsUnit(U) then begin
@@ -264,7 +284,7 @@ begin
     end;
   except
      on e: Exception do begin
-       DoMessage(2, mtWarning, 'Error %s: %s parsing unit %s, continuing...', [e.ClassName, e.Message, u.Name]); 
+       DoMessage(2, mtWarning, 'Error %s: %s parsing unit %s, continuing...', [e.ClassName, e.Message, ExtractFileName(SourceFileName)]); 
      end;
   end;
   p.Free;
@@ -356,6 +376,7 @@ end;
 procedure TPasDoc.Execute;
 var
   t1, t2: TDateTime;
+  i: Integer;
 begin
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
@@ -391,6 +412,15 @@ begin
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
 
   Generator.WriteDocumentation;
+  if CacheDir <> '' then begin
+    DoMessage(1, mtInformation, 'Writing cache...', []);
+    for i := 0 to FUnits.Count-1 do begin
+      if not FUnits.PasItemAt[i].WasDeserialized then begin
+        FUnits.UnitAt[i].SerializeToFile(FCacheDir+ChangeFileExt(ExtractFileName(FUnits.UnitAt[i].SourceFileName), '.pduc'));
+      end;
+    end;
+  end;
+
 
   t2 := Now;
   DoMessage(1, mtInformation, 'Done, worked %s minutes(s)',

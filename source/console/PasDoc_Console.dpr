@@ -46,7 +46,7 @@ uses
   OptionParser,
   PasDoc_Types,
   PasDoc_RunHelp;
-  
+
 var
   GPasDoc: TPasDoc;
   GOptionParser: TOptionParser;
@@ -77,6 +77,7 @@ var
   GOption_VisibleMembers: TSetOption;
   GOption_CommentMarker: TStringOptionList;
   GOption_MarkerOptional: TBoolOption;
+  GOption_CacheDir: TStringOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -201,6 +202,10 @@ begin
   GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words', True, False);
   GOption_IgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line, no comments allowed';
   GOptionParser.AddOption(GOption_IgnoreWords);
+
+  GOption_CacheDir := TStringOption.Create(#0, 'cache-dir');
+  GOption_CacheDir.Explanation := 'Cache directory for parsed files (default not set)';
+  GOptionParser.AddOption(GOption_CacheDir);
 end;
 
 procedure PrintUsage;
@@ -308,7 +313,7 @@ begin
   GPasDoc.Generator.CheckSpelling := GOption_ASPELL.WasSpecified;
   GPasDoc.Generator.AspellLanguage := GOption_ASPELL.Value;
   GPasDoc.Generator.IgnoreWordsFile := GOption_IgnoreWords.Value;
-
+  GPasDoc.CacheDir := GOption_CacheDir.Value;
   Result := True;
 end;
 

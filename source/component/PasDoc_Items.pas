@@ -18,7 +18,8 @@ uses
   StringVector,
   ObjectVector,
   Hashes,
-  Classes;
+  Classes,
+  PasDoc_Serialize;
 
 type
   { Accessibility of a field/method }
@@ -48,8 +49,7 @@ type
   TPasProperties = class;
 
   { basic linkable item in pasdoc hierarchy }
-  TPasItem = class(TObject)
-  private
+  TPasItem = class(TSerializable)
   protected
     FFullLink: string;
     FLastMod: string;
@@ -66,12 +66,14 @@ type
     FCreated: string;
     procedure Unabbreviate(var s: string);
     procedure SetAuthors(const Value: TStringVector);
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     // THIS IS A BAD HACK
     FDescription: string;
     FDetailedDescription: string;
     { }
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
 
     procedure DescriptionExtractTag(var ADescription: string; const Offs1,
@@ -148,6 +150,8 @@ type
   TPasVarConst = class(TPasItem)
   protected
     FFullDeclaration: string;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     { full declaration, including type, default values, etc }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
@@ -157,6 +161,8 @@ type
   TPasEnum = class(TPasVarConst)
   protected
     FMembers: TPasItems;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     destructor Destroy; override;
     constructor Create; override;
@@ -178,7 +184,11 @@ type
     FRaises: TStringVector;
     FFullDecl: string;
     FWhat: TMethodType;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
+    procedure SetParams(const Value: TStringVector);
   public
+    constructor Create; override;
     destructor Destroy; override;
     procedure HandleParamTag; override;
     procedure HandleReturnsTag; override;
@@ -187,7 +197,7 @@ type
     property FullDeclaration: string read FFullDecl write FFullDecl;
     { }
     property What: TMethodType read FWhat write FWhat;
-    property Params: TStringVector read FParams;
+    property Params: TStringVector read FParams write SetParams;
     property Returns: string read FReturns;
     property Raises: TStringVector read FRaises;
   end;
@@ -203,6 +213,8 @@ type
     FFullDeclaration: string;
     FPropType: string;
     FReader: string;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     { full declaration, including read/write and storage specifiers }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
@@ -231,14 +243,15 @@ type
   { Extends @link(TPasItem) to store all items in a class / an object, e.g.
     fields. }
   TPasCio = class(TPasItem)
-  private
+  protected
     FFields: TPasItems;
     FMethods: TPasMethods;
     FProperties: TPasProperties;
     FAncestors: TStringVector;
-  protected
     FOutputFileName: string;
     FMyType: TCIOType;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -270,16 +283,17 @@ type
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit }
   TPasUnit = class(TPasItem)
-  private
+  protected
     FTypes: TPasItems;
     FVariables: TPasItems;
     FCIOs: TPasItems;
     FConstants: TPasItems;
     FFuncsProcs: TPasMethods;
     FUsesUnits: TStringVector;
-  protected
     FSourceFilename: string;
     FOutputFileName: string;
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -319,6 +333,8 @@ type
     FHash: TObjectHash;
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
+    procedure Serialize(const ADestination: TStream);
+    procedure Deserialize(const ASource: TStream);
   public
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
@@ -344,6 +360,7 @@ type
     procedure DeleteAt(const AIndex: Integer);
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
+    procedure Clear; override;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -774,6 +791,7 @@ end;
 destructor TPasItems.Destroy;
 begin
   FHash.Free;
+  FHash := nil;
   inherited;
 end;
 
@@ -1103,12 +1121,40 @@ begin
   FAncestors := TStringVector.Create;
 end;
 
+procedure TPasCio.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  FFields.Deserialize(ASource);
+  FMethods.Deserialize(ASource);
+  FProperties.Deserialize(ASource);
+  Ancestors.Text := LoadStringFromStream(ASource);
+  FOutputFileName := LoadStringFromStream(ASource);
+  ASource.Read(FMyType, SizeOf(FMyType));
+end;
+
+procedure TPasCio.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  FFields.Serialize(ADestination);
+  FMethods.Serialize(ADestination);
+  FProperties.Serialize(ADestination);
+  SaveStringToStream(Ancestors.Text, ADestination);
+  SaveStringToStream(FOutputFileName, ADestination);
+  ADestination.Write(FMyType, SizeOf(FMyType));
+end;
+
 { TPasEnum }
 
 constructor TPasEnum.Create;
 begin
   inherited Create;
   FMembers := TPasItems.Create(True);
+end;
+
+procedure TPasEnum.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  Members.Deserialize(ASource);
 end;
 
 destructor TPasEnum.Destroy;
@@ -1136,6 +1182,13 @@ end;
 constructor TPasItem.Create;
 begin
   inherited Create;
+  FAuthors := TStringVector.Create;
+end;
+
+procedure TPasEnum.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  Members.Serialize(ADestination);
 end;
 
 { TPasMethod }
@@ -1143,6 +1196,7 @@ end;
 destructor TPasMethod.Destroy;
 begin
   FParams.Free;
+  FRaises.Free;
   inherited Destroy;
 end;
 
@@ -1165,7 +1219,6 @@ begin
       { we found one, remove it from the description and add it to the parameter list }
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
-        if not Assigned(FRaises) then FRaises := NewStringVector;
         FRaises.Add(s);
       end;
     end;
@@ -1192,7 +1245,6 @@ begin
       { we found one, remove it from the description and add it to the parameter list }
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
-        if not Assigned(FParams) then FParams := NewStringVector;
         FParams.Add(s);
       end;
     end;
@@ -1223,4 +1275,177 @@ begin
   end;
 end;
 
+procedure TPasItem.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  Name := LoadStringFromStream(ASource);
+  Description := LoadStringFromStream(ASource);
+  DetailedDescription := LoadStringFromStream(ASource);
+  FullLink := LoadStringFromStream(ASource);
+  LastMod := LoadStringFromStream(ASource);
+  ASource.Read(FState, SizeOf(State));
+  ASource.Read(FDeprecated, SizeOf(IsDeprecated));
+  ASource.Read(FPlatform, SizeOf(IsPlatform));
+  Authors.Text := LoadStringFromStream(ASource);
+  FCreated := LoadStringFromStream(ASource);
+end;
+
+procedure TPasItem.Serialize(const ADestination: TStream);
+begin
+  SaveStringToStream(Name, ADestination);
+  SaveStringToStream(Description, ADestination);
+  SaveStringToStream(DetailedDescription, ADestination);
+  SaveStringToStream(FullLink, ADestination);
+  SaveStringToStream(LastMod, ADestination);
+  ADestination.Write(FState, SizeOf(State));
+  ADestination.Write(FDeprecated, SizeOf(IsDeprecated));
+  ADestination.Write(FPlatform, SizeOf(IsPlatform));
+  SaveStringToStream(Authors.Text, ADestination);
+  SaveStringToStream(Created, ADestination);
+end;
+
+procedure TPasMethod.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  Params.Text := LoadStringFromStream(ASource);
+  FReturns := LoadStringFromStream(ASource);
+  FRaises.Text := LoadStringFromStream(ASource);
+  FFullDecl := LoadStringFromStream(ASource);
+  ASource.Read(FWhat, SizeOf(FWhat));
+end;
+
+procedure TPasMethod.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  SaveStringToStream(Params.Text, ADestination);
+  SaveStringToStream(FReturns, ADestination);
+  SaveStringToStream(FRaises.Text, ADestination);
+  SaveStringToStream(FFullDecl, ADestination);
+  ADestination.Write(FWhat, SizeOf(FWhat));
+end;
+
+constructor TPasMethod.Create;
+begin
+  inherited;
+  FParams := TStringVector.Create;
+  FRaises := TStringVector.Create;
+end;
+
+procedure TPasMethod.SetParams(const Value: TStringVector);
+begin
+  FParams.Assign(Value);
+end;
+
+{ TPasVarConst }
+
+procedure TPasVarConst.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  FullDeclaration := LoadStringFromStream(ASource);
+end;
+
+procedure TPasVarConst.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  SaveStringToStream(FullDeclaration, ADestination);
+end;
+
+procedure TPasItems.Clear;
+begin
+  if Assigned(FHash) then begin
+    // not assigned if destroying
+    FHash.Free;
+    FHash := TObjectHash.Create;
+  end;
+  inherited;
+end;
+
+procedure TPasItems.Deserialize(const ASource: TStream);
+var
+  LCount: Integer;
+begin
+  Clear;
+  ASource.Read(LCount, SizeOf(LCount));
+  while LCount>0 do begin
+    Add(TPasItem(TPasItem.DeserializeObject(ASource)));
+    Dec(LCount);
+  end;
+end;
+
+procedure TPasItems.Serialize(const ADestination: TStream);
+var
+  LCount: Integer;
+begin
+  LCount := Count;
+  ADestination.Write(LCount, SizeOf(LCount));
+  while LCount > 0 do begin
+    Dec(LCount);
+    TSerializable.SerializeObject(PasItemAt[LCount], ADestination);
+  end;
+end;
+
+{ TPasProperty }
+
+procedure TPasProperty.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  ASource.Read(FDefault, SizeOf(FDefault));
+  ASource.Read(FNoDefault, SizeOf(FNoDefault));
+  FIndexDecl := LoadStringFromStream(ASource);
+  FStoredID := LoadStringFromStream(ASource);
+  FDefaultID := LoadStringFromStream(ASource);
+  FWriter := LoadStringFromStream(ASource);
+  FFullDeclaration := LoadStringFromStream(ASource);
+  FPropType := LoadStringFromStream(ASource);
+  FReader := LoadStringFromStream(ASource);
+end;
+
+procedure TPasProperty.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  ADestination.Write(FDefault, SizeOf(FDefault));
+  ADestination.Write(FNoDefault, SizeOf(FNoDefault));
+  SaveStringToStream(FIndexDecl, ADestination);
+  SaveStringToStream(FStoredID, ADestination);
+  SaveStringToStream(FDefaultID, ADestination);
+  SaveStringToStream(FWriter, ADestination);
+  SaveStringToStream(FFullDeclaration, ADestination);
+  SaveStringToStream(FPropType, ADestination);
+  SaveStringToStream(FReader, ADestination);
+end;
+
+procedure TPasUnit.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  FTypes.Deserialize(ASource);
+  FVariables.Deserialize(ASource);
+  FCIOs.Deserialize(ASource);
+  FConstants.Deserialize(ASource);
+  FFuncsProcs.Deserialize(ASource);
+  FUsesUnits.Text := LoadStringFromStream(ASource);
+  FSourceFilename := LoadStringFromStream(ASource);
+  FOutputFileName := LoadStringFromStream(ASource);
+end;
+
+procedure TPasUnit.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  FTypes.Serialize(ADestination);
+  FVariables.Serialize(ADestination);
+  FCIOs.Serialize(ADestination);
+  FConstants.Serialize(ADestination);
+  FFuncsProcs.Serialize(ADestination);
+  SaveStringToStream(FUsesUnits.Text, ADestination);
+  SaveStringToStream(FSourceFilename, ADestination);
+  SaveStringToStream(FOutputFileName, ADestination);
+end;
+
+initialization
+  TSerializable.Register(TPasItem);
+  TSerializable.Register(TPasVarConst);
+  TSerializable.Register(TPasEnum);
+  TSerializable.Register(TPasMethod);
+  TSerializable.Register(TPasProperty);
+  TSerializable.Register(TPasCio);
+  TSerializable.Register(TPasUnit);
 end.

@@ -185,6 +185,8 @@ type
     procedure LoadFooterFromFile(const AFileName: string);
     procedure LoadHeaderFromFile(const AFileName: string);
     procedure BuildLinks; override;
+
+    function EscapeURL(const AString: string): string; virtual;
   published
     property HtmlHelp: boolean read FHtmlHelp write FHtmlHelp;
     property ContentsFile: string read FContentsFile write FContentsFile;
@@ -277,7 +279,7 @@ end;
 function THTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result := '<a href="' + Link + '">' + ItemName + '</a>';
+  Result := '<a href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
 end;
 
 function THTMLDocGenerator.GetFileExtension: string;
@@ -290,7 +292,7 @@ begin
   { check if user does not want a link to the pasdoc homepage }
   if NoGeneratorInfo then Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-  WriteDirect('<hr noshade size=1><em>');
+  WriteDirect('<hr noshade="1" size="1"/><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
   WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
@@ -392,7 +394,7 @@ begin
         WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
       else
         WriteConverted(SectionHeads[Section]);
-      WriteDirect('<td>');
+      WriteDirect('</td>');
     end;
   WriteDirect('</tr></table>', true);
 
@@ -402,12 +404,12 @@ begin
   if Assigned(CIO.MyUnit) then begin
     WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
     WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
-    WriteDirect('<br>');
+    WriteDirect('<br/>');
   end;
 
   { write declaration link }
   WriteHeading(HL + 1, FLanguage.Translation[trDeclaration]);
-  WriteDirect('<p>');
+  WriteStartOfParagraph;
   WriteStartOfCode;
   WriteConverted('type ' + CIO.Name + ' = ');
   WriteConverted(CIO_NAMES[CIO.MyType]);
@@ -426,7 +428,7 @@ begin
     WriteConverted(')');
   end;
   WriteEndOfCode;
-  WriteDirect('</p>');
+  WriteEndOfParagraph;
 
   { Write Description }
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
@@ -486,12 +488,19 @@ begin
 
   for i := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[i]);
-    if not CreateStream(p.OutputFileName) then begin
-      DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
-      Continue;
+    case CreateStream(p.OutputFileName, not p.WasDeserialized) of
+      csError: begin
+          DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
+          Continue;
+        end;
+      csCreated: begin
+          DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
+          WriteCIO(HL, p);
+        end;
+      csExisted: begin
+          DoMessage(3, mtInformation, 'File for "%s" already existed and data was loaded from cache, skipped.', [p.Name]);
+      end;
     end;
-    DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
-    WriteCIO(HL, p);
   end;
   CloseStream;
 end;
@@ -677,8 +686,7 @@ begin
     { TODO :
       replacing the <center> tag with the align=center attribute displays the links as
       links again (with underlines etc.), question is whether we want this. }
-    WriteDirect('<td align="center"><a href="' + OverviewFilenames[i] +
-      GetFileExtension + '">');
+    WriteDirect('<td align="center"><a href="' + EscapeURL(OverviewFilenames[i] + GetFileExtension) + '">');
     case i of
       0: WriteConverted(FLanguage.Translation[trUnits]);
       1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
@@ -736,7 +744,7 @@ begin
     s := '<a';
   if target <> '' then
     s := Format('%s target="%s"', [s, target]);
-  WriteDirect(Format('%s href="%s">%s</a>', [s, href, caption]));
+  WriteDirect(Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]));
 end;
 
 procedure THTMLDocGenerator.WriteEndOfParagraph;
@@ -1006,12 +1014,15 @@ begin
     WriteWithURLs(AItem.Description);
 
     if AItem.DetailedDescription <> '' then begin
-      WriteDirect('<p>');
+      WriteStartOfParagraph;
       WriteWithURLs(AItem.DetailedDescription);
+      WriteEndOfParagraph;
     end;
   end else begin
     if AItem.DetailedDescription <> '' then begin
-      WriteWithURLs(AItem.DetailedDescription)
+      WriteStartOfParagraph;
+      WriteWithURLs(AItem.DetailedDescription);
+      WriteEndOfParagraph;
     end else begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
@@ -1108,7 +1119,7 @@ begin
   TotalItems := TPasItems.Create(False);
 
   for i := 2 to NUM_OVERVIEW_FILES_USED - 1  do begin
-    if (not CreateStream(OverviewFilenames[i] + GetFileExtension))
+    if (CreateStream(OverviewFilenames[i] + GetFileExtension, True) = csError)
       then begin
       DoMessage(1, mtError, 'Error: Could not create output file "' +
         OverviewFilenames[i] + '".', []);
@@ -1174,7 +1185,7 @@ begin
         WriteEndOfTableCell;
 
         if j = 0 then
-          WriteStartOfTableCell('width="100%"')
+          WriteStartOfTableCell('width="100%"', '')
         else
           WriteStartOfTableCell;
         WriteItemDescription(Item);
@@ -1198,7 +1209,7 @@ begin
     CloseStream;
   end;
 
-  if not CreateStream(OverviewFilenames[7] + GetFileExtension) then
+  if CreateStream(OverviewFilenames[7] + GetFileExtension, True) = csError then
     begin
     DoMessage(1, mtError, 'Could not create overview output file "' +
       OverviewFilenames[7] + '".', []);
@@ -1227,7 +1238,7 @@ begin
     WriteEndOfTableCell;
 
     if j = 0 then
-      WriteStartOfTableCell('width="100%"')
+      WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
     WriteItemDescription(Item);
@@ -1249,9 +1260,9 @@ procedure THTMLDocGenerator.WriteParagraph(HL: integer; s: string; t: string);
 begin
   // if (not Assigned(t)) or (t.Content < 1) then Exit;
   WriteHeading(HL, s);
-  WriteDirect('<P>', true);
+  WriteStartOfParagraph;
   WriteWithURLs(t);
-  WriteDirect('</P>', true);
+  WriteEndOfParagraph;
 end;
 
 procedure THTMLDocGenerator.WriteProperties(HL: integer; const p:
@@ -1307,7 +1318,7 @@ begin
 
     WriteVisibilityCell(Prop);
     if j = 0 then
-      WriteStartOfTableCell('width="100%"')
+      WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
 
@@ -1348,28 +1359,28 @@ end;
 
 procedure THTMLDocGenerator.WriteStartOfDocument(Name: string);
 begin
-  WriteDirect('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">', true);
-  WriteDirect('<HTML>', true);
-  WriteDirect('<HEAD>', true);
-  WriteDirect('<META name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
+  WriteDirect('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1 Strict//EN" "http://www.w3.org/TR/REC-html4/strict.dtd">', true);
+  WriteDirect('<html>', true);
+  WriteDirect('<head>', true);
+  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '"/>', true);
   // Check if we need to specify character sets
   if FLanguage.CharSet <> '' then begin
-    WriteDirect('<META http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '">', true);
+    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '"/>', true);
   end;
   // Title
-  WriteDirect('<TITLE>');
+  WriteDirect('<title>');
   if {not HtmlHelp and}(Title <> '') then begin
     WriteConverted(Title + ': ');
   end;
   WriteConverted(Name);
-  WriteDirect('</TITLE>', true);
+  WriteDirect('</title>', true);
   // StyleSheet
-  WriteDirect('<LINK rel="StyleSheet" href="');
-  WriteConverted(ProjectName);
-  WriteDirect('.css">', true);
+  WriteDirect('<link rel="StyleSheet" href="');
+  WriteDirect(EscapeURL('pasdoc.css'));
+  WriteDirect('"/>', true);
 
-  WriteDirect('</HEAD>', true);
-  WriteDirect('<BODY bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">', true);
+  WriteDirect('</head>', true);
+  WriteDirect('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">', true);
 
   if Length(Header) > 0 then begin
     WriteWithURLs(Header);
@@ -1386,7 +1397,7 @@ begin
     s := '<a';
   if target <> '' then
     s := Format('%s target="%s"', [s, target]);
-  WriteDirect(Format('%s href="%s">', [s, href]));
+  WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
 end;
 
 procedure THTMLDocGenerator.WriteStartOfLink(const href, css: string);
@@ -1401,39 +1412,39 @@ end;
 
 procedure THTMLDocGenerator.WriteStartOfParagraph;
 begin
-  WriteDirect('<P>');
+  WriteDirect('<p>');
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable1Column(t: string);
 begin
-  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
+  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
 begin
-  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
+  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
-  WriteDirect('<TR bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><TH>');
+  WriteDirect('<tr bgcolor="#' +
+    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
   WriteConverted(t1);
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   WriteConverted(t2);
-  WriteDirect('</TH></TR>', true);
+  WriteDirect('</th></tr>', true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable3Columns(t1, t2, T3: string);
 begin
-  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
+  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
-  WriteDirect('<TR bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><TH>');
+  WriteDirect('<tr bgcolor="#' +
+    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
   WriteConverted(t1);
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   WriteConverted(t2);
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   WriteConverted(T3);
-  WriteDirect('</TH></TR>', true);
+  WriteDirect('</th></tr>', true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, css: string);
@@ -1467,7 +1478,7 @@ begin
     s := Format('<tr class="%s"', [CssClass])
   else
     s := '<tr';
-  WriteDirect(s + ' bgcolor=#' + HTML_ROW_BACKGROUND_COLOR + ' valign="top">');
+  WriteDirect(s + ' bgcolor="#' + HTML_ROW_BACKGROUND_COLOR + '" valign="top">');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1780,7 +1791,7 @@ begin
     Units is assigned and Units.Count > 0
     No need to test this again. }
 
-  if not CreateStream(ProjectName + '.hhc') then begin
+  if CreateStream(ProjectName + '.hhc', True) = csError then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Content file "%s.hhc' +
       '".', [ProjectName]);
     Exit;
@@ -1793,7 +1804,7 @@ begin
   WriteDirect('<html>', true);
   WriteDirect('<head>', true);
   WriteDirect('<meta name="GENERATOR" content="' +
-    PASDOC_NAME_AND_VERSION + '">', true);
+    PASDOC_NAME_AND_VERSION + '"/>', true);
   WriteDirect('</head><body>', true);
   WriteDirect('<ul>', true);
 
@@ -1879,7 +1890,7 @@ begin
     c.CopyItems(PU.FuncsProcs);
   end;
 
-  if not CreateStream(ProjectName + '.hhk') then begin
+  if CreateStream(ProjectName + '.hhk', True) = csError then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Index file "%s.hhk' +
       '".', [ProjectName]);
     Exit;
@@ -1954,7 +1965,7 @@ begin
   CloseStream;
 
   // Create a HTML Help Project File
-  if (not CreateStream(ProjectName + '.hhp')) then begin
+  if CreateStream(ProjectName + '.hhp', True) = csError then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Project file "%s.hhp' +
       '".', [ProjectName]);
     Exit;
@@ -2060,10 +2071,14 @@ begin
     Exit;
   end;
 
-  if (not CreateStream(U.OutputFileName)) then begin
-    DoMessage(1, mtError, 'Could not create HTML unit doc file for unit %s.',
-      [U.Name]);
-    Exit;
+  case CreateStream(U.OutputFileName, not U.WasDeserialized) of
+    csError: begin
+      DoMessage(1, mtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
+      Exit;
+    end;
+    csExisted: begin
+      Exit;
+    end;
   end;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
@@ -2097,7 +2112,7 @@ begin
         WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
       else
         WriteConverted(SectionHeads[Section]);
-      WriteDirect('<td>');
+      WriteDirect('</td>');
     end;
   WriteDirect('</tr></table>', true);
 
@@ -2141,7 +2156,7 @@ var
   j: Integer;
 begin
   c := Units;
-  if (not CreateStream(OverviewFilenames[0] + GetFileExtension))
+  if CreateStream(OverviewFilenames[0] + GetFileExtension, True) = csError
     then begin
     DoMessage(1, mtError, 'Could not create overview output file "' +
       OverviewFilenames[0] + '".', []);
@@ -2164,7 +2179,7 @@ begin
       WriteEndOfTableCell;
 
       if j = 0 then
-        WriteStartOfTableCell('width="100%"')
+        WriteStartOfTableCell('width="100%"', '')
       else
         WriteStartOfTableCell;
       WriteItemDescription(Item);
@@ -2187,7 +2202,7 @@ begin
     s := Format('<img class="%s"', [css])
   else
     s := '<img border="0"';
-  WriteDirect(Format('%s src="%s" alt="%s"', [s, src, alt]));
+  WriteDirect(Format('%s src="%s" alt="%s"/>', [s, src, alt]));
 end;
 
 procedure THTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
@@ -2235,7 +2250,7 @@ procedure THTMLDocGenerator.WriteVisibilityLegendFile;
 const
   Filename = 'legend';
 begin
-  if not CreateStream(Filename + GetFileextension) then
+  if CreateStream(Filename + GetFileextension, True) = csError then
     begin
       DoMessage(1, mtError, 'Could not create output file "%s".',
         [Filename + GetFileExtension]);
@@ -2245,16 +2260,16 @@ begin
 
   WriteHeading(1, FLanguage.Translation[trLegend]);
 
-  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
+  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '">', true);
-  WriteDirect('<TR bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><TH>');
+  WriteDirect('<tr bgcolor="#' +
+    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
   { TODO -otwm : needs translation }
   WriteConverted('Marker');
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   { TODO -otwm : needs translation }
   WriteConverted('Visibility');
-  WriteDirect('</TH></TR>', true);
+  WriteDirect('</th></tr>', true);
 
   WriteLegendEntry('private.gif', trPrivate);
   WriteLegendEntry('protected.gif', trProtected);
@@ -2277,7 +2292,7 @@ var
 begin
   CreateClassHierarchy;
 
-  if not CreateStream(OverviewFilenames[1] + GetFileExtension) then begin
+  if CreateStream(OverviewFilenames[1] + GetFileExtension, True) = csError then begin
     DoMessage(1, mtError, 'Could not create output file "%s".',
       [OverviewFilenames[1] + GetFileExtension]);
     Abort;
@@ -2321,7 +2336,7 @@ begin
       Node := FClassHierarchy.NextItem(Node);
     end;
 
-    while OldLevel >= 0 do begin
+    while OldLevel > 0 do begin
       WriteDirect('</ul>');
       Dec(OldLevel);
     end;
@@ -2413,30 +2428,30 @@ end;
 function THTMLDocGenerator.ParameterString(const ParamType,
   Param: string): string;
 begin
-  Result := '<br>' + ParamType + ' <span class="parameter">' + Param + '</span>';
+  Result := '<br/>' + ParamType + ' <span class="parameter">' + Param + '</span>';
 end;
 procedure THTMLDocGenerator.WriteBinaryFiles;begin
-  CreateStream('automated.gif');
+  CreateStream('automated.gif', True);
   CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
 
-  CreateStream('private.gif');
+  CreateStream('private.gif', True);
   CurrentStream.Write(img_private[0], High(img_private)+1);
   CloseStream;
 
-  CreateStream('protected.gif');
+  CreateStream('protected.gif', True);
   CurrentStream.Write(img_protected[0], High(img_protected)+1);
   CloseStream;
 
-  CreateStream('public.gif');
+  CreateStream('public.gif', True);
   CurrentStream.Write(img_public[0], High(img_public)+1);
   CloseStream;
 
-  CreateStream('published.gif');
+  CreateStream('published.gif', True);
   CurrentStream.Write(img_published[0], High(img_published)+1);
   CloseStream;
 
-  if not FileExists(DestinationDirectory+ProjectName+'.css') then begin
-    CreateStream(ProjectName + '.css');
+  if not FileExists(DestinationDirectory+'pasdoc.css') then begin
+    CreateStream('pasdoc.css', True);
     StreamUtils.WriteLine(CurrentStream, 'body {' +
       'font-family:Verdana,Arial;' +
       'color:#000000;' +
@@ -2538,6 +2553,21 @@ procedure THTMLDocGenerator.BuildLinks;
 begin
   FLinkCount := 1;
   inherited;
+end;
+
+function THTMLDocGenerator.EscapeURL(const AString: string): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(AString) do begin
+    case byte(AString[i]) of
+      $21..$7E: Result := Result + AString[i];
+      else begin
+        Result := Result + '%' + IntToHex(Byte(AString[i]), 2);
+      end;
+    end;
+  end;
 end;
 
 end.

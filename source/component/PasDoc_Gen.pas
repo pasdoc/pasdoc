@@ -1,3 +1,5 @@
+{$A8,B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M-,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W+,X+,Y+,Z1}
+{$APPTYPE GUI}
 { @abstract(basic doc generator object)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -63,6 +65,16 @@ type
     { comma-separated list of suggestions }
     Suggestions: string;
   end;
+
+  { Result for @link(TDocGenerator.CreateStream) }
+  TCreateStreamResult = (
+    { normal result }
+    csCreated,
+    { if file exists this will be returned, unless overwrite is true }
+    csExisted,
+    { returned on error }
+    csError
+  );
 
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -157,7 +169,7 @@ type
       No path or extension should therefore be in Name.
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
-    function CreateStream(const Name: string): Boolean;
+    function CreateStream(const Name: string; const AOverwrite: boolean): TCreateStreamResult;
 
     { Must be overwritten.
       From an item name and its link, this creates a language-specific
@@ -430,15 +442,17 @@ procedure TDocGenerator.BuildLinks;
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
       p.FullLink := CreateLink(p);
-      p.Abbreviations := FAbbreviations;
-      p.HandleAuthorTags;
-      p.HandleCreatedTag;
-      p.HandleLastModTag;
-      p.HandleCVSTag;
-      p.HandleAbstractTag;
-      p.HandleParamTag;
-      p.HandleReturnsTag;
-      p.HandleRaisesTag;
+      if not p.WasDeserialized then begin
+        p.Abbreviations := FAbbreviations;
+        p.HandleAuthorTags;
+        p.HandleCreatedTag;
+        p.HandleLastModTag;
+        p.HandleCVSTag;
+        p.HandleAbstractTag;
+        p.HandleParamTag;
+        p.HandleReturnsTag;
+        p.HandleRaisesTag;
+      end;
     end;
   end;
 
@@ -456,14 +470,16 @@ begin
     U.FullLink := CreateLink(U);
     U.OutputFileName := U.FullLink;
     U.Abbreviations := FAbbreviations;
-    U.HandleAuthorTags;
-    U.HandleCreatedTag;
-    U.HandleLastModTag;
-    U.HandleCVSTag;
-    U.HandleAbstractTag;
-    U.HandleParamTag;
-    U.HandleReturnsTag;
-    U.HandleRaisesTag;
+    if not U.WasDeserialized then begin
+      U.HandleAuthorTags;
+      U.HandleCreatedTag;
+      U.HandleLastModTag;
+      U.HandleCVSTag;
+      U.HandleAbstractTag;
+      U.HandleParamTag;
+      U.HandleReturnsTag;
+      U.HandleRaisesTag;
+    end;
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
     AssignLinks(U, nil, U.FullLink, U.Types);
@@ -474,19 +490,21 @@ begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
         CO.MyUnit := U;
 
-        CO.FullLink := CreateLink(CO);
-        CO.OutputFileName := CO.FullLink;
+        if not CO.WasDeserialized then begin
+          CO.FullLink := CreateLink(CO);
+          CO.OutputFileName := CO.FullLink;
 
-        CO.Abbreviations := FAbbreviations;
+          CO.Abbreviations := FAbbreviations;
 
-        CO.HandleAuthorTags;
-        CO.HandleCreatedTag;
-        CO.HandleLastModTag;
-        CO.HandleCVSTag;
-        CO.HandleAbstractTag;
-        CO.HandleParamTag;
-        CO.HandleReturnsTag;
-        CO.HandleRaisesTag;
+          CO.HandleAuthorTags;
+          CO.HandleCreatedTag;
+          CO.HandleLastModTag;
+          CO.HandleCVSTag;
+          CO.HandleAbstractTag;
+          CO.HandleParamTag;
+          CO.HandleReturnsTag;
+          CO.HandleRaisesTag;
+        end;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
         AssignLinks(U, CO, CO.FullLink, CO.Properties);
@@ -515,15 +533,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.CreateStream(const Name: string): Boolean;
+function TDocGenerator.CreateStream(const Name: string;
+  const AOverwrite: boolean): TCreateStreamResult;
 begin
   CloseStream;
   DoMessage(4, mtInformation, 'Creating output stream "' + Name + '".', []);
-  Result := false;
-  try
-    FCurrentStream := TFileStream.Create(DestinationDirectory+Name, fmCreate);
-    Result := True;
-  except
+  Result := csError;
+  if FileExists(Name) and not AOverwrite then begin
+    Result := csExisted;
+  end else begin
+    try
+      FCurrentStream := TFileStream.Create(DestinationDirectory+Name, fmCreate);
+      Result := csCreated;
+    except
+    end;
   end;
 end;
 
@@ -801,6 +824,7 @@ begin
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
+    if U.WasDeserialized then continue;
     ExpandItem(U);
     ExpandCollection(U.Constants);
     ExpandCollection(U.Variables);
@@ -1381,7 +1405,7 @@ begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
-    CreateStream(OverviewFilenames[9]+'.gviz');
+    CreateStream(OverviewFilenames[9]+'.gviz', True);
     WriteConverted('DiGraph Classes {', true);
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
@@ -1403,7 +1427,7 @@ var
   U: TPasUnit;
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
-    CreateStream(OverviewFilenames[8]+'.gviz');
+    CreateStream(OverviewFilenames[8]+'.gviz', True);
     WriteConverted('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin
