@@ -176,13 +176,13 @@ const
   {  }
   PASDOC_NAME = 'DelphiDoc';
   { }
-  PASDOC_DATE = '2003-03-28';
+  PASDOC_DATE = '2003-04-02';
   { }
-  PASDOC_VERSION = '0.8.6';
+  PASDOC_VERSION = '0.8.6-jb';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
-  PASDOC_HOMEPAGE = '<old URL outdated>';
+  PASDOC_HOMEPAGE = 'http://pasdoc.sourceforge.net/';
   { }
   PASDOC_FULL_INFO = PASDOC_NAME_AND_VERSION + ' [' + PASDOC_DATE + '|' +
     COMPILER_NAME + '|' + COMPILER_OS + '|' + COMPILER_BITS + ']';
