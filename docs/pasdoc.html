@@ -7,7 +7,7 @@
 <meta name="originator" content="TeX4ht (http://www.cis.ohio-state.edu/~gurari/TeX4ht/mn.html)"> 
 <!-- html --> 
 <meta name="src" content="pasdoc.tex"> 
-<meta name="date" content="2004-03-19 11:26:00"> 
+<meta name="date" content="2004-04-19 22:02:00"> 
 <link rel="stylesheet" type="text/css" href="pasdoc.css"> 
 </head><body 
 >
@@ -20,7 +20,7 @@ class="cmr-12">Marco Schmidt &amp; Carl Eric Cod</span><span
 class="cmr-12">&egrave;re &amp; Johannes Berg</span></div>
 <br>
 <div class="date" ><span 
-class="cmr-12">March 19, 2004</span></div>
+class="cmr-12">April 19, 2004</span></div>
    </div>
 <!--l. 19--><p class="indent">
 
@@ -296,11 +296,13 @@ type
 </div>
 </td></tr></table>
 <!--l. 156--><p class="nopar">
-<!--l. 158--><p class="indent">   It is possible to specify that items will only be documented when certain
-comment markers are present at the start of the comment. Please refer to <a 
-href="#x1-340005.3">5.3<!--tex4ht:ref: specifymarkers --></a> for
-further information.
-<!--l. 162--><p class="indent">   An interesting feature of pasdoc is its ability to link items from within
+<!--l. 158--><p class="indent">   It is possible to specify that items will only be documented when
+certain comment markers are present at the start of the comment. Please
+refer to <a 
+href="#x1-340005.3">5.3<!--tex4ht:ref: specifymarkers --></a> for further information. Furthermore, undocumented items
+may or may not appear in the final document, depending on the output
+format.
+<!--l. 164--><p class="indent">   An interesting feature of pasdoc is its ability to link items from within
 comments. If you are currently writing about an array of integers <span 
 class="cmtt-10x-x-109">TIntArray</span>
 you&#8217;ve declared as a type, you might mention that the number of values it can
@@ -333,19 +335,19 @@ to the definition of <span
 class="cmtt-10x-x-109">MAX</span><span 
 class="cmtt-10x-x-109">_INTS</span>, where you&#8217;d find more information on
 it.
-<!--l. 181--><p class="indent">   If pasdoc cannot resolve a link (for whatever reasons), it will issue a warning
+
+<!--l. 183--><p class="indent">   If pasdoc cannot resolve a link (for whatever reasons), it will issue a warning
 to standard output and will write the content of <span 
 class="cmtt-10x-x-109">@link() </span>to the documentation
 file, not as a link, but in a special font.
-
-<!--l. 185--><p class="noindent">
+<!--l. 187--><p class="noindent">
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
  id="x1-50004"></a>Formatting your comments</h3>
-<!--l. 187--><p class="noindent">All comments recognize special directives that are used for different purposes.
+<!--l. 189--><p class="noindent">All comments recognize special directives that are used for different purposes.
 Each of these special directives starts with the at character <span 
 class="cmtt-10x-x-109">@</span>, followed by and
 identifier and optinally followed by text between parentheses.
-<!--l. 192--><p class="indent">   As an example, lets take the well-known <span 
+<!--l. 194--><p class="indent">   As an example, lets take the well-known <span 
 class="cmtt-10x-x-109">DOS </span>unit. Its top part could look like
 this:
 
@@ -367,22 +369,22 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />unit&nbsp;DOS;
 </div>
 </td></tr></table>
-<!--l. 208--><p class="nopar">
-<!--l. 210--><p class="indent">   Pasdoc would read this comment and store it with the unit information. After
+<!--l. 210--><p class="nopar">
+<!--l. 212--><p class="indent">   Pasdoc would read this comment and store it with the unit information. After
 all Pascal source code files you gave to pasdoc have been read, pasdoc will try to
 process all tags, i.e., all words introduced by a <span 
 class="cmtt-10x-x-109">@ </span>character.
-<!--l. 215--><p class="indent">   If you want to use the character <span 
+<!--l. 217--><p class="indent">   If you want to use the character <span 
 class="cmtt-10x-x-109">@ </span>itself, you must write it twice so that
 pasdoc knows you don&#8217;t want to specify a tag.
-<!--l. 218--><p class="indent">   Note in the example above that the character does not need this special
+<!--l. 220--><p class="indent">   Note in the example above that the character does not need this special
 treatment within the parentheses, as shown in the author tag at the example of
 the email address.
-<!--l. 222--><p class="indent">   Following is a list of all tags that you may use in pasdoc. A tag like <span 
+<!--l. 224--><p class="indent">   Following is a list of all tags that you may use in pasdoc. A tag like <span 
 class="cmtt-10x-x-109">@link</span>
 must always be followed by an opening and then a closing parenthesis, even if
 you add nothing between them.
-<!--l. 226--><p class="indent">   The following tags are supported:
+<!--l. 228--><p class="indent">   The following tags are supported:
      <dl class="description"><dt class="description">
 <span 
 class="cmbx-10x-x-109">@@</span> </dt><dd 
@@ -471,33 +473,33 @@ class="description">Description of a function&#8217;s return value
 <span 
 class="cmbx-10x-x-109">@true</span> </dt><dd 
 class="description">PasDoc inserts the specially formatted text &#8217;true&#8217; here.</dd></dl>
-<!--l. 256--><p class="noindent">
+<!--l. 258--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.1   </span> <a 
  id="x1-60004.1"></a>@</h4>
-<!--l. 257--><p class="noindent">Represents the <span 
+<!--l. 259--><p class="noindent">Represents the <span 
 class="cmtt-10x-x-109">@ </span>character, for example if you want to use one of the tags
 literally
-<!--l. 260--><p class="noindent">
+<!--l. 262--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.2   </span> <a 
  id="x1-70004.2"></a>abstract</h4>
-<!--l. 262--><p class="noindent">For some item types like classes or units you may write very large descriptions to
+<!--l. 264--><p class="noindent">For some item types like classes or units you may write very large descriptions to
 give an adequate introduction. However, these large texts are not appropriate in
 an overview list. Use the abstract tag to give a short explanation of what an item
 is about. One row of text is a good rule of thumb. Of course, there should only be
 one abstract tag per description.
-<!--l. 270--><p class="indent">   The abstract text will appear in the overview section of the documentation (if
+<!--l. 272--><p class="indent">   The abstract text will appear in the overview section of the documentation (if
 the document format supports this overview section), and will also appear as the
 first paragraph of the item full documentation.
-<!--l. 275--><p class="noindent">
+<!--l. 277--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.3   </span> <a 
  id="x1-80004.3"></a>author</h4>
-<!--l. 277--><p class="noindent">For each author who participated in writing an item, one author tag should be
+<!--l. 279--><p class="noindent">For each author who participated in writing an item, one author tag should be
 added. The format of the author tag should conform to the following specification
 : <span 
 class="cmtt-10x-x-109">@author(Name &lt;URI&gt;)</span>
-<!--l. 281--><p class="indent">   Author tags will only result in documentation output for classes, interfaces,
+<!--l. 283--><p class="indent">   Author tags will only result in documentation output for classes, interfaces,
 objects and units.
-<!--l. 284--><p class="indent">   Example:
+<!--l. 286--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -505,17 +507,17 @@ class="verbatim"><div class="verbatim">
 @author(Johannes&nbsp;Berg&nbsp;&lt;email@address.here&gt;)
 </div>
 </td></tr></table>
-<!--l. 287--><p class="nopar">
-<!--l. 289--><p class="noindent">
+<!--l. 289--><p class="nopar">
+<!--l. 291--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.4   </span> <a 
  id="x1-90004.4"></a>classname, inherited, name</h4>
-<!--l. 291--><p class="noindent">PasDoc uses the tags <span 
+<!--l. 293--><p class="noindent">PasDoc uses the tags <span 
 class="cmtt-10x-x-109">@inherited</span>, <span 
 class="cmtt-10x-x-109">@classname </span>and <span 
 class="cmtt-10x-x-109">@name </span>as placeholders for the
 names of the ancestor class, current class and name of the current item
 respectively.
-<!--l. 295--><p class="indent">   Example:
+<!--l. 297--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -524,14 +526,14 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />&nbsp;&nbsp;@inherited&nbsp;to&nbsp;do&nbsp;something&nbsp;completely&nbsp;different...}
 </div>
 </td></tr></table>
-<!--l. 300--><p class="nopar">
-<!--l. 302--><p class="noindent">
+<!--l. 302--><p class="nopar">
+<!--l. 304--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.5   </span> <a 
  id="x1-100004.5"></a>code</h4>
-<!--l. 304--><p class="noindent">PasDoc uses the tag @code to mark example code which is preformatted and
+<!--l. 306--><p class="noindent">PasDoc uses the tag @code to mark example code which is preformatted and
 should not be changed in the output. It will usually appear in a teletype font in
 the final documentation.
-<!--l. 308--><p class="indent">   Example:
+<!--l. 310--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -544,25 +546,25 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />}
 </div>
 </td></tr></table>
-<!--l. 316--><p class="nopar">
-<!--l. 319--><p class="noindent">
+<!--l. 318--><p class="nopar">
+<!--l. 321--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.6   </span> <a 
  id="x1-110004.6"></a>created</h4>
-<!--l. 321--><p class="noindent">This tag should contain the date the item was created. At most one created tag
+<!--l. 323--><p class="noindent">This tag should contain the date the item was created. At most one created tag
 should be in a description. Created tags will only result in documentation output
 for classes, interfaces, objects and units. There is no special format that must be
 followed.
-<!--l. 327--><p class="noindent">
+<!--l. 329--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.7   </span> <a 
  id="x1-120004.7"></a>cvs</h4>
-<!--l. 329--><p class="noindent">This tag is used to extract the last modification date and authors of the item.
+<!--l. 331--><p class="noindent">This tag is used to extract the last modification date and authors of the item.
 The parameter of this tag should conform to the <span 
 class="cmmi-10x-x-109">Author </span>: <span 
 class="cmmi-10x-x-109">ccodere </span>or
 <span 
 class="cmmi-10x-x-109">Date </span>: 2004<span 
-class="cmmi-10x-x-109">/</span>03<span 
-class="cmmi-10x-x-109">/</span>1607 : 09 : 01 string of cvs or rcs.
+class="cmmi-10x-x-109">/</span>04<span 
+class="cmmi-10x-x-109">/</span>2002 : 01 : 52 string of cvs or rcs.
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -570,19 +572,19 @@ class="verbatim"><div class="verbatim">
 @cvs($Date$)
 </div>
 </td></tr></table>
-<!--l. 336--><p class="nopar">
-<!--l. 338--><p class="noindent">
+<!--l. 338--><p class="nopar">
+<!--l. 340--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.8   </span> <a 
  id="x1-130004.8"></a>exclude</h4>
-<!--l. 340--><p class="noindent">If an exclude tag is found in a description, the item will not appear in the
+<!--l. 342--><p class="noindent">If an exclude tag is found in a description, the item will not appear in the
 documentation. As a logical consequence, no information except the exclude tag
 itself should be written to the description. Whenever high-level items like units or
 classes are excluded from the documentation process, all items contained in them
 will not appear as well, e.g. constants or functions in an excluded unit or
 methods and fields in an excluded class.
-<!--l. 349--><p class="indent">   The following example will produce no documentation, as the entire unit will
+<!--l. 351--><p class="indent">   The following example will produce no documentation, as the entire unit will
 be excluded from the documentation process.
-<!--l. 352--><p class="indent">   Example:
+<!--l. 354--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -604,50 +606,50 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />end.
 </div>
 </td></tr></table>
-<!--l. 369--><p class="nopar">
-<!--l. 372--><p class="noindent">
+<!--l. 371--><p class="nopar">
+<!--l. 374--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.9   </span> <a 
  id="x1-140004.9"></a>false</h4>
-<!--l. 373--><p class="noindent">PasDoc inserts the specially formatted text &#8217;false&#8217; here at the location of the tag.
+<!--l. 375--><p class="noindent">PasDoc inserts the specially formatted text &#8217;false&#8217; here at the location of the tag.
 This tag does not have any parameters.
-<!--l. 377--><p class="noindent">
+<!--l. 379--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.10   </span> <a 
  id="x1-150004.10"></a>html</h4>
-<!--l. 378--><p class="noindent">Pasdoc directly outputs the text that is between parentheses, without any
+<!--l. 380--><p class="noindent">Pasdoc directly outputs the text that is between parentheses, without any
 conversion for the html output format. For other formats, the text is converted to
 standard text.
-<!--l. 382--><p class="indent">   There is no syntax checking on the validity of the HTML syntax.
-<!--l. 384--><p class="indent">   If there are no parentheses, <span 
+<!--l. 384--><p class="indent">   There is no syntax checking on the validity of the HTML syntax.
+<!--l. 386--><p class="indent">   If there are no parentheses, <span 
 class="cmtt-10x-x-109">@HTML </span>is directly written to the output
 documentation.
 
-<!--l. 387--><p class="noindent">
+<!--l. 389--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.11   </span> <a 
  id="x1-160004.11"></a>lastmod</h4>
-<!--l. 389--><p class="noindent">This tag should contain the date the item was last modified. At most one created
+<!--l. 391--><p class="noindent">This tag should contain the date the item was last modified. At most one created
 tag should be in a description. Lastmod tags will only result in documentation
 output for classes, interfaces, objects and units. There is no special format that
 must be followed.
-<!--l. 395--><p class="noindent">
+<!--l. 397--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.12   </span> <a 
  id="x1-170004.12"></a>link</h4>
-<!--l. 397--><p class="noindent">Use this tag to make your documentation more convenient to the reader.
+<!--l. 399--><p class="noindent">Use this tag to make your documentation more convenient to the reader.
 Whenever you mention another item in the description of an item, enclose the
 name of the mentioned item in a link tag, e.g.
 <br class="newline"><span 
 class="cmtt-10x-x-109">@link(GetName)</span>.
 <br class="newline">This will result in a hyperlink in HTML and a page reference in <span class="LATEX">L<span class="A">A</span><span class="TEX">T<span 
 class="E">E</span>X</span></span>.
-<!--l. 404--><p class="noindent">
+<!--l. 406--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.13   </span> <a 
  id="x1-180004.13"></a>longcode</h4>
-<!--l. 406--><p class="noindent">Use this tag to output code, and pre-formatted text. The output text will closely
+<!--l. 408--><p class="noindent">Use this tag to output code, and pre-formatted text. The output text will closely
 ressemble the text typed, and will be represented in a fixed width font. In
 the case of pascal code typed within this tag, it will be pretty-printed
 first.
-<!--l. 411--><p class="indent">   To be able to put special characters in this tag, the tag should be followed by
+<!--l. 413--><p class="indent">   To be able to put special characters in this tag, the tag should be followed by
 a # and finished with a # before the closing parentheses.
-<!--l. 415--><p class="indent">   Example:
+<!--l. 417--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -669,18 +671,18 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#)
 </div>
 </td></tr></table>
-<!--l. 432--><p class="nopar">
-<!--l. 435--><p class="noindent">
+<!--l. 434--><p class="nopar">
+<!--l. 437--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.14   </span> <a 
  id="x1-190004.14"></a>nil</h4>
-<!--l. 437--><p class="noindent">PasDoc inserts the specially formatted text &#8217;nil&#8217; here. This tag does not have any
+<!--l. 439--><p class="noindent">PasDoc inserts the specially formatted text &#8217;nil&#8217; here. This tag does not have any
 parameters.
-<!--l. 440--><p class="noindent">
+<!--l. 442--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.15   </span> <a 
  id="x1-200004.15"></a>param</h4>
-<!--l. 442--><p class="noindent">Treats first argument as parameter name and all following text as the description
+<!--l. 444--><p class="noindent">Treats first argument as parameter name and all following text as the description
 of this parameter.
-<!--l. 445--><p class="indent">   Example:
+<!--l. 447--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -691,13 +693,13 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />constructor&nbsp;Init(FilePath&nbsp;:&nbsp;String);
 </div>
 </td></tr></table>
-<!--l. 451--><p class="nopar">
-<!--l. 454--><p class="noindent">
+<!--l. 453--><p class="nopar">
+<!--l. 456--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.16   </span> <a 
  id="x1-210004.16"></a>raises</h4>
-<!--l. 456--><p class="noindent">Treats the first argument as exception name and all following text as the
+<!--l. 458--><p class="noindent">Treats the first argument as exception name and all following text as the
 description for this exception.
-<!--l. 459--><p class="indent">   Example:
+<!--l. 461--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -708,21 +710,21 @@ class="verbatim"><div class="verbatim">
 &nbsp;<br />constructor&nbsp;Init;
 </div>
 </td></tr></table>
-<!--l. 465--><p class="nopar">
-<!--l. 467--><p class="noindent">
+<!--l. 467--><p class="nopar">
+<!--l. 469--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.17   </span> <a 
  id="x1-220004.17"></a>return, returns</h4>
-<!--l. 469--><p class="noindent">Treat the text in the argument as the description of the returns value of this
+<!--l. 471--><p class="noindent">Treat the text in the argument as the description of the returns value of this
 function or method.
-<!--l. 472--><p class="noindent">
+<!--l. 474--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">4.18   </span> <a 
  id="x1-230004.18"></a>true</h4>
-<!--l. 474--><p class="noindent">PasDoc inserts the specially formatted text &#8217;true&#8217; here at the location of the tag.
+<!--l. 476--><p class="noindent">PasDoc inserts the specially formatted text &#8217;true&#8217; here at the location of the tag.
 This tag does not have any parameters.
-<!--l. 478--><p class="noindent">
+<!--l. 480--><p class="noindent">
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
  id="x1-240005"></a>Switches</h3>
-<!--l. 480--><p class="noindent">This is a list of all switches (program parameters) supported by <span 
+<!--l. 482--><p class="noindent">This is a list of all switches (program parameters) supported by <span 
 class="cmtt-10x-x-109">pasdoc</span>.
 Enter <span 
 class="cmtt-10x-x-109">pasdoc --help </span>at the command line to get this list. Make sure you
@@ -730,124 +732,130 @@ keep the exact spelling of the switches, pasdoc is case-sensitive. Most
 switches exist in two variations, a short one with a single dash and a
 longer one with two dashes. You can use either switch to get the same
 effect.
-<!--l. 487--><p class="noindent">
+<!--l. 489--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
  id="x1-250005.1"></a>Documentation file format</h4>
-<!--l. 489--><p class="noindent">After loading all Pascal source code files, pasdoc will write one or more
+<!--l. 491--><p class="noindent">After loading all Pascal source code files, pasdoc will write one or more
 output files, depending on the output file format. Choose the output
 
 format according to your needs - you might want to create several versions
 for
-<!--l. 494--><p class="noindent">
+<!--l. 496--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.1.1   </span> <a 
  id="x1-260005.1.1"></a>HTML</h5>
-<!--l. 496--><p class="noindent"><span 
+<!--l. 498--><p class="noindent"><span 
 class="cmtt-10x-x-109">-O html</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--format html</span>
 <br class="newline">
-<!--l. 499--><p class="indent">   This switch makes pasdoc write HTML (Hypertext Markup Language)
+<!--l. 501--><p class="indent">   This switch makes pasdoc write HTML (Hypertext Markup Language)
 output. HTML files are usually displayed in a web browser, which available on all
 modern computer systems.
-<!--l. 503--><p class="indent">   It is the default output file format. Several files will be created for this output
+<!--l. 505--><p class="indent">   It is the default output file format. Several files will be created for this output
 type, one for each unit, class, interface and object, additionally some overview
 files with lists of all constants, types etc.
-<!--l. 507--><p class="indent">   This is the preferred output for online viewing.
-<!--l. 509--><p class="noindent">
+<!--l. 509--><p class="indent">   This is the preferred output for online viewing.
+<!--l. 511--><p class="indent">   It is to note that even undocumented items will appear in the final output file
+format.
+<!--l. 514--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.1.2   </span> <a 
  id="x1-270005.1.2"></a>htmlhelp</h5>
-<!--l. 511--><p class="noindent"><span 
+<!--l. 516--><p class="noindent"><span 
 class="cmtt-10x-x-109">-O htmlhelp</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--format htmlhelp</span>
 <br class="newline">
-<!--l. 514--><p class="indent">   This switch makes pasdoc write HTML (Hypertext Markup Language)
+<!--l. 519--><p class="indent">   This switch makes pasdoc write HTML (Hypertext Markup Language)
 output. It also writes additional files that can be used to create Microsoft
 htmlhelp files. Please consult the htmlhelp Microsoft SDK for more information.
-<!--l. 519--><p class="noindent">
+<!--l. 524--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.1.3   </span> <a 
  id="x1-280005.1.3"></a><span class="LATEX">L<span class="A">A</span><span class="TEX">T<span 
 class="E">E</span>X</span></span></h5>
-<!--l. 521--><p class="noindent"><span 
+<!--l. 526--><p class="noindent"><span 
 class="cmtt-10x-x-109">-O latex</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--format latex</span>
 <br class="newline">
-<!--l. 524--><p class="indent">   This switch makes pasdoc write output that can be interpreted using
+<!--l. 529--><p class="indent">   This switch makes pasdoc write output that can be interpreted using
 <span class="LATEX">L<span class="A">A</span><span class="TEX">T<span 
 class="E">E</span>X</span></span>. This is the preferred output format for printing the documentation.
-<!--l. 528--><p class="indent">   A single output file, either having the name specified with the <span 
+<!--l. 533--><p class="indent">   A single output file, either having the name specified with the <span 
 class="cmtt-10x-x-109">-N </span>switch, or
 the default name <span 
 class="cmtt-10x-x-109">docs.tex </span>will be created.
-<!--l. 532--><p class="indent">   With <span 
+
+<!--l. 537--><p class="indent">   With <span 
 class="cmtt-10x-x-109">latex </span>you will be able to create a dvi file that can then be converted to
 a Postscript file using <span 
 class="cmtt-10x-x-109">dvips</span>. Or you can also directly generate a huge HTML file
-
 by using <span 
 class="cmtt-10x-x-109">htlatex</span>, or a PDF file by using <span 
 class="cmtt-10x-x-109">pdflatex</span>.
-<!--l. 538--><p class="indent">   It is to note that the output generated by pasdoc has been optimized for
+<!--l. 543--><p class="indent">   It is to note that the output generated by pasdoc has been optimized for
 <span 
 class="cmtt-10x-x-109">pdflatex </span>and <span 
 class="cmtt-10x-x-109">htlatex</span>.
-<!--l. 541--><p class="noindent">
+<!--l. 546--><p class="indent">   It is to note that only documented items will appear in the final output file
+format.
+<!--l. 550--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.1.4   </span> <a 
  id="x1-290005.1.4"></a>LaTeX2rtf</h5>
-<!--l. 543--><p class="noindent"><span 
+<!--l. 552--><p class="noindent"><span 
 class="cmtt-10x-x-109">-O latex2rtf</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--format latex2rtf</span>
 <br class="newline">
-<!--l. 546--><p class="indent">   This switch makes pasdoc write output that can be interpreted using
+<!--l. 555--><p class="indent">   This switch makes pasdoc write output that can be interpreted using
 <span 
 class="cmtt-10x-x-109">latex2rtf</span>. This is the preferred output format for adding the documentation to
 word processor documentation.
-<!--l. 550--><p class="indent">   A single output file, either having the name specified with the <span 
+<!--l. 559--><p class="indent">   A single output file, either having the name specified with the <span 
 class="cmtt-10x-x-109">-N </span>switch, or
 the default name <span 
 class="cmtt-10x-x-109">docs.tex </span>will be created. This file can then be converted to rtf
 by using <span 
 class="cmtt-10x-x-109">latex2rtf</span>.
-<!--l. 555--><p class="indent">   This output will only work with the <span 
+<!--l. 564--><p class="indent">   This output will only work with the <span 
 class="cmtt-10x-x-109">latex2rtf </span>tool. Using other tools might
 not produce the expected results.
-<!--l. 558--><p class="noindent">
+<!--l. 567--><p class="indent">   It is to note that only documented items will appear in the final output file
+format.
+<!--l. 571--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">5.2   </span> <a 
  id="x1-300005.2"></a>Format-specific switches</h4>
-<!--l. 560--><p class="noindent">The following switches can only be used with one output file format and are
+<!--l. 573--><p class="noindent">The following switches can only be used with one output file format and are
 useless for the others.
-<!--l. 563--><p class="noindent">
+<!--l. 576--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.2.1   </span> <a 
  id="x1-310005.2.1"></a>No generator information</h5>
-<!--l. 565--><p class="noindent"><span 
+<!--l. 578--><p class="noindent"><span 
 class="cmtt-10x-x-109">-X</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--exclude-generator</span>
 <br class="newline">
-<!--l. 568--><p class="indent">   By default, pasdoc includes some information on itself and the document
+<!--l. 581--><p class="indent">   By default, pasdoc includes some information on itself and the document
 creation time at the bottom of each generated HTML file. This switch keeps
+
 pasdoc from adding that information.
-<!--l. 572--><p class="noindent">
+<!--l. 585--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.2.2   </span> <a 
  id="x1-320005.2.2"></a>Specify name of document</h5>
-<!--l. 573--><p class="noindent"><span 
+<!--l. 586--><p class="noindent"><span 
 class="cmtt-10x-x-109">-N NAME --name NAME</span>
-
-<!--l. 576--><p class="indent">   When the output format of the documentation is not HTML (such as latex,
+<!--l. 589--><p class="indent">   When the output format of the documentation is not HTML (such as latex,
 or CHM), this specifies the name of the final name of the documentation. If this
 is not specified, it uses the default<span 
 class="cmtt-10x-x-109">docs </span>filename.
-<!--l. 584--><p class="noindent">
+<!--l. 597--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.2.3   </span> <a 
  id="x1-330005.2.3"></a>Specify footers and headers to use</h5>
-<!--l. 586--><p class="noindent"><span 
+<!--l. 599--><p class="noindent"><span 
 class="cmtt-10x-x-109">-F FILNAME --footer FILENAME -H FILNAME --header FILENAME</span>
-<!--l. 591--><p class="indent">   You can specify texts files which PasDoc should use as header or footer for all
+<!--l. 604--><p class="indent">   You can specify texts files which PasDoc should use as header or footer for all
 generated html pages. This option is only available for the html output
 format.
-<!--l. 595--><p class="indent">   Example:
+<!--l. 608--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -855,14 +863,14 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--header&nbsp;myheader.txt&nbsp;--footer&nbsp;myfooter.txt
 </div>
 </td></tr></table>
-<!--l. 598--><p class="nopar">
-<!--l. 602--><p class="noindent">
+<!--l. 611--><p class="nopar">
+<!--l. 615--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
  id="x1-340005.3"></a>Comment Marker switches</h4>
-<!--l. 605--><p class="noindent">It is possible for pasdoc to ignore comments that do not start with the correct
+<!--l. 618--><p class="noindent">It is possible for pasdoc to ignore comments that do not start with the correct
 start markers. By default, all comments are treated as item descriptions. This
 can be changed using the following switches:
-<!--l. 610--><p class="indent">
+<!--l. 623--><p class="indent">
      <dl class="description"><dt class="description">
 <span 
 class="cmtt-10x-x-109">--staronly</span> </dt><dd 
@@ -881,15 +889,15 @@ class="cmmi-10x-x-109">&gt;</span>, (*¡marker¿ and //¡marker¿ comments.
 class="cmtt-10x-x-109">--marker-optional</span> </dt><dd 
 class="description">Do  not  require  the  markers  given  in  -marker  but
      remove them from the comment if they exist.</dd></dl>
-<!--l. 619--><p class="noindent">
+<!--l. 632--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">5.4   </span> <a 
  id="x1-350005.4"></a>Output language switches</h4>
-<!--l. 621--><p class="noindent"><span 
+<!--l. 634--><p class="noindent"><span 
 class="cmtt-10x-x-109">-L lg</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--language lg</span>
 <br class="newline">
-<!--l. 625--><p class="indent">   You can specify the language that will be used for words in the output like
+<!--l. 638--><p class="indent">   You can specify the language that will be used for words in the output like
 <span 
 class="cmti-10x-x-109">Methods </span>or <span 
 class="cmti-10x-x-109">Classes, interfaces and objects</span>. Your choice will not influence the
@@ -897,7 +905,7 @@ status messages printed by pasdoc to standard output - they will always be in
 English. Note that you can choose at most one language switch - if you specify
 none, the default language <span 
 class="cmti-10x-x-109">English </span>will be used.
-<!--l. 632--><p class="indent">   The <span 
+<!--l. 645--><p class="indent">   The <span 
 class="cmtt-10x-x-109">lg </span>parameter can take one of the following values:
 
      <dl class="description"><dt class="description">
@@ -969,21 +977,21 @@ class="description">Spanish
 <span 
 class="cmbx-10x-x-109">se</span> </dt><dd 
 class="description">Swedish</dd></dl>
-<!--l. 653--><p class="noindent">
+<!--l. 666--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">5.5   </span> <a 
  id="x1-360005.5"></a>Other switches</h4>
-<!--l. 657--><p class="noindent">
+<!--l. 670--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.1   </span> <a 
  id="x1-370005.5.1"></a>Include / Exclude class Members by visiblity</h5>
-<!--l. 659--><p class="noindent"><span 
+<!--l. 672--><p class="noindent"><span 
 class="cmtt-10x-x-109">-M</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--visible-members</span>
 <br class="newline">
-<!--l. 662--><p class="indent">   By default all non-private fields, methods properties are included in the
+<!--l. 675--><p class="indent">   By default all non-private fields, methods properties are included in the
 documentation. This switch permits to change which items of the specified
 visibility will be documented.
-<!--l. 666--><p class="indent">   The possible arguments, separated by a comma are:
+<!--l. 679--><p class="indent">   The possible arguments, separated by a comma are:
      <dl class="description"><dt class="description">
 <span 
 class="cmtt-10x-x-109">private</span> </dt><dd 
@@ -1004,7 +1012,7 @@ class="description">
 <span 
 class="cmtt-10x-x-109">automated</span> </dt><dd 
 class="description"></dd></dl>
-<!--l. 675--><p class="indent">   In the following example only the private and protected members will be
+<!--l. 688--><p class="indent">   In the following example only the private and protected members will be
 documented, all others will be ignored.
 
    <table width="100%" 
@@ -1013,70 +1021,70 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--visible-members&nbsp;private,protected
 </div>
 </td></tr></table>
-<!--l. 680--><p class="nopar">
-<!--l. 682--><p class="noindent">
+<!--l. 693--><p class="nopar">
+<!--l. 695--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.2   </span> <a 
  id="x1-380005.5.2"></a>Output directory</h5>
-<!--l. 684--><p class="noindent"><span 
+<!--l. 697--><p class="noindent"><span 
 class="cmtt-10x-x-109">-E DIRECTORY</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--output DIRECTORY</span>
 <br class="newline">
-<!--l. 687--><p class="indent">   By default, pasdoc writes the output file(s) to the current directory. This
+<!--l. 700--><p class="indent">   By default, pasdoc writes the output file(s) to the current directory. This
 switch defines a new output directory - this makes sense especially when you
 have many units and classes, they should get a subdirectory of their own, e.g.
 <span 
 class="cmtt-10x-x-109">htmloutput</span>.
-<!--l. 692--><p class="noindent">
+<!--l. 705--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.3   </span> <a 
  id="x1-390005.5.3"></a>Read file names from file</h5>
-<!--l. 694--><p class="noindent"><span 
+<!--l. 707--><p class="noindent"><span 
 class="cmtt-10x-x-109">-S FILE</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--source FILE</span>
 <br class="newline">
-<!--l. 697--><p class="indent">   If you want pasdoc to write documentation for a large project involving many
+<!--l. 710--><p class="indent">   If you want pasdoc to write documentation for a large project involving many
 unit source code files, you can use this switch to load the file names from a text
 file. Pasdoc expects this file to have one file name in each row, no additional
 cleaning is done, so be careful not to include spaces or other whitespace like
 tabs.
-<!--l. 704--><p class="noindent">
+<!--l. 717--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.4   </span> <a 
  id="x1-400005.5.4"></a>Change verbosity level</h5>
-<!--l. 706--><p class="noindent"><span 
+<!--l. 719--><p class="noindent"><span 
 class="cmtt-10x-x-109">-v LEVEL</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--verbosity LEVEL</span>
 <br class="newline">
-<!--l. 709--><p class="indent">   Using this switch in combination with an integer number <span 
+<!--l. 722--><p class="indent">   Using this switch in combination with an integer number <span 
 class="cmsy-10x-x-109"><u 
 class="underline">&gt;</u> </span>0 lets you define
 the amount of information pasdoc writes to standard output. The default
 
 level is 2, this switch is optional. A level of 0 will result in no output at
 all.
-<!--l. 714--><p class="noindent">
+<!--l. 727--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.5   </span> <a 
  id="x1-410005.5.5"></a>Show help</h5>
-<!--l. 716--><p class="noindent"><span 
+<!--l. 729--><p class="noindent"><span 
 class="cmtt-10x-x-109">-?</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--help</span>
 <br class="newline">
-<!--l. 719--><p class="indent">   This switch makes pasdoc print usage hints and supported switches to
+<!--l. 732--><p class="indent">   This switch makes pasdoc print usage hints and supported switches to
 standard output (usually the console) and terminates.
-<!--l. 722--><p class="noindent">
+<!--l. 735--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.6   </span> <a 
  id="x1-420005.5.6"></a>Specify a directive</h5>
-<!--l. 725--><p class="noindent"><span 
+<!--l. 738--><p class="noindent"><span 
 class="cmtt-10x-x-109">-D DIRECTIVE</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--define DIRECTIVE</span>
 <br class="newline">
-<!--l. 728--><p class="indent">   Adds <span 
+<!--l. 741--><p class="indent">   Adds <span 
 class="cmtt-10x-x-109">DIRECTIVE </span>to the list of conditional directives that are present
 whenever parsing a unit is started.
-<!--l. 731--><p class="indent">   The list of directives will be adjusted whenever a directive like <span 
+<!--l. 744--><p class="indent">   The list of directives will be adjusted whenever a directive like <span 
 class="cmtt-10x-x-109">WIN32 </span>or <span 
 class="cmtt-10x-x-109">FPC</span>
 is defined or undefined in the source code. Each define should be separated by the
@@ -1088,23 +1096,23 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--define&nbsp;debug,hello,world
 </div>
 </td></tr></table>
-<!--l. 737--><p class="nopar">
-<!--l. 739--><p class="noindent">
+<!--l. 750--><p class="nopar">
+<!--l. 752--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.7   </span> <a 
  id="x1-430005.5.7"></a>Specify an include file path</h5>
-<!--l. 742--><p class="noindent"><span 
+<!--l. 755--><p class="noindent"><span 
 class="cmtt-10x-x-109">-I DIR</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--include DIR</span>
 <br class="newline">
-<!--l. 745--><p class="indent">   Adds <span 
+<!--l. 758--><p class="indent">   Adds <span 
 class="cmtt-10x-x-109">DIR </span>to the list of directories where pasdoc will search for include files.
 Whenever an include file directive is encountered in the source code, pasdoc
 first tries to open that include file by the name found in that directive.
 This will work in all cases where the current directory contains that
 include file or when the file name contains a valid absolute or relative
 path.
-<!--l. 752--><p class="indent">   It is possible to use this switch more than once on the command
+<!--l. 765--><p class="indent">   It is possible to use this switch more than once on the command
 line.
 
    <table width="100%" 
@@ -1113,19 +1121,19 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--include&nbsp;c:\mysources\include&nbsp;--include&nbsp;c:\3rdparty\somelib\include
 </div>
 </td></tr></table>
-<!--l. 756--><p class="nopar">
-<!--l. 758--><p class="noindent">
+<!--l. 769--><p class="nopar">
+<!--l. 771--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.8   </span> <a 
  id="x1-440005.5.8"></a>Specify directive file</h5>
-<!--l. 761--><p class="noindent"><span 
+<!--l. 774--><p class="noindent"><span 
 class="cmtt-10x-x-109">-d DIRECTORY</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--conditionals DIRECTORY</span>
 <br class="newline">
-<!--l. 764--><p class="indent">   Adds the defines specified in a file <span 
+<!--l. 777--><p class="indent">   Adds the defines specified in a file <span 
 class="cmtt-10x-x-109">DIRECTORY </span>to the list of conditional
 directives that are present whenever parsing a unit is started.
-<!--l. 767--><p class="indent">   The list of directives will be adjusted whenever a directive like <span 
+<!--l. 780--><p class="indent">   The list of directives will be adjusted whenever a directive like <span 
 class="cmtt-10x-x-109">WIN32 </span>or <span 
 class="cmtt-10x-x-109">FPC</span>
 is defined or undefined in the source code. There should be one defibe per line in
@@ -1137,20 +1145,20 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--conditionals&nbsp;/home/me/pascal/myconditionals
 </div>
 </td></tr></table>
-<!--l. 773--><p class="nopar">
-<!--l. 775--><p class="noindent">
+<!--l. 786--><p class="nopar">
+<!--l. 788--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.9   </span> <a 
  id="x1-450005.5.9"></a>Set title of document</h5>
-<!--l. 777--><p class="noindent"><span 
+<!--l. 790--><p class="noindent"><span 
 class="cmtt-10x-x-109">-T &#34;STRING&#34;</span>
 <br class="newline"><span 
 class="cmtt-10x-x-109">--title &#34;STRING&#34;</span>
 <br class="newline">
-<!--l. 780--><p class="indent">   This option sets the title of the output document. The characters in the title
+<!--l. 793--><p class="indent">   This option sets the title of the output document. The characters in the title
 should be enclosed in double quotes.
-<!--l. 783--><p class="indent">   By default, depending on the documentation format, the document contains
+<!--l. 796--><p class="indent">   By default, depending on the documentation format, the document contains
 either no title, or the name of the unit being documented.
-<!--l. 786--><p class="indent">   Example:
+<!--l. 799--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -1158,16 +1166,16 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;-T&nbsp;&#34;This&nbsp;is&nbsp;my&nbsp;document&nbsp;title&#34;
 </div>
 </td></tr></table>
-<!--l. 789--><p class="nopar">
-<!--l. 791--><p class="noindent">
+<!--l. 802--><p class="nopar">
+<!--l. 804--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.10   </span> <a 
  id="x1-460005.5.10"></a>Include uses list</h5>
-<!--l. 793--><p class="noindent"><span 
+<!--l. 806--><p class="noindent"><span 
 class="cmtt-10x-x-109">--write-uses-list</span>
 <br class="newline">
-<!--l. 795--><p class="indent">   PasDoc can optionally include the list of units in a unit&#8217;s uses clause to that
+<!--l. 808--><p class="indent">   PasDoc can optionally include the list of units in a unit&#8217;s uses clause to that
 unit&#8217;s description.
-<!--l. 798--><p class="indent">   Example:
+<!--l. 811--><p class="indent">   Example:
 
    <table width="100%" 
 class="verbatim"><tr class="verbatim"><td 
@@ -1175,28 +1183,28 @@ class="verbatim"><div class="verbatim">
 pasdoc&nbsp;--write-uses-list
 </div>
 </td></tr></table>
-<!--l. 801--><p class="nopar">
-<!--l. 803--><p class="indent">   If a unit in the uses list is part of the documentation, it will be clickable in
+<!--l. 814--><p class="nopar">
+<!--l. 816--><p class="indent">   If a unit in the uses list is part of the documentation, it will be clickable in
 the output.
-<!--l. 806--><p class="indent">   By default this option is disabled.
-<!--l. 808--><p class="noindent">
+<!--l. 819--><p class="indent">   By default this option is disabled.
+<!--l. 821--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.11   </span> <a 
  id="x1-470005.5.11"></a>Full link output</h5>
-<!--l. 810--><p class="noindent"><span 
+<!--l. 823--><p class="noindent"><span 
 class="cmtt-10x-x-109">--full-link</span>
 <br class="newline">
-<!--l. 812--><p class="indent">   This option controls the behaviour of &#8221;@link(unit.procedure)&#8221; type links. If it
+<!--l. 825--><p class="indent">   This option controls the behaviour of &#8221;@link(unit.procedure)&#8221; type links. If it
 is set, the output generated will look like this:
-<!--l. 815--><p class="indent">   <span 
+<!--l. 828--><p class="indent">   <span 
 class="cmtt-10x-x-109">unit.procedure </span>with the &#8221;unit&#8221; part linking to the unit and the &#8221;procedure&#8221;
 part linking to the procedure inside the unit. If it is unset, then the output will
 only be <span 
 class="cmtt-10x-x-109">procedure</span>.
-<!--l. 819--><p class="noindent">
+<!--l. 832--><p class="noindent">
    <h5 class="subsubsectionHead"><span class="titlemark">5.5.12   </span> <a 
  id="x1-480005.5.12"></a>Non documented switches</h5>
-<!--l. 821--><p class="noindent">This lists the other unusual switches that are recognized by pasdoc:
-<!--l. 824--><p class="indent">
+<!--l. 834--><p class="noindent">This lists the other unusual switches that are recognized by pasdoc:
+<!--l. 837--><p class="indent">
      <dl class="description"><dt class="description">
 <span 
 class="cmtt-10x-x-109">-R, --description</span> </dt><dd 
@@ -1243,13 +1251,13 @@ class="description">When spell-checking, ignore the words in that file. The file
 <span 
 class="cmtt-10x-x-109">--cache-dir</span> </dt><dd 
 class="description">Cache directory for parsed files (default not set)</dd></dl>
-<!--l. 840--><p class="noindent">
+<!--l. 853--><p class="noindent">
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
  id="x1-490006"></a>Known problems</h3>
-<!--l. 842--><p class="noindent">
+<!--l. 855--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">6.1   </span> <a 
  id="x1-500006.1"></a>Documentation of program files</h4>
-<!--l. 844--><p class="noindent">As was said before, only units are regarded by pasdoc. In an OOP environment
+<!--l. 857--><p class="noindent">As was said before, only units are regarded by pasdoc. In an OOP environment
 for which pasdoc was written, an application is usually a class overriding an
 abstract application class, so all code that is ever needed in the program file looks
 like this:
@@ -1270,31 +1278,31 @@ program&nbsp;main;
 &nbsp;<br />end.
 </div>
 </td></tr></table>
-<!--l. 861--><p class="nopar">
-<!--l. 863--><p class="indent">   So there isn&#8217;t much to do for documentation. If you&#8217;re not using OOP, you
+<!--l. 874--><p class="nopar">
+<!--l. 876--><p class="indent">   So there isn&#8217;t much to do for documentation. If you&#8217;re not using OOP, you
 could at least try to move as much code as possible out of the main program to
 make things work with pasdoc.
-<!--l. 867--><p class="noindent">
+<!--l. 880--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">6.2   </span> <a 
  id="x1-510006.2"></a>Records</h4>
-<!--l. 869--><p class="noindent">Pasdoc cannot create separate documentation for members of a record. In
+<!--l. 882--><p class="noindent">Pasdoc cannot create separate documentation for members of a record. In
 object-oriented programs, records will not appear most of the time because all
 encapsulated data will be part of a class or object. However, you can give a single
 explanation on a record type which could contain a description of all
 members.
-<!--l. 875--><p class="noindent">
+<!--l. 888--><p class="noindent">
    <h4 class="subsectionHead"><span class="titlemark">6.3   </span> <a 
  id="x1-520006.3"></a>Non-unique identifiers</h4>
-<!--l. 877--><p class="noindent">In some larger projects, identifiers may be used in different contexts, e.g. as the
+<!--l. 890--><p class="noindent">In some larger projects, identifiers may be used in different contexts, e.g. as the
 name for a parameter and as a function name. Pasdoc will not be able to tell
 these contexts apart and as a result, will create in the above-mentioned example
 links (at least in HTML) from the argument name of a function to the type of
 the same name.
 
-<!--l. 883--><p class="noindent">
+<!--l. 896--><p class="noindent">
    <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
  id="x1-530007"></a>Adding support for another output format</h3>
-<!--l. 885--><p class="noindent">If you want to write a different type of document than those supported, you can
+<!--l. 898--><p class="noindent">If you want to write a different type of document than those supported, you can
 create another unit with a new object type that overrides <span 
 class="cmtt-10x-x-109">TDocGenerator </span>from
 unit <span 
@@ -1306,10 +1314,10 @@ class="E">E</span>X</span></span>generators work. First of all, you must decide 
 new output format will store the documentation in one (like <span class="LATEX">L<span class="A">A</span><span class="TEX">T<span 
 class="E">E</span>X</span></span>) or multiple
 files (like HTML).
-<!--l. 897--><p class="noindent">
+<!--l. 910--><p class="noindent">
    <h3 class="sectionHead"><span class="titlemark">8   </span> <a 
  id="x1-540008"></a>Credits</h3>
-<!--l. 899--><p class="noindent">Thanks to Michael van Canneyt, Marco van de Voort, Dan Damian, Philippe
+<!--l. 912--><p class="noindent">Thanks to Michael van Canneyt, Marco van de Voort, Dan Damian, Philippe
 Jean Dit Bailleul, Jeff Wormsley, Johann Glaser, Gudrun Plato, Erwin
 Scheuch-Hellig, Iv&aacute;n Montes Velencoso, Mike Ravkin, Jean-Pierre Vial, Jon
 Korty, Martin Krumpolec, Andr&eacute; Jager, Samuel Liddicott, Michael Hess, Ivan
