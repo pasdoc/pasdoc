@@ -62,6 +62,8 @@ type
     procedure SetStarStyle(const Value: boolean);
     function GetStarStyle: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
+    procedure HandleDescrfileTag(const TagName, TagDesc: string;
+      var ReplaceStr: string);
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(Units). }
@@ -215,6 +217,7 @@ implementation
 
 uses
   PasDoc_Parser,
+  PasDoc_TagManager,
   ObjectVector,
   Utils, PasDoc_Serialize;
 
@@ -464,15 +467,19 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure TPasDoc.HandleDescrfileTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  DoMessage(3, mtInformation, 'Adding description file "%s"', [TagDesc]);
+  DescriptionFileNames.Add(TagDesc);
+  ReplaceStr := '';
+end;
+
 procedure TPasDoc.SearchDescrFileTags(const c: TPasItems);
 var
-  Found: Boolean;
   i: Integer;
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
   p: TPasItem;
   s: string;
+  TagManager: TTagManager;
 begin
   if (not Assigned(c)) then Exit;
   i := 0;
@@ -481,17 +488,14 @@ begin
     Inc(i);
     if (not Assigned(p)) then Continue;
     if p.DetailedDescription <> '' then begin
-      Offs1 := 0;
-      repeat
-        Found := p.DescriptionFindTag(p.DetailedDescription, 'DESCRFILE', Offs1,
-          Offs2, Offs3);
-        if Found then begin
-          p.DescriptionExtractTag(p.FDetailedDescription, Offs1, Offs2, Offs3, s);
-          DoMessage(3, mtInformation, 'Adding description file "%s"', [s]);
-          DescriptionFileNames.Add(s);
-          Offs1 := Offs3 + 1;
-        end;
-      until (not Found);
+      TagManager := TTagManager.Create;
+      try
+        TagManager.AddHandler('descrfile', HandleDescrfileTag);
+        s := p.Description;
+        TagManager.Execute(s);
+      finally
+        TagManager.Free;
+      end;
     end;
 
     if p.ClassType = TPasCio then begin

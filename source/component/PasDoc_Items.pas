@@ -19,6 +19,7 @@ uses
   ObjectVector,
   Hashes,
   Classes,
+  PasDoc_TagManager,
   PasDoc_Serialize;
 
 type
@@ -40,7 +41,7 @@ type
     );
 
   TAccessibilities = set of TAccessibility;
-  
+
 const
   AccessibilityStr: Array[STATE_PUBLISHED..STATE_AUTOMATED] of string[16] =
   (
@@ -81,6 +82,12 @@ type
     procedure SetAuthors(const Value: TStringVector);
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
+    procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
+    procedure StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreAuthorTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreCreatedTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreLastModTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreCVSTag(const TagName, TagDesc: string; var ReplaceStr: string);
   public
     // THIS IS A BAD HACK
     FDescription: string;
@@ -89,43 +96,13 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure DescriptionExtractTag(var ADescription: string; const Offs1,
-      Offs2, Offs3: Integer; var s: string);
-    function DescriptionFindTag(const ADescription, TagName: string; var
-      Offs1, Offs2, Offs3: Integer): Boolean;
-    function DescriptionFindTagParameters(const ADescription: string; var
-      Offs1, Offs2: Integer): Boolean;
-    function DescriptionGetTagName(const ADescription: string; var Offset:
-      Integer): string;
-    procedure DescriptionGetTag(var ADescription: string; const Remove:
-      Boolean; const Offs1, Offs2, Offs3: Integer; var s: string);
-
     function FindItem(const ItemName: string): TPasItem; virtual;
     { }
     function FindName(S1, S2, S3: string; n: Integer): TPasItem; virtual;
     { Returns DetailedDescription if available, otherwise Description,
       otherwise nil. }
     function GetDescription: string;
-    { Searches for an abstract tag within the Description field of
-      this item. If one is found, Description is copied to DetailedDescription
-      and the abstract tag becomes the new Description. This procedure
-      should be called after the dates (created and lastmod) and the
-      author tags have been handled, as they are searched in Description. }
-    procedure HandleAbstractTag;
-    { }
-    procedure HandleAuthorTags;
-    { }
-    procedure HandleCreatedTag;
-    { }
-    procedure HandleLastModTag;
-    { }
-    procedure HandleCVSTag;
-    { handles a @@param tag }
-    procedure HandleParamTag; virtual;
-    { handles a @@returns tag }
-    procedure HandleReturnsTag; virtual;
-    { handles a @@raises tag }
-    procedure HandleRaisesTag; virtual;
+    procedure HandleTags;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
@@ -200,12 +177,13 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure SetParams(const Value: TStringVector);
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
+    procedure StoreRaisesTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreParamTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreReturnsTag(const TagName, TagDesc: string; var ReplaceStr: string);
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure HandleParamTag; override;
-    procedure HandleReturnsTag; override;
-    procedure HandleRaisesTag; override;
     { full declaration, including parameter list and procedural directives }
     property FullDeclaration: string read FFullDecl write FFullDecl;
     { }
@@ -473,7 +451,7 @@ begin
   inherited;
 end;
 
-procedure TPasItem.DescriptionExtractTag(var ADescription: string; const
+(*procedure TPasItem.DescriptionExtractTag(var ADescription: string; const
   Offs1, Offs2, Offs3: Integer; var s: string);
 begin
   DescriptionGetTag(ADescription, True, Offs1, Offs2, Offs3, s);
@@ -566,6 +544,7 @@ begin
   s := Copy(ADescription, Offs2 + 1, l);
   if Remove then Delete(ADescription, Offs1, Offs3 - Offs1 + 1);
 end;
+*)
 
 function TPasItem.FindItem(const ItemName: string): TPasItem;
 begin
@@ -638,114 +617,60 @@ end;
 
 { ---------- }
 
-procedure TPasItem.HandleAbstractTag;
+procedure TPasItem.HandleTags;
 var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
+  TagManager: TTagManager;
   s: string;
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-
-  while Offs1 < Length(DetailedDescription) do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'ABSTRACT', Offs1, Offs2, Offs3) then
-    begin
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
-      if (Length(s) <= 0) then Continue;
-      Description := s;
-      Exit;
-    end;
-    Inc(Offs1);
+  TagManager := TTagManager.Create;
+  try
+    TagManager.Abbreviations := Abbreviations;
+    RegisterTagHandlers(TagManager);
+    s := DetailedDescription;
+    TagManager.Execute(s);
+    DetailedDescription := s;
+  finally
+    TagManager.Free;
   end;
 end;
 
-procedure TPasItem.HandleParamTag;
+procedure TPasItem.RegisterTagHandlers(TagManager: TTagManager);
 begin
-  // does nothing for a normal TPasItem, but only for a TPasMethod
+  TagManager.AddHandler('abstract', StoreAbstractTag);
+  TagManager.AddHandler('author', StoreAuthorTag);
+  TagManager.AddHandler('created', StoreCreatedTag);
+  TagManager.AddHandler('lastmod', StoreLastModTag);
+  TagManager.AddHandler('cvs', StoreCVSTag);
 end;
 
-procedure TPasItem.HandleReturnsTag;
+procedure TPasItem.StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  // does nothing for a normal TPasItem, but only for a TPasMethod
+  if TagDesc = '' then exit;
+  Description := TagDesc;
+  ReplaceStr := '';
 end;
 
-procedure TPasItem.HandleRaisesTag;
+procedure TPasItem.StoreAuthorTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  // does nothing for a normal TPasItem, but only for a TPasMethod
+  if TagDesc = '' then exit;
+  if Authors = nil then
+    FAuthors := NewStringVector;
+  Authors.Add(TagDesc);
+  ReplaceStr := '';
 end;
 
-{ ---------- }
-
-procedure TPasItem.HandleAuthorTags;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  s: string;
-  l: Integer;
+procedure TPasItem.StoreCreatedTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  { we could have more than one author, so repeat until we have all }
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'AUTHOR', Offs1, Offs2, Offs3) then
-        begin
-          { we found one, remove it from the description and add it to the author list }
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
-      l := Length(DetailedDescription);
-      if s <> '' then begin
-        if Authors = nil then FAuthors := NewStringVector;
-        Authors.Add(s);
-      end;
-    end;
-    Inc(Offs1);
-  end;
+  if TagDesc = '' then exit;
+  FCreated := TagDesc;
+  ReplaceStr := '';
 end;
 
-procedure TPasItem.HandleCreatedTag;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  l: Integer;
+procedure TPasItem.StoreLastModTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'CREATED', Offs1, Offs2, Offs3) then
-        begin
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, FCreated);
-      Exit;
-    end;
-    Inc(Offs1);
-  end;
-end;
-
-procedure TPasItem.HandleLastModTag;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  l: Integer;
-begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'LASTMOD', Offs1, Offs2, Offs3) then
-        begin
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, FLastMod);
-      Exit;
-    end;
-    Inc(Offs1);
-  end;
+  if TagDesc = '' then exit;
+  FLastMod := TagDesc;
+  ReplaceStr := '';
 end;
 
 function TPasItem.HasDescription: Boolean;
@@ -1075,45 +1000,30 @@ begin
   if Variables <> nil then Variables.SortByPasItemName;
 end;
 
-procedure TPasItem.HandleCVSTag;
+procedure TPasItem.StoreCVSTag(const TagName, TagDesc: string; var ReplaceStr: string);
 var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  l: Integer;
-  LTagData: string;
+  s: string;
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-        DescriptionFindTag(DetailedDescription, 'CVS', Offs1, Offs2, Offs3) then begin
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, LTagData);
-      l := length(DetailedDescription);
-      if Length(LTagData)>1 then begin
-        case LTagData[2] of
-          'D': begin
-                 if Copy(LTagData,1,7) = '$Date: ' then begin
-                   LastMod := Trim(Copy(LTagData, 7, Length(LTagData)-7-1)) + ' UTC';
-                 end;
+  if Length(TagDesc)>1 then begin
+    case TagDesc[2] of
+      'D': begin
+             if Copy(TagDesc,1,7) = '$Date: ' then begin
+               LastMod := Trim(Copy(TagDesc, 7, Length(TagDesc)-7-1)) + ' UTC';
+             end;
+           end;
+      'A': begin
+             if Copy(TagDesc,1,9) = '$Author: ' then begin
+               s := Trim(Copy(TagDesc, 9, Length(TagDesc)-9-1));
+               if Length(s) > 0 then begin
+                 if not Assigned(Authors) then
+                   FAuthors := NewStringVector;
+                 Authors.AddNotExisting(s);
                end;
-          'A': begin
-                 if Copy(LTagData,1,9) = '$Author: ' then begin
-                   LTagData := Trim(Copy(LTagData, 9, Length(LTagData)-9-1));
-                   Unabbreviate(LTagData);
-                   if Length(LTagData) > 0 then begin
-                     if not Assigned(Authors) then FAuthors := NewStringVector;
-                     Authors.AddNotExisting(LTagData);
-                   end;
-                 end;
-               end;
-          else begin
-          end;
-        end;
+             end;
+           end;
+      else begin
       end;
     end;
-    Inc(Offs1);
   end;
 end;
 
@@ -1217,82 +1127,25 @@ begin
   inherited Destroy;
 end;
 
-procedure TPasMethod.HandleRaisesTag;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  s: string;
-  l: Integer;
+procedure TPasMethod.StoreRaisesTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  { we could have more than one parameter, so repeat until we have all }
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'RAISES', Offs1, Offs2, Offs3) then
-    begin
-      { we found one, remove it from the description and add it to the parameter list }
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
-      l := length(DetailedDescription);
-      if s <> '' then begin
-        FRaises.Add(s);
-      end;
-    end;
-    Inc(Offs1);
-  end;
+  if TagDesc = '' then exit;
+  FRaises.Add(TagDesc);
+  ReplaceStr := '';
 end;
 
-procedure TPasMethod.HandleParamTag;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  s: string;
-  l: Integer;
+procedure TPasMethod.StoreParamTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-  l := Length(DetailedDescription);
-  { we could have more than one exception, so repeat until we have all }
-  while Offs1 < l do begin
-    if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'PARAM', Offs1, Offs2, Offs3) then
-    begin
-      { we found one, remove it from the description and add it to the parameter list }
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
-      l := length(DetailedDescription);
-      if s <> '' then begin
-        FParams.Add(s);
-      end;
-    end;
-    Inc(Offs1);
-  end;
+  if TagDesc = '' then exit;
+  FParams.Add(TagDesc);
+  ReplaceStr := '';
 end;
 
-procedure TPasMethod.HandleReturnsTag;
-var
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
-  s: string;
+procedure TPasMethod.StoreReturnsTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if DetailedDescription = '' then Exit;
-  Offs1 := 1;
-
-  while Offs1 < Length(DetailedDescription) do begin
-    if (DetailedDescription[Offs1] = '@') and
-      (DescriptionFindTag(DetailedDescription, 'RETURN', Offs1, Offs2, Offs3) or
-       DescriptionFindTag(DetailedDescription, 'RETURNS', Offs1, Offs2, Offs3)) then
-    begin
-      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
-      if (Length(s) <= 0) then Continue;
-        FReturns := s;
-      Exit;
-    end;
-    Inc(Offs1);
-  end;
+  if TagDesc = '' then exit;
+  FReturns := TagDesc;
+  ReplaceStr := '';
 end;
 
 procedure TPasItem.Deserialize(const ASource: TStream);
@@ -1354,6 +1207,15 @@ end;
 procedure TPasMethod.SetParams(const Value: TStringVector);
 begin
   FParams.Assign(Value);
+end;
+
+procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);
+begin
+  inherited;
+  TagManager.AddHandler('raises', StoreRaisesTag);
+  TagManager.AddHandler('param', StoreParamTag);
+  TagManager.AddHandler('returns', StoreReturnsTag);
+  TagManager.AddHandler('return', StoreReturnsTag);
 end;
 
 { TPasVarConst }

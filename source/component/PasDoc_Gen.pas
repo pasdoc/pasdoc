@@ -102,6 +102,18 @@ type
     FFullLink: boolean;
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
+    FCurrentItem: TPasItem;
+    
+    procedure HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleInheritedTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLiteralTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleDoubleAt(const TagName, TagDesc: string; var ReplaceStr: string);
+
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -193,8 +205,7 @@ begin
 end;
       #)
       *)
-    function LongCode(const Desc: string; Len: integer;
-      var CurPos: integer): string; virtual;
+//    function LongCode(const Content: string): string; virtual;
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
 
@@ -506,7 +517,8 @@ implementation
 uses
   SysUtils,
   StreamUtils,
-  Utils;
+  Utils,
+  PasDoc_TagManager;
 
 { ---------------------------------------------------------------------------- }
 { TDocGenerator                                                                }
@@ -528,14 +540,7 @@ procedure TDocGenerator.BuildLinks;
       p.FullLink := CreateLink(p);
       if not p.WasDeserialized then begin
         p.Abbreviations := FAbbreviations;
-        p.HandleAuthorTags;
-        p.HandleCreatedTag;
-        p.HandleLastModTag;
-        p.HandleCVSTag;
-        p.HandleAbstractTag;
-        p.HandleParamTag;
-        p.HandleReturnsTag;
-        p.HandleRaisesTag;
+        p.HandleTags;
       end;
     end;
   end;
@@ -555,14 +560,7 @@ begin
     U.OutputFileName := U.FullLink;
     U.Abbreviations := FAbbreviations;
     if not U.WasDeserialized then begin
-      U.HandleAuthorTags;
-      U.HandleCreatedTag;
-      U.HandleLastModTag;
-      U.HandleCVSTag;
-      U.HandleAbstractTag;
-      U.HandleParamTag;
-      U.HandleReturnsTag;
-      U.HandleRaisesTag;
+      U.HandleTags;
     end;
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
@@ -580,14 +578,7 @@ begin
 
           CO.Abbreviations := FAbbreviations;
 
-          CO.HandleAuthorTags;
-          CO.HandleCreatedTag;
-          CO.HandleLastModTag;
-          CO.HandleCVSTag;
-          CO.HandleAbstractTag;
-          CO.HandleParamTag;
-          CO.HandleReturnsTag;
-          CO.HandleRaisesTag;
+          CO.HandleTags;
         end;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
@@ -638,228 +629,154 @@ end;
 
 function TDocGenerator.CodeString(const s: string): string;
 begin
-  Result := s;
+  Result := '<pre>' + CodeString(s) + '</pre>';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
-  Boolean;
+procedure TDocGenerator.HandleDoubleAt(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '@';
+end;
 
-  function GetNextWord(const Desc: string; Len: integer; var CurPos: integer): string;
-  begin
-    Result := '';
-    while (CurPos < Len) and (Desc[CurPos] in ['(', ' ', #9]) do
-      Inc(CurPos);
-    while (CurPos < Len) and not (Desc[CurPos] in [')', ' ', #9]) do
-      begin
-        Result := Result + Desc[CurPos];
-        Inc(CurPos);
-      end;
-  end;
+procedure TDocGenerator.HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  if TagDesc = '' then
+    exit;
+  ReplaceStr := FormatPascalCode(ConvertString(TagDesc));
+end;
 
-  function IsMacro(const Desc: string; Len: integer;
-    const Macro: string; var CurPos: integer): boolean;
-  var
-    i: integer;
-    l: integer;
-    s: string;
-  begin
-    Result := false;
-    s := UpperCase(Macro);
-    l := Length(s);
+procedure TDocGenerator.HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  { HTML goes right throu }
+  ReplaceStr := TagDesc;
+end;
 
-    if CurPos + l > Len then
-      exit;
+procedure TDocGenerator.HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
+end;
 
-    for i:=1 to l do
-      if UpCase(Desc[CurPos+i]) <> s[i] then
-        exit;
+procedure TDocGenerator.HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  if Assigned(fCurrentItem.MyObject) then begin
+    ReplaceStr := CodeString(ConvertString(fCurrentItem.MyObject.Name));
+  end else if fCurrentItem is TPasCio then begin
+    ReplaceStr := CodeString(ConvertString(fCurrentItem.Name));
+  end
+end;
 
-    { TODO -cfixme -ojmb: is NOT (a..z,A..Z) ok? I don't see what difference it makes... }
-    if (CurPos + l = Len) or (not (Desc[CurPos + l + 1] in ['a'..'z','A'..'Z','0'..'9'])) then begin
-      Inc(CurPos, l + 1);
-      Result := true;
+// handles @true, @false, @nil (Who uses these tags anyway?)
+procedure TDocGenerator.HandleLiteralTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := CodeString(UpCase(TagName[1]) + Copy(TagName, 2, 255));
+end;
+
+procedure TDocGenerator.HandleInheritedTag(const TagName, TagDesc: string; var ReplaceStr: string);
+var
+  TheObject: TPasCio;
+  Ancestor: TPasItem;
+  s: string;
+  TheLink: string;
+begin
+  if Assigned(fCurrentItem.MyObject) then
+    TheObject := fCurrentItem.MyObject
+  else if fCurrentItem is TPasCio then
+    TheObject := TPasCio(fCurrentItem)
+  else
+    TheObject := nil;
+
+  // Try to find inherited property of item.
+  // Updated 14 Jun 2002
+
+   TheLink := '';
+  if Assigned(TheObject)
+    and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
+    s := TheObject.Ancestors.FirstName;
+    Ancestor := SearchItem(s, fCurrentItem);
+    if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
+      then begin
+      repeat
+        if fCurrentItem.MyObject = nil then
+          // we are looking for the ancestor itself
+          TheLink := SearchLink(s, fCurrentItem)
+        else
+          // we are looking for an ancestor's property or method
+          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem);
+        if TheLink <> '' then Break;
+
+        if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
+          then begin
+          s := TPasCio(Ancestor).Ancestors.FirstName;
+          Ancestor := SearchItem(s, Ancestor);
+        end else begin
+          Break;
+        end;
+      until Ancestor = nil;
     end;
   end;
 
+  if TheLink <> '' then begin
+    ReplaceStr := TheLink;
+  end else begin
+    DoMessage(2, mtWarning, 'Could not resolve "@Inherited" (%s)', [fCurrentItem.QualifiedName]);
+    ReplaceStr := CodeString(ConvertString(fCurrentItem.Name));
+  end;
+end;
+
+procedure TDocGenerator.HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
 var
-  Run: Integer;
-  Offs1: Integer;
-  Offs2: Integer;
-  Offs3: Integer;
   TheLink: string;
-  s: string;
-  t: string;
-  l: Integer;
-  TheObject: TPasCio;
-  Ancestor: TPasItem;
+begin
+  TheLink := SearchLink(TagDesc, FCurrentItem);
+
+  if TheLink <> '' then
+    ReplaceStr := TheLink
+  else
+    begin
+      DoMessage(1, mtWarning, 'Could not resolve "@Link(%s)" (%s)', [TagDesc, fCurrentItem.QualifiedName]);
+      ReplaceStr := CodeString(ConvertString(TagDesc));
+    end;
+end;
+
+procedure TDocGenerator.HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := CodeString(TagDesc);
+end;
+
+function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string): Boolean;
+var
+  TagManager: TTagManager;
 begin
   Result := True;
   { check for cases "no id" and "id is empty" }
-  if d = '' then Exit;
-  { first convert the string to its correct representation }
-  l := Length(d);
+  if d = '' then
+    Exit;
 
-  { create temporary TText object }
-  Run := 1;
-  repeat
-    if (d[Run] = '@') then begin
-        { this is @@ (literal '@')? }
-      if (Run <= l - 1) and (d[Run + 1] = '@') then
-      begin
-        { literal @ }
-        t := t + ConvertChar('@');
-        Inc(Run, 2);
-      end
-      else
-        if IsMacro(d, l, 'LONGCODE', Run) then begin
-          t := t + LongCode(d, l, Run) + ' ';
-        end
-        else
-        if IsMacro(d, l, 'HTML', Run) then begin
-          t := t + HtmlString(d, l, Run) + ' ';
-        end
-        else
-        if IsMacro(d, l, 'RAISES', Run) then begin
-          t := t + ParameterString('Raises', ConvertString(GetNextWord(d, l, Run))) + ' ';
-        end
-        else
-        if IsMacro(d, l, 'PARAM', Run) then begin
-          t := t + ParameterString('', ConvertString(GetNextWord(d, l, Run))) + ' ';
-        end
-        else
-        if IsMacro(d, l, 'RETURN', Run) or
-          IsMacro(d, l, 'RETURNS', Run) then begin
-          t := t + ParameterString('', 'Returns') + ' ';
-        end
-        else
-          { Is it @Name?
-            * Name must follow directly after @.
-            * There are no brackets after @Name. }
-        if IsMacro(d, l, 'NAME', Run) then begin
-          t := t + CodeString(ConvertString(Item.Name));
-        end
-        else
-          if IsMacro(d, l, 'CLASSNAME', Run) then begin
-            if Assigned(Item.MyObject) then begin
-              t := t + CodeString(ConvertString(Item.MyObject.Name));
-            end else if Item is TPasCio then begin
-              t := t + CodeString(ConvertString(Item.Name));
-            end
-          end
-          else
-              { Is it @True? }
-            if IsMacro(d, l, 'TRUE', Run) then begin
-              t := t + CodeString('True');
-            end
-            else
-                { Is it @False ? }
-              if IsMacro(d, l, 'FALSE', Run) then begin
-                t := t + CodeString('False');
-              end
-              else
-                  { Is it @nil ? }
-                if IsMacro(d, l, 'NIL', Run) then begin
-                  t := t + CodeString('nil');
-                end
-                else
-                  if IsMacro(d, l, 'INHERITED', Run) then begin
-                    if Assigned(Item.MyObject) then
-                      TheObject := Item.MyObject
-                    else if Item is TPasCio then
-                      TheObject := TPasCio(Item)
-                    else
-                      TheObject := nil;
-                    // Try to find inherited property of item.
-                    // Updated 14 Jun 2002
+  // make it available to the handlers
+  FCurrentItem := Item;
 
-                    if Assigned(TheObject)
-                      and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
-                      s := TheObject.Ancestors.FirstName;
-                      Ancestor := SearchItem(s, Item);
-                      if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
-                        then begin
-                        repeat
-                          if Item.MyObject = nil then
-                            // we are looking for the ancestor itself
-                            TheLink := SearchLink(s, Item)
-                          else
-                            // we are looking for an ancestor's property or method
-                            TheLink := SearchLink(s + '.' + Item.Name, Item);
-                          if TheLink <> '' then Break;
+  TagManager := TTagManager.Create;
+  try
+    TagManager.Abbreviations := Abbreviations;
+    TagManager.StringConverter := ConvertString;
+    TagManager.AddHandler('@', HandleDoubleAt);
+    TagManager.AddHandler('longcode', HandleLongCodeTag);
+    TagManager.AddHandler('link', HandleLinkTag);
+    TagManager.AddHandler('HTML', HandleHtmlTag);
+    TagManager.AddHandler('NAME', HandleNameTag);
+    TagManager.AddHandler('CLASSNAME', HandleClassnameTag);
+    TagManager.AddHandler('TRUE', HandleLiteralTag);
+    TagManager.AddHandler('FALSE', HandleLiteralTag);
+    TagManager.AddHandler('NIL', HandleLiteralTag);
+    TagManager.AddHandler('INHERITED', HandleInheritedTag);
+    TagManager.AddHandler('LINK', HandleLinkTag);
+    TagManager.AddHandler('CODE', HandleCodeTag);
 
-                          if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
-                            then begin
-                            s := TPasCio(Ancestor).Ancestors.FirstName;
-                            Ancestor := SearchItem(s, Ancestor);
-                          end else begin
-                            Break;
-                          end;
-                        until Ancestor = nil;
-                      end;
-                    end;
-
-                    if TheLink <> '' then begin
-                      t := t + TheLink;
-                    end else begin
-                      DoMessage(2, mtWarning, 'Could not resolve "@Inherited" (%s)', [Item.QualifiedName]);
-                      t := t + CodeString(ConvertString(Item.Name));
-                    end;
-                  end
-                  else begin
-                    Offs1 := Run;
-                    if Item.DescriptionFindTag(d, 'LINK', Offs1,
-                      Offs2, Offs3) then begin
-                      Item.DescriptionGetTag(d, False, Offs1, Offs2,
-                        Offs3, s);
-                      t := t + ConvertString(Copy(d, Run, Offs1 -
-                        Run));
-                      Run := Offs3 + 1;
-                      TheLink := SearchLink(s, Item);
-
-                      if TheLink <> '' then
-                        t := t + TheLink
-                      else
-                        begin
-                          DoMessage(1, mtWarning, 'Could not resolve "%s" (%s)', [s, Item.QualifiedName]);
-                          t := t + CodeString(ConvertString(s));
-                        end;
-                    end else begin
-                      Offs1 := Run;
-                      if Item.DescriptionFindTag(d, 'CODE', Offs1,
-                        Offs2, Offs3) then begin
-                        Item.DescriptionGetTag(d, False, Offs1,
-                          Offs2, Offs3, s);
-                        t := t + ConvertString(Copy(d, Run, Offs1 -
-                          Run));
-                        Run := Offs3 + 1;
-                        t := t + CodeString(ConvertString(s));
-                      end else begin
-                        Inc(Run);
-                        if Assigned(Item.MyUnit) then begin
-                          DoMessage(2, mtWarning,
-                            'Found non-link tag when expanding descriptions of "' +
-                            Item.Name + '" in unit ' + Item.MyUnit.Name,
-                            [])
-                        end else begin
-                          DoMessage(2, mtWarning,
-                            'Found non-link tag when expanding descriptions of "' +
-                            Item.Name + '"', []);
-                          t := t + 'WARNING: @';
-                        end;
-                      end;
-                    end;
-                  end;
-    end
-    else begin
-      if (d[Run] in [#9{, #13, #10}]) then d[Run] := ' ';   // GSk: Removed CR and LF
-      t := t + ConvertChar(d[Run]);
-      Inc(Run);
-    end;
-  until (Run > l);
-
-  d := t;
+    TagManager.Execute(d);
+  finally
+    TagManager.Free;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1754,8 +1671,7 @@ begin
   WriteConverted(s, false);
 end;
 
-function TDocGenerator.LongCode(const Desc: string; Len: integer;
-  var CurPos: integer): string;
+(*function TDocGenerator.LongCode(const Desc: string; Len: integer; var CurPos: integer): string;
 var
   CharPos: integer;
   ClosingCharacter: Char;
@@ -1793,7 +1709,7 @@ begin
       result := '@LONGCODE';
     end;
   end;
-end;
+end;*)
 
 function TDocGenerator.HtmlString(const Desc: string; Len: integer;
   var CurPos: integer): string;

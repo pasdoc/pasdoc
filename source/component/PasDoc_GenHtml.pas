@@ -2658,6 +2658,10 @@ begin
   CloseStream;
 end;
 
+
+{ TODO : This does not work under Linux (or maybe not even under Windows):
+         Where are the German Umlauts (-> &Auml; etc.) and French/Spanish
+         special characters (-> &ccedil; etc.) ?}
 function THTMLDocGenerator.ConvertString(const s: String): String;
 {
   Code taken from "Ingo Kemper"
