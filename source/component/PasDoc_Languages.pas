@@ -183,13 +183,13 @@ const
     (Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
     (Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
     (Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
-    (Name: 'Danish'; Syntax: 'dk'; CharSet: ''),
-    (Name: 'Dutch'; Syntax: 'nl'; CharSet: ''),
-    (Name: 'English'; Syntax: 'en'; CharSet: ''),
-    (Name: 'Frensh'; Syntax: 'fr'; CharSet: ''),
-    (Name: 'German'; Syntax: 'de'; CharSet: ''),
+    (Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
+    (Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
+    (Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
+    (Name: 'Frensh'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
+    (Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'),
     (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
-    (Name: 'Italian'; Syntax: 'it'; CharSet: ''),
+    (Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
     (Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
     (Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),         // GSk: renamed, added CharSet
     (Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'), // GSk: added
@@ -197,8 +197,8 @@ const
     (Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
     (Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
     (Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
-    (Name: 'Spanish'; Syntax: 'es'; CharSet: ''),
-    (Name: 'Swedish'; Syntax: 'se'; CharSet: ''),
+    (Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'),
+    (Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'),
     (Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250')
     
     );
@@ -1547,6 +1547,9 @@ end;
 
 {
   $Log$
+  Revision 1.13  2005/03/30 10:18:59  johill
+  add charsets to languages
+
   Revision 1.12  2004/08/10 20:43:26  twm
   patches from Ricardo Pardini:
   * Include graphics into htmlhelp
