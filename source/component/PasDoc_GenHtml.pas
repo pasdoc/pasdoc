@@ -2576,6 +2576,26 @@ begin
 end;
 
 procedure THTMLDocGenerator.WriteFramesetFiles;
+
+const
+  TRANSLATION_IDS: array[0..NUM_OVERVIEW_FILES_USED-1] of TTranslationId = (
+      trUnits,
+      trClassHierarchy,
+      trCio,
+      trTypes,
+      trVariables,
+      trConstants,
+      trFunctionsAndProcedures,
+      trIdentifiers
+  );
+
+  procedure WriteLink(const Filename: string; CaptionId: TTranslationID);
+  begin
+    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
+    WriteConverted(FLanguage.Translation[CaptionId]);
+    WriteDirect('</a></td></tr>', true);
+  end;
+
 var
   i: Integer;
 begin
@@ -2601,20 +2621,10 @@ begin
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
     + '" width="100%">', true);
-  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
-    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(OverviewFilenames[i] + GetFileExtension) + '" class="navigation">');
-    case i of
-      0: WriteConverted(FLanguage.Translation[trUnits]);
-      1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
-      2: WriteConverted(FLanguage.Translation[trCio]);
-      3: WriteConverted(FLanguage.Translation[trTypes]);
-      4: WriteConverted(FLanguage.Translation[trVariables]);
-      5: WriteConverted(FLanguage.Translation[trConstants]);
-      6: WriteConverted(FLanguage.Translation[trFunctionsAndProcedures]);
-      7: WriteConverted(FLanguage.Translation[trIdentifiers]);
-    end;
-    WriteDirect('</a></td></tr>', true);
-  end;
+  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do 
+    WriteLink(OverviewFilenames[i] + GetFileExtension, TRANSLATION_IDS[i]);
+  WriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
+  WriteLink(OverviewFilenames[9] + '.' + LinkGraphVizUses , trGvClasses);
   WriteDirect('</table>', true);
   WriteLine(CurrentStream, '</body></html>');
   CloseStream;
