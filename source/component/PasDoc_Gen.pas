@@ -792,7 +792,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
     if Item is TPasEnum then begin
       for i := 0 to TPasEnum(Item).Members.Count-1 do begin
-        ExpandItem(TPasItem(TPasEnum(Item).Members.ObjectAt[i]));
+        ExpandItem(TPasItem(TPasEnum(Item).Members.PasItemAt[i]));
       end;
     end;
   end;
@@ -1074,11 +1074,10 @@ begin
   end;
 
   { first try to find link starting at Item }
+  FoundItem := nil;
   if Assigned(Item) then begin
     FoundItem := Item.FindName(S1, S2, S3, n);
-  end
-  else
-    FoundItem := nil;
+  end;
 
   { Next try to find link in items's unit uses units. }
   if FoundItem = nil then
@@ -1090,7 +1089,6 @@ begin
           UnitName := Item.MyUnit.UsesUnits[i];
           U := TPasUnit(Units.FindName(UnitName));
           if U <> nil then
-                // FoundItem := U^.FindName(s1, s2, S3, n);
             FoundItem := U.FindFieldMethodProperty(S1, S2);
           if FoundItem <> nil then Break;
         end;
@@ -1103,7 +1101,7 @@ begin
   if Assigned(FoundItem) then
     Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink)
   else
-    Result := ''; // RJ ConvertString(s);
+    Result := '';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1538,7 +1536,7 @@ begin
                s := copy(s, p+1, MaxInt);
                LError.Offset := StrToIntDef(s, 0)-1;
                DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Add(LError);
+               AErrors.Insert(LError);
              end;
         '&': begin
                LError := TSpellingError.Create; 
@@ -1553,7 +1551,7 @@ begin
                SetLength(s, p2-1);
                LError.Offset := StrToIntDef(s, 0)-1;
                DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Add(LError);
+               AErrors.Insert(LError);
              end;
       end;
       s := ReadLine(FAspellPipe);

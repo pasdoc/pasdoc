@@ -65,11 +65,13 @@ type
     { if assigned, contains string with date of creation }
     FCreated: string;
     procedure Unabbreviate(var s: string);
+    procedure SetAuthors(const Value: TStringVector);
   public
     // THIS IS A BAD HACK
     FDescription: string;
     FDetailedDescription: string;
     { }
+    constructor Create; virtual;
     destructor Destroy; override;
 
     procedure DescriptionExtractTag(var ADescription: string; const Offs1,
@@ -107,15 +109,13 @@ type
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
-    { Inserts an item into a collection.
-    Creates collection if it does not exist already. }
-    procedure InsertItem(const Item: TPasItem; var c: TPasItems);
-    { inserts a method into a collection; creates collection if necessary }
-    procedure InsertMethod(const Method: TPasMethod; var c: TPasMethods);
-    { inserts a property into a collection; creates collection if necessary }
-    procedure InsertProperty(const Prop: TPasProperty; var c: TPasProperties);
     { returns the qualified name of the item }
     function QualifiedName: String;
+
+    { pointer to unit this item belongs to }
+    property MyUnit: TPasUnit read FMyUnit write FMyUnit;
+    { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
+    property MyObject: TPasCio read FMyObject write FMyObject;
   published
     { description of this item, a single sentence }
     property Description: string read FDescription write FDescription;
@@ -126,10 +126,6 @@ type
     property FullLink: string read FFullLink write FFullLink;
     { if assigned, contains string with date of last modification }
     property LastMod: string read FLastMod write FLastMod;
-    { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
-    property MyObject: TPasCio read FMyObject write FMyObject;
-    { pointer to unit this item belongs to }
-    property MyUnit: TPasUnit read FMyUnit write FMyUnit;
     { name of the item }
     property Name: string read FName write FName;
     { One of the STATE_xxx constants, determines access rights
@@ -139,7 +135,7 @@ type
     property IsDeprecated: boolean read FDeprecated write FDeprecated;
     { is this item platform specific? }
     property IsPlatform: boolean read FPlatform write FPlatform;
-    property Authors: TStringVector read FAuthors;
+    property Authors: TStringVector read FAuthors write SetAuthors;
     property Created: string read FCreated;
   end;
 
@@ -158,7 +154,7 @@ type
     FMembers: TPasItems;
   public
     destructor Destroy; override;
-    constructor Create;
+    constructor Create; override;
   published
     property Members: TPasItems read FMembers;
   end;
@@ -221,10 +217,16 @@ type
   { Extends @link(TPasItem) to store all items in a class / an object, e.g.
     fields. }
   TPasCio = class(TPasItem)
+  private
+    FFields: TPasItems;
+    FMethods: TPasMethods;
+    FProperties: TPasProperties;
+    FAncestors: TStringVector;
   protected
     FOutputFileName: string;
     FMyType: TCIOType;
   public
+    constructor Create; override;
     destructor Destroy; override;
 
     { Simply returns the result of a call to @link(FindFieldMethodProperty). }
@@ -237,13 +239,13 @@ type
     procedure SortPasItems;
   published
     { name of the ancestor class / object }
-    Ancestors: TStringVector;
+    property Ancestors: TStringVector read FAncestors;
     { list of all fields }
-    Fields: TPasItems;
+    property Fields: TPasItems read FFields;
     { list of all methods }
-    Methods: TPasMethods;
+    property Methods: TPasMethods read FMethods;
     { list of properties }
-    Properties: TPasProperties;
+    property Properties: TPasProperties read FProperties;
     { determines if this is a class, an interface or an object }
     property MyType: TCIOType read FMyType write FMyType;
     { name of documentation output file (if each class / object gets
@@ -254,6 +256,13 @@ type
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit }
   TPasUnit = class(TPasItem)
+  private
+    FTypes: TPasItems;
+    FVariables: TPasItems;
+    FCIOs: TPasItems;
+    FConstants: TPasItems;
+    FFuncsProcs: TPasMethods;
+    FUsesUnits: TStringVector;
   protected
     FIsCached: boolean;
     FSourceFilename: string;
@@ -262,7 +271,7 @@ type
     procedure LoadCachedProperty(Reader: TReader);
     procedure StoreCachedProperty(Writer: TWriter);
   public
-    { dispose of all dynamically allocated memory in this object }
+    constructor Create; override;
     destructor Destroy; override;
     procedure AddCIO(const i: TPasCio);
     procedure AddConstant(const i: TPasItem);
@@ -272,22 +281,22 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
-
+                     
     property IsCachedVersion: boolean read FIsCached;
   published
     { list of classes and objects defined in this unit }
-    CIOs: TPasItems;
+    property CIOs: TPasItems read FCIOs;
     { list of constants defined in this unit }
-    Constants: TPasItems;
+    property Constants: TPasItems read FConstants;
     { list of functions and procedures defined in this unit }
-    FuncsProcs: TPasMethods;
+    property FuncsProcs: TPasMethods read FFuncsProcs;
     { the names of all units mentioned in a uses clause in the interface
       section of this unit }
-    UsesUnits: TStringVector;
+    property UsesUnits: TStringVector read FUsesUnits;
     { list of types defined in this unit }
-    Types: TPasItems;
+    property Types: TPasItems read FTypes;
     { list of variables defined in this unit }
-    Variables: TPasItems;
+    property Variables: TPasItems read FVariables;
     { name of documentation output file
       THIS SHOULD NOT BE HERE! }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
@@ -323,7 +332,7 @@ type
 
     procedure SortByPasItemName;
 
-    procedure InsertObjectLast(const AObject: TPasItem);
+    procedure Add(const AObject: TPasItem);
     procedure DeleteAt(const AIndex: Integer);
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
@@ -675,40 +684,9 @@ begin
   end;
 end;
 
-{ ---------------------------------------------------------------------------- }
-
 function TPasItem.HasDescription: Boolean;
 begin
   HasDescription := (Description <> '') or (DetailedDescription <> '');
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasItem.InsertItem(const Item: TPasItem; var c: TPasItems);
-begin
-  if Item = nil then Exit;
-  if c = nil then c := TPasItems.Create(True);
-  c.InsertObjectLast(Item);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasItem.InsertMethod(const Method: TPasMethod; var c:
-  TPasMethods);
-begin
-  if Method = nil then Exit;
-  if c = nil then c := TPasMethods.Create(True);
-  c.InsertObjectLast(Method);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasItem.InsertProperty(const Prop: TPasProperty; var c:
-  TPasProperties);
-begin
-  if Prop = nil then Exit;
-  if c = nil then c := TPasProperties.Create(True);
-  c.InsertObjectLast(Prop);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -721,7 +699,7 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
-    InsertObjectLast(TPasItem(c.GetPasItemAt(i)));
+    Add(TPasItem(c.GetPasItemAt(i)));
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -780,7 +758,7 @@ end;
 
 function TPasItems.GetPasItemAt(const AIndex: Integer): TPasItem;
 begin
-  Result := TPasItem(ObjectAt[AIndex]);
+  Result := TPasItem(Items[AIndex]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -791,14 +769,14 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
-    InsertObjectLast(TPasItem(c.ObjectAt[i]));
+    Add(TPasItem(c.Items[i]));
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasItems.InsertObjectLast(const AObject: TPasItem);
+procedure TPasItems.Add(const AObject: TPasItem);
 begin
-  inherited InsertObjectLast(AObject);
+  inherited Insert(AObject);
   FHash.Items[LowerCase(AObject.Name)] := AObject;
 end;
 
@@ -872,48 +850,34 @@ end;
 
 destructor TPasUnit.Destroy;
 begin
-  CIOs.Free;
-  Constants.Free;
-  FuncsProcs.Free;
-  Types.Free;
-  UsesUnits.Free;
-  Variables.Free;
+  FCIOs.Free;
+  FConstants.Free;
+  FFuncsProcs.Free;
+  FTypes.Free;
+  FUsesUnits.Free;
+  FVariables.Free;
   inherited;
 end;
 
-{ ---------------------------------------------------------------------------- }
-
 procedure TPasUnit.AddCIO(const i: TPasCio);
 begin
-  if CIOs = nil then CIOs := TPasItems.Create(True);
-  CIOs.InsertObjectLast(i);
+  CIOs.Add(i);
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 procedure TPasUnit.AddConstant(const i: TPasItem);
 begin
-  if Constants = nil then Constants := TPasItems.Create(True);
-  Constants.InsertObjectLast(i);
+  Constants.Add(i);
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 procedure TPasUnit.AddType(const i: TPasItem);
 begin
-  if Types = nil then Types := TPasItems.Create(True);
-  Types.InsertObjectLast(i);
+  Types.Add(i);
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 procedure TPasUnit.AddVariable(const i: TPasItem);
 begin
-  if Variables = nil then Variables := TPasItems.Create(True);
-  Variables.InsertObjectLast(i);
+  Variables.Add(i);
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
 var
@@ -929,8 +893,6 @@ begin
     if Assigned(PI) then FindFieldMethodProperty := PI;
   end;
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 function TPasUnit.FindItem(const ItemName: string): TPasItem;
 { // these belong to the commented out code below
@@ -996,14 +958,14 @@ end;
 
 function TPasUnits.GetUnitAt(const AIndex: Integer): TPasUnit;
 begin
-  Result := TPasUnit(ObjectAt[AIndex]);
+  Result := TPasUnit(Items[AIndex]);
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TPasUnits.SetUnitAt(const AIndex: Integer; const Value: TPasUnit);
 begin
-  ObjectAt[AIndex] := Value;
+  Items[AIndex] := Value;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1011,7 +973,7 @@ end;
 procedure TPasItems.SetPasItemAt(const AIndex: Integer; const Value:
   TPasItem);
 begin
-  ObjectAt[AIndex] := Value;
+  Items[AIndex] := Value;
 end;
 
 procedure TPasItems.SortByPasItemName;
@@ -1101,6 +1063,15 @@ begin
   end;
 end;
 
+constructor TPasCio.Create;
+begin
+  inherited;
+  FFields := TPasItems.Create(True);
+  FMethods := TPasMethods.Create(True);
+  FProperties := TPasProperties.Create(True);
+  FAncestors := TStringVector.Create;
+end;
+
 { TPasEnum }
 
 constructor TPasEnum.Create;
@@ -1128,6 +1099,27 @@ end;
 
 procedure TPasUnit.StoreCachedProperty(Writer: TWriter);
 begin
+end;
+
+procedure TPasItem.SetAuthors(const Value: TStringVector);
+begin
+  FAuthors.Assign(Value);
+end;
+
+constructor TPasUnit.Create;
+begin
+  inherited Create;
+  FTypes := TPasItems.Create(True);
+  FVariables := TPasItems.Create(True);
+  FCIOs := TPasItems.Create(True);
+  FConstants := TPasItems.Create(True);
+  FFuncsProcs := TPasMethods.Create(True);
+  FUsesUnits := TStringVector.Create;
+end;
+
+constructor TPasItem.Create;
+begin
+  inherited Create;
 end;
 
 end.

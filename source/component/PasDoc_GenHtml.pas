@@ -988,9 +988,9 @@ begin
       WriteDirect('<ul>', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
         WriteDirect('<li>', true);
-        WriteConverted(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).Name);
+        WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
         WriteConverted(': ');
-        WriteWithURLs(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).GetDescription);
+        WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
         WriteDirect('</li>', true);
       end;
       WriteDirect('</ul>', true);
@@ -1784,7 +1784,7 @@ begin
     if Assigned(PU.CIOs) then
       for k := 0 to PU.CIOs.Count - 1 do begin
         CIO := TPasCio(PU.CIOs.PasItemAt[k]);
-        c.InsertObjectLast(CIO);
+        c.Add(CIO);
         c.CopyItems(CIO.Fields);
         c.CopyItems(CIO.Properties);
         c.CopyItems(CIO.Methods);
@@ -2311,15 +2311,15 @@ begin
     LString := AString;
     for i := LErrors.Count-1 downto 0 do begin
       // everything after the offending word
-      temp := TSpellingError(LErrors.ObjectAt[i]).Offset+Length(TSpellingError(LErrors.ObjectAt[i]).Word) + 1;
-      s := ( '">' + TSpellingError(LErrors.ObjectAt[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
-      if Length(TSpellingError(LErrors.ObjectAt[i]).Suggestions) > 0 then begin
-        s := 'suggestions: '+TSpellingError(LErrors.ObjectAt[i]).Suggestions + s;
+      temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
+      s := ( '">' + TSpellingError(LErrors.Items[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
+      if Length(TSpellingError(LErrors.Items[i]).Suggestions) > 0 then begin
+        s := 'suggestions: '+TSpellingError(LErrors.Items[i]).Suggestions + s;
       end else begin
         s := 'no suggestions' + s;
       end;
       s := '<acronym style="#0000FF; border-bottom: 1px solid crimson" title="' + s;
-      SetLength(LString, TSpellingError(LErrors.ObjectAt[i]).Offset);
+      SetLength(LString, TSpellingError(LErrors.Items[i]).Offset);
     end;
     WriteDirect(LString);
     WriteDirect(s);

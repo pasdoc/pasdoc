@@ -77,9 +77,9 @@ type
       with RemoveExcludedItems
       If the collection is empty after removal of all items, it is disposed
       of and the variable is set to nil. }
-    procedure RemoveExcludedItems(var c: TPasItems);
+    procedure RemoveExcludedItems(const c: TPasItems);
     { Searches for descr tags in the comments of all TPasItem objects in C. }
-    procedure SearchDescrFileTags(var c: TPasItems);
+    procedure SearchDescrFileTags(const c: TPasItems);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
@@ -256,7 +256,7 @@ begin
         U.Free;
       end else begin
         U.SourceFileName := SourceFileName;
-        FUnits.InsertObjectLast(U);
+        FUnits.Add(U);
       end;
     end else begin
       DoMessage(2, mtWarning, 'Could not parse unit %s, but continuing anyway', [U.Name]);
@@ -317,7 +317,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDoc.RemoveExcludedItems(var c: TPasItems);
+procedure TPasDoc.RemoveExcludedItems(const c: TPasItems);
 var
   i: Integer;
   p: TPasItem;
@@ -349,8 +349,6 @@ begin
       Inc(i);
     end;
   end;
-
-  FreeAndNilIfEmpty(c);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -401,7 +399,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDoc.SearchDescrFileTags(var c: TPasItems);
+procedure TPasDoc.SearchDescrFileTags(const c: TPasItems);
 var
   Found: Boolean;
   i: Integer;

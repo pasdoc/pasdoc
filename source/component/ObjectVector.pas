@@ -16,20 +16,18 @@ type
     FOwnsObject: boolean;
     function GetItem(AIndex: Integer): TObject;
     procedure SetItem(AIndex: Integer; const Value: TObject);
-    procedure InsertObjectLast(const AObject: TObject);
     procedure DeleteAt(const AIndex: Integer);
   public
     constructor Create(const AOwnsObject: boolean); virtual;
     destructor Destroy; override;
     function Count: Integer;
-    property ObjectAt[AIndex: Integer]: TObject read GetItem write SetItem;
     procedure Sort(Compare: TListSortCompare);
-    procedure Clear;
-    procedure Add(const AObject: TObject);
+    procedure Clear;       
+    procedure Insert(const AObject: TObject);
+    property Items[AIndex: Integer]: TObject read GetItem write SetItem;
   end;
 
 function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean; 
-procedure FreeAndNilIfEmpty(var AObject);
 
 implementation
 
@@ -41,21 +39,7 @@ begin
   end;
 end;
 
-procedure FreeAndNilIfEmpty(var AObject);
-begin
-  Assert(TObject(AObject) is TObjectVector);
-  if TObjectVector(AObject).Count = 0 then begin
-    TObjectVector(AObject).Free;
-    TObjectVector(AObject) := nil;
-  end;
-end;
-
 { TObjectVector }
-
-procedure TObjectVector.Add(const AObject: TObject);
-begin
-  InsertObjectLast(AObject);
-end;
 
 procedure TObjectVector.Clear;
 var
@@ -63,7 +47,7 @@ var
 begin
   if FOwnsObject then begin
     for i := 0 to count-1 do begin
-      ObjectAt[i].Free;
+      Items[i].Free;
     end;
   end;
   FList.Clear;
@@ -101,7 +85,7 @@ begin
   Result := FList.Items[AIndex];
 end;
 
-procedure TObjectVector.InsertObjectLast(const AObject: TObject);
+procedure TObjectVector.Insert(const AObject: TObject);
 begin
   FList.Add(AObject)
 end;

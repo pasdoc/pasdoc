@@ -531,8 +531,7 @@ begin
       { optional ancestor introduced by ( }
     FreeAndNil(t);
     Finished := False;
-    i.Ancestors := NewStringVector;
-      { outer repeat loop: one ancestor per pass }
+    { outer repeat loop: one ancestor per pass }
     repeat
       FreeAndNil(t);
       if not GetNextNonWCToken(t) then Exit;
@@ -589,25 +588,21 @@ begin
     case i.MyType of
       CIO_CLASS: begin
         if not SameText(i.Name, 'tobject') then begin
-          i.Ancestors := NewStringVector;
           i.Ancestors.Add('TObject');
         end;
       end;
       CIO_SPINTERFACE: begin
         if not SameText(i.Name, 'idispinterface') then begin
-          i.Ancestors := NewStringVector;
           i.Ancestors.Add('IDispInterface');
         end;
       end;
       CIO_INTERFACE: begin
         if not SameText(i.Name, 'iinterface') then begin
-          i.Ancestors := NewStringVector;
           i.Ancestors.Add('IInterface');
         end;
       end;
       CIO_OBJECT: begin
         if not SameText(i.Name, 'tobject') then begin
-          i.Ancestors := NewStringVector;
           i.Ancestors.Add('TObject');
         end;
       end;
@@ -663,7 +658,7 @@ begin
               end;
               M.State := State;
               if State in ClassMembers then begin
-                M.InsertMethod(M, i.Methods);
+                i.Methods.Add(M);
               end;
             end;
           KEY_END: Finished := True;
@@ -675,7 +670,7 @@ begin
               end;
               p.State := State;
               if State in ClassMembers then begin
-                p.InsertProperty(p, i.Properties);
+                i.Properties.Add(p);
               end;
             end;
           KEY_CASE: begin
@@ -729,7 +724,7 @@ begin
               f.State := State;
               f.DetailedDescription := GetLastComment(False);
               if State in ClassMembers then begin
-                f.InsertItem(f, i.Fields);
+                i.Fields.Add(f);
               end;
               FreeAndNil(t);
 
@@ -947,7 +942,7 @@ begin
                   then begin
                   Exit;
                 end;
-                M.InsertMethod(M, U.FuncsProcs);
+                u.FuncsProcs.Add(M);
                 Mode := MODE_UNDEFINED;
               end;
             KEY_IMPLEMENTATION:
@@ -1078,7 +1073,7 @@ begin
       P := TPasItem.Create;
       p.Name := t1.Data;
       p.Description := GetLastComment(True);
-      p.InsertItem(p, R.Fields);
+      R.Fields.Add(p);
     end else begin
       // case Type of
       Scanner.UnGetToken(t2);
@@ -1132,7 +1127,7 @@ begin
           P := TPasItem.Create;
           p.Description := GetLastComment(True);
           P.Name:=t1.Data;
-          p.InsertItem(p, R.Fields);
+          R.Fields.Add(p);
           FreeAndNil(t1);
           GetNextNonWCToken(t1);
           LLastWasComma := false;
@@ -1142,7 +1137,7 @@ begin
                 p := TPasItem.Create;
                 p.Description := GetLastComment(True);
                 p.Name := t1.data;
-                p.InsertItem(p, R.Fields);
+                R.Fields.Add(p);
               end;
             end;
             if t1.MyType = TOK_RESERVED then begin
@@ -1364,8 +1359,6 @@ begin
   t := nil;
   Result := False;
 
-  if U.UsesUnits = nil then U.UsesUnits := NewStringVector;
-
   repeat
     if not GetNextNonWCToken(t) then Exit;
     if t.MyType <> TOK_IDENTIFIER then
@@ -1418,7 +1411,7 @@ begin
       end;
       i.DetailedDescription := GetLastComment(False);
       U.AddVariable(i);
-      LNew.InsertObjectLast(i);
+      LNew.Add(i);
       FreeAndNil(t);
       if (not GetNextNonWCToken(t, LCollector)) then Exit;
       dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
