@@ -35,10 +35,8 @@ type
     NumCells: Integer;
     { number of cells we've already written in current table row }
     CellCounter: LongInt;
-    
-    { Contains Name of a file to read HtmlHelp Contents from.
-      If empty, create default contents file. }
-    FContentsFile: string;
+    { Indicate if the output must be simplified for latex2rtf }
+    FLatex2Rtf: Boolean;
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -61,15 +59,12 @@ type
     procedure WriteEndOfTableRow;
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
-    { Writes a Hireachy list - this is more useful than the simple class list }
-    procedure WriteHierarchy;
     procedure WriteItemDescription(const AItem: TPasItem);
     { Writes the Item's DetailedDescription. If the Item also has Discription
       (extracted from @@abstract), this is written to a separate paragraph
       in front of the DetailedDescription. }
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
-    procedure WriteParagraph(HL: integer; s: string; t: string);
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
 
     { Writes an opening A element, including a name attribute given by the
@@ -97,6 +92,7 @@ type
       Will convert special characters to their html escape sequence
       -> test }
     function ConvertString(const s: string): string; override;
+    function ConvertChar(c: char): String; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     procedure WriteUnitUses(const HL: integer; U: TPasUnit);
@@ -162,11 +158,6 @@ type
     procedure WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
     procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 
-    { output all the necessary images }
-    procedure WriteBinaryFiles;
-
-    { write the legend file for visibility markers }
-    procedure WriteVisibilityLegendFile;
     procedure WriteImage(const src, alt, css: string);
     procedure WriteLink(const href, caption, css: string); overload;
     procedure WriteLink(const href, caption, css, target: string); overload;
@@ -175,22 +166,29 @@ type
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
-    procedure LoadFooterFromFile(const AFileName: string);
-    procedure LoadHeaderFromFile(const AFileName: string);
     procedure BuildLinks; override;
 
     function EscapeURL(const AString: string): string; virtual;
   published
-    property ContentsFile: string read FContentsFile write FContentsFile;
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
+    property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf;
+    
    private
     procedure WriteParameter(const ParamName: string; const Desc: string);
     procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
       List: TStringVector);
     procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+    { PDF Conditional support routines }
+    procedure WriteStartFlushLeft;
+    procedure WritePDFIfdef;
+    procedure WriteEndFlushLeft; 
+    procedure WritePDFDocInfo(LocalTitle: string); 
+    procedure WriteStartList(s: string);
+    procedure WriteEndList;
+    procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
   end;
 
 {$INCLUDE automated.inc}
@@ -280,7 +278,7 @@ end;
 
 function TTexDocGenerator.CodeString(const s: string): string;
 begin
-  Result := '\texttt{' + s + '}';
+  Result := '\begin{ttfamily}' + s + '\end{ttfamily}';
 end;
 
 function TTexDocGenerator.CreateLink(const Item: TPasItem): string;
@@ -319,7 +317,7 @@ end;
 function TTexDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result :=  '\texttt{'+ConvertString(ItemName) +'}(\ref{' + 
+  Result :=  '\begin{ttfamily}'+ConvertString(ItemName) +'\end{ttfamily}(\ref{' + 
      EscapeURL(Link) + '})'; 
 end;
 
@@ -392,8 +390,6 @@ var
   j: integer;
 begin
   if not Assigned(CIO) then Exit;
-  { write the complete definition }  
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
   
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
@@ -413,97 +409,65 @@ begin
 
   CIO.SortPasItems;
 
+  WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
   WriteAnchor(CIO.Name,CIO.FullLink);
-  WriteHeading(HL+2, CIO.Name);
 
-(*  WriteDirect('<table class="sections"><tr>', true);
-  for Section := Low(TSections) to High(TSections) do
+  if dsHierarchy in SectionsAvailable then
     begin
-      WriteDirect('<td>');
-      if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
-      else
-        WriteConverted(SectionHeads[Section]);
-      WriteDirect('</td>');
-    end;
-  WriteDirect('</tr></table>', true);
+      { Write Hierarchy }
+      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then 
+        begin
+          WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
 
-  WriteAnchor(SectionAnchors[dsDescription]);
+          WriteDirect(CIO.Name);
+          WriteConverted(' > ');
+          s := CIO.Ancestors.FirstName;
+          Item := SearchItem(s, CIO);
+          if Assigned(Item) and (Item is TPasCio) then 
+            begin
+              repeat
+                s := CreateReferencedLink(Item.Name, Item.FullLink);
+                WriteDirect(s);
 
-  { write unit link }
-  if Assigned(CIO.MyUnit) then begin
-    WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
-    WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), 'bold');
-    WriteDirect('<br/>');
-  end;
+                if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
+                  begin
+                    s := TPasCio(Item).Ancestors.FirstName;
+                    Item := SearchItem(s, Item);
 
-  { write declaration link }
-  WriteHeading(HL + 1, FLanguage.Translation[trDeclaration]);
-  WriteStartOfParagraph;
-  WriteStartOfCode;
-  WriteConverted('type ' + CIO.Name + ' = ');
-  WriteConverted(CIO_NAMES[CIO.MyType]);
-
-  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
-    WriteConverted('(');
-    for i := 0 to CIO.Ancestors.Count - 1 do begin
-      s := CIO.Ancestors[i];
-      TheLink := SearchLink(s, CIO);
-      if TheLink <> '' then
-        s := TheLink;
-      WriteDirect(s);
-      if (i <> CIO.Ancestors.Count - 1) then
-        WriteConverted(', ');
-    end;
-    WriteConverted(')');
-  end;
-  WriteEndOfCode;
-  WriteEndOfParagraph;
-
-  { Write Description }
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-  WriteItemDetailedDescription(CIO);
-
-  { Write Hierarchy }
-  if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then begin
-    WriteAnchor(SectionAnchors[dsHierarchy]);
-    WriteHeading(HL + 1, SectionHeads[dsHierarchy]);
-
-    WriteDirect(CIO.Name);
-    WriteDirect('&nbsp;&gt; ');
-    s := CIO.Ancestors.FirstName;
-    Item := SearchItem(s, CIO);
-    if Assigned(Item) and (Item is TPasCio) then begin
-      repeat
-        s := CreateReferencedLink(Item.Name, Item.FullLink);
-        WriteDirect(s);
-
-        if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then begin
-          s := TPasCio(Item).Ancestors.FirstName;
-          Item := SearchItem(s, Item);
-
-          WriteDirect('&nbsp;&gt; ');
-          if (Item <> nil) and (Item is TPasCio) then begin
-            Continue;
+                    WriteConverted(' > ');
+                    if (Item <> nil) and (Item is TPasCio) then 
+                      begin
+                        Continue;
+                      end;
+                   end;
+                 WriteDirect('',true);
+                 Break;
+                until False;
+             end;
+             if Item = nil then 
+              begin
+                WriteDirect(s,true);
+              end;
           end;
-        end;
-        Break;
-      until False;
+      end;
+
+  if dsDescription in SectionsAvailable then
+    begin
+      WriteHeading(HL + 2, SectionHeads[dsDescription]);
+      WriteItemDetailedDescription(CIO);
     end;
-    if Item = nil then WriteDirect(s);
-  end;
+        
+  if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
+    WriteProperties(HL + 2, CIO.Properties);
+        
+  WriteFields(HL + 2, CIO.Fields);
 
-  WriteFields(HL + 1, CIO.Fields);
+  WriteMethods(HL + 2, CIO.Methods);
+        
 
-  WriteFuncsProcs(HL + 1, True, CIO.Methods);
-
-  if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then begin
-    WritePropertiesSummary(HL + 1, CIO.Properties);
-    WriteProperties(HL + 1, CIO.Properties);
-  end;*)
-
-  WriteAuthors(HL + 1, CIO.Authors);
-  WriteDates(HL + 1, CIO.Created, CIO.LastMod);
+  WriteAuthors(HL + 2, CIO.Authors);
+  WriteDates(HL + 2, CIO.Created, CIO.LastMod);
+  
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
@@ -527,82 +491,7 @@ begin
   for j := 0 to c.Count - 1 do 
     begin
       CIO := TPasCio(c.PasItemAt[j]);
-      SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
-      SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
-      SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
-      SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
-      SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
-
-      SectionsAvailable := [dsDescription];
-      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
-        Include(SectionsAvailable, dsHierarchy);
-      if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
-        Include(SectionsAvailable, dsFields);
-      if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
-        Include(SectionsAvailable, dsMethods);
-      if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
-        Include(SectionsAvailable, dsProperties);
-
-      CIO.SortPasItems;
-
-      WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
-      WriteAnchor(CIO.Name,CIO.FullLink);
-
-      if dsHierarchy in SectionsAvailable then
-        begin
-          { Write Hierarchy }
-          if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then 
-            begin
-              WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
-
-              WriteDirect(CIO.Name);
-              WriteConverted(' > ');
-              s := CIO.Ancestors.FirstName;
-              Item := SearchItem(s, CIO);
-              if Assigned(Item) and (Item is TPasCio) then 
-                begin
-                  repeat
-                    s := CreateReferencedLink(Item.Name, Item.FullLink);
-                    WriteDirect(s);
-
-                    if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
-                      begin
-                        s := TPasCio(Item).Ancestors.FirstName;
-                        Item := SearchItem(s, Item);
-
-                        WriteConverted(' > ');
-                        if (Item <> nil) and (Item is TPasCio) then 
-                          begin
-                            Continue;
-                          end;
-                      end;
-                      WriteDirect('',true);
-                      Break;
-                  until False;
-                end;
-                if Item = nil then 
-                  begin
-                    WriteDirect(s,true);
-                  end;
-            end;
-        end;
-
-      if dsDescription in SectionsAvailable then
-        begin
-          WriteHeading(HL + 2, SectionHeads[dsDescription]);
-          WriteItemDetailedDescription(CIO);
-        end;
-        
-      if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
-          WriteProperties(HL + 2, CIO.Properties);
-        
-      WriteFields(HL + 2, CIO.Fields);
-
-      WriteMethods(HL + 2, CIO.Methods);
-        
-
-      WriteAuthors(HL + 2, CIO.Authors);
-      WriteDates(HL + 2, CIO.Created, CIO.LastMod);
+      WriteCIO(HL,CIO);
     end;
 end;
 
@@ -621,8 +510,8 @@ begin
   for j := 0 to c.Count - 1 do 
     begin
       CIO := TPasCio(c.PasItemAt[j]);
-      WriteDirect('\item[{\ttfamily ');
-      WriteLink(CIO.FullLink, CodeString(CIO.Name), 'bold');
+      WriteDirect('\item[\texttt{');
+      WriteLink(CIO.FullLink, CodeString(ConvertString(CIO.Name)), 'bold');
       { name of class/interface/object and unit }
       WriteDirect(' ');
       WriteConverted(GETCIOTypeName(CIO.MyType));
@@ -656,6 +545,7 @@ begin
   SearchForLink := false;
   l := Length(Code);
   ncstart := i;
+  
   while i <= l do
   begin
     case Code[i] of
@@ -727,7 +617,74 @@ begin
   end;
   WriteConverted(Copy(Code, ncstart, i - ncstart));
   WriteEndOfCode;
+  WriteDirect('',true);
 end;
+
+{ ---------------------------------------------------------------------------- }
+{                             PDF SUPPORT ROUTINES                             }
+{ ---------------------------------------------------------------------------- }
+procedure TTexDocGenerator.WriteStartFlushLeft;
+  begin
+    if not FLatex2rtf then
+      begin
+        WriteDirect('\ifpdf',true);
+        WriteDirect('\begin{flushleft}',true);
+        WriteDirect('\fi',true);
+      end
+     else
+        WriteDirect('\begin{flushleft}',true);
+  end;
+  
+procedure TTexDocGenerator.WritePDFIfdef;
+  begin
+    { PDF output support, create ifpdf macro 
+      to be able to support extended PDF features.
+    }
+    if not FLatex2Rtf then
+      begin
+        WriteDirect('',true);
+        WriteDirect('% Conditional define to determine if pdf output is used',true);
+        WriteDirect('\newif\ifpdf',true);
+        WriteDirect('\ifx\pdfoutput\undefined',true);
+        WriteDirect('\pdffalse',true);
+        WriteDirect('\else',true);
+        WriteDirect('\pdfoutput=1',true);
+        WriteDirect('\pdftrue',true);
+        WriteDirect('\fi',true);
+        WriteDirect('',true);
+      end;
+  end;    
+  
+ 
+ 
+procedure TTexDocGenerator.WriteEndFlushLeft; 
+  begin
+    if not FLatex2Rtf then
+      begin
+        WriteDirect('\ifpdf',true);
+        WriteDirect('\end{flushleft}',true);
+        WriteDirect('\fi',true);
+      end
+     else
+        WriteDirect('\end{flushleft}',true);
+end;
+ 
+procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string); 
+  begin
+    if not FLatex2RTF then
+      begin
+        WriteDirect('',true);
+        WriteDirect('% Write Document information for pdflatex/pdftex',true);
+        WriteDirect('\ifpdf',true);
+        WriteDirect('\pdfinfo{',true);
+        WriteDirect(' /Author     (Pasdoc)',true);
+        WriteDirect(' /Title      ('+LocalTitle+')',true);
+        WriteDirect(' /CreationDate ('+FormatDateTime('yyyymmddhhmmss', Now)+')',true);
+        WriteDirect('}',true);
+        WriteDirect('\fi',true);
+        WriteDirect('',true);
+      end;
+ end;
 
 { ---------------------------------------------------------------------------- }
 
@@ -754,11 +711,20 @@ procedure TTexDocGenerator.WriteDocumentation;
 begin
 {  StartSpellChecking('sgml');}
   inherited;
+
+  case CreateStream('docs.tex', true) of
+    csError: begin
+      DoMessage(1, mtError, 'Could not create doc file %s',['docs.tex']);
+      Exit;
+    end;
+    csExisted: begin
+      Exit;
+    end;
+  end;
+  WriteStartOfDocument('');
   WriteUnits(1);
-{  WriteHierarchy;
-  WriteBinaryFiles;
-  WriteOverviewFiles;
-  WriteVisibilityLegendFile;}
+  WriteEndOfDocument;
+  CloseStream;
 {  EndSpellChecking;}
 end;
 
@@ -775,7 +741,7 @@ end;
 
 procedure TTexDocGenerator.WriteEndOfCode;
 begin
-  WriteDirect('}');
+  WriteDirect('\end{ttfamily}',true);
 end;
 
 procedure TTexDocGenerator.WriteLink(const href, caption, css: string);
@@ -812,6 +778,61 @@ procedure TTexDocGenerator.WriteEndOfTableRow;
 begin
    WriteDirect('\\',true);
 end;
+{ ---------------------------------------------------------------------------- }
+procedure TTexDocGenerator.WriteStartList(s: string);
+begin
+  if FLatex2rtf then
+    begin
+      WriteDirect('\begin{list}{}{',true);
+      WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+      WriteDirect('\setlength{\itemindent}{0cm}',true);
+      WriteDirect('\setlength{\listparindent}{0cm}',true);
+      WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+      WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+      WriteDirect('\settowidth{\labelsep}{X}',true);
+      WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+      WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+      WriteDirect('}',true);
+    end
+  else
+    begin
+      WriteDirect('\begin{list}{}{',true);
+      WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+      WriteDirect('\setlength{\itemindent}{0cm}',true);
+      WriteDirect('\setlength{\listparindent}{0cm}',true);
+      WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+      WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+      WriteDirect('\settowidth{\labelsep}{X}',true);
+      WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+      WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+      WriteDirect('}',true);
+    end;
+end;
+
+procedure TTexDocGenerator.WriteEndList;
+begin
+  WriteDirect('\end{list}',true);
+end;
+
+procedure TTexDocGenerator.WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
+begin
+  if FLatex2rtf then
+    begin
+      WriteStartFlushLeft;
+      WriteDirect('\item[\textbf{'+itemname+'}\hfill]',true);
+      WriteCodeWithLinks(p, itemdesc, '');
+      WriteDirect('',true);
+      WriteEndFlushLeft;
+    end
+  else
+    begin
+      WriteDirect('\item[\textbf{'+itemname+'}\hfill]',true);
+      WriteStartFlushLeft;
+      WriteCodeWithLinks(p, itemdesc, '');
+      WriteEndFlushLeft;
+      WriteDirect('',true);
+    end;
+end;
 
 { ---------------------------------------------------------------------------- }
 
@@ -823,50 +844,79 @@ var
   s: string;
 begin
   if ObjectVectorIsNilOrEmpty(Fields) then Exit;
-
+  
   WriteHeading(Order, FLanguage.Translation[trFields]);
   
-  { get the longest string for names }
-  s:='';
-  for j := 0 to Fields.Count - 1 do 
+  if FLatex2Rtf then
     begin
-      Item := Fields.PasItemAt[j];
-      if length(s) < length(Item.Name) then
-        s:=Item.Name;
-    end;
+    { Determine the longest string used.
+      This is the one we will use for determining the label width.
+    }
+    s:=FLanguage.Translation[trDescription];
+    if length(s) < length(FLanguage.Translation[trDeclaration])  then
+       s:= FLanguage.Translation[trDeclaration];
+    if length(s) < length(FLanguage.Translation[trReturns])  then
+       s:=FLanguage.Translation[trReturns];
+    if length(s) < length(FLanguage.Translation[trParameters])  then
+       s:=FLanguage.Translation[trParameters];
+    if length(s) < length(FLanguage.Translation[trExceptions])  then
+       s:=FLanguage.Translation[trExceptions];
   
-  { Determine the longest string used.
-    This is the one we will use for determining the label width.
-  }
-  WriteDirect('\begin{list}{}{',true);
-  WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
-  WriteDirect('\setlength{\itemindent}{0cm}',true);
-  WriteDirect('\setlength{\listparindent}{0cm}',true);
-  WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
-  WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
-  WriteDirect('\settowidth{\labelsep}{X}',true);
-  WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
-  WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
-  WriteDirect('}',true);
-  for j := 0 to Fields.Count - 1 do 
-    begin
-      Item := Fields.PasItemAt[j];
-      WriteDirect('\item[');
-      WriteDirect('\textbf{'+Item.name);
-      WriteDirect('}\hfill]',true);
-      WriteDirect('',true);
-      WriteDirect('\begin{flushleft}',true);
-      if Item is TPasVarConst then 
+
+    for j := 0 to Fields.Count - 1 do 
       begin
-        WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
-      end
-      else
-        WriteCodeWithLinks(Item, Item.Name, '');
-      WriteDirect('\end{flushleft}',true);
-      WriteDirect('\par ');
-      WriteItemDetailedDescription(Item);
-    end;
-   WriteDirect('\end{list}',true); 
+        Item := Fields.PasItemAt[j];
+
+        WriteHeading(Order+1, Item.Name);
+        WriteAnchor(Item.Name,Item.FullLink);
+        WriteStartList(s);
+        
+        if Item is TPasVarConst then 
+        begin
+          WriteDeclarationItem(Item,FLanguage.Translation[trDeclaration],
+            TPasVarConst(Item).FullDeclaration);
+        end
+        else
+          WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration], Item.name);
+          
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+        WriteStartOfParagraph;
+        WriteItemDetailedDescription(Item);
+        WriteEndOfParagraph;
+        WriteEndList;
+      end;
+    end
+   else
+  begin  
+    { get the longest string for names }
+    s:='';
+    for j := 0 to Fields.Count - 1 do 
+      begin
+        Item := Fields.PasItemAt[j];
+        if length(s) < length(Item.Name) then
+          s:=Item.Name;
+      end;
+    
+    { Determine the longest string used.
+      This is the one we will use for determining the label width.
+    }
+    WriteStartList(s);
+    for j := 0 to Fields.Count - 1 do 
+      begin
+        Item := Fields.PasItemAt[j];
+        WriteAnchor(Item.Name,Item.FullLink);
+        if Item is TPasVarConst then 
+        begin
+          WriteDeclarationItem(Item, Item.name, TPasVarConst(Item).FullDeclaration);
+        end
+        else
+          WriteDeclarationItem(Item, Item.name, Item.name);
+        WriteDirect('',true);
+        WriteDirect('\par ');
+        WriteItemDetailedDescription(Item);
+      end;
+     WriteEndList; 
+  end;     
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -921,7 +971,7 @@ end;
       we need to add an empty item so that the list starts
       at the correct margin.
     }
-    WriteDirect('\item',true);
+{    WriteDirect('\item',true);}
     for i := 0 to List.Count - 1 do begin
       s := List[i];
       ParamName := ExtractFirstWord(s);
@@ -959,7 +1009,7 @@ begin
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
     
-    WriteDirect('\item[{\ttfamily ');
+    WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
     WriteVisibilityCell(p);
@@ -974,7 +1024,7 @@ begin
               Delete(s, 1,1);
             end;
 
-    WriteDirect(p.name);
+    WriteConverted(p.name);
     WriteDirect('}]');
 
     WriteItemDescription(p);
@@ -1018,21 +1068,10 @@ begin
         WriteHeading(HL+1,p.Name);
         WriteAnchor(p.Name,p.FullLink);
         
-        WriteDirect('\begin{list}{}{',true);
-        WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
-        WriteDirect('\setlength{\itemindent}{0cm}',true);
-        WriteDirect('\setlength{\listparindent}{0cm}',true);
-        WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
-        WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
-        WriteDirect('\settowidth{\labelsep}{X}',true);
-        WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
-        WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
-        WriteDirect('}',true);
-        
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
-        WriteDirect('\begin{flushleft}',true);
-        WriteCodeWithLinks(p, p.FullDeclaration, '');
-        WriteDirect('\end{flushleft}',true);
+        WriteStartList(s);
+
+        WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
+          p.FullDeclaration);
 
         WriteStartOfParagraph;
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
@@ -1042,7 +1081,8 @@ begin
         WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
         WriteReturnDesc(p, p.Returns);
         WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
-        WriteDirect('\end{list}',true);
+        
+        WriteEndList;
       end;
   end;
 end;
@@ -1066,7 +1106,7 @@ var
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
     
-    WriteDirect('\item[{\ttfamily ');
+    WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
     s := p.FullLink;
@@ -1079,7 +1119,7 @@ var
               Delete(s, 1,1);
             end;
 
-    WriteDirect(p.name);
+    WriteConverted(p.name);
     WriteDirect('}]');
     WriteItemDescription(p);
   end;
@@ -1131,22 +1171,11 @@ begin
 
         WriteHeading(HL+1,p.Name+' '+procstr);
         WriteAnchor(p.Name,p.FullLink);
-
-        WriteDirect('\begin{list}{}{',true);
-        WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
-        WriteDirect('\setlength{\itemindent}{0cm}',true);
-        WriteDirect('\setlength{\listparindent}{0cm}',true);
-        WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
-        WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
-        WriteDirect('\settowidth{\labelsep}{X}',true);
-        WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
-        WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
-        WriteDirect('}',true);
-
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
-        WriteDirect('\begin{flushleft}',true);
-        WriteCodeWithLinks(p, p.FullDeclaration, '');
-        WriteDirect('\end{flushleft}',true);
+        
+        WriteStartList(s);
+        
+        WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
+          p.FullDeclaration);
 
         WriteStartOfParagraph;
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
@@ -1156,7 +1185,9 @@ begin
         WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
         WriteReturnDesc(p, p.Returns);
         WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
-        WriteDirect('\end{list}',true);
+        
+        WriteEndList;
+        
       end;
   end;
 end;
@@ -1182,10 +1213,25 @@ begin
         WriteDirect('}', true);
        end; 
     3: begin
-        WriteDirect('\subsection*{');
-          WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
-          '\hrulefill');
-        WriteDirect('}', true);
+          if latex2rtf then
+            begin
+              WriteDirect('\subsection*{');
+              WriteConverted(s);
+              WriteDirect('}', true);
+            end
+          else
+            begin
+              WriteDirect('\ifpdf',true);
+              WriteDirect('\subsection*{');
+              WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
+                '\hrulefill');
+              WriteDirect('}', true);
+              WriteDirect('\else',true);
+              WriteDirect('\subsection*{');
+              WriteConverted(s);
+              WriteDirect('}', true);
+              WriteDirect('\fi',true);
+            end;
        end; 
     4: begin
           WriteDirect('\subsubsection*{');
@@ -1285,28 +1331,19 @@ begin
       WriteHeading(HL+1, Item.Name);
     
     WriteAnchor(Item.Name,Item.FullLink);
-    WriteDirect('\begin{list}{}{',true);
-    WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
-    WriteDirect('\setlength{\itemindent}{0cm}',true);
-    WriteDirect('\setlength{\listparindent}{0cm}',true);
-    WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
-    WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
-    WriteDirect('\settowidth{\labelsep}{X}',true);
-    WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
-    WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
-    WriteDirect('}',true);
+    
+    WriteStartList(s);
 
-    WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
-    WriteDirect('\begin{flushleft}',true);
     if Item is TPasVarConst then 
       begin
-        WriteCodeWithLinks(Item, Item.Name, '');
-        WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '')
+        WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
+            Item.Name+TPasVarConst(Item).FullDeclaration);
       end
     else
-      WriteCodeWithLinks(Item, Item.Name, '');
+        WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
+            Item.Name);
       
-    WriteDirect('\end{flushleft}',true);
+    WriteDirect('',true);
 
     WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
     WriteItemDetailedDescription(Item);
@@ -1317,7 +1354,7 @@ begin
      begin
       WriteDirect('\begin{description}', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-        WriteDirect('\item[{\ttfamily ');
+        WriteDirect('\item[\texttt{');
         { add the first character for enums }
         WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
         { add the end characters for enums }
@@ -1327,7 +1364,7 @@ begin
       end;
       WriteDirect('\end{description}', true);
     end;
-    WriteDirect('\end{list}',true);
+    WriteEndList;
   end;
 end;
 
@@ -1481,14 +1518,6 @@ begin
   CloseStream;
 end;
 
-procedure TTexDocGenerator.WriteParagraph(HL: integer; s: string; t: string);
-begin
-  // if (not Assigned(t)) or (t.Content < 1) then Exit;
-  WriteHeading(HL, s);
-  WriteStartOfParagraph;
-  WriteWithURLs(t);
-  WriteEndOfParagraph;
-end;
 
 procedure TTexDocGenerator.WriteProperties(HL: integer; const p:
   TPasProperties);
@@ -1501,42 +1530,69 @@ begin
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   
-  { get the longest string for names }
-  s:='';
-  for j := 0 to p.Count - 1 do
+  if FLatex2Rtf then
     begin
-      Prop := TpasProperty(p.PasItemAt[j]);
-      if length(s) < length(Prop.Name) then
-        s:=Prop.Name;
-    end;
+    { Determine the longest string used.
+      This is the one we will use for determining the label width.
+    }
+    s:=FLanguage.Translation[trDescription];
+    if length(s) < length(FLanguage.Translation[trDeclaration])  then
+       s:= FLanguage.Translation[trDeclaration];
+    if length(s) < length(FLanguage.Translation[trReturns])  then
+       s:=FLanguage.Translation[trReturns];
+    if length(s) < length(FLanguage.Translation[trParameters])  then
+       s:=FLanguage.Translation[trParameters];
+    if length(s) < length(FLanguage.Translation[trExceptions])  then
+       s:=FLanguage.Translation[trExceptions];
   
-  { Determine the longest string used.
-    This is the one we will use for determining the label width.
-  }
-  WriteDirect('\begin{list}{}{',true);
-  WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
-  WriteDirect('\setlength{\itemindent}{0cm}',true);
-  WriteDirect('\setlength{\listparindent}{0cm}',true);
-  WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
-  WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
-  WriteDirect('\settowidth{\labelsep}{X}',true);
-  WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
-  WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
-  WriteDirect('}',true);
-  for j := 0 to p.Count - 1 do 
-    begin
-      Prop := TPasProperty(p.PasItemAt[j]);
-      WriteDirect('\item[');
-      WriteDirect('\textbf{'+Prop.name);
-      WriteDirect('}\hfill]',true);
-      WriteDirect('',true);
-      WriteDirect('\begin{flushleft}',true);
-      WriteCodeWithLinks(Prop, Prop.FullDeclaration, '');
-      WriteDirect('\end{flushleft}',true);
-      WriteDirect('\par ');
-      WriteItemDetailedDescription(Prop);
-    end;
-   WriteDirect('\end{list}',true); 
+
+    for j := 0 to p.Count - 1 do 
+      begin
+        Prop := TpasProperty(p.PasItemAt[j]);
+
+        WriteHeading(HL+1, Prop.Name);
+        WriteAnchor(Prop.Name,Prop.FullLink);
+        WriteStartList(s);
+        
+        
+        WriteDeclarationItem(Prop, FLanguage.Translation[trDeclaration], Prop.Fulldeclaration);
+          
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+        WriteStartOfParagraph;
+        WriteItemDetailedDescription(Prop);
+        WriteEndOfParagraph;
+        WriteEndList;
+      end;
+    end
+   else
+  begin    
+  
+    { get the longest string for names }
+    s:='';
+    for j := 0 to p.Count - 1 do
+      begin
+        Prop := TpasProperty(p.PasItemAt[j]);
+        if length(s) < length(Prop.Name) then
+          s:=Prop.Name;
+      end;
+    
+    { Determine the longest string used.
+      This is the one we will use for determining the label width.
+    }
+    WriteStartList(s);
+    
+    for j := 0 to p.Count - 1 do 
+      begin
+        WriteAnchor(Prop.Name,Prop.FullLink);
+        Prop := TPasProperty(p.PasItemAt[j]);
+        WriteDeclarationItem(Prop, Prop.Name, Prop.FullDeclaration);
+        WriteDirect('',true);
+        WriteDirect('\par ');
+        WriteItemDetailedDescription(Prop);
+      end;
+    
+     WriteEndList; 
+  end;
 end;
 
 procedure TTexDocGenerator.WritePropertiesSummary(HL: integer; p:
@@ -1550,6 +1606,8 @@ end;
 { ---------------------------------------------------------------------------- }
 procedure TTexDocGenerator.WriteAnchor(ItemName, Link: string);
 begin
+  { no links in RTF documentation }
+  if FLatex2rtf then exit;
   if Link <> '' then
      WriteDirect('\label{'+Link+'}',true)
   else
@@ -1562,7 +1620,7 @@ end;
 
 procedure TTexDocGenerator.WriteStartOfCode;
 begin
-  WriteDirect('{\ttfamily ');
+  WriteDirect('\begin{ttfamily}',true);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1572,41 +1630,42 @@ var
  i : integer;
  Localtitle: string;
 begin
-  if Title <> '' then
-    Localtitle:= Title + ':' + Aname
-  else
-    LocalTitle := AName;
   { write basic header }
   WriteAppInfo;
   WriteDirect('\documentclass{report}',true);
+  WriteDirect('\usepackage{hyperref}',true);
   WriteDirect('% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE',true);
   WriteDirect('\oddsidemargin 0cm',true);
   WriteDirect('\evensidemargin 0cm',true);
   WriteDirect('\marginparsep 0cm',true);
   WriteDirect('\marginparwidth 0cm',true);
-  WriteDirect('\textwidth 16.5cm',true);
   WriteDirect('\parindent 0cm',true);
+  if not FLatex2Rtf then
+  begin
+    WriteDirect('\setlength{\textwidth}{\paperwidth}',true);
+    WriteDirect('\addtolength{\textwidth}{-2in}',true);
+  end
+  else
+    WriteDirect('\textwidth 16.5cm',true);
   WriteDirect('',true);
-  { PDF output support, create ifpdf macro 
-    to be able to support extended PDF features.
-  }
-  WriteDirect('\newif\ifpdf',true);
-  WriteDirect('\ifx\pdfoutput\undefined',true);
-  WriteDirect('\pdffalse',true);
-  WriteDirect('\else',true);
-  WriteDirect('\pdfoutput=1',true);
-  WriteDirect('\pdftrue',true);
-  WriteDirect('\fi',true);
+  WritePDFIfDef;
+  WritePDFDocInfo(Title);
   WriteDirect('',true);
-  WriteDirect('\ifpdf',true);
-  WriteDirect('\pdfinfo{',true);
-  WriteDirect(' /Author     (Pasdoc)',true);
-  WriteDirect(' /Title      ('+LocalTitle+')',true);
-  WriteDirect(' /CreationDate ('+FormatDateTime('yyyymmddhhmmss', Now)+')',true);
-  WriteDirect('}',true);
-  
-  WriteDirect('\fi',true);
   WriteDirect('\begin{document}',true);
+  if not Flatex2rtf then
+  begin
+    if Title <> '' then
+      begin
+        WriteDirect('\title{'+Title+'}',true);
+        WriteDirect('\author{Pasdoc}',true);      
+        WriteDirect('\maketitle',true);
+        WriteDirect('\newpage',true);
+      end;
+
+    WriteDirect('\tableofcontents',true);
+    WriteDirect('\newpage',true);
+  end;
+  
   WriteDirect('% special variable used for calculating some widths.',true);
   WriteDirect('\newlength{\tmplength}',true);
   if Length(Header) > 0 then begin
@@ -1688,48 +1747,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{ HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
-{ ---------------------------------------------------------------------------- }
-
-function BeforeEqualChar(const s: string): string;
-var
-  i: Cardinal;
-begin
-  Result := s;
-  i := Pos('=', Result);
-  if i <> 0 then
-    SetLength(Result, i - 1);
-end;
-
-function AfterEqualChar(const s: string): string;
-var
-  i: Cardinal;
-begin
-  Result := s;
-  i := Pos('=', Result);
-  if i <> 0 then
-    Delete(Result, 1, i)
-  else
-    Result := '';
-end;
-
-function GetLevel(var s: string): Integer;
-var
-  l: Cardinal;
-  p: PChar;
-begin
-  Result := 0;
-  p := Pointer(s);
-  l := Length(s);
-  while (l > 0) and (p^ in [' ', #9]) do begin
-    Inc(Result);
-    Inc(p);
-    Dec(l);
-  end;
-  Delete(s, 1, Result);
-end;
-
-{ ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 type
@@ -1758,22 +1775,6 @@ var
   end;
 
 begin
-  if not Assigned(U) then begin
-    DoMessage(1, mtError,
-      'TTexDocGenerator.WriteUnit: Unit variable has not been initialized.',
-      []);
-    Exit;
-  end;
-
-  case CreateStream(U.OutputFileName, not U.WasDeserialized) of
-    csError: begin
-      DoMessage(1, mtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-    csExisted: begin
-      Exit;
-    end;
-  end;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsUses] := 'uses';
@@ -1792,7 +1793,6 @@ begin
   ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
 
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteStartOfDocument(U.Name);
 
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
@@ -1808,20 +1808,14 @@ begin
 
   WriteFuncsProcs(HL + 1, U.FuncsProcs);
 
-  WriteAnchor(SectionAnchors[dsTypes],'');
   WriteTypes(HL + 1, U.Types);
 
-  WriteAnchor(SectionAnchors[dsConstants],'');
   WriteConstants(HL + 1, U.Constants);
 
-  WriteAnchor(SectionAnchors[dsVariables],'');
   WriteVariables(HL + 1, U.Variables);
 
   WriteAuthors(HL + 1, U.Authors);
   WriteDates(HL + 1, U.Created, U.LastMod);
-  WriteFooter;
-  WriteEndOfDocument;
-  CloseStream;
 end;
 
 procedure TTexDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
@@ -1910,127 +1904,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteVisibilityLegendFile;
-
-  procedure WriteLegendEntry(const Image: string; trans: TTranslationID);
-  begin
-    WriteStartOfTableRow('');
-    WriteStartOfTableCell();
-    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
-    WriteEndOfTableCell;
-    WriteStartOfTableCell();
-    WriteConverted(FLanguage.Translation[trans]);
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-
-const
-  Filename = 'legend';
-begin
-  if CreateStream(Filename + GetFileextension, True) = csError then
-    begin
-      DoMessage(1, mtError, 'Could not create output file "%s".',
-        [Filename + GetFileExtension]);
-      Abort;
-    end;
-  WriteStartOfDocument(FLanguage.Translation[trLegend]);
-
-  WriteHeading(1, FLanguage.Translation[trLegend]);
-
-  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '">', true);
-  WriteDirect('<tr class="listheader"><th class="listheader">');
-  { TODO -otwm : needs translation }
-  WriteConverted('Marker');
-  WriteDirect('</th><th class="listheader">');
-  { TODO -otwm : needs translation }
-  WriteConverted('Visibility');
-  WriteDirect('</th></tr>', true);
-
-  WriteLegendEntry('private.gif', trPrivate);
-  WriteLegendEntry('protected.gif', trProtected);
-  WriteLegendEntry('public.gif', trPublic);
-  WriteLegendEntry('published.gif', trPublished);
-  WriteLegendEntry('automated.gif', trAutomated);
-  WriteEndOfTable;
-
-  WriteFooter;
-  WriteEndOfDocument;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteHierarchy;
-var
-  Level, OldLevel: Integer;
-  Node: TPasItemNode;
-begin
-  CreateClassHierarchy;
-
-  if CreateStream(OverviewFilenames[1] + GetFileExtension, True) = csError then begin
-    DoMessage(1, mtError, 'Could not create output file "%s".',
-      [OverviewFilenames[1] + GetFileExtension]);
-    Abort;
-  end;
-
-  WriteStartOfDocument(FLanguage.Translation[trClassHierarchy]);
-  WriteHeading(1, FLanguage.Translation[trClassHierarchy]);
-
-  if FClassHierarchy.IsEmpty then begin
-    WriteStartOfParagraph;
-    WriteConverted(FLanguage.Translation[trNone]);
-    WriteEndOfParagraph;
-  end else begin
-    OldLevel := -1;
-    Node := FClassHierarchy.FirstItem;
-    while Node <> nil do begin
-      Level := Node.Level;
-      if Level > OldLevel then
-        WriteDirect('\begin{itemize}',true)
-      else
-        while Level < OldLevel do begin
-          WriteDirect('\end{itemize}',true);
-          Dec(OldLevel);
-        end;
-      OldLevel := Level;
-
-      if Node.Item = nil then
-        begin
-          WriteDirect('\item ');
-          WriteConverted(Node.Name);
-          WriteDirect('',true);
-        end
-      else
-        begin
-          WriteDirect('\item ');
-          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
-          WriteDirect('',true);
-        end;
-      Node := FClassHierarchy.NextItem(Node);
-    end;
-
-    while OldLevel > 0 do begin
-      WriteDirect('\end{itemize}',true);
-      Dec(OldLevel);
-    end;
-  end;
-
-  WriteFooter;
-  WriteEndOfDocument;
-
-  CloseStream;
-end;
-
-procedure TTexDocGenerator.LoadFooterFromFile(const AFileName: string);
-begin
-  LoadStrFromFileA(AFileName, FFooter);
-end;
-
-procedure TTexDocGenerator.LoadHeaderFromFile(const AFileName: string);
-begin
-  LoadStrFromFileA(AFileName, FHeader);
-end;
-
 procedure TTexDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
 var
   i: Integer;
@@ -2072,9 +1945,11 @@ var
 begin
   LErrors := TObjectVector.Create(True);
   CheckString(AString, LErrors);
-  if LErrors.Count = 0 then begin
+  if LErrors.Count = 0 then 
+  begin
     WriteDirect(AString);
-  end else begin
+  end else 
+  begin
     // build s
     s := '';
     LString := AString;
@@ -2096,135 +1971,11 @@ begin
   LErrors.Free;
 end;
 
-procedure TTexDocGenerator.WriteBinaryFiles;
-var
-  i: Integer;
-begin
-  CreateStream('automated.gif', True);
-  CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
-
-  CreateStream('private.gif', True);
-  CurrentStream.Write(img_private[0], High(img_private)+1);
-  CloseStream;
-
-  CreateStream('protected.gif', True);
-  CurrentStream.Write(img_protected[0], High(img_protected)+1);
-  CloseStream;
-
-  CreateStream('public.gif', True);
-  CurrentStream.Write(img_public[0], High(img_public)+1);
-  CloseStream;
-
-  CreateStream('published.gif', True);
-  CurrentStream.Write(img_published[0], High(img_published)+1);
-  CloseStream;
-
-  if not FileExists(DestinationDirectory+'pasdoc.css') then begin
-    CreateStream('pasdoc.css', True);
-    StreamUtils.WriteLine(CurrentStream, 'body {' +
-      'font-family: Verdana,Arial;' +
-      'color: black;' +
-      'background-color: white; font-size: 12px; }');
-    StreamUtils.WriteLine(CurrentStream, 'body.navigationframe {' +
-      'font-family: Verdana,Arial;' +
-      'color: white;' +
-      'background-color: #787878; font-size: 12px; }');
-
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:link {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:visited {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:hover {' +
-      'color: white;' +
-      'font-weight: bold; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:active {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
-
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:link {' +
-      'color:#C91E0C; text-decoration: none; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:visited {' +
-      'color:#7E5C31; text-decoration: none; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:hover {' +
-      'text-decoration: underline; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:active {' +
-      'text-decoration: underline; }');
-
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:visited {' +
-      'color:#7E5C31; text-decoration: none; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:hover {' +
-      'text-decoration: underline; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:active {' +
-      'text-decoration: underline; font-weight:bold; }');
-
-    StreamUtils.WriteLine(CurrentStream, 'tr.list { background: #FFBF44; }');
-    StreamUtils.WriteLine(CurrentStream, 'tr.list2 { background: #FFC982; }');
-    StreamUtils.WriteLine(CurrentStream, 'tr.listheader { background: #C91E0C; }');
-    StreamUtils.WriteLine(CurrentStream, 'th.listheader { color: white; }');
-
-    StreamUtils.WriteLine(CurrentStream, 'a.section {' +
-      'color: green; '+
-      'text-decoration: none; '+
-      'font-weight: bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.section:hover {' +
-      'color: green; '+
-      'text-decoration: underline; '+
-      'font-weight: bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
-      'white-space:nowrap; }');
-    StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
-      'color:red;}');
-    StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
-    StreamUtils.WriteLine(CurrentStream, 'dt.parameters {' +
-      'color:blue;}');
-    StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
-
-    CloseStream;
-  end;
-
-  CreateStream('index.html', True);
-  WriteLine(CurrentStream, '<html><head><title>'+Title+'</title>');
-  WriteLine(CurrentStream, '</head><frameset cols="200,*" border="1">');
-  WriteLine(CurrentStream, '<frame src="navigation.html"/>');
-  WriteLine(CurrentStream, '<frame src="AllUnits.html" name="content"/>');
-  WriteLine(CurrentStream, '</frameset></html>');
-  CloseStream;
-
-  CreateStream('navigation.html', True);
-  WriteLine(CurrentStream, '<html><head>');
-  WriteDirect('<link rel="StyleSheet" href="');
-  WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirect('"/>', true);
-  WriteLine(CurrentStream, '</head>');
-  WriteLine(CurrentStream, '<body class="navigationframe">');
-  WriteDirect('<h2>'+Title+'</h2>');
-  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG
-    + '" width="100%">', true);
-  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
-    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(OverviewFilenames[i] + GetFileExtension) + '" class="navigation">');
-    case i of
-      0: WriteConverted(FLanguage.Translation[trUnits]);
-      1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
-      2: WriteConverted(FLanguage.Translation[trCio]);
-      3: WriteConverted(FLanguage.Translation[trTypes]);
-      4: WriteConverted(FLanguage.Translation[trVariables]);
-      5: WriteConverted(FLanguage.Translation[trConstants]);
-      6: WriteConverted(FLanguage.Translation[trFunctionsAndProcedures]);
-      7: WriteConverted(FLanguage.Translation[trIdentifiers]);
-    end;
-    WriteDirect('</a></td></tr>', true);
-  end;
-  WriteDirect('</table>', true);
-  WriteLine(CurrentStream, '</body></html>');
-  CloseStream;
-end;
 
 function TTEXDocGenerator.ConvertString(const s: String): String;
 const
   NumSpecials = 69;  
-  Entities: array [1..NumSpecials] of string[12] =
+  Entities: array [1..NumSpecials] of string[16] =
     ('\c{C}','\c{c}',
      '\~{N}','\~{n}',
      '\~{A}','\~{a}',
@@ -2258,7 +2009,7 @@ const
      '\%','\#',
      '\{','\}',
       '$>$','$<$',
-      '\^{}','\verb|\|',
+      '\^{}','\textbackslash',
       '\_'
       
     );
@@ -2306,6 +2057,12 @@ const
       i: Integer;
     begin
       Result := Special;
+      { skip the @ character }
+      if Special = '@' then
+      begin  
+        Result:='@';
+        exit;
+      end;
       for i := 1 to NumSpecials do
         if Specials[i] = Special then
         begin
@@ -2326,6 +2083,13 @@ begin
    end;
 end;
 
+
+function TTexDocGenerator.ConvertChar(c: char): String;
+begin
+  ConvertChar := ConvertString(c);
+end;
+
+
 procedure TTexDocGenerator.BuildLinks;
 begin
   FLinkCount := 1;
@@ -2343,6 +2107,12 @@ end.
 
 {
   $Log$
+  Revision 1.5  2004/03/13 02:21:17  ccodere
+  1) added latex2rtf support
+  2) now independent from paper size
+  3) table of contents
+  4) several several bugfixes
+
   Revision 1.4  2004/03/12 05:01:21  ccodere
   added support for properties.
   added support for overview of functions
