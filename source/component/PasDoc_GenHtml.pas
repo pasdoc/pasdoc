@@ -543,7 +543,8 @@ begin
           ncstart := i;
           Continue; // We don't want to miss out on any ':' or ';' for SearchForLink
         end;
-      ':': SearchForLink := True;
+      ':',
+      '=': SearchForLink := True;
       ';': SearchForLink := False;
     end;
     Inc(i);
