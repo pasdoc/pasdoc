@@ -510,362 +510,378 @@ begin
   t := nil;
   Result := False;
   DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
-  if not GetNextNonWCToken(t) then Exit;
+  i := nil;
+  try
+    if not GetNextNonWCToken(t) then Exit;
 
-  { Test for forward class definition here:
-      class MyClass = class;
-    with no ancestor or class members listed after the word class. }
-  if t.IsSymbol(SYM_SEMICOLON) then begin
-    Result := True; // No error, continue the parsing.
-    t.Free;
-    Exit;
-  end;
+    { Test for forward class definition here:
+        class MyClass = class;
+      with no ancestor or class members listed after the word class. }
+    if t.IsSymbol(SYM_SEMICOLON) then begin
+      Result := True; // No error, continue the parsing.
+      t.Free;
+      Exit;
+    end;
 
-  i := TPasCio.Create;
-  i.Name := CioName;
-  i.DetailedDescription := d;
-  i.MyType := CIOType;
-  { get all ancestors; remember, this could look like
-    TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
-    All class ancestors are supposed to be included in the docs!
-  }
-  { TODO -otwm :
-    That's not quite true since multiple inheritance is not supported by Delphi/Kylix
-    (does FreePascal???). Every entry but the first must be an interface. }
-  if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
-      { optional ancestor introduced by ( }
-    FreeAndNil(t);
-    Finished := False;
-    { outer repeat loop: one ancestor per pass }
-    repeat
+    i := TPasCio.Create;
+    i.Name := CioName;
+    i.DetailedDescription := d;
+    i.MyType := CIOType;
+    { get all ancestors; remember, this could look like
+      TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
+      All class ancestors are supposed to be included in the docs!
+    }
+    { TODO -otwm :
+      That's not quite true since multiple inheritance is not supported by Delphi/Kylix
+      (does FreePascal???). Every entry but the first must be an interface. }
+    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
+        { optional ancestor introduced by ( }
       FreeAndNil(t);
-      if not GetNextNonWCToken(t) then Exit;
-      if t.MyType = TOK_IDENTIFIER then begin { an ancestor }
-        s := t.Data;
-            { inner repeat loop: one part of the ancestor per name }
-        repeat
-          FreeAndNil(t);
-          if not Scanner.GetToken(t) then begin
-            Exit;
-          end;
-          if not t.IsSymbol(SYM_PERIOD) then begin
-            Scanner.UnGetToken(t);
-            t := nil;
-            Break; { leave inner repeat loop }
-          end;
-          FreeAndNil(t);
-          s := s + '.';
-          if not Scanner.GetToken(t) or (t.MyType <> TOK_IDENTIFIER) then
-            DoError('%s: expected class, object or interface in ancestor declaration.', [Scanner.GetStreamInfo], 0);
-
-          s := s + t.Data;
-        until False;
-        i.Ancestors.Add(s);
-      end else begin
-        if (t.IsSymbol(SYM_COMMA)) then
-            { comma, separating two ancestors } begin
-          FreeAndNil(t);
-        end else begin
-          Finished := t.IsSymbol(SYM_RIGHT_PARENTHESIS);
-          FreeAndNil(t);
-          if not Finished then
-            DoError('%s: Error - ")" expected.', [Scanner.GetStreamInfo], 0);
-        end;
-      end;
-    until Finished;
-  end else begin
-    Scanner.UnGetToken(t);
-    case i.MyType of
-      CIO_CLASS: begin
-        if not SameText(i.Name, 'tobject') then begin
-          i.Ancestors.Add('TObject');
-        end;
-      end;
-      CIO_SPINTERFACE: begin
-        if not SameText(i.Name, 'idispinterface') then begin
-          i.Ancestors.Add('IDispInterface');
-        end;
-      end;
-      CIO_INTERFACE: begin
-        if not SameText(i.Name, 'iinterface') then begin
-          i.Ancestors.Add('IInterface');
-        end;
-      end;
-      CIO_OBJECT: begin
-        if not SameText(i.Name, 'tobject') then begin
-          i.Ancestors.Add('TObject');
-        end;
-      end;
-    end;
-  end;
-  GetNextNonWCToken(t);
-  if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
-    FreeAndNil(t);
-    { for the time being, we throw away the ID itself }
-    if (not GetNextNonWCToken(t)) then begin
-      Exit;
-    end;
-    if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
-      DoError('%s: Error - literal String or identifier as interface ID expected.', [Scanner.GetStreamInfo], 0);
-    FreeAndNil(t);
-    if not GetNextNonWCToken(t) then begin
-      Exit;
-    end;
-    if not t.IsSymbol(SYM_RIGHT_BRACKET) then
-      DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
-  end else begin
-    Scanner.UnGetToken(t);
-  end;
-
-  { now collect methods, fields and properties }
-  CS := '';
-
-  (* Members at the beginning of a class declaration that don<92>t have a specified
-     visibility are by default published, provided the class is compiled in the
-     $M+ state or is derived from a class compiled in the $M+ state;
-     otherwise, such members are public.
-
-     How do we resolve the inherited classes' $M+ state? *)
-  if Scanner.SwitchOptions['M'] then begin
-    State := STATE_PUBLISHED;
-  end else begin
-    State := STATE_PUBLIC;
-  end;
-
-  Finished := False;
-  repeat
-    CSFound := False;
-    FreeAndNil(t);
-    if not GetNextNonWCToken(t) then begin
-      i.Free;
-      Exit;
-    end;
-    if (t.IsSymbol(SYM_SEMICOLON)) then begin
-        { A forward declaration of type "name = class(ancestor);" }
-      FreeAndNil(t);
-      if Assigned(U) then U.AddCIO(i);
-      Result := True;
-      Exit;
-    end
-    else
-      if (t.MyType = TOK_RESERVED) then
-        case t.Info.ReservedKey of
-          KEY_CLASS: begin
-              CS := t.Data;
-              CSFound := True;
-            end;
-          KEY_CONSTRUCTOR,
-            KEY_DESTRUCTOR,
-            KEY_FUNCTION,
-            KEY_PROCEDURE: begin
-              d := GetLastComment(True);
-              if (not ParseCDFP(M, CS, t.Data, t.Info.ReservedKey, d, True))
-                then begin
-                i.Free;
-                FreeAndNil(t);
-                Exit;
-              end;
-              M.State := State;
-              if State in ClassMembers then begin
-                i.Methods.Add(M);
-              end
-              else
-              begin
-                M.Free;
-              end;
-            end;
-          KEY_END: Finished := True;
-          KEY_PROPERTY: begin
-              if (not ParseProperty(p)) then begin
-                FreeAndNil(t);
-                i.Free;
-                Exit;
-              end;
-              p.State := State;
-              if State in ClassMembers then begin
-                i.Properties.Add(p);
-              end;
-            end;
-          KEY_CASE: begin
-              if not ParseRecordCase(i, false) then begin
-                FreeAndNil(t);
-                i.Free;
-                Exit;
-              end;
-            end;
-          KEY_PUBLIC: begin
-              CS := t.Data;
-              Ind := StandardDirectiveByName(CS);
-              State := STATE_PUBLIC;
-            end;
-        else begin
-            i.Free;
-            try
-              DoError('%s: Error, unexpected reserved keyword "%s".',
-                [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]], 0);
-            finally
-              FreeAndNil(t);
-            end;
-          end;
-        end
-      else
-        if (t.MyType = TOK_IDENTIFIER) then begin
-          CS := t.Data;
-          Ind := StandardDirectiveByName(CS);
-          case Ind of
-            SD_DEFAULT: begin
-                if not SkipDeclaration(nil) then begin
-                  DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo], 0);
-                end;
-                DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
-              end;
-            SD_PUBLIC: State := STATE_PUBLIC;
-            SD_PUBLISHED: State := STATE_PUBLISHED;
-            SD_PRIVATE: State := STATE_PRIVATE;
-            SD_PROTECTED: State := STATE_PROTECTED;
-            SD_AUTOMATED: State := STATE_AUTOMATED;
-          else
-            FirstFieldLoop := True;
-            repeat
-              f := TPasItem.Create;
-              if FirstFieldLoop then begin
-                f.Name := t.Data;
-                FirstFieldLoop := False;
-              end else begin
-                if not GetNextNonWCToken(t) then Exit;
-                if t.MyType <> TOK_IDENTIFIER then begin
-                  DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
-                end;
-                f.Name := t.Data;
-              end;
-
-              f.State := State;
-              f.DetailedDescription := GetLastComment(False);
-              if State in ClassMembers then begin
-                i.Fields.Add(f);
-              end else begin
-                f.Free;
-              end;
-              FreeAndNil(t);
-
-              if not GetNextNonWCToken(t) then Exit;
-
-              if t.MyType = TOK_SYMBOL then begin
-                case t.Info.SymbolType of
-                  SYM_COMMA:
-                    begin
-                      FreeAndNil(t);
-                      Continue;
-                    end;
-                  SYM_COLON:
-                    begin
-                      Break;
-                    end;
-                end;
-              end;
-              // We reach here only if token is not a comma or a colon.
-              FreeAndNil(t);
-              DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
-            until False;
-            ClearLastComment;
-            FreeAndNil(t);
-            GetNextNonWCToken(t);
-            if (t.MyType = TOK_RESERVED) then begin
-              case t.Info.ReservedKey of
-                KEY_FUNCTION, KEY_PROCEDURE: begin
-                    if ParseCDFP(M,'','',t.Info.ReservedKey,d,false) then begin
-                      M.Free;
-                      FreeAndNil(t);
-                    end else begin
-                      FreeAndNil(t);
-                      exit;
-                    end;
-                  end;
-                KEY_RECORD: begin
-                  ParseCIO(nil, '', CIO_RECORD, '', False);
-                  end;
-                KEY_PACKED: begin
-                    FreeAndNil(t);
-                    GetNextNonWCToken(t);
-                    if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_RECORD) then begin
-                      ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
-                    end else begin
-                      SkipDeclaration(nil);
-                    end;
-                  end;
-                else begin
-                    FreeAndNil(t);
-                    if not SkipDeclaration(nil) then begin
-                      exit;
-                    end;
-                  end;
-                end;
-            end else begin
-              FreeAndNil(t);
-              if not SkipDeclaration(nil) then begin
-                Exit;
-              end;
-            end;
-          end;
-        end;
-    if (not CSFound) then CS := '';
-    FreeAndNil(t);
-  until Finished;
-  while true do begin
-    try
-    if (not GetNextNonWCToken(t)) then begin
-      i.Free;
-      try
-        DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo], 0);
-      finally
+      Finished := False;
+      { outer repeat loop: one ancestor per pass }
+      repeat
         FreeAndNil(t);
-      end;
-    end else begin
-      if t.MyType = TOK_IDENTIFIER then begin
-        case StandardDirectiveByName(t.Data) of
-          SD_PLATFORM: i.IsPlatform := True;
-          SD_DEPRECATED: i.IsDeprecated := True;
-          else begin
-            i.Free;
-            try
-              DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data], 0);
-            finally
-              FreeAndNil(t);
+        if not GetNextNonWCToken(t) then Exit;
+        if t.MyType = TOK_IDENTIFIER then begin { an ancestor }
+          s := t.Data;
+              { inner repeat loop: one part of the ancestor per name }
+          repeat
+            FreeAndNil(t);
+            if not Scanner.GetToken(t) then begin
+              Exit;
             end;
+            if not t.IsSymbol(SYM_PERIOD) then begin
+              Scanner.UnGetToken(t);
+              t := nil;
+              Break; { leave inner repeat loop }
+            end;
+            FreeAndNil(t);
+            s := s + '.';
+            if not Scanner.GetToken(t) or (t.MyType <> TOK_IDENTIFIER) then
+              DoError('%s: expected class, object or interface in ancestor declaration.', [Scanner.GetStreamInfo], 0);
+
+            s := s + t.Data;
+          until False;
+          i.Ancestors.Add(s);
+        end else begin
+          if (t.IsSymbol(SYM_COMMA)) then
+              { comma, separating two ancestors } begin
+            FreeAndNil(t);
+          end else begin
+            Finished := t.IsSymbol(SYM_RIGHT_PARENTHESIS);
+            FreeAndNil(t);
+            if not Finished then
+              DoError('%s: Error - ")" expected.', [Scanner.GetStreamInfo], 0);
           end;
         end;
+      until Finished;
+    end else begin
+      Scanner.UnGetToken(t);
+      case i.MyType of
+        CIO_CLASS: begin
+          if not SameText(i.Name, 'tobject') then begin
+            i.Ancestors.Add('TObject');
+          end;
+        end;
+        CIO_SPINTERFACE: begin
+          if not SameText(i.Name, 'idispinterface') then begin
+            i.Ancestors.Add('IDispInterface');
+          end;
+        end;
+        CIO_INTERFACE: begin
+          if not SameText(i.Name, 'iinterface') then begin
+            i.Ancestors.Add('IInterface');
+          end;
+        end;
+        CIO_OBJECT: begin
+          if not SameText(i.Name, 'tobject') then begin
+            i.Ancestors.Add('TObject');
+          end;
+        end;
+      end;
+    end;
+    GetNextNonWCToken(t);
+    if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
+      FreeAndNil(t);
+      { for the time being, we throw away the ID itself }
+      if (not GetNextNonWCToken(t)) then begin
+        Exit;
+      end;
+      if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
+        DoError('%s: Error - literal String or identifier as interface ID expected.', [Scanner.GetStreamInfo], 0);
+      FreeAndNil(t);
+      if not GetNextNonWCToken(t) then begin
+        Exit;
+      end;
+      if not t.IsSymbol(SYM_RIGHT_BRACKET) then
+        DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
+    end else begin
+      Scanner.UnGetToken(t);
+    end;
+
+    { now collect methods, fields and properties }
+    CS := '';
+
+    (* Members at the beginning of a class declaration that don<92>t have a specified
+       visibility are by default published, provided the class is compiled in the
+       $M+ state or is derived from a class compiled in the $M+ state;
+       otherwise, such members are public.
+
+       How do we resolve the inherited classes' $M+ state? *)
+    if Scanner.SwitchOptions['M'] then begin
+      State := STATE_PUBLISHED;
+    end else begin
+      State := STATE_PUBLIC;
+    end;
+
+    Finished := False;
+    repeat
+      CSFound := False;
+      FreeAndNil(t);
+      if not GetNextNonWCToken(t) then begin
+        i.Free;
+        Exit;
+      end;
+      if (t.IsSymbol(SYM_SEMICOLON)) then begin
+          { A forward declaration of type "name = class(ancestor);" }
+        FreeAndNil(t);
+        if Assigned(U) then U.AddCIO(i);
+        Result := True;
+        Exit;
+      end
+      else
+        if (t.MyType = TOK_RESERVED) then
+          case t.Info.ReservedKey of
+            KEY_CLASS: begin
+                CS := t.Data;
+                CSFound := True;
+              end;
+            KEY_CONSTRUCTOR,
+              KEY_DESTRUCTOR,
+              KEY_FUNCTION,
+              KEY_PROCEDURE: begin
+                d := GetLastComment(True);
+                if (not ParseCDFP(M, CS, t.Data, t.Info.ReservedKey, d, True))
+                  then begin
+                  i.Free;
+                  FreeAndNil(t);
+                  Exit;
+                end;
+                M.State := State;
+                if State in ClassMembers then begin
+                  i.Methods.Add(M);
+                end
+                else
+                begin
+                  M.Free;
+                end;
+              end;
+            KEY_END: Finished := True;
+            KEY_PROPERTY: begin
+                if (not ParseProperty(p)) then begin
+                  FreeAndNil(t);
+                  i.Free;
+                  Exit;
+                end;
+                p.State := State;
+                if State in ClassMembers then begin
+                  i.Properties.Add(p);
+                end
+                else
+                begin
+                  FreeAndNil(p);
+                end;
+              end;
+            KEY_CASE: begin
+              try
+                if not ParseRecordCase(i, false) then begin
+                  FreeAndNil(t);
+                  i.Free;
+                  Exit;
+                end;
+                except
+                  FreeAndNil(t);
+                  i.Free;
+                  raise;
+                end;
+              end;
+            KEY_PUBLIC: begin
+                CS := t.Data;
+                Ind := StandardDirectiveByName(CS);
+                State := STATE_PUBLIC;
+              end;
+          else begin
+              i.Free;
+              try
+                DoError('%s: Error, unexpected reserved keyword "%s".',
+                  [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]], 0);
+              finally
+                FreeAndNil(t);
+              end;
+            end;
+          end
+        else
+          if (t.MyType = TOK_IDENTIFIER) then begin
+            CS := t.Data;
+            Ind := StandardDirectiveByName(CS);
+            case Ind of
+              SD_DEFAULT: begin
+                  if not SkipDeclaration(nil) then begin
+                    DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo], 0);
+                  end;
+                  DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
+                end;
+              SD_PUBLIC: State := STATE_PUBLIC;
+              SD_PUBLISHED: State := STATE_PUBLISHED;
+              SD_PRIVATE: State := STATE_PRIVATE;
+              SD_PROTECTED: State := STATE_PROTECTED;
+              SD_AUTOMATED: State := STATE_AUTOMATED;
+            else
+              FirstFieldLoop := True;
+              repeat
+                f := TPasItem.Create;
+                if FirstFieldLoop then begin
+                  f.Name := t.Data;
+                  FirstFieldLoop := False;
+                end else begin
+                  if not GetNextNonWCToken(t) then Exit;
+                  if t.MyType <> TOK_IDENTIFIER then begin
+                    DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
+                  end;
+                  f.Name := t.Data;
+                end;
+
+                f.State := State;
+                f.DetailedDescription := GetLastComment(False);
+                if State in ClassMembers then begin
+                  i.Fields.Add(f);
+                end else begin
+                  f.Free;
+                end;
+                FreeAndNil(t);
+
+                if not GetNextNonWCToken(t) then Exit;
+
+                if t.MyType = TOK_SYMBOL then begin
+                  case t.Info.SymbolType of
+                    SYM_COMMA:
+                      begin
+                        FreeAndNil(t);
+                        Continue;
+                      end;
+                    SYM_COLON:
+                      begin
+                        Break;
+                      end;
+                  end;
+                end;
+                // We reach here only if token is not a comma or a colon.
+                FreeAndNil(t);
+                DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
+              until False;
+              ClearLastComment;
+              FreeAndNil(t);
+              GetNextNonWCToken(t);
+              if (t.MyType = TOK_RESERVED) then begin
+                case t.Info.ReservedKey of
+                  KEY_FUNCTION, KEY_PROCEDURE: begin
+                      if ParseCDFP(M,'','',t.Info.ReservedKey,d,false) then begin
+                        M.Free;
+                        FreeAndNil(t);
+                      end else begin
+                        FreeAndNil(t);
+                        exit;
+                      end;
+                    end;
+                  KEY_RECORD: begin
+                    ParseCIO(nil, '', CIO_RECORD, '', False);
+                    end;
+                  KEY_PACKED: begin
+                      FreeAndNil(t);
+                      GetNextNonWCToken(t);
+                      if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_RECORD) then begin
+                        ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
+                      end else begin
+                        SkipDeclaration(nil);
+                      end;
+                    end;
+                  else begin
+                      FreeAndNil(t);
+                      if not SkipDeclaration(nil) then begin
+                        exit;
+                      end;
+                    end;
+                  end;
+              end else begin
+                FreeAndNil(t);
+                if not SkipDeclaration(nil) then begin
+                  Exit;
+                end;
+              end;
+            end;
+          end;
+      if (not CSFound) then CS := '';
+      FreeAndNil(t);
+    until Finished;
+    while true do begin
+      try
+      if (not GetNextNonWCToken(t)) then begin
+        i.Free;
+        try
+          DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo], 0);
+        finally
+          FreeAndNil(t);
+        end;
       end else begin
-        if not t.IsSymbol(SYM_SEMICOLON) then begin
-          if IsInRecordCase then begin
-            if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
-              Scanner.UnGetToken(t);
-              break;
+        if t.MyType = TOK_IDENTIFIER then begin
+          case StandardDirectiveByName(t.Data) of
+            SD_PLATFORM: i.IsPlatform := True;
+            SD_DEPRECATED: i.IsDeprecated := True;
+            else begin
+              i.Free;
+              try
+                DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data], 0);
+              finally
+                FreeAndNil(t);
+              end;
+            end;
+          end;
+        end else begin
+          if not t.IsSymbol(SYM_SEMICOLON) then begin
+            if IsInRecordCase then begin
+              if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
+                Scanner.UnGetToken(t);
+                break;
+              end else begin
+                i.Free;
+                FreeAndNil(t);
+                DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo], 0);
+              end;
             end else begin
               i.Free;
-              FreeAndNil(t);
-              DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo], 0);
+              try
+                DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo], 0);
+              finally
+                FreeAndNil(t);
+              end;
             end;
           end else begin
-            i.Free;
-            try
-              DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo], 0);
-            finally
-              FreeAndNil(t);
-            end;
+            break;
           end;
-        end else begin
-          break;
         end;
       end;
+      finally
+      FreeAndNil(t);
     end;
-    finally
-    FreeAndNil(t);
-  end;
-  end;
-  if Assigned(U) then U.AddCIO(i)
-  else
-  begin
-    i.Free;
+    end;
+    if Assigned(U) then U.AddCIO(i)
+    else
+    begin
+      i.Free;
+    end;
+  except
+    t.Free;
+    raise;
   end;
   Result := True;
 end;
@@ -1366,27 +1382,33 @@ begin
   FreeAndNil(t);
 
   U := TPasUnit.Create;
-  U.DetailedDescription := GetLastComment(True);
-  if not GetNextNonWCToken(t) then Exit;
+  try
+    U.DetailedDescription := GetLastComment(True);
+    if not GetNextNonWCToken(t) then Exit;
 
-  { get unit name identifier }
-  if t.MyType <> TOK_IDENTIFIER then
-    DoError(Scanner.GetStreamInfo + ': identifier (unit name) expected.',
-      [], 0);
-  U.Name := t.Data;
-  FreeAndNil(t);
-  { skip semicolon }
-  if not GetNextNonWCToken(t) then Exit;
-  if not t.IsSymbol(SYM_SEMICOLON) then
-    DoError(Scanner.GetStreamInfo + ': semicolon expected.', [], 0);
-  FreeAndNil(t);
-  if not GetNextNonWCToken(t) then Exit;
+    { get unit name identifier }
+    if t.MyType <> TOK_IDENTIFIER then
+      DoError(Scanner.GetStreamInfo + ': identifier (unit name) expected.',
+        [], 0);
+    U.Name := t.Data;
+    FreeAndNil(t);
+    { skip semicolon }
+    if not GetNextNonWCToken(t) then Exit;
+    if not t.IsSymbol(SYM_SEMICOLON) then
+      DoError(Scanner.GetStreamInfo + ': semicolon expected.', [], 0);
+    FreeAndNil(t);
+    if not GetNextNonWCToken(t) then Exit;
 
-  { get 'interface' keyword }
-  if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INTERFACE) then
-    DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
-  { now parse the interface section of that unit }
-  Result := ParseInterfaceSection(U);
+    { get 'interface' keyword }
+    if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INTERFACE) then
+      DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
+    { now parse the interface section of that unit }
+    Result := ParseInterfaceSection(U);
+  except
+    FreeAndNil(U);
+    FreeAndNil(t);
+    raise;
+  end;
   FreeAndNil(t);
 end;
 

@@ -1009,6 +1009,7 @@ begin
       'D': begin
              if Copy(TagDesc,1,7) = '$Date: ' then begin
                LastMod := Trim(Copy(TagDesc, 7, Length(TagDesc)-7-1)) + ' UTC';
+               ReplaceStr := '';
              end;
            end;
       'A': begin
@@ -1018,6 +1019,7 @@ begin
                  if not Assigned(Authors) then
                    FAuthors := NewStringVector;
                  Authors.AddNotExisting(s);
+                 ReplaceStr := '';
                end;
              end;
            end;

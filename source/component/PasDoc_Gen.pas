@@ -762,7 +762,7 @@ begin
     TagManager.StringConverter := ConvertString;
     TagManager.AddHandler('@', HandleDoubleAt);
     TagManager.AddHandler('longcode', HandleLongCodeTag);
-    TagManager.AddHandler('link', HandleLinkTag);
+//    TagManager.AddHandler('link', HandleLinkTag);
     TagManager.AddHandler('HTML', HandleHtmlTag);
     TagManager.AddHandler('NAME', HandleNameTag);
     TagManager.AddHandler('CLASSNAME', HandleClassnameTag);
