@@ -1033,7 +1033,6 @@ begin
           end;
         end;
       end;
-      Exit;
     end;
     Inc(Offs1);
   end;
