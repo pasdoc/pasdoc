@@ -192,6 +192,9 @@ type
     { output all the necessary images }
     procedure WriteBinaryFiles;
 
+    { output the index.html and navigation.html files }
+    procedure WriteFramesetFiles;
+
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
     procedure WriteImage(const src, alt, css: string);
@@ -745,6 +748,7 @@ begin
   WriteBinaryFiles;
   WriteOverviewFiles;
   WriteVisibilityLegendFile;
+  WriteFramesetFiles;
   EndSpellChecking;
 end;
 
@@ -2475,7 +2479,6 @@ end;
 
 procedure THTMLDocGenerator.WriteBinaryFiles;
 var
-  i: Integer;
   Fin, Fout:TFileStream; { If external CSS file specified, copy set CSS file to pasdoc.css.
                            Fin: open external file, Fout: target file (pasdoc.css). }
 begin
@@ -2570,7 +2573,12 @@ begin
       CloseStream;
     end;
   end;
+end;
 
+procedure THTMLDocGenerator.WriteFramesetFiles;
+var
+  i: Integer;
+begin
   CreateStream('index.html', True);
   WriteLine(CurrentStream, '<html><head><title>'+Title+'</title>');
   WriteLine(CurrentStream, '</head><frameset cols="200,*" border="1">');

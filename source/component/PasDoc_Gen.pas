@@ -478,8 +478,14 @@ end;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
 
+    { generate a GraphViz diagram for the units dependencies }
     property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses;
+    { generate a GraphViz diagram for the Class hierarchy }
     property OutputGraphVizClassHierarchy: boolean read FGraphVizClasses write FGraphVizClasses;
+    { link the GraphViz uses diagram }
+    property LinkGraphVizUses: string read FLinkGraphVizUses write FLinkGraphVizUses;
+    { link the GraphViz classes diagram }
+    property LinkGraphVizClasses: string read FLinkGraphVizClasses write FLinkGraphVizClasses;
 
     property Abbreviations: TStringList read FAbbreviations write SetAbbreviations;
 
@@ -1519,7 +1525,7 @@ begin
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
     CreateStream(OverviewFilenames[9]+'.dot', True);
-    WriteConverted('DiGraph Classes {', true);
+    WriteDirect('DiGraph Classes {', true);
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
         if Length(LNode.Parent.Name) > 0 then begin
@@ -1529,7 +1535,7 @@ begin
       LNode := FClassHierarchy.NextItem(LNode);
     end;
 
-    WriteConverted('}', true);
+    WriteDirect('}', true);
     CloseStream;
   end;
 end;
@@ -1541,7 +1547,7 @@ var
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
     CreateStream(OverviewFilenames[8]+'.dot', True);
-    WriteConverted('DiGraph Uses {', true);
+    WriteDirect('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin
         U := TPasUnit(FUnits.PasItemAt[i]);
@@ -1552,7 +1558,7 @@ begin
         end;
       end;
     end;
-    WriteConverted('}', true);
+    WriteDirect('}', true);
     CloseStream;
   end;
 end;

@@ -44,8 +44,8 @@ ExeDescription=
 DynamicLoader=/lib/ld-linux.so.2
 
 [Directories]
-OutputDir=
-UnitOutputDir=
+OutputDir=$(HOME)/out/test
+UnitOutputDir=$(HOME)/out/test/dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=../component:../OptionParser
@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=-E/tmp /tmp/test1.pas /tmp/test2.pas
+RunParams=--marker=: --output=/home/twm/source/3rd/dzchart/docs /home/twm/source/3rd/dzchart/*.pas
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
@@ -80,4 +80,12 @@ Item6=../component:/tmp
 Item7=../Component
 Item8=$(DELPHI)/lib/debug:../Component
 Item9=../Component:/tmp
+
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=$(HOME)/out/test/dcu
+
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=$(HOME)/out/test
 
