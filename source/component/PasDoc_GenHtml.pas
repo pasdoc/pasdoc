@@ -34,6 +34,8 @@ type
     For printed output, use @link(Tex.TTexDocGenerator). }
   THTMLDocGenerator = class(TDocGenerator)
   protected
+    FNumericFilenames: boolean;
+    FLinkCount: Integer;
     FFooter: string;
     FHeader: string;
     { Contains Name of a file to read HtmlHelp Contents from.
@@ -161,6 +163,7 @@ type
     property ContentsFile: string read FContentsFile write FContentsFile;
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
+    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
   end;
 
 const
@@ -207,22 +210,27 @@ function THTMLDocGenerator.CreateLink(const Item: TPasItem): string;
 begin
   Result := '';
   if (not Assigned(Item)) then Exit;
-  if Assigned(Item.MyUnit) then begin
-    if Assigned(Item.MyObject) then begin
-      { it's a method, a field or a property - only those have MyObject initialized }
-      Result := Item.MyObject.FullLink + '#' + IntToStr(Item.AnchorNumber);
-    end else begin
-      if Item.ClassType = TPasCio then begin
-        { it's an object / a class }
-        Result := Item.MyUnit.Name + '.' + Item.Name + GetFileExtension;
-      end else begin
-        { it's a constant, a variable, a type or a function / procedure }
-        Result := Item.MyUnit.FullLink + '#' + IntToStr(Item.AnchorNumber);
-      end;
-    end;
+  if NumericFilenames then begin
+    Result := IntToStr(FLinkCount) + GetFileExtension;
+    Inc(FLinkCount);
   end else begin
-    { it's a unit - only units don't have a MyUnit pointer }
-    Result := Item.Name + GetFileExtension;
+    if Assigned(Item.MyUnit) then begin
+      if Assigned(Item.MyObject) then begin
+        { it's a method, a field or a property - only those have MyObject initialized }
+        Result := Item.MyObject.FullLink + '#' + IntToStr(Item.AnchorNumber);
+      end else begin
+        if Item.ClassType = TPasCio then begin
+          { it's an object / a class }
+          Result := Item.MyUnit.Name + '.' + Item.Name + GetFileExtension;
+        end else begin
+          { it's a constant, a variable, a type or a function / procedure }
+          Result := Item.MyUnit.FullLink + '#' + IntToStr(Item.AnchorNumber);
+        end;
+      end;
+    end else begin
+      { it's a unit - only units don't have a MyUnit pointer }
+      Result := Item.Name + GetFileExtension;
+    end;
   end;
 end;
 
@@ -546,6 +554,7 @@ var
   HhcPath: string;
 {$ENDIF}
 begin
+  FLinkCount := 1;
   inherited;
   WriteBinaryFiles;
   WriteUnits(1);
