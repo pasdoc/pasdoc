@@ -575,7 +575,7 @@ begin
       DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
         if Authors = nil then FAuthors := NewStringVector;
-        Authors.Add(s);
+        Authors.AddNotExisting(s);
       end;
     end;
     Inc(Offs1);
@@ -1025,7 +1025,7 @@ begin
                    Unabbreviate(LTagData);
                    if Length(LTagData) > 0 then begin
                      if not Assigned(Authors) then FAuthors := NewStringVector;
-                     Authors.Add(LTagData);
+                     Authors.AddNotExisting(LTagData);
                    end;
                  end;
                end;

@@ -23,6 +23,7 @@ type
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
     procedure Iterate(const AItFunc: TIterateFunc);
+    procedure AddNotExisting(const AString: string);
   end;
 
 function NewStringVector: TStringVector;
@@ -44,9 +45,17 @@ end;
 function NewStringVector: TStringVector;
 begin
   Result := TStringVector.Create;
+  Result.Duplicates := dupIgnore;
 end;
 
 { TStringVector }
+
+procedure TStringVector.AddNotExisting(const AString: string);
+begin
+  if IndexOf(AString) < 0 then begin
+    Add(AString);
+  end;
+end;
 
 function TStringVector.ExistsNameCI(const AName: string): boolean;
 var
