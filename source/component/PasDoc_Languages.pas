@@ -89,6 +89,8 @@ type
     trUnit,
     trUnits,
     trVariables,
+    trGvUses,
+    trGvClasses,
 
     trHeadlineCio,
     trHeadlineConstants,
@@ -156,7 +158,6 @@ type
     procedure SetLanguageSpanish;
     { Defines translations for Swedish. }
     procedure SetLanguageSwedish;
-    
     { Defines translations for Hungarian (Codepage 1250). }
     procedure SetLanguageHungarian_1250;
     
@@ -248,6 +249,8 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variables';
+  FTranslation[trGvUses] := 'Unit dependency graph';
+  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'All Classes, Interfaces and Objects';
   FTranslation[trHeadlineConstants] := 'All Constants';
@@ -309,6 +312,9 @@ begin
   FTranslation[trUnit] := 'Fajl';
   FTranslation[trUnits] := 'Fajlovi';
   FTranslation[trVariables] := 'Promjenjive';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Sve Klase, Interfejsi i Objekti';
   FTranslation[trHeadlineConstants] := 'Sve Konstante';
@@ -370,6 +376,10 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Unit';
   FTranslation[trVariables] := 'Variáveis';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
   FTranslation[trWarningOverwrite] :=
     'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito';
 
@@ -431,6 +441,10 @@ begin
   FTranslation[trUnit] := 'Unitat';
   FTranslation[trUnits] := 'Unitats';
   FTranslation[trVariables] := 'Variables';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
   FTranslation[trWarningOverwrite] :=
     'Atenci¢, no editar - aquest fitxer ha estat creat automaticament i ser… sobrescrit';
 
@@ -504,6 +518,10 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variable';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
   FTranslation[trWarningOverwrite] :=
     'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret';
 
@@ -566,6 +584,10 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variabelen';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
   FTranslation[trWarningOverwrite] :=
     'Waarschuwing, wijzig niets - dit bestand is automatisch gegenereerd en zal worden overschreven';
 
@@ -628,6 +650,10 @@ begin
   FTranslation[trUnit] := 'Unité';
   FTranslation[trUnits] := 'Unités';
   FTranslation[trVariables] := 'Variables';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
   FTranslation[trWarningOverwrite] :=
     'Attention, ne pas édtier - ce fichier est créé automatiquement et va être écrasé';
 
@@ -691,6 +717,8 @@ begin
   FTranslation[trVariables] := 'Variablen';
   FTranslation[trType] := 'Typ';
   FTranslation[trTypes] := 'Typen';
+  FTranslation[trGvUses] := 'Unit Abhängigkeitsgraph';
+  FTranslation[trGvClasses] := 'Klassenhierarchie Graph';
 
   FTranslation[trHeadlineCio] := 'Alle Klassen, Schnittstellen und Objekte';
   FTranslation[trHeadlineConstants] := 'Alle Konstanten';
@@ -750,6 +778,9 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Unit';
   FTranslation[trVariables] := 'Variabel';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Semua Kelas, Interface, dan Objek';
   FTranslation[trHeadlineConstants] := 'Semua Konstanta';
@@ -811,6 +842,9 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variabili';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Tutte le Classi, Interfacce ed Oggetti';
   FTranslation[trHeadlineConstants] := 'Tutte le Costanti';
@@ -873,6 +907,9 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Unit';
   FTranslation[trVariables] := 'Variabel';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Kabeh Kelas, Interface, lan Objek';
   FTranslation[trHeadlineConstants] := 'Kabeh Konstanta';
@@ -936,6 +973,9 @@ begin
   FTranslation[trUnit] := 'Modu³';
   FTranslation[trUnits] := 'Modu³y';
   FTranslation[trVariables] := 'Zmienne';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy i obiekty';
   FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
@@ -996,6 +1036,9 @@ begin
   FTranslation[trUnit] := 'Modu³';
   FTranslation[trUnits] := 'Modu³y';
   FTranslation[trVariables] := 'Zmienne';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy i obiekty';
   FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
@@ -1057,6 +1100,9 @@ begin
   FTranslation[trUnit] := 'Ìîäóëü';
   FTranslation[trUnits] := 'Ìîäóëè';
   FTranslation[trVariables] := 'Ïåğåìåííûå';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
   FTranslation[trWarningOverwrite] :=
     'Ïğåäóïğåæäåíèå: íå ğåäàêòèğîâàòü - ıòîò ôàéë ñîçäàí àâòîìàòè÷åñêè è ìîæåò áûòü èçìåí¸í áåç ïğåäóïğåæäåíèÿ';
 
@@ -1118,6 +1164,9 @@ begin
   FTranslation[trUnit] := 'Œ®¤ã«ì';
   FTranslation[trUnits] := 'Œ®¤ã«¨';
   FTranslation[trVariables] := '¥à¥¬¥­­ë¥';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
   FTranslation[trWarningOverwrite] :=
     'à¥¤ã¯à¥¦¤¥­¨¥: ­¥ à¥¤ ªâ¨à®¢ âì - íâ®â ä ©« á®§¤ ­  ¢â®¬ â¨ç¥áª¨ ¨ ¬®¦¥â ¡ëâì ¨§¬¥­ñ­ ¡¥§ ¯à¥¤ã¯à¥¦¤¥­¨ï';
 
@@ -1179,6 +1228,9 @@ begin
   FTranslation[trUnit] := 'íÏÄÕÌØ';
   FTranslation[trUnits] := 'íÏÄÕÌÉ';
   FTranslation[trVariables] := 'ğÅÒÅÍÅÎÎÙÅ';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
   FTranslation[trWarningOverwrite] :=
     'ğÒÅÄÕĞÒÅÖÄÅÎÉÅ: ÎÅ ÒÅÄÁËÔÉÒÏ×ÁÔØ - ÜÔÏÔ ÆÁÊÌ ÓÏÚÄÁÎ Á×ÔÏÍÁÔÉŞÅÓËÉ É ÍÏÖÅÔ ÂÙÔØ ÉÚÍÅÎ£Î ÂÅÚ ĞÒÅÄÕĞÒÅÖÄÅÎÉÑ';
 
@@ -1232,6 +1284,9 @@ begin
   FTranslation[trUnit] := 'Jednotka';
   FTranslation[trUnits] := 'Jednotky';
   FTranslation[trVariables] := 'Premenné';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
   FTranslation[trWarningOverwrite] :=
     'Upozornenie: Needitujte - tento súbor bol vytvorenı automaticky a je pravdepodobné, e bude prepísanı';
 
@@ -1295,6 +1350,9 @@ begin
   FTranslation[trUnit] := 'Unidad';
   FTranslation[trUnits] := 'Unidades';
   FTranslation[trVariables] := 'Variables';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
   FTranslation[trHeadlineCio] := 'Todas las clases, interfaces y objetos';
   FTranslation[trHeadlineConstants] := 'Todas las constantes';
   FTranslation[trHeadlineFunctionsAndProcedures] :=    'Todos las funciones y procedimientos';
@@ -1303,7 +1361,7 @@ begin
   FTranslation[trHeadlineUnits] := 'Todas las unidades';
   FTranslation[trHeadlineVariables] := 'Todas las variables';
   FTranslation[trSummaryCio] := 'Lista de clases, interfaces y objetos';
-  FTranslation[trWarningOverwrite] :=    'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito'; 
+  FTranslation[trWarningOverwrite] :=    'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito';
   FTranslation[trGeneratedBy] := 'Generador por';
   FTranslation[trOnDateTime] := 'a';
 end;
@@ -1351,6 +1409,9 @@ begin
   FTranslation[trUnit] := 'Enhet';
   FTranslation[trUnits] := 'Enheter';
   FTranslation[trVariables] := 'Variabler';
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
 
   FTranslation[trHeadlineCio] := 'Alla klasser, interface och objekt';
   FTranslation[trHeadlineConstants] := 'All Constants';
@@ -1415,7 +1476,10 @@ procedure TPasDocLanguages.SetLanguageHungarian_1250;
    FTranslation[trUnit] := 'Egység';
    FTranslation[trUnits] := 'Egységek';
    FTranslation[trVariables] := 'Változók';
-  
+  { TODO : add translation }
+//  FTranslation[trGvUses] := 'Unit dependency graph';
+//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+
    FTranslation[trHeadlineCio] := 'Összes Osztály, Kapcsolódási felület és Objektumok';
    FTranslation[trHeadlineConstants] := 'Összes Kontans';
    FTranslation[trHeadlineFunctionsAndProcedures] := 'Összes Függvény és Eljárás';
@@ -1480,6 +1544,13 @@ end;
 
 {
   $Log$
+  Revision 1.11  2004/08/08 14:56:33  twm
+  Bugfixes:
+  * In several places the return value of CreateStream wasn't checked leading a access violations if a file could not be created (e.g. if the output directory didn't exist)
+  * Missing field declarations for FLinkGraphVizUses and FLinkGraphVizClasses
+  * missing declaration and translations for trGvUses and trGvClasses
+  * Main program did not handle all exceptions (e.g. EAbort)
+
   Revision 1.10  2004/07/16 16:34:16  johill
   some code cleanup, fixes from Pierre Woestyn
 

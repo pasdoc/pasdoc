@@ -353,7 +353,9 @@ begin
 
   GPasDoc.Generator.OutputGraphVizUses := GOption_WriteGVUses.TurnedOn;
   GPasDoc.Generator.OutputGraphVizClassHierarchy := GOption_WriteGVClasses.TurnedOn;
-  GPasDoc.Generator.LinkGraphVizUses := goption_
+  GPasDoc.Generator.LinkGraphVizUses := Goption_LinkGVUses.Value;
+  GPasDoc.Generator.LinkGraphVizClasses := Goption_LinkGVClasses.Value;
+
   GPasDoc.Generator.FullLink := GOption_FullLink.TurnedOn;
 
   for i := 0 to GOption_AbbrevFiles.Values.Count-1 do begin
@@ -404,7 +406,7 @@ begin
       GPasDoc.Free;
     end;
   except
-    on e: EPasDoc do
+    on e: Exception do
       with e do
         WriteLn('Fatal Error: ', Message);
   end;

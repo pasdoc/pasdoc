@@ -100,6 +100,8 @@ type
     FIgnoreWordsFile,
     FAspellMode: string;
     FFullLink: boolean;
+    FLinkGraphVizUses: string;
+    FLinkGraphVizClasses: string;
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -1524,7 +1526,11 @@ begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
-    CreateStream(OverviewFilenames[9]+'.dot', True);
+    if CreateStream(OverviewFilenames[9] + '.dot', True) = csError
+      then begin
+        DoMessage(1, mtError, 'Could not create output file "%s.dot".', [OverviewFilenames[9]]);
+        Exit;
+    end;
     WriteDirect('DiGraph Classes {', true);
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
@@ -1546,7 +1552,11 @@ var
   U: TPasUnit;
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
-    CreateStream(OverviewFilenames[8]+'.dot', True);
+    if CreateStream(OverviewFilenames[8]+'.dot', True) = csError
+      then begin
+        DoMessage(1, mtError, 'Could not create output file "%s.dot".', [OverviewFilenames[8]]);
+        Exit;
+    end;
     WriteDirect('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin

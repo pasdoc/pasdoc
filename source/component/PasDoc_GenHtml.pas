@@ -2478,28 +2478,28 @@ begin
 end;
 
 procedure THTMLDocGenerator.WriteBinaryFiles;
+
+  procedure WriteGifFile(const Img: array of byte; const Filename: string);
+  begin
+    if CreateStream(Filename, True) = csError 
+      then begin
+        DoMessage(1, mtError, 'Could not create output file "%s".', [Filename]);
+      Exit;
+    end;
+    CurrentStream.Write(img[0], High(img)+1);
+    CloseStream;
+  end;
+
 var
   Fin, Fout:TFileStream; { If external CSS file specified, copy set CSS file to pasdoc.css.
                            Fin: open external file, Fout: target file (pasdoc.css). }
+
 begin
-  CreateStream('automated.gif', True);
-  CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
-
-  CreateStream('private.gif', True);
-  CurrentStream.Write(img_private[0], High(img_private)+1);
-  CloseStream;
-
-  CreateStream('protected.gif', True);
-  CurrentStream.Write(img_protected[0], High(img_protected)+1);
-  CloseStream;
-
-  CreateStream('public.gif', True);
-  CurrentStream.Write(img_public[0], High(img_public)+1);
-  CloseStream;
-
-  CreateStream('published.gif', True);
-  CurrentStream.Write(img_published[0], High(img_published)+1);
-  CloseStream;
+  WriteGifFile(img_automated, 'automated.gif');
+  WriteGifFile(img_private, 'private.gif');
+  WriteGifFile(img_protected, 'protected.gif');
+  WriteGifFile(img_public, 'public.gif');
+  WriteGifFile(img_published, 'published.gif');
 
   if not FileExists(DestinationDirectory+'pasdoc.css') then begin
     { If external CSS specified, copying to pasdoc.css file. }
