@@ -367,7 +367,7 @@ type
 
     procedure Add(const AObject: TPasItem);
     procedure Delete(const AIndex: Integer);
-    constructor Create(const AOwnsObject: Boolean); 
+    constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
     procedure Clear; override;
   end;
