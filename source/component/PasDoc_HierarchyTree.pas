@@ -11,8 +11,7 @@ uses
   PasDoc_Items;
 
 type
-  TPasItemNode = class
-  private
+  TPasItemNode = class(TObject)
   protected
     FChildren: TObjectList;
     FParent: TPasItemNode;

@@ -30,7 +30,7 @@ type
     all information on the unit.
     Otherwise a description of the error should be found in
     @link(ErrorMessage). }
-  TParser = class(TObject)
+  TParser = class
     { Last comment found in input or nil if no comment available.
     Will be modified by @link(GetLastComment). }
     LastCommentToken: TToken;
@@ -466,7 +466,7 @@ begin
   end else begin
     if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
       FreeAndNil(t);
-        { for the time being, we throw away the ID itself }
+      { for the time being, we throw away the ID itself }
       if (not GetNextNonWCToken(t)) then begin
         Exit;
       end;
@@ -480,6 +480,8 @@ begin
         DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo]);
     end else begin
       Scanner.UnGetToken(t);
+      i.Ancestors := NewStringVector;
+      i.Ancestors.Add('TObject');
       t := nil;
     end;
   end;

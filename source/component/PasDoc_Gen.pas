@@ -59,8 +59,6 @@ type
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
-  private
-    function GetLanguage: TLanguageID;
   protected
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
@@ -87,9 +85,10 @@ type
 
     FClassHierarchy: TStringCardinalTree;
 
+    function GetLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
     procedure SetDestDir(const Value: string);
-    
+
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -229,8 +228,6 @@ type
       Writes a heading S at level HL to output.
       In HTML, heading levels are regarded by choosing the appropriate
       element from H1 to H6.
-      In TeX, headings will result in chapter, section, subsection or
-      subsubsection elements.
       The minimum heading level is 1, the maximum level depends on the
       output format.
       However, it is no good idea to choose a heading level larger than
@@ -345,7 +342,6 @@ type
     property DestinationDirectory: string read FDestDir write SetDestDir;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    
   end;
 
 implementation
@@ -579,14 +575,14 @@ begin
                     ((d[Run + 8] = 'E') or (d[Run + 8] = 'e')) and
                     ((d[Run + 9] = 'D') or (d[Run + 9] = 'd')) and
                     Assigned(Item.MyObject) then begin
-                        // Try to find inherited property of item.
-                        // Updated 14 Jun 2002
+                    // Try to find inherited property of item.
+                    // Updated 14 Jun 2002
 
                     if not IsNilOrEmpty(Item.MyObject.Ancestors) then begin
                       s := Item.MyObject.Ancestors.FirstName;
                       Ancestor := SearchItem(s, Item);
                       if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
-                        then
+                        then begin
                         repeat
                           TheLink := SearchLink(s + '.' + Item.Name, Item);
                           if TheLink <> '' then Break;
@@ -595,10 +591,11 @@ begin
                             then begin
                             s := TPasCio(Ancestor).Ancestors.FirstName;
                             Ancestor := SearchItem(s, Ancestor);
-                          end
-                          else
+                          end else begin
                             Break;
+                          end;
                         until Ancestor = nil;
+                      end;
                     end;
 
                     if TheLink <> '' then begin

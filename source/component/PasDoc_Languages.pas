@@ -103,6 +103,7 @@ type
   protected
     FTranslation: array[TTranslationID] of string;
     FCharSet: string;
+    { @abstract(gets a translation token) }
     function GetTranslation(const ATranslationID: TTranslationID): string;
     { Defines translations for English (the default). }
     procedure SetLanguageEnglish;

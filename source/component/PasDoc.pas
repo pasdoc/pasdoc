@@ -502,9 +502,13 @@ end;
 
 procedure TPasDoc.SetGenerator(const Value: TDocGenerator);
 begin
+  if Assigned(FGenerator) then begin
+    FGenerator.OnMessage := nil;
+  end;
   FGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
+    FGenerator.OnMessage := GenMessage;
   end;
 end;
 
@@ -514,7 +518,7 @@ begin
   inherited;
   if (AComponent = FGenerator) and (Operation = opRemove) then begin
     FGenerator := nil;
-  end
+  end;
 end;
 
 end.
