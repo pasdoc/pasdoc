@@ -169,9 +169,9 @@ const
   { ---------------------------------------------------------------------------- }
 
   {  }
-  PASDOC_NAME = 'DelphiDoc';
+  PASDOC_NAME = 'PasDoc';
   { }
-  PASDOC_DATE = '2003-04-02';
+  PASDOC_DATE = '2003-04-05';
   { }
   PASDOC_VERSION = '0.8.6-jb';
   { }
