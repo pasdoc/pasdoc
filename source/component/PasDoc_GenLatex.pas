@@ -191,6 +191,10 @@ type
     procedure WriteStartList(s: string);
     procedure WriteEndList;
     procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
+    {** Returns @true if this item or its ancestor has a description, otherwise
+        returns @false.
+    }    
+    function HasDescription(const AItem: TPasItem): boolean;
   end;
 
 {$INCLUDE automated.inc}
@@ -517,6 +521,7 @@ var
   Section: TSections;
 begin
   if c = nil then Exit;
+  if c.Count = 0 then Exit;
 
   WriteHeading(HL, FLanguage.Translation[trCio]);
 
@@ -538,6 +543,7 @@ var
   Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
+  if c.Count = 0 then exit;
   WriteDirect('\begin{description}',true);
   for j := 0 to c.Count - 1 do 
     begin
@@ -1136,6 +1142,7 @@ var
   s: string;
  begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+  if FuncsProcs.Count = 0 then exit;
   
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
@@ -1177,6 +1184,7 @@ var
   procstr: string;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+  if FuncsProcs.Count = 0 then exit;
 
   WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
 
@@ -1299,6 +1307,37 @@ begin
       WriteDirect(' ');
 end;
 
+
+function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
+var
+  Ancestor: TPasCio;
+  AncestorName: string;
+begin
+  HasDescription := false;
+  if not Assigned(AItem) then Exit;
+
+  if AItem.Description <> '' then 
+  begin
+    HasDescription := true;
+    exit
+  end;
+  if AItem.DetailedDescription <> '' then
+  begin
+    HasDescription := true;
+    exit;
+  end;
+  if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
+  begin
+    AncestorName := TPasCio(AItem).Ancestors.FirstName;
+    Ancestor := TPasCio(SearchItem(AncestorName, AItem));
+    if Assigned(Ancestor) then
+      begin
+        HasDescription:=HasDescription(Ancestor);
+        exit;
+      end;
+  end;    
+end;
+
 procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 var
   Ancestor: TPasCio;
@@ -1348,9 +1387,9 @@ var
   s: string;
 begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
-
-  WriteHeading(HL, Heading);
+  if i.count = 0 then exit;
   
+  WriteHeading(HL, Heading);
   s:=FLanguage.Translation[trDescription];
   if length(s) < length(FLanguage.Translation[trDeclaration])  then
      s:= FLanguage.Translation[trDeclaration];
@@ -1383,13 +1422,24 @@ begin
       
     WriteDirect('',true);
 
-    WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-    WriteItemDetailedDescription(Item);
+    
     
     if not (Item is TPasEnum) then
-       WriteDirect('\par ',true)
+      begin
+        { If there is no description, don't write any description section }
+        if HasDescription(Item) then
+          begin
+            WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+            WriteItemDetailedDescription(Item);
+            WriteDirect('\par ',true);
+          end
+        else
+            WriteDirect('%\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+      end
     else
      begin
+      WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+      WriteItemDetailedDescription(Item);
       WriteDirect('\begin{description}', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
         WriteDirect('\item[\texttt{');
@@ -1703,6 +1753,7 @@ begin
         WriteDirect('\newpage',true);
       end;
 
+    WriteDirect('\label{toc}');
     WriteDirect('\tableofcontents',true);
     WriteDirect('\newpage',true);
   end;
@@ -1841,7 +1892,8 @@ begin
 
   WriteUnitUses(HL + 1, U);
   
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+  if (U.CIOs.count <> 0) or (U.FuncsProcs.count <> 0) then
+    WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
   WriteCIOSummary(HL + 1, U.CIOs);
   WriteFuncsProcsSummary(HL + 1, U.FuncsProcs);
   
@@ -2148,6 +2200,9 @@ end.
 
 {
   $Log$
+  Revision 1.9  2004/03/19 17:15:13  ccodere
+    - remove description and headings with no data
+
   Revision 1.8  2004/03/19 15:55:09  ccodere
     * bugfix with parsing field names with _ charactersa
     + added longcode support
