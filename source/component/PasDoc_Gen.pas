@@ -147,8 +147,9 @@ type
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html.
-      @param s is the string to format
-      @return the formatted string }
+      @param(s is the string to format)
+      @returns(the formatted string) 
+    }
     function CodeString(const s: string): string; virtual;
 
     { Called when an @html tag is encountered. }
@@ -157,9 +158,18 @@ type
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
 
-    { Calls @link(ConvertChar) for each character in S, thus assembling a
-      String that is returned and can be written to the documentation file. }
-    function ConvertString(const s: string): string; virtual;
+    { Converts for each character in S, thus assembling a
+      String that is returned and can be written to the documentation file. 
+      
+      The @@ character should not be converted, this will be done later on. 
+    }
+    function ConvertString(const s: string): string; virtual; abstract;
+    { Converts a character to its converted form. This method
+      should always be called to add characters to a string.
+      
+      @@ should also be converted by this routine.
+    }
+    function ConvertChar(c: char): string; virtual; abstract;
 
     { This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
@@ -296,7 +306,7 @@ type
       abstract;
 
     { Writes String S to output, converting each character using
-      @link(ConvertChar). }
+      @link(ConvertString). }
     procedure WriteConverted(const s: string; Newline: boolean); overload; virtual;
 
     procedure WriteConverted(const s: string); overload; virtual;
@@ -618,7 +628,7 @@ begin
   Result := True;
   { check for cases "no id" and "id is empty" }
   if d = '' then Exit;
-
+  { first convert the string to its correct representation }
   l := Length(d);
 
   { create temporary TText object }
@@ -626,9 +636,10 @@ begin
   repeat
     if (d[Run] = '@') then begin
         { this is @@ (literal '@')? }
-      if (Run <= l - 1) and (d[Run + 1] = '@') then begin
-            { literal @ }
-        t := t + '@';
+      if (Run <= l - 1) and (d[Run + 1] = '@') then 
+      begin
+        { literal @ }
+        t := t + ConvertChar('@');
         Inc(Run, 2);
       end
       else
@@ -637,11 +648,11 @@ begin
         end
         else
         if IsMacro(d, l, 'RAISES', Run) then begin
-          t := t + ParameterString('Raises', GetNextWord(d, l, Run)) + ' ';
+          t := t + ParameterString('Raises', ConvertString(GetNextWord(d, l, Run))) + ' ';
         end
         else
         if IsMacro(d, l, 'PARAM', Run) then begin
-          t := t + ParameterString('', GetNextWord(d, l, Run)) + ' ';
+          t := t + ParameterString('', ConvertString(GetNextWord(d, l, Run))) + ' ';
         end
         else
         if IsMacro(d, l, 'RETURN', Run) or
@@ -653,12 +664,12 @@ begin
             * Name must follow directly after @.
             * There are no brackets after @Name. }
         if IsMacro(d, l, 'NAME', Run) then begin
-          t := t + CodeString(Item.Name);
+          t := t + CodeString(ConvertString(Item.Name));
         end
         else
           if IsMacro(d, l, 'CLASSNAME', Run) then begin
             if Assigned(Item.MyObject) then begin
-              t := t + CodeString(Item.MyObject.Name);
+              t := t + CodeString(ConvertString(Item.MyObject.Name));
             end;
           end
           else
@@ -706,7 +717,7 @@ begin
                       t := t + TheLink;
                     end else begin
                       DoMessage(2, mtWarning, 'Could not resolve "@Inherited" (%s)', [Item.QualifiedName]);
-                      t := t + CodeString(Item.Name);
+                      t := t + CodeString(ConvertString(Item.Name));
                     end;
                   end
                   else begin
@@ -725,7 +736,7 @@ begin
                       else
                         begin
                           DoMessage(1, mtWarning, 'Could not resolve "%s" (%s)', [s, Item.QualifiedName]);
-                          t := t + CodeString(s);
+                          t := t + CodeString(ConvertString(s));
                         end;
                     end else begin
                       Offs1 := Run;
@@ -736,7 +747,7 @@ begin
                         t := t + ConvertString(Copy(d, Run, Offs1 -
                           Run));
                         Run := Offs3 + 1;
-                        t := t + CodeString(s);
+                        t := t + CodeString(ConvertString(s));
                       end else begin
                         Inc(Run);
                         if Assigned(Item.MyUnit) then begin
@@ -756,7 +767,7 @@ begin
     end
     else begin
       if (d[Run] in [#9, #13, #10]) then d[Run] := ' ';
-      t := t + ConvertString(d[Run]);
+      t := t + ConvertChar(d[Run]);
       Inc(Run);
     end;
   until (Run > l);
@@ -1314,11 +1325,6 @@ begin
   if Assigned(FOnMessage) then begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
   end;
-end;
-
-function TDocGenerator.ConvertString(const s: string): string;
-begin
-  Result := s;
 end;
 
 constructor TDocGenerator.Create(AOwner: TComponent);
