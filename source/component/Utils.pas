@@ -40,7 +40,7 @@ function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
 {$IFNDEF DELPHI_6_UP}
-{$IFNDEF LINUX}
+{$IFNDEF KYLIX}
 function IncludeTrailingPathDelimiter(const S: string): string;
 {$ENDIF}
 {$ENDIF}
@@ -126,7 +126,7 @@ begin
 end;
 
 {$IFNDEF DELPHI_6_UP}
-{$IFNDEF LINUX}
+{$IFNDEF KYLIX}
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
