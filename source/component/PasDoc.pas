@@ -178,9 +178,9 @@ const
   {  }
   PASDOC_NAME = 'PasDoc';
   { }
-  PASDOC_DATE = '2003-04-05';
+  PASDOC_DATE = '2003-05-01';
   { }
-  PASDOC_VERSION = '0.8.6-jb';
+  PASDOC_VERSION = '0.8.7';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
