@@ -27,14 +27,14 @@ type
   end;
 
 function NewStringVector: TStringVector;
-function IsNilOrEmpty(const AOV: TStringVector): boolean; overload;
+function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
 
 implementation
 uses
   Utils,
   SysUtils;
 
-function IsNilOrEmpty(const AOV: TStringVector): boolean;
+function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
 begin
   Result := not Assigned(AOV);
   if not Result then begin
