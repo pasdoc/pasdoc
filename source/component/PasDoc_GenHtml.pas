@@ -545,8 +545,11 @@ begin
         end;
       ':',
       '=': SearchForLink := True;
-      ';',
-      '''': SearchForLink := False;
+      ';': SearchForLink := False;
+      '''': begin
+          Inc(i);
+          while (i<=l) and (Code[i] <> '''') do Inc(i);
+        end;
     end;
     Inc(i);
   end;
