@@ -381,7 +381,7 @@ type
   end;
 
   { ---------------------------------------------------------------------------- }
-  { TPasUnits
+  { TPasUnits }
   { ---------------------------------------------------------------------------- }
 
   { @abstract(Holds a collection of units.) }
@@ -452,7 +452,7 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{ TPasItem
+{ TPasItem }
 { ---------------------------------------------------------------------------- }
 
 destructor TPasItem.Destroy;
@@ -741,7 +741,7 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{ TPasItems
+{ TPasItems }
 { ---------------------------------------------------------------------------- }
 
 procedure TPasItems.CopyItems(const c: TPasItems);
@@ -892,12 +892,12 @@ end;
 procedure TPasCio.SortPasItems;
 begin
   if Fields <> nil then Fields.SortByPasItemName;
-  if Methods <> nil then Methods.Sort(ComparePasMethods);
+  if Methods <> nil then Methods.Sort(@ComparePasMethods);
   if Properties <> nil then Properties.SortByPasItemName;
 end;
 
 { ---------------------------------------------------------------------------- }
-{ TPasUnit
+{ TPasUnit }
 { ---------------------------------------------------------------------------- }
 
 destructor TPasUnit.Destroy;
@@ -998,7 +998,7 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{ TPasUnits
+{ TPasUnits }
 { ---------------------------------------------------------------------------- }
 
 function TPasUnits.ExistsUnit(const AUnit: TPasUnit): Boolean;
@@ -1030,7 +1030,7 @@ end;
 
 procedure TPasItems.SortByPasItemName;
 begin
-  Sort(ComparePasItemsByName);
+  Sort(@ComparePasItemsByName);
 end;
 
 function TPasItem.QualifiedName: String;

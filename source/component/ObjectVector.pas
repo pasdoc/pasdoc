@@ -82,7 +82,7 @@ end;
 
 function TObjectVector.GetItem(AIndex: Integer): TObject;
 begin
-  Result := FList.Items[AIndex];
+  Result := TObject(FList.Items[AIndex]);
 end;
 
 procedure TObjectVector.Insert(const AObject: TObject);

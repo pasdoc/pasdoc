@@ -82,8 +82,8 @@ type
 
     { Writes an opening A element, including a name attribute given by the
       argument. }
-    procedure WriteStartOfAnchor(const Name: string);
-    procedure WriteStartOfDocument(Name: string);
+    procedure WriteStartOfAnchor(const AName: string);
+    procedure WriteStartOfDocument(AName: string);
 
     procedure WriteStartOfLink(const href: string); overload;
     procedure WriteStartOfLink(const href, css: string); overload;
@@ -170,8 +170,8 @@ type
     procedure WriteImage(const src, alt, css: string);
     procedure WriteLink(const href, caption, css: string); overload;
     procedure WriteLink(const href, caption, css, target: string); overload;
-    procedure WriteAnchor(const Name: string); overload;
-    procedure WriteAnchor(const Name, Caption: string); overload;
+    procedure WriteAnchor(const AName: string); overload;
+    procedure WriteAnchor(const AName, Caption: string); overload;
     procedure WriteEndOfLink;
   public
     { The method that does everything - writes documentation for all units
@@ -1286,19 +1286,19 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteAnchor(const Name: string);
+procedure THTMLDocGenerator.WriteAnchor(const AName: string);
 begin
-  WriteAnchor(Name, '');
+  WriteAnchor(AName, '');
 end;
 
-procedure THTMLDocGenerator.WriteAnchor(const Name, Caption: string);
+procedure THTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
-  WriteDirect(Format('<a name="%s">%s</a>', [Name, Caption]));
+  WriteDirect(Format('<a name="%s">%s</a>', [AName, Caption]));
 end;
 
-procedure THTMLDocGenerator.WriteStartOfAnchor(const Name: string);
+procedure THTMLDocGenerator.WriteStartOfAnchor(const AName: string);
 begin
-  WriteDirect('<a name="' + Name + '">');
+  WriteDirect('<a name="' + AName + '">');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1310,7 +1310,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteStartOfDocument(Name: string);
+procedure THTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
   WriteDirect('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1 Strict//EN" "http://www.w3.org/TR/REC-html4/strict.dtd">', true);
   WriteDirect('<html>', true);
@@ -1325,7 +1325,7 @@ begin
   if {not HtmlHelp and}(Title <> '') then begin
     WriteConverted(Title + ': ');
   end;
-  WriteConverted(Name);
+  WriteConverted(AName);
   WriteDirect('</title>', true);
   // StyleSheet
   WriteDirect('<link rel="StyleSheet" href="');
@@ -1442,7 +1442,7 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{ HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl>
+{ HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
 { ---------------------------------------------------------------------------- }
 
 function BeforeEqualChar(const s: string): string;

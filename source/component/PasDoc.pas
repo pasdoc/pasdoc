@@ -130,7 +130,7 @@ type
   end;
 
   { ---------------------------------------------------------------------------- }
-  { Compiler Identification Constants
+  { Compiler Identification Constants }
   { ---------------------------------------------------------------------------- }
 
 const
@@ -176,7 +176,7 @@ const
 {$ENDIF}
 
   { ---------------------------------------------------------------------------- }
-  { PasDoc Version Constants
+  { PasDoc Version Constants }
   { ---------------------------------------------------------------------------- }
 
   {  }
@@ -244,8 +244,13 @@ var
   LCacheFileName: string;
 begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
+{$IFDEF FPC}
+  p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
+    @GenMessage, FVerbosity, SourceFileName);
+{$ELSE}
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     GenMessage, FVerbosity, SourceFileName);
+{$ENDIF}
   p.ClassMembers := ClassMembers;
   try
     p.CommentMarkers := CommentMarkers;
@@ -400,7 +405,7 @@ begin
   end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
-  FIncludeDirectories.Iterate(IncludeTrailingPathDelimiter);
+  FIncludeDirectories.Iterate(@IncludeTrailingPathDelimiter);
 
   t1 := Now;
   ParseFiles;
@@ -550,7 +555,11 @@ begin
   FGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
+{$IFDEF FPC}
+    FGenerator.OnMessage := @GenMessage;
+{$ELSE}
     FGenerator.OnMessage := GenMessage;
+{$ENDIF}
   end;
 end;
 

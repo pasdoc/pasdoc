@@ -59,7 +59,7 @@ type
     { Returns the last comment that was found in input. If there was none, the
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
-    function GetLastComment(const ClearLastComment: Boolean): String;
+    function GetLastComment(const AClearLastComment: Boolean): String;
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. }
     function GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean; overload;
@@ -125,7 +125,7 @@ uses
   Utils;
 
 { ---------------------------------------------------------------------------- }
-{ TParser
+{ TParser }
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ClearLastComment;
@@ -183,7 +183,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetLastComment(const ClearLastComment: Boolean): string;
+function TParser.GetLastComment(const AClearLastComment: Boolean): string;
 var
   l: Integer;
   i: integer;
@@ -191,7 +191,7 @@ var
 begin
   if Assigned(LastCommentToken) then begin
     Result := LastCommentToken.Data;
-    if ClearLastComment then begin
+    if AClearLastComment then begin
       LastCommentToken.Free;
       LastCommentToken := nil;
     end;
