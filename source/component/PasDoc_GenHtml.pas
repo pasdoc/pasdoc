@@ -2056,7 +2056,7 @@ begin
     WriteText(S1);
     WriteText('<a href="');
     WriteText(link);
-    WriteText('">');
+    WriteText('" target="_new">');
     WriteText(link);
     WriteText('</a>');
     s := s2;
