@@ -1577,8 +1577,8 @@ function TDocGenerator.ExtractLink(s: string; var S1, S2,
   Link: string): Boolean;
 const
   AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
-  FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~'];
-  HalfLinkChars = ['.', ',', '-', ':', ';'];
+  FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
+  HalfLinkChars = ['.', ',', '-', ':', ';', '?'];
 var
   p, i: Integer;
   scheme, url: string;
