@@ -85,7 +85,7 @@ type
     destructor Destroy; override;
 
     procedure DescriptionExtractTag(var ADescription: string; const Offs1,
-      Offs2, Offs3: Integer; out s: string);
+      Offs2, Offs3: Integer; var s: string);
     function DescriptionFindTag(const ADescription, TagName: string; var
       Offs1, Offs2, Offs3: Integer): Boolean;
     function DescriptionFindTagParameters(const ADescription: string; var
@@ -93,7 +93,7 @@ type
     function DescriptionGetTagName(const ADescription: string; var Offset:
       Integer): string;
     procedure DescriptionGetTag(var ADescription: string; const Remove:
-      Boolean; const Offs1, Offs2, Offs3: Integer; out s: string);
+      Boolean; const Offs1, Offs2, Offs3: Integer; var s: string);
 
     function FindItem(const ItemName: string): TPasItem; virtual;
     { }
@@ -254,7 +254,7 @@ type
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
     { Counts classes, interfaces and objects within this collection. }
-    procedure CountCIO(out c, i, o: Integer);
+    procedure CountCIO(var c, i, o: Integer);
     { Compares each element's name field with Name and returns the item on
       success, nil otherwise.
       Name's case is not regarded. }
@@ -314,8 +314,7 @@ implementation
 
 uses
   SysUtils,
-  Utils,
-  Contnrs;
+  Utils;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -366,7 +365,7 @@ begin
 end;
 
 procedure TPasItem.DescriptionExtractTag(var ADescription: string; const
-  Offs1, Offs2, Offs3: Integer; out s: string);
+  Offs1, Offs2, Offs3: Integer; var s: string);
 begin
   DescriptionGetTag(ADescription, True, Offs1, Offs2, Offs3, s);
   Unabbreviate(s);
@@ -449,7 +448,7 @@ begin
 end;
 
 procedure TPasItem.DescriptionGetTag(var ADescription: string; const Remove:
-  Boolean; const Offs1, Offs2, Offs3: Integer; out s: string);
+  Boolean; const Offs1, Offs2, Offs3: Integer; var s: string);
 var
   l: Integer;
 begin
@@ -675,7 +674,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasItems.CountCIO(out c, i, o: Integer);
+procedure TPasItems.CountCIO(var c, i, o: Integer);
 var
   j: Integer;
 begin
