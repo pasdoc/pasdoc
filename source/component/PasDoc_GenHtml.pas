@@ -841,8 +841,6 @@ end;
 { ---------- }
 
 procedure THTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
-var
-  s, s1, s2, link: string;
 begin
   if AItem = nil then Exit;
 
