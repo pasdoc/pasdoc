@@ -545,7 +545,7 @@ begin
     Result := csExisted;
   end else begin
     try
-      FCurrentStream := TFileStream.Create(DestinationDirectory+Name, fmCreate);
+      FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
       Result := csCreated;
     except
     end;
