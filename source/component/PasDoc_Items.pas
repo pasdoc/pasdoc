@@ -1024,7 +1024,7 @@ begin
         case LTagData[2] of
           'D': begin
                  if Copy(LTagData,1,7) = '$Date: ' then begin
-                   LastMod := Trim(Copy(LTagData, 7, Length(LTagData)-7-1));
+                   LastMod := Trim(Copy(LTagData, 7, Length(LTagData)-7-1)) + ' UTC';
                  end;
                end;
           'A': begin
