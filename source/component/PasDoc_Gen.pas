@@ -585,15 +585,15 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
     s := UpperCase(Macro);
     l := Length(s);
 
-    if CurPos + l >= Len then
+    if CurPos + l > Len then
       exit;
 
     for i:=1 to l do
       if UpCase(Desc[CurPos+i]) <> s[i] then
         exit;
 
-    { TODO -cfixme -otwm : this should probably also check for other whitespace characters }
-    if (CurPos + l = Len) or (Desc[CurPos + l + 1] in ['(', ' ', #9]) then begin
+    { TODO -cfixme -ojmb: is NOT {a..z,A..Z} ok? I don't see what difference it makes... }
+    if (CurPos + l = Len) or (not (Desc[CurPos + l + 1] in ['a'..'z','A'..'Z'])) then begin
       Inc(CurPos, l + 1);
       Result := true;
     end;
