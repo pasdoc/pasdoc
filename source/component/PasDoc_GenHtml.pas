@@ -813,7 +813,7 @@ begin
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
   WriteDirect('<tr class="listheader">');
-  WriteDirect('<th>&nbsp;</th><th>');
+  WriteDirect('<th>&nbsp;</th><th class="listheader">');
   WriteConverted(FLanguage.Translation[trName]);
   WriteDirect('</th><th class="listheader">');
   WriteConverted(FLanguage.Translation[trDescription]);
