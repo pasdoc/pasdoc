@@ -8,6 +8,11 @@
   @created(24 Sep 1999)
 }
 
+{$ifdef FPC}
+  { Turn macro on to get FPC_VERSION, FPC_RELEASE, FPC_PATCH macros }
+  {$macro on}
+{$endif}
+
 unit PasDoc;
 
 {$I DEFINES.INC}
@@ -143,39 +148,49 @@ type
   { Compiler Identification Constants }
   { ---------------------------------------------------------------------------- }
 
-const
 {$IFDEF KYLIX_1}
+const
   COMPILER_NAME = 'KYLIX 1';
 {$ENDIF}
 
 {$IFDEF KYLIX_2}
+const
   COMPILER_NAME = 'KYLIX 2';
 {$ENDIF}
 
 {$IFDEF KYLIX_3}
+const
   COMPILER_NAME = 'KYLIX 3';
 {$ENDIF}
 
 {$IFDEF DELPHI_7}
+const
   COMPILER_NAME = 'DELPHI 7';
 {$ENDIF}
 
 {$IFDEF DELPHI_6}
+const
   COMPILER_NAME = 'DELPHI 6';
 {$ENDIF}
 
 {$IFDEF DELPHI_5}
+const
   COMPILER_NAME = 'DELPHI 5';
 {$ENDIF}
 
 {$IFDEF DELPHI_4}
+const
   COMPILER_NAME = 'DELPHI 4';
 {$ENDIF}
 
 {$IFDEF FPC}
-  COMPILER_NAME = 'FPC';
+{ This is a function only because we can't nicely declare it as a constant.
+  But this behaves like a constant, i.e. every time you call it
+  it returns the same thing (as long as this is the same binary). }
+function COMPILER_NAME: string;
 {$ENDIF}
 
+const
   COMPILER_BITS = '32';
 
 {$IFDEF LINUX}
@@ -220,9 +235,11 @@ const
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
   PASDOC_HOMEPAGE = 'http://pasdoc.sourceforge.net/';
-  { }
-  PASDOC_FULL_INFO = PASDOC_NAME_AND_VERSION + ' [' + PASDOC_DATE + '|' +
-    COMPILER_NAME + '|' + COMPILER_OS + '|' + COMPILER_BITS + ']';
+
+{ This is a function only because we can't nicely declare it as a constant.
+  But this behaves like a constant, i.e. every time you call it
+  it returns the same thing (as long as this is the same binary). }
+function PASDOC_FULL_INFO: string;
 
 implementation
 
@@ -653,6 +670,23 @@ end;
 procedure TPasDoc.SetCommentMarkers(const Value: TStringList);
 begin
   FCommentMarkers.Assign(Value);
+end;
+
+{ non-object routines -------------------------------------------------------- }
+
+{$ifdef FPC}
+function COMPILER_NAME: string;
+begin
+  COMPILER_NAME := 'FPC ' +
+    Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
+end;
+{$endif}
+
+function PASDOC_FULL_INFO: string;
+begin
+  PASDOC_FULL_INFO :=
+    PASDOC_NAME_AND_VERSION + ' [' + PASDOC_DATE + '|' +
+      COMPILER_NAME + '|' + COMPILER_OS + '|' + COMPILER_BITS + ']';
 end;
 
 end.
