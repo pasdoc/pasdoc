@@ -50,9 +50,10 @@ type
       during the parsing. }
     FUnits: TPasUnits;
     FVerbosity: Cardinal;
-    FCommentMarker: string;
+    FCommentMarkers: TStringList;
     FGenerator: TDocGenerator;
     FClassMembers: TAccessibilities;
+    FMarkerOptional: boolean;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -60,6 +61,7 @@ type
     procedure SetGenerator(const Value: TDocGenerator);
     procedure SetStarStyle(const Value: boolean);
     function GetStarStyle: boolean;
+    procedure SetCommentMarkers(const Value: TStringList);
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(Units). }
@@ -119,7 +121,8 @@ type
     property Title: string read FTitle write FTitle;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property StarStyleOnly: boolean read GetStarStyle write SetStarStyle;
-    property CommentMarker: string read FCommentMarker write FCommentMarker;
+    property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
+    property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers; 
@@ -210,12 +213,14 @@ begin
   FVerbosity := DEFAULT_VERBOSITY_LEVEL;
 
   FGenerator := nil;
+  FCommentMarkers := TStringList.Create;
 end;
 
 { ---------------------------------------------------------------------------- }
 
 destructor TPasDoc.Destroy;
 begin
+  FCommentMarkers.Free;
   FDescriptionFileNames.Free;
   FDirectives.Free;
   FIncludeDirectories.Free;
@@ -238,7 +243,8 @@ begin
     GenMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
   try
-    p.CommentMarker := CommentMarker;
+    p.CommentMarkers := CommentMarkers;
+    p.MarkersOptional := MarkerOptional;
 
     if p.ParseUnit(U) then begin
       if FUnits = nil then FUnits := TPasUnits.Create(True);
@@ -545,17 +551,26 @@ begin
 end;
 
 procedure TPasDoc.SetStarStyle(const Value: boolean);
+var
+  Idx: Integer;
 begin
   if Value then begin
-    FCommentMarker := '**';
+    FCommentMarkers.Add('**');
   end else begin
-    FCommentMarker := '';
+    Idx := FCommentMarkers.IndexOf('**');
+    if Idx <> -1 then
+      FCommentMarkers.Delete(Idx);
   end;
 end;
 
 function TPasDoc.GetStarStyle: boolean;
 begin
-  Result := FCommentMarker = '**';
+  Result := FCommentMarkers.IndexOf('**') <> -1;
+end;
+
+procedure TPasDoc.SetCommentMarkers(const Value: TStringList);
+begin
+  FCommentMarkers.Assign(Value);
 end;
 
 end.

@@ -75,7 +75,8 @@ var
   GOption_WriteGVUses,
   GOption_WriteGVClasses: TBoolOption;
   GOption_VisibleMembers: TSetOption;
-  GOption_CommentMarker: TStringOption;
+  GOption_CommentMarker: TStringOptionList;
+  GOption_MarkerOptional: TBoolOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -159,9 +160,13 @@ begin
     'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
 
-  GOption_CommentMarker := TStringOption.Create(#0, 'marker');
+  GOption_CommentMarker := TStringOptionList.Create(#0, 'marker', True, False);
   GOption_CommentMarker.Explanation := 'Parse only {<marker>, (*<marker> and //<marker> comments. Overrides the staronly option, which is a shortcut for ''--marker=**''';
   GOptionParser.AddOption(GOption_CommentMarker);
+
+  GOption_MarkerOptional := TBoolOption.Create(#0, 'marker-optional', True, False);
+  GOption_MarkerOptional.Explanation := 'do not require the markers given in --marker but remove them from the comment if they exist.';
+  GOptionParser.AddOption(GOption_MarkerOptional);
 
   GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames', True, False);
   GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
@@ -275,10 +280,12 @@ begin
     THTMLDocGenerator(GPasDoc.Generator).WriteUsesClause := GOption_WriteUsesList.TurnedOn;
   end;
 
-  GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
   if GOption_CommentMarker.WasSpecified then begin
-    GPasDoc.CommentMarker := GOption_CommentMarker.Value;
+    GPasDoc.CommentMarkers.Assign(GOption_CommentMarker.Values);
   end;
+  if GOption_StarOnly.TurnedOn then
+    GPasDoc.StarStyleOnly := true;
+  GPasDoc.MarkerOptional := GOption_MarkerOptional.TurnedOn;
 
   GPasDoc.AddSourceFileNames(GOptionParser.LeftList);
 

@@ -31,6 +31,8 @@ type
     Otherwise a description of the error should be found in
     @link(ErrorMessage). }
   TParser = class
+  private
+    procedure SetCommentMarkers(const Value: TStringList);
   protected
     { Last comment found in input or nil if no comment available.
     Will be modified by @link(GetLastComment). }
@@ -39,7 +41,8 @@ type
     Scanner: TScanner;
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
-    FCommentMarker: string;
+    FCommentMarkers: TStringList;
+    FMarkersOptional: boolean;
     FClassMembers: TAccessibilities;
 
     procedure DoError(const AMessage: string; const AArguments: array of
@@ -108,7 +111,8 @@ type
     function ParseUnit(var U: TPasUnit): Boolean;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    property CommentMarker: string read FCommentMarker write FCommentMarker;
+    property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
+    property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
   end;
 
@@ -146,13 +150,14 @@ begin
   Scanner := TScanner.Create(InputStream, OnMessageEvent, VerbosityLevel, AStreamName);
   Scanner.AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
-  FCommentMarker := '**';
+  FCommentMarkers := TStringlist.Create;
 end;
 
 { ---------------------------------------------------------------------------- }
 
 destructor TParser.Destroy;
 begin
+  FCommentMarkers.Free;
   Scanner.Free;
   LastCommentToken.Free;
   inherited;
@@ -180,6 +185,8 @@ end;
 function TParser.GetLastComment(const ClearLastComment: Boolean): string;
 var
   l: Integer;
+  i: integer;
+  Marker: string;
 begin
   if Assigned(LastCommentToken) then begin
     Result := LastCommentToken.Data;
@@ -221,14 +228,19 @@ begin
   else
     Result := '';
 
-  if CommentMarker <> '' then begin
-    if (Length(Result) < Length(CommentMarker)) or (Copy(Result, 1, Length(CommentMarker)) <> CommentMarker) then
-      begin
-      Result := '';
+  if (Result = '') or (CommentMarkers.Count = 0) then
+    exit;
+
+  for i := 0 to CommentMarkers.Count-1 do begin
+    Marker := CommentMarkers[i];
+    l := Length(Marker);
+    if (Length(Result) >= l) and (Copy(Result, 1, l) = Marker) then begin
+      Delete(Result, 1, l);
       exit;
     end;
-    Delete(Result, 1, Length(CommentMarker));
   end;
+  if not MarkersOptional then
+    Result := '';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1450,6 +1462,11 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
+
+procedure TParser.SetCommentMarkers(const Value: TStringList);
+begin
+  FCommentMarkers.Assign(Value);
+end;
 
 function TParser.SkipDeclaration(const VC: TPasVarConst): Boolean;
 var
