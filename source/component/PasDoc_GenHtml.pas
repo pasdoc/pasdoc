@@ -499,12 +499,14 @@ begin
               begin
                 WriteString(s);
                 SearchForLink := False;
+                ncstart := i;
                 Continue;
               end;
             SD_EXTERNAL:
               begin
                 WriteString(s);
                 SearchForLink := True;
+                ncstart := i;
                 Continue;
               end;
           end;
@@ -1940,6 +1942,9 @@ begin
     STATE_PUBLISHED:
       WriteString('<IMG src="published.gif" alt="' +
         FLanguage.Translation[trPublished] + '">');
+    STATE_AUTOMATED:
+      WriteString('<IMG src="autmated.gif" alt="' +
+        FLanguage.Translation[trAutomated] + '">');
   end;
   WriteEndOfTableCell;
 end;
