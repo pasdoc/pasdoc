@@ -49,7 +49,14 @@ type
 
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class
+  private
   protected
+    FFullLink: string;
+    FLastMod: string;
+    FName: string;
+    FState: TAccessibility;
+    FMyObject: TPasCio;
+    FMyUnit: TPasUnit;
     FDeprecated: boolean;
     FPlatform: boolean;
     FAbbreviations: TStringList;
@@ -59,27 +66,9 @@ type
     FCreated: string;
     procedure Unabbreviate(var s: string);
   public
-    property Authors: TStringVector read FAuthors;
-    property Created: string read FCreated;
-  public
-    { description of this item, a single sentence }
-    Description: string;
-    { more detailed description of this item, mostly more than one
-      sentence }
-    DetailedDescription: string;
-    { a full link that should be enough to link this item from anywhere else }
-    FullLink: string;
-    { if assigned, contains string with date of last modification }
-    LastMod: string;
-    { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
-    MyObject: TPasCio;
-    { pointer to unit this item belongs to }
-    MyUnit: TPasUnit;
-    { name of the item }
-    Name: string;
-    { One of the STATE_xxx constants, determines access rights
-      (public, private, etc.). }
-    State: TAccessibility;
+    // THIS IS A BAD HACK
+    FDescription: string;
+    FDetailedDescription: string;
     { }
     destructor Destroy; override;
 
@@ -114,6 +103,8 @@ type
     procedure HandleLastModTag;
     { }
     procedure HandleCVSTag;
+
+    property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
     { Inserts an item into a collection.
@@ -125,28 +116,51 @@ type
     procedure InsertProperty(const Prop: TPasProperty; var c: TPasProperties);
     { returns the qualified name of the item }
     function QualifiedName: String;
+  published
+    { description of this item, a single sentence }
+    property Description: string read FDescription write FDescription;
+    { more detailed description of this item, mostly more than one
+      sentence }
+    property DetailedDescription: string read FDetailedDescription write FDetailedDescription;
+    { a full link that should be enough to link this item from anywhere else }
+    property FullLink: string read FFullLink write FFullLink;
+    { if assigned, contains string with date of last modification }
+    property LastMod: string read FLastMod write FLastMod;
+    { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
+    property MyObject: TPasCio read FMyObject write FMyObject;
+    { pointer to unit this item belongs to }
+    property MyUnit: TPasUnit read FMyUnit write FMyUnit;
+    { name of the item }
+    property Name: string read FName write FName;
+    { One of the STATE_xxx constants, determines access rights
+      (public, private, etc.). }
+    property State: TAccessibility read FState write FState;
     { is this item deprecated? }
     property IsDeprecated: boolean read FDeprecated write FDeprecated;
     { is this item platform specific? }
     property IsPlatform: boolean read FPlatform write FPlatform;
-
-    property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
+    property Authors: TStringVector read FAuthors;
+    property Created: string read FCreated;
   end;
 
   { @abstract(used for constants/variables) }
   TPasVarConst = class(TPasItem)
+  protected
+    FFullDeclaration: string;
+  published
     { full declaration, including type, default values, etc }
-    FullDeclaration: string;
+    property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
   end;
 
   { @abstract(Enumerated types) }
   TPasEnum = class(TPasVarConst)
   protected
-    FMembers: TObjectVector;
+    FMembers: TPasItems;
   public
-    property Members: TObjectVector read FMembers;
     destructor Destroy; override;
-    constructor Create; 
+    constructor Create;
+  published
+    property Members: TPasItems read FMembers;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -165,24 +179,35 @@ type
   end;
 
   TPasProperty = class(TPasItem)
+  protected
+    FDefault: Boolean;
+    FNoDefault: Boolean;
+    FIndexDecl: string;
+    FStoredID: string;
+    FDefaultID: string;
+    FWriter: string;
+    FFullDeclaration: string;
+    FPropType: string;
+    FReader: string;
+  published
     { full declaration, including read/write and storage specifiers }
-    FullDeclaration: string;
+    property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
     { contains the optional index declaration, including brackets }
-    IndexDecl: string;
+    property IndexDecl: string read FIndexDecl write FIndexDecl;
     { contains the type of the property }
-    Proptype: string;
+    property Proptype: string read FPropType write FPropType;
     { read specifier }
-    Reader: string;
+    property Reader: string read FReader write FReader;
     { write specifier }
-    Writer: string;
+    property Writer: string read FWriter write FWriter;
     { true if the property is the default property }
-    Default: Boolean;
+    property Default: Boolean read FDefault write FDefault;
     { keeps default value specifier }
-    DefaultID: string;
+    property DefaultID: string read FDefaultID write FDefaultID;
     { true if Nodefault property }
-    NoDefault: Boolean;
+    property NoDefault: Boolean read FNoDefault write FNoDefault;
     { keeps Stored specifier }
-    StoredId: string;
+    property StoredId: string read FStoredID write FStoredID;
   end;
 
   { enumeration type to determine type of TObjectInfo item: class,
@@ -192,20 +217,10 @@ type
   { Extends @link(TPasItem) to store all items in a class / an object, e.g.
     fields. }
   TPasCio = class(TPasItem)
-    { name of the ancestor class / object }
-    Ancestors: TStringVector;
-    { list of all fields }
-    Fields: TPasItems;
-    { list of all methods }
-    Methods: TPasMethods;
-    { determines if this is a class, an interface or an object }
-    MyType: TCIOType;
-    { name of documentation output file (if each class / object gets
-      its own file, that's the case for HTML, but not for TeX) }
-    OutputFileName: string;
-    { list of properties }
-    Properties: TPasProperties;
-
+  protected
+    FOutputFileName: string;
+    FMyType: TCIOType;
+  public
     destructor Destroy; override;
 
     { Simply returns the result of a call to @link(FindFieldMethodProperty). }
@@ -216,29 +231,30 @@ type
     function FindFieldMethodProperty(const ItemName: string): TPasItem;
 
     procedure SortPasItems;
+  published
+    { name of the ancestor class / object }
+    Ancestors: TStringVector;
+    { list of all fields }
+    Fields: TPasItems;
+    { list of all methods }
+    Methods: TPasMethods;
+    { list of properties }
+    Properties: TPasProperties;
+    { determines if this is a class, an interface or an object }
+    property MyType: TCIOType read FMyType write FMyType;
+    { name of documentation output file (if each class / object gets
+      its own file, that's the case for HTML, but not for TeX) }
+    property OutputFileName: string read FOutputFileName write FOutputFileName;
   end;
 
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit }
   TPasUnit = class(TPasItem)
-    { list of classes and objects defined in this unit }
-    CIOs: TPasItems;
-    { list of constants defined in this unit }
-    Constants: TPasItems;
-    { list of functions and procedures defined in this unit }
-    FuncsProcs: TPasMethods;
-    { name of documentation output file
-      THIS SHOULD NOT BE HERE! }
-    OutputFileName: string;
-    { the names of all units mentioned in a uses clause in the interface
-      section of this unit }
-    UsesUnits: TStringVector;
-    { list of classes and objects defined in this unit }
-    SourceFileName: string;
-    { list of types defined in this unit }
-    Types: TPasItems;
-    { list of variables defined in this unit }
-    Variables: TPasItems;
+  private
+  protected
+    FSourceFilename: string;
+    FOutputFileName: string;
+  public
     { dispose of all dynamically allocated memory in this object }
     destructor Destroy; override;
     procedure AddCIO(const i: TPasCio);
@@ -249,6 +265,24 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
+  published
+    { list of classes and objects defined in this unit }
+    CIOs: TPasItems;
+    { list of constants defined in this unit }
+    Constants: TPasItems;
+    { list of functions and procedures defined in this unit }
+    FuncsProcs: TPasMethods;
+    { the names of all units mentioned in a uses clause in the interface
+      section of this unit }
+    UsesUnits: TStringVector;
+    { list of types defined in this unit }
+    Types: TPasItems;
+    { list of variables defined in this unit }
+    Variables: TPasItems;
+    { name of documentation output file
+      THIS SHOULD NOT BE HERE! }
+    property OutputFileName: string read FOutputFileName write FOutputFileName;
+    property SourceFileName: string read FSourceFilename write FSourceFilename;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -552,7 +586,7 @@ begin
     if (DetailedDescription[Offs1] = '@') and
       DescriptionFindTag(DetailedDescription, 'ABSTRACT', Offs1, Offs2, Offs3) then
     begin
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
       if (Length(s) <= 0) then Continue;
       Description := s;
       Exit;
@@ -580,7 +614,7 @@ begin
       DescriptionFindTag(DetailedDescription, 'AUTHOR', Offs1, Offs2, Offs3) then
         begin
           { we found one, remove it from the description and add it to the author list }
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
         if Authors = nil then FAuthors := NewStringVector;
         Authors.Add(s);
@@ -604,7 +638,7 @@ begin
     if (DetailedDescription[Offs1] = '@') and
       DescriptionFindTag(DetailedDescription, 'CREATED', Offs1, Offs2, Offs3) then
         begin
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, FCreated);
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, FCreated);
       Exit;
     end;
     Inc(Offs1);
@@ -625,7 +659,7 @@ begin
     if (DetailedDescription[Offs1] = '@') and
       DescriptionFindTag(DetailedDescription, 'LASTMOD', Offs1, Offs2, Offs3) then
         begin
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, LastMod);
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, FLastMod);
       Exit;
     end;
     Inc(Offs1);
@@ -1019,7 +1053,7 @@ begin
   while Offs1 < l do begin
     if (DetailedDescription[Offs1] = '@') and
         DescriptionFindTag(DetailedDescription, 'CVS', Offs1, Offs2, Offs3) then begin
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, LTagData);
+      DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, LTagData);
       if Length(LTagData)>1 then begin
         case LTagData[2] of
           'D': begin
@@ -1063,7 +1097,7 @@ end;
 constructor TPasEnum.Create;
 begin
   inherited Create;
-  FMembers := TObjectVector.Create(True);
+  FMembers := TPasItems.Create(True);
 end;
 
 destructor TPasEnum.Destroy;

@@ -423,7 +423,7 @@ begin
         Found := p.DescriptionFindTag(p.DetailedDescription, 'DESCRFILE', Offs1,
           Offs2, Offs3);
         if Found then begin
-          p.DescriptionExtractTag(p.DetailedDescription, Offs1, Offs2, Offs3, s);
+          p.DescriptionExtractTag(p.FDetailedDescription, Offs1, Offs2, Offs3, s);
           DoMessage(3, mtInformation, 'Adding description file "%s"', [s]);
           DescriptionFileNames.Add(s);
           Offs1 := Offs3 + 1;

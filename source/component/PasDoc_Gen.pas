@@ -765,20 +765,27 @@ procedure TDocGenerator.ExpandDescriptions;
   procedure ExpandItem(Item: TPasItem);
   var
     i: Integer;
+    s: string;
   begin
     if Item = nil then Exit;
 
     if IsStrEmptyA(Item.Description) then
       Item.Description := ''
-    else
-      TrimCompress(Item.Description);
+    else begin
+      s := Item.Description;
+      TrimCompress(s);
+      Item.Description := s;
+    end;
     if IsStrEmptyA(Item.DetailedDescription) then
       Item.DetailedDescription := ''
-    else
-      TrimCompress(Item.DetailedDescription);
+    else begin
+      s := Item.DetailedDescription;
+      TrimCompress(s);
+      Item.DetailedDescription := s;
+    end;
 
-    if (not ExpandDescription(Item, Item.Description)) or
-      (not ExpandDescription(Item, Item.DetailedDescription)) then begin
+    if (not ExpandDescription(Item, Item.FDescription)) or
+      (not ExpandDescription(Item, Item.FDetailedDescription)) then begin
       DoMessage(2, mtWarning, 'Could not expand description from ' +
         Item.Name, []);
     end;
