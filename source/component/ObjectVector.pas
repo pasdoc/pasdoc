@@ -24,14 +24,16 @@ type
     function Count: Integer;
     property ObjectAt[AIndex: Integer]: TObject read GetItem write SetItem;
     procedure Sort(Compare: TListSortCompare);
+    procedure Clear;
+    procedure Add(const AObject: TObject);
   end;
 
-function IsNilOrEmpty(const AOV: TObjectVector): boolean; overload;
+function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean; 
 procedure FreeAndNilIfEmpty(var AObject);
 
 implementation
 
-function IsNilOrEmpty(const AOV: TObjectVector): boolean;
+function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean;
 begin
   Result := not Assigned(AOV);
   if not Result then begin
@@ -49,6 +51,23 @@ begin
 end;
 
 { TObjectVector }
+
+procedure TObjectVector.Add(const AObject: TObject);
+begin
+  InsertObjectLast(AObject);
+end;
+
+procedure TObjectVector.Clear;
+var
+  i: Integer;
+begin
+  if FOwnsObject then begin
+    for i := 0 to count-1 do begin
+      ObjectAt[i].Free;
+    end;
+  end;
+  FList.Clear;
+end;
 
 function TObjectVector.Count: Integer;
 begin
@@ -71,14 +90,8 @@ begin
 end;
 
 destructor TObjectVector.Destroy;
-var
-  i: Integer;
 begin
-  if FOwnsObject then begin
-    for i := 0 to count-1 do begin
-      ObjectAt[i].Free;
-    end;
-  end;
+  Clear;
   FList.Free;
   inherited;
 end;

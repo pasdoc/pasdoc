@@ -32,20 +32,19 @@ program PasDoc_Console;
 {$APPTYPE CONSOLE}
 
 uses
-  PasDoc in '../component/PasDoc.pas',
-  PasDoc_Languages in '../component/PasDoc_Languages.pas',
+  PasDoc,
+  PasDoc_Languages,
   SysUtils,
-  Utils in '../component/Utils.pas',
-  Types in '../component/Types.pas',
-  PasDoc_HierarchyTree in '../component/PasDoc_HierarchyTree.pas',
-  StreamUtils in '../component/StreamUtils.pas',
-  ObjectVector in '../component/ObjectVector.pas',
-  PasDoc_GenHtml in '../component/PasDoc_GenHtml.pas',
-  PasDoc_Gen in '../component/PasDoc_Gen.pas',
-  PasDoc_Items in '../component/PasDoc_Items.pas',
-  OptionParser in '../OptionParser/OptionParser.pas',
-  PasDoc_Types in '../component/PasDoc_Types.pas',
-  PasDoc_RunHelp in '../component/PasDoc_RunHelp.pas';
+  Utils,
+  PasDoc_HierarchyTree,
+  StreamUtils,
+  ObjectVector,
+  PasDoc_GenHtml,
+  PasDoc_Gen,
+  PasDoc_Items,
+  OptionParser,
+  PasDoc_Types,
+  PasDoc_RunHelp;
 
 var
   GPasDoc: TPasDoc;
@@ -84,111 +83,111 @@ var
 begin
   GOptionParser := TOptionParser.Create;
 
-  GOption_Help := TBoolOption.Create('?', 'help');
+  GOption_Help := TBoolOption.Create('?', 'help', True, False);
   GOption_Help.Explanation := 'show this help';
   GOptionParser.AddOption(GOption_Help);
 
-  GOption_Verbosity := TIntegerOption.Create('v', 'verbosity');
+  GOption_Verbosity := TIntegerOption.Create('v', 'verbosity', True, False);
   GOption_Verbosity.Value := DEFAULT_VERBOSITY_LEVEL;
   GOption_Verbosity.Explanation := 'set log verbosity (0-5) ['+IntToStr(DEFAULT_VERBOSITY_LEVEL)+']';
   GOptionParser.AddOption(GOption_Verbosity);
 
-  GOption_Define := TStringOptionList.Create('D', 'define');
+  GOption_Define := TStringOptionList.Create('D', 'define', True, False);
   GOption_Define.Explanation := 'define conditional';
   GOptionParser.AddOption(GOption_Define);
 
-  GOption_Descriptions := TStringOptionList.Create('R', 'description');
+  GOption_Descriptions := TStringOptionList.Create('R', 'description', True, False);
   GOption_Descriptions.Explanation := 'read description from this file';
   GOptionParser.AddOption(GOption_Descriptions);
 
-  GOption_ConditionalFile := TStringOptionList.Create('d', 'conditionals');
+  GOption_ConditionalFile := TStringOptionList.Create('d', 'conditionals', True, False);
   GOption_ConditionalFile.Explanation := 'read conditionals from this file';
   GOptionParser.AddOption(GOption_ConditionalFile);
 
-  GOption_IncludePaths := TStringOptionList.Create('I', 'include');
+  GOption_IncludePaths := TStringOptionList.Create('I', 'include', True, False);
   GOption_IncludePaths.Explanation := 'includes search path';
   GOptionParser.AddOption(GOption_IncludePaths);
 
-  GOption_SourceList := TStringOptionList.Create('S', 'source');
+  GOption_SourceList := TStringOptionList.Create('S', 'source', True, False);
   GOption_SourceList.Explanation := 'read source filenames from file';
   GOptionParser.AddOption(GOption_SourceList);
 
-  GOption_ContentFile := TStringOption.Create('C', 'content');
+  GOption_ContentFile := TStringOption.Create('C', 'content', True, False);
   GOption_ContentFile.Explanation := 'Read Contents for HtmlHelp from file';
   GOptionParser.AddOption(GOption_ContentFile);
 
-  GOption_Footer := TStringOption.Create('F', 'footer');
+  GOption_Footer := TStringOption.Create('F', 'footer', True, False);
   GOption_Footer.Explanation := 'include file as footer';
   GOptionParser.AddOption(GOption_Footer);
 
-  GOption_Header := TStringOption.Create('H', 'header');
+  GOption_Header := TStringOption.Create('H', 'header', True, False);
   GOption_Header.Explanation := 'include file as header';
   GOptionParser.AddOption(GOption_Header);
 
-  GOption_Name := TStringOption.Create('N', 'name');
+  GOption_Name := TStringOption.Create('N', 'name', True, False);
   GOption_Name.Explanation := 'Name for documentation';
   GOptionParser.AddOption(GOption_Name);
 
-  GOption_Title := TStringOption.Create('T', 'title');
+  GOption_Title := TStringOption.Create('T', 'title', True, False);
   GOption_Title.Explanation := 'Documentation title';
   GOptionParser.AddOption(GOption_Title);
 
-  GOption_Format := TStringOption.Create('O', 'format');
+  GOption_Format := TStringOption.Create('O', 'format', True, False);
   GOption_Format.Explanation := 'output format: html or htmlhelp';
   GOption_Format.Value := 'html';
   GOptionParser.AddOption(GOption_Format);
 
-  GOption_OutputPath := TStringOption.Create('E', 'output');
+  GOption_OutputPath := TStringOption.Create('E', 'output', True, False);
   GOption_OutputPath.Explanation := 'output path';
   GOptionParser.AddOption(GOption_OutputPath);
 
-  GOption_Generator := TBoolOption.Create('X', 'exclude-generator');
+  GOption_Generator := TBoolOption.Create('X', 'exclude-generator', True, False);
   GOption_Generator.Explanation := 'exclude generator information';
   GOptionParser.AddOption(GOption_Generator);
 
-  GOption_Language := TStringOption.Create('L', 'language');
+  GOption_Language := TStringOption.Create('L', 'language', True, False);
   GOption_Language.Explanation := 'Output language. Valid languages are: ' + #10;
   for l := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
     GOption_Language.Explanation := GOption_Language.Explanation + '  ' +
       LANGUAGE_ARRAY[l].Syntax + ': ' + LANGUAGE_ARRAY[l].Name + #10;
   GOptionParser.AddOption(GOption_Language);
 
-  GOption_StarOnly := TBoolOption.Create(#0, 'staronly');
+  GOption_StarOnly := TBoolOption.Create(#0, 'staronly', True, False);
   GOption_StarOnly.Explanation :=
     'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
 
-  GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames');
+  GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames', True, False);
   GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
   GOptionParser.AddOption(GOption_NumericFilenames);
 
-  GOption_VisibleMembers := TSetOption.Create('M','visible-members');
+  GOption_VisibleMembers := TSetOption.Create('M','visible-members', True, False);
   GOption_VisibleMembers.Explanation := 'Include / Exclude class Members by visiblity';
   GOption_VisibleMembers.PossibleValues := 'private,protected,public,published,automated';
   GOption_VisibleMembers.Values := 'protected,public,published,automated';
   GOptionParser.AddOption(GOption_VisibleMembers);
 
-  GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list');
+  GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list', True, False);
   GOption_WriteUsesList.Explanation := 'put uses list into output';
   GOptionParser.AddOption(GOption_WriteUsesList);
 
-  GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses');
+  GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses', True, False);
   GOption_WriteGVUses.Explanation := 'write a GVUses.gviz file that can be used for the `dot` program from GraphViz to generate a unit dependency graph';
   GOptionParser.AddOption(GOption_WriteGVUses);
 
-  GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes');
+  GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes', True, False);
   GOption_WriteGVClasses.Explanation := 'write a GVClasses.gviz file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
   GOptionParser.AddOption(GOption_WriteGVClasses);
 
-  GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations');
+  GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations', True, False);
   GOption_AbbrevFiles.Explanation := 'abbreviation file, format is "[name]  value", value is trimmed, lines that do not start with ''['' (or whitespace before that) are ignored';
   GOptionParser.AddOption(GOption_AbbrevFiles);
 
-  GOption_ASPELL := TStringOption.Create(#0, 'aspell');
+  GOption_ASPELL := TStringOption.Create(#0, 'aspell', True, False);
   GOption_ASPELL.Explanation := 'enable aspell, giving language as parameter, currently only done in HTML output';
   GOptionParser.AddOption(GOption_ASPELL);
 
-  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words');
+  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words', True, False);
   GOption_IgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line, no comments allowed';
   GOptionParser.AddOption(GOption_IgnoreWords);
 end;
