@@ -1,5 +1,4 @@
-{$A8,B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M-,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W+,X+,Y+,Z1}
-{$APPTYPE GUI}
+{$B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M+,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W+,X+,Y+,Z1}
 { @abstract(basic doc generator object)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -58,6 +57,7 @@ const
 type
   { @abstract(class for spell-checking) }
   TSpellingError = class
+  public
     { the mis-spelled word }
     Word: string;
     { offset inside the checked string }
@@ -170,7 +170,7 @@ type
       No path or extension should therefore be in Name.
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
-    function CreateStream(const Name: string; const AOverwrite: boolean): TCreateStreamResult;
+    function CreateStream(const AName: string; const AOverwrite: boolean): TCreateStreamResult;
 
     { Must be overwritten.
       From an item name and its link, this creates a language-specific
@@ -427,7 +427,7 @@ uses
   Utils;
 
 { ---------------------------------------------------------------------------- }
-{ TDocGenerator
+{ TDocGenerator                                                                }
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.BuildLinks;
@@ -535,11 +535,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.CreateStream(const Name: string;
+function TDocGenerator.CreateStream(const AName: string;
   const AOverwrite: boolean): TCreateStreamResult;
 begin
   CloseStream;
-  DoMessage(4, mtInformation, 'Creating output stream "' + Name + '".', []);
+  DoMessage(4, mtInformation, 'Creating output stream "' + AName + '".', []);
   Result := csError;
   if FileExists(Name) and not AOverwrite then begin
     Result := csExisted;
@@ -968,7 +968,7 @@ var
   t: string;
 begin
   if n = '' then Exit;
-
+  ItemName := '';
   DoMessage(3, mtInformation, 'Loading descriptions from file "' + n + '"', []);
   f := nil;
   if FileExists(n) then begin
@@ -1471,7 +1471,7 @@ procedure TDocGenerator.ParseAbbreviationsFile(const AFileName: string);
 var
   L: TStringList;
   i, p: Integer;
-  s, name, value: string;
+  s, lname, value: string;
 begin
   if FileExists(AFileName) then begin
     L := TStringList.Create;
@@ -1483,9 +1483,9 @@ begin
           if s[1] = '[' then begin
             p := pos(']', s);
             if p>=0 then begin
-              name := Trim(copy(s, 2, p-2));
+              lname := Trim(copy(s, 2, p-2));
               value := Trim(copy(s,p+1,MaxInt));
-              FAbbreviations.Values[name] := value;
+              FAbbreviations.Values[lname] := value;
             end;
           end;
         end;

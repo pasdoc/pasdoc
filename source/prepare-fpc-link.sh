@@ -1,4 +1,4 @@
-
+exit 0
 # get dir name
 dir=`dirname $1`
 
