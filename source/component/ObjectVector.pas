@@ -77,6 +77,7 @@ destructor TObjectVector.Destroy;
 begin
   Clear;
   FList.Free;
+  Flist := nil;
   inherited;
 end;
 

@@ -205,6 +205,7 @@ begin
     end;
   end;
   FreeMem(Feld,sizeof(PHashEntry)*(Succ(FeldMaxValue)));
+  Feld := nil;
   inherited Destroy;
 end;
 
