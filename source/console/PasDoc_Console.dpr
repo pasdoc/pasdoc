@@ -51,8 +51,7 @@ var
   GOptionParser: TOptionParser;
   GOption_Verbosity: TIntegerOption;
   GOption_Define: TStringOptionList;
-  GOption_Help,
-  GOption_Private: TBoolOption;
+  GOption_Help: TBoolOption;
   GOption_Descriptions,
   GOption_ConditionalFile,
   GOption_IncludePaths,
@@ -105,10 +104,6 @@ begin
   GOption_IncludePaths := TStringOptionList.Create('I', 'include');
   GOption_IncludePaths.Explanation := 'includes search path';
   GOptionParser.AddOption(GOption_IncludePaths);
-
-  GOption_Private := TBoolOption.Create('p', 'private', False);
-  GOption_Private.Explanation := 'include private declarations';
-  GOptionParser.AddOption(GOption_Private);
 
   GOption_SourceList := TStringOptionList.Create('S', 'source');
   GOption_SourceList.Explanation := 'read source filenames from file';
@@ -234,7 +229,6 @@ begin
 
   GPasDoc.ProjectName := GOption_Name.Value;
 
-  GPasDoc.IncludePrivate := GOption_Private.TurnedOn;
   GPasDoc.DescriptionFileNames.Assign(GOption_Descriptions.Values);
 
   for i := 0 to GOption_SourceList.Values.Count - 1 do begin

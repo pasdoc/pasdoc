@@ -41,7 +41,6 @@ type
     FGeneratorInfo: Boolean;
     FHtmlHelpContentsFileName: string;
     FIncludeDirectories: TStringVector;
-    FIncludePrivate: Boolean;
     FOnMessage: TPasDocMessageEvent;
     { The name PasDoc shall give to this documentation project,
       also used to name some of the output files. }
@@ -108,10 +107,6 @@ type
       write FHtmlHelpContentsFileName;
     property IncludeDirectories: TStringVector read FIncludeDirectories write
       SetIncludeDirectories;
-    { Defines if the private parts (fields, methods and properties) of objects
-      are to be included in the documentation (default is @False). }
-    property IncludePrivate: Boolean read FIncludePrivate write
-      FIncludePrivate;
 
     property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage;
     { The name PasDoc shall give to this documentation project,
