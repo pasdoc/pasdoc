@@ -87,6 +87,7 @@ var
   GOption_MarkerOptional: TBoolOption;
   GOption_CacheDir: TStringOption;
   GOption_FullLink: TBoolOption;
+  GOption_CSS: TStringOption; { Using external CSS file for HTML output }
 
   { ---------------------------------------------------------------------------- }
 
@@ -219,6 +220,12 @@ begin
   GOption_FullLink := TBoolOption.Create(#0, 'full-link');
   GOption_FullLink.Explanation := 'if set, @link() always writes the qualified procedure name "unit.proc" instead of just "proc" and links the "unit" part to the unit only';
   GOptionParser.AddOption(GOption_FullLink);
+
+  { Using external CSS file for HTML output. }
+  GOption_CSS := TStringOption.Create(#0, 'css');
+  GOption_CSS.Explanation := 'CSS file for HTML files (copied into output tree)';
+  GOptionParser.AddOption(GOption_CSS);
+
 end;
 
 procedure PrintUsage;
@@ -307,6 +314,11 @@ begin
 
     if GOption_Header.WasSpecified then begin
       THTMLDocGenerator(GPasDoc.Generator).LoadHeaderFromFile(GOption_Header.Value);
+    end;
+
+    { If external CSS file was specified }
+    if GOption_CSS.WasSpecified then begin
+     THTMLDocGenerator(GPasDoc.Generator).LoadCSSFromFile(GOption_CSS.Value);
     end;
 
     THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;

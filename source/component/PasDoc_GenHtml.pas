@@ -39,6 +39,8 @@ type
     FWriteUses: boolean;
     FLinkCount: Integer;
     FFooter: string;
+    { If specified, using external CSS file }
+    FCSS: string;
     FHeader: string;
     FOddTableRow: Integer;
     { Contains Name of a file to read HtmlHelp Contents from.
@@ -204,6 +206,8 @@ type
     procedure WriteDocumentation; override;
     procedure LoadFooterFromFile(const AFileName: string);
     procedure LoadHeaderFromFile(const AFileName: string);
+    { Open external file }
+    procedure LoadCSSFromFile(const AFileName: string);
     procedure BuildLinks; override;
 
     function EscapeURL(const AString: string): string; virtual;
@@ -212,15 +216,16 @@ type
     property ContentsFile: string read FContentsFile write FContentsFile;
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
+    property CSS: string read FCSS write FCSS;
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
   end;
 
-{$I automated.inc}
-{$I private.inc}
-{$I public.inc}
-{$I published.inc}
-{$I protected.inc}
+{$INCLUDE automated.inc}
+{$INCLUDE private.inc}
+{$INCLUDE public.inc}
+{$INCLUDE published.inc}
+{$INCLUDE protected.inc}
 
 const
   { HTML table padding inside each cell. }
@@ -2397,6 +2402,11 @@ begin
   LoadStrFromFileA(AFileName, FHeader);
 end;
 
+procedure THTMLDocGenerator.LoadCSSFromFile(const AFileName: string);
+begin
+  FCSS:=AFileName;
+end;
+
 procedure THTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
 var
   i: Integer;
@@ -2466,6 +2476,8 @@ end;
 procedure THTMLDocGenerator.WriteBinaryFiles;
 var
   i: Integer;
+  Fin, Fout:TFileStream; { If external CSS file specified, copy set CSS file to pasdoc.css.
+                           Fin: open external file, Fout: target file (pasdoc.css). }
 begin
   CreateStream('automated.gif', True);
   CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
@@ -2487,67 +2499,76 @@ begin
   CloseStream;
 
   if not FileExists(DestinationDirectory+'pasdoc.css') then begin
-    CreateStream('pasdoc.css', True);
-    StreamUtils.WriteLine(CurrentStream, 'body {' +
-      'font-family: Verdana,Arial;' +
-      'color: black;' +
-      'background-color: white; font-size: 12px; }');
-    StreamUtils.WriteLine(CurrentStream, 'body.navigationframe {' +
-      'font-family: Verdana,Arial;' +
-      'color: white;' +
-      'background-color: #787878; font-size: 12px; }');
+    { If external CSS specified, copying to pasdoc.css file. }
+    if ((FCSS<>'') and (FileExists(FCSS)=True)) then begin
+      FIn := TFileStream.Create(FCSS, fmOpenRead);
+      FOut := TFileStream.Create(DestinationDirectory+'pasdoc.css', fmCreate or fmOpenWrite);
+      FOut.CopyFrom(FIn, FIn.Size);
+      FIn.Free;
+      FOut.Free;
+    end else begin
+      CreateStream('pasdoc.css', True);
+      StreamUtils.WriteLine(CurrentStream, 'body {' +
+        'font-family: Verdana,Arial;' +
+        'color: black;' +
+        'background-color: white; font-size: 12px; }');
+      StreamUtils.WriteLine(CurrentStream, 'body.navigationframe {' +
+        'font-family: Verdana,Arial;' +
+        'color: white;' +
+        'background-color: #787878; font-size: 12px; }');
 
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:link {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:visited {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:hover {' +
-      'color: white;' +
-      'font-weight: bold; text-decoration: none;  font-size: 12px;}');
-    StreamUtils.WriteLine(CurrentStream, 'a.navigation:active {' +
-      'color: white; text-decoration: none;  font-size: 12px;}');
+      StreamUtils.WriteLine(CurrentStream, 'a.navigation:link {' +
+        'color: white; text-decoration: none;  font-size: 12px;}');
+      StreamUtils.WriteLine(CurrentStream, 'a.navigation:visited {' +
+        'color: white; text-decoration: none;  font-size: 12px;}');
+      StreamUtils.WriteLine(CurrentStream, 'a.navigation:hover {' +
+        'color: white;' +
+        'font-weight: bold; text-decoration: none;  font-size: 12px;}');
+      StreamUtils.WriteLine(CurrentStream, 'a.navigation:active {' +
+        'color: white; text-decoration: none;  font-size: 12px;}');
 
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:link {' +
-      'color:#C91E0C; text-decoration: none; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:visited {' +
-      'color:#7E5C31; text-decoration: none; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:hover {' +
-      'text-decoration: underline; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.normal:active {' +
-      'text-decoration: underline; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.normal:link {' +
+        'color:#C91E0C; text-decoration: none; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.normal:visited {' +
+        'color:#7E5C31; text-decoration: none; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.normal:hover {' +
+        'text-decoration: underline; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.normal:active {' +
+        'text-decoration: underline; }');
 
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:visited {' +
-      'color:#7E5C31; text-decoration: none; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:hover {' +
-      'text-decoration: underline; font-weight:bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.bold:active {' +
-      'text-decoration: underline; font-weight:bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.bold:link {' +
+        'color:#C91E0C; text-decoration: none; font-weight:bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.bold:visited {' +
+        'color:#7E5C31; text-decoration: none; font-weight:bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.bold:hover {' +
+        'text-decoration: underline; font-weight:bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.bold:active {' +
+        'text-decoration: underline; font-weight:bold; }');
 
-    StreamUtils.WriteLine(CurrentStream, 'tr.list { background: #FFBF44; }');
-    StreamUtils.WriteLine(CurrentStream, 'tr.list2 { background: #FFC982; }');
-    StreamUtils.WriteLine(CurrentStream, 'tr.listheader { background: #C91E0C; }');
-    StreamUtils.WriteLine(CurrentStream, 'th.listheader { color: white; }');
+      StreamUtils.WriteLine(CurrentStream, 'tr.list { background: #FFBF44; }');
+      StreamUtils.WriteLine(CurrentStream, 'tr.list2 { background: #FFC982; }');
+      StreamUtils.WriteLine(CurrentStream, 'tr.listheader { background: #C91E0C; }');
+      StreamUtils.WriteLine(CurrentStream, 'th.listheader { color: white; }');
 
-    StreamUtils.WriteLine(CurrentStream, 'a.section {' +
-      'color: green; '+
-      'text-decoration: none; '+
-      'font-weight: bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'a.section:hover {' +
-      'color: green; '+
-      'text-decoration: underline; '+
-      'font-weight: bold; }');
-    StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
-      'white-space:nowrap; }');
-    StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
-      'color:red;}');
-    StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
-    StreamUtils.WriteLine(CurrentStream, 'dt.parameters {' +
-      'color:blue;}');
-    StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
+      StreamUtils.WriteLine(CurrentStream, 'a.section {' +
+        'color: green; '+
+        'text-decoration: none; '+
+        'font-weight: bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'a.section:hover {' +
+        'color: green; '+
+        'text-decoration: underline; '+
+        'font-weight: bold; }');
+      StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
+        'white-space:nowrap; }');
+      StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
+        'color:red;}');
+      StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
+      StreamUtils.WriteLine(CurrentStream, 'dt.parameters {' +
+        'color:blue;}');
+      StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
 
-    CloseStream;
+      CloseStream;
+    end;
   end;
 
   CreateStream('index.html', True);
