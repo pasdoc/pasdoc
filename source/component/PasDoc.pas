@@ -420,7 +420,7 @@ begin
   if FProjectName <> '' then begin
     Generator.ProjectName := FProjectName
   end else begin
-    Generator.ProjectName := 'Help Project';
+    Generator.ProjectName := 'Docs';
   end;
 
   Generator.Title := Title;
