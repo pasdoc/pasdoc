@@ -170,7 +170,7 @@ const
 {$IFDEF LINUX}
   COMPILER_OS = 'Linux';
 {$ENDIF}
-{$IFDEF MSWINDOWS}
+{$IFDEF WIN32}
   COMPILER_OS = 'MSWindows';
 {$ENDIF}
 

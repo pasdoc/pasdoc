@@ -31,7 +31,7 @@ uses
   SysUtils;
 
 const
-  sLineBreak = {$IFDEF LINUX} #10 {$ENDIF} {$IFDEF MSWINDOWS} #13#10 {$ENDIF};
+  sLineBreak = {$IFDEF LINUX} #10 {$ENDIF} {$IFDEF WIN32} #13#10 {$ENDIF};
   
 { LeadBytes is a char set that indicates which char values are lead bytes
   in multibyte character sets (Japanese, Chinese, etc).
