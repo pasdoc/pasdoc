@@ -903,6 +903,7 @@ begin
     CIO_SPINTERFACE: Result := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];
+    CIO_RECORD: Result := 'record'; // TODO
   else
     Result := '';
   end;

@@ -483,9 +483,10 @@ begin
         DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo]);
     end else begin
       Scanner.UnGetToken(t);
-      i.Ancestors := NewStringVector;
-      i.Ancestors.Add('TObject');
-      t := nil;
+      if i.MyType = CIO_class then begin
+        i.Ancestors := NewStringVector;
+        i.Ancestors.Add('TObject');
+      end;
     end;
   end;
   { now collect methods, fields and properties }
@@ -769,7 +770,7 @@ var
   i: TPasItem;
   n: string;
 begin
-  ParseType := False;
+  Result := False;
   n := t.Data;
   DoMessage(5, mtInformation, 'Parsing type "%s"', [n]);
   FreeAndNil(t);
@@ -781,7 +782,7 @@ begin
     if (t.IsSymbol(SYM_SEMICOLON)) then begin
       FreeAndNil(t);
       t := nil;
-      ParseType := True;
+      Result := True;
       Exit;
     end;
     FreeAndNil(t);
@@ -804,7 +805,7 @@ begin
             Scanner.UnGetToken(t);
             t := nil;
             if not ParseCIO(U, n, CIO_CLASS, d) then Exit;
-            ParseType := True;
+            Result := True;
             Exit;
           end;
         end;
@@ -812,21 +813,28 @@ begin
           if not ParseCIO(U, n, CIO_SPINTERFACE, d) then Exit;
           FreeAndNil(t);
           t := nil;
-          ParseType := True;
+          Result := True;
           Exit;
         end;
       KEY_INTERFACE: begin
           if not ParseCIO(U, n, CIO_INTERFACE, d) then Exit;
           FreeAndNil(t);
           t := nil;
-          ParseType := True;
+          Result := True;
           Exit;
         end;
       KEY_OBJECT: begin
           if not ParseCIO(U, n, CIO_OBJECT, d) then Exit;
           FreeAndNil(t);
           t := nil;
-          ParseType := True;
+          Result := True;
+          Exit;
+        end;
+      KEY_RECORD: begin
+          if not ParseCIO(U, n, CIO_RECORD, d) then Exit;
+          FreeAndNil(t);
+          t := nil;
+          Result := True;
           Exit;
         end;
     end;
@@ -841,7 +849,7 @@ begin
   i.Name := n;
   i.Description := d;
   U.AddType(i);
-  ParseType := True;
+  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -153,7 +153,7 @@ type
 
   { enumeration type to determine type of TObjectInfo item: class,
     interface or object }
-  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT);
+  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT, CIO_RECORD);
 
   { Extends @link(TPasItem) to store all items in a class / an object, e.g.
     fields. }

@@ -211,7 +211,7 @@ begin
   Result := '';
   if (not Assigned(Item)) then Exit;
   if NumericFilenames then begin
-    Result := IntToStr(FLinkCount) + GetFileExtension;
+    Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
     Inc(FLinkCount);
   end else begin
     if Assigned(Item.MyUnit) then begin
@@ -305,6 +305,7 @@ begin
     CIO_SPINTERFACE: s := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: s := FLanguage.Translation[trInterface];
     CIO_OBJECT: s := FLanguage.Translation[trObject];
+    CIO_RECORD: s := 'record'; // TODO
   else
     s := '';
   end;
@@ -332,6 +333,7 @@ begin
     CIO_CLASS: WriteString('class');
     CIO_SPINTERFACE: WriteString('dispinterface');
     CIO_INTERFACE: WriteString('interface');
+    CIO_RECORD: WriteString('record');
   else
     WriteString('object');
   end;
@@ -408,8 +410,7 @@ begin
         'Could not create Class/Interface/Object documentation file.', []);
       Continue;
     end;
-    DoMessage(2, mtInformation, 'Creating Class/Interface/Object file for "'
-      + p.OutputFileName + '"...', []);
+    DoMessage(2, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
     WriteCIO(HL, p);
   end;
   CloseStream;
