@@ -6,7 +6,7 @@
   @author(Philippe Jean Dit Bailleul (jdb@abacom.com))
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
   @created(30 Aug 1998)
-  @lastmod(2003-03-29)
+  @cvs($Date$)
 
   GenDoc contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce
@@ -960,26 +960,28 @@ var
 begin
   if n = '' then Exit;
 
-  DoMessage(3, mtInformation, 'Loading descriptions from file "' + n + '"',
-    []);
-  f := TFileStream.Create(n, fmOpenRead);
+  DoMessage(3, mtInformation, 'Loading descriptions from file "' + n + '"', []);
+  f := nil;
+  if FileExists(n) then begin
+    f := TFileStream.Create(n, fmOpenRead);
+  end;
   if not Assigned(f) then
     DoError('Could not open description file "%s%.', [n], 0);
   t := '';
   while (f.Position < f.Size) do begin
     s := StreamReadLine(f);
-      {    DoMessage(4, 'DEBUG - descr "' + S + '"');}
+    {    DoMessage(4, 'DEBUG - descr "' + S + '"');}
     if (Length(s) > 0) then begin
-          { # means: description of another item begins }
+      { # means: description of another item begins }
       if (s[1] = '#') then begin
-              { if there is an old description, deal with it }
+        { if there is an old description, deal with it }
         StoreDescription(ItemName, t);
-              { delete # char }
+        { delete # char }
         System.Delete(s, 1, 1);
-              { skip whitespace }
+        { skip whitespace }
         while (Length(s) > 0) and (s[1] in [' ', #9]) do
           System.Delete(s, 1, 1);
-              { find item }
+        { find item }
         ItemName := '';
         while (Length(s) > 0) and (s[1] in ['A'..'Z', 'a'..'z', '_', '.',
           '0'..'9']) do begin
@@ -988,11 +990,9 @@ begin
         end;
       end
       else begin
-              { check if there is a text }
+        { check if there is a text }
         if t = '' then begin
-          DoMessage(2, mtError,
-            'First line of description file must start with "# item_name"',
-            []);
+          DoMessage(2, mtError, 'First line of description file must start with "# item_name"', []);
           Break; { leave while loop }
         end;
         t := t + s + #10;
