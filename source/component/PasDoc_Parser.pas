@@ -159,7 +159,9 @@ end;
 function TParser.GetLastComment: string;
 var
   l: Integer;
+  LBSComment: Integer;
 begin
+  LBSComment := 0;
   if Assigned(LastCommentToken) then begin
     Result := LastCommentToken.Data;
     LastCommentToken.Free;
@@ -186,6 +188,7 @@ begin
     if (l > 1) and (Result[1] = '(') and (Result[2] = '*') then begin
       Delete(Result, 1, 2);
       Dec(l, 2);
+      LBSComment := 1;
     end;
 
     if (l > 1) and (Result[l - 2] = '*') and (Result[l - 1] = ')') then
@@ -195,17 +198,17 @@ begin
     Result := '';
 
   if StarStyleOnly then begin
-    if (Length(Result) < 2) or (Result[1] <> '*') or (Result[2] <> '*') then
+    if (Length(Result) < 2-LBSComment) or (Result[1] <> '*') or ((Result[2] <> '*') and (LBSComment=0)) then
       begin
       Result := '';
       exit;
     end else begin
-      Delete(Result, 1, 2);
+      Delete(Result, 1, 2-LBSComment);
     end;
   end else begin
-    if (Length(Result) >= 2) and (Result[1] = '*') and (Result[2] = '*') then
+    if (Length(Result) >= 2-LBSComment) and (Result[1] = '*') and ((Result[2] = '*') or (LBSComment=1)) then
       begin
-      Delete(Result, 1, 2);
+      Delete(Result, 1, 2-LBSComment);
     end;
   end;
 end;
