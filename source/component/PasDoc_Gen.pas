@@ -743,7 +743,9 @@ procedure TDocGenerator.ExpandDescriptions;
 
 { expands Description and DetailedDescription of Item }
 
-procedure ExpandItem(Item: TPasItem);
+  procedure ExpandItem(Item: TPasItem);
+  var
+    i: Integer;
   begin
     if Item = nil then Exit;
 
@@ -760,6 +762,12 @@ procedure ExpandItem(Item: TPasItem);
       (not ExpandDescription(Item, Item.DetailedDescription)) then begin
       DoMessage(2, mtWarning, 'Could not expand description from ' +
         Item.Name, []);
+    end;
+
+    if Item is TPasEnum then begin
+      for i := 0 to TPasEnum(Item).Members.Count-1 do begin
+        ExpandItem(TPasItem(TPasEnum(Item).Members.ObjectAt[i]));
+      end;
     end;
   end;
 

@@ -142,10 +142,11 @@ type
   { @abstract(Enumerated types) }
   TPasEnum = class(TPasVarConst)
   protected
-    FMembers: TStringList;
+    FMembers: TObjectVector;
   public
-    property Members: TStringList read FMembers write FMembers;
+    property Members: TObjectVector read FMembers;
     destructor Destroy; override;
+    constructor Create; 
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -1059,9 +1060,15 @@ end;
 
 { TPasEnum }
 
+constructor TPasEnum.Create;
+begin
+  inherited Create;
+  FMembers := TObjectVector.Create(True);
+end;
+
 destructor TPasEnum.Destroy;
 begin
-  Members.Free;
+  FMembers.Free;
   inherited;
 end;
 

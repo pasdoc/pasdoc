@@ -905,9 +905,9 @@ begin
       WriteLine('<UL>');
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
         WriteLine('<LI>');
-        WriteString(TPasEnum(Item).Members.Names[k]);
+        WriteString(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).Name);
         WriteString(': ');
-        WriteWithURLs(TPasEnum(Item).Members.Values[TPasEnum(Item).Members.Names[k]]);
+        WriteWithURLs(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).GetDescription);
         WriteLine('</LI>');
       end;
       WriteLine('</UL>');

@@ -868,15 +868,18 @@ end;
 function TParser.ParseEnum(var p: TPasEnum): boolean;
 var
   t: TToken;
+  item: TPasItem;
 begin
   t := nil;
   p := TPasEnum.Create;
-  p.Members := TStringList.Create;
 
   GetNextNonWCToken(t);
   while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
     if t.MyType = TOK_IDENTIFIER then begin
-      p.Members.Add(t.Data+'='+GetLastComment(True));
+      item := TPasItem.Create;;
+      p.Members.Add(item);
+      item.Name := t.Data;
+      item.Description := GetLastComment(True);
     end;
     if t.IsSymbol(SYM_EQUAL) then begin
       FreeAndNil(t);
