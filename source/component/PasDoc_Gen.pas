@@ -139,6 +139,7 @@ end;
     procedure HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLatexTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleInheritedTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -478,11 +479,22 @@ end;
     { S is guaranteed (guaranteed by the user) to be correct html content,
       this is taken directly from parameters of @html tag.
       Override this function to decide what to put in output on such thing.
+
+      Note that S is not processed in any way, even with ConvertString.
+      So you're able to copy user's input inside @@html() 
+      verbatim to the output.
+
+      The default implementation is this class simply discards it,
+      i.e. returns always ''. Generators that know what to do with
+      HTML can override this with simple "Result := S". }
+    function HtmlString(const S: string): string; virtual;
+    
+    { This is equivalent of @link(HtmlString) for @@latex tag.
       
-      Note that S is not processed in any way, even with ConvertString
-      -- unless you're overriding this function in html generator, 
-      you will probably want to process S with ConvertString. }
-    function HtmlString(const S: string): string; virtual; abstract; 
+      The default implementation is this class simply discards it,
+      i.e. returns always ''. Generators that know what to do with raw
+      LaTeX markup can override this with simple "Result := S". }
+    function LatexString(const S: string): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -671,6 +683,11 @@ begin
   ReplaceStr := HtmlString(TagDesc);
 end;
 
+procedure TDocGenerator.HandleLatexTag(const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := LatexString(TagDesc);
+end;
+
 procedure TDocGenerator.HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
@@ -800,6 +817,7 @@ begin
     { Tags with non-recursive params }
     TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag, false, true);
     TagManager.AddHandler('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag, false, true);
+    TagManager.AddHandler('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag, false, true);
     TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag, false, true);
 
     { Tags with recursive params }
@@ -2072,6 +2090,16 @@ end;
 function TDocGenerator.InsertParagraphs(const S: string): string; 
 begin
   Result := S;
+end;
+
+function TDocGenerator.HtmlString(const S: string): string;
+begin
+  Result := '';
+end;
+
+function TDocGenerator.LatexString(const S: string): string;
+begin
+  Result := '';
 end;
 
 initialization
