@@ -455,7 +455,7 @@ begin
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
     U.FullLink := CreateLink(U);
-    U.OutputFileName := DestinationDirectory + U.FullLink;
+    U.OutputFileName := U.FullLink;
     U.Abbreviations := FAbbreviations;
     U.HandleAuthorTags;
     U.HandleCreatedTag;
@@ -473,7 +473,7 @@ begin
         CO.MyUnit := U;
 
         CO.FullLink := CreateLink(CO);
-        CO.OutputFileName := DestinationDirectory + CO.FullLink;
+        CO.OutputFileName := CO.FullLink;
         
         CO.Abbreviations := FAbbreviations;
 
@@ -516,7 +516,7 @@ begin
   DoMessage(4, mtInformation, 'Creating output stream "' + Name + '".', []);
   Result := false;
   try
-    FCurrentStream := TFileStream.Create(Name, fmCreate);
+    FCurrentStream := TFileStream.Create(DestinationDirectory+Name, fmCreate);
     Result := True;
   except
   end;
@@ -1408,7 +1408,7 @@ begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
-    CreateStream(FDestDir+OverviewFilenames[9]+'.gviz');
+    CreateStream(OverviewFilenames[9]+'.gviz');
     WriteLine('DiGraph Classes {');
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
@@ -1430,7 +1430,7 @@ var
   U: TPasUnit;
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
-    CreateStream(FDestDir+OverviewFilenames[8]+'.gviz');
+    CreateStream(OverviewFilenames[8]+'.gviz');
     WriteLine('DiGraph Uses {');
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin

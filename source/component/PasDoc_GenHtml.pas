@@ -13,10 +13,6 @@
 
 unit PasDoc_GenHtml;
 
-{$IFNDEF FPC}
-{$R BinData.res}
-{$ENDIF}
-
 interface
 
 uses
@@ -161,6 +157,9 @@ type
       The functions are stored in the FuncsProcs argument. }
     procedure WriteFuncsProcs(const HL: Byte; const Methods: Boolean; const
       FuncsProcs: TPasMethods); override;
+
+    { output all the necessary images }
+    procedure WriteBinaryFiles;
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -175,6 +174,13 @@ type
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
   end;
+
+
+{$INCLUDE automated.inc}
+{$INCLUDE private.inc}
+{$INCLUDE public.inc}
+{$INCLUDE published.inc}
+{$INCLUDE protected.inc}
 
 const
   { background color of a table header row; a light gray slightly darker
@@ -584,6 +590,7 @@ begin
   inherited;
   WriteUnits(1);
   WriteHierachy;
+  WriteBinaryFiles;
   WriteOverviewFiles;
 {$IFDEF MSWINDOWS}
   { Registry and HCC only exists on Windows. }
@@ -944,7 +951,7 @@ begin
   TotalItems := TPasItems.Create(False);
 
   for i := 2 to 6 do begin
-    if (not CreateStream(DestinationDirectory + OverviewFilenames[i] + GetFileExtension))
+    if (not CreateStream(OverviewFilenames[i] + GetFileExtension))
       then begin
       DoMessage(1, mtError, 'Error: Could not create output file "' +
         OverviewFilenames[i] + '".', []);
@@ -1037,7 +1044,7 @@ begin
     CloseStream;
   end;
 
-  if not CreateStream(DestinationDirectory + OverviewFilenames[7] + GetFileExtension) then
+  if not CreateStream(OverviewFilenames[7] + GetFileExtension) then
     begin
     DoMessage(1, mtError, 'Could not create overview output file "' +
       OverviewFilenames[7] + '".', []);
@@ -1569,7 +1576,7 @@ begin
     Units is assigned and Units.Count > 0
     No need to test this again. }
 
-  if not CreateStream(DestinationDirectory + ProjectName + '.hhc') then begin
+  if not CreateStream(ProjectName + '.hhc') then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Content file "%s.hhc' +
       '".', [ProjectName]);
     Exit;
@@ -1668,7 +1675,7 @@ begin
     c.CopyItems(PU.FuncsProcs);
   end;
 
-  if not CreateStream(DestinationDirectory + ProjectName + '.hhk') then begin
+  if not CreateStream(ProjectName + '.hhk') then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Index file "%s.hhk' +
       '".', [ProjectName]);
     Exit;
@@ -1743,7 +1750,7 @@ begin
   CloseStream;
 
   // Create a HTML Help Project File
-  if (not CreateStream(DestinationDirectory + ProjectName + '.hhp')) then begin
+  if (not CreateStream(ProjectName + '.hhp')) then begin
     DoMessage(1, mtError, 'Could not create HtmlHelp Project file "%s.hhp' +
       '".', [ProjectName]);
     Exit;
@@ -1813,7 +1820,7 @@ begin
   CloseStream;
 
   // Create a Main Topic
-  if (not CreateStream(DestinationDirectory + 'Legend'+GetFileExtension)) then begin
+  if (not CreateStream('Legend'+GetFileExtension)) then begin
     DoMessage(1, mtError, 'Could not create file "Legend'+GetFileExtension+'".', []);
     Exit;
   end;
@@ -1891,7 +1898,7 @@ var
   j: Integer;
 begin
   c := Units;
-  if (not CreateStream(DestinationDirectory + OverviewFilenames[0] + GetFileExtension))
+  if (not CreateStream(OverviewFilenames[0] + GetFileExtension))
     then begin
     DoMessage(1, mtError, 'Could not create overview output file "' +
       OverviewFilenames[0] + '".', []);
@@ -1962,7 +1969,7 @@ var
 begin
   CreateClassHierarchy;
   
-  if not CreateStream(DestinationDirectory + OverviewFilenames[1] + GetFileExtension) then begin
+  if not CreateStream(OverviewFilenames[1] + GetFileExtension) then begin
     DoMessage(1, mtError, 'Could not create output file "%s".',
       [OverviewFilenames[1] + GetFileExtension]);
     Abort;
@@ -2100,6 +2107,29 @@ begin
     This should probably be something like
     <div type="parameter"> ... </div> to be used with CSS }
   Result := '<br>' + ParamType + ' <span type="parameter">' + Param + '</span>';
+end;
+
+procedure THTMLDocGenerator.WriteBinaryFiles;
+begin
+  CreateStream('automated.gif');
+  CurrentStream.Write(img_automated[0], High(img_automated)+1);
+  CloseStream;
+
+  CreateStream('private.gif');
+  CurrentStream.Write(img_private[0], High(img_private)+1);
+  CloseStream;
+
+  CreateStream('protected.gif');
+  CurrentStream.Write(img_protected[0], High(img_protected)+1);
+  CloseStream;
+
+  CreateStream('public.gif');
+  CurrentStream.Write(img_public[0], High(img_public)+1);
+  CloseStream;
+
+  CreateStream('published.gif');
+  CurrentStream.Write(img_published[0], High(img_published)+1);
+  CloseStream;
 end;
 
 end.
