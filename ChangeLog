@@ -1,3 +1,11 @@
+2003-05-14 v0.8.8-pre4 Thomas Mueller
+ + more CSS
+ + code cleanup
+ + if class has no description, write ancestor's description and
+   a warning
+ + reordering by visibility
+ + @param, @returns, @raises except argument in parentheses now
+
 2003-05-09 v0.8.8-pre3 Thomas Mueller/Johannes Berg
  + write complete known hierarchy in class descriptions
  - remove calling hhc.exe, you should do this from a script
