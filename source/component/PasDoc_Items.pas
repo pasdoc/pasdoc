@@ -1267,7 +1267,8 @@ begin
 
   while Offs1 < Length(DetailedDescription) do begin
     if (DetailedDescription[Offs1] = '@') and
-      DescriptionFindTag(DetailedDescription, 'RETURNS', Offs1, Offs2, Offs3) then
+      (DescriptionFindTag(DetailedDescription, 'RETURN', Offs1, Offs2, Offs3) or
+       DescriptionFindTag(DetailedDescription, 'RETURNS', Offs1, Offs2, Offs3)) then
     begin
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
       if (Length(s) <= 0) then Continue;

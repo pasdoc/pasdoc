@@ -792,9 +792,9 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     Result := '';
     Len := Length(s);
     p := 1;
-    while (p < Len) and (s[p] in [' ', #9, #13, #10]) do
+    while (p <= Len) and (s[p] in [' ', #9, #13, #10]) do
       Inc(p);
-    while (p < Len) and not (s[p] in [' ', #9, #13, #10]) do
+    while (p <= Len) and not (s[p] in [' ', #9, #13, #10]) do
       begin
         Result := Result + s[p];
         Inc(p);
@@ -840,7 +840,9 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
       exit;
     WriteHeading(6, 'return value');
     ExpandDescription(Func, ReturnDesc);
+    WriteDirect('<p class="return">');
     WriteWithURLs(ReturnDesc);
+    WriteDirect('</p>');
   end;
 
 var

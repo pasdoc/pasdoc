@@ -1,3 +1,14 @@
+2003-11-20 v0.8.8-pre6 Johannes Berg
+ + fix 3 logged bugs
+   [ pasdoc-Bugs-842325 ] bug in function IsMacro
+   [ pasdoc-Bugs-844324 ] tag "returns" very together does not insert a jump of line
+   [ pasdoc-Bugs-844325 ] The tag "return" does not work, "returns" with "s" if
+ + corrected output of @raises tag (last character could be cut off)
+ + javi fixed and updated the Spanish translation
+ + added proper warning for FPC operator overloading as it is not supported
+   right now. TODO item: write a ParseOperator function
+ + added support for FreePascal inline "calling convention"
+
 2003-05-14 v0.8.8-pre4 Thomas Mueller
  + more CSS
  + code cleanup
@@ -68,7 +79,7 @@ Based on Ralf Junker's changes, I did the following:
    files instead, as constants in code, for FPC
 
 Some time inbetween... (0.6.21 to 0.8.6) Ralf Junker
- - LaTeX documentation
+ - LaTeX documentation removed
  - see http://zeitungsjunge.de/delphi/PasDoc/History.htm for
    more information.
 

@@ -382,7 +382,7 @@ begin
       M.Free;
       DoError('Could not get next non white space token', [], 0);
     end;
-    if (t.MyType <> TOK_IDENTIFIER) then begin
+    if (t.MyType <> TOK_IDENTIFIER) and ((t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INLINE)) then begin
       Scanner.UnGetToken(t);
       Break;
     end;
@@ -390,7 +390,7 @@ begin
     pl := StandardDirectiveByName(CS);
     case pl of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
         SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
         SD_VARARGS:
         begin
@@ -402,7 +402,7 @@ begin
             Exit;
           end;
         end;
-                                                                                                                               
+
       { * External declarations might be followed by a string constant.
         * Messages are followed by an integer constant between 1 and 49151 which
           specifies the message ID. }
@@ -410,14 +410,14 @@ begin
         begin
           M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
           FreeAndNil(t);
-                                                                                                                               
+
           // Keep on reading up to the next semicolon or declaration
           repeat
             if not GetNextNonWCToken(t) then begin
               M.Free;
               DoError('Could not get next non white space token', [], 0);
             end;
-                                                                                                                               
+
             if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
               Break
             end else begin
@@ -454,26 +454,10 @@ begin
       Break;
     end; // case
 
-(* OLD CODE
-    if (pl = SD_INVALIDSTANDARDDIRECTIVE) or (not (pl in SDSet)) then begin
-      Scanner.UnGetToken(t);
-      Break;
-    end;
-    if (pl = SD_DEPRECATED) then begin
-      M.IsDeprecated := True;
-    end;
-    M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-    FreeAndNil(t);
-*)
     { Apparently, the Delphi compiler does NOT enforce that
       directives must be separated and be terminated by a semicolon,
       even though Delphi help consistently uses them consistently.
       However, we take the compiler as a reference and try to mimic its behaviour. }
-{    FreeAndNil(t);
-    if (not GetNextNonWCToken(t)) then begin
-      M.Free;
-      Exit;
-    end;
     { Is current token a semicolon? }
     if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then
       M.FullDeclaration := M.FullDeclaration + ';'
@@ -939,6 +923,9 @@ begin
             KEY_RESOURCESTRING,
               KEY_CONST:
               Mode := MODE_CONST;
+            KEY_OPERATOR: begin
+                DoError('Sorry, FreePascal operator overloading syntax cannot be parsed currently', [], 100);
+              end;
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);

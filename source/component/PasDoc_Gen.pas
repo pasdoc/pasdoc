@@ -593,7 +593,7 @@ function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string):
         exit;
 
     { TODO -cfixme -ojmb: is NOT (a..z,A..Z) ok? I don't see what difference it makes... }
-    if (CurPos + l = Len) or (not (Desc[CurPos + l + 1] in ['a'..'z','A'..'Z'])) then begin
+    if (CurPos + l = Len) or (not (Desc[CurPos + l + 1] in ['a'..'z','A'..'Z','0'..'9'])) then begin
       Inc(CurPos, l + 1);
       Result := true;
     end;
