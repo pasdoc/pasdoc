@@ -1,5 +1,5 @@
 {
-  @lastmod(2003-03-29)
+  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   a simple object vector
 }
