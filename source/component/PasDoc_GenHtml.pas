@@ -7,6 +7,7 @@
   @author(Hendy Irawan (ceefour@gauldong.net))
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
   @author(Thomas W. Mueller <no-email>)
+  @author(David Berg (HTML Layout) <david@sipsolutions.de>)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
@@ -38,6 +39,7 @@ type
     FLinkCount: Integer;
     FFooter: string;
     FHeader: string;
+    FOddTableRow: Integer;
     { Contains Name of a file to read HtmlHelp Contents from.
       If empty, create default contents file. }
     FContentsFile: string;
@@ -51,16 +53,11 @@ type
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
     procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; const
       ItemLink: string);
-    { Writes the beginning of the HTML document, including opening HTML element,
-      a complete HEAD element and an opening BODY element.
-      See @link(WriteEndOfDocument). }
-    procedure WriteDocumentHeadline;
     { Writes an empty table cell, '&nbsp;'. }
     procedure WriteEmptyCell;
 
     { Writes the end of an HTML anchor, '</A>'. }
     procedure WriteEndOfAnchor;
-    { See @link(WriteDocumentHeadline). }
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
     procedure WriteEndOfParagraph;
@@ -124,8 +121,6 @@ type
     procedure WriteSpellChecked(const AString: string);
 
     procedure WriteWithURLs(s: string);
-    { Mark the string as a parameter, e.g. <b>TheString</b> }
-    function ParameterString(const ParamType, Param: string): string; override;        
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -203,13 +198,6 @@ type
 {$INCLUDE protected.inc}
 
 const
-  { background color of a table header row; a light gray slightly darker
-    than the light gray of @link(HTML_HEADER_BACKGROUND_COLOR)  }
-  HTML_ROW_BACKGROUND_COLOR: string[6] = 'efefef';
-  { background color of a normal table row; a light gray slightly lighter
-    than the light gray of @link(HTML_ROW_BACKGROUND_COLOR) }
-  HTML_HEADER_BACKGROUND_COLOR: string[6] = 'e0e0e0';
-
   { HTML table padding inside each cell. }
   HTML_TABLE_CELLPADNG = '4';
   { HTML table spacing between cells. }
@@ -279,7 +267,7 @@ end;
 function THTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result := '<a href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
+  Result := '<a class="normal" href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
 end;
 
 function THTMLDocGenerator.GetFileExtension: string;
@@ -294,7 +282,7 @@ begin
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
   WriteDirect('<hr noshade="1" size="1"/><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
+  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('ddd dd/ mmm yyyy hh:mm:ss', Now));
   WriteDirect('</em>', true);
@@ -380,8 +368,6 @@ begin
   s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
-  // if not HtmlHelp then
-    WriteDocumentHeadline;
 
   WriteAnchor(CIO.Name);
   WriteHeading(HL, s);
@@ -391,7 +377,7 @@ begin
     begin
       WriteDirect('<td>');
       if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
+        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
       else
         WriteConverted(SectionHeads[Section]);
       WriteDirect('</td>');
@@ -403,7 +389,7 @@ begin
   { write unit link }
   if Assigned(CIO.MyUnit) then begin
     WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
-    WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
+    WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), 'bold');
     WriteDirect('<br/>');
   end;
 
@@ -526,7 +512,7 @@ begin
     WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
     WriteConverted(GetCIOTypeName(p.MyType));
     WriteDirect('&nbsp;');
-    WriteLink(p.FullLink, CodeString(p.Name), '');
+    WriteLink(p.FullLink, CodeString(p.Name), 'bold');
     WriteEndOfTableCell;
 
     { Description of class/interface/object }
@@ -674,35 +660,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteDocumentHeadline;
-var
-  i: integer;
-begin
-  WriteDirect('<table class="headline" cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG
-    + '" width="100%">', true);
-  WriteDirect('<tr bgcolor="' + HTML_HEADER_BACKGROUND_COLOR + '">');
-  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
-    { TODO :
-      replacing the <center> tag with the align=center attribute displays the links as
-      links again (with underlines etc.), question is whether we want this. }
-    WriteDirect('<td align="center"><a href="' + EscapeURL(OverviewFilenames[i] + GetFileExtension) + '">');
-    case i of
-      0: WriteConverted(FLanguage.Translation[trUnits]);
-      1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
-      2: WriteConverted(FLanguage.Translation[trCio]);
-      3: WriteConverted(FLanguage.Translation[trTypes]);
-      4: WriteConverted(FLanguage.Translation[trVariables]);
-      5: WriteConverted(FLanguage.Translation[trConstants]);
-      6: WriteConverted(FLanguage.Translation[trFunctionsAndProcedures]);
-      7: WriteConverted(FLanguage.Translation[trIdentifiers]);
-    end;
-    WriteDirect('</a></td>', true);
-  end;
-  WriteDirect('</tr>');
-  WriteDirect('</table>', true);
-end;
-
 procedure THTMLDocGenerator.WriteEmptyCell;
 begin
   WriteDirect('&nbsp;');
@@ -741,7 +698,7 @@ begin
   if css <> '' then
     s := Format('<a class="%s"', [css])
   else
-    s := '<a';
+    s := '<a class="normal"';
   if target <> '' then
     s := Format('%s target="%s"', [s, target]);
   WriteDirect(Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]));
@@ -783,11 +740,10 @@ begin
   WriteDirect('<table class="fields" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
-  WriteDirect('<tr bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '">');
+  WriteDirect('<tr class="listheader">');
   WriteDirect('<th>&nbsp;</th><th>');
   WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th class="listheader">');
   WriteConverted(FLanguage.Translation[trDescription]);
   WriteDirect('</th></tr>', true);
 
@@ -1057,10 +1013,10 @@ begin
   WriteDirect('<table class="itemlist" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
-  WriteDirect('<tr bgcolor="#' + HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteDirect('<th nowrap="nowrap">');
+  WriteDirect('<tr class="listheader">');
+  WriteDirect('<th class="listheader" nowrap="nowrap">');
   WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th width="100%">');
+  WriteDirect('</th><th class="listheader" width="100%">');
   WriteConverted(FLanguage.Translation[trDescription]);
   WriteDirect('</th></tr>', true);
 
@@ -1137,9 +1093,6 @@ begin
       7: WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
     end;
 
-//    if not HtmlHelp then
-      WriteDocumentHeadline;
-
     case i of
       2: WriteHeading(1, FLanguage.Translation[trHeadlineCio]);
       3: WriteHeading(1, FLanguage.Translation[trHeadlineTypes]);
@@ -1177,11 +1130,11 @@ begin
         WriteStartOfTableRow('');
 
         WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-        WriteLink(Item.FullLink, Item.Name, '');
+        WriteLink(Item.FullLink, Item.Name, 'bold');
         WriteEndOfTableCell;
 
         WriteStartOfTableCell;
-        WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, '');
+        WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
         WriteEndOfTableCell;
 
         if j = 0 then
@@ -1218,8 +1171,6 @@ begin
   DoMessage(3, mtInformation, 'Writing overview file ' + OverviewFilenames[7]
     + '...', []);
   WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-//  if not HtmlHelp then
-    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
   WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
     FLanguage.Translation[trDescription]);
@@ -1230,11 +1181,11 @@ begin
     WriteStartOfTableRow('');
 
     WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteLink(Item.FullLink, Item.Name, '');
+    WriteLink(Item.FullLink, Item.Name, 'bold');
     WriteEndOfTableCell;
 
     WriteStartOfTableCell;
-    WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, '');
+    WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
     WriteEndOfTableCell;
 
     if j = 0 then
@@ -1394,7 +1345,7 @@ begin
   if css <> '' then
     s := Format('<a class="%s"', [css])
   else
-    s := '<a';
+    s := '<a class="normal"';
   if target <> '' then
     s := Format('%s target="%s"', [s, target]);
   WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
@@ -1417,32 +1368,33 @@ end;
 
 procedure THTMLDocGenerator.WriteStartOfTable1Column(t: string);
 begin
+  FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
 begin
+  FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
-  WriteDirect('<tr bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
+  WriteDirect('<tr class="listheader"><th class="listheader">');
   WriteConverted(t1);
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th class="listheader">');
   WriteConverted(t2);
   WriteDirect('</th></tr>', true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable3Columns(t1, t2, T3: string);
 begin
+  FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
-  WriteDirect('<tr bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
+  WriteDirect('<tr class="listheader"><th class="listheader">');
   WriteConverted(t1);
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th class="listheader">');
   WriteConverted(t2);
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th class="listheader">');
   WriteConverted(T3);
   WriteDirect('</th></tr>', true);
 end;
@@ -1474,11 +1426,17 @@ procedure THTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
 var
   s: string;
 begin
-  if CssClass <> '' then
+  if CssClass <> '' then begin
     s := Format('<tr class="%s"', [CssClass])
-  else
-    s := '<tr';
-  WriteDirect(s + ' bgcolor="#' + HTML_ROW_BACKGROUND_COLOR + '" valign="top">');
+  end else begin
+    s := '<tr class="list';
+    if FOddTableRow = 1 then begin
+      s := s + '2';
+    end;
+    FOddTableRow := (FOddTableRow + 1) mod 2;
+    s := s + '"';
+  end;
+  WriteDirect(s + ' valign="top">');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2100,8 +2058,6 @@ begin
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
-//  if not HtmlHelp then
-    WriteDocumentHeadline;
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   WriteDirect('<table class="sections"><tr>', true);
@@ -2109,7 +2065,7 @@ begin
     begin
       WriteDirect('<td>');
       if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
+        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
       else
         WriteConverted(SectionHeads[Section]);
       WriteDirect('</td>');
@@ -2165,8 +2121,6 @@ begin
   DoMessage(3, mtInformation, 'Writing unit overview file "%s" ...',
     [OverviewFilenames[0]]);
   WriteStartOfDocument(FLanguage.Translation[trHeadlineUnits]);
-//  if not HtmlHelp then
-    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trHeadlineUnits]);
   if Assigned(c) and (c.Count > 0) then begin
     WriteStartOfTable2Columns(FLanguage.Translation[trName],
@@ -2175,7 +2129,7 @@ begin
       Item := c.PasItemAt[j];
       WriteStartOfTableRow('');
       WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-      WriteLink(Item.FullLink, Item.Name, '');
+      WriteLink(Item.FullLink, Item.Name, 'bold');
       WriteEndOfTableCell;
 
       if j = 0 then
@@ -2262,11 +2216,10 @@ begin
 
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '">', true);
-  WriteDirect('<tr bgcolor="#' +
-    HTML_HEADER_BACKGROUND_COLOR + '"><th>');
+  WriteDirect('<tr class="listheader"><th class="listheader">');
   { TODO -otwm : needs translation }
   WriteConverted('Marker');
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th class="listheader">');
   { TODO -otwm : needs translation }
   WriteConverted('Visibility');
   WriteDirect('</th></tr>', true);
@@ -2299,8 +2252,6 @@ begin
   end;
 
   WriteStartOfDocument(FLanguage.Translation[trClassHierarchy]);
-//  if not HtmlHelp then
-    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trClassHierarchy]);
 
   if FClassHierarchy.IsEmpty then begin
@@ -2330,7 +2281,7 @@ begin
       else
         begin
           WriteDirect('<li>');
-          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), '');
+          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
           WriteDirect('</li>');
         end;
       Node := FClassHierarchy.NextItem(Node);
@@ -2371,7 +2322,7 @@ begin
       WriteDirect('<li>');
       ULink := FUnits.FindName(U.UsesUnits[i]);
       if ULink is TPasUnit then begin
-        WriteLink(ULink.FullLink, U.UsesUnits[i], '');
+        WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
       end else begin
         WriteDirect(U.UsesUnits[i]);
       end;
@@ -2425,12 +2376,10 @@ begin
   LErrors.Free;
 end;
 
-function THTMLDocGenerator.ParameterString(const ParamType,
-  Param: string): string;
+procedure THTMLDocGenerator.WriteBinaryFiles;
+var
+  i: Integer;
 begin
-  Result := '<br/>' + ParamType + ' <span class="parameter">' + Param + '</span>';
-end;
-procedure THTMLDocGenerator.WriteBinaryFiles;begin
   CreateStream('automated.gif', True);
   CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
 
@@ -2450,34 +2399,61 @@ procedure THTMLDocGenerator.WriteBinaryFiles;begin
   CurrentStream.Write(img_published[0], High(img_published)+1);
   CloseStream;
 
-  if not FileExists(DestinationDirectory+'pasdoc.css') then begin
+  //if not FileExists(DestinationDirectory+'pasdoc.css') then begin
+  begin
     CreateStream('pasdoc.css', True);
     StreamUtils.WriteLine(CurrentStream, 'body {' +
-      'font-family:Verdana,Arial;' +
-      'color:#000000;' +
-      'background-color:"#ffffff";}');
-    StreamUtils.WriteLine(CurrentStream, 'a:link {' +
-      'color:#0000ff;}');
-    StreamUtils.WriteLine(CurrentStream, 'a:visited {' +
-      'color:#800080;}');
-    StreamUtils.WriteLine(CurrentStream, 'a:hover {' +
-      'background-color:yellow;' +
-      'color:black;' +
-      'text-decoration:none;}');
-    StreamUtils.WriteLine(CurrentStream, 'a:active {' +
-      'color:#FF0000;}');
-    { TODO -otwm : no longer used??? }
-    StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
-    StreamUtils.WriteLine(CurrentStream, 'table.headline {' +
-      'padding:4pt; background-color:white;}');
-    StreamUtils.WriteLine(CurrentStream, 'table.headline td {' +
-      'margin:20pt; background-color:#e0e0e0;border-style:outset;}');
-    StreamUtils.WriteLine(CurrentStream, 'table.headline a {' +
-      'color:black;text-decoration:none;background-color:#e0e0e0;}');
-    StreamUtils.WriteLine(CurrentStream, 'table.sections a {' +
-      'color:green;text-decoration:underlined;background-color:white;}');
+      'font-family: Verdana,Arial;' +
+      'color: black;' +
+      'background-color: white; font-size: 12px; }');
+    StreamUtils.WriteLine(CurrentStream, 'body.navigationframe {' +
+      'font-family: Verdana,Arial;' +
+      'color: white;' +
+      'background-color: #787878; font-size: 12px; }');
+
+    StreamUtils.WriteLine(CurrentStream, 'a.navigation:link {' +
+      'color: white; text-decoration: none;  font-size: 12px;}');
+    StreamUtils.WriteLine(CurrentStream, 'a.navigation:visited {' +
+      'color: white; text-decoration: none;  font-size: 12px;}');
+    StreamUtils.WriteLine(CurrentStream, 'a.navigation:hover {' +
+      'color: white;' +
+      'font-weight: bold; text-decoration: none;  font-size: 12px;}');
+    StreamUtils.WriteLine(CurrentStream, 'a.navigation:active {' +
+      'color: white; text-decoration: none;  font-size: 12px;}');
+
+    StreamUtils.WriteLine(CurrentStream, 'a.normal:link {' +
+      'color:#C91E0C; text-decoration: none; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.normal:visited {' +
+      'color:#7E5C31; text-decoration: none; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.normal:hover {' +
+      'text-decoration: underline; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.normal:active {' +
+      'text-decoration: underline; }');
+
+    StreamUtils.WriteLine(CurrentStream, 'a.bold:link {' +
+      'color:#C91E0C; text-decoration: none; font-weight:bold; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.bold:visited {' +
+      'color:#7E5C31; text-decoration: none; font-weight:bold; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.bold:hover {' +
+      'text-decoration: underline; font-weight:bold; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.bold:active {' +
+      'text-decoration: underline; font-weight:bold; }');
+
+    StreamUtils.WriteLine(CurrentStream, 'tr.list { background: #FFBF44; }');
+    StreamUtils.WriteLine(CurrentStream, 'tr.list2 { background: #FFC982; }');
+    StreamUtils.WriteLine(CurrentStream, 'tr.listheader { background: #C91E0C; }');
+    StreamUtils.WriteLine(CurrentStream, 'th.listheader { color: white; }');
+
+    StreamUtils.WriteLine(CurrentStream, 'a.section {' +
+      'color: green; '+
+      'text-decoration: none; '+
+      'font-weight: bold; }');
+    StreamUtils.WriteLine(CurrentStream, 'a.section:hover {' +
+      'color: green; '+
+      'text-decoration: underline; '+
+      'font-weight: bold; }');
     StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
-      'white-space:nowrap;}');
+      'white-space:nowrap; }');
     StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
       'color:red;}');
     StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
@@ -2487,6 +2463,43 @@ procedure THTMLDocGenerator.WriteBinaryFiles;begin
 
     CloseStream;
   end;
+
+  CreateStream('index.html', True);
+  WriteLine(CurrentStream, '<html><head><title>'+Title+'</title>');
+  WriteLine(CurrentStream, '</head><frameset cols="200,*" border="1">');
+  WriteLine(CurrentStream, '<frame src="navigation.html"/>');
+  WriteLine(CurrentStream, '<frame src="AllUnits.html" name="content"/>');
+  WriteLine(CurrentStream, '</frameset></html>');
+  CloseStream;
+
+  CreateStream('navigation.html', True);
+  WriteLine(CurrentStream, '<html><head>');
+  WriteDirect('<link rel="StyleSheet" href="');
+  WriteDirect(EscapeURL('pasdoc.css'));
+  WriteDirect('"/>', true);
+  WriteLine(CurrentStream, '</head>');
+  WriteLine(CurrentStream, '<body class="navigationframe">');
+  WriteDirect('<h2>'+Title+'</h2>');
+  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
+    + '" cellpadding="' + HTML_TABLE_CELLPADNG
+    + '" width="100%">', true);
+  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
+    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(OverviewFilenames[i] + GetFileExtension) + '" class="navigation">');
+    case i of
+      0: WriteConverted(FLanguage.Translation[trUnits]);
+      1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
+      2: WriteConverted(FLanguage.Translation[trCio]);
+      3: WriteConverted(FLanguage.Translation[trTypes]);
+      4: WriteConverted(FLanguage.Translation[trVariables]);
+      5: WriteConverted(FLanguage.Translation[trConstants]);
+      6: WriteConverted(FLanguage.Translation[trFunctionsAndProcedures]);
+      7: WriteConverted(FLanguage.Translation[trIdentifiers]);
+    end;
+    WriteDirect('</a></td></tr>', true);
+  end;
+  WriteDirect('</table>', true);
+  WriteLine(CurrentStream, '</body></html>');
+  CloseStream;
 end;
 
 function THTMLDocGenerator.ConvertString(const s: String): String;
