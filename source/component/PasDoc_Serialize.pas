@@ -93,7 +93,7 @@ var
 begin
   ASource.Read(L, SizeOf(L));
   SetLength(Result, L);
-  ASource.Read(Result[1], L);
+  ASource.Read(Pointer(Result)^, L);
 end;
 
 class procedure TSerializable.Register(const AClass: TSerializableClass);
@@ -122,7 +122,7 @@ var
 begin
   L := Length(AValue);
   ADestination.Write(L, SizeOf(L));
-  ADestination.Write(AValue[1], L);
+  ADestination.Write(Pointer(AValue)^, L);
 end;
 
 class procedure TSerializable.SerializeObject(const AObject: TSerializable;
