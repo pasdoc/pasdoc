@@ -279,7 +279,6 @@ type
       read GetUnitAt
       write SetUnitAt;
     function ExistsUnit(const AUnit: TPasUnit): Boolean;
-    function IndexOfUnit(const AUnit: TPasUnit): Integer;
   end;
 
 function NewPasItems(const AOwnsObjects: boolean): TPasItems;
@@ -938,35 +937,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TPasUnits.ExistsUnit(const AUnit: TPasUnit): Boolean;
-var
-  i: Integer;
-  LUnitName: string;
 begin
-  LUnitName := LowerCase(AUnit.Name);
-  Result := false;
-  for i := 0 to Count - 1 do begin
-    if LowerCase(TPasUnit(ObjectAt[i]).Name) = LUnitName then begin
-      Result := True;
-      break;
-    end;
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function TPasUnits.IndexOfUnit(const AUnit: TPasUnit): Integer;
-var
-  i: Integer;
-  LUnitName: string;
-begin
-  LUnitName := LowerCase(AUnit.Name);
-  Result := -1;
-  for i := 0 to Count - 1 do begin
-    if LowerCase(TPasUnit(ObjectAt[i]).Name) = LUnitName then begin
-      Result := i;
-      break;
-    end;
-  end;
+  Result := FindName(AUnit.Name) <> nil;
 end;
 
 { ---------------------------------------------------------------------------- }
