@@ -72,6 +72,7 @@ type
     function ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
       TCIOType; d: string): Boolean;
     { }
+    function ParseRecordCase(const R: TPasCio; const SubCase: boolean = false): boolean;
     function ParseConstant(const U: TPasUnit; t: TToken): Boolean;
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
     function ParseProperty(var p: TPasProperty): Boolean;
@@ -530,16 +531,26 @@ begin
           KEY_END: Finished := True;
           KEY_PROPERTY: begin
               if (not ParseProperty(p)) then begin
+                FreeAndNil(t);
                 Exit;
               end;
               p.State := State;
               p.InsertProperty(p, i.Properties);
             end;
+          KEY_CASE: begin
+              if not ParseRecordCase(i) then begin
+                FreeAndNil(t);
+                Exit;
+              end;
+            end;
         else begin
             i.Free;
-            FreeAndNil(t);
-            DoError('%s: Error, unexpected reserved keyword "%s".',
-              [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]]);
+            try
+              DoError('%s: Error, unexpected reserved keyword "%s".',
+                [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]]);
+            finally
+              FreeAndNil(t);
+            end;
           end;
         end
       else
@@ -566,8 +577,10 @@ begin
             f.Name := t.Data;
             f.State := State;
             f.Description := GetLastComment;
-            if not SkipDeclaration then
+            if not SkipDeclaration then begin
+              f.Free;
               Exit;
+            end;
 
             f.InsertItem(f, i.Fields);
           end;
@@ -763,6 +776,107 @@ end;
           ANYTHING
     interface end ;              => interface
 }
+
+function TParser.ParseRecordCase(const R: TPasCio;
+  const SubCase: boolean): boolean;
+var
+  t1, t2: TToken;
+  P: TPasItem;
+  LLastWasComma: boolean;
+begin
+  Result := True;
+  t1:=nil; t2:=nil;
+  GetNextNonWCToken(t1);
+  if t1.MyType <> TOK_IDENTIFIER then begin
+    Result := False;
+    FreeAndNil(t1);
+  end else begin
+    GetNextNonWCToken(t2);
+    if (t2.MyType = TOK_SYMBOL) and (t2.Info.SymbolType = SYM_COLON) then begin
+      // case x:Type of
+      FreeAndNil(t2); // colon
+      GetNextNonWCToken(t2);
+      P := TPasItem.Create;
+      p.Name := t1.Data;
+      p.Description := GetLastComment;
+      p.InsertItem(p, R.Fields);
+    end else begin
+      // case Type of
+      Scanner.UnGetToken(t2);
+    end;
+    FreeAndNil(t2);
+    FreeAndNil(t1);
+    GetNextNonWCToken(t1);
+    if (t1.MyType <> TOK_RESERVED) or (t1.Info.ReservedKey <> KEY_OF) then begin
+      FreeAndNil(t1);
+      DoError('OF expected',[],1);
+    end;
+    FreeAndNil(t1);
+    GetNextNonWCToken(t1);
+    repeat
+      FreeAndNil(t1);
+      GetNextNonWCToken(t1);
+      if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_COLON) then begin
+        FreeAndNil(t1);
+        DoError(': expected', [], 1);
+      end;
+      FreeAndNil(t1);
+      GetNextNonWCToken(t1);
+      if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
+        FreeAndNil(t1);
+        DoError('( expected', [], 1);
+      end;
+      FreeAndNil(t1);
+      GetNextNonWCToken(t1);
+      while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
+        if t1.MyType = TOK_IDENTIFIER then begin
+          P := TPasItem.Create;
+          p.Description := GetLastComment;
+          P.Name:=t1.Data;
+          p.InsertItem(p, R.Fields);
+          FreeAndNil(t1);
+          GetNextNonWCToken(t1);
+          LLastWasComma := false;
+          while (t1.MyType <> TOK_SYMBOL) OR ((t1.Info.SymbolType <> SYM_SEMICOLON) and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS)) do begin
+            if (t1.MyType = TOK_IDENTIFIER) and LLastWasComma then begin
+              p := TPasItem.Create;
+              p.Description := GetLastComment;
+              p.Name := t1.data;
+              p.InsertItem(p, R.Fields);
+            end;
+            LLastWasComma := false;
+            if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
+              LLastWasComma := True;
+            end;
+            FreeAndNil(t1);
+            GetNextNonWCToken(t1);
+          end;
+          if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then begin
+            Scanner.UnGetToken(t1);
+          end;
+        end else begin
+          if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_CASE) then begin
+            ParseRecordCase(R, true);
+          end else begin
+            FreeAndNil(t1);
+            DoError('Invalid keyword found',[],1);
+          end;
+        end;
+        FreeAndNil(t1); // free token
+        GetNextNonWCToken(t1);
+      end;
+      FreeAndNil(t1); // free ')' token
+      GetNextNonWCToken(t1); // next
+      if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_SEMICOLON) then begin
+        FreeAndNil(t1);
+        GetNextNonWCToken(t1);
+      end;
+      if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_END) then break;
+      if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
+    until false;
+    Scanner.UnGetToken(t1);
+  end;
+end;
 
 function TParser.ParseType(const U: TPasUnit; var t: TToken): Boolean;
 var

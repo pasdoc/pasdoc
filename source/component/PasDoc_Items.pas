@@ -281,6 +281,9 @@ type
     function ExistsUnit(const AUnit: TPasUnit): Boolean;
   end;
 
+const
+  CIO_NonHierarchy = [CIO_RECORD];
+
 function NewPasItems(const AOwnsObjects: boolean): TPasItems;
 function NewPasMethods(const AOwnsObjects: boolean): TPasMethods;
 function NewPasProperties(const AOwnsObjects: boolean): TPasProperties;
