@@ -1078,6 +1078,7 @@ begin
     if (DetailedDescription[Offs1] = '@') and
         DescriptionFindTag(DetailedDescription, 'CVS', Offs1, Offs2, Offs3) then begin
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, LTagData);
+      l := length(DetailedDescription);
       if Length(LTagData)>1 then begin
         case LTagData[2] of
           'D': begin
@@ -1222,6 +1223,7 @@ begin
     begin
       { we found one, remove it from the description and add it to the parameter list }
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      l := length(DetailedDescription);
       if s <> '' then begin
         FRaises.Add(s);
       end;
@@ -1248,6 +1250,7 @@ begin
     begin
       { we found one, remove it from the description and add it to the parameter list }
       DescriptionExtractTag(FDetailedDescription, Offs1, Offs2, Offs3, s);
+      l := length(DetailedDescription);
       if s <> '' then begin
         FParams.Add(s);
       end;
