@@ -48,7 +48,7 @@ type
   TPasProperties = class;
 
   { basic linkable item in pasdoc hierarchy }
-  TPasItem = class(TPersistent)
+  TPasItem = class(TObject)
   private
   protected
     FFullLink: string;
@@ -267,9 +267,6 @@ type
     FIsCached: boolean;
     FSourceFilename: string;
     FOutputFileName: string;
-    procedure DefineProperties(Filer: TFiler); override;
-    procedure LoadCachedProperty(Reader: TReader);
-    procedure StoreCachedProperty(Writer: TWriter);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -1084,21 +1081,6 @@ destructor TPasEnum.Destroy;
 begin
   FMembers.Free;
   inherited;
-end;
-
-procedure TPasUnit.DefineProperties(Filer: TFiler);
-begin
-  inherited;
-  Filer.DefineProperty('Cached', LoadCachedProperty, StoreCachedProperty, True);
-end;
-
-procedure TPasUnit.LoadCachedProperty(Reader: TReader);
-begin
-  FIsCached := True;
-end;
-
-procedure TPasUnit.StoreCachedProperty(Writer: TWriter);
-begin
 end;
 
 procedure TPasItem.SetAuthors(const Value: TStringVector);

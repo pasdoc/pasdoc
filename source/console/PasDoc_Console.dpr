@@ -46,7 +46,7 @@ uses
   OptionParser,
   PasDoc_Types,
   PasDoc_RunHelp;
-
+  
 var
   GPasDoc: TPasDoc;
   GOptionParser: TOptionParser;
