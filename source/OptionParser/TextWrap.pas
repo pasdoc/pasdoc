@@ -31,7 +31,10 @@ uses
   SysUtils;
 
 const
-  sLineBreak = {$IFDEF LINUX} #10 {$ENDIF} {$IFDEF WIN32} #13#10 {$ENDIF};
+{$IFDEF DELPHI_6_UP}
+  LINEEnding: string = #13#10;
+{$ENDIF}
+  sLineBreak = LineEnding;
   
   
 { LeadBytes is a char set that indicates which char values are lead bytes
