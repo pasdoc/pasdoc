@@ -42,7 +42,7 @@ const
   NUM_OVERVIEW_FILES_USED = 8;
 
   { names of all overview files, extensions not included }
-  OverviewFilenames: array[0..NUM_OVERVIEW_FILES - 1] of string =
+  OverviewFilenames: array[0..NUM_OVERVIEW_FILES - 1] of shortstring =
   ( 'AllUnits',
     'ClassHierarchy',
     'AllClasses',
