@@ -116,7 +116,7 @@ type
       in Html. }
     function CodeString(const s: string): string; override;
     { Returns a link to an anchor within a document. HTML simply concatenates
-      the strings with a "#" character between them. }
+      the strings with a "-" character between them. }
     function CreateLink(const Item: TPasItem): string; override;
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
@@ -319,7 +319,8 @@ end;
 function TTexDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result :=  '\texttt{'+ItemName +'}(\ref{' + EscapeURL(Link) + '})'; 
+  Result :=  '\texttt{'+ConvertString(ItemName) +'}(\ref{' + 
+     EscapeURL(Link) + '})'; 
 end;
 
 function TTexDocGenerator.GetFileExtension: string;
@@ -358,6 +359,7 @@ begin
 
     if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
       WriteConverted(S1);
+      WriteConverted(EmailAddress);
       WriteConverted(S2);
     end else begin
       WriteConverted(s);
@@ -390,29 +392,6 @@ var
   j: integer;
 begin
   if not Assigned(CIO) then Exit;
-(*
-  { *********** WRITE THE OVERVIEW  }
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  WriteDirect('\begin{description}',true);
-  for j := 0 to c.Count - 1 do begin
-    p := TPasCio(c.PasItemAt[j]);
-    WriteDirect('\item[{\ttfamily ');
-    WriteLink(p.FullLink, CodeString(p.Name), 'bold');
-    WriteDirect('=');
-    { name of class/interface/object and unit }
-    WriteConverted(GetCIOTypeName(p.MyType));
-    WriteDirect('}]');
-
-    { Write only the description and do not opt for DetailedDescription,
-      like WriteItemDescription does. }
-    if p.Description <> '' then
-      WriteWithURLs(p.Description);
-    WriteDirect('',true);
-  end;
-  WriteDirect('\end{description}',true);
-  
-*)
-  { *********** WRITE THE DETAILED INFORMATION  }
   { write the complete definition }  
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
   
@@ -614,16 +593,13 @@ begin
           WriteItemDetailedDescription(CIO);
         end;
         
+      if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
+          WriteProperties(HL + 2, CIO.Properties);
+        
       WriteFields(HL + 2, CIO.Fields);
 
       WriteMethods(HL + 2, CIO.Methods);
         
-(*
-      if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
-        begin
-          WritePropertiesSummary(HL + 1, CIO.Properties);
-          WriteProperties(HL + 1, CIO.Properties);
-        end;*)
 
       WriteAuthors(HL + 2, CIO.Authors);
       WriteDates(HL + 2, CIO.Created, CIO.LastMod);
@@ -897,7 +873,7 @@ end;
 
 procedure TTexDocGenerator.WriteFooter;
 begin
-  WriteConverted(Footer);
+{  WriteConverted(Footer);}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1081,11 +1057,10 @@ var
   p: TPasMethod;
   s: string;
  begin
+  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+  
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
-  // two passes, in the first (i=0) we write the overview
-  // in the second (i=1) we write the descriptions
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
   WriteDirect('\begin{description}',true);
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
@@ -1250,9 +1225,11 @@ begin
   if AItem.Description <> '' then 
   begin
     WriteWithURLs(AItem.Description);
-
+    
     if AItem.DetailedDescription <> '' then 
       begin
+        WriteDirect('\hfill\vspace*{1ex}',true);
+        WriteDirect('',true);
         WriteWithURLs(AItem.DetailedDescription);
       end;
   end else 
@@ -1268,9 +1245,7 @@ begin
         Ancestor := TPasCio(SearchItem(AncestorName, AItem));
         if Assigned(Ancestor) then
           begin
-            WriteDirect('<div class="nodescription">');
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteDirect('</div>');
             WriteItemDetailedDescription(Ancestor);
           end;
       end else
@@ -1520,31 +1495,48 @@ procedure TTexDocGenerator.WriteProperties(HL: integer; const p:
 var
   j: Integer;
   Prop: TPasProperty;
+  s: string;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-  for j := 0 to p.Count - 1 do begin
-    Prop := TPasProperty(p.PasItemAt[j]);
-
-    WriteStartOfTable1Column('');
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Prop);
-
-    WriteStartOfTableCell('width="100%"', '');
-    WriteAnchor(Prop.Name,Prop.FullLink);
-    WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration, '');
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-    WriteEndOfTable;
-
-    WriteStartOfParagraph;
-    WriteItemDetailedDescription(Prop);
-    WriteEndOfParagraph;
-
-  end;
+  WriteHeading(HL, FLanguage.Translation[trProperties]);
+  
+  { get the longest string for names }
+  s:='';
+  for j := 0 to p.Count - 1 do
+    begin
+      Prop := TpasProperty(p.PasItemAt[j]);
+      if length(s) < length(Prop.Name) then
+        s:=Prop.Name;
+    end;
+  
+  { Determine the longest string used.
+    This is the one we will use for determining the label width.
+  }
+  WriteDirect('\begin{list}{}{',true);
+  WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+  WriteDirect('\setlength{\itemindent}{0cm}',true);
+  WriteDirect('\setlength{\listparindent}{0cm}',true);
+  WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+  WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+  WriteDirect('\settowidth{\labelsep}{X}',true);
+  WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+  WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+  WriteDirect('}',true);
+  for j := 0 to p.Count - 1 do 
+    begin
+      Prop := TPasProperty(p.PasItemAt[j]);
+      WriteDirect('\item[');
+      WriteDirect('\textbf{'+Prop.name);
+      WriteDirect('}\hfill]',true);
+      WriteDirect('',true);
+      WriteDirect('\begin{flushleft}',true);
+      WriteCodeWithLinks(Prop, Prop.FullDeclaration, '');
+      WriteDirect('\end{flushleft}',true);
+      WriteDirect('\par ');
+      WriteItemDetailedDescription(Prop);
+    end;
+   WriteDirect('\end{list}',true); 
 end;
 
 procedure TTexDocGenerator.WritePropertiesSummary(HL: integer; p:
@@ -1553,31 +1545,6 @@ var
   j: Integer;
   Prop: TPasProperty;
 begin
-  if ObjectVectorIsNilOrEmpty(p) then Exit;
-
-  WriteAnchor('@Properties','');
-
-  WriteHeading(HL, FLanguage.Translation[trProperties]);
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-
-  WriteStartOfTable1Column('');
-  for j := 0 to p.Count - 1 do begin
-    Prop := TPasProperty(p.PasItemAt[j]);
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Prop);
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-
-    WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration,
-      Prop.FullLink);
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-  WriteEndOfTable;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1587,7 +1554,7 @@ begin
      WriteDirect('\label{'+Link+'}',true)
   else
      WriteDirect('\label{'+ItemName+'}',true);
-  WriteDirect('\index{'+ItemName+'}',true);
+  WriteDirect('\index{'+ConvertString(ItemName)+'}',true);
 end;
 
 
@@ -1832,8 +1799,10 @@ begin
   WriteUnitDescription(HL + 1, U);
 
   WriteUnitUses(HL + 1, U);
-
+  
+  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
   WriteCIOSummary(HL + 1, U.CIOs);
+  WriteFuncsProcsSummary(HL + 1, U.FuncsProcs);
   
   WriteCIOs(HL + 1, U.CIOs);
 
@@ -1859,6 +1828,7 @@ procedure TTexDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
 begin
   WriteHeading(HL, FLanguage.Translation[trDescription]);
   WriteItemDetailedDescription(U);
+  WriteDirect('',true);
 end;
 
 procedure TTexDocGenerator.WriteUnitOverviewFile;
@@ -2371,3 +2341,12 @@ end;
 
 end.
 
+{
+  $Log$
+  Revision 1.4  2004/03/12 05:01:21  ccodere
+  added support for properties.
+  added support for overview of functions
+  some fixes regarding illegal characters
+  some fixes regarding some vertical spacing
+
+}
