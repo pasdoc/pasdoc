@@ -21,7 +21,15 @@ uses
   PasDoc_Languages,
   PasDoc_Gen,
   PasDoc_Types,
-  StringVector;
+  StringVector
+{$IFNDEF FPC}
+{$IFDEF WIN32}
+{$IFNDEF DELPHI_6_UP}
+  ,FileCtrl
+{$ENDIF}
+{$ENDIF}
+{$ENDIF}
+  ;
   
 const
   DEFAULT_VERBOSITY_LEVEL = 2;
