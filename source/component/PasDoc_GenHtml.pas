@@ -212,7 +212,7 @@ const
 implementation
 
 uses
-{$IFDEF MSWINDOWS
+{$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
   SysUtils,
