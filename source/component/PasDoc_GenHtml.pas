@@ -2596,7 +2596,8 @@ begin
 
       CloseStream;
     end;
-  end;
+  end else
+    DoMessage(2, mtInformation, '"pasdoc.css" file already exists, not overwriting', []);
 end;
 
 procedure THTMLDocGenerator.WriteFramesetFiles;
