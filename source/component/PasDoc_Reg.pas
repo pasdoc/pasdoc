@@ -1,5 +1,7 @@
 { @abstract(Registers the PasDoc components into the IDE. )
-  @author(Ralf Junker (delphi@zeitungsjunge.de)) }
+  @author(Ralf Junker (delphi@zeitungsjunge.de))
+  @cvs($Date$)
+  @author(Johannes Berg <johannes@sipsolutions.de> }
 
 unit PasDoc_Reg;
 
@@ -12,13 +14,12 @@ implementation
 
 uses
   Classes,
-  PasDoc;
-
-{ ---------------------------------------------------------------------------- }
+  PasDoc,
+  PasDoc_GenHtml;
 
 procedure Register;
 begin
-  RegisterComponents('The Delphi Inspiration', [TPasDoc]);
+  RegisterComponents('PasDoc', [TPasDoc, THTMLDocGenerator]);
 end;
 
 end.
