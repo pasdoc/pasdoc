@@ -121,7 +121,7 @@ type
     property MyUnit: TPasUnit read FMyUnit write FMyUnit;
     { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
     property MyObject: TPasCio read FMyObject write FMyObject;
-  published
+
     { description of this item, a single sentence }
     property Description: string read FDescription write FDescription;
     { more detailed description of this item, mostly more than one
@@ -148,7 +148,7 @@ type
   TPasVarConst = class(TPasItem)
   protected
     FFullDeclaration: string;
-  published
+  public
     { full declaration, including type, default values, etc }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
   end;
@@ -160,7 +160,6 @@ type
   public
     destructor Destroy; override;
     constructor Create; override;
-  published
     property Members: TPasItems read FMembers;
   end;
 
@@ -179,7 +178,7 @@ type
     FRaises: TStringVector;
     FFullDecl: string;
     FWhat: TMethodType;
-  published
+  public
     destructor Destroy; override;
     procedure HandleParamTag; override;
     procedure HandleReturnsTag; override;
@@ -204,7 +203,7 @@ type
     FFullDeclaration: string;
     FPropType: string;
     FReader: string;
-  published
+  public
     { full declaration, including read/write and storage specifiers }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
     { contains the optional index declaration, including brackets }
@@ -252,7 +251,7 @@ type
     function FindFieldMethodProperty(const ItemName: string): TPasItem;
 
     procedure SortPasItems;
-  published
+  public
     { name of the ancestor class / object }
     property Ancestors: TStringVector read FAncestors;
     { list of all fields }
@@ -292,7 +291,7 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
-  published
+  public
     { list of classes and objects defined in this unit }
     property CIOs: TPasItems read FCIOs;
     { list of constants defined in this unit }
