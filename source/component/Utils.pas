@@ -67,7 +67,6 @@ procedure InsertParagraphs(var d:string; const Paragraph:string);
 implementation
 uses
   SysUtils,
-  StrUtils,
   Classes;
 
 {$IFDEF FPC}
@@ -168,6 +167,7 @@ const
   WhiteSpaces = [#10, #13, ' ', #9];
 var
   BeginPos, EndPos, Done, LineEndingPos, I:Integer;
+  TempString: string;
 begin
   d := AdjustLineBreaks(d);
   
@@ -197,7 +197,9 @@ begin
   Done := 1; 
   while Done<=Length(d) do
   begin
-    LineEndingPos := PosEx(LineEnding, d, Done);
+    TempString:=Copy(d, Done, Length(d));
+    LineEndingPos := Pos(LineEnding, TempString) + (Done-1);
+{    LineEndingPos:=PosEx(LineEnding,d,Done); }
     if LineEndingPos = 0 then Break;
     
     I := LineEndingPos + Length(LineEnding);

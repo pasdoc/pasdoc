@@ -90,15 +90,15 @@ type
     procedure WriteStartOfDocument(AName: string);
 
     procedure WriteStartOfLink(const href: string); overload;
-    procedure WriteStartOfLink(const href, css: string); overload;
-    procedure WriteStartOfLink(const href, css, Target: string); overload;
+    procedure WriteStartOfLink(const href, localcss: string); overload;
+    procedure WriteStartOfLink(const href, localcss, Target: string); overload;
 
     { Starts an HTML paragraph element by writing an opening P tag. }
     procedure WriteStartOfParagraph;
 
     procedure WriteStartOfTableCell; overload;
-    procedure WriteStartOfTableCell(const css: string); overload;
-    procedure WriteStartOfTableCell(const Params, css: string); overload;
+    procedure WriteStartOfTableCell(const localcss: string); overload;
+    procedure WriteStartOfTableCell(const Params, localcss: string); overload;
 
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
@@ -197,9 +197,9 @@ type
 
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
-    procedure WriteImage(const src, alt, css: string);
-    procedure WriteLink(const href, caption, css: string); overload;
-    procedure WriteLink(const href, caption, css, target: string); overload;
+    procedure WriteImage(const src, alt, localcss: string);
+    procedure WriteLink(const href, caption, localcss: string); overload;
+    procedure WriteLink(const href, caption, localcss, target: string); overload;
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
     procedure WriteEndOfLink;
@@ -780,17 +780,17 @@ begin
   WriteDirect('</code>');
 end;
 
-procedure THTMLDocGenerator.WriteLink(const href, caption, css: string);
+procedure THTMLDocGenerator.WriteLink(const href, caption, localcss: string);
 begin
-  WriteLink(href, caption, css, '');
+  WriteLink(href, caption, localcss, '');
 end;
 
-procedure THTMLDocGenerator.WriteLink(const href, caption, css, target: string);
+procedure THTMLDocGenerator.WriteLink(const href, caption, localcss, target: string);
 var
   s: string;
 begin
   if css <> '' then
-    s := Format('<a class="%s"', [css])
+    s := Format('<a class="%s"', [localcss])
   else
     s := '<a class="normal"';
   if target <> '' then
@@ -1434,12 +1434,12 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const href, css, Target: string);
+procedure THTMLDocGenerator.WriteStartOfLink(const href, localcss, Target: string);
 var
   s: string;
 begin
   if css <> '' then
-    s := Format('<a class="%s"', [css])
+    s := Format('<a class="%s"', [localcss])
   else
     s := '<a class="normal"';
   if target <> '' then
@@ -1447,9 +1447,9 @@ begin
   WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const href, css: string);
+procedure THTMLDocGenerator.WriteStartOfLink(const href, localcss: string);
 begin
-  WriteStartOfLink(href, css, '');
+  WriteStartOfLink(href, localcss, '');
 end;
 
 procedure THTMLDocGenerator.WriteStartOfLink(const href: string);
@@ -1495,12 +1495,12 @@ begin
   WriteDirect('</th></tr>', true);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, css: string);
+procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, localcss: string);
 var
   s: string;
 begin
   if css <> '' then
-    s := Format('<td class="%s"',[css])
+    s := Format('<td class="%s"',[localcss])
   else
     s := '<td';
   if Params <> '' then
@@ -1508,9 +1508,9 @@ begin
   WriteDirect(s+'>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell(const css: string);
+procedure THTMLDocGenerator.WriteStartOfTableCell(const localcss: string);
 begin
-  WriteStartOfTableCell('', css);
+  WriteStartOfTableCell('', localcss);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTableCell;
@@ -2270,12 +2270,12 @@ begin
   CloseStream;
 end;
 
-procedure THTMLDocGenerator.WriteImage(const src, alt, css: string);
+procedure THTMLDocGenerator.WriteImage(const src, alt, localcss: string);
 var
   s: string;
 begin
   if css <> '' then
-    s := Format('<img class="%s"', [css])
+    s := Format('<img class="%s"', [localcss])
   else
     s := '<img border="0"';
   WriteDirect(Format('%s src="%s" alt="%s"/>', [s, src, alt]));
@@ -2615,7 +2615,7 @@ const
       trIdentifiers
   );
 
-  procedure WriteLink(const Filename: string; CaptionId: TTranslationID);
+  procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID);
   begin
     WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
     WriteConverted(FLanguage.Translation[CaptionId]);
@@ -2648,11 +2648,11 @@ begin
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
     + '" width="100%">', true);
   for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do 
-    WriteLink(OverviewFilenames[i] + GetFileExtension, TRANSLATION_IDS[i]);
+    LocalWriteLink(OverviewFilenames[i] + GetFileExtension, TRANSLATION_IDS[i]);
   if (LinkGraphVizUses <> '') then
-    WriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
+    LocalWriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
   if (LinkGraphVizClasses <> '') then
-    WriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
+    LocalWriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
   WriteDirect('</table>', true);
   WriteLine(CurrentStream, '</body></html>');
   CloseStream;
