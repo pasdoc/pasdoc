@@ -117,6 +117,9 @@ type
     { Forwards a message to the @link(OnMessage) event. }
     procedure DoMessage(const AVerbosity: Cardinal; const AMessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
+    { for Generator messages }
+    procedure GenMessage(const MessageType: TMessageType; const
+      AMessage: string; const AVerbosity: Cardinal);
     { Starts creating the documentation. }
     procedure Execute;
     { }
@@ -463,13 +466,13 @@ begin
   { create desired output generator }
   case OutputFormat of
     ofHtml, ofHtmlHelp: begin
-        Generator := THTMLDocGenerator.Create(FOnMessage, FVerbosity);
+        Generator := THTMLDocGenerator.Create(nil);
+        Generator.OnMessage := GenMessage;
         // Additional settings for Html Help
         if OutputFormat = ofHtmlHelp then
           with THTMLDocGenerator(Generator) do begin
             ContentsFile := Self.FHtmlHelpContentsFileName;
             HtmlHelp := True;
-            NoHHC := not Self.InvokeHtmlHelpCompiler;
           end;
       end;
   else begin
@@ -481,13 +484,14 @@ begin
   Generator.Header := FHeader;
   Generator.Footer := FFooter;
   Generator.Language := Language;
-  Generator.DestDir := FOutputFolder;
+  Generator.DestinationDirectory := FOutputFolder;
   Generator.NoGeneratorInfo := not GeneratorInfo;
 
-  if FProjectName <> '' then
+  if FProjectName <> '' then begin
     Generator.ProjectName := FProjectName
-  else
+  end else begin
     Generator.ProjectName := Translation[trHelp];
+  end;
 
   Generator.Title := Title;
   Generator.Units := FUnits;
@@ -634,6 +638,12 @@ constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
 begin
   ExitCode := AExitCode;
   CreateFmt(AMessage, AArguments);
+end;
+
+procedure TPasDoc.GenMessage(const MessageType: TMessageType;
+  const AMessage: string; const AVerbosity: Cardinal);
+begin
+  DoMessage(AVerbosity, MessageType, AMessage, []);
 end;
 
 end.

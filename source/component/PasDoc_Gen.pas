@@ -6,7 +6,7 @@
   @author(Philippe Jean Dit Bailleul (jdb@abacom.com))
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
   @created(30 Aug 1998)
-  @lastmod(20 Apr 2000)
+  @lastmod(2003-03-29)
 
   GenDoc contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce
@@ -38,14 +38,14 @@ const
 
   { names of all overview files, extensions not included }
   OverviewFilenames: array[0..NUM_OVERVIEW_FILES - 1] of string =
-  ('AllUnits',
-    'AllClasH',
-    'AllClass',
+  ( 'AllUnits',
+    'ClassHierarchy',
+    'AllClasses',
     'AllTypes',
-    'AllVaria',
-    'AllConst',
-    'AllFuncs',
-    'AllIdent');
+    'AllVariables',
+    'AllConstants',
+    'AllFunctions',
+    'AllIdentifiers');
 
 type
   { @abstract(basic documentation generator object)
@@ -57,47 +57,44 @@ type
     values and program parameters.
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
-  TDocGenerator = class(TObject)
-  private
-    FOnMessage: TPasDocMessageEvent;
-    FVerbosity: Cardinal;
+  TDocGenerator = class(TComponent)
   protected
+    FHeader: string;
+    FFooter: string;
+    { the (human) output language of the documentation file(s);
+      one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
+      default language is @link(DEFAULT_LANGUAGE) }
+    FLanguage: TLanguageID;
+    { Name of the project to create. }
+    FProjectName: string;
+    { if true, no link to pasdoc homepage will be included at the bottom of
+      HTML files;
+      default is false }
+    FNoGeneratorInfo: Boolean;
+    { the output stream that is currently written to; depending on the
+      output format, more than one output stream will be necessary to
+      store all documentation }
+    FCurrentStream: TStream;
+    { Title of documentation. }
+    FTitle: string;
+    { destination directory for documentation; must include terminating
+      forward slash or backslash so that valid file names can be created
+      by concatenating DestinationDirectory and a pathless file name }
+    FDestDir: string;
+
+    FOnMessage: TPasDocMessageEvent;
+
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
+    property CurrentStream: TStream read FCurrentStream;
+
   public
-    { destination directory for documentation; must include terminating
-      forward slash or backslash so that valid file names can be created
-      by concatenating DestDir and a pathless file name }
-    DestDir: string;
-    // KeepLineFeeds: Boolean;
-    { the (human) output language of the documentation file(s);
-      one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
-      default language is @link(DEFAULT_LANGUAGE) }
-    Header: string;
-    Footer: string;
-    Language: TLanguageID;
-    { Name of the project to create. }
-    ProjectName: string;
-    { if true, no link to pasdoc homepage will be included at the bottom of
-      HTML files;
-      default is false }
-    NoGeneratorInfo: Boolean;
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
-    Stream: TStream;
-    { Title of documentation. }
-    Title: string;
     { list of all units that were successfully parsed }
     Units: TPasUnits;
     { Creates anchors and links for all items in all units. }
-
-    constructor Create(
-      const OnMessageEvent: TPasDocMessageEvent;
-      const VerbosityLevel: Cardinal);
 
     procedure BuildLinks;
     { Checks if D is assigned and empty - if so, disposes of D and sets it to
@@ -241,7 +238,7 @@ type
       Heading level HL is used for the heading Translation[trPROPERTIES). }
     procedure WriteProperties(HL: Byte; const p: TPasProperties); virtual;
       abstract;
-    { Writes a resources to DestDir. Existing files will not be overwritten. }
+    { Writes a resources to DestinationDirectory. Existing files will not be overwritten. }
     procedure WriteResourceToFile(const ResourceName, ResourceType: PChar;
       const FileName: string);
     { Writes String S to output, converting each character using
@@ -277,12 +274,30 @@ type
 
     procedure WriteStartOfCode; virtual; abstract;
     procedure WriteEndOfCode; virtual; abstract;
+  published
+    property Header: string read FHeader write FHeader;
+    property Footer: string read FFooter write FFooter;
+    { the (human) output language of the documentation file(s);
+      one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
+      default language is @link(DEFAULT_LANGUAGE) }
+    property Language: TLanguageID read FLanguage write FLanguage;
+    { Name of the project to create. }
+    property ProjectName: string read FProjectName write FProjectName;
+    { if true, no link to pasdoc homepage will be included at the bottom of
+      HTML files;
+      default is false }
+    property NoGeneratorInfo: Boolean read FNoGeneratorInfo write FNoGeneratorInfo;
+    { the output stream that is currently written to; depending on the
+      output format, more than one output stream will be necessary to
+      store all documentation }
+    property Title: string read FTitle write FTitle;
+    { destination directory for documentation; must include terminating
+      forward slash or backslash so that valid file names can be created
+      by concatenating DestinationDirectory and a pathless file name }
+    property DestinationDirectory: string read FDestDir write FDestDir;
+
+    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   end;
-
-  { Creates a String from a number, concatenating the String 'link' and a String
-    version of Number. }
-
-function AnchorToString(Number: Integer): string;
 
 implementation
 
@@ -293,27 +308,7 @@ uses
   ObjectVector;
 
 { ---------------------------------------------------------------------------- }
-{ Utilities
-{ ---------------------------------------------------------------------------- }
-
-function AnchorToString(Number: Integer): string;
-begin
-  AnchorToString := IntToStr(Number);
-end;
-
-{ ---------------------------------------------------------------------------- }
 { TDocGenerator
-{ ---------------------------------------------------------------------------- }
-
-constructor TDocGenerator.Create(
-  const OnMessageEvent: TPasDocMessageEvent;
-  const VerbosityLevel: Cardinal);
-begin
-  inherited Create;
-  FOnMessage := OnMessageEvent;
-  FVerbosity := VerbosityLevel;
-end;
-
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.BuildLinks;
@@ -358,7 +353,7 @@ begin
     U := Units.UnitAt[i];
     U.AnchorNumber := n;
     U.FullLink := CreateLink(U);
-    U.OutputFileName := DestDir + U.FullLink;
+    U.OutputFileName := DestinationDirectory + U.FullLink;
     U.HandleAuthorTags;
     U.HandleCreatedTag;
     U.HandleLastModTag;
@@ -375,11 +370,11 @@ begin
         CO.AnchorNumber := n;
         CO.MyUnit := U;
 
-              // CO^.OutputFileName := DestDir + CO^.Name + GetFileExtension;
+              // CO^.OutputFileName := DestinationDirectory + CO^.Name + GetFileExtension;
               // CO^.FullLink := CreateLink(CO);
 
         CO.FullLink := CreateLink(CO);
-        CO.OutputFileName := DestDir + CO.FullLink;
+        CO.OutputFileName := DestinationDirectory + CO.FullLink;
 
         CO.HandleAuthorTags;
         CO.HandleCreatedTag;
@@ -400,9 +395,9 @@ end;
 
 procedure TDocGenerator.CloseStream;
 begin
-  if Assigned(Stream) then begin
-    Stream.Free;
-    Stream := nil;
+  if Assigned(FCurrentStream) then begin
+    FCurrentStream.Free;
+    FCurrentStream := nil;
   end;
 end;
 
@@ -421,7 +416,7 @@ begin
   DoMessage(4, mtInformation, 'Creating output stream "' + Name + '".', []);
   Result := False;
   try
-    Stream := TFileStream.Create(Name, fmCreate);
+    FCurrentStream := TFileStream.Create(Name, fmCreate);
     Result := True;
   except
     on EFileStreamError do ;
@@ -1155,7 +1150,7 @@ end;
 procedure TDocGenerator.WriteLine(const s: string);
 begin
   WriteString(s);
-  StreamUtils.WriteLine(Stream, '');
+  StreamUtils.WriteLine(CurrentStream, '');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1172,7 +1167,7 @@ begin
   HGlobal := LoadResource(MainInstance, HResInfo);
   if HGlobal = 0 then Exit;
 
-  with TFileStream.Create(DestDir + FileName, fmCreate) do begin
+  with TFileStream.Create(DestinationDirectory + FileName, fmCreate) do begin
     try
       Write(LockResource(HGlobal)^, SizeOfResource(MainInstance, HResInfo));
     finally
@@ -1188,14 +1183,14 @@ var
   t: string;
 begin
   t := ConvertString(s);
-  Stream.WriteBuffer(t[1], Length(t));
+  CurrentStream.WriteBuffer(t[1], Length(t));
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.WriteText(const t: string);
 begin
-  Stream.WriteBuffer(t[1], Length(t));
+  CurrentStream.WriteBuffer(t[1], Length(t));
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1238,7 +1233,7 @@ procedure TDocGenerator.DoMessage(const AVerbosity: Cardinal; const
   MessageType: TMessageType; const AMessage: string; const AArguments: array of
   const);
 begin
-  if (AVerbosity <= FVerbosity) and Assigned(FOnMessage) then begin
+  if Assigned(FOnMessage) then begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
   end;
 end;

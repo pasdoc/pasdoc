@@ -37,13 +37,14 @@ uses
   SysUtils,
   Utils in '../component/Utils.pas',
   Types in '../component/Types.pas',
-  StringCardinalTree in '../component/StringCardinalTree.pas',
+  PasDoc_HierarchyTree in '../component/PasDoc_HierarchyTree.pas',
   StreamUtils in '../component/StreamUtils.pas',
   ObjectVector in '../component/ObjectVector.pas',
   PasDoc_GenHtml in '../component/PasDoc_GenHtml.pas',
   PasDoc_Gen in '../component/PasDoc_Gen.pas',
   PasDoc_Items in '../component/PasDoc_Items.pas',
-  OptionParser in '../OptionParser/OptionParser.pas';
+  OptionParser in '../OptionParser/OptionParser.pas',
+  PasDoc_Types in '../component/PasDoc_Types.pas';
 
 var
   GPasDoc: TPasDoc;
@@ -174,44 +175,38 @@ begin
     exit;
   end;
 
+  GOption_Format.Value := LowerCase(GOption_Format.Value);
+  if GOption_Format.Value = 'html' then begin
+    GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
+  end else begin
+    if GOption_Format.Value = 'htmlhelp' then begin
+      GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
+    end else begin
+      GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), skipping.',
+        [GOption_Format.Value]);
+    end;
+  end;
+
+
   GPasDoc.HtmlHelpContentsFileName := GOption_ContentFile.Value;
   GPasDoc.Directives.Assign(GOption_Define.Values);
   for i := 0 to GOption_ConditionalFile.Values.Count - 1 do begin
     GPasDoc.Directives.LoadFromTextFileAdd(GOption_ConditionalFile.Values[i]);
   end;
 
-  GPasDoc.OutputFolder := GOption_OutputPath.Value;
-  if GOption_Footer.WasSpecified then begin
-    GPasDoc.LoadFooterFromFile(GOption_Footer.Value);
-  end;
-  if GOption_Header.WasSpecified then begin
-    GPasDoc.LoadHeaderFromFile(GOption_Header.Value);
-  end;
-
+  GPasDoc.Generator.DestinationDirectory := GOption_OutputPath.Value;
   GPasDoc.IncludeDirectories.Assign(GOption_IncludePaths.Values);
 
   GOption_Language.Value := lowercase(GOption_Language.Value);
   for lng := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do begin
     if LowerCase(LANGUAGE_ARRAY[lng].Syntax) = GOption_Language.Value then
       begin
-      GPasDoc.Language := lng;
+      GPasDoc.Generator.Language := lng;
       break;
     end;
   end;
 
   GPasDoc.ProjectName := GOption_Name.Value;
-
-  GOption_Format.Value := LowerCase(GOption_Format.Value);
-  if GOption_Format.Value = 'html' then begin
-    GPasDoc.OutputFormat := ofHtml;
-  end else begin
-    if GOption_Format.Value = 'html' then begin
-      GPasDoc.OutputFormat := ofHtmlHelp;
-    end else begin
-      GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), skipping.',
-        [GOption_Format.Value]);
-    end;
-  end;
 
   GPasDoc.IncludePrivate := GOption_Private.TurnedOn;
   GPasDoc.DescriptionFileNames.Assign(GOption_Descriptions.Values);
@@ -224,7 +219,17 @@ begin
 
   GPasDoc.Verbosity := GOption_Verbosity.Value;
 
-  GPasDoc.GeneratorInfo := not GOption_Generator.TurnedOn;
+  if GPasDoc.Generator is THTMLDocGenerator then begin
+    THTMLDocGenerator(GPasDoc.Generator).NoGeneratorInfo := GOption_Generator.TurnedOn;
+
+    if GOption_Footer.WasSpecified then begin
+      THTMLDocGenerator(GPasDoc.Generator).LoadFooterFromFile(GOption_Footer.Value);
+    end;
+
+    if GOption_Header.WasSpecified then begin
+      THTMLDocGenerator(GPasDoc.Generator).LoadHeaderFromFile(GOption_Header.Value);
+    end;
+  end;
 
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
 
