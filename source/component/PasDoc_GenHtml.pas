@@ -545,7 +545,8 @@ begin
         end;
       ':',
       '=': SearchForLink := True;
-      ';': SearchForLink := False;
+      ';',
+      '''': SearchForLink := False;
     end;
     Inc(i);
   end;
