@@ -21,6 +21,7 @@ uses
   PasDoc_Items,
   PasDoc_Languages,
   StringVector,
+  ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
   PasDoc_RunHelp,
@@ -52,8 +53,8 @@ const
     'GVClasses');
 
 type
-  { @abstract(record for spell-checking) }
-  TSpellCheckRecord = record
+  { @abstract(class for spell-checking) }
+  TSpellingError = class
     { the mis-spelled word }
     Word: string;
     { offset inside the checked string }
@@ -61,9 +62,6 @@ type
     { comma-separated list of suggestions }
     Suggestions: string;
   end;
-
-  { array containing a list of wrong words when spell-checking }
-  TSpellCheckArray = array of TSpellCheckRecord;
 
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -116,10 +114,11 @@ type
     procedure SetLanguage(const Value: TLanguageID);
     procedure SetDestDir(const Value: string);
 
-    procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
-    procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
-      TMessageType; const AMessage: string; const AArguments: array of const);
+    procedure DoError(const AMessage: string; const AArguments: array of const;
+      const AExitCode: Integer);
+    procedure DoMessage(const AVerbosity: Cardinal;
+      const MessageType: TMessageType; const AMessage: string;
+      const AArguments: array of const);
 
     property CurrentStream: TStream read FCurrentStream;
 
@@ -174,11 +173,11 @@ type
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
-    function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
+    function ExtractEmailAddress(s: string; var S1, S2, EmailAddress: string): Boolean;
 
     { Searches for a link in string S, signified by
       xxx://xxxx/.../ }
-    function ExtractLink(s: string; out S1,S2,Link: string): Boolean;
+    function ExtractLink(s: string; var S1,S2,Link: string): Boolean;
     
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
@@ -282,10 +281,6 @@ type
     procedure WriteProperties(HL: Byte; const p: TPasProperties); virtual;
       abstract;
       
-    { Writes a resources to DestinationDirectory. Existing files will not be overwritten. }
-    procedure WriteResourceToFile(const ResourceName, ResourceType: PChar;
-      const FileName: string);
-
     { Writes String S to output, converting each character using
       @link(ConvertChar). }
     procedure WriteString(const s: string);
@@ -343,10 +338,10 @@ type
       Example:
         check the string "the quieck brown fox"
         result is:
-        AWords contains a single item:
+        AErrors contains a single item:
           quieck=5 with object a stringlist containing something like the words
           quick, quiesce, ... }
-    function CheckString(const AString: string): TSpellCheckArray;
+    procedure CheckString(const AString: string; const AErrors: TObjectVector);
 
     { closes the spellchecker }
     procedure EndSpellChecking;
@@ -414,8 +409,7 @@ implementation
 uses
   SysUtils,
   StreamUtils,
-  Utils,
-  ObjectVector;
+  Utils;
 
 { ---------------------------------------------------------------------------- }
 { TDocGenerator
@@ -451,7 +445,7 @@ var
   U: TPasUnit;
 begin
   DoMessage(2, mtInformation, 'Creating links ...', []);
-  if IsNilOrEmpty(Units) then Exit;
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
@@ -468,7 +462,7 @@ begin
     AssignLinks(U, nil, U.FullLink, U.Types);
     AssignLinks(U, nil, U.FullLink, U.FuncsProcs);
 
-    if not IsNilOrEmpty(U.CIOs) then begin
+    if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
         CO.MyUnit := U;
@@ -514,12 +508,11 @@ function TDocGenerator.CreateStream(const Name: string): Boolean;
 begin
   CloseStream;
   DoMessage(4, mtInformation, 'Creating output stream "' + Name + '".', []);
-  Result := False;
+  Result := false;
   try
     FCurrentStream := TFileStream.Create(Name, fmCreate);
     Result := True;
   except
-    on EFileStreamError do ;
   end;
 end;
 
@@ -633,7 +626,7 @@ begin
                     // Try to find inherited property of item.
                     // Updated 14 Jun 2002
 
-                    if not IsNilOrEmpty(Item.MyObject.Ancestors) then begin
+                    if not StringVectorIsNilOrEmpty(Item.MyObject.Ancestors) then begin
                       s := Item.MyObject.Ancestors.FirstName;
                       Ancestor := SearchItem(s, Item);
                       if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
@@ -642,7 +635,7 @@ begin
                           TheLink := SearchLink(s + '.' + Item.Name, Item);
                           if TheLink <> '' then Break;
 
-                          if not IsNilOrEmpty(TPasCio(Ancestor).Ancestors)
+                          if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
                             then begin
                             s := TPasCio(Ancestor).Ancestors.FirstName;
                             Ancestor := SearchItem(s, Ancestor);
@@ -778,7 +771,7 @@ procedure ExpandItem(Item: TPasItem);
     p: TPasItem;
     {T: PText;}
   begin
-    if IsNilOrEmpty(c) then Exit;
+    if ObjectVectorIsNilOrEmpty(c) then Exit;
     for i := 0 to c.Count - 1 do begin
       p := c.PasItemAt[i];
       ExpandItem(p);
@@ -794,7 +787,7 @@ var
 begin
   DoMessage(2, mtInformation, 'Expanding descriptions ...', []);
 
-  if IsNilOrEmpty(Units) then Exit;
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
@@ -804,7 +797,7 @@ begin
     ExpandCollection(U.Types);
     ExpandCollection(U.FuncsProcs);
 
-    if not IsNilOrEmpty(U.CIOs) then
+    if not ObjectVectorIsNilOrEmpty(U.CIOs) then
       for j := 0 to U.CIOs.Count - 1 do begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
         ExpandItem(CO);
@@ -819,7 +812,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.ExtractEmailAddress(s: string; out S1, S2,
+function TDocGenerator.ExtractEmailAddress(s: string; var S1, S2,
   EmailAddress: string): Boolean;
 const
   ALLOWED_CHARS = ['a'..'z', 'A'..'Z', '-', '.', '_', '0'..'9'];
@@ -863,7 +856,7 @@ var
 begin
   Result := nil;
 
-  if IsNilOrEmpty(Units) then Exit;
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
   
   case n of
     0: { }
@@ -944,7 +937,7 @@ begin
     []);
   f := TFileStream.Create(n, fmOpenRead);
   if not Assigned(f) then
-    DoError('Could not open description file "%s%.', [n]);
+    DoError('Could not open description file "%s%.', [n], 0);
   t := '';
   while (f.Position < f.Size) do begin
     s := StreamReadLine(f);
@@ -1171,7 +1164,7 @@ procedure TDocGenerator.WriteCIOs(HL: Byte; c: TPasItems);
 var
   i: Integer;
 begin
-  if IsNilOrEmpty(c) then Exit;
+  if ObjectVectorIsNilOrEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
     WriteCIO(HL, TPasCio(c.PasItemAt[i]));
 end;
@@ -1219,29 +1212,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteResourceToFile(const ResourceName, ResourceType:
-  PChar; const FileName: string);
-var
-  HResInfo: HRSRC;
-  HGlobal: THandle;
-begin
-  HResInfo := FindResource(MainInstance, ResourceName, ResourceType);
-  if HResInfo = 0 then Exit;
-
-  HGlobal := LoadResource(MainInstance, HResInfo);
-  if HGlobal = 0 then Exit;
-
-  with TFileStream.Create(DestinationDirectory + FileName, fmCreate) do begin
-    try
-      Write(LockResource(HGlobal)^, SizeOfResource(MainInstance, HResInfo));
-    finally
-      Free;
-    end;
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TDocGenerator.WriteString(const s: string);
 var
   t: string;
@@ -1270,7 +1240,7 @@ procedure TDocGenerator.WriteUnits(const HL: Byte);
 var
   i: Integer;
 begin
-  if IsNilOrEmpty(Units) then Exit;
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
   for i := 0 to Units.Count - 1 do begin
     WriteUnit(HL, Units.UnitAt[i]);
   end;
@@ -1314,7 +1284,6 @@ begin
   FNoGeneratorInfo := False;
   FLanguage := TPasDocLanguages.Create;
   FAbbreviations := TStringList.Create;
-  FAbbreviations.CaseSensitive := False;
   FAbbreviations.Duplicates := dupIgnore;
 end;
 
@@ -1434,13 +1403,13 @@ var
   i, j: Integer;
   U: TPasUnit;
 begin
-  if not IsNilOrEmpty(FUnits) then begin
+  if not ObjectVectorIsNilOrEmpty(FUnits) then begin
     CreateStream(FDestDir+OverviewFilenames[8]+'.gviz');
     WriteLine('DiGraph Uses {');
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin
         U := TPasUnit(FUnits.PasItemAt[i]);
-        if not IsNilOrEmpty(U.UsesUnits) then begin
+        if not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
           for j := 0 to U.UsesUnits.Count-1 do begin
             writeline('  '+U.Name+' -> '+U.UsesUnits[j]);
           end;
@@ -1486,7 +1455,7 @@ begin
   end;
 end;
 
-function TDocGenerator.ExtractLink(s: string; out S1, S2,
+function TDocGenerator.ExtractLink(s: string; var S1, S2,
   Link: string): Boolean;
 const
   AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
@@ -1515,12 +1484,14 @@ begin
   end;
 end;
 
-function TDocGenerator.CheckString(const AString: string): TSpellCheckArray;
+procedure TDocGenerator.CheckString(const AString: string;
+  const AErrors: TObjectVector);
 var
   s: string;
   p, p2: Integer;
+  LError: TSpellingError;
 begin
-  SetLength(Result, 0);
+  AErrors.Clear;
   if FCheckSpelling and FSpellCheckStarted then begin
     s := StringReplace(AString, #10, ' ', [rfReplaceAll]);
     s := StringReplace(AString, #13, ' ', [rfReplaceAll]);
@@ -1534,28 +1505,30 @@ begin
       case s[1] of
         '*': continue; // no error
         '#': begin
-               SetLength(Result, Length(Result)+1);
+               LError := TSpellingError.Create; 
                s := copy(s, 3, MaxInt); // get rid of '# '
                p := Pos(' ', s);
-               Result[High(Result)].Word := copy(s, 1, p-1); // get word
-               Result[High(Result)].Suggestions := '';
+               LError.Word := copy(s, 1, p-1); // get word
+               LError.Suggestions := '';
                s := copy(s, p+1, MaxInt);
-               Result[High(Result)].Offset := StrToIntDef(s, 0)-1;
-               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [Result[High(Result)].Word]);
+               LError.Offset := StrToIntDef(s, 0)-1;
+               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
+               AErrors.Add(LError);
              end;
         '&': begin
-               SetLength(Result, Length(Result)+1);
+               LError := TSpellingError.Create; 
                s := copy(s, 3, MaxInt); // get rid of '& '
                p := Pos(' ', s);
-               Result[High(Result)].Word := copy(s, 1, p-1); // get word
+               LError.Word := copy(s, 1, p-1); // get word
                s := copy(s, p+1, MaxInt);
                p := Pos(' ', s);
                s := copy(s, p+1, MaxInt);
                p2 := Pos(':', s);
-               Result[High(Result)].Suggestions := Copy(s, Pos(':', s)+2, MaxInt);
+               LError.Suggestions := Copy(s, Pos(':', s)+2, MaxInt);
                SetLength(s, p2-1);
-               Result[High(Result)].Offset := StrToIntDef(s, 0)-1;
-               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [Result[High(Result)].Word]);
+               LError.Offset := StrToIntDef(s, 0)-1;
+               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
+               AErrors.Add(LError);
              end;
       end;
       s := ReadLine(FAspellPipe);
@@ -1581,9 +1554,9 @@ begin
     try
       FAspellMode := AMode;
       if AMode <> '' then begin
-        FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage, '--mode='+AMode]);
+        FAspellPipe := RunProgram('/usr/bin/aspell', '-a --lang='+FAspellLanguage+' --mode='+AMode);
       end else begin
-        FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage]);
+        FAspellPipe := RunProgram('/usr/bin/aspell', '-a --lang='+FAspellLanguage);
       end;
       FSpellCheckStarted := True;
     except
