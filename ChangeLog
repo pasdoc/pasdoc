@@ -1,4 +1,4 @@
-2004-03-09 v0.8.8 Johannes Berg, Richard B Winston, Carl Eric Codere
+2004-05-06 v0.8.8 Johannes Berg, Richard B Winston, Carl Eric Codere
  + fix a lot of tiny bugs, range check errors, etc
  + implement consolidation for // style comments so that you can now
    use // style comments in multiple lines like this:
