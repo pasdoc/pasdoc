@@ -1,0 +1,277 @@
+2003-04-20 v0.8.7 Johannes Berg
+Based on Ralf Junker's changes, I did the following:
+ + added enumerated type parsing
+ + made work with FPC
+ + records (handled like classes), 
+   + case statements in records
+   + nested records
+ + spell-checker for linux (currently disabled, use an older CVS file
+   of RunHelp to use under Kylix, will not work in FPC, need advice)
+ + new option-parser
+ + uses delphi streams instead of files. Supposedly does not work
+   on all platforms FPC runs on - need advice
+ + commentmarker (for example only {: comments )
+ + declarations like
+   "var a: function(x,y,z:Integer):Integer cdecl = nil" 
+   are parsed correctly
+ + dependency plotting with GraphViz (AT&T )
+   (not very useful)
+ + uses clause will be included in doc (optional)
+ + links "http://", "ftp://" etc. are recognized automatically
+ + varargs directive
+ + abbreviations "@author(johannes)" can be expanded
+   to @author(Johannes Berg <...>) via abbreviatons file
+ + @cvs($Date ...$), @cvs($Author ...$) is recognized and
+   used for lastmod / author
+   + duplicate authors skipped
+ - name search doesn't look into classes any more,
+   if a method reference is needed outside the current class
+   then the class has to be specified:
+   @link(class.method)
+   (faster and less error-prone)
+ + HTML output uses unitname.classname.html instead of numbers,
+   but has option to make number-only-filenames (for short-name
+   filesystems)
+ + class member visibility can be specified in output
+ + long option names (see PasDoc --help)
+ + images are no longer carried in a .RES file but in include
+   files instead, as constants in code, for FPC
+
+Some time inbetween... (0.6.21 to 0.8.6) Ralf Junker
+ - LaTeX documentation
+ - see http://zeitungsjunge.de/delphi/PasDoc/History.htm for
+   more information.
+
+2000/04/20 v0.6.20 ms
+- added Rodrigo Jardim's translations of pasdoc's output to Brasilian
+  Portuguese; new switch -b (and --brasilian)
+- increased STEP from 32 to 128 when reallocating description pointers,
+  this makes pasdoc crash less with RTE 216; bug must still be fixed by
+  changing GetMem's default behaviour
+
+2000/04/17 v0.6.19 ms
+- fixed bug that prevented pasdoc from skipping code until an $else
+  conditional directive (thanks to Michael v. Canneyt for reporting
+  this bug)
+
+2000/04/12 v0.6.17 ms
+- added Marc Weustinks Dutch translation to pasdoc; switch -m (or --dutch) now
+  creates Dutch output
+- successfully created docs on Delphi 5 rtl\win directory (222 seconds, 16 MB html
+  files on a P-II 350, 256 MB RAM)
+
+2000/04/09 v0.6.15 ms
+- added Michael v.C.'s update of the tex unit (changed chapter/section/
+  subsection nesting of LaTeX output)
+- moved LoadDescriptionFile and LoadDescriptionFiles from main.TPasdoc to
+  gendoc.TDocGenerator
+- worked on external description file loading
+- email addresses in author tags are now displayed as mailto links in HTML
+  output
+- hard-coded HTML colors in body element (already added colors for tables
+  etc., as long as the whole thing is not CSS-based, it's better to have
+  all colors defined so that unusual default colors of a browser won't ruin
+  the overall impression)
+- released 0.6.15
+
+2000/04/08 v0.6.13 ms
+- released 0.6.13
+
+2000/04/06 v0.6.13 ms
+- fixed bug that made pasdoc ignore a unit that has ). in a type declaration;
+  in scanning.pas, ). was supposed to be a replacement for ] while it must be
+  .)
+- empty author tags are now ignored
+- fixed LaTeX bug that kept pasdoc from converting identifiers that were not
+  found in the list of items to output format style
+
+2000/04/05 v0.6.13 ms
+- added -u DIR switch to make pasdoc search for include files
+
+2000/04/04 v0.6.11 ms
+- moved objects.pas to directory 'other'; will now use default objects unit from FPC
+- for the time being, I stop trying to compile pasdoc with Delphi, there is some bug
+  I am unable to trace; Delphi 5 compiles pasdoc without problems but crashes when
+  running it on appinfo.pas between the second and third constant for no apparent
+  reason; I will try to fix bugs that are more obvious in the near future...
+- fixed bug that made default keyword after a property appear as a field of that class
+  (thanks to Andre Jager for pointing this out)
+- fixed bug that made pasdoc crash on an empty author tag: @author()
+  (thanks to Michael Hess for finding and isolating (!) this!)
+- made pasdoc skip property declaration; property parsing needs some work,
+  I will do this soon
+
+2000/04/03 v0.6.11 ms
+- created sourceforge.net account; pasdoc is now at http://pasdoc.sourceforge.net
+- modified homepage to have frames; single page has become too huge
+
+2000/03/31 v0.6.11 ms
+- on a totally unrelated note - I just passed my exam in theoretical computer
+  science - woohooo! again some time to work on pasdoc...
+
+2000/02/11 v0.6.10 ms
+- changed directory structure of the pasdoc project (added src, bin, man etc.)
+- added -v (or --verbosity) switch to be able to change the amount of output
+
+2000/02/08 v0.6.10 ms
+- added PDF version of manual to homepage, thanks to Martin Krumpolec
+
+2000/02/07 v0.6.10 ms
+- arguments in functions and procedures no longer become links if there is a
+  type of the same name (THTMLDocGenerator.WriteCodeWithLinks)
+- HTML now writes Class, Interface or Object (translated to the chosen
+  language) in front of each CIO item in a unit's summary of these items
+- removed some unnecessary methods from THTMLDocGenerator in html.pas
+
+2000/02/06 v0.6.10 ms
+- added Catalan and Spanish translations sent in by Ivan Montes Velencoso to
+  gendoc.pas and corresponding command line switches in main.pas
+- removed tabularx environments from TTexDocGenerator (for LaTeX output)
+- added equivalent long command line switches for most of the short ones
+- added check that will detect unknown (=> invalid) command line switches and
+  react on them with an error message
+- received pasdoc DOS binaries sent in by Jean-Pierre Vial and created a 0.6.9
+  DOS binaries release, then updated the homepage
+- added IOResult check in TFileInputStream.Open in filestre.pas; no more crashing
+  on non-existent files
+- added explanation for non-unique identifiers to manual; may find a workaround
+  for this later (bug?)
+- fixed bug that made the time in HTML documents always be 00:00:00 with
+  the Delphi pasdoc version
+- started new unit chars that will be the basis for the handling of special
+  characters in other languages
+
+2000/02/05 v0.6.9 ms
+- integrated fixes sent in by Erwin Scheuch-Hellig (no more destination
+directory in HTML overview file links, path names of source code files 
+are no longer dropped, destination directory gets a terminating slash)
+- renamed this file from History to ChangeLog
+- updated homepage and freshmeat appindex
+
+1999/11/26 v0.6.9 ms
+- pasdoc now seems to work with Delphi 5
+
+1999/11/17 v0.6.9 ms
+- updated French output TDocGenerator.GetFrenchString in gendoc.pas
+
+1999/11/16 v0.6.9 ms
+- added support for user-defined line feeds
+
+1999/09/28 v0.6.8 ms
+- improved TeX output
+
+1999/09/27 v0.6.8 ms
+- continued work on Tex unit; TeX output working again partially
+- added -j switch to suppress headers and footers in Tex output (Johann Glaser's suggestion)
+
+1999/09/24 v0.6.8 ms
+- replaced numerous calls to WriteLn with PrintLn from new unit Msg
+- moved TPasdoc to new unit Main
+
+1999/08/16 v0.6.7 ms
+- fixed bug in main, wrong parameter (units instead of file list)
+- fixed bug in TTokenizer.SkipUntilElseOrEndif that would choke on unidentified directives
+- fixed some bugs in TParser.ParseProperty
+
+1999/08/15 v0.6.7 ms
+- continued implementing handling of @descrfile tags
+
+1999/08/10 v0.6.6 ms
+- fixed property index parsing bug
+
+1999/08/08 v0.6.5 ms
+- HTML declarations of functions, procedures, methods and properties now contain hyperlinks
+- started adding support for descriptions in external files
+
+1999/08/05 v0.6.4 ms
+- added support for $ifopt directive
+- added support for resourcestring key word (now handled like constants)
+
+1999/08/04 v0.6.3 ms
+- added -s switch to read file names from text file
+- manual updated, large part added
+- made HTML doc generator suppress Properties section for objects (which never have properties)
+- fixed bug that made HTML generator write no empty method section for C/I/O
+- added @exclude() tag to disallow inclusion into output
+
+1999/08/03 v0.6.2 ms
+- various fixes
+- initial property parsing and output
+
+1999/08/02 v0.6.1 ms
+- made 'include private fields / methods / properties' switch work
+- added dates, author to classes / interfaces / objects
+- cleaned up TDocGenerator
+- moved STATE_xxx constants from unit Parsing to Items
+
+1999/07/29 v0.6.1 ms
+- rewrote part to support different output languages
+  (TDocGenerator.GetString now calls TDocGenerator.GetStringEnglish
+   etc., each language gets its own GetStringXXXX function)
+- integrated Jean Dit Bailleul's French translation
+
+1999/04/27 v0.6.0 ms
+- added support for directive file switch -f
+
+1999/04/18 v0.6.0 ms
+- added support for getting ancestor list in objects / classes
+  and skipping interface ID in Delphi-4-type interfaces;
+  now Delphi 4 d4system.pas and d4sysuti.pas are parsed flawlessly!
+
+1999/03/11 v0.6.0 ms
+- replaced platform.inc with version from latest FV snapshot to detect
+  Delphi 4
+- added CompVer unit to store compiler name / OS / bits
+- moved TItem and descendants to new unit Items
+- started adding support for interfaces (Delphi 3.0+ feature)
+- added a stripped-down version of Objects to work with Delphi
+  (Delphi command line compiler dcc32 now compiles pasdoc, but
+   execution results in runtime error 103 at the beginning);
+  don't use this Objects for anything else, only TCollection, TObject
+  and TSortedCollection (IIRC) will be used!
+
+????/??/?? v0.5.? ms
+- added test.pas to test pasdoc functionality
+- changed switches to one letter
+- added --version and --help switches
+- added -d switch to specify conditional directive on command line
+- added new units Scanning and Tokenizi for decent support of
+  conditional compiler directives
+- created a basic pasdoc.tex file that will be the manual
+- added applications pastype, pasdep and pasconv (no functionality yet)
+  which will use the Scanning unit
+
+1999/02/25 v0.5.2 ms
+- moved TPasDoc from parsing.pas to pasdoc.pas
+- added fields Language, DestDir and Units to TDocGenerator
+
+1999/02/24 v0.5.2 ms
+- created scanning.pas
+
+1999/02/22 v0.5.2 ms
+- unit Parsing exceeded 3000 lines of code, so I
+  moved TText from unit Parsing to new unit Texts
+
+1999/02/11 v0.5.1 ms
+- fixed several bugs
+  - HTML links
+  - property parsing
+  - class parsing
+  - some changes in tex generator
+- added support for German docs
+
+1998/12/10 v0.5.0 ms
+- added "nogeneratorinfo" switch
+
+1998/12/09 v0.5.0 ms
+- continued work on ExpandDescription
+
+1998/12/08 v0.5.0 ms
+- first entry in this history file
+- restarted work on pasdoc after 2-3 months...
+- now pasdoc can only create one type of output each time it gets called,
+  not multiple
+- TGenDoc.WriteDescription copies all data byte-wise to output stream;
+  replacing of links and special characters is done in additional
+  procedure TPasDoc.ExpandDescriptions to be called after
+  TDocGenerator.BuildLinks and before TDocGenerator.WriteDocumentation
