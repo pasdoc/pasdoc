@@ -537,9 +537,9 @@ begin
       if not GetNextNonWCToken(t) then Exit;
       if t.MyType = TOK_IDENTIFIER then begin { an ancestor }
         s := t.Data;
-        FreeAndNil(t);
             { inner repeat loop: one part of the ancestor per name }
         repeat
+          FreeAndNil(t);
           if not Scanner.GetToken(t) then begin
             Exit;
           end;
@@ -569,21 +569,6 @@ begin
       end;
     until Finished;
   end else begin
-    if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
-      FreeAndNil(t);
-      { for the time being, we throw away the ID itself }
-      if (not GetNextNonWCToken(t)) then begin
-        Exit;
-      end;
-      if (t.MyType <> TOK_STRING) then
-        DoError('%s: Error - literal String as interface ID expected.', [Scanner.GetStreamInfo], 0);
-      FreeAndNil(t);
-      if not GetNextNonWCToken(t) then begin
-        Exit;
-      end;
-      if not t.IsSymbol(SYM_RIGHT_BRACKET) then
-        DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
-    end;
     Scanner.UnGetToken(t);
     case i.MyType of
       CIO_CLASS: begin
@@ -608,6 +593,25 @@ begin
       end;
     end;
   end;
+  GetNextNonWCToken(t);
+  if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
+    FreeAndNil(t);
+    { for the time being, we throw away the ID itself }
+    if (not GetNextNonWCToken(t)) then begin
+      Exit;
+    end;
+    if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
+      DoError('%s: Error - literal String or identifier as interface ID expected.', [Scanner.GetStreamInfo], 0);
+    FreeAndNil(t);
+    if not GetNextNonWCToken(t) then begin
+      Exit;
+    end;
+    if not t.IsSymbol(SYM_RIGHT_BRACKET) then
+      DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
+  end else begin
+    Scanner.UnGetToken(t);
+  end;
+
   { now collect methods, fields and properties }
   CS := '';
 
