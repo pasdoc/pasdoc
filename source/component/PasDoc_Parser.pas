@@ -435,7 +435,6 @@ begin
 
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(t);
-              GetNextNonWCToken(t);
             end;
           until False;
         end;
