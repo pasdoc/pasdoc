@@ -95,7 +95,7 @@ type
     procedure WriteStartOfTableCell; overload;
     procedure WriteStartOfTableCell(const css: string); overload;
     procedure WriteStartOfTableCell(const Params, css: string); overload;
-    
+
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
@@ -128,7 +128,22 @@ type
       parentheses  and to have matching parentheses.  If no parentheses are found
       after @HTML, the string '@HTML' is returned instead. }
     function HtmlString(const Desc: string; Len: integer; var CurPos: integer): string; override;
-
+    // FormatPascalCode will cause Line to be formatted in
+    // the way that Pascal code is formatted in Delphi.
+    function FormatPascalCode(const Line: string): string; override;
+    // FormatComment will cause AString to be formatted in
+    // the way that comments other than compiler directives are
+    // formatted in Delphi.  See: @link(FormatCompilerComment).
+    function FormatComment(AString: string): string; override;
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that strings are formatted in Delphi.
+    function FormatString(AString: string): string; override;
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that reserved words are formatted in Delphi.
+    function FormatKeyWord(AString: string): string; override;
+    // FormatCompilerComment will cause AString to be formatted in
+    // the way that compiler directives are formatted in Delphi.
+    function FormatCompilerComment(AString: string): string; override;
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -272,6 +287,26 @@ begin
       result := '@HTML';
     end;
   end;
+end;
+
+function THTMLDocGenerator.FormatString(AString: string): string;
+begin
+  result := '<font color = "#000080">' + AString + ' </font>';
+end;
+
+function THTMLDocGenerator.FormatKeyWord(AString: string): string;
+begin
+  result := '<b>' + AString + '</b>';
+end;
+
+function THTMLDocGenerator.FormatComment(AString: string): string;
+begin
+  result := '<i><font color = "#000080">' + AString + ' </font></i>';
+end;
+
+function THTMLDocGenerator.FormatCompilerComment(AString: string): string;
+begin
+  result := '<font color = "#008000">' + AString + ' </font>';
 end;
 
 function THTMLDocGenerator.CodeString(const s: string): string;
@@ -2637,6 +2672,11 @@ begin
       end;
     end;
   end;
+end;
+
+function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
+begin
+  result := '<pre><code>' + inherited FormatPascalCode(Line) + '</pre></code>';
 end;
 
 end.

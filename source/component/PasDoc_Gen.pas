@@ -55,6 +55,10 @@ const
     'GVClasses');
 
 type
+  TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
+    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment,
+    ctEndComment);
+
   { @abstract(class for spell-checking) }
   TSpellingError = class
   public
@@ -154,6 +158,38 @@ type
 
     { Called when an @html tag is encountered. }
     function HtmlString(const Desc: string; Len: integer;
+      var CurPos: integer): string; virtual;
+
+    (* Called when an @longcode tag is encountered. This tag is used to format
+      the enclosed text in the same way it would be in Delphi (using the
+      default settings in Delphi).
+
+    Because any character including the ')' character might be in your code,
+    there needs to be a special way to mark the end of the @longCode tag.
+    To do this include a special character such as "#' just after the opening
+    '(' of the @longcode tag.  Include that same character again just before
+    the closing ')' of the @longcode tag.
+
+      Here is an example of the @longcode tag in use. Check the source code
+      to see how it was done.
+
+      @longCode(#
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  // Note that your comments are formatted.
+  {$H+} // You can even include compiler directives.
+  // reserved words are formatted in bold.
+  for i := 1 to 10 do
+  begin
+    It is OK to include pseudo-code like this line.
+    // It will be formatted as if it were meaningful pascal code.
+  end;
+end;
+      #)
+      *)
+    function LongCode(const Desc: string; Len: integer;
       var CurPos: integer): string; virtual;
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
@@ -373,6 +409,25 @@ type
 
     { closes the spellchecker }
     procedure EndSpellChecking;
+    // FormatPascalCode will cause Line to be formatted in
+    // the way that Pascal code is formatted in Delphi.
+    function FormatPascalCode(const Line: string): string; virtual;
+    // FormatCode will cause AString to be formatted in the
+    // way that Pascal statements are in Delphi.
+    function FormatCode(AString: string): string; virtual;
+    // FormatComment will cause AString to be formatted in
+    // the way that comments other than compiler directives are
+    // formatted in Delphi.  See: @link(FormatCompilerComment).
+    function FormatComment(AString: string): string; virtual;
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that strings are formatted in Delphi.
+    function FormatString(AString: string): string; virtual;
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that reserved words are formatted in Delphi.
+    function FormatKeyWord(AString: string): string; virtual;
+    // FormatCompilerComment will cause AString to be formatted in
+    // the way that compiler directives are formatted in Delphi.
+    function FormatCompilerComment(AString: string): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -431,6 +486,10 @@ type
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
     property FullLink: boolean read FFullLink write FFullLink;
   end;
+
+var
+  ReservedWords: TStringList;
+
 
 implementation
 
@@ -643,6 +702,10 @@ begin
         Inc(Run, 2);
       end
       else
+        if IsMacro(d, l, 'LONGCODE', Run) then begin
+          t := t + LongCode(d, l, Run) + ' ';
+        end
+        else
         if IsMacro(d, l, 'HTML', Run) then begin
           t := t + HtmlString(d, l, Run) + ' ';
         end
@@ -1657,8 +1720,49 @@ begin
   WriteConverted(s, false);
 end;
 
+function TDocGenerator.LongCode(const Desc: string; Len: integer;
+  var CurPos: integer): string;
+var
+  CharPos: integer;
+  ClosingCharacter: Char;
+  FoundEnd: boolean;
+begin
+  CharPos := CurPos;
+  if (CharPos+1 > Len) or (Desc[CharPos] <> '(') then
+  begin
+    result := '@LONGCODE';
+  end
+  else
+  begin
+    ClosingCharacter := Desc[CharPos+1];
+    CharPos := CharPos + 1;
+    FoundEnd := False;
+    while (CharPos <= Len) do
+    begin
+      Inc(CharPos);
+      if Desc[CharPos] = ClosingCharacter then
+      begin
+        if (CharPos + 1 <= Len) and (Desc[CharPos+1] = ')') then
+        begin
+          FoundEnd := True;
+          break;
+        end;
+      end;
+    end;
+    if FoundEnd then
+    begin
+      result := FormatPascalCode(Copy(Desc, CurPos + 2, CharPos - CurPos-2));
+      CurPos := CharPos + 2;
+    end
+    else
+    begin
+      result := '@LONGCODE';
+    end;
+  end;
+end;
+
 function TDocGenerator.HtmlString(const Desc: string; Len: integer;
-  var CurPos: integer): string; 
+  var CurPos: integer): string;
 var
   ParenthesesLevel: integer;
   CharPos: integer;
@@ -1694,5 +1798,405 @@ begin
     end;
   end;
 end;
+
+function TDocGenerator.FormatPascalCode(const Line: string): string;
+var
+  CharIndex: integer;
+  CodeType: TCodeType;
+  CommentBegining: integer;
+  StringBeginning: integer;
+  CodeBeginning: integer;
+  EndOfCode: boolean;
+  WhiteSpaceBeginning: integer;
+const
+  Separators = [' ', ',', '(', ')', #9, #10, #13, ';', '[', ']', '{', '}',
+    '''', ':', '<', '>', '=', '+', '-', '*', '/', '@', '.'];
+  LineEnd = [#10, #13];
+  AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z'];
+  function TestCommentStart: boolean;
+  begin
+    result := False;
+    if Line[CharIndex] = '(' then
+    begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '*') then
+      begin
+        CodeType := ctParenComment;
+        result := True;
+      end
+    end
+    else if Line[CharIndex] = '{' then
+    begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '$') then
+      begin
+        CodeType := ctCompilerComment;
+      end
+      else
+      begin
+        CodeType := ctBracketComment;
+      end;
+      result := True;
+    end
+    else if Line[CharIndex] = '/' then
+    begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '/') then
+      begin
+        CodeType := ctSlashComment;
+        result := True;
+      end
+    end;
+    if result then
+    begin
+      CommentBegining := CharIndex;
+    end;
+  end;
+  function TestStringBeginning: boolean;
+  begin
+    result := False;
+    if Line[CharIndex] = '''' then
+    begin
+      if CodeType <> ctChar then
+      begin
+        StringBeginning := CharIndex;
+      end;
+      CodeType := ctString;
+      result := True;
+    end
+  end;
+begin
+  CommentBegining := 1;
+  StringBeginning := 1;
+  result := '';
+  CodeType := ctWhiteSpace;
+  WhiteSpaceBeginning := 1;
+  CodeBeginning := 1;
+  for CharIndex := 1 to Length(Line) do
+  begin
+    case CodeType of
+      ctWhiteSpace:
+        begin
+          EndOfCode := False;
+          if TestStringBeginning then
+          begin
+            EndOfCode := True;
+          end
+          else if Line[CharIndex] = '#' then
+          begin
+            StringBeginning := CharIndex;
+            CodeType := ctChar;
+            EndOfCode := True;
+          end
+          else if TestCommentStart then
+          begin
+            EndOfCode := True;
+          end
+          else if Line[CharIndex] in AlphaNumeric then
+          begin
+            CodeType := ctCode;
+            CodeBeginning := CharIndex;
+            EndOfCode := True;
+          end;
+          if EndOfCode then
+          begin
+            result := result + (Copy(Line, WhiteSpaceBeginning, CharIndex -
+              WhiteSpaceBeginning));
+          end;
+        end;
+      ctString:
+        begin
+          if Line[CharIndex] = '''' then
+          begin
+            if (CharIndex = Length(Line)) or (Line[CharIndex + 1] <> '''') then
+            begin
+              CodeType := ctEndString;
+              result := result + FormatString(Copy(Line, StringBeginning,
+                CharIndex - StringBeginning + 1));
+            end;
+          end;
+        end;
+      ctCode:
+        begin
+          EndOfCode := False;
+          if TestStringBeginning then
+          begin
+            EndOfCode := True;
+          end
+          else if Line[CharIndex] = '#' then
+          begin
+            EndOfCode := True;
+            CodeType := ctChar;
+            StringBeginning := CharIndex;
+          end
+          else if TestCommentStart then
+          begin
+            EndOfCode := True;
+          end
+          else if not (Line[CharIndex] in AlphaNumeric) then
+          begin
+            EndOfCode := True;
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex;
+          end;
+          if EndOfCode then
+          begin
+            result := result + FormatCode(Copy(Line, CodeBeginning, CharIndex -
+              CodeBeginning));
+          end;
+        end;
+      ctEndString:
+        begin
+          if Line[CharIndex] = '#' then
+          begin
+            CodeType := ctChar;
+          end
+          else if TestCommentStart then
+          begin
+            // do nothing
+          end
+          else if Line[CharIndex] in AlphaNumeric then
+          begin
+            CodeType := ctCode;
+            CodeBeginning := CharIndex;
+          end
+          else
+          begin
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex;
+          end;
+        end;
+      ctChar:
+        begin
+          if Line[CharIndex] = '''' then
+          begin
+            CodeType := ctString;
+          end
+          else if TestCommentStart then
+          begin
+            // do nothing
+          end
+          else if Line[CharIndex] in Separators then
+          begin
+            result := result + FormatString(Copy(Line, StringBeginning,
+              CharIndex - StringBeginning));
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex;
+          end;
+        end;
+      ctParenComment:
+        begin
+          if Line[CharIndex] = ')' then
+          begin
+            if (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
+            begin
+              CodeType := ctEndComment;
+              result := result + FormatComment(Copy(Line, CommentBegining,
+                CharIndex - CommentBegining + 1));
+            end;
+          end;
+        end;
+      ctBracketComment:
+        begin
+          if Line[CharIndex] = '}' then
+          begin
+            CodeType := ctEndComment;
+            result := result + FormatComment(Copy(Line, CommentBegining,
+              CharIndex - CommentBegining + 1));
+          end;
+        end;
+      ctCompilerComment:
+        begin
+          if Line[CharIndex] = '}' then
+          begin
+            CodeType := ctEndComment;
+            result := result + FormatCompilerComment(Copy(Line, CommentBegining,
+              CharIndex - CommentBegining + 1));
+          end;
+        end;
+      ctSlashComment:
+        begin
+          if Line[CharIndex] in LineEnd then
+          begin
+            CodeType := ctWhiteSpace;
+            result := result + FormatComment(Copy(Line, CommentBegining,
+              CharIndex - CommentBegining));
+            WhiteSpaceBeginning := CharIndex;
+          end;
+        end;
+      ctEndComment:
+        begin
+          if TestCommentStart then
+          begin
+            // do nothing
+          end
+          else if Line[CharIndex] in Separators then
+          begin
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex;
+          end
+          else if Line[CharIndex] in AlphaNumeric then
+          begin
+            CodeType := ctCode;
+            CodeBeginning := CharIndex;
+          end;
+        end;
+    else
+      Assert(False);
+    end;
+  end;
+  CharIndex := Length(Line);
+  case CodeType of
+    ctWhiteSpace:
+      begin
+        result := result + (Copy(Line, WhiteSpaceBeginning, CharIndex -
+          WhiteSpaceBeginning));
+      end;
+    ctString:
+      begin
+      end;
+    ctCode:
+      begin
+        result := result + FormatCode(Copy(Line, CodeBeginning, CharIndex -
+          CodeBeginning));
+      end;
+    ctEndString:
+      begin
+      end;
+    ctChar:
+      begin
+        result := result + FormatString(Copy(Line, StringBeginning,
+          CharIndex - StringBeginning));
+      end;
+    ctParenComment:
+      begin
+        result := result + FormatComment(Copy(Line, CommentBegining,
+          CharIndex - CommentBegining + 1));
+      end;
+    ctBracketComment:
+      begin
+        result := result + FormatComment(Copy(Line, CommentBegining,
+          CharIndex - CommentBegining + 1));
+      end;
+    ctCompilerComment:
+      begin
+        result := result + FormatCompilerComment(Copy(Line, CommentBegining,
+          CharIndex - CommentBegining + 1));
+      end;
+    ctSlashComment:
+      begin
+      end;
+    ctEndComment:
+      begin
+        result := result + FormatComment(Copy(Line, CommentBegining,
+          CharIndex - CommentBegining + 1));
+      end;
+  else Assert(False);
+  end;
+end;
+
+function TDocGenerator.FormatCode(AString: string): string;
+begin
+  if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
+  begin
+    Result := FormatKeyWord(AString);
+  end
+  else
+  begin
+    result := AString;
+  end;
+end;
+
+function TDocGenerator.FormatComment(AString: string): string;
+begin
+  result := AString;
+end;
+
+function TDocGenerator.FormatCompilerComment(AString: string): string;
+begin
+  result := AString;
+end;
+
+function TDocGenerator.FormatKeyWord(AString: string): string;
+begin
+  result := AString;
+end;
+
+function TDocGenerator.FormatString(AString: string): string;
+begin
+  result := AString;
+end;
+
+initialization
+  ReservedWords := TStringList.Create;
+
+  // construct the list of reserved words.  These will be displayed
+  // in bold text.
+  ReservedWords.Add('and');
+  ReservedWords.Add('array');
+  ReservedWords.Add('as');
+  ReservedWords.Add('asm');
+  ReservedWords.Add('begin');
+  ReservedWords.Add('case');
+  ReservedWords.Add('class');
+  ReservedWords.Add('const');
+  ReservedWords.Add('constructor');
+  ReservedWords.Add('destructor');
+  ReservedWords.Add('dispinterface');
+  ReservedWords.Add('div');
+  ReservedWords.Add('do');
+  ReservedWords.Add('downto');
+  ReservedWords.Add('else');
+  ReservedWords.Add('end');
+  ReservedWords.Add('except');
+  ReservedWords.Add('exports');
+  ReservedWords.Add('file');
+  ReservedWords.Add('finalization');
+  ReservedWords.Add('finally');
+  ReservedWords.Add('for');
+  ReservedWords.Add('function');
+  ReservedWords.Add('goto');
+  ReservedWords.Add('if');
+  ReservedWords.Add('implementation');
+  ReservedWords.Add('in');
+  ReservedWords.Add('inherited');
+  ReservedWords.Add('initialization');
+  ReservedWords.Add('inline');
+  ReservedWords.Add('interface');
+  ReservedWords.Add('is');
+  ReservedWords.Add('label');
+  ReservedWords.Add('library');
+  ReservedWords.Add('mod');
+  ReservedWords.Add('nil');
+  ReservedWords.Add('not');
+  ReservedWords.Add('object');
+  ReservedWords.Add('of');
+  ReservedWords.Add('or');
+  ReservedWords.Add('out');
+  ReservedWords.Add('packed');
+  ReservedWords.Add('procedure');
+  ReservedWords.Add('program');
+  ReservedWords.Add('property');
+  ReservedWords.Add('raise');
+  ReservedWords.Add('record');
+  ReservedWords.Add('repeat');
+  ReservedWords.Add('resourcestring');
+  ReservedWords.Add('set');
+  ReservedWords.Add('shl');
+  ReservedWords.Add('shr');
+  ReservedWords.Add('string');
+  ReservedWords.Add('then');
+  ReservedWords.Add('threadvar');
+  ReservedWords.Add('to');
+  ReservedWords.Add('try');
+  ReservedWords.Add('type');
+  ReservedWords.Add('unit');
+  ReservedWords.Add('until');
+  ReservedWords.Add('uses');
+  ReservedWords.Add('var');
+  ReservedWords.Add('while');
+  ReservedWords.Add('with');
+  ReservedWords.Add('xor');
+  ReservedWords.Sorted := True;
+
+finalization
+  ReservedWords.Free;
 
 end.
