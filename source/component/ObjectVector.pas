@@ -78,7 +78,7 @@ begin
   Clear;
   FList.Free;
   Flist := nil;
-  inherited;
+  inherited Destroy;
 end;
 
 function TObjectVector.GetItem(AIndex: Integer): TObject;

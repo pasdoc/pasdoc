@@ -214,11 +214,11 @@ type
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
   end;
 
-{$INCLUDE automated.inc}
-{$INCLUDE private.inc}
-{$INCLUDE public.inc}
-{$INCLUDE published.inc}
-{$INCLUDE protected.inc}
+{$I automated.inc}
+{$I private.inc}
+{$I public.inc}
+{$I published.inc}
+{$I protected.inc}
 
 const
   { HTML table padding inside each cell. }

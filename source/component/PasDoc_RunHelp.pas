@@ -5,16 +5,7 @@
 unit PasDoc_RunHelp;
 
 interface
-uses
-{$IFDEF LINUX}
-  {$IFNDEF FPC}
-  Libc;
-  {$ELSE}
-  linux;
-  {$ENDIF}
-{$ELSE}
-  Windows;
-{$ENDIF}
+
 
 type
   TRunRecord = record // opaque record (platform dependent)

@@ -174,6 +174,24 @@ const
 {$IFDEF WIN32}
   COMPILER_OS = 'MSWindows';
 {$ENDIF}
+{$IFDEF BEOS}
+  COMPILER_OS = 'BeOS';
+{$ENDIF}
+{$IFDEF QNX}
+  COMPILER_OS = 'QNX';
+{$ENDIF}
+{$IFDEF AMIGA}
+  COMPILER_OS = 'AmigaOS';
+{$ENDIF}
+{$IFDEF SUNOS}
+  COMPILER_OS = 'SunOS';
+{$ENDIF}
+{$IFDEF GO32V2}
+  COMPILER_OS = 'DOS/Go32v2';
+{$ENDIF}
+{$IFDEF OS2}
+  COMPILER_OS = 'OS/2';
+{$ENDIF}
 
   { ---------------------------------------------------------------------------- }
   { PasDoc Version Constants }

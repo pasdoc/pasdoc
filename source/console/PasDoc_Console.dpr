@@ -29,7 +29,9 @@
 
 program PasDoc_Console;
 
+{$IFNDEF VPASCAL}
 {$APPTYPE CONSOLE}
+{$ENDIF}
 
 uses
   PasDoc,

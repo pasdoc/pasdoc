@@ -198,11 +198,11 @@ type
     function HasDescription(const AItem: TPasItem): boolean;
   end;
 
-{$INCLUDE automated.inc}
-{$INCLUDE private.inc}
-{$INCLUDE public.inc}
-{$INCLUDE published.inc}
-{$INCLUDE protected.inc}
+{$I automated.inc}
+{$I private.inc}
+{$I public.inc}
+{$I published.inc}
+{$I protected.inc}
 
 const
   { HTML table padding inside each cell. }
@@ -2393,6 +2393,9 @@ end.
 
 {
   $Log$
+  Revision 1.13  2004/05/07 18:13:24  ccodere
+    * fixes for compilation with different compiler targets
+
   Revision 1.12  2004/05/07 07:14:27  johill
   fix bug: write \begin{description} only if it will be non-empty, achieved by writing it lazily only when real output comes. Something like this should possibly be done in more places.
 

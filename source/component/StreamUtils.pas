@@ -6,8 +6,11 @@
 unit StreamUtils;
 
 interface
+
 uses
   Classes;
+  
+{$I VERSIONS.INC}  
 
 function StreamReadLine(const AStream: TStream): string;
 procedure WriteLine(const AStream: TStream; const AString: string);
@@ -15,12 +18,9 @@ procedure WriteString(const AStream: TStream; const AString: string);
 
 implementation
 
+{$IFDEF DELPHI_6_UP}
 const
-{$IFDEF LINUX}
-  LINETERMINATOR: string = #10;
-{$ENDIF}
-{$IFDEF WIN32}
-  LINETERMINATOR: string = #13#10;
+  LINEEnding: string = #13#10;
 {$ENDIF}
 
 function StreamReadLine(const AStream: TStream): string;
@@ -49,11 +49,14 @@ begin
 end;
 
 procedure WriteLine(const AStream: TStream; const AString: string);
+var
+ LineTerminator: string;
 begin
   if length(AString) > 0 then begin
     AStream.WriteBuffer(AString[1], Length(AString));
   end;
-  AStream.Write(LINETERMINATOR[1], Length(LINETERMINATOR));
+  LineTerminator := LineEnding;
+  AStream.Write(LineTerminator[1], Length(LineTerminator));
 end;
 
 procedure WriteString(const AStream: TStream; const AString: string);
