@@ -58,6 +58,7 @@ type
     FAuthors: TStringVector;
     { if assigned, contains string with date of creation }
     FCreated: string;
+    procedure Unabbreviate(var s: string);
   public
     property Authors: TStringVector read FAuthors;
     property Created: string read FCreated;
@@ -112,6 +113,8 @@ type
     procedure HandleCreatedTag;
     { }
     procedure HandleLastModTag;
+    { }
+    procedure HandleCVSTag;
     { Returns true if there is a detailled or a normal description available. }
     function HasDescription: Boolean;
     { Inserts an item into a collection.
@@ -364,16 +367,9 @@ end;
 
 procedure TPasItem.DescriptionExtractTag(var ADescription: string; const
   Offs1, Offs2, Offs3: Integer; out s: string);
-var
-  idx: Integer;
 begin
   DescriptionGetTag(ADescription, True, Offs1, Offs2, Offs3, s);
-  if Assigned(Abbreviations) then begin
-    idx := Abbreviations.IndexOfName(s);
-    if idx>=0 then begin
-      s := Abbreviations.Values[s];
-    end;
-  end;
+  Unabbreviate(s);
 end;
 
 function TPasItem.DescriptionFindTag(const ADescription, TagName: string; var
@@ -886,9 +882,11 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TPasUnit.FindItem(const ItemName: string): TPasItem;
+{ // these belong to the commented out code below
 var
   i: Integer;
   CioItem: TPasCio;
+}
 begin
   if LowerCase(Name) = LowerCase(ItemName) then begin
     Result := Self;
@@ -997,6 +995,60 @@ begin
   if FuncsProcs <> nil then FuncsProcs.SortByPasItemName;
   if Types <> nil then Types.SortByPasItemName;
   if Variables <> nil then Variables.SortByPasItemName;
+end;
+
+procedure TPasItem.HandleCVSTag;
+var
+  Offs1: Integer;
+  Offs2: Integer;
+  Offs3: Integer;
+  l: Integer;
+  LTagData: string;
+begin
+  if DetailedDescription = '' then Exit;
+  Offs1 := 1;
+  l := Length(DetailedDescription);
+  while Offs1 < l do begin
+    if (DetailedDescription[Offs1] = '@') and
+        DescriptionFindTag(DetailedDescription, 'CVS', Offs1, Offs2, Offs3) then begin
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, LTagData);
+      if Length(LTagData)>1 then begin
+        case LTagData[2] of
+          'D': begin
+                 if Copy(LTagData,1,7) = '$Date: ' then begin
+                   LastMod := Trim(Copy(LTagData, 7, Length(LTagData)-7-1));
+                 end;
+               end;
+          'A': begin
+                 if Copy(LTagData,1,9) = '$Author: ' then begin
+                   LTagData := Trim(Copy(LTagData, 9, Length(LTagData)-9-1));
+                   Unabbreviate(LTagData);
+                   if Length(LTagData) > 0 then begin
+                     if not Assigned(Authors) then FAuthors := NewStringVector;
+                     Authors.Add(LTagData);
+                   end;
+                 end;
+               end;
+          else begin
+          end;
+        end;
+      end;
+      Exit;
+    end;
+    Inc(Offs1);
+  end;
+end;
+
+procedure TPasItem.Unabbreviate(var s: string);
+var
+  idx: Integer;
+begin
+  if Assigned(Abbreviations) then begin
+    idx := Abbreviations.IndexOfName(s);
+    if idx>=0 then begin
+      s := Abbreviations.Values[s];
+    end;
+  end;
 end;
 
 end.

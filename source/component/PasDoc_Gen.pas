@@ -394,6 +394,7 @@ procedure TDocGenerator.BuildLinks;
       p.HandleCreatedTag;
       p.HandleLastModTag;
       p.HandleAbstractTag;
+      p.HandleCVSTag;
     end;
   end;
 
@@ -415,6 +416,7 @@ begin
     U.HandleCreatedTag;
     U.HandleLastModTag;
     U.HandleAbstractTag;
+    U.HandleCVSTag;
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
     AssignLinks(U, nil, U.FullLink, U.Types);
@@ -669,21 +671,19 @@ begin
                                   Run));
                                 Run := Offs3 + 1;
                                 t := t + CodeString(s);
-                              end
-                              else begin
+                              end else begin
                                 Inc(Run);
-                                if Assigned(Item.MyUnit) then
+                                if Assigned(Item.MyUnit) then begin
                                   DoMessage(2, mtWarning,
                                     'Found non-link tag when expanding descriptions of "' +
                                     Item.Name + '" in unit ' + Item.MyUnit.Name,
                                     [])
-                                else
+                                end else begin
                                   DoMessage(2, mtWarning,
                                     'Found non-link tag when expanding descriptions of "' +
                                     Item.Name + '"', []);
-                                t := t + 'WARNING: @';
-                                        //  end;
-                                        //  Inc(Run);
+                                  t := t + 'WARNING: @';
+                                end;
                               end;
                             end;
                           end;
