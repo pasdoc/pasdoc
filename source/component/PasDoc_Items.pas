@@ -297,7 +297,7 @@ type
   end;
 
 const
-  CIO_NonHierarchy = [CIO_RECORD];
+  CIO_NonHierarchy = [Low(TCIOType)..High(TCIOType)] - [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT];
 
 implementation
 
