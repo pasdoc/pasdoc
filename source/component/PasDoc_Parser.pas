@@ -77,7 +77,7 @@ type
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
     function ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-      TCIOType; d: string): Boolean;
+      TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
     { }
     function ParseRecordCase(const R: TPasCio; const SubCase: boolean = false): boolean;
     function ParseConstant(const U: TPasUnit; t: TToken): Boolean;
@@ -484,7 +484,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-  TCIOType; d: string): Boolean;
+  TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
 var
   CS: string;
   CSFound, FirstFieldLoop: Boolean;
@@ -760,13 +760,13 @@ begin
                     end;
                   end;
                 KEY_RECORD: begin
-                  ParseCIO(nil, '', CIO_RECORD, '');
+                  ParseCIO(nil, '', CIO_RECORD, '', False);
                   end;
                 KEY_PACKED: begin
                     FreeAndNil(t);
                     GetNextNonWCToken(t);
                     if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_RECORD) then begin
-                      ParseCIO(nil, '', CIO_PACKEDRECORD, '');
+                      ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
                     end else begin
                       SkipDeclaration(nil);
                     end;
@@ -811,11 +811,22 @@ begin
         end;
       end else begin
         if not t.IsSymbol(SYM_SEMICOLON) then begin
-          i.Free;
-          try
-            DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo]);
-          finally
-            FreeAndNil(t);
+          if IsInRecordCase then begin
+            if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
+              Scanner.UnGetToken(t);
+              break;
+            end else begin
+              i.Free;
+              FreeAndNil(t);
+              DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo]);
+            end;
+          end else begin
+            i.Free;
+            try
+              DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo]);
+            finally
+              FreeAndNil(t);
+            end;
           end;
         end else begin
           break;
@@ -1088,11 +1099,25 @@ begin
           GetNextNonWCToken(t1);
           LLastWasComma := false;
           while (t1.MyType <> TOK_SYMBOL) OR ((t1.Info.SymbolType <> SYM_SEMICOLON) and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS)) do begin
-            if (t1.MyType = TOK_IDENTIFIER) and LLastWasComma then begin
-              p := TPasItem.Create;
-              p.Description := GetLastComment;
-              p.Name := t1.data;
-              p.InsertItem(p, R.Fields);
+            if (t1.MyType = TOK_IDENTIFIER) then begin
+              if LLastWasComma then begin
+                p := TPasItem.Create;
+                p.Description := GetLastComment;
+                p.Name := t1.data;
+                p.InsertItem(p, R.Fields);
+              end;
+            end;
+            if t1.MyType = TOK_RESERVED then begin
+              if (t1.Info.ReservedKey = KEY_RECORD) then begin
+                ParseCIO(nil, '', CIO_RECORD, '', True);
+              end;
+              if (t1.Info.ReservedKey = KEY_PACKED) then begin
+                FreeAndNil(t1);
+                GetNextNonWCToken(t1);
+                if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_RECORD) then begin
+                  ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
+                end;
+              end;
             end;
             LLastWasComma := false;
             if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
@@ -1134,6 +1159,7 @@ var
   i: TPasItem;
   n: string;
   LCollected, LTemp: string;
+  M: TPasMethod;
 begin
   Result := False;
   n := t.Data;
@@ -1171,32 +1197,32 @@ begin
           end else begin
             Scanner.UnGetToken(t);
             t := nil;
-            if not ParseCIO(U, n, CIO_CLASS, d) then Exit;
+            if not ParseCIO(U, n, CIO_CLASS, d, False) then Exit;
             Result := True;
             Exit;
           end;
         end;
       KEY_SPINTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_SPINTERFACE, d) then Exit;
+          if not ParseCIO(U, n, CIO_SPINTERFACE, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_INTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_INTERFACE, d) then Exit;
+          if not ParseCIO(U, n, CIO_INTERFACE, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_OBJECT: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_OBJECT, d) then Exit;
+          if not ParseCIO(U, n, CIO_OBJECT, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_RECORD: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_RECORD, d) then Exit;
+          if not ParseCIO(U, n, CIO_RECORD, d, False) then Exit;
           Result := True;
           Exit;
         end;
@@ -1206,18 +1232,29 @@ begin
           LCollected := LCollected + LTemp + t.Data;
           if (t.MyType = TOK_RESERVED) AND (t.Info.ReservedKey = KEY_RECORD) then begin
             FreeAndNil(t);
-            if not ParseCIO(U, n, CIO_PACKEDRECORD, d) then exit;
+            if not ParseCIO(U, n, CIO_PACKEDRECORD, d, False) then exit;
             Result := True;
             exit;
           end;
         end;
     end;
   if Assigned(t) then begin
+    if (t.MyType = TOK_RESERVED) then begin
+      if t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE] then begin
+        if ParseCDFP(M, '', t.Data, t.Info.ReservedKey, '', False) then begin
+          M.Name := n;
+          U.AddType(M);
+          Result := True;
+          exit;
+        end else begin
+          DoError('Very strange condition - found function but could not parse', [], 1);
+        end;
+      end;
+    end;
     SetLength(LCollected, Length(LCollected)-Length(t.Data));
     Scanner.UnGetToken(t);
   end;
 
-  t := nil; { so that calling function will not try to dispose of it }
   i := TPasVarConst.Create;
   TPasVarConst(i).FullDeclaration := LCollected;
   if not SkipDeclaration(TPasVarConst(i)) then begin
@@ -1412,6 +1449,12 @@ begin
     IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
       SYM_SEMICOLON);
     if Assigned(VC) then VC.FullDeclaration := VC.FullDeclaration + t.Data;
+    if EndLevel<0 then begin
+      // within records et al. the last declaration need not be terminated by ;
+      Scanner.UnGetToken(t);
+      Result := True;
+      exit;
+    end;
     FreeAndNil(t);
   until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
   Result := True;
