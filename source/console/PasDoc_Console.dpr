@@ -32,8 +32,8 @@ program PasDoc_Console;
 {$APPTYPE CONSOLE}
 
 uses
-  PasDoc,
-  PasDoc_Languages,
+  PasDoc in '../component/PasDoc.pas',
+  PasDoc_Languages in '../component/PasDoc_Languages.pas',
   SysUtils,
   Utils in '../component/Utils.pas',
   Types in '../component/Types.pas',
@@ -43,7 +43,7 @@ uses
   PasDoc_GenHtml in '../component/PasDoc_GenHtml.pas',
   PasDoc_Gen in '../component/PasDoc_Gen.pas',
   PasDoc_Items in '../component/PasDoc_Items.pas',
-  OptionParser in '../../../OptionParser/OptionParser.pas';
+  OptionParser in '../OptionParser/OptionParser.pas';
 
 var
   GPasDoc: TPasDoc;
