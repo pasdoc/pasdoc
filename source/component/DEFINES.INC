@@ -1,0 +1,9 @@
+{$INCLUDE VERSIONS.INC}
+
+{$IFDEF DELPHI_7_UP}
+{$WARN UNSAFE_CAST OFF}
+{$WARN UNSAFE_CODE OFF}
+{$WARN UNSAFE_TYPE OFF}
+{$ENDIF}
+(* Disables .NET warnings for Delphi 7 and later. *)
+
