@@ -157,14 +157,14 @@ type
     FStreamName: string;
     
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
+      const; const AExitCode: Integer);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
     function CreateSymbolToken(const st: TSymbolType; const s: string): TToken;
-    function GetChar(out c: Char): Boolean;
+    function GetChar(var c: Char): Boolean;
     function PeekChar(var c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
@@ -396,12 +396,10 @@ procedure TTokenizer.CheckForDirective(const t: TToken);
 var
   l: Cardinal;
 begin
-  with t do begin
-    l := Length(Data);
-    if ((l >= 2) and (Data[1] = '{') and (Data[2] = '$')) or
-      ((l >= 3) and (Data[1] = '(') and (Data[2] = '*') and (Data[3] = '$')) then
-      MyType := TOK_DIRECTIVE;
-  end;
+  l := Length(t.Data);
+  if ((l >= 2) and (t.Data[1] = '{') and (t.Data[2] = '$')) or
+    ((l >= 3) and (t.Data[1] = '(') and (t.Data[2] = '*') and (t.Data[3] = '$')) then
+    t.MyType := TOK_DIRECTIVE;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -442,7 +440,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.GetChar(out c: Char): Boolean;
+function TTokenizer.GetChar(var c: Char): Boolean;
 begin
   if IsCharBuffered then begin
     c := BufferedChar;
@@ -489,7 +487,7 @@ begin
             caveat: will fail on Mac files (row is 13) }
         Inc(Row, StrCountCharA(Result.Data, #10))
       else
-        DoError('Error: tokenizer: could not read character.', []);
+        DoError('Error: tokenizer: could not read character.', [], 0);
     end
     else
       if c in IdentifierStart then begin
@@ -517,7 +515,7 @@ begin
               end;
             '(': begin
                 c := ' ';
-                if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', []);
+                if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', [], 0);
                 case c of
                   '*': begin
                       ConsumeChar;
@@ -608,11 +606,11 @@ begin
                   exit;
                 end;
               end;
-              DoError('Error: Invalid character in Pascal input stream.', []);
+              DoError('Error: Invalid character in Pascal input stream.', [], 0);
             end;
           end
       else
-        DoError('Error: tokenizer: could not read character.', []);
+        DoError('Error: tokenizer: could not read character.', [], 0);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -717,16 +715,16 @@ begin
   repeat
     if not (Stream.Position < Stream.Size) then begin
       ReleaseToken;
-      DoError('Error: tokenizer: unexpected end of stream.', []);
+      DoError('Error: tokenizer: unexpected end of stream.', [], 0);
     end;
     if not GetChar(c) then begin
       ReleaseToken;
-      DoError('Error: tokenizer: could not read character.', []);
+      DoError('Error: tokenizer: could not read character.', [], 0);
     end;
     if c = QuoteChar then begin
       if not PeekChar(c) then begin
         ReleaseToken;
-        DoError('Error: tokenizer: could not peek character.', [])
+        DoError('Error: tokenizer: could not peek character.', [], 0)
       end;
       if c = QuoteChar then { escaped single quote within string } begin
         ConsumeChar;
@@ -806,7 +804,7 @@ begin
           end;
       end
     else
-      DoError('Could not read character from %s', [GetStreamInfo]);
+      DoError('Could not read character from %s', [GetStreamInfo], 0);
   until False;
 end;
 
