@@ -1,0 +1,843 @@
+%
+% pasdoc.tex
+%
+% Manual for pasdoc
+% Written by Marco Schmidt <marcoschmidt@geocities.com>
+% Last modification Apr 20, 2000
+%
+% STILL TO DOCUMENT:
+% -R, --description        read description from this file
+% -C, --content            Read Contents for HtmlHelp from file
+% -F, --footer             include file as footer
+% -H, --header             include file as header
+% -N, --name               Name for documentation
+% -T, --title              Documentation title
+% --numericfilenames       Causes the html generator to create numeric filenames
+% --graphviz-uses          write a GVUses.gviz file that can be used for the 
+%                          `dot` program from GraphViz to generate a unit 
+%                          dependency graph
+% --graphviz-classes       write a GVClasses.gviz file that can be used for the 
+%                          `dot` program from GraphViz to generate a class 
+%                          hierarchy graph
+% --abbreviations          abbreviation file, format is "[name]  value", value 
+%                          is trimmed, lines that do not start with '[' (or 
+%                          whitespace before that) are ignored
+% --aspell                 enable aspell, giving language as parameter, 
+%                          currently only done in HTML output
+% --ignore-words           When spell-checking, ignore the words in that file. 
+%                          The file should contain one word on every line, no 
+%                          comments allowed
+% --cache-dir              Cache directory for parsed files (default not set)
+
+\documentclass[11pt]{article}
+
+\begin{document}
+
+\title{Manual for pasdoc 0.8}
+\author{Marco Schmidt \& Carl Eric Cod\`{e}re \& Johannes Berg}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+Pasdoc creates documentation for Pascal unit files.
+
+Descriptions for variables, constants, types (called 'items' from now on) are 
+taken from comments stored in the interface sections of unit source code files,
+each comment must be placed directly before the item's declaration.
+
+This way, you as a programmer can easily generate reference manuals of your
+libraries without having to deal with the details of document formats like
+HTML or \LaTeX.
+
+Moreover, you can edit the source code and its descriptions in one
+place, no need to add or modify explanations in other files.
+The rest is done automatically, you should write a script / batch file that
+does the actual call to pasdoc...
+Download the latest version from
+\begin{verbatim}
+http://pasdoc.sourceforge.net.
+\end{verbatim}
+For an example of source code that can be used with pasdoc, try the pasdoc
+sources themselves - type {\tt pasdoc[.exe] --format html *.pas} to generate HTML
+documentation.
+
+You can compile pasdoc with Free Pascal (version 1.0 or higher), as well
+as with Delphi and Kylix. 
+
+\section{Directives}
+
+As you may know, Pascal allows for \emph{directives} in the source code.
+These are comments that contain commands for the compiler introduced by the
+dollar sign.
+
+To distinguish different compilers, libraries or development stages,
+\emph{conditional directives} make it possible to make the compiler ignore
+part of the file.
+An example:
+
+\begin{verbatim}
+  unit SampleUnit;
+
+  {$ifdef WIN32}
+  uses Windows, WinProcs;
+  procedure WindowMove(H: TWindowHandle; DX, DY: Integer);
+  procedure WindowPrintText(H: TWindowHandle; X, Y: Integer; S: String);
+  {$else}
+  procedure ClearConsole;
+  procedure PrintText(S: String);
+  {$endif}
+
+  {$define DEBUG}
+  {$undef OPTIMIZE}
+\end{verbatim}
+
+The {\tt ifdef} part checks if a conditional directive called {\tt WIN32} is
+currently defined (that would be the case for Delphi or FPC/Win32).
+If this is true, all code until {\tt else} or {\tt endif} are compiled,
+everything between {\tt else} and {\tt endif} is ignored.
+The contrary would apply if the directive is not defined, e.g. under FPC/DOS
+or Borland Pascal.
+These statements can also be nested.
+Using {\tt define} and {\tt undef}, a programmer can add and delete
+directives, in the above example DEBUG and OPTIMIZE.
+
+As pasdoc loads Pascal files in a similar way a compiler does, it must be able
+to regard conditional directives. All define and undef parts are evaluated by 
+pasdoc, modifying an internal list of directives as source code is parsed.
+
+Different from a real compiler, pasdoc starts with an empty list of
+conditional directives. To get back to the above example, if you want to write 
+documentation for the {\tt WIN32} code part, you must explicitly tell pasdoc 
+that you want this directive defined.
+
+You can do so using the \emph{Specify directive} or \emph{Add directives from
+file} switch (see sections \ref{specifydirective} and \ref{specifydirectives}).
+
+Next to those directives already presented, pasdoc also supports include
+files:
+
+\begin{verbatim}
+type TInteger = Integer;
+
+{$I numbers.inc}
+
+const MAX_FILES = 12;
+\end{verbatim}
+
+In the above code, pasdoc would parse {\tt TInteger}, get the include
+directive and start parsing the include file {\tt numbers.inc}.
+This file could contain other directives, types or whatever.
+It is treated as it would be treated by any Pascal compiler.
+
+Pascal compilers also know \emph{switch directives}.
+These are boolean options, either on or off.
+They can be checked similar to conditional directives with
+the {\tt \$ifopt} directive.
+Pasdoc does not yet fully support these, but at least does not give
+up when it encounters one.
+
+\section{Adding descriptions}
+
+You can provide documentation for
+
+\begin{itemize}
+\item types (including enumerations),
+\item variables,
+\item constants,
+\item classes, interfances, objects,
+\item procedures, functions and
+\item units.
+\end{itemize}
+
+Providing a description for the different items is fairly easy. You simply
+need to provide a comment containing the description before the name of
+the item itself. 
+
+For units, the comment declaration must be done before the {\tt unit} keyword. 
+Example:
+\begin{verbatim}
+type
+  { This record type stores all information on a customer, including
+    name, age and gender. }
+  TCustomer = record
+    Name: String;
+    Age: Byte;
+    Gender: Boolean;
+  end;
+
+{ Initializes a TCustomer record with the given parameters. }
+procedure InitCustomer(Name: String; Age: Byte;
+  Gender: Boolean; var Customer: TCustomer);
+\end{verbatim}
+
+It is possible to specify that items will only be documented when certain
+comment markers are present at the start of the comment. Please refer
+to \ref{specifymarkers} for further information.
+
+An interesting feature of pasdoc is its ability to link items from within
+comments. If you are currently writing about an array of integers {\tt TIntArray} you've
+declared as a type, you might mention that the number of values it can store
+is specified in the constant {\tt MAX\_INTS}.
+You've probably already documented this constant when you declared it earlier
+in the same or another unit.
+Now, if you write {\tt @link(MAX\_INTS)} instead of simply {\tt MAX\_INTS},
+pasdoc knows that you are referring to another item it has found or will find
+in the list of units you gave to it.
+After all input files have been parsed, pasdoc will start substituting all
+occurrences of {\tt @link(something)} with "real" links.
+Depending on the type of output, these links could be hyperlinks (in HTML)
+or page references (in \LaTeX).
+If the current output format is HTML, the description of {\tt TIntArray} would
+contain a link to {\tt MAX\_INTS}.
+Viewing {\tt TIntArray}'s description in your favourite web browser you'd
+now be able to click on {\tt MAX\_INTS} and the browser would jump to the
+definition of {\tt MAX\_INTS}, where you'd find more information on it.
+
+If pasdoc cannot resolve a link (for whatever reasons), it will issue a
+warning to standard output and will write the content of {\tt @link()}
+to the documentation file, not as a link, but in a special font.
+
+\section{Formatting your comments}
+
+All comments recognize special directives that are used for different
+purposes. Each of these special directives starts with the at character 
+{\tt @}, followed by and identifier and optinally followed by text 
+between parentheses. 
+
+As an example, lets take the well-known {\tt DOS} unit.
+Its top part could look like this:
+\begin{verbatim}
+{
+@abstract(provides access to file and directory operations)
+@author(John Doe <doe@john-doe.com>)
+@created(July 12, 1997)
+@lastmod(June 20, 1999)
+The DOS unit provides functionality to get information on files and
+directories and to modify some of this information.
+This includes disk space (e.g. @link(DiskFree)), access rights, file
+and directory lists, changing the current directory, deleting files
+and directories and creating directories.
+Some of the functions are not available on all operating systems.
+}
+unit DOS;
+\end{verbatim}
+
+Pasdoc would read this comment and store it with the unit information.
+After all Pascal source code files you gave to pasdoc have been read,
+pasdoc will try to process all tags, i.e., all words introduced by a
+{\tt @} character.
+
+If you want to use the character {\tt @} itself, you must write it twice
+so that pasdoc knows you don't want to specify a tag.
+
+Note in the example above that the character does not need this
+special treatment within the parentheses, as shown in the author tag
+at the example of the email address.
+
+Following is a list of all tags that you may use in pasdoc.
+A tag like {\tt @link} must always be followed by an opening
+and then a closing parenthesis, even if you add nothing between them.
+
+The following tags are supported:
+\begin{description}
+\item[@@] represents the @ character
+\item[@abstract] This is an abstract of the description 
+(nowadays called "management summary") 
+\item[@author] Treat the argument as an author's name and email address 
+\item[@classname] PasDoc inserts the class name here. 
+\item[@code] Treat argument as code example 
+\item[@created] Creation date of item 
+\item[@cvs] The argument is related to source versioning with e.g. cvs 
+\item[@exclude] The current item is to be excluded from documentation 
+\item[@false] PasDoc inserts the specially formatted text 'false' here. 
+\item[@html] Inserts html code in the output
+\item[@inherited] PasDoc inserts the name of the ancestor class here. 
+\item[@lastmod] last modified date of item 
+\item[@link]  The argument is the name of another entity, PasDoc will 
+add a link to it here. 
+\item[@name]  PasDoc inserts the name of the item (class, object, function, variable...) 
+here 
+\item[@nil]  PasDoc inserts the specially formatted text 'nil' here. 
+\item[@param] Treat first argument as parameter name and all following
+arguments as the description
+\item[@raises] Treat first argument as exception name and all following
+arguments as the description
+\item[@return, @returns] Description of a function's return value 
+\item[@true] PasDoc inserts the specially formatted text 'true' here. 
+\end{description}
+
+\subsection{@}
+Represents the {\tt @} character, for example if you want to use one 
+of the tags literally 
+
+\subsection{abstract}
+
+For some item types like classes or units you may write very large
+descriptions to give an adequate introduction.
+However, these large texts are not appropriate in an overview list.
+Use the abstract tag to give a short explanation of what an item
+is about. 
+One row of text is a good rule of thumb.
+Of course, there should only be one abstract tag per description.
+
+The abstract text will appear in the overview section of the
+documentation (if the document format supports this overview section), 
+and will also appear as the first paragraph of the item full 
+documentation.
+
+\subsection{author}
+
+For each author who participated in writing an item, one author tag
+should be added. The format of the author tag should conform to
+the following specification : {\tt @author(Name <URI>)}
+
+Author tags will only result in documentation output for
+classes, interfaces, objects and units.
+
+Example:
+\begin{verbatim}
+@author(Johannes Berg <email@address.here>)
+\end{verbatim}
+
+\subsection{classname, inherited, name}
+
+PasDoc uses the tags {\tt @inherited}, {\tt @classname} and {\tt @name} as 
+placeholders for the names of the ancestor class, current class and name of the 
+current item respectively.
+
+\begin{verbatim}
+Example:
+
+{ @name is a method of @classname which overrides the method of @inherited to do 
+something completely different...}
+\end{verbatim}
+
+\subsection{code}
+
+PasDoc uses the tag @code to mark example code which is preformatted and should 
+not be changed in the output. It will usually appear in a teletype font in
+the final documentation.
+
+Example:
+\begin{verbatim}
+{: how to declare a variable.
+Example:
+@code(
+var
+  SomeVariable: SomeType;)
+}
+\end{verbatim}
+
+
+\subsection{created}
+
+This tag should contain the date the item was created.
+At most one created tag should be in a description.
+Created tags will only result in documentation output for
+classes, interfaces, objects and units.
+There is no special format that must be followed.
+
+\subsection{cvs}
+
+This tag is used to extract the last modification
+date and authors of the item. The parameter of this
+tag should conform to the $Author$ or $Date$ string
+of cvs or rcs.
+
+\begin{verbatim}
+@cvs($Date$)
+\end{verbatim}
+
+\subsection{exclude}
+
+If an exclude tag is found in a description, the item will not
+appear in the documentation.
+As a logical consequence, no information except the
+exclude tag itself should be written to the description.
+Whenever high-level items like units or classes are excluded from the
+documentation process, all items contained in them will not appear as well,
+e.g. constants or functions in an excluded unit or methods and fields in
+an excluded class.
+
+The following example will produce no documentation, as the entire unit
+will be excluded from the documentation process.
+
+Example:
+\begin{verbatim}
+{@exclude }
+unit myunit;
+
+interface
+
+procedure hello;
+
+implementation
+
+procedure hello;
+begin
+ WriteLn('Hello');
+end;
+
+end.
+\end{verbatim}
+
+
+\subsection{false}
+PasDoc inserts the specially formatted text 'false' here
+at the location of the tag. This tag does not have any
+parameters.
+
+\subsection{html}
+Pasdoc directly outputs the text that is between parentheses,
+without any conversion. There is no syntax checking on the
+validity of the HTML syntax.
+
+This should not be used if \LaTeX support is used, as it
+will confuse \LaTeX. 
+
+If there are no parentheses, {\tt @HTML} is directly written
+to the output documentation.
+
+
+
+\subsection{lastmod}
+
+This tag should contain the date the item was last modified.
+At most one created tag should be in a description.
+Lastmod tags will only result in documentation output for
+classes, interfaces, objects and units.
+There is no special format that must be followed.
+
+\subsection{link}
+
+Use this tag to make your documentation more convenient to the reader.
+Whenever you mention another item in the description of an item,
+enclose the name of the mentioned item in a link tag, e.g.\\
+{\tt @link(GetName)}.\\
+This will result in a hyperlink in HTML and a page reference in
+\LaTeX.
+
+\subsection{nil}
+
+PasDoc inserts the specially formatted text 'nil' here. This tag does 
+not have any parameters.
+
+\subsection{param}
+
+Treats first argument as parameter name and all following text as the 
+description of this parameter. 
+
+Example:
+\begin{verbatim}
+{ A small description 
+  @param(Filepath The file to open)
+}  
+constructor Init(FilePath : String);
+\end{verbatim}   
+
+
+\subsection{raises} 
+
+Treats the first argument as exception name and all following
+text as the description for this exception. 
+
+Example:
+\begin{verbatim}
+{ A small description 
+  @raises(EMyException Raises this exception)
+}  
+constructor Init;
+\end{verbatim}
+
+\subsection{return, returns}
+
+Treat the text in the argument as the description of the returns
+value of this function or method. 
+
+\subsection{true}
+
+PasDoc inserts the specially formatted text 'true' here
+at the location of the tag. This tag does not have any
+parameters.
+
+\section{Switches}
+
+This is a list of all switches (program parameters) supported by {\tt pasdoc}.
+Enter {\tt pasdoc --help} at the command line to get this list.
+Make sure you keep the exact spelling of the switches, pasdoc is case-sensitive.
+Most switches exist in two variations, a short one with a single dash and
+a longer one with two dashes.
+You can use either switch to get the same effect.
+
+\subsection{Documentation file format}
+
+After loading all Pascal source code files, pasdoc will write one or more
+output files, depending on the output file format.
+Choose the output format according to your needs -- you might want to create
+several versions for 
+
+\subsubsection{HTML}
+
+{\tt -O html}\\
+{\tt --format html}\\
+
+This switch makes pasdoc write HTML (Hypertext Markup Language) output.
+HTML files are usually displayed in a web browser, available on
+all modern computer systems. 
+
+It is the default output file format. Several files will be created for 
+this output type, one for each unit, class, interface and object, 
+additionally some overview files with lists of all constants, types etc.
+
+This is the preferred output for online viewing.
+
+\subsubsection{\LaTeX}
+
+{\tt -O latex}\\
+{\tt --format latex}\\
+
+This switch makes pasdoc write output that can be interpreted using
+\LaTeX. This is the preferred output format for printing the 
+documentation.
+
+A single output file {\tt docs.tex} will be created. 
+With {\tt latex docs.tex} you will be able to create a dvi file
+that can then be converted to a Postscript file using 
+{\tt dvips docs.dvi}. Or you can also directly generate a huge
+HTML file by using {\tt htlatex docs.tex}, or a PDF file
+by using {\tt pdflatex docs.tex}.
+
+It is to note that the output generated by pasdoc has been optimized for 
+{\tt pdflatex} and {\tt htlatex}.
+
+\subsubsection{LaTeX2rtf}
+
+{\tt -O latex2rtf}\\
+{\tt --format latex2rtf}\\
+
+This switch makes pasdoc write output that can be interpreted using
+{\tt latex2rtf}. This is the preferred output format for adding
+the documentation to word processor documentation.
+
+A single output file {\tt docs.tex} will be created, and can then
+be converted by using {\tt latex2rtf docs.tex}. 
+
+This output will only work with the {\tt latex2rtf} tool, using
+other tools might not produce the expected results. 
+
+\subsection{Format-specific switches}
+
+The following switches can only be used with one output file format
+and are useless for the others.
+
+\subsubsection{No headers and footers in \LaTeX}
+
+{\tt -j}\\
+{\tt --notexheaders}\\
+
+This switch will keep pasdoc from writing out standard declarations like
+{\tt begin\{document\}} when writing output for \LaTeX.
+This way, you will be able to include pasdoc's output by simply stating
+
+\begin{verbatim}
+\include(docs.tex)
+\end{verbatim}
+
+in your \LaTeX document.
+
+\subsubsection{No generator information}
+
+{\tt -X}\\
+{\tt --exclude-generator}\\
+
+By default, pasdoc includes some information on itself and the document
+creation time at the bottom of each generated HTML file.
+This switch keeps pasdoc from adding that information.
+
+
+\subsection{Comment Marker switches}
+\label{specifymarkers}
+
+It is possible for pasdoc to ignore comments that do not
+start with the correct start markers. By default, all
+comments are treated as item descriptions. This can
+be changed using the following switches:
+
+\begin{description}
+\item[{\tt --staronly}] Parse only \{**, (*** and //** style comments
+\item[{\tt --marker}] Parse only \{$<$marker$>$, (*<marker> and //<marker> 
+comments. Overrides the staronly option, which is a shortcut for 
+'--marker=**'
+\item[{\tt --marker-optional}] Do not require the markers given in --marker but 
+remove them from the comment if they exist.
+\end{description}
+
+\subsection{Output language switches}
+
+{\tt -L lg}\\
+{\tt --language lg}\\
+
+
+You can specify the language that will be used for words in the output like
+\emph{Methods} or \emph{Classes, interfaces and objects}.
+Your choice will not influence the status messages printed by pasdoc to
+standard output -- they will always be in English.
+Note that you can choose at most one language switch -- if you specify none,
+the default language \emph{English} will be used.
+
+The {\tt lg} parameter can take one of the following values:
+\begin{description}
+\item[ba] Bosnian (Codepage 1250)
+\item[br] Portugese / Brazilian
+\item[ct] Catalan
+\item[dk] Danish
+\item[en] English
+\item[fr] French
+\item[de] German
+\item[id] Indonesian
+\item[it] Italian
+\item[jv] Javanese
+\item[pl] Polish
+\item[ru.1251] Russian (Codepage 1251)
+\item[ru.866] Russian (Codepage 866)
+\item[ru.KOI8] Russian (KOI-8
+\item[sk] Slovak
+\item[es] Spanish
+\item[se] Swedish
+\end{description}
+
+\subsection{Other switches}
+
+\subsubsection{Include / Exclude class Members by visiblity}
+
+{\tt -M}\\
+{\tt --visible-members}\\
+
+By default all non-private fields, methods properties are included
+in the documentation. This switch permits to change which items
+of the specified visibility will be documented. 
+
+The possible arguments, separated by a comma are:
+\begin{description}
+\item[private]
+\item[protected]
+\item[public]
+\item[published]
+\item[automated]
+\end{description}
+
+In the following example only the private and protected members
+will be documented, all others will be ignored.
+
+\begin{verbatim}
+pasdoc --visible-members private,protected
+\end{verbatim}
+
+\subsubsection{Output directory}
+
+{\tt -E DIRECTORY}\\
+{\tt --output DIRECTORY}\\
+
+By default, pasdoc writes the output file(s) to the current directory.
+This switch defines a new output directory -- this makes sense
+especially when you have many units and classes, they should get
+a subdirectory of their own, e.g. {\tt htmloutput}.
+
+\subsubsection{Read file names from file}
+
+{\tt -S FILE}\\
+{\tt --source FILE}\\
+
+If you want pasdoc to write documentation for a large project involving many
+unit source code files, you can use this switch to load the file names from
+a text file.
+Pasdoc expects this file to have one file name in each row, no additional
+cleaning is done, so be careful not to include spaces or other whitespace
+like tabs.
+
+\subsubsection{Change verbosity level}
+
+{\tt -v LEVEL}\\
+{\tt --verbosity LEVEL}\\
+
+Using this switch in combination with an integer number $\geq$ 0 lets you
+define the amount of information pasdoc writes to standard output.
+The default level is 2, this switch is optional.
+A level of 0 will result in no output at all.
+
+\subsubsection{Show help}
+
+{\tt -?}\\
+{\tt --help}\\
+
+This switch makes pasdoc print usage hints and supported switches to standard
+output (usually the console) and terminates.
+
+\subsubsection{Show version}
+
+{\tt -V}\\
+{\tt --version}\\
+
+A typical GNU switch, this makes pasdoc print program name and version in
+one row (e.g. {\tt pasdoc 0.6.2}) to standard output.
+The program then terminates.
+
+\subsubsection{Specify a directive}
+\label{specifydirective}
+
+{\tt -D DIRECTIVE}\\
+{\tt --define DIRECTIVE}\\
+
+Adds {\tt DIRECTIVE} to the list of conditional directives that are present
+whenever parsing a unit is started.
+
+The list of directives will be adjusted whenever a directive like {\tt WIN32}
+or {\tt FPC} is defined or undefined in the source code. Each define should
+be separated by the others by a comma, as shown in the following example:
+
+\begin{verbatim}
+pasdoc --define debug,hello,world
+\end{verbatim}
+
+
+  
+\subsubsection{Specify an include file path}
+\label{specifyincludefilepath}
+
+{\tt -I DIR}\\
+{\tt --include DIR}\\
+
+Adds {\tt DIR} to the list of directories where pasdoc will search for include
+files.
+Whenever an include file directive is encountered in the source code, pasdoc
+first tries to open that include file by the name found in that directive.
+This will work in all cases where the current directory contains that include
+file or when the file name contains a valid absolute or relative path.
+
+It is possible to use this switch more than once on the command line.
+
+\begin{verbatim}
+pasdoc --include c:\mysources\include --include c:\3rdparty\somelib\include
+\end{verbatim}
+
+\subsubsection{Specify directive file}
+\label{specifydirectives}
+
+{\tt -d DIRECTORY}\\
+{\tt --conditionals DIRECTORY}\\
+
+Adds the defines specified in a file {\tt DIRECTORY} to the list of conditional directives 
+that are present whenever parsing a unit is started.
+
+The list of directives will be adjusted whenever a directive like {\tt WIN32}
+or {\tt FPC} is defined or undefined in the source code. There should be one
+defibe per line in the conditional file. 
+
+\begin{verbatim}
+pasdoc --conditionals /home/me/pascal/myconditionals
+\end{verbatim}
+
+
+\subsubsection{Include uses list}
+
+{\tt --write-uses-list}\\
+
+PasDoc can optionally include the list of units in a unit's uses 
+clause to that unit's description. 
+
+Example:
+\begin{verbatim}
+pasdoc --write-uses-list
+\end{verbatim}
+
+If a unit in the uses list is part of the documentation, it 
+will be clickable in the output.
+
+By default this option is disabled.
+
+\subsubsection{Full link output}
+
+{\tt --full-link}\\
+
+This option controls the behaviour of "@link(unit.procedure)" type links. 
+If it is set, the output generated will look like this:
+
+{\tt unit.procedure} with the "unit" part linking to the unit and the 
+"procedure" part linking to the procedure inside the unit. If it is unset, 
+then the output will only be {\tt procedure}.
+
+\section{Known problems}
+
+\subsection{Documentation of program files}
+
+As was said before, only units are regarded by pasdoc.
+In an OOP environment for which pasdoc was written, an application is
+usually a class overriding an abstract application class, so all
+code that is ever needed in the program file looks like this:
+
+\begin{verbatim}
+program main;
+
+uses myapp;
+
+var App: TMyApplication;
+
+begin
+  App := TMyApplication.Create;
+  App.Run;
+  App.Destroy;
+end.
+\end{verbatim}
+
+So there isn't much to do for documentation.
+If you're not using OOP, you could at least try to move as much code
+as possible out of the main program to make things work with pasdoc.
+
+\subsection{Records}
+
+Pasdoc cannot create separate documentation for members of a record.
+In object-oriented programs, records will not appear most of the time
+because all encapsulated data will be part of a class or object.
+However, you can give a single explanation on a record type which
+could contain a description of all members.
+
+\subsection{Non-unique identifiers}
+
+In some larger projects, identifiers may be used in different contexts,
+e.g. as the name for a parameter and as a function name.
+Pasdoc will not be able to tell these contexts apart and as a result,
+will create in the above-mentioned example links (at least in HTML)
+from the argument name of a function to the type of the same name.
+
+\section{Adding support for another output format}
+
+If you want to write a different type of document than those supported,
+you can create another unit with a new object type that overrides
+{\tt TDocGenerator} from unit {\tt PasDoc\_Gen.pas}.
+You'll have to override several of its methods to implement a new 
+output format.
+As examples, you can always look at how the HTML and \LaTeX generators
+work.
+First of all, you must decide whether your new output format will 
+store the documentation in one (like \LaTeX) or multiple files 
+(like HTML).
+
+
+\section{Credits}
+
+Thanks to Michael van Canneyt, Marco van de Voort, Dan Damian, Philippe
+Jean Dit Bailleul, Jeff Wormsley, Johann Glaser, Gudrun Plato, Erwin
+Scheuch-Hellig, Iv\'{a}n Montes Velencoso, Mike Ravkin, Jean-Pierre Vial,
+Jon Korty, Martin Krumpolec, Andr\'{e} Jager, Samuel Liddicott, Michael
+Hess, Ivan Tarapcik, Marc Weustink, Pascal Berger, Rolf Offermanns and
+Rodrigo Urubatan Ferreira Jardim for contributing ideas, bug reports and
+fixes, help and code!
+
+\end{document}
