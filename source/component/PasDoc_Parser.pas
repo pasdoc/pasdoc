@@ -1026,7 +1026,7 @@ begin
     if (not GetNextNonWCToken(t)) then Exit;
     if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_RESERVED) then
       DoError('Identifier expected, found %s in file %s',
-        [TokenTypeNames[t.MyType], Scanner.GetStreamInfo], 0);
+        [TOKEN_TYPE_NAMES[t.MyType], Scanner.GetStreamInfo], 0);
 
     p.Proptype := t.Data;
     FreeAndNil(t);

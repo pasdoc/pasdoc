@@ -42,13 +42,9 @@ type
     FContentsFile: string;
     { If True, generate Html Help project files. }
     FHtmlHelp: Boolean;
-    { True if not to call HCC.exe if creating HtmlHelp output.
-      Otherwise, PasDoc will look for HCC.exe in the registry and
-      compile the project.  }
-    FNoHHC: Boolean;
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
-    procedure WriteAppInfo;
+    procedure WriteAppInfo;               
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -128,7 +124,7 @@ type
 
     procedure WriteWithURLs(s: string);
     { Mark the string as a parameter, e.g. <b>TheString</b> }
-    function ParameterString(const ParamType, Param: string): string; override;
+    function ParameterString(const ParamType, Param: string): string; override;        
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -187,6 +183,7 @@ type
     procedure WriteDocumentation; override;
     procedure LoadFooterFromFile(const AFileName: string);
     procedure LoadHeaderFromFile(const AFileName: string);
+    procedure BuildLinks; override;
   published
     property HtmlHelp: boolean read FHtmlHelp write FHtmlHelp;
     property ContentsFile: string read FContentsFile write FContentsFile;
@@ -244,30 +241,35 @@ begin
 end;
 
 function THTMLDocGenerator.CreateLink(const Item: TPasItem): string;
+  function NewLink(const AFullName: string): string;
+  begin
+    if NumericFilenames then begin
+      Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
+      Inc(FLinkCount);
+    end else begin
+      Result := AFullName + GetFileExtension;
+    end;
+  end;
+
 begin
   Result := '';
   if (not Assigned(Item)) then Exit;
-  if NumericFilenames then begin
-    Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
-    Inc(FLinkCount);
-  end else begin
-    if Assigned(Item.MyUnit) then begin
-      if Assigned(Item.MyObject) then begin
-        { it's a method, a field or a property - only those have MyObject initialized }
-        Result := Item.MyObject.FullLink + '#' + Item.Name;
-      end else begin
-        if Item.ClassType = TPasCio then begin
-          { it's an object / a class }
-          Result := Item.MyUnit.Name + '.' + Item.Name + GetFileExtension;
-        end else begin
-          { it's a constant, a variable, a type or a function / procedure }
-          Result := Item.MyUnit.FullLink + '#' + Item.Name;
-        end;
-      end;
+  if Assigned(Item.MyUnit) then begin
+    if Assigned(Item.MyObject) then begin
+      { it's a method, a field or a property - only those have MyObject initialized }
+      Result := Item.MyObject.FullLink + '#' + Item.Name;
     end else begin
-      { it's a unit - only units don't have a MyUnit pointer }
-      Result := Item.Name + GetFileExtension;
+      if Item.ClassType = TPasCio then begin
+        { it's an object / a class }
+        Result := NewLink(Item.MyUnit.Name + '.' + Item.Name);
+      end else begin
+        { it's a constant, a variable, a type or a function / procedure }
+        Result := Item.MyUnit.FullLink + '#' + Item.Name;
+      end;
     end;
+  end else begin
+    { it's a unit - only units don't have a MyUnit pointer }
+    Result := NewLink(Item.Name);
   end;
 end;
 
@@ -375,7 +377,8 @@ begin
   s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
-  if not HtmlHelp then WriteDocumentHeadline;
+  // if not HtmlHelp then
+    WriteDocumentHeadline;
 
   WriteAnchor(CIO.Name);
   WriteHeading(HL, s);
@@ -454,7 +457,7 @@ begin
         Break;
       until False;
     end;
-    WriteDirect(s);
+    if Item = nil then WriteDirect(s);
   end;
 
   WriteFields(HL + 1, CIO.Fields);
@@ -648,33 +651,14 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure THTMLDocGenerator.WriteDocumentation;
-{$IFDEF MSWINDOWS}
-var
-  HhcPath: string;
-{$ENDIF}
 begin
   StartSpellChecking('sgml');
-  FLinkCount := 1;
   inherited;
   WriteUnits(1);
   WriteHierarchy;
   WriteBinaryFiles;
   WriteOverviewFiles;
   WriteVisibilityLegendFile;
-{$IFDEF MSWINDOWS}
-  { Registry and HCC only exists on Windows. }
-  if HtmlHelp and not NoHHC then begin // Try to call HCC.exe
-    HhcPath := RegReadStrDefA(HKEY_CURRENT_USER,
-      'Software\Microsoft\HTML Help Workshop', 'InstallDir', '');
-    if (HhcPath = '') or
-      not DirectoryExistsA(HhcPath) or
-      (ShellExecute(GetDeskTopWindow(), 'Open',
-      PChar(HhcPath + '\hhc.exe'),
-      PChar(DestinationDirectory + ProjectName + '.hhp'),
-      '', SW_SHOW) <= 32) then
-      DoMessage(1, mtError, 'Could not compile HtmlHelp.', []);
-  end;
-{$ENDIF}
   EndSpellChecking;
 end;
 
@@ -688,9 +672,9 @@ begin
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
     + '" width="100%">', true);
   WriteDirect('<tr bgcolor="' + HTML_HEADER_BACKGROUND_COLOR + '">');
-  for i := 0 to NUM_OVERVIEW_FILES - 1 do begin
+  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
     { TODO :
-      replacing the <center> tag with the aling=center attribute displays the links as
+      replacing the <center> tag with the align=center attribute displays the links as
       links again (with underlines etc.), question is whether we want this. }
     WriteDirect('<td align="center"><a href="' + OverviewFilenames[i] +
       GetFileExtension + '">');
@@ -980,9 +964,9 @@ begin
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
   WriteDirect('<tr bgcolor="#' + HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteDirect('<th>');
+  WriteDirect('<th nowrap="nowrap">');
   WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th>');
+  WriteDirect('</th><th width="100%">');
   WriteConverted(FLanguage.Translation[trDescription]);
   WriteDirect('</th></tr>', true);
 
@@ -990,7 +974,7 @@ begin
     Item := i.PasItemAt[j];
     WriteStartOfTableRow('');
 
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+    WriteStartOfTableCell('itemname');
     WriteAnchor(Item.Name);
     WriteConverted(Item.Name);
     if Item is TPasVarConst then begin
@@ -998,10 +982,7 @@ begin
     end;
     WriteEndOfTableCell;
 
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
+    WriteStartOfTableCell;
     WriteItemDetailedDescription(Item);
     if Item is TPasEnum then begin
       WriteDirect('<ul>', true);
@@ -1043,7 +1024,7 @@ begin
   // Make sure we don't free the Itmes when we free the container.
   TotalItems := TPasItems.Create(False);
 
-  for i := 2 to 6 do begin
+  for i := 2 to NUM_OVERVIEW_FILES_USED - 1  do begin
     if (not CreateStream(OverviewFilenames[i] + GetFileExtension))
       then begin
       DoMessage(1, mtError, 'Error: Could not create output file "' +
@@ -1062,7 +1043,8 @@ begin
       7: WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
     end;
 
-    if not HtmlHelp then WriteDocumentHeadline;
+//    if not HtmlHelp then
+      WriteDocumentHeadline;
 
     case i of
       2: WriteHeading(1, FLanguage.Translation[trHeadlineCio]);
@@ -1142,7 +1124,8 @@ begin
   DoMessage(3, mtInformation, 'Writing overview file ' + OverviewFilenames[7]
     + '...', []);
   WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-  if not HtmlHelp then WriteDocumentHeadline;
+//  if not HtmlHelp then
+    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
   WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
     FLanguage.Translation[trDescription]);
@@ -1455,41 +1438,41 @@ var
 
   procedure WriteLiObject(const Name, Local: string);
   begin
-    WriteDirect('<LI><OBJECT type="text/sitemap">', true);
-    WriteDirect('<PARAM name="Name" value="' + Name + '">', true);
+    WriteDirect('<li><object type="text/sitemap">', true);
+    WriteDirect('<param name="Name" value="' + Name + '">', true);
     if Local <> '' then begin
-      WriteDirect('<PARAM name="Local" value="' + Local + '">', true);
+      WriteDirect('<param name="Local" value="' + Local + '">', true);
       if DefaultTopic = '' then
         DefaultTopic := Local;
     end;
-    WriteDirect('</OBJECT>', true);
+    WriteDirect('</object>', true);
   end;
 
   { ---------- }
 
-  procedure WriteItemCollection(const c: TPasItems);
+  procedure WriteItemCollection(const _Filename: string; const c: TPasItems);
   var
     i: Integer;
     Item: TPasItem;
   begin
     if Assigned(c) then begin
-      WriteDirect('<UL>', true);
+      WriteDirect('<ul>', true);
       for i := 0 to c.Count - 1 do begin
         Item := c.PasItemAt[i];
-        WriteLiObject(Item.Name, Item.FullLink);
+        WriteLiObject(Item.Name, _Filename + '#' + Item.Name);
       end;
-      WriteDirect('</UL>', true);
+      WriteDirect('</ul>', true);
     end;
   end;
 
   { ---------- }
 
-  procedure WriteItemHeadingCollection(const Title, FullLink: string; const
+  procedure WriteItemHeadingCollection(const Title, ParentLink, Anchor: string; const
     c: TPasItems);
   begin
     if Assigned(c) and (c.Count > 0) then begin
-      WriteLiObject(Title, FullLink);
-      WriteItemCollection(c);
+      WriteLiObject(Title, ParentLink + '#' + Anchor);
+      WriteItemCollection(ParentLink, c);
     end;
   end;
 
@@ -1498,13 +1481,13 @@ var
   procedure InternalWriteCIO(const ClassItem: TPasCio);
   begin
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
-    WriteDirect('<UL>', true);
+    WriteDirect('<ul>', true);
 
-    WriteItemHeadingCollection('Fields', ClassItem.FullLink + '#@Fields', ClassItem.Fields);
-    WriteItemHeadingCollection('Properties', ClassItem.FullLink + '#@Properties', ClassItem.Properties);
-    WriteItemHeadingCollection('Methods', ClassItem.FullLink + '#@Methods', ClassItem.Methods);
+    WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
+    WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
+    WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
 
-    WriteDirect('</UL>', true);
+    WriteDirect('</ul>', true);
   end;
 
   { ---------- }
@@ -1520,39 +1503,39 @@ var
     else
       WriteLiObject(FLanguage.Translation[trUnits], OverviewFilenames[0] +
         GetFileExtension);
-    WriteDirect('<UL>', true);
+    WriteDirect('<ul>', true);
 
     // Iterate all Units
     for j := 0 to Units.Count - 1 do begin
       PU := Units.UnitAt[j];
       WriteLiObject(PU.Name, PU.FullLink);
-      WriteDirect('<UL>', true);
+      WriteDirect('<ul>', true);
 
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
         WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#@Classes');
-        WriteDirect('<UL>', true);
+        WriteDirect('<ul>', true);
 
         for k := 0 to c.Count - 1 do
           InternalWriteCIO(TPasCio(c.PasItemAt[k]));
 
-        WriteDirect('</UL>', true);
+        WriteDirect('</ul>', true);
       end;
 
         // For each unit, write Functions & Procedures.
       WriteItemHeadingCollection(FLanguage.Translation[trFunctionsAndProcedures],
-        PU.FullLink + '#@FuncsProcs', PU.FuncsProcs);
+        PU.FullLink, '@FuncsProcs', PU.FuncsProcs);
         // For each unit, write Types.
-      WriteItemHeadingCollection(FLanguage.Translation[trTypes], PU.FullLink +
-        '#@Types', PU.Types);
+      WriteItemHeadingCollection(FLanguage.Translation[trTypes], PU.FullLink,
+        '@Types', PU.Types);
         // For each unit, write Constants.
-      WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink +
-        '#@Constants', PU.Constants);
+      WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink,
+        '@Constants', PU.Constants);
 
-      WriteDirect('</UL>', true);
+      WriteDirect('</ul>', true);
     end;
-    WriteDirect('</UL>', true);
+    WriteDirect('</ul>', true);
   end;
 
   { ---------- }
@@ -1569,7 +1552,7 @@ var
     else
       WriteLiObject(FLanguage.Translation[trClasses], OverviewFilenames[2] +
         GetFileExtension);
-    WriteDirect('<UL>', true);
+    WriteDirect('<ul>', true);
 
     c := TPasItems.Create(False);
     // First collect classes
@@ -1582,7 +1565,7 @@ var
     for j := 0 to c.Count - 1 do
       InternalWriteCIO(TPasCio(c.PasItemAt[j]));
     c.Free;
-    WriteDirect('</UL>', true);
+    WriteDirect('</ul>', true);
   end;
 
   { ---------- }
@@ -1614,9 +1597,9 @@ var
       WriteLiObject(Text, '')
     else
       WriteLiObject(FLanguage.Translation[trOverview], '');
-    WriteDirect('<UL>', true);
-    for j := 0 to NUM_OVERVIEW_FILES - 1 do begin
-      WriteDirect('<LI><OBJECT type="text/sitemap">', true);
+    WriteDirect('<ul>', true);
+    for j := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
+      WriteDirect('<LI><object type="text/sitemap">', true);
       case j of
         0: WriteParam(trHeadlineUnits);
         1: WriteParam(trClassHierarchy);
@@ -1627,12 +1610,12 @@ var
         6: WriteParam(trHeadlineFunctionsAndProcedures);
         7: WriteParam(trHeadlineIdentifiers);
       end;
-      WriteDirect('<PARAM name="Local" value="');
+      WriteDirect('<param name="Local" value="');
       WriteConverted(OverviewFilenames[j] + GetFileExtension);
       WriteDirect('">', true);
-      WriteDirect('</OBJECT>', true);
+      WriteDirect('</object>', true);
     end;
-    WriteDirect('</UL>', true);
+    WriteDirect('</ul>', true);
   end;
 
   { ---------- }
@@ -1640,9 +1623,9 @@ var
   procedure ContentWriteLegend(const Text: string);
   begin
     if Text <> '' then
-      WriteLiObject(Text, 'Legend'+GetFileExtension)
+      WriteLiObject(Text, 'Legend' + GetFileExtension)
     else
-      WriteLiObject(FLanguage.Translation[trLegend], 'Legend'+GetFileExtension);
+      WriteLiObject(FLanguage.Translation[trLegend], 'Legend' + GetFileExtension);
   end;
 
   { ---------- }
@@ -1700,12 +1683,13 @@ var
   { ---------------------------------------------------------------------------- }
 
 var
-  j, k: Integer;
+  j, k, l: Integer;
   CurrentLevel, Level: Integer;
   CIO: TPasCio;
   PU: TPasUnit;
   c: TPasItems;
   Item, NextItem, PreviousItem: TPasItem;
+  Item2: TPasCio;
   s, Text, Link: string;
   SL: TStringVector;
 begin
@@ -1723,12 +1707,12 @@ begin
 
   // File Header
   WriteDirect('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">', true);
-  WriteDirect('<HTML>', true);
-  WriteDirect('<HEAD>', true);
-  WriteDirect('<META name="GENERATOR" content="' +
+  WriteDirect('<html>', true);
+  WriteDirect('<head>', true);
+  WriteDirect('<meta name="GENERATOR" content="' +
     PASDOC_NAME_AND_VERSION + '">', true);
-  WriteDirect('</HEAD><BODY>', true);
-  WriteDirect('<UL>', true);
+  WriteDirect('</head><body>', true);
+  WriteDirect('<ul>', true);
 
   DefaultContentsWritten := False;
   DefaultTopic := '';
@@ -1753,16 +1737,16 @@ begin
         ContentWriteCustom(Text, Link)
       else
         if CurrentLevel = (Level - 1) then begin
-          WriteDirect('<UL>', true);
+          WriteDirect('<ul>', true);
           Inc(CurrentLevel);
           ContentWriteCustom(Text, Link)
         end
         else
           if CurrentLevel > Level then begin
-            WriteDirect('</UL>', true);
+            WriteDirect('</ul>', true);
             Dec(CurrentLevel);
             while CurrentLevel > Level do begin
-              WriteDirect('</UL>', true);
+              WriteDirect('</ul>', true);
               Dec(CurrentLevel);
             end;
             ContentWriteCustom(Text, Link)
@@ -1786,8 +1770,8 @@ begin
   end;
 
   // End of File
-  WriteDirect('</UL>', true);
-  WriteDirect('</BODY></HTML>', true);
+  WriteDirect('</ul>', true);
+  WriteDirect('</body></html>', true);
   CloseStream;
 
   // Create Keyword Index
@@ -1821,11 +1805,11 @@ begin
     [ProjectName]);
 
   WriteDirect('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">', true);
-  WriteDirect('<HTML>', true);
-  WriteDirect('<HEAD>', true);
-  WriteDirect('<META name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
-  WriteDirect('</HEAD><BODY>', true);
-  WriteDirect('<UL>', true);
+  WriteDirect('<html>', true);
+  WriteDirect('<head>', true);
+  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
+  WriteDirect('</head><body>', true);
+  WriteDirect('<ul>', true);
 
   // Write all Items to KeyWord Index
 
@@ -1847,7 +1831,7 @@ begin
         // Write the Item. It acts as a header for the subitems to follow.
         WriteLiObject(Item.Name, Item.FullLink);
         // Indent by one.
-        WriteDirect('<UL>', true);
+        WriteDirect('<ul>', true);
 
         // No previous Item as we start.
         PreviousItem := nil;
@@ -1870,7 +1854,7 @@ begin
         IndexWriteItem(Item, PreviousItem, nil);
 
         Item := NextItem;
-        WriteDirect('</UL>', true);
+        WriteDirect('</ul>', true);
       end;
 
       Inc(j);
@@ -1882,8 +1866,8 @@ begin
 
   c.Free;
 
-  WriteDirect('</UL>', true);
-  WriteDirect('</BODY></HTML>', true);
+  WriteDirect('</ul>', true);
+  WriteDirect('</body></html>', true);
   CloseStream;
 
   // Create a HTML Help Project File
@@ -1925,26 +1909,26 @@ begin
   WriteDirect('[FILES]', true);
 
   { HHC seems to know about the files by reading the Content and Index.
-    So there is no need to specify them in the FILES section.
+    So there is no need to specify them in the FILES section. }
 
-  WriteLine('Legend.htm');
-  for k := 0 to NUM_OVERVIEW_FILES - 1 do
-    WriteLine(OverviewFilenames[k] + '.htm');
+  WriteDirect('Legend.html', true);
+  for k := 0 to NUM_OVERVIEW_FILES_USED - 1 do
+    WriteDirect(OverviewFilenames[k] + '.html', true);
 
   if Assigned(Units) then
     for k := 0 to units.Count - 1 do
       begin
-        Item := units.PasItemAt[k);
-        PU := units.PasItemAt[k);
-        WriteLine(Item.FullLink);
-        c := PU.CIO;
+        Item := units.PasItemAt[k];
+        PU := TPasUnit(units.PasItemAt[k]);
+        WriteDirect(Item.FullLink, true);
+        c := PU.CIOs;
         if Assigned(c) then
           for l := 0 to c.Count - 1 do
             begin
-              Item2 := c.PasItemAt[l);
-              WriteLine(Item2^.FullLink);
+              Item2 := TPasCio(c.PasItemAt[l]);
+              WriteDirect(Item2.OutputFilename, true);
             end;
-      end;}
+      end;
 
   WriteDirect('', true);
 
@@ -1954,43 +1938,6 @@ begin
 
   WriteDirect('[MERGE FILES]', true);
 
-  CloseStream;
-
-  // Create a Main Topic
-  if (not CreateStream('Legend'+GetFileExtension)) then begin
-    DoMessage(1, mtError, 'Could not create file "Legend'+GetFileExtension+'".', []);
-    Exit;
-  end;
-  DoMessage(2, mtInformation, 'Writing Legend...', []);
-
-  WriteStartOfDocument(FLanguage.Translation[trLegend]);
-  WriteHeading(1, FLanguage.Translation[trLegend]);
-  WriteDirect('<TABLE cellpadding="5">');
-  WriteDirect('<TR><TD><IMG src="private.gif" alt="');
-  WriteConverted(FLanguage.Translation[trPrivate]);
-  WriteDirect('"></TD><TD>');
-  WriteConverted(FLanguage.Translation[trPrivate]);
-  WriteDirect('</TD></TR>');
-  WriteDirect('<TR><TD><IMG src="protected.gif" alt="');
-
-  WriteConverted(FLanguage.Translation[trProtected]);
-  WriteDirect('"></TD><TD>');
-  WriteConverted(FLanguage.Translation[trProtected]);
-  WriteDirect('</TD></TR>');
-  WriteDirect('<TR><TD><IMG src="public.gif" alt="');
-  WriteConverted(FLanguage.Translation[trPublic]);
-  WriteDirect('"></TD><TD>');
-  WriteConverted(FLanguage.Translation[trPublic]);
-  WriteDirect('</TD></TR>');
-  WriteDirect('<TR><TD><IMG src="published.gif" alt="');
-  WriteConverted(FLanguage.Translation[trPublished]);
-  WriteDirect('"></TD><TD>');
-  WriteConverted(FLanguage.Translation[trPublished]);
-  WriteDirect('</TD></TR>');
-  WriteDirect('</TABLE>');
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
   CloseStream;
 end;
 
@@ -2055,7 +2002,8 @@ begin
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
-  if not HtmlHelp then WriteDocumentHeadline;
+//  if not HtmlHelp then
+    WriteDocumentHeadline;
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   WriteDirect('<table class="sections"><tr>', true);
@@ -2119,7 +2067,8 @@ begin
   DoMessage(3, mtInformation, 'Writing unit overview file "%s" ...',
     [OverviewFilenames[0]]);
   WriteStartOfDocument(FLanguage.Translation[trHeadlineUnits]);
-  if not HtmlHelp then WriteDocumentHeadline;
+//  if not HtmlHelp then
+    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trHeadlineUnits]);
   if Assigned(c) and (c.Count > 0) then begin
     WriteStartOfTable2Columns(FLanguage.Translation[trName],
@@ -2162,7 +2111,7 @@ procedure THTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
   procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
   begin
-    WriteStartOfLink('visibility_legend.html', '', '_blank');
+    WriteStartOfLink('legend.html');
     WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
     WriteEndOfLink;
   end;
@@ -2201,7 +2150,7 @@ procedure THTMLDocGenerator.WriteVisibilityLegendFile;
   end;
 
 const
-  Filename = 'visibility_legend';
+  Filename = 'legend';
 begin
   if not CreateStream(Filename + GetFileextension) then
     begin
@@ -2252,7 +2201,8 @@ begin
   end;
 
   WriteStartOfDocument(FLanguage.Translation[trClassHierarchy]);
-  if not HtmlHelp then WriteDocumentHeadline;
+//  if not HtmlHelp then
+    WriteDocumentHeadline;
   WriteHeading(1, FLanguage.Translation[trClassHierarchy]);
 
   if FClassHierarchy.IsEmpty then begin
@@ -2382,12 +2332,9 @@ function THTMLDocGenerator.ParameterString(const ParamType,
 begin
   Result := '<br>' + ParamType + ' <span class="parameter">' + Param + '</span>';
 end;
-
-procedure THTMLDocGenerator.WriteBinaryFiles;
-begin
+procedure THTMLDocGenerator.WriteBinaryFiles;begin
   CreateStream('automated.gif');
-  CurrentStream.Write(img_automated[0], High(img_automated)+1);
-  CloseStream;
+  CurrentStream.Write(img_automated[0], High(img_automated)+1);  CloseStream;
 
   CreateStream('private.gif');
   CurrentStream.Write(img_private[0], High(img_private)+1);
@@ -2422,20 +2369,16 @@ begin
     StreamUtils.WriteLine(CurrentStream, 'a:active {' +
       'color:#FF0000;}');
     StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
-
     StreamUtils.WriteLine(CurrentStream, 'table.headline {' +
       'padding:4pt; background-color:white;}');
     StreamUtils.WriteLine(CurrentStream, 'table.headline td {' +
       'margin:20pt; background-color:#e0e0e0;border-style:outset;}');
     StreamUtils.WriteLine(CurrentStream, 'table.headline a {' +
       'color:black;text-decoration:none;background-color:#e0e0e0;}');
-
     StreamUtils.WriteLine(CurrentStream, 'table.sections a {' +
       'color:green;text-decoration:underlined;background-color:white;}');
-
     StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
       'white-space:nowrap;}');
-
     CloseStream;
   end;
 end;
@@ -2447,8 +2390,7 @@ function THTMLDocGenerator.ConvertString(const s: String): String;
   and adjusted.
 }
 const
-  NumSpecials = 85;
-  Entities: array [1..NumSpecials] of string[10] =
+  NumSpecials = 85;  Entities: array [1..NumSpecials] of string[10] =
     ('&lt;','&gt;','&amp;','&quot;','&Ccedil;','&ccedil;','&Ntilde;',
      '&ntilde;','&THORN;','&thorn;','&Yacute;','&yacute;','&yuml;','&szlig;',
      '&AElig;','&Aacute;','&Acirc;','&Agrave;','&Aring;','&Atilde;','&Auml;',
@@ -2462,7 +2404,6 @@ const
      '&plusmn;','&micro;','&para;','&middot;','&cent;','&pound;','&yen;',
      '&sup1;','&sup2;','&sup3;','&iquest;',
      '&deg;','&sect;','&laquo;','&raquo;','&#132;','&#147;');
-     
   Specials: array [1..NumSpecials] of char =
      ('<','>','&','"','Ç','ç','Ñ','ñ','Þ','þ','Ý','ý','ÿ','ß','Æ','Á',
       'Â','À','Å','Ã','Ä','æ','á','â','à','å','ã','ä',
@@ -2484,6 +2425,7 @@ const
           break;
         end
     end;
+
 var
   i: Integer;
   Ent: string;
@@ -2499,6 +2441,12 @@ begin
     end else begin
       inc(i);
     end;
+end;
+
+procedure THTMLDocGenerator.BuildLinks;
+begin
+  FLinkCount := 1;
+  inherited;
 end;
 
 end.

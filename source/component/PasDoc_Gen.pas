@@ -38,6 +38,7 @@ const
   { number of overview files that pasdoc generates for
     multiple-document-formats like @link(HTML) }
   NUM_OVERVIEW_FILES = 10;
+  NUM_OVERVIEW_FILES_USED = 8;
 
   { names of all overview files, extensions not included }
   OverviewFilenames: array[0..NUM_OVERVIEW_FILES - 1] of string =
@@ -354,7 +355,7 @@ type
   public
 
     { Creates anchors and links for all items in all units. }
-    procedure BuildLinks;
+    procedure BuildLinks; virtual;
     
     { Calls @link(ExpandDescription) for each item in each unit of
       @link(Units). }
@@ -364,8 +365,7 @@ type
       Calls @link(LoadDescriptionFile) with each file name. }
     procedure LoadDescriptionFiles(const c: TStringVector);
 
-    { Abstract procedure, must be overwritten.
-      Writes all documentation.
+    { Must be overwritten, writes all documentation.
       Will create either a single file or one file for each unit and each
       class, interface or object, depending on output format. }
     procedure WriteDocumentation; virtual;
@@ -1477,7 +1477,7 @@ function TDocGenerator.ExtractLink(s: string; var S1, S2,
   Link: string): Boolean;
 const
   AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
-  FullLinkChars = AlphaNum + ['_', '%', '/', '#'];
+  FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~'];
   HalfLinkChars = ['.', ',', '-', ':', ';'];
 var
   p, i: Integer;

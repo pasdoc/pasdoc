@@ -1,3 +1,14 @@
+2003-05-09 v0.8.8-pre3 Thomas Mueller/Johannes Berg
+ + write complete known hierarchy in class descriptions
+ - remove calling hhc.exe, you should do this from a script
+ + fixed HTML-Help output
+ + fixed numeric name creation wrt. cross-links
+   (there was a rather BAD bug, now all numbers are
+    sequential too!)
+ + automatically turn on numeric filenames for HTML help because
+   hhc chokes on extra dots in filenames
+ + bugfix: "~" is a valid character in a URL
+
 2003-05-02 v0.8.8-pre2 Thomas Mueller/Johannes Berg
  + better HTML output with CSS
  + HTML output has new section links

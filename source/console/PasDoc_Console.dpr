@@ -228,6 +228,8 @@ begin
   end else begin
     if GOption_Format.Value = 'htmlhelp' then begin
       GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
+      THTMLDocGenerator(GPasDoc.Generator).HtmlHelp := True;
+      THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
     end else begin
       GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), skipping.',
         [GOption_Format.Value]);
