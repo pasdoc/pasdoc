@@ -35,6 +35,7 @@ type
   THTMLDocGenerator = class(TDocGenerator)
   protected
     FNumericFilenames: boolean;
+    FWriteUses: boolean;
     FLinkCount: Integer;
     FFooter: string;
     FHeader: string;
@@ -109,6 +110,7 @@ type
     procedure WriteBinaryFiles;
 
     procedure WriteUnit(const HL: Byte; const U: TPasUnit); override;
+    procedure WriteUnitUses(const HL:Byte; U: TPasUnit); 
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); override;
     procedure WriteProperties(HL: Byte; const p: TPasProperties); override;
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
@@ -164,6 +166,7 @@ type
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
+    property WriteUsesClause: boolean read FWriteUses write FWriteUses;
   end;
 
 const
@@ -1863,6 +1866,7 @@ begin
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   WriteUnitDescription(HL + 1, U);
+  WriteUnitUses(HL + 1, U);
   WriteCIOSummary(HL + 1, U.CIOs);
   WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
   WriteTypes(HL + 1, U.Types);
@@ -2018,6 +2022,30 @@ end;
 procedure THTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
 begin
   LoadStrFromFileA(AFileName, FHeader);
+end;
+
+procedure THTMLDocGenerator.WriteUnitUses(const HL: Byte; U: TPasUnit);
+var
+  i: Integer;
+  ULink: TPasItem;
+begin
+  if WriteUsesClause and not IsNilOrEmpty(U.UsesUnits) then begin
+    WriteHeading(HL, 'uses');
+    WriteString('<ul>');
+    for i := 0 to U.UsesUnits.Count-1 do begin
+      WriteString('<li>');
+      ULink := FUnits.FindName(U.UsesUnits[i]);
+      if ULink is TPasUnit then begin
+        WriteStartOfLink(ULink.FullLink);
+        WriteText(U.UsesUnits[i]);
+        WriteEndOfLink;
+      end else begin
+        WriteText(U.UsesUnits[i]);
+      end;
+      WriteString('</li>');
+    end;
+    WriteString('</ul>');
+  end;
 end;
 
 end.
