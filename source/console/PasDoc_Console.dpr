@@ -68,7 +68,8 @@ var
   GOption_Format,
   GOption_OutputPath,
   GOption_Language,
-  GOption_ASPELL: TStringOption;
+  GOption_ASPELL,
+  GOption_IgnoreWords: TStringOption;
   GOption_StarOnly,
   GOption_Generator,
   GOption_NumericFilenames,
@@ -186,8 +187,12 @@ begin
   GOptionParser.AddOption(GOption_AbbrevFiles);
 
   GOption_ASPELL := TStringOption.Create(#0, 'aspell');
-  GOption_ASPELL.Explanation := 'enable aspell, giving language as parameter, only for HTML output currently';
+  GOption_ASPELL.Explanation := 'enable aspell, giving language as parameter, currently only done in HTML output';
   GOptionParser.AddOption(GOption_ASPELL);
+
+  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words');
+  GOption_IgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line, no comments allowed';
+  GOptionParser.AddOption(GOption_IgnoreWords);
 end;
 
 procedure PrintUsage;
@@ -287,6 +292,7 @@ begin
 
   GPasDoc.Generator.CheckSpelling := GOption_ASPELL.WasSpecified;
   GPasDoc.Generator.AspellLanguage := GOption_ASPELL.Value;
+  GPasDoc.Generator.IgnoreWordsFile := GOption_IgnoreWords.Value;
 
   Result := True;
 end;

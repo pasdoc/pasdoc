@@ -67,6 +67,7 @@ type
     FSpellCheckStarted: boolean;
     FAspellLanguage: string;
     FAspellPipe: TRunRecord;
+    FIgnoreWordsFile: string;
   protected
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -381,6 +382,7 @@ type
 
     property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling;
     property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
+    property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
   end;
 
 implementation
@@ -1556,6 +1558,8 @@ end;
 procedure TDocGenerator.StartSpellChecking;
 var
   s: string;
+  L: TStringList;
+  i: Integer;
 begin
   FSpellCheckStarted := False;
   if FCheckSpelling then begin
@@ -1573,6 +1577,18 @@ begin
       DoError('Could not initialize aspell: "%s"', [s], 1);
     end else begin
       PasDoc_RunHelp.WriteLine('!', FAspellPipe);
+      if Length(IgnoreWordsFile)>0 then begin
+        L := TStringList.Create;
+        try
+          L.LoadFromFile(IgnoreWordsFile);
+          for i := L.Count-1 downto 0 do begin
+            PasDoc_RunHelp.WriteLine('@'+L[i], FAspellPipe);
+          end;
+        except
+          DoMessage(1, mtWarning, 'Could not load ignore words file %s', [IgnoreWordsFile]);
+        end;
+        L.Free;
+      end;
     end;
   end;
 end;
