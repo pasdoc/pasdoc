@@ -212,6 +212,9 @@ const
 implementation
 
 uses
+{$IFDEF MSWINDOWS
+  Windows,
+{$ENDIF}
   SysUtils,
   PasDoc,
   ObjectVector,
