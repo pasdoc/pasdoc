@@ -22,6 +22,7 @@ uses
   PasDoc_Items,
   PasDoc_Languages,
   StringVector,
+  PasDoc_Types,
   Classes;
 
 type
@@ -33,6 +34,8 @@ type
     For printed output, use @link(Tex.TTexDocGenerator). }
   THTMLDocGenerator = class(TDocGenerator)
   protected
+    FFooter: string;
+    FHeader: string;
     { Contains Name of a file to read HtmlHelp Contents from.
       If empty, create default contents file. }
     FContentsFile: string;
@@ -103,7 +106,7 @@ type
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
     procedure WriteBinaryFiles;
-  public
+
     procedure WriteUnit(const HL: Byte; const U: TPasUnit); override;
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); override;
     procedure WriteProperties(HL: Byte; const p: TPasProperties); override;
@@ -125,9 +128,6 @@ type
       using heading level HL. }
     procedure WriteCIOs(HL: Byte; c: TPasItems); override;
     procedure WriteCIOSummary(HL: Byte; c: TPasItems); override;
-    { The method that does everything - writes documentation for all units
-      and creates overview files. }
-    procedure WriteDocumentation; override;
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: Byte; const Created, LastMod: string); override;
@@ -151,9 +151,17 @@ type
       The functions are stored in the FuncsProcs argument. }
     procedure WriteFuncsProcs(const HL: Byte; const Methods: Boolean; const
       FuncsProcs: TPasMethods); override;
+  public
+    { The method that does everything - writes documentation for all units
+      and creates overview files. }
+    procedure WriteDocumentation; override;
+    procedure LoadFooterFromFile(const AFileName: string);
+    procedure LoadHeaderFromFile(const AFileName: string);
   published
     property HtmlHelp: boolean read FHtmlHelp write FHtmlHelp;
     property ContentsFile: string read FContentsFile write FContentsFile;
+    property Header: string read FHeader write FHeader;
+    property Footer: string read FFooter write FFooter;
   end;
 
 const
@@ -578,6 +586,7 @@ var
   HhcPath: string;
 {$ENDIF}
 begin
+  inherited;
   WriteBinaryFiles;
   WriteUnits(1);
   WriteHierachy;
@@ -2006,6 +2015,16 @@ begin
   WriteEndOfDocument;
 
   CloseStream;
+end;
+
+procedure THTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
+begin
+  LoadStrFromFileA(AFileName, FFooter);
+end;
+
+procedure THTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
+begin
+  LoadStrFromFileA(AFileName, FHeader);
 end;
 
 end.

@@ -19,7 +19,7 @@ interface
 uses
   SysUtils,
   Classes,
-  PasDoc,
+  PasDoc_Types,
   PasDoc_Tokenizer,
   StringVector;
 

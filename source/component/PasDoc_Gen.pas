@@ -18,11 +18,11 @@ unit PasDoc_Gen;
 interface
 
 uses
-  PasDoc,
   PasDoc_Items,
   PasDoc_Languages,
   StringVector,
   PasDoc_HierarchyTree,
+  PasDoc_Types,
   Classes;
 
 const
@@ -60,8 +60,6 @@ type
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
   protected
-    FHeader: string;
-    FFooter: string;
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
       default language is @link(DEFAULT_LANGUAGE) }
@@ -96,12 +94,13 @@ type
 
     procedure CreateClassHierarchy;
 
-  public
-    { list of all units that were successfully parsed }
-    Units: TPasUnits;
-    { Creates anchors and links for all items in all units. }
-    procedure BuildLinks;
+    { Calls @link(WriteString) with S, then writes a line feed. }
+    procedure WriteLine(const s: string);
     
+  protected
+    { list of all units that were successfully parsed }
+    FUnits: TPasUnits;
+
     { Checks if D is assigned and empty - if so, disposes of D and sets it to
       nil.
       If there are characters in D, it is checked whether at least one
@@ -117,9 +116,8 @@ type
     { Calls @link(ConvertChar) for each character in S, thus assembling a
       String that is returned and can be written to the documentation file. }
     function ConvertString(const s: string): string; virtual;
-    
-    { Abstract function to be overwritten in descendants.
-      This function is supposed to return a reference to an item, that is the
+
+    { This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
       HTML or a page number in Tex. }
     function CreateLink(const Item: TPasItem): string; virtual;
@@ -143,10 +141,6 @@ type
       Returns true on success, false otherwise (not enough memory?). }
     function ExpandDescription(Item: TPasItem; var d: string): Boolean;
 
-    { Calls @link(ExpandDescription) for each item in each unit of
-      @link(Units). }
-    procedure ExpandDescriptions;
-
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
@@ -166,10 +160,6 @@ type
       comment sections of items. }
     procedure LoadDescriptionFile(n: string);
     
-    { Assumes C contains file names as PString variables.
-      Calls @link(LoadDescriptionFile) with each file name. }
-    procedure LoadDescriptionFiles(const c: TStringVector);
-
     function SearchItem(s: string; const Item: TPasItem): TPasItem;
 
     { Searches for an item of name S which was linked in the description
@@ -219,12 +209,6 @@ type
     procedure WriteDescription(HL: Byte; const Heading: string; const Item:
       TPasItem);
 
-    { Abstract procedure, must be overwritten.
-      Writes all documentation.
-      Will create either a single file or one file for each unit and each
-      class, interface or object, depending on output format. }
-    procedure WriteDocumentation; virtual; abstract;
-
     { Writes a list of functions / procedure or constructors / destructors /
       methods I to output.
       Heading level HL is used.
@@ -258,27 +242,30 @@ type
     procedure WriteItems(HL: Byte; Heading: string; const Anchor: string;
       const i: TPasItems); virtual; abstract;
       
-    { Calls @link(WriteString) with S, then writes a line feed. }
-    procedure WriteLine(const s: string);
     { Abstract method, must be overwritten by descendants to implement
       functionality.
       Writes a list of properties P to output.
       Heading level HL is used for the heading Translation[trPROPERTIES). }
     procedure WriteProperties(HL: Byte; const p: TPasProperties); virtual;
       abstract;
+      
     { Writes a resources to DestinationDirectory. Existing files will not be overwritten. }
     procedure WriteResourceToFile(const ResourceName, ResourceType: PChar;
       const FileName: string);
+
     { Writes String S to output, converting each character using
       @link(ConvertChar). }
     procedure WriteString(const s: string);
+
     { Simply copies characters in text T to output. }
     procedure WriteText(const t: string); virtual;
+    
     { Writes collection T, which is supposed to contain type items (TPasItem) to
       output at heading level HL with heading Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
     procedure WriteTypes(const HL: Byte; const t: TPasItems); virtual;
+
     { Abstract method that writes all documentation for a single unit U to
       output, starting at heading level HL.
       Implementation must be provided by descendant objects and is dependent
@@ -287,24 +274,48 @@ type
       @link(WriteCIOs) or @link(WriteUnitDescription). }
     procedure WriteUnit(const HL: Byte; const U: TPasUnit); virtual;
       abstract;
+
     { Abstract method to be implemented by descendant objects.
       Writes the (detailed, if available) description T of a unit to output,
       including a Translation[trDESCRIPTION) headline at heading level HL. }
     procedure WriteUnitDescription(HL: Byte; U: TPasUnit); virtual; abstract;
+
     { Writes documentation for all units, calling @link(WriteUnit) for each
       unit. }
     procedure WriteUnits(const HL: Byte);
+    
     { Writes collection V, which is supposed to contain variable items (TPasItem)
       to output at heading level HL with heading Translation[trTYPES) calling
       @link(WriteItems).
       Can be overwritten in descendants. }
     procedure WriteVariables(const HL: Byte; const V: TPasItems); virtual;
 
-    procedure WriteStartOfCode; virtual; abstract;
-    procedure WriteEndOfCode; virtual; abstract;
+    procedure WriteStartOfCode; virtual;
+
+    procedure WriteEndOfCode; virtual;
+
+  public
+
+    { Creates anchors and links for all items in all units. }
+    procedure BuildLinks;
+    
+    { Calls @link(ExpandDescription) for each item in each unit of
+      @link(Units). }
+    procedure ExpandDescriptions;
+
+    { Assumes C contains file names as PString variables.
+      Calls @link(LoadDescriptionFile) with each file name. }
+    procedure LoadDescriptionFiles(const c: TStringVector);
+
+    { Abstract procedure, must be overwritten.
+      Writes all documentation.
+      Will create either a single file or one file for each unit and each
+      class, interface or object, depending on output format. }
+    procedure WriteDocumentation; virtual;
+
+    property Units: TPasUnits read FUnits write FUnits;
+
   published
-    property Header: string read FHeader write FHeader;
-    property Footer: string read FFooter write FFooter;
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
       default language is @link(DEFAULT_LANGUAGE) }
@@ -314,7 +325,7 @@ type
     { if true, no link to pasdoc homepage will be included at the bottom of
       HTML files;
       default is false }
-    property NoGeneratorInfo: Boolean read FNoGeneratorInfo write FNoGeneratorInfo;
+    property NoGeneratorInfo: Boolean read FNoGeneratorInfo write FNoGeneratorInfo default False;
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
@@ -329,6 +340,7 @@ type
     property DestinationDirectory: string read FDestDir write FDestDir;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
+    
   end;
 
 implementation
@@ -1274,6 +1286,7 @@ constructor TDocGenerator.Create(AOwner: TComponent);
 begin
   inherited;
   FClassHierarchy := nil;
+  FNoGeneratorInfo := False;
 end;
 
 procedure TDocGenerator.CreateClassHierarchy;
@@ -1327,6 +1340,21 @@ destructor TDocGenerator.Destroy;
 begin
   FClassHierarchy.Free;
   inherited;
+end;
+
+procedure TDocGenerator.WriteEndOfCode;
+begin
+// nothing - for some output this is irrelevant
+end;
+
+procedure TDocGenerator.WriteStartOfCode;
+begin
+// nothing - for some output this is irrelevant
+end;
+
+procedure TDocGenerator.WriteDocumentation;
+begin
+  FDestDir := IncludeTrailingPathDelimiter(FDestDir);
 end;
 
 end.

@@ -19,17 +19,17 @@ type
     FItem: TPasItem;
     FName: string;
     function GetName: string;
-  public
-    constructor Create;
-    destructor Destroy; override;
+  protected
     function AddChild(const AName: string): TPasItemNode; overload;
     function AddChild(const AItem: TPasItem): TPasItemNode; overload;
-    function Level: Integer;
     function FindItem(const AName: string): TPasItemNode;
     procedure Adopt(const AChild: TPasItemNode);
     function Orphan(const AChild: TPasItemNode): boolean;
     procedure Sort;
-
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Level: Integer;
     property Name: string read GetName;
     property Item: TPasItem read FItem;
   end;

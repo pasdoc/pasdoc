@@ -20,34 +20,14 @@ uses
   Classes,
   PasDoc_Items,
   PasDoc_Languages,
+  PasDoc_Gen,
+  PasDoc_Types,
   StringVector;
 
 const
   DEFAULT_VERBOSITY_LEVEL = 3;
 
 type
-  { }
-  TMessageType = (mtPlainText, mtInformation, mtWarning, mtError);
-  { }
-  TPasDocMessageEvent = procedure(const MessageType: TMessageType; const
-    AMessage: string; const AVerbosity: Cardinal) of object;
-
-  { ---------------------------------------------------------------------------- }
-  { EPasDoc
-  { ---------------------------------------------------------------------------- }
-
-{ }
-  EPasDoc = class(Exception)
-  public
-    constructor Create(const AMessage: string;
-      const AArguments: array of const; const AExitCode: Integer = 0);
-  end;
-
-  { ---------------------------------------------------------------------------- }
-
-  { all supported output formats }
-  TOutputFormat = (ofDefault, ofHtml, ofHtmlHelp);
-
   { The main object in the pasdoc application; first scans parameters, then
     parses files.
     All parsed units are then given to documentation generator,
@@ -58,17 +38,11 @@ type
     { Title of documentation. }
     FTitle: string;
     FDirectives: TStringVector;
-    FFooter: string;
     FGeneratorInfo: Boolean;
-    FHeader: string;
     FHtmlHelpContentsFileName: string;
     FIncludeDirectories: TStringVector;
     FIncludePrivate: Boolean;
-    FInvokeHtmlHelpCompiler: Boolean;
-    FLanguage: TLanguageID;
     FOnMessage: TPasDocMessageEvent;
-    FOutputFolder: string;
-    FOutputFormat: TOutputFormat;
     { The name PasDoc shall give to this documentation project,
       also used to name some of the output files. }
     FProjectName: string;
@@ -78,11 +52,13 @@ type
     FUnits: TPasUnits;
     FVerbosity: Cardinal;
     FStarStyle: boolean;
+    FGenerator: TDocGenerator;
     procedure SetDescriptionFileNames(const ADescriptionFileNames:
       TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
     procedure SetSourceFileNames(const ASourceFileNames: TStringVector);
+    procedure SetGenerator(const Value: TDocGenerator);
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
    @link(Units). }
@@ -101,6 +77,7 @@ type
     procedure RemoveExcludedItems(var c: TPasItems);
     { Searches for descr tags in the comments of all TPasItem objects in C. }
     procedure SearchDescrFileTags(var c: TPasItems);
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
     constructor Create(AOwner: TComponent); override;
@@ -121,16 +98,10 @@ type
       AMessage: string; const AVerbosity: Cardinal);
     { Starts creating the documentation. }
     procedure Execute;
-    { }
-    procedure LoadFooterFromFile(const AFileName: string);
-    { }
-    procedure LoadHeaderFromFile(const AFileName: string);
   published
     property DescriptionFileNames: TStringVector read FDescriptionFileNames
       write SetDescriptionFileNames;
     property Directives: TStringVector read FDirectives write SetDirectives;
-    property Footer: string read FFooter write FFooter;
-    property Header: string read FHeader write FHeader;
     property HtmlHelpContentsFileName: string read FHtmlHelpContentsFileName
       write FHtmlHelpContentsFileName;
     property IncludeDirectories: TStringVector read FIncludeDirectories write
@@ -139,22 +110,8 @@ type
       are to be included in the documentation (default is @False). }
     property IncludePrivate: Boolean read FIncludePrivate write
       FIncludePrivate;
-    { Registry and HCC only exists on Windows. }
-    { When creating HtmlHelp output, PasDoc will look for the Html Help Compiler
-      "HCC.exe" in the registry and compile the project. Set @Name to @False
-      to suppress automatic compilation of Html Help projects. }
-    property InvokeHtmlHelpCompiler: Boolean read FInvokeHtmlHelpCompiler
-      write FInvokeHtmlHelpCompiler default True;
-    { Language used to write the documentation. }
-    property Language: TLanguageID read FLanguage write FLanguage;
-    { By default, PasDoc adds generator information and a time stamp to the documentation.
-      Set @Name to @False to suppress this information. }
-    property GeneratorInfo: Boolean read FGeneratorInfo write FGeneratorInfo
-      default True;
+
     property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    property OutputFolder: string read FOutputFolder write FOutputFolder;
-    property OutputFormat: TOutputFormat read FOutputFormat write
-      FOutputFormat;
     { The name PasDoc shall give to this documentation project,
       also used to name some of the output files. }
     property ProjectName: string read FProjectName write FProjectName;
@@ -163,6 +120,8 @@ type
     property Title: string read FTitle write FTitle;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property StarStyleOnly: boolean read FStarStyle write FStarStyle;
+
+    property Generator: TDocGenerator read FGenerator write SetGenerator; 
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -228,34 +187,24 @@ const
 implementation
 
 uses
-  PasDoc_Gen,
   PasDoc_GenHtml,
   PasDoc_Parser,
   ObjectVector,
   Utils;
-
-const
-  { The output format to be used when none is specified on command line. }
-  DEFAULT_OUTPUT_FORMAT: TOutputFormat = ofHtml;
-  { Names of all output formats. }
-  OUTPUT_FORMAT_NAMES: array[TOutputFormat] of string = ('', 'HTML',
-    'HTML Help');
-
-  { ---------------------------------------------------------------------------- }
 
 constructor TPasDoc.Create(AOwner: TComponent);
 begin
   inherited;
 
   FGeneratorInfo := True;
-  FInvokeHtmlHelpCompiler := True;
-
   FDescriptionFileNames := NewStringVector;
   FDirectives := NewStringVector;
   FIncludeDirectories := NewStringVector;
   FSourceFileNames := NewStringVector;
 
   FVerbosity := DEFAULT_VERBOSITY_LEVEL;
+
+  FGenerator := nil;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -415,37 +364,18 @@ end;
 
 procedure TPasDoc.Execute;
 var
-  Generator: TDocGenerator;
   t1, t2: TDateTime;
 begin
+  if not Assigned(Generator) then begin
+    DoError('No Generator present!', [], 1);
+  end;
   { Do a couple of tests before we actually start processing the source files. }
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
   end;
 
-  if not DirectoryExists(FOutputFolder) then begin
-    DoError('Output Folder does not exist (%s).', [FOutputFolder]);
-  end;
-  FOutputFolder := IncludeTrailingPathDelimiter(FOutputFolder);
-
-  { If no output format has been defined on the command line, pick
-    default output format, show warning }
-  if OutputFormat = ofDefault then begin
-    DoMessage(1, mtWarning,
-      'No Output Format specified, using default ("%s")',
-      [OUTPUT_FORMAT_NAMES[DEFAULT_OUTPUT_FORMAT]]);
-    OutputFormat := DEFAULT_OUTPUT_FORMAT;
-  end;
-
   { Set default language in case a language does not provide a translation. }
   LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Proc;
-  if Language <> lgDefault then begin
-    LANGUAGE_ARRAY[Language].Proc
-  end else begin
-    DoMessage(1, mtWarning,
-      'No Output Language specified, using default ("%s")',
-      [LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Name]);
-  end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
   FIncludeDirectories.Iterate(IterateIncludeTrailingPathDelimiter);
@@ -458,33 +388,6 @@ begin
   if IsNilOrEmpty(FUnits) then begin
     DoError('At least one unit must have been successfully parsed to write docs.', [], 1);
   end;
-
-  DoMessage(3, mtInformation, 'Creating %s documentation file(s)...',
-    [OUTPUT_FORMAT_NAMES[OutputFormat]]);
-    
-  { create desired output generator }
-  case OutputFormat of
-    ofHtml, ofHtmlHelp: begin
-        Generator := THTMLDocGenerator.Create(nil);
-        Generator.OnMessage := GenMessage;
-        // Additional settings for Html Help
-        if OutputFormat = ofHtmlHelp then
-          with THTMLDocGenerator(Generator) do begin
-            ContentsFile := Self.FHtmlHelpContentsFileName;
-            HtmlHelp := True;
-          end;
-      end;
-  else begin
-      Generator := nil; { to prevent 'uninitialized' warnings }
-      DoError('Output format unknown.', []);
-    end;
-  end;
-  { copy some fields from P to Generator }
-  Generator.Header := FHeader;
-  Generator.Footer := FFooter;
-  Generator.Language := Language;
-  Generator.DestinationDirectory := FOutputFolder;
-  Generator.NoGeneratorInfo := not GeneratorInfo;
 
   if FProjectName <> '' then begin
     Generator.ProjectName := FProjectName
@@ -499,10 +402,7 @@ begin
   Generator.ExpandDescriptions;
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
 
-  // ... because WriteDocumentation may need them (i.e. when calling HHC.exe).
   Generator.WriteDocumentation;
-
-  Generator.Free;
 
   t2 := Now;
   DoMessage(1, mtInformation, 'Done, worked %s minutes(s)',
@@ -604,43 +504,27 @@ begin
   FSourceFileNames.Assign(ASourceFileNames);
 end;
 
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasDoc.LoadFooterFromFile(const AFileName: string);
-begin
-  if not LoadStrFromFileA(AFileName, FFooter) then begin
-    DoMessage(1, mtError, 'Could not read Footer from file "%s".',
-      [AFileName]);
-    FFooter := '';
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasDoc.LoadHeaderFromFile(const AFileName: string);
-begin
-  if not LoadStrFromFileA(AFileName, FHeader) then begin
-    DoMessage(1, mtError, 'Could not read Header from file "%s".',
-      [AFileName]);
-    FHeader := '';
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-{ EPasDoc
-{ ---------------------------------------------------------------------------- }
-
-constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer = 0);
-begin
-  ExitCode := AExitCode;
-  CreateFmt(AMessage, AArguments);
-end;
-
 procedure TPasDoc.GenMessage(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 begin
   DoMessage(AVerbosity, MessageType, AMessage, []);
+end;
+
+procedure TPasDoc.SetGenerator(const Value: TDocGenerator);
+begin
+  FGenerator := Value;
+  if Assigned(FGenerator) then begin
+    FGenerator.FreeNotification(Self);
+  end;
+end;
+
+procedure TPasDoc.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited;
+  if (AComponent = FGenerator) and (Operation = opRemove) then begin
+    FGenerator := nil;
+  end
 end;
 
 end.

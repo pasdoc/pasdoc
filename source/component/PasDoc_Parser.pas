@@ -14,7 +14,7 @@ interface
 
 uses
   Classes,
-  PasDoc,
+  PasDoc_Types,
   PasDoc_Items,
   PasDoc_Scanner,
   PasDoc_Tokenizer,

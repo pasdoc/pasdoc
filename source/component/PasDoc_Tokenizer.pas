@@ -19,7 +19,7 @@ interface
 uses
   StringVector,
   Utils,
-  PasDoc,
+  PasDoc_Types,
   Classes;
 
 type
