@@ -1,5 +1,5 @@
 {
-  @lastmod(2003-03-29)
+  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @abstract(string vector - based on TStringList)
   The string vector is based on TStringList and simply exports
