@@ -22,13 +22,6 @@ implementation
 uses
   SysUtils;
 
-{$IFDEF FPC}
-type
-  TPipeDescriptors = record
-    ReadDes, WriteDes: Integer;
-  end;
-{$ENDIF}
-
 {$IFDEF LINUX}
 function RunProgram(const AName: string; args: string): TRunRecord;
 begin
@@ -45,6 +38,7 @@ end;
 
 function ReadLine(const ARR: TRunRecord): string;
 begin
+  Result := '';
 end;
 {$ELSE}
 function RunProgram(const AName: string; args: string): TRunRecord;

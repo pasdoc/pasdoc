@@ -18,7 +18,7 @@ type
   EPasDoc = class(Exception)
   public
     constructor Create(const AMessage: string;
-      const AArguments: array of const; const AExitCode: Integer);
+      const AArguments: array of const; const AExitCode: Word);
   end;
 
 implementation
@@ -26,7 +26,7 @@ implementation
 { EPasDoc }
 
 constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer);
+  const; const AExitCode: Word);
 begin
   ExitCode := AExitCode;
   CreateFmt(AMessage, AArguments);

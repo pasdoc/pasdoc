@@ -65,7 +65,6 @@ function NewStringCardinalTree: TStringCardinalTree;
 
 implementation
 uses
-  Utils,
   SysUtils;
 
 function SortProc(A, B: Pointer): Integer;

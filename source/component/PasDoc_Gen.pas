@@ -7,6 +7,7 @@
   @author(Philippe Jean Dit Bailleul (jdb@abacom.com))
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
+  @author(Pierre Woestyn <pwoestyn@users.sourceforge.net>)
   @created(30 Aug 1998)
   @cvs($Date$)
 
@@ -134,7 +135,7 @@ type
     procedure SetDestDir(const Value: string);
 
     procedure DoError(const AMessage: string; const AArguments: array of const;
-      const AExitCode: Integer);
+      const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TMessageType; const AMessage: string;
       const AArguments: array of const);
@@ -1044,55 +1045,56 @@ end;
 
 procedure TDocGenerator.LoadDescriptionFile(n: string);
 var
-  f: TStream;
-  ItemName: string;
-  s: string;
-  t: string;
+  f           : TStream;
+  ItemName    : string;
+  Description : string;
+  i           : Integer;
+  s           : string;
+const
+  IdentChars  = ['A'..'Z', 'a'..'z', '_', '.', '0'..'9'];
 begin
-  if n = '' then Exit;
   ItemName := '';
-  DoMessage(3, mtInformation, 'Loading descriptions from file "' + n + '"', []);
-  f := nil;
-  if FileExists(n) then begin
+  if n = '' then Exit;
+  try
     f := TFileStream.Create(n, fmOpenRead);
-  end;
-  if not Assigned(f) then
-    DoError('Could not open description file "%s%.', [n], 0);
-  t := '';
-  while (f.Position < f.Size) do begin
-    s := StreamReadLine(f);
-    {    DoMessage(4, 'DEBUG - descr "' + S + '"');}
-    if (Length(s) > 0) then begin
-      { # means: description of another item begins }
-      if (s[1] = '#') then begin
-        { if there is an old description, deal with it }
-        StoreDescription(ItemName, t);
-        { delete # char }
-        System.Delete(s, 1, 1);
-        { skip whitespace }
-        while (Length(s) > 0) and (s[1] in [' ', #9]) do
-          System.Delete(s, 1, 1);
-        { find item }
-        ItemName := '';
-        while (Length(s) > 0) and (s[1] in ['A'..'Z', 'a'..'z', '_', '.',
-          '0'..'9']) do begin
-          ItemName := ItemName + s[1];
-          System.Delete(s, 1, 1);
+  
+    Assert(Assigned(f));
+  
+    try
+      while f.Position < f.Size do begin
+        s := StreamReadLine(f);
+        if s[1] = '#' then begin
+          i := 2;
+          while s[i] in [' ', #9] do Inc(i);
+          { Make sure we read a valid name - the user might have used # in his
+            description. }
+          if s[i] in IdentChars then begin
+            if ItemName <> '' then StoreDescription(ItemName, Description);
+            { Read item name and beginning of the description }
+            ItemName := '';
+            repeat
+              ItemName := ItemName + s[i];
+              Inc(i);
+            until not (s[i] in IdentChars);
+            while s[i] in [' ', #9] do Inc(i);
+            Description := Copy(s, i, MaxInt);
+            Continue;
+          end;
         end;
-      end
-      else begin
-        { check if there is a text }
-        if t = '' then begin
-          DoMessage(2, mtError, 'First line of description file must start with "# item_name"', []);
-          Break; { leave while loop }
-        end;
-        t := t + s + #10;
+        Description := Description + s;
       end;
+      
+      if ItemName = '' then
+        DoMessage(2, mtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
+      else
+        StoreDescription(ItemName, Description);
+    finally
+      f.Free;
     end;
+  except
+    DoError('Could not open description file "%s".', [n], 0);
   end;
-  StoreDescription(ItemName, t);
-  f.Free;
-end;
+end; {TDocGenerator.LoadDescriptionFile}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1376,7 +1378,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.DoError(const AMessage: string; const AArguments:
-  array of const; const AExitCode: Integer);
+  array of const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;
@@ -1502,7 +1504,7 @@ begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then begin
-    CreateStream(OverviewFilenames[9]+'.gviz', True);
+    CreateStream(OverviewFilenames[9]+'.dot', True);
     WriteConverted('DiGraph Classes {', true);
     while Assigned(LNode) do begin
       if Assigned(LNode.Parent) then begin
@@ -1524,7 +1526,7 @@ var
   U: TPasUnit;
 begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then begin
-    CreateStream(OverviewFilenames[8]+'.gviz', True);
+    CreateStream(OverviewFilenames[8]+'.dot', True);
     WriteConverted('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do begin
       if FUnits.PasItemAt[i] is TPasUnit then begin

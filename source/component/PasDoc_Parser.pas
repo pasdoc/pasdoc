@@ -48,7 +48,7 @@ type
     FClassMembers: TAccessibilities;
 
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer);
+      const; const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
@@ -173,7 +173,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.DoError(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer);
+  const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;

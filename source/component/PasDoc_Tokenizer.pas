@@ -17,7 +17,6 @@ unit PasDoc_Tokenizer;
 interface
 
 uses
-  StringVector,
   Utils,
   PasDoc_Types,
   Classes;
@@ -43,7 +42,7 @@ type
     KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
     KEY_SPINTERFACE,
-    KEY_V,
+//    KEY_V,
     KEY_DO,
     KEY_DOWNTO,
     KEY_ELSE,
@@ -160,7 +159,7 @@ type
     FStreamName: string;
     
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer);
+      const; const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
@@ -207,7 +206,7 @@ const
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'SPINTERFACE', 'V', 'DO', 'DOWNTO',
+    'CONSTRUCTOR', 'DESTRUCTOR', 'SPINTERFACE', {'V', } 'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
@@ -422,7 +421,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTokenizer.DoError(const AMessage: string; const AArguments: array
-  of const; const AExitCode: Integer);
+  of const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;

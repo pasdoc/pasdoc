@@ -217,25 +217,10 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
-  StreamUtils,
   Utils,
-  PasDoc_Tokenizer,
-  PasDoc_HierarchyTree;
+  PasDoc_Tokenizer;
   
-type
-  TCIONames = array[TCIOType] of string;
-
-const
-  CIO_NAMES: TCIONames = (
-    'class',
-    'dispinterface',
-    'interface',
-    'object',
-    'record',
-    'packed record');
-
-
-  { Remove all HTML characters }
+{ Remove all HTML characters }
 function RemoveHTMLChars(s: string):string;
 var
  CharPos: integer;
@@ -430,14 +415,6 @@ procedure TTexDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
-const
-  CIO_NAMES: TCIONames = (
-    'class',
-    'dispinterface',
-    'interface',
-    'object',
-    'record',
-    'packed record');
 var
   s: string;
   Item: TPasItem;
@@ -534,9 +511,6 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
-type
-  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
-  TSectionSet = set of TSections;
 var
   j: Integer;
   CIO: TPasCio;
@@ -2042,16 +2016,6 @@ type
   TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
     dsTypes, dsConstants, dsVariables);
   TSectionSet = set of TSections;
-  TSectionAnchors = array[TSections] of string;
-const
-  SectionAnchors: TSectionAnchors = (
-    '@Description',
-    '@Uses',
-    '@Classes',
-    '@FuncsProcs',
-    '@Types',
-    '@Constants',
-    '@Variables');
 var
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
@@ -2399,6 +2363,9 @@ end;
 
 (*
   $Log$
+  Revision 1.16  2004/07/16 16:34:16  johill
+  some code cleanup, fixes from Pierre Woestyn
+
   Revision 1.15  2004/07/09 14:03:28  johill
   fix things, apply patches from mailing list.
 

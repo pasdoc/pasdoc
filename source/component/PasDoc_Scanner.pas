@@ -65,7 +65,7 @@ type
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer);
+      const; const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
   public
@@ -99,9 +99,6 @@ type
   end;
 
 implementation
-
-uses
-  Utils;
 
 type
   { all directives a scanner is going to regard }
@@ -548,7 +545,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TScanner.DoError(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer);
+  const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;

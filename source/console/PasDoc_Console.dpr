@@ -194,11 +194,11 @@ begin
   GOptionParser.AddOption(GOption_WriteUsesList);
 
   GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses', True, False);
-  GOption_WriteGVUses.Explanation := 'write a GVUses.gviz file that can be used for the `dot` program from GraphViz to generate a unit dependency graph';
+  GOption_WriteGVUses.Explanation := 'write a GVUses.dot file that can be used for the `dot` program from GraphViz to generate a unit dependency graph';
   GOptionParser.AddOption(GOption_WriteGVUses);
 
   GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes', True, False);
-  GOption_WriteGVClasses.Explanation := 'write a GVClasses.gviz file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
+  GOption_WriteGVClasses.Explanation := 'write a GVClasses.dot file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
   GOptionParser.AddOption(GOption_WriteGVClasses);
 
   GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations', True, False);

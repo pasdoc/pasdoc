@@ -94,7 +94,7 @@ type
     procedure AddSourceFileNamesFromFile(const FileName: string);
     { Raises an exception. }
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer);
+      const; const AExitCode: Word);
     { Forwards a message to the @link(OnMessage) event. }
     procedure DoMessage(const AVerbosity: Cardinal; const AMessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
@@ -202,7 +202,7 @@ const
   { }
   PASDOC_DATE = '$Date$';
   { }
-  PASDOC_VERSION = '0.8.8.2';
+  PASDOC_VERSION = '0.8.8.3';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
@@ -214,8 +214,6 @@ const
 implementation
 
 uses
-  PasDoc_GenHtml,
-  PasDoc_GenLatex,
   PasDoc_Parser,
   ObjectVector,
   Utils, PasDoc_Serialize;
@@ -515,7 +513,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDoc.DoError(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Integer);
+  const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;

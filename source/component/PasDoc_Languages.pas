@@ -1478,9 +1478,11 @@ begin
   end;
 end;
 
-end.
 {
   $Log$
+  Revision 1.10  2004/07/16 16:34:16  johill
+  some code cleanup, fixes from Pierre Woestyn
+
   Revision 1.9  2004/06/20 18:36:26  johill
   Changes from Grzegorz Skoczylas: character set handling + updated Polish
   translation
@@ -1489,3 +1491,4 @@ end.
     + added hungarian translation from Jonas (thanks!)
 
 }
+end.

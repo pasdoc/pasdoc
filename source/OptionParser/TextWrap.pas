@@ -118,7 +118,7 @@ begin
           end
           else
           begin
-            ExistingBreak := StrLComp(Pointer(@Line[Pos]), sLineBreak, Length(sLineBreak)) = 0;
+            ExistingBreak := StrLComp(@Line[Pos], sLineBreak, Length(sLineBreak)) = 0;
             if ExistingBreak then
               Inc(Pos, Length(sLineBreak))
             else

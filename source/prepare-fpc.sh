@@ -1,5 +1,5 @@
 #!/bin/sh
-exit 0
+
 echo -n Creating links for FPC compilation...
 
 find -type f -iname '*.pas' -exec bash prepare-fpc-link.sh "{}" ';'

@@ -18,7 +18,7 @@ procedure WriteString(const AStream: TStream; const AString: string);
 
 implementation
 uses
-  Utils;
+  Utils; // for LineEnding in Kylix/Delphi
 
 function StreamReadLine(const AStream: TStream): string;
 // totally junky implementation!!
