@@ -14,7 +14,7 @@ uses
   Classes;
 
 type
-  TIterateFunc = procedure(var AString: string);
+  TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
     function FirstName: string;
@@ -76,12 +76,9 @@ end;
 procedure TStringVector.Iterate(const AItFunc: TIterateFunc);
 var
   i: Integer;
-  s: string;
 begin
   for i := 0 to count - 1 do begin
-    s := Strings[i];
-    AItFunc(s);
-    Strings[i] := s;
+    Strings[i] := AItFunc(Strings[i]);
   end;
 end;
 

@@ -355,13 +355,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure IterateIncludeTrailingPathDelimiter(var AString: string);
-begin
-  AString := IncludeTrailingPathDelimiter(AString);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TPasDoc.Execute;
 var
   t1, t2: TDateTime;
@@ -375,7 +368,7 @@ begin
   end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
-  FIncludeDirectories.Iterate(IterateIncludeTrailingPathDelimiter);
+  FIncludeDirectories.Iterate(IncludeTrailingPathDelimiter);
 
   t1 := Now;
   ParseFiles;
