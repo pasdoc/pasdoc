@@ -13,7 +13,9 @@
 
 unit PasDoc_GenHtml;
 
+{$IFNDEF FPC}
 {$R BinData.res}
+{$ENDIF}
 
 interface
 
@@ -107,7 +109,6 @@ type
     procedure WriteUnitOverviewFile;
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
-    procedure WriteBinaryFiles;
 
     procedure WriteUnit(const HL: Byte; const U: TPasUnit); override;
     procedure WriteUnitUses(const HL:Byte; U: TPasUnit); 
@@ -192,7 +193,6 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
-  Types,
   Utils,
   PasDoc_Tokenizer,
   PasDoc_HierarchyTree;
@@ -271,7 +271,7 @@ var
   s, S1, S2: string;
   EmailAddress: string;
 begin
-  if IsNilOrEmpty(Authors) then Exit;
+  if StringVectorIsNilOrEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
     WriteHeading(HL, FLanguage.Translation[trAuthor])
@@ -335,7 +335,7 @@ begin
     WriteString('object');
   end;
 
-  if not IsNilOrEmpty(CIO.Ancestors) then begin
+  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
     WriteString('(');
     for i := 0 to CIO.Ancestors.Count - 1 do begin
       s := CIO.Ancestors[i];
@@ -363,7 +363,7 @@ begin
         s := CreateReferencedLink(Item.Name, Item.FullLink);
         WriteString(s);
 
-        if not IsNilOrEmpty(TPasCio(Item).Ancestors) then begin
+        if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then begin
           s := TPasCio(Item).Ancestors.FirstName;
           Item := SearchItem(s, Item);
 
@@ -419,7 +419,7 @@ var
   j: Integer;
   p: TPasCio;
 begin
-  if IsNilOrEmpty(c) then Exit;
+  if ObjectVectorIsNilOrEmpty(c) then Exit;
 
   if HtmlHelp then
     WriteString('<A name=@Classes></A>');
@@ -580,7 +580,6 @@ begin
   StartSpellChecking('sgml');
   FLinkCount := 1;
   inherited;
-  WriteBinaryFiles;
   WriteUnits(1);
   WriteHierachy;
   WriteOverviewFiles;
@@ -684,7 +683,7 @@ var
   j: Integer;
   Item: TPasItem;
 begin
-  if IsNilOrEmpty(Fields) then Exit;
+  if ObjectVectorIsNilOrEmpty(Fields) then Exit;
 
   WriteString('<A name=@Fields></A>');
   WriteHeading(Order, FLanguage.Translation[trFields]);
@@ -739,7 +738,7 @@ var
   p: TPasMethod;
   s: string;
 begin
-  if IsNilOrEmpty(FuncsProcs) then Exit;
+  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
 
   if Methods then begin
     if HtmlHelp then
@@ -827,18 +826,6 @@ end;
 
 { ---------- }
 
-procedure THTMLDocGenerator.WriteBinaryFiles;
-begin
-  WriteResourceToFile('PRIVATE', RT_RCDATA, 'private.gif');
-  WriteResourceToFile('PROTECTED', RT_RCDATA, 'protected.gif');
-  WriteResourceToFile('PUBLIC', RT_RCDATA, 'public.gif');
-  WriteResourceToFile('PUBLISHED', RT_RCDATA, 'published.gif');
-  WriteResourceToFile('AUTOMATED', RT_RCDATA, 'automated.gif');
-  WriteResourceToFile('CSS', RT_RCDATA, ProjectName + '.css')
-end;
-
-{ ---------- }
-
 procedure THTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
@@ -881,7 +868,7 @@ var
   j: Integer;
   Item: TPasItem;
 begin
-  if IsNilOrEmpty(i) then Exit;
+  if ObjectVectorIsNilOrEmpty(i) then Exit;
 
   if HtmlHelp and (Anchor <> '') then
     WriteString('<A name=@' + Anchor + '></A>');
@@ -938,7 +925,7 @@ begin
 
   WriteUnitOverviewFile;
 
-  if IsNilOrEmpty(Units) then Exit;
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   // Make sure we don't free the Itmes when we free the container.
   TotalItems := TPasItems.Create(False);
@@ -990,7 +977,7 @@ begin
       PartialItems.InsertItems(ItemsToCopy);
     end;
 
-    if not IsNilOrEmpty(PartialItems) then begin
+    if not ObjectVectorIsNilOrEmpty(PartialItems) then begin
       WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
         FLanguage.Translation[trDescription]);
 
@@ -1102,7 +1089,7 @@ var
   j: Integer;
   Prop: TPasProperty;
 begin
-  if IsNilOrEmpty(p) then Exit;
+  if ObjectVectorIsNilOrEmpty(p) then Exit;
 
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
   for j := 0 to p.Count - 1 do begin
@@ -1135,7 +1122,7 @@ var
   j: Integer;
   Prop: TPasProperty;
 begin
-  if IsNilOrEmpty(p) then Exit;
+  if ObjectVectorIsNilOrEmpty(p) then Exit;
 
   if HtmlHelp then
     WriteString('<A name=Properties></A>');
@@ -2026,7 +2013,7 @@ var
   i: Integer;
   ULink: TPasItem;
 begin
-  if WriteUsesClause and not IsNilOrEmpty(U.UsesUnits) then begin
+  if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
     WriteHeading(HL, 'uses');
     WriteString('<ul>');
     for i := 0 to U.UsesUnits.Count-1 do begin
@@ -2063,32 +2050,34 @@ end;
 
 procedure THTMLDocGenerator.WriteSpellChecked(const AString: string);
 var
-  LErrors: TSpellCheckArray;
+  LErrors: TObjectVector;
   i, temp: Integer;
   LString, s: string;
 begin
-  LErrors := CheckString(AString);
-  if Length(LErrors) = 0 then begin
+  LErrors := TObjectVector.Create(True);
+  CheckString(AString, LErrors);
+  if LErrors.Count = 0 then begin
     WriteString(AString);
   end else begin
     // build s
     s := '';
     LString := AString;
-    for i := High(LErrors) downto 0 do begin
+    for i := LErrors.Count-1 downto 0 do begin
       // everything after the offending word
-      temp := LErrors[i].Offset+Length(LErrors[i].Word) + 1;
-      s := ( '">' + LErrors[i].Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
-      if Length(LErrors[i].Suggestions) > 0 then begin
-        s := 'suggestions: '+LErrors[i].Suggestions + s;
+      temp := TSpellingError(LErrors.ObjectAt[i]).Offset+Length(TSpellingError(LErrors.ObjectAt[i]).Word) + 1;
+      s := ( '">' + TSpellingError(LErrors.ObjectAt[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
+      if Length(TSpellingError(LErrors.ObjectAt[i]).Suggestions) > 0 then begin
+        s := 'suggestions: '+TSpellingError(LErrors.ObjectAt[i]).Suggestions + s;
       end else begin
         s := 'no suggestions' + s;
       end;
       s := '<acronym style="#0000FF; border-bottom: 1px solid crimson" title="' + s;
-      SetLength(LString, LErrors[i].Offset);
+      SetLength(LString, TSpellingError(LErrors.ObjectAt[i]).Offset);
     end;
     WriteString(LString);
     writestring(s);
   end;
+  LErrors.Free;
 end;
 
 end.
