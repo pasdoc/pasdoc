@@ -6,6 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Philippe Jean Dit Bailleul (jdb@abacom.com))
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
+  @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @created(30 Aug 1998)
   @cvs($Date$)
 
@@ -229,7 +230,7 @@ end;
     { Takes description D of the item Item, expands links (using Item),
       converts output-specific characters.
       Returns true on success, false otherwise (not enough memory?). }
-    function ExpandDescription(Item: TPasItem; var d: string): Boolean;
+    function ExpandDescription(Item: TPasItem; var d: string): Boolean; virtual;  // GSk: changed to virtual
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
@@ -695,7 +696,7 @@ begin
   repeat
     if (d[Run] = '@') then begin
         { this is @@ (literal '@')? }
-      if (Run <= l - 1) and (d[Run + 1] = '@') then 
+      if (Run <= l - 1) and (d[Run + 1] = '@') then
       begin
         { literal @ }
         t := t + ConvertChar('@');
@@ -829,7 +830,7 @@ begin
                   end;
     end
     else begin
-      if (d[Run] in [#9, #13, #10]) then d[Run] := ' ';
+      if (d[Run] in [#9{, #13, #10}]) then d[Run] := ' ';   // GSk: Removed CR and LF
       t := t + ConvertChar(d[Run]);
       Inc(Run);
     end;

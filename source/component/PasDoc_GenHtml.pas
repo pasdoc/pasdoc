@@ -8,6 +8,7 @@
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
   @author(Thomas W. Mueller <no-email>)
   @author(David Berg (HTML Layout) <david@sipsolutions.de>)
+  @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
@@ -48,6 +49,7 @@ type
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
+    function ExpandDescription(Item: TPasItem; var d: string): Boolean; override;  // GSk
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -2561,6 +2563,9 @@ begin
   WriteDirect('<link rel="StyleSheet" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
   WriteDirect('"/>', true);
+  if FLanguage.CharSet <> '' then begin   // GSk - START
+    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' + FLanguage.CharSet + '"/>', true);
+  end;                                    // GSk - STOP
   WriteLine(CurrentStream, '</head>');
   WriteLine(CurrentStream, '<body class="navigationframe">');
   WriteDirect('<h2>'+Title+'</h2>');
@@ -2592,8 +2597,10 @@ function THTMLDocGenerator.ConvertString(const s: String): String;
   http://groups.google.com/groups?selm=aa8ntp.108.1%40ingo.tgl.westfalen.de&oe=UTF-8&output=gplain
   and adjusted.
 }
+(* - GSk: code replaced with code below
 const
-  NumSpecials = 85;  Entities: array [1..NumSpecials] of string[10] =
+  NumSpecials = 100;
+  Entities: array [1..NumSpecials] of string[10] =
     ('&lt;','&gt;','&amp;','&quot;','&Ccedil;','&ccedil;','&Ntilde;',
      '&ntilde;','&THORN;','&thorn;','&Yacute;','&yacute;','&yuml;','&szlig;',
      '&AElig;','&Aacute;','&Acirc;','&Agrave;','&Aring;','&Atilde;','&Auml;',
@@ -2606,7 +2613,10 @@ const
      '&Uuml;','&uacute;','&ucirc;','&ugrave;','&uuml;','&reg;','&copy;',
      '&plusmn;','&micro;','&para;','&middot;','&cent;','&pound;','&yen;',
      '&sup1;','&sup2;','&sup3;','&iquest;',
-     '&deg;','&sect;','&laquo;','&raquo;','&#132;','&#147;');
+     '&deg;','&sect;','&laquo;','&raquo;',
+     '&lsquo;','&rsquo;','&sbquo;','&ldquo;','&rdquo;','&bdquo;',
+     '&permil;','&ndash;', '&mdash;','&lsaquo;','&rsaquo;','&euro;',
+     '&divide;','&times;','&brvbar;','&curren;','...');
   Specials: array [1..NumSpecials] of char =
      ('<','>','&','"','Ç','ç','Ñ','ñ','Þ','þ','Ý','ý','ÿ','ß','Æ','Á',
       'Â','À','Å','Ã','Ä','æ','á','â','à','å','ã','ä',
@@ -2614,19 +2624,75 @@ const
       'î','ì','ï','Ó','Ô','Ò','Ø',
       'Õ','Ö','ó','ô','ò','ø','õ','ö','Ú','Û',
       'Ù','Ü','ú','û','ù','ü','®','©','±','µ','¶','·','¢','£','¥','¹','²','³',
-      '¿','°','§','«','»','"','"');
+      '¿','°','§','«','»',
+      '‚','‘','’','“','”','„',
+      '‰','–','—','‹','›','€',
+      '÷','×','¦','¤','…');
+*)
+const
+  NumSpecials = 36;
+  Specials:  array[0..NumSpecials-1] of
+               record
+                 cChar:  Char;
+                 sSpec:  string[10]
+               end = (
+                 (cChar: '<';   sSpec: '&lt;'),
+                 (cChar: '>';   sSpec: '&gt;'),
+                 (cChar: '&';   sSpec: '&amp;'),
+                 (cChar: '"';   sSpec: '&quot;'),
+                 (cChar: '¤';   sSpec: '&curren;'),
+                 (cChar: '¦';   sSpec: '&brvbar;'),
+                 (cChar: '§';   sSpec: '&sect;'),
+                 (cChar: '©';   sSpec: '&copy;'),
+                 (cChar: '«';   sSpec: '&laquo;'),
+                 (cChar: '¬';   sSpec: '&not;'),
+                 (cChar: '®';   sSpec: '&reg;'),
+                 (cChar: '°';   sSpec: '&deg;'),
+                 (cChar: '±';   sSpec: '&plusmn;'),
+                 (cChar: '´';   sSpec: '&acute;'),
+                 (cChar: '·';   sSpec: '&middot;'),
+                 (cChar: '¸';   sSpec: '&cedil;'),
+                 (cChar: '»';   sSpec: '&raquo;'),
+                 (cChar: '×';   sSpec: '&times;'),
+                 (cChar: 'ß';   sSpec: '&szlig;'),
+                 (cChar: '÷';   sSpec: '&divide;'),
+                 (cChar: '^';   sSpec: '&circ;'),
+                 (cChar: '~';   sSpec: '&tilde;'),
+                 (cChar: '–';   sSpec: '&ndash;'),
+                 (cChar: '—';   sSpec: '&mdash;'),
+                 (cChar: '‘';   sSpec: '&lsquo;'),
+                 (cChar: '’';   sSpec: '&rsquo;'),
+                 (cChar: '‚';   sSpec: '&sbquo;'),
+                 (cChar: '“';   sSpec: '&ldquo;'),
+                 (cChar: '”';   sSpec: '&rdquo;'),
+                 (cChar: '„';   sSpec: '&bdquo;'),
+                 (cChar: '†';   sSpec: '&dagger;'),
+                 (cChar: '‡';   sSpec: '&Dagger;'),
+                 (cChar: '‰';   sSpec: '&permil;'),
+                 (cChar: '‹';   sSpec: '&lsaquo;'),
+                 (cChar: '›';   sSpec: '&rsaquo;'),
+                 (cChar: '€';   sSpec: '&euro;'));
 
     function Entity(const Special: Char): String;
     var
       i: Integer;
     begin
       Result := Special;
+(* -- GSk: code replaced with code below
       for i := 1 to NumSpecials do
         if Specials[i] = Special then
         begin
           Result := Entities[i];
           break;
         end
+*)
+      for  i := NumSpecials - 1  downto  0  do
+        with  Specials[i]  do
+          if  cChar = Special  then
+            begin
+              Result := sSpec;
+              Break
+            end
     end;
 
 var
@@ -2677,6 +2743,39 @@ end;
 function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
   result := '<pre><code>' + inherited FormatPascalCode(Line) + '</pre></code>';
+end;
+
+function THTMLDocGenerator.ExpandDescription(Item: TPasItem;   // GSk: override
+                                             var d: string): Boolean;
+{$IfDef MSWindows }
+  const
+    cNewLine  = #13#10;
+    cNewLine2 = cNewLine + cNewLine;
+    cNewLine3 = cNewLine + cNewLine + cNewLine;
+{$Else}  {$IfDef Linux }
+  const
+    cNewLine  = #10;
+    cNewLine2 = cNewLine + cNewLine;
+    cNewLine3 = cNewLine + cNewLine + cNewLine;
+{$Else}
+  {$Message error 'Unrecognised operating system' }
+{$EndIf} {$EndIf}
+begin
+  Result := inherited ExpandDescription(Item, d);
+  { Eliminate empty lines at beginning }
+  while  Copy(d, 1, Length(cNewLine)) = cNewLine  do
+    Delete(d, 1, Length(cNewLine));
+  { Eliminate empty lines at enging }
+  while  Copy(d, Length(d) - Length(cNewLine) + 1, MaxInt) = cNewLine  do
+    SetLength(d, Length(d) - Length(cNewLine));
+  { Reduce all 2 or more empty lines to 1 empty line }
+  while  Pos(cNewLine3, d) <> 0  do
+    d := StringReplace(d, cNewLine3, cNewLine2, [rfReplaceAll]);
+  { Replace empty lines with paragraph breaks }
+  d := StringReplace(d, cNewLine2, '</p><p>', [rfReplaceAll]);
+  { Eliminate empty paragraphs }
+  while  Pos('<p></p>', d) <> 0  do
+    d := StringReplace(d, '<p></p>', '', [rfReplaceAll])
 end;
 
 end.

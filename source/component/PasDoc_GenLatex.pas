@@ -40,6 +40,7 @@ type
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
+    function ExpandDescription(Item: TPasItem; var d: string): Boolean; override;  // GSk
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
@@ -77,7 +78,7 @@ type
     procedure WriteStartOfTableCell; overload;
     procedure WriteStartOfTableCell(const css: string); overload;
     procedure WriteStartOfTableCell(const Params, css: string); overload;
-    
+
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
@@ -947,7 +948,7 @@ begin
        s:=FLanguage.Translation[trParameters];
     if length(s) < length(FLanguage.Translation[trExceptions])  then
        s:=FLanguage.Translation[trExceptions];
-  
+
 
     for j := 0 to Fields.Count - 1 do 
       begin
@@ -1357,7 +1358,7 @@ begin
 
         WriteHeading(HL+1,p.Name+' '+procstr);
         WriteAnchor(p.Name,p.FullLink);
-        
+
         WriteStartList(s);
         
         WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
@@ -1557,7 +1558,7 @@ begin
   
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
-    { skip the item entirely if it does not have any description 
+    { skip the item entirely if it does not have any description
       
     }
     if not HasDescription(Item) then
@@ -2363,7 +2364,7 @@ const
 var
   i: Integer;
 begin
-  i := 1;
+//i := 1;
   Result := '';
   for i:=1 to length (s) do
    begin
@@ -2389,10 +2390,25 @@ begin
   EscapeURL := AString;
 end;
 
-end.
+function TTexDocGenerator.ExpandDescription(Item: TPasItem;    // GSk: override
+                                            var d: string): Boolean;
+var
+  nInd:  Integer;
+begin
+  Result := inherited ExpandDescription(Item, d);
+  { I have no idea about LaTeX requirements so I remove CR and LF characters
+    for compatimility with previous version of PasDoc. }
+  for  nInd := Length(d)  downto  1  do
+    if  d[nInd] in [#13{CR}, #10{LF}]  then
+      Delete(d, nInd, 1)
+end;
 
 {
   $Log$
+  Revision 1.14  2004/06/20 18:36:26  johill
+  Changes from Grzegorz Skoczylas: character set handling + updated Polish
+  translation
+
   Revision 1.13  2004/05/07 18:13:24  ccodere
     * fixes for compilation with different compiler targets
 
@@ -2431,4 +2447,7 @@ end.
   some fixes regarding illegal characters
   some fixes regarding some vertical spacing
 
-}
+} // GSk: commend moved before last *end* to eliminate compiler warning
+
+end.
+
