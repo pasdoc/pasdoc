@@ -38,6 +38,7 @@ uses
   Utils,
   PasDoc_HierarchyTree,
   StreamUtils,
+  StringVector,
   ObjectVector,
   PasDoc_GenHtml,
   PasDoc_Gen,
@@ -74,6 +75,7 @@ var
   GOption_WriteGVUses,
   GOption_WriteGVClasses: TBoolOption;
   GOption_VisibleMembers: TSetOption;
+  GOption_CommentMarker: TStringOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -156,6 +158,10 @@ begin
   GOption_StarOnly.Explanation :=
     'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
+
+  GOption_CommentMarker := TStringOption.Create(#0, 'marker');
+  GOption_CommentMarker.Explanation := 'Parse only {<marker>, (*<marker> and //<marker> comments. Overrides the staronly option, which is a shortcut for ''--marker=**''';
+  GOptionParser.AddOption(GOption_CommentMarker);
 
   GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames', True, False);
   GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
@@ -270,6 +276,9 @@ begin
   end;
 
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
+  if GOption_CommentMarker.WasSpecified then begin
+    GPasDoc.CommentMarker := GOption_CommentMarker.Value;
+  end;
 
   GPasDoc.AddSourceFileNames(GOptionParser.LeftList);
 
