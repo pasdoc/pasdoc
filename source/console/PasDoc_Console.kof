@@ -48,14 +48,14 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=../component:/tmp
+SearchPath=$(DELPHI)/lib/debug:../component
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
-Conditionals=PROFILE
+Conditionals=
 DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=-E/tmp /home/johannes/Projects/Indy/source/Core/IdBuffer.pas
+RunParams=--help --visible-members=private
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
@@ -70,10 +70,11 @@ Count=1
 Item0=PROFILE
 
 [HistoryLists\hlSearchPath]
-Count=5
-Item0=../component:/tmp
-Item1=../component
-Item2=../Component
-Item3=$(DELPHI)/lib/debug:../Component
-Item4=../Component:/tmp
+Count=6
+Item0=$(DELPHI)/lib/debug:../component
+Item1=../component:/tmp
+Item2=../component
+Item3=../Component
+Item4=$(DELPHI)/lib/debug:../Component
+Item5=../Component:/tmp
 

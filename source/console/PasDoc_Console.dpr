@@ -68,6 +68,7 @@ var
   GOption_StarOnly,
   GOption_Generator,
   GOption_NumericFilenames: TBoolOption;
+  GOption_VisibleMembers: TSetOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -158,6 +159,12 @@ begin
   GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames');
   GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
   GOptionParser.AddOption(GOption_NumericFilenames);
+
+  GOption_VisibleMembers := TSetOption.Create('M','visible-members');
+  GOption_VisibleMembers.Explanation := 'Include / Exclude class Members by visiblity';
+  GOption_VisibleMembers.PossibleValues := 'private,protected,public,published,automated';
+  GOption_VisibleMembers.Values := 'protected,public,published,automated';
+  GOptionParser.AddOption(GOption_VisibleMembers);
 end;
 
 procedure PrintUsage;
@@ -176,6 +183,7 @@ begin
   GOptionParser.ParseOptions;
   if GOption_Help.TurnedOn then begin
     PrintUsage;
+    writeln(GOption_VisibleMembers.Value);
     exit;
   end;
 
@@ -240,6 +248,13 @@ begin
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
 
   GPasDoc.AddSourceFileNames(GOptionParser.LeftList);
+
+  GPasDoc.ClassMembers := [];
+  if GOption_VisibleMembers.HasValue('private') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PRIVATE];
+  if GOption_VisibleMembers.HasValue('protected') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PROTECTED];
+  if GOption_VisibleMembers.HasValue('public') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLIC];
+  if GOption_VisibleMembers.HasValue('published') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLISHED];
+  if GOption_VisibleMembers.HasValue('automated') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_AUTOMATED];
 
   Result := True;
 end;
