@@ -49,11 +49,15 @@ type
 
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class
-  public
+  protected
     { list of strings, each representing one author of this item }
-    Authors: TStringVector;
+    FAuthors: TStringVector;
     { if assigned, contains string with date of creation }
-    Created: string;
+    FCreated: string;
+  public
+    property Authors: TStringVector read FAuthors;
+    property Created: string read FCreated;
+  public
     { description of this item, a single sentence }
     Description: string;
     { more detailed description of this item, mostly more than one
@@ -557,7 +561,7 @@ begin
           { we found one, remove it from the description and add it to the author list }
       DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
-        if Authors = nil then Authors := NewStringVector;
+        if Authors = nil then FAuthors := NewStringVector;
         Authors.Add(s);
       end;
     end;
@@ -579,7 +583,7 @@ begin
     if (DetailedDescription[Offs1] = '@') and
       DescriptionFindTag(DetailedDescription, 'CREATED', Offs1, Offs2, Offs3) then
         begin
-      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, Created);
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, FCreated);
       Exit;
     end;
     Inc(Offs1);
