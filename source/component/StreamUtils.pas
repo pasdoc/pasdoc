@@ -17,11 +17,8 @@ procedure WriteLine(const AStream: TStream; const AString: string);
 procedure WriteString(const AStream: TStream; const AString: string);
 
 implementation
-
-{$IFDEF DELPHI_6_UP}
-const
-  LINEEnding: string = #13#10;
-{$ENDIF}
+uses
+  Utils;
 
 function StreamReadLine(const AStream: TStream): string;
 // totally junky implementation!!

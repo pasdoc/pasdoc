@@ -49,9 +49,25 @@ function SameText(const A, B: string): boolean;
 function DirectoryExists(const name: string): boolean;
 {$ENDIF}
 
+{$ifndef FPC}
+const
+  LineEnding = {$ifdef LINUX} #10 {$endif}
+               {$ifdef MSWINDOWS} #13#10 {$endif};
+{$endif}
+
+{ 1. AdjustLineBreaks in d
+  2. Trim any whitespaces (also newline characters, #10 and #13) 
+     at the beginning and end of d
+  3. Finally replace each sequence of blank lines
+     (i.e. LineEnding + some optional spaces/tabs + LineEnding
+     + some optional LineEndings and spaces/tabs)
+     by one Paragraph string. }
+procedure InsertParagraphs(var d:string; const Paragraph:string);
+
 implementation
 uses
   SysUtils,
+  StrUtils,
   Classes;
 
 {$IFDEF FPC}
@@ -145,5 +161,66 @@ begin
   Result := FileGetAttr(name) or faAnyFile <> 0;
 end;
 {$ENDIF}
+
+procedure InsertParagraphs(var d:string; const Paragraph:string);
+const
+  { Note that these WhiteSpaces include all possible newline characters }
+  WhiteSpaces = [#10, #13, ' ', #9];
+var
+  BeginPos, EndPos, Done, LineEndingPos, I:Integer;
+begin
+  d := AdjustLineBreaks(d);
+  
+  { Code below does work assuming that Length(d)>=1. 
+    So Exit now if Length(d) = 0. }
+  if d = '' then Exit;
+  
+  { Eliminate whitespace at beginning and ending of d }
+  BeginPos := 1;
+  while d[BeginPos] in WhiteSpaces do Inc(BeginPos);
+  EndPos := Length(d);
+  while d[  EndPos] in WhiteSpaces do Dec(  EndPos);
+  if (BeginPos > 1) or (EndPos < Length(d)) then
+  begin
+    if BeginPos<=EndPos then
+      d := Copy(d, BeginPos, EndPos - BeginPos + 1) else
+      d := '';
+  end;
+  
+  { Look for a sequences of blank lines. 
+    Blank line is line filled only with spaces (' ') or tabs (#9), 
+    in particular empty line is also a blank line.
+    Each sequence of blank lines will be replaced by Paragraph string. }
+  { Variable Done says "how many beginning chars from D are already done,
+    i.e. blank line sequences in D[1..Done-1] are already converted 
+    to Paragraphs" }
+  Done := 1; 
+  while Done<=Length(d) do
+  begin
+    LineEndingPos := PosEx(LineEnding, d, Done);
+    if LineEndingPos = 0 then Break;
+    
+    I := LineEndingPos + Length(LineEnding);
+    while (I<=Length(d)) and (d[I] in [' ', #9]) do Inc(i);    
+    if I > Length(d) then Break;
+    
+    if Copy(d, I, Length(LineEnding)) = LineEnding then
+    begin
+      { Then bingo ! We should make a paragraph here, and ignore all
+        subsequent white chars (spaces, tabs, and newline characters). }
+      while (I<=Length(d)) and (d[I] in WhiteSpaces) do Inc(i);
+      
+      Delete(d, LineEndingPos, I-LineEndingPos);
+      Insert(Paragraph, d, LineEndingPos);
+      
+      Done := Done + Length(Paragraph) + 1;
+    end else
+    begin
+      { Then it's just a usual newline (possibly followed by some 
+        whitespaces). We can leave it as it is. }
+      Done := I;
+    end;
+  end;
+end;
 
 end.

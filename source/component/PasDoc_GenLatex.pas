@@ -2392,19 +2392,16 @@ end;
 
 function TTexDocGenerator.ExpandDescription(Item: TPasItem;    // GSk: override
                                             var d: string): Boolean;
-var
-  nInd:  Integer;
 begin
   Result := inherited ExpandDescription(Item, d);
-  { I have no idea about LaTeX requirements so I remove CR and LF characters
-    for compatimility with previous version of PasDoc. }
-  for  nInd := Length(d)  downto  1  do
-    if  d[nInd] in [#13{CR}, #10{LF}]  then
-      Delete(d, nInd, 1)
+  InsertParagraphs(d, LineEnding + LineEnding);
 end;
 
-{
+(*
   $Log$
+  Revision 1.15  2004/07/09 14:03:28  johill
+  fix things, apply patches from mailing list.
+
   Revision 1.14  2004/06/20 18:36:26  johill
   Changes from Grzegorz Skoczylas: character set handling + updated Polish
   translation
@@ -2447,7 +2444,7 @@ end;
   some fixes regarding illegal characters
   some fixes regarding some vertical spacing
 
-} // GSk: commend moved before last *end* to eliminate compiler warning
+*) // GSk: commend moved before last *end* to eliminate compiler warning
 
 end.
 

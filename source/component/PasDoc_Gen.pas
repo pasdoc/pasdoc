@@ -1,4 +1,4 @@
-{$B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M+,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W+,X+,Y+,Z1}
+{$B-}
 { @abstract(basic doc generator object)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -1341,7 +1341,8 @@ end;
 
 procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean);
 begin
-  CurrentStream.WriteBuffer(t[1], Length(t));
+  if length(t) > 0 then
+    CurrentStream.WriteBuffer(t[1], Length(t));
   if Newline then
     StreamUtils.WriteLine(CurrentStream, '');
 end;

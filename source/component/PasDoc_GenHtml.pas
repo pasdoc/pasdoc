@@ -2768,35 +2768,9 @@ end;
 
 function THTMLDocGenerator.ExpandDescription(Item: TPasItem;   // GSk: override
                                              var d: string): Boolean;
-{$IfDef MSWindows }
-  const
-    cNewLine  = #13#10;
-    cNewLine2 = cNewLine + cNewLine;
-    cNewLine3 = cNewLine + cNewLine + cNewLine;
-{$Else}  {$IfDef Linux }
-  const
-    cNewLine  = #10;
-    cNewLine2 = cNewLine + cNewLine;
-    cNewLine3 = cNewLine + cNewLine + cNewLine;
-{$Else}
-  {$Message error 'Unrecognised operating system' }
-{$EndIf} {$EndIf}
 begin
   Result := inherited ExpandDescription(Item, d);
-  { Eliminate empty lines at beginning }
-  while  Copy(d, 1, Length(cNewLine)) = cNewLine  do
-    Delete(d, 1, Length(cNewLine));
-  { Eliminate empty lines at enging }
-  while  Copy(d, Length(d) - Length(cNewLine) + 1, MaxInt) = cNewLine  do
-    SetLength(d, Length(d) - Length(cNewLine));
-  { Reduce all 2 or more empty lines to 1 empty line }
-  while  Pos(cNewLine3, d) <> 0  do
-    d := StringReplace(d, cNewLine3, cNewLine2, [rfReplaceAll]);
-  { Replace empty lines with paragraph breaks }
-  d := StringReplace(d, cNewLine2, '</p><p>', [rfReplaceAll]);
-  { Eliminate empty paragraphs }
-  while  Pos('<p></p>', d) <> 0  do
-    d := StringReplace(d, '<p></p>', '', [rfReplaceAll])
+  InsertParagraphs(d, '</p><p>');
 end;
 
 end.
