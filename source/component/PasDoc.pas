@@ -257,23 +257,28 @@ begin
     if (CacheDir <> '') and FileExists(LCacheFileName) then begin
       DoMessage(2, mtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
-      LParseSuccessful := True;
-      LLoaded := True;
+      if U.SourceFileDate <> FileDateToDateTime(FileAge(SourceFileName)) then begin
+        DoMessage(2, mtInformation, 'Cache file for %s is outdated.', [SourceFileName]);
+      end else begin
+        LParseSuccessful := True;
+        LLoaded := True;
+      end;
     end;
 
     if not LLoaded then begin
       DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
       LParseSuccessful := p.ParseUnit(U);
     end;
-    
+
     if LParseSuccessful then begin
       if FUnits.ExistsUnit(U) then begin
         DoMessage(2, mtWarning,
           'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
-          U.SourceFileName, SourceFileName]);
+          TPasUnit(FUnits.FindName(U.Name)).SourceFileName, SourceFileName]);
         U.Free;
       end else begin
         U.SourceFileName := SourceFileName;
+        U.SourceFileDate := FileDateToDateTime(FileAge(SourceFileName));
         FUnits.Add(U);
       end;
     end else begin

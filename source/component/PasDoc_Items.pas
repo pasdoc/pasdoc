@@ -292,6 +292,7 @@ type
     FUsesUnits: TStringVector;
     FSourceFilename: string;
     FOutputFileName: string;
+    FSourceFileDate: TDateTime;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
@@ -323,6 +324,8 @@ type
       THIS SHOULD NOT BE HERE! }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
     property SourceFileName: string read FSourceFilename write FSourceFilename;
+
+    property SourceFileDate: TDateTime read FSourceFileDate write FSourceFileDate; 
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -1425,6 +1428,7 @@ begin
   FUsesUnits.Text := LoadStringFromStream(ASource);
   FSourceFilename := LoadStringFromStream(ASource);
   FOutputFileName := LoadStringFromStream(ASource);
+  FSourceFileDate := LoadDoubleFromStream(ASource);
 end;
 
 procedure TPasUnit.Serialize(const ADestination: TStream);
@@ -1438,6 +1442,7 @@ begin
   SaveStringToStream(FUsesUnits.Text, ADestination);
   SaveStringToStream(FSourceFilename, ADestination);
   SaveStringToStream(FOutputFileName, ADestination);
+  SaveDoubleToStream(SourceFileDate, ADestination);
 end;
 
 initialization

@@ -17,6 +17,8 @@ type
     procedure Deserialize(const ASource: TStream); virtual;
     class function LoadStringFromStream(const ASource: TStream): string;
     class procedure SaveStringToStream(const AValue: string; const ADestination: TStream);
+    class function LoadDoubleFromStream(const ASource: TStream): double;
+    class procedure SaveDoubleToStream(const AValue: double; const ADestination: TStream);
   public
     constructor Create; virtual;
     class procedure SerializeObject(const AObject: TSerializable; const ADestination: TStream);
@@ -78,6 +80,12 @@ begin
   end;
 end;
 
+class function TSerializable.LoadDoubleFromStream(
+  const ASource: TStream): double;
+begin
+  ASource.Read(Result, SizeOf(Result));
+end;
+
 class function TSerializable.LoadStringFromStream(
   const ASource: TStream): string;
 var
@@ -91,6 +99,12 @@ end;
 class procedure TSerializable.Register(const AClass: TSerializableClass);
 begin
   GClassNames.AddObject(AClass.ClassName, TObject(AClass));
+end;
+
+class procedure TSerializable.SaveDoubleToStream(const AValue: double;
+  const ADestination: TStream);
+begin
+  ADestination.Write(AValue, SizeOf(AValue));
 end;
 
 class procedure TSerializable.SaveStringToStream(const AValue: string;
