@@ -359,7 +359,7 @@ uses
 procedure TDocGenerator.BuildLinks;
 
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
-    const DocName: string; c: TPasItems; var CurrentNumber: Integer);
+    const DocName: string; c: TPasItems);
   var
     i: Integer;
     p: TPasItem;
@@ -367,7 +367,6 @@ procedure TDocGenerator.BuildLinks;
     if (not Assigned(c)) or (c.Count < 1) then Exit;
     for i := 0 to c.Count - 1 do begin
       p := c.PasItemAt[i];
-      p.AnchorNumber := CurrentNumber;
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
       p.FullLink := CreateLink(p);
@@ -375,48 +374,35 @@ procedure TDocGenerator.BuildLinks;
       p.HandleCreatedTag;
       p.HandleLastModTag;
       p.HandleAbstractTag;
-      Inc(CurrentNumber);
     end;
   end;
 
 var
-  {  C: TPasItems;}
   CO: TPasCio;
   i: Integer;
-  {  Item: TPasItem;}
   j: Integer;
-  {  K: Integer;}
-  n: Integer;
   U: TPasUnit;
 begin
   DoMessage(2, mtInformation, 'Creating links ...', []);
   if IsNilOrEmpty(Units) then Exit;
 
-  n := 0;
   for i := 0 to Units.Count - 1 do begin
-    Inc(n);
     U := Units.UnitAt[i];
-    U.AnchorNumber := n;
     U.FullLink := CreateLink(U);
     U.OutputFileName := DestinationDirectory + U.FullLink;
     U.HandleAuthorTags;
     U.HandleCreatedTag;
     U.HandleLastModTag;
     U.HandleAbstractTag;
-    AssignLinks(U, nil, U.FullLink, U.Constants, n);
-    AssignLinks(U, nil, U.FullLink, U.Variables, n);
-    AssignLinks(U, nil, U.FullLink, U.Types, n);
-    AssignLinks(U, nil, U.FullLink, U.FuncsProcs, n);
+    AssignLinks(U, nil, U.FullLink, U.Constants);
+    AssignLinks(U, nil, U.FullLink, U.Variables);
+    AssignLinks(U, nil, U.FullLink, U.Types);
+    AssignLinks(U, nil, U.FullLink, U.FuncsProcs);
 
     if not IsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
-        Inc(n);
         CO := TPasCio(U.CIOs.PasItemAt[j]);
-        CO.AnchorNumber := n;
         CO.MyUnit := U;
-
-              // CO^.OutputFileName := DestinationDirectory + CO^.Name + GetFileExtension;
-              // CO^.FullLink := CreateLink(CO);
 
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := DestinationDirectory + CO.FullLink;
@@ -425,15 +411,13 @@ begin
         CO.HandleCreatedTag;
         CO.HandleLastModTag;
         CO.HandleAbstractTag;
-              { Do not reset N - gives problems with TeX output}
-        Inc(n);
-        AssignLinks(U, CO, CO.FullLink, CO.Fields, n);
-        AssignLinks(U, CO, CO.FullLink, CO.Methods, n);
-        AssignLinks(U, CO, CO.FullLink, CO.Properties, n);
+        AssignLinks(U, CO, CO.FullLink, CO.Fields);
+        AssignLinks(U, CO, CO.FullLink, CO.Methods);
+        AssignLinks(U, CO, CO.FullLink, CO.Properties);
       end;
     end;
   end;
-  DoMessage(2, mtInformation, '... ' + IntToStr(n) + ' links created', []);
+  DoMessage(2, mtInformation, '... ' + ' links created', []);
 end;
 
 { ---------------------------------------------------------------------------- }
