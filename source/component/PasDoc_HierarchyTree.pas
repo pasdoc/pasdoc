@@ -31,6 +31,7 @@ type
     function Level: Integer;
     property Name: string read GetName;
     property Item: TPasItem read FItem;
+    property Parent: TPasItemNode read FParent;
   end;
 
   TStringCardinalTree = class

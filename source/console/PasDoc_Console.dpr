@@ -68,7 +68,9 @@ var
   GOption_StarOnly,
   GOption_Generator,
   GOption_NumericFilenames,
-  GOption_WriteUsesList: TBoolOption;
+  GOption_WriteUsesList,
+  GOption_WriteGVUses,
+  GOption_WriteGVClasses: TBoolOption;
   GOption_VisibleMembers: TSetOption;
 
   { ---------------------------------------------------------------------------- }
@@ -170,6 +172,14 @@ begin
   GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list');
   GOption_WriteUsesList.Explanation := 'put uses list into output';
   GOptionParser.AddOption(GOption_WriteUsesList);
+
+  GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses');
+  GOption_WriteGVUses.Explanation := 'write a GVUses.gviz file that can be used for the `dot` program from GraphViz to generate a unit dependency graph';
+  GOptionParser.AddOption(GOption_WriteGVUses);
+
+  GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes');
+  GOption_WriteGVClasses.Explanation := 'write a GVClasses.gviz file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
+  GOptionParser.AddOption(GOption_WriteGVClasses);
 end;
 
 procedure PrintUsage;
@@ -260,6 +270,9 @@ begin
   if GOption_VisibleMembers.HasValue('public') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLIC];
   if GOption_VisibleMembers.HasValue('published') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLISHED];
   if GOption_VisibleMembers.HasValue('automated') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_AUTOMATED];
+
+  GPasDoc.Generator.OutputGraphVizUses := GOption_WriteGVUses.TurnedOn;
+  GPasDoc.Generator.OutputGraphVizClassHierarchy := GOption_WriteGVClasses.TurnedOn;
 
   Result := True;
 end;

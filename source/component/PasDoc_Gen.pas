@@ -35,7 +35,7 @@ const
 
   { number of overview files that pasdoc generates for
     multiple-document-formats like @link(HTML) }
-  NUM_OVERVIEW_FILES = 8;
+  NUM_OVERVIEW_FILES = 10;
 
   { names of all overview files, extensions not included }
   OverviewFilenames: array[0..NUM_OVERVIEW_FILES - 1] of string =
@@ -46,7 +46,9 @@ const
     'AllVariables',
     'AllConstants',
     'AllFunctions',
-    'AllIdentifiers');
+    'AllIdentifiers',
+    'GVUses',
+    'GVClasses');
 
 type
   { @abstract(basic documentation generator object)
@@ -60,6 +62,8 @@ type
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
   protected
+    FGraphVizClasses: boolean;
+    FGraphVizUses: boolean;
     { the (human) output language of the documentation file(s);
       one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
       default language is @link(DEFAULT_LANGUAGE) }
@@ -296,6 +300,11 @@ type
 
     procedure WriteEndOfCode; virtual;
 
+    { output graphviz uses tree }
+    procedure WriteGVUses;
+    { output graphviz class tree }
+    procedure WriteGVClasses;
+
   public
 
     { Creates anchors and links for all items in all units. }
@@ -342,6 +351,9 @@ type
     property DestinationDirectory: string read FDestDir write SetDestDir;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
+
+    property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses;
+    property OutputGraphVizClassHierarchy: boolean read FGraphVizClasses write FGraphVizClasses;
   end;
 
 implementation
@@ -1334,6 +1346,8 @@ end;
 
 procedure TDocGenerator.WriteDocumentation;
 begin
+  if OutputGraphVizUses then WriteGVUses;
+  if OutputGraphVizClassHierarchy then WriteGVClasses;
 end;
 
 procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
@@ -1349,6 +1363,53 @@ end;
 function TDocGenerator.GetLanguage: TLanguageID;
 begin
   Result := FLanguage.Language;
+end;
+
+procedure TDocGenerator.WriteGVClasses;
+var
+  LNode: TPasItemNode;
+
+begin
+  CreateClassHierarchy;
+  LNode := FClassHierarchy.FirstItem;
+  if Assigned(LNode) then begin
+    CreateStream(FDestDir+OverviewFilenames[9]+'.gviz');
+    WriteLine('DiGraph Classes {');
+    while Assigned(LNode) do begin
+      if Assigned(LNode.Parent) then begin
+        if Length(LNode.Parent.Name) > 0 then begin
+          WriteLine('  '+LNode.Name + ' -> '+LNode.Parent.Name);
+        end;
+      end;
+      LNode := FClassHierarchy.NextItem(LNode);
+    end;
+
+    WriteLine('}');
+    CloseStream;
+  end;
+end;
+
+procedure TDocGenerator.WriteGVUses;
+var
+  i, j: Integer;
+  U: TPasUnit;
+begin
+  if not IsNilOrEmpty(FUnits) then begin
+    CreateStream(FDestDir+OverviewFilenames[8]+'.gviz');
+    WriteLine('DiGraph Uses {');
+    for i := 0 to FUnits.Count-1 do begin
+      if FUnits.PasItemAt[i] is TPasUnit then begin
+        U := TPasUnit(FUnits.PasItemAt[i]);
+        if not IsNilOrEmpty(U.UsesUnits) then begin
+          for j := 0 to U.UsesUnits.Count-1 do begin
+            writeline('  '+U.Name+' -> '+U.UsesUnits[j]);
+          end;
+        end;
+      end;
+    end;
+    WriteLine('}');
+    CloseStream;
+  end;
 end;
 
 end.
