@@ -999,6 +999,7 @@ begin
 
         WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
+        WriteEndOfParagraph;
 
         WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
           p.Params, false);
@@ -1326,7 +1327,6 @@ begin
     WriteStartOfParagraph;
     WriteItemDetailedDescription(Prop);
     WriteEndOfParagraph;
-
   end;
 end;
 
