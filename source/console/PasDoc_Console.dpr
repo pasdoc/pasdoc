@@ -11,7 +11,7 @@
   * distributed under the GNU General Public License (GPL)
 
   * copyright (C) 1998-2000 by Marco Schmidt
-  * copyright (C) 2001-2002 by Ralf Junker <delphi@zeitungsjunge.de>
+  * copyright (C) 2001-2003 by Ralf Junker <delphi@zeitungsjunge.de>
   * Copyright (C) 2003 by Johannes Berg <johannes@sipsolutions.de>
 
   Hint:
