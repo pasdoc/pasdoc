@@ -1254,7 +1254,7 @@ begin
             Exit;
           end;
         end;
-      KEY_SPINTERFACE: begin
+      KEY_DISPINTERFACE: begin
           FreeAndNil(t);
           if not ParseCIO(U, n, CIO_SPINTERFACE, d, False) then Exit;
           Result := True;

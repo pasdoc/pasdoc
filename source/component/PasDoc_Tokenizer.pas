@@ -41,8 +41,8 @@ type
     KEY_CONST,
     KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
-    KEY_SPINTERFACE,
-//    KEY_V,
+    KEY_DISPINTERFACE,
+    KEY_DIV,
     KEY_DO,
     KEY_DOWNTO,
     KEY_ELSE,
@@ -206,7 +206,7 @@ const
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'SPINTERFACE', {'V', } 'DO', 'DOWNTO',
+    'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
