@@ -7,13 +7,13 @@ unit ObjectVector;
 
 interface
 uses
-  Contnrs,
   Classes;
 
 type
   TObjectVector = class
   protected
-    FList: TObjectList;
+    FList: TList;
+    FOwnsObject: boolean;
     function GetItem(AIndex: Integer): TObject;
     procedure SetItem(AIndex: Integer; const Value: TObject);
     procedure InsertObjectLast(const AObject: TObject);
@@ -58,16 +58,27 @@ end;
 constructor TObjectVector.Create(const AOwnsObject: boolean);
 begin
   inherited Create;
-  FList := TObjectList.Create(AOwnsObject);
+  FList := TList.Create;
+  FOwnsObject := AOwnsObject;
 end;
 
 procedure TObjectVector.DeleteAt(const AIndex: Integer);
 begin
+  if FOwnsObject then begin
+    TObject(FList.Items[AIndex]).Free;
+  end;
   FList.Delete(AIndex);
 end;
 
 destructor TObjectVector.Destroy;
+var
+  i: Integer;
 begin
+  if FOwnsObject then begin
+    for i := 0 to count-1 do begin
+      ObjectAt[i].Free;
+    end;
+  end;
   FList.Free;
   inherited;
 end;
