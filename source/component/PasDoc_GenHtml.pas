@@ -23,8 +23,7 @@ uses
   PasDoc_Languages,
   StringVector,
   PasDoc_Types,
-  Classes,
-  MNStringFunctions;
+  Classes;
 
 type
   { @abstract(generates HTML documentation)
@@ -284,14 +283,14 @@ begin
     WriteStartOfParagraph;
 
     if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
-      WriteWithURLs(S1);
+      WriteString(S1);
       WriteString('<A href="mailto:' + EmailAddress +
         '">');
       WriteString(EmailAddress);
       WriteString('</A>');
-      WriteWithURLs(S2);
+      WriteString(S2);
     end else begin
-      WriteWithURLs(s);
+      WriteString(s);
     end;
 
     WriteEndOfParagraph;
@@ -578,7 +577,7 @@ var
   HhcPath: string;
 {$ENDIF}
 begin
-  StartSpellChecking;
+  StartSpellChecking('sgml');
   FLinkCount := 1;
   inherited;
   WriteBinaryFiles;
@@ -797,15 +796,10 @@ begin
         WriteStartOfAnchor(p.Name);
         WriteEndOfAnchor;
 
-              // s := StringReplace(s, p^.Name, '<B>' + p^.Name + '</B>', [rfIgnoreCase]);
         WriteCodeWithLinks(p, p.FullDeclaration, '');
-              {WriteString('<code>');
-              WriteString(P^.FullDeclaration);
-              WriteString('</code>');}
         WriteEndOfTableCell;
         WriteEndOfTableRow;
         WriteEndOfTable;
-              // RJ WriteEndOfParagraph;
 
         WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
@@ -2069,37 +2063,32 @@ end;
 
 procedure THTMLDocGenerator.WriteSpellChecked(const AString: string);
 var
-  tok: TMNTokenizeRec;
-  s, t: string;
-  slen, i: Integer;
-  sug: TStringList;
+  LErrors: TSpellCheckArray;
+  i, temp: Integer;
+  LString, s: string;
 begin
-  s:= AString;
-  slen := Length(s);
-  t := Token(s, ' ', tok, False);
-  sug := TStringList.Create;
-  while (tok.CurrentPos < slen) or (length(t)>0) do begin
-    sug.Clear;
-    if CheckWord(t, sug) then begin
-      WriteString(t+' ');
-    end else begin
-      writestring('<a style="#0000FF; border-bottom: 1px solid crimson" ');
-      if sug.count>0 then begin
-        writestring('title="suggestions: ');
-        for i := 0 to sug.count-2 do begin
-          writestring(sug[i]);
-          writestring(', ');
-        end;
-        writestring(sug[sug.count-1]);
-        writestring('"');
+  LErrors := CheckString(AString);
+  if Length(LErrors) = 0 then begin
+    WriteString(AString);
+  end else begin
+    // build s
+    s := '';
+    LString := AString;
+    for i := High(LErrors) downto 0 do begin
+      // everything after the offending word
+      temp := LErrors[i].Offset+Length(LErrors[i].Word) + 1;
+      s := ( '">' + LErrors[i].Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
+      if Length(LErrors[i].Suggestions) > 0 then begin
+        s := 'suggestions: '+LErrors[i].Suggestions + s;
       end else begin
-        writestring('title="no suggestions found"');
+        s := 'no suggestions' + s;
       end;
-      writestring('>'+t+'</a> ');
+      s := '<acronym style="#0000FF; border-bottom: 1px solid crimson" title="' + s;
+      SetLength(LString, LErrors[i].Offset);
     end;
-    t := NextToken(s, tok);
+    WriteString(LString);
+    writestring(s);
   end;
-  sug.free;
 end;
 
 end.

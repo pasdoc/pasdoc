@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=/tmp/test.pas -E/tmp --aspell=en
+RunParams=/tmp/test.pas -E/home/johannes/public_html/tests/pasdoc/ --aspell=en
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1

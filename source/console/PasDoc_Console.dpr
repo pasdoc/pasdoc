@@ -45,9 +45,7 @@ uses
   PasDoc_Items in '../component/PasDoc_Items.pas',
   OptionParser in '../OptionParser/OptionParser.pas',
   PasDoc_Types in '../component/PasDoc_Types.pas',
-  PasDoc_RunHelp in '../component/PasDoc_RunHelp.pas',
-  MNStringFunctions in '../../../MetaNet/source/common/misc/MNStringFunctions.pas',
-  MNMemFunctions in '../../../MetaNet/source/common/misc/MNMemFunctions.pas';
+  PasDoc_RunHelp in '../component/PasDoc_RunHelp.pas';
 
 var
   GPasDoc: TPasDoc;

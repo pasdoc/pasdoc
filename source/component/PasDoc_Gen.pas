@@ -52,6 +52,19 @@ const
     'GVClasses');
 
 type
+  { @abstract(record for spell-checking) }
+  TSpellCheckRecord = record
+    { the mis-spelled word }
+    Word: string;
+    { offset inside the checked string }
+    Offset: Integer;
+    { comma-separated list of suggestions }
+    Suggestions: string;
+  end;
+
+  { array containing a list of wrong words when spell-checking }
+  TSpellCheckArray = array of TSpellCheckRecord;
+
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
     This abstract object will do the complete process of writing
@@ -319,10 +332,20 @@ type
     procedure WriteGVClasses;
 
     { starts the spell checker - currently linux only }
-    procedure StartSpellChecking;
+    procedure StartSpellChecking(const AMode: string);
 
-    { checks a word and returns suggestions }
-    function CheckWord(const AWord: string; const ASuggestions: TStrings): boolean;
+    { checks a word and returns suggestions.
+      Will create an entry in AWords for each wrong word,
+      and the object (if not nil meaning no suggestions) will contain
+      another string list with suggestions. The value will be the
+      offset from the start of AString.
+      Example:
+        check the string "the quieck brown fox"
+        result is:
+        AWords contains a single item:
+          quieck=5 with object a stringlist containing something like the words
+          quick, quiesce, ... }
+    function CheckString(const AString: string): TSpellCheckArray;
 
     { closes the spellchecker }
     procedure EndSpellChecking;
@@ -1491,59 +1514,46 @@ begin
   end;
 end;
 
-function TDocGenerator.CheckWord(const AWord: string;
-  const ASuggestions: TStrings): boolean;
-
-  function wordisword(const AWord: string): boolean;
-  const
-    upper = ['A'..'Z'];
-    lower = ['a'..'z'];
-    half = ['-'];
-  var
-    i : Integer;
-    haslower: boolean;
-  begin
-    Result := Length(AWord) > 0;
-    if not result then exit;
-    haslower := false;
-    for i := 1 to length(AWord) do begin
-      haslower := haslower or (AWord[i] in lower);
-      if not (AWord[i] in (lower + upper + half)) then begin
-        Result := false;
-        exit;
-      end;
-    end;
-    Result := (AWord[1] in (lower+upper));
-    if Result and (length(aword)>1) then Result := (AWord[2] in (lower+upper));
-    if Result then Result := haslower;
-  end;
-
+function TDocGenerator.CheckString(const AString: string): TSpellCheckArray;
 var
-  s, s2: string;
+  s: string;
+  p, p2: Integer;
 begin
-  Result := True;
-  if FCheckSpelling and FSpellCheckStarted and wordisword(AWord) then begin
-    PasDoc_RunHelp.WriteLine('^'+AWord, FAspellPipe);
+  SetLength(Result, 0);
+  if FCheckSpelling and FSpellCheckStarted then begin
+    s := StringReplace(AString, #10, ' ', [rfReplaceAll]);
+    s := StringReplace(AString, #13, ' ', [rfReplaceAll]);
+    PasDoc_RunHelp.WriteLine('^'+s, FAspellPipe);
     s := ReadLine(FAspellPipe);
-    if s <> '' then begin
-      s2 := ReadLine(FAspellPipe);
-      while Length(s2)>0 do begin
-        s2 := ReadLine(FAspellPipe);
-        if s = '*' then s := s2;
+    while Length(s) > 0 do begin
+      case s[1] of
+        '*': continue; // no error
+        '#': begin
+               SetLength(Result, Length(Result)+1);
+               s := copy(s, 3, MaxInt); // get rid of '# '
+               p := Pos(' ', s);
+               Result[High(Result)].Word := copy(s, 1, p-1); // get word
+               Result[High(Result)].Suggestions := '';
+               s := copy(s, p+1, MaxInt);
+               Result[High(Result)].Offset := StrToIntDef(s, 0)-1;
+               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [Result[High(Result)].Word]);
+             end;
+        '&': begin
+               SetLength(Result, Length(Result)+1);
+               s := copy(s, 3, MaxInt); // get rid of '& '
+               p := Pos(' ', s);
+               Result[High(Result)].Word := copy(s, 1, p-1); // get word
+               s := copy(s, p+1, MaxInt);
+               p := Pos(' ', s);
+               s := copy(s, p+1, MaxInt);
+               p2 := Pos(':', s);
+               Result[High(Result)].Suggestions := Copy(s, Pos(':', s)+2, MaxInt);
+               SetLength(s, p2-1);
+               Result[High(Result)].Offset := StrToIntDef(s, 0)-1;
+               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [Result[High(Result)].Word]);
+             end;
       end;
-      Result := (Length(s) > 0) and (s[1] = '*');
-      if not Result then begin
-        DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [AWord]);
-      end;
-      if not Result and Assigned(ASuggestions) And (Length(s) > 0) and (s[1] = '&') then begin
-        ASuggestions.CommaText := s;
-        if ASuggestions.Count>4 then begin
-          ASuggestions.Delete(0);
-          ASuggestions.Delete(0);
-          ASuggestions.Delete(0);
-          ASuggestions.Delete(0);
-        end;
-      end;
+      s := ReadLine(FAspellPipe);
     end;
   end;
 end;
@@ -1555,7 +1565,7 @@ begin
   end;
 end;
 
-procedure TDocGenerator.StartSpellChecking;
+procedure TDocGenerator.StartSpellChecking(const AMode: string);
 var
   s: string;
   L: TStringList;
@@ -1564,7 +1574,11 @@ begin
   FSpellCheckStarted := False;
   if FCheckSpelling then begin
     try
-      FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage]);
+      if AMode <> '' then begin
+        FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage, '--mode='+AMode]);
+      end else begin
+        FAspellPipe := RunProgram('/usr/bin/aspell', ['-a', '--lang='+FAspellLanguage]);
+      end;
       FSpellCheckStarted := True;
     except
       DoMessage(1, mtWarning, 'spell checking is not supported yet, disabling', []);
