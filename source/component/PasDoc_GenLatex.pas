@@ -227,17 +227,40 @@ const
     'packed record');
 
 
-{ HTML things to be customized:
-    - standard background color (white)
-    - background color for table headings and overview list at the top of each file (light gray)
-    - background color for normal table cells (light gray, slightly lighter than the above)
-    - standard foreground color (black)
-    - unused link color (blue)
-    - used link color (purple)
-    - link color while being clicked on (red)
-    - normal font (Times Roman)
-    - heading font (Helvetica)
-    - code font (Courier New) }
+  { Remove all HTML characters }
+function RemoveHTMLChars(s: string):string;
+var
+ CharPos: integer;
+ outstr : string;
+begin
+ Result := s;
+ if Length(s) = 0 then exit;
+ CharPos := 1;
+ if (Pos('<',s) > 0) and (Pos('>',s) > 0) then
+  begin
+    outstr := '';
+    while (CharPos <= length(s)) do
+     begin
+       if s[CharPos] = '<' then
+        begin
+          Inc(CharPos);
+          while s[CharPos] <> '>' do
+          begin
+              if CharPos >= length(s) then break;
+              inc(CharPos);
+          end;
+          inc(CharPos);
+        end
+       else
+       begin
+         outstr := outstr + s[charpos];
+         inc(CharPos);
+       end;
+     end;
+  end;
+  Result:=outstr;
+end;
+{ }
 
 function TTexDocGenerator.HtmlString(const Desc: string; Len: integer; var CurPos: integer): string;
 var
@@ -266,7 +289,7 @@ begin
     end;
     if ParenthesesLevel = 0 then
     begin
-      result := Copy(Desc, CurPos + 1, CharPos - CurPos - 1);
+      result := RemoveHTMLChars(Copy(Desc, CurPos + 1, CharPos - CurPos - 1));
       CurPos := CharPos + 1;
     end
     else
@@ -708,13 +731,19 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteDocumentation;
+var
+ OutputFileName: string;
 begin
 {  StartSpellChecking('sgml');}
   inherited;
 
+  if ProjectName <> '' then
+    OutputFileName := ProjectName + '.tex'
+  else
+    OutputFileName := 'docs.tex';
   case CreateStream('docs.tex', true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create doc file %s',['docs.tex']);
+      DoMessage(1, mtError, 'Could not create doc file %s',[Outputfilename]);
       Exit;
     end;
     csExisted: begin
@@ -874,10 +903,11 @@ begin
         if Item is TPasVarConst then 
         begin
           WriteDeclarationItem(Item,FLanguage.Translation[trDeclaration],
-            TPasVarConst(Item).FullDeclaration);
+            AccessibilityStr[Item.State]+' '+TPasVarConst(Item).FullDeclaration);
         end
         else
-          WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration], Item.name);
+          WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration], 
+          AccessibilityStr[Item.State]+' '+Item.name);
           
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
         WriteStartOfParagraph;
@@ -907,10 +937,11 @@ begin
         WriteAnchor(Item.Name,Item.FullLink);
         if Item is TPasVarConst then 
         begin
-          WriteDeclarationItem(Item, Item.name, TPasVarConst(Item).FullDeclaration);
+          WriteDeclarationItem(Item, Item.name, AccessibilityStr[Item.State]+' '+
+            TPasVarConst(Item).FullDeclaration);
         end
         else
-          WriteDeclarationItem(Item, Item.name, Item.name);
+          WriteDeclarationItem(Item, Item.name, AccessibilityStr[Item.State]+' '+Item.name);
         WriteDirect('',true);
         WriteDirect('\par ');
         WriteItemDetailedDescription(Item);
@@ -1063,15 +1094,13 @@ begin
       { overview of functions and procedures }
       begin
 
-        WriteVisibilityCell(p);
-        
         WriteHeading(HL+1,p.Name);
         WriteAnchor(p.Name,p.FullLink);
         
         WriteStartList(s);
 
         WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
-          p.FullDeclaration);
+          AccessibilityStr[p.State]+' '+p.FullDeclaration);
 
         WriteStartOfParagraph;
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
@@ -1555,7 +1584,8 @@ begin
         WriteStartList(s);
         
         
-        WriteDeclarationItem(Prop, FLanguage.Translation[trDeclaration], Prop.Fulldeclaration);
+        WriteDeclarationItem(Prop, FLanguage.Translation[trDeclaration], 
+          AccessibilityStr[Prop.State]+ ' '+Prop.Fulldeclaration);
           
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
         WriteStartOfParagraph;
@@ -1585,7 +1615,8 @@ begin
       begin
         WriteAnchor(Prop.Name,Prop.FullLink);
         Prop := TPasProperty(p.PasItemAt[j]);
-        WriteDeclarationItem(Prop, Prop.Name, Prop.FullDeclaration);
+        WriteDeclarationItem(Prop, Prop.Name, AccessibilityStr[Prop.State]+' '+
+           Prop.FullDeclaration);
         WriteDirect('',true);
         WriteDirect('\par ');
         WriteItemDetailedDescription(Prop);
@@ -1649,6 +1680,7 @@ begin
     WriteDirect('\textwidth 16.5cm',true);
   WriteDirect('',true);
   WritePDFIfDef;
+  Title := ConvertString(Title);
   WritePDFDocInfo(Title);
   WriteDirect('',true);
   WriteDirect('\begin{document}',true);
@@ -2107,6 +2139,10 @@ end.
 
 {
   $Log$
+  Revision 1.6  2004/03/16 07:11:57  ccodere
+  + if no project is defined, the document will be called docs
+  + htmlstring now works as expected
+
   Revision 1.5  2004/03/13 02:21:17  ccodere
   1) added latex2rtf support
   2) now independent from paper size
