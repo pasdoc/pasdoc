@@ -50,8 +50,6 @@ type
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class
   public
-    { unique number of this item }
-    AnchorNumber: Integer;
     { list of strings, each representing one author of this item }
     Authors: TStringVector;
     { if assigned, contains string with date of creation }
