@@ -324,6 +324,7 @@ var
   pl: TStandardDirective;
   t: TToken;
   level: Integer;
+  InvalidType: boolean;
 begin
   Result := False;
   M := TPasMethod.Create;
@@ -334,7 +335,7 @@ begin
       M.What := METHOD_CONSTRUCTOR;
     KEY_DESTRUCTOR:
       M.What := METHOD_DESTRUCTOR;
-    KEY_FUNCTION, KEY_PROCEDURE:
+    KEY_FUNCTION, KEY_PROCEDURE, KEY_OPERATOR:
       M.What := METHOD_FUNCTION_PROCEDURE;
   else
     DoError('FATAL ERROR: CDFP got invalid key.', [], 1);
@@ -346,7 +347,16 @@ begin
       M.Free;
       DoError('Could not get next non white space token', [], 0);
     end;
-    if (t.MyType <> TOK_IDENTIFIER) then begin
+    if (Key = KEY_OPERATOR) then
+    begin
+      InvalidType := (t.MyType <> TOK_SYMBOL);
+    end
+    else
+    begin
+      InvalidType := (t.MyType <> TOK_IDENTIFIER);
+    end;
+
+    if InvalidType then begin
       M.Free;
       FreeAndNil(t);
       DoError('Could not get next identifier', [], 0);
@@ -683,6 +693,11 @@ begin
                 Exit;
               end;
             end;
+          KEY_PUBLIC: begin
+              CS := t.Data;
+              Ind := StandardDirectiveByName(CS);
+              State := STATE_PUBLIC;
+            end;
         else begin
             i.Free;
             try
@@ -949,7 +964,14 @@ begin
               KEY_CONST:
               Mode := MODE_CONST;
             KEY_OPERATOR: begin
-                DoError('Sorry, FreePascal operator overloading syntax cannot be parsed currently', [], 100);
+                d := GetLastComment(True);
+                if (not ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, True))
+                then begin
+                  Exit;
+                end;
+                u.FuncsProcs.Add(M);
+                Mode := MODE_UNDEFINED;
+                //DoError('Sorry, FreePascal operator overloading syntax cannot be parsed currently', [], 100);
               end;
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
@@ -1410,6 +1432,8 @@ var
   LNew: TPasItems;
   j: Integer;
   LCollector: string;
+  ttemp: TToken;
+  FirstCheck: boolean;
 begin
   Result := False;
   dummy := TPasVarConst.Create;
@@ -1465,6 +1489,53 @@ begin
     end else begin
       if not SkipDeclaration(dummy) then Exit;
     end;
+
+    // The following section allows PasDoc to parse variable modifiers in FPC.
+    // See: http://www.freepascal.org/docs-html/ref/refse19.html
+    ClearLastComment;
+    Finished := False;
+    FirstCheck := True;
+    repeat
+      ttemp := nil;
+      if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+      if FirstCheck then
+      begin
+        // If the first non-white character token after the semicolon
+        // is "cvar", "export', "external", or "public", there is
+        // a variable modifier present.
+
+        // This does not take into account the "absolute" modifier
+        // (which is not preceeded by a semicolon).
+        FirstCheck := False;
+        if (ttemp.MyType = TOK_RESERVED) and (ttemp.Info.ReservedKey in
+          [KEY_CVAR, KEY_EXPORT, KEY_EXTERNAL, KEY_PUBLIC]) then 
+        begin
+          dummy.FullDeclaration := dummy.FullDeclaration +  ' ' + ttemp.Data;
+          FreeAndNil(ttemp)
+        end
+        else
+        begin
+          Finished := True;
+          Scanner.UnGetToken(ttemp);
+        end;
+        while not Finished do
+        begin
+          if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+          if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
+          begin
+            Finished := True;
+            FirstCheck := False;
+            dummy.FullDeclaration := dummy.FullDeclaration +  ttemp.Data;
+          end
+          else
+          begin
+            dummy.FullDeclaration := dummy.FullDeclaration +  ' ' + ttemp.Data;
+          end;
+          FreeAndNil(ttemp)
+        end;
+      end;
+    until Finished and not FirstCheck;
+
     Result := True;
     for j := LNew.Count-1 downto 0 do begin
       TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := dummy.FullDeclaration;

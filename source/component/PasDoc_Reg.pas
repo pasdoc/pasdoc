@@ -15,11 +15,12 @@ implementation
 uses
   Classes,
   PasDoc,
-  PasDoc_GenHtml;
+  PasDoc_GenHtml,
+  PasDoc_GenLatex;
 
 procedure Register;
 begin
-  RegisterComponents('PasDoc', [TPasDoc, THTMLDocGenerator]);
+  RegisterComponents('PasDoc', [TPasDoc, THTMLDocGenerator, TTexDocGenerator]);
 end;
 
 end.

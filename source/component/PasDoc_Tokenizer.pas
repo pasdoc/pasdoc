@@ -40,6 +40,7 @@ type
     KEY_CLASS,
     KEY_CONST,
     KEY_CONSTRUCTOR,
+    KEY_CVAR,
     KEY_DESTRUCTOR,
     KEY_DISPINTERFACE,
     KEY_DIV,
@@ -48,7 +49,9 @@ type
     KEY_ELSE,
     KEY_END,
     KEY_EXCEPT,
+    KEY_EXPORT,
     KEY_EXPORTS,
+    KEY_EXTERNAL,
     KEY_FILE,
     KEY_FINALIZATION,
     KEY_FINALLY,
@@ -77,6 +80,7 @@ type
     KEY_PROCEDURE,
     KEY_PROGRAM,
     KEY_PROPERTY,
+    KEY_PUBLIC,
     KEY_RAISE,
     KEY_RECORD,
     KEY_REPEAT,
@@ -114,7 +118,7 @@ type
     SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
     SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
     SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, SYM_LEFT_BRACE,
-    SYM_RIGHT_BRACE, SYM_DOLLAR, SYM_NUMBER, SYM_ASSIGN, SYM_RANGE);
+    SYM_RIGHT_BRACE, SYM_DOLLAR, SYM_NUMBER, SYM_ASSIGN, SYM_RANGE, SYM_POWER);
 
   { Stores the exact type and additional information on one token.
     Additionally, @link(Data) stores the array of characters }
@@ -206,12 +210,12 @@ const
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
-    'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
+    'CONSTRUCTOR', 'CVAR',  'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
+    'ELSE', 'END', 'EXCEPT', 'EXPORT', 'EXPORTS', 'EXTERNAL', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
     'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
-    'ON', 'OR', 'OPERATOR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
+    'ON', 'OR', 'OPERATOR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY', 'PUBLIC',
     'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
     'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
     'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
@@ -594,6 +598,18 @@ begin
                     end;
                 else
                   Result := CreateSymbolToken(SYM_GREATER_THAN, '<');
+                end;
+              end;
+            '*': begin
+                c := ' ';
+                if HasData and (not PeekChar(c)) then Exit;
+                case c of
+                  '*': begin
+                      ConsumeChar;
+                      Result := CreateSymbolToken(SYM_POWER, '**');
+                    end;
+                else
+                  Result := CreateSymbolToken(SYM_ASTERISK, '*');
                 end;
               end;
           else begin
