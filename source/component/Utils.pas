@@ -8,6 +8,13 @@ unit Utils;
 
 interface
 
+{$IFDEF FPC}
+type
+  TMethod = record
+    data, code: Pointer;
+  end;
+{$ENDIF}
+
 { string empty means it contains only whitespace }
 function IsStrEmptyA(const AString: string): boolean;
 { trim compress - only trims right now, TODO: compress whitespace }
@@ -27,13 +34,27 @@ uses
   Classes;
 
 function StrSameIA(const A, B: string): boolean;
+{$IFDEF FPC}
+var
+  i: Integer;
+begin  
+  Result := Length(A) = Length(B);
+  if Result then begin
+    for i := 1 to Length(A) do begin
+      if LowerCase(A[i]) <> LowerCase(B[i]) then begin
+        Result := false; break;
+      end;
+    end;
+  end;
+{$ELSE}
 begin
-  Result := AnsiSameText(A, B);
+  Result := SameText(A, B);
+{$ENDIF}
 end;
 
 function StrCompIA(const A, B: string): Integer;
 begin
-  Result := AnsiCompareText(A, B);
+  Result := CompareText(A, B);
 end;
 
 function IsStrEmptyA(const AString: string): boolean;
@@ -58,7 +79,7 @@ end;
 
 function StrPosIA(const ASub, AString: string): Integer;
 begin
-  Result := AnsiPos(AnsiLowerCase(ASub), AnsiLowerCase(AString))
+  Result := Pos(LowerCase(ASub), LowerCase(AString))
 end;
 
 function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
