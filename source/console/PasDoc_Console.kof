@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=-E/tmp /tmp/test*.pas --write-uses-list
+RunParams=-E/tmp /tmp/test*.pas --write-uses-list --define=ABCDE --verbosity=6
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1

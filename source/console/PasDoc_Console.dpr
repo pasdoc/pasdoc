@@ -208,8 +208,8 @@ begin
     end;
   end;
 
-
   GPasDoc.HtmlHelpContentsFileName := GOption_ContentFile.Value;
+  
   GPasDoc.Directives.Assign(GOption_Define.Values);
   for i := 0 to GOption_ConditionalFile.Values.Count - 1 do begin
     GPasDoc.Directives.LoadFromTextFileAdd(GOption_ConditionalFile.Values[i]);
