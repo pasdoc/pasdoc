@@ -121,7 +121,7 @@ var
   l: Integer;
 begin
   Result := False;
-  i := 0;
+  i := 1;
   DirectiveName := '';
   Params := '';
   { find dollar sign }
