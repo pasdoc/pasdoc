@@ -19,8 +19,10 @@ type
 
 {$IFNDEF DELPHI_6_UP}
 {$IFNDEF FPC}
+{$IFNDEF LINUX}
 const
   DirectorySeparator = '\';
+{$ENDIF}
 {$ENDIF}
 {$ENDIF}
 
@@ -38,7 +40,9 @@ function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
 {$IFNDEF DELPHI_6_UP}
+{$IFNDEF LINUX}
 function IncludeTrailingPathDelimiter(const S: string): string;
+{$ENDIF}
 {$ENDIF}
 {$IFDEF FPC}
 function SameText(const A, B: string): boolean;
@@ -122,6 +126,7 @@ begin
 end;
 
 {$IFNDEF DELPHI_6_UP}
+{$IFNDEF LINUX}
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
@@ -131,6 +136,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 {$ENDIF}
 
 {$IFDEF FPC}
