@@ -11,7 +11,7 @@ interface
 {$IFDEF FPC}
 type
   TMethod = record
-    data, code: Pointer;
+    code, data: Pointer;
   end;
 {$ENDIF}
 
@@ -27,6 +27,10 @@ function StrPosIA(const ASub, AString: string): Integer;
 function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
+
+{$IFDEF FPC}
+function IncludeTrailingPathDelimiter(const S: string): string;
+{$ENDIF}
 
 implementation
 uses
@@ -106,5 +110,17 @@ begin
   Result.Code := AMethod;
   Result.Data := AObject;
 end;
+
+{$IFDEF FPC}
+const
+  {$IFDEF LINUX}
+  PathDelim = '/';
+  {$ENDIF}
+  
+function IncludeTrailingPathDelimiter(const S: string): string;
+begin
+  if S[Length(S)] <> PathDelim then Result := S + PathDelim else Result := S;
+end;
+{$ENDIF}
 
 end.
