@@ -56,6 +56,12 @@ type
       @link(GetLastComment) was called with @code(ClearLastComment) set to
       @False. }
     procedure ClearLastComment;
+    { Returns the comment (or other data) in t. If t = nil, the
+      Result will be an empty string. If FreeToken is @True, @Name frees t.
+      Otherwise, t stays untouched for further use. if present, comment
+      markers are removed from the beginning and end of the data.}
+    function ExtractComment(const FreeToken: Boolean;
+      var t: TToken): string;
     { Returns the last comment that was found in input. If there was none, the
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
@@ -182,18 +188,17 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-function TParser.GetLastComment(const AClearLastComment: Boolean): string;
+function TParser.ExtractComment(const FreeToken: Boolean; var t: TToken): string;
 var
   l: Integer;
   i: integer;
   Marker: string;
 begin
-  if Assigned(LastCommentToken) then begin
-    Result := LastCommentToken.Data;
-    if AClearLastComment then begin
-      LastCommentToken.Free;
-      LastCommentToken := nil;
+  if Assigned(t) then begin
+    Result := t.Data;
+    if FreeToken then begin
+      t.Free;
+      t := nil;
     end;
 
     { remove comment characters here }
@@ -244,6 +249,11 @@ begin
     Result := '';
 end;
 
+function TParser.GetLastComment(const AClearLastComment: Boolean): string;
+begin
+  result := ExtractComment(AClearLastComment, LastCommentToken);
+end;
+
 { ---------------------------------------------------------------------------- }
 
 function TParser.GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean;
@@ -292,7 +302,7 @@ begin
         else if (t.MyType = TOK_WHITESPACE) then begin
           if (Length(a) > 0) and (a[Length(a)] <> ' ') then a := a + ' ';
         end
-        else if (t.MyType = TOK_COMMENT) or (t.MyType = TOK_DIRECTIVE) then
+        else if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT, TOK_DIRECTIVE] then
           begin
               { ignore }
         end
@@ -355,7 +365,7 @@ begin
       M.Free;
       DoError('Could not get next token', [], 0);
     end;
-    if (t.MyType = TOK_COMMENT) then
+    if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT] then
     else if (t.MyType = TOK_WHITESPACE) then begin
       if Length(M.FullDeclaration) > 0 then begin
         if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
@@ -1004,7 +1014,7 @@ begin
       if not Scanner.GetToken(t) then
         DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo], 0);
 
-      if (t.MyType <> TOK_COMMENT) and (t.MyType <> TOK_DIRECTIVE) then
+      if not (t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE, TOK_DIRECTIVE]) then
         p.IndexDecl := p.IndexDecl + t.Data;
       Finished := t.IsSymbol(SYM_RIGHT_BRACKET);
       FreeAndNil(t);
@@ -1531,9 +1541,17 @@ begin
       LCollector := LCollector + t.Data;
       FreeAndNil(t);
     end else begin
-      if t.MyType = TOK_COMMENT then begin
+      if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE] then begin
         Scanner.ConsumeToken;
-        if Assigned(LastCommentToken) then LastCommentToken.Free;
+        // If there are several comments in a row, combine them.
+        if Assigned(LastCommentToken) then
+          if (t.MyType = TOK_COMMENT_CSTYLE) and (t.MyType = LastCommentToken.MyType) then begin
+            t.Data := GetLastComment(True) + ' ' + ExtractComment(False, t);
+          end;
+        if Assigned(LastCommentToken) then
+        begin
+          LastCommentToken.Free;
+        end;
         LastCommentToken := t;
         t := nil;
       end else begin

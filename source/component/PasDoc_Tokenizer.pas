@@ -25,8 +25,9 @@ uses
 type
   { enumeration type that provides all types of tokens; each token's name
     starts with TOK_ }
-  TTokenType = (TOK_WHITESPACE, TOK_COMMENT, TOK_IDENTIFIER,
-    TOK_NUMBER, TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_RESERVED);
+  TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
+                TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
+                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_RESERVED);
 
 type
   TKeyword = (
@@ -101,8 +102,8 @@ type
 const
   { Names of the token types }
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
-  ('Whitespace', 'Comment', 'Identifier', 'Number', 'String',
-    'Symbol', 'Directive', 'Reserved');
+  ('Whitespace', 'Comment (Pascal)', 'Comment (extended)', 'Comment (C-Style)', 
+    'Identifier', 'Number', 'String', 'Symbol', 'Directive', 'Reserved');
 
 type
   { }
@@ -638,7 +639,7 @@ function TTokenizer.ReadCommentType1: TToken;
 var
   c: Char;
 begin
-  Result := TToken.Create(TOK_COMMENT);
+  Result := TToken.Create(TOK_COMMENT_EXT);
   with Result do begin
     Data := '{';
     repeat
@@ -655,7 +656,7 @@ function TTokenizer.ReadCommentType2: TToken;
 var
   c: Char;
 begin
-  Result := TToken.Create(TOK_COMMENT);
+  Result := TToken.Create(TOK_COMMENT_PAS);
   Result.Data := '(*';
   if not HasData or not GetChar(c) then Exit;
   repeat
@@ -682,7 +683,7 @@ function TTokenizer.ReadCommentType3: TToken;
 var
   c: Char;
 begin
-  Result := TToken.Create(TOK_COMMENT);
+  Result := TToken.Create(TOK_COMMENT_CSTYLE);
   with Result do begin
     Data := '//';
     while HasData and GetChar(c) and not (c in [#10, #13]) do
