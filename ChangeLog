@@ -1,4 +1,15 @@
-2003-04-20 v0.8.7 Johannes Berg
+2003-05-02 v0.8.8-pre2 Thomas Mueller/Johannes Berg
+ + better HTML output with CSS
+ + HTML output has new section links
+ + fix hierarchy: objects descend from TObject,
+   interfaces with GUID are now shown properly
+
+2003-05-01 v0.8.8-pre1 Thomas Mueller/Johannes Berg
+ + hierarchy is shown properly with everything
+ + name directive for imported functions parsed properly
+ + proper HTML entity encoding
+
+2003-04-20 v0.8.7 Johannes Berg/Thomas Mueller
 Based on Ralf Junker's changes, I did the following:
  + added enumerated type parsing
  + made work with FPC
