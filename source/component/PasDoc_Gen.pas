@@ -438,8 +438,8 @@ procedure TDocGenerator.BuildLinks;
       p.HandleAuthorTags;
       p.HandleCreatedTag;
       p.HandleLastModTag;
-      p.HandleAbstractTag;
       p.HandleCVSTag;
+      p.HandleAbstractTag;
     end;
   end;
 
@@ -460,8 +460,8 @@ begin
     U.HandleAuthorTags;
     U.HandleCreatedTag;
     U.HandleLastModTag;
-    U.HandleAbstractTag;
     U.HandleCVSTag;
+    U.HandleAbstractTag;
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
     AssignLinks(U, nil, U.FullLink, U.Types);
@@ -480,6 +480,7 @@ begin
         CO.HandleAuthorTags;
         CO.HandleCreatedTag;
         CO.HandleLastModTag;
+        CO.HandleCVSTag;
         CO.HandleAbstractTag;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
