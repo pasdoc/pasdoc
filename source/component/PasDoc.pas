@@ -295,7 +295,7 @@ begin
       end;
     end;
   end;
-
+  FUnits.SortByPasItemName;
   DoMessage(2, mtInformation, '... %d Source File(s) parsed', [Count]);
 end;
 
