@@ -303,18 +303,7 @@ begin
   if not Assigned(CIO) then Exit;
 
   CIO.SortPasItems;
-
-  case CIO.MyType of
-    CIO_CLASS: s := FLanguage.Translation[trClass];
-    CIO_SPINTERFACE: s := FLanguage.Translation[trDispInterface];
-    CIO_INTERFACE: s := FLanguage.Translation[trInterface];
-    CIO_OBJECT: s := FLanguage.Translation[trObject];
-    CIO_RECORD: s := 'record'; // TODO
-  else
-    s := '';
-  end;
-
-  s := s + ' ' + CIO.Name;
+  s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
   if not HtmlHelp then WriteDocumentHeadline;
@@ -338,6 +327,7 @@ begin
     CIO_SPINTERFACE: WriteString('dispinterface');
     CIO_INTERFACE: WriteString('interface');
     CIO_RECORD: WriteString('record');
+    CIO_PACKEDRECORD: WriteString('packed record');
   else
     WriteString('object');
   end;

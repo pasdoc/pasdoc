@@ -1083,32 +1083,39 @@ begin
           end;
         end;
       KEY_SPINTERFACE: begin
-          if not ParseCIO(U, n, CIO_SPINTERFACE, d) then Exit;
           FreeAndNil(t);
-          t := nil;
+          if not ParseCIO(U, n, CIO_SPINTERFACE, d) then Exit;
           Result := True;
           Exit;
         end;
       KEY_INTERFACE: begin
-          if not ParseCIO(U, n, CIO_INTERFACE, d) then Exit;
           FreeAndNil(t);
-          t := nil;
+          if not ParseCIO(U, n, CIO_INTERFACE, d) then Exit;
           Result := True;
           Exit;
         end;
       KEY_OBJECT: begin
-          if not ParseCIO(U, n, CIO_OBJECT, d) then Exit;
           FreeAndNil(t);
-          t := nil;
+          if not ParseCIO(U, n, CIO_OBJECT, d) then Exit;
           Result := True;
           Exit;
         end;
       KEY_RECORD: begin
-          if not ParseCIO(U, n, CIO_RECORD, d) then Exit;
           FreeAndNil(t);
-          t := nil;
+          if not ParseCIO(U, n, CIO_RECORD, d) then Exit;
           Result := True;
           Exit;
+        end;
+      KEY_PACKED: begin
+          FreeAndNil(t);
+          GetNextNonWCToken(t, LTemp);
+          LCollected := LCollected + LTemp + t.Data;
+          if (t.MyType = TOK_RESERVED) AND (t.Info.ReservedKey = KEY_RECORD) then begin
+            FreeAndNil(t);
+            if not ParseCIO(U, n, CIO_PACKEDRECORD, d) then exit;
+            Result := True;
+            exit;
+          end;
         end;
     end;
   SetLength(LCollected, Length(LCollected)-Length(t.Data));

@@ -888,6 +888,7 @@ begin
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];
     CIO_RECORD: Result := 'record'; // TODO
+    CIO_PACKEDRECORD: Result := 'packed record'; // TODO
   else
     Result := '';
   end;
