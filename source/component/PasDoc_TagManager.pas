@@ -122,13 +122,17 @@ var
     OldLen: integer;
     NewLen: integer;
   begin
-    if ConvertOffset >= FOffset then
-      exit;
-    OldLen := FOffset - ConvertOffset;
-    s := ConvertString(Copy(FDescription, ConvertOffset, OldLen));
-    ReplaceInDesc(ConvertOffset, OldLen, s, NewLen);
-    FOffset := FOffset +  NewLen - OldLen;
-    ConvertOffset := FTagEnd + NewLen - OldLen;
+    try
+      OldLen := FOffset - ConvertOffset;
+      NewLen := OldLen;
+      if ConvertOffset >= FOffset then
+        exit;
+      s := ConvertString(Copy(FDescription, ConvertOffset, OldLen));
+      ReplaceInDesc(ConvertOffset, OldLen, s, NewLen);
+      FOffset := FOffset +  NewLen - OldLen;
+    finally
+      ConvertOffset := FTagEnd + NewLen - OldLen;
+    end;
   end;
 
 var

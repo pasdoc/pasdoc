@@ -105,6 +105,37 @@ type
     FCurrentItem: TPasItem;
     
     procedure HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
+
+    (* Called when an @longcode tag is encountered. This tag is used to format
+      the enclosed text in the same way it would be in Delphi (using the
+      default settings in Delphi).
+
+    Because any character including the ')' character might be in your code,
+    there needs to be a special way to mark the end of the @longCode tag.
+    To do this include a special character such as "#' just after the opening
+    '(' of the @longcode tag.  Include that same character again just before
+    the closing ')' of the @longcode tag.
+
+      Here is an example of the @@longcode tag in use. Check the source code
+      to see how it was done.
+
+      @longCode(#
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  // Note that your comments are formatted.
+  {$H+} // You can even include compiler directives.
+  // reserved words are formatted in bold.
+  for i := 1 to 10 do
+  begin
+    It is OK to include pseudo-code like this line.
+    // It will be formatted as if it were meaningful pascal code.
+  end;
+end;
+      #)
+      *)
+
     procedure HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -176,48 +207,18 @@ type
     function HtmlString(const Desc: string; Len: integer;
       var CurPos: integer): string; virtual;
 
-    (* Called when an @longcode tag is encountered. This tag is used to format
-      the enclosed text in the same way it would be in Delphi (using the
-      default settings in Delphi).
-
-    Because any character including the ')' character might be in your code,
-    there needs to be a special way to mark the end of the @longCode tag.
-    To do this include a special character such as "#' just after the opening
-    '(' of the @longcode tag.  Include that same character again just before
-    the closing ')' of the @longcode tag.
-
-      Here is an example of the @longcode tag in use. Check the source code
-      to see how it was done.
-
-      @longCode(#
-procedure TForm1.FormCreate(Sender: TObject);
-var
-  i: integer;
-begin
-  // Note that your comments are formatted.
-  {$H+} // You can even include compiler directives.
-  // reserved words are formatted in bold.
-  for i := 1 to 10 do
-  begin
-    It is OK to include pseudo-code like this line.
-    // It will be formatted as if it were meaningful pascal code.
-  end;
-end;
-      #)
-      *)
-//    function LongCode(const Content: string): string; virtual;
     { Mark the string as a parameter, e.g. <b>TheString</b> }
     function ParameterString(const ParamType, Param: string): string; virtual;
 
     { Converts for each character in S, thus assembling a
-      String that is returned and can be written to the documentation file. 
-      
-      The @@ character should not be converted, this will be done later on. 
+      String that is returned and can be written to the documentation file.
+
+      The @@ character should not be converted, this will be done later on.
     }
     function ConvertString(const s: string): string; virtual; abstract;
     { Converts a character to its converted form. This method
       should always be called to add characters to a string.
-      
+
       @@ should also be converted by this routine.
     }
     function ConvertChar(c: char): string; virtual; abstract;
@@ -643,7 +644,10 @@ procedure TDocGenerator.HandleLongCodeTag(const TagName, TagDesc: string; var Re
 begin
   if TagDesc = '' then
     exit;
-  ReplaceStr := FormatPascalCode(ConvertString(TagDesc));
+  // Trim off "marker" characters at the beginning and end of TagDesc.
+  // Then trim or white space.
+  // Then format pascal code.
+  ReplaceStr := FormatPascalCode(ConvertString(Copy(TagDesc,2,Length(TagDesc)-2)));
 end;
 
 procedure TDocGenerator.HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
@@ -1352,6 +1356,7 @@ var
   ParentItem: TPasItem;
   Parent, Child: TPasItemNode;
 begin
+  FClassHierarchy.Free;
   FClassHierarchy := TStringCardinalTree.Create;
   for unitLoop := 0 to Units.Count - 1 do begin
     PU := Units.UnitAt[unitLoop];
