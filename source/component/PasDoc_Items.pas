@@ -366,8 +366,8 @@ type
     procedure SortByPasItemName;
 
     procedure Add(const AObject: TPasItem);
-    procedure DeleteAt(const AIndex: Integer);
-    constructor Create(const AOwnsObject: Boolean); override;
+    procedure Delete(const AIndex: Integer);
+    constructor Create(const AOwnsObject: Boolean); 
     destructor Destroy; override;
     procedure Clear; override;
   end;
@@ -718,13 +718,13 @@ begin
   FHash := TObjectHash.Create;
 end;
 
-procedure TPasItems.DeleteAt(const AIndex: Integer);
+procedure TPasItems.Delete(const AIndex: Integer);
 var
   LObj: TPasItem;
 begin
   LObj := GetPasItemAt(AIndex);
   FHash.Delete(LowerCase(LObj.Name));
-  inherited DeleteAt(AIndex);
+  inherited Delete(AIndex);
 end;
 
 destructor TPasItems.Destroy;
@@ -764,7 +764,7 @@ end;
 
 procedure TPasItems.Add(const AObject: TPasItem);
 begin
-  inherited Insert(AObject);
+  inherited Add(AObject);
   FHash.Items[LowerCase(AObject.Name)] := AObject;
 end;
 
@@ -777,7 +777,7 @@ begin
   while (i < Count) do begin
     Item := PasItemAt[i];
     if Assigned(Item) and (Item.State = STATE_PRIVATE) then
-      DeleteAt(i)
+      Delete(i)
     else
       Inc(i);
   end;

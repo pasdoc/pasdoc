@@ -421,7 +421,7 @@ begin
 
     if Assigned(p) and (StrPosIA('@EXCLUDE', p.DetailedDescription) > 0) then begin
       DoMessage(3, mtInformation, 'Excluding item %s', [p.Name]);
-      c.DeleteAt(i);
+      c.Delete(i);
     end
     else begin
           { P has no excluded tag; but if it is a class, interface, object or

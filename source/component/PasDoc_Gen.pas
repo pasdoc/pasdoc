@@ -1615,7 +1615,7 @@ begin
                s := copy(s, p+1, MaxInt);
                LError.Offset := StrToIntDef(s, 0)-1;
                DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Insert(LError);
+               AErrors.Add(LError);
              end;
         '&': begin
                LError := TSpellingError.Create; 
@@ -1630,7 +1630,7 @@ begin
                SetLength(s, p2-1);
                LError.Offset := StrToIntDef(s, 0)-1;
                DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Insert(LError);
+               AErrors.Add(LError);
              end;
       end;
       s := ReadLine(FAspellPipe);
