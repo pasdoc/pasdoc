@@ -2399,8 +2399,7 @@ begin
   CurrentStream.Write(img_published[0], High(img_published)+1);
   CloseStream;
 
-  //if not FileExists(DestinationDirectory+'pasdoc.css') then begin
-  begin
+  if not FileExists(DestinationDirectory+'pasdoc.css') then begin
     CreateStream('pasdoc.css', True);
     StreamUtils.WriteLine(CurrentStream, 'body {' +
       'font-family: Verdana,Arial;' +
