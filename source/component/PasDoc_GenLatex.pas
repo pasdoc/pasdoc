@@ -190,6 +190,7 @@ type
     procedure WritePDFDocInfo(LocalTitle: string); 
     procedure WriteStartList(s: string);
     procedure WriteEndList;
+    function HasDescriptions(c: TPasItems):boolean;
     procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
     {** Returns @true if this item or its ancestor has a description, otherwise
         returns @false.
@@ -403,6 +404,27 @@ begin
   end;
 end;
 
+
+{ Returns TRUE if one of the subentries has a description
+  otherwise returns FALSE
+}  
+function TTexDocGenerator.HasDescriptions(c: TPasItems):boolean;
+var j :integer;
+    Item: TPasItem;
+begin
+  HasDescriptions := false;
+  for j := 0 to c.Count - 1 do 
+    begin
+      Item := TPasItem(c.PasItemAt[j]);
+      if HasDescription(Item) then
+        begin
+          HasDescriptions:=true;
+          exit;
+        end;
+    end;
+end;
+
+
 procedure TTexDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
@@ -433,17 +455,24 @@ begin
   SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
   SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
 
-  SectionsAvailable := [dsDescription];
+  SectionsAvailable := [];
+  if HasDescription(CIO) then
+    Include(SectionsAvailable, dsDescription);
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
     Include(SectionsAvailable, dsHierarchy);
-  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
+  if (not (ObjectVectorIsNilOrEmpty(CIO.Fields))) and (HasDescriptions(CIO.Fields)) then
     Include(SectionsAvailable, dsFields);
-  if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
+  if (not ObjectVectorIsNilOrEmpty(CIO.Methods)) and (HasDescriptions(CIO.Methods)) then
     Include(SectionsAvailable, dsMethods);
-  if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
+  if (not ObjectVectorIsNilOrEmpty(CIO.Properties)) and (HasDescriptions(CIO.Properties)) then
     Include(SectionsAvailable, dsProperties);
 
+  if SectionsAvailable = [] then exit;
+  WriteLN(longint(SectionsAvailable));
+  WriteLn(CIO.Name);
+
   CIO.SortPasItems;
+  
 
   WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
   WriteAnchor(CIO.Name,CIO.FullLink);
@@ -491,7 +520,10 @@ begin
     begin
       WriteHeading(HL + 2, SectionHeads[dsDescription]);
       WriteItemDetailedDescription(CIO);
-    end;
+    end
+  else
+      WriteDirect('%%%%' + SectionHeads[dsDescription],true);
+    
         
   if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
     WriteProperties(HL + 2, CIO.Properties);
@@ -548,6 +580,9 @@ begin
   for j := 0 to c.Count - 1 do 
     begin
       CIO := TPasCio(c.PasItemAt[j]);
+      { skip any CIO which has no description, as well as all records }
+      if (not HasDescription(CIO)) or (CIO.MyType in [CIO_Record,CIO_PackedRecord]) then
+        continue;
       WriteDirect('\item[\texttt{');
       WriteLink(CIO.FullLink, CodeString(ConvertString(CIO.Name)), 'bold');
       { name of class/interface/object and unit }
@@ -886,8 +921,26 @@ var
   j: Integer;
   Item: TPasItem;
   s: string;
+  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(Fields) then Exit;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to Fields.Count - 1 do 
+    begin
+      Item := Fields.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
   
   WriteHeading(Order, FLanguage.Translation[trFields]);
   
@@ -910,6 +963,8 @@ begin
     for j := 0 to Fields.Count - 1 do 
       begin
         Item := Fields.PasItemAt[j];
+        if not HasDescription(Item) then
+          continue;
 
         WriteHeading(Order+1, Item.Name);
         WriteAnchor(Item.Name,Item.FullLink);
@@ -949,6 +1004,8 @@ begin
     for j := 0 to Fields.Count - 1 do 
       begin
         Item := Fields.PasItemAt[j];
+        if not HasDescription(Item) then
+          continue;
         WriteAnchor(Item.Name,Item.FullLink);
         if Item is TPasVarConst then 
         begin
@@ -1043,10 +1100,29 @@ var
   i: Integer;
   j: Integer;
   p: TPasMethod;
+  Item: TPasItem;
   s: string;
+  SomeDescriptions: boolean;
 begin
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to FuncsProcs.Count - 1 do 
+    begin
+      Item := FuncsProcs.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
   // two passes, in the first (i=0) we write the overview
   // in the second (i=1) we write the descriptions
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
@@ -1054,6 +1130,9 @@ begin
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
+    { skip this entry if there is no description }
+    if not HasDescription(p) then
+      continue;
     
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
@@ -1084,8 +1163,28 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
+  SomeDescriptions: boolean;
+  item: TPasitem;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+  if FuncsProcs.Count = 0 then exit;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to FuncsProcs.Count - 1 do 
+    begin
+      Item := FuncsProcs.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
 
   WriteHeading(HL, FLanguage.Translation[trMethods]);
 
@@ -1106,6 +1205,9 @@ begin
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
+      { skip this entry if there is no description }
+      if not HasDescription(p) then
+        continue;
       { overview of functions and procedures }
       begin
 
@@ -1140,9 +1242,28 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
+  SomeDescriptions: boolean;
+  Item: TPasItem;
  begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to FuncsProcs.Count - 1 do 
+    begin
+      Item := FuncsProcs.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
   
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
@@ -1150,6 +1271,9 @@ var
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
+    { skip empty entries }
+    if not HasDescription(p) then continue;
+    
     
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
@@ -1180,11 +1304,30 @@ var
   i: Integer;
   j: Integer;
   p: TPasMethod;
+  Item: TPasItem;
   s: string;
   procstr: string;
+  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to FuncsProcs.Count - 1 do 
+    begin
+      Item := FuncsProcs.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
 
   WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
 
@@ -1203,6 +1346,8 @@ begin
   for j := 0 to FuncsProcs.Count - 1 do
   begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
+      { skip empty entries }
+      if not HasDescription(p) then continue;
       { overview of functions and procedures }
       begin
         { Check if this is a function or a procedure }
@@ -1385,11 +1530,29 @@ var
   j, k: Integer;
   Item: TPasItem;
   s: string;
+  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
   if i.count = 0 then exit;
   
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to i.Count - 1 do 
+    begin
+      Item := i.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
   WriteHeading(HL, Heading);
+  
   s:=FLanguage.Translation[trDescription];
   if length(s) < length(FLanguage.Translation[trDeclaration])  then
      s:= FLanguage.Translation[trDeclaration];
@@ -1401,6 +1564,33 @@ begin
   
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
+    { skip the item entirely if it does not have any description 
+      
+    }
+    if not HasDescription(Item) then
+      begin
+        SomeDescriptions:=false;
+        { If this is not an enumeration, then skip it entirely }
+        if not (Item is TPasEnum) then
+          continue
+        else
+        { for an enumeration we must verify if one of the subentries
+          has a description - if so continue 
+        }
+        for k := 0 to TPasEnum(Item).Members.Count-1 do 
+          begin
+            if HasDescription(TPasItem(TPasEnum(Item).Members.PasItemAt[k])) then
+              begin
+                SomeDescriptions:=true;
+                break;
+              end;
+          end;
+        { If no descriptions at all, skip to next }  
+        if not SomeDescriptions then
+          begin
+            continue; 
+          end;
+      end;
 
     if Item is TPasEnum then
       WriteHeading(HL+1, Item.Name+' '+LowerCase(FLanguage.Translation[trEnum]))
@@ -1426,20 +1616,18 @@ begin
     
     if not (Item is TPasEnum) then
       begin
-        { If there is no description, don't write any description section }
-        if HasDescription(Item) then
-          begin
-            WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-            WriteItemDetailedDescription(Item);
-            WriteDirect('\par ',true);
-          end
-        else
-            WriteDirect('%\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+        WriteItemDetailedDescription(Item);
+        WriteDirect('\par ',true);
       end
     else
      begin
       WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-      WriteItemDetailedDescription(Item);
+      { We may be here if the subitems have descriptions, 
+        if the main has no enumerations then simply skip it. 
+      }
+      if HasDescription(Item) then
+        WriteItemDetailedDescription(Item);
       WriteDirect('\begin{description}', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
         WriteDirect('\item[\texttt{');
@@ -1613,8 +1801,27 @@ var
   j: Integer;
   Prop: TPasProperty;
   s: string;
+  Item: TPasItem;
+  SomeDescriptions: boolean;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
+  
+  { verify if at least one item has a description, if so then
+    add the heading, otherwise simply ignore it and exit.
+  } 
+  SomeDescriptions:=false;
+  for j := 0 to p.Count - 1 do 
+    begin
+      Item := p.PasItemAt[j];
+      if HasDescription(Item) then
+        begin
+          SomeDescriptions := true;
+          break;
+        end;
+    end;
+  
+  if not SomeDescriptions then exit;
+  
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   
@@ -1637,6 +1844,8 @@ begin
     for j := 0 to p.Count - 1 do 
       begin
         Prop := TpasProperty(p.PasItemAt[j]);
+        if not HasDescription(Prop) then
+          continue;
 
         WriteHeading(HL+1, Prop.Name);
         WriteAnchor(Prop.Name,Prop.FullLink);
@@ -1672,8 +1881,10 @@ begin
     
     for j := 0 to p.Count - 1 do 
       begin
-        WriteAnchor(Prop.Name,Prop.FullLink);
         Prop := TPasProperty(p.PasItemAt[j]);
+        if not HasDescription(Prop) then
+          continue;
+        WriteAnchor(Prop.Name,Prop.FullLink);
         WriteDeclarationItem(Prop, Prop.Name, AccessibilityStr[Prop.State]+' '+
            Prop.FullDeclaration);
         WriteDirect('',true);
@@ -1888,7 +2099,8 @@ begin
 
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
-  WriteUnitDescription(HL + 1, U);
+  if HasDescription(U) then
+    WriteUnitDescription(HL + 1, U);
 
   WriteUnitUses(HL + 1, U);
   
@@ -2200,6 +2412,9 @@ end.
 
 {
   $Log$
+  Revision 1.10  2004/04/20 01:58:20  ccodere
+  + now all non-documented items will not be output, there is still a bug with the CIO Heading though that might appear with an empty section.
+
   Revision 1.9  2004/03/19 17:15:13  ccodere
     - remove description and headings with no data
 
