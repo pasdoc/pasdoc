@@ -168,6 +168,7 @@ const
 var
   BeginPos, EndPos, Done, LineEndingPos, I:Integer;
   TempString: string;
+  LenD: integer;
 begin
   d := AdjustLineBreaks(d);
   
@@ -194,31 +195,35 @@ begin
   { Variable Done says "how many beginning chars from D are already done,
     i.e. blank line sequences in D[1..Done-1] are already converted 
     to Paragraphs" }
-  Done := 1; 
-  while Done<=Length(d) do
+  Done := 1;
+  LenD := Length(d);
+  while Done<=LenD do
   begin
-    TempString:=Copy(d, Done, Length(d));
-    LineEndingPos := Pos(LineEnding, TempString) + (Done-1);
+    TempString:=Copy(d, Done, LenD);
+    LineEndingPos := Pos(LineEnding, TempString);
 {    LineEndingPos:=PosEx(LineEnding,d,Done); }
     if LineEndingPos = 0 then Break;
-    
+
+    Inc(LineEndingPos, Done-1);
+
     I := LineEndingPos + Length(LineEnding);
-    while (I<=Length(d)) and (d[I] in [' ', #9]) do Inc(i);    
-    if I > Length(d) then Break;
-    
+    while (I<=LenD) and (d[I] in [' ', #9]) do Inc(i);
+    if I > LenD then Break;
+
     if Copy(d, I, Length(LineEnding)) = LineEnding then
     begin
       { Then bingo ! We should make a paragraph here, and ignore all
         subsequent white chars (spaces, tabs, and newline characters). }
-      while (I<=Length(d)) and (d[I] in WhiteSpaces) do Inc(i);
-      
+      while (I<=LenD) and (d[I] in WhiteSpaces) do Inc(i);
+
       Delete(d, LineEndingPos, I-LineEndingPos);
       Insert(Paragraph, d, LineEndingPos);
-      
+
       Done := Done + Length(Paragraph) + 1;
+      LenD := Length(d);
     end else
     begin
-      { Then it's just a usual newline (possibly followed by some 
+      { Then it's just a usual newline (possibly followed by some
         whitespaces). We can leave it as it is. }
       Done := I;
     end;
