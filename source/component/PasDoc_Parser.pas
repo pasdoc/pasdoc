@@ -46,9 +46,14 @@ type
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
-    { Will write last comment that was found in input to T. If there was none,
-      T will be set to nil. }
-    function GetLastComment: string;
+    { Clears the last comment token. Should be issued soon after
+      @link(GetLastComment) was called with @code(ClearLastComment) set to
+      @False. }
+    procedure ClearLastComment;
+    { Returns the last comment that was found in input. If there was none, the
+      Result will be an empty string. If ClearLastComment is @True, @Name clears
+      the last comment. Otherwise, it stays untouched for further use. }
+    function GetLastComment(const ClearLastComment: Boolean = True): String;
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. }
     function GetNextNonWCToken(var t: TToken): Boolean;
@@ -112,6 +117,14 @@ uses
 { TParser
 { ---------------------------------------------------------------------------- }
 
+procedure TParser.ClearLastComment;
+begin
+  if Assigned(LastCommentToken) then begin
+    LastCommentToken.Free;
+    LastCommentToken := nil;
+  end;
+end;
+
 constructor TParser.Create(
   const InputStream: TStream;
   const Directives: TStringVector;
@@ -157,7 +170,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetLastComment: string;
+function TParser.GetLastComment(const ClearLastComment: Boolean): string;
 var
   l: Integer;
   LBSComment: Integer;
@@ -165,35 +178,42 @@ begin
   LBSComment := 0;
   if Assigned(LastCommentToken) then begin
     Result := LastCommentToken.Data;
-    LastCommentToken.Free;
-    LastCommentToken := nil;
+    if ClearLastComment then begin
+      LastCommentToken.Free;
+      LastCommentToken := nil;
+    end;
 
-      { remove comment characters here }
+    { remove comment characters here }
     l := Length(Result);
 
-    if (l > 0) and (Result[1] = '{') then begin
-      Delete(Result, 1, 1);
-      Dec(l);
-    end;
-
-    if (l > 0) and (Result[l] = '}') then begin
-      Delete(Result, Length(Result), 1);
-      Dec(l);
-    end;
-
-    if (l > 1) and (Result[1] = '/') and (Result[2] = '/') then begin
-      Delete(Result, 1, 2);
-      Exit;
-    end;
-
-    if (l > 1) and (Result[1] = '(') and (Result[2] = '*') then begin
-      Delete(Result, 1, 2);
-      Dec(l, 2);
-      LBSComment := 1;
-    end;
-
-    if (l > 1) and (Result[l - 2] = '*') and (Result[l - 1] = ')') then
-      Delete(Result, l - 1, 2);
+      if l > 0 then
+        case Result[1] of
+          '{':
+            begin
+              Delete(Result, 1, 1);
+              Dec(l);
+ 
+              if (l > 0) and (Result[l] = '}') then
+                Delete(Result, Length(Result), 1);
+            end;
+ 
+          '/':
+            if (l > 1) and (Result[2] = '/') then
+              begin
+                Delete(Result, 1, 2);
+                Exit;
+              end;
+ 
+          '(':
+            if (l > 1) and (Result[2] = '*') then
+              begin
+                Delete(Result, 1, 2);
+                Dec(l, 2);
+                LBSComment := 1;
+                if (l > 1) and (Result[l - 1] = '*') and (Result[l] = ')') then
+                  Delete(Result, l - 1, 2);
+              end;
+        end;
   end
   else
     Result := '';
@@ -252,7 +272,7 @@ begin
         else if (t.MyType = TOK_WHITESPACE) then begin
           if (Length(a) > 0) and (a[Length(a)] <> ' ') then a := a + ' ';
         end
-        else if (t.MyType = TOK_COMMENT) or (t.MyType = TOK_RECTIVE) then
+        else if (t.MyType = TOK_COMMENT) or (t.MyType = TOK_DIRECTIVE) then
           begin
               { ignore }
         end
@@ -274,9 +294,8 @@ const
   [SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
     SD_EXTERNAL, SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD,
     SD_OVERRIDE, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-    SD_DEPRECATED];
+    SD_DEPRECATED, SD_PASCAL, SD_REGISTER, SD_SAFECALL];
 var
-  Finished: Boolean;
   IsSemicolon: Boolean;
   pl: TStandardDirective;
   t: TToken;
@@ -284,7 +303,7 @@ var
 begin
   Result := False;
   M := TPasMethod.Create;
-  M.Description := d;
+  M.DetailedDescription := d;
   t := nil;
   case Key of
     KEY_CONSTRUCTOR:
@@ -343,7 +362,6 @@ begin
 
   { first get non-WC token - if it is not an identifier in SD_SET put it back
     into stream and leave; otherwise copy tokens until semicolon }
-  Finished := False;
   repeat
     FreeAndNil(t);
     if (not GetNextNonWCToken(t)) then begin
@@ -356,6 +374,68 @@ begin
     end;
     CS := t.Data;
     pl := StandardDirectiveByName(CS);
+    case pl of
+      SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          FreeAndNil(t);
+                                                                                                                               
+          if not GetNextNonWCToken(t) then begin
+            M.Free;
+            Exit;
+          end;
+        end;
+                                                                                                                               
+      { * External declarations might be followed by a string constant.
+        * Messages are followed by an integer constant between 1 and 49151 which
+          specifies the message ID. }
+      SD_EXTERNAL, SD_MESSAGE, SD_NAME:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          FreeAndNil(t);
+                                                                                                                               
+          // Keep on reading up to the next semicolon or declaration
+          repeat
+            if not GetNextNonWCToken(t) then begin
+              M.Free;
+              DoError('Could not get next non white space token', []);
+            end;
+                                                                                                                               
+            if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
+              Break
+            end else begin
+              if t.MyType = TOK_IDENTIFIER then begin
+                  pl := StandardDirectiveByName(t.Data);
+                  case pl of
+                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
+                      SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                      begin
+                        // FScanner.UnGetToken(t);
+                        Break;
+                      end;
+                  end;
+                end;
+
+              M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+              FreeAndNil(t);
+              GetNextNonWCToken(t);
+            end;
+          until False;
+        end;
+      SD_DEPRECATED: begin
+        M.IsDeprecated := True;
+        FreeAndNil(t);
+        GetNextNonWCToken(t);
+      end;
+    else
+      Scanner.UnGetToken(t);
+      Break;
+    end; // case
+
+(* OLD CODE
     if (pl = SD_INVALIDSTANDARDDIRECTIVE) or (not (pl in SDSet)) then begin
       Scanner.UnGetToken(t);
       Break;
@@ -365,11 +445,12 @@ begin
     end;
     M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
     FreeAndNil(t);
-
+*)
     { Apparently, the Delphi compiler does NOT enforce that
       directives must be separated and be terminated by a semicolon,
       even though Delphi help consistently uses them consistently.
       However, we take the compiler as a reference and try to mimic its behaviour. }
+{    FreeAndNil(t);
     if (not GetNextNonWCToken(t)) then begin
       M.Free;
       Exit;
@@ -382,7 +463,7 @@ begin
       Scanner.UnGetToken(t);
     end;
 
-  until Finished;
+  until False;
   Result := True;
 end;
 
@@ -392,7 +473,7 @@ function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
   TCIOType; d: string): Boolean;
 var
   CS: string;
-  CSFound: Boolean;
+  CSFound, FirstFieldLoop: Boolean;
   f: TPasItem;
   Finished: Boolean;
   i: TPasCio;
@@ -405,8 +486,7 @@ var
 begin
   t := nil;
   Result := False;
-  DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"',
-    [CioName]);
+  DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
   if not GetNextNonWCToken(t) then Exit;
 
   { Test for forward class definition here:
@@ -419,7 +499,7 @@ begin
 
   i := TPasCio.Create;
   i.Name := CioName;
-  i.Description := d;
+  i.DetailedDescription := d;
   i.MyType := CIOType;
   { get all ancestors; remember, this could look like
     TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
@@ -492,7 +572,19 @@ begin
   end;
   { now collect methods, fields and properties }
   CS := '';
-  State := STATE_PUBLIC;
+
+  (* Members at the beginning of a class declaration that don<92>t have a specified
+     visibility are by default published, provided the class is compiled in the
+     $M+ state or is derived from a class compiled in the $M+ state;
+     otherwise, such members are public.
+
+     How do we resolve the inherited classes' $M+ state? *)
+  if Scanner.SwitchOptions['M'] then begin
+    State := STATE_PUBLISHED;
+  end else begin
+    State := STATE_PUBLIC;
+  end;
+
   Finished := False;
   repeat
     CSFound := False;
@@ -532,6 +624,7 @@ begin
           KEY_PROPERTY: begin
               if (not ParseProperty(p)) then begin
                 FreeAndNil(t);
+                i.Free;
                 Exit;
               end;
               p.State := State;
@@ -540,6 +633,7 @@ begin
           KEY_CASE: begin
               if not ParseRecordCase(i) then begin
                 FreeAndNil(t);
+                i.Free;
                 Exit;
               end;
             end;
@@ -568,21 +662,51 @@ begin
             SD_PUBLISHED: State := STATE_PUBLISHED;
             SD_PRIVATE: State := STATE_PRIVATE;
             SD_PROTECTED: State := STATE_PROTECTED;
-            SD_AUTOMATED: State := STATE_PUBLIC;
+            SD_AUTOMATED: State := STATE_AUTOMATED;
           else
-            Ind := SD_INVALIDSTANDARDDIRECTIVE;
-          end;
-          if (Ind = SD_INVALIDSTANDARDDIRECTIVE) then begin
-            f := TPasItem.Create;
-            f.Name := t.Data;
-            f.State := State;
-            f.Description := GetLastComment;
+            FirstFieldLoop := True;
+            repeat
+              f := TPasItem.Create;
+              if FirstFieldLoop then begin
+                f.Name := t.Data;
+                FirstFieldLoop := False;
+              end else begin
+                if not GetNextNonWCToken(t) then Exit;
+                if t.MyType <> TOK_IDENTIFIER then begin
+                  DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
+                end;
+                f.Name := t.Data;
+              end;
+
+              f.State := State;
+              f.DetailedDescription := GetLastComment(False);
+              f.InsertItem(f, i.Fields);
+              FreeAndNil(t);
+
+              if not GetNextNonWCToken(t) then Exit;
+
+              if t.MyType = TOK_SYMBOL then begin
+                case t.Info.SymbolType of
+                  SYM_COMMA:
+                    begin
+                      FreeAndNil(t);
+                      Continue;
+                    end;
+                  SYM_COLON:
+                    begin
+                      Break;
+                    end;
+                end;
+              end;
+              // We reach here only if token is not a comma or a colon.
+              FreeAndNil(t);
+              DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo]);
+            until False;
+            ClearLastComment;
+
             if not SkipDeclaration then begin
-              f.Free;
               Exit;
             end;
-
-            f.InsertItem(f, i.Fields);
           end;
         end;
     if (not CSFound) then CS := '';
@@ -608,7 +732,7 @@ begin
   i := TPasItem.Create;
   i.Name := t.Data;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
-  i.Description := GetLastComment;
+  i.DetailedDescription := GetLastComment;
   if SkipDeclaration then begin
     U.AddConstant(i);
     Result := True;
@@ -686,7 +810,7 @@ begin
           end;
         end;
     end;
-    if Assigned(t) then FreeAndNil(t);
+    FreeAndNil(t);
   until Finished;
   Result := True;
 end;
@@ -723,7 +847,7 @@ begin
         DoError('Error, could not parse property in file %s',
           [Scanner.GetStreamInfo]);
 
-      if (t.MyType <> TOK_COMMENT) and (t.MyType <> TOK_RECTIVE) then
+      if (t.MyType <> TOK_COMMENT) and (t.MyType <> TOK_DIRECTIVE) then
         p.IndexDecl := p.IndexDecl + t.Data;
       Finished := t.IsSymbol(SYM_RIGHT_BRACKET);
       FreeAndNil(t);
@@ -961,7 +1085,7 @@ begin
 
   i := TPasItem.Create;
   i.Name := n;
-  i.Description := d;
+  i.DetailedDescription := d;
   U.AddType(i);
   Result := True;
 end;
@@ -982,7 +1106,7 @@ begin
   FreeAndNil(t);
 
   U := TPasUnit.Create;
-  U.Description := GetLastComment;
+  U.DetailedDescription := GetLastComment;
   if not GetNextNonWCToken(t) then Exit;
 
   { get unit name identifier }
@@ -1054,14 +1178,13 @@ begin
     if FirstLoop then begin
       i.Name := t.Data;
       FirstLoop := False;
-    end
-    else begin
+    end else begin
       if (not GetNextNonWCToken(t)) then Exit;
       if (t.MyType <> TOK_IDENTIFIER) then
         DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
       i.Name := t.Data;
     end;
-    i.Description := GetLastComment;
+    i.DetailedDescription := GetLastComment(False);
     U.AddVariable(i);
     FreeAndNil(t);
     if (not GetNextNonWCToken(t)) then Exit;
@@ -1073,11 +1196,10 @@ begin
 
     Finished := (t.Info.SymbolType = SYM_COLON);
     FreeAndNil(t);
-    t := nil;
   until Finished;
+  ClearLastComment;
   GetNextNonWCToken(t);
-  if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey in [KEY_FUNCTION,
-    KEY_PROCEDURE]) then begin
+  if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
     ParseCDFP(m, '', t.Data, t.Info.ReservedKey, '', False);
     m.Free;
     FreeAndNil(t);

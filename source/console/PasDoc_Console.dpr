@@ -239,7 +239,7 @@ begin
 
   GPasDoc.StarStyleOnly := GOption_StarOnly.TurnedOn;
 
-  GPasDoc.SourceFileNames.AddStrings(GOptionParser.LeftList);
+  GPasDoc.AddSourceFileNames(GOptionParser.LeftList);
 
   Result := True;
 end;

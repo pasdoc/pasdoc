@@ -187,6 +187,7 @@ uses
   ObjectVector,
   Types,
   Utils,
+  PasDoc_Tokenizer,
   PasDoc_HierarchyTree;
 
 { HTML things to be customized:
@@ -406,8 +407,7 @@ begin
   for i := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[i]);
     if not CreateStream(p.OutputFileName) then begin
-      DoMessage(1, mtError,
-        'Could not create Class/Interface/Object documentation file.', []);
+      DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
       Continue;
     end;
     DoMessage(2, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
@@ -426,7 +426,7 @@ begin
   if IsNilOrEmpty(c) then Exit;
 
   if HtmlHelp then
-    WriteString('<A name=Classes></A>');
+    WriteString('<A name=@Classes></A>');
 
   WriteHeading(HL, FLanguage.Translation[trCio]);
   WriteStartOfTable2Columns(FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
@@ -463,11 +463,11 @@ end;
 procedure THTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
   string; const ItemLink: string);
 var
-  SearchForLink: Boolean;
+  NameFound, SearchForLink: Boolean;
   FoundItem: TPasItem;
   i, j, l: Integer;
   s: string;
-
+  pl: TStandardDirective;
   n, ncstart: Integer;
   S1: string;
   S2: string;
@@ -475,6 +475,7 @@ var
 begin
   WriteStartOfCode;
   i := 1;
+  NameFound := false;
   SearchForLink := False;
   l := Length(Code);
   ncstart := i;
@@ -486,18 +487,36 @@ begin
           j := i;
           repeat
             Inc(i);
-          until (i > l) or (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z',
-            'a'..'z']));
+          until (i > l) or (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
-          if s = p.Name then begin
+           { Special processing for standard directives. }
+          pl := StandardDirectiveByName(s);
+          case pl of
+            SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+              SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+              SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+              begin
+                WriteString(s);
+                SearchForLink := False;
+                Continue;
+              end;
+            SD_EXTERNAL:
+              begin
+                WriteString(s);
+                SearchForLink := True;
+                Continue;
+              end;
+          end;
+          if not NameFound and (s = p.Name) then begin
             if ItemLink <> '' then begin
               WriteStartOfLink(ItemLink);
               WriteString('<B>' + s + '</B>');
               WriteEndOfLink;
             end else begin
               WriteString('<B>' + s + '</B>')
-            end
+            end;
+            NameFound := True;
           end else begin
             { search for item of name  L }
             if SearchForLink and (SplitLink(s, S1, S2, S3, n)) then begin
@@ -517,7 +536,7 @@ begin
             end;
           end;
           ncstart := i;
-          Continue; // We don't want to miss out on any ':' or ';'
+          Continue; // We don't want to miss out on any ':' or ';' for SearchForLink
         end;
       ':': SearchForLink := True;
       ';': SearchForLink := False;
@@ -662,7 +681,7 @@ var
 begin
   if IsNilOrEmpty(Fields) then Exit;
 
-  WriteString('<A name=Fields></A>');
+  WriteString('<A name=@Fields></A>');
   WriteHeading(Order, FLanguage.Translation[trFields]);
 
   WriteString('<TABLE cellspacing=' +
@@ -719,12 +738,12 @@ begin
 
   if Methods then begin
     if HtmlHelp then
-      WriteString('<A name=Methods></A>');
+      WriteString('<A name=@Methods></A>');
     WriteHeading(HL, FLanguage.Translation[trMethods]);
   end
   else begin
     if HtmlHelp then
-      WriteString('<A name=FuncsProcs></A>');
+      WriteString('<A name=@FuncsProcs></A>');
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
@@ -814,6 +833,7 @@ begin
   WriteResourceToFile('PROTECTED', RT_RCDATA, 'protected.gif');
   WriteResourceToFile('PUBLIC', RT_RCDATA, 'public.gif');
   WriteResourceToFile('PUBLISHED', RT_RCDATA, 'published.gif');
+  WriteResourceToFile('AUTOMATED', RT_RCDATA, 'automated.gif');
   WriteResourceToFile('CSS', RT_RCDATA, ProjectName + '.css')
 end;
 
@@ -862,7 +882,7 @@ begin
   if IsNilOrEmpty(i) then Exit;
 
   if HtmlHelp and (Anchor <> '') then
-    WriteString('<A name=' + Anchor + '></A>');
+    WriteString('<A name=@' + Anchor + '></A>');
 
   WriteHeading(HL, Heading);
 
@@ -1333,12 +1353,9 @@ var
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
     WriteLine('<UL>');
 
-    WriteItemHeadingCollection('Fields', ClassItem.FullLink + '#Fields',
-      ClassItem.Fields);
-    WriteItemHeadingCollection('Properties', ClassItem.FullLink +
-      '#Properties', ClassItem.Properties);
-    WriteItemHeadingCollection('Methods', ClassItem.FullLink + '#Methods',
-      ClassItem.Methods);
+    WriteItemHeadingCollection('Fields', ClassItem.FullLink + '#@Fields', ClassItem.Fields);
+    WriteItemHeadingCollection('Properties', ClassItem.FullLink + '#@Properties', ClassItem.Properties);
+    WriteItemHeadingCollection('Methods', ClassItem.FullLink + '#@Methods', ClassItem.Methods);
 
     WriteLine('</UL>');
   end;
@@ -1367,7 +1384,7 @@ var
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
-        WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#Classes');
+        WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#@Classes');
         WriteLine('<UL>');
 
         for k := 0 to c.Count - 1 do
@@ -1378,13 +1395,13 @@ var
 
         // For each unit, write Functions & Procedures.
       WriteItemHeadingCollection(FLanguage.Translation[trFunctionsAndProcedures],
-        PU.FullLink + '#FuncsProcs', PU.FuncsProcs);
+        PU.FullLink + '#@FuncsProcs', PU.FuncsProcs);
         // For each unit, write Types.
       WriteItemHeadingCollection(FLanguage.Translation[trTypes], PU.FullLink +
-        '#Types', PU.Types);
+        '#@Types', PU.Types);
         // For each unit, write Constants.
       WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink +
-        '#Constants', PU.Constants);
+        '#@Constants', PU.Constants);
 
       WriteLine('</UL>');
     end;
@@ -1463,8 +1480,7 @@ var
         7: WriteLine('<PARAM name="Name" value="' +
           FLanguage.Translation[trHeadlineIdentifiers] + '">');
       end;
-      WriteLine('<PARAM name="Local" value="' + OverviewFilenames[j] +
-        '.htm">');
+      WriteLine('<PARAM name="Local" value="' + OverviewFilenames[j] + GetFileExtension + '">');
       WriteLine('</OBJECT>');
     end;
     WriteLine('</UL>');
@@ -1475,9 +1491,9 @@ var
   procedure ContentWriteLegend(const Text: string);
   begin
     if Text <> '' then
-      WriteLiObject(Text, 'Legend.htm')
+      WriteLiObject(Text, 'Legend'+GetFileExtension)
     else
-      WriteLiObject(FLanguage.Translation[trLegend], 'Legend.htm');
+      WriteLiObject(FLanguage.Translation[trLegend], 'Legend'+GetFileExtension);
   end;
 
   { ---------- }
@@ -1792,14 +1808,14 @@ begin
   CloseStream;
 
   // Create a Main Topic
-  if (not CreateStream(DestinationDirectory + 'Legend.htm')) then begin
-    DoMessage(1, mtError, 'Could not create file "Legend.htm".', []);
+  if (not CreateStream(DestinationDirectory + 'Legend'+GetFileExtension)) then begin
+    DoMessage(1, mtError, 'Could not create file "Legend'+GetFileExtension+'".', []);
     Exit;
   end;
-  DoMessage(2, mtInformation, 'Writing Legend.htm...', []);
+  DoMessage(2, mtInformation, 'Writing Legend...', []);
 
-  WriteStartOfDocument('Legend');
-  WriteHeading(1, 'Legend');
+  WriteStartOfDocument(FLanguage.Translation[trLegend]);
+  WriteHeading(1, FLanguage.Translation[trLegend]);
   WriteString('<TABLE cellpadding=5>');
   WriteString('<TR><TD><IMG src="private.gif" alt="' + FLanguage.Translation[trPrivate]
     + '"></TD><TD>' + FLanguage.Translation[trPrivate] + '</TD></TR>');

@@ -45,6 +45,7 @@ type
   TTranslationID = (
     trAuthor,
     trAuthors,
+    trAutomated,
     trCio,
     trClass,
     trClasses,
@@ -188,6 +189,7 @@ procedure TPasDocLanguages.SetLanguageEnglish;
 begin
   FTranslation[trAuthor] := 'Author';
   FTranslation[trAuthors] := 'Authors';
+  FTranslation[trAutomated] := 'Automated';
   FTranslation[trCio] := 'Classes, Interfaces and Objects';
   FTranslation[trClass] := 'Class';
   FTranslation[trClasses] := 'Classes';
@@ -224,8 +226,7 @@ begin
 
   FTranslation[trHeadlineCio] := 'All Classes, Interfaces and Objects';
   FTranslation[trHeadlineConstants] := 'All Constants';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'All Functions and Procedures';
+  FTranslation[trHeadlineFunctionsAndProcedures] := 'All Functions and Procedures';
   FTranslation[trHeadlineIdentifiers] := 'All Identifiers';
   FTranslation[trHeadlineTypes] := 'All Types';
   FTranslation[trHeadlineUnits] := 'All Units';
@@ -249,6 +250,7 @@ begin
   FTranslation[trCio] := 'Klase, Interfejsi i Objekti';
   FTranslation[trClass] := 'Klasa';
   FTranslation[trClasses] := 'Klase';
+  FTranslation[trClassHierarchy] := 'Klasna hijerarhija';
   FTranslation[trConstants] := 'Konstante';
   FTranslation[trCreated] := 'Kreirano';
   FTranslation[trDeclaration] := 'Deklaracija';

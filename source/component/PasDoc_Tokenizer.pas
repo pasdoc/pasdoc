@@ -26,7 +26,7 @@ type
   { enumeration type that provides all types of tokens; each token's name
     starts with TOK_ }
   TTokenType = (TOK_WHITESPACE, TOK_COMMENT, TOK_IDENTIFIER,
-    TOK_NUMBER, TOK_STRING, TOK_SYMBOL, TOK_RECTIVE, TOK_RESERVED);
+    TOK_NUMBER, TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_RESERVED);
 
 type
   TKeyword = (
@@ -169,7 +169,7 @@ type
       const VerbosityLevel: Cardinal);
     { Releases all dynamically allocated memory. }
     destructor Destroy; override;
-    procedure CheckForDirective(const t: TToken; Offset: Integer);
+    procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
     function CreateSymbolToken(const st: TSymbolType; const s: string): TToken;
     function GetChar(out c: Char): Boolean;
@@ -184,6 +184,9 @@ type
     function ReadToken(c: Char; const s: TCharSet; const TT: TTokenType; var
       t: TToken): Boolean;
 
+    { Skips all chars until it encounters either $ELSE or $ENDIF compiler defines. }
+    function SkipUntilCompilerDirective: TToken;
+    
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
   end;
@@ -245,7 +248,8 @@ type
     SD_STORED,
     SD_VIRTUAL,
     SD_WRITE,
-    SD_DEPRECATED);
+    SD_DEPRECATED,
+    SD_SAFECALL);
 
 const
   StandardDirectiveArray:
@@ -264,7 +268,7 @@ const
     'READ', 'REGISTER', 'REINTRODUCE', 'RESIDENT',
     'STDCALL', 'STORED',
     'VIRTUAL',
-    'WRITE', 'DEPRECATED');
+    'WRITE', 'DEPRECATED', 'SAFECALL');
 
 function StandardDirectiveByName(const Name: string): TStandardDirective;
 function KeyWordByName(const Name: string): TKeyword;
@@ -382,12 +386,16 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTokenizer.CheckForDirective(const t: TToken; Offset: Integer);
+procedure TTokenizer.CheckForDirective(const t: TToken);
+var
+  l: Cardinal;
 begin
-  with t do
-    if (Data <> '') and (Length(Data) >= Offset) and (Data[Offset] = '$')
-      then
-      MyType := TOK_RECTIVE;
+  with t do begin
+    l := Length(Data);
+    if ((l >= 2) and (Data[1] = '{') and (Data[2] = '$')) or
+      ((l >= 3) and (Data[1] = '(') and (Data[2] = '*') and (Data[3] = '$')) then
+      MyType := TOK_DIRECTIVE;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -501,7 +509,7 @@ begin
               ReadToken(c, CharOther, TOK_STRING, Result);
             '{': begin
                 Result := ReadCommentType1;
-                CheckForDirective(Result, 2);
+                CheckForDirective(Result);
               end;
             '(': begin
                 c := ' ';
@@ -510,7 +518,7 @@ begin
                   '*': begin
                       ConsumeChar;
                       Result := ReadCommentType2;
-                      CheckForDirective(Result, 2);
+                      CheckForDirective(Result);
                     end;
                   '.': begin
                       ConsumeChar;
@@ -651,18 +659,21 @@ var
 begin
   Result := TToken.Create(TOK_COMMENT);
   Result.Data := '(*';
+  if not HasData or not GetChar(c) then Exit;
   repeat
-    if not HasData or not GetChar(c) then Exit;
     Result.Data := Result.Data + c;
-
-    if c = #10 then Inc(Row);
-    if c = '*' then begin
+ 
+    if c <> '*' then begin
+      if c = #10 then Inc(Row);
       if not HasData or not GetChar(c) then Exit;
-      if c = ')' then begin
-        ConsumeChar;
-        Result.Data := Result.Data + c;
-        Break;
-      end;
+    end else begin
+      if not HasData or not GetChar(c) then Exit;
+      if c = ')' then
+        begin
+          ConsumeChar;
+          Result.Data := Result.Data + c;
+          Break;
+        end;
     end;
   until False;
 end;
@@ -695,7 +706,6 @@ var
   c: Char;
   Finished: Boolean;
 begin
-//  Result := False; // no hint
   Finished := False;
 
   t := TToken.Create(TOK_STRING);
@@ -764,6 +774,37 @@ begin
   end else begin
     Assert(not Assigned(t));
   end;
+end;
+
+function TTokenizer.SkipUntilCompilerDirective: TToken;
+var
+  c: Char;
+begin
+  Result := nil;
+  repeat
+    if GetChar(c) then
+      case c of
+        '{':
+          begin
+            Result := ReadCommentType1;
+            CheckForDirective(Result);
+            if Result.MyType = TOK_DIRECTIVE then break;
+            FreeAndNil(Result);
+          end;
+        '(':
+          begin
+            GetChar(c);
+            if c = '*' then begin
+              Result := ReadCommentType2;
+              CheckForDirective(Result);
+              if Result.MyType = TOK_DIRECTIVE then break;
+              FreeAndNil(Result);
+            end;
+          end;
+      end
+    else
+      DoError('Could not read character from %s', [GetStreamInfo]);
+  until False;
 end;
 
 end.

@@ -31,20 +31,19 @@ const
 
 type
   { subrange type that has the 26 lower case letters from a to z }
-  TLowerCaseLetter = 'a'..'z';
-  { an array of boolean values, index type is @link(TLowerCaseLetter) }
-  TSwitchOptions = array[TLowerCaseLetter] of Boolean;
+  TUpperCaseLetter = 'A'..'Z';
+  { an array of boolean values, index type is @link(TUpperCaseLetter) }
+  TSwitchOptions = array[TUpperCaseLetter] of Boolean;
 
   { This class scans one unit using one or more @link(TTokenizer) objects
     to scan the unit and all nested include files. }
   TScanner = class(TObject)
-    CT: Integer;
-    DirectiveLevel: Integer;
-    ErrorMessage: string;
-    SwitchOptions: TSwitchOptions;
-    Tokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
-
   private
+    FCurrentTokenizer: Integer;
+    FDirectiveLevel: Integer;
+    FErrorMessage: string;
+    FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
+    FSwitchOptions: TSwitchOptions;
     FBufferedToken: TToken;
     FDirectives: TStringVector;
     FIncludeFilePaths: TStringVector;
@@ -57,12 +56,13 @@ type
     procedure AddDirective(const n: string);
     { Removes directive N from the internal list of directives.
       If N was not in that list, nothing is done. }
-    procedure DeleteDirective(n: string);
+    procedure DeleteDirective(const n: string);
     { Returns if a given directive N is defined at the moment. }
     function IsDirectiveDefined(const n: string): Boolean;
     function IsSwitchDefined(n: string): Boolean;
     function OpenIncludeFile(const n: string): Boolean;
     function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
+    procedure ResolveSwitchDirectives(const Comment: String);
   protected
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Integer = 0);
@@ -94,6 +94,7 @@ type
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
+    property SwitchOptions: TSwitchOptions read FSwitchOptions;
   end;
 
 implementation
@@ -103,12 +104,11 @@ uses
 
 type
   { all directives a scanner is going to regard }
-  TDirectiveType = (DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF, DT_IFNDEF,
-    DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_UNKNOWN);
+  TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF, DT_IFNDEF,
+    DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF);
 
 const
-  NUM_RECTIVES = 8;
-  DirectiveNames: array[DT_DEFINE..DT_UNDEF] of string[6] =
+  DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string[6] =
   ('DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF');
 
   { this function recognizes only those directives we'll need for the scanner }
@@ -153,21 +153,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function IdentifyDirective(const t: string; out dt: TDirectiveType; var p:
-  string): Boolean;
+function IdentifyDirective(const t: string; out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
 var
   i: TDirectiveType;
-  s: string;
 begin
-  Result := False;
-  if not SplitDirective(t, s, p) then Exit;
-  s := LowerCase(s);
-  for i := DT_DEFINE to DT_UNDEF do
-    if s = LowerCase(DirectiveNames[i]) then begin
-      dt := i;
-      Result := True;
-      Exit;
+  Result := false;
+  if SplitDirective(t, DirectiveName, DirectiveParam) then begin
+    for i := DT_DEFINE to High(TDirectiveType) do begin
+      if UpperCase(DirectiveName) = DirectiveNames[i] then begin
+        dt := i;
+        Result := True;
+        break;
+      end;
     end;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -179,17 +178,30 @@ constructor TScanner.Create(
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal);
 var
-  c: TLowerCaseLetter;
+  c: TUpperCaseLetter;
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
 
+  { Set default switch directives (according to the Delphi 4 Help). }
   for c := Low(SwitchOptions) to High(SwitchOptions) do
-    SwitchOptions[c] := False;
+    FSwitchOptions[c] := False;
+  FSwitchOptions['A'] := True;
+  FSwitchOptions['C'] := True;
+  FSwitchOptions['D'] := True;
+  FSwitchOptions['G'] := True;
+  FSwitchOptions['H'] := True;
+  FSwitchOptions['I'] := True;
+  FSwitchOptions['J'] := True;
+  FSwitchOptions['L'] := True;
+  FSwitchOptions['P'] := True;
+  FSwitchOptions['O'] := True;
+  FSwitchOptions['V'] := True;
+  FSwitchOptions['X'] := True;
 
-  Tokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel);
-
+  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel);
+  FCurrentTokenizer := 0;
   FBufferedToken := nil;
 end;
 
@@ -201,8 +213,9 @@ var
 begin
   FDirectives.Free;
 
-  for i := 0 to CT do
-    Tokenizers[i].Free;
+  for i := 0 to FCurrentTokenizer do begin
+    FTokenizers[i].Free;
+  end;
 
   FBufferedToken.Free;
   
@@ -239,7 +252,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.DeleteDirective(n: string);
+procedure TScanner.DeleteDirective(const n: string);
 begin
   if FDirectives <> nil then begin
     FDirectives.RemoveAllNamesCI(n);
@@ -250,10 +263,11 @@ end;
 
 function TScanner.GetStreamInfo: string;
 begin
-  if (CT >= 0) then
-    Result := Tokenizers[CT].GetStreamInfo
-  else
+  if (FCurrentTokenizer >= 0) then begin
+    Result := FTokenizers[FCurrentTokenizer].GetStreamInfo
+  end else begin
     Result := '';
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -263,7 +277,7 @@ var
   dt: TDirectiveType;
   Finished: Boolean;
   FoundElse: Boolean;
-  p: string;
+  DirectiveName, DirectiveParam: string;
 begin
   Assert(t = nil);
   if Assigned(FBufferedToken) then begin
@@ -277,112 +291,99 @@ begin
   Finished := False;
   repeat
     { check if we have a tokenizer left }
-    if (CT = -1) then
+    if (FCurrentTokenizer = -1) then
       DoError('End of stream reached while trying to get next token.', []);
 
-    if Tokenizers[CT].HasData then begin
+    if FTokenizers[FCurrentTokenizer].HasData then begin
         { get next token from tokenizer }
-      t := Tokenizers[CT].GetToken;
+      t := FTokenizers[FCurrentTokenizer].GetToken;
         { check if token is a directive }
-      if (t.MyType = TOK_RECTIVE) then begin
-        if not IdentifyDirective(t.Data, dt, p) then begin
+      if (t.MyType = TOK_DIRECTIVE) then begin
+        if not IdentifyDirective(t.Data, dt, DirectiveName, DirectiveParam) then begin
+          ResolveSwitchDirectives(t.Data);
           t.Free;
           Continue;
         end;
         case dt of
           DT_DEFINE: begin
-              DoMessage(6, mtInformation, 'DEFINE encountered (' + p + ')',
-                []);
-              AddDirective(p);
+              DoMessage(6, mtInformation, 'DEFINE encountered (' + DirectiveParam + ')', []);
+              AddDirective(DirectiveParam);
             end;
           DT_ELSE: begin
               DoMessage(5, mtInformation, 'ELSE encountered', []);
-              if (DirectiveLevel > 0) then begin
-                      // RJ Dec(DirectiveLevel);
+              if (FDirectiveLevel > 0) then begin
                 if not SkipUntilElseOrEndif(FoundElse) then Exit;
-                if not FoundElse then Dec(DirectiveLevel); // RJ
+                if not FoundElse then Dec(FDirectiveLevel);
               end
               else begin
-                ErrorMessage := GetStreamInfo +
-                  ': unexpected $ELSE directive.';
+                FErrorMessage := GetStreamInfo + ': unexpected $ELSE directive.';
                 Exit;
               end;
             end;
           DT_ENDIF: begin
               DoMessage(5, mtInformation, 'ENDIF encountered', []);
-              if (DirectiveLevel > 0) then begin
-                Dec(DirectiveLevel);
-                DoMessage(6, mtInformation, 'DirectiveLevel = ' +
-                  IntToStr(DirectiveLevel), []);
+              if (FDirectiveLevel > 0) then begin
+                Dec(FDirectiveLevel);
+                DoMessage(6, mtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
               end
               else begin
-                ErrorMessage := GetStreamInfo +
-                  ': unexpected $ENDIF directive.';
+                FErrorMessage := GetStreamInfo + ': unexpected $ENDIF directive.';
                 Exit;
               end;
             end;
           DT_IFDEF: begin
-              if IsDirectiveDefined(p) then begin
-                Inc(DirectiveLevel);
-                DoMessage(6, mtInformation,
-                  'IFDEF encountered (%s), defined, level %d', [p,
-                  DirectiveLevel]);
+              if IsDirectiveDefined(DirectiveParam) then begin
+                Inc(FDirectiveLevel);
+                DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
               end
               else begin
-                DoMessage(6, mtInformation,
-                  'IFDEF encountered (%s), not defined, level %d', [p,
-                  DirectiveLevel]);
+                DoMessage(6, mtInformation, 'IFDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
                 if not SkipUntilElseOrEndif(FoundElse) then Exit;
                 if FoundElse then
-                  Inc(DirectiveLevel);
+                  Inc(FDirectiveLevel);
               end;
             end;
           DT_IFNDEF: begin
-              if not IsDirectiveDefined(p) then begin
-                Inc(DirectiveLevel);
-                DoMessage(6, mtInformation,
-                  'IFNDEF encountered (%s), not defined, level %d', [p,
-                  DirectiveLevel]);
+              if not IsDirectiveDefined(DirectiveParam) then begin
+                Inc(FDirectiveLevel);
+                DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
               end
               else begin
-                DoMessage(6, mtInformation,
-                  'IFNDEF encountered (%s), defined, level %d', [p,
-                  DirectiveLevel]);
+                DoMessage(6, mtInformation, 'IFNDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
                 if not SkipUntilElseOrEndif(FoundElse) then Exit;
                 if FoundElse then
-                  Inc(DirectiveLevel);
+                  Inc(FDirectiveLevel);
               end;
             end;
           DT_IFOPT: begin
-              if (not IsSwitchDefined(p)) then begin
+              if (not IsSwitchDefined(DirectiveParam)) then begin
                 if (not SkipUntilElseOrEndif(FoundElse)) then Exit;
-                if FoundElse then Inc(DirectiveLevel);
+                if FoundElse then Inc(FDirectiveLevel);
               end
               else
-                Inc(DirectiveLevel);
+                Inc(FDirectiveLevel);
             end;
           DT_INCLUDE_FILE:
-            if not OpenIncludeFile(p) then
+            if not OpenIncludeFile(DirectiveParam) then
               DoError(GetStreamInfo + ': Error, could not open include file "'
-                + p + '"', []);
+                + DirectiveParam + '"', []);
           DT_UNDEF: begin
-              DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [p]);
-              DeleteDirective(p);
+              DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
+              DeleteDirective(DirectiveParam);
             end;
         end;
       end;
-      if t.MyType = TOK_RECTIVE then begin
+      if t.MyType = TOK_DIRECTIVE then begin
         t.Free;
         t := nil;
       end else begin
         Finished := True;
       end;
     end else begin
-      DoMessage(5, mtInformation, 'Closing file "%s"',
-        [Tokenizers[CT].GetStreamInfo]);
-      Tokenizers[CT].Free;
-      Tokenizers[CT] := nil;
-      Dec(CT);
+      DoMessage(5, mtInformation, 'Closing file "%s"', [FTokenizers[FCurrentTokenizer].GetStreamInfo]);
+      FTokenizers[FCurrentTokenizer].Free;
+      FTokenizers[FCurrentTokenizer] := nil;
+      Dec(FCurrentTokenizer);
     end;
   until Finished;
   Result := True;
@@ -397,30 +398,23 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.IsSwitchDefined(n: string): Boolean;
-var
-  b1: Boolean;
-  b2: Boolean;
-  l: TLowerCaseLetter;
+function TScanner.IsSwitchDefined(N: string): Boolean;
 begin
-  { we expect a length 2 String like 'I+' or 'A-', first character a letter,
+  { We expect a length 2 AnsiString like 'I+' or 'A-', first character a letter,
     second character plus or minus }
-  if ((n[1] >= 'A') and (n[1] <= 'Z')) then n[1] := Chr(Ord(n[1]) + 32);
-  if (Length(n) < 2) or
-    ((n[1] < 'a') and (n[1] > 'z')) or
-    ((n[2] <> '-') and (n[2] <> '+')) then begin
-    DoMessage(2, mtInformation, GetStreamInfo +
-      ': Warning - invalid $ifopt parameters.', []);
-    Result := False;
-  end
-  else begin
-      { look up switch from current table }
-    l := TLowerCaseLetter(Ord(n[1]) - Ord('a'));
-    b1 := SwitchOptions[l];
-      { get status from parameter }
-    b2 := (n[2] = '+');
-    Result := (b1 = b2);
-  end;
+  if Length(N) >= 2 then
+    begin;
+      if (N[1] >= 'a') and (N[1] <= 'z') then
+        N[1] := AnsiChar(Ord(N[1]) - 32);
+      if (N[1] >= 'A') and (N[1] <= 'Z') and ((N[2] = '-') or (N[2] = '+')) then
+        begin
+          Result := FSwitchOptions[N[1]] = (N[2] = '+');
+          Exit;
+        end;
+    end;
+ 
+  DoMessage(2, mtInformation, GetStreamInfo + ': Invalid $IFOPT parameter (%s).', [N]);
+  Result := False;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -433,9 +427,9 @@ var
   p: string;
   s: TStream;
 begin
-  { check if maximum number of tokenizers has been reached }
-  if CT = MAX_TOKENIZERS - 1 then begin
-    DoError('%s: maximum number of tokenizers reached.', [GetStreamInfo]);
+  { check if maximum number of FTokenizers has been reached }
+  if FCurrentTokenizer = MAX_TOKENIZERS - 1 then begin
+    DoError('%s: maximum number of FTokenizers reached.', [GetStreamInfo]);
   end;
 
   { determine how many names we can check; number is 1 + IncludeFilePaths.Count }
@@ -473,8 +467,8 @@ begin
   end;
 
   { create new tokenizer with stream }
-  Inc(CT);
-  Tokenizers[CT] := TTokenizer.Create(s, FOnMessage, FVerbosity);
+  Inc(FCurrentTokenizer);
+  FTokenizers[FCurrentTokenizer] := TTokenizer.Create(s, FOnMessage, FVerbosity);
 
   Result := True;
 end;
@@ -502,33 +496,31 @@ function TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
 var
   dt: TDirectiveType;
   Level: Integer;
-  p: string;
+  DirectiveName, DirectiveParam: string;
   t: TToken;
   TT: TTokenType;
 begin
 //  Result := False; // no hint
   Level := 1;
   repeat
-    t := Tokenizers[CT].GetToken;
-    if t = nil then
+    t := FTokenizers[FCurrentTokenizer].SkipUntilCompilerDirective;
+    if t = nil then begin
       DoError('SkipUntilElseOrEndif GetToken', []);
+    end;
 
-    {writeln('token ', t.Data^.GetString);}
-    if (t.MyType = TOK_RECTIVE) then begin
-      if IdentifyDirective(t.Data, dt, p) then begin
-        DoMessage(6, mtInformation,
-          'SkipUntilElseOrFound: encountered directive %s',
-          [DirectiveNames[dt]]);
+    if (t.MyType = TOK_DIRECTIVE) then begin
+      if IdentifyDirective(t.Data, dt, DirectiveName, DirectiveParam) then begin
+        DoMessage(6, mtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
         case dt of
           DT_IFDEF,
             DT_IFNDEF,
             DT_IFOPT: Inc(Level);
           DT_ELSE:
-                { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
-                  encountered, ignoring all $ELSEs. We must therefore not
-                  decrement Level at $ELSE if it is part of such a nested $IFDEF.
-                  $ELSE must decrement Level only for the initial $IFDEF.
-                  That's why whe test Level for 1 (initial $IFDEF) here. }
+            { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
+              encountered, ignoring all $ELSEs. We must therefore not
+              decrement Level at $ELSE if it is part of such a nested $IFDEF.
+              $ELSE must decrement Level only for the initial $IFDEF.
+              That's why whe test Level for 1 (initial $IFDEF) here. }
             if Level = 1 then Dec(Level);
           DT_ENDIF: Dec(Level);
         end;
@@ -536,14 +528,15 @@ begin
     end;
     TT := t.MyType;
     t.Free;
-  until (Level = 0) and (TT = TOK_RECTIVE) and ((dt = DT_ELSE) or (dt =
+  until (Level = 0) and (TT = TOK_DIRECTIVE) and ((dt = DT_ELSE) or (dt =
     DT_ENDIF));
   FoundElse := (dt = DT_ELSE);
-  if FoundElse then
-    p := 'ELSE'
-  else
-    p := 'ENDIF';
-  DoMessage(6, mtInformation, 'Skipped code, last token ' + p, []);
+  if FoundElse then begin
+    DirectiveParam := 'ELSE'
+  end else begin
+    DirectiveParam := 'ENDIF';
+  end;
+  DoMessage(6, mtInformation, 'Skipped code, last token ' + DirectiveParam, []);
   Result := True;
 end;
 
@@ -577,5 +570,66 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
+
+procedure TScanner.ResolveSwitchDirectives(const Comment: String);
+var
+  p: PChar;
+  l: Cardinal;
+  c: Char;
+
+  procedure SkipWhiteSpace;
+  begin
+    while (l > 0) and (p^ <= #32) do
+      begin
+        Inc(p);
+        Dec(l);
+      end;
+  end;
+
+begin
+  p := Pointer(Comment);
+  l := Length(Comment);
+                                                                                                                               
+  if l < 4 then Exit;
+  case p^ of
+    '{':
+      begin
+        if p[1] <> '$' then Exit;
+        Inc(p, 2);
+        Dec(l, 2);
+      end;
+    '(':
+      begin
+        if (p[1] <> '*') or (p[2] <> '$') then Exit;
+        Inc(p, 3);
+        Dec(l, 3);
+      end;
+  else
+    Exit;
+  end;
+ 
+  repeat
+    SkipWhiteSpace;
+    if l < 3 then Exit;
+ 
+    c := p^;
+    if c in ['a'..'z'] then
+      Dec(c, 32);
+ 
+    if not (c in ['A'..'Z']) or not (p[1] in ['-', '+']) then
+      Exit;
+ 
+    FSwitchOptions[c] := p[1] = '+';
+    Inc(p, 2);
+    Dec(l, 2);
+                                                                                                                               
+    SkipWhiteSpace;
+                                                                                                                               
+    // Skip comma
+    if (l = 0) or (p^ <> ',') then Exit;
+    Inc(p);
+    Dec(l);
+  until False;
+end;
 
 end.

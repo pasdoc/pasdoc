@@ -23,14 +23,16 @@ uses
 type
   { Accessibility of a field/method }
   TAccessibility = (
-    { indicates field or method is public (default state) }
+    { indicates field or method is public }
     STATE_PUBLIC,
     { indicates field or method is protected }
     STATE_PROTECTED,
     { indicates field or method is private }
     STATE_PRIVATE,
     { indicates field or method is published }
-    STATE_PUBLISHED
+    STATE_PUBLISHED,
+    { indicates field or method is automated }
+    STATE_AUTOMATED
     );
 
 type
@@ -111,6 +113,8 @@ type
     procedure InsertMethod(const Method: TPasMethod; var c: TPasMethods);
     { inserts a property into a collection; creates collection if necessary }
     procedure InsertProperty(const Prop: TPasProperty; var c: TPasProperties);
+    { returns the qualified name of the item }
+    function QualifiedName: String;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -213,7 +217,8 @@ type
     procedure AddVariable(const i: TPasItem);
     function FindFieldMethodProperty(const S1, S2: string): TPasItem;
     function FindItem(const ItemName: string): TPasItem; override;
-    procedure RemovePrivateItems;
+
+    procedure SortPasItems;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -253,15 +258,15 @@ type
 
   { ---------------------------------------------------------------------------- }
 
-    { extends @link(TPasItems) by defining a different compare function: two
-      methods are first compared by their @link(TPasMethod.What) field, which determines
-      whether they are constructor, destructor or function / procedure }
+  { @Name holds a collection of methods. It introduces no
+    new methods compared to @link(TPasItems), but this may be
+    implemented in a later stage. }
   TPasMethods = class(TPasItems)
   end;
 
-  { a TPasProperties holds a collection of properties. It introduces no
-    new methods when compared to @link(TPasItems), but this may be
-    implemented in a later stage }
+  { @Name holds a collection of properties. It introduces no
+    new methods compared to @link(TPasItems), but this may be
+    implemented in a later stage. }
   TPasProperties = class(TPasItems)
   end;
 
@@ -269,7 +274,7 @@ type
   { TPasUnits
   { ---------------------------------------------------------------------------- }
 
-  { }
+  { @abstract(Holds a collection of units.) }
   TPasUnits = class(TPasItems)
   private
     function GetUnitAt(const AIndex: Integer): TPasUnit;
@@ -299,6 +304,39 @@ uses
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
   Result := CompareText(TPasItem(PItem1).Name, TPasItem(PItem2).Name);
+  // Sort duplicate class names by unit name if available.
+  if (Result = 0) and
+    (TObject(PItem1).ClassType = TPasCio) and
+    (TObject(PItem2).ClassType = TPasCio) then
+    if TPasCio(PItem1).MyUnit = nil then begin
+      Result := -1
+    end else begin
+      if TPasCio(PItem2).MyUnit = nil then begin
+        Result := 1
+      end else begin
+        Result := CompareText(TPasCio(PItem1).MyUnit.Name, TPasCio(PItem2).MyUnit.Name);
+      end;
+    end;
+end;
+
+function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
+var
+  P1: TPasMethod;
+  P2: TPasMethod;
+begin
+  P1 := TPasMethod(PItem1);
+  P2 := TPasMethod(PItem2);
+  { compare 'method type', order is constructor > destructor > function, procedure }
+  if P1.What = P2.What then begin
+    { if 'method type' is equal, compare names }
+    Result := CompareText(P1.Name, P2.Name)
+  end else begin
+    if P1.What < P2.What then begin
+      Result := -1
+    end else begin
+      Result := 1;
+    end;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -482,17 +520,15 @@ var
   Offs3: Integer;
   s: string;
 begin
-  if Description = '' then Exit;
+  if DetailedDescription = '' then Exit;
   Offs1 := 1;
 
-  while Offs1 < Length(Description) do begin
-    if (Description[Offs1] = '@') and
-      DescriptionFindTag(Description, 'ABSTRACT', Offs1, Offs2, Offs3) then
+  while Offs1 < Length(DetailedDescription) do begin
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'ABSTRACT', Offs1, Offs2, Offs3) then
     begin
-      DescriptionExtractTag(Description, Offs1, Offs2, Offs3, s);
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
       if (Length(s) <= 0) then Continue;
-      DetailedDescription := Trim(Description);
-        // JB - do not loose description
       Description := s;
       Exit;
     end;
@@ -510,16 +546,16 @@ var
   s: string;
   l: Integer;
 begin
-  if Description = '' then Exit;
+  if DetailedDescription = '' then Exit;
   Offs1 := 1;
-  l := Length(Description);
+  l := Length(DetailedDescription);
   { we could have more than one author, so repeat until we have all }
   while Offs1 < l do begin
-    if (Description[Offs1] = '@') and
-      DescriptionFindTag(Description, 'AUTHOR', Offs1, Offs2, Offs3) then
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'AUTHOR', Offs1, Offs2, Offs3) then
         begin
           { we found one, remove it from the description and add it to the author list }
-      DescriptionExtractTag(Description, Offs1, Offs2, Offs3, s);
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, s);
       if s <> '' then begin
         if Authors = nil then Authors := NewStringVector;
         Authors.Add(s);
@@ -536,14 +572,14 @@ var
   Offs3: Integer;
   l: Integer;
 begin
-  if Description = '' then Exit;
+  if DetailedDescription = '' then Exit;
   Offs1 := 1;
-  l := Length(Description);
+  l := Length(DetailedDescription);
   while Offs1 < l do begin
-    if (Description[Offs1] = '@') and
-      DescriptionFindTag(Description, 'CREATED', Offs1, Offs2, Offs3) then
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'CREATED', Offs1, Offs2, Offs3) then
         begin
-      DescriptionExtractTag(Description, Offs1, Offs2, Offs3, Created);
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, Created);
       Exit;
     end;
     Inc(Offs1);
@@ -557,14 +593,14 @@ var
   Offs3: Integer;
   l: Integer;
 begin
-  if Description = '' then Exit;
+  if DetailedDescription = '' then Exit;
   Offs1 := 1;
-  l := Length(Description);
+  l := Length(DetailedDescription);
   while Offs1 < l do begin
-    if (Description[Offs1] = '@') and
-      DescriptionFindTag(Description, 'LASTMOD', Offs1, Offs2, Offs3) then
+    if (DetailedDescription[Offs1] = '@') and
+      DescriptionFindTag(DetailedDescription, 'LASTMOD', Offs1, Offs2, Offs3) then
         begin
-      DescriptionExtractTag(Description, Offs1, Offs2, Offs3, LastMod);
+      DescriptionExtractTag(DetailedDescription, Offs1, Offs2, Offs3, LastMod);
       Exit;
     end;
     Inc(Offs1);
@@ -788,7 +824,7 @@ end;
 procedure TPasCio.SortPasItems;
 begin
   if Fields <> nil then Fields.SortByPasItemName;
-  if Methods <> nil then Methods.SortByPasItemName;
+  if Methods <> nil then Methods.Sort(ComparePasMethods);
   if Properties <> nil then Properties.SortByPasItemName;
 end;
 
@@ -906,36 +942,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TPasUnit.RemovePrivateItems;
-var
-  i: Integer;
-  p: TPasCio;
-begin
-  if CIOs = nil then Exit;
-
-  for i := 0 to CIOs.Count - 1 do begin
-    p := TPasCio(CIOs.PasItemAt[i]);
-
-    if p.Fields <> nil then begin
-      p.Fields.RemovePrivateItems;
-      FreeAndNilIfEmpty(p.Fields);
-    end;
-
-    if p.Methods <> nil then begin
-      p.Methods.RemovePrivateItems;
-      FreeAndNilIfEmpty(p.Methods)
-    end;
-    ;
-
-    if p.Properties <> nil then begin
-      p.Properties.RemovePrivateItems;
-      FreeAndNilIfEmpty(p.Properties);
-    end;
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
 { TPasUnits
 { ---------------------------------------------------------------------------- }
 
@@ -969,6 +975,35 @@ end;
 procedure TPasItems.SortByPasItemName;
 begin
   Sort(ComparePasItemsByName);
+end;
+
+function TPasItem.QualifiedName: String;
+begin
+  Result := '';
+  if MyUnit <> nil then begin
+    Result := Result + MyUnit.Name + '.';
+  end;
+  if MyObject <> nil then begin
+    Result := Result + MyObject.Name + '.';
+  end;
+  Result := Result + Name;
+end;
+
+procedure TPasUnit.SortPasItems;
+var
+  i: Integer;
+begin
+  if CIOs <> nil then
+    begin
+      CIOs.SortByPasItemName;
+      { Also sort Fields / Methods / Properties of each CIO. }
+      for i := 0 to CIOs.Count - 1 do
+        TPasCio(CIOs.PasItemAt[i]).SortPasItems;
+    end;
+  if Constants <> nil then Constants.SortByPasItemName;
+  if FuncsProcs <> nil then FuncsProcs.SortByPasItemName;
+  if Types <> nil then Types.SortByPasItemName;
+  if Variables <> nil then Variables.SortByPasItemName;
 end;
 
 end.

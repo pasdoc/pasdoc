@@ -598,21 +598,12 @@ begin
                       end;
                     end;
 
+                    Inc(Run, 10);
                     if TheLink <> '' then begin
-                      Inc(Run, 10);
                       t := t + TheLink;
-                    end
-                    else begin
-                      Inc(Run);
-                      if Assigned(Item.MyUnit) then
-                        DoMessage(2, mtInformation,
-                          'Warning: Could not expand @Inherited of "' +
-                          Item.Name + '" in unit ' + Item.MyUnit.Name, [])
-                      else
-                        DoMessage(2, mtInformation,
-                          'Warning: Could not expand @Inherited of "' +
-                          Item.Name + '"', []);
-                      t := t + 'WARNING: @';
+                    end else begin
+                      DoMessage(2, mtWarning, 'Could not resolve "@Inherited" (%s)', [Item.QualifiedName]);
+                      t := t + CodeString(Item.Name);
                     end;
                   end
                   else
@@ -661,17 +652,14 @@ begin
                               Run := Offs3 + 1;
                               TheLink := SearchLink(s, Item);
 
-                              if Assigned(Item.MyUnit) then
-                                if CompareText(Item.MyUnit.FullLink,
-                                  Copy(TheLink, 1,
-                                  Length(Item.MyUnit.FullLink))) = 0 then
-                                  Delete(TheLink, 1,
-                                    Length(Item.MyUnit.FullLink));
-
-                              t := t + SearchLink(s, Item);
-                            end
-                            else
-                            begin
+                              if TheLink <> '' then
+                                t := t + TheLink
+                              else
+                                begin
+                                  DoMessage(1, mtWarning, 'Could not resolve "%s" (%s)', [s, Item.QualifiedName]);
+                                  t := t + CodeString(s);
+                                end;
+                            end else begin
                               Offs1 := Run;
                               if Item.DescriptionFindTag(d, 'CODE', Offs1,
                                 Offs2, Offs3) then begin
@@ -1018,8 +1006,10 @@ begin
   { S is supposed to have 0 to 2 dots in it - S1, S2 and S3 contain
     the parts between the dots, N the number of dots }
   if (not SplitLink(s, S1, S2, S3, n)) then begin
-    DoMessage(2, mtWarning, 'The link "' + s + '" in unit ' + Item.MyUnit.Name
-      + ' is invalid', []);
+    if Item.MyUnit = nil then
+      DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.Name + ')', [])
+    else
+      DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.MyUnit.Name + '.' + Item.Name + ')', []);
     Result := 'UNKNOWN';
     Exit;
   end;

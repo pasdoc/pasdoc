@@ -53,15 +53,14 @@ type
     FVerbosity: Cardinal;
     FStarStyle: boolean;
     FGenerator: TDocGenerator;
-    procedure SetDescriptionFileNames(const ADescriptionFileNames:
-      TStringVector);
+    procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
     procedure SetSourceFileNames(const ASourceFileNames: TStringVector);
     procedure SetGenerator(const Value: TDocGenerator);
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
-   @link(Units). }
+      @link(Units). }
     procedure HandleStream(
       const InputStream: TStream;
       const SourceFileName: string);
@@ -84,6 +83,8 @@ type
     { }
     destructor Destroy; override;
 
+    { Adds source filenames from a stringlist }
+    procedure AddSourceFileNames(const AFileNames: TStringList);
     { Loads names of Pascal unit source code files from a text file.
       Adds all file names to @link(SourceFileNames). }
     procedure AddSourceFileNamesFromFile(const FileName: string);
@@ -228,13 +229,13 @@ var
   p: TParser;
   U: TPasUnit;
 begin
+  DoMessage(3, mtInformation, 'Now parsing file %s...', [SourceFileName]);
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     FOnMessage, FVerbosity);
   try
     p.StarStyleOnly := StarStyleOnly;
 
     if p.ParseUnit(U) then begin
-      if not IncludePrivate then U.RemovePrivateItems;
       if FUnits = nil then FUnits := NewPasUnits(True);
 
       if FUnits.ExistsUnit(U) then begin
@@ -259,29 +260,11 @@ end;
 procedure TPasDoc.AddSourceFileNamesFromFile(const FileName: string);
 var
   ASV: TStringVector;
-  i: Integer;
-  FileMask, Path, s: string;
-  SearchResult: Integer;
-  SR: SysUtils.TSearchRec;
 begin
   ASV := NewStringVector;
   ASV.LoadFromTextFileAdd(FileName);
 
-  for i := 0 to ASV.Count - 1 do begin
-    FileMask := ASV[i];
-    Path := ExtractFilePath(FileMask);
-
-    SearchResult := SysUtils.FindFirst(FileMask, 63, SR);
-    while SearchResult = 0 do begin
-      if (SR.Attr and 24) = 0 then begin
-        s := Path + SR.Name;
-        if not FSourceFileNames.ExistsNameCI(s) then
-          FSourceFileNames.Add(s)
-      end;
-      SearchResult := FindNext(SR);
-    end;
-    SysUtils.FindClose(SR);
-  end;
+  AddSourceFileNames(ASV);
 
   ASV.Free;
 end;
@@ -300,14 +283,17 @@ begin
   Count := 0;
   for i := 0 to FSourceFileNames.Count - 1 do begin
     p := FSourceFileNames[i];
-    DoMessage(2, mtInformation, 'Parsing "%s"', [p]);
-    InputStream := TFileStream.Create(p, fmOpenRead);
-    if Assigned(InputStream) then begin
-      // HandleStream frees InputStream!
-      HandleStream(InputStream, p);
-      Inc(Count);
+    if not FileExists(p) then begin
+       DoMessage(1, mtError, 'Could not find or open file "%s", skipping', [p]);
     end else begin
-      DoMessage(2, mtError, 'Parsing "%s"', [p]);
+      InputStream := TFileStream.Create(p, fmOpenRead);
+      if Assigned(InputStream) then begin
+        // HandleStream frees InputStream!
+        HandleStream(InputStream, p);
+        Inc(Count);
+      end else begin
+        DoMessage(2, mtError, 'Parsing "%s"', [p]);
+      end;
     end;
   end;
 
@@ -325,8 +311,7 @@ begin
   i := 0;
   while (i < c.Count) do begin
     p := c.PasItemAt[i];
-    if Assigned(p) and (p.Description <> '') and (StrPosIA('@EXCLUDE',
-      p.Description) > 0) then begin
+    if Assigned(p) and (StrPosIA('@EXCLUDE', p.DetailedDescription) > 0) then begin
       DoMessage(3, mtInformation, 'Excluding item %s', [p.Name]);
       c.DeleteAt(i);
     end
@@ -417,13 +402,13 @@ begin
     p := c.PasItemAt[i];
     Inc(i);
     if (not Assigned(p)) then Continue;
-    if p.Description <> '' then begin
+    if p.DetailedDescription <> '' then begin
       Offs1 := 0;
       repeat
-        Found := p.DescriptionFindTag(p.Description, 'DESCRFILE', Offs1,
+        Found := p.DescriptionFindTag(p.DetailedDescription, 'DESCRFILE', Offs1,
           Offs2, Offs3);
         if Found then begin
-          p.DescriptionExtractTag(p.Description, Offs1, Offs2, Offs3, s);
+          p.DescriptionExtractTag(p.DetailedDescription, Offs1, Offs2, Offs3, s);
           DoMessage(3, mtInformation, 'Adding description file "%s"', [s]);
           DescriptionFileNames.Add(s);
           Offs1 := Offs3 + 1;
@@ -491,7 +476,8 @@ end;
 
 procedure TPasDoc.SetSourceFileNames(const ASourceFileNames: TStringVector);
 begin
-  FSourceFileNames.Assign(ASourceFileNames);
+  FSourceFileNames.Clear;
+  AddSourceFileNames(ASourceFileNames);
 end;
 
 procedure TPasDoc.GenMessage(const MessageType: TMessageType;
@@ -518,6 +504,34 @@ begin
   inherited;
   if (AComponent = FGenerator) and (Operation = opRemove) then begin
     FGenerator := nil;
+  end;
+end;
+
+procedure TPasDoc.AddSourceFileNames(const AFileNames: TStringList);
+var
+  SR: TSearchRec;
+  FileMask, Path, s: string;
+  i: Integer;
+  SearchResult: Integer;
+begin
+  for i := 0 to AFileNames.Count - 1 do begin
+    FileMask := AFileNames[i];
+    Path := ExtractFilePath(FileMask);
+
+    SearchResult := SysUtils.FindFirst(FileMask, 63, SR);
+    if SearchResult <> 0 then begin
+      DoMessage(1, mtWarning, 'No files found for "%s", skipping', [FileMask]);
+    end else begin
+      repeat
+        if (SR.Attr and 24) = 0 then begin
+          s := Path + SR.Name;
+          if not FSourceFileNames.ExistsNameCI(s) then
+            FSourceFileNames.Add(s)
+        end;
+        SearchResult := FindNext(SR);
+      until SearchResult <> 0;
+    end;
+    SysUtils.FindClose(SR);
   end;
 end;
 
