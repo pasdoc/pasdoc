@@ -6,8 +6,8 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Hendy Irawan (ceefour@gauldong.net))
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
-  @lastmod(2003-03-29)
-  
+  @cvs($Date$)
+
   Implements an object to generate HTML documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }
 
@@ -65,7 +65,6 @@ type
     procedure WriteEndOfAnchor;
     { See @link(WriteDocumentHeadline). }
     procedure WriteEndOfDocument;
-    procedure WriteEndOfLink;
     { Finishes an HTML paragraph element by writing a closing P tag. }
     procedure WriteEndOfParagraph;
     { Finishes an HTML table cell by writing a closing TD tag. }
@@ -77,7 +76,7 @@ type
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
     { Writes a Hireachy list - this is more useful than the simple class list }
-    procedure WriteHierachy;
+    procedure WriteHierarchy;
     procedure WriteItemDescription(const AItem: TPasItem);
     { Writes the Item's DetailedDescription. If the Item also has Discription
       (extracted from @@abstract), this is written to a separate paragraph
@@ -86,18 +85,27 @@ type
     procedure WriteOverviewFiles;
     procedure WriteParagraph(HL: integer; s: string; t: string);
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
+
     { Writes an opening A element, including a name attribute given by the
       argument. }
     procedure WriteStartOfAnchor(const Name: string);
     procedure WriteStartOfDocument(Name: string);
-    procedure WriteStartOfLink(const Name: string);
+
+    procedure WriteStartOfLink(const href: string); overload;
+    procedure WriteStartOfLink(const href, css: string); overload;
+    procedure WriteStartOfLink(const href, css, Target: string); overload;
+
     { Starts an HTML paragraph element by writing an opening P tag. }
     procedure WriteStartOfParagraph;
-    procedure WriteStartOfTableCell;
+
+    procedure WriteStartOfTableCell; overload;
+    procedure WriteStartOfTableCell(const css: string); overload;
+    procedure WriteStartOfTableCell(const Params, css: string); overload;
+    
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
-    procedure WriteStartOfTableRow;
+    procedure WriteStartOfTableRow(const CssClass: string);
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
 
@@ -112,7 +120,7 @@ type
     function ConvertString(const s: string): string; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-    procedure WriteUnitUses(const HL: integer; U: TPasUnit); 
+    procedure WriteUnitUses(const HL: integer; U: TPasUnit);
     procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
     procedure WriteProperties(HL: integer; const p: TPasProperties); override;
 
@@ -151,8 +159,7 @@ type
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
     procedure WriteHeading(Level: integer; const s: string); override;
-    { Reads the default HTML Images from the PasDoc executable and writes
-      them to the Output Directory. Existing files will not be overwritten. }
+
     procedure WriteEndOfCode; override;
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
@@ -165,6 +172,15 @@ type
 
     { output all the necessary images }
     procedure WriteBinaryFiles;
+
+    { write the legend file for visibility markers }
+    procedure WriteVisibilityLegendFile;
+    procedure WriteImage(const src, alt, css: string);
+    procedure WriteLink(const href, caption, css: string); overload;
+    procedure WriteLink(const href, caption, css, target: string); overload;
+    procedure WriteAnchor(const Name: string); overload;
+    procedure WriteAnchor(const Name, Caption: string); overload;
+    procedure WriteEndOfLink;
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -179,7 +195,6 @@ type
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
   end;
-
 
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
@@ -206,6 +221,7 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
+  StreamUtils,
   Utils,
   PasDoc_Tokenizer,
   PasDoc_HierarchyTree;
@@ -258,7 +274,7 @@ end;
 function THTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result := '<A href="' + Link + '">' + ItemName + '</A>';
+  Result := '<a href="' + Link + '">' + ItemName + '</a>';
 end;
 
 function THTMLDocGenerator.GetFileExtension: string;
@@ -271,14 +287,12 @@ begin
   { check if user does not want a link to the pasdoc homepage }
   if NoGeneratorInfo then Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-  WriteDirect('<HR noshade size=1><EM>');
-  WriteConverted(FLanguage.Translation[trGeneratedBy]);
-  WriteDirect(' <A href="' + PASDOC_HOMEPAGE + '">');
-  WriteConverted(PASDOC_NAME_AND_VERSION);
-  WriteDirect('</A> ');
-  WriteConverted(FLanguage.Translation[trOnDateTime] + ' ' +
+  WriteDirect('<hr noshade size=1><em>');
+  WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
+  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
+  WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('ddd dd/ mmm yyyy hh:mm:ss', Now));
-  WriteDirect('</EM>', true);
+  WriteDirect('</em>', true);
 end;
 
 procedure THTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -300,10 +314,7 @@ begin
 
     if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
       WriteConverted(S1);
-      WriteDirect('<A href="mailto:' + EmailAddress +
-        '">');
-      WriteConverted(EmailAddress);
-      WriteDirect('</A>');
+      WriteLink('mailto:' + EmailAddress, ConvertString(EmailAddress), '');
       WriteConverted(S2);
     end else begin
       WriteConverted(s);
@@ -315,8 +326,17 @@ end;
 
 procedure THTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
+  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
+  TSectionSet = set of TSections;
+  TSectionAnchors = array[TSections] of string;
   TCIONames = array[TCIOType] of string;
 const
+  SectionAnchors: TSectionAnchors = (
+    '@Description',
+    '@Hierarchy',
+    '@Fields',
+    '@Methods',
+    '@Properties');
   CIO_NAMES: TCIONames = (
     'class',
     'dispinterface',
@@ -329,8 +349,27 @@ var
   s: string;
   Item: TPasItem;
   TheLink: string;
+  SectionsAvailable: TSectionSet;
+  SectionHeads: array[TSections] of string;
+  Section: TSections;
 begin
   if not Assigned(CIO) then Exit;
+
+  SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
+  SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
+  SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
+  SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
+  SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
+
+  SectionsAvailable := [dsDescription];
+  if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
+    Include(SectionsAvailable, dsHierarchy);
+  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
+    Include(SectionsAvailable, dsFields);
+  if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
+    Include(SectionsAvailable, dsMethods);
+  if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
+    Include(SectionsAvailable, dsProperties);
 
   CIO.SortPasItems;
   s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
@@ -338,20 +377,33 @@ begin
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
   if not HtmlHelp then WriteDocumentHeadline;
 
-  WriteStartOfAnchor(CIO.Name);
-  WriteEndOfAnchor;
+  WriteAnchor(CIO.Name);
   WriteHeading(HL, s);
+
+  WriteDirect('<table class="sections"><tr>', true);
+  for Section := Low(TSections) to High(TSections) do
+    begin
+      WriteDirect('<td>');
+      if Section in SectionsAvailable then
+        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
+      else
+        WriteConverted(SectionHeads[Section]);
+      WriteDirect('<td>');
+    end;
+  WriteDirect('</tr></table>', true);
+
+  WriteAnchor(SectionAnchors[dsDescription]);
+
   { write unit link }
   if Assigned(CIO.MyUnit) then begin
     WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
-    WriteDirect('<A href="' + CIO.MyUnit.FullLink + '">');
-    WriteConverted(CIO.MyUnit.Name);
-    WriteDirect('</A><BR>');
+    WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
+    WriteDirect('<br>');
   end;
 
   { write declaration link }
   WriteHeading(HL + 1, FLanguage.Translation[trDeclaration]);
-  WriteDirect('<P>');
+  WriteDirect('<p>');
   WriteStartOfCode;
   WriteConverted('type ' + CIO.Name + ' = ');
   WriteConverted(CIO_NAMES[CIO.MyType]);
@@ -370,7 +422,7 @@ begin
     WriteConverted(')');
   end;
   WriteEndOfCode;
-  WriteDirect('</P>');
+  WriteDirect('</p>');
 
   { Write Description }
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
@@ -378,10 +430,14 @@ begin
 
   { Write Hierarchy }
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then begin
+    WriteAnchor(SectionAnchors[dsHierarchy]);
+    WriteHeading(HL + 1, SectionHeads[dsHierarchy]);
+
+    WriteDirect(CIO.Name);
+    WriteDirect('&nbsp;&gt; ');
     s := CIO.Ancestors.FirstName;
     Item := SearchItem(s, CIO);
     if Assigned(Item) and (Item is TPasCio) then begin
-      WriteHeading(HL + 1, FLanguage.Translation[trHierarchy]);
       repeat
         s := CreateReferencedLink(Item.Name, Item.FullLink);
         WriteDirect(s);
@@ -390,21 +446,22 @@ begin
           s := TPasCio(Item).Ancestors.FirstName;
           Item := SearchItem(s, Item);
 
+          WriteDirect('&nbsp;&gt; ');
           if (Item <> nil) and (Item is TPasCio) then begin
-            WriteDirect('&nbsp;&gt; ');
             Continue;
           end;
         end;
         Break;
       until False;
     end;
+    WriteDirect(s);
   end;
 
   WriteFields(HL + 1, CIO.Fields);
 
   WriteFuncsProcs(HL + 1, True, CIO.Methods);
 
-  if (CIO.MyType <> CIO_OBJECT) then begin
+  if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then begin
     WritePropertiesSummary(HL + 1, CIO.Properties);
     WriteProperties(HL + 1, CIO.Properties);
   end;
@@ -444,26 +501,24 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
 
-  if HtmlHelp then
-    WriteDirect('<A name="@Classes"></A>');
+  // if HtmlHelp then
+    WriteAnchor('@Classes');
 
   WriteHeading(HL, FLanguage.Translation[trCio]);
   WriteStartOfTable2Columns(FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
   for j := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[j]);
-    WriteStartOfTableRow;
-      { name of class/interface/object and unit }
-    WriteStartOfTableCell;
+    WriteStartOfTableRow('');
+    { name of class/interface/object and unit }
+    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
     WriteConverted(GetCIOTypeName(p.MyType));
     WriteDirect('&nbsp;');
-    WriteStartOfLink(p.FullLink);
-    WriteDirect(CodeString(p.Name));
-    WriteEndOfLink;
+    WriteLink(p.FullLink, CodeString(p.Name), '');
     WriteEndOfTableCell;
 
     { Description of class/interface/object }
     if j = 0 then
-      WriteDirect('<TD width="100%">')
+      WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
     { Write only the description and do not opt for DetailedDescription,
@@ -531,15 +586,11 @@ begin
           end;
           if not NameFound and (s = p.Name) then begin
             if ItemLink <> '' then begin
-              WriteStartOfLink(ItemLink);
-              WriteDirect('<B>');
-              WriteConverted(s);
-              WriteDirect('</B>');
-              WriteEndOfLink;
+              WriteLink(ItemLink, '<b>' + ConvertString(s) + '</b>', '');
             end else begin
-              WriteDirect('<B>');
+              WriteDirect('<b>');
               WriteConverted(s);
-              WriteDirect('</B>')
+              WriteDirect('</b>')
             end;
             NameFound := True;
           end else begin
@@ -552,11 +603,9 @@ begin
             else
               FoundItem := nil;
 
-            if Assigned(FoundItem) then begin
-              WriteStartOfLink(FoundItem.FullLink);
-              WriteConverted(s);
-              WriteEndOfLink;
-            end else begin
+            if Assigned(FoundItem) then
+              WriteLink(FoundItem.FullLink, ConvertString(s), '')
+            else begin
               WriteConverted(s);
             end;
           end;
@@ -608,9 +657,10 @@ begin
   FLinkCount := 1;
   inherited;
   WriteUnits(1);
-  WriteHierachy;
+  WriteHierarchy;
   WriteBinaryFiles;
   WriteOverviewFiles;
+  WriteVisibilityLegendFile;
 {$IFDEF MSWINDOWS}
   { Registry and HCC only exists on Windows. }
   if HtmlHelp and not NoHHC then begin // Try to call HCC.exe
@@ -634,12 +684,16 @@ procedure THTMLDocGenerator.WriteDocumentHeadline;
 var
   i: integer;
 begin
-  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
-  WriteDirect('<TR bgcolor="' + HTML_HEADER_BACKGROUND_COLOR + '">');
+  WriteDirect('<table class="headline" cellspacing="' + HTML_TABLE_CELLSPACING
+    + '" cellpadding="' + HTML_TABLE_CELLPADNG
+    + '" width="100%">', true);
+  WriteDirect('<tr bgcolor="' + HTML_HEADER_BACKGROUND_COLOR + '">');
   for i := 0 to NUM_OVERVIEW_FILES - 1 do begin
-    WriteDirect('<TD><A href="' + OverviewFilenames[i] +
-      GetFileExtension + '"><CENTER>');
+    { TODO :
+      replacing the <center> tag with the aling=center attribute displays the links as
+      links again (with underlines etc.), question is whether we want this. }
+    WriteDirect('<td align="center"><a href="' + OverviewFilenames[i] +
+      GetFileExtension + '">');
     case i of
       0: WriteConverted(FLanguage.Translation[trUnits]);
       1: WriteConverted(FLanguage.Translation[trClassHierarchy]);
@@ -650,10 +704,10 @@ begin
       6: WriteConverted(FLanguage.Translation[trFunctionsAndProcedures]);
       7: WriteConverted(FLanguage.Translation[trIdentifiers]);
     end;
-    WriteDirect('</CENTER></A></TD>', true);
+    WriteDirect('</a></td>', true);
   end;
-  WriteDirect('</TR>');
-  WriteDirect('</TABLE>', true);
+  WriteDirect('</tr>');
+  WriteDirect('</table>', true);
 end;
 
 procedure THTMLDocGenerator.WriteEmptyCell;
@@ -663,43 +717,61 @@ end;
 
 procedure THTMLDocGenerator.WriteEndOfDocument;
 begin
-  WriteDirect('</BODY>');
-  WriteDirect('</HTML>', true);
+  WriteDirect('</body>');
+  WriteDirect('</html>', true);
 end;
 
 procedure THTMLDocGenerator.WriteEndOfAnchor;
 begin
-  WriteDirect('</A>');
-end;
-
-procedure THTMLDocGenerator.WriteEndOfCode;
-begin
-  WriteDirect('</CODE>');
+  WriteDirect('</a>');
 end;
 
 procedure THTMLDocGenerator.WriteEndOfLink;
 begin
-  WriteDirect('</A>');
+  WriteDirect('</a>');
+end;
+
+procedure THTMLDocGenerator.WriteEndOfCode;
+begin
+  WriteDirect('</code>');
+end;
+
+procedure THTMLDocGenerator.WriteLink(const href, caption, css: string);
+begin
+  WriteLink(href, caption, css, '');
+end;
+
+procedure THTMLDocGenerator.WriteLink(const href, caption, css, target: string);
+var
+  s: string;
+begin
+  if css <> '' then
+    s := Format('<a class="%s"', [css])
+  else
+    s := '<a';
+  if target <> '' then
+    s := Format('%s target="%s"', [s, target]);
+  WriteDirect(Format('%s href="%s">%s</a>', [s, href, caption]));
 end;
 
 procedure THTMLDocGenerator.WriteEndOfParagraph;
 begin
-  WriteDirect('</P>', true);
+  WriteDirect('</p>', true);
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTableCell;
 begin
-  WriteDirect('</TD>', true);
+  WriteDirect('</td>', true);
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTable;
 begin
-  WriteDirect('</TABLE>', true);
+  WriteDirect('</table>', true);
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTableRow;
 begin
-  WriteDirect('</TR>', true);
+  WriteDirect('</tr>', true);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -712,34 +784,34 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(Fields) then Exit;
 
-  WriteDirect('<A name="@Fields"></A>');
+  WriteAnchor('@Fields');
   WriteHeading(Order, FLanguage.Translation[trFields]);
 
-  WriteDirect('<TABLE cellspacing="' +
+  WriteDirect('<table class="fields" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
-  WriteDirect('<TR bgcolor="#' +
+  WriteDirect('<tr bgcolor="#' +
     HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteDirect('<TH>&nbsp;</TH><TH>');
+  WriteDirect('<th>&nbsp;</th><th>');
   WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirect('</TH></TR>', true);
+  WriteDirect('</th></tr>', true);
 
   for j := 0 to Fields.Count - 1 do begin
     Item := Fields.PasItemAt[j];
-    WriteStartOfTableRow;
+    WriteStartOfTableRow('');
 
     WriteVisibilityCell(Item);
 
-    WriteStartOfTableCell;
-    WriteStartOfAnchor(Item.Name);
-    WriteEndOfAnchor;
+    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+    WriteAnchor(Item.Name);
+    { TODO -otwm : This should not only write the name but the full declaration of the field. }
     WriteDirect(CodeString(Item.Name));
     WriteEndOfTableCell;
 
     if j = 0 then
-      WriteDirect('<TD width=100%>')
+      WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
 
@@ -748,7 +820,7 @@ begin
 
     WriteEndOfTableRow;
   end;
-  WriteDirect('</TABLE>');
+  WriteDirect('</table>');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -771,13 +843,13 @@ begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
 
   if Methods then begin
-    if HtmlHelp then
-      WriteDirect('<A name="@Methods"></A>');
+//    if HtmlHelp then
+      WriteAnchor('@Methods');
     WriteHeading(HL, FLanguage.Translation[trMethods]);
   end
   else begin
-    if HtmlHelp then
-      WriteDirect('<A name="@FuncsProcs"></A>');
+//    if HtmlHelp then
+      WriteAnchor('@FuncsProcs');
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
@@ -794,13 +866,13 @@ begin
     for j := 0 to FuncsProcs.Count - 1 do begin
       p := TPasMethod(FuncsProcs.PasItemAt[j]);
       if (i = 0) then begin
-        WriteStartOfTableRow;
+        WriteStartOfTableRow('');
 
               { Only write visibility for methods of classes and objects. }
         if Methods then WriteVisibilityCell(p);
 
         if j = 0 then
-          WriteDirect('<TD width="100%">')
+          WriteStartOfTableCell('width="100%"', '')
         else
           WriteStartOfTableCell;
 
@@ -817,13 +889,12 @@ begin
       end
       else begin
         WriteStartOfTable1Column('');
-        WriteStartOfTableRow;
+        WriteStartOfTableRow('');
 
         if Methods then WriteVisibilityCell(p);
 
-        WriteDirect('<TD width="100%">');
-        WriteStartOfAnchor(p.Name);
-        WriteEndOfAnchor;
+        WriteStartOfTableCell('width="100%"', '');
+        WriteAnchor(p.Name);
 
         WriteCodeWithLinks(p, p.FullDeclaration, '');
         WriteEndOfTableCell;
@@ -849,9 +920,9 @@ begin
     Level := 6;
   end;
   c := IntToStr(Level);
-  WriteDirect('<H' + c + '>');
+  WriteDirect('<h' + c + '>');
   WriteConverted(s);
-  WriteDirect('</H' + c + '>', true);
+  WriteDirect('</h' + c + '>', true);
 end;
 
 { ---------- }
@@ -880,7 +951,7 @@ begin
     WriteWithURLs(AItem.Description);
 
     if AItem.DetailedDescription <> '' then begin
-      WriteDirect('<P>');
+      WriteDirect('<p>');
       WriteWithURLs(AItem.DetailedDescription);
     end;
   end else begin
@@ -901,27 +972,26 @@ begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
 
   if HtmlHelp and (Anchor <> '') then
-    WriteDirect('<A name="@' + Anchor + '"></A>');
+    WriteAnchor('@' + Anchor);
 
   WriteHeading(HL, Heading);
 
-  WriteDirect('<TABLE cellspacing="' +
+  WriteDirect('<table class="itemlist" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
-  WriteDirect('<TR bgcolor="#' + HTML_HEADER_BACKGROUND_COLOR + '">');
-  WriteDirect('<TH>');
+  WriteDirect('<tr bgcolor="#' + HTML_HEADER_BACKGROUND_COLOR + '">');
+  WriteDirect('<th>');
   WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</TH><TH>');
+  WriteDirect('</th><th>');
   WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirect('</TH></TR>', true);
+  WriteDirect('</th></tr>', true);
 
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
-    WriteStartOfTableRow;
+    WriteStartOfTableRow('');
 
-    WriteStartOfTableCell;
-    WriteStartOfAnchor(Item.Name);
-    WriteEndOfAnchor;
+    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+    WriteAnchor(Item.Name);
     WriteConverted(Item.Name);
     if Item is TPasVarConst then begin
       WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
@@ -929,26 +999,26 @@ begin
     WriteEndOfTableCell;
 
     if j = 0 then
-      WriteDirect('<TD width="100%">')
+      WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
     WriteItemDetailedDescription(Item);
     if Item is TPasEnum then begin
-      WriteDirect('<UL>', true);
+      WriteDirect('<ul>', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-        WriteDirect('<LI>', true);
+        WriteDirect('<li>', true);
         WriteConverted(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).Name);
         WriteConverted(': ');
         WriteWithURLs(TPasItem(TPasEnum(Item).Members.ObjectAt[k]).GetDescription);
-        WriteDirect('', true);
+        WriteDirect('</li>', true);
       end;
-      WriteDirect('</UL>', true);
+      WriteDirect('</ul>', true);
     end;
     WriteEndOfTableCell;
 
     WriteEndOfTableRow;
   end;
-  WriteDirect('</TABLE>');
+  WriteDirect('</table>');
 end;
 
 { ---------- }
@@ -1028,22 +1098,18 @@ begin
 
       for j := 0 to PartialItems.Count - 1 do begin
         Item := PartialItems.PasItemAt[j];
-        WriteStartOfTableRow;
+        WriteStartOfTableRow('');
 
-        WriteStartOfTableCell;
-        WriteStartOfLink(Item.FullLink);
-        WriteConverted(Item.Name);
-        WriteEndOfLink;
+        WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+        WriteLink(Item.FullLink, Item.Name, '');
         WriteEndOfTableCell;
 
         WriteStartOfTableCell;
-        WriteStartOfLink(Item.MyUnit.FullLink);
-        WriteConverted(Item.MyUnit.Name);
-        WriteEndOfLink;
+        WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, '');
         WriteEndOfTableCell;
 
         if j = 0 then
-          WriteDirect('<TD width="100%">')
+          WriteStartOfTableCell('width="100%"')
         else
           WriteStartOfTableCell;
         WriteItemDescription(Item);
@@ -1084,22 +1150,18 @@ begin
   TotalItems.SortByPasItemName;
   for j := 0 to TotalItems.Count - 1 do begin
     Item := TotalItems.PasItemAt[j];
-    WriteStartOfTableRow;
+    WriteStartOfTableRow('');
 
-    WriteStartOfTableCell;
-    WriteStartOfLink(Item.FullLink);
-    WriteConverted(Item.Name);
-    WriteEndOfLink;
+    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+    WriteLink(Item.FullLink, Item.Name, '');
     WriteEndOfTableCell;
 
     WriteStartOfTableCell;
-    WriteStartOfLink(Item.MyUnit.FullLink);
-    WriteConverted(Item.MyUnit.Name);
-    WriteEndOfLink;
+    WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, '');
     WriteEndOfTableCell;
 
     if j = 0 then
-      WriteDirect('<TD width="100%">')
+      WriteStartOfTableCell('width="100%"')
     else
       WriteStartOfTableCell;
     WriteItemDescription(Item);
@@ -1139,13 +1201,12 @@ begin
     Prop := TPasProperty(p.PasItemAt[j]);
 
     WriteStartOfTable1Column('');
-    WriteStartOfTableRow;
+    WriteStartOfTableRow('');
 
     WriteVisibilityCell(Prop);
 
-    WriteDirect('<TD width="100%">');
-    WriteStartOfAnchor(Prop.Name);
-    WriteEndOfAnchor;
+    WriteStartOfTableCell('width="100%"', '');
+    WriteAnchor(Prop.Name);
     WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration, '');
 
     WriteEndOfTableCell;
@@ -1167,8 +1228,8 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
-  if HtmlHelp then
-    WriteDirect('<A name="Properties"></A>');
+//  if HtmlHelp then
+    WriteAnchor('@Properties');
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
@@ -1176,11 +1237,11 @@ begin
   WriteStartOfTable1Column('');
   for j := 0 to p.Count - 1 do begin
     Prop := TPasProperty(p.PasItemAt[j]);
-    WriteStartOfTableRow;
+    WriteStartOfTableRow('');
 
     WriteVisibilityCell(Prop);
     if j = 0 then
-      WriteDirect('<TD width="100%">')
+      WriteStartOfTableCell('width="100%"')
     else
       WriteStartOfTableCell;
 
@@ -1195,16 +1256,26 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure THTMLDocGenerator.WriteAnchor(const Name: string);
+begin
+  WriteAnchor(Name, '');
+end;
+
+procedure THTMLDocGenerator.WriteAnchor(const Name, Caption: string);
+begin
+  WriteDirect(Format('<a name="%s">%s</a>', [Name, Caption]));
+end;
+
 procedure THTMLDocGenerator.WriteStartOfAnchor(const Name: string);
 begin
-  WriteDirect('<A name="' + Name + '">');
+  WriteDirect('<a name="' + Name + '">');
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure THTMLDocGenerator.WriteStartOfCode;
 begin
-  WriteDirect('<CODE>');
+  WriteDirect('<code>');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1239,9 +1310,27 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const Name: string);
+procedure THTMLDocGenerator.WriteStartOfLink(const href, css, Target: string);
+var
+  s: string;
 begin
-  WriteDirect('<A href="' + Name + '">');
+  if css <> '' then
+    s := Format('<a class="%s"', [css])
+  else
+    s := '<a';
+  if target <> '' then
+    s := Format('%s target="%s"', [s, target]);
+  WriteDirect(Format('%s href="%s">', [s, href]));
+end;
+
+procedure THTMLDocGenerator.WriteStartOfLink(const href, css: string);
+begin
+  WriteStartOfLink(href, css, '');
+end;
+
+procedure THTMLDocGenerator.WriteStartOfLink(const href: string);
+begin
+  WriteStartOflink(href, '', '');
 end;
 
 procedure THTMLDocGenerator.WriteStartOfParagraph;
@@ -1281,15 +1370,38 @@ begin
   WriteDirect('</TH></TR>', true);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell;
+procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, css: string);
+var
+  s: string;
 begin
-  WriteDirect('<TD>');
+  if css <> '' then
+    s := Format('<td class="%s"',[css])
+  else
+    s := '<td';
+  if Params <> '' then
+    s := s + ' ' + Params;
+  WriteDirect(s+'>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableRow;
+procedure THTMLDocGenerator.WriteStartOfTableCell(const css: string);
 begin
-  WriteDirect('<TR bgcolor=#' + HTML_ROW_BACKGROUND_COLOR
-    + ' valign="top">');
+  WriteStartOfTableCell('', css);
+end;
+
+procedure THTMLDocGenerator.WriteStartOfTableCell;
+begin
+  WriteStartOfTableCell('', '');
+end;
+
+procedure THTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
+var
+  s: string;
+begin
+  if CssClass <> '' then
+    s := Format('<tr class="%s"', [CssClass])
+  else
+    s := '<tr';
+  WriteDirect(s + ' bgcolor=#' + HTML_ROW_BACKGROUND_COLOR + ' valign="top">');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1885,6 +1997,31 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure THTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+type
+  TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
+    dsTypes, dsConstants, dsVariables);
+  TSectionSet = set of TSections;
+  TSectionAnchors = array[TSections] of string;
+const
+  SectionAnchors: TSectionAnchors = (
+    '@Description',
+    '@Uses',
+    '@Classes',
+    '@FuncsProcs',
+    '@Types',
+    '@Constants',
+    '@Variables');
+var
+  SectionsAvailable: TSectionSet;
+  SectionHeads: array[TSections] of string;
+  Section: TSections;
+
+  procedure ConditionallyAddSection(Section: TSections; Condition: boolean);
+  begin
+    if Condition then
+      Include(SectionsAvailable, Section);
+  end;
+
 begin
   if not Assigned(U) then begin
     DoMessage(1, mtError,
@@ -1899,19 +2036,58 @@ begin
     Exit;
   end;
 
+  SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
+  SectionHeads[dsUses] := 'uses';
+  SectionHeads[dsClasses] := FLanguage.Translation[trCio];
+  SectionHeads[dsFuncsProcs]:= FLanguage.Translation[trFunctionsAndProcedures];
+  SectionHeads[dsTypes]:= FLanguage.Translation[trTypes];
+  SectionHeads[dsConstants]:= FLanguage.Translation[trConstants];
+  SectionHeads[dsVariables]:= FLanguage.Translation[trVariables];
+
+  SectionsAvailable := [dsDescription];
+  ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
+  ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));
+  ConditionallyAddSection(dsFuncsProcs, not ObjectVectorIsNilOrEmpty(U.FuncsProcs));
+  ConditionallyAddSection(dsTypes, not ObjectVectorIsNilOrEmpty(U.Types));
+  ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
+  ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
+
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
   if not HtmlHelp then WriteDocumentHeadline;
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
+  WriteDirect('<table class="sections"><tr>', true);
+  for Section := Low(TSections) to High(TSections) do
+    begin
+      WriteDirect('<td>');
+      if Section in SectionsAvailable then
+        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], '')
+      else
+        WriteConverted(SectionHeads[Section]);
+      WriteDirect('<td>');
+    end;
+  WriteDirect('</tr></table>', true);
+
+  WriteAnchor(SectionAnchors[dsDescription]);
   WriteUnitDescription(HL + 1, U);
+
   WriteUnitUses(HL + 1, U);
+
   WriteCIOSummary(HL + 1, U.CIOs);
+
   WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
+
+  WriteAnchor(SectionAnchors[dsTypes]);
   WriteTypes(HL + 1, U.Types);
+
+  WriteAnchor(SectionAnchors[dsConstants]);
   WriteConstants(HL + 1, U.Constants);
+
+  WriteAnchor(SectionAnchors[dsVariables]);
   WriteVariables(HL + 1, U.Variables);
+
   WriteAuthors(HL + 1, U.Authors);
   WriteDates(HL + 1, U.Created, U.LastMod);
   WriteFooter;
@@ -1950,15 +2126,13 @@ begin
       FLanguage.Translation[trDescription]);
     for j := 0 to c.Count - 1 do begin
       Item := c.PasItemAt[j];
-      WriteStartOfTableRow;
-      WriteStartOfTableCell;
-      WriteStartOfLink(Item.FullLink);
-      WriteConverted(Item.Name);
-      WriteEndOfLink;
+      WriteStartOfTableRow('');
+      WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+      WriteLink(Item.FullLink, Item.Name, '');
       WriteEndOfTableCell;
 
       if j = 0 then
-        WriteDirect('<TD width="100%">')
+        WriteStartOfTableCell('width="100%"')
       else
         WriteStartOfTableCell;
       WriteItemDescription(Item);
@@ -1973,53 +2147,104 @@ begin
   CloseStream;
 end;
 
+procedure THTMLDocGenerator.WriteImage(const src, alt, css: string);
+var
+  s: string;
+begin
+  if css <> '' then
+    s := Format('<img class="%s"', [css])
+  else
+    s := '<img border="0"';
+  WriteDirect(Format('%s src="%s" alt="%s"', [s, src, alt]));
+end;
+
 procedure THTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
+
+  procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
+  begin
+    WriteStartOfLink('visibility_legend.html', '', '_blank');
+    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
+    WriteEndOfLink;
+  end;
+
 begin
   WriteStartOfTableCell;
   case Item.State of
     STATE_PRIVATE:
-      begin
-        WriteDirect('<IMG src="private.gif" alt="');
-        WriteConverted(FLanguage.Translation[trPrivate]);
-        WriteDirect('">');
-      end;
+      WriteVisibilityImage('private.gif', trPrivate);
     STATE_PROTECTED:
-      begin
-        WriteDirect('<IMG src="protected.gif" alt="');
-        WriteConverted(FLanguage.Translation[trProtected]);
-        WriteDirect('">');
-      end;
+      WriteVisibilityImage('protected.gif', trProtected);
     STATE_PUBLIC:
-      begin
-        WriteDirect('<IMG src="public.gif" alt="');
-        WriteConverted(FLanguage.Translation[trPublic]);
-        WriteDirect('">');
-      end;
+      WriteVisibilityImage('public.gif', trPublic);
     STATE_PUBLISHED:
-      begin
-        WriteDirect('<IMG src="published.gif" alt="');
-        WriteConverted(FLanguage.Translation[trPublished]);
-        WriteDirect('">');
-      end;
+      WriteVisibilityImage('published.gif', trPublished);
     STATE_AUTOMATED:
-      begin
-        WriteDirect('<IMG src="autmated.gif" alt="');
-        WriteConverted(FLanguage.Translation[trAutomated]);
-        WriteDirect('">');
-      end;
+      WriteVisibilityImage('automated.gif', trAutomated);
   end;
   WriteEndOfTableCell;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteHierachy;
+procedure THTMLDocGenerator.WriteVisibilityLegendFile;
+
+  procedure WriteLegendEntry(const Image: string; trans: TTranslationID);
+  begin
+    WriteStartOfTableRow('');
+    WriteStartOfTableCell();
+    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
+    WriteEndOfTableCell;
+    WriteStartOfTableCell();
+    WriteConverted(FLanguage.Translation[trans]);
+    WriteEndOfTableCell;
+    WriteEndOfTableRow;
+  end;
+
+const
+  Filename = 'visibility_legend';
+begin
+  if not CreateStream(Filename + GetFileextension) then
+    begin
+      DoMessage(1, mtError, 'Could not create output file "%s".',
+        [Filename + GetFileExtension]);
+      Abort;
+    end;
+  WriteStartOfDocument(FLanguage.Translation[trLegend]);
+
+  WriteHeading(1, FLanguage.Translation[trLegend]);
+
+  WriteDirect('<TABLE cellspacing="' + HTML_TABLE_CELLSPACING
+    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '">', true);
+  WriteDirect('<TR bgcolor="#' +
+    HTML_HEADER_BACKGROUND_COLOR + '"><TH>');
+  { TODO -otwm : needs translation }
+  WriteConverted('Marker');
+  WriteDirect('</TH><TH>');
+  { TODO -otwm : needs translation }
+  WriteConverted('Visibility');
+  WriteDirect('</TH></TR>', true);
+
+  WriteLegendEntry('private.gif', trPrivate);
+  WriteLegendEntry('protected.gif', trProtected);
+  WriteLegendEntry('public.gif', trPublic);
+  WriteLegendEntry('published.gif', trPublished);
+  WriteLegendEntry('automated.gif', trAutomated);
+  WriteEndOfTable;
+
+  WriteFooter;
+  WriteAppInfo;
+  WriteEndOfDocument;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure THTMLDocGenerator.WriteHierarchy;
 var
   Level, OldLevel: Integer;
   Node: TPasItemNode;
 begin
   CreateClassHierarchy;
-  
+
   if not CreateStream(OverviewFilenames[1] + GetFileExtension) then begin
     DoMessage(1, mtError, 'Could not create output file "%s".',
       [OverviewFilenames[1] + GetFileExtension]);
@@ -2040,31 +2265,31 @@ begin
     while Node <> nil do begin
       Level := Node.Level;
       if Level > OldLevel then
-        WriteDirect('<UL>')
+        WriteDirect('<ul>')
       else
         while Level < OldLevel do begin
-          WriteDirect('</UL>');
+          WriteDirect('</ul>');
           Dec(OldLevel);
         end;
       OldLevel := Level;
 
       if Node.Item = nil then
         begin
-          WriteDirect('<LI>');
+          WriteDirect('<li>');
           WriteConverted(Node.Name);
-          WriteDirect('</LI>');
+          WriteDirect('</li>');
         end
       else
         begin
-          WriteDirect('<LI><A href="' + Node.Item.FullLink + '">');
-          WriteConverted(Node.Name);
-          WriteDirect('</A></LI>');
+          WriteDirect('<li>');
+          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), '');
+          WriteDirect('</li>');
         end;
       Node := FClassHierarchy.NextItem(Node);
     end;
 
     while OldLevel >= 0 do begin
-      WriteDirect('</UL>');
+      WriteDirect('</ul>');
       Dec(OldLevel);
     end;
   end;
@@ -2098,9 +2323,7 @@ begin
       WriteDirect('<li>');
       ULink := FUnits.FindName(U.UsesUnits[i]);
       if ULink is TPasUnit then begin
-        WriteStartOfLink(ULink.FullLink);
-        WriteDirect(U.UsesUnits[i]);
-        WriteEndOfLink;
+        WriteLink(ULink.FullLink, U.UsesUnits[i], '');
       end else begin
         WriteDirect(U.UsesUnits[i]);
       end;
@@ -2116,11 +2339,7 @@ var
 begin
   while ExtractLink(s, s1, s2, link) do begin
     WriteSpellChecked(S1);
-    WriteDirect('<a href="');
-    WriteDirect(link);
-    WriteDirect('" target="_new">');
-    WriteDirect(link);
-    WriteDirect('</a>');
+    WriteLink(link, Link, '', '_new');
     s := s2;
   end;
   WriteSpellChecked(s);
@@ -2161,9 +2380,6 @@ end;
 function THTMLDocGenerator.ParameterString(const ParamType,
   Param: string): string;
 begin
-  { TODO -cfixme -otwm :
-    This should probably be something like
-    <div type="parameter"> ... </div> to be used with CSS }
   Result := '<br>' + ParamType + ' <span class="parameter">' + Param + '</span>';
 end;
 
@@ -2191,8 +2407,35 @@ begin
 
   if not FileExists(DestinationDirectory+ProjectName+'.css') then begin
     CreateStream(ProjectName + '.css');
-     //(, 'BODY { font-family:"Verdana","Arial"; }');
-    //StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
+    StreamUtils.WriteLine(CurrentStream, 'body {' +
+      'font-family:Verdana,Arial;' +
+      'color:#000000;' +
+      'background-color:"#ffffff";}');
+    StreamUtils.WriteLine(CurrentStream, 'a:link {' +
+      'color:#0000ff;}');
+    StreamUtils.WriteLine(CurrentStream, 'a:visited {' +
+      'color:#800080;}');
+    StreamUtils.WriteLine(CurrentStream, 'a:hover {' +
+      'background-color:yellow;' +
+      'color:black;' +
+      'text-decoration:none;}');
+    StreamUtils.WriteLine(CurrentStream, 'a:active {' +
+      'color:#FF0000;}');
+    StreamUtils.WriteLine(CurrentStream, 'span.parameter { color:blue; }');
+
+    StreamUtils.WriteLine(CurrentStream, 'table.headline {' +
+      'padding:4pt; background-color:white;}');
+    StreamUtils.WriteLine(CurrentStream, 'table.headline td {' +
+      'margin:20pt; background-color:#e0e0e0;border-style:outset;}');
+    StreamUtils.WriteLine(CurrentStream, 'table.headline a {' +
+      'color:black;text-decoration:none;background-color:#e0e0e0;}');
+
+    StreamUtils.WriteLine(CurrentStream, 'table.sections a {' +
+      'color:green;text-decoration:underlined;background-color:white;}');
+
+    StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
+      'white-space:nowrap;}');
+
     CloseStream;
   end;
 end;
