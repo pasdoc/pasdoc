@@ -50,8 +50,6 @@ type
     { Writes an empty table cell, '&nbsp;'. }
     procedure WriteEmptyCell;
 
-    { Writes the end of an HTML anchor, '</A>'. }
-    procedure WriteEndOfAnchor;
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
     procedure WriteEndOfParagraph;
@@ -76,12 +74,7 @@ type
 
     { Writes an opening A element, including a name attribute given by the
       argument. }
-    procedure WriteStartOfAnchor(const AName: string);
     procedure WriteStartOfDocument(AName: string);
-
-    procedure WriteStartOfLink(const href: string); overload;
-    procedure WriteStartOfLink(const href, css: string); overload;
-    procedure WriteStartOfLink(const href, css, Target: string); overload;
 
     { Starts an HTML paragraph element by writing an opening P tag. }
     procedure WriteStartOfParagraph;
@@ -157,8 +150,17 @@ type
       interface or object, otherwise they're considered functions or procedures
       of a unit.
       The functions are stored in the FuncsProcs argument. }
-    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const
-      FuncsProcs: TPasMethods); override;
+      procedure WriteFuncsProcs(const HL: integer; const FuncsProcs: TPasMethods);
+      
+    { Writes information on functions and procedures or methods of a unit or
+      class, interface or object to output.
+      If argument Methods is true, they will be considered methods of a class,
+      interface or object, otherwise they're considered functions or procedures
+      of a unit.
+      The functions are stored in the FuncsProcs argument. }
+    procedure WriteMethods(const HL: integer; const FuncsProcs: TPasMethods); 
+    procedure WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
+    procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 
     { output all the necessary images }
     procedure WriteBinaryFiles;
@@ -168,9 +170,7 @@ type
     procedure WriteImage(const src, alt, css: string);
     procedure WriteLink(const href, caption, css: string); overload;
     procedure WriteLink(const href, caption, css, target: string); overload;
-    procedure WriteAnchor(const AName: string); overload;
-    procedure WriteAnchor(const AName, Caption: string); overload;
-    procedure WriteEndOfLink;
+    procedure WriteAnchor(ItemName, Link: string);
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -186,6 +186,11 @@ type
     property Footer: string read FFooter write FFooter;
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses;
+   private
+    procedure WriteParameter(const ParamName: string; const Desc: string);
+    procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+      List: TStringVector);
+    procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   end;
 
 {$INCLUDE automated.inc}
@@ -210,6 +215,19 @@ uses
   Utils,
   PasDoc_Tokenizer,
   PasDoc_HierarchyTree;
+  
+type
+  TCIONames = array[TCIOType] of string;
+
+const
+  CIO_NAMES: TCIONames = (
+    'class',
+    'dispinterface',
+    'interface',
+    'object',
+    'record',
+    'packed record');
+
 
 { HTML things to be customized:
     - standard background color (white)
@@ -282,14 +300,14 @@ begin
   if Assigned(Item.MyUnit) then begin
     if Assigned(Item.MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
-      Result := Item.MyObject.FullLink + '#' + Item.Name;
+      Result := Item.MyObject.FullLink + '-' + Item.Name;
     end else begin
       if Item.ClassType = TPasCio then begin
         { it's an object / a class }
         Result := NewLink(Item.MyUnit.Name + '.' + Item.Name);
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := Item.MyUnit.FullLink + '#' + Item.Name;
+        Result := Item.MyUnit.FullLink + '-' + Item.Name;
       end;
     end;
   end else begin
@@ -301,7 +319,7 @@ end;
 function TTexDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
-  Result := '<a class="normal" href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
+  Result :=  '\texttt{'+ItemName +'}(\ref{' + EscapeURL(Link) + '})'; 
 end;
 
 function TTexDocGenerator.GetFileExtension: string;
@@ -317,7 +335,7 @@ begin
   WriteDirect('% '+FLanguage.Translation[trGeneratedBy] + ' ');
   WriteDirect(PASDOC_HOMEPAGE+ PASDOC_NAME_AND_VERSION);
   WriteDirect(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
-    FormatDateTime('ddd dd/ mmm yyyy hh:mm:ss', Now));
+    FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirect('', true);
 end;
 
@@ -353,15 +371,7 @@ procedure TTexDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
-  TSectionAnchors = array[TSections] of string;
-  TCIONames = array[TCIOType] of string;
 const
-  SectionAnchors: TSectionAnchors = (
-    '@Description',
-    '@Hierarchy',
-    '@Fields',
-    '@Methods',
-    '@Properties');
   CIO_NAMES: TCIONames = (
     'class',
     'dispinterface',
@@ -377,9 +387,35 @@ var
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
   Section: TSections;
+  j: integer;
 begin
   if not Assigned(CIO) then Exit;
+(*
+  { *********** WRITE THE OVERVIEW  }
+  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+  WriteDirect('\begin{description}',true);
+  for j := 0 to c.Count - 1 do begin
+    p := TPasCio(c.PasItemAt[j]);
+    WriteDirect('\item[{\ttfamily ');
+    WriteLink(p.FullLink, CodeString(p.Name), 'bold');
+    WriteDirect('=');
+    { name of class/interface/object and unit }
+    WriteConverted(GetCIOTypeName(p.MyType));
+    WriteDirect('}]');
 
+    { Write only the description and do not opt for DetailedDescription,
+      like WriteItemDescription does. }
+    if p.Description <> '' then
+      WriteWithURLs(p.Description);
+    WriteDirect('',true);
+  end;
+  WriteDirect('\end{description}',true);
+  
+*)
+  { *********** WRITE THE DETAILED INFORMATION  }
+  { write the complete definition }  
+  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+  
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
   SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
@@ -397,14 +433,11 @@ begin
     Include(SectionsAvailable, dsProperties);
 
   CIO.SortPasItems;
-  s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
 
-  WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
+  WriteAnchor(CIO.Name,CIO.FullLink);
+  WriteHeading(HL+2, CIO.Name);
 
-  WriteAnchor(CIO.Name);
-  WriteHeading(HL, s);
-
-  WriteDirect('<table class="sections"><tr>', true);
+(*  WriteDirect('<table class="sections"><tr>', true);
   for Section := Low(TSections) to High(TSections) do
     begin
       WriteDirect('<td>');
@@ -488,38 +521,113 @@ begin
   if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then begin
     WritePropertiesSummary(HL + 1, CIO.Properties);
     WriteProperties(HL + 1, CIO.Properties);
-  end;
+  end;*)
 
   WriteAuthors(HL + 1, CIO.Authors);
   WriteDates(HL + 1, CIO.Created, CIO.LastMod);
-  WriteFooter;
-  WriteEndOfDocument;
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
+type
+  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
+  TSectionSet = set of TSections;
 var
-  i: Integer;
-  p: TPasCio;
+  i,j: Integer;
+  CIO: TPasCio;
+  s: string;
+  Item: TPasItem;
+  TheLink: string;
+  SectionsAvailable: TSectionSet;
+  SectionHeads: array[TSections] of string;
+  Section: TSections;
 begin
   if c = nil then Exit;
 
-  for i := 0 to c.Count - 1 do begin
-    p := TPasCio(c.PasItemAt[i]);
-    case CreateStream(p.OutputFileName, not p.WasDeserialized) of
-      csError: begin
-          DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
-          Continue;
+  WriteHeading(HL, FLanguage.Translation[trCio]);
+
+  for j := 0 to c.Count - 1 do 
+    begin
+      CIO := TPasCio(c.PasItemAt[j]);
+      SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
+      SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
+      SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
+      SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
+      SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
+
+      SectionsAvailable := [dsDescription];
+      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
+        Include(SectionsAvailable, dsHierarchy);
+      if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
+        Include(SectionsAvailable, dsFields);
+      if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
+        Include(SectionsAvailable, dsMethods);
+      if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
+        Include(SectionsAvailable, dsProperties);
+
+      CIO.SortPasItems;
+
+      WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
+      WriteAnchor(CIO.Name,CIO.FullLink);
+
+      if dsHierarchy in SectionsAvailable then
+        begin
+          { Write Hierarchy }
+          if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then 
+            begin
+              WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
+
+              WriteDirect(CIO.Name);
+              WriteConverted(' > ');
+              s := CIO.Ancestors.FirstName;
+              Item := SearchItem(s, CIO);
+              if Assigned(Item) and (Item is TPasCio) then 
+                begin
+                  repeat
+                    s := CreateReferencedLink(Item.Name, Item.FullLink);
+                    WriteDirect(s);
+
+                    if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
+                      begin
+                        s := TPasCio(Item).Ancestors.FirstName;
+                        Item := SearchItem(s, Item);
+
+                        WriteConverted(' > ');
+                        if (Item <> nil) and (Item is TPasCio) then 
+                          begin
+                            Continue;
+                          end;
+                      end;
+                      WriteDirect('',true);
+                      Break;
+                  until False;
+                end;
+                if Item = nil then 
+                  begin
+                    WriteDirect(s,true);
+                  end;
+            end;
         end;
-      csCreated: begin
-          DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
-          WriteCIO(HL, p);
+
+      if dsDescription in SectionsAvailable then
+        begin
+          WriteHeading(HL + 2, SectionHeads[dsDescription]);
+          WriteItemDetailedDescription(CIO);
         end;
-      csExisted: begin
-          DoMessage(3, mtInformation, 'File for "%s" already existed and data was loaded from cache, skipped.', [p.Name]);
-      end;
+        
+      WriteFields(HL + 2, CIO.Fields);
+
+      WriteMethods(HL + 2, CIO.Methods);
+        
+(*
+      if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
+        begin
+          WritePropertiesSummary(HL + 1, CIO.Properties);
+          WriteProperties(HL + 1, CIO.Properties);
+        end;*)
+
+      WriteAuthors(HL + 2, CIO.Authors);
+      WriteDates(HL + 2, CIO.Created, CIO.LastMod);
     end;
-  end;
-  CloseStream;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -528,39 +636,29 @@ procedure TTexDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 var
   j: Integer;
   p: TPasCio;
+  CIO: TPasCio;
+  s: string;
+  Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
+  WriteDirect('\begin{description}',true);
+  for j := 0 to c.Count - 1 do 
+    begin
+      CIO := TPasCio(c.PasItemAt[j]);
+      WriteDirect('\item[{\ttfamily ');
+      WriteLink(CIO.FullLink, CodeString(CIO.Name), 'bold');
+      { name of class/interface/object and unit }
+      WriteDirect(' ');
+      WriteConverted(GETCIOTypeName(CIO.MyType));
+      WriteDirect('}]');
 
-  WriteAnchor('@Classes');
-
-  WriteHeading(HL, FLanguage.Translation[trCio]);
-  WriteStartOfTable2Columns(FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
-  for j := 0 to c.Count - 1 do begin
-    p := TPasCio(c.PasItemAt[j]);
-    WriteStartOfTableRow('');
-    { name of class/interface/object and unit }
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteConverted(GetCIOTypeName(p.MyType));
-    WriteDirect('&nbsp;');
-    WriteLink(p.FullLink, CodeString(p.Name), 'bold');
-    WriteEndOfTableCell;
-
-    { Description of class/interface/object }
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-    { Write only the description and do not opt for DetailedDescription,
-      like WriteItemDescription does. }
-    if p.Description <> '' then
-      WriteWithURLs(p.Description)
-    else
-      WriteDirect('&nbsp;');
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-  WriteEndOfTable;
+      { Write only the description and do not opt for DetailedDescription,
+        like WriteItemDescription does. }
+      if CIO.Description <> '' then
+        WriteWithURLs(CIO.Description);
+      WriteDirect('',true);
+    end;
+  WriteDirect('\end{description}',true);
 end;
 
 procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
@@ -681,10 +779,10 @@ begin
 {  StartSpellChecking('sgml');}
   inherited;
   WriteUnits(1);
-  WriteHierarchy;
+{  WriteHierarchy;
   WriteBinaryFiles;
   WriteOverviewFiles;
-  WriteVisibilityLegendFile;
+  WriteVisibilityLegendFile;}
 {  EndSpellChecking;}
 end;
 
@@ -697,16 +795,6 @@ end;
 procedure TTexDocGenerator.WriteEndOfDocument;
 begin
   WriteDirect('\end{document}',true);
-end;
-
-procedure TTexDocGenerator.WriteEndOfAnchor;
-begin
-  WriteDirect('</a>');
-end;
-
-procedure TTexDocGenerator.WriteEndOfLink;
-begin
-  WriteDirect('</a>');
 end;
 
 procedure TTexDocGenerator.WriteEndOfCode;
@@ -756,45 +844,53 @@ procedure TTexDocGenerator.WriteFields(const Order: integer; const Fields:
 var
   j: Integer;
   Item: TPasItem;
+  s: string;
 begin
   if ObjectVectorIsNilOrEmpty(Fields) then Exit;
 
-  WriteAnchor('@Fields');
   WriteHeading(Order, FLanguage.Translation[trFields]);
-
-  WriteDirect('<table class="fields" cellspacing="' +
-    HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
-    '" width="100%">');
-  WriteDirect('<tr class="listheader">');
-  WriteDirect('<th>&nbsp;</th><th>');
-  WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th class="listheader">');
-  WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirect('</th></tr>', true);
-
-  for j := 0 to Fields.Count - 1 do begin
-    Item := Fields.PasItemAt[j];
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Item);
-
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteAnchor(Item.Name);
-    { TODO -otwm : This should not only write the name but the full declaration of the field. }
-    WriteDirect(CodeString(Item.Name));
-    WriteEndOfTableCell;
-
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-
-    WriteItemDetailedDescription(Item);
-    WriteEndOfTableCell;
-
-    WriteEndOfTableRow;
-  end;
-  WriteDirect('</table>');
+  
+  { get the longest string for names }
+  s:='';
+  for j := 0 to Fields.Count - 1 do 
+    begin
+      Item := Fields.PasItemAt[j];
+      if length(s) < length(Item.Name) then
+        s:=Item.Name;
+    end;
+  
+  { Determine the longest string used.
+    This is the one we will use for determining the label width.
+  }
+  WriteDirect('\begin{list}{}{',true);
+  WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+  WriteDirect('\setlength{\itemindent}{0cm}',true);
+  WriteDirect('\setlength{\listparindent}{0cm}',true);
+  WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+  WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+  WriteDirect('\settowidth{\labelsep}{X}',true);
+  WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+  WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+  WriteDirect('}',true);
+  for j := 0 to Fields.Count - 1 do 
+    begin
+      Item := Fields.PasItemAt[j];
+      WriteDirect('\item[');
+      WriteDirect('\textbf{'+Item.name);
+      WriteDirect('}\hfill]',true);
+      WriteDirect('',true);
+      WriteDirect('\begin{flushleft}',true);
+      if Item is TPasVarConst then 
+      begin
+        WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
+      end
+      else
+        WriteCodeWithLinks(Item, Item.Name, '');
+      WriteDirect('\end{flushleft}',true);
+      WriteDirect('\par ');
+      WriteItemDetailedDescription(Item);
+    end;
+   WriteDirect('\end{list}',true); 
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -805,10 +901,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
-  Boolean; const FuncsProcs: TPasMethods);
-
   function ExtractFirstWord(var s: string): string;
   var
     p: integer;
@@ -827,7 +919,7 @@ procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     s := Copy(s, p, Length(s));
   end;
 
-  procedure WriteParameter(const ParamName: string; const Desc: string);
+  procedure TTexDocGenerator.WriteParameter(const ParamName: string; const Desc: string);
   begin
     WriteDirect('\item[');
     WriteConverted(ParamName);
@@ -837,7 +929,7 @@ procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   end;
 
   { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+  procedure TTexDocgenerator.WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
     List: TStringVector);
   var
     i: integer;
@@ -846,13 +938,13 @@ procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   begin
     if StringVectorIsNilOrEmpty(List) then
       exit;
-    
-    WriteDirect('\item[Parameters]',true);
+
+    WriteDirect('\item[\textbf{'+Caption+'}]',true);
     WriteDirect('\begin{description}',true);
-    { Terrible hack : To fix and replace by a clean solution, 
+    { Terrible hack : To fix and replace by a clean solution,
       we need to add an empty item so that the list starts
       at the correct margin.
-    }  
+    }
     WriteDirect('\item',true);
     for i := 0 to List.Count - 1 do begin
       s := List[i];
@@ -863,31 +955,24 @@ procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     WriteDirect('\end{description}',true);
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure TTexDocGenerator.WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   begin
     if ReturnDesc = '' then
       exit;
-    WriteDirect('\item[Returns]');
+    WriteDirect('\item['+FLanguage.Translation[trReturns]+']');
     ExpandDescription(Func, ReturnDesc);
     WriteWithURLs(ReturnDesc);
     WriteDirect('',true);
   end;
 
+
+procedure TTexDocGenerator.WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
 var
   i: Integer;
   j: Integer;
   p: TPasMethod;
   s: string;
 begin
-  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
-
-  if Methods then begin
-    WriteHeading(HL, FLanguage.Translation[trMethods]);
-  end
-  else begin
-    WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
-  end;
-
   // Sort alphabatically
   FuncsProcs.SortByPasItemName;
   // two passes, in the first (i=0) we write the overview
@@ -901,8 +986,7 @@ begin
     WriteDirect('\item[{\ttfamily ');
     { overview of functions and procedures }
     { Only write visibility for methods of classes and objects. }
-    if Methods then 
-      WriteVisibilityCell(p);
+    WriteVisibilityCell(p);
 
     s := p.FullLink;
       if Assigned(p.MyUnit) then
@@ -910,24 +994,42 @@ begin
             Length(p.MyUnit.FullLink))) = 0 then
             begin
               Delete(s, 1, Length(p.MyUnit.FullLink));
-              { remove # character from the link }
+              { remove - character from the link }
               Delete(s, 1,1);
             end;
-        
+
     WriteDirect(p.name);
-    WriteDirect(' (\pageref{'+s+'})');
     WriteDirect('}]');
 
-    if p.Description <> '' then
-      WriteDirect(p.Description,true)
-    else
-      WriteDirect('',true);
+    WriteItemDescription(p);
   end;
   WriteDirect('\end{description}',true);
-  
-  
-  { write the complete definition }  
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+end;
+
+procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
+var
+  i: Integer;
+  j: Integer;
+  p: TPasMethod;
+  s: string;
+begin
+  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+
+  WriteHeading(HL, FLanguage.Translation[trMethods]);
+
+  { Determine the longest string used.
+    This is the one we will use for determining the label width.
+  }
+  s:=FLanguage.Translation[trDescription];
+  if length(s) < length(FLanguage.Translation[trDeclaration])  then
+     s:= FLanguage.Translation[trDeclaration];
+  if length(s) < length(FLanguage.Translation[trReturns])  then
+     s:=FLanguage.Translation[trReturns];
+  if length(s) < length(FLanguage.Translation[trParameters])  then
+     s:=FLanguage.Translation[trParameters];
+  if length(s) < length(FLanguage.Translation[trExceptions])  then
+     s:=FLanguage.Translation[trExceptions];
+
 
   for j := 0 to FuncsProcs.Count - 1 do 
   begin
@@ -935,26 +1037,151 @@ begin
       { overview of functions and procedures }
       begin
 
-        if Methods then WriteVisibilityCell(p);
+        WriteVisibilityCell(p);
         
-        WriteDirect('\large{\textbf{'+p.Name+'}}\normalsize\hspace{1ex}\hrulefill\linebreak',true);
-        WriteAnchor(p.Name);
-
-        WriteDirect('\begin{description}',true);
-        WriteDirect('\item[Declaration]',true);
+        WriteHeading(HL+1,p.Name);
+        WriteAnchor(p.Name,p.FullLink);
+        
+        WriteDirect('\begin{list}{}{',true);
+        WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+        WriteDirect('\setlength{\itemindent}{0cm}',true);
+        WriteDirect('\setlength{\listparindent}{0cm}',true);
+        WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+        WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+        WriteDirect('\settowidth{\labelsep}{X}',true);
+        WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+        WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+        WriteDirect('}',true);
+        
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
         WriteDirect('\begin{flushleft}',true);
         WriteCodeWithLinks(p, p.FullDeclaration, '');
         WriteDirect('\end{flushleft}',true);
 
         WriteStartOfParagraph;
-        WriteDirect('\item[Description]',true);
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
         WriteItemDetailedDescription(p);
         WriteEndOfParagraph;
 
-        WriteParamsOrRaises(p, 'parameters', p.Params);
+        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
         WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, 'exceptions raised', p.Raises);
-        WriteDirect('\end{description}',true);
+        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
+        WriteDirect('\end{list}',true);
+      end;
+  end;
+end;
+ 
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TTexDocGenerator.WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
+var
+  i: Integer;
+  j: Integer;
+  p: TPasMethod;
+  s: string;
+ begin
+  // Sort alphabatically
+  FuncsProcs.SortByPasItemName;
+  // two passes, in the first (i=0) we write the overview
+  // in the second (i=1) we write the descriptions
+  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+  WriteDirect('\begin{description}',true);
+  for j := 0 to FuncsProcs.Count - 1 do 
+  begin
+    p := TPasMethod(FuncsProcs.PasItemAt[j]);
+    
+    WriteDirect('\item[{\ttfamily ');
+    { overview of functions and procedures }
+    { Only write visibility for methods of classes and objects. }
+    s := p.FullLink;
+      if Assigned(p.MyUnit) then
+         if CompareText(p.MyUnit.FullLink, Copy(s, 1,
+            Length(p.MyUnit.FullLink))) = 0 then
+            begin
+              Delete(s, 1, Length(p.MyUnit.FullLink));
+              { remove - character from the link }
+              Delete(s, 1,1);
+            end;
+
+    WriteDirect(p.name);
+    WriteDirect('}]');
+    WriteItemDescription(p);
+  end;
+  WriteDirect('\end{description}',true);
+ end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const FuncsProcs: TPasMethods);
+
+
+var
+  i: Integer;
+  j: Integer;
+  p: TPasMethod;
+  s: string;
+  procstr: string;
+begin
+  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
+
+  WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
+
+  { Determine the longest string used.
+    This is the one we will use for determining the label width.
+  }
+  s:=FLanguage.Translation[trDescription];
+  if length(s) < length(FLanguage.Translation[trDeclaration])  then
+     s:= FLanguage.Translation[trDeclaration];
+  if length(s) < length(FLanguage.Translation[trReturns])  then
+     s:=FLanguage.Translation[trReturns];
+  if length(s) < length(FLanguage.Translation[trParameters])  then
+     s:=FLanguage.Translation[trParameters];
+
+
+  for j := 0 to FuncsProcs.Count - 1 do
+  begin
+      p := TPasMethod(FuncsProcs.PasItemAt[j]);
+      { overview of functions and procedures }
+      begin
+        { Check if this is a function or a procedure }
+        { and add it as an end string                }
+        procstr:=p.FullDeclaration;
+        procstr:=trimleft(procstr);
+        procstr:=trimright(procstr);
+        if (pos('procedure',LowerCase(procstr)) >= 1) then
+          procstr:='procedure'
+        else
+          procstr:='function';
+
+        WriteHeading(HL+1,p.Name+' '+procstr);
+        WriteAnchor(p.Name,p.FullLink);
+
+        WriteDirect('\begin{list}{}{',true);
+        WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+        WriteDirect('\setlength{\itemindent}{0cm}',true);
+        WriteDirect('\setlength{\listparindent}{0cm}',true);
+        WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+        WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+        WriteDirect('\settowidth{\labelsep}{X}',true);
+        WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+        WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+        WriteDirect('}',true);
+
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
+        WriteDirect('\begin{flushleft}',true);
+        WriteCodeWithLinks(p, p.FullDeclaration, '');
+        WriteDirect('\end{flushleft}',true);
+
+        WriteStartOfParagraph;
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+        WriteItemDetailedDescription(p);
+        WriteEndOfParagraph;
+
+        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], p.Params);
+        WriteReturnDesc(p, p.Returns);
+        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], p.Raises);
+        WriteDirect('\end{list}',true);
       end;
   end;
 end;
@@ -964,18 +1191,40 @@ var
   c: string;
 begin
   if (Level < 1) then Level := 1;
-  if Level > 4 then begin
+  if Level > 5 then begin
     DoMessage(2, mtWarning, 'latex generator cannot write headlines of level 4 or greater; will use 4 instead.', []);
-    Level := 4;
+    Level := 5;
   end;
   case Level of
-    1: WriteDirect('\chapter{');
-    2: WriteDirect('\section{');
-    3: WriteDirect('\subsection{');
-    4: WriteDirect('\subsubsection{');
+    1: begin
+        WriteDirect('\chapter{');
+        WriteConverted(s);
+        WriteDirect('}', true);
+       end; 
+    2: begin
+        WriteDirect('\section{');
+        WriteConverted(s);
+        WriteDirect('}', true);
+       end; 
+    3: begin
+        WriteDirect('\subsection*{');
+          WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
+          '\hrulefill');
+        WriteDirect('}', true);
+       end; 
+    4: begin
+          WriteDirect('\subsubsection*{');
+          WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
+          '\hfill');
+          WriteDirect('}',true);
+       end;
+    5: begin
+        WriteDirect('\paragraph*{');
+        WriteConverted(s);
+        WriteDirect('}\hspace*{\fill}', true);
+        WriteDirect('',true);
+       end; 
   end;
-  WriteConverted(s);
-  WriteDirect('}', true);
 end;
 
 { ---------- }
@@ -983,16 +1232,12 @@ end;
 procedure TTexDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
-
-  if AItem.Description <> '' then begin
-    WriteWithURLs(AItem.Description);
-  end else begin
-    if AItem.DetailedDescription <> '' then begin
-      WriteWithURLs(AItem.DetailedDescription)
-    end else begin
+  if AItem.Description <> '' then
+    begin
+      WriteWithURLs(AItem.Description);
+    end
+  else
       WriteDirect(' ');
-    end;
-  end;
 end;
 
 procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
@@ -1002,17 +1247,23 @@ var
 begin
   if not Assigned(AItem) then Exit;
 
-  if AItem.Description <> '' then begin
+  if AItem.Description <> '' then 
+  begin
     WriteWithURLs(AItem.Description);
 
-    if AItem.DetailedDescription <> '' then begin
+    if AItem.DetailedDescription <> '' then 
+      begin
+        WriteWithURLs(AItem.DetailedDescription);
+      end;
+  end else 
+  begin
+    if AItem.DetailedDescription <> '' then 
+    begin
       WriteWithURLs(AItem.DetailedDescription);
-    end;
-  end else begin
-    if AItem.DetailedDescription <> '' then begin
-      WriteWithURLs(AItem.DetailedDescription);
-    end else begin
-      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
+    end else 
+    begin
+      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
+      begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(SearchItem(AncestorName, AItem));
         if Assigned(Ancestor) then
@@ -1035,52 +1286,73 @@ procedure TTexDocGenerator.WriteItems(HL: integer; Heading: string; const
 var
   j, k: Integer;
   Item: TPasItem;
+  s: string;
 begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
 
   WriteHeading(HL, Heading);
-
+  
+  s:=FLanguage.Translation[trDescription];
+  if length(s) < length(FLanguage.Translation[trDeclaration])  then
+     s:= FLanguage.Translation[trDeclaration];
+  if length(s) < length(FLanguage.Translation[trReturns])  then
+     s:=FLanguage.Translation[trReturns];
+  if length(s) < length(FLanguage.Translation[trParameters])  then
+     s:=FLanguage.Translation[trParameters];
+  
+  
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
 
+    if Item is TPasEnum then
+      WriteHeading(HL+1, Item.Name+' '+LowerCase(FLanguage.Translation[trEnum]))
+    else
+      WriteHeading(HL+1, Item.Name);
     
-    WriteDirect('\begin{description}', true);
-    WriteDirect('\item[');
-    WriteAnchor(Item.Name);
-    WriteStartOfCode;
-    WriteConverted(Item.Name);
-    if Item is TPasVarConst then 
-    begin
-      WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
-    end;
-    WriteEndOfCode;
-    WriteConverted('] ');
+    WriteAnchor(Item.Name,Item.FullLink);
+    WriteDirect('\begin{list}{}{',true);
+    WriteDirect('\settowidth{\tmplength}{\textbf{'+s+'}}',true);
+    WriteDirect('\setlength{\itemindent}{0cm}',true);
+    WriteDirect('\setlength{\listparindent}{0cm}',true);
+    WriteDirect('\setlength{\leftmargin}{\evensidemargin}',true);
+    WriteDirect('\addtolength{\leftmargin}{\tmplength}',true);
+    WriteDirect('\settowidth{\labelsep}{X}',true);
+    WriteDirect('\addtolength{\leftmargin}{\labelsep}',true);
+    WriteDirect('\setlength{\labelwidth}{\tmplength}',true);
+    WriteDirect('}',true);
 
+    WriteDirect('\item[\textbf{'+FLanguage.Translation[trDeclaration]+'}]',true);
+    WriteDirect('\begin{flushleft}',true);
+    if Item is TPasVarConst then 
+      begin
+        WriteCodeWithLinks(Item, Item.Name, '');
+        WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '')
+      end
+    else
+      WriteCodeWithLinks(Item, Item.Name, '');
+      
+    WriteDirect('\end{flushleft}',true);
+
+    WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
     WriteItemDetailedDescription(Item);
+    
     if not (Item is TPasEnum) then
-       WriteDirect('',true)
+       WriteDirect('\par ',true)
     else
      begin
-      WriteDirect(' = ',true);
       WriteDirect('\begin{description}', true);
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
         WriteDirect('\item[{\ttfamily ');
         { add the first character for enums }
-        if k = 0 then
-           WriteConverted('(');
         WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
         { add the end characters for enums }
-        if k = TPasEnum(Item).Members.Count-1 then
-           WriteConverted(');')
-        else
-           WriteConverted(',');
         WriteDirect('}] ');
         WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
         WriteDirect('', true);
       end;
       WriteDirect('\end{description}', true);
     end;
-    WriteDirect('\end{description}', true);
+    WriteDirect('\end{list}',true);
   end;
 end;
 
@@ -1261,7 +1533,7 @@ begin
     WriteVisibilityCell(Prop);
 
     WriteStartOfTableCell('width="100%"', '');
-    WriteAnchor(Prop.Name);
+    WriteAnchor(Prop.Name,Prop.FullLink);
     WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration, '');
 
     WriteEndOfTableCell;
@@ -1283,8 +1555,7 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
-//  if HtmlHelp then
-    WriteAnchor('@Properties');
+  WriteAnchor('@Properties','');
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
@@ -1310,22 +1581,15 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteAnchor(const AName: string);
+procedure TTexDocGenerator.WriteAnchor(ItemName, Link: string);
 begin
-  WriteAnchor(AName, '');
+  if Link <> '' then
+     WriteDirect('\label{'+Link+'}',true)
+  else
+     WriteDirect('\label{'+ItemName+'}',true);
+  WriteDirect('\index{'+ItemName+'}',true);
 end;
 
-procedure TTexDocGenerator.WriteAnchor(const AName, Caption: string);
-begin
-  WriteDirect(Format('\label{%s}', [AName]),true);
-  WriteDirect('\index{'+AName+'}',true);
-end;
-
-procedure TTexDocGenerator.WriteStartOfAnchor(const AName: string);
-begin
-  WriteDirect('<a namae="' + AName + '">');
-end;
 
 { ---------------------------------------------------------------------------- }
 
@@ -1339,7 +1603,12 @@ end;
 procedure TTexDocGenerator.WriteStartOfDocument(AName: string);
 var
  i : integer;
+ Localtitle: string;
 begin
+  if Title <> '' then
+    Localtitle:= Title + ':' + Aname
+  else
+    LocalTitle := AName;
   { write basic header }
   WriteAppInfo;
   WriteDirect('\documentclass{report}',true);
@@ -1349,34 +1618,35 @@ begin
   WriteDirect('\marginparsep 0cm',true);
   WriteDirect('\marginparwidth 0cm',true);
   WriteDirect('\textwidth 16.5cm',true);
+  WriteDirect('\parindent 0cm',true);
+  WriteDirect('',true);
+  { PDF output support, create ifpdf macro 
+    to be able to support extended PDF features.
+  }
+  WriteDirect('\newif\ifpdf',true);
+  WriteDirect('\ifx\pdfoutput\undefined',true);
+  WriteDirect('\pdffalse',true);
+  WriteDirect('\else',true);
+  WriteDirect('\pdfoutput=1',true);
+  WriteDirect('\pdftrue',true);
+  WriteDirect('\fi',true);
+  WriteDirect('',true);
+  WriteDirect('\ifpdf',true);
+  WriteDirect('\pdfinfo{',true);
+  WriteDirect(' /Author     (Pasdoc)',true);
+  WriteDirect(' /Title      ('+LocalTitle+')',true);
+  WriteDirect(' /CreationDate ('+FormatDateTime('yyyymmddhhmmss', Now)+')',true);
+  WriteDirect('}',true);
+  
+  WriteDirect('\fi',true);
   WriteDirect('\begin{document}',true);
+  WriteDirect('% special variable used for calculating some widths.',true);
+  WriteDirect('\newlength{\tmplength}',true);
   if Length(Header) > 0 then begin
     WriteWithURLs(Header);
   end;
 end;
 
-procedure TTexDocGenerator.WriteStartOfLink(const href, css, Target: string);
-var
-  s: string;
-begin
-  if css <> '' then
-    s := Format('<a class="%s"', [css])
-  else
-    s := '<a class="normal"';
-  if target <> '' then
-    s := Format('%s target="%s"', [s, target]);
-  WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
-end;
-
-procedure TTexDocGenerator.WriteStartOfLink(const href, css: string);
-begin
-  WriteStartOfLink(href, css, '');
-end;
-
-procedure TTexDocGenerator.WriteStartOfLink(const href: string);
-begin
-  WriteStartOflink(href, '', '');
-end;
 
 procedure TTexDocGenerator.WriteStartOfParagraph;
 begin
@@ -1564,16 +1834,18 @@ begin
   WriteUnitUses(HL + 1, U);
 
   WriteCIOSummary(HL + 1, U.CIOs);
+  
+  WriteCIOs(HL + 1, U.CIOs);
 
-  WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
+  WriteFuncsProcs(HL + 1, U.FuncsProcs);
 
-  WriteAnchor(SectionAnchors[dsTypes]);
+  WriteAnchor(SectionAnchors[dsTypes],'');
   WriteTypes(HL + 1, U.Types);
 
-  WriteAnchor(SectionAnchors[dsConstants]);
+  WriteAnchor(SectionAnchors[dsConstants],'');
   WriteConstants(HL + 1, U.Constants);
 
-  WriteAnchor(SectionAnchors[dsVariables]);
+  WriteAnchor(SectionAnchors[dsVariables],'');
   WriteVariables(HL + 1, U.Variables);
 
   WriteAuthors(HL + 1, U.Authors);
@@ -1581,7 +1853,6 @@ begin
   WriteFooter;
   WriteEndOfDocument;
   CloseStream;
-  WriteCIOs(HL, U.CIOs);
 end;
 
 procedure TTexDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
@@ -1647,13 +1918,11 @@ procedure TTexDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
   procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
   begin
-    WriteStartOfLink('legend.html');
     WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
-    WriteEndOfLink;
   end;
 
 begin
-  WriteStartOfTableCell;
+{
   case Item.State of
     STATE_PRIVATE:
       WriteVisibilityImage('private.gif', trPrivate);
@@ -1666,7 +1935,7 @@ begin
     STATE_AUTOMATED:
       WriteVisibilityImage('automated.gif', trAutomated);
   end;
-  WriteEndOfTableCell;
+}  
 end;
 
 { ---------------------------------------------------------------------------- }
