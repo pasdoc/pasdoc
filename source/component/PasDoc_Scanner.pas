@@ -61,11 +61,11 @@ type
     function IsDirectiveDefined(const n: string): Boolean;
     function IsSwitchDefined(n: string): Boolean;
     function OpenIncludeFile(const n: string): Boolean;
-    function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
+    function SkipUntilElseOrEndif(var FoundElse: Boolean): Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
     procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Integer = 0);
+      const; const AExitCode: Integer);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
   public
@@ -154,7 +154,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function IdentifyDirective(const t: string; out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
+function IdentifyDirective(const t: string; var dt: TDirectiveType; var DirectiveName, DirectiveParam: string): Boolean;
 var
   i: TDirectiveType;
 begin
@@ -294,7 +294,7 @@ begin
   repeat
     { check if we have a tokenizer left }
     if (FCurrentTokenizer = -1) then
-      DoError('End of stream reached while trying to get next token.', []);
+      DoError('End of stream reached while trying to get next token.', [], 0);
 
     if FTokenizers[FCurrentTokenizer].HasData then begin
         { get next token from tokenizer }
@@ -368,7 +368,7 @@ begin
           DT_INCLUDE_FILE:
             if not OpenIncludeFile(DirectiveParam) then
               DoError(GetStreamInfo + ': Error, could not open include file "'
-                + DirectiveParam + '"', []);
+                + DirectiveParam + '"', [], 0);
           DT_UNDEF: begin
               DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
               DeleteDirective(DirectiveParam);
@@ -431,7 +431,7 @@ var
 begin
   { check if maximum number of FTokenizers has been reached }
   if FCurrentTokenizer = MAX_TOKENIZERS - 1 then begin
-    DoError('%s: maximum number of FTokenizers reached.', [GetStreamInfo]);
+    DoError('%s: maximum number of FTokenizers reached.', [GetStreamInfo], 0);
   end;
 
   { determine how many names we can check; number is 1 + IncludeFilePaths.Count }
@@ -453,19 +453,15 @@ begin
         Continue; { next loop iteration }
     end;
     DoMessage(5, mtInformation, 'Trying to open include file "%s"...', [Name]);
-    try
-      if FileExists(Name) then begin
-        s := TFileStream.Create(Name, fmOpenRead);
-      end;
-    except
-      on EFileStreamError do ;
+    if FileExists(Name) then begin
+      s := TFileStream.Create(Name, fmOpenRead);
     end;
     if Assigned(s) then Break;
   end;
 
   { if we still don't have a valid open stream we failed }
   if not Assigned(s) then begin
-    DoError('%s: could not open include file %s', [GetStreamInfo, n]);
+    DoError('%s: could not open include file %s', [GetStreamInfo, n], 0);
   end;
 
   { create new tokenizer with stream }
@@ -489,7 +485,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
+function TScanner.SkipUntilElseOrEndif(var FoundElse: Boolean): Boolean;
 var
   dt: TDirectiveType;
   Level: Integer;
@@ -502,7 +498,7 @@ begin
   repeat
     t := FTokenizers[FCurrentTokenizer].SkipUntilCompilerDirective;
     if t = nil then begin
-      DoError('SkipUntilElseOrEndif GetToken', []);
+      DoError('SkipUntilElseOrEndif GetToken', [], 0);
     end;
 
     if (t.MyType = TOK_DIRECTIVE) then begin
@@ -543,7 +539,7 @@ procedure TScanner.UnGetToken(var t: TToken);
 begin
   if Assigned(FBufferedToken) then
     DoError('%s: FATAL ERROR - CANNOT UNGET MORE THAN ONE TOKEN.',
-      [GetStreamInfo]);
+      [GetStreamInfo], 0);
 
   FBufferedToken := t;
   t := nil;
