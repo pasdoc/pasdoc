@@ -89,10 +89,10 @@ type
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
 
+    function ConvertString(const s: string): string; override;
     { Called by @link(ConvertString) to convert a character.
       Will convert special characters to their html escape sequence
       -> test }
-    function ConvertString(const s: string): string; override;
     function ConvertChar(c: char): String; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
@@ -2364,6 +2364,9 @@ end;
 
 (*
   $Log$
+  Revision 1.18  2005/01/22 13:03:17  twm
+  moved description comment of ConvertChar from ConvertString to where it belongs
+
   Revision 1.17  2004/08/20 00:34:44  ccodere
     * bugfixes when writing URL's in LaTeX
 

@@ -16,7 +16,7 @@ K=0
 L=1
 M=0
 N=1
-O=1
+O=0
 P=1
 Q=0
 R=0
@@ -55,11 +55,11 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=--marker=: --output=/home/twm/source/3rd/dzchart/docs /home/twm/source/3rd/dzchart/*.pas
+RunParams=--write-uses-list --output=autodoc --include component component/*.pas
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
-DebugCWD=
+DebugCWD=/home/twm/source/pasdoc/PasDoc-0.8/source
 
 [Excluded Packages]
 /usr/local/kylix3/bin/dclsoap.so.6.9=Borland SOAP Components

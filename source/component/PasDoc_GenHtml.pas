@@ -112,10 +112,10 @@ type
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
 
+    function ConvertString(const s: string): string; override;
     { Called by @link(ConvertString) to convert a character.
       Will convert special characters to their html escape sequence
       -> test }
-    function ConvertString(const s: string): string; override;
     function ConvertChar(c: char): string; override;
     
 
