@@ -56,7 +56,7 @@ begin
   LName := LowerCase(AName);
   Result := false;
   for i := Count - 1 downto 0 do begin
-    if LowerCase(Get(i)) = AName then begin
+    if LowerCase(Get(i)) = LName then begin
       Result := True;
       break;
     end;
