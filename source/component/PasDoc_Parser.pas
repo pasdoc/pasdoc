@@ -84,6 +84,9 @@ type
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
     function ParseProperty(var p: TPasProperty): Boolean;
     function ParseType(const U: TPasUnit; var t: TToken): Boolean;
+    
+    function ParseEnum(var p: TPasEnum): boolean;
+
     function ParseUses(const U: TPasUnit): Boolean;
     function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
     function SkipDeclaration(const VC: TPasVarConst): Boolean;
@@ -862,6 +865,32 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function TParser.ParseEnum(var p: TPasEnum): boolean;
+var
+  t: TToken;
+begin
+  t := nil;
+  p := TPasEnum.Create;
+  p.Members := TStringList.Create;
+
+  GetNextNonWCToken(t);
+  while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
+    if t.MyType = TOK_IDENTIFIER then begin
+      p.Members.Add(t.Data+'='+GetLastComment(True));
+    end;
+    if t.IsSymbol(SYM_EQUAL) then begin
+      FreeAndNil(t);
+      GetNextNonWCToken(t);
+    end;
+    FreeAndNil(t);
+    GetNextNonWCToken(t);
+  end;
+  FreeAndNil(t);
+  Scanner.GetToken(t);
+  FreeAndNil(t);
+  Result := true;
+end;
+
 function TParser.ParseInterfaceSection(const U: TPasUnit): Boolean;
 const
   MODE_UNDEFINED = 0;
@@ -1162,6 +1191,7 @@ var
   n: string;
   LCollected, LTemp: string;
   M: TPasMethod;
+  E: TPasEnum;
 begin
   Result := False;
   n := t.Data;
@@ -1251,6 +1281,15 @@ begin
         end else begin
           DoError('Very strange condition - found function but could not parse', [], 1);
         end;
+      end;
+    end;
+    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
+      if ParseEnum(E) then begin
+        E.Name := n;
+        E.DetailedDescription := d;
+        U.AddType(E);
+        Result := True;
+        exit;
       end;
     end;
     SetLength(LCollected, Length(LCollected)-Length(t.Data));

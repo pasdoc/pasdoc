@@ -865,7 +865,7 @@ end;
 procedure THTMLDocGenerator.WriteItems(HL: Byte; Heading: string; const
   Anchor: string; const i: TPasItems);
 var
-  j: Integer;
+  j, k: Integer;
   Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(i) then Exit;
@@ -901,6 +901,17 @@ begin
     else
       WriteStartOfTableCell;
     WriteItemDetailedDescription(Item);
+    if Item is TPasEnum then begin
+      WriteLine('<UL>');
+      for k := 0 to TPasEnum(Item).Members.Count-1 do begin
+        WriteLine('<LI>');
+        WriteString(TPasEnum(Item).Members.Names[k]);
+        WriteString(': ');
+        WriteWithURLs(TPasEnum(Item).Members.Values[TPasEnum(Item).Members.Names[k]]);
+        WriteLine('</LI>');
+      end;
+      WriteLine('</UL>');
+    end;
     WriteEndOfTableCell;
 
     WriteEndOfTableRow;

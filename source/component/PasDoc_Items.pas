@@ -1,7 +1,6 @@
 { @abstract(defines all items that can appear within a Pascal unit's interface)
   @created(11 Mar 1999)
-  @lastmod(14 Jun 2002)
-  @lastmod(2003-03-29)
+  @lastmod(2003-04-20)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -138,6 +137,15 @@ type
   TPasVarConst = class(TPasItem)
     { full declaration, including type, default values, etc }
     FullDeclaration: string;
+  end;
+
+  { @abstract(Enumerated types) }
+  TPasEnum = class(TPasVarConst)
+  protected
+    FMembers: TStringList;
+  public
+    property Members: TStringList read FMembers write FMembers;
+    destructor Destroy; override;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -1047,6 +1055,14 @@ begin
       s := Abbreviations.Values[s];
     end;
   end;
+end;
+
+{ TPasEnum }
+
+destructor TPasEnum.Destroy;
+begin
+  Members.Free;
+  inherited;
 end;
 
 end.
