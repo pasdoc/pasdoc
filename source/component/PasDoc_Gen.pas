@@ -673,78 +673,50 @@ begin
                       t := t + CodeString(Item.Name);
                     end;
                   end
-                  else
-                      { Is it @<? }
-                    if (Run <= l - 1) and
-                      (d[Run + 1] = '<') then begin
-                      t := t + '&lt;';
-                      Inc(Run, 2);
-                    end
-                    else
-                        { Is it @>? }
-                      if (Run <= l - 1) and
-                        (d[Run + 1] = '>') then begin
-                        t := t + '&gt;';
-                        Inc(Run, 2);
-                      end
-                      else
-                          { Is it '@<' ? }
-                        if (Run <= l - 1) and
-                          (d[Run + 1] = '&') then begin
-                          t := t + '&amp;';
-                          Inc(Run, 2);
-                        end
-                        else
-                            { Is it '@=' ? }
-                          if (Run <= l - 1) and
-                            (d[Run + 1] = '=') then begin
-                            t := t + '&quot;';
-                            Inc(Run, 2);
-                          end
-                          else begin
-                            Offs1 := Run;
-                            if Item.DescriptionFindTag(d, 'LINK', Offs1,
-                              Offs2, Offs3) then begin
-                              Item.DescriptionGetTag(d, False, Offs1, Offs2,
-                                Offs3, s);
-                              t := t + ConvertString(Copy(d, Run, Offs1 -
-                                Run));
-                              Run := Offs3 + 1;
-                              TheLink := SearchLink(s, Item);
+                  else begin
+                    Offs1 := Run;
+                    if Item.DescriptionFindTag(d, 'LINK', Offs1,
+                      Offs2, Offs3) then begin
+                      Item.DescriptionGetTag(d, False, Offs1, Offs2,
+                        Offs3, s);
+                      t := t + ConvertString(Copy(d, Run, Offs1 -
+                        Run));
+                      Run := Offs3 + 1;
+                      TheLink := SearchLink(s, Item);
 
-                              if TheLink <> '' then
-                                t := t + TheLink
-                              else
-                                begin
-                                  DoMessage(1, mtWarning, 'Could not resolve "%s" (%s)', [s, Item.QualifiedName]);
-                                  t := t + CodeString(s);
-                                end;
-                            end else begin
-                              Offs1 := Run;
-                              if Item.DescriptionFindTag(d, 'CODE', Offs1,
-                                Offs2, Offs3) then begin
-                                Item.DescriptionGetTag(d, False, Offs1,
-                                  Offs2, Offs3, s);
-                                t := t + ConvertString(Copy(d, Run, Offs1 -
-                                  Run));
-                                Run := Offs3 + 1;
-                                t := t + CodeString(s);
-                              end else begin
-                                Inc(Run);
-                                if Assigned(Item.MyUnit) then begin
-                                  DoMessage(2, mtWarning,
-                                    'Found non-link tag when expanding descriptions of "' +
-                                    Item.Name + '" in unit ' + Item.MyUnit.Name,
-                                    [])
-                                end else begin
-                                  DoMessage(2, mtWarning,
-                                    'Found non-link tag when expanding descriptions of "' +
-                                    Item.Name + '"', []);
-                                  t := t + 'WARNING: @';
-                                end;
-                              end;
-                            end;
-                          end;
+                      if TheLink <> '' then
+                        t := t + TheLink
+                      else
+                        begin
+                          DoMessage(1, mtWarning, 'Could not resolve "%s" (%s)', [s, Item.QualifiedName]);
+                          t := t + CodeString(s);
+                        end;
+                    end else begin
+                      Offs1 := Run;
+                      if Item.DescriptionFindTag(d, 'CODE', Offs1,
+                        Offs2, Offs3) then begin
+                        Item.DescriptionGetTag(d, False, Offs1,
+                          Offs2, Offs3, s);
+                        t := t + ConvertString(Copy(d, Run, Offs1 -
+                          Run));
+                        Run := Offs3 + 1;
+                        t := t + CodeString(s);
+                      end else begin
+                        Inc(Run);
+                        if Assigned(Item.MyUnit) then begin
+                          DoMessage(2, mtWarning,
+                            'Found non-link tag when expanding descriptions of "' +
+                            Item.Name + '" in unit ' + Item.MyUnit.Name,
+                            [])
+                        end else begin
+                          DoMessage(2, mtWarning,
+                            'Found non-link tag when expanding descriptions of "' +
+                            Item.Name + '"', []);
+                          t := t + 'WARNING: @';
+                        end;
+                      end;
+                    end;
+                  end;
     end
     else begin
       if (d[Run] in [#9, #13, #10]) then d[Run] := ' ';
