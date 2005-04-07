@@ -37,19 +37,9 @@ Units are divided into these 3 groups because
 -- We should be eventually able to use output messages and exit status
    of pasdoc to at least a little automate the process of testing.
 
-These are not any really automated tests, so you must look at units'
-sources and comments there to know what generated documentation should
-look like (in case of ok_* and warning_* files) and what
-warnings/errors should be reported (in case of warning_* and error_* files).
-
-Of course, just briefly checking that all ok_* units generate no warnings,
-all warning_* units generate some warnings (and produce some docs)
-and all error_* units generate errors (and no docs)
-is still a better test than nothing...
-
 Notes:
 -- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
-   e.g. the filemask `ok_*' works as expected on case-sensitive filesystems.
+   e.g. the file-mask `ok_*' works as expected on case-sensitive file-systems.
 -- Most of these units will have empty implementation.
    They are not supposed to be ever compiled by anything.
 -- There is no requirement here that the interface of units
@@ -60,8 +50,96 @@ Notes:
    exactly reimplement some part of a compiler that carefully checks
    syntax and everything), it may try to generate some docs.
    But even with incorrect units, it obviously shouldn't fail with some
-   miserable error (like sigsegv :) or do anything that it shouldn't, 
+   miserable error (like sigsegv :) or do anything that it shouldn't,
    like removing some files or so.
+
+--------------------
+Possible tests to be done:
+
+1. make PAS=ok_*.pas
+   make PAS=warning_*.pas
+   make PAS=error_*.pas
+
+   and check manually pasdoc's output and generated docs.
+
+   Default output is html, you may/should also try other output
+   formats, e.g. pdf, like
+     make pdf PAS=ok_*.pas
+     make pdf PAS=warning_*.pas
+     make pdf PAS=error_*.pas
+
+   These are not any automated tests, so you must look at units'
+   sources and comments there to know what generated documentation should
+   look like (in case of ok_* and warning_* files) and what
+   warnings/errors should be reported (in case of warning_* and error_* files).
+
+   Of course, just briefly checking that all ok_* units generate no warnings,
+   all warning_* units generate some warnings (and produce some docs)
+   and all error_* units generate errors (and no docs)
+   is still a better test than nothing...
+
+2. make html validate_html
+
+   This is an automatic test that makes html docs for all test units
+   and validates them using sgml validator.
+   onsgmls program must be installed for this to work.
+
+   Links how to install onsgmls may be found here
+   [http://pasdoc.sourceforge.net/phpwiki/index.php/HtmlOutput].
+
+3. cd scripts/
+   ./check_cache.sh html
+   ./check_cache.sh latex
+
+   $1 arg for this script is required and is any valid pasdoc format
+   (as for pasdoc's --format option).
+   Rest of args are just passed to pasdoc as they are.
+
+   This runs pasdoc twice using the cache,
+   1st time the cache directory is empty and pasdoc writes the cache,
+   2nd time pasdoc should read everything from the cache.
+   The script then checks that pasdoc's output was identical each time
+   (comparing them with `diff -u', so you get diff on output if something
+   does not match).
+
+   This somehow checks that writing the cache and reading the cache
+   and writing documentation basing on information read from the cache
+   (instead of from parsing units) works OK.
+
+   Everything is read/write to a temporary directory scripts/check_cache_tmp/,
+   that is cleaned at the beginning and at the end of the script.
+   (It's cleaned at the beginning, and also by `make clean', just to
+   make sure that no garbage is left there, in case script failed
+   for whatever reason.)
+   So this script is mostly independent from the rest of the tests
+   here -- it just happens to use the same test units.
+   In case comparison between two outputs failed both outputs
+   and left in scripts/check_cache_tmp/, so developer can inspect
+   them closer.
+
+--------------------
+Random notes:
+
+Remember that you can always override at command-line what test units
+are used, e.g.
+  make html PAS=ok_*.pas
+or
+  make html PAS=todo/ok_*.pas
+or
+  make html PAS=ok_expanding_descriptions.pas
+Default value is *.pas, i.e. all test units in this directory
+(but not in todo/ subdirectory).
+
+`make clean' will clean this directory.
+
+Note that make used must be GNU make.
+Under Linux this is standard, under FreeBSD this is called `gmake',
+under Win32 you can get this with cygwin ([http://www.cygwin.com/]).
+
+scripts/ subdirectory contains some helpful things for running tests.
+These should be scripts that perform some additional tests
+on test units available here (like check_cache.sh),
+but also some helper scripts/files for Makefile in this directory.
 
 --------------------
 Subdirectory todo/
@@ -80,9 +158,9 @@ even if it doesn't do it now.
 The idea is that when developer fixes a problem with some unit
 in tests/todo/ directory, he can simply move it to tests/.
 
-(Note: There's a problem with moving files inside CVS, since it actually
-means doing `cvs remove' + `cvs add' and this does not move cvs log info
-with this unit, but I don't think that accurate cvs log info for test
+(Note: moving files inside CVS is problematic (you know, it's actually
+`cvs remove' + `cvs add' and this does not move cvs log info),
+but I don't think that accurate cvs log info for test
 units is so much important to worry about it.)
 
 These files are in separate todo/ subdirectory, because otherwise

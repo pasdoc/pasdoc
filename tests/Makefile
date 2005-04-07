@@ -1,23 +1,42 @@
-# TODO: I'll do this Makefile tomorrow, and will add more comments to README.
-# Today I'm just committing my work: README and some starting test units,
-# contents of this Makefile are now only some trivial skeleton.
+# See README for docs how to use this Makefile.
 
-.PHONY: html
+# TODO: all pasdoc's output formats should be added here,
+# including latex2rtf and htmlhelp.
+
+# Making docs ----------------------------------------
 
 # Pascal files to process.
 # Remember that you can override it at command-line,
 # e.g. run `make PAS=error_line_number.pas'
-#PAS=*.pas
-#PAS=ok_*.pas
-#PAS=warning_*.pas
-#PAS=error_*.pas
-#PAS=todo/ok_*.pas
-PAS=todo/warning_*.pas
-#PAS=todo/error_*.pas
+PAS=*.pas
+
+.PHONY: html pdf latex
 
 html:
 	mkdir -p html/
 	pasdoc --format html --output=html/ $(PAS)
 
+pdf: latex/docs.pdf
+
+latex: latex/docs.tex
+
+# (Yes, I must do `cd latex' before calling pdflatex, I can't simply call
+# `pdflatex latex/docs.tex' because then many output files of pdflatex
+# would be placed in current dir)
+latex/docs.pdf: latex/docs.tex
+	cd latex; pdflatex --file-line-error-style -interaction=nonstopmode docs.tex
+	cd latex; pdflatex --file-line-error-style -interaction=nonstopmode docs.tex
+
+latex/docs.tex:
+	mkdir -p latex/
+	pasdoc --format latex --output=latex/ $(PAS)
+
+# Other targets ----------------------------------------
+
+validate_html:
+	cd html/; ../scripts/validate_html.sh
+
 clean:
-	rm -Rf html/
+	rm -Rf html/ latex/ scripts/check_cache_tmp/
+
+# eof ----------------------------------------
