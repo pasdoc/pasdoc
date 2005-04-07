@@ -1,7 +1,6 @@
 #!/bin/sh
+set -e
 
 #./prepare-fpc.sh
 
-fpc -S2 console/PasDoc_Console.dpr -Fucomponent -FuOptionParser -Ficomponent -Sh \
-  -Cr -g -gl -gg -Ci -Co -Ct -CR\
-  $@
+fpc "$@" @pasdoc-fpc.cfg console/PasDoc_Console.dpr
