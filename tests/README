@@ -1,0 +1,97 @@
+Test units for pasdoc.
+
+The goal of these units is to be short and difficult for pasdoc.
+"Difficult" usually means that pasdoc failed to handle them correctly
+at some time, i.e. most of these units are test cases of some pasdoc's bugs
+(reported to mailing list, tracker, or just found on our own).
+
+--------------------
+Naming of Pascal unit files (and include files, ".inc") in this directory:
+
+ok_*
+  Means that this unit should be parsed by pasdoc without any warnings.
+
+warning_*
+  Means that this unit should be parsed by pasdoc (i.e. some documentation
+  for it should be generated), but some warnings should be reported
+  by pasdoc.
+
+error_*
+  Means that pasdoc should not be able to parse this unit,
+  documentation for this unit shouldn't be possible to generate.
+  pasdoc should generate proper error message for this case.
+
+  Note that pasdoc may report errors as warnings,
+  e.g. "Warning[2]: Error EPasDoc: error_line_number.pas(26):
+  could not open include file not_existing.inc ..."
+  Pasdoc calls this a warning, since, after all, it can continue
+  it's work simply skipping to the next unit.
+  But for the sake of this distinction, this is an *error*,
+  not merely a *warning*.
+  The precise difference between an error and a warning is:
+  "error makes impossible to generate documentation for this unit".
+
+Units are divided into these 3 groups because
+-- These groups are precisely defined, so there shouldn't be any concern
+   about "where this test unit belong".
+-- We should be eventually able to use output messages and exit status
+   of pasdoc to at least a little automate the process of testing.
+
+These are not any really automated tests, so you must look at units'
+sources and comments there to know what generated documentation should
+look like (in case of ok_* and warning_* files) and what
+warnings/errors should be reported (in case of warning_* and error_* files).
+
+Of course, just briefly checking that all ok_* units generate no warnings,
+all warning_* units generate some warnings (and produce some docs)
+and all error_* units generate errors (and no docs)
+is still a better test than nothing...
+
+Notes:
+-- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
+   e.g. the filemask `ok_*' works as expected on case-sensitive filesystems.
+-- Most of these units will have empty implementation.
+   They are not supposed to be ever compiled by anything.
+-- There is no requirement here that the interface of units
+   placed here must be correct Pascal code.
+   Pasdoc should be able to handle even incorrect units.
+   Usually it should break with some parsing error on such units,
+   but it doesn't have to (after all, pasdoc is not meant to
+   exactly reimplement some part of a compiler that carefully checks
+   syntax and everything), it may try to generate some docs.
+   But even with incorrect units, it obviously shouldn't fail with some
+   miserable error (like sigsegv :) or do anything that it shouldn't, 
+   like removing some files or so.
+
+--------------------
+Subdirectory todo/
+
+It contains units that are known to
+be incorrectly handled by pasdoc by now. "Incorrectly handled"
+may mean that generated documentation is incorrect, or that pasdoc
+fails with some error on correct input, but "incorrectly handled"
+may also mean that pasdoc fails to write a proper warning/error
+in case when input (unit's sources) is obviously wrong.
+
+Files inside todo/ should follow exactly the same naming convention
+as units in this directory (ok_*, warning_*, error_*).
+In this case, unit's name tells what pasdoc *should* do with such unit,
+even if it doesn't do it now.
+The idea is that when developer fixes a problem with some unit
+in tests/todo/ directory, he can simply move it to tests/.
+
+(Note: There's a problem with moving files inside CVS, since it actually
+means doing `cvs remove' + `cvs add' and this does not move cvs log info
+with this unit, but I don't think that accurate cvs log info for test
+units is so much important to worry about it.)
+
+These files are in separate todo/ subdirectory, because otherwise
+every time we would like to check our tests we would have to
+remember "oh, such-and-such test fails but it's a known problem,
+so I can ignore it". This would be troublesome,
+because *usually* we will want to test whether we did not break
+anything that previously worked, and we will not care that there
+are still some unresolved problems in pasdoc.
+
+--------------------
+And that's all for now.
