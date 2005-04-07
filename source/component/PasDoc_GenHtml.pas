@@ -2727,8 +2727,33 @@ end;
 
 function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
-  result := '<pre class="longcode">' + 
-    inherited FormatPascalCode(ConvertString(Line)) + '</pre>';
+  { Why these </p> and <p> are needed ?
+    Well, basic idea is that pasdoc should always try to make closing
+    and opening tags explicit, even though they can be omitted for paragraphs 
+    in html. And paragraph must end before <pre> and if there is any text after
+    </pre> than new paragraph must be opened.
+    
+    Besides the feeling of being "clean", specifying explicit paragraph
+    endings is also important because IE sometimes reacts stupidly
+    when paragraph is not explicitly closed, see
+    [http://sourceforge.net/mailarchive/message.php?msg_id=11388479].
+    In order to fix it, WriteItemDetailedDescription is usually called like
+      WriteStartOfParagraph;
+      WriteItemDetailedDescription(p);
+      WriteEndOfParagraph;
+    This works perfectly expect for the cases where @longcode
+    is at the end of description, then we have 
+      <p>Some text <pre>Some Pascal code</pre></p>
+    Because there is no text between "</pre>" and "</p>" this means
+    that paragraph is not implicitly opened there. This, in turn,
+    means that html validator complains that we have </p> without
+    opening a paragraph. 
+    
+    So the clean solution must be to mark explicitly that paragraph
+    always ends before <pre> and always begins after </pre>. }
+
+  result := '</p><pre class="longcode">' + 
+    inherited FormatPascalCode(ConvertString(Line)) + '</pre><p>';
 end;
 
 function THTMLDocGenerator.InsertParagraphs(const S: string): string; 
