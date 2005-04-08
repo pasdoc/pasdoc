@@ -2,11 +2,10 @@ Test units for pasdoc.
 
 The goal of these units is to be short and difficult for pasdoc.
 "Difficult" usually means that pasdoc failed to handle them correctly
-at some time, i.e. most of these units are test cases of some pasdoc's bugs
-(reported to mailing list, tracker, or just found on our own).
+at some time, i.e. most of these units are test cases of some pasdoc's bugs.
 
 --------------------
-Naming of Pascal unit files (and include files, ".inc") in this directory:
+Naming of Pascal unit files in this directory:
 
 ok_*
   Means that this unit should be parsed by pasdoc without any warnings.
@@ -25,7 +24,7 @@ error_*
   e.g. "Warning[2]: Error EPasDoc: error_line_number.pas(26):
   could not open include file not_existing.inc ..."
   Pasdoc calls this a warning, since, after all, it can continue
-  it's work simply skipping to the next unit.
+  it's work by simply skipping to the next unit.
   But for the sake of this distinction, this is an *error*,
   not merely a *warning*.
   The precise difference between an error and a warning is:
@@ -35,7 +34,7 @@ Units are divided into these 3 groups because
 -- These groups are precisely defined, so there shouldn't be any concern
    about "where this test unit belong".
 -- We should be eventually able to use output messages and exit status
-   of pasdoc to at least a little automate the process of testing.
+   of pasdoc to automate testing as much as we can.
 
 Notes:
 -- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
@@ -60,7 +59,7 @@ Possible tests to be done:
    make PAS=warning_*.pas
    make PAS=error_*.pas
 
-   and check manually pasdoc's output and generated docs.
+   and each time check manually pasdoc's output and generated docs.
 
    Default output is html, you may/should also try other output
    formats, e.g. pdf, like
@@ -103,16 +102,17 @@ Possible tests to be done:
    does not match).
 
    This somehow checks that writing the cache and reading the cache
-   and writing documentation basing on information read from the cache
+   and writing documentation basing on information obtained from the cache
    (instead of from parsing units) works OK.
 
-   Everything is read/write to a temporary directory scripts/check_cache_tmp/,
-   that is cleaned at the beginning and at the end of the script.
-   (It's cleaned at the beginning, and also by `make clean', just to
+   Everything is read/written to a temporary directory scripts/check_cache_tmp/,
+   that is removed at the beginning and at the end of the script.
+   (It's removed at the beginning, and also by `make clean', just to
    make sure that no garbage is left there, in case script failed
    for whatever reason.)
    So this script is mostly independent from the rest of the tests
    here -- it just happens to use the same test units.
+
    In case comparison between two outputs failed both outputs
    and left in scripts/check_cache_tmp/, so developer can inspect
    them closer.
@@ -154,9 +154,9 @@ in case when input (unit's sources) is obviously wrong.
 Files inside todo/ should follow exactly the same naming convention
 as units in this directory (ok_*, warning_*, error_*).
 In this case, unit's name tells what pasdoc *should* do with such unit,
-even if it doesn't do it now.
+even if it doesn't do it for now.
 The idea is that when developer fixes a problem with some unit
-in tests/todo/ directory, he can simply move it to tests/.
+in tests/todo/ directory, he can simply move this unit to tests/.
 
 (Note: moving files inside CVS is problematic (you know, it's actually
 `cvs remove' + `cvs add' and this does not move cvs log info),
