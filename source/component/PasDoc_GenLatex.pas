@@ -903,7 +903,6 @@ procedure TTexDocGenerator.WriteMethodsSummary(const HL: integer; const FuncsPro
 var
   j: Integer;
   p: TPasMethod;
-  Item: TPasItem;
   s: string;
 begin
   if FuncsProcs.Count = 0 then Exit;
@@ -948,7 +947,6 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
-  item: TPasitem;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
@@ -1008,7 +1006,6 @@ var
   j: Integer;
   p: TPasMethod;
   s: string;
-  Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
@@ -1049,7 +1046,6 @@ procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods: boo
 var
   j: Integer;
   p: TPasMethod;
-  Item: TPasItem;
   s: string;
   procstr: string;
 begin
@@ -1490,7 +1486,6 @@ var
   j: Integer;
   Prop: TPasProperty;
   s: string;
-  Item: TPasItem;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
@@ -2064,6 +2059,10 @@ end;
 
 (*
   $Log$
+  Revision 1.23  2005/04/08 17:56:17  twm
+  removed some unused variable declarations
+  checkt that it still compiles with Kylix
+
   Revision 1.22  2005/04/06 12:52:42  kambi
   * Two similiar implementations of WriteCodeWithLinks in tex and html generator
     merged to one code in TDocGenerator.WriteCodeWithLinksCommon

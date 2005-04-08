@@ -53,7 +53,8 @@ uses
   PasDoc_Parser,
   PasDoc_Tokenizer,
   PasDoc_Serialize,
-  PasDoc_Scanner;
+  PasDoc_Scanner,
+  PasDoc_TagManager in '../component/PasDoc_TagManager.pas';
 
 var
   GPasDoc: TPasDoc;

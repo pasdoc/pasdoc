@@ -51,11 +51,11 @@ PackageDCPOutputDir=
 SearchPath=../component:../OptionParser
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
-DebugSourceDirs=
+DebugSourceDirs=/home/twm/source/pasdoc/PasDoc-0.8/source/component/
 UsePackages=0
 
 [Parameters]
-RunParams=--write-uses-list --output=autodoc --include component component/*.pas
+RunParams=-marker=: -E/tmp /tmp/Unit1.pas /tmp/test2.pas
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
