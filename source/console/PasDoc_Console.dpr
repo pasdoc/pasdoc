@@ -54,7 +54,7 @@ uses
   PasDoc_Tokenizer,
   PasDoc_Serialize,
   PasDoc_Scanner,
-  PasDoc_TagManager in '../component/PasDoc_TagManager.pas';
+  PasDoc_TagManager;
 
 var
   GPasDoc: TPasDoc;
