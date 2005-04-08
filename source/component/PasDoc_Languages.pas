@@ -618,7 +618,7 @@ procedure TPasDocLanguages.SetLanguageFrench;
 begin
   FTranslation[trAuthor] := 'Auteur';
   FTranslation[trAuthors] := 'Auteurs';
-  FTranslation[trCio] := 'Classes, interfaces et objets';
+  FTranslation[trCio] := 'Classes, interfaces, structures et objets';
   FTranslation[trClass] := 'Classe';
   FTranslation[trClasses] := 'Classes';
   FTranslation[trConstants] := 'Constantes';
@@ -1548,6 +1548,9 @@ end;
 
 {
   $Log$
+  Revision 1.15  2005/04/08 02:51:47  ccodere
+    + corrected french language
+
   Revision 1.14  2005/04/06 13:34:36  kambi
   * Added "and Records" to FTranslation[trCio], FTranslation[trHeadlineCio],
     FTranslation[trSummaryCio] for English and two Polish versions
