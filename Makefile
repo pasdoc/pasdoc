@@ -23,7 +23,8 @@ endif
 PACKAGENAME:=pasdoc
 DOCTITLE:=Pasdoc documentation
 UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser
-FILE:=./source/console/pasdoc_console.dpr
+INCLUDEDIRS := ./source/component
+FILE:=./source/console/PasDoc_Console.dpr
 BINFILES:=./bin/pasdoc_console
 DOCFILES:= LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
 #SRCFILES:=./source/*
@@ -62,6 +63,11 @@ CURRENTDIR:=$(shell pwd)
 
 
 # FREEPASCAL CONFIGURATION
+
+# FPCDEFAULT means "use current os and processor", 
+# calling just fpc binary on the path
+FPCDEFAULT = fpc
+
 FPCWIN32    = fpc
 FPCGO32 = C:\pp\cross\i386-go32v2\bin\ppc386.exe
 FPCLINUXX86 = C:\pp\cross\i386-linux\bin\ppc386.exe
@@ -72,7 +78,8 @@ FPCOS2 = C:\pp\cross\i386-os2\bin\ppc386.exe
 
 FPC2   = C:\pp2\bin\win32\ppc386.exe
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
-FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR)  -S2 -vihwn -Sh -Ct
+FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
+FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR)  -S2 -vihwn -Sh -Ct $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
 
 
 # DELPHI CONFIGURATION
@@ -90,6 +97,9 @@ VPCUNITDIRS = $(foreach units,$(UNITDIRS),-U$(units))
 VPCINCDIRS = $(foreach units,$(UNITDIRS),-I$(units))
 VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCINCDIRS) -L$(OUTDIR)
 
+# Default target
+default: build-fpc-default
+
 # Clean up the output files.
 clean:
 ifdef OUTDIR
@@ -99,41 +109,43 @@ ifdef BINDIR
 	del /Q $(BINDIR)\*.*
 endif	
 
+build-fpc-default:
+	$(FPCDEFAULT) $(FPCFLAGS) $(FILE)
 
 build-fpc-win32:
-	$(FPCWIN32) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCWIN32) $(FPCFLAGS) $(FILE)
+
 build-fpc-go32:
-	$(FPCGO32) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCGO32) $(FPCFLAGS) $(FILE)
+
 build-fpc-linux:
-	$(FPCLINUXX86) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCLINUXX86) $(FPCFLAGS) $(FILE)
+
 build-fpc-linuxm68k:
-	$(FPCLINUXM68K) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCLINUXM68K) $(FPCFLAGS) $(FILE)
+
 build-fpc-amiga:
-	$(FPCAMIGA) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCAMIGA) $(FPCFLAGS) $(FILE)
+
 build-fpc-beos:
-	$(FPCBEOS) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCBEOS) $(FPCFLAGS) $(FILE)
+
 build-fpc-os2:
-	$(FPCOS2) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPCOS2) $(FPCFLAGS) $(FILE)
+
 
 build-fpc2:
-	$(FPC2) $(FPCFLAGS) $(FPCUNITDIRS) $(FILE)
-	
+	$(FPC2) $(FPCFLAGS) $(FILE)
+
 build-dcc:	
 	$(DCC) $(DCCFLAGS) $(DCCUNITDIRS) $(FILE)
-	
+
 build-vpc-win32:	
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
-	
+
 build-vpc-os2:	
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
-	
+
 
 help:
 	@echo Commands for building the targets.
@@ -149,7 +161,7 @@ help:
 	@echo make makelinuxm68k: Create a package compiled for Linux-m68k (FPC)
 	@echo make makelinux: Create a package compiled for Linux-x86 (FPC)
 	@echo make makeamiga: Create a package compiled for AmigaOS (FPC)
-	
+
 
 buildall:
 	echo Building all
@@ -161,7 +173,7 @@ buildall:
 	$(MAKE) -s -C . build-dcc
 	$(MAKE) -s -C . clean
 	$(MAKE) -s -C . clean
-	
+
 makepkg:	
 	rm -rf $(ZIPPKGDIR)
 	mkdir $(ZIPPKGDIR)
@@ -187,13 +199,13 @@ endif
 	rm -f zipit.bat
 	cp $(TEMP)$(PATHSEP)$(PACKAGENAME).zip .
 	rm -f $(TEMP)$(PATHSEP)$(PACKAGENAME).zip
-	
+
 makego32:	
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-go32
 	$(MAKE) -C . makepkg EXE=.exe
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-go32.zip
-	
+
 makewin32:	
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-win32
@@ -205,13 +217,13 @@ makeos2:
 	$(MAKE) -C . build-fpc-os2
 	$(MAKE) -C . makepkg EXE=.exe
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-os2.zip
-	
+
 makebeos:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-beos
 	$(MAKE) -C . makepkg
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-be-x86.zip
-	
+
 makelinuxm68k:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-linuxm68k
@@ -230,12 +242,12 @@ makeamiga:
 	$(MAKE) -C . build-fpc-amiga
 	$(MAKE) -C . makepkg
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-amiga-m68k.zip
-	
+
 makesrc:
 	$(MAKE) -C . clean
 	$(MAKE) -C . makepkg
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)src.zip
-	
+
 
 
 makeall:
@@ -249,4 +261,4 @@ makeall:
 	$(MAKE) -C . makelinux
 	$(MAKE) -C . makeamiga
 	$(MAKE) -C . makesrc BINFILES=
-	
+
