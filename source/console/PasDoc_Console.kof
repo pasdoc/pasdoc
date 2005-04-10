@@ -44,17 +44,22 @@ ExeDescription=
 DynamicLoader=/lib/ld-linux.so.2
 
 [Directories]
+OutputDir=
+UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=../component:../OptionParser
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
+DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
+RunParams=
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
+DebugCWD=
 
 [Excluded Packages]
 /usr/local/kylix3/bin/dclsoap.so.6.9=Borland SOAP Components
