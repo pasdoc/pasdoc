@@ -4,7 +4,8 @@
 
   To use this unit, create an object of @link(TOptionParser) and add options to
   it, each option descends from @link(TOption).
-  Then, call your object's @link(ParseOptions) method and options are parsed.
+  Then, call your object's @link(TOptionParser.ParseOptions) 
+  method and options are parsed.
   After parsing, examine your option objects. }
 unit OptionParser;
 

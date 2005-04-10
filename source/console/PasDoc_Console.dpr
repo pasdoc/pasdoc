@@ -398,7 +398,7 @@ begin
   try
     GPasDoc := TPasDoc.Create(nil);
     try
-      GPasDoc.OnWarning := TPasDocMessageEvent(MakeMethod(nil,
+      GPasDoc.OnMessage := TPasDocMessageEvent(MakeMethod(nil,
         @WriteWarning));
       if ParseCommandLine then begin
         GPasDoc.Execute;

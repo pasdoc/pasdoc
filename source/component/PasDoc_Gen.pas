@@ -39,7 +39,7 @@ const
   IdentifierOther = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
 
   { number of overview files that pasdoc generates for
-    multiple-document-formats like @link(HTML) }
+    multiple-document-formats like HTML (see @link(THTMLDocGenerator)) }
   NUM_OVERVIEW_FILES = 10;
   NUM_OVERVIEW_FILES_USED = 8;
 
@@ -161,9 +161,7 @@ end;
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
     FGraphVizUses: boolean;
-    { the (human) output language of the documentation file(s);
-      one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
-      default language is @link(DEFAULT_LANGUAGE) }
+    { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
     { Name of the project to create. }
     FProjectName: string;
@@ -213,7 +211,7 @@ end;
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
 
-    { If field @link(Stream) is assigned, it is disposed and set to nil. }
+    { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
@@ -244,14 +242,15 @@ end;
       HTML or a page number in Tex. }
     function CreateLink(const Item: TPasItem): string; virtual;
 
-    { If field @link(Stream) still exists (@<@> nil), it is closed.
+    { If @link(CurrentStream) still exists (<> nil), it is closed.
       Then, a new output stream in the destination directory with given
       name and file extension typical for this document format is created and
-      assigned to Stream.
+      assigned to @link(CurrentStream).
       No path or extension should therefore be in Name.
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
-    function CreateStream(const AName: string; const AOverwrite: boolean): TCreateStreamResult;
+    function CreateStream(const AName: string; const AOverwrite: boolean): 
+      TCreateStreamResult;
 
     { Must be overwritten.
       From an item name and its link, this creates a language-specific
@@ -541,9 +540,7 @@ end;
     procedure ParseAbbreviationsFile(const AFileName: string);
 
   published
-    { the (human) output language of the documentation file(s);
-      one of the LANG_xxx constants, e.g. @link(LANG_ENGLISH);
-      default language is @link(DEFAULT_LANGUAGE) }
+    { the (human) output language of the documentation file(s) }
     property Language: TLanguageID read GetLanguage write SetLanguage;
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;

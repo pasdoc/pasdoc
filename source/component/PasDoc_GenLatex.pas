@@ -19,10 +19,7 @@ uses
 type
   { @abstract(generates latex documentation)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in laTex (HyperText Markup Language) format.
-    This type of output is well suited to be read with a web browser at the
-    computer, as a reference manual that does not have to be printed.
-    For printed output, use @link(Tex.TTexDocGenerator). }
+    output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   protected
     FNumericFilenames: boolean;
@@ -2059,6 +2056,9 @@ end;
 
 (*
   $Log$
+  Revision 1.24  2005/04/10 06:06:16  kambi
+  * Corrected autodoc output (some broken @links etc.)
+
   Revision 1.23  2005/04/08 17:56:17  twm
   removed some unused variable declarations
   checkt that it still compiles with Kylix

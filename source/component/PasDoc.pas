@@ -79,11 +79,11 @@ type
       var ReplaceStr: string);
   protected
     { Creates a @link(TPasUnit) object from the stream and adds it to
-      @link(Units). }
+      @link(FUnits). }
     procedure HandleStream(
       const InputStream: TStream;
       const SourceFileName: string);
-    { Calls @link(HandleStream) for each file name in @link(FileNames). }
+    { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
@@ -131,7 +131,11 @@ type
     property IncludeDirectories: TStringVector read FIncludeDirectories write
       SetIncludeDirectories;
 
+    { This is deprecated name for @link(OnMessage) }
     property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage;
+    
+    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
+    
     { The name PasDoc shall give to this documentation project,
       also used to name some of the output files. }
     property ProjectName: string read FProjectName write FProjectName;

@@ -32,7 +32,7 @@ type
     output in HTML (HyperText Markup Language) format.
     This type of output is well suited to be read with a web browser at the
     computer, as a reference manual that does not have to be printed.
-    For printed output, use @link(Tex.TTexDocGenerator). }
+    For printed output, use @link(TTexDocGenerator). }
   THTMLDocGenerator = class(TDocGenerator)
   private
     { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
