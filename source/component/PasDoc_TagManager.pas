@@ -254,7 +254,7 @@ var
       TagEnd := i;
     end else
       DoMessage(1, mtWarning,
-        'No matching closing paren for paramaters of tag "%s"', [TagName]);
+        'No matching closing parenthesis for tag "%s"', [TagName]);
   end;
 
   { This function moves FOffset to the position of next '@' in Description
