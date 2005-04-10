@@ -18,6 +18,7 @@ cd ..
 pasdoc_call ()
 {
   pasdoc "$@" --format="$OUTPUT_FORMAT" ok_*.pas warning_*.pas \
+    --exclude-generator \
     --cache-dir=scripts/check_cache_tmp/cache/
 }
 
