@@ -8,10 +8,13 @@ uses
   PasDoc_Types;
 
 type
-  TTagHandler = procedure(const TagName: string; const TagDesc: string; var ReplaceStr: string) of object;
+  TTagManager = class;
+
+  TTagHandler = procedure(TagManager: TTagManager;
+    const TagName: string; const TagDesc: string; var ReplaceStr: string)
+    of object;
   TStringConverter = function(const s: string): string of object;
 
-type
   TTagHandlerObj = class
   private
     FTagHandler: TTagHandler;
@@ -41,10 +44,10 @@ type
       This is not important if ParametersAllowed = false. }
     property RecursiveTags: boolean read FRecursiveTags;
 
-    procedure Execute(const TagName: string; const TagDesc: string; var ReplaceStr: string);
+    procedure Execute(TagManager: TTagManager;
+      const TagName: string; const TagDesc: string; var ReplaceStr: string);
   end;
 
-type
   TTagManager = class
   private
     FTags: TStringList;
@@ -55,11 +58,6 @@ type
 
     function ConvertString(const s: string): string;
     procedure Unabbreviate(var s: string);
-
-    { Call OnMessage (if assigned) with given params. }
-    procedure DoMessage(const AVerbosity: Cardinal;
-      const MessageType: TMessageType; const AMessage: string;
-      const AArguments: array of const); 
       
     { Call InsertParagraphs if assigned, else just returns S. }
     function DoInsertParagraphs(const S: string): string;
@@ -67,7 +65,21 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    { This will be used to print messages from within @link(Execute). }
+    { Call OnMessage (if assigned) with given params. }
+    procedure DoMessage(const AVerbosity: Cardinal;
+      const MessageType: TMessageType; const AMessage: string;
+      const AArguments: array of const); 
+
+    { This will be used to print messages from within @link(Execute). 
+    
+      Note that in this unit we essentialy "don't know"
+      that parsed Description string is probably attached to some TPasItem.
+      It's good that we don't know it (because it makes this class more flexible).
+      But it also means that OnMessage that you assign here may want to add 
+      to passed AMessage something like + ' (Expanded_TPasItem_Name)',
+      see e.g. TDocGenerator.DoMessageFromExpandDescription. 
+      Maybe in the future we will do some descendant of this class,
+      like TTagManagerForPasItem. }
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
 
     { This will be called to insert paragraphs into a text.
@@ -110,10 +122,11 @@ begin
   FParametersAllowed := AParametersAllowed;
 end;
 
-procedure TTagHandlerObj.Execute(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TTagHandlerObj.Execute(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if Assigned(fTagHandler) then
-    fTagHandler(TagName, TagDesc, ReplaceStr);
+    fTagHandler(TagManager, TagName, TagDesc, ReplaceStr);
 end;
 
 { TTagManager }
@@ -241,7 +254,7 @@ var
       TagEnd := i;
     end else
       DoMessage(1, mtWarning,
-        'No matching closing parenthesis for paramaters of tag "%s"', [TagName]);
+        'No matching closing paren for paramaters of tag "%s"', [TagName]);
   end;
 
   { This function moves FOffset to the position of next '@' in Description
@@ -314,7 +327,7 @@ begin
           ReplaceStr := ConvertString('@(' + TagName) + Params + ConvertString(')');
         end else
           ReplaceStr := ConvertString('@' + TagName);
-        TagHandlerObj.Execute(TagName, Params, ReplaceStr);
+        TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
 
         Result := Result + ReplaceStr;
         FOffset := TagEnd;

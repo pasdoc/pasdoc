@@ -80,11 +80,16 @@ type
     procedure SetAuthors(const Value: TStringVector);
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;    
-    procedure StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreAuthorTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreCreatedTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreLastModTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreCVSTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreAbstractTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreAuthorTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreCreatedTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreLastModTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreCVSTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
   public
     // THIS IS A BAD HACK
     FDescription: string;
@@ -180,9 +185,12 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure SetParams(const Value: TStringVector);
-    procedure StoreRaisesTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreParamTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure StoreReturnsTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreRaisesTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreParamTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure StoreReturnsTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -408,7 +416,7 @@ const
 implementation
 
 uses
-  SysUtils;
+  SysUtils, PasDoc_Types;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -641,14 +649,19 @@ begin
   TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag, false, true);
 end;
 
-procedure TPasItem.StoreAbstractTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasItem.StoreAbstractTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if TagDesc = '' then exit;
+  if Description <> '' then
+    TagManager.DoMessage(1, mtWarning,
+      '@abstract tag was already specified for this item. ' +
+      'It was specified as "%s"', [Description]);
   Description := TagDesc;
   ReplaceStr := '';
 end;
 
-procedure TPasItem.StoreAuthorTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasItem.StoreAuthorTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   if Authors = nil then
@@ -657,14 +670,16 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TPasItem.StoreCreatedTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasItem.StoreCreatedTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   FCreated := TagDesc;
   ReplaceStr := '';
 end;
 
-procedure TPasItem.StoreLastModTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasItem.StoreLastModTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   FLastMod := TagDesc;
@@ -998,7 +1013,8 @@ begin
   if Variables <> nil then Variables.SortByPasItemName;
 end;
 
-procedure TPasItem.StoreCVSTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasItem.StoreCVSTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 var
   s: string;
 begin
@@ -1115,21 +1131,24 @@ begin
   inherited Destroy;
 end;
 
-procedure TPasMethod.StoreRaisesTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasMethod.StoreRaisesTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   FRaises.Add(TagDesc);
   ReplaceStr := '';
 end;
 
-procedure TPasMethod.StoreParamTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasMethod.StoreParamTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   FParams.Add(TagDesc);
   ReplaceStr := '';
 end;
 
-procedure TPasMethod.StoreReturnsTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasMethod.StoreReturnsTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then exit;
   FReturns := TagDesc;

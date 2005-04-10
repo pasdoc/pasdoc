@@ -28,7 +28,8 @@ uses
   PasDoc_HierarchyTree,
   PasDoc_Types,
   PasDoc_RunHelp,
-  Classes;
+  Classes,
+  PasDoc_TagManager;
 
 const
   { set of characters, including all letters and the underscore }
@@ -115,8 +116,15 @@ type
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TPasItem;
-    
-    procedure HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
+
+    { This just calls OnMessage (if assigned), but it appends
+      to AMessage FCurrentItem.QualifiedName. }
+    procedure DoMessageFromExpandDescription(
+      const MessageType: TMessageType; const AMessage: string; 
+      const AVerbosity: Cardinal);
+
+    procedure HandleLinkTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
 
     (* Called when an @longcode tag is encountered. This tag is used to format
       the enclosed text in the same way it would be in Delphi (using the
@@ -148,14 +156,22 @@ end;
       #)
       *)
 
-    procedure HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleLatexTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleInheritedTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure HandleLiteralTag(const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLongCodeTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleClassnameTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleHtmlTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLatexTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleInheritedTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleNameTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleCodeTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleLiteralTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
 
   protected
     FAbbreviations: TStringList;
@@ -602,8 +618,7 @@ uses
   SysUtils,
   StreamUtils,
   Utils,
-  PasDoc_Tokenizer,
-  PasDoc_TagManager;
+  PasDoc_Tokenizer;
 
 { ---------------------------------------------------------------------------- }
 { TDocGenerator                                                                }
@@ -701,7 +716,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.HandleLongCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleLongCodeTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if TagDesc = '' then
     exit;
@@ -711,22 +727,26 @@ begin
   ReplaceStr := FormatPascalCode(Copy(TagDesc,2,Length(TagDesc)-2));
 end;
 
-procedure TDocGenerator.HandleHtmlTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleHtmlTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := HtmlString(TagDesc);
 end;
 
-procedure TDocGenerator.HandleLatexTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleLatexTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := LatexString(TagDesc);
 end;
 
-procedure TDocGenerator.HandleNameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleNameTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
 end;
 
-procedure TDocGenerator.HandleClassnameTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleClassnameTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   if Assigned(fCurrentItem.MyObject) then begin
     ReplaceStr := CodeString(ConvertString(fCurrentItem.MyObject.Name));
@@ -736,12 +756,14 @@ begin
 end;
 
 // handles @true, @false, @nil (Who uses these tags anyway?)
-procedure TDocGenerator.HandleLiteralTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleLiteralTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(UpCase(TagName[1]) + Copy(TagName, 2, 255));
 end;
 
-procedure TDocGenerator.HandleInheritedTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleInheritedTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 var
   TheObject: TPasCio;
   Ancestor: TPasItem;
@@ -805,15 +827,26 @@ begin
   end;
 end;
 
-procedure TDocGenerator.HandleLinkTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleLinkTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := SearchLinkOrWarning(TagDesc, FCurrentItem,
     'Could not resolve "@Link(%s)" (%s)');
 end;
 
-procedure TDocGenerator.HandleCodeTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TDocGenerator.HandleCodeTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(TagDesc);
+end;
+
+procedure TDocGenerator.DoMessageFromExpandDescription(
+  const MessageType: TMessageType; const AMessage: string; 
+  const AVerbosity: Cardinal);
+begin
+  if Assigned(OnMessage) then
+    OnMessage(MessageType, AMessage + 
+      ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
 end;
 
 function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string): Boolean;
@@ -834,7 +867,7 @@ begin
   try
     TagManager.Abbreviations := Abbreviations;
     TagManager.StringConverter := {$IFDEF FPC}@{$ENDIF}ConvertString;
-    TagManager.OnMessage := OnMessage;
+    TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF}DoMessageFromExpandDescription;
     TagManager.InsertParagraphs := {$IFDEF FPC}@{$ENDIF}InsertParagraphs;
     
     Item.RegisterTagHandlers(TagManager);
