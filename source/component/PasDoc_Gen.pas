@@ -544,10 +544,25 @@ end;
     property Language: TLanguageID read GetLanguage write SetLanguage;
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;
-    { if true, no link to pasdoc homepage will be included at the bottom of
-      HTML files;
-      default is false }
-    property NoGeneratorInfo: Boolean read FNoGeneratorInfo write FNoGeneratorInfo default False;
+    
+    { "generator info" are 
+      things that can change with each invocation of pasdoc,
+      with different pasdoc binary etc.
+      
+      This includes
+      - time of generating docs
+      - compiler name and version used to compile pasdoc, 
+        time of compilation and such
+      - pasdoc's version
+      Default value is false (i.e. show them), 
+      as this information is generally considered useful.
+      
+      Setting this to true is useful for automatically comparing two
+      versions of pasdoc's output (e.g. when trying to automate pasdoc's 
+      tests). }
+    property NoGeneratorInfo: Boolean 
+      read FNoGeneratorInfo write FNoGeneratorInfo default False;
+    
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
