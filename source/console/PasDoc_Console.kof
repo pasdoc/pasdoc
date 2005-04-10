@@ -44,22 +44,17 @@ ExeDescription=
 DynamicLoader=/lib/ld-linux.so.2
 
 [Directories]
-OutputDir=$(HOME)/out/test
-UnitOutputDir=$(HOME)/out/test/dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=../component:../OptionParser
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
-DebugSourceDirs=/home/twm/source/pasdoc/PasDoc-0.8/source/component/
 UsePackages=0
 
 [Parameters]
-RunParams=-marker=: -E/tmp /tmp/Unit1.pas /tmp/test2.pas
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
-DebugCWD=/home/twm/source/pasdoc/PasDoc-0.8/source
 
 [Excluded Packages]
 /usr/local/kylix3/bin/dclsoap.so.6.9=Borland SOAP Components
