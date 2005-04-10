@@ -1042,7 +1042,7 @@ begin
   FFields.Deserialize(ASource);
   FMethods.Deserialize(ASource);
   FProperties.Deserialize(ASource);
-  Ancestors.Text := LoadStringFromStream(ASource);
+  Ancestors.LoadFromBinaryStream(ASource);
   FOutputFileName := LoadStringFromStream(ASource);
   ASource.Read(FMyType, SizeOf(FMyType));
 end;
@@ -1053,7 +1053,7 @@ begin
   FFields.Serialize(ADestination);
   FMethods.Serialize(ADestination);
   FProperties.Serialize(ADestination);
-  SaveStringToStream(Ancestors.Text, ADestination);
+  Ancestors.SaveToBinaryStream(ADestination);
   SaveStringToStream(FOutputFileName, ADestination);
   ADestination.Write(FMyType, SizeOf(FMyType));
 end;
@@ -1147,7 +1147,7 @@ begin
   ASource.Read(FState, SizeOf(State));
   ASource.Read(FDeprecated, SizeOf(IsDeprecated));
   ASource.Read(FPlatform, SizeOf(IsPlatform));
-  Authors.Text := LoadStringFromStream(ASource);
+  Authors.LoadFromBinaryStream(ASource);
   FCreated := LoadStringFromStream(ASource);
 end;
 
@@ -1161,16 +1161,16 @@ begin
   ADestination.Write(FState, SizeOf(State));
   ADestination.Write(FDeprecated, SizeOf(IsDeprecated));
   ADestination.Write(FPlatform, SizeOf(IsPlatform));
-  SaveStringToStream(Authors.Text, ADestination);
+  Authors.SaveToBinaryStream(ADestination);
   SaveStringToStream(Created, ADestination);
 end;
 
 procedure TPasMethod.Deserialize(const ASource: TStream);
 begin
   inherited;
-  Params.Text := LoadStringFromStream(ASource);
+  Params.LoadFromBinaryStream(ASource);
   FReturns := LoadStringFromStream(ASource);
-  FRaises.Text := LoadStringFromStream(ASource);
+  FRaises.LoadFromBinaryStream(ASource);
   FFullDecl := LoadStringFromStream(ASource);
   ASource.Read(FWhat, SizeOf(FWhat));
 end;
@@ -1178,9 +1178,9 @@ end;
 procedure TPasMethod.Serialize(const ADestination: TStream);
 begin
   inherited;
-  SaveStringToStream(Params.Text, ADestination);
+  Params.SaveToBinaryStream(ADestination);
   SaveStringToStream(FReturns, ADestination);
-  SaveStringToStream(FRaises.Text, ADestination);
+  FRaises.SaveToBinaryStream(ADestination);
   SaveStringToStream(FFullDecl, ADestination);
   ADestination.Write(FWhat, SizeOf(FWhat));
 end;
@@ -1292,7 +1292,7 @@ begin
   FCIOs.Deserialize(ASource);
   FConstants.Deserialize(ASource);
   FFuncsProcs.Deserialize(ASource);
-  FUsesUnits.Text := LoadStringFromStream(ASource);
+  FUsesUnits.LoadFromBinaryStream(ASource);
   FSourceFilename := LoadStringFromStream(ASource);
   FOutputFileName := LoadStringFromStream(ASource);
   FSourceFileDate := LoadDoubleFromStream(ASource);
@@ -1306,7 +1306,7 @@ begin
   FCIOs.Serialize(ADestination);
   FConstants.Serialize(ADestination);
   FFuncsProcs.Serialize(ADestination);
-  SaveStringToStream(FUsesUnits.Text, ADestination);
+  FUsesUnits.SaveToBinaryStream(ADestination);
   SaveStringToStream(FSourceFilename, ADestination);
   SaveStringToStream(FOutputFileName, ADestination);
   SaveDoubleToStream(SourceFileDate, ADestination);

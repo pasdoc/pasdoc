@@ -12,7 +12,7 @@ unit StringVector;
 interface
 uses
   Classes;
-    
+   
 type
   TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
@@ -24,6 +24,24 @@ type
     function IsEmpty: boolean;
     procedure Iterate(const AItFunc: TIterateFunc);
     procedure AddNotExisting(const AString: string);
+    
+    { This loads our contents (i.e. Count and Items[] values)
+      from a stream using the binary format
+      - SizeOf(Count) bytes for Count
+      - then each string is loaded using 
+        @link(TSerializable.LoadStringFromStream). 
+
+      This is better than simply loading/saving our Text value,
+      by @code(Text := TSerializable.LoadStringFromStream(Stream)),
+      because when such loading splits multiline strings,
+      e.g. if Items[0] = 'foo' + LineEnding + 'bar', 
+      then after you do Text := 'foo' + LineEnding + 'bar'
+      you get two items: Items[0] = 'foo' and Items[1] = 'bar'. }
+    procedure LoadFromBinaryStream(Stream: TStream);
+    
+    { This saves our contents in a format readable by 
+      @link(LoadFromBinaryStream). }
+    procedure SaveToBinaryStream(Stream: TStream);
   end;
 
 function NewStringVector: TStringVector;
@@ -31,7 +49,7 @@ function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
 
 implementation
 uses
-  SysUtils;
+  SysUtils, PasDoc_Serialize;
 
 function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
 begin
@@ -111,6 +129,22 @@ begin
       Delete(i);
     end;
   end;
+end;
+
+procedure TStringVector.LoadFromBinaryStream(Stream: TStream);
+var i: Integer;
+begin
+  Clear;
+  for i := 0 to TSerializable.LoadIntegerFromStream(Stream) - 1 do
+    Append(TSerializable.LoadStringFromStream(Stream));
+end;
+
+procedure TStringVector.SaveToBinaryStream(Stream: TStream);
+var i: Integer;
+begin
+  TSerializable.SaveIntegerToStream(Count, Stream);
+  for i := 0 to Count - 1 do
+    TSerializable.SaveStringToStream(Strings[i], Stream);
 end;
 
 end.

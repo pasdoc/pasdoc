@@ -15,11 +15,14 @@ type
   protected
     procedure Serialize(const ADestination: TStream); virtual; abstract;
     procedure Deserialize(const ASource: TStream); virtual;
+  public  
     class function LoadStringFromStream(const ASource: TStream): string;
     class procedure SaveStringToStream(const AValue: string; const ADestination: TStream);
     class function LoadDoubleFromStream(const ASource: TStream): double;
     class procedure SaveDoubleToStream(const AValue: double; const ADestination: TStream);
-  public
+    class function LoadIntegerFromStream(const ASource: TStream): Integer;
+    class procedure SaveIntegerToStream(const AValue: Integer; const ADestination: TStream);
+
     constructor Create; virtual;
     class procedure SerializeObject(const AObject: TSerializable; const ADestination: TStream);
     class function DeserializeObject(const ASource: TStream): TSerializable;
@@ -80,6 +83,12 @@ begin
   end;
 end;
 
+class function TSerializable.LoadIntegerFromStream(
+  const ASource: TStream): Integer;
+begin
+  ASource.Read(Result, SizeOf(Result));
+end;
+
 class function TSerializable.LoadDoubleFromStream(
   const ASource: TStream): double;
 begin
@@ -107,6 +116,12 @@ begin
 {$else}
   GClassNames.AddObject(AClass.ClassName, TObject(AClass));
 {$endif}
+end;
+
+class procedure TSerializable.SaveIntegerToStream(
+  const AValue: Integer; const ADestination: TStream);
+begin
+  ADestination.Write(AValue, SizeOf(AValue));
 end;
 
 class procedure TSerializable.SaveDoubleToStream(const AValue: double;
