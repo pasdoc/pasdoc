@@ -1,7 +1,7 @@
 { @abstract(Registers the PasDoc components into the IDE. )
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @cvs($Date$)
-  @author(Johannes Berg <johannes@sipsolutions.de> }
+  @author(Johannes Berg <johannes@sipsolutions.de>) }
 
 unit PasDoc_Reg;
 
