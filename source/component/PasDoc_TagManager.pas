@@ -239,7 +239,9 @@ var
     if (BracketCount = 0) then begin
       Parameters := Copy(Description, TagEnd + 1, i - TagEnd - 2);
       TagEnd := i;
-    end;
+    end else
+      DoMessage(1, mtWarning,
+        'No matching closing parenthesis for paramaters of tag "%s"', [TagName]);
   end;
 
   { This function moves FOffset to the position of next '@' in Description
