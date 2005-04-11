@@ -50,10 +50,6 @@ type
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
 
-    { Adds parameter String to the list of directives.
-      Returns true on success, false on failure (e.g. in case that there
-      wasn't enough memory. }
-    procedure AddDirective(const n: string);
     { Removes directive N from the internal list of directives.
       If N was not in that list, nothing is done. }
     procedure DeleteDirective(const n: string);
@@ -77,9 +73,13 @@ type
       const AStreamName: string);
     destructor Destroy; override;
 
+    { Adds parameter String to the list of directives. }
+    procedure AddDirective(const n: string);
+    
     { Adds all directives in the parameter String collection by calling
       @link(AddDirective) for each of the strings in that collection. }
     procedure AddDirectives(const DL: TStringVector);
+    
     { Gets next token and throws it away. }
     procedure ConsumeToken;
 

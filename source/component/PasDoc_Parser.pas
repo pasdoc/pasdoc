@@ -29,9 +29,11 @@ type
     and a list of directives, then does the parsing work when its
     @link(ParseUnit) method is called.
     If no errors appear, should return a @link(TPasUnit) object with
-    all information on the unit.
-    Otherwise a description of the error should be found in
-    @link(ErrorMessage). }
+    all information on the unit. 
+
+    TODO -- for now it's not really consistent how the errors in parsing
+    are reported. Some errors cause @link(ParseUnit) and other ParseXxx
+    methods to exit with false, some errors cause raising an exception. }
   TParser = class
   private
     procedure SetCommentMarkers(const Value: TStringList);

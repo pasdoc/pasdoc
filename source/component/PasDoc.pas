@@ -77,7 +77,7 @@ type
     procedure SetCommentMarkers(const Value: TStringList);
     procedure HandleDescrfileTag(const TagName, TagDesc: string;
       var ReplaceStr: string);
-  protected
+      
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(FUnits). }
     procedure HandleStream(
@@ -85,6 +85,7 @@ type
       const SourceFileName: string);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
+  protected
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
       If one is found, the item is removed from the collection.
