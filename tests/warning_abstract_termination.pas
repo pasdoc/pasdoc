@@ -3,7 +3,7 @@
   or both)
 
   Submitted in thread "Pasdoc tests" 2004-04-10 on pasdoc-main. }
-unit AbstractTermination;
+unit warning_abstract_termination;
 
 interface
 
