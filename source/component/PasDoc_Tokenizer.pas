@@ -8,7 +8,7 @@
 The @link(TTokenizer) object creates @link(TToken) objects (tokens) for the
 Pascal programming language from a character input stream.
 
-<P>The @link(PasDoc_Scanner) unit does the same (it actually uses this unit's
+The @link(PasDoc_Scanner) unit does the same (it actually uses this unit's
 tokenizer), with the exception that it evaluates compiler directives,
 which are comments that start with a dollar sign. }
 

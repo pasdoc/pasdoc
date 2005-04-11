@@ -6,7 +6,7 @@
 
   Parsing implements most of the functionality of the pasdoc program.
 
-  <P>It provides the @link(TParser) object, which scans the command line parameters
+  It provides the @link(TParser) object, which scans the command line parameters
   for file names and switches and then starts collecting information from those
   files, issueing warnings to standard out if necessary. }
 
