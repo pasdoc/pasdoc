@@ -36,13 +36,7 @@
 #     For the sake of other pasdoc developers that would like
 #     to also be able to execute `make upload' to upload freshest
 #     version of autodoc, this target at the end gives write
-#     permissions for the group for all uploaded files.
-#     Group of uploaded files is assumed to be automatically set to `pasdoc'.
-#
-#     TODO: this should be done automatically but for now
-#     do it manually: just enter
-#     shell.sourceforge.net:/home/groups/p/pa/pasdoc/htdocs/autodoc/
-#     and execute `chmod -R g+w *'
+#     permissions for the group `pasdoc' to all uploaded files.
 #
 # Some hints:
 #   To completely remake all documentation for
@@ -123,15 +117,20 @@ public: html pdf latex html-latex
 # like `make upload SF_USERNAME=my_user_name'
 SF_USERNAME=kambi
 
-SF_HOSTPATH=shell.sourceforge.net:/home/groups/p/pa/pasdoc/htdocs/autodoc/
+SF_HOST=shell.sourceforge.net
+SF_PATH=/home/groups/p/pa/pasdoc/htdocs/autodoc/
+
+SF_CONNECT=$(SF_USERNAME)@$(SF_HOST):$(SF_PATH)
 
 SCP_OPTIONS=
 
 upload:
-	scp $(SCP_OPTIONS) latex/docs.pdf $(SF_USERNAME)@$(SF_HOSTPATH)latex/
-	scp $(SCP_OPTIONS) latex/docs.tex $(SF_USERNAME)@$(SF_HOSTPATH)latex/
-	scp $(SCP_OPTIONS) latex/docs.html $(SF_USERNAME)@$(SF_HOSTPATH)latex/
-	scp $(SCP_OPTIONS) latex/docs.css $(SF_USERNAME)@$(SF_HOSTPATH)latex/
-	scp $(SCP_OPTIONS) -r html/ $(SF_USERNAME)@$(SF_HOSTPATH)
+	scp $(SCP_OPTIONS) latex/docs.pdf $(SF_CONNECT)latex/
+	scp $(SCP_OPTIONS) latex/docs.tex $(SF_CONNECT)latex/
+	scp $(SCP_OPTIONS) latex/docs.html $(SF_CONNECT)latex/
+	scp $(SCP_OPTIONS) latex/docs.css $(SF_CONNECT)latex/
+	scp $(SCP_OPTIONS) -r html/ $(SF_CONNECT)
+	../../tests/scripts/ssh_chmod_writeable_by_pasdoc.sh \
+	  $(SF_USERNAME) $(SF_PATH)
 
 # eof ------------------------------------------------------------
