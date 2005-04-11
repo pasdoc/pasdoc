@@ -33,6 +33,17 @@
 #     you can pass option `-q' to scp, calling make like this
 #     `make upload SCP_OPTIONS=-q SF_USERNAME=my_user_name'
 #
+#     For the sake of other pasdoc developers that would like
+#     to also be able to execute `make upload' to upload freshest
+#     version of autodoc, this target at the end gives write
+#     permissions for the group for all uploaded files.
+#     Group of uploaded files is assumed to be automatically set to `pasdoc'.
+#
+#     TODO: this should be done automatically but for now
+#     do it manually: just enter
+#     shell.sourceforge.net:/home/groups/p/pa/pasdoc/htdocs/autodoc/
+#     and execute `chmod -R g+w *'
+#
 # Some hints:
 #   To completely remake all documentation for
 #   http://pasdoc.sourceforge.net/autodoc/
