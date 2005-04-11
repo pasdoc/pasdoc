@@ -276,6 +276,12 @@ type
       property with the name of ItemName, the corresponding item pointer is
       returned. }
     function FindFieldMethodProperty(const ItemName: string): TPasItem;
+    
+    { If n = 0 this first checks for item inside this class,
+      i.e. checks if S1 is maybe some method or property or field.
+      
+      Then it calls inherited. }
+    function FindName(S1, S2, S3: string; n: Integer): TPasItem; override;
 
     procedure SortPasItems;
   public
@@ -798,7 +804,7 @@ begin
   end;
 end;
 
-{ TPasCio }
+{ TPasCio ------------------------------------------------------------ }
 
 destructor TPasCio.Destroy;
 begin
@@ -809,14 +815,19 @@ begin
   inherited;
 end;
 
-{ ---------------------------------------------------------------------------- }
+function TPasCio.FindName(S1, S2, S3: string; n: Integer): TPasItem; 
+begin
+  Result := nil;
+  if n = 0 then
+    Result := FindFieldMethodProperty(S1);
+  if Result = nil then
+    Result := inherited FindName(S1, S2, S3, n);
+end;
 
 function TPasCio.FindItem(const ItemName: string): TPasItem;
 begin
   FindItem := FindFieldMethodProperty(ItemName);
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 function TPasCio.FindFieldMethodProperty(const ItemName: string): TPasItem;
 begin
@@ -837,8 +848,6 @@ begin
 
   Result := nil;
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 procedure TPasCio.SortPasItems;
 begin

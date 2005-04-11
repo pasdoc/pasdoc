@@ -25,9 +25,9 @@ uses
 type
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
-    Will normally be created used @link(Init) with an input stream
-    and a list of directives, then does the parsing work when its
-    @link(ParseUnit) method is called.
+    When creating this object constructor @link(Create) takes as an argument 
+    an input stream and a list of directives.
+    Parsing work is done by calling @link(ParseUnit) method.
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. 
 
