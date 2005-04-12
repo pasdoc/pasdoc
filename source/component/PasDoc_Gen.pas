@@ -293,8 +293,12 @@ end;
     function ExtractEmailAddress(s: string; var S1, S2, EmailAddress: string): Boolean;
 
     { Searches for a link in string S, signified by
-      xxx://xxxx/.../ }
-    function ExtractLink(s: string; var S1,S2,Link: string): Boolean; virtual;
+      xxx://xxxx/.../.
+      
+      If found, returns true and sets S1, S2 and Link such that 
+      S = S1 + Link + S2 and Link is the URL that was found.
+      Else returns false. }
+    function ExtractLink(s: string; var S1,S2,Link: string): Boolean;
 
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
@@ -1641,15 +1645,28 @@ begin
   end;
 end;
 
-function TDocGenerator.ExtractLink(s: string; var S1, S2,
-  Link: string): Boolean;
+function TDocGenerator.ExtractLink(s: string; 
+  var S1, S2, Link: string): Boolean;
+  
+{ Here's how it works, and what is the meaning of constants below:
+
+  Find '://' in S.
+  Include all continuous AlphaNum chars before '://'.
+  Include all continuous FullLinkChars and HalfLinkChars chars after '://'
+  but then strip all HalfLinkChars from the end.
+  
+  This means that HalfLinkChars are allowed in the middle of URL,
+  but only as long as there is some char after FullLinkChars
+  but not at the end.
+}
+
 const
   AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
   FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
-  HalfLinkChars = ['.', ',', '-', ':', ';', '?'];
+  HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];
 var
   p, i: Integer;
-  scheme, url: string;
+  scheme: string;
 begin
   Result := False;
   p := Pos('://', s);
@@ -1664,8 +1681,7 @@ begin
     while (s[i] in HalfLinkChars) do Dec(i);
     Inc(i);
     S2 := Copy(s, i, MaxInt);
-    url := Copy(s, p+3, i - p-3);
-    link := scheme + url;
+    link := scheme + Copy(s, p+3, i - p-3);
     Result := True; 
   end;
 end;
