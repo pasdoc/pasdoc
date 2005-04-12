@@ -74,6 +74,18 @@ Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
 Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
 {$endif}
 
+type
+  TCharReplacement = 
+  record
+    cChar: Char;
+    sSpec: string[10];
+  end;
+
+{ Returns S with each char from ReplacementArray[].cChar replaced
+  with ReplacementArray[].sSpec. }
+function StringReplaceChars(const S: string; 
+  const ReplacementArray: array of TCharReplacement): string;
+
 implementation
 uses
   SysUtils,
@@ -256,5 +268,32 @@ begin
 {$endif}
 end;
 {$endif}
+
+function StringReplaceChars(const S: string; 
+  const ReplacementArray: array of TCharReplacement): string;
+
+  function Replacement(const Special: Char): String;
+  var
+    i: Integer;
+  begin
+    for i := 0 to High(ReplacementArray) do
+      with ReplacementArray[i] do
+        if cChar = Special then
+        begin
+          Result := sSpec;
+          Exit;
+        end;
+    Result := Special;
+  end;
+
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(S) do
+  begin
+    Result := Result + Replacement(S[i]);
+  end;
+end;
 
 end.

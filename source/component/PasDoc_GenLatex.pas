@@ -1919,117 +1919,24 @@ begin
   LErrors.Free;
 end;
 
-
-function TTEXDocGenerator.ConvertString(const s: String): String;
+function TTexDocGenerator.ConvertString(const S: String): String;
 const
-  NumSpecials = 69;  
-  Entities: array [1..NumSpecials] of string[16] =
-    ('{\c{C}}','{\c{c}}',
-     '{\~{N}}','{\~{n}}',
-     '{\~{A}}','{\~{a}}',
-     '{\~{O}}','{\~{o}}',
-     '{\''{A}}','{\`{A}}',
-     '{\''{a}}','{\`{a}}',
-     '{\''{o}}','{\`{o}}',
-     '{\''{E}}','{\`{E}}',
-     '{\''{e}}','{\`{e}}',
-     '{\''{U}}','{\`{U}}',
-     '{\''{u}}','{\`{u}}',
-     '{\''{O}}','{\`{O}}',
-     '{\''{I}}','{\`{I}}',
-     '{\''{i}}','{\`{i}}',
-     '{\AA}',  ',{\aa}',
-     '{\"{A}}','{\"{a}}',
-     '{\"{E}}','{\"{e}}',
-     '{\"{U}}','{\"{u}}',
-     '{\"{O}}','{\"{o}}',
-     '{\"{I}}','{\"{i}}',
-     '{\^{U}}','{\^{u}}',
-     '{\^{I}}','{\^{i}}',
-     '{\^{a}}','{\ae}',
-     '{\''{y}}','{\"{y}}',
-     '{\ss}','{\AE}',
-     '{\^{E}}','{\^{e}}',
-     '{\^{o}}','{\copyright}',
-     '{\S}','{\pounds}',
-     '{\P}','{?''}',
-     '{\$}','{\&}',
-     '{\%}','{\#}',
-     '{\{}','{\}}',
-      '{$>$}','{$<$}',
-      '{\^{}}','{\textbackslash}',
-      '{\_}'
-      
-    );
-  Specials: array [1..NumSpecials] of char =
-     ('Ç','ç',
-      'Ñ','ñ',
-      'Ã','ã',
-      'Õ','õ',
-      'Á','À',
-      'á','à',
-      'ó','ò',
-      'É','È',
-      'é','è',
-      'Ú','Ù',
-      'ú','ù',
-      'Ó','Ò',
-      'Í','Ì',
-      'í','ì',
-      'Å','å',
-      'Ä','ä',
-      'Ë','ë',
-      'Ü','ü',
-      'Ö','ö',
-      'Ï','ï',
-      'Û','û',
-      'Î','î',
-      'â','æ',    
-      'ý','ÿ',
-      'ß','Æ',
-      'Ê','ê',
-      'ô','©',
-      '§','£',
-      '¶','¿',
-      '$','&',
-      '%','#',
-      '{','}',
-      '>','<',
-      '^','\',
-      '_'
-      );
-      
-
-    function Entity(const Special: Char): String;
-    var
-      i: Integer;
-    begin
-      Result := Special;
-      { skip the @ character }
-      if Special = '@' then
-      begin  
-        Result:='@';
-        exit;
-      end;
-      for i := 1 to NumSpecials do
-        if Specials[i] = Special then
-        begin
-          Result := Entities[i];
-          break;
-        end
-    end;
-
-var
-  i: Integer;
+  ReplacementArray: array[0..10] of TCharReplacement = (
+    (cChar: '$'; sSpec: '{\$}'),
+    (cChar: '&'; sSpec: '{\&}'),
+    (cChar: '%'; sSpec: '{\%}'),
+    (cChar: '#'; sSpec: '{\#}'),
+    (cChar: '{'; sSpec: '{\{}'),
+    (cChar: '}'; sSpec: '{\}}'),
+    (cChar: '>'; sSpec: '{$>$}'),
+    (cChar: '<'; sSpec: '{$<$}'),
+    (cChar: '^'; sSpec: '{\^{}}'),
+    (cChar: '\'; sSpec: '{\textbackslash}'),
+    (cChar: '_'; sSpec: '{\_}')
+  );
 begin
-//i := 1;
-  Result := '';
-  for i:=1 to length (s) do
-   begin
-    Result := Result + Entity(s[i]);
-   end;
+  Result := StringReplaceChars(S, ReplacementArray);
 end;
-
 
 function TTexDocGenerator.ConvertChar(c: char): String;
 begin
@@ -2056,6 +1963,18 @@ end;
 
 (*
   $Log$
+  Revision 1.25  2005/04/12 21:25:13  kambi
+  * Cleaning up THTMLGenerator.ConvertString and TTexGenerator.ConvertString:
+    - code shared in Utils.StringReplaceChars
+    - removed wrong conversions of chars that used to broke pasdoc's output in
+      various non-ISO-8859-1 charsets. This fixes bug 1109867 and actually
+      more general problems with many charsets, see my letter on pasdoc-main
+      [http://sourceforge.net/mailarchive/forum.php?thread_id=7028980&forum_id=4647].
+    - accidentaly this also fixes a bug in THTMLGenerator.ConvertString
+      (previous check
+      "if (ord(Result[i]) > 127) or (Result[i] in ['<','>','&','"']) then"
+      prevented convertion of some chars like '^' to '&circ;')
+
   Revision 1.24  2005/04/10 06:06:16  kambi
   * Corrected autodoc output (some broken @links etc.)
 

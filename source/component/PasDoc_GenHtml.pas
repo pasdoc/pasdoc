@@ -2572,131 +2572,19 @@ begin
   CloseStream;
 end;
 
-
-{ TODO : This does not work under Linux (or maybe not even under Windows):
-         Where are the German Umlauts (-> &Auml; etc.) and French/Spanish
-         special characters (-> &ccedil; etc.) ?}
-function THTMLDocGenerator.ConvertString(const s: String): String;
-{
-  Code taken from "Ingo Kemper"
-  http://groups.google.com/groups?selm=aa8ntp.108.1%40ingo.tgl.westfalen.de&oe=UTF-8&output=gplain
-  and adjusted.
-}
-(* - GSk: code replaced with code below
+function THTMLDocGenerator.ConvertString(const S: String): String;
 const
-  NumSpecials = 100;
-  Entities: array [1..NumSpecials] of string[10] =
-    ('&lt;','&gt;','&amp;','&quot;','&Ccedil;','&ccedil;','&Ntilde;',
-     '&ntilde;','&THORN;','&thorn;','&Yacute;','&yacute;','&yuml;','&szlig;',
-     '&AElig;','&Aacute;','&Acirc;','&Agrave;','&Aring;','&Atilde;','&Auml;',
-     '&aelig;','&aacute;','&acirc;','&agrave;','&aring;','&atilde;','&auml;',
-     '&ETH;','&Eacute;','&Ecirc;','&Egrave;','&Euml;','&eth;','&eacute;',
-     '&ecirc;','&egrave;','&euml;','&Iacute;','&Icirc;','&Igrave;','&Iuml;',
-     '&iacute;','&icirc;','&igrave;','&iuml;','&Oacute;','&Ocirc;',
-     '&Ograve;','&Oslash;','&Otilde;','&Ouml;','&oacute;','&ocirc;',
-     '&ograve;','&oslash;','&otilde;','&ouml;','&Uacute;','&Ucirc;','&Ugrave;',
-     '&Uuml;','&uacute;','&ucirc;','&ugrave;','&uuml;','&reg;','&copy;',
-     '&plusmn;','&micro;','&para;','&middot;','&cent;','&pound;','&yen;',
-     '&sup1;','&sup2;','&sup3;','&iquest;',
-     '&deg;','&sect;','&laquo;','&raquo;',
-     '&lsquo;','&rsquo;','&sbquo;','&ldquo;','&rdquo;','&bdquo;',
-     '&permil;','&ndash;', '&mdash;','&lsaquo;','&rsaquo;','&euro;',
-     '&divide;','&times;','&brvbar;','&curren;','...');
-  Specials: array [1..NumSpecials] of char =
-     ('<','>','&','"','Ç','ç','Ñ','ñ','Þ','þ','Ý','ý','ÿ','ß','Æ','Á',
-      'Â','À','Å','Ã','Ä','æ','á','â','à','å','ã','ä',
-      'Ð','É','Ê','È','Ë','ð','é','ê','è','ë','Í','Î','Ì','Ï','í',
-      'î','ì','ï','Ó','Ô','Ò','Ø',
-      'Õ','Ö','ó','ô','ò','ø','õ','ö','Ú','Û',
-      'Ù','Ü','ú','û','ù','ü','®','©','±','µ','¶','·','¢','£','¥','¹','²','³',
-      '¿','°','§','«','»',
-      '‚','‘','’','“','”','„',
-      '‰','–','—','‹','›','€',
-      '÷','×','¦','¤','…');
-*)
-const
-  NumSpecials = 36;
-  Specials:  array[0..NumSpecials-1] of
-               record
-                 cChar:  Char;
-                 sSpec:  string[10]
-               end = (
-                 (cChar: '<';   sSpec: '&lt;'),
-                 (cChar: '>';   sSpec: '&gt;'),
-                 (cChar: '&';   sSpec: '&amp;'),
-                 (cChar: '"';   sSpec: '&quot;'),
-                 (cChar: '¤';   sSpec: '&curren;'),
-                 (cChar: '¦';   sSpec: '&brvbar;'),
-                 (cChar: '§';   sSpec: '&sect;'),
-                 (cChar: '©';   sSpec: '&copy;'),
-                 (cChar: '«';   sSpec: '&laquo;'),
-                 (cChar: '¬';   sSpec: '&not;'),
-                 (cChar: '®';   sSpec: '&reg;'),
-                 (cChar: '°';   sSpec: '&deg;'),
-                 (cChar: '±';   sSpec: '&plusmn;'),
-                 (cChar: '´';   sSpec: '&acute;'),
-                 (cChar: '·';   sSpec: '&middot;'),
-                 (cChar: '¸';   sSpec: '&cedil;'),
-                 (cChar: '»';   sSpec: '&raquo;'),
-                 (cChar: '×';   sSpec: '&times;'),
-                 (cChar: 'ß';   sSpec: '&szlig;'),
-                 (cChar: '÷';   sSpec: '&divide;'),
-                 (cChar: '^';   sSpec: '&circ;'),
-                 (cChar: '~';   sSpec: '&tilde;'),
-                 (cChar: '–';   sSpec: '&ndash;'),
-                 (cChar: '—';   sSpec: '&mdash;'),
-                 (cChar: '‘';   sSpec: '&lsquo;'),
-                 (cChar: '’';   sSpec: '&rsquo;'),
-                 (cChar: '‚';   sSpec: '&sbquo;'),
-                 (cChar: '“';   sSpec: '&ldquo;'),
-                 (cChar: '”';   sSpec: '&rdquo;'),
-                 (cChar: '„';   sSpec: '&bdquo;'),
-                 (cChar: '†';   sSpec: '&dagger;'),
-                 (cChar: '‡';   sSpec: '&Dagger;'),
-                 (cChar: '‰';   sSpec: '&permil;'),
-                 (cChar: '‹';   sSpec: '&lsaquo;'),
-                 (cChar: '›';   sSpec: '&rsaquo;'),
-                 (cChar: '€';   sSpec: '&euro;'));
-
-    function Entity(const Special: Char): String;
-    var
-      i: Integer;
-    begin
-      Result := Special;
-(* -- GSk: code replaced with code below
-      for i := 1 to NumSpecials do
-        if Specials[i] = Special then
-        begin
-          Result := Entities[i];
-          break;
-        end
-*)
-      for  i := NumSpecials - 1  downto  0  do
-        with  Specials[i]  do
-          if  cChar = Special  then
-            begin
-              Result := sSpec;
-              Break
-            end
-    end;
-
-var
-  i: Integer;
-  Ent: string;
+  ReplacementArray: array[0..5] of TCharReplacement = (
+    (cChar: '<'; sSpec: '&lt;'),
+    (cChar: '>'; sSpec: '&gt;'),
+    (cChar: '&'; sSpec: '&amp;'),
+    (cChar: '"'; sSpec: '&quot;'),
+    (cChar: '^'; sSpec: '&circ;'),
+    (cChar: '~'; sSpec: '&tilde;')
+  );
 begin
-  i := 1;
-  Result := s;
-  while i <= length (Result) do
-    if (ord(Result[i]) > 127) or (Result[i] in ['<','>','&','"']) then begin
-      Ent := Entity(Result[i]);
-      delete(Result, i, 1);
-      System.Insert(Ent, Result, i);
-      inc (i, Length (ent));
-    end else begin
-      inc(i);
-    end;
+  Result := StringReplaceChars(S, ReplacementArray);
 end;
-
 
 function THTMLDocGenerator.ConvertChar(c: char): String;
 begin
