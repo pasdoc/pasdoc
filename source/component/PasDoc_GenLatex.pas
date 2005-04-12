@@ -549,7 +549,9 @@ procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string);
         WriteDirect('\pdfinfo{',true);
         WriteDirect(' /Author     (Pasdoc)',true);
         WriteDirect(' /Title      ('+LocalTitle+')',true);
-        WriteDirect(' /CreationDate ('+FormatDateTime('yyyymmddhhmmss', Now)+')',true);
+        if not NoGeneratorInfo then
+          WriteDirect(' /CreationDate ('+
+            FormatDateTime('yyyymmddhhmmss', Now)+')',true);
         WriteDirect('}',true);
         WriteDirect('\fi',true);
         WriteDirect('',true);
@@ -1963,6 +1965,9 @@ end;
 
 (*
   $Log$
+  Revision 1.26  2005/04/12 23:34:44  kambi
+  * Made NoGeneratorInfo work with LaTeX generator
+
   Revision 1.25  2005/04/12 21:25:13  kambi
   * Cleaning up THTMLGenerator.ConvertString and TTexGenerator.ConvertString:
     - code shared in Utils.StringReplaceChars

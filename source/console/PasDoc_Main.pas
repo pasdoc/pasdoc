@@ -296,9 +296,10 @@ begin
   GPasDoc.Title := GOption_Title.Value;
 
   GPasDoc.Verbosity := GOption_Verbosity.Value;
+  
+  GPasDoc.Generator.NoGeneratorInfo := GOption_Generator.TurnedOn;
 
-  if GPasDoc.Generator is THTMLDocGenerator then begin
-    THTMLDocGenerator(GPasDoc.Generator).NoGeneratorInfo := GOption_Generator.TurnedOn;
+  if GPasDoc.Generator is THTMLDocGenerator then begin    
 
     if GOption_Footer.WasSpecified then begin
       THTMLDocGenerator(GPasDoc.Generator).LoadFooterFromFile(GOption_Footer.Value);
