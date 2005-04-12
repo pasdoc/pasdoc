@@ -35,6 +35,7 @@ var
   GOption_Verbosity: TIntegerOption;
   GOption_Define: TStringOptionList;
   GOption_Help: TBoolOption;
+  GOption_Version: TBoolOption;
   GOption_IncludePaths: TPathListOption;
   GOption_Descriptions,
   GOption_ConditionalFile,
@@ -76,6 +77,10 @@ begin
   GOption_Help := TBoolOption.Create('?', 'help', True, False);
   GOption_Help.Explanation := 'show this help';
   GOptionParser.AddOption(GOption_Help);
+
+  GOption_Version := TBoolOption.Create(#0, 'version');
+  GOption_Version.Explanation := 'show pasdoc version (and related info)';
+  GOptionParser.AddOption(GOption_Version);
 
   GOption_Verbosity := TIntegerOption.Create('v', 'verbosity', True, False);
   GOption_Verbosity.Value := DEFAULT_VERBOSITY_LEVEL;
@@ -231,6 +236,9 @@ begin
     PrintUsage;
     exit;
   end;
+  
+  if GOption_Version.TurnedOn then
+    Exit;
 
   GOption_Format.Value := LowerCase(GOption_Format.Value);
   { install a default generator }
