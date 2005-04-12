@@ -111,8 +111,10 @@ Possible tests to be done:
    (and read also Thomas answers!) about this:
    [http://sourceforge.net/mailarchive/message.php?msg_id=11427925].
    In short: this technique of checking will be successful
-   if pasdoc's output will not change very often.
-
+   if pasdoc's output will not change very often, or if the changes
+   will be very local (because then developer will be able to grok them
+   by looking at output of `diff -u html/ correct_output/html/').
+   
    If pasdoc's developer sees at any point that "current output" differs
    from "correct output" and also he carefully checked that "current
    output" is still correct, than he should upload his "current output"
