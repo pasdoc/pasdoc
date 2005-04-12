@@ -7,7 +7,7 @@
 // @abstract( This unit is used for converting to and from the BigEndian format.
 // See http://community.borland.com/article/0,1410,28964,00.html.)
 
-unit ComplicatedRecord;
+unit ok_complicated_record;
 
 interface
 

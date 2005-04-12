@@ -10,11 +10,15 @@
 # e.g. run `make PAS=error_line_number.pas'
 PAS=*.pas
 
+# These options will be passed to every pasdoc invocation,
+# i.e. for every output format.
+PASDOC_OPTIONS=--exclude-generator $(PAS)
+
 .PHONY: html pdf latex
 
 html:
 	mkdir -p html/
-	pasdoc --format html --output=html/ $(PAS)
+	pasdoc --format html --output=html/ $(PASDOC_OPTIONS)
 
 pdf: latex/docs.pdf
 
@@ -29,7 +33,7 @@ latex/docs.pdf: latex/docs.tex
 
 latex/docs.tex:
 	mkdir -p latex/
-	pasdoc --format latex --output=latex/ $(PAS)
+	pasdoc --format latex --output=latex/ $(PASDOC_OPTIONS)
 
 # Other targets ----------------------------------------
 
@@ -37,6 +41,7 @@ validate_html:
 	cd html/; ../scripts/validate_html.sh
 
 clean:
-	rm -Rf html/ latex/ scripts/check_cache_tmp/
+	rm -Rf html/ latex/ scripts/check_cache_tmp/ \
+	  scripts/upload_correct_tests_output_tmp/
 
 # eof ----------------------------------------
