@@ -214,13 +214,15 @@ type
 
     function EscapeURL(const AString: string): string; virtual;
   published
-    property HtmlHelp: boolean read FHtmlHelp write FHtmlHelp;
+    property HtmlHelp: boolean read FHtmlHelp write FHtmlHelp default false;
     property ContentsFile: string read FContentsFile write FContentsFile;
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
     property CSS: string read FCSS write FCSS;
-    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
-    property WriteUsesClause: boolean read FWriteUses write FWriteUses;
+    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
+      default false;
+    property WriteUsesClause: boolean read FWriteUses write FWriteUses
+      default false;
   end;
 
 {$INCLUDE automated.inc}

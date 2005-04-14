@@ -169,11 +169,13 @@ type
   published
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
-    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames;
-    property WriteUsesClause: boolean read FWriteUses write FWriteUses;
-    property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf;
+    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
+      default false;
+    property WriteUsesClause: boolean read FWriteUses write FWriteUses
+      default false;
+    property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
     
-   private
+  private
     procedure WriteParameter(const ParamName: string; const Desc: string);
     procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
       List: TStringVector; LinkToParamNames: boolean);
@@ -1965,6 +1967,10 @@ end;
 
 (*
   $Log$
+  Revision 1.27  2005/04/14 10:21:51  kambi
+  * Specified default values for many properties. This means that code is better self-documenting,
+    and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
+
   Revision 1.26  2005/04/12 23:34:44  kambi
   * Made NoGeneratorInfo work with LaTeX generator
 

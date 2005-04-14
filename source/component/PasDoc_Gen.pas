@@ -561,7 +561,8 @@ end;
 
   published
     { the (human) output language of the documentation file(s) }
-    property Language: TLanguageID read GetLanguage write SetLanguage;
+    property Language: TLanguageID read GetLanguage write SetLanguage
+      default DEFAULT_LANGUAGE;
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;
     
@@ -596,9 +597,11 @@ end;
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
 
     { generate a GraphViz diagram for the units dependencies }
-    property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses;
+    property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses
+      default false;
     { generate a GraphViz diagram for the Class hierarchy }
-    property OutputGraphVizClassHierarchy: boolean read FGraphVizClasses write FGraphVizClasses;
+    property OutputGraphVizClassHierarchy: boolean 
+      read FGraphVizClasses write FGraphVizClasses default false;
     { link the GraphViz uses diagram }
     property LinkGraphVizUses: string read FLinkGraphVizUses write FLinkGraphVizUses;
     { link the GraphViz classes diagram }
@@ -606,10 +609,12 @@ end;
 
     property Abbreviations: TStringList read FAbbreviations write SetAbbreviations;
 
-    property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling;
+    property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling
+      default false;
     property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
-    property FullLink: boolean read FFullLink write FFullLink;
+    property FullLink: boolean read FFullLink write FFullLink
+      default false;
   end;
 
 var

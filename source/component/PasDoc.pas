@@ -143,10 +143,12 @@ type
     property SourceFileNames: TStringVector read FSourceFileNames write
       SetSourceFileNames;
     property Title: string read FTitle write FTitle;
-    property Verbosity: Cardinal read FVerbosity write FVerbosity;
+    property Verbosity: Cardinal read FVerbosity write FVerbosity 
+      default DEFAULT_VERBOSITY_LEVEL;
     property StarStyleOnly: boolean read GetStarStyle write SetStarStyle;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
-    property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional;
+    property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
+      default false;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;

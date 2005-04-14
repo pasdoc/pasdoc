@@ -107,7 +107,10 @@ type
     trGeneratedBy,
     trOnDateTime);
 
+const
+  DEFAULT_LANGUAGE = lgEnglish;
 
+type
   { Language class to hold all translated strings }
   TPasDocLanguages = class
   private
@@ -167,7 +170,8 @@ type
     property CharSet: string read FCharSet;
     property Translation[const ATranslationID: TTranslationID]: string read GetTranslation;
     constructor Create;
-    property Language: TLanguageID read FLanguage write SetLanguage;
+    property Language: TLanguageID read FLanguage write SetLanguage
+      default DEFAULT_LANGUAGE;
   end;
 
 type
@@ -204,8 +208,6 @@ const
     );
 
 implementation
-const
-  DEFAULT_LANGUAGE = lgEnglish;
 
 procedure TPasDocLanguages.SetLanguageEnglish;
 begin
@@ -1548,6 +1550,10 @@ end;
 
 {
   $Log$
+  Revision 1.16  2005/04/14 10:21:51  kambi
+  * Specified default values for many properties. This means that code is better self-documenting,
+    and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
+
   Revision 1.15  2005/04/08 02:51:47  ccodere
     + corrected french language
 
