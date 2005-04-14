@@ -78,7 +78,7 @@ type
   TCharReplacement = 
   record
     cChar: Char;
-    sSpec: string[10];
+    sSpec: string;
   end;
 
 { Returns S with each char from ReplacementArray[].cChar replaced
