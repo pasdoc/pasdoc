@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <Name Value="pasdoc_package"/>
+    <Author Value="PasDoc developers"/>
+    <CompilerOptions>
+      <Version Value="5"/>
+      <SearchPaths>
+        <IncludeFiles Value="../../component/"/>
+        <OtherUnitFiles Value="../../component/"/>
+        <UnitOutputDirectory Value="lib/"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+          <UseAnsiStrings Value="True"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <Checks>
+          <IOChecks Value="True"/>
+        </Checks>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <Verbosity>
+          <ShowNotes Value="False"/>
+          <ShowHints Value="False"/>
+        </Verbosity>
+        <WriteFPCLogo Value="False"/>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="PasDoc - components that generate documentation for Pascal units by parsing units interface, extracting identifiers and associated comments.
+See http://pasdoc.sourceforge.net/
+"/>
+    <License Value="Hashes unit on GNU LGPL version >= 2.
+Rest on GNU General Public License version 2."/>
+    <Version Minor="8" Release="8"/>
+    <Files Count="19">
+      <Item1>
+        <Filename Value="../../component/Hashes.pas"/>
+        <UnitName Value="Hashes"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../../component/ObjectVector.pas"/>
+        <UnitName Value="ObjectVector"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../../component/PasDoc.pas"/>
+        <UnitName Value="PasDoc"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../component/PasDoc_Gen.pas"/>
+        <UnitName Value="PasDoc_Gen"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../../component/PasDoc_GenHtml.pas"/>
+        <UnitName Value="PasDoc_GenHtml"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../../component/PasDoc_GenLatex.pas"/>
+        <UnitName Value="PasDoc_GenLatex"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../component/PasDoc_HierarchyTree.pas"/>
+        <UnitName Value="PasDoc_HierarchyTree"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../../component/PasDoc_Items.pas"/>
+        <UnitName Value="PasDoc_Items"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../../component/PasDoc_Languages.pas"/>
+        <UnitName Value="PasDoc_Languages"/>
+      </Item9>
+      <Item10>
+        <Filename Value="../../component/PasDoc_Parser.pas"/>
+        <UnitName Value="PasDoc_Parser"/>
+      </Item10>
+      <Item11>
+        <Filename Value="../../component/PasDoc_Reg.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="PasDoc_Reg"/>
+      </Item11>
+      <Item12>
+        <Filename Value="../../component/PasDoc_RunHelp.pas"/>
+        <UnitName Value="PasDoc_RunHelp"/>
+      </Item12>
+      <Item13>
+        <Filename Value="../../component/PasDoc_Scanner.pas"/>
+        <UnitName Value="PasDoc_Scanner"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../../component/PasDoc_Serialize.pas"/>
+        <UnitName Value="PasDoc_Serialize"/>
+      </Item14>
+      <Item15>
+        <Filename Value="../../component/PasDoc_TagManager.pas"/>
+        <UnitName Value="PasDoc_TagManager"/>
+      </Item15>
+      <Item16>
+        <Filename Value="../../component/PasDoc_Tokenizer.pas"/>
+        <UnitName Value="PasDoc_Tokenizer"/>
+      </Item16>
+      <Item17>
+        <Filename Value="../../component/PasDoc_Types.pas"/>
+        <UnitName Value="PasDoc_Types"/>
+      </Item17>
+      <Item18>
+        <Filename Value="../../component/StreamUtils.pas"/>
+        <UnitName Value="StreamUtils"/>
+      </Item18>
+      <Item19>
+        <Filename Value="../../component/StringVector.pas"/>
+        <UnitName Value="StringVector"/>
+      </Item19>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)/"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
