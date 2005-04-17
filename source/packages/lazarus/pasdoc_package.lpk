@@ -31,13 +31,12 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="PasDoc - components that generate documentation for Pascal units by parsing units interface, extracting identifiers and associated comments.
-See http://pasdoc.sourceforge.net/
+    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/
 "/>
-    <License Value="Hashes unit on GNU LGPL version >= 2.
-Rest on GNU General Public License version 2."/>
+    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
+"/>
     <Version Minor="8" Release="8"/>
-    <Files Count="19">
+    <Files Count="20">
       <Item1>
         <Filename Value="../../component/Hashes.pas"/>
         <UnitName Value="Hashes"/>
@@ -115,6 +114,10 @@ Rest on GNU General Public License version 2."/>
         <Filename Value="../../component/StringVector.pas"/>
         <UnitName Value="StringVector"/>
       </Item19>
+      <Item20>
+        <Filename Value="../../component/Utils.pas"/>
+        <UnitName Value="Utils"/>
+      </Item20>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

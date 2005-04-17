@@ -1,0 +1,17 @@
+In this directory you should be able to find packages that allow you
+to install PasDoc components in Lazarus and Delphi IDE.
+
+For Delphi the intention is that we will provide packages
+for these Delphi versions that are available to us.
+No other long-term promise can be made.
+Note that Kylix packages are in delphi/linux/ subdirectory,
+there is no kylix/ subdirectory.
+
+For Lazarus the intention is that we will provide packages
+just for latest version of Lazarus. There should be no reason
+to provide separate packages for different Lazarus versions.
+
+Package name is "pasdoc_package", not just "pasdoc", to avoid
+any name conflicts with unit PasDoc.pas and the pasdoc program.
+Version of the package reflects version stored in PASDOC_VERSION
+constant in PasDoc unit.
