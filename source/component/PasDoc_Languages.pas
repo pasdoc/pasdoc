@@ -190,7 +190,7 @@ const
     (Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
     (Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
     (Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
-    (Name: 'Frensh'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
+    (Name: 'French'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
     (Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'),
     (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
     (Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
@@ -1550,6 +1550,9 @@ end;
 
 {
   $Log$
+  Revision 1.17  2005/04/17 03:46:53  kambi
+  * typo fix: Frensh -> French
+
   Revision 1.16  2005/04/14 10:21:51  kambi
   * Specified default values for many properties. This means that code is better self-documenting,
     and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
