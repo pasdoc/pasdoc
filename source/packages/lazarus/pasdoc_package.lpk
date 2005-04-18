@@ -31,10 +31,8 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/
-"/>
-    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
-"/>
+    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/"/>
+    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2."/>
     <Version Minor="8" Release="8"/>
     <Files Count="20">
       <Item1>
