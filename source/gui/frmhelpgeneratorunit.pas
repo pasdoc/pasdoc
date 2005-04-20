@@ -280,7 +280,7 @@ var
   LanguageIndex: TLanguageID;
 begin
   EditHtmlBrowserCommand.Text :=
-    {$ifdef WIN32} 'explorer %s' {$else} 'sensible-browser %s' {$endif};
+    {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
   comboLanguages.Items.Capacity :=
     Ord(High(LanguageIndex)) - Ord(Low(TLanguageID)) + 1;
