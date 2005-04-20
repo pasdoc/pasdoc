@@ -9,19 +9,6 @@
   for HTML under Win32, using ShellExecute.
   Under UNIXes the equivalent is already available, just use `run-mailcap'.
 
-- Caption should reflect current filename of the project, or 'noname.pds'
-  if it's not saved yet. Also '*' should be added when Changed = true.
-
-  These are the common ways to say user what filename he is editing
-  (because he *is* editing a file using pasdoc_gui: he's editing
-  his PasDoc Settings, pds file) and what is the value of Changed.
-
-  This would also render unnecessary the code
-  "PageControl1.ActivePageIndex := 0;"
-  currently done when user executes "New" menu command.
-  I find it unpleasant, but for now it's sometimes necessary to clearly
-  show the user that settings were reseted.
-
 - Layout of controls is not controlled as good as it should be.
   You may encounter problems if you use unusually large fonts etc.
   This is partially because of lame (nonexistent?) Delphi positioning

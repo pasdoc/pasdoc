@@ -45,3 +45,19 @@ Notes about command to run browser:
 
 See HISTORY file for changes that I did while converting HelpGenerator
 to FPC/Lazarus pasdoc_gui.
+
+Development things:
+
+- In case of uncertainties, we should try to conform to GNOME HIG 2.0
+  standards. This is (at least for now) not to be taken *too* strictly,
+  so don't worry if you don't know GNOME HIG.
+
+- pasdoc_gui.lpi XML file contains many important project settings,
+  but also many settings that you can easily modify "by accident".
+  (actually, this is the same problem as with Delphi/Kylix config files)
+
+  We just have to live with it. So:
+  when committing don't worry if you accidentaly modified something
+  in pasdoc_gui.lpi file, but try to not commit anything really
+  "breaking" there, that could make difficult for other developers
+  to open a project.

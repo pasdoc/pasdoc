@@ -1,4 +1,22 @@
+- Done item from TO-DO file:
+
+  Caption should reflect current filename of the project, or 'noname.pds'
+  if it's not saved yet. Also '*' should be added when Changed = true.
+
+  These are the common ways to say user what filename he is editing
+  (because he *is* editing a file using pasdoc_gui: he's editing
+  his PasDoc Settings, pds file) and what is the value of Changed.
+
+  This would also render unnecessary the code
+  "PageControl1.ActivePageIndex := 0;"
+  currently done when user executes "New" menu command.
+  I find it unpleasant, but for now it's sometimes necessary to clearly
+  show the user that settings were reseted.
+
 For later changes see cvs logs.
+Although some changes may be mentioned in this file if they were
+previously mentioned in TO-DO file. Upon fixing such things
+you can move text from TO-DO file to this HISTORY file.
 
 kambi, 2005-04-20:
 Changes done to HelpGenerator to make it work cleanly with FPC/Lazarus:

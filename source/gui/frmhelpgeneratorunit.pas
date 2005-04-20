@@ -43,15 +43,15 @@ type
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
-   EditHtmlBrowserCommand: TEdit;
-   Label13: TLabel;
-   Label4: TLabel;
-   Label5: TLabel;
-   LabelHtmlBrowserCommand: TLabel;
-   MemoCommandLog: TMemo;
-   memoFooter: TMemo;
-   memoHeader: TMemo;
-   Panel4: TPanel;
+    EditHtmlBrowserCommand: TEdit;
+    Label13: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    LabelHtmlBrowserCommand: TLabel;
+    MemoCommandLog: TMemo;
+    memoFooter: TMemo;
+    memoHeader: TMemo;
+    Panel4: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
     // and @link(TexDocGenerator) to create the output.
@@ -151,15 +151,24 @@ type
     procedure comboGenerateFormatChange(Sender: TObject);
     procedure About1Click(Sender: TObject);
   private
+    FChanged: boolean;
+    FSettingsFileName: string;
     procedure SaveChanges(var Action: TCloseAction);
+    procedure SetChanged(const AValue: boolean);
     procedure SetDefaults;
-    { Private declarations }
+    procedure SetSettingsFileName(const AValue: string);
+    procedure UpdateCaption;
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
-    Changed: boolean;
+    property Changed: boolean read FChanged write SetChanged;
+    { This is the settings filename (.pds file) that is currently
+      opened. You can look at pasdoc_gui as a "program to edit pds files".
+      It is '' if current settings are not associated with any filename
+      (because user did not opened any pds file, or he chose "New" menu item). }
+    property SettingsFileName: string read FSettingsFileName
+      write SetSettingsFileName;
     DefaultDirectives: TStringList;
-    { Public declarations }
   end;
 
 var
@@ -249,8 +258,6 @@ end;
 
 procedure TfrmHelpGenerator.SetDefaults;
 begin
-  PageControl1.ActivePageIndex := 0;
-
   clbMethodVisibility.Checked[0] := True;
   clbMethodVisibility.Checked[1] := True;
   clbMethodVisibility.Checked[2] := False;
@@ -274,6 +281,32 @@ begin
   Changed := False;
 end;
 
+procedure TfrmHelpGenerator.UpdateCaption;
+var
+  NewCaption: string;
+begin
+  { Caption value follows GNOME HIO 2.0 standard }
+  NewCaption := '';
+  if Changed then NewCaption += '*';
+  if SettingsFileName = '' then
+   NewCaption += 'Unsaved PasDoc settings' else
+   NewCaption += SettingsFileName;
+  NewCaption += ' - PasDoc GUI';
+  Caption := NewCaption;
+end;
+
+procedure TfrmHelpGenerator.SetChanged(const AValue: boolean);
+begin
+  if FChanged = AValue then Exit;
+  FChanged := AValue;
+  UpdateCaption;
+end;
+
+procedure TfrmHelpGenerator.SetSettingsFileName(const AValue: string);
+begin
+  FSettingsFileName := AValue;
+  UpdateCaption;
+end;
 
 procedure TfrmHelpGenerator.FormCreate(Sender: TObject);
 var
@@ -304,6 +337,9 @@ begin
   DefaultDirectives.Append('DEBUG');
 
   SetDefaults;
+  
+  { It's too easy to change it at design-time, so we set it at runtime. }
+  PageControl1.ActivePageIndex := 0;
 end;
 
 procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
@@ -437,9 +473,9 @@ var i: Integer;
 begin
   if OpenDialog2.Execute then
   begin
-    SaveDialog1.FileName := OpenDialog2.FileName;
+    SettingsFileName := OpenDialog2.FileName;
 
-    Ini := TIniFile.Create(SaveDialog1.FileName);
+    Ini := TIniFile.Create(SettingsFileName);
     try
       { Default values for ReadXxx() methods here are not so important,
         don't even try to set them right.
@@ -504,8 +540,9 @@ var i: Integer;
 begin
   if SaveDialog1.Execute then
   begin
+    SettingsFileName := SaveDialog1.FileName;
 
-    Ini := TIniFile.Create(SaveDialog1.FileName);
+    Ini := TIniFile.Create(SettingsFileName);
     try
       Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
       Ini.WriteString('Main', 'OutputDir', edOutput.Text);
@@ -587,7 +624,7 @@ begin
 
   SetDefaults;
 
-  SaveDialog1.FileName := '';
+  SettingsFileName := '';
 
   Changed := False;
 end;
