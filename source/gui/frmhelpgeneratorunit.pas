@@ -51,6 +51,7 @@ type
    MemoCommandLog: TMemo;
    memoFooter: TMemo;
    memoHeader: TMemo;
+   Panel4: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
     // and @link(TexDocGenerator) to create the output.
