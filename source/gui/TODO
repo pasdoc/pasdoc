@@ -1,0 +1,47 @@
+- spinedit has wrong width at runtime on Win32.
+  This is most probably a problem in Win32 Lazarus code.
+  GTK 1 version has no problems.
+
+- Default value of EditHtmlBrowserCommand.Text
+  should be read from some user's config file.
+
+  Also this should allow executing "default shell association"
+  for HTML under Win32, using ShellExecute.
+  Under UNIXes the equivalent is already available, just use `run-mailcap'.
+
+- Caption should reflect current filename of the project, or 'noname.pds'
+  if it's not saved yet. Also '*' should be added when Changed = true.
+
+  These are the common ways to say user what filename he is editing
+  (because he *is* editing a file using pasdoc_gui: he's editing
+  his PasDoc Settings, pds file) and what is the value of Changed.
+
+  This would also render unnecessary the code
+  "PageControl1.ActivePageIndex := 0;"
+  currently done when user executes "New" menu command.
+  I find it unpleasant, but for now it's sometimes necessary to clearly
+  show the user that settings were reseted.
+
+- Layout of controls is not controlled as good as it should be.
+  You may encounter problems if you use unusually large fonts etc.
+  This is partially because of lame (nonexistent?) Delphi positioning
+  scheme, partially because of problems with keeping such things
+  portable in Lazarus (across GTK and Win32 component sets).
+
+  It's a shame for me, but for now each time I switched between
+  GTK and Win32 I found that I have to readjust layout of some things
+  a little... Hopefully these issues are now gone and layout looks good
+  for everyone, but I'm not happy with it, really.
+
+- pasdoc_gui should allow user to configure default state of "Defines".
+  Actually, it should allow user to configure default state of *all* options.
+  E.g. maybe someone always wants to make default language of docs = Polish ?
+  Maybe someone wants default verbosity = 6 ?
+  Maybe someone has some include directory with his include files that
+  he wants to always be added to "Include dirs" by default ?
+  This can all be very nicely solved by storing some "default project settings"
+  in user's directory and loading it on program start (and menu "New" execution).
+  Then the code that currently loads contents from Ini file can be modified
+  to actually have really good default values, and instead of using "SetDefaults"
+  we simply load from a file where "default project settings" for this user
+  are stored (like ~/.pasdoc_gui/default.pds on Unixes)

@@ -1,0 +1,108 @@
+For later changes see cvs logs.
+
+kambi, 2005-04-20:
+Changes done to HelpGenerator to make it work cleanly with FPC/Lazarus:
+- I renamed it to "pasdoc_gui" (instead of "HelpGenerator"),
+  because I just consider it a better name.
+
+  I also changed output extension to "pds" (was "hgs").
+  This not only reflects new name, but it also reflects the fact
+  that pasdoc_gui *cannot* read files written by HelpGenerator.
+  See lower in this file for description why I changed the way
+  settings are read/written.
+
+- I removed dependency on MemCheck unit, not only because it's does not
+  comply with GNU GPL free but also because it's absolutely useless for
+  FPC programs. (HeapTrc unit exists for FPC that does roughly what
+  MemCheck unit does for Delphi).
+
+- I also removed USGS copyright notices at the beginning of the file
+  frmhelpgeneratorunit.pas because they were making unclear
+  statements about what and how is required.
+  I replaced them with standard GNU GPL copyright preamble.
+
+  My basis is that original code by Richard is said to be
+  on public domain, so I can do anything with it, including licensing
+  modified version of HelpGenerator as GNU GPL sources.
+
+  If someone thinks that I cannot do this, I will obey.
+  Although I prefer to develop free software using GNU GPL,
+  and a "clean GNU GPL", without any additional legal statements.
+
+  Richard: even if what I did is OK, you may still want me to change
+  the first line of copyright. I put there
+  "Copyright 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)"
+  basing on previous copyright comments.
+
+- Part of "Options" tab splitted to "Header/Footer" tab to make it
+  smaller.
+
+- "About" form changed.
+
+- Running external browser is implemented using TProcess.
+
+- Let me elaborate a little why previous system with saving
+  setting was not working correctly:
+
+  When you save a component to a stream, Delphi and FPC do not write
+  properties that have a default value. This is against the spirit
+  of what was assumed in HelpGenerator code, that incorrectly *assumed*
+  that this will always be done.
+
+  You can see this bug in HelpGenerator:
+  1. clear "Defines" memo
+  2. save project as "foo.hgs"
+  3. write some values in "Defines" memo, like 'FPC'
+  4. load project as "foo.hgs"
+  Bug: "Defines" memo contains value 'FPC', but it shouldn't, because
+  "foo.hgs" says that no defines should be specified.
+  Why ? Because ObjectPascal streaming system did not record in "foo.hgs"
+  file value of Directives property, it assumed that having Count=0 is the
+  default state of "Defines" property, so there is no need to save it.
+
+  There are a couple of property types where this behavior will always be
+  present, e.g. string properties are never saved when their value is '' etc.
+  For *some* properties (namely, ones that are obtained via GetOrdProp RTTI call,
+  with the exception of "Integer default $80000000" because $80000000 is special)
+  you can reliably tell Delphi to always save them (regardless of their
+  value) but
+  1. this is uncleanly done in Delphi (because it's not a general solution,
+     it doesn't work for all property types (it doesn't work for TString
+     property or a string property), and there's that funny thing
+     with $80000000 being special)
+  2. unfortunately FPC does not implement it for now. This means that
+     in FPC property always has some implicit default value, like "false"
+     for booleans and "0" for integers. There is *no* way to tell FPC
+     to always save a boolean property to a file (regardless of value
+     of that property). See this thread in fpc-pascal mailing archives:
+     [http://www.nl.freepascal.org/lists/fpc-pascal/2005-April/008267.html]
+
+  What does it mean in a "general view" ?
+  Using ObjectPascal streaming system is a perfect (and easy) way
+  when you always load object from a file *right after* creating it
+  and you're prepared that if some property has some default value,
+  it's "Set" method will not be called by the streaming system at all.
+  Streaming system simply assumes that properties are already correctly
+  set to their default values.
+
+  That's why I decided that it will be simplest to simply resign from
+  using separate THelpGeneratorProjectOptions class at all.
+  I simply remade reading/writing everything using simple TIniFile.
+  This means that adding new things to a settings file is a little
+  more error-prone (you don't have to add only one property to some
+  class, you have to remember to add both the reading and the writing
+  code to appropriate places). Although in fact it's simpler and shorter
+  (less dummy Get/Set methods, also no need for dummy splitting
+  of clbMethodVisibility items to 5 boolean properties.)
+
+  As for now, I see that my version of frmHelpGenerator has 250 lines
+  less than original one :) OK, I surprised myself :)
+
+- Implementation of SetDefaults extended with things that were originally
+  only in New1Click. This is for clarity.
+
+- Oh, and I changed default "Defines" from Delphi and Win32 oriented
+  to FPC and Linux oriented. Sorry, I just couldn't resists :)
+
+  Seriously, this is TO-DO item in TO-DO file, see item
+  "pasdoc_gui should allow user to configure default state of Defines"
