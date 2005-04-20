@@ -1,0 +1,50 @@
+object frmAbout: TfrmAbout
+  Caption = 'About'
+  ClientHeight = 266
+  ClientWidth = 421
+  Font.Height = -16
+  Font.Name = 'MS Sans Serif'
+  OnCreate = frmAboutCreate
+  PixelsPerInch = 96
+  Position = poMainFormCenter
+  TextHeight = 20
+  HorzScrollBar.Page = 420
+  VertScrollBar.Page = 265
+  Left = 167
+  Height = 266
+  Top = 62
+  Width = 421
+  object Label1: TLabel
+    BorderSpacing.OnChange = nil
+    Caption = 'pasdoc_gui'
+    Color = clNone
+    Font.Height = -19
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    Left = 13
+    Height = 24
+    Top = 8
+    Width = 144
+  end
+  object BitBtn1: TBitBtn
+    Anchors = [akRight, akBottom]
+    BorderSpacing.OnChange = nil
+    Caption = '&Close'
+    Kind = bkClose
+    TabOrder = 0
+    Left = 323
+    Height = 25
+    Top = 230
+    Width = 75
+  end
+  object Memo1: TMemo
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.OnChange = nil
+    ReadOnly = True
+    TabOrder = 1
+    Left = 13
+    Height = 184
+    Top = 34
+    Width = 385
+  end
+end

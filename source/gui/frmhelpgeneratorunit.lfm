@@ -1,0 +1,564 @@
+object frmHelpGenerator: TfrmHelpGenerator
+  Caption = 'pasdoc gui'
+  ClientHeight = 325
+  ClientWidth = 575
+  Font.Height = -16
+  Font.Name = 'MS Sans Serif'
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 61
+  Position = poDefaultPosOnly
+  TextHeight = 20
+  HorzScrollBar.Page = 574
+  VertScrollBar.Page = 324
+  Height = 351
+  Width = 575
+  object PageControl1: TPageControl
+    ActivePage = tabDefines
+    Align = alClient
+    TabIndex = 4
+    TabOrder = 0
+    Height = 325
+    Width = 575
+    object tabOptions: TTabSheet
+      Caption = 'Options'
+      ClientHeight = 295
+      ClientWidth = 571
+      ImageIndex = 2
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object Label1: TLabel
+        Anchors = [akTop, akRight]
+        Caption = 'Properties, Methods, Events, and Fields to include'
+        Color = clNone
+        WordWrap = True
+        Left = 331
+        Height = 28
+        Top = 20
+        Width = 208
+      end
+      object Label2: TLabel
+        Caption = 'Language (This is the language used in the web page.)'
+        Color = clNone
+        Left = 8
+        Height = 27
+        Top = 123
+        Width = 298
+      end
+      object Label3: TLabel
+        Caption = 'Output directory (This is the directory where the web pages will be created.)'
+        Color = clNone
+        Left = 8
+        Height = 20
+        Top = 196
+        Width = 532
+      end
+      object Label6: TLabel
+        Caption = 'Project Name (The Project Name is used to name some of the generated web pages.)'
+        Color = clNone
+        WordWrap = True
+        Left = 8
+        Height = 32
+        Top = 16
+        Width = 278
+      end
+      object Label7: TLabel
+        Caption = 'Message level (This controls what sort of messages will apear on the Generate tab when web pages are created.)'
+        Color = clNone
+        WordWrap = True
+        Left = 92
+        Height = 30
+        Top = 258
+        Width = 452
+      end
+      object Label11: TLabel
+        Caption = 'Output Type :'
+        Color = clNone
+        FocusControl = comboGenerateFormat
+        Left = 8
+        Height = 13
+        Top = 98
+        Width = 102
+      end
+      object clbMethodVisibility: TCheckListBox
+        Anchors = [akTop, akRight]
+        Items.Strings = (
+          'Published'
+          'Public'
+          'Protected'
+          'Private'
+          'Automated'
+        )
+        ItemHeight = 20
+        OnClick = clbMethodVisibilityClick
+        TabOrder = 0
+        Left = 331
+        Height = 120
+        Top = 57
+        Width = 223
+      end
+      object comboLanguages: TComboBox
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 20
+        MaxLength = 0
+        OnChange = comboLanguagesChange
+        Style = csDropDownList
+        TabOrder = 1
+        Left = 6
+        Height = 21
+        Top = 152
+        Width = 316
+      end
+      object edOutput: TEdit
+        Anchors = [akTop, akLeft, akRight]
+        OnChange = edProjectNameChange
+        TabOrder = 2
+        Left = 8
+        Height = 23
+        Top = 218
+        Width = 459
+      end
+      object btnBrowseOutputDirectory: TButton
+        Anchors = [akTop, akRight]
+        Caption = 'Browse'
+        OnClick = btnBrowseOutputDirectoryClick
+        TabOrder = 3
+        Left = 474
+        Height = 25
+        Top = 218
+        Width = 75
+      end
+      object edProjectName: TEdit
+        Anchors = [akTop, akLeft, akRight]
+        OnChange = edProjectNameChange
+        TabOrder = 4
+        Left = 8
+        Height = 23
+        Top = 56
+        Width = 308
+      end
+      object seVerbosity: TSpinEdit
+        DecimalPlaces = 0
+        MaxValue = 6
+        OnChange = edProjectNameChange
+        TabOrder = 5
+        Value = 2
+        Left = 12
+        Height = 30
+        Top = 258
+        Width = 64
+      end
+      object comboGenerateFormat: TComboBox
+        ItemHeight = 20
+        Items.Strings = (
+          'Generate Web pages'
+          'Generate HTML Help Workshop project'
+          'Generate LaTex documentation.'
+        )
+        ItemIndex = 0
+        MaxLength = 0
+        OnChange = comboGenerateFormatChange
+        Style = csDropDownList
+        TabOrder = 6
+        Text = 'Generate Web pages'
+        Left = 102
+        Height = 21
+        Top = 92
+        Width = 180
+      end
+    end
+    object tabHeadFoot: TTabSheet
+      Caption = 'Header / Footer'
+      ClientHeight = 295
+      ClientWidth = 571
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object Label4: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Footer (This text will appear at the bottom of the web page)'
+        Color = clNone
+        Left = 14
+        Height = 20
+        Top = 148
+        Width = 429
+      end
+      object Label5: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Header (This text will appear at the top of the web page)'
+        Color = clNone
+        Left = 14
+        Height = 20
+        Top = 20
+        Width = 408
+      end
+      object memoFooter: TMemo
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
+        OnChange = edProjectNameChange
+        TabOrder = 0
+        WordWrap = False
+        Left = 14
+        Height = 107
+        Top = 172
+        Width = 545
+      end
+      object memoHeader: TMemo
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
+        OnChange = edProjectNameChange
+        TabOrder = 1
+        WordWrap = False
+        Left = 14
+        Height = 81
+        Top = 44
+        Width = 545
+      end
+    end
+    object tabSourceFiles: TTabSheet
+      Caption = 'Source Files'
+      ClientHeight = 295
+      ClientWidth = 571
+      ImageIndex = 3
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object memoFiles: TMemo
+        Align = alClient
+        OnChange = edProjectNameChange
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+        Height = 197
+        Top = 57
+        Width = 571
+      end
+      object Panel3: TPanel
+        Align = alBottom
+        ClientHeight = 41
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 1
+        Height = 41
+        Top = 254
+        Width = 571
+        object btnBrowseSourceFiles: TButton
+          Caption = 'Browse'
+          OnClick = btnBrowseSourceFilesClick
+          TabOrder = 0
+          Left = 8
+          Height = 25
+          Top = 8
+          Width = 75
+        end
+      end
+      object Panel5: TPanel
+        Align = alTop
+        ClientHeight = 57
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 2
+        Height = 57
+        Width = 571
+        object Label8: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 43
+          Top = 8
+          Width = 549
+        end
+      end
+    end
+    object tabIncludeDirectories: TTabSheet
+      Caption = 'Include Directories'
+      ClientHeight = 295
+      ClientWidth = 571
+      ImageIndex = 4
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object memoIncludeDirectories: TMemo
+        Align = alClient
+        OnChange = edProjectNameChange
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+        Height = 189
+        Top = 65
+        Width = 571
+      end
+      object Panel2: TPanel
+        Align = alBottom
+        ClientHeight = 41
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 1
+        Height = 41
+        Top = 254
+        Width = 571
+        object btnBrowseIncludeDirectory: TButton
+          Caption = 'Browse'
+          OnClick = btnBrowseIncludeDirectoryClick
+          TabOrder = 0
+          Left = 8
+          Height = 25
+          Top = 8
+          Width = 75
+        end
+      end
+      object Panel6: TPanel
+        Align = alTop
+        ClientHeight = 65
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 2
+        Height = 65
+        Width = 571
+        object Label9: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 36
+          Top = 8
+          Width = 547
+        end
+      end
+    end
+    object tabDefines: TTabSheet
+      Caption = 'Defines'
+      ClientHeight = 295
+      ClientWidth = 571
+      ImageIndex = 5
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object Panel8: TPanel
+        Align = alTop
+        ClientHeight = 76
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 0
+        Height = 76
+        Width = 571
+        object Label12: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
+          Color = clNone
+          WordWrap = True
+          Left = 6
+          Height = 48
+          Top = 8
+          Width = 553
+        end
+      end
+      object memoDefines: TMemo
+        Align = alClient
+        Lines.Strings = (
+          
+          
+          
+          
+        )
+        OnChange = edProjectNameChange
+        ScrollBars = ssBoth
+        TabOrder = 1
+        WordWrap = False
+        Height = 219
+        Top = 76
+        Width = 571
+      end
+    end
+    object tabGenerate: TTabSheet
+      Caption = 'Generate'
+      ClientHeight = 295
+      ClientWidth = 571
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object memoMessages: TMemo
+        Align = alClient
+        ScrollBars = ssBoth
+        TabOrder = 0
+        Height = 165
+        Top = 89
+        Width = 571
+      end
+      object Panel1: TPanel
+        Align = alBottom
+        ClientHeight = 41
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 1
+        Height = 41
+        Top = 254
+        Width = 571
+        object btnGenerateWebPages: TButton
+          Caption = 'Generate documentation'
+          OnClick = btnGenerateWebPagesClick
+          TabOrder = 0
+          Left = 8
+          Height = 25
+          Top = 8
+          Width = 185
+        end
+      end
+      object Panel7: TPanel
+        Align = alTop
+        ClientHeight = 89
+        ClientWidth = 571
+        FullRepaint = False
+        TabOrder = 2
+        Height = 89
+        Width = 571
+        object Label10: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'When you click the "Generate web pages" button, Help Generator will begin to process your input files and create web pages for them.  Messages describing what is happening will appear in the area below.  You can control how many messages appear using the "Message Level" on the Options tab. When it is done, a preview of the web pages will appear on the "Web Page" tab.'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 68
+          Top = 8
+          Width = 549
+        end
+      end
+    end
+    object tabWebPage: TTabSheet
+      Caption = 'Web Page'
+      ClientHeight = 295
+      ClientWidth = 571
+      ImageIndex = 1
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object Label13: TLabel
+        Caption = 'TODO: here should be embedded html browser component. But for now this just runs external browser.'
+        Color = clNone
+        Left = 14
+        Height = 17
+        Top = 12
+        Width = 592
+      end
+      object LabelHtmlBrowserCommand: TLabel
+        Caption = 'Command to run browser: (%s will be replaced with HTML filename, %% with %)'
+        Color = clNone
+        Left = 14
+        Height = 17
+        Top = 36
+        Width = 472
+      end
+      object EditHtmlBrowserCommand: TEdit
+        TabOrder = 0
+        Text = 'sensible-browser %s'
+        Left = 14
+        Height = 23
+        Top = 52
+        Width = 304
+      end
+      object MemoCommandLog: TMemo
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ReadOnly = True
+        TabOrder = 1
+        Left = -1
+        Height = 211
+        Top = 85
+        Width = 572
+      end
+    end
+  end
+  object PasDoc1: TPasDoc
+    OnWarning = PasDoc1Warning
+    OnMessage = PasDoc1Warning
+    StarStyleOnly = True
+    CommentMarkers.Strings = (
+      '**'
+      '**'
+    )
+    MarkerOptional = True
+    Generator = HtmlDocGenerator
+    left = 136
+    top = 528
+  end
+  object HtmlDocGenerator: THTMLDocGenerator
+    WriteUsesClause = True
+    OnMessage = nil
+    left = 168
+    top = 528
+  end
+  object OpenDialog1: TOpenDialog
+    Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
+    Title = 'Open existing file'
+    Filter = 'Delphi source files *.pas|*.pas|Free Pascal source files *.pp|*.pp|All Pascal source files *.pas, *.pp|*.pas;*.pp|All Files *.*|*.*'
+    FilterIndex = 3
+    Title = 'Open existing file'
+    top = 528
+  end
+  object SaveDialog1: TSaveDialog
+    Title = 'Save file as'
+    DefaultExt = '.pds'
+    Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
+    FilterIndex = 0
+    Title = 'Save file as'
+    left = 96
+    top = 528
+  end
+  object OpenDialog2: TOpenDialog
+    Title = 'Open existing file'
+    DefaultExt = '.pds'
+    Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
+    FilterIndex = 0
+    Title = 'Open existing file'
+    left = 64
+    top = 528
+  end
+  object MainMenu1: TMainMenu
+    left = 32
+    top = 528
+    object File1: TMenuItem
+      Caption = '&File'
+      object New1: TMenuItem
+        Caption = '&New'
+        OnClick = New1Click
+      end
+      object Open1: TMenuItem
+        Caption = '&Open'
+        OnClick = btnOpenClick
+      end
+      object Save1: TMenuItem
+        Caption = '&Save'
+        OnClick = Save1Click
+      end
+      object Exit1: TMenuItem
+        Caption = '&Exit'
+        OnClick = Exit1Click
+      end
+    end
+    object About1: TMenuItem
+      Caption = 'About'
+      OnClick = About1Click
+    end
+  end
+  object TexDocGenerator: TTexDocGenerator
+    WriteUsesClause = True
+    left = 200
+    top = 528
+  end
+  object DocBrowserProcess: TProcess
+    Priority = ppNormal
+    left = 240
+    top = 528
+  end
+end
