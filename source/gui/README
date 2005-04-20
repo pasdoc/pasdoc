@@ -154,6 +154,12 @@ I did many other changes while converting:
   we simply load from a file where "default project settings" for this user
   are stored (like ~/.pasdoc_gui/default.pds on Unixes)
 
+Notes about command to run browser:
+- For Debian users better value here would be 'sensible-browser %s'.
+  Default command under UNIXes just uses $BROWSER, 
+  sensible-browser script under Debian does more sophisticated
+  things there.
+
 Some other TODOs:
 - spinedit has wrong width at runtime on Win32.
   This is most probably a problem in Win32 Lazarus code.
@@ -161,10 +167,6 @@ Some other TODOs:
 
 - Default value of EditHtmlBrowserCommand.Text
   should be read from some user's config file.
-
-  Also this should allow using environment variable,
-  e.g. $BROWSER would be better default value under UNIXes
-  than current `sensible-browser' (sensible-browser is Debianism).
 
   Also this should allow executing "default shell association"
   for HTML under Win32, using ShellExecute.

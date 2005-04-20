@@ -486,6 +486,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object Panel4: TPanel
         Align = alTop
         BorderSpacing.OnChange = nil
+        BevelOuter = bvNone
         ClientHeight = 118
         ClientWidth = 571
         FullRepaint = False
