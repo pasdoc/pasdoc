@@ -22,6 +22,7 @@
 {
   @abstract(@name contains the main form of Help Generator.)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
+  @author(Michalis Kamburelis)
   @created(2004-11-28)
 }
 
