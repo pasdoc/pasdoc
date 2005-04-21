@@ -7,6 +7,7 @@
 
   Also this should allow executing "default shell association"
   for HTML under Win32, using ShellExecute.
+  Maybe using rundll instead of coding it ?
   Under UNIXes the equivalent is already available, just use `run-mailcap'.
 
 - Layout of controls is not controlled as good as it should be.
