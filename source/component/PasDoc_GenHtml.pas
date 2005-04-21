@@ -352,7 +352,7 @@ begin
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
   WriteDirect('<hr noshade size="1"><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_new');
+  WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirect('</em>', true);
@@ -2362,7 +2362,7 @@ var
 begin
   while ExtractLink(s, s1, s2, link) do begin
     WriteSpellChecked(S1);
-    WriteLinkTarget(link, Link, '', '_new');
+    WriteLinkTarget(link, Link, '', '_parent');
     s := s2;
   end;
   WriteSpellChecked(s);
