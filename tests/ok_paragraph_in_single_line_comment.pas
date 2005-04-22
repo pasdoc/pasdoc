@@ -5,7 +5,7 @@
 // This is the 3rd paragraph.
 //
 // pasdoc should create paragraphs when glueing single-line comments to
-// a description, but it doesn't for now.
+// a description, but it doesn't for now. Update: now it does.
 unit ok_paragraph_in_single_line_comment;
 
 interface
