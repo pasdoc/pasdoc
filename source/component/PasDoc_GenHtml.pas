@@ -105,6 +105,9 @@ type
 
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
+    { TODO: Such thing as Width100 should be better done by giving here css 
+      classname and setting rest in css }
+    procedure WriteStartOfTable2ColumnsExt(t1, t2: string; Width100: boolean);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
     { Writes the topic files for Html Help Generation }
@@ -724,6 +727,8 @@ begin
   WriteAnchor('@Fields');
   WriteHeading(Order, FLanguage.Translation[trFields]);
 
+  { TODO: this should call WriteStartOfTable* }
+  FOddTableRow := 0;
   WriteDirect('<table class="fields" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
@@ -1008,6 +1013,8 @@ begin
 
   WriteHeading(HL, Heading);
 
+  { TODO: this should call WriteStartOfTable* }
+  FOddTableRow := 0;
   WriteDirect('<table class="itemlist" cellspacing="' +
     HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
     '" width="100%">');
@@ -1375,16 +1382,25 @@ begin
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
+procedure THTMLDocGenerator.WriteStartOfTable2ColumnsExt(t1, t2: string;
+  Width100: boolean);
 begin
   FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
+    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '"');
+  if Width100 then
+    WriteDirect(' width="100%"');
+  WriteDirect('>', true);
   WriteDirect('<tr class="listheader"><th class="listheader">');
   WriteConverted(t1);
   WriteDirect('</th><th class="listheader">');
   WriteConverted(t2);
   WriteDirect('</th></tr>', true);
+end;
+
+procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
+begin
+  WriteStartOfTable2ColumnsExt(t1, t2, true);
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable3Columns(t1, t2, T3: string);
@@ -2242,15 +2258,10 @@ begin
 
   WriteHeading(1, FLanguage.Translation[trLegend]);
 
-  WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
-    + '" cellpadding="' + HTML_TABLE_CELLPADNG + '">', true);
-  WriteDirect('<tr class="listheader"><th class="listheader">');
-  { TODO -otwm : needs translation }
-  WriteConverted('Marker');
-  WriteDirect('</th><th class="listheader">');
-  { TODO -otwm : needs translation }
-  WriteConverted('Visibility');
-  WriteDirect('</th></tr>', true);
+  WriteStartOfTable2ColumnsExt(
+    { TODO -otwm : needs translation } 'Marker',
+    { TODO -otwm : needs translation } 'Visibility',
+    false);
 
   WriteLegendEntry('private.gif', trPrivate);
   WriteLegendEntry('protected.gif', trProtected);
