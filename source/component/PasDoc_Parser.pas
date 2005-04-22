@@ -1665,7 +1665,7 @@ begin
         // If there are several comments in a row, combine them.
         if Assigned(LastCommentToken) then
           if (t.MyType = TOK_COMMENT_CSTYLE) and (t.MyType = LastCommentToken.MyType) then begin
-            t.Data := GetLastComment(True) + ' ' + ExtractComment(False, t);
+            t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
           end;
         if Assigned(LastCommentToken) then
         begin
