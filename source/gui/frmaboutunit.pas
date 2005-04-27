@@ -61,12 +61,16 @@ uses PasDoc;
 procedure TfrmAbout.frmAboutCreate(Sender: TObject);
 begin
   Memo1.Lines.Text :=
-    'by Richard B. Winston (rbwinst@usgs.gov)' +LineEnding+
+    'Copyright 2004-2005 Richard B. Winston (rbwinst@usgs.gov), ' +
+    'U.S. Geological Survey (USGS)' + LineEnding +
+    LineEnding +
+    'Copyright 2005 Michalis Kamburelis ' + LineEnding +
     LineEnding+
-    'Conversion to Lazarus by Michalis Kamburelis.' +LineEnding+
-    LineEnding+
-    'This program makes use of PasDoc (http://pasdoc.sourceforge.net/). ' +
-    'PasDoc is licensed under the GNU General Public License.' +LineEnding+
+    'pasdoc_gui and PasDoc component are free software. ' +
+    'You are welcome to further modify and redistribute them on terms ' +
+    'of GNU General Public License.' +LineEnding+
+    LineEnding +
+    'See http://pasdoc.sourceforge.net/' +LineEnding+
     LineEnding+
     'PasDoc version information:' +LineEnding+
     PASDOC_FULL_INFO;

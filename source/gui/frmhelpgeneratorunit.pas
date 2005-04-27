@@ -52,7 +52,7 @@ type
     MemoCommandLog: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
-    Panel4: TPanel;
+    PanelWebPageTop: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
     // and @link(TexDocGenerator) to create the output.
@@ -82,7 +82,7 @@ type
     // @name holds the complete paths of all the source files
     // in the project.
     memoFiles: TMemo;
-    Panel3: TPanel;
+    PanelSourceFilesBottom: TPanel;
     // Click @name to select one or more sorce files for the
     // project.
     btnBrowseSourceFiles: TButton;
@@ -97,7 +97,7 @@ type
     // The lines in @name are the paths of the files that
     // may have include files that are part of the project.
     memoIncludeDirectories: TMemo;
-    Panel2: TPanel;
+    PanelIncludeDirectoriesBottom: TPanel;
     // Click @name  to select a directory that may
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
@@ -117,11 +117,11 @@ type
     // @name controls the severity of the messages that are displayed.
     seVerbosity: TSpinEdit;
     Label7: TLabel;
-    Panel5: TPanel;
+    PanelSourceFilesTop: TPanel;
     Label8: TLabel;
-    Panel6: TPanel;
+    PanelIncludeDirectoriesTop: TPanel;
     Label9: TLabel;
-    Panel7: TPanel;
+    PanelGenerateTop: TPanel;
     Label10: TLabel;
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
@@ -130,7 +130,7 @@ type
     // @name generates Latex output.
     TexDocGenerator: TTexDocGenerator;
     tabDefines: TTabSheet;
-    Panel8: TPanel;
+    PanelDefinesTop: TPanel;
     Label12: TLabel;
     memoDefines: TMemo;
     About1: TMenuItem;

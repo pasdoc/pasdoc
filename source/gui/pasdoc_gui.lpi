@@ -4,21 +4,23 @@
     <PathDelim Value="/"/>
     <Version Value="5"/>
     <General>
+      <Flags>
+        <SaveClosedFiles Value="False"/>
+      </Flags>
       <MainUnit Value="0"/>
-      <ActiveEditorIndexAtStart Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
     </General>
     <JumpHistory Count="0" HistoryIndex="-1"/>
-    <Units Count="16">
+    <Units Count="3">
       <Unit0>
         <CursorPos X="16" Y="9"/>
         <Filename Value="pasdoc_gui.lpr"/>
         <IsPartOfProject Value="True"/>
         <TopLine Value="1"/>
         <UnitName Value="pasdoc_gui"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="55"/>
       </Unit0>
       <Unit1>
         <CursorPos X="1" Y="222"/>
@@ -28,117 +30,21 @@
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
         <TopLine Value="199"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="55"/>
         <Bookmarks Count="1">
           <Item0 X="40" Y="651" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>
-        <CursorPos X="27" Y="23"/>
+        <CursorPos X="1" Y="70"/>
         <Filename Value="frmaboutunit.pas"/>
         <ComponentName Value="frmAbout"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmaboutunit.lrs"/>
-        <TopLine Value="1"/>
+        <TopLine Value="50"/>
         <UnitName Value="frmAboutUnit"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="55"/>
       </Unit2>
-      <Unit3>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/graphics.pp"/>
-        <TopLine Value="1"/>
-        <UnitName Value="Graphics"/>
-        <UsageCount Value="9"/>
-      </Unit3>
-      <Unit4>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/controls.pp"/>
-        <TopLine Value="1"/>
-        <UnitName Value="Controls"/>
-        <UsageCount Value="9"/>
-      </Unit4>
-      <Unit5>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/dialogs.pp"/>
-        <TopLine Value="1"/>
-        <UnitName Value="Dialogs"/>
-        <UsageCount Value="9"/>
-      </Unit5>
-      <Unit6>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/checklst.pas"/>
-        <TopLine Value="1"/>
-        <UnitName Value="CheckLst"/>
-        <UsageCount Value="9"/>
-      </Unit6>
-      <Unit7>
-        <CursorPos X="5" Y="58"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/spin.pp"/>
-        <TopLine Value="58"/>
-        <UnitName Value="Spin"/>
-        <UsageCount Value="9"/>
-      </Unit7>
-      <Unit8>
-        <CursorPos X="3" Y="608"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/extctrls.pp"/>
-        <TopLine Value="589"/>
-        <UnitName Value="ExtCtrls"/>
-        <UsageCount Value="9"/>
-      </Unit8>
-      <Unit9>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="9"/>
-      </Unit9>
-      <Unit10>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="frmaboutunit.lrs"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit10>
-      <Unit11>
-        <CursorPos X="27" Y="9"/>
-        <Filename Value="home/michal/sources/pasdoc/PasDoc-0.8/source/packages/lazarus/pasdoc_package.pas"/>
-        <TopLine Value="1"/>
-        <UnitName Value="pasdoc_package"/>
-        <UsageCount Value="9"/>
-      </Unit11>
-      <Unit12>
-        <CursorPos X="3" Y="341"/>
-        <EditorIndex Value="0"/>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <ComponentName Value="frmHelpGenerator"/>
-        <Loaded Value="True"/>
-        <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="325"/>
-        <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="19"/>
-        <Bookmarks Count="1">
-          <Item0 X="39" Y="532" ID="1"/>
-        </Bookmarks>
-      </Unit12>
-      <Unit13>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="frmhelpgeneratorunit.lfm"/>
-        <SyntaxHighlighter Value="LFM"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="9"/>
-      </Unit13>
-      <Unit14>
-        <CursorPos X="15" Y="89"/>
-        <Filename Value="frmhelpgeneratorunit.lfm"/>
-        <SyntaxHighlighter Value="LFM"/>
-        <TopLine Value="80"/>
-        <UsageCount Value="9"/>
-      </Unit14>
-      <Unit15>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="home/michal/sources/fpc_and_lazarus/cvs/lazarus/lcl/checklst.pas"/>
-        <TopLine Value="1"/>
-        <UnitName Value="CheckLst"/>
-        <UsageCount Value="9"/>
-      </Unit15>
     </Units>
     <PublishOptions>
       <Version Value="2"/>
