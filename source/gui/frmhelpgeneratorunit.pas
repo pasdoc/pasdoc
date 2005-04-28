@@ -1,6 +1,7 @@
 {
-  Copyright 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
-  Copyright 2005 Michalis Kamburelis
+  Original version 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
+  Modifications copyright 2005 Michalis Kamburelis
+  Additional modifications by Richard B. Winston, April 26, 2005.
 
   This file is part of pasdoc_gui.
 
@@ -24,6 +25,7 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Michalis Kamburelis)
   @created(2004-11-28)
+  @cvs($Date$)
 }
 
 unit frmHelpGeneratorUnit;
@@ -358,11 +360,12 @@ begin
           HtmlDocGenerator.Footer := memoFooter.Lines.Text;
           HtmlDocGenerator.HtmlHelp := (comboGenerateFormat.ItemIndex = 1);
         end;
-      2:
+      2, 3:
         begin
           PasDoc1.Generator := TexDocGenerator;
           TexDocGenerator.Header := memoHeader.Lines.Text;
           TexDocGenerator.Footer := memoFooter.Lines.Text;
+          TexDocGenerator.Latex2rtf := (comboGenerateFormat.ItemIndex = 3);
         end;
     else
       Assert(False);
@@ -398,7 +401,7 @@ begin
           MemoCommandLog.Lines.Append('Executed: ' + DocBrowserProcess.CommandLine);
           PageControl1.ActivePage := tabWebPage;
         end;
-      2:
+      2, 3:
         begin
         end;
     else
