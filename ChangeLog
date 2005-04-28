@@ -23,6 +23,9 @@
    right now. TODO item: write a ParseOperator function
  + added support for FreePascal inline "calling convention"
 
+2003-08-04 v0.8.8-pre5 Johannes Berg
+ * more CSS, completely new style
+
 2003-05-14 v0.8.8-pre4 Thomas Mueller
  + more CSS
  + code cleanup
