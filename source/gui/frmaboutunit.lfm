@@ -5,7 +5,7 @@ object frmAbout: TfrmAbout
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   OnCreate = frmAboutCreate
-  PixelsPerInch = 61
+  PixelsPerInch = 96
   Position = poMainFormCenter
   TextHeight = 20
   HorzScrollBar.Page = 408
@@ -15,18 +15,20 @@ object frmAbout: TfrmAbout
   Top = 62
   Width = 409
   object Label1: TLabel
+    BorderSpacing.OnChange = nil
     Caption = 'pasdoc_gui'
     Color = clNone
     Font.Height = -19
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     Left = 13
-    Height = 19
+    Height = 24
     Top = 8
-    Width = 103
+    Width = 109
   end
   object BitBtn1: TBitBtn
     Anchors = [akRight, akBottom]
+    BorderSpacing.OnChange = nil
     Caption = '&Close'
     Kind = bkClose
     TabOrder = 0
@@ -37,6 +39,7 @@ object frmAbout: TfrmAbout
   end
   object Memo1: TMemo
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.OnChange = nil
     ReadOnly = True
     TabOrder = 1
     Left = 13

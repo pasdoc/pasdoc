@@ -329,20 +329,65 @@ begin
   Constraints.MinHeight := Height;
 
   DefaultDirectives := TStringList.Create;
+  
   { Original HelpGenerator did here
     DefaultDirectives.Assign(memoDefines.Lines)
     I like this solution, but unfortunately current Lazarus seems
     to sometimes "lose" value of TMemo.Lines...
     So I'm setting these values at runtime. }
+    
+  {$IFDEF FPC}
   DefaultDirectives.Append('FPC');
+  {$ENDIF}
+  {$IFDEF UNIX}
   DefaultDirectives.Append('UNIX');
+  {$ENDIF}
+  {$IFDEF LINUX}
   DefaultDirectives.Append('LINUX');
+  {$ENDIF}
+  {$IFDEF DEBUG}
   DefaultDirectives.Append('DEBUG');
+  {$ENDIF}
+
+  {$IFDEF VER130}
+  DefaultDirectives.Append('VER130');
+  {$ENDIF}
+  {$IFDEF VER140}
+  DefaultDirectives.Append('VER140');
+  {$ENDIF}
+  {$IFDEF VER150}
+  DefaultDirectives.Append('VER150');
+  {$ENDIF}
+  {$IFDEF VER160}
+  DefaultDirectives.Append('VER160');
+  {$ENDIF}
+  {$IFDEF VER170}
+  DefaultDirectives.Append('VER170');
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  DefaultDirectives.Append('MSWINDOWS');
+  {$ENDIF}
+  {$IFDEF WIN32}
+  DefaultDirectives.Append('WIN32');
+  {$ENDIF}
+  {$IFDEF CPU386}
+  DefaultDirectives.Append('CPU386');
+  {$ENDIF}
+  {$IFDEF CONDITIONALEXPRESSIONS}
+  DefaultDirectives.Append('CONDITIONALEXPRESSIONS');
+  {$ENDIF}
 
   SetDefaults;
   
   { It's too easy to change it at design-time, so we set it at runtime. }
   PageControl1.ActivePageIndex := 0;
+
+  {$IFDEF WIN32}
+  // Deal with bug in display of TSpinEdit in Win32.
+  seVerbosity.Constraints.MinWidth := 60;
+  seVerbosity.Width := seVerbosity.Constraints.MinWidth;
+  {$ENDIF}
+
 end;
 
 procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
@@ -369,6 +414,13 @@ begin
         end;
     else
       Assert(False);
+    end;
+
+    // Create the output directory if it does not exist.
+
+    if not DirectoryExists(edOutput.Text) then
+    begin
+      CreateDir(edOutput.Text)
     end;
 
     PasDoc1.Generator.DestinationDirectory := edOutput.Text;

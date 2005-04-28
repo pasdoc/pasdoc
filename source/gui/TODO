@@ -1,7 +1,3 @@
-- spinedit has wrong width at runtime on Win32.
-  This is most probably a problem in Win32 Lazarus code.
-  GTK 1 version has no problems.
-
 - Default value of EditHtmlBrowserCommand.Text
   should be read from some user's config file.
 

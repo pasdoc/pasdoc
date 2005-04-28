@@ -61,11 +61,13 @@ uses PasDoc;
 procedure TfrmAbout.frmAboutCreate(Sender: TObject);
 begin
   Memo1.Lines.Text :=
-    'Copyright 2004-2005 Richard B. Winston (rbwinst@usgs.gov), ' +
+    'Original version Richard B. Winston (rbwinst@usgs.gov), ' +
     'U.S. Geological Survey (USGS)' + LineEnding +
     LineEnding +
-    'Copyright 2005 Michalis Kamburelis ' + LineEnding +
-    LineEnding+
+    'Modifications copyright 2005 Michalis Kamburelis' + LineEnding +
+    LineEnding +
+    'Additional modifications by Richard B. Winston' + LineEnding +
+    LineEnding +
     'pasdoc_gui and PasDoc component are free software. ' +
     'You are welcome to further modify and redistribute them on terms ' +
     'of GNU General Public License.' +LineEnding+
