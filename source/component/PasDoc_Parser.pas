@@ -74,7 +74,7 @@ type
     function GetNextNonWCToken(var t: TToken): Boolean; overload;
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
-      Resulting PMethod item will be returned in M.
+      Resulting @link(TPasMethod) item will be returned in M.
       CS may contain the 'class' keyword - its exact spelling is taken from
       this variable.
       CDFP contains the keyword constructor, destructor, function or procedure
@@ -272,12 +272,7 @@ function TParser.GetNextNonWCToken(var t: TToken): Boolean;
 var
   LDummy: string;
 begin
-  Assert(t=nil);
-  if SkipWhitespaceAndComments(LDummy) then begin
-    Result := Scanner.GetToken(t)
-  end else begin
-    Result := False;
-  end;
+  Result := GetNextNonWCToken(t, LDummy);
 end;
 
 function TParser.ParseArguments(var a: string): Boolean;
@@ -1655,28 +1650,33 @@ begin
   LCollector := '';
   repeat
     if not Scanner.PeekToken(t) then break;
-    if t.MyType = TOK_WHITESPACE then begin
-      Scanner.ConsumeToken;
-      LCollector := LCollector + t.Data;
-      FreeAndNil(t);
-    end else begin
-      if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE] then begin
-        Scanner.ConsumeToken;
-        // If there are several comments in a row, combine them.
-        if Assigned(LastCommentToken) then
-          if (t.MyType = TOK_COMMENT_CSTYLE) and (t.MyType = LastCommentToken.MyType) then begin
-            t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
-          end;
-        if Assigned(LastCommentToken) then
+    case t.MyType of
+      TOK_WHITESPACE: 
         begin
-          LastCommentToken.Free;
+          Scanner.ConsumeToken;
+          LCollector := LCollector + t.Data;
+          FreeAndNil(t);
         end;
-        LastCommentToken := t;
-        t := nil;
-      end else begin
-        Result := True;
-        break;
-      end;
+      TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE:
+        begin
+          Scanner.ConsumeToken;
+          // If there are several comments in a row, combine them.
+          if Assigned(LastCommentToken) then
+            if (t.MyType = TOK_COMMENT_CSTYLE) and (t.MyType = LastCommentToken.MyType) then begin
+              t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
+            end;
+          if Assigned(LastCommentToken) then
+          begin
+            LastCommentToken.Free;
+          end;
+          LastCommentToken := t;
+          t := nil;
+        end 
+      else 
+        begin
+          Result := True;
+          break;
+        end;
     end;
   until False;
 end;
