@@ -23,10 +23,22 @@ uses
 
 type
   { enumeration type that provides all types of tokens; each token's name
-    starts with TOK_ }
+    starts with TOK_.
+    
+    TOK_DIRECTIVE is a compiler directive (like $ifdef, $define). 
+    
+    Note that tokenizer is not able to tell whether you used
+    standard directive (e.g. 'Register') as an identifier
+    (e.g. you're declaring procedure named 'Register')
+    or as a real standard directive (e.g. a calling specifier 'register').
+    So there is *no* value like TOK_STANDARD_DIRECTIVE here,
+    standard directives are always reported as TOK_IDENTIFIER.
+    You can check TToken.Info.StandardDirective to know whether
+    this identifier is *maybe* used as real standard directive.
+    }
   TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
                 TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
-                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_RESERVED);
+                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD);
 
 type
   TKeyword = (
@@ -49,9 +61,7 @@ type
     KEY_ELSE,
     KEY_END,
     KEY_EXCEPT,
-    KEY_EXPORT,
     KEY_EXPORTS,
-    KEY_EXTERNAL,
     KEY_FILE,
     KEY_FINALIZATION,
     KEY_FINALLY,
@@ -80,7 +90,6 @@ type
     KEY_PROCEDURE,
     KEY_PROGRAM,
     KEY_PROPERTY,
-    KEY_PUBLIC,
     KEY_RAISE,
     KEY_RECORD,
     KEY_REPEAT,
@@ -101,6 +110,47 @@ type
     KEY_WHILE,
     KEY_WITH,
     KEY_XOR);
+
+  TStandardDirective = (
+    SD_INVALIDSTANDARDDIRECTIVE,
+    SD_ABSOLUTE,
+    SD_ABSTRACT,
+    SD_APIENTRY,
+    SD_ASSEMBLER,
+    SD_AUTOMATED,
+    SD_CDECL,
+    SD_DEFAULT,
+    SD_SPID,
+    SD_DYNAMIC,
+    SD_EXPORT,
+    SD_EXTERNAL,
+    SD_FAR,
+    SD_FORWARD,
+    SD_INDEX,
+    SD_INLINE,
+    SD_MESSAGE,
+    SD_NAME,
+    SD_NEAR,
+    SD_NODEFAULT,
+    SD_OVERLOAD,
+    SD_OVERRIDE,
+    SD_PASCAL,
+    SD_PRIVATE,
+    SD_PROTECTED,
+    SD_PUBLIC,
+    SD_PUBLISHED,
+    SD_READ,
+    SD_REGISTER,
+    SD_REINTRODUCE,
+    SD_RESIDENT,
+    SD_STDCALL,
+    SD_STORED,
+    SD_VIRTUAL,
+    SD_WRITE,
+    SD_DEPRECATED,
+    SD_SAFECALL,
+    SD_PLATFORM,
+    SD_VARARGS);
 
 const
   { Names of the token types }
@@ -131,7 +181,8 @@ type
       case Integer of
         0: (WhitespaceRows: Integer);
         2: (SymbolType: TSymbolType);
-        3: (ReservedKey: TKeyWord);
+        3: (KeyWord: TKeyWord);
+        4: (StandardDirective: TStandardDirective);
     end;
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
@@ -199,70 +250,21 @@ type
     property StreamName: string read FStreamName;
   end;
 
-//const
-//  {: names of the token types }
-//  TokenTypeNames: array[TOK_WHITESPACE..TOK_RESERVED] of string =
-//  ('whitespace', 'comment', 'identifier', 'number', 'string',
-//    'symbol', 'directive', 'reserved');
-
 const
   { all Object Pascal keywords }
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
     'CONSTRUCTOR', 'CVAR',  'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
-    'ELSE', 'END', 'EXCEPT', 'EXPORT', 'EXPORTS', 'EXTERNAL', 'FILE', 'FINALIZATION',
+    'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
     'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
-    'ON', 'OR', 'OPERATOR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY', 'PUBLIC',
+    'ON', 'OR', 'OPERATOR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
     'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
     'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
     'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
 
-type
-  TStandardDirective = (
-    SD_INVALIDSTANDARDDIRECTIVE,
-    SD_ABSOLUTE,
-    SD_ABSTRACT,
-    SD_APIENTRY,
-    SD_ASSEMBLER,
-    SD_AUTOMATED,
-    SD_CDECL,
-    SD_DEFAULT,
-    SD_SPID,
-    SD_DYNAMIC,
-    SD_EXPORT,
-    SD_EXTERNAL,
-    SD_FAR,
-    SD_FORWARD,
-    SD_INDEX,
-    SD_INLINE,
-    SD_MESSAGE,
-    SD_NAME,
-    SD_NEAR,
-    SD_NODEFAULT,
-    SD_OVERLOAD,
-    SD_OVERRIDE,
-    SD_PASCAL,
-    SD_PRIVATE,
-    SD_PROTECTED,
-    SD_PUBLIC,
-    SD_PUBLISHED,
-    SD_READ,
-    SD_REGISTER,
-    SD_REINTRODUCE,
-    SD_RESIDENT,
-    SD_STDCALL,
-    SD_STORED,
-    SD_VIRTUAL,
-    SD_WRITE,
-    SD_DEPRECATED,
-    SD_SAFECALL,
-    SD_PLATFORM,
-    SD_VARARGS);
-
-const
   { Object Pascal directives }
   StandardDirectiveArray:
     array[Low(TStandardDirective)..High(TStandardDirective)] of PChar =
@@ -475,7 +477,7 @@ end;
 function TTokenizer.GetToken: TToken;
 var
   c: Char;
-  I: TKeyword;
+  MaybeKeyword: TKeyword;
   s: string;
   J: Integer;
 begin
@@ -492,13 +494,19 @@ begin
     end
     else
       if c in IdentifierStart then begin
-        if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then begin
-              { check if identifier is a reserved identifier }
+        if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
+        begin
           s := Result.Data;
-          I := KeyWordByName(s);
-          if (I <> KEY_INVALIDKEYWORD) then begin
-            Result.MyType := TOK_RESERVED;
-            Result.Info.ReservedKey := I;
+          { check if identifier is a keyword }
+          MaybeKeyword := KeyWordByName(s);
+          if (MaybeKeyword <> KEY_INVALIDKEYWORD) then
+          begin
+            Result.MyType := TOK_KEYWORD;
+            Result.Info.KeyWord := MaybeKeyword;
+          end else
+          begin
+            { calculate Result.Info.StandardDirective }
+            Result.Info.StandardDirective := StandardDirectiveByName(s);
           end;
         end
       end else

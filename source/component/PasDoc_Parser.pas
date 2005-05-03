@@ -318,7 +318,6 @@ function TParser.ParseCDFP(var M: TPasMethod; CS, CDFPS: string; Key:
   TKeyword; d: string; const NeedName: boolean): Boolean;
 var
   IsSemicolon: Boolean;
-  pl: TStandardDirective;
   t: TToken;
   level: Integer;
   InvalidType: boolean;
@@ -372,15 +371,18 @@ begin
       M.Free;
       DoError('Could not get next token', [], 0);
     end;
-    if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT] then
-    else if (t.MyType = TOK_WHITESPACE) then begin
-      if Length(M.FullDeclaration) > 0 then begin
-        if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
-          M.FullDeclaration := M.FullDeclaration + ' ';
-      end;
-    end
-    else begin
-      M.FullDeclaration := M.FullDeclaration + t.Data;
+    case t.MyType of 
+      TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT: { ignore };
+      TOK_WHITESPACE:
+        begin
+          { add exactly *one space* at the end of M.FullDeclaration }
+          if Length(M.FullDeclaration) > 0 then begin
+            if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
+              M.FullDeclaration := M.FullDeclaration + ' ';
+          end;
+        end
+      else
+        M.FullDeclaration := M.FullDeclaration + t.Data;
     end;
     if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_LEFT_PARENTHESIS)
       then Inc(level);
@@ -390,7 +392,7 @@ begin
       SYM_SEMICOLON);
     FreeAndNil(t);
   until IsSemicolon and (Level = 0);
-
+  
   { first get non-WC token - if it is not an identifier in SD_SET put it back
     into stream and leave; otherwise copy tokens until semicolon }
   repeat
@@ -399,13 +401,16 @@ begin
       M.Free;
       DoError('Could not get next non white space token', [], 0);
     end;
-    if (t.MyType <> TOK_IDENTIFIER) and ((t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INLINE)) then begin
+    
+    if (t.MyType <> TOK_IDENTIFIER) and 
+       ((t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INLINE)) then 
+    begin
       Scanner.UnGetToken(t);
       Break;
     end;
     CS := t.Data;
-    pl := StandardDirectiveByName(CS);
-    case pl of
+    
+    case t.Info.StandardDirective of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
         SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
         SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
@@ -438,17 +443,15 @@ begin
             if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
               Break
             end else begin
-              if t.MyType = TOK_IDENTIFIER then begin
-                  pl := StandardDirectiveByName(t.Data);
-                  case pl of
-                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
-                      SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
-                      begin
-                        // FScanner.UnGetToken(t);
-                        Break;
-                      end;
-                  end;
+              if t.MyType = TOK_IDENTIFIER then 
+                case t.Info.StandardDirective of
+                  SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
+                    SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                    SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                    begin
+                      // FScanner.UnGetToken(t);
+                      Break;
+                    end;
                 end;
 
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
@@ -497,7 +500,6 @@ var
   f: TPasItem;
   Finished: Boolean;
   i: TPasCio;
-  Ind: TStandardDirective;
   M: TPasMethod;
   p: TPasProperty;
   s: string;
@@ -529,8 +531,8 @@ begin
       All class ancestors are supposed to be included in the docs!
     }
     { TODO -otwm :
-      That's not quite true since multiple inheritance is not supported by Delphi/Kylix
-      (does FreePascal???). Every entry but the first must be an interface. }
+      That's not quite true since multiple inheritance is not supported by 
+       Delphi/Kylix or FPC. Every entry but the first must be an interface. }
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
         { optional ancestor introduced by ( }
       FreeAndNil(t);
@@ -647,8 +649,8 @@ begin
         Exit;
       end
       else
-        if (t.MyType = TOK_RESERVED) then
-          case t.Info.ReservedKey of
+        if (t.MyType = TOK_KEYWORD) then
+          case t.Info.KeyWord of
             KEY_CLASS: begin
                 CS := t.Data;
                 CSFound := True;
@@ -658,7 +660,7 @@ begin
               KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, CS, t.Data, t.Info.ReservedKey, d, True))
+                if (not ParseCDFP(M, CS, t.Data, t.Info.KeyWord, d, True))
                   then begin
                   i.Free;
                   FreeAndNil(t);
@@ -702,16 +704,11 @@ begin
                   raise;
                 end;
               end;
-            KEY_PUBLIC: begin
-                CS := t.Data;
-                Ind := StandardDirectiveByName(CS);
-                State := STATE_PUBLIC;
-              end;
           else begin
               i.Free;
               try
                 DoError('%s: Error, unexpected reserved keyword "%s".',
-                  [Scanner.GetStreamInfo, KeyWordArray[t.Info.ReservedKey]], 0);
+                  [Scanner.GetStreamInfo, KeyWordArray[t.Info.KeyWord]], 0);
               finally
                 FreeAndNil(t);
               end;
@@ -720,8 +717,7 @@ begin
         else
           if (t.MyType = TOK_IDENTIFIER) then begin
             CS := t.Data;
-            Ind := StandardDirectiveByName(CS);
-            case Ind of
+            case t.Info.StandardDirective of
               SD_DEFAULT: begin
                   if not SkipDeclaration(nil) then begin
                     DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo], 0);
@@ -779,10 +775,10 @@ begin
               ClearLastComment;
               FreeAndNil(t);
               GetNextNonWCToken(t);
-              if (t.MyType = TOK_RESERVED) then begin
-                case t.Info.ReservedKey of
+              if (t.MyType = TOK_KEYWORD) then begin
+                case t.Info.KeyWord of
                   KEY_FUNCTION, KEY_PROCEDURE: begin
-                      if ParseCDFP(M,'','',t.Info.ReservedKey,d,false) then begin
+                      if ParseCDFP(M,'','',t.Info.KeyWord,d,false) then begin
                         M.Free;
                         FreeAndNil(t);
                       end else begin
@@ -796,7 +792,7 @@ begin
                   KEY_PACKED: begin
                       FreeAndNil(t);
                       GetNextNonWCToken(t);
-                      if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_RECORD) then begin
+                      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
                         ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
                       end else begin
                         SkipDeclaration(nil);
@@ -831,7 +827,7 @@ begin
         end;
       end else begin
         if t.MyType = TOK_IDENTIFIER then begin
-          case StandardDirectiveByName(t.Data) of
+          case t.Info.StandardDirective of
             SD_PLATFORM: i.IsPlatform := True;
             SD_DEPRECATED: i.IsDeprecated := True;
             else begin
@@ -971,14 +967,14 @@ begin
               [Scanner.GetStreamInfo, t.Data], 0);
           end;
         end;
-      TOK_RESERVED: begin
-          case t.Info.ReservedKey of
+      TOK_KEYWORD: begin
+          case t.Info.KeyWord of
             KEY_RESOURCESTRING,
               KEY_CONST:
               Mode := MODE_CONST;
             KEY_OPERATOR: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, True))
+                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
                 then begin
                   Exit;
                 end;
@@ -989,7 +985,7 @@ begin
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, '', t.Data, t.Info.ReservedKey, d, True))
+                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
                   then begin
                   Exit;
                 end;
@@ -1072,7 +1068,7 @@ begin
       { get property type }
     FreeAndNil(t);
     if (not GetNextNonWCToken(t)) then Exit;
-    if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_RESERVED) then
+    if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD) then
       DoError('Identifier expected, found %s in file %s',
         [TOKEN_TYPE_NAMES[t.MyType], Scanner.GetStreamInfo], 0);
 
@@ -1136,7 +1132,7 @@ begin
     FreeAndNil(t2);
     FreeAndNil(t1);
     GetNextNonWCToken(t1);
-    if (t1.MyType <> TOK_RESERVED) or (t1.Info.ReservedKey <> KEY_OF) then begin
+    if (t1.MyType <> TOK_KEYWORD) or (t1.Info.KeyWord <> KEY_OF) then begin
       FreeAndNil(t1);
       DoError('OF expected',[],1);
     end;
@@ -1202,14 +1198,14 @@ begin
                 R.Fields.Add(p);
               end;
             end;
-            if t1.MyType = TOK_RESERVED then begin
-              if (t1.Info.ReservedKey = KEY_RECORD) then begin
+            if t1.MyType = TOK_KEYWORD then begin
+              if (t1.Info.KeyWord = KEY_RECORD) then begin
                 ParseCIO(nil, '', CIO_RECORD, '', True);
               end;
-              if (t1.Info.ReservedKey = KEY_PACKED) then begin
+              if (t1.Info.KeyWord = KEY_PACKED) then begin
                 FreeAndNil(t1);
                 GetNextNonWCToken(t1);
-                if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_RECORD) then begin
+                if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_RECORD) then begin
                   ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
                 end;
               end;
@@ -1240,7 +1236,7 @@ begin
             Scanner.UnGetToken(t1);
           end;
         end else begin
-          if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_CASE) then begin
+          if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_CASE) then begin
             ParseRecordCase(R, true);
           end else begin
             FreeAndNil(t1);
@@ -1256,7 +1252,7 @@ begin
         FreeAndNil(t1);
         GetNextNonWCToken(t1);
       end;
-      if (t1.MyType = TOK_RESERVED) and (t1.Info.ReservedKey = KEY_END) then break;
+      if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_END) then break;
       if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
     until false;
     Scanner.UnGetToken(t1);
@@ -1297,13 +1293,13 @@ begin
     Exit;
   LCollected := LCollected + LTemp + t.Data;
 
-  if (t.MyType = TOK_RESERVED) then
-    case t.Info.ReservedKey of
+  if (t.MyType = TOK_KEYWORD) then
+    case t.Info.KeyWord of
       KEY_CLASS: begin
           FreeAndNil(t);
           if (not GetNextNonWCToken(t, LTemp)) then Exit;
           LCollected := LCollected + LTemp + t.Data;
-          if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey = KEY_OF) then begin
+          if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_OF) then begin
             { include "identifier = class of something;" as standard type }
           end else begin
             Scanner.UnGetToken(t);
@@ -1341,7 +1337,7 @@ begin
           FreeAndNil(t);
           GetNextNonWCToken(t, LTemp);
           LCollected := LCollected + LTemp + t.Data;
-          if (t.MyType = TOK_RESERVED) AND (t.Info.ReservedKey = KEY_RECORD) then begin
+          if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then begin
             FreeAndNil(t);
             if not ParseCIO(U, n, CIO_PACKEDRECORD, d, False) then exit;
             Result := True;
@@ -1350,9 +1346,9 @@ begin
         end;
     end;
   if Assigned(t) then begin
-    if (t.MyType = TOK_RESERVED) then begin
-      if t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(M, d, t.Data, t.Info.ReservedKey, d, False) then begin
+    if (t.MyType = TOK_KEYWORD) then begin
+      if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
+        if ParseCDFP(M, d, t.Data, t.Info.KeyWord, d, False) then begin
           M.Name := n;
           U.AddType(M);
           Result := True;
@@ -1397,7 +1393,7 @@ begin
   Result := False;
   { get 'unit' keyword }
   if not GetNextNonWCToken(t) then Exit;
-  if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_UNIT) then
+  if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_UNIT) then
     DoError(Scanner.GetStreamInfo + ': keyword "unit" expected.', [], 0);
   
   FreeAndNil(t);
@@ -1421,7 +1417,7 @@ begin
     if not GetNextNonWCToken(t) then Exit;
 
     { get 'interface' keyword }
-    if (t.MyType <> TOK_RESERVED) or (t.Info.ReservedKey <> KEY_INTERFACE) then
+    if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INTERFACE) then
       DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
     { now parse the interface section of that unit }
     Result := ParseInterfaceSection(U);
@@ -1516,8 +1512,8 @@ begin
     ClearLastComment;
     GetNextNonWCToken(t, LCollector);
     dummy.FullDeclaration := dummy.FullDeclaration + LCollector + t.Data;
-    if (t.MyType = TOK_RESERVED) and (t.Info.ReservedKey in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
-      ParseCDFP(m, '', t.Data, t.Info.ReservedKey, '', False);
+    if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
+      ParseCDFP(m, '', t.Data, t.Info.KeyWord, '', False);
       dummy.FullDeclaration := dummy.FullDeclaration + m.FullDeclaration;
       m.Free;
       FreeAndNil(t);
@@ -1550,8 +1546,11 @@ begin
         // This does not take into account the "absolute" modifier
         // (which is not preceeded by a semicolon).
         FirstCheck := False;
-        if (ttemp.MyType = TOK_RESERVED) and (ttemp.Info.ReservedKey in
-          [KEY_CVAR, KEY_EXPORT, KEY_EXTERNAL, KEY_PUBLIC]) then 
+        if ( (ttemp.MyType = TOK_KEYWORD) and 
+             (ttemp.Info.KeyWord in [KEY_CVAR]) ) or
+           ( (ttemp.MyType = TOK_IDENTIFIER) and 
+             (ttemp.Info.StandardDirective in 
+               [SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) ) then 
         begin
           dummy.FullDeclaration := dummy.FullDeclaration +  ' ' + ttemp.Data;
           FreeAndNil(ttemp)
@@ -1619,8 +1618,8 @@ begin
           SYM_LEFT_PARENTHESIS: Inc(PLevel);
           SYM_RIGHT_PARENTHESIS: Dec(PLevel);
         end;
-      TOK_RESERVED:
-        case t.Info.ReservedKey of
+      TOK_KEYWORD:
+        case t.Info.KeyWord of
           KEY_END: Dec(EndLevel);
           KEY_RECORD: Inc(EndLevel);
         end;
