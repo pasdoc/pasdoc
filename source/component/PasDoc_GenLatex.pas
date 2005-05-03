@@ -1892,35 +1892,14 @@ end;
 procedure TTexDocGenerator.WriteSpellChecked(const AString: string);
 var
   LErrors: TObjectVector;
-  i, temp: Integer;
-  LString, s: string;
 begin
   LErrors := TObjectVector.Create(True);
-  CheckString(AString, LErrors);
-  if LErrors.Count = 0 then 
-  begin
+  try
+    CheckString(AString, LErrors);
     WriteDirect(AString);
-  end else 
-  begin
-    // build s
-    s := '';
-    LString := AString;
-    for i := LErrors.Count-1 downto 0 do begin
-      // everything after the offending word
-      temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
-      s := ( '">' + TSpellingError(LErrors.Items[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
-      if Length(TSpellingError(LErrors.Items[i]).Suggestions) > 0 then begin
-        s := 'suggestions: '+TSpellingError(LErrors.Items[i]).Suggestions + s;
-      end else begin
-        s := 'no suggestions' + s;
-      end;
-      s := '<acronym style="#0000FF; border-bottom: 1px solid crimson" title="' + s;
-      SetLength(LString, TSpellingError(LErrors.Items[i]).Offset);
-    end;
-    WriteDirect(LString);
-    WriteDirect(s);
-  end;
-  LErrors.Free;
+    
+    { TODO: write here LErrors, like in THTMLDocGenerator.WriteSpellChecked }
+  finally LErrors.Free end;
 end;
 
 function TTexDocGenerator.ConvertString(const S: String): String;
@@ -1967,6 +1946,9 @@ end;
 
 (*
   $Log$
+  Revision 1.28  2005/05/03 18:44:01  kambi
+  * Removed HTML-specific implementation of TTexDocGenerator.WriteSpellChecked
+
   Revision 1.27  2005/04/14 10:21:51  kambi
   * Specified default values for many properties. This means that code is better self-documenting,
     and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
