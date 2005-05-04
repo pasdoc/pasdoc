@@ -201,23 +201,29 @@ var
     ("done" means that their converted version is appended to Result) }
   FOffset: Integer;  
 
-  { This checks if something looking as tag name starts at 
-    Description[FOffset + 1].
+  { This checks if some tag starts at Description[FOffset + 1].
     If yes then it returns true and sets
+    -- TagHandlerObj to given tag object
     -- TagName to lowercased name of this tag (e.g. 'link')
     -- Parameters to params for this tag (text specified between '(' ')',
        parsed to the matching parenthesis)
     -- TagEnd to the index of *next* character in Description right
-       after this tag (including it's parameters, if there were any)
-       
+       after this tag (including it's parameters, if there were any)    
+
     Note that it may also change it's var parameters even when it returns
     false; this doesn't harm anything for now, so I don't think there's
-    a reason to correct this for now. }
-  function FindTag(var TagName: string; var Parameters: string; 
+    a reason to correct this for now. 
+    
+    In case some string looking as tag name (A-Za-z*) is here,
+    but it's not a name of any existing tag,
+    it not only returns false but also emits a warning for user. }
+  function FindTag(var TagHandlerObj: TTagHandlerObj;
+    var TagName: string; var Parameters: string; 
     var TagEnd: Integer): Boolean;
   var
     i: Integer;
     BracketCount: integer;
+    TagIndex: integer;
   begin
     Result := False;
     Parameters := '';
@@ -228,34 +234,56 @@ var
       Inc(i);
 
     if i = FOffset + 1 then Exit; { exit with false }
-    
+
     TagName := LowerCase(Copy(Description, FOffset + 1, i - FOffset - 1));
     TagEnd := i;
-    Result := true;
-
-    { ok, we found the correct tag, now lets get the parameters }
-
-    { There must be at least 2 characters left in Description, 
-      that's why we can check "i >= Length(Description)" instead of
-      only "i > Length(Description)" }
-    if (i >= Length(Description)) or (Description[i] <> '(') then 
+    
+    if not FTags.Find(TagName, TagIndex) then
+    begin
+      DoMessage(1, mtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
+    end;
+    
+    TagHandlerObj := FTags.Objects[TagIndex] as TTagHandlerObj;
+    Result := true;
+    
+    { OK, we found the correct tag.
+      TagHandlerObj and TagName are already set.
+      Now lets get the parameters, setting Parameters and TagEnd. }
 
-    Inc(i);
-    BracketCount := 1;
-    repeat
-      case Description[i] of
-        '(': Inc(BracketCount);
-        ')': Dec(BracketCount);
-      end;
+    if (i <= Length(Description)) and (Description[i] = '(') then
+    begin
+      { Read Parameters to a matching parenthesis.
+        Note that we didn't check here whether 
+        toParameterRequired in TagHandlerObj.TagOptions.
+        Caller of FindTag will give a warning for user if it will
+        receive some Parameters <> '' while 
+        toParameterRequired is *not* in TagHandlerObj.TagOptions }
       Inc(i);
-    until (i > Length(Description)) or (BracketCount = 0);
-    if (BracketCount = 0) then begin
-      Parameters := Copy(Description, TagEnd + 1, i - TagEnd - 2);
-      TagEnd := i;
+      BracketCount := 1;
+      repeat
+        case Description[i] of
+          '(': Inc(BracketCount);
+          ')': Dec(BracketCount);
+        end;
+        Inc(i);
+      until (i > Length(Description)) or (BracketCount = 0);
+      if (BracketCount = 0) then begin
+        Parameters := Copy(Description, TagEnd + 1, i - TagEnd - 2);
+        TagEnd := i;
+      end else
+        DoMessage(1, mtWarning,
+          'No matching closing parenthesis for tag "%s"', [TagName]);
     end else
-      DoMessage(1, mtWarning,
-        'No matching closing parenthesis for tag "%s"', [TagName]);
+    if toParameterRequired in TagHandlerObj.TagOptions then
+    begin
+      { Read Parameters to the end of Description or newline. }
+      while (i <= Length(Description)) and 
+            (not (Description[i] in [#10, #13])) do
+        Inc(i);
+      Parameters := Copy(Description, TagEnd, i - TagEnd);
+      TagEnd := i;
+    end;
   end;
 
   { This function moves FOffset to the position of next '@' in Description
@@ -286,7 +314,6 @@ var
   ReplaceStr: string;
   TagName: string;
   Params: string;
-  TagIndex: integer;
   TagEnd: Integer;
   TagHandlerObj: TTagHandlerObj;
 begin
@@ -295,48 +322,40 @@ begin
   
   while FOffset <= Length(Description) do 
   begin
-    if (Description[FOffset] = '@') and FindTag(TagName, Params, TagEnd) then
+    if (Description[FOffset] = '@') and
+       FindTag(TagHandlerObj, TagName, Params, TagEnd) then
     begin
-      if FTags.Find(TagName, TagIndex) then
+      if Params <> '' then 
       begin
-        TagHandlerObj := FTags.Objects[TagIndex] as TTagHandlerObj;
-
-        if Params <> '' then 
+        if toParameterRequired in TagHandlerObj.TagOptions then
         begin
-          if toParameterRequired in TagHandlerObj.TagOptions then
-          begin
-            Unabbreviate(Params);
-            if toRecursiveTags in TagHandlerObj.TagOptions then
-              Params := Execute(Params); { recursively expand Params }
-          end else
-          begin
-            { Note that in this case we ignore whether
-              toRecursiveTags is in TagHandlerObj.TagOptions,
-              we always behave like toRecursiveTags was not included.
-
-              This is reported as a serious warning,
-              because tag handler procedure will probably ignore
-              passed value of Params and will set ReplaceStr to something
-              unrelated to Params. This means that user input is completely
-              discarded. So user should really correct it. 
-              
-              I didn't mark this as an mtError only because some sensible
-              output will be generated anyway. }
-            DoMessage(1, mtWarning,
-              'Tag "%s" is not allowed to have any parameters', [TagName]);
-          end;
-          ReplaceStr := ConvertString('@(' + TagName) + Params + ConvertString(')');
+          Unabbreviate(Params);
+          if toRecursiveTags in TagHandlerObj.TagOptions then
+            Params := Execute(Params); { recursively expand Params }
         end else
-          ReplaceStr := ConvertString('@' + TagName);
-        TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
+        begin
+          { Note that in this case we ignore whether
+            toRecursiveTags is in TagHandlerObj.TagOptions,
+            we always behave like toRecursiveTags was not included.
 
-        Result := Result + ReplaceStr;
-        FOffset := TagEnd;
+            This is reported as a serious warning,
+            because tag handler procedure will probably ignore
+            passed value of Params and will set ReplaceStr to something
+            unrelated to Params. This means that user input is completely
+            discarded. So user should really correct it. 
+
+            I didn't mark this as an mtError only because some sensible
+            output will be generated anyway. }
+          DoMessage(1, mtWarning,
+            'Tag "%s" is not allowed to have any parameters', [TagName]);
+        end;
+        ReplaceStr := ConvertString('@(' + TagName) + Params + ConvertString(')');
       end else
-      begin
-        DoMessage(1, mtWarning, 'Unknown tag "%s"', [TagName]);
-        Convert;
-      end;
+        ReplaceStr := ConvertString('@' + TagName);
+      TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
+
+      Result := Result + ReplaceStr;
+        FOffset := TagEnd;
     end else
     if (Description[FOffset] = '@') and 
        (FOffset < Length(Description)) and
