@@ -10,7 +10,7 @@
   @cvs($Author$)
   @lastmod(2005-03-30)
 
-  See also @link(TMyClass) for other test of @cvs tag (with $Date,
+  See also @link(TMyClass) for other test of @@cvs tag (with $Date,
   as an alternative specification of @@lastmod)
 }
 
