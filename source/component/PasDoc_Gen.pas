@@ -1052,6 +1052,7 @@ begin
          end;
 
          Result := U.FindItem(S1);
+         if Result <> nil then Exit;
        end;
     1: begin
          { object.field_method_property }
