@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# This is small script used by upload_correct_tests_output.sh
+# This is small script used by upload_correct_tests_output.sh and
 # source/autodoc/Makefile.
 #
 # $1 is your username on sourceforge,
