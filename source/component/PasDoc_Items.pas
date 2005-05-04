@@ -64,6 +64,9 @@ type
 
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class(TSerializable)
+  private
+    FDescription: string;
+    FDetailedDescription: string;
   protected
     FFullLink: string;
     FLastMod: string;
@@ -99,10 +102,6 @@ type
       Actually @link(FindName) uses this function. }
     function FindNameWithinUnit(S1, S2, S3: string; n: Integer): TPasItem; virtual;
   public
-    // THIS IS A BAD HACK
-    FDescription: string;
-    FDetailedDescription: string;
-    { }
     constructor Create; override;
     destructor Destroy; override;
     

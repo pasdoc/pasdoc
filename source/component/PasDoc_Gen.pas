@@ -273,20 +273,26 @@ end;
       reference to that item. }
     function CreateReferencedLink(ItemName, Link: string): string; virtual; abstract;
 
-    { Takes description D of the item Item, expands links (using Item),
+    (*Takes description D of the Item, expands links (using Item),
       converts output-specific characters.
-      Returns true on success, false otherwise (not enough memory?). 
       
-      Note that you can't call this function more than once on the
-      same Item, because this function processes the Item "in place",
-      i.e. it replaces some members of Item with their processed form
-      ("processed" means here "ready to be included in final doc output").
+      Note that you can't process with this function more than once
+      the same Description (i.e. like
+      @longcode(#
+        { BAD EXAMPLE }
+        Description := ExpandDescription(Item, Description);
+        Description := ExpandDescription(Item, Description);
+      #)) because output of this function is already something
+      ready to be included in final doc output, it shouldn't be
+      processed once more, moreover this function initializes
+      some properties of Item to make them also in the 
+      "already-processed" form (ready to be included in final docs).
       
       Note that you can call it only when not Item.WasDeserialized.
       That's because the current approach to cache stores in the cache
       items in the state already processed by this function,
-      and, as said above, you shouldn't process Item twice by this function. }
-    function ExpandDescription(Item: TPasItem; var d: string): Boolean; virtual;  // GSk: changed to virtual
+      i.e. after all ExpandDescription calls were made. *)
+    function ExpandDescription(Item: TPasItem; const Description: string): string;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
@@ -858,17 +864,13 @@ begin
       ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
 end;
 
-function TDocGenerator.ExpandDescription(Item: TPasItem; var d: string): Boolean;
+function TDocGenerator.ExpandDescription(Item: TPasItem; 
+  const Description: string): string;
 var
   TagManager: TTagManager;
 begin
   Assert(not Item.WasDeserialized);
   
-  Result := True;
-  { check for cases "no id" and "id is empty" }
-  if d = '' then
-    Exit;
-
   // make it available to the handlers
   FCurrentItem := Item;
 
@@ -898,7 +900,7 @@ begin
     { Tags with recursive params }
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag, true, true);
 
-    d := TagManager.Execute(d);
+    Result := TagManager.Execute(Description);
   finally
     TagManager.Free;
   end;
@@ -932,11 +934,9 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.DetailedDescription := s;
     end;
 
-    if (not ExpandDescription(Item, Item.FDescription)) or
-      (not ExpandDescription(Item, Item.FDetailedDescription)) then begin
-      DoMessage(2, mtWarning, 'Could not expand description from ' +
-        Item.Name, []);
-    end;
+    Item.Description := ExpandDescription(Item, Item.Description);
+    Item.DetailedDescription := 
+      ExpandDescription(Item, Item.DetailedDescription);
 
     if Item is TPasEnum then begin
       for i := 0 to TPasEnum(Item).Members.Count-1 do begin
