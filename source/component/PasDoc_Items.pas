@@ -691,11 +691,16 @@ end;
 
 procedure TPasItem.RegisterTagHandlers(TagManager: TTagManager);
 begin
-  TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag, true, true);
-  TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag, false, true);
-  TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag, false, true);
-  TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag, false, true);
-  TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag, false, true);
+  TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag,
+    [toParameterRequired, toRecursiveTags]);
+  TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag,
+    [toParameterRequired]);
+  TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
+    [toParameterRequired]);
+  TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
+    [toParameterRequired]);
+  TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag,
+    [toParameterRequired]);
 end;
 
 procedure TPasItem.StoreAbstractTag(TagManager: TTagManager; 
@@ -1233,10 +1238,14 @@ end;
 procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag, true, true);
-  TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag, true, true);
-  TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag, true, true);
-  TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag, true, true);
+  TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag,
+    [toParameterRequired, toRecursiveTags]);
+  TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag,
+    [toParameterRequired, toRecursiveTags]);
+  TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+    [toParameterRequired, toRecursiveTags]);
+  TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag,
+    [toParameterRequired, toRecursiveTags]);
 end;
 
 { TPasVarConst }

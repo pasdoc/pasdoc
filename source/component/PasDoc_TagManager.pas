@@ -14,35 +14,38 @@ type
     const TagName: string; const TagDesc: string; var ReplaceStr: string)
     of object;
   TStringConverter = function(const s: string): string of object;
+  
+  { toParameterRequired means that tag expects parameters.
+    Else it should not be given any parameters,
+    i.e. TagDesc passed to @link(Execute) should be ''.
+    We will display a warning if user will try to give
+    some parameters for such tag. 
+
+    toRecursiveTags means that parameters of this tag will be expanded
+    before passing them to @link(Execute) of this object.
+    This means that we will expand recursive tags inside
+    parameters, that we will ConvertString inside parameters, 
+    that we will handle paragraphs inside parameters etc. --
+    all that does @link(TTagManager.Execute).
+
+    If toParameterRequired is not present in TTagOptions than
+    it's not important whether you included toRecursiveTags.
+    
+    It's useful for some tags to include toParameterRequired
+    without including toRecursiveTags, e.g. @longcode or @html,
+    that want to get their parameters "verbatim", not processed. }
+  TTagOption = (toParameterRequired, toRecursiveTags);
+  TTagOptions = set of TTagOption;
 
   TTagHandlerObj = class
   private
     FTagHandler: TTagHandler;
-    FRecursiveTags: boolean;
-    FParametersAllowed: boolean;
+    FTagOptions: TTagOptions;
   public
-    constructor Create(TagHandler: TTagHandler; 
-      ARecursiveTags, AParametersAllowed: boolean);
+    constructor Create(ATagHandler: TTagHandler; 
+      const ATagOptions: TTagOptions);
 
-    { If true then tag can have parameters.
-      Else it should not have any parameters,
-      i.e. TagDesc passed to @link(Execute) should be ''.
-      We will display a warning if user will try to give
-      some parameters for this tag. }
-    property ParametersAllowed: boolean read FParametersAllowed;
-
-    { If true then parameters of this tag will be expanded
-      before passing them to @link(Execute) of this object.
-      This means that we will expand recursive tags inside
-      parameters, that we will ConvertString inside parameters, 
-      that we will handle paragraphs inside parameters etc. --
-      all that does @link(TTagManager.Execute).
-
-      Setting this to false may be useful for tags like @longcode or @html,
-      that want to get their parameters "verbatim", not processed. 
-      
-      This is not important if ParametersAllowed = false. }
-    property RecursiveTags: boolean read FRecursiveTags;
+    property TagOptions: TTagOptions read FTagOptions write FTagOptions;
 
     procedure Execute(TagManager: TTagManager;
       const TagName: string; const TagDesc: string; var ReplaceStr: string);
@@ -96,11 +99,10 @@ type
     property InsertParagraphs: TStringConverter 
       read FInsertParagraphs write FInsertParagraphs;
 
-    { See @link(TTagHandlerObj) for the meaning of parameters
-      RecursiveTags and ParametersAllowed.
+    { See @link(TTagHandlerObj) for the meaning of parameter TagOption.
       Don't worry about the case of TagName, it does *not* matter. }
     procedure AddHandler(const TagName: string; Handler: TTagHandler;
-      RecursiveTags, ParametersAllowed: boolean);
+      const TagOptions: TTagOptions);
 
     function Execute(const Description: string): string;
     property StringConverter: TStringConverter read FStringConverter write FStringConverter;
@@ -113,13 +115,12 @@ uses {$ifdef VER1_0} Utils {$else} StrUtils {$endif};
 
 { TTagHandlerObj }
 
-constructor TTagHandlerObj.Create(TagHandler: TTagHandler; 
-  ARecursiveTags, AParametersAllowed: boolean);
+constructor TTagHandlerObj.Create(ATagHandler: TTagHandler; 
+  const ATagOptions: TTagOptions);
 begin
   inherited Create;
-  fTagHandler := Taghandler;
-  FRecursiveTags := ARecursiveTags;
-  FParametersAllowed := AParametersAllowed;
+  FTagHandler := ATagHandler;
+  FTagOptions := ATagOptions;
 end;
 
 procedure TTagHandlerObj.Execute(TagManager: TTagManager;
@@ -152,10 +153,10 @@ begin
 end;
 
 procedure TTagManager.AddHandler(const TagName: string; Handler: TTagHandler;
-  RecursiveTags, ParametersAllowed: boolean);
+  const TagOptions: TTagOptions);
 begin
   FTags.AddObject(LowerCase(Tagname), 
-    TTagHandlerObj.Create(Handler, RecursiveTags, ParametersAllowed));
+    TTagHandlerObj.Create(Handler, TagOptions));
 end;
 
 function TTagManager.ConvertString(const s: string): string;
@@ -302,16 +303,16 @@ begin
 
         if Params <> '' then 
         begin
-          if TagHandlerObj.ParametersAllowed then
+          if toParameterRequired in TagHandlerObj.TagOptions then
           begin
             Unabbreviate(Params);
-            if TagHandlerObj.RecursiveTags then
+            if toRecursiveTags in TagHandlerObj.TagOptions then
               Params := Execute(Params); { recursively expand Params }
           end else
           begin
-            { Note that in this case we ignore value of
-              TagHandlerObj.RecursiveTags, we always behave 
-              like TagHandlerObj.RecursiveTags = false. 
+            { Note that in this case we ignore whether
+              toRecursiveTags is in TagHandlerObj.TagOptions,
+              we always behave like toRecursiveTags was not included.
 
               This is reported as a serious warning,
               because tag handler procedure will probably ignore

@@ -884,21 +884,26 @@ begin
     Item.RegisterTagHandlers(TagManager);
 
     { Tags without params }
-    TagManager.AddHandler('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, false, false);
-    TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
-    TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
-    TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, false, false);
-    TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, false, false);    
-    TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, false, false);
+    TagManager.AddHandler('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
+    TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+    TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+    TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+    TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
+    TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
 
     { Tags with non-recursive params }
-    TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag, false, true);
-    TagManager.AddHandler('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag, false, true);
-    TagManager.AddHandler('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag, false, true);
-    TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag, false, true);
+    TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
+      [toParameterRequired]);
+    TagManager.AddHandler('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
+      [toParameterRequired]);
+    TagManager.AddHandler('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
+      [toParameterRequired]);
+    TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
+      [toParameterRequired]);
 
     { Tags with recursive params }
-    TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag, true, true);
+    TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+      [toParameterRequired, toRecursiveTags]);
 
     Result := TagManager.Execute(Description);
   finally
