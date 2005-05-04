@@ -1223,18 +1223,17 @@ begin
     TODO: this should be moved to TPasItem.FindName,
     this way it will also be used by SearchItem. }
   if FoundItem = nil then
-    if Assigned(Item.MyUnit) then
-      if Assigned(Item.MyUnit.UsesUnits) then begin
-        i := Item.MyUnit.UsesUnits.Count;
-        while i > 0 do begin
-          Dec(i);
-          UnitName := Item.MyUnit.UsesUnits[i];
-          U := TPasUnit(Units.FindName(UnitName));
-          if U <> nil then
-            FoundItem := U.FindFieldMethodProperty(S1, S2);
-          if FoundItem <> nil then Break;
-        end;
+    if Assigned(Item.MyUnit) and Assigned(Item.MyUnit.UsesUnits) then
+    begin
+      for i := 0 to Item.MyUnit.UsesUnits.Count - 1 do 
+      begin
+        UnitName := Item.MyUnit.UsesUnits[i];
+        U := TPasUnit(Units.FindName(UnitName));
+        if U <> nil then
+          FoundItem := U.FindFieldMethodProperty(S1, S2);
+        if FoundItem <> nil then Break;
       end;
+    end;
 
   { Find Global }
   if FoundItem = nil then

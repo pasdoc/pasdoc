@@ -90,6 +90,14 @@ type
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreCVSTag(TagManager: TTagManager; 
       const TagName, TagDesc: string; var ReplaceStr: string);
+  protected
+    { This does the same thing as @link(FindName) but it *doesn't*
+      scan other units. If this item is a unit, it searches only
+      inside this unit, else it searches only inside @link(MyUnit)
+      unit.
+      
+      Actually @link(FindName) uses this function. }
+    function FindNameWithinUnit(S1, S2, S3: string; n: Integer): TPasItem; virtual;
   public
     // THIS IS A BAD HACK
     FDescription: string;
@@ -604,7 +612,7 @@ begin
   Result := nil;
 end;
 
-function TPasItem.FindName(S1, S2, S3: string; n: Integer): TPasItem;
+function TPasItem.FindNameWithinUnit(S1, S2, S3: string; n: Integer): TPasItem;
 var
   p: TPasItem;
   LS1: string;
@@ -613,7 +621,7 @@ begin
   LS1 := LowerCase(S1);
   case n of
     0: begin
-         Result := FindItem(LS1);
+         Result := FindItem(S1);
          if Result <> nil then Exit;
          
          if Assigned(MyObject) then begin { this item is a method or field }
@@ -659,6 +667,15 @@ begin
         end;
       end;
   end;
+end;
+
+function TPasItem.FindName(S1, S2, S3: string; n: Integer): TPasItem;
+begin
+  Result := FindNameWithinUnit(S1, S2, S3, n);
+  
+  { TODO: here should be code that searches inside used units.
+    Some skeleton of this code is inside TDocGenerator.SearchLink,
+    it should be removed when this will be implemented here. }
 end;
 
 function TPasItem.GetDescription: string;
