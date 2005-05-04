@@ -127,8 +127,17 @@ type
       Implementation in this class always returns nil.
       Override as necessary. }
     function FindItem(const ItemName: string): TPasItem; virtual;
-    { }
+    
+    { This does all it can to resolve link specified by S1, S2, S3.
+      n is 0, 1, 2 and specifies how many S were actually specified.
+      
+      While searching this tries to mimic ObjectPascal identifier scope
+      as much as it can. It seaches within this item,
+      but also within class enclosing this item,
+      within unit enclosing this item, then within units used by unit
+      of this item. }
     function FindName(S1, S2, S3: string; n: Integer): TPasItem; virtual;
+    
     { Returns DetailedDescription if available, otherwise Description,
       otherwise nil. }
     function GetDescription: string;
@@ -297,12 +306,6 @@ type
       property with the name of ItemName, the corresponding item pointer is
       returned. }
     function FindItem(const ItemName: string): TPasItem; override;
-
-    { If n = 0 this first checks for item inside this class,
-      i.e. checks if S1 is maybe some method or property or field.
-      
-      Then it calls inherited. }
-    function FindName(S1, S2, S3: string; n: Integer): TPasItem; override;
 
     procedure SortPasItems;
   public
@@ -610,28 +613,30 @@ begin
   LS1 := LowerCase(S1);
   case n of
     0: begin
-        if Assigned(MyObject) then begin { this item is a method or field }
-          p := MyObject.FindItem(S1);
-          if Assigned(p) then begin
-            Result := p;
-            Exit;
-          end;
-        end;
+         Result := FindItem(LS1);
+         if Result <> nil then Exit;
+         
+         if Assigned(MyObject) then begin { this item is a method or field }
+           p := MyObject.FindItem(S1);
+           if Assigned(p) then begin
+             Result := p;
+             Exit;
+           end;
+         end;
 
-        if Assigned(MyUnit) then begin
-          p := MyUnit.FindItem(S1);
-          if Assigned(p) then begin
-            Result := p;
-            Exit;
-          end;
-        end;
+         if Assigned(MyUnit) then begin
+           p := MyUnit.FindItem(S1);
+           if Assigned(p) then begin
+             Result := p;
+             Exit;
+           end;
+         end;
 
-        if Assigned(MyUnit) and (LS1 = LowerCase(MyUnit.Name)) then begin
-          Result := MyUnit;
-          Exit;
-        end;
-
-      end;
+         if Assigned(MyUnit) and (LS1 = LowerCase(MyUnit.Name)) then begin
+           Result := MyUnit;
+           Exit;
+         end;
+       end;
 
     1: begin
         if Assigned(MyObject) then begin
@@ -836,15 +841,6 @@ begin
   inherited;
 end;
 
-function TPasCio.FindName(S1, S2, S3: string; n: Integer): TPasItem; 
-begin
-  Result := nil;
-  if n = 0 then
-    Result := FindItem(S1);
-  if Result = nil then
-    Result := inherited FindName(S1, S2, S3, n);
-end;
-
 function TPasCio.FindItem(const ItemName: string): TPasItem;
 begin
   if Fields <> nil then begin
@@ -909,17 +905,14 @@ end;
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
 var
-  PI: TPasItem;
   po: TPasCio;
 begin
   Result := nil;
   if CIOs = nil then Exit;
 
   po := TPasCio(CIOs.FindName(S1));
-  if Assigned(po) then begin
-    PI := po.FindItem(S2);
-    if Assigned(PI) then FindFieldMethodProperty := PI;
-  end;
+  if Assigned(po) then
+    Result := po.FindItem(S2);
 end;
 
 function TPasUnit.FindItem(const ItemName: string): TPasItem;

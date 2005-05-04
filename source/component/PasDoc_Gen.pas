@@ -1034,7 +1034,6 @@ function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer): T
 var
   i: Integer;
   Item: TPasItem;
-  CIO: TPasCio;
   U: TPasUnit;
 begin
   Result := nil;
@@ -1042,51 +1041,42 @@ begin
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
   
   case n of
-    0: { }
-      for i := 0 to Units.Count - 1 do begin
-        U := Units.UnitAt[i];
-        Item := U.FindItem(S1);
-        if Assigned(Item) then begin
-          Result := Item;
-          Exit;
-        end;
-      end;
+    0: for i := 0 to Units.Count - 1 do
+       begin
+         U := Units.UnitAt[i];
+
+         if SameText(U.Name, S1) then
+         begin
+           Result := U;
+           Exit;
+         end;
+
+         Result := U.FindItem(S1);
+       end;
     1: begin
-        { object.field_method_property }
-        for i := 0 to Units.Count - 1 do begin
-          U := Units.UnitAt[i];
-          ;
-          if Assigned(U.CIOs) then begin
-            CIO := TPasCio(U.CIOs.FindName(S1));
-            if Assigned(CIO) then begin
-              Item := CIO.FindItem(S2);
-              if Assigned(Item) then begin
-                Result := Item;
-                Exit;
-              end;
-            end;
-          end;
-        end;
-        { unit.cio_var_const_type }
-        U := TPasUnit(Units.FindName(S1));
-        if Assigned(U) then begin
-          Item := U.FindItem(S2);
-          Result := Item;
-          Exit;
-        end;
-      end;
-    2: { unit.objectorclassorinterface.fieldormethodorproperty } begin
-        U := TPasUnit(Units.FindName(S1));
-        if (not Assigned(U)) then Exit;
-        Item := U.FindItem(S2);
-        if (not Assigned(Item)) then Exit;
-        Item := Item.FindItem(S3);
-        if (not Assigned(Item)) then Exit;
-        Result := Item;
-        Exit;
-      end;
+         { object.field_method_property }
+         for i := 0 to Units.Count - 1 do begin
+           Result := Units.UnitAt[i].FindFieldMethodProperty(S1, S2);
+           if Assigned(Result) then Exit;
+         end;
+
+         { unit.cio_var_const_type }
+         U := TPasUnit(Units.FindName(S1));
+         if Assigned(U) then 
+           Result := U.FindItem(S2);
+       end;
+    2: begin
+         { unit.objectorclassorinterface.fieldormethodorproperty } 
+         U := TPasUnit(Units.FindName(S1));
+         if (not Assigned(U)) then Exit;
+         Item := U.FindItem(S2);
+         if (not Assigned(Item)) then Exit;
+         Item := Item.FindItem(S3);
+         if (not Assigned(Item)) then Exit;
+         Result := Item;
+         Exit;
+       end;
   end;
-  Result := nil;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1229,7 +1219,9 @@ begin
     FoundItem := Item.FindName(S1, S2, S3, n);
   end;
 
-  { Next try to find link in items's unit uses units. }
+  { Next try to find link in items's unit uses units. 
+    TODO: this should be moved to TPasItem.FindName,
+    this way it will also be used by SearchItem. }
   if FoundItem = nil then
     if Assigned(Item.MyUnit) then
       if Assigned(Item.MyUnit.UsesUnits) then begin
