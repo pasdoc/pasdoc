@@ -103,6 +103,29 @@ type
       You can override it to add more handlers. }
     procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
 
+    { The meaning of this method is that it searches for item with ItemName
+      *inside* *this* item. This means that e.g. for units it checks whether
+      there is some item declared in this unit (like procedure, or class).
+      For classes this means that some item is declared within the class
+      (like method or property).
+      
+      All normal rules of ObjectPascal scope apply, which means that
+      e.g. if this item is a unit, @name searches for a class named
+      ItemName but it *doesn't* search for a method named ItemName
+      inside some class of this unit. Just like in ObjectPascal
+      the scope of identifiers declared within the class always
+      stays within the class. Of course, in ObjectPascal you can
+      qualify a method name with a class name, and you can also
+      do such qualified links in pasdoc, but this is not handled
+      by this routine (see @link(FindName) instead). 
+      
+      Returns nil if not found.
+      
+      Note that it never checks ItemName with Self.Name.
+      You may want to check this yourself if you want.
+      
+      Implementation in this class always returns nil.
+      Override as necessary. }
     function FindItem(const ItemName: string): TPasItem; virtual;
     { }
     function FindName(S1, S2, S3: string; n: Integer): TPasItem; virtual;
@@ -270,13 +293,11 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    { Simply returns the result of a call to @link(FindFieldMethodProperty). }
-    function FindItem(const ItemName: string): TPasItem; override;
     { If this class (or interface or object) contains a field, method or
       property with the name of ItemName, the corresponding item pointer is
       returned. }
-    function FindFieldMethodProperty(const ItemName: string): TPasItem;
-    
+    function FindItem(const ItemName: string): TPasItem; override;
+
     { If n = 0 this first checks for item inside this class,
       i.e. checks if S1 is maybe some method or property or field.
       
@@ -590,7 +611,7 @@ begin
   case n of
     0: begin
         if Assigned(MyObject) then begin { this item is a method or field }
-          p := MyObject.FindFieldMethodProperty(S1);
+          p := MyObject.FindItem(S1);
           if Assigned(p) then begin
             Result := p;
             Exit;
@@ -615,7 +636,7 @@ begin
     1: begin
         if Assigned(MyObject) then begin
           if LowerCase(MyObject.Name) = LS1 then begin
-            p := MyObject.FindFieldMethodProperty(S2);
+            p := MyObject.FindItem(S2);
             if Assigned(p) then begin
               Result := p;
               Exit;
@@ -819,17 +840,12 @@ function TPasCio.FindName(S1, S2, S3: string; n: Integer): TPasItem;
 begin
   Result := nil;
   if n = 0 then
-    Result := FindFieldMethodProperty(S1);
+    Result := FindItem(S1);
   if Result = nil then
     Result := inherited FindName(S1, S2, S3, n);
 end;
 
 function TPasCio.FindItem(const ItemName: string): TPasItem;
-begin
-  FindItem := FindFieldMethodProperty(ItemName);
-end;
-
-function TPasCio.FindFieldMethodProperty(const ItemName: string): TPasItem;
 begin
   if Fields <> nil then begin
     Result := Fields.FindName(ItemName);
@@ -846,7 +862,7 @@ begin
     if Result <> nil then Exit;
   end;
 
-  Result := nil;
+  Result := inherited FindItem(ItemName);
 end;
 
 procedure TPasCio.SortPasItems;
@@ -901,23 +917,13 @@ begin
 
   po := TPasCio(CIOs.FindName(S1));
   if Assigned(po) then begin
-    PI := po.FindFieldMethodProperty(S2);
+    PI := po.FindItem(S2);
     if Assigned(PI) then FindFieldMethodProperty := PI;
   end;
 end;
 
 function TPasUnit.FindItem(const ItemName: string): TPasItem;
-{ // these belong to the commented out code below
-var
-  i: Integer;
-  CioItem: TPasCio;
-}
 begin
-  if LowerCase(Name) = LowerCase(ItemName) then begin
-    Result := Self;
-    Exit;
-  end;
-
   if Constants <> nil then begin
     Result := Constants.FindName(ItemName);
     if Result <> nil then Exit;
@@ -942,19 +948,8 @@ begin
     Result := CIOs.FindName(ItemName);
     if Result <> nil then Exit;
   end;
-{ // JMB: I removed this so that no cross-linking between units would occur
-  // for simple properties etc. Yes, it means you have to do more typing,
-  // but it also makes linking much more sensible
-  if CIOs <> nil then
-    for i := 0 to CIOs.Count - 1 do begin
-      CioItem := TPasCio(CIOs.PasItemAt[i]);
-      if CioItem <> nil then begin
-        Result := CioItem.FindFieldMethodProperty(ItemName);
-        if Result <> nil then Exit;
-      end;
-    end;
-}
-  Result := nil;
+
+  Result := inherited FindItem(ItemName);
 end;
 
 { ---------------------------------------------------------------------------- }

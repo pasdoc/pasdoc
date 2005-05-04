@@ -1059,7 +1059,7 @@ begin
           if Assigned(U.CIOs) then begin
             CIO := TPasCio(U.CIOs.FindName(S1));
             if Assigned(CIO) then begin
-              Item := CIO.FindFieldMethodProperty(S2);
+              Item := CIO.FindItem(S2);
               if Assigned(Item) then begin
                 Result := Item;
                 Exit;
