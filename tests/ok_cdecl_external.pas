@@ -4,6 +4,8 @@
   Warning[2]: Error EPasDoc: todo/ok_cdecl_external.pas(5): Unexpected keyword external. parsing unit ok_cdecl_external.pas, continuing...
 
   Bar and Xyz added as additional tests.
+  
+  Update: it's fixed now, pasdoc parses it correctly.
 }
 
 unit ok_cdecl_external;
