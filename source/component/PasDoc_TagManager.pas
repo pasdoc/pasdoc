@@ -281,7 +281,7 @@ var
       while (i <= Length(Description)) and 
             (not (Description[i] in [#10, #13])) do
         Inc(i);
-      Parameters := Copy(Description, TagEnd, i - TagEnd);
+      Parameters := Trim(Copy(Description, TagEnd, i - TagEnd));
       TagEnd := i;
     end;
   end;
