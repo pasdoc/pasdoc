@@ -5,13 +5,15 @@ interface
 { Parens are missing here, generated docs will not be as expected.
   PasDoc should warn about this.
 
-  @returns something }
+  @returns
+    something }
 function Foo1(A: Integer): Integer;
 
 { Parens are missing here, generated docs will not be as expected.
   PasDoc should warn about this.
 
-  @param A means something }
+  @param
+    A means something }
 function Foo2(A: Integer): Integer;
 
 type
@@ -20,7 +22,8 @@ type
 { Parens are missing here, generated docs will not be as expected.
   PasDoc should warn about this.
 
-  @raises EFoo when something is bad }
+  @raises
+    EFoo when something is bad }
 function Foo3(A: Integer): Integer;
 
 implementation
