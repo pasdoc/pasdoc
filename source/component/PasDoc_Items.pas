@@ -111,8 +111,8 @@ type
       You can override it to add more handlers. }
     procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
 
-    { The meaning of this method is that it searches for item with ItemName
-      *inside* *this* item. This means that e.g. for units it checks whether
+    { This searches for item with ItemName *inside* *this* item. 
+      This means that e.g. for units it checks whether
       there is some item declared in this unit (like procedure, or class).
       For classes this means that some item is declared within the class
       (like method or property).
@@ -129,7 +129,7 @@ type
       
       Returns nil if not found.
       
-      Note that it never checks ItemName with Self.Name.
+      Note that it never compares ItemName with Self.Name.
       You may want to check this yourself if you want.
       
       Implementation in this class always returns nil.
@@ -137,7 +137,8 @@ type
     function FindItem(const ItemName: string): TPasItem; virtual;
     
     { This does all it can to resolve link specified by S1, S2, S3.
-      n is 0, 1, 2 and specifies how many S were actually specified.
+      n is 0, 1, 2 and specifies how many parts (from S1, S2, S3)
+      were actually specified.
       
       While searching this tries to mimic ObjectPascal identifier scope
       as much as it can. It seaches within this item,

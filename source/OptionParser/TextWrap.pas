@@ -12,7 +12,12 @@
 {  Foundation and appearing at http://www.borland.com/kylix/gpl.html.     }
 {                                                                         }
 { *********************************************************************** }
+
+{ This unit contains implementation of WrapText function, 
+  used only with FPC <= 1.9.4. In newer FPC and Delphi/Kylix this
+  function is available in SysUtils unit. }
 unit TextWrap;
+
 interface
 
 type
