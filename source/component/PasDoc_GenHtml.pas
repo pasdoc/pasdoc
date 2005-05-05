@@ -207,6 +207,8 @@ type
     procedure WriteEndOfLink;
     
     function InsertParagraphs(const S: string): string; override;
+    
+    function LineBreak: string; override;
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -2661,6 +2663,11 @@ function THTMLDocGenerator.InsertParagraphs(const S: string): string;
 begin
   Result := S;
   Utils.InsertParagraphs(Result, '<p>');
+end;
+
+function THTMLDocGenerator.LineBreak: string; 
+begin
+  Result := '<br>';
 end;
 
 end.

@@ -172,6 +172,8 @@ end;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleLiteralTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleBrTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
 
   protected
     FAbbreviations: TStringList;
@@ -540,6 +542,16 @@ end;
       i.e. returns always ''. Generators that know what to do with raw
       LaTeX markup can override this with simple "Result := S". }
     function LatexString(const S: string): string; virtual;
+    
+    { This returns markup that forces line break in given output
+      format (e.g. '<br>' in html or '\\' in LaTeX).
+      It is used on @br tag (but may also be used on other 
+      occasions in the future).
+      
+      In this class it returns '', because it's valid for
+      an output generator to simply ignore @br tags if linebreaks
+      can't be expressed in given output format. }
+    function LineBreak: string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -855,6 +867,12 @@ begin
   ReplaceStr := CodeString(TagDesc);
 end;
 
+procedure TDocGenerator.HandleBrTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := LineBreak;
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -890,6 +908,7 @@ begin
     TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
     TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
     TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
+    TagManager.AddHandler('br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
 
     { Tags with non-recursive params }
     TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
@@ -2142,6 +2161,11 @@ begin
 end;
 
 function TDocGenerator.LatexString(const S: string): string;
+begin
+  Result := '';
+end;
+
+function TDocGenerator.LineBreak: string; 
 begin
   Result := '';
 end;

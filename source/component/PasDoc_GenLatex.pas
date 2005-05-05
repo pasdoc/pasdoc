@@ -157,6 +157,8 @@ type
     procedure WriteAnchor(ItemName, Link: string);
     
     function InsertParagraphs(const S: string): string; override;
+    
+    function LineBreak: string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -1944,8 +1946,16 @@ begin
   Utils.InsertParagraphs(Result, LineEnding + LineEnding);
 end;
 
+function TTexDocGenerator.LineBreak: string; 
+begin
+  Result := '\\';
+end;
+
 (*
   $Log$
+  Revision 1.29  2005/05/05 09:14:34  kambi
+  + @br tag implementation and test in tests/ok_line_break.pas
+
   Revision 1.28  2005/05/03 18:44:01  kambi
   * Removed HTML-specific implementation of TTexDocGenerator.WriteSpellChecked
 
