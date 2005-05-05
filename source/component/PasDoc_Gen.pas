@@ -1806,46 +1806,6 @@ begin
   WriteConverted(s, false);
 end;
 
-(*function TDocGenerator.LongCode(const Desc: string; Len: integer; var CurPos: integer): string;
-var
-  CharPos: integer;
-  ClosingCharacter: Char;
-  FoundEnd: boolean;
-begin
-  CharPos := CurPos;
-  if (CharPos+1 > Len) or (Desc[CharPos] <> '(') then
-  begin
-    result := '@LONGCODE';
-  end
-  else
-  begin
-    ClosingCharacter := Desc[CharPos+1];
-    CharPos := CharPos + 1;
-    FoundEnd := False;
-    while (CharPos <= Len) do
-    begin
-      Inc(CharPos);
-      if Desc[CharPos] = ClosingCharacter then
-      begin
-        if (CharPos + 1 <= Len) and (Desc[CharPos+1] = ')') then
-        begin
-          FoundEnd := True;
-          break;
-        end;
-      end;
-    end;
-    if FoundEnd then
-    begin
-      result := FormatPascalCode(Copy(Desc, CurPos + 2, CharPos - CurPos-2));
-      CurPos := CharPos + 2;
-    end
-    else
-    begin
-      result := '@LONGCODE';
-    end;
-  end;
-end;*)
-
 function TDocGenerator.FormatPascalCode(const Line: string): string;
 var
   CharIndex: integer;
