@@ -938,11 +938,11 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.ExpandDescriptions;
+  
+  procedure ExpandCollection(c: TPasItems); forward;
 
   { expands Description and DetailedDescription of Item }
   procedure ExpandItem(Item: TPasItem);
-  var
-    i: Integer;
   begin
     if Item = nil then Exit;
 
@@ -953,29 +953,21 @@ procedure TDocGenerator.ExpandDescriptions;
     Item.DetailedDescription := 
       ExpandDescription(Item, Item.DetailedDescription);
 
-    if Item is TPasEnum then begin
-      for i := 0 to TPasEnum(Item).Members.Count-1 do begin
-        ExpandItem(TPasItem(TPasEnum(Item).Members.PasItemAt[i]));
-      end;
-    end;
+    if Item is TPasEnum then
+      ExpandCollection(TPasEnum(Item).Members)
   end;
 
   { for all items in collection C, expands descriptions }
   procedure ExpandCollection(c: TPasItems);
   var
     i: Integer;
-    p: TPasItem;
-    {T: PText;}
   begin
-    if ObjectVectorIsNilOrEmpty(c) then Exit;
-    for i := 0 to c.Count - 1 do begin
-      p := c.PasItemAt[i];
-      ExpandItem(p);
-    end;
+    if c = nil then Exit;
+    for i := 0 to c.Count - 1 do 
+      ExpandItem(c.PasItemAt[i]);
   end;
 
 var
-  {C: TPasItems;}
   CO: TPasCio;
   i: Integer;
   j: Integer;
