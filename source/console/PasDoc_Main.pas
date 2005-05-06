@@ -65,6 +65,7 @@ var
   GOption_CacheDir: TStringOption;
   GOption_FullLink: TBoolOption;
   GOption_CSS: TStringOption; { Using external CSS file for HTML output }
+  GOption_AutoAbstract: TBoolOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -215,6 +216,9 @@ begin
   GOption_CSS.Explanation := 'CSS file for HTML files (copied into output tree)';
   GOptionParser.AddOption(GOption_CSS);
 
+  GOption_AutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
+  GOption_AutoAbstract.Explanation := 'if set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
+  GOptionParser.AddOption(GOption_AutoAbstract);
 end;
 
 procedure PrintUsage;
@@ -349,6 +353,9 @@ begin
   GPasDoc.Generator.AspellLanguage := GOption_ASPELL.Value;
   GPasDoc.Generator.IgnoreWordsFile := GOption_IgnoreWords.Value;
   GPasDoc.CacheDir := GOption_CacheDir.Value;
+
+  GPasDoc.Generator.AutoAbstract := GOption_AutoAbstract.TurnedOn;
+
   Result := True;
 end;
 

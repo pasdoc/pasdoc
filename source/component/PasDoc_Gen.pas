@@ -116,6 +116,7 @@ type
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TPasItem;
+    FAutoAbstract: boolean;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -633,6 +634,10 @@ end;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
     property FullLink: boolean read FFullLink write FFullLink
       default false;
+
+    { The meaning of this is just like --auto-abstract command-line option.
+      It is used in @link(ExpandDescriptions). }
+    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
   end;
 
 var
@@ -934,29 +939,15 @@ end;
 
 procedure TDocGenerator.ExpandDescriptions;
 
-{ expands Description and DetailedDescription of Item }
-
+  { expands Description and DetailedDescription of Item }
   procedure ExpandItem(Item: TPasItem);
   var
     i: Integer;
-    s: string;
   begin
     if Item = nil then Exit;
 
-    if IsStrEmptyA(Item.Description) then
-      Item.Description := ''
-    else begin
-      s := Item.Description;
-      TrimCompress(s);
-      Item.Description := s;
-    end;
-    if IsStrEmptyA(Item.DetailedDescription) then
-      Item.DetailedDescription := ''
-    else begin
-      s := Item.DetailedDescription;
-      TrimCompress(s);
-      Item.DetailedDescription := s;
-    end;
+    Item.Description := TrimCompress(Item.Description);
+    Item.DetailedDescription := TrimCompress(Item.DetailedDescription);
 
     Item.Description := ExpandDescription(Item, Item.Description);
     Item.DetailedDescription := 
@@ -970,7 +961,6 @@ procedure TDocGenerator.ExpandDescriptions;
   end;
 
   { for all items in collection C, expands descriptions }
-
   procedure ExpandCollection(c: TPasItems);
   var
     i: Integer;
