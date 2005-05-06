@@ -334,10 +334,6 @@ var
     Result := true;
     while SCharIs(Description, i, WhiteSpace) do Inc(i);
     OffsetEnd := i;
-    
-    {}{Writeln('Para --------------------');
-    Writeln('"', Description, '" ', FOffset);
-    Writeln('--------------------');}
   end;
 
 var
