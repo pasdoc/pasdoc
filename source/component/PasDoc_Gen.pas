@@ -2148,7 +2148,7 @@ procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem;
 
   { Tries to find a link from string S. 
     Tries to split S using SplitLink, if succeeds then tries using p.FindName,
-    if that does not resolve the link that tries using FindGlobal.
+    if that does not resolve the link then tries using FindGlobal.
     
     Returns nil if S couldn't be resolved. 
     
