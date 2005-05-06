@@ -266,13 +266,8 @@ var
   LCacheFileName: string;
 begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
-{$IFDEF FPC}
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    @GenMessage, FVerbosity, SourceFileName);
-{$ELSE}
-  p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    GenMessage, FVerbosity, SourceFileName);
-{$ENDIF}
+    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName);
   p.ClassMembers := ClassMembers;
   try
     p.CommentMarkers := CommentMarkers;
