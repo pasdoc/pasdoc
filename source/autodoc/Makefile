@@ -56,7 +56,8 @@ PASDOC=../console/PasDoc_Console
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
   ../component/*.pas ../OptionParser/*.pas ../console/*.pas \
-  --title "PasDoc's autodoc" --write-uses-list
+  --title "PasDoc's autodoc" --write-uses-list \
+  --full-link
 
 .PHONY: html latex pdf dvi ps html-latex clean
 
