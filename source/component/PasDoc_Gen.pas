@@ -300,14 +300,6 @@ end;
       of the @@ character}
     function ExtractEmailAddress(s: string; var S1, S2, EmailAddress: string): Boolean;
 
-    { Searches for a link in string S, signified by
-      xxx://xxxx/.../.
-      
-      If found, returns true and sets S1, S2 and Link such that 
-      S = S1 + Link + S2 and Link is the URL that was found.
-      Else returns false. }
-    function ExtractLink(s: string; var S1,S2,Link: string): Boolean;
-
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
       Returns a pointer to the item on success, nil otherwise. }
@@ -547,6 +539,20 @@ end;
       an output generator to simply ignore @br tags if linebreaks
       can't be expressed in given output format. }
     function LineBreak: string; virtual;
+    
+    { This should return markup upon finding URL in description.
+      E.g. HTML generator will want to wrap this in 
+      <a href="...">...</a>.
+      
+      Note that passed here URL is *not* processed by @link(ConvertString)
+      (because sometimes it could be undesirable).
+      If you want you can process URL with ConvertString when
+      overriding this method.
+      
+      Default implementation in this class simply returns ConvertString(URL).
+      This is good if your documentation format does not support
+      anything like URL links. }
+    function URLLink(const URL: string): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -897,7 +903,8 @@ begin
   TagManager := TTagManager.Create;
   try
     TagManager.Abbreviations := Abbreviations;
-    TagManager.StringConverter := {$IFDEF FPC}@{$ENDIF}ConvertString;
+    TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF}ConvertString;
+    TagManager.URLLink := {$IFDEF FPC}@{$ENDIF}URLLink;
     TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF}DoMessageFromExpandDescription;
     TagManager.Paragraph := Paragraph;
     
@@ -1627,47 +1634,6 @@ begin
   end;
 end;
 
-function TDocGenerator.ExtractLink(s: string; 
-  var S1, S2, Link: string): Boolean;
-  
-{ Here's how it works, and what is the meaning of constants below:
-
-  Find '://' in S.
-  Include all continuous AlphaNum chars before '://'.
-  Include all continuous FullLinkChars and HalfLinkChars chars after '://'
-  but then strip all HalfLinkChars from the end.
-  
-  This means that HalfLinkChars are allowed in the middle of URL,
-  but only as long as there is some char after FullLinkChars
-  but not at the end.
-}
-
-const
-  AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
-  FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
-  HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];
-var
-  p, i: Integer;
-  scheme: string;
-begin
-  Result := False;
-  p := Pos('://', s);
-  if p > 0 then begin
-    i := p-1;
-    while (i>0) and (s[i] in AlphaNum) do Dec(i); // find beginning of scheme
-    scheme := Copy(s, i+1, p-i+2);
-    S1 := Copy(s, 1, i);
-    i := p+2;
-    while (i<=length(s)) and (s[i] in FullLinkChars + HalfLinkChars) do Inc(i);
-    Dec(i);
-    while (s[i] in HalfLinkChars) do Dec(i);
-    Inc(i);
-    S2 := Copy(s, i, MaxInt);
-    link := scheme + Copy(s, p+3, i - p-3);
-    Result := True; 
-  end;
-end;
-
 procedure TDocGenerator.CheckString(const AString: string;
   const AErrors: TObjectVector);
 var
@@ -2129,6 +2095,11 @@ end;
 function TDocGenerator.LineBreak: string; 
 begin
   Result := '';
+end;
+
+function TDocGenerator.URLLink(const URL: string): string; 
+begin
+  Result := ConvertString(URL);
 end;
 
 procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem; 

@@ -78,12 +78,14 @@ type
   TTagManager = class
   private
     FTags: TStringList;
-    FStringConverter: TStringConverter;
+    FConvertString: TStringConverter;
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
     FParagraph: string;
+    FURLLink: TStringConverter;
 
-    function ConvertString(const s: string): string;
+    function DoConvertString(const s: string): string;
+    function DoURLLink(const s: string): string;
     procedure Unabbreviate(var s: string);
   public
     constructor Create;
@@ -113,6 +115,15 @@ type
       
       Default value is ' ' (one space). }
     property Paragraph: string read FParagraph write FParagraph;
+    
+    { This will be called from @link(Execute) when URL will be found
+      in Description. Note that passed here URL will *not* be processed by
+      @link(ConvertString). 
+      
+      This tells what to put in result on URL.
+      If this is not assigned, then ConvertString(URL) will be appended
+      to Result in @link(Execute). }
+    property URLLink: TStringConverter read FURLLink write FURLLink;
 
     { See @link(TTagHandlerObj) for the meaning of parameter TagOption.
       Don't worry about the case of TagName, it does *not* matter. }
@@ -120,7 +131,8 @@ type
       const TagOptions: TTagOptions);
 
     function Execute(const Description: string): string;
-    property StringConverter: TStringConverter read FStringConverter write FStringConverter;
+    property ConvertString: TStringConverter 
+      read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
   end;
 
@@ -175,12 +187,20 @@ begin
     TTagHandlerObj.Create(Handler, TagOptions));
 end;
 
-function TTagManager.ConvertString(const s: string): string;
+function TTagManager.DoConvertString(const s: string): string;
 begin
-  if Assigned(FStringConverter) then
-    Result := FStringConverter(s)
+  if Assigned(FConvertString) then
+    Result := FConvertString(s)
   else
     Result := s;
+end;
+
+function TTagManager.DoURLLink(const s: string): string;
+begin
+  if Assigned(FURLLink) then
+    Result := FURLLink(s)
+  else
+    Result := DoConvertString(s);
 end;
 
 procedure TTagManager.Unabbreviate(var s: string);
@@ -336,10 +356,57 @@ var
     OffsetEnd := i;
   end;
 
+  { Checks does Description[FOffset] may be a beginning of some URL.
+    (xxx://xxxx/.../).
+      
+    If yes, returns true and sets OffsetEnd to the next
+    index in Description after this URL.
+    
+    For your comfort, returns also URL (this is *always*
+    Copy(Description, FOffset, OffsetEnd - FOffset)). }
+  function FindURL(var OffsetEnd: Integer; var URL: string): boolean;
+
+  { Here's how it works, and what is the meaning of constants below:
+
+    Include all continuous AlphaNum chars.
+    Then must be '://'.
+    Include all continuous FullLinkChars and HalfLinkChars chars after '://'
+    but then strip all HalfLinkChars from the end.
+
+    This means that HalfLinkChars are allowed in the middle of URL,
+    but only as long as there is some char after FullLinkChars
+    but not at the end.
+  }
+
+  const
+    AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
+    FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
+    HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];  
+    URLMiddle = '://';
+  var
+    i: Integer;
+  begin
+    Result := False;
+    
+    i := FOffset;    
+    while SCharIs(Description, i, AlphaNum) do Inc(i);
+    if not (Copy(Description, i, Length(URLMiddle)) = URLMiddle) then Exit;
+    
+    Result := true;
+    i := i + Length(URLMiddle);
+    while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
+    Dec(i);
+    while (Description[i] in HalfLinkChars) do Dec(i);
+    Inc(i);
+    OffsetEnd := i;
+    
+    URL := Copy(Description, FOffset, OffsetEnd - FOffset);
+  end;
+
 var
   { Always ConvertBeginOffset <= FOffset. 
     Description[ConvertBeginOffset ... FOffset - 1] 
-    is the string that should be filtered by ConvertString. }
+    is the string that should be filtered by DoConvertString. }
   ConvertBeginOffset: Integer;
 
   { This function increases ConvertBeginOffset to FOffset,
@@ -348,7 +415,7 @@ var
     to Result. }
   procedure DoConvert;
   begin
-    Result := Result + ConvertString(
+    Result := Result + DoConvertString(
       Copy(Description, ConvertBeginOffset, FOffset - ConvertBeginOffset));
     ConvertBeginOffset := FOffset;
   end;
@@ -359,6 +426,7 @@ var
   Params: string;
   OffsetEnd: Integer;
   TagHandlerObj: TTagHandlerObj;
+  URL: string;
 begin
   Result := '';
   FOffset := 1;
@@ -398,9 +466,9 @@ begin
           DoMessage(1, mtWarning,
             'Tag "%s" is not allowed to have any parameters', [TagName]);
         end;
-        ReplaceStr := ConvertString('@(' + TagName) + Params + ConvertString(')');
+        ReplaceStr := DoConvertString('@(' + TagName) + Params + ConvertString(')');
       end else
-        ReplaceStr := ConvertString('@' + TagName);
+        ReplaceStr := DoConvertString('@' + TagName);
       TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
@@ -425,6 +493,15 @@ begin
       DoConvert;
       
       Result := Result + Paragraph;
+      FOffset := OffsetEnd;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    if FindURL(OffsetEnd, URL) then
+    begin
+      DoConvert;
+      
+      Result := Result + DoURLLink(URL);
       FOffset := OffsetEnd;
       
       ConvertBeginOffset := FOffset;

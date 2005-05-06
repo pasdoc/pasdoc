@@ -38,6 +38,9 @@ type
     { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
       html element describing current charset (from FLanguage). }
     procedure WriteMetaContentType;
+    
+    function MakeLinkTarget(
+      const href, caption, localcss, target: string): string;    
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -132,7 +135,6 @@ type
 
     procedure WriteSpellChecked(const AString: string);
 
-    procedure WriteWithURLs(s: string);
     function HtmlString(const S: string): string; override;
     // FormatPascalCode will cause Line to be formatted in
     // the way that Pascal code is formatted in Delphi.
@@ -209,6 +211,8 @@ type
     function Paragraph: string; override;
     
     function LineBreak: string; override;
+    
+    function URLLink(const URL: string): string; override;
   public
     { The method that does everything - writes documentation for all units
       and creates overview files. }
@@ -598,7 +602,7 @@ begin
     { Write only the description and do not opt for DetailedDescription,
       like WriteItemDescription does. }
     if p.Description <> '' then
-      WriteWithURLs(p.Description)
+      WriteSpellChecked(p.Description)
     else
       WriteDirect('&nbsp;');
 
@@ -682,8 +686,8 @@ begin
   WriteLinkTarget(href, caption, localcss, '');
 end;
 
-procedure THTMLDocGenerator.WriteLinkTarget(
-  const href, caption, localcss, target: string);
+function THTMLDocGenerator.MakeLinkTarget(
+  const href, caption, localcss, target: string): string;
 var
   s: string;
 begin
@@ -693,7 +697,13 @@ begin
     s := '<a class="normal"';
   if target <> '' then
     s := Format('%s target="%s"', [s, target]);
-  WriteDirect(Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]));
+  Result := Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]);
+end;
+
+procedure THTMLDocGenerator.WriteLinkTarget(
+  const href, caption, localcss, target: string);
+begin
+  WriteDirect(MakeLinkTarget(href, caption, localcss, target));
 end;
 
 procedure THTMLDocGenerator.WriteEndOfParagraph;
@@ -802,7 +812,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     WriteDirect(ParamName);
     WriteDirect('</dt>', true);
     WriteDirect('<dd class="parameters">', true);
-    WriteWithURLs(Desc);
+    WriteSpellChecked(Desc);
     WriteDirect('</dd>', true);
   end;
 
@@ -844,7 +854,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
       exit;
     WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
     WriteDirect('<p class="return">');
-    WriteWithURLs(ReturnDesc);
+    WriteSpellChecked(ReturnDesc);
     WriteDirect('</p>');
   end;
 
@@ -956,10 +966,10 @@ begin
   if AItem = nil then Exit;
 
   if AItem.Description <> '' then begin
-    WriteWithURLs(AItem.Description);
+    WriteSpellChecked(AItem.Description);
   end else begin
     if AItem.DetailedDescription <> '' then begin
-      WriteWithURLs(AItem.DetailedDescription)
+      WriteSpellChecked(AItem.DetailedDescription)
     end else begin
       WriteDirect('&nbsp;');
     end;
@@ -974,16 +984,16 @@ begin
   if not Assigned(AItem) then Exit;
 
   if AItem.Description <> '' then begin
-    WriteWithURLs(AItem.Description);
+    WriteSpellChecked(AItem.Description);
 
     if AItem.DetailedDescription <> '' then begin
       WriteStartOfParagraph;
-      WriteWithURLs(AItem.DetailedDescription);
+      WriteSpellChecked(AItem.DetailedDescription);
     end;
   end else begin
     if AItem.DetailedDescription <> '' then begin
       WriteStartOfParagraph;
-      WriteWithURLs(AItem.DetailedDescription);
+      WriteSpellChecked(AItem.DetailedDescription);
     end else begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
@@ -1047,7 +1057,7 @@ begin
         WriteDirect('<li>', true);
         WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
         WriteConverted(': ');
-        WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
+        WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
         WriteDirect('</li>', true);
       end;
       WriteDirect('</ul>', true);
@@ -1219,7 +1229,7 @@ begin
   // if (not Assigned(t)) or (t.Content < 1) then Exit;
   WriteHeading(HL, s);
   WriteStartOfParagraph;
-  WriteWithURLs(t);
+  WriteSpellChecked(t);
   WriteEndOfParagraph;
 end;
 
@@ -1345,7 +1355,7 @@ begin
   WriteDirect('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">', true);
 
   if Length(Header) > 0 then begin
-    WriteWithURLs(Header);
+    WriteSpellChecked(Header);
   end;
 end;
 
@@ -2369,18 +2379,6 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteWithURLs(s: string);
-var
-  s1, s2, link: string;
-begin
-  while ExtractLink(s, s1, s2, link) do begin
-    WriteSpellChecked(S1);
-    WriteLinkTarget(link, Link, '', '_parent');
-    s := s2;
-  end;
-  WriteSpellChecked(s);
-end;
-
 procedure THTMLDocGenerator.WriteSpellChecked(const AString: string);
 var
   LErrors: TObjectVector;
@@ -2669,5 +2667,9 @@ begin
   Result := '<br>';
 end;
 
-end.
+function THTMLDocGenerator.URLLink(const URL: string): string; 
+begin
+  Result := MakeLinkTarget(EscapeURL(URL), ConvertString(URL), '', '_parent');
+end;
 
+end.

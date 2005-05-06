@@ -14,11 +14,13 @@ PAS=*.pas
 # i.e. for every output format.
 PASDOC_OPTIONS=--exclude-generator $(PAS)
 
-.PHONY: html pdf latex
+.PHONY: html pdf latex dvi
 
 html:
 	mkdir -p html/
 	pasdoc --format html --output=html/ $(PASDOC_OPTIONS)
+
+dvi: latex/docs.dvi
 
 pdf: latex/docs.pdf
 
@@ -30,6 +32,10 @@ latex: latex/docs.tex
 latex/docs.pdf: latex/docs.tex
 	cd latex; pdflatex --file-line-error-style -interaction=nonstopmode docs.tex
 	cd latex; pdflatex --file-line-error-style -interaction=nonstopmode docs.tex
+
+latex/docs.dvi: latex/docs.tex
+	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
+	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
 
 latex/docs.tex:
 	mkdir -p latex/

@@ -98,8 +98,6 @@ type
 
     procedure WriteSpellChecked(const AString: string);
 
-    procedure WriteWithURLs(s: string);
-    
     function LatexString(const S: string): string; override;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
@@ -159,6 +157,8 @@ type
     function Paragraph: string; override;
     
     function LineBreak: string; override;
+    
+    function URLLink(const URL: string): string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -480,7 +480,7 @@ begin
       { Write only the description and do not opt for DetailedDescription,
         like WriteItemDescription does. }
       if CIO.Description <> '' then
-        WriteWithURLs(CIO.Description);
+        WriteSpellChecked(CIO.Description);
       WriteDirect('',true);
     end;
   WriteDirect('\end{description}',true);
@@ -830,7 +830,7 @@ end;
     WriteDirect('\item[');
     WriteDirect(ParamName);
     WriteDirect('] ');
-    WriteWithURLs(Desc);
+    WriteSpellChecked(Desc);
     WriteDirect('',true);
   end;
 
@@ -897,7 +897,7 @@ end;
     if ReturnDesc = '' then
       exit;
     WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
-    WriteWithURLs(ReturnDesc);
+    WriteSpellChecked(ReturnDesc);
     WriteDirect('',true);
   end;
 
@@ -1173,7 +1173,7 @@ begin
   if AItem = nil then Exit;
   if AItem.Description <> '' then
     begin
-      WriteWithURLs(AItem.Description);
+      WriteSpellChecked(AItem.Description);
     end
   else
       WriteDirect(' ');
@@ -1219,19 +1219,19 @@ begin
 
   if AItem.Description <> '' then 
   begin
-    WriteWithURLs(AItem.Description);
+    WriteSpellChecked(AItem.Description);
     
     if AItem.DetailedDescription <> '' then 
       begin
         WriteDirect('\hfill\vspace*{1ex}',true);
         WriteDirect('',true);
-        WriteWithURLs(AItem.DetailedDescription);
+        WriteSpellChecked(AItem.DetailedDescription);
       end;
   end else 
   begin
     if AItem.DetailedDescription <> '' then 
     begin
-      WriteWithURLs(AItem.DetailedDescription);
+      WriteSpellChecked(AItem.DetailedDescription);
     end else 
     begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
@@ -1322,7 +1322,7 @@ begin
           WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
           { add the end characters for enums }
           WriteDirect('}] ');
-          WriteWithURLs(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
+          WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
           WriteDirect('', true);
         end;
         WriteDirect('\end{description}', true);
@@ -1634,7 +1634,7 @@ begin
   WriteDirect('% special variable used for calculating some widths.',true);
   WriteDirect('\newlength{\tmplength}',true);
   if Length(Header) > 0 then begin
-    WriteWithURLs(Header);
+    WriteSpellChecked(Header);
   end;
 end;
 
@@ -1879,18 +1879,6 @@ begin
   end;
 end;
 
-procedure TTexDocGenerator.WriteWithURLs(s: string);
-var
-  s1, s2, link: string;
-begin
-  while ExtractLink(s, s1, s2, link) do begin
-    WriteSpellChecked(S1);
-    WriteLink('',link,'');
-    s:=s2;
-  end;
-  WriteSpellChecked(s);
-end;
-
 procedure TTexDocGenerator.WriteSpellChecked(const AString: string);
 var
   LErrors: TObjectVector;
@@ -1950,8 +1938,21 @@ begin
   Result := '\\';
 end;
 
+function TTexDocGenerator.URLLink(const URL: string): string; 
+begin
+  Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
+end;
+
 (*
   $Log$
+  Revision 1.32  2005/05/06 22:26:48  kambi
+  + TDocGenerator.URLLink, TTagManager.URLLink, FindURL in TagManager
+  - TPasDoc_Gen.WriteWithURLs, TPasDoc_Gen.ExtractLink
+  * parsing url links is now done in TagManager, this way TDocGenerator.URLLink gets unconverted URL, which allows to differentiate between EscapeURL(URL) and ConvertString(URL), also markup introduced by ConvertString doesn't confuse FindURL.
+  * now URLs in LaTeX output are presented using \html command
+  * TTagManager.StringConverter -> TTagManager.ConvertString (for consistency)
+  + dvi target to tests/Makefile
+
   Revision 1.31  2005/05/06 20:41:56  kambi
   * Cleaned out inserting paragraphs: instead of those ugly InsertParagraphs
     methods and procedure in Utils, now it's handled by simple Paragraph property
