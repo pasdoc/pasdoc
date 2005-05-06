@@ -12,6 +12,7 @@
   @author(Peter Šimkoviè <simkovic_jr@manal.sk> (Slovak translation))
   @author(Peter Thörnqvist <pt@timemetrics.se> (Swedish translation))
   @author(Rodrigo Urubatan Ferreira Jardim <rodrigo@netscape.net> (Brasilian translation))
+  @author(Alexandre da Silva <simpsomboy@gmail.com> (Brasilian translation - Update))
   @author(Vitaly Kovalenko <v_l_kovalenko@alsy.by> (Russian translation))
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl> (corrected Polish translation))
   @author(Jónás Gergõ <jonas.gergo@ch...> (Hungarian translation))
@@ -343,18 +344,19 @@ procedure TPasDocLanguages.SetLanguageBrasilian;
 begin
   FTranslation[trAuthor] := 'Autor';
   FTranslation[trAuthors] := 'Autores';
-  FTranslation[trCio] := 'Classes, Interfaces e Objetos';
+  FTranslation[trAutomated] := 'Automated';
+  FTranslation[trCio] := 'Classes, Interfaces, Objetos e Registros';
   FTranslation[trClass] := 'Classe';
   FTranslation[trClasses] := 'Classes';
   FTranslation[trClassHierarchy] := 'Hierarquia de Classes';
   FTranslation[trConstants] := 'Constantes';
-  FTranslation[trCreated] := 'Criado';
+  FTranslation[trCreated] := 'Criada';
   FTranslation[trDeclaration] := 'Declaração';
   FTranslation[trDescription] := 'Descrição';
   FTranslation[trParameters] := 'Parâmetros';
   FTranslation[trReturns] := 'Retornos';
-  FTranslation[trExceptions] := 'Exceptions';
-  FTranslation[trEnum] := 'Enumeration';
+  FTranslation[trExceptions] := 'Exceções';
+  FTranslation[trEnum] := 'Enumerações';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
   FTranslation[trFunctionsAndProcedures] := 'Funções e Procedimentos';
@@ -363,43 +365,39 @@ begin
   FTranslation[trIdentifiers] := 'Identificadores';
   FTranslation[trInterface] := 'Interface';
   FTranslation[trLegend] := 'Legenda';
-  FTranslation[trLastModified] := 'Última modificação';
   FTranslation[trMethods] := 'Métodos';
+  FTranslation[trLastModified] := 'Última modificação';
   FTranslation[trName] := 'Nome';
   FTranslation[trNone] := 'Nenhum';
   FTranslation[trObject] := 'Objeto';
   FTranslation[trObjects] := 'Objetos';
-  FTranslation[trOverview] := 'Visão geral';
+  FTranslation[trOverview] := 'Visão Geral';
   FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Propriedades';
+  FTranslation[trProperties] := 'Properties';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipo';
   FTranslation[trTypes] := 'Tipos';
   FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Unit';
+  FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variáveis';
-  FTranslation[trGvUses] := 'Diagrama de dependências de Units';
+  FTranslation[trGvUses] := 'Diagrama de dependências de units';
   FTranslation[trGvClasses] := 'Diagrama de hierarquia de Classes';
+
+  FTranslation[trHeadlineCio] := 'Todas as Classes, Interfaces, Objetos e Registros';
+  FTranslation[trHeadlineConstants] := 'Todas as Constantes';
+  FTranslation[trHeadlineFunctionsAndProcedures] := 'Todas as funções e procedimentos';
+  FTranslation[trHeadlineIdentifiers] := 'Todos os Identificadores';
+  FTranslation[trHeadlineTypes] := 'Todos os Tipos';
+  FTranslation[trHeadlineUnits] := 'Todas as Units';
+  FTranslation[trHeadlineVariables] := 'Todas as Variáveis';
+
+  FTranslation[trSummaryCio] :=
+    'Lista das Classes, Interfaces, Objetos e Registros';
 
   FTranslation[trWarningOverwrite] :=
     'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito';
-
-  FTranslation[trHeadlineCio] := 'Todas as classes, interfaces e objetos';
-  FTranslation[trHeadlineConstants] := 'Todas as constantes';
-
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Todas as funções e procedimentos';
-  // or:
-  //  FTranslation[trHeadlineFunctionsAndProcedures] := 'Todas as rotinas'; ??
-
-  FTranslation[trHeadlineIdentifiers] := 'Todos os identificadores';
-  FTranslation[trHeadlineTypes] := 'Todos os tipos';
-  FTranslation[trHeadlineUnits] := 'Todos as units';
-  FTranslation[trHeadlineVariables] := 'Todas as variáveis';
-
-  FTranslation[trSummaryCio] := 'Lista de classes, interfaces e objetos';
 
   FTranslation[trGeneratedBy] := 'Gerado por';
   FTranslation[trOnDateTime] := 'as';
@@ -1550,6 +1548,9 @@ end;
 
 {
   $Log$
+  Revision 1.18  2005/05/06 23:30:49  kambi
+  * Updates to Brasilian translation from Alexandre da Silva
+
   Revision 1.17  2005/04/17 03:46:53  kambi
   * typo fix: Frensh -> French
 
