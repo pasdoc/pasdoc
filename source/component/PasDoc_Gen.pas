@@ -116,7 +116,6 @@ type
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TPasItem;
-    FAutoAbstract: boolean;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -634,10 +633,6 @@ end;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
     property FullLink: boolean read FFullLink write FFullLink
       default false;
-
-    { The meaning of this is just like --auto-abstract command-line option.
-      It is used in @link(ExpandDescriptions). }
-    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
   end;
 
 var
