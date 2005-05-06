@@ -1867,7 +1867,7 @@ begin
     WriteDirect('\begin{itemize}',true);
     for i := 0 to U.UsesUnits.Count-1 do begin
       WriteDirect('\item ');
-      ULink := FUnits.FindName(U.UsesUnits[i]);
+      ULink := TPasUnit(U.UsesUnits.Objects[i]);
       if ULink is TPasUnit then begin
         WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
       end else begin
@@ -1953,6 +1953,11 @@ end;
 
 (*
   $Log$
+  Revision 1.30  2005/05/06 18:04:21  kambi
+  * TPasUnit.UsesUnits.Objects[] now contain links to TPasUnit instances.
+    This simplifies some code, like TDocGenerator.SearchLink
+    that can be now implemented cleaner and more functional in TPasItem.FindName.
+
   Revision 1.29  2005/05/05 09:14:34  kambi
   + @br tag implementation and test in tests/ok_line_break.pas
 

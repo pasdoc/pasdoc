@@ -686,6 +686,13 @@ begin
     U := Units.UnitAt[i];
     U.FullLink := CreateLink(U);
     U.OutputFileName := U.FullLink;
+    
+    for j := 0 to U.UsesUnits.Count - 1 do
+    begin
+      { Yes, this will also set U.UsesUnits.Objects[i] to nil
+        if no such unit exists in Units table. }
+      U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
+    end;
 
     AssignLinks(U, nil, U.FullLink, U.Constants);
     AssignLinks(U, nil, U.FullLink, U.Variables);
@@ -1201,13 +1208,11 @@ end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TPasItem): string;
 var
-  i, n: Integer;
+  n: Integer;
   S1: string;
   S2: string;
   S3: string;
-  UnitName: string;
   FoundItem: TPasItem;
-  U: TPasUnit;
 begin
   { S is supposed to have 0 to 2 dots in it - S1, S2 and S3 contain
     the parts between the dots, N the number of dots }
@@ -1225,22 +1230,6 @@ begin
   if Assigned(Item) then begin
     FoundItem := Item.FindName(S1, S2, S3, n);
   end;
-
-  { Next try to find link in items's unit uses units. 
-    TODO: this should be moved to TPasItem.FindName,
-    this way it will also be used by SearchItem. }
-  if FoundItem = nil then
-    if Assigned(Item.MyUnit) and Assigned(Item.MyUnit.UsesUnits) then
-    begin
-      for i := 0 to Item.MyUnit.UsesUnits.Count - 1 do 
-      begin
-        UnitName := Item.MyUnit.UsesUnits[i];
-        U := TPasUnit(Units.FindName(UnitName));
-        if U <> nil then
-          FoundItem := U.FindFieldMethodProperty(S1, S2);
-        if FoundItem <> nil then Break;
-      end;
-    end;
 
   { Find Global }
   if FoundItem = nil then

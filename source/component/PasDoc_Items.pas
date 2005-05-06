@@ -365,9 +365,19 @@ type
     property Constants: TPasItems read FConstants;
     { list of functions and procedures defined in this unit }
     property FuncsProcs: TPasMethods read FFuncsProcs;
-    { the names of all units mentioned in a uses clause in the interface
-      section of this unit }
+    
+    { The names of all units mentioned in a uses clause in the interface
+      section of this unit.
+      
+      This is never nil.
+
+      After @link(TDocGenerator.BuildLinks), for every i:
+      UsesUnits.Objects[i] will point to TPasUnit object with 
+      Name = UsesUnits[i] (or nil, if pasdoc's didn't parse such unit). 
+      In other words, you will be able to use UsesUnits.Objects[i] to 
+      obtain given unit's instance, as parsed by pasdoc. }
     property UsesUnits: TStringVector read FUsesUnits;
+    
     { list of types defined in this unit }
     property Types: TPasItems read FTypes;
     { list of variables defined in this unit }
@@ -575,12 +585,36 @@ begin
 end;
 
 function TPasItem.FindName(S1, S2, S3: string; n: Integer): TPasItem;
+
+  procedure SearchUsedUnits(UsesUnits: TStringVector);
+  var 
+    U: TPasUnit;
+    i: Integer;
+  begin
+    for i := 0 to UsesUnits.Count - 1 do
+    begin
+      U := TPasUnit(UsesUnits.Objects[i]);
+      if U <> nil then
+      begin
+        Result := U.FindNameWithinUnit(S1, S2, S3, n);
+        if Result <> nil then Exit;
+      end;
+    end;
+    Result := nil;
+  end;
+
 begin
   Result := FindNameWithinUnit(S1, S2, S3, n);
-  
-  { TODO: here should be code that searches inside used units.
-    Some skeleton of this code is inside TDocGenerator.SearchLink,
-    it should be removed when this will be implemented here. }
+
+  if Result = nil then
+  begin
+    { Dirty code: checking for "Self is some class".
+      This could be organized better by virtual methods. }
+    if Self is TPasUnit then
+      SearchUsedUnits(TPasUnit(Self).UsesUnits) else
+    if MyUnit <> nil then
+      SearchUsedUnits(MyUnit.UsesUnits);
+  end;    
 end;
 
 function TPasItem.GetDescription: string;

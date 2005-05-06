@@ -2357,8 +2357,8 @@ begin
     WriteDirect('<ul>');
     for i := 0 to U.UsesUnits.Count-1 do begin
       WriteDirect('<li>');
-      ULink := FUnits.FindName(U.UsesUnits[i]);
-      if ULink is TPasUnit then begin
+      ULink := TPasUnit(U.UsesUnits.Objects[i]);
+      if ULink <> nil then begin
         WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
       end else begin
         WriteDirect(U.UsesUnits[i]);
