@@ -512,16 +512,11 @@ end;
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; virtual;
     
-    { This should insert paragraphs into S.
-      Note that S will already be in the form processed by ConvertString. 
-      
-      Note that this shouldn't trim S, i.e. if S begins or ends with 
-      two consecutive newlines -- this means that paragraph marker 
-      should be inserted at the beginning or end of string.
-      
-      In this class, this function simply returns S, so no paragraphs
-      are inserted. }
-    function InsertParagraphs(const S: string): string; virtual;
+    { This is paragraph marker in output documentation.
+    
+      Default implementation in this class simply returns ' ' 
+      (one space). }
+    function Paragraph: string; virtual;
     
     { S is guaranteed (guaranteed by the user) to be correct html content,
       this is taken directly from parameters of @html tag.
@@ -904,7 +899,7 @@ begin
     TagManager.Abbreviations := Abbreviations;
     TagManager.StringConverter := {$IFDEF FPC}@{$ENDIF}ConvertString;
     TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF}DoMessageFromExpandDescription;
-    TagManager.InsertParagraphs := {$IFDEF FPC}@{$ENDIF}InsertParagraphs;
+    TagManager.Paragraph := Paragraph;
     
     Item.RegisterTagHandlers(TagManager);
 
@@ -2116,9 +2111,9 @@ begin
   result := AString;
 end;
 
-function TDocGenerator.InsertParagraphs(const S: string): string; 
+function TDocGenerator.Paragraph: string; 
 begin
-  Result := S;
+  Result := ' ';
 end;
 
 function TDocGenerator.HtmlString(const S: string): string;

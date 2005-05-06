@@ -35,7 +35,7 @@ type
     const TagName: string; const TagDesc: string; var ReplaceStr: string)
     of object;
   TStringConverter = function(const s: string): string of object;
-
+  
   TTagOption = (
     { This means that tag expects parameters. If this is not included 
       in TagOptions then tag should not be given any parameters,
@@ -81,13 +81,10 @@ type
     FStringConverter: TStringConverter;
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
-    FInsertParagraphs: TStringConverter;
+    FParagraph: string;
 
     function ConvertString(const s: string): string;
     procedure Unabbreviate(var s: string);
-
-    { Call InsertParagraphs if assigned, else just returns S. }
-    function DoInsertParagraphs(const S: string): string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -109,19 +106,13 @@ type
       like TTagManagerForPasItem. }
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
 
-    { This will be called to insert paragraphs into a text.
-      Note that input given to this function will always be
-      already processed by @link(StringConverter).
-
-      Design note: I don't think that it would be good to simply
-      require user of this class to insert paragraphs inside
-      @link(StringConverter). Why ? Because any user of this class
-      will want anyway to have something like @link(StringConverter)
-      that doesn't insert paragraphs available, because it is needed
-      when handling @longcode tag (that should escape characters,
-      e.g. '<' ->  '&lt;' in html output, but should not insert paragraphs). }
-    property InsertParagraphs: TStringConverter
-      read FInsertParagraphs write FInsertParagraphs;
+    { This will be inserted on paragraph marker (two consecutive newlines,
+      see wiki page WritingDocumentation) in the text.
+      This should specify how paragraphs are marked in particular
+      output format, e.g. html generator may set this to '<p>'.
+      
+      Default value is ' ' (one space). }
+    property Paragraph: string read FParagraph write FParagraph;
 
     { See @link(TTagHandlerObj) for the meaning of parameter TagOption.
       Don't worry about the case of TagName, it does *not* matter. }
@@ -135,7 +126,7 @@ type
 
 implementation
 
-uses {$ifdef VER1_0} Utils {$else} StrUtils {$endif};
+uses Utils {$ifndef VER1_0}, StrUtils {$endif};
 
 { TTagHandlerObj }
 
@@ -161,6 +152,7 @@ begin
   inherited Create;
   FTags := TStringList.Create;
   FTags.Sorted := true;
+  FParagraph := ' ';
 end;
 
 destructor TTagManager.Destroy;
@@ -211,13 +203,6 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
-function TTagManager.DoInsertParagraphs(const S: string): string;
-begin
-  if Assigned(InsertParagraphs) then
-    Result := InsertParagraphs(S) else
-    Result := S;
-end;
-
 function TTagManager.Execute(const Description: string): string;
 var
   { This is the position of next char in Description to work with,
@@ -231,7 +216,7 @@ var
     -- TagName to lowercased name of this tag (e.g. 'link')
     -- Parameters to params for this tag (text specified between '(' ')',
        parsed to the matching parenthesis)
-    -- TagEnd to the index of *next* character in Description right
+    -- OffsetEnd to the index of *next* character in Description right
        after this tag (including it's parameters, if there were any)
 
     Note that it may also change it's var parameters even when it returns
@@ -243,7 +228,7 @@ var
     it not only returns false but also emits a warning for user. }
   function FindTag(var TagHandlerObj: TTagHandlerObj;
     var TagName: string; var Parameters: string;
-    var TagEnd: Integer): Boolean;
+    var OffsetEnd: Integer): Boolean;
   var
     i: Integer;
     BracketCount: integer;
@@ -260,7 +245,7 @@ var
     if i = FOffset + 1 then Exit; { exit with false }
 
     TagName := LowerCase(Copy(Description, FOffset + 1, i - FOffset - 1));
-    TagEnd := i;
+    OffsetEnd := i;
 
     if not FTags.Find(TagName, TagIndex) then
     begin
@@ -273,7 +258,7 @@ var
 
     { OK, we found the correct tag.
       TagHandlerObj and TagName are already set.
-      Now lets get the parameters, setting Parameters and TagEnd. }
+      Now lets get the parameters, setting Parameters and OffsetEnd. }
 
     if (i <= Length(Description)) and (Description[i] = '(') then
     begin
@@ -293,8 +278,8 @@ var
         Inc(i);
       until (i > Length(Description)) or (BracketCount = 0);
       if (BracketCount = 0) then begin
-        Parameters := Copy(Description, TagEnd + 1, i - TagEnd - 2);
-        TagEnd := i;
+        Parameters := Copy(Description, OffsetEnd + 1, i - OffsetEnd - 2);
+        OffsetEnd := i;
       end else
         DoMessage(1, mtWarning,
           'No matching closing parenthesis for tag "%s"', [TagName]);
@@ -305,50 +290,94 @@ var
       while (i <= Length(Description)) and
             (not (Description[i] in [#10, #13])) do
         Inc(i);
-      Parameters := Trim(Copy(Description, TagEnd, i - TagEnd));
-      TagEnd := i;
+      Parameters := Trim(Copy(Description, OffsetEnd, i - OffsetEnd));
+      OffsetEnd := i;
     end;
   end;
 
-  { This function moves FOffset to the position of next '@' in Description
-    starting at FOffset + 1 char (so this function always increases FOffset
-    at least by one). Yes, this means that it always converts *at least* char
-    Description[FOffset] to Result, but it doesn't care whether
-    Description[FOffset] is '@' or not.
-    Moves FOffset to Length(Decription)+1 if there are
-    no more '@' chars.
-
-    With moving FOffset, it also updates Result (of Execute method)
-    accordingly, converting appropriate part of Description using
-    ConvertString. }
-  procedure Convert;
-  var
-    NewOffset: integer;
+  { This checks whether we are looking (i.e. Description[FOffset] 
+    starts with) at a pargraph marker
+    (i.e. newline + 
+          optional whitespace + 
+          newline + 
+          some more optional whitespaces and newlines)
+    and if it is so, returns true and sets OffsetEnd to the next
+    index in Description after this paragraph marker. }
+  function FindParagraph(var OffsetEnd: Integer): boolean;
+  const
+    { Whitespace that is not any part of newline. }
+    WhiteSpaceNotNL = [' ', #9];
+    { Whitespace that is some part of newline. }
+    WhiteSpaceNL = [#10, #13];
+    { Any whitespace (that may indicate newline or not) }
+    WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
+  var i: Integer;
   begin
-    NewOffset := PosEx('@', Description, FOffset + 1);
-    if NewOffset = 0 then
-      NewOffset := Length(Description)+1;
+    Result := false;
+    
+    i := FOffset;
+    while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
+    if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
+    { In case newline is two-characters wide, read it to the end
+      (to not accidentaly take #13#10 as two newlines.) }
+    Inc(i);
+    if (i <= Length(Description)) and
+       ( ((Description[i-1] = #10) and (Description[i] = #13)) or
+         ((Description[i-1] = #13) and (Description[i] = #10))
+       ) then
+      Inc(i);
+    while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
+    if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
+    
+    { OK, so we found 2nd newline. So we got paragraph marker.
+      Now read it to the end. }
+    Result := true;
+    while SCharIs(Description, i, WhiteSpace) do Inc(i);
+    OffsetEnd := i;
+    
+    {}{Writeln('Para --------------------');
+    Writeln('"', Description, '" ', FOffset);
+    Writeln('--------------------');}
+  end;
 
-    Result := Result + DoInsertParagraphs(ConvertString(
-      Copy(Description, FOffset, NewOffset - FOffset)));
-    FOffset := NewOffset;
+var
+  { Always ConvertBeginOffset <= FOffset. 
+    Description[ConvertBeginOffset ... FOffset - 1] 
+    is the string that should be filtered by ConvertString. }
+  ConvertBeginOffset: Integer;
+
+  { This function increases ConvertBeginOffset to FOffset,
+    appending converted version of
+    Description[ConvertBeginOffset ... FOffset - 1]
+    to Result. }
+  procedure DoConvert;
+  begin
+    Result := Result + ConvertString(
+      Copy(Description, ConvertBeginOffset, FOffset - ConvertBeginOffset));
+    ConvertBeginOffset := FOffset;
   end;
 
 var
   ReplaceStr: string;
   TagName: string;
   Params: string;
-  TagEnd: Integer;
+  OffsetEnd: Integer;
   TagHandlerObj: TTagHandlerObj;
 begin
   Result := '';
   FOffset := 1;
+  ConvertBeginOffset := 1;
+  
+  { Description[FOffset] is the next char that must be processed
+    (we're "looking at it" right now). }
 
   while FOffset <= Length(Description) do
   begin
     if (Description[FOffset] = '@') and
-       FindTag(TagHandlerObj, TagName, Params, TagEnd) then
+       FindTag(TagHandlerObj, TagName, Params, OffsetEnd) then
     begin
+      DoConvert;
+      
       if Params <> '' then
       begin
         if toParameterRequired in TagHandlerObj.TagOptions then
@@ -379,18 +408,35 @@ begin
       TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
-        FOffset := TagEnd;
+      FOffset := OffsetEnd;
+      
+      ConvertBeginOffset := FOffset;
     end else
     if (Description[FOffset] = '@') and
        (FOffset < Length(Description)) and
        (Description[FOffset + 1] = '@') then
     begin
-      { convert '@@' to '@' }
-      FOffset := FOffset + 2;
+      DoConvert;
+      
+      { convert '@@' to '@' }      
       Result := Result + '@';
+      FOffset := FOffset + 2;
+      
+      ConvertBeginOffset := FOffset;
     end else
-      Convert;
+    if FindParagraph(OffsetEnd) then
+    begin
+      DoConvert;
+      
+      Result := Result + Paragraph;
+      FOffset := OffsetEnd;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+      Inc(FOffset);
   end;
+
+  DoConvert;
 
   { Only for testing:
   Writeln('----');

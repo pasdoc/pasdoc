@@ -206,7 +206,7 @@ type
     procedure WriteAnchor(const AName, Caption: string); overload;
     procedure WriteEndOfLink;
     
-    function InsertParagraphs(const S: string): string; override;
+    function Paragraph: string; override;
     
     function LineBreak: string; override;
   public
@@ -2659,10 +2659,9 @@ begin
     inherited FormatPascalCode(ConvertString(Line)) + '</pre><p>';
 end;
 
-function THTMLDocGenerator.InsertParagraphs(const S: string): string; 
+function THTMLDocGenerator.Paragraph: string; 
 begin
-  Result := S;
-  Utils.InsertParagraphs(Result, '<p>');
+  Result := '<p>';
 end;
 
 function THTMLDocGenerator.LineBreak: string; 

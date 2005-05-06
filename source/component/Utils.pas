@@ -6,9 +6,11 @@
 }
 unit Utils;
 
+{$I DEFINES.INC}
+
 interface
 
-{$I DEFINES.INC}
+uses PasDoc_Types;
 
 {$IFNDEF DELPHI_6_UP}
 type
@@ -55,17 +57,6 @@ const
                {$ifdef MSWINDOWS} #13#10 {$endif};
 {$endif}
 
-{ 1. AdjustLineBreaks in d
-
-  2. Trim any whitespaces (also newline characters, #10 and #13) 
-     at the beginning and end of d
-
-  3. Finally replace each sequence of blank lines
-     (i.e. LineEnding + some optional spaces/tabs + LineEnding
-     + some optional LineEndings and spaces/tabs)
-     by one Paragraph string. }
-procedure InsertParagraphs(var d:string; const Paragraph:string);
-
 {$ifdef VER1_0}
 { This is only for compatibity with FPC 1.0.x.
   FPC 1.9.x and Delphi/Kylix have this is StrUtils unit.
@@ -85,6 +76,12 @@ type
   with ReplacementArray[].sSpec. }
 function StringReplaceChars(const S: string; 
   const ReplacementArray: array of TCharReplacement): string;
+
+{ Comfortable shortcut for Index <= Length(S) and S[Index] = C. }
+function SCharIs(const S: string; Index: integer; C: char): boolean; overload;
+{ Comfortable shortcut for Index <= Length(S) and S[Index] in Chars. }
+function SCharIs(const S: string; Index: integer; 
+  const Chars: TCharSet): boolean; overload;
 
 implementation
 uses
@@ -183,59 +180,6 @@ begin
 end;
 {$ENDIF}
 
-procedure InsertParagraphs(var d:string; const Paragraph:string);
-const
-  { Note that these WhiteSpaces include all possible newline characters }
-  WhiteSpaces = [#10, #13, ' ', #9];
-var
-  Done, LineEndingPos, I: Integer;
-  TempString: string;
-  LenD: integer;
-begin
-  d := AdjustLineBreaks(d);
-  
-  { Look for a sequences of blank lines. 
-    Blank line is line filled only with spaces (' ') or tabs (#9), 
-    in particular empty line is also a blank line.
-    Each sequence of blank lines will be replaced by Paragraph string. }
-  { Variable Done says "how many beginning chars from D are already done,
-    i.e. blank line sequences in D[1..Done-1] are already converted 
-    to Paragraphs" }
-  Done := 1;
-  LenD := Length(d);
-  while Done<=LenD do
-  begin
-    TempString:=Copy(d, Done, LenD);
-    LineEndingPos := Pos(LineEnding, TempString);
-{    LineEndingPos:=PosEx(LineEnding,d,Done); }
-    if LineEndingPos = 0 then Break;
-
-    Inc(LineEndingPos, Done-1);
-
-    I := LineEndingPos + Length(LineEnding);
-    while (I<=LenD) and (d[I] in [' ', #9]) do Inc(i);
-    if I > LenD then Break;
-
-    if Copy(d, I, Length(LineEnding)) = LineEnding then
-    begin
-      { Then bingo ! We should make a paragraph here, and ignore all
-        subsequent white chars (spaces, tabs, and newline characters). }
-      while (I<=LenD) and (d[I] in WhiteSpaces) do Inc(i);
-
-      Delete(d, LineEndingPos, I-LineEndingPos);
-      Insert(Paragraph, d, LineEndingPos);
-
-      Done := Done + Length(Paragraph) + 1;
-      LenD := Length(d);
-    end else
-    begin
-      { Then it's just a usual newline (possibly followed by some
-        whitespaces). We can leave it as it is. }
-      Done := I;
-    end;
-  end;
-end;
-
 {$ifdef VER1_0}
 Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
 
@@ -294,6 +238,17 @@ begin
   begin
     Result := Result + Replacement(S[i]);
   end;
+end;
+
+function SCharIs(const S: string; Index: integer; C: char): boolean; overload;
+begin
+  Result := (Index <= Length(S)) and (S[Index] = C);
+end;
+
+function SCharIs(const S: string; Index: integer; 
+  const Chars: TCharSet): boolean; overload;
+begin
+  Result := (Index <= Length(S)) and (S[Index] in Chars);
 end;
 
 end.

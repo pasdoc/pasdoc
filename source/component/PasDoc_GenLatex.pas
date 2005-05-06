@@ -156,7 +156,7 @@ type
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
     
-    function InsertParagraphs(const S: string): string; override;
+    function Paragraph: string; override;
     
     function LineBreak: string; override;
   public
@@ -1940,10 +1940,9 @@ begin
   EscapeURL := AString;
 end;
 
-function TTexDocGenerator.InsertParagraphs(const S: string): string; 
+function TTexDocGenerator.Paragraph: string; 
 begin
-  Result := S;
-  Utils.InsertParagraphs(Result, LineEnding + LineEnding);
+  Result := LineEnding + LineEnding;
 end;
 
 function TTexDocGenerator.LineBreak: string; 
@@ -1953,6 +1952,13 @@ end;
 
 (*
   $Log$
+  Revision 1.31  2005/05/06 20:41:56  kambi
+  * Cleaned out inserting paragraphs: instead of those ugly InsertParagraphs
+    methods and procedure in Utils, now it's handled by simple Paragraph property
+    and recognized inside TagManager.Execute. This way inserting paragraphs
+    and ConvertString do not interfere -- paragraphs are found in raw
+    (unprocessed) Description, not in somehow processed Description.
+
   Revision 1.30  2005/05/06 18:04:21  kambi
   * TPasUnit.UsesUnits.Objects[] now contain links to TPasUnit instances.
     This simplifies some code, like TDocGenerator.SearchLink

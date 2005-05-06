@@ -14,6 +14,8 @@ type
   TPasDocMessageEvent = procedure(const MessageType: TMessageType; const
     AMessage: string; const AVerbosity: Cardinal) of object;
 
+  TCharSet = set of Char;
+
 { }
   EPasDoc = class(Exception)
   public

@@ -159,8 +159,6 @@ const
     'Identifier', 'Number', 'String', 'Symbol', 'Directive', 'Reserved');
 
 type
-  { }
-  TCharSet = set of Char;
   { enumeration type that provides all types of symbols; each
     symbol's name starts with SYM_ }
   TSymbolType = (SYM_PLUS, SYM_MINUS, SYM_ASTERISK, SYM_SLASH, SYM_EQUAL,
