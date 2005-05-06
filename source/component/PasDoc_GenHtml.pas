@@ -780,7 +780,7 @@ end;
 
 procedure THTMLDocGenerator.WriteFooter;
 begin
-  WriteConverted(Footer);
+  WriteDirect(Footer);
 end;
 
 { ---------------------------------------------------------------------------- }
