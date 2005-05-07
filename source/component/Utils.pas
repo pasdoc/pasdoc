@@ -83,6 +83,14 @@ function SCharIs(const S: string; Index: integer; C: char): boolean; overload;
 function SCharIs(const S: string; Index: integer; 
   const Chars: TCharSet): boolean; overload;
 
+const
+  { Whitespace that is not any part of newline. }
+  WhiteSpaceNotNL = [' ', #9];
+  { Whitespace that is some part of newline. }
+  WhiteSpaceNL = [#10, #13];
+  { Any whitespace (that may indicate newline or not) }
+  WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
+
 implementation
 uses
   SysUtils,

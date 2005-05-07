@@ -116,6 +116,7 @@ type
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TPasItem;
+    FAutoAbstract: boolean;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -293,8 +294,18 @@ end;
       Note that you can call it only when not Item.WasDeserialized.
       That's because the current approach to cache stores in the cache
       items in the state already processed by this function,
-      i.e. after all ExpandDescription calls were made. *)
-    function ExpandDescription(Item: TPasItem; const Description: string): string;
+      i.e. after all ExpandDescription calls were made. 
+      
+      Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
+      see @link(TTagManager.Execute). *)
+    function ExpandDescription(Item: TPasItem; 
+      const Description: string;
+      WantFirstSentenceEnd: boolean;
+      var FirstSentenceEnd: Integer): string; overload; 
+
+    { Same thing as ExpandDescription(Item, Description, false, Dummy) }
+    function ExpandDescription(Item: TPasItem; 
+      const Description: string): string; overload;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
@@ -634,6 +645,10 @@ end;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
     property FullLink: boolean read FFullLink write FFullLink
       default false;
+
+    { The meaning of this is just like --auto-abstract command-line option.
+      It is used in @link(ExpandDescriptions). }
+    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
   end;
 
 var
@@ -891,7 +906,9 @@ begin
 end;
 
 function TDocGenerator.ExpandDescription(Item: TPasItem; 
-  const Description: string): string;
+  const Description: string;
+  WantFirstSentenceEnd: boolean;
+  var FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
 begin
@@ -933,10 +950,18 @@ begin
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags]);
 
-    Result := TagManager.Execute(Description);
+    Result := TagManager.Execute(Description,
+      WantFirstSentenceEnd, FirstSentenceEnd);
   finally
     TagManager.Free;
   end;
+end;
+
+function TDocGenerator.ExpandDescription(Item: TPasItem; 
+  const Description: string): string; 
+var Dummy: Integer;
+begin
+  Result := ExpandDescription(Item, Description, false, Dummy);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -947,6 +972,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
   { expands Description and DetailedDescription of Item }
   procedure ExpandItem(Item: TPasItem);
+  var FirstSentenceEnd: Integer;
   begin
     if Item = nil then Exit;
 
@@ -955,10 +981,24 @@ procedure TDocGenerator.ExpandDescriptions;
 
     Item.Description := ExpandDescription(Item, Item.Description);
     Item.DetailedDescription := 
-      ExpandDescription(Item, Item.DetailedDescription);
+      ExpandDescription(Item, Item.DetailedDescription, true, FirstSentenceEnd);
+
+    if AutoAbstract and (Trim(Item.Description) = '') then
+    begin
+      if FirstSentenceEnd = 0 then
+      begin
+        Item.Description := Item.DetailedDescription;
+        Item.DetailedDescription := '';
+      end else
+      begin
+        Item.Description := Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
+        Item.DetailedDescription := 
+          Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
+      end;
+    end;
 
     if Item is TPasEnum then
-      ExpandCollection(TPasEnum(Item).Members)
+      ExpandCollection(TPasEnum(Item).Members);
   end;
 
   { for all items in collection C, expands descriptions }

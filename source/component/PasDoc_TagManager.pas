@@ -130,7 +130,34 @@ type
     procedure AddHandler(const TagName: string; Handler: TTagHandler;
       const TagOptions: TTagOptions);
 
-    function Execute(const Description: string): string;
+    { This method is the very essence of this class and this unit.
+      It expands Description, which means that it processes Description
+      (text supplied by user in some comment in parsed unit)
+      into something ready to be included in output documentation.
+      This means that this handles parsing @-tags, inserting
+      paragraph markers, recognizing URLs in Description and
+      correctly translating it, and translating rest of the "normal" text
+      via ConvertString.
+      
+      If WantFirstSentenceEnd then upon completion,
+      then we will look for '.' char followed by any whitespace in
+      Description. Moreover, this '.' must be outside of any @-tags
+      parameter. Under FirstSentenceEnd we will return the number
+      of beginning characters *in the output string* that will
+      include correspong '.' character (note that this definition
+      takes into account that ConvertString may translate '.' into
+      something longer).
+      If no such character exists in Description, FirstSentenceEnd will 
+      be set to 0. 
+      
+      If WantFirstSentenceEnd, FirstSentenceEnd will not be modified. }
+    function Execute(const Description: string;
+      WantFirstSentenceEnd: boolean;
+      var FirstSentenceEnd: Integer): string; overload;
+      
+    { This is equivalent to Execute(Description, false, Dummy) }
+    function Execute(const Description: string): string; overload;
+  
     property ConvertString: TStringConverter 
       read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
@@ -223,7 +250,9 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
-function TTagManager.Execute(const Description: string): string;
+function TTagManager.Execute(const Description: string;
+  WantFirstSentenceEnd: boolean;
+  var FirstSentenceEnd: Integer): string;
 var
   { This is the position of next char in Description to work with,
     i.e. first FOffset-1 chars in Description are considered "done"
@@ -324,13 +353,6 @@ var
     and if it is so, returns true and sets OffsetEnd to the next
     index in Description after this paragraph marker. }
   function FindParagraph(var OffsetEnd: Integer): boolean;
-  const
-    { Whitespace that is not any part of newline. }
-    WhiteSpaceNotNL = [' ', #9];
-    { Whitespace that is some part of newline. }
-    WhiteSpaceNL = [#10, #13];
-    { Any whitespace (that may indicate newline or not) }
-    WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
   var i: Integer;
   begin
     Result := false;
@@ -402,6 +424,12 @@ var
     
     URL := Copy(Description, FOffset, OffsetEnd - FOffset);
   end;
+  
+  function FindFirstSentenceEnd: boolean;
+  begin
+    Result := (Description[FOffset] = '.') and 
+      SCharIs(Description, FOffset + 1, WhiteSpace);
+  end;
 
 var
   { Always ConvertBeginOffset <= FOffset. 
@@ -431,6 +459,9 @@ begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
+  
+  if WantFirstSentenceEnd then
+    FirstSentenceEnd := 0;
   
   { Description[FOffset] is the next char that must be processed
     (we're "looking at it" right now). }
@@ -506,6 +537,18 @@ begin
       
       ConvertBeginOffset := FOffset;
     end else
+    if WantFirstSentenceEnd and
+       (FirstSentenceEnd = 0) and
+       FindFirstSentenceEnd then
+    begin
+      DoConvert;
+      
+      Result := Result + ConvertString('.');
+      FirstSentenceEnd := Length(Result);
+      Inc(FOffset);
+      
+      ConvertBeginOffset := FOffset;
+    end else
       Inc(FOffset);
   end;
 
@@ -516,6 +559,12 @@ begin
   Writeln('Description was "', Description, '"');
   Writeln('Result is "', Result, '"');
   Writeln('----');}
+end;
+
+function TTagManager.Execute(const Description: string): string; 
+var Dummy: Integer;
+begin
+  Result := Execute(Description, false, Dummy);
 end;
 
 end.
