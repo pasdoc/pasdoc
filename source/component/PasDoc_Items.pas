@@ -74,8 +74,9 @@ type
     FState: TAccessibility;
     FMyObject: TPasCio;
     FMyUnit: TPasUnit;
-    FDeprecated: boolean;
-    FPlatform: boolean;
+    FIsDeprecated: boolean;
+    FIsPlatformSpecific: boolean;
+    FIsLibrarySpecific: boolean;
     { list of strings, each representing one author of this item }
     FAuthors: TStringVector;
     { if assigned, contains string with date of creation }
@@ -177,9 +178,15 @@ type
       (public, private, etc.). }
     property State: TAccessibility read FState write FState;
     { is this item deprecated? }
-    property IsDeprecated: boolean read FDeprecated write FDeprecated;
-    { is this item platform specific? }
-    property IsPlatform: boolean read FPlatform write FPlatform;
+    property IsDeprecated: boolean read FIsDeprecated write FIsDeprecated;
+    { Is this item platform specific? 
+      This is decided by "platform" hint directive after an item. }
+    property IsPlatformSpecific: boolean 
+      read FIsPlatformSpecific write FIsPlatformSpecific;
+    { Is this item specific to a library ? 
+      This is decided by "library" hint directive after an item. }
+    property IsLibrarySpecific: boolean 
+      read FIsLibrarySpecific write FIsLibrarySpecific;
     property Authors: TStringVector read FAuthors write SetAuthors;
     property Created: string read FCreated;
   end;
@@ -1122,8 +1129,9 @@ begin
   FullLink := LoadStringFromStream(ASource);
   LastMod := LoadStringFromStream(ASource);
   ASource.Read(FState, SizeOf(State));
-  ASource.Read(FDeprecated, SizeOf(IsDeprecated));
-  ASource.Read(FPlatform, SizeOf(IsPlatform));
+  ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
+  ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
+  ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
   Authors.LoadFromBinaryStream(ASource);
   FCreated := LoadStringFromStream(ASource);
 end;
@@ -1136,8 +1144,9 @@ begin
   SaveStringToStream(FullLink, ADestination);
   SaveStringToStream(LastMod, ADestination);
   ADestination.Write(FState, SizeOf(State));
-  ADestination.Write(FDeprecated, SizeOf(IsDeprecated));
-  ADestination.Write(FPlatform, SizeOf(IsPlatform));
+  ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
+  ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
+  ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
   Authors.SaveToBinaryStream(ADestination);
   SaveStringToStream(Created, ADestination);
 end;

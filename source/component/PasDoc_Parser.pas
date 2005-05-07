@@ -37,6 +37,15 @@ type
   TParser = class
   private
     procedure SetCommentMarkers(const Value: TStringList);
+    
+    { Skips all whitespace and comments and while it sees some hint directive
+      (platform, library, deprecated) it consumes it, sets appropriate
+      property of Item (IsPlatformSpecific, IsLibrarySpecific or IsDeprecated)
+      to true and goes further.
+      
+      Stops when Scanner.PeekToken returns some non-whitespace non-comment 
+      non-hint-directive token. }
+    procedure ParseHintDirectives(Item: TPasItem);
   protected
     { Last comment found in input or nil if no comment available.
     Will be modified by @link(GetLastComment). }
@@ -103,9 +112,17 @@ type
     function ParseUses(const U: TPasUnit): Boolean;
     function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
     function SkipDeclaration(const VC: TPasVarConst): Boolean;
+    
     { Reads tokens and throws them away as long as they are either whitespace
-      or comments. Returns true on success, false if there were any errors. }
-    function SkipWhitespaceAndComments(var LCollector: string): Boolean;
+      or comments. 
+
+      @returns(true if a non-white token is found (then you know that 
+      Scanner.PeekToken or Scanner.GetToken will return with true) 
+      or false if stream ended.) }
+    function SkipWhitespaceAndComments(var LCollector: string): Boolean; overload;
+    
+    { Same thing as SkipWhitespaceAndComments(Dummy) }
+    function SkipWhitespaceAndComments: Boolean; overload;
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -402,77 +419,102 @@ begin
       DoError('Could not get next non white space token', [], 0);
     end;
     
-    if (t.MyType <> TOK_IDENTIFIER) and 
-       ((t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INLINE)) then 
+    if t.MyType = TOK_IDENTIFIER then
+    begin
+      case t.Info.StandardDirective of
+        SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+          SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
+          SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+          SD_VARARGS:
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            FreeAndNil(t);
+
+            if not GetNextNonWCToken(t) then begin
+              M.Free;
+              Exit;
+            end;
+          end;
+
+        { * External declarations might be followed by a string constant.
+          * Messages are followed by an integer constant between 1 and 49151 which
+            specifies the message ID. }
+        SD_EXTERNAL, SD_MESSAGE, SD_NAME:
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            FreeAndNil(t);
+
+            // Keep on reading up to the next semicolon or declaration
+            repeat
+              if not GetNextNonWCToken(t) then begin
+                M.Free;
+                DoError('Could not get next non white space token', [], 0);
+              end;
+
+              if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
+                Break
+              end else begin
+                if t.MyType = TOK_IDENTIFIER then 
+                  case t.Info.StandardDirective of
+                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
+                      SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                      begin
+                        // FScanner.UnGetToken(t);
+                        Break;
+                      end;
+                  end;
+
+                M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+                FreeAndNil(t);
+              end;
+            until False;
+          end;
+        SD_DEPRECATED: begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          M.IsDeprecated := True;
+          FreeAndNil(t);
+          GetNextNonWCToken(t);
+        end;
+        SD_PLATFORM: begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          M.IsPlatformSpecific := True;
+          FreeAndNil(t);
+          GetNextNonWCToken(t);
+        end;
+      else
+        begin
+          Scanner.UnGetToken(t);
+          Break;
+        end;
+      end; // case
+    end else
+    if t.MyType = TOK_KEYWORD then 
+    begin
+      case t.Info.KeyWord of 
+        KEY_INLINE: begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            FreeAndNil(t);
+            GetNextNonWCToken(t);
+          end;
+        KEY_LIBRARY:
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            M.IsLibrarySpecific := True;
+            FreeAndNil(t);
+            GetNextNonWCToken(t);
+          end;
+        else 
+          begin
+            Scanner.UnGetToken(t);
+            Break;        
+          end;
+      end;
+    end else
     begin
       Scanner.UnGetToken(t);
       Break;
     end;
-    CS := t.Data;
-    
-    case t.Info.StandardDirective of
-      SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
-        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-        SD_VARARGS:
-        begin
-          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-          FreeAndNil(t);
-
-          if not GetNextNonWCToken(t) then begin
-            M.Free;
-            Exit;
-          end;
-        end;
-
-      { * External declarations might be followed by a string constant.
-        * Messages are followed by an integer constant between 1 and 49151 which
-          specifies the message ID. }
-      SD_EXTERNAL, SD_MESSAGE, SD_NAME:
-        begin
-          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-          FreeAndNil(t);
-
-          // Keep on reading up to the next semicolon or declaration
-          repeat
-            if not GetNextNonWCToken(t) then begin
-              M.Free;
-              DoError('Could not get next non white space token', [], 0);
-            end;
-
-            if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
-              Break
-            end else begin
-              if t.MyType = TOK_IDENTIFIER then 
-                case t.Info.StandardDirective of
-                  SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
-                    SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                    SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
-                    begin
-                      // FScanner.UnGetToken(t);
-                      Break;
-                    end;
-                end;
-
-              M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-              FreeAndNil(t);
-            end;
-          until False;
-        end;
-      SD_DEPRECATED: begin
-        M.IsDeprecated := True;
-        FreeAndNil(t);
-        GetNextNonWCToken(t);
-      end;
-      SD_PLATFORM: begin
-        M.IsPlatform := True;
-        FreeAndNil(t);
-        GetNextNonWCToken(t);
-      end;
-    else
-      Scanner.UnGetToken(t);
-      Break;
-    end; // case
 
     { Apparently, the Delphi compiler does NOT enforce that
       directives must be separated and be terminated by a semicolon,
@@ -816,62 +858,34 @@ begin
       if (not CSFound) then CS := '';
       FreeAndNil(t);
     until Finished;
-    while true do begin
-      try
-      if (not GetNextNonWCToken(t)) then begin
-        i.Free;
-        try
-          DoError('%s: Need token, but none readable! (end of class/object/interface...)', [Scanner.GetStreamInfo], 0);
-        finally
-          FreeAndNil(t);
-        end;
-      end else begin
-        if t.MyType = TOK_IDENTIFIER then begin
-          case t.Info.StandardDirective of
-            SD_PLATFORM: i.IsPlatform := True;
-            SD_DEPRECATED: i.IsDeprecated := True;
-            else begin
-              i.Free;
-              try
-                DoError('%s: Invalid Standard Directive (%s) encountered at end of declaration', [Scanner.GetStreamInfo, t.Data], 0);
-              finally
-                FreeAndNil(t);
-              end;
-            end;
+    
+    ParseHintDirectives(i);
+    
+    GetNextNonWCToken(t);
+    try
+      if not t.IsSymbol(SYM_SEMICOLON) then
+      begin
+        if IsInRecordCase then
+        begin
+          if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then 
+            Scanner.UnGetToken(t) else 
+          begin
+            i.Free;
+            DoError('%s: unexpected symbol at end of sub-record.', 
+              [Scanner.GetStreamInfo], 0);
           end;
-        end else begin
-          if not t.IsSymbol(SYM_SEMICOLON) then begin
-            if IsInRecordCase then begin
-              if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
-                Scanner.UnGetToken(t);
-                break;
-              end else begin
-                i.Free;
-                FreeAndNil(t);
-                DoError('%s: unexpected symbol at end of sub-record.', [Scanner.GetStreamInfo], 0);
-              end;
-            end else begin
-              i.Free;
-              try
-                DoError('%s: Semicolon at the end of Class/Object/Interface expected.', [Scanner.GetStreamInfo], 0);
-              finally
-                FreeAndNil(t);
-              end;
-            end;
-          end else begin
-            break;
-          end;
+        end else 
+        begin
+          i.Free;
+          DoError('%s: Semicolon at the end of Class / Object / Interface' +
+            ' / Record expected.', [Scanner.GetStreamInfo], 0);
         end;
       end;
-      finally
+    finally
       FreeAndNil(t);
     end;
-    end;
-    if Assigned(U) then U.AddCIO(i)
-    else
-    begin
-      i.Free;
-    end;
+
+    if Assigned(U) then U.AddCIO(i) else i.Free;
   except
     t.Free;
     raise;
@@ -1409,6 +1423,9 @@ begin
         [], 0);
     U.Name := t.Data;
     FreeAndNil(t);
+    
+    ParseHintDirectives(U);
+    
     { skip semicolon }
     if not GetNextNonWCToken(t) then Exit;
     if not t.IsSymbol(SYM_SEMICOLON) then
@@ -1678,6 +1695,50 @@ begin
         end;
     end;
   until False;
+end;
+
+function TParser.SkipWhitespaceAndComments: Boolean; 
+var 
+  Dummy: string;
+begin
+  Result := SkipWhitespaceAndComments(Dummy);
+end;
+
+{ ------------------------------------------------------------ }
+
+procedure TParser.ParseHintDirectives(Item: TPasItem);
+var
+  t: TToken;
+begin
+  t := nil;
+  repeat
+    if not SkipWhitespaceAndComments then
+      DoError('%s: Unexpected end of stream', [Scanner.GetStreamInfo], 1);
+    Scanner.PeekToken(t);
+    
+    if (t.MyType = TOK_IDENTIFIER) and 
+       (t.Info.StandardDirective = SD_PLATFORM) then
+    begin
+      Scanner.ConsumeToken;
+      Item.IsPlatformSpecific := true;
+      FreeAndNil(t);
+    end else
+    if (t.MyType = TOK_IDENTIFIER) and 
+       (t.Info.StandardDirective = SD_DEPRECATED) then
+    begin
+      Scanner.ConsumeToken;
+      Item.IsDeprecated := true;
+      FreeAndNil(t);
+    end else
+    if (t.MyType = TOK_KEYWORD) and 
+       (t.Info.KeyWord = KEY_LIBRARY) then
+    begin
+      Scanner.ConsumeToken;
+      Item.IsLibrarySpecific := true;
+      FreeAndNil(t);
+    end else
+      break;
+  until false;
 end;
 
 end.
