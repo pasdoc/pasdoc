@@ -1,10 +1,16 @@
 { This is the 1st sentence, it will be turned into
   @@abstact description of this item. This is the 2nd sentence of the
-  description. 
-  
+  description.
+
   You should run pasdoc with --auto-abstract to make a sensible test of
-  this unit.
-  No, Makefile in tests/ does not do this for now. }
+  this unit, like
+    pasdoc --auto-abstract --output=/tmp/ ok_auto_abstract.pas
+
+  No, Makefile in tests/ directory does not do this for now
+  and correct_tests_output for now contain version of this unit
+  generated without  --auto-abstract. So unfortunately
+  correct_tests_output does not do a good job with testing correctness
+  of this unit for now. }
 unit ok_auto_abstract;
 
 interface
@@ -27,7 +33,7 @@ type
   { Of course, 1st sentence may contain other tags,
     like this: @link(TTest1) and like this:
     @code Some code. Not really Pascal code, but oh well...
-    and I'm still in the 1st sentence, here the 
+    and I'm still in the 1st sentence, here the
     @@abstract part ends. This is the 2nd sentence.
 
     Note that in this example the '.' char inside @@code tag
