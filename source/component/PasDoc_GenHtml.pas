@@ -2642,7 +2642,7 @@ begin
       WriteStartOfParagraph;
       WriteItemDetailedDescription(p);
       WriteEndOfParagraph;
-    This works perfectly expect for the cases where @longcode
+    This works perfectly except for the cases where @longcode
     is at the end of description, then we have 
       <p>Some text <pre>Some Pascal code</pre></p>
     Because there is no text between "</pre>" and "</p>" this means
