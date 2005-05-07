@@ -19,6 +19,13 @@ set -eu
 # Note that you will be asked (more than once) for your password
 # unless you configured your ssh keys, which is recommended.
 #
+# After uploading it calls ./download_correct_tests_output.sh "$1"
+# This way it checks that files were correctly uploaded
+# and also sets your local version of ../correct_output/ directory
+# to the correct state.
+# So after calling this script successfully, directories
+# ../$1/ and ../correct_output/$1/ are always equal.
+#
 # Precisely what files are uploaded:
 # - $1.tar.gz -- archived contents of ../$1/
 #   Easily downloadable, e.g. by download_correct_tests_output.
@@ -70,3 +77,5 @@ scp -r ../"$FORMAT"/ "$SF_CONNECT"
 
 # Clean temp dir
 rm -Rf upload_correct_tests_output_tmp/
+
+./download_correct_tests_output.sh "$FORMAT"
