@@ -25,8 +25,6 @@ type
     FNumericFilenames: boolean;
     FWriteUses: boolean;
     FLinkCount: Integer;
-    FFooter: string;
-    FHeader: string;
     FOddTableRow: Integer;
     { number of cells (= columns) per table row }
     NumCells: Integer;
@@ -169,8 +167,6 @@ type
 
     function EscapeURL(const AString: string): string; virtual;
   published
-    property Header: string read FHeader write FHeader;
-    property Footer: string read FFooter write FFooter;
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses
@@ -1633,9 +1629,6 @@ begin
   
   WriteDirect('% special variable used for calculating some widths.',true);
   WriteDirect('\newlength{\tmplength}',true);
-  if Length(Header) > 0 then begin
-    WriteSpellChecked(Header);
-  end;
 end;
 
 
@@ -1945,6 +1938,9 @@ end;
 
 (*
   $Log$
+  Revision 1.33  2005/05/07 00:07:19  kambi
+  * Removed Header and Footer properties (they were not initialized properly by command-line options anyway)
+
   Revision 1.32  2005/05/06 22:26:48  kambi
   + TDocGenerator.URLLink, TTagManager.URLLink, FindURL in TagManager
   - TPasDoc_Gen.WriteWithURLs, TPasDoc_Gen.ExtractLink
