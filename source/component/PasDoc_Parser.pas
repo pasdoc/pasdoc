@@ -1639,6 +1639,15 @@ begin
         case t.Info.KeyWord of
           KEY_END: Dec(EndLevel);
           KEY_RECORD: Inc(EndLevel);
+          KEY_LIBRARY: 
+            if Assigned(VC) then VC.IsLibrarySpecific := true;
+        end;
+      TOK_IDENTIFIER:
+        case t.Info.StandardDirective of
+          SD_PLATFORM: 
+            if Assigned(VC) then VC.IsPlatformSpecific := true;
+          SD_DEPRECATED: 
+            if Assigned(VC) then VC.IsDeprecated := true;
         end;
     end;
     IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
