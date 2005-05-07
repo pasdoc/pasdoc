@@ -54,7 +54,7 @@
   {$mode DELPHI}
 {$endif}
 
-unit ok_platform_hints platform library deprecated;
+unit ok_hint_directives platform library deprecated;
 
 interface
 
