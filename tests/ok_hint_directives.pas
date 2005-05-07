@@ -97,6 +97,15 @@ type
     TestFieldDeprecated: Integer deprecated;
     TestFieldCombined: Integer library deprecated platform;
 
+    { Hint directives for properties are not allowed.
+      Nowhere in Delphi help do they say that hint directives
+      are supported for properties, and indeed it doesn't seem
+      to be supported.
+
+      property SomeProperty: Integer
+        read TestFieldPlatform write TestFieldPlatform; platform;}
+
+    { }
     procedure TestMethodLibrary; library;
     procedure TestMethodPlatform; platform;
     procedure TestMethodDeprecated; deprecated;

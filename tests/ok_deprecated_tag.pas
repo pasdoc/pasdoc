@@ -22,6 +22,11 @@ type
 
     { Deprecated field. @deprecated }
     MyField: Integer;
+    
+    { @deprecated @deprecated @deprecated @deprecated 
+      Property is deprecated (you can specify @@deprecated
+      as many times as you want, because it's harmless). }
+    property MyProperty: Integer read MyField write MyField;
 
     { @deprecated }
     procedure MyMethodLibrary;
