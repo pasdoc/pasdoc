@@ -977,11 +977,26 @@ begin
 end;
 
 procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+
+  procedure WriteHintDirective(const S: string);
+  begin
+    WriteDirect('<p class="hint_directive">');
+    WriteConverted('Warning: ' + S + '.');
+    WriteDirect('</p>');
+  end;
+
 var
   Ancestor: TPasItem;
   AncestorName: string;
 begin
   if not Assigned(AItem) then Exit;
+  
+  if AItem.IsDeprecated then
+    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+  if AItem.IsPlatformSpecific then
+    WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
+  if AItem.IsLibrarySpecific then
+    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.Description <> '' then begin
     WriteSpellChecked(AItem.Description);
@@ -2517,6 +2532,9 @@ begin
         'span.pascal_comment { color: #000080; font-style: italic; }');
       StreamUtils.WriteLine(CurrentStream,
         'span.pascal_compiler_comment { color: #008000; }');
+
+      StreamUtils.WriteLine(CurrentStream,
+        'p.hint_directive { color: red; }');
 
       CloseStream;
     end;

@@ -1181,19 +1181,17 @@ var
   Ancestor: TPasItem;
   AncestorName: string;
 begin
-  HasDescription := false;
+  Result := false;
   if not Assigned(AItem) then Exit;
+  
+  Result := 
+    (AItem.Description <> '') or 
+    (AItem.DetailedDescription <> '') or
+    { some hint directive ? }
+    AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific;
 
-  if AItem.Description <> '' then 
-  begin
-    HasDescription := true;
-    exit
-  end;
-  if AItem.DetailedDescription <> '' then
-  begin
-    HasDescription := true;
-    exit;
-  end;
+  if Result then Exit;
+
   if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
   begin
     AncestorName := TPasCio(AItem).Ancestors.FirstName;
@@ -1207,11 +1205,24 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+
+  procedure WriteHintDirective(const S: string);
+  begin
+    WriteConverted('Warning: ' + S + '.' + LineEnding + LineEnding);
+  end;
+
 var
   Ancestor: TPasItem;
   AncestorName: string;
 begin
   if not Assigned(AItem) then Exit;
+
+  if AItem.IsDeprecated then
+    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+  if AItem.IsPlatformSpecific then
+    WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
+  if AItem.IsLibrarySpecific then
+    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.Description <> '' then 
   begin
@@ -1938,6 +1949,9 @@ end;
 
 (*
   $Log$
+  Revision 1.34  2005/05/07 19:03:41  kambi
+  * Displaying hint directives in html and latex output
+
   Revision 1.33  2005/05/07 00:07:19  kambi
   * Removed Header and Footer properties (they were not initialized properly by command-line options anyway)
 
