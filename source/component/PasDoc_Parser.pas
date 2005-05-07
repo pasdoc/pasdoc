@@ -1599,6 +1599,9 @@ begin
     for j := LNew.Count-1 downto 0 do begin
       TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := dummy.FullDeclaration;
     end;
+    LNew.SetIsDeprecated(dummy.IsDeprecated);
+    LNew.SetIsPlatformSpecific(dummy.IsPlatformSpecific);
+    LNew.SetIsLibrarySpecific(dummy.IsLibrarySpecific);
   finally
     dummy.free;
     LNew.Free;

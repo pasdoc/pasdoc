@@ -435,6 +435,15 @@ type
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
     procedure Clear; override;
+    
+    { Set IsDeprecated property of all Items to given Value }
+    procedure SetIsDeprecated(Value: boolean);
+    
+    { Set IsPlatformSpecific property of all Items to given Value }
+    procedure SetIsPlatformSpecific(Value: boolean);
+    
+    { Set IsLibrarySpecific property of all Items to given Value }
+    procedure SetIsLibrarySpecific(Value: boolean);
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -1253,6 +1262,27 @@ begin
     Dec(LCount);
     TSerializable.SerializeObject(PasItemAt[LCount], ADestination);
   end;
+end;
+
+procedure TPasItems.SetIsDeprecated(Value: boolean);
+var i: Integer;
+begin
+  for i := 0 to Count - 1 do 
+    PasItemAt[i].IsDeprecated := Value;
+end;
+
+procedure TPasItems.SetIsPlatformSpecific(Value: boolean);
+var i: Integer;
+begin
+  for i := 0 to Count - 1 do 
+    PasItemAt[i].IsPlatformSpecific := Value;
+end;
+
+procedure TPasItems.SetIsLibrarySpecific(Value: boolean);
+var i: Integer;
+begin
+  for i := 0 to Count - 1 do 
+    PasItemAt[i].IsLibrarySpecific := Value;
 end;
 
 { TPasProperty }
