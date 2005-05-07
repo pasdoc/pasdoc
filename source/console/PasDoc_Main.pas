@@ -377,7 +377,7 @@ begin
   WriteLn;
   CreateOptions;
 
-//  try
+  try
     GPasDoc := TPasDoc.Create(nil);
     try
       GPasDoc.OnMessage := TPasDocMessageEvent(MakeMethod(nil,
@@ -388,11 +388,11 @@ begin
     finally
       GPasDoc.Free;
     end;
-{  except
+  except
     on e: Exception do
       with e do
         WriteLn('Fatal Error: ', Message);
-  end;}
+  end;
   GOptionParser.Free;
 end;
 
