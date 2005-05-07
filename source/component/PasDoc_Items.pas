@@ -94,6 +94,8 @@ type
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreCVSTag(TagManager: TTagManager; 
       const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleDeprecatedTag(TagManager: TTagManager; 
+      const TagName, TagDesc: string; var ReplaceStr: string);
   protected
     { This does the same thing as @link(FindName) but it *doesn't*
       scan other units. If this item is a unit, it searches only
@@ -647,6 +649,8 @@ begin
     [toParameterRequired]);
   TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag,
     [toParameterRequired]);
+  TagManager.AddHandler('deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
+    []);
 end;
 
 procedure TPasItem.StoreAbstractTag(TagManager: TTagManager; 
@@ -683,6 +687,13 @@ procedure TPasItem.StoreLastModTag(TagManager: TTagManager;
 begin
   if TagDesc = '' then exit;
   FLastMod := TagDesc;
+  ReplaceStr := '';
+end;
+
+procedure TPasItem.HandleDeprecatedTag(TagManager: TTagManager; 
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  IsDeprecated := true;
   ReplaceStr := '';
 end;
 
