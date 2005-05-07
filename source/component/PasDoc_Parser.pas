@@ -536,10 +536,128 @@ end;
 
 function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
   TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
+
+  { Parse field declaration, i.e. something like
+      NAME1, NAME2, ... : TYPE;
+    If AddToFields then adds parsed fields to i.Fields.
+    State of created fields is set to given State parameter. }
+  function ParseCIOField(var t: TToken; 
+    i: TPasCio; AddToFields: boolean; State: TAccessibility): boolean;
+  var
+    FirstFieldLoop: Boolean;
+    FieldsAdded: TPasItems;
+    f: TPasItem;
+    DummyField: TPasVarConst;
+    M: TPasMethod;
+  begin
+    Result := false;
+    
+    FieldsAdded := TPasItems.Create(false);
+    try
+      FirstFieldLoop := True;
+      repeat
+        f := TPasItem.Create;
+        if FirstFieldLoop then begin
+          f.Name := t.Data;
+          FirstFieldLoop := False;
+        end else begin
+          if not GetNextNonWCToken(t) then Exit;
+          if t.MyType <> TOK_IDENTIFIER then begin
+            DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
+          end;
+          f.Name := t.Data;
+        end;
+
+        f.State := State;
+        f.DetailedDescription := GetLastComment(False);
+        if AddToFields then begin
+          i.Fields.Add(f);
+          FieldsAdded.Add(f);
+        end else begin
+          f.Free;
+        end;
+        FreeAndNil(t);
+
+        if not GetNextNonWCToken(t) then Exit;
+
+        if t.MyType = TOK_SYMBOL then begin
+          case t.Info.SymbolType of
+            SYM_COMMA:
+              begin
+                FreeAndNil(t);
+                Continue;
+              end;
+            SYM_COLON:
+              begin
+                Break;
+              end;
+          end;
+        end;
+        // We reach here only if token is not a comma or a colon.
+        FreeAndNil(t);
+        DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
+      until False;
+      ClearLastComment;
+      FreeAndNil(t);
+      GetNextNonWCToken(t);
+      
+      { This is the place where DummyField and FieldsAdded are useful:
+        we will try to parse the rest of fields declaration to DummyField
+        properties. Then we will copy some properties from DummyField
+        to all items in FieldsAdded. This way we e.g. parse hint directives
+        (like deprecated, platform etc.) into DummyField properties
+        and then copy them into FieldsAdded items. }
+      DummyField := TPasVarConst.Create;
+      try
+        if (t.MyType = TOK_KEYWORD) then begin
+          case t.Info.KeyWord of
+            KEY_FUNCTION, KEY_PROCEDURE: begin
+                if ParseCDFP(M,'','',t.Info.KeyWord,d,false) then begin
+                  M.Free;
+                  FreeAndNil(t);
+                end else begin
+                  FreeAndNil(t);
+                  exit;
+                end;
+              end;
+            KEY_RECORD: begin
+              ParseCIO(nil, '', CIO_RECORD, '', False);
+              end;
+            KEY_PACKED: begin
+                FreeAndNil(t);
+                GetNextNonWCToken(t);
+                if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
+                  ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
+                end else begin
+                  SkipDeclaration(DummyField);
+                end;
+              end;
+            else begin
+                FreeAndNil(t);
+                if not SkipDeclaration(DummyField) then begin
+                  exit;
+                end;
+              end;
+            end;
+        end else begin
+          FreeAndNil(t);
+          if not SkipDeclaration(DummyField) then begin
+            Exit;
+          end;
+        end;
+        
+        FieldsAdded.SetIsDeprecated(DummyField.IsDeprecated);
+        FieldsAdded.SetIsPlatformSpecific(DummyField.IsPlatformSpecific);
+        FieldsAdded.SetIsLibrarySpecific(DummyField.IsLibrarySpecific);
+      finally DummyField.Free end;
+    finally FieldsAdded.Free end;
+    
+    Result := true;
+  end;
+  
 var
   CS: string;
-  CSFound, FirstFieldLoop: Boolean;
-  f: TPasItem;
+  CSFound: Boolean;
   Finished: Boolean;
   i: TPasCio;
   M: TPasMethod;
@@ -757,7 +875,8 @@ begin
             end;
           end
         else
-          if (t.MyType = TOK_IDENTIFIER) then begin
+          if (t.MyType = TOK_IDENTIFIER) then
+          begin
             CS := t.Data;
             case t.Info.StandardDirective of
               SD_DEFAULT: begin
@@ -771,88 +890,9 @@ begin
               SD_PRIVATE: State := STATE_PRIVATE;
               SD_PROTECTED: State := STATE_PROTECTED;
               SD_AUTOMATED: State := STATE_AUTOMATED;
-            else
-              FirstFieldLoop := True;
-              repeat
-                f := TPasItem.Create;
-                if FirstFieldLoop then begin
-                  f.Name := t.Data;
-                  FirstFieldLoop := False;
-                end else begin
-                  if not GetNextNonWCToken(t) then Exit;
-                  if t.MyType <> TOK_IDENTIFIER then begin
-                    DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
-                  end;
-                  f.Name := t.Data;
-                end;
-
-                f.State := State;
-                f.DetailedDescription := GetLastComment(False);
-                if State in ClassMembers then begin
-                  i.Fields.Add(f);
-                end else begin
-                  f.Free;
-                end;
-                FreeAndNil(t);
-
-                if not GetNextNonWCToken(t) then Exit;
-
-                if t.MyType = TOK_SYMBOL then begin
-                  case t.Info.SymbolType of
-                    SYM_COMMA:
-                      begin
-                        FreeAndNil(t);
-                        Continue;
-                      end;
-                    SYM_COLON:
-                      begin
-                        Break;
-                      end;
-                  end;
-                end;
-                // We reach here only if token is not a comma or a colon.
-                FreeAndNil(t);
-                DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
-              until False;
-              ClearLastComment;
-              FreeAndNil(t);
-              GetNextNonWCToken(t);
-              if (t.MyType = TOK_KEYWORD) then begin
-                case t.Info.KeyWord of
-                  KEY_FUNCTION, KEY_PROCEDURE: begin
-                      if ParseCDFP(M,'','',t.Info.KeyWord,d,false) then begin
-                        M.Free;
-                        FreeAndNil(t);
-                      end else begin
-                        FreeAndNil(t);
-                        exit;
-                      end;
-                    end;
-                  KEY_RECORD: begin
-                    ParseCIO(nil, '', CIO_RECORD, '', False);
-                    end;
-                  KEY_PACKED: begin
-                      FreeAndNil(t);
-                      GetNextNonWCToken(t);
-                      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
-                        ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
-                      end else begin
-                        SkipDeclaration(nil);
-                      end;
-                    end;
-                  else begin
-                      FreeAndNil(t);
-                      if not SkipDeclaration(nil) then begin
-                        exit;
-                      end;
-                    end;
-                  end;
-              end else begin
-                FreeAndNil(t);
-                if not SkipDeclaration(nil) then begin
+              else
+                if not ParseCIOField(t, i, State in ClassMembers, State) then
                   Exit;
-                end;
-              end;
             end;
           end;
       if (not CSFound) then CS := '';
