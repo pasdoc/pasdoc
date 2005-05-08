@@ -983,7 +983,10 @@ procedure TDocGenerator.ExpandDescriptions;
     Item.DetailedDescription := 
       ExpandDescription(Item, Item.DetailedDescription, true, FirstSentenceEnd);
 
-    if AutoAbstract and (Trim(Item.Description) = '') then
+    Item.DescriptionWasAutomatic := 
+      AutoAbstract and (Trim(Item.Description) = '');
+
+    if Item.DescriptionWasAutomatic then
     begin
       if FirstSentenceEnd = 0 then
       begin

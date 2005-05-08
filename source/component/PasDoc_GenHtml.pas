@@ -983,12 +983,15 @@ begin
   if AItem.Description <> '' then begin
     WriteSpellChecked(AItem.Description);
 
-    if AItem.DetailedDescription <> '' then begin
-      WriteStartOfParagraph;
+    if AItem.DetailedDescription <> '' then
+    begin
+      if not AItem.DescriptionWasAutomatic then
+        WriteStartOfParagraph;
       WriteSpellChecked(AItem.DetailedDescription);
     end;
   end else begin
-    if AItem.DetailedDescription <> '' then begin
+    if AItem.DetailedDescription <> '' then
+    begin
       WriteStartOfParagraph;
       WriteSpellChecked(AItem.DetailedDescription);
     end else begin

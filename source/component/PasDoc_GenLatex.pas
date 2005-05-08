@@ -1213,8 +1213,11 @@ begin
     
     if AItem.DetailedDescription <> '' then 
       begin
-        WriteDirect('\hfill\vspace*{1ex}',true);
-        WriteDirect('',true);
+        if not AItem.DescriptionWasAutomatic then
+        begin
+          WriteDirect('\hfill\vspace*{1ex}',true);
+          WriteDirect('',true);
+        end;
         WriteSpellChecked(AItem.DetailedDescription);
       end;
   end else 
@@ -1932,6 +1935,10 @@ end;
 
 (*
   $Log$
+  Revision 1.36  2005/05/08 23:25:57  kambi
+  * When Description was automatically deduced (with --auto-abstract),
+    WriteItemDetailedDescription should not separate Description and DetailedDescription with paragraph.
+
   Revision 1.35  2005/05/08 03:32:52  kambi
   * Applied patch from Damien Honeyford to implement @value and @member tags, see thread "Record and Enum handling" on pasdoc-main mail list around 2005-05-07
 

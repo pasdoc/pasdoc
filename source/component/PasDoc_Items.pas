@@ -67,6 +67,7 @@ type
   private
     FDescription: string;
     FDetailedDescription: string;
+    FDescriptionWasAutomatic: boolean;
   protected
     FFullLink: string;
     FLastMod: string;
@@ -170,6 +171,44 @@ type
     { more detailed description of this item, mostly more than one
       sentence }
     property DetailedDescription: string read FDetailedDescription write FDetailedDescription;
+
+    (*
+      TDocGenerator.ExpandDescriptions sets this property to
+      true if AutoAbstract was used and Description of this
+      item was automatically deduced from the 1st sentence of
+      DetailedDescription.
+      
+      Otherwise (if @@abstract was specified explicitly, or there
+      was no @@abstract and AutoAbstract was false) this is set to false. 
+      
+      This is a useful hint for generators: it tells them that when they
+      are printing *both* Description and DetailedDescription of the item
+      in one place (e.g. @link(TTexDocGenerator.WriteItemDetailedDescription)
+      and @link(THTMLDocGenerator.WriteItemDetailedDescription) both do this)
+      then they should *not* add any additional space between
+      Description and DetailedDescription.
+      
+      This way when user will specify description like
+      
+      @longcode(#
+        { First sentence. Second sentence. }
+        procedure Foo;
+      #)
+      
+      and --auto-abstract was on, then "First sentence." is the
+      Description, second sentence is " Second sentence.",
+      DescriptionWasAutomatic is true and
+      and @link(THTMLDocGenerator.WriteItemDetailedDescription)
+      can print them as "First sentence. Second sentence."
+      
+      Without this property, @link(THTMLDocGenerator.WriteItemDetailedDescription)
+      would not be able to say that this abstract was deduced automatically
+      and would print additional paragraph break that was not present
+      in desscription, i.e. "First sentence.<p> Second sentence."
+    *)
+    property DescriptionWasAutomatic: boolean
+      read FDescriptionWasAutomatic write FDescriptionWasAutomatic;
+    
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write FFullLink;
     { if assigned, contains string with date of last modification }
@@ -1221,6 +1260,7 @@ begin
   Name := LoadStringFromStream(ASource);
   Description := LoadStringFromStream(ASource);
   DetailedDescription := LoadStringFromStream(ASource);
+  ASource.Read(FDescriptionWasAutomatic, SizeOf(FDescriptionWasAutomatic));
   FullLink := LoadStringFromStream(ASource);
   LastMod := LoadStringFromStream(ASource);
   ASource.Read(FState, SizeOf(State));
@@ -1236,6 +1276,7 @@ begin
   SaveStringToStream(Name, ADestination);
   SaveStringToStream(Description, ADestination);
   SaveStringToStream(DetailedDescription, ADestination);
+  ADestination.Write(FDescriptionWasAutomatic, SizeOf(FDescriptionWasAutomatic));
   SaveStringToStream(FullLink, ADestination);
   SaveStringToStream(LastMod, ADestination);
   ADestination.Write(FState, SizeOf(State));
