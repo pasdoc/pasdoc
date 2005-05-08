@@ -788,24 +788,6 @@ end;
 procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   Boolean; const FuncsProcs: TPasMethods);
 
-  function ExtractFirstWord(var s: string): string;
-  var
-    p: integer;
-    Len: integer;
-  begin
-    Result := '';
-    Len := Length(s);
-    p := 1;
-    while (p <= Len) and (s[p] in [' ', #9, #13, #10]) do
-      Inc(p);
-    while (p <= Len) and not (s[p] in [' ', #9, #13, #10]) do
-      begin
-        Result := Result + s[p];
-        Inc(p);
-      end;
-    s := Copy(s, p, Length(s));
-  end;
-
   procedure WriteParameter(const ParamName: string; const Desc: string);
   begin
     WriteDirect('<dt class="parameters">', true);

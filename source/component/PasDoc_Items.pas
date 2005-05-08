@@ -210,7 +210,11 @@ type
     FMembers: TPasItems;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
+    procedure StoreValueTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
   public
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
+
     destructor Destroy; override;
     constructor Create; override;
     property Members: TPasItems read FMembers;
@@ -315,6 +319,9 @@ type
     FMyType: TCIOType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
+  protected
+    procedure StoreMemberTag(TagManager: TTagManager;
+      const TagName, TagDesc: String; var replaceStr: String);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -325,6 +332,8 @@ type
     function FindItem(const ItemName: string): TPasItem; override;
 
     procedure SortPasItems;
+
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
   public
     { name of the ancestor class / object }
     property Ancestors: TStringVector read FAncestors;
@@ -430,6 +439,8 @@ type
 
     procedure SortByPasItemName;
 
+    { During Add, AObject is associated with AObject.Name using hash table,
+      so remember to set AObject.Name *before* calling Add(AObject). }
     procedure Add(const AObject: TPasItem);
     procedure Delete(const AIndex: Integer);
     constructor Create(const AOwnsObject: Boolean); override;
@@ -482,7 +493,7 @@ const
 implementation
 
 uses
-  SysUtils, PasDoc_Types;
+  SysUtils, PasDoc_Types, Utils;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -856,6 +867,39 @@ begin
   if Properties <> nil then Properties.SortByPasItemName;
 end;
 
+procedure TPasCio.RegisterTagHandlers(TagManager: TTagManager);
+begin
+  inherited RegisterTagHandlers(TagManager);
+  TagManager.AddHandler('member', {$IFDEF FPC}@{$ENDIF}StoreMemberTag,
+    [toParameterRequired ]);
+end;
+
+procedure TPasCio.StoreMemberTag(TagManager: TTagManager; const TagName,
+  TagDesc: String; var replaceStr: String);
+var
+  MemberName: String;
+  MemberDesc: String;
+  Member: TPasItem;
+begin
+  ReplaceStr := '';
+  MemberDesc := TagDesc;
+  MemberName := ExtractFirstWord(MemberDesc);
+
+  Member := FindItem(MemberName);
+  if Assigned(Member) then
+  begin
+    { Only replace the description if one wasn't specified for it
+      already }
+    if Member.Description = '' then
+      Member.Description := MemberDesc else
+      TagManager.DoMessage(1, mtWarning,
+        '@member tag specifies description for member "%s" that already' +
+        ' has one description.', [MemberName]);
+  end else
+    TagManager.DoMessage(1, mtWarning,
+      '@member tag specifies unknown member "%s".', [MemberName]);
+end;
+
 { ---------------------------------------------------------------------------- }
 { TPasUnit }
 { ---------------------------------------------------------------------------- }
@@ -1101,10 +1145,41 @@ begin
   FAuthors := TStringVector.Create;
 end;
 
+procedure TPasEnum.RegisterTagHandlers(TagManager: TTagManager);
+begin
+  inherited RegisterTagHandlers(TagManager);
+  TagManager.AddHandler('value', {$IFDEF FPC}@{$ENDIF}StoreValueTag,
+    [toParameterRequired]);
+end;
+
 procedure TPasEnum.Serialize(const ADestination: TStream);
 begin
   inherited;
   Members.Serialize(ADestination);
+end;
+
+procedure TPasEnum.StoreValueTag(TagManager: TTagManager; const TagName,
+  TagDesc: string; var ReplaceStr: string);
+var
+  ValueName: String;
+  ValueDesc: String;
+  Value: TPasItem;
+begin
+  ReplaceStr := '';
+  ValueDesc := TagDesc;
+  ValueName := ExtractFirstWord(ValueDesc);
+
+  Value := Members.FindName(ValueName);
+  if Assigned(Value) then
+  begin
+    if Value.Description = '' then
+      Value.Description := ValueDesc else
+      TagManager.DoMessage(1, mtWarning,
+        '@value tag specifies description for a value "%s" that already' +
+        ' has one description.', [ValueName]);
+  end else
+    TagManager.DoMessage(1, mtWarning,
+      '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
 { TPasMethod }

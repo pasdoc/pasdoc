@@ -83,6 +83,10 @@ function SCharIs(const S: string; Index: integer; C: char): boolean; overload;
 function SCharIs(const S: string; Index: integer; 
   const Chars: TCharSet): boolean; overload;
 
+{ Extracts all characters up to the first white-space encountered
+  from the string specified by S. }
+function ExtractFirstWord(var s: string): string;
+
 const
   { Whitespace that is not any part of newline. }
   WhiteSpaceNotNL = [' ', #9];
@@ -257,6 +261,30 @@ function SCharIs(const S: string; Index: integer;
   const Chars: TCharSet): boolean; overload;
 begin
   Result := (Index <= Length(S)) and (S[Index] in Chars);
+end;
+
+function ExtractFirstWord(var S: String): String;
+var
+  Len: Integer;
+  StartPos: Integer;
+  EndPos: Integer;
+begin
+  Result := '';
+  StartPos := 1;
+  Len := Length(S);
+
+  while (StartPos <= Len) and (S[StartPos] in WhiteSpace) do
+    Inc(StartPos);
+
+  if StartPos < Len then
+  begin
+    EndPos := StartPos;
+    while (EndPos <= Len) and not (S[EndPos] in WhiteSpace) do
+      Inc(EndPos);
+
+    Result := Copy(S, StartPos, EndPos - StartPos);
+    S := Trim(Copy(S, EndPos, Len));
+  end;
 end;
 
 end.

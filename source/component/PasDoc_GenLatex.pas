@@ -803,23 +803,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-  function ExtractFirstWord(var s: string): string;
-  var
-    p: integer;
-    Len: integer;
-  begin
-    Result := '';
-    Len := Length(s);
-    p := 1;
-    while (p <= Len) and (s[p] in [' ', #9, #13, #10]) do
-      Inc(p);
-    while (p <= Len) and not (s[p] in [' ', #9, #13, #10]) do
-      begin
-        Result := Result + s[p];
-        Inc(p);
-      end;
-    s := Copy(s, p, Length(s));
-  end;
 
   procedure TTexDocGenerator.WriteParameter(const ParamName: string; const Desc: string);
   begin
@@ -1949,6 +1932,9 @@ end;
 
 (*
   $Log$
+  Revision 1.35  2005/05/08 03:32:52  kambi
+  * Applied patch from Damien Honeyford to implement @value and @member tags, see thread "Record and Enum handling" on pasdoc-main mail list around 2005-05-07
+
   Revision 1.34  2005/05/07 19:03:41  kambi
   * Displaying hint directives in html and latex output
 

@@ -965,10 +965,10 @@ begin
   GetNextNonWCToken(t);
   while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
     if t.MyType = TOK_IDENTIFIER then begin
-      item := TPasItem.Create;;
-      p.Members.Add(item);
+      item := TPasItem.Create;
       item.Name := t.Data;
       item.Description := GetLastComment(True);
+      p.Members.Add(item);
     end;
     if t.IsSymbol(SYM_EQUAL) then begin
       FreeAndNil(t);
