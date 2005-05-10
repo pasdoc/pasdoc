@@ -473,10 +473,10 @@ begin
       WriteConverted(GETCIOTypeName(CIO.MyType));
       WriteDirect('}]');
 
-      { Write only the description and do not opt for DetailedDescription,
+      { Write only the AbstractDescription and do not opt for DetailedDescription,
         like WriteItemDescription does. }
-      if CIO.Description <> '' then
-        WriteSpellChecked(CIO.Description);
+      if CIO.AbstractDescription <> '' then
+        WriteSpellChecked(CIO.AbstractDescription);
       WriteDirect('',true);
     end;
   WriteDirect('\end{description}',true);
@@ -1150,9 +1150,9 @@ end;
 procedure TTexDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
-  if AItem.Description <> '' then
+  if AItem.AbstractDescription <> '' then
     begin
-      WriteSpellChecked(AItem.Description);
+      WriteSpellChecked(AItem.AbstractDescription);
     end
   else
       WriteDirect(' ');
@@ -1167,9 +1167,7 @@ begin
   Result := false;
   if not Assigned(AItem) then Exit;
   
-  Result := 
-    (AItem.Description <> '') or 
-    (AItem.DetailedDescription <> '') or
+  Result := AItem.HasDescription or
     { some hint directive ? }
     AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific;
 
@@ -1207,13 +1205,13 @@ begin
   if AItem.IsLibrarySpecific then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
-  if AItem.Description <> '' then 
+  if AItem.AbstractDescription <> '' then 
   begin
-    WriteSpellChecked(AItem.Description);
+    WriteSpellChecked(AItem.AbstractDescription);
     
     if AItem.DetailedDescription <> '' then 
       begin
-        if not AItem.DescriptionWasAutomatic then
+        if not AItem.AbstractDescriptionWasAutomatic then
         begin
           WriteDirect('\hfill\vspace*{1ex}',true);
           WriteDirect('',true);
@@ -1935,6 +1933,11 @@ end;
 
 (*
   $Log$
+  Revision 1.37  2005/05/10 15:55:32  kambi
+  * TPasItem.Description property renamed to AbstractDescription
+  * Parser cleaned up: always sets DetailedDescription, never touches AbstractDescription
+  * many code related to descriptions here and there cleaned
+
   Revision 1.36  2005/05/08 23:25:57  kambi
   * When Description was automatically deduced (with --auto-abstract),
     WriteItemDetailedDescription should not separate Description and DetailedDescription with paragraph.

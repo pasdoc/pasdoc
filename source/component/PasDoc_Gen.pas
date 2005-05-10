@@ -976,25 +976,22 @@ procedure TDocGenerator.ExpandDescriptions;
   begin
     if Item = nil then Exit;
 
-    Item.Description := TrimCompress(Item.Description);
-    Item.DetailedDescription := TrimCompress(Item.DetailedDescription);
+    Item.DetailedDescription := TrimCompress(
+      ExpandDescription(Item, Item.DetailedDescription, true, FirstSentenceEnd));
 
-    Item.Description := ExpandDescription(Item, Item.Description);
-    Item.DetailedDescription := 
-      ExpandDescription(Item, Item.DetailedDescription, true, FirstSentenceEnd);
+    Item.AbstractDescriptionWasAutomatic := 
+      AutoAbstract and (Trim(Item.AbstractDescription) = '');
 
-    Item.DescriptionWasAutomatic := 
-      AutoAbstract and (Trim(Item.Description) = '');
-
-    if Item.DescriptionWasAutomatic then
+    if Item.AbstractDescriptionWasAutomatic then
     begin
       if FirstSentenceEnd = 0 then
       begin
-        Item.Description := Item.DetailedDescription;
+        Item.AbstractDescription := Item.DetailedDescription;
         Item.DetailedDescription := '';
       end else
       begin
-        Item.Description := Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
+        Item.AbstractDescription := 
+          Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
         Item.DetailedDescription := 
           Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
       end;
@@ -1362,12 +1359,12 @@ begin
   if SplitLink(ItemName, S1, S2, S3, n) then begin
     Item := FindGlobal(S1, S2, S3, n);
     if Assigned(Item) then begin
-      if Item.Description <> '' then begin
+      if Item.DetailedDescription <> '' then begin
         DoMessage(2, mtWarning, 'More than one description for ' + ItemName,
           []);
         t := '';
       end else begin
-        Item.Description := t;
+        Item.DetailedDescription := t;
       end;
     end else begin
       DoMessage(2, mtWarning, 'Could not find item ' + ItemName, []);
@@ -1408,19 +1405,9 @@ end;
 
 procedure TDocGenerator.WriteDescription(HL: integer; const Heading: string;
   const Item: TPasItem);
-var
-  d: string;
 begin
-  if Item.DetailedDescription <> '' then
-    d := Item.DetailedDescription
-  else
-    if Item.Description <> '' then
-      d := Item.Description
-    else
-      Exit;
-
   if Length(Heading) > 0 then WriteHeading(HL, Heading);
-  WriteDirect(d);
+  WriteDirect(Item.GetDescription);
 end;
 
 { ---------------------------------------------------------------------------- }

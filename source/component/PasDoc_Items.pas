@@ -65,9 +65,9 @@ type
   { basic linkable item in pasdoc hierarchy }
   TPasItem = class(TSerializable)
   private
-    FDescription: string;
+    FAbstractDescription: string;
     FDetailedDescription: string;
-    FDescriptionWasAutomatic: boolean;
+    FAbstractDescriptionWasAutomatic: boolean;
   protected
     FFullLink: string;
     FLastMod: string;
@@ -109,7 +109,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     
-    { It registers handlers that init @link(Description), @link(Authors), 
+    { It registers handlers that init @link(AbstractDescription), @link(Authors), 
       @link(Created), @link(LastMod) and remove relevant tags from description. 
       You can override it to add more handlers. }
     procedure RegisterTagHandlers(TagManager: TTagManager); virtual;
@@ -150,10 +150,11 @@ type
       of this item. }
     function FindName(S1, S2, S3: string; n: Integer): TPasItem; virtual;
     
-    { Returns DetailedDescription if available, otherwise Description,
-      otherwise nil. }
+    { Returns DetailedDescription if available, otherwise 
+      AbstractDescription, otherwise ''. }
     function GetDescription: string;
-    { Returns true if there is a detailled or a normal description available. }
+    { Returns true if there is a DetailledDescription or AbstractDescription
+      available. In other words, it's equivalent to @code(GetDescription <> ''). }
     function HasDescription: Boolean;
     { returns the qualified name of the item }
     function QualifiedName: String;
@@ -163,18 +164,36 @@ type
     { if this item is part of an object or class, the corresponding info object is stored here, nil otherwise }
     property MyObject: TPasCio read FMyObject write FMyObject;
 
-    { description of this item, a single sentence.
+    { Abstract description of this item.
+      This is intended to be short (e.g. one sentence) description of 
+      this object. 
+      This will be inited from @@abstract tag, or cutted out from
+      DetailedDescription if --auto-abstract was used.
     
       Note that this is already in the form suitable for final output,
       with tags expanded, chars converted etc. }
-    property Description: string read FDescription write FDescription;
-    { more detailed description of this item, mostly more than one
-      sentence }
-    property DetailedDescription: string read FDetailedDescription write FDetailedDescription;
+    property AbstractDescription: string 
+      read FAbstractDescription write FAbstractDescription;
+    
+    { Detailed description of this item, something more elaborate
+      than @link(AbstractDescription).
+      
+      TODO: for now it stores first unexpanded version (as specified
+      in user's comments in source code of parsed units) and then
+      it's changed to an expanded version (ready to be put inside
+      final documentation, with things from @@abstract tag removed
+      to @link(AbstractDescription), things from @@author tag removed
+      to @link(Authors) etc.).
+      
+      This is not good -- in the future this should store only expanded
+      version, and RawDescription will be introduced to store exact
+      text that user put in his comment for this item. }
+    property DetailedDescription: string 
+      read FDetailedDescription write FDetailedDescription;
 
     (*
       TDocGenerator.ExpandDescriptions sets this property to
-      true if AutoAbstract was used and Description of this
+      true if AutoAbstract was used and AbstractDescription of this
       item was automatically deduced from the 1st sentence of
       DetailedDescription.
       
@@ -182,11 +201,11 @@ type
       was no @@abstract and AutoAbstract was false) this is set to false. 
       
       This is a useful hint for generators: it tells them that when they
-      are printing *both* Description and DetailedDescription of the item
+      are printing *both* AbstractDescription and DetailedDescription of the item
       in one place (e.g. @link(TTexDocGenerator.WriteItemDetailedDescription)
       and @link(THTMLDocGenerator.WriteItemDetailedDescription) both do this)
-      then they should *not* add any additional space between
-      Description and DetailedDescription.
+      then they should *not* put any additional space between
+      AbstractDescription and DetailedDescription.
       
       This way when user will specify description like
       
@@ -196,8 +215,8 @@ type
       #)
       
       and --auto-abstract was on, then "First sentence." is the
-      Description, second sentence is " Second sentence.",
-      DescriptionWasAutomatic is true and
+      AbstractDescription, " Second sentence." is DetailedDescription,
+      AbstractDescriptionWasAutomatic is true and
       and @link(THTMLDocGenerator.WriteItemDetailedDescription)
       can print them as "First sentence. Second sentence."
       
@@ -206,8 +225,9 @@ type
       and would print additional paragraph break that was not present
       in desscription, i.e. "First sentence.<p> Second sentence."
     *)
-    property DescriptionWasAutomatic: boolean
-      read FDescriptionWasAutomatic write FDescriptionWasAutomatic;
+    property AbstractDescriptionWasAutomatic: boolean
+      read FAbstractDescriptionWasAutomatic 
+      write FAbstractDescriptionWasAutomatic;
     
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write FFullLink;
@@ -687,10 +707,10 @@ end;
 
 function TPasItem.GetDescription: string;
 begin
-  if Length(DetailedDescription) > 0 then begin
+  if DetailedDescription <> '' then begin
     Result := DetailedDescription
   end else begin
-    Result := Description
+    Result := AbstractDescription
   end;
 end;
 
@@ -715,11 +735,11 @@ end;
 procedure TPasItem.StoreAbstractTag(TagManager: TTagManager; 
   const TagName, TagDesc: string; var ReplaceStr: string);
 begin
-  if Description <> '' then
+  if AbstractDescription <> '' then
     TagManager.DoMessage(1, mtWarning,
       '@abstract tag was already specified for this item. ' +
-      'It was specified as "%s"', [Description]);
-  Description := TagDesc;
+      'It was specified as "%s"', [AbstractDescription]);
+  AbstractDescription := TagDesc;
   ReplaceStr := '';
 end;
 
@@ -758,7 +778,7 @@ end;
 
 function TPasItem.HasDescription: Boolean;
 begin
-  HasDescription := (Description <> '') or (DetailedDescription <> '');
+  HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -929,8 +949,8 @@ begin
   begin
     { Only replace the description if one wasn't specified for it
       already }
-    if Member.Description = '' then
-      Member.Description := MemberDesc else
+    if Member.DetailedDescription = '' then
+      Member.DetailedDescription := MemberDesc else
       TagManager.DoMessage(1, mtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
@@ -1211,8 +1231,8 @@ begin
   Value := Members.FindName(ValueName);
   if Assigned(Value) then
   begin
-    if Value.Description = '' then
-      Value.Description := ValueDesc else
+    if Value.DetailedDescription = '' then
+      Value.DetailedDescription := ValueDesc else
       TagManager.DoMessage(1, mtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);
@@ -1258,9 +1278,10 @@ procedure TPasItem.Deserialize(const ASource: TStream);
 begin
   inherited;
   Name := LoadStringFromStream(ASource);
-  Description := LoadStringFromStream(ASource);
+  AbstractDescription := LoadStringFromStream(ASource);
   DetailedDescription := LoadStringFromStream(ASource);
-  ASource.Read(FDescriptionWasAutomatic, SizeOf(FDescriptionWasAutomatic));
+  ASource.Read(FAbstractDescriptionWasAutomatic, 
+    SizeOf(FAbstractDescriptionWasAutomatic));
   FullLink := LoadStringFromStream(ASource);
   LastMod := LoadStringFromStream(ASource);
   ASource.Read(FState, SizeOf(State));
@@ -1274,9 +1295,10 @@ end;
 procedure TPasItem.Serialize(const ADestination: TStream);
 begin
   SaveStringToStream(Name, ADestination);
-  SaveStringToStream(Description, ADestination);
+  SaveStringToStream(AbstractDescription, ADestination);
   SaveStringToStream(DetailedDescription, ADestination);
-  ADestination.Write(FDescriptionWasAutomatic, SizeOf(FDescriptionWasAutomatic));
+  ADestination.Write(FAbstractDescriptionWasAutomatic, 
+    SizeOf(FAbstractDescriptionWasAutomatic));
   SaveStringToStream(FullLink, ADestination);
   SaveStringToStream(LastMod, ADestination);
   ADestination.Write(FState, SizeOf(State));

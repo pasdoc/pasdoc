@@ -599,10 +599,10 @@ begin
       WriteStartOfTableCell('width="100%"', '')
     else
       WriteStartOfTableCell;
-    { Write only the description and do not opt for DetailedDescription,
+    { Write only the AbstractDescription and do not opt for DetailedDescription,
       like WriteItemDescription does. }
-    if p.Description <> '' then
-      WriteSpellChecked(p.Description)
+    if p.AbstractDescription <> '' then
+      WriteSpellChecked(p.AbstractDescription)
     else
       WriteDirect('&nbsp;');
 
@@ -947,8 +947,8 @@ procedure THTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
 
-  if AItem.Description <> '' then begin
-    WriteSpellChecked(AItem.Description);
+  if AItem.AbstractDescription <> '' then begin
+    WriteSpellChecked(AItem.AbstractDescription);
   end else begin
     if AItem.DetailedDescription <> '' then begin
       WriteSpellChecked(AItem.DetailedDescription)
@@ -980,12 +980,12 @@ begin
   if AItem.IsLibrarySpecific then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
-  if AItem.Description <> '' then begin
-    WriteSpellChecked(AItem.Description);
+  if AItem.AbstractDescription <> '' then begin
+    WriteSpellChecked(AItem.AbstractDescription);
 
     if AItem.DetailedDescription <> '' then
     begin
-      if not AItem.DescriptionWasAutomatic then
+      if not AItem.AbstractDescriptionWasAutomatic then
         WriteStartOfParagraph;
       WriteSpellChecked(AItem.DetailedDescription);
     end;

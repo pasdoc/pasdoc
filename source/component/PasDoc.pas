@@ -450,8 +450,8 @@ begin
   Generator.Units := FUnits;
   Generator.BuildLinks;
 
-  Generator.ExpandDescriptions;
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
+  Generator.ExpandDescriptions;  
 
   Generator.WriteDocumentation;
   if CacheDir <> '' then begin

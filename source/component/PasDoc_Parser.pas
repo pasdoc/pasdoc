@@ -30,6 +30,12 @@ type
     Parsing work is done by calling @link(ParseUnit) method.
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. 
+    
+    Note that parser inits DetailedDescription of each item it returns.
+    It never inits AbstractDescription or other things that should
+    be inited while expanding this item's tags. In the future,
+    the parser will init only RawDescription of each item,
+    see TODO at TPasItem.DetailedDescription.
 
     TODO -- for now it's not really consistent how the errors in parsing
     are reported. Some errors cause @link(ParseUnit) and other ParseXxx
@@ -967,7 +973,7 @@ begin
     if t.MyType = TOK_IDENTIFIER then begin
       item := TPasItem.Create;
       item.Name := t.Data;
-      item.Description := GetLastComment(True);
+      item.DetailedDescription := GetLastComment(True);
       p.Members.Add(item);
     end;
     if t.IsSymbol(SYM_EQUAL) then begin
@@ -1089,7 +1095,7 @@ begin
   p.IndexDecl := '';
   p.Proptype := '';
   FreeAndNil(t);
-  p.Description := GetLastComment(True);
+  p.DetailedDescription := GetLastComment(True);
   if (not GetNextNonWCToken(t)) then Exit;
   { get index }
   if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
@@ -1177,7 +1183,7 @@ begin
       GetNextNonWCToken(t2);
       P := TPasItem.Create;
       p.Name := t1.Data;
-      p.Description := GetLastComment(True);
+      p.DetailedDescription := GetLastComment(True);
       R.Fields.Add(p);
     end else begin
       // case Type of
@@ -1230,7 +1236,7 @@ begin
       while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
         if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
           P := TPasItem.Create;
-          p.Description := GetLastComment(True);
+          p.DetailedDescription := GetLastComment(True);
           P.Name:=t1.Data;
           R.Fields.Add(p);
           if (ParenCount = 0) then
@@ -1247,7 +1253,7 @@ begin
             if (t1.MyType = TOK_IDENTIFIER) then begin
               if LLastWasComma then begin
                 p := TPasItem.Create;
-                p.Description := GetLastComment(True);
+                p.DetailedDescription := GetLastComment(True);
                 p.Name := t1.data;
                 R.Fields.Add(p);
               end;
