@@ -984,17 +984,10 @@ procedure TDocGenerator.ExpandDescriptions;
 
     if Item.AbstractDescriptionWasAutomatic then
     begin
-      if FirstSentenceEnd = 0 then
-      begin
-        Item.AbstractDescription := Item.DetailedDescription;
-        Item.DetailedDescription := '';
-      end else
-      begin
-        Item.AbstractDescription := 
-          Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
-        Item.DetailedDescription := 
-          Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
-      end;
+      Item.AbstractDescription := 
+        Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
+      Item.DetailedDescription := 
+        Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
     end;
 
     if Item is TPasEnum then

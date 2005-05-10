@@ -147,8 +147,9 @@ type
       include correspong '.' character (note that this definition
       takes into account that ConvertString may translate '.' into
       something longer).
-      If no such character exists in Description, FirstSentenceEnd will 
-      be set to 0. 
+      If no such character exists in Description, FirstSentenceEnd will
+      be set to Length(Result), so the whole Description will be treated
+      as it's first sentence.
       
       If WantFirstSentenceEnd, FirstSentenceEnd will not be modified. }
     function Execute(const Description: string;
@@ -553,6 +554,9 @@ begin
   end;
 
   DoConvert;
+
+  if WantFirstSentenceEnd and (FirstSentenceEnd = 0) then
+    FirstSentenceEnd := Length(Result);
 
   { Only for testing:
   Writeln('----');
