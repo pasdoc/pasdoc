@@ -381,7 +381,7 @@ end;
 
     { Writes an already-converted description T to output.
       Takes @link(TPasItem.DetailedDescription) if available,
-      @link(TPasItem.Description) otherwise.
+      @link(TPasItem.AbstractDescription) otherwise.
       If none of them is assigned, nothing is written. }
     procedure WriteDescription(HL: integer; const Heading: string; const Item:
       TPasItem);
