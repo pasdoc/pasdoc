@@ -79,7 +79,7 @@ procedure TestLongCode;
   )
 
   @latex(
-    This is some {\bf dummy} html code, just to show that inside
+    This is some {\bf dummy} \LaTeX code, just to show that inside
     @latex tag of pasdoc (note that I used single @ char in this sentence)
     nothing is expanded by pasdoc.
     No paragraphs are created by pasdoc. Although, in case of LaTeX output,
