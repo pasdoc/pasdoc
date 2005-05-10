@@ -929,6 +929,17 @@ end;
 procedure TPasCio.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited RegisterTagHandlers(TagManager);
+  
+  { Note that @member tag does not have toRecursiveTags,
+    and it shouldn't: parameters of this tag will be copied
+    verbatim to appropriate member's DetailedDescription,
+    and they will be expanded when this member will be expanded
+    by TDocGenerator.ExpandDescriptions.
+    
+    This way they will be expanded exactly once, as they should be. 
+    
+    Moreover, this allows you to correctly use tags like @param
+    and @raises inside @member for a method. }
   TagManager.AddHandler('member', {$IFDEF FPC}@{$ENDIF}StoreMemberTag,
     [toParameterRequired ]);
 end;
@@ -1207,6 +1218,13 @@ end;
 procedure TPasEnum.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited RegisterTagHandlers(TagManager);
+  
+  { Note that @value tag does not have toRecursiveTags,
+    and it shouldn't: parameters of this tag will be copied
+    verbatim to appropriate member's DetailedDescription,
+    and they will be expanded when this member will be expanded
+    by TDocGenerator.ExpandDescriptions.
+    This way they will be expanded exactly once, as they should be. }
   TagManager.AddHandler('value', {$IFDEF FPC}@{$ENDIF}StoreValueTag,
     [toParameterRequired]);
 end;
