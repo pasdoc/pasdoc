@@ -82,9 +82,18 @@ type
     { Writes a Hireachy list - this is more useful than the simple class list }
     procedure WriteHierarchy;
     procedure WriteItemDescription(const AItem: TPasItem);
-    { Writes the Item's DetailedDescription. If the Item also has Discription
-      (extracted from @@abstract), this is written to a separate paragraph
-      in front of the DetailedDescription. }
+    (*Writes the Item's DetailedDescription. If the Item also has
+      AbstractDescription, this is also written in front of the 
+      DetailedDescription.
+      
+      Code here will open and close paragraph for itself, so you shouldn't
+      surround it inside
+      @longcode(#
+        { BAD EXAMPLE }
+        WriteStartOfParagraph;
+        ...
+        WriteEndOfParagraph;
+      #) *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
     procedure WriteParagraph(HL: integer; s: string; t: string);
@@ -911,9 +920,7 @@ begin
         WriteEndOfTableRow;
         WriteEndOfTable;
 
-        WriteStartOfParagraph;
         WriteItemDetailedDescription(p);
-        WriteEndOfParagraph;
 
         WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
           p.Params, false);
@@ -978,23 +985,32 @@ begin
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then
-    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
+    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);  
 
-  if AItem.AbstractDescription <> '' then begin
+  if AItem.AbstractDescription <> '' then
+  begin
+    WriteStartOfParagraph;
     WriteSpellChecked(AItem.AbstractDescription);
 
     if AItem.DetailedDescription <> '' then
     begin
       if not AItem.AbstractDescriptionWasAutomatic then
+      begin
+        WriteEndOfParagraph; { always try to write closing </p>, to be clean }
         WriteStartOfParagraph;
+      end;
       WriteSpellChecked(AItem.DetailedDescription);
     end;
+    
+    WriteEndOfParagraph;
   end else begin
     if AItem.DetailedDescription <> '' then
     begin
       WriteStartOfParagraph;
       WriteSpellChecked(AItem.DetailedDescription);
-    end else begin
+      WriteEndOfParagraph;
+    end else 
+    begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := SearchItem(AncestorName, AItem);
@@ -1258,9 +1274,7 @@ begin
     WriteEndOfTableRow;
     WriteEndOfTable;
 
-    WriteStartOfParagraph;
     WriteItemDetailedDescription(Prop);
-    WriteEndOfParagraph;
   end;
 end;
 
@@ -2641,10 +2655,9 @@ begin
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
     [http://sourceforge.net/mailarchive/message.php?msg_id=11388479].
-    In order to fix it, WriteItemDetailedDescription is usually called like
-      WriteStartOfParagraph;
-      WriteItemDetailedDescription(p);
-      WriteEndOfParagraph;
+    In order to fix it, WriteItemDetailedDescription always wraps
+    what it writes between <p> ... </p>
+
     This works perfectly except for the cases where @longcode
     is at the end of description, then we have 
       <p>Some text <pre>Some Pascal code</pre></p>

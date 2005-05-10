@@ -55,9 +55,9 @@ type
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
     procedure WriteItemDescription(const AItem: TPasItem);
-    { Writes the Item's DetailedDescription. If the Item also has Discription
-      (extracted from @@abstract), this is written to a separate paragraph
-      in front of the DetailedDescription. }
+    { Writes the Item's DetailedDescription. If the Item also has
+      AbstractDescription this is written in front of the
+      DetailedDescription. }
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
@@ -1933,6 +1933,9 @@ end;
 
 (*
   $Log$
+  Revision 1.38  2005/05/10 20:35:16  kambi
+  * Improved explicit paragraphs begin/end, some fixes to autodoc
+
   Revision 1.37  2005/05/10 15:55:32  kambi
   * TPasItem.Description property renamed to AbstractDescription
   * Parser cleaned up: always sets DetailedDescription, never touches AbstractDescription
