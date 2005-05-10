@@ -4,14 +4,15 @@ interface
 
 type
   { @member MyField Description of MyField here.
-    @member(MyMethod Description of MyMethod here, 
-      using parenthesis.)
-    @member(MyProperty Description of MyProperty here,
-      with some recursive tags inside: @code(Some code with
-      a link to @link(TMyRecord)).) }
+    @member(MyMethod Description of MyMethod here, using parenthesis.
+      @param(A Description of param A.)
+      @returns(Some boolean value.) )
+    @member(MyProperty Description of MyProperty here, 
+      with some recursive tags inside: 
+      @code(Some code with a link to @link(TMyRecord)).) }
   TMyClass = class
     MyField: Integer;
-    procedure MyMethod;
+    function MyMethod(A: Integer): boolean;
     property MyProperty: Integer read MyField write MyField;
   end;
   
