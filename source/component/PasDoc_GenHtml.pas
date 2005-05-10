@@ -2633,13 +2633,23 @@ var
   i: Integer;
 begin
   Result := '';
-  for i := 1 to Length(AString) do begin
-    case byte(AString[i]) of
-      $21..$7E: Result := Result + AString[i];
-      else begin
-        Result := Result + '%' + IntToHex(Byte(AString[i]), 2);
-      end;
-    end;
+  for i := 1 to Length(AString) do
+  begin
+    { Kambi: It's obvious that we must escape '&'.
+      I don't know why, but escaping it using '%26' does not work
+      (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2, 
+      and finally even IE, so it's certainly not a bug of some browser).
+      But escaping it using '&amp;' works OK.
+      
+      On the other hand, escaping '~' using '&tilde;' does not work.
+      (So EscapeURL function still *must* be something different than 
+      ConvertString.) }
+      
+    if AString[i] = '&' then
+      Result := Result + '&amp;' else
+    if AString[i] in [Chr($21)..Chr($7E)] then
+      Result := Result + AString[i] else
+      Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
   end;
 end;
 
@@ -2685,7 +2695,7 @@ end;
 
 function THTMLDocGenerator.URLLink(const URL: string): string; 
 begin
-  Result := MakeLinkTarget(EscapeURL(URL), ConvertString(URL), '', '_parent');
+  Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
 end;
 
 end.
