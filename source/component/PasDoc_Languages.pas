@@ -413,10 +413,10 @@ begin
 
   FTranslation[trGeneratedBy] := 'Gerado por';
   FTranslation[trOnDateTime] := 'as';
-  
-  FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  FTranslation[trDeprecated] := 'este símbolo está depreciado';
+  FTranslation[trPlatformSpecific] := 'este símbolo é específico para alguma plataforma';
+  FTranslation[trLibrarySpecific] := 'este símbolo é específico para alguma biblioteca';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1635,6 +1635,9 @@ end;
 
 {
   $Log$
+  Revision 1.20  2005/05/10 07:28:27  kambi
+  * Updates to Brasilian translation from Alexandre da Silva
+
   Revision 1.19  2005/05/07 19:03:41  kambi
   * Displaying hint directives in html and latex output
 
