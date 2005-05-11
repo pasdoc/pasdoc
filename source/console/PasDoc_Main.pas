@@ -300,7 +300,7 @@ begin
   GPasDoc.DescriptionFileNames.Assign(GOption_Descriptions.Values);
 
   for i := 0 to GOption_SourceList.Values.Count - 1 do begin
-    GPasDoc.AddSourceFileNamesFromFile(GOption_SourceList.Values[i]);
+    GPasDoc.AddSourceFileNamesFromFile(GOption_SourceList.Values[i], true);
   end;
 
   GPasDoc.Title := GOption_Title.Value;

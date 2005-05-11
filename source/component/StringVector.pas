@@ -18,7 +18,8 @@ type
   TStringVector = class(TStringList)
   public
     function FirstName: string;
-    procedure LoadFromTextFileAdd(const AFilename: string);
+    procedure LoadFromTextFileAdd(const AFilename: string); overload;
+    procedure LoadFromTextFileAdd(var ATextFile: TextFile); overload;
     procedure RemoveAllNamesCI(const AName: string);
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
@@ -116,6 +117,17 @@ begin
   LCurrent := Text;
   LoadFromFile(AFilename);
   Add(LCurrent);
+end;
+
+procedure TStringVector.LoadFromTextFileAdd(var ATextFile: TextFile);
+var S: string;
+begin
+  while not Eof(ATextFile) do
+  begin
+    Readln(ATextFile, S);
+    S := Trim(S);
+    if S <> '' then Append(S);
+  end;
 end;
 
 procedure TStringVector.RemoveAllNamesCI(const AName: string);

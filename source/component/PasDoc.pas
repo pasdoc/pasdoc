@@ -110,8 +110,11 @@ type
     { Adds source filenames from a stringlist }
     procedure AddSourceFileNames(const AFileNames: TStringList);
     { Loads names of Pascal unit source code files from a text file.
-      Adds all file names to @link(SourceFileNames). }
-    procedure AddSourceFileNamesFromFile(const FileName: string);
+      Adds all file names to @link(SourceFileNames). 
+      If DashMeansStdin and AFileName = '-' then it will load filenames
+      from stdin. }
+    procedure AddSourceFileNamesFromFile(const FileName: string;
+      DashMeansStdin: boolean);
     { Raises an exception. }
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Word);
@@ -317,16 +320,21 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDoc.AddSourceFileNamesFromFile(const FileName: string);
+procedure TPasDoc.AddSourceFileNamesFromFile(const FileName: string;
+  DashMeansStdin: boolean);
 var
   ASV: TStringVector;
 begin
   ASV := NewStringVector;
-  ASV.LoadFromTextFileAdd(FileName);
+  try
+    if DashMeansStdin and (FileName = '-') then
+      ASV.LoadFromTextFileAdd(Input) else
+      ASV.LoadFromTextFileAdd(FileName);
 
-  AddSourceFileNames(ASV);
-
-  ASV.Free;
+    AddSourceFileNames(ASV);
+  finally  
+    ASV.Free;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
