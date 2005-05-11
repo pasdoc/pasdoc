@@ -1735,10 +1735,27 @@ begin
         begin
           Scanner.ConsumeToken;
           // If there are several comments in a row, combine them.
-          if Assigned(LastCommentToken) then
-            if (t.MyType = TOK_COMMENT_CSTYLE) and (t.MyType = LastCommentToken.MyType) then begin
-              t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
-            end;
+          if Assigned(LastCommentToken) and
+             (t.MyType = TOK_COMMENT_CSTYLE) and 
+             (t.MyType = LastCommentToken.MyType) then 
+          begin
+            t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
+            
+            (* Remember that t.Data must be in the form acceptable by
+               ExtractComment again. And the code above just removed comments
+               braces and comment markers from the comment. This means that 
+               we must do something ugly now:
+               1. apply again comment braces (otherwise comments like
+                  {( * bla bla * )} could not work as expected, as they
+                  would be stripped from braces more than once.)
+               2. add again marker, if it's not optional (otherwise
+                  comments could be errorneously rejected because they no
+                  longer have required marker)
+            *)
+            if (not MarkersOptional) and (CommentMarkers.Count > 0) then
+              t.Data := CommentMarkers[0] + t.Data;
+            t.Data := '{' + t.Data + '}';
+          end;
           if Assigned(LastCommentToken) then
           begin
             LastCommentToken.Free;
