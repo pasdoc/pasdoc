@@ -287,21 +287,25 @@ var
   StartPos: Integer;
   EndPos: Integer;
 begin
-  Result := '';
   StartPos := 1;
   Len := Length(S);
 
   while (StartPos <= Len) and (S[StartPos] in WhiteSpace) do
     Inc(StartPos);
 
-  if StartPos < Len then
+  if StartPos <= Len then
   begin
-    EndPos := StartPos;
+    EndPos := StartPos + 1;
     while (EndPos <= Len) and not (S[EndPos] in WhiteSpace) do
       Inc(EndPos);
 
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
+  end else
+  begin
+    { S is only whitespaces }
+    Result := '';
+    S := '';
   end;
 end;
 
