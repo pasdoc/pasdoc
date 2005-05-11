@@ -94,6 +94,8 @@ type
     they are ignored in latex output),  but I'll try to not fix everything 
     at once, to not break some things). }
   TWriteLinkProc = procedure (const href, caption, localcss: string) of object;
+  
+  TLinkLook = (llDefault, llFull, llStripped);
 
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -112,11 +114,11 @@ type
     FAspellPipe: TRunRecord;
     FIgnoreWordsFile,
     FAspellMode: string;
-    FFullLink: boolean;
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TPasItem;
     FAutoAbstract: boolean;
+    FLinkLook: TLinkLook;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -331,7 +333,9 @@ end;
     { Searches for an item of name S which was linked in the description
       of Item. Starts search within item, then does a search on all items in all
       units using @link(FindGlobal).
-      Returns a link as String on success or an empty String on failure. }
+      Returns a link as String on success or an empty String on failure. 
+      
+      How exactly link does look like is controlled by @link(LinkLook) property. }
     function SearchLink(s: string; const Item: TPasItem): string;
 
     { This calls SearchLink(Identifier, Item).
@@ -643,12 +647,14 @@ end;
       default false;
     property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
     property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
-    property FullLink: boolean read FFullLink write FFullLink
-      default false;
 
     { The meaning of this is just like --auto-abstract command-line option.
       It is used in @link(ExpandDescriptions). }
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
+    
+    { This controls @link(SearchLink) behavior, as described in
+      [http://pasdoc.sipsolutions.net/LinkLookOption]. }
+    property LinkLook: TLinkLook read FLinkLook write FLinkLook;
   end;
 
 var
@@ -1266,21 +1272,32 @@ begin
     FoundItem := FindGlobal(S1, S2, S3, n);
 
   if Assigned(FoundItem) then
-    Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink)
-  else
+  begin
+    case LinkLook of
+      llDefault:
+        Result := CreateReferencedLink(S, FoundItem.FullLink);
+      llStripped: 
+        Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink);
+      llFull:
+        begin
+          Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink);
+          
+          if S3 <> '' then
+          begin
+            FoundItem := FindGlobal(S1, S2, '', 1);
+            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+          end;
+
+          if S2 <> '' then
+          begin
+            FoundItem := FindGlobal(S1, '', '', 0);
+            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+          end;          
+        end;
+      else Assert(false, 'LinkLook = ??');
+    end;
+  end else
     Result := '';
-
-  if FullLink then begin
-    if (S3 <> '') and (result <> '') then begin
-      FoundItem := FindGlobal(S1, S2, '', 1);
-      Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
-    end;
-
-    if (S2 <> '') and (result <> '') then begin
-      FoundItem := FindGlobal(S1, '', '', 0);
-      Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
-    end;
-  end;
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -66,6 +66,7 @@ var
   GOption_FullLink: TBoolOption;
   GOption_CSS: TStringOption; { Using external CSS file for HTML output }
   GOption_AutoAbstract: TBoolOption;
+  GOption_LinkLook: TStringOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -207,8 +208,13 @@ begin
   GOption_CacheDir.Explanation := 'Cache directory for parsed files (default not set)';
   GOptionParser.AddOption(GOption_CacheDir);
 
+  GOption_LinkLook := TStringOption.Create(#0, 'link-look');
+  GOption_LinkLook.Explanation := 'how links are displayed in documentation: "default" (show the complete link name, as specified by @link), "full" (show the complete link name, and try to make each part of it a link), or "stripped" (show only last part of the link)';
+  GOption_LinkLook.Value := 'default'; { default value is 'default' }
+  GOptionParser.AddOption(GOption_LinkLook);
+
   GOption_FullLink := TBoolOption.Create(#0, 'full-link');
-  GOption_FullLink.Explanation := 'if set, @link() always writes the qualified procedure name "unit.proc" instead of just "proc" and links the "unit" part to the unit only';
+  GOption_FullLink.Explanation := 'obsolete name for --link-look=full';
   GOptionParser.AddOption(GOption_FullLink);
 
   { Using external CSS file for HTML output. }
@@ -343,8 +349,6 @@ begin
   GPasDoc.Generator.LinkGraphVizUses := Goption_LinkGVUses.Value;
   GPasDoc.Generator.LinkGraphVizClasses := Goption_LinkGVClasses.Value;
 
-  GPasDoc.Generator.FullLink := GOption_FullLink.TurnedOn;
-
   for i := 0 to GOption_AbbrevFiles.Values.Count-1 do begin
     GPasDoc.Generator.ParseAbbreviationsFile(GOption_AbbrevFiles.Values[i]);
   end;
@@ -355,6 +359,19 @@ begin
   GPasDoc.CacheDir := GOption_CacheDir.Value;
 
   GPasDoc.Generator.AutoAbstract := GOption_AutoAbstract.TurnedOn;
+
+  if SameText(GOption_LinkLook.Value, 'default') then
+    GPasDoc.Generator.LinkLook := llDefault else
+  if SameText(GOption_LinkLook.Value, 'full') then
+    GPasDoc.Generator.LinkLook := llFull else
+  if SameText(GOption_LinkLook.Value, 'stripped') then
+    GPasDoc.Generator.LinkLook := llStripped else
+    raise Exception.CreateFmt(
+      'Invalid argument for "--link-look" option : "%s"', 
+      [GOption_LinkLook.Value]);
+
+  if GOption_FullLink.TurnedOn then
+    GPasDoc.Generator.LinkLook := llFull;
 
   Result := True;
 end;
