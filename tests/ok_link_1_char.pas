@@ -1,5 +1,3 @@
-{ -*- compile-command: "pasdoc ok_link_1_char.pas --visible-members 'private,public,published'" -*- }
-
 unit ok_link_1_char;
 
 interface

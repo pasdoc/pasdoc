@@ -53,28 +53,35 @@ Notes:
    But even with incorrect units, it obviously shouldn't fail with some
    miserable error (like sigsegv :) or do anything that it shouldn't,
    like removing some files or so.
+-- If you want to test unit with a special pasdoc's command-line,
+   you must add appropriate line at the end of ./mk_tests.sh script.
 
 --------------------
 Possible tests to be done:
 
-1. make PAS=ok_*.pas
-   make PAS=warning_*.pas
-   make PAS=error_*.pas
+1. Generate tests output by simple 
+     make
 
-   and each time check manually pasdoc's output and generated docs.
+   Default output is html, you should also try other output
+   formats, e.g. latex or even pdf (made from latex), like
+     make latex
+     make pdf
 
-   Default output is html, you may/should also try other output
-   formats, e.g. pdf, like
-     make pdf PAS=ok_*.pas
-     make pdf PAS=warning_*.pas
-     make pdf PAS=error_*.pas
+   Remember that some tests are created in subdirectories,
+   e.g. html/ok_const_1st_comment_missing/ and
+   latex/ok_const_1st_comment_missing/ will contain output for
+   ok_const_1st_comment_missing.pas unit (because it must be generated
+   with special command-line option : --marker=:).
 
-   These are not any automated tests, so you must look at units'
+   Now, to automatically test this output, see below,
+   for "correct tests output" and for "validate_html".
+
+   But you can of course try to manually look at units'
    sources and comments there to know what generated documentation should
    look like (in case of ok_* and warning_* files) and what
    warnings/errors should be reported (in case of warning_* and error_* files).
 
-   Of course, just briefly checking that all ok_* units generate no warnings,
+   Of course, even briefly checking that all ok_* units generate no warnings,
    all warning_* units generate some warnings (and produce some docs)
    and all error_* units generate errors (and no docs)
    is still a better test than nothing...
@@ -93,7 +100,7 @@ Possible tests to be done:
 
    Then whenever you want you can compare current documentation generated
    by pasdoc to downloaded "correct output"
-   e.g. using `diff -u html/ correct_output/html/'.
+   e.g. using `diff -u correct_output/html/ html/'.
 
    Note that *failure* of comparison does not necessarily mean that
    current pasdoc *has* a bug, since it's possible that current output of
@@ -176,16 +183,6 @@ Possible tests to be done:
 
 --------------------
 Random notes:
-
-Remember that you can always override at command-line what test units
-are used, e.g.
-  make html PAS=ok_*.pas
-or
-  make html PAS=todo/ok_*.pas
-or
-  make html PAS=ok_expanding_descriptions.pas
-Default value is *.pas, i.e. all test units in this directory
-(but not in todo/ subdirectory).
 
 `make clean' will clean this directory.
 

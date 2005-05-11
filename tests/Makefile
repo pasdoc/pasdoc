@@ -5,26 +5,19 @@
 
 # Making docs ----------------------------------------
 
-# Pascal files to process.
-# Remember that you can override it at command-line,
-# e.g. run `make PAS=error_line_number.pas'
-PAS=*.pas
-
-# These options will be passed to every pasdoc invocation,
-# i.e. for every output format.
-PASDOC_OPTIONS=--exclude-generator $(PAS)
-
 .PHONY: html pdf latex dvi
 
 html:
-	mkdir -p html/
-	pasdoc --format html --output=html/ $(PASDOC_OPTIONS)
+	./mk_tests.sh html
 
 dvi: latex/docs.dvi
 
 pdf: latex/docs.pdf
 
 latex: latex/docs.tex
+
+latex/docs.tex:
+	./mk_tests.sh latex
 
 # (Yes, I must do `cd latex' before calling pdflatex, I can't simply call
 # `pdflatex latex/docs.tex' because then many output files of pdflatex
@@ -36,10 +29,6 @@ latex/docs.pdf: latex/docs.tex
 latex/docs.dvi: latex/docs.tex
 	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
 	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
-
-latex/docs.tex:
-	mkdir -p latex/
-	pasdoc --format latex --output=latex/ $(PASDOC_OPTIONS)
 
 # Other targets ----------------------------------------
 
