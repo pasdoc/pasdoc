@@ -84,8 +84,26 @@ function SCharIs(const S: string; Index: integer;
   const Chars: TCharSet): boolean; overload;
 
 { Extracts all characters up to the first white-space encountered
-  from the string specified by S. }
-function ExtractFirstWord(var s: string): string;
+  (ignoring white-space at the very beginning of the string)
+  from the string specified by S. 
+  
+  If there is no white-space in S (or there is white-space
+  only at the beginning of S, in which case it is ignored)
+  then the whole S is regarded as it's first word.
+  
+  Both S and result are trimmed, i.e. they don't have any
+  excessive white-space at the beginning or end. }
+function ExtractFirstWord(var s: string): string; overload;
+
+{ Another version of ExtractFirstWord.
+
+  Splits S by it's first white-space (ignoring white-space at the 
+  very beginning of the string). No such white-space means that
+  whole S is regarded as the FirstWord.
+  
+  Both FirstWord and Rest are trimmed. }
+procedure ExtractFirstWord(const S: string; 
+  var FirstWord, Rest: string); overload;
 
 const
   { Whitespace that is not any part of newline. }
@@ -285,6 +303,12 @@ begin
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
   end;
+end;
+
+procedure ExtractFirstWord(const S: string; var FirstWord, Rest: string);
+begin
+  Rest := S;
+  FirstWord := ExtractFirstWord(Rest);
 end;
 
 end.

@@ -492,7 +492,7 @@ begin
     WriteConverted('(');
     for i := 0 to CIO.Ancestors.Count - 1 do begin
       s := CIO.Ancestors[i];
-      TheLink := SearchLink(s, CIO);
+      TheLink := SearchLink(s, CIO, '');
       if TheLink <> '' then
         s := TheLink;
       WriteDirect(s);
@@ -831,7 +831,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
       ParamName := ExtractFirstWord(s);
       
       if LinkToParamNames then
-       ParamName := SearchLinkOrWarning(ParamName, Func, 
+       ParamName := SearchLinkOrWarning(ParamName, Func, '',
          'Could not resolve link to "%s" from description of item "%s"');
       
       WriteParameter(ParamName, s);

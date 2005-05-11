@@ -335,8 +335,11 @@ end;
       units using @link(FindGlobal).
       Returns a link as String on success or an empty String on failure. 
       
-      How exactly link does look like is controlled by @link(LinkLook) property. }
-    function SearchLink(s: string; const Item: TPasItem): string;
+      How exactly link does look like is controlled by @link(LinkLook) property. 
+      
+      LinkDisplay, if not '', specifies explicite the display text for link. }
+    function SearchLink(s: string; const Item: TPasItem;
+      const LinkDisplay: string): string;
 
     { This calls SearchLink(Identifier, Item).
       If SearchLink succeeds (returns something <> ''), it simply returns
@@ -347,7 +350,8 @@ end;
         Format(WarningFormat, [Identifier, Item.QualifiedName]
       - returns CodeString(ConvertString(Identifier)) }
     function SearchLinkOrWarning(const Identifier: string; 
-      Item: TPasItem; const WarningFormat: string): string;
+      Item: TPasItem; const LinkDisplay: string;
+      const WarningFormat: string): string;
 
     { A link provided in a tag can be made up of up to three parts,
       separated by dots.
@@ -846,10 +850,10 @@ begin
       repeat
         if fCurrentItem.MyObject = nil then
           // we are looking for the ancestor itself
-          TheLink := SearchLink(s, fCurrentItem)
+          TheLink := SearchLink(s, fCurrentItem, '')
         else
           // we are looking for an ancestor's property or method
-          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem);
+          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem, '');
         if TheLink <> '' then Break;
 
         if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
@@ -872,9 +876,10 @@ begin
 end;
 
 function TDocGenerator.SearchLinkOrWarning(const Identifier: string; 
-  Item: TPasItem; const WarningFormat: string): string;
+  Item: TPasItem; const LinkDisplay: string;
+  const WarningFormat: string): string;
 begin
-  Result := SearchLink(Identifier, Item);
+  Result := SearchLink(Identifier, Item, LinkDisplay);
 
   if Result = '' then
   begin
@@ -885,8 +890,10 @@ end;
 
 procedure TDocGenerator.HandleLinkTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);
+var LinkTarget, LinkDisplay: string;
 begin
-  ReplaceStr := SearchLinkOrWarning(TagDesc, FCurrentItem,
+  ExtractFirstWord(TagDesc, LinkTarget, LinkDisplay);
+  ReplaceStr := SearchLinkOrWarning(LinkTarget, FCurrentItem, LinkDisplay,
     'Could not resolve "@Link(%s)" (%s)');
 end;
 
@@ -1242,7 +1249,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SearchLink(s: string; const Item: TPasItem): string;
+function TDocGenerator.SearchLink(s: string; const Item: TPasItem;
+  const LinkDisplay: string): string;
 var
   n: Integer;
   S1: string;
@@ -1273,6 +1281,8 @@ begin
 
   if Assigned(FoundItem) then
   begin
+    if LinkDisplay <> '' then
+      Result := CreateReferencedLink(LinkDisplay, FoundItem.FullLink) else
     case LinkLook of
       llDefault:
         Result := CreateReferencedLink(S, FoundItem.FullLink);

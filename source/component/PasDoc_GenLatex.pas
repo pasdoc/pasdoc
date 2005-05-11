@@ -863,7 +863,7 @@ end;
       ParamName := ExtractFirstWord(s);
 
       if LinkToParamNames then
-       ParamName := SearchLinkOrWarning(ParamName, Func, 
+       ParamName := SearchLinkOrWarning(ParamName, Func, '',
          'Could not resolve link to "%s" from description of item "%s"');
 
       WriteParameter(ParamName, s);
@@ -1933,6 +1933,9 @@ end;
 
 (*
   $Log$
+  Revision 1.39  2005/05/11 01:43:49  kambi
+  * You can add explicit name to @link tag
+
   Revision 1.38  2005/05/10 20:35:16  kambi
   * Improved explicit paragraphs begin/end, some fixes to autodoc
 
