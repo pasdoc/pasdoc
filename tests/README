@@ -100,7 +100,7 @@ Possible tests to be done:
 
    Then whenever you want you can compare current documentation generated
    by pasdoc to downloaded "correct output"
-   e.g. using `diff -u correct_output/html/ html/'.
+   e.g. using `diff -ur correct_output/html/ html/'.
 
    Note that *failure* of comparison does not necessarily mean that
    current pasdoc *has* a bug, since it's possible that current output of
