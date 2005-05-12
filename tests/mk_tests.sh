@@ -52,7 +52,9 @@ run_pasdoc --output="$FORMAT"/ \
   ')' `
 
 # Make a specialized test of some units that need special
-# command-line
+# command-line. This is also useful if you want to just make
+# some units in a separate subdirectories, to separate them
+# from the rest of tests (e.g. because you want to test AllXxx.html pages).
 mk_special_test ok_const_1st_comment_missing --marker=: ok_const_1st_comment_missing.pas
 mk_special_test ok_link_1_char --visible-members 'private,public,published' ok_link_1_char.pas
 mk_special_test ok_auto_abstract --auto-abstract ok_auto_abstract.pas
