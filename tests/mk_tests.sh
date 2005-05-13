@@ -48,7 +48,8 @@ run_pasdoc --output="$FORMAT"/ \
 `find . -iname '*.pas' -maxdepth 1 -not '(' \
   -iname 'ok_link_1_char.pas' -or \
   -iname 'ok_const_1st_comment_missing.pas' -or \
-  -iname 'ok_auto_abstract.pas' \
+  -iname 'ok_auto_abstract.pas' -or \
+  -iname 'warning_incorrect_tag_nesting.pas' \
   ')' `
 
 # Make a specialized test of some units that need special
@@ -58,3 +59,4 @@ run_pasdoc --output="$FORMAT"/ \
 mk_special_test ok_const_1st_comment_missing --marker=: ok_const_1st_comment_missing.pas
 mk_special_test ok_link_1_char --visible-members 'private,public,published' ok_link_1_char.pas
 mk_special_test ok_auto_abstract --auto-abstract ok_auto_abstract.pas
+mk_special_test warning_incorrect_tag_nesting warning_incorrect_tag_nesting.pas

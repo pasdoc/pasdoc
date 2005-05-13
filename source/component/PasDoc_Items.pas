@@ -719,17 +719,17 @@ end;
 procedure TPasItem.RegisterTagHandlers(TagManager: TTagManager);
 begin
   TagManager.AddHandler('abstract', {$IFDEF FPC}@{$ENDIF}StoreAbstractTag,
-    [toParameterRequired, toRecursiveTags]);
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
   TagManager.AddHandler('author', {$IFDEF FPC}@{$ENDIF}StoreAuthorTag,
-    [toParameterRequired]);
+    [toParameterRequired], []);
   TagManager.AddHandler('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
-    [toParameterRequired]);
+    [toParameterRequired, toRecursiveTags], []);
   TagManager.AddHandler('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
-    [toParameterRequired]);
+    [toParameterRequired, toRecursiveTags], []);
   TagManager.AddHandler('cvs', {$IFDEF FPC}@{$ENDIF}StoreCVSTag,
-    [toParameterRequired]);
+    [toParameterRequired], []);
   TagManager.AddHandler('deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
-    []);
+    [], []);
 end;
 
 procedure TPasItem.StoreAbstractTag(TagManager: TTagManager; 
@@ -941,7 +941,7 @@ begin
     Moreover, this allows you to correctly use tags like @param
     and @raises inside @member for a method. }
   TagManager.AddHandler('member', {$IFDEF FPC}@{$ENDIF}StoreMemberTag,
-    [toParameterRequired ]);
+    [toParameterRequired], []);
 end;
 
 procedure TPasCio.StoreMemberTag(TagManager: TTagManager; const TagName,
@@ -1226,7 +1226,7 @@ begin
     by TDocGenerator.ExpandDescriptions.
     This way they will be expanded exactly once, as they should be. }
   TagManager.AddHandler('value', {$IFDEF FPC}@{$ENDIF}StoreValueTag,
-    [toParameterRequired]);
+    [toParameterRequired], []);
 end;
 
 procedure TPasEnum.Serialize(const ADestination: TStream);
@@ -1363,13 +1363,13 @@ procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);
 begin
   inherited;
   TagManager.AddHandler('raises', {$IFDEF FPC}@{$ENDIF}StoreRaisesTag,
-    [toParameterRequired, toRecursiveTags]);
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
   TagManager.AddHandler('param', {$IFDEF FPC}@{$ENDIF}StoreParamTag,
-    [toParameterRequired, toRecursiveTags]);
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
   TagManager.AddHandler('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags]);
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
   TagManager.AddHandler('return', {$IFDEF FPC}@{$ENDIF}StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags]);
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
 end;
 
 { TPasVarConst }

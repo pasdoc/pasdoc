@@ -941,27 +941,27 @@ begin
     Item.RegisterTagHandlers(TagManager);
 
     { Tags without params }
-    TagManager.AddHandler('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
-    TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
-    TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
-    TagManager.AddHandler('br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
+    TagManager.AddHandler('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, [], []);
+    TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, [], []);
+    TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, [], []);
+    TagManager.AddHandler('br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, [], []);
 
     { Tags with non-recursive params }
     TagManager.AddHandler('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
-      [toParameterRequired]);
+      [toParameterRequired], []);
     TagManager.AddHandler('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
-      [toParameterRequired]);
+      [toParameterRequired], []);
     TagManager.AddHandler('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
-      [toParameterRequired]);
+      [toParameterRequired], []);
     TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
-      [toParameterRequired]);
+      [toParameterRequired], []);
 
     { Tags with recursive params }
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-      [toParameterRequired, toRecursiveTags]);
+      [toParameterRequired, toRecursiveTags], [aiOther]);
 
     Result := TagManager.Execute(Description,
       WantFirstSentenceEnd, FirstSentenceEnd);

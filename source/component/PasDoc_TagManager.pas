@@ -57,22 +57,65 @@ type
       It's useful for some tags to include toParameterRequired
       without including toRecursiveTags, e.g. @@longcode or @@html,
       that want to get their parameters "verbatim", not processed. }
-    toRecursiveTags);
+    toRecursiveTags,
+    
+    { This means that this tag is allowed at toplevel of description, 
+      but not inside parameter of any other tag.
+      
+      (We're talking here only about the case when "other tag"
+      does have toRecursiveTags included. Without toRecursiveTags,
+      tag parameters are always valid, not parsed, not checked
+      for anything that looks like a tag etc.) }
+    toTopLevel);
       
   TTagOptions = set of TTagOption;
+
+  { If a tag has toRecursiveTags in TagOptions, then values of these
+    type will specify exactly what tags are allowed inside.
+    If toRecursiveTags is not included in TagOptions
+    then TagsAllowedInside value for this tag doesn't matter. 
+    
+    There are three groups of tags that we consider:
+    
+    - toTopLevel tags. These are never allowed inside.
+    
+    - Self tag, e.g. is 
+        @@code(This is some @@code(code) that I wrote) 
+      allowed ?
+      This is decided by aiSelf.
+      Note that if self tag is toTopLevel, then whether aiSelf
+      is specified does not matter -- toplevel tag is never allowed
+      inside any other tag (even in itself).
+      
+    - Non-toTopLevel tags, that are not equal to self.
+      This is decided by aiOther. }
+  TTagsAllowedInsideOption = (
+    aiSelf,
+    aiOther);
+    
+  TTagsAllowedInside = set of TTagsAllowedInsideOption;
 
   TTagHandlerObj = class
   private
     FTagHandler: TTagHandler;
     FTagOptions: TTagOptions;
+    FTagsAllowedInside: TTagsAllowedInside;
+    FName: string;
   public
-    constructor Create(ATagHandler: TTagHandler;
-      const ATagOptions: TTagOptions);
+    constructor Create(const AName: string;
+      ATagHandler: TTagHandler;
+      const ATagOptions: TTagOptions;
+      const ATagsAllowedInside: TTagsAllowedInside);
 
     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
+    
+    property TagsAllowedInside: TTagsAllowedInside
+      read FTagsAllowedInside write FTagsAllowedInside;
+
+    property Name: string read FName write FName;
 
     procedure Execute(TagManager: TTagManager;
-      const TagName: string; const TagDesc: string; var ReplaceStr: string);
+      const TagDesc: string; var ReplaceStr: string);
   end;
 
   TTagManager = class
@@ -87,6 +130,22 @@ type
     function DoConvertString(const s: string): string;
     function DoURLLink(const s: string): string;
     procedure Unabbreviate(var s: string);
+    
+    { This is underlying version of Execute.
+
+      If EnclosingTag = nil then this is understood to be 
+      toplevel of description, which means that all tags are allowed inside.
+      
+      If EnclosingTag <> nil then this is not toplevel.
+      So toTopLevel tags are not allowed and other tags are allowed 
+      on the basis of EnclosingTag.TagsAllowedInside. }
+    function CoreExecute(const Description: string;
+      EnclosingTag: TTagHandlerObj;
+      WantFirstSentenceEnd: boolean;
+      var FirstSentenceEnd: Integer): string; overload;
+
+    function CoreExecute(const Description: string;
+      EnclosingTag: TTagHandlerObj): string; overload;
   public
     constructor Create;
     destructor Destroy; override;
@@ -128,7 +187,8 @@ type
     { See @link(TTagHandlerObj) for the meaning of parameter TagOption.
       Don't worry about the case of TagName, it does *not* matter. }
     procedure AddHandler(const TagName: string; Handler: TTagHandler;
-      const TagOptions: TTagOptions);
+      const TagOptions: TTagOptions;
+      const TagsAllowedInside: TTagsAllowedInside);
 
     { This method is the very essence of this class and this unit.
       It expands Description, which means that it processes Description
@@ -158,7 +218,7 @@ type
       
     { This is equivalent to Execute(Description, false, Dummy) }
     function Execute(const Description: string): string; overload;
-  
+
     property ConvertString: TStringConverter 
       read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
@@ -170,19 +230,23 @@ uses Utils {$ifndef VER1_0}, StrUtils {$endif};
 
 { TTagHandlerObj }
 
-constructor TTagHandlerObj.Create(ATagHandler: TTagHandler;
-  const ATagOptions: TTagOptions);
+constructor TTagHandlerObj.Create(const AName: string;
+  ATagHandler: TTagHandler;
+  const ATagOptions: TTagOptions;
+  const ATagsAllowedInside: TTagsAllowedInside);
 begin
   inherited Create;
+  FName := AName;
   FTagHandler := ATagHandler;
   FTagOptions := ATagOptions;
+  FTagsAllowedInside := ATagsAllowedInside;
 end;
 
 procedure TTagHandlerObj.Execute(TagManager: TTagManager;
-  const TagName, TagDesc: string; var ReplaceStr: string);
+  const TagDesc: string; var ReplaceStr: string);
 begin
   if Assigned(fTagHandler) then
-    fTagHandler(TagManager, TagName, TagDesc, ReplaceStr);
+    fTagHandler(TagManager, Name, TagDesc, ReplaceStr);
 end;
 
 { TTagManager }
@@ -209,10 +273,11 @@ begin
 end;
 
 procedure TTagManager.AddHandler(const TagName: string; Handler: TTagHandler;
-  const TagOptions: TTagOptions);
+  const TagOptions: TTagOptions;
+  const TagsAllowedInside: TTagsAllowedInside);
 begin
-  FTags.AddObject(LowerCase(Tagname),
-    TTagHandlerObj.Create(Handler, TagOptions));
+  FTags.AddObject(LowerCase(TagName),
+    TTagHandlerObj.Create(TagName, Handler, TagOptions, TagsAllowedInside));
 end;
 
 function TTagManager.DoConvertString(const s: string): string;
@@ -251,7 +316,8 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
-function TTagManager.Execute(const Description: string;
+function TTagManager.CoreExecute(const Description: string;
+  EnclosingTag: TTagHandlerObj;
   WantFirstSentenceEnd: boolean;
   var FirstSentenceEnd: Integer): string;
 var
@@ -263,7 +329,6 @@ var
   { This checks if some tag starts at Description[FOffset + 1].
     If yes then it returns true and sets
     -- TagHandlerObj to given tag object
-    -- TagName to lowercased name of this tag (e.g. 'link')
     -- Parameters to params for this tag (text specified between '(' ')',
        parsed to the matching parenthesis)
     -- OffsetEnd to the index of *next* character in Description right
@@ -277,12 +342,12 @@ var
     but it's not a name of any existing tag,
     it not only returns false but also emits a warning for user. }
   function FindTag(var TagHandlerObj: TTagHandlerObj;
-    var TagName: string; var Parameters: string;
-    var OffsetEnd: Integer): Boolean;
+    var Parameters: string; var OffsetEnd: Integer): Boolean;
   var
     i: Integer;
     BracketCount: integer;
     TagIndex: integer;
+    TagName: string;
   begin
     Result := False;
     Parameters := '';
@@ -451,10 +516,9 @@ var
 
 var
   ReplaceStr: string;
-  TagName: string;
   Params: string;
   OffsetEnd: Integer;
-  TagHandlerObj: TTagHandlerObj;
+  FoundTag: TTagHandlerObj;
   URL: string;
 begin
   Result := '';
@@ -470,17 +534,44 @@ begin
   while FOffset <= Length(Description) do
   begin
     if (Description[FOffset] = '@') and
-       FindTag(TagHandlerObj, TagName, Params, OffsetEnd) then
+       FindTag(FoundTag, Params, OffsetEnd) then
     begin
       DoConvert;
       
+      { Check is it allowed for this tag to be here }
+      if EnclosingTag <> nil then
+      begin
+        { To which category TagHandlerObj belongs ?
+          As outlined in comments at TTagsAllowedIndideOption,
+          there are three groups: toplevel tag, self tag, and other. }
+        if toTopLevel in FoundTag.TagOptions then
+        begin
+          { toplevel tags are never allowed here }
+          DoMessage(1, mtWarning,
+            'The tag "%s" cannot be embedded within other tags', [FoundTag.Name]);
+        end else
+        if FoundTag = EnclosingTag then
+        begin
+          if not (aiSelf in EnclosingTag.TagsAllowedInside) then
+            DoMessage(1, mtWarning,
+              'The tag "%s" cannot be embedded within itself', [FoundTag.Name]);
+        end else
+        if not (aiOther in EnclosingTag.TagsAllowedInside) then
+        begin
+          DoMessage(1, mtWarning,
+            'The tag "%s" cannot contain other tags', [EnclosingTag.Name]);
+        end;
+      end;
+      
+      { Process Params }
       if Params <> '' then
       begin
-        if toParameterRequired in TagHandlerObj.TagOptions then
+        if toParameterRequired in FoundTag.TagOptions then
         begin
           Unabbreviate(Params);
-          if toRecursiveTags in TagHandlerObj.TagOptions then
-            Params := Execute(Params); { recursively expand Params }
+          if toRecursiveTags in FoundTag.TagOptions then
+            { recursively expand Params }
+            Params := CoreExecute(Params, FoundTag);
         end else
         begin
           { Note that in this case we ignore whether
@@ -496,12 +587,14 @@ begin
             I didn't mark this as an mtError only because some sensible
             output will be generated anyway. }
           DoMessage(1, mtWarning,
-            'Tag "%s" is not allowed to have any parameters', [TagName]);
+            'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
         end;
-        ReplaceStr := DoConvertString('@(' + TagName) + Params + ConvertString(')');
+        ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
       end else
-        ReplaceStr := DoConvertString('@' + TagName);
-      TagHandlerObj.Execute(Self, TagName, Params, ReplaceStr);
+        ReplaceStr := DoConvertString('@' + FoundTag.Name);
+        
+      { execute tag handler }
+      FoundTag.Execute(Self, Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
       FOffset := OffsetEnd;
@@ -563,6 +656,21 @@ begin
   Writeln('Description was "', Description, '"');
   Writeln('Result is "', Result, '"');
   Writeln('----');}
+end;
+
+function TTagManager.CoreExecute(const Description: string;
+  EnclosingTag: TTagHandlerObj): string;
+var Dummy: Integer;
+begin
+  Result := CoreExecute(Description, EnclosingTag, false, Dummy);
+end;
+
+function TTagManager.Execute(const Description: string;
+  WantFirstSentenceEnd: boolean;
+  var FirstSentenceEnd: Integer): string;
+begin
+  Result := CoreExecute(Description, nil, 
+    WantFirstSentenceEnd, FirstSentenceEnd);
 end;
 
 function TTagManager.Execute(const Description: string): string; 
