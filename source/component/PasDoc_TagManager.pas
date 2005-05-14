@@ -5,7 +5,8 @@ interface
 uses
   SysUtils,
   Classes,
-  PasDoc_Types;
+  PasDoc_Types,
+  ObjectVector;
 
 type
   TTagManager = class;
@@ -39,13 +40,13 @@ type
   TTagOption = (
     { This means that tag expects parameters. If this is not included 
       in TagOptions then tag should not be given any parameters,
-      i.e. TagDesc passed to @link(TTagHandlerObj.Execute) should be ''.
+      i.e. TagDesc passed to @link(TTag.Execute) should be ''.
       We will display a warning if user will try to give
       some parameters for such tag. }
     toParameterRequired, 
     
     { This means that parameters of this tag will be expanded
-      before passing them to @link(TTagHandlerObj.Execute).
+      before passing them to @link(TTag.Execute).
       This means that we will expand recursive tags inside
       parameters, that we will ConvertString inside parameters,
       that we will handle paragraphs inside parameters etc. --
@@ -95,13 +96,15 @@ type
     
   TTagsAllowedInside = set of TTagsAllowedInsideOption;
 
-  TTagHandlerObj = class
+  TTag = class
   private
     FTagHandler: TTagHandler;
     FTagOptions: TTagOptions;
     FTagsAllowedInside: TTagsAllowedInside;
     FName: string;
   public
+    { Note that AName will converted to lowercase before assigning 
+      to Name. }
     constructor Create(const AName: string;
       ATagHandler: TTagHandler;
       const ATagOptions: TTagOptions;
@@ -112,15 +115,26 @@ type
     property TagsAllowedInside: TTagsAllowedInside
       read FTagsAllowedInside write FTagsAllowedInside;
 
+    { Note that this must always be lowercase. }
     property Name: string read FName write FName;
 
     procedure Execute(TagManager: TTagManager;
       const TagDesc: string; var ReplaceStr: string);
   end;
 
+  { All Items of this list must be non-nil TTag objects. }
+  TTagVector = class(TObjectVector)
+    { Case of Name does *not* matter (so don't bother converting it to 
+      lowercase or something like that before using this method). 
+      Returns nil if not found. 
+      
+      Maybe in the future it will use hashlist, for now it's not needed. }
+    function FindByName(const Name: string): TTag;
+  end;
+
   TTagManager = class
   private
-    FTags: TStringList;
+    FTags: TTagVector;
     FConvertString: TStringConverter;
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
@@ -140,12 +154,12 @@ type
       So toTopLevel tags are not allowed and other tags are allowed 
       on the basis of EnclosingTag.TagsAllowedInside. }
     function CoreExecute(const Description: string;
-      EnclosingTag: TTagHandlerObj;
+      EnclosingTag: TTag;
       WantFirstSentenceEnd: boolean;
       var FirstSentenceEnd: Integer): string; overload;
 
     function CoreExecute(const Description: string;
-      EnclosingTag: TTagHandlerObj): string; overload;
+      EnclosingTag: TTag): string; overload;
   public
     constructor Create;
     destructor Destroy; override;
@@ -184,7 +198,7 @@ type
       to Result in @link(Execute). }
     property URLLink: TStringConverter read FURLLink write FURLLink;
 
-    { See @link(TTagHandlerObj) for the meaning of parameter TagOption.
+    { See @link(TTag) for the meaning of parameter TagOption.
       Don't worry about the case of TagName, it does *not* matter. }
     procedure AddHandler(const TagName: string; Handler: TTagHandler;
       const TagOptions: TTagOptions;
@@ -228,47 +242,55 @@ implementation
 
 uses Utils {$ifndef VER1_0}, StrUtils {$endif};
 
-{ TTagHandlerObj }
+{ TTag ------------------------------------------------------------  }
 
-constructor TTagHandlerObj.Create(const AName: string;
+constructor TTag.Create(const AName: string;
   ATagHandler: TTagHandler;
   const ATagOptions: TTagOptions;
   const ATagsAllowedInside: TTagsAllowedInside);
 begin
   inherited Create;
-  FName := AName;
+  FName := LowerCase(AName);
   FTagHandler := ATagHandler;
   FTagOptions := ATagOptions;
   FTagsAllowedInside := ATagsAllowedInside;
 end;
 
-procedure TTagHandlerObj.Execute(TagManager: TTagManager;
+procedure TTag.Execute(TagManager: TTagManager;
   const TagDesc: string; var ReplaceStr: string);
 begin
   if Assigned(fTagHandler) then
-    fTagHandler(TagManager, Name, TagDesc, ReplaceStr);
+    FTagHandler(TagManager, Name, TagDesc, ReplaceStr);
 end;
 
-{ TTagManager }
+{ TTagVector ------------------------------------------------------------ }
+
+function TTagVector.FindByName(const Name: string): TTag;
+var 
+  i: Integer;
+  NameLower: string;
+begin
+  NameLower := LowerCase(Name);
+  for i := 0 to Count - 1 do 
+  begin
+    Result := TTag(Items[i]);
+    if Result.Name = NameLower then Exit;
+  end;
+  Result := nil;
+end;
+
+{ TTagManager ------------------------------------------------------------ }
 
 constructor TTagManager.Create;
 begin
   inherited Create;
-  FTags := TStringList.Create;
-  FTags.Sorted := true;
+  FTags := TTagVector.Create(true);
   FParagraph := ' ';
 end;
 
 destructor TTagManager.Destroy;
-var
-  i: integer;
 begin
-  if FTags <> nil then
-    begin
-      for i:=0 to FTags.Count-1 do
-        FTags.Objects[i].Free;
-      FTags.Free;
-    end;
+  FreeAndNil(FTags);
   inherited;
 end;
 
@@ -276,8 +298,7 @@ procedure TTagManager.AddHandler(const TagName: string; Handler: TTagHandler;
   const TagOptions: TTagOptions;
   const TagsAllowedInside: TTagsAllowedInside);
 begin
-  FTags.AddObject(LowerCase(TagName),
-    TTagHandlerObj.Create(TagName, Handler, TagOptions, TagsAllowedInside));
+  FTags.Add(TTag.Create(TagName, Handler, TagOptions, TagsAllowedInside));
 end;
 
 function TTagManager.DoConvertString(const s: string): string;
@@ -317,7 +338,7 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTagHandlerObj;
+  EnclosingTag: TTag;
   WantFirstSentenceEnd: boolean;
   var FirstSentenceEnd: Integer): string;
 var
@@ -328,7 +349,7 @@ var
 
   { This checks if some tag starts at Description[FOffset + 1].
     If yes then it returns true and sets
-    -- TagHandlerObj to given tag object
+    -- Tag to given tag object
     -- Parameters to params for this tag (text specified between '(' ')',
        parsed to the matching parenthesis)
     -- OffsetEnd to the index of *next* character in Description right
@@ -341,12 +362,11 @@ var
     In case some string looking as tag name (A-Za-z*) is here,
     but it's not a name of any existing tag,
     it not only returns false but also emits a warning for user. }
-  function FindTag(var TagHandlerObj: TTagHandlerObj;
+  function FindTag(var Tag: TTag;
     var Parameters: string; var OffsetEnd: Integer): Boolean;
   var
     i: Integer;
     BracketCount: integer;
-    TagIndex: integer;
     TagName: string;
   begin
     Result := False;
@@ -359,30 +379,29 @@ var
 
     if i = FOffset + 1 then Exit; { exit with false }
 
-    TagName := LowerCase(Copy(Description, FOffset + 1, i - FOffset - 1));
+    TagName := Copy(Description, FOffset + 1, i - FOffset - 1);
+    Tag := FTags.FindByName(TagName);
     OffsetEnd := i;
 
-    if not FTags.Find(TagName, TagIndex) then
+    if Tag = nil then
     begin
       DoMessage(1, mtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
     end;
-
-    TagHandlerObj := FTags.Objects[TagIndex] as TTagHandlerObj;
+    
     Result := true;
 
-    { OK, we found the correct tag.
-      TagHandlerObj and TagName are already set.
+    { OK, we found the correct tag, Tag variable is already set.
       Now lets get the parameters, setting Parameters and OffsetEnd. }
 
     if (i <= Length(Description)) and (Description[i] = '(') then
     begin
       { Read Parameters to a matching parenthesis.
         Note that we didn't check here whether
-        toParameterRequired in TagHandlerObj.TagOptions.
+        toParameterRequired in Tag.TagOptions.
         Caller of FindTag will give a warning for user if it will
         receive some Parameters <> '' while
-        toParameterRequired is *not* in TagHandlerObj.TagOptions }
+        toParameterRequired is *not* in Tag.TagOptions }
       Inc(i);
       BracketCount := 1;
       repeat
@@ -399,7 +418,7 @@ var
         DoMessage(1, mtWarning,
           'No matching closing parenthesis for tag "%s"', [TagName]);
     end else
-    if toParameterRequired in TagHandlerObj.TagOptions then
+    if toParameterRequired in Tag.TagOptions then
     begin
       { Read Parameters to the end of Description or newline. }
       while (i <= Length(Description)) and
@@ -518,7 +537,7 @@ var
   ReplaceStr: string;
   Params: string;
   OffsetEnd: Integer;
-  FoundTag: TTagHandlerObj;
+  FoundTag: TTag;
   URL: string;
 begin
   Result := '';
@@ -541,7 +560,7 @@ begin
       { Check is it allowed for this tag to be here }
       if EnclosingTag <> nil then
       begin
-        { To which category TagHandlerObj belongs ?
+        { To which category Tag belongs ?
           As outlined in comments at TTagsAllowedIndideOption,
           there are three groups: toplevel tag, self tag, and other. }
         if toTopLevel in FoundTag.TagOptions then
@@ -575,7 +594,7 @@ begin
         end else
         begin
           { Note that in this case we ignore whether
-            toRecursiveTags is in TagHandlerObj.TagOptions,
+            toRecursiveTags is in Tag.TagOptions,
             we always behave like toRecursiveTags was not included.
 
             This is reported as a serious warning,
@@ -659,7 +678,7 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTagHandlerObj): string;
+  EnclosingTag: TTag): string;
 var Dummy: Integer;
 begin
   Result := CoreExecute(Description, EnclosingTag, false, Dummy);
