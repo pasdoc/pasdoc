@@ -868,6 +868,9 @@ begin
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
+  // now resort the list alphabetically
+  FuncsProcs.SortByPasItemName;
+
   // two passes, in the first (i=0) we write the overview
   // in the second (i=1) we write the descriptions
   for i := 0 to 1 do begin
@@ -877,8 +880,6 @@ begin
     end
     else
     begin
-      // now resort the list alphabetically
-      FuncsProcs.SortByPasItemName;
       WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
     end;
 
