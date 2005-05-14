@@ -1401,26 +1401,24 @@ end;
 
 procedure TPasItems.Deserialize(const ASource: TStream);
 var
-  LCount: Integer;
+  LCount, i: Integer;
 begin
   Clear;
   ASource.Read(LCount, SizeOf(LCount));
-  while LCount>0 do begin
+  for i := 0 to LCount - 1 do
     Add(TPasItem(TPasItem.DeserializeObject(ASource)));
-    Dec(LCount);
-  end;
 end;
 
 procedure TPasItems.Serialize(const ADestination: TStream);
 var
-  LCount: Integer;
+  LCount, i: Integer;
 begin
   LCount := Count;
   ADestination.Write(LCount, SizeOf(LCount));
-  while LCount > 0 do begin
-    Dec(LCount);
-    TSerializable.SerializeObject(PasItemAt[LCount], ADestination);
-  end;
+  { Remember to always serialize and deserialize items in the
+    same order -- this is e.g. checked by ../../tests/scripts/check_cache.sh }
+  for i := 0 to Count - 1 do
+    TSerializable.SerializeObject(PasItemAt[i], ADestination);
 end;
 
 procedure TPasItems.SetIsDeprecated(Value: boolean);
