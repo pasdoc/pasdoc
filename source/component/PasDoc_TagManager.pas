@@ -103,7 +103,7 @@ type
     FTagsAllowedInside: TTagsAllowedInside;
     FName: string;
   public
-    { Note that AName will converted to lowercase before assigning 
+    { Note that AName will be converted to lowercase before assigning 
       to Name. }
     constructor Create(const AName: string;
       ATagHandler: TTagHandler;
