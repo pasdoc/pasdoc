@@ -11,7 +11,7 @@ uses
 type
   TTagManager = class;
 
-  { TagManager can be useful for various things:
+  { TagManager parameter can be useful for various things:
 
     E.g. you can use it in tag handler to report a message
     by @code(TagManager.DoMessage(...)), this is e.g. used
