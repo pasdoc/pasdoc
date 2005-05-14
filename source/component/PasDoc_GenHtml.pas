@@ -87,11 +87,11 @@ type
       DetailedDescription.
       
       Code here will open and close paragraph for itself, so you shouldn't
-      surround it inside
+      surround it inside WriteStart/EndOfParagraph, like
       @longcode(#
         { BAD EXAMPLE }
         WriteStartOfParagraph;
-        ...
+        WriteItemDetailedDescription(Item);
         WriteEndOfParagraph;
       #) *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
