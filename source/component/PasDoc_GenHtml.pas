@@ -849,8 +849,25 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
     WriteDirect('</p>');
   end;
 
+  procedure WriteMethodTableRow(p: TPasMethod; const ItemLink: string;
+    MakeAnchor: boolean);
+  begin
+    WriteStartOfTableRow('');
+
+    { Only write visibility for methods of classes and objects. }
+    if Methods then WriteVisibilityCell(p);
+
+    WriteStartOfTableCell('width="100%"', '');
+
+    if MakeAnchor then WriteAnchor(p.Name);
+
+    WriteCodeWithLinks(p, p.FullDeclaration, ItemLink);
+
+    WriteEndOfTableCell;
+    WriteEndOfTableRow;
+  end;
+
 var
-  i: Integer;
   j: Integer;
   p: TPasMethod;
   s: string;
@@ -871,66 +888,43 @@ begin
   // now resort the list alphabetically
   FuncsProcs.SortByPasItemName;
 
-  // two passes, in the first (i=0) we write the overview
-  // in the second (i=1) we write the descriptions
-  for i := 0 to 1 do begin
-    if (i = 0) then begin
-      WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-      WriteStartOfTable1Column('');
-    end
-    else
-    begin
-      WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-    end;
+  // 1st pass: write the overview
+  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+  WriteStartOfTable1Column('');
 
-    for j := 0 to FuncsProcs.Count - 1 do begin
-      p := TPasMethod(FuncsProcs.PasItemAt[j]);
-      if (i = 0) then begin
-        WriteStartOfTableRow('');
+  for j := 0 to FuncsProcs.Count - 1 do
+  begin
+    p := TPasMethod(FuncsProcs.PasItemAt[j]);
 
-        { Only write visibility for methods of classes and objects. }
-        if Methods then WriteVisibilityCell(p);
+    s := p.FullLink;
+    if Assigned(p.MyUnit) then
+      if CompareText(p.MyUnit.FullLink, Copy(s, 1,
+        Length(p.MyUnit.FullLink))) = 0 then
+        Delete(s, 1, Length(p.MyUnit.FullLink));
 
-        if j = 0 then
-          WriteStartOfTableCell('width="100%"', '')
-        else
-          WriteStartOfTableCell;
+    WriteMethodTableRow(p, s, false);
+  end;
 
-        s := p.FullLink;
-        if Assigned(p.MyUnit) then
-          if CompareText(p.MyUnit.FullLink, Copy(s, 1,
-            Length(p.MyUnit.FullLink))) = 0 then
-            Delete(s, 1, Length(p.MyUnit.FullLink));
+  WriteEndOfTable;
 
-        WriteCodeWithLinks(p, p.FullDeclaration, s);
+  // 2nd pass: write the detailed descriptions
+  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
 
-        WriteEndOfTableCell;
-        WriteEndOfTableRow;
-      end
-      else begin
-        WriteStartOfTable1Column('');
-        WriteStartOfTableRow('');
+  for j := 0 to FuncsProcs.Count - 1 do
+  begin
+    p := TPasMethod(FuncsProcs.PasItemAt[j]);
 
-        if Methods then WriteVisibilityCell(p);
+    WriteStartOfTable1Column('');
+    WriteMethodTableRow(p, '', true);
+    WriteEndOfTable;
 
-        WriteStartOfTableCell('width="100%"', '');
-        WriteAnchor(p.Name);
+    WriteItemDetailedDescription(p);
 
-        WriteCodeWithLinks(p, p.FullDeclaration, '');
-        WriteEndOfTableCell;
-        WriteEndOfTableRow;
-        WriteEndOfTable;
-
-        WriteItemDetailedDescription(p);
-
-        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
-          p.Params, false);
-        WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), 
-          p.Raises, true);
-      end;
-    end;
-    if (i = 0) then WriteEndOfTable;
+    WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
+      p.Params, false);
+    WriteReturnDesc(p, p.Returns);
+    WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), 
+      p.Raises, true);
   end;
 end;
 
