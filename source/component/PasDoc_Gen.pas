@@ -983,14 +983,14 @@ procedure TDocGenerator.ExpandDescriptions;
   
   procedure ExpandCollection(c: TPasItems); forward;
 
-  { expands Description and DetailedDescription of Item }
+  { expands RawDescription of Item }
   procedure ExpandItem(Item: TPasItem);
   var FirstSentenceEnd: Integer;
   begin
     if Item = nil then Exit;
 
     Item.DetailedDescription := TrimCompress(
-      ExpandDescription(Item, Item.DetailedDescription, true, FirstSentenceEnd));
+      ExpandDescription(Item, Item.RawDescription, true, FirstSentenceEnd));
 
     Item.AbstractDescriptionWasAutomatic := 
       AutoAbstract and (Trim(Item.AbstractDescription) = '');
@@ -1379,12 +1379,12 @@ begin
   if SplitLink(ItemName, S1, S2, S3, n) then begin
     Item := FindGlobal(S1, S2, S3, n);
     if Assigned(Item) then begin
-      if Item.DetailedDescription <> '' then begin
+      if Item.RawDescription <> '' then begin
         DoMessage(2, mtWarning, 'More than one description for ' + ItemName,
           []);
         t := '';
       end else begin
-        Item.DetailedDescription := t;
+        Item.RawDescription := t;
       end;
     end else begin
       DoMessage(2, mtWarning, 'Could not find item ' + ItemName, []);

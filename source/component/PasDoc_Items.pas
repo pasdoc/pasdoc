@@ -66,6 +66,7 @@ type
   TPasItem = class(TSerializable)
   private
     FAbstractDescription: string;
+    FRawDescription: string;
     FDetailedDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
   protected
@@ -167,8 +168,10 @@ type
     { Abstract description of this item.
       This is intended to be short (e.g. one sentence) description of 
       this object. 
-      This will be inited from @@abstract tag, or cutted out from
-      DetailedDescription if --auto-abstract was used.
+      
+      This will be inited from @@abstract tag in RawDescription, 
+      or cutted out from first sentence in RawDescription 
+      if --auto-abstract was used.
     
       Note that this is already in the form suitable for final output,
       with tags expanded, chars converted etc. }
@@ -178,24 +181,24 @@ type
     { Detailed description of this item, something more elaborate
       than @link(AbstractDescription).
       
-      TODO: for now it stores first unexpanded version (as specified
-      in user's comments in source code of parsed units) and then
-      it's changed to an expanded version (ready to be put inside
-      final documentation, with things from @@abstract tag removed
-      to @link(AbstractDescription), things from @@author tag removed
-      to @link(Authors) etc.).
-      
-      This is not good -- in the future this should store only expanded
-      version, and RawDescription will be introduced to store exact
-      text that user put in his comment for this item. }
+      This is already in the form suitable for final output,
+      ready to be put inside final documentation. }
     property DetailedDescription: string 
       read FDetailedDescription write FDetailedDescription;
+
+    { This stores unexpanded version (as specified
+      in user's comment in source code of parsed units)
+      of description of this item. 
+      
+      This is intended to be initialized by parser. }
+    property RawDescription: string 
+      read FRawDescription write FRawDescription;
 
     (*
       TDocGenerator.ExpandDescriptions sets this property to
       true if AutoAbstract was used and AbstractDescription of this
       item was automatically deduced from the 1st sentence of
-      DetailedDescription.
+      RawDescription.
       
       Otherwise (if @@abstract was specified explicitly, or there
       was no @@abstract and AutoAbstract was false) this is set to false. 
@@ -932,7 +935,7 @@ begin
   
   { Note that @member tag does not have toRecursiveTags,
     and it shouldn't: parameters of this tag will be copied
-    verbatim to appropriate member's DetailedDescription,
+    verbatim to appropriate member's RawDescription,
     and they will be expanded when this member will be expanded
     by TDocGenerator.ExpandDescriptions.
     
@@ -960,8 +963,8 @@ begin
   begin
     { Only replace the description if one wasn't specified for it
       already }
-    if Member.DetailedDescription = '' then
-      Member.DetailedDescription := MemberDesc else
+    if Member.RawDescription = '' then
+      Member.RawDescription := MemberDesc else
       TagManager.DoMessage(1, mtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
@@ -1221,7 +1224,7 @@ begin
   
   { Note that @value tag does not have toRecursiveTags,
     and it shouldn't: parameters of this tag will be copied
-    verbatim to appropriate member's DetailedDescription,
+    verbatim to appropriate member's RawDescription,
     and they will be expanded when this member will be expanded
     by TDocGenerator.ExpandDescriptions.
     This way they will be expanded exactly once, as they should be. }
@@ -1249,8 +1252,8 @@ begin
   Value := Members.FindName(ValueName);
   if Assigned(Value) then
   begin
-    if Value.DetailedDescription = '' then
-      Value.DetailedDescription := ValueDesc else
+    if Value.RawDescription = '' then
+      Value.RawDescription := ValueDesc else
       TagManager.DoMessage(1, mtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);

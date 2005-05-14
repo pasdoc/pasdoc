@@ -388,7 +388,8 @@ begin
       incorporated into doing TTagManager.Execute
       in ExpandDescription. }
 
-    if Assigned(p) and (StrPosIA('@EXCLUDE', p.DetailedDescription) > 0) then begin
+    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then 
+    begin
       DoMessage(3, mtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
     end
@@ -511,11 +512,12 @@ begin
     p := c.PasItemAt[i];
     Inc(i);
     if (not Assigned(p)) then Continue;
-    if p.DetailedDescription <> '' then begin
+    if p.RawDescription <> '' then begin
       TagManager := TTagManager.Create;
       try
-        TagManager.AddHandler('descrfile', {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag, false, false);
-        s := TagManager.Execute(p.Description);
+        TagManager.AddHandler('descrfile', 
+          {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag, false, false);
+        s := TagManager.Execute(p.RawDescription);
       finally
         TagManager.Free;
       end;

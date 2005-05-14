@@ -31,11 +31,9 @@ type
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. 
     
-    Note that parser inits DetailedDescription of each item it returns.
-    It never inits AbstractDescription or other things that should
-    be inited while expanding this item's tags. In the future,
-    the parser will init only RawDescription of each item,
-    see TODO at TPasItem.DetailedDescription.
+    Note that parser inits RawDescription of each item it returns.
+    It never inits AbstractDescription or DetailedDescription or 
+    other things that should be inited while expanding this item's tags. 
 
     TODO -- for now it's not really consistent how the errors in parsing
     are reported. Some errors cause @link(ParseUnit) and other ParseXxx
@@ -347,7 +345,7 @@ var
 begin
   Result := False;
   M := TPasMethod.Create;
-  M.DetailedDescription := d;
+  M.RawDescription := d;
   t := nil;
   case Key of
     KEY_CONSTRUCTOR:
@@ -575,7 +573,7 @@ function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
         end;
 
         f.State := State;
-        f.DetailedDescription := GetLastComment(False);
+        f.RawDescription := GetLastComment(False);
         if AddToFields then begin
           i.Fields.Add(f);
           FieldsAdded.Add(f);
@@ -690,7 +688,7 @@ begin
 
     i := TPasCio.Create;
     i.Name := CioName;
-    i.DetailedDescription := d;
+    i.RawDescription := d;
     i.MyType := CIOType;
     { get all ancestors; remember, this could look like
       TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
@@ -949,7 +947,7 @@ begin
   i := TPasVarConst.Create;
   i.Name := t.Data;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
-  i.DetailedDescription := GetLastComment(True);
+  i.RawDescription := GetLastComment(True);
   if SkipDeclaration(i) then begin
     U.AddConstant(i);
     Result := True;
@@ -973,7 +971,7 @@ begin
     if t.MyType = TOK_IDENTIFIER then begin
       item := TPasItem.Create;
       item.Name := t.Data;
-      item.DetailedDescription := GetLastComment(True);
+      item.RawDescription := GetLastComment(True);
       p.Members.Add(item);
     end;
     if t.IsSymbol(SYM_EQUAL) then begin
@@ -1095,7 +1093,7 @@ begin
   p.IndexDecl := '';
   p.Proptype := '';
   FreeAndNil(t);
-  p.DetailedDescription := GetLastComment(True);
+  p.RawDescription := GetLastComment(True);
   if (not GetNextNonWCToken(t)) then Exit;
   { get index }
   if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
@@ -1183,7 +1181,7 @@ begin
       GetNextNonWCToken(t2);
       P := TPasItem.Create;
       p.Name := t1.Data;
-      p.DetailedDescription := GetLastComment(True);
+      p.RawDescription := GetLastComment(True);
       R.Fields.Add(p);
     end else begin
       // case Type of
@@ -1236,7 +1234,7 @@ begin
       while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
         if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
           P := TPasItem.Create;
-          p.DetailedDescription := GetLastComment(True);
+          p.RawDescription := GetLastComment(True);
           P.Name:=t1.Data;
           R.Fields.Add(p);
           if (ParenCount = 0) then
@@ -1253,7 +1251,7 @@ begin
             if (t1.MyType = TOK_IDENTIFIER) then begin
               if LLastWasComma then begin
                 p := TPasItem.Create;
-                p.DetailedDescription := GetLastComment(True);
+                p.RawDescription := GetLastComment(True);
                 p.Name := t1.data;
                 R.Fields.Add(p);
               end;
@@ -1421,7 +1419,7 @@ begin
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
       if ParseEnum(E) then begin
         E.Name := n;
-        E.DetailedDescription := d;
+        E.RawDescription := d;
         U.AddType(E);
         Result := True;
         exit;
@@ -1437,7 +1435,7 @@ begin
     i.Free;
   end else begin
     i.Name := n;
-    i.DetailedDescription := d;
+    i.RawDescription := d;
     U.AddType(i);
     Result := True;
   end;
@@ -1460,7 +1458,7 @@ begin
 
   U := TPasUnit.Create;
   try
-    U.DetailedDescription := GetLastComment(True);
+    U.RawDescription := GetLastComment(True);
     if not GetNextNonWCToken(t) then Exit;
 
     { get unit name identifier }
@@ -1554,7 +1552,7 @@ begin
           DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
         i.Name := t.Data;
       end;
-      i.DetailedDescription := GetLastComment(False);
+      i.RawDescription := GetLastComment(False);
       U.AddVariable(i);
       LNew.Add(i);
       FreeAndNil(t);
