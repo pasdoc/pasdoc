@@ -9,25 +9,33 @@ set -eu
 
 # functions ----------------------------------------
 
-# Simply runs pasdoc with "$@" and common command-line options.
-# And echoes this is output.
-run_pasdoc ()
+# $1 is name of subdir (must end with /) where to put test output
+# (including PASDOC-OUTPUT file).
+# Rest of params are pasdoc's command-line:
+# special command-line parameters and unit files to process.
+mk_test ()
 {
+  OUTPUT_PATH="$1"
+  shift 1
+
+  mkdir -p "$OUTPUT_PATH"
+
+  PASDOC_OUTPUT_FILENAME="$OUTPUT_PATH"PASDOC-OUTPUT
+
   echo "Running pasdoc:"
-  echo pasdoc --format "$FORMAT" --exclude-generator "$@"
-  pasdoc --format "$FORMAT" --exclude-generator "$@"
+  echo pasdoc --format "$FORMAT" --exclude-generator \
+    --output="$OUTPUT_PATH" "$@" '>' "$PASDOC_OUTPUT_FILENAME"
+       pasdoc --format "$FORMAT" --exclude-generator \
+    --output="$OUTPUT_PATH" "$@" >   "$PASDOC_OUTPUT_FILENAME"
 }
 
-# $1 is name of subdir inside "$FORMAT"/ where to put test output.
-# Rest of params are pasdoc's command-line:
-# special command-line paramaters and unit files to process.
+# Like mk_test but $1 is name of subdir inside "$FORMAT" subdir.
 mk_special_test ()
 {
   OUTPUT_PATH="$FORMAT"/"$1"/
   shift 1
 
-  mkdir -p "$OUTPUT_PATH"
-  run_pasdoc --output="$OUTPUT_PATH" "$@"
+  mk_test "$OUTPUT_PATH" "$@"
 }
 
 # parse params ----------------------------------------
@@ -37,14 +45,12 @@ shift 1
 
 # Run tests ----------------------------------------
 
-mkdir -p "$FORMAT"
-
 # Try to place each entry below on separate line,
 # so that it's easy to temporary switch some test on/off by
 # simply commenting / uncommenting that line.
 
 # Make a general test of everything with normal pasdoc command-line
-run_pasdoc --output="$FORMAT"/ \
+mk_test "$FORMAT"/ \
 `find . -iname '*.pas' -maxdepth 1 -not '(' \
   -iname 'ok_link_1_char.pas' -or \
   -iname 'ok_const_1st_comment_missing.pas' -or \
