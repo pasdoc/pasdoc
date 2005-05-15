@@ -31,9 +31,38 @@ type
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. 
     
-    Note that parser inits RawDescription of each item it returns.
-    It never inits AbstractDescription or DetailedDescription or 
-    other things that should be inited while expanding this item's tags. 
+    Things that parser inits in items it returns:
+    
+    - Of every TPasItem :
+      Name, RawDescription, State, IsDeprecated, IsPlatformSpecific, 
+      IsLibrarySpecific. 
+      
+      Note to IsDeprecated: parser inits it basing on hint directive
+      "deprecated" presence in source file; it doesn't handle the fact 
+      that @@deprecated tag may be specified inside RawDescription.
+      
+      Note to RawDescription: parser inits them from user's comments
+      that preceded given item in source file.
+      It doesn't handle the fact that @@member and @@value tags
+      may also assign RawDescription for some item.
+      
+    - Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
+    - Of TPasEnum: Members.
+    - Of TPasMethod: What, FullDeclararation.
+    - Of TPasVarConst: FullDeclaration.
+    - Of TPasProperty: IndexDecl, FullDeclaration.
+      PropType (only if was specified in property declaration).
+      It was intended that parser will also set Default,
+      NoDefault, StoredId, DefaultId, Reader, Writer attributes, 
+      but it's still not implemented.
+    - Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
+      FuncsProcs.
+    
+    It doesn't init other values. 
+    E.g. AbstractDescription or DetailedDescription of TPasItem 
+    should be inited while expanding this item's tags.
+    E.g. SourceFileDate and SourceFileName of TPasUnit must
+    be set by other means.
 
     TODO -- for now it's not really consistent how the errors in parsing
     are reported. Some errors cause @link(ParseUnit) and other ParseXxx
