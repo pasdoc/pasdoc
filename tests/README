@@ -196,6 +196,26 @@ Possible tests to be done:
    and left in scripts/check_cache_tmp/, so developer can inspect
    them closer.
 
+5/  cd scripts/
+   ./check_cache_format_independent.sh html latex
+   ./check_cache_format_independent.sh latex html
+   
+   Requires two arguments, two names of pasdoc output format.
+   These two formats should be different for this test to be really sensible
+   (and better than check_cache.sh), but they can also be equal and
+   test should pass anyway.
+
+   This is similar to ./check_cache.sh test, but it checks
+   that cache format is independent of pasdoc's output format.
+   1st it generates output with format 1, without using any cache.
+   2nd it generates output with format 2, writing the cache.
+   3rd it generates output with format 1, this time reading the cache.
+   Then it checks that 1st and 3rd output are equal.
+
+   This way it checks that cache generated while doing format 2
+   may be reused while making format 1. So it tests that cache
+   format is really independent from pasdoc's chosen output format.
+
 --------------------
 Random notes:
 

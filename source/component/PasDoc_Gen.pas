@@ -293,11 +293,6 @@ end;
       some properties of Item to make them also in the 
       "already-processed" form (ready to be included in final docs).
       
-      Note that you can call it only when not Item.WasDeserialized.
-      That's because the current approach to cache stores in the cache
-      items in the state already processed by this function,
-      i.e. after all ExpandDescription calls were made. 
-      
       Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
       see @link(TTagManager.Execute). *)
     function ExpandDescription(Item: TPasItem; 
@@ -724,11 +719,9 @@ begin
       for j := 0 to U.CIOs.Count - 1 do begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
         CO.MyUnit := U;
+        CO.FullLink := CreateLink(CO);
+        CO.OutputFileName := CO.FullLink;
 
-        if not CO.WasDeserialized then begin
-          CO.FullLink := CreateLink(CO);
-          CO.OutputFileName := CO.FullLink;
-        end;
         AssignLinks(U, CO, CO.FullLink, CO.Fields);
         AssignLinks(U, CO, CO.FullLink, CO.Methods);
         AssignLinks(U, CO, CO.FullLink, CO.Properties);
@@ -925,8 +918,6 @@ function TDocGenerator.ExpandDescription(Item: TPasItem;
 var
   TagManager: TTagManager;
 begin
-  Assert(not Item.WasDeserialized);
-  
   // make it available to the handlers
   FCurrentItem := Item;
 
@@ -1029,7 +1020,7 @@ begin
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
-    if U.WasDeserialized then continue;
+
     ExpandItem(U);
     ExpandCollection(U.Constants);
     ExpandCollection(U.Variables);
