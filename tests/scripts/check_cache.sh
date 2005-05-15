@@ -42,4 +42,4 @@ echo 'Comparing two outputs:'
 diff -u scripts/check_cache_tmp/1/ scripts/check_cache_tmp/2/
 echo 'OK, test passed.'
 
-rm -Rf check_cache_tmp/
+rm -Rf scripts/check_cache_tmp/
