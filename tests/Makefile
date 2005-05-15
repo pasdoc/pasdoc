@@ -8,7 +8,7 @@
 .PHONY: html pdf latex dvi
 
 html:
-	./mk_tests.sh html
+	scripts/mk_tests.sh html
 
 dvi: latex/docs.dvi
 
@@ -17,7 +17,7 @@ pdf: latex/docs.pdf
 latex: latex/docs.tex
 
 latex/docs.tex:
-	./mk_tests.sh latex
+	scripts/mk_tests.sh latex
 
 # (Yes, I must do `cd latex' before calling pdflatex, I can't simply call
 # `pdflatex latex/docs.tex' because then many output files of pdflatex
