@@ -7,6 +7,26 @@ set -eu
 #
 # See ../README file for docs for this script.
 
+# functions ------------------------------------------------------------
+
+run_echo ()
+{
+  echo "$@"
+  "$@"
+}
+
+pasdoc_call ()
+{
+  echo 'Running pasdoc:'
+  run_echo pasdoc \
+    --format="$OUTPUT_FORMAT" ok_*.pas warning_*.pas \
+    --exclude-generator \
+    --cache-dir=scripts/check_cache_tmp/cache/ \
+    "$@"
+}
+
+# ------------------------------------------------------------
+
 OUTPUT_FORMAT="$1"
 shift 1
 
@@ -15,15 +35,11 @@ mkdir -p check_cache_tmp/cache/ check_cache_tmp/1/ check_cache_tmp/2/
 
 cd ..
 
-pasdoc_call ()
-{
-  pasdoc "$@" --format="$OUTPUT_FORMAT" ok_*.pas warning_*.pas \
-    --exclude-generator \
-    --cache-dir=scripts/check_cache_tmp/cache/
-}
-
 pasdoc_call --output=scripts/check_cache_tmp/1/
 pasdoc_call --output=scripts/check_cache_tmp/2/
+
+echo 'Comparing two outputs:'
 diff -u scripts/check_cache_tmp/1/ scripts/check_cache_tmp/2/
+echo 'OK, test passed.'
 
 rm -Rf check_cache_tmp/
