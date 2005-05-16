@@ -608,7 +608,8 @@ end;
       - compiler name and version used to compile pasdoc, 
         time of compilation and such
       - pasdoc's version
-      Default value is false (i.e. show them), 
+      See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
+      Default value is false (i.e. show them),
       as this information is generally considered useful.
       
       Setting this to true is useful for automatically comparing two

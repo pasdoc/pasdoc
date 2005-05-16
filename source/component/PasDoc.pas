@@ -483,9 +483,13 @@ begin
 
   Generator.WriteDocumentation;
 
-  t2 := Now;
-  DoMessage(1, mtInformation, 'Done, worked %s minutes(s)',
-    [FormatDateTime('nn:ss', (t2 - t1))]);
+  if Generator.NoGeneratorInfo then
+    DoMessage(1, mtInformation, 'Done', []) else
+  begin
+    t2 := Now;
+    DoMessage(1, mtInformation, 'Done, worked %s minutes(s)',
+      [FormatDateTime('nn:ss', (t2 - t1))]);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
