@@ -279,11 +279,15 @@ begin
     LLoaded := false;
     LParseSuccessful := false;
 
-    if (CacheDir <> '') and FileExists(LCacheFileName) then begin
+    if (CacheDir <> '') and FileExists(LCacheFileName) then
+    begin
       DoMessage(2, mtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
-      if U.SourceFileDate <> FileDateToDateTime(FileAge(SourceFileName)) then begin
-        DoMessage(2, mtInformation, 'Cache file for %s is outdated.', [SourceFileName]);
+      U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
+      if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
+      begin
+        DoMessage(2, mtInformation, 'Cache file for %s is outdated.', 
+          [SourceFileName]);
       end else begin
         LParseSuccessful := True;
         LLoaded := True;
@@ -304,7 +308,7 @@ begin
       end else 
       begin
         U.SourceFileName := SourceFileName;
-        U.SourceFileDate := FileDateToDateTime(FileAge(SourceFileName));
+        U.SourceFileDateTime := FileDateToDateTime(FileAge(SourceFileName));
         FUnits.Add(U);
         
         { Now we know that unit was 100% successfully parsed.

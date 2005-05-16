@@ -61,7 +61,7 @@ type
     It doesn't init other values. 
     E.g. AbstractDescription or DetailedDescription of TPasItem 
     should be inited while expanding this item's tags.
-    E.g. SourceFileDate and SourceFileName of TPasUnit must
+    E.g. SourceFileDateTime and SourceFileName of TPasUnit must
     be set by other means.
 
     TODO -- for now it's not really consistent how the errors in parsing

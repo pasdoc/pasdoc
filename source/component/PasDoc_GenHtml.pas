@@ -560,9 +560,20 @@ var
 begin
   if c = nil then Exit;
 
-  for i := 0 to c.Count - 1 do begin
+  for i := 0 to c.Count - 1 do
+  begin
     p := TPasCio(c.PasItemAt[i]);
-    case CreateStream(p.OutputFileName, not p.WasDeserialized) of
+    
+    if (p.MyUnit <> nil) and
+       p.MyUnit.FileNewerThanCache(DestinationDirectory + p.OutputFileName) then
+    begin
+      DoMessage(3, mtInformation, 'Data for "%s" was loaded from cache, '+
+        'and output file of this item exists and is newer than cache, '+
+        'skipped.', [p.Name]);
+      Continue;
+    end;
+    
+    case CreateStream(p.OutputFileName, true) of
       csError: begin
           DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
           Continue;
@@ -571,9 +582,6 @@ begin
           DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
           WriteCIO(HL, p);
         end;
-      csExisted: begin
-          DoMessage(3, mtInformation, 'File for "%s" already existed and data was loaded from cache, skipped.', [p.Name]);
-      end;
     end;
   end;
   CloseStream;
@@ -2093,13 +2101,18 @@ begin
       []);
     Exit;
   end;
+  
+  if U.FileNewerThanCache(DestinationDirectory + U.OutputFileName) then
+  begin
+    DoMessage(3, mtInformation, 'Data for unit "%s" was loaded from cache, '+
+      'and output file of this unit exists and is newer than cache, '+
+      'skipped.', [U.Name]);
+    Exit;
+  end;
 
-  case CreateStream(U.OutputFileName, not U.WasDeserialized) of
+  case CreateStream(U.OutputFileName, true) of
     csError: begin
       DoMessage(1, mtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-    csExisted: begin
       Exit;
     end;
   end;
