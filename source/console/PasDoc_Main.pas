@@ -227,29 +227,34 @@ begin
   GOptionParser.AddOption(GOption_AutoAbstract);
 end;
 
+procedure PrintHeader;
+begin
+  WriteLn(PASDOC_FULL_INFO);
+  WriteLn('Documentation generator for Pascal source');
+  WriteLn;
+  WriteLn('This is free software; see the source for copying conditions.  There is NO');
+  WriteLn('warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.');
+  WriteLn;
+end;
+
 procedure PrintUsage;
 begin
+  PrintHeader;
   WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' [options] [files]');
   WriteLn('Valid options are: ');
   GOptionParser.WriteExplanations;
 end;
 
-function ParseCommandLine: boolean;
+procedure PrintVersion; 
+begin
+  Writeln(PASDOC_FULL_INFO);
+end;
+
+procedure ParseCommandLine;
 var
   i: Integer;
   lng: TLanguageID;
 begin
-  Result := false;
-  GOptionParser.ParseOptions;
-
-  if GOption_Help.TurnedOn then begin
-    PrintUsage;
-    exit;
-  end;
-  
-  if GOption_Version.TurnedOn then
-    Exit;
-
   GOption_Format.Value := LowerCase(GOption_Format.Value);
   { install a default generator }
   GPasDoc.Generator:=THTMLDocGenerator.Create(GPasDoc);
@@ -372,8 +377,6 @@ begin
 
   if GOption_FullLink.TurnedOn then
     GPasDoc.Generator.LinkLook := llFull;
-
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -393,31 +396,34 @@ end;
 { ---------------------------------------------------------------------------- }
 procedure Main;
 begin
-  WriteLn(PASDOC_FULL_INFO);
-  WriteLn('Documentation generator for Pascal source');
-  WriteLn;
-  WriteLn('This is free software; see the source for copying conditions.  There is NO');
-  WriteLn('warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.');
-  WriteLn;
   CreateOptions;
-
   try
-    GPasDoc := TPasDoc.Create(nil);
+    GOptionParser.ParseOptions;
+
+    if GOption_Help.TurnedOn then begin PrintUsage; Exit; end;
+
+    if GOption_Version.TurnedOn then begin PrintVersion; Exit; end;
+    
+    if not GOption_Generator.TurnedOn then PrintHeader;
+
     try
-      GPasDoc.OnMessage := TPasDocMessageEvent(MakeMethod(nil,
-        @WriteWarning));
-      if ParseCommandLine then begin
+      GPasDoc := TPasDoc.Create(nil);
+      try
+        GPasDoc.OnMessage := 
+          TPasDocMessageEvent(MakeMethod(nil, @WriteWarning));
+        ParseCommandLine;
         GPasDoc.Execute;
+      finally
+        GPasDoc.Free;
       end;
-    finally
-      GPasDoc.Free;
+    except
+      on e: Exception do
+        with e do
+          WriteLn('Fatal Error: ', Message);
     end;
-  except
-    on e: Exception do
-      with e do
-        WriteLn('Fatal Error: ', Message);
+  finally
+    GOptionParser.Free;
   end;
-  GOptionParser.Free;
 end;
 
 end.
