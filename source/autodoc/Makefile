@@ -58,7 +58,12 @@ PASDOC_OPTIONS=--include ../component \
   ../component/*.pas ../OptionParser/*.pas ../console/*.pas \
   --title "PasDoc's autodoc" --write-uses-list
 
-.PHONY: html latex pdf dvi ps html-latex clean
+# How to call hhc (html help compiler) ?
+# Default value means that it must be available on path.
+# As usual, remember you can override it at make's command-line.
+HHC=hhc
+
+.PHONY: html latex pdf dvi ps html-latex clean htmlhelp
 
 html:
 	mkdir -p html/
@@ -68,6 +73,13 @@ html:
 	  --output=html/
 	dot -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
 	dot -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
+
+# Ignore exit code from hhc (it's always 1 ???)
+htmlhelp:
+	mkdir -p htmlhelp/
+	$(PASDOC) $(PASDOC_OPTIONS) \
+	  --format=htmlhelp --output=htmlhelp/
+	-cd htmlhelp/; $(HHC) docs.hhp
 
 # Just shortcuts
 latex: latex/docs.tex
