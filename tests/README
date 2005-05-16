@@ -95,14 +95,6 @@ Possible tests to be done:
    (see below) so comparing with "correct tests output" also checks
    that pasdoc messages are correct (warnings are as they should be
    and where they should be etc.)
-   
-   TODO: for now PASDOC-OUTPUT contains some info that shouldn't
-   be there on 1st line (pasdoc version, last mod date of PasDoc.pas,
-   compiler version, os/bits) and last line (time taken).
-   This should be fixed by widening meaning of --exclude-generator
-   pasdoc command-line option (note: remember to update page
-   [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption]
-   when implementing this).
 
 2. "Correct tests output" try to give more automated way to exactly
    check documentation of test units here.
