@@ -1364,7 +1364,7 @@ begin
   WriteConverted(AName);
   WriteDirect('</title>', true);
   // StyleSheet
-  WriteDirect('<link rel="StyleSheet" href="');
+  WriteDirect('<link rel="StyleSheet" type="text/css" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
   WriteDirect('">', true);
 
@@ -2588,7 +2588,7 @@ begin
   CreateStream('navigation.html', True);
   WriteLine(CurrentStream, DoctypeNormal);
   WriteLine(CurrentStream, '<html><head>');
-  WriteDirect('<link rel="StyleSheet" href="');
+  WriteDirect('<link rel="StyleSheet" type="text/css" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
   WriteDirect('">', true);
   WriteMetaContentType;
