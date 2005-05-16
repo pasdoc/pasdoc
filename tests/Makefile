@@ -1,8 +1,5 @@
 # See README for docs how to use this Makefile.
 
-# TODO: all pasdoc's output formats should be added here,
-# including latex2rtf and htmlhelp.
-
 # Making docs ----------------------------------------
 
 .PHONY: html pdf latex dvi
