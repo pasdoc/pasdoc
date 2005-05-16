@@ -49,14 +49,19 @@ shift 1
 # so that it's easy to temporary switch some test on/off by
 # simply commenting / uncommenting that line.
 
-# Make a general test of everything with normal pasdoc command-line
+# Make a general test of everything with normal pasdoc command-line.
+#
+# Note that sorting output of find below is needed to get "stable" order,
+# otherwise find outputs files in pretty much random (as they happened to
+# returned by OS calls), and this can accidentaly change order of lines in
+# PASDOC-OUTPUT files.
 mk_test "$FORMAT"/ \
 `find . -iname '*.pas' -maxdepth 1 -not '(' \
   -iname 'ok_link_1_char.pas' -or \
   -iname 'ok_const_1st_comment_missing.pas' -or \
   -iname 'ok_auto_abstract.pas' -or \
   -iname 'warning_incorrect_tag_nesting.pas' \
-  ')' `
+  ')' | sort`
 
 # Make a specialized test of some units that need special
 # command-line. This is also useful if you want to just make
