@@ -16,6 +16,11 @@ pdf: latex/docs.pdf
 
 latex: latex/docs.tex
 
+latex2rtf: latex2rtf/docs.tex
+
+htmlhelp:
+	scripts/mk_tests.sh htmlhelp
+
 latex/docs.tex:
 	scripts/mk_tests.sh latex
 
@@ -30,13 +35,17 @@ latex/docs.dvi: latex/docs.tex
 	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
 	cd latex; latex --file-line-error-style -interaction=nonstopmode docs.tex
 
+latex2rtf/docs.tex:
+	scripts/mk_tests.sh latex2rtf
+
 # Other targets ----------------------------------------
 
 validate_html:
 	cd html/; ../scripts/validate_html.sh
 
 clean:
-	rm -Rf html/ latex/ scripts/check_cache_tmp/ \
+	rm -Rf html/ latex/ htmlhelp/ latex2rtf/ \
+	  scripts/check_cache_tmp/ \
 	  scripts/upload_correct_tests_output_tmp/
 
 # eof ----------------------------------------
