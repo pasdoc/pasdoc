@@ -1,3 +1,5 @@
+- Integrate in gui new pasdoc options: AutoAbstract, UseTipueSearch
+
 - Default value of EditHtmlBrowserCommand.Text
   should be read from some user's config file.
 
