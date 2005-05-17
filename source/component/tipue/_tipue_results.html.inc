@@ -38,9 +38,8 @@
 '' + LineEnding + 
 '<script language="JavaScript1.3" type="text/javascript">tip_out()</script>' + LineEnding + 
 '' + LineEnding + 
-'<p><br>' + LineEnding + 
+'<p>' + LineEnding + 
 '<a href="http://www.tipue.com" target="_parent"><img src="tipue_b1.png" title="Tipue" alt="Tipue" border=0 width=138 height=32></a>' + LineEnding + 
-'<br>' + LineEnding + 
 '</div>' + LineEnding + 
 '' + LineEnding + 
 '</body>' + LineEnding + 
