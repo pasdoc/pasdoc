@@ -2,7 +2,7 @@
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @abstract(Some utility functions)
-  This unit contains some utility functions for string handling
+  This unit contains some utility functions
 }
 unit Utils;
 
@@ -112,6 +112,10 @@ const
   WhiteSpaceNL = [#10, #13];
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
+
+function FileToString(const FileName: string): string;
+procedure StringToFile(const FileName, S: string);
+procedure CopyFile(const SourceFileName, DestinationFileName: string);
 
 implementation
 uses
@@ -313,6 +317,37 @@ procedure ExtractFirstWord(const S: string; var FirstWord, Rest: string);
 begin
   Rest := S;
   FirstWord := ExtractFirstWord(Rest);
+end;
+
+function FileToString(const FileName: string): string;
+var F: TFileStream;
+begin
+  F := TFileStream.Create(FileName, fmOpenRead);
+  try
+    SetLength(Result, F.Size);
+    F.ReadBuffer(Pointer(Result)^, F.Size);
+  finally F.Free end;
+end;
+
+procedure StringToFile(const FileName, S: string);
+var F: TFileStream;
+begin
+  F := TFileStream.Create(FileName, fmCreate);
+  try
+    F.WriteBuffer(Pointer(S)^, Length(S));
+  finally F.Free end;
+end;
+
+procedure CopyFile(const SourceFileName, DestinationFileName: string);
+var Source, Destination: TFileStream;
+begin
+  Destination := TFileStream.Create(DestinationFileName, fmCreate);
+  try
+    Source := TFileStream.Create(SourceFileName, fmOpenRead);
+    try
+      Destination.CopyFrom(Source, Source.Size);
+    finally Source.Free end;
+  finally Destination.Free end;
 end;
 
 end.
