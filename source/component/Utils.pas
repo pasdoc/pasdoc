@@ -113,9 +113,8 @@ const
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
-function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
-procedure CopyFile(const SourceFileName, DestinationFileName: string);
+procedure DataToFile(const FileName: string; const Data: array of Byte);
 
 implementation
 uses
@@ -319,16 +318,6 @@ begin
   FirstWord := ExtractFirstWord(Rest);
 end;
 
-function FileToString(const FileName: string): string;
-var F: TFileStream;
-begin
-  F := TFileStream.Create(FileName, fmOpenRead);
-  try
-    SetLength(Result, F.Size);
-    F.ReadBuffer(Pointer(Result)^, F.Size);
-  finally F.Free end;
-end;
-
 procedure StringToFile(const FileName, S: string);
 var F: TFileStream;
 begin
@@ -338,16 +327,13 @@ begin
   finally F.Free end;
 end;
 
-procedure CopyFile(const SourceFileName, DestinationFileName: string);
-var Source, Destination: TFileStream;
+procedure DataToFile(const FileName: string; const Data: array of Byte);
+var F: TFileStream;
 begin
-  Destination := TFileStream.Create(DestinationFileName, fmCreate);
+  F := TFileStream.Create(FileName, fmCreate);
   try
-    Source := TFileStream.Create(SourceFileName, fmOpenRead);
-    try
-      Destination.CopyFrom(Source, Source.Size);
-    finally Source.Free end;
-  finally Destination.Free end;
+    F.WriteBuffer(Data, High(Data) + 1);
+  finally F.Free end;
 end;
 
 end.

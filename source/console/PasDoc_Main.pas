@@ -67,6 +67,7 @@ var
   GOption_CSS: TStringOption; { Using external CSS file for HTML output }
   GOption_AutoAbstract: TBoolOption;
   GOption_LinkLook: TStringOption;
+  GOption_UseTipueSearch: TBoolOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -225,6 +226,10 @@ begin
   GOption_AutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
   GOption_AutoAbstract.Explanation := 'if set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
   GOptionParser.AddOption(GOption_AutoAbstract);
+  
+  GOption_UseTipueSearch := TBoolOption.Create(#0, 'use-tipue-search');
+  GOption_UseTipueSearch.Explanation := 'use tipue search engine in HTML output';
+  GOptionParser.AddOption(GOption_UseTipueSearch);
 end;
 
 procedure PrintHeader;
@@ -249,6 +254,9 @@ procedure PrintVersion;
 begin
   Writeln(PASDOC_FULL_INFO);
 end;
+
+type
+  EInvalidCommandLine = class(Exception);
 
 procedure ParseCommandLine;
 var
@@ -331,6 +339,13 @@ begin
 
     THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;
     THTMLDocGenerator(GPasDoc.Generator).WriteUsesClause := GOption_WriteUsesList.TurnedOn;
+    
+    THTMLDocGenerator(GPasDoc.Generator).UseTipueSearch := GOption_UseTipueSearch.TurnedOn;
+  end else
+  begin
+    if GOption_UseTipueSearch.TurnedOn then
+      raise EInvalidCommandLine.Create(
+        'You can''t specify --use-tipue-search option for non-html output formats');
   end;
 
   if GOption_CommentMarker.WasSpecified then begin
@@ -371,7 +386,7 @@ begin
     GPasDoc.Generator.LinkLook := llFull else
   if SameText(GOption_LinkLook.Value, 'stripped') then
     GPasDoc.Generator.LinkLook := llStripped else
-    raise Exception.CreateFmt(
+    raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--link-look" option : "%s"', 
       [GOption_LinkLook.Value]);
 

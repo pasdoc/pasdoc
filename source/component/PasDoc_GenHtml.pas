@@ -35,6 +35,8 @@ type
     For printed output, use @link(TTexDocGenerator). }
   THTMLDocGenerator = class(TDocGenerator)
   private
+    FUseTipueSearch: boolean;
+    
     { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
       html element describing current charset (from FLanguage). }
     procedure WriteMetaContentType;
@@ -241,6 +243,8 @@ type
       default false;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses
       default false;
+
+    property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch;
   end;
 
 {$INCLUDE automated.inc}
@@ -266,7 +270,8 @@ uses
   ObjectVector,
   StreamUtils,
   Utils,
-  PasDoc_HierarchyTree;
+  PasDoc_HierarchyTree,
+  PasDoc_Tipue;
 
 { HTML things to be customized:
     - standard background color (white)
@@ -667,6 +672,12 @@ begin
   WriteOverviewFiles;
   WriteVisibilityLegendFile;
   WriteFramesetFiles;
+  if UseTipueSearch then
+  begin
+    DoMessage(2, mtInformation, 
+      'Writing additional files for tipue search engine', []);
+    TipueAddFiles(DestinationDirectory);
+  end;
   EndSpellChecking;
 end;
 
@@ -2593,6 +2604,9 @@ begin
   WriteDirect('">', true);
   WriteMetaContentType;
   WriteLine(CurrentStream, '<title>Navigation</title>');
+  WriteDirect('<head>', true);
+  if UseTipue then
+    WriteDirect(TipueSearchButtonHead);
   WriteLine(CurrentStream, '</head>');
   WriteLine(CurrentStream, '<body class="navigationframe">');
   WriteDirect('<h2>'+Title+'</h2>');
@@ -2605,6 +2619,8 @@ begin
     LocalWriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
   if (LinkGraphVizClasses <> '') then
     LocalWriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
+  if UseTipue  then
+    WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
   WriteDirect('</table>', true);
   WriteLine(CurrentStream, '</body></html>');
   CloseStream;

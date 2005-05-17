@@ -50,6 +50,7 @@ contains
   PasDoc_Types in '..\..\..\..\component\PasDoc_Types.pas',
   StreamUtils in '..\..\..\..\component\StreamUtils.pas',
   StringVector in '..\..\..\..\component\StringVector.pas',
-  Hashes in '..\..\..\..\component\Hashes.pas';
+  Hashes in '..\..\..\..\component\Hashes.pas',
+  PasDoc_Tipue in '..\..\..\..\component\tipue\PasDoc_Tipue.pas';
 
 end.

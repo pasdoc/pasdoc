@@ -55,7 +55,7 @@ PASDOC=../console/PasDoc_Console
 # These options will be passed to every pasdoc invocation,
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
-  ../component/*.pas ../OptionParser/*.pas ../console/*.pas \
+  ../component/*.pas ../component/tipue/*.pas ../OptionParser/*.pas ../console/*.pas \
   --title "PasDoc's autodoc" --write-uses-list
 
 # How to call hhc (html help compiler) ?
