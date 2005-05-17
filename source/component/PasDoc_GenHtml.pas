@@ -2605,7 +2605,7 @@ begin
   WriteMetaContentType;
   WriteLine(CurrentStream, '<title>Navigation</title>');
   WriteDirect('<head>', true);
-  if UseTipue then
+  if UseTipueSearch then
     WriteDirect(TipueSearchButtonHead);
   WriteLine(CurrentStream, '</head>');
   WriteLine(CurrentStream, '<body class="navigationframe">');
@@ -2619,7 +2619,7 @@ begin
     LocalWriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
   if (LinkGraphVizClasses <> '') then
     LocalWriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
-  if UseTipue  then
+  if UseTipueSearch then
     WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
   WriteDirect('</table>', true);
   WriteLine(CurrentStream, '</body></html>');
