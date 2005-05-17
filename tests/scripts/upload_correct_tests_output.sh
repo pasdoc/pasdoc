@@ -57,7 +57,12 @@ mkdir "$TEMP_PATH"
 # Prepare tar.gz archive
 ARCHIVE_FILENAME_NONDIR="$FORMAT.tar.gz"
 ARCHIVE_FILENAME="$TEMP_PATH""$ARCHIVE_FILENAME_NONDIR"
-tar czvf "$ARCHIVE_FILENAME" ../"$FORMAT"/
+# Note: We temporary jump to ../, this way we can pack files using 
+# "$FORMAT"/ instead of ../"$FORMAT"/. Some tar versions would
+# strip "../" automatically, but some would not.
+cd ../
+tar czvf scripts/"$ARCHIVE_FILENAME" "$FORMAT"/
+cd scripts/
 
 # Prepare timestamp file
 TIMESTAMP_FILENAME="$TEMP_PATH""$FORMAT.timestamp"
