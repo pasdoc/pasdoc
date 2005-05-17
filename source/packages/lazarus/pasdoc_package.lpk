@@ -6,8 +6,8 @@
     <CompilerOptions>
       <Version Value="5"/>
       <SearchPaths>
-        <IncludeFiles Value="../../component/"/>
-        <OtherUnitFiles Value="../../component/"/>
+        <IncludeFiles Value="../../component/;../../component/tipue/"/>
+        <OtherUnitFiles Value="../../component/;../../component/tipue/"/>
         <UnitOutputDirectory Value="lib/"/>
       </SearchPaths>
       <Parsing>
@@ -31,10 +31,12 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/"/>
-    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2."/>
+    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/
+"/>
+    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
+"/>
     <Version Minor="8" Release="8"/>
-    <Files Count="20">
+    <Files Count="21">
       <Item1>
         <Filename Value="../../component/Hashes.pas"/>
         <UnitName Value="Hashes"/>
@@ -116,6 +118,10 @@
         <Filename Value="../../component/Utils.pas"/>
         <UnitName Value="Utils"/>
       </Item20>
+      <Item21>
+        <Filename Value="../../component/tipue/PasDoc_Tipue.pas"/>
+        <UnitName Value="PasDoc_Tipue"/>
+      </Item21>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
