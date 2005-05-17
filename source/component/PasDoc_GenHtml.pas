@@ -2604,7 +2604,6 @@ begin
   WriteDirectLine('">');
   WriteMetaContentType;
   WriteDirectLine('<title>Navigation</title>');
-  WriteDirectLine('<head>');
   if UseTipueSearch then
     WriteDirect(TipueSearchButtonHead);
   WriteDirectLine('</head>');
