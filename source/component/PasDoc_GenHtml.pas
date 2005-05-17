@@ -378,7 +378,7 @@ begin
   WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
-  WriteDirect('</em>', true);
+  WriteDirectLine('</em>');
 end;
 
 procedure THTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -465,7 +465,7 @@ begin
   WriteAnchor(CIO.Name);
   WriteHeading(HL, s);
 
-  WriteDirect('<table class="sections"><tr>', true);
+  WriteDirectLine('<table class="sections"><tr>');
   for Section := Low(TSections) to High(TSections) do
     begin
       WriteDirect('<td>');
@@ -475,7 +475,7 @@ begin
         WriteConverted(SectionHeads[Section]);
       WriteDirect('</td>');
     end;
-  WriteDirect('</tr></table>', true);
+  WriteDirectLine('</tr></table>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
 
@@ -655,7 +655,7 @@ begin
   if LastMod <> '' then begin
     WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteConverted(LastMod, true);
+    WriteConvertedLine(LastMod);
     WriteEndOfParagraph;
   end;
 end;
@@ -691,7 +691,7 @@ end;
 procedure THTMLDocGenerator.WriteEndOfDocument;
 begin
   WriteDirect('</body>');
-  WriteDirect('</html>', true);
+  WriteDirectLine('</html>');
 end;
 
 procedure THTMLDocGenerator.WriteEndOfAnchor;
@@ -736,22 +736,22 @@ end;
 
 procedure THTMLDocGenerator.WriteEndOfParagraph;
 begin
-  WriteDirect('</p>', true);
+  WriteDirectLine('</p>');
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTableCell;
 begin
-  WriteDirect('</td>', true);
+  WriteDirectLine('</td>');
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTable;
 begin
-  WriteDirect('</table>', true);
+  WriteDirectLine('</table>');
 end;
 
 procedure THTMLDocGenerator.WriteEndOfTableRow;
 begin
-  WriteDirect('</tr>', true);
+  WriteDirectLine('</tr>');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -777,7 +777,7 @@ begin
   WriteConverted(FLanguage.Translation[trName]);
   WriteDirect('</th><th class="listheader">');
   WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirect('</th></tr>', true);
+  WriteDirectLine('</th></tr>');
 
   for j := 0 to Fields.Count - 1 do begin
     Item := Fields.PasItemAt[j];
@@ -818,12 +818,12 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
 
   procedure WriteParameter(const ParamName: string; const Desc: string);
   begin
-    WriteDirect('<dt class="parameters">', true);
+    WriteDirectLine('<dt class="parameters">');
     WriteDirect(ParamName);
-    WriteDirect('</dt>', true);
-    WriteDirect('<dd class="parameters">', true);
+    WriteDirectLine('</dt>');
+    WriteDirectLine('<dd class="parameters">');
     WriteSpellChecked(Desc);
-    WriteDirect('</dd>', true);
+    WriteDirectLine('</dd>');
   end;
 
   { writes the parameters or exceptions list }
@@ -838,7 +838,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
       exit;
 
     WriteHeading(6, Caption);
-    WriteDirect('<dl class="parameters">', true);
+    WriteDirectLine('<dl class="parameters">');
     for i := 0 to List.Count - 1 do begin
       s := List[i];
 
@@ -855,7 +855,7 @@ procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
       
       WriteParameter(ParamName, s);
     end;
-    WriteDirect('</dl>', true);
+    WriteDirectLine('</dl>');
   end;
 
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
@@ -959,7 +959,7 @@ begin
   c := IntToStr(Level);
   WriteDirect('<h' + c + '>');
   WriteConverted(s);
-  WriteDirect('</h' + c + '>', true);
+  WriteDirectLine('</h' + c + '>');
 end;
 
 { ---------- }
@@ -1065,7 +1065,7 @@ begin
   WriteConverted(FLanguage.Translation[trName]);
   WriteDirect('</th><th class="listheader" width="100%">');
   WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirect('</th></tr>', true);
+  WriteDirectLine('</th></tr>');
 
   for j := 0 to i.Count - 1 do begin
     Item := i.PasItemAt[j];
@@ -1082,15 +1082,15 @@ begin
     WriteStartOfTableCell;
     WriteItemDetailedDescription(Item);
     if Item is TPasEnum then begin
-      WriteDirect('<ul>', true);
+      WriteDirectLine('<ul>');
       for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-        WriteDirect('<li>', true);
+        WriteDirectLine('<li>');
         WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
         WriteConverted(': ');
         WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
-        WriteDirect('</li>', true);
+        WriteDirectLine('</li>');
       end;
-      WriteDirect('</ul>', true);
+      WriteDirectLine('</ul>');
     end;
     WriteEndOfTableCell;
 
@@ -1362,10 +1362,10 @@ end;
 
 procedure THTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
-  WriteDirect(DoctypeNormal, true);
-  WriteDirect('<html>', true);
-  WriteDirect('<head>', true);
-  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
+  WriteDirectLine(DoctypeNormal);
+  WriteDirectLine('<html>');
+  WriteDirectLine('<head>');
+  WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
   WriteMetaContentType;
   // Title
   WriteDirect('<title>');
@@ -1373,14 +1373,14 @@ begin
     WriteConverted(Title + ': ');
   end;
   WriteConverted(AName);
-  WriteDirect('</title>', true);
+  WriteDirectLine('</title>');
   // StyleSheet
   WriteDirect('<link rel="StyleSheet" type="text/css" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirect('">', true);
+  WriteDirectLine('">');
 
-  WriteDirect('</head>', true);
-  WriteDirect('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">', true);
+  WriteDirectLine('</head>');
+  WriteDirectLine('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">');
 
   if Length(Header) > 0 then begin
     WriteSpellChecked(Header);
@@ -1430,12 +1430,12 @@ begin
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '"');
   if Width100 then
     WriteDirect(' width="100%"');
-  WriteDirect('>', true);
+  WriteDirectLine('>');
   WriteDirect('<tr class="listheader"><th class="listheader">');
   WriteConverted(t1);
   WriteDirect('</th><th class="listheader">');
   WriteConverted(t2);
-  WriteDirect('</th></tr>', true);
+  WriteDirectLine('</th></tr>');
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
@@ -1454,7 +1454,7 @@ begin
   WriteConverted(t2);
   WriteDirect('</th><th class="listheader">');
   WriteConverted(T3);
-  WriteDirect('</th></tr>', true);
+  WriteDirectLine('</th></tr>');
 end;
 
 procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, localcss: string);
@@ -1548,14 +1548,14 @@ var
 
   procedure WriteLiObject(const Name, Local: string);
   begin
-    WriteDirect('<li><object type="text/sitemap">', true);
-    WriteDirect('<param name="Name" value="' + Name + '">', true);
+    WriteDirectLine('<li><object type="text/sitemap">');
+    WriteDirectLine('<param name="Name" value="' + Name + '">');
     if Local <> '' then begin
-      WriteDirect('<param name="Local" value="' + Local + '">', true);
+      WriteDirectLine('<param name="Local" value="' + Local + '">');
       if DefaultTopic = '' then
         DefaultTopic := Local;
     end;
-    WriteDirect('</object>', true);
+    WriteDirectLine('</object>');
   end;
 
   { ---------- }
@@ -1566,12 +1566,12 @@ var
     Item: TPasItem;
   begin
     if Assigned(c) then begin
-      WriteDirect('<ul>', true);
+      WriteDirectLine('<ul>');
       for i := 0 to c.Count - 1 do begin
         Item := c.PasItemAt[i];
         WriteLiObject(Item.Name, _Filename + '#' + Item.Name);
       end;
-      WriteDirect('</ul>', true);
+      WriteDirectLine('</ul>');
     end;
   end;
 
@@ -1591,13 +1591,13 @@ var
   procedure InternalWriteCIO(const ClassItem: TPasCio);
   begin
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
-    WriteDirect('<ul>', true);
+    WriteDirectLine('<ul>');
 
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
 
-    WriteDirect('</ul>', true);
+    WriteDirectLine('</ul>');
   end;
 
   { ---------- }
@@ -1613,24 +1613,24 @@ var
     else
       WriteLiObject(FLanguage.Translation[trUnits], OverviewFilenames[0] +
         GetFileExtension);
-    WriteDirect('<ul>', true);
+    WriteDirectLine('<ul>');
 
     // Iterate all Units
     for j := 0 to Units.Count - 1 do begin
       PU := Units.UnitAt[j];
       WriteLiObject(PU.Name, PU.FullLink);
-      WriteDirect('<ul>', true);
+      WriteDirectLine('<ul>');
 
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
         WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#@Classes');
-        WriteDirect('<ul>', true);
+        WriteDirectLine('<ul>');
 
         for k := 0 to c.Count - 1 do
           InternalWriteCIO(TPasCio(c.PasItemAt[k]));
 
-        WriteDirect('</ul>', true);
+        WriteDirectLine('</ul>');
       end;
 
         // For each unit, write Functions & Procedures.
@@ -1643,9 +1643,9 @@ var
       WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink,
         '@Constants', PU.Constants);
 
-      WriteDirect('</ul>', true);
+      WriteDirectLine('</ul>');
     end;
-    WriteDirect('</ul>', true);
+    WriteDirectLine('</ul>');
   end;
 
   { ---------- }
@@ -1662,7 +1662,7 @@ var
     else
       WriteLiObject(FLanguage.Translation[trClasses], OverviewFilenames[2] +
         GetFileExtension);
-    WriteDirect('<ul>', true);
+    WriteDirectLine('<ul>');
 
     c := TPasItems.Create(False);
     // First collect classes
@@ -1675,7 +1675,7 @@ var
     for j := 0 to c.Count - 1 do
       InternalWriteCIO(TPasCio(c.PasItemAt[j]));
     c.Free;
-    WriteDirect('</ul>', true);
+    WriteDirectLine('</ul>');
   end;
 
   { ---------- }
@@ -1697,7 +1697,7 @@ var
     begin
       WriteDirect('<param name="Name" value="');
       WriteConverted(FLanguage.Translation[Id]);
-      WriteDirect('">', true);
+      WriteDirectLine('">');
     end;
 
   var
@@ -1707,9 +1707,9 @@ var
       WriteLiObject(Text, '')
     else
       WriteLiObject(FLanguage.Translation[trOverview], '');
-    WriteDirect('<ul>', true);
+    WriteDirectLine('<ul>');
     for j := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
-      WriteDirect('<li><object type="text/sitemap">', true);
+      WriteDirectLine('<li><object type="text/sitemap">');
       case j of
         0: WriteParam(trHeadlineUnits);
         1: WriteParam(trClassHierarchy);
@@ -1722,10 +1722,10 @@ var
       end;
       WriteDirect('<param name="Local" value="');
       WriteConverted(OverviewFilenames[j] + GetFileExtension);
-      WriteDirect('">', true);
-      WriteDirect('</object>', true);
+      WriteDirectLine('">');
+      WriteDirectLine('</object>');
     end;
-    WriteDirect('</ul>', true);
+    WriteDirectLine('</ul>');
   end;
 
   { ---------- }
@@ -1834,13 +1834,13 @@ begin
     + '"...', []);
 
   // File Header
-  WriteDirect('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">', true);
-  WriteDirect('<html>', true);
-  WriteDirect('<head>', true);
+  WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
+  WriteDirectLine('<html>');
+  WriteDirectLine('<head>');
   WriteDirect('<meta name="GENERATOR" content="' +
     PASDOC_NAME_AND_VERSION + '">', true);
-  WriteDirect('</head><body>', true);
-  WriteDirect('<ul>', true);
+  WriteDirectLine('</head><body>');
+  WriteDirectLine('<ul>');
 
   DefaultContentsWritten := False;
   DefaultTopic := '';
@@ -1865,16 +1865,16 @@ begin
         ContentWriteCustom(Text, Link)
       else
         if CurrentLevel = (Level - 1) then begin
-          WriteDirect('<ul>', true);
+          WriteDirectLine('<ul>');
           Inc(CurrentLevel);
           ContentWriteCustom(Text, Link)
         end
         else
           if CurrentLevel > Level then begin
-            WriteDirect('</ul>', true);
+            WriteDirectLine('</ul>');
             Dec(CurrentLevel);
             while CurrentLevel > Level do begin
-              WriteDirect('</ul>', true);
+              WriteDirectLine('</ul>');
               Dec(CurrentLevel);
             end;
             ContentWriteCustom(Text, Link)
@@ -1900,8 +1900,8 @@ begin
   end;
 
   // End of File
-  WriteDirect('</ul>', true);
-  WriteDirect('</body></html>', true);
+  WriteDirectLine('</ul>');
+  WriteDirectLine('</body></html>');
   CloseStream;
 
   // Create Keyword Index
@@ -1934,12 +1934,12 @@ begin
   DoMessage(2, mtInformation, 'Writing HtmlHelp Index file "%s"...',
     [ProjectName]);
 
-  WriteDirect('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">', true);
-  WriteDirect('<html>', true);
-  WriteDirect('<head>', true);
-  WriteDirect('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">', true);
-  WriteDirect('</head><body>', true);
-  WriteDirect('<ul>', true);
+  WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
+  WriteDirectLine('<html>');
+  WriteDirectLine('<head>');
+  WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
+  WriteDirectLine('</head><body>');
+  WriteDirectLine('<ul>');
 
   // Write all Items to KeyWord Index
 
@@ -1961,7 +1961,7 @@ begin
         // Write the Item. It acts as a header for the subitems to follow.
         WriteLiObject(Item.Name, Item.FullLink);
         // Indent by one.
-        WriteDirect('<ul>', true);
+        WriteDirectLine('<ul>');
 
         // No previous Item as we start.
         PreviousItem := nil;
@@ -1984,7 +1984,7 @@ begin
         IndexWriteItem(Item, PreviousItem, nil);
 
         Item := NextItem;
-        WriteDirect('</ul>', true);
+        WriteDirectLine('</ul>');
       end;
 
       Inc(j);
@@ -1996,8 +1996,8 @@ begin
 
   c.Free;
 
-  WriteDirect('</ul>', true);
-  WriteDirect('</body></html>', true);
+  WriteDirectLine('</ul>');
+  WriteDirectLine('</body></html>');
   CloseStream;
 
   // Create a HTML Help Project File
@@ -2009,24 +2009,24 @@ begin
   DoMessage(3, mtInformation, 'Writing Html Help Project file "%s"...',
     [ProjectName]);
 
-  WriteDirect('[OPTIONS]', true);
-  WriteDirect('Binary TOC=Yes', true);
-  WriteDirect('Compatibility=1.1 or later', true);
-  WriteDirect('Compiled file=' + ProjectName + '.chm', true);
-  WriteDirect('Contents file=' + ProjectName + '.hhc', true);
-  WriteDirect('Default Window=Default', true);
-  WriteDirect('Default topic=' + DefaultTopic, true);
-  WriteDirect('Display compile progress=Yes', true);
-  WriteDirect('Error log file=' + ProjectName + '.log', true);
-  WriteDirect('Full-text search=Yes', true);
-  WriteDirect('Index file=' + ProjectName + '.hhk', true);
+  WriteDirectLine('[OPTIONS]');
+  WriteDirectLine('Binary TOC=Yes');
+  WriteDirectLine('Compatibility=1.1 or later');
+  WriteDirectLine('Compiled file=' + ProjectName + '.chm');
+  WriteDirectLine('Contents file=' + ProjectName + '.hhc');
+  WriteDirectLine('Default Window=Default');
+  WriteDirectLine('Default topic=' + DefaultTopic);
+  WriteDirectLine('Display compile progress=Yes');
+  WriteDirectLine('Error log file=' + ProjectName + '.log');
+  WriteDirectLine('Full-text search=Yes');
+  WriteDirectLine('Index file=' + ProjectName + '.hhk');
   if Title <> '' then
-    WriteDirect('Title=' + Title, true)
+    WriteDirectLine('Title=' + Title)
   else
-    WriteDirect('Title=' + ProjectName, true);
+    WriteDirectLine('Title=' + ProjectName);
 
-  WriteDirect('', true);
-  WriteDirect('[WINDOWS]', true);
+  WriteDirectLine('');
+  WriteDirectLine('[WINDOWS]');
   if Title <> '' then
     WriteDirect('Default="' + Title + '","' + ProjectName +
       '.hhc","' + ProjectName + '.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0', true)
@@ -2035,44 +2035,44 @@ begin
       ProjectName + '.hhc","' + ProjectName +
       '.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0', true);
 
-  WriteDirect('', true);
-  WriteDirect('[FILES]', true);
+  WriteDirectLine('');
+  WriteDirectLine('[FILES]');
 
   { HHC seems to know about the files by reading the Content and Index.
     So there is no need to specify them in the FILES section. }
 
-  WriteDirect('Legend.html', true);
+  WriteDirectLine('Legend.html');
 
   if (LinkGraphVizClasses <> '') then
-    WriteDirect(OverviewFilenames[9]+'.'+LinkGraphVizClasses, true);
+    WriteDirectLine(OverviewFilenames[9]+'.'+LinkGraphVizClasses);
   if (LinkGraphVizUses <> '') then
-    WriteDirect(OverviewFilenames[8]+'.'+LinkGraphVizUses, true);
+    WriteDirectLine(OverviewFilenames[8]+'.'+LinkGraphVizUses);
 
   for k := 0 to NUM_OVERVIEW_FILES_USED - 1 do
-    WriteDirect(OverviewFilenames[k] + '.html', true);
+    WriteDirectLine(OverviewFilenames[k] + '.html');
 
   if Assigned(Units) then
     for k := 0 to units.Count - 1 do
       begin
         Item := units.PasItemAt[k];
         PU := TPasUnit(units.PasItemAt[k]);
-        WriteDirect(Item.FullLink, true);
+        WriteDirectLine(Item.FullLink);
         c := PU.CIOs;
         if Assigned(c) then
           for l := 0 to c.Count - 1 do
             begin
               Item2 := TPasCio(c.PasItemAt[l]);
-              WriteDirect(Item2.OutputFilename, true);
+              WriteDirectLine(Item2.OutputFilename);
             end;
       end;
 
-  WriteDirect('', true);
+  WriteDirectLine('');
 
-  WriteDirect('[INFOTYPES]', true);
+  WriteDirectLine('[INFOTYPES]');
 
-  WriteDirect('', true);
+  WriteDirectLine('');
 
-  WriteDirect('[MERGE FILES]', true);
+  WriteDirectLine('[MERGE FILES]');
 
   CloseStream;
 end;
@@ -2149,7 +2149,7 @@ begin
 
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
 
-  WriteDirect('<table class="sections"><tr>', true);
+  WriteDirectLine('<table class="sections"><tr>');
   for Section := Low(TSections) to High(TSections) do
     begin
       WriteDirect('<td>');
@@ -2159,7 +2159,7 @@ begin
         WriteConverted(SectionHeads[Section]);
       WriteDirect('</td>');
     end;
-  WriteDirect('</tr></table>', true);
+  WriteDirectLine('</tr></table>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
   WriteUnitDescription(HL + 1, U);
@@ -2481,77 +2481,77 @@ begin
       FOut.Free;
     end else begin
       CreateStream('pasdoc.css', True);
-      StreamUtils.WriteLine(CurrentStream, 'body {' +
+      WriteDirectLine('body {' +
         'font-family: Verdana,Arial;' +
         'color: black;' +
         'background-color: white; font-size: 12px; }');
-      StreamUtils.WriteLine(CurrentStream, 'body.navigationframe {' +
+      WriteDirectLine('body.navigationframe {' +
         'font-family: Verdana,Arial;' +
         'color: white;' +
         'background-color: #787878; font-size: 12px; }');
 
-      StreamUtils.WriteLine(CurrentStream, 'a.navigation:link {' +
+      WriteDirectLine('a.navigation:link {' +
         'color: white; text-decoration: none;  font-size: 12px;}');
-      StreamUtils.WriteLine(CurrentStream, 'a.navigation:visited {' +
+      WriteDirectLine('a.navigation:visited {' +
         'color: white; text-decoration: none;  font-size: 12px;}');
-      StreamUtils.WriteLine(CurrentStream, 'a.navigation:hover {' +
+      WriteDirectLine('a.navigation:hover {' +
         'color: white;' +
         'font-weight: bold; text-decoration: none;  font-size: 12px;}');
-      StreamUtils.WriteLine(CurrentStream, 'a.navigation:active {' +
+      WriteDirectLine('a.navigation:active {' +
         'color: white; text-decoration: none;  font-size: 12px;}');
 
-      StreamUtils.WriteLine(CurrentStream, 'a.normal:link {' +
+      WriteDirectLine('a.normal:link {' +
         'color:#C91E0C; text-decoration: none; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.normal:visited {' +
+      WriteDirectLine('a.normal:visited {' +
         'color:#7E5C31; text-decoration: none; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.normal:hover {' +
+      WriteDirectLine('a.normal:hover {' +
         'text-decoration: underline; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.normal:active {' +
+      WriteDirectLine('a.normal:active {' +
         'text-decoration: underline; }');
 
-      StreamUtils.WriteLine(CurrentStream, 'a.bold:link {' +
+      WriteDirectLine('a.bold:link {' +
         'color:#C91E0C; text-decoration: none; font-weight:bold; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.bold:visited {' +
+      WriteDirectLine('a.bold:visited {' +
         'color:#7E5C31; text-decoration: none; font-weight:bold; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.bold:hover {' +
+      WriteDirectLine('a.bold:hover {' +
         'text-decoration: underline; font-weight:bold; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.bold:active {' +
+      WriteDirectLine('a.bold:active {' +
         'text-decoration: underline; font-weight:bold; }');
 
-      StreamUtils.WriteLine(CurrentStream, 'tr.list { background: #FFBF44; }');
-      StreamUtils.WriteLine(CurrentStream, 'tr.list2 { background: #FFC982; }');
-      StreamUtils.WriteLine(CurrentStream, 'tr.listheader { background: #C91E0C; }');
-      StreamUtils.WriteLine(CurrentStream, 'th.listheader { color: white; }');
+      WriteDirectLine('tr.list { background: #FFBF44; }');
+      WriteDirectLine('tr.list2 { background: #FFC982; }');
+      WriteDirectLine('tr.listheader { background: #C91E0C; }');
+      WriteDirectLine('th.listheader { color: white; }');
 
-      StreamUtils.WriteLine(CurrentStream, 'a.section {' +
+      WriteDirectLine('a.section {' +
         'color: green; '+
         'text-decoration: none; '+
         'font-weight: bold; }');
-      StreamUtils.WriteLine(CurrentStream, 'a.section:hover {' +
+      WriteDirectLine('a.section:hover {' +
         'color: green; '+
         'text-decoration: underline; '+
         'font-weight: bold; }');
-      StreamUtils.WriteLine(CurrentStream, 'td.itemname {' +
+      WriteDirectLine('td.itemname {' +
         'white-space:nowrap; }');
-      StreamUtils.WriteLine(CurrentStream, 'div.nodescription {' +
+      WriteDirectLine('div.nodescription {' +
         'color:red;}');
-      StreamUtils.WriteLine(CurrentStream, 'dl.parameters {;}');
-      StreamUtils.WriteLine(CurrentStream, 'dt.parameters {' +
+      WriteDirectLine('dl.parameters {;}');
+      WriteDirectLine('dt.parameters {' +
         'color:blue;}');
-      StreamUtils.WriteLine(CurrentStream, 'dd.parameters {;}');
+      WriteDirectLine('dd.parameters {;}');
 
       { Style applied to Pascal code in documentation 
         (e.g. produced by @longcode tag) }
-      StreamUtils.WriteLine(CurrentStream,
+      WriteDirectLine(
         'span.pascal_string { color: #000080; }');
-      StreamUtils.WriteLine(CurrentStream,
+      WriteDirectLine(
         'span.pascal_keyword { font-weight: bolder; }');
-      StreamUtils.WriteLine(CurrentStream,
+      WriteDirectLine(
         'span.pascal_comment { color: #000080; font-style: italic; }');
-      StreamUtils.WriteLine(CurrentStream,
+      WriteDirectLine(
         'span.pascal_compiler_comment { color: #008000; }');
 
-      StreamUtils.WriteLine(CurrentStream,
+      WriteDirectLine(
         'p.hint_directive { color: red; }');
 
       CloseStream;
@@ -2579,36 +2579,36 @@ const
   begin
     WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
     WriteConverted(FLanguage.Translation[CaptionId]);
-    WriteDirect('</a></td></tr>', true);
+    WriteDirectLine('</a></td></tr>');
   end;
 
 var
   i: Integer;
 begin
   CreateStream('index.html', True);
-  WriteLine(CurrentStream, DoctypeFrameset);
-  WriteLine(CurrentStream, '<html><head>');
+  WriteDirectLine(DoctypeFrameset);
+  WriteDirectLine('<html><head>');
   WriteMetaContentType;
-  WriteLine(CurrentStream, '<title>'+Title+'</title>');
-  WriteLine(CurrentStream, '</head><frameset cols="200,*">');
-  WriteLine(CurrentStream, '<frame src="navigation.html" frameborder="0">');
-  WriteLine(CurrentStream, '<frame src="AllUnits.html" frameborder="0" name="content">');
-  WriteLine(CurrentStream, '</frameset></html>');
+  WriteDirectLine('<title>'+Title+'</title>');
+  WriteDirectLine('</head><frameset cols="200,*">');
+  WriteDirectLine('<frame src="navigation.html" frameborder="0">');
+  WriteDirectLine('<frame src="AllUnits.html" frameborder="0" name="content">');
+  WriteDirectLine('</frameset></html>');
   CloseStream;
 
   CreateStream('navigation.html', True);
-  WriteLine(CurrentStream, DoctypeNormal);
-  WriteLine(CurrentStream, '<html><head>');
+  WriteDirectLine(DoctypeNormal);
+  WriteDirectLine('<html><head>');
   WriteDirect('<link rel="StyleSheet" type="text/css" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirect('">', true);
+  WriteDirectLine('">');
   WriteMetaContentType;
-  WriteLine(CurrentStream, '<title>Navigation</title>');
-  WriteDirect('<head>', true);
+  WriteDirectLine('<title>Navigation</title>');
+  WriteDirectLine('<head>');
   if UseTipueSearch then
     WriteDirect(TipueSearchButtonHead);
-  WriteLine(CurrentStream, '</head>');
-  WriteLine(CurrentStream, '<body class="navigationframe">');
+  WriteDirectLine('</head>');
+  WriteDirectLine('<body class="navigationframe">');
   WriteDirect('<h2>'+Title+'</h2>');
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
@@ -2621,8 +2621,8 @@ begin
     LocalWriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
   if UseTipueSearch then
     WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
-  WriteDirect('</table>', true);
-  WriteLine(CurrentStream, '</body></html>');
+  WriteDirectLine('</table>');
+  WriteDirectLine('</body></html>');
   CloseStream;
 end;
 

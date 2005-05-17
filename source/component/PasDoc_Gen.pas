@@ -427,16 +427,26 @@ end;
     procedure WriteProperties(HL: integer; const p: TPasProperties); virtual;
       abstract;
 
-    { Writes String S to output, converting each character using
-      @link(ConvertString). }
-    procedure WriteConverted(const s: string; Newline: boolean); overload; virtual;
+    { Writes S to CurrentStream, converting it using @link(ConvertString).
+      Then optionally writes LineEnding. }
+    procedure WriteConverted(const s: string; Newline: boolean); overload; 
 
-    procedure WriteConverted(const s: string); overload; virtual;
+    { Writes S to CurrentStream, converting it using @link(ConvertString).
+      No LineEnding at the end. }
+    procedure WriteConverted(const s: string); overload; 
+    
+    { Writes S to CurrentStream, converting it using @link(ConvertString).
+      Then writes LineEnding. }
+    procedure WriteConvertedLine(const s: string);
 
-    { Simply copies characters in text T to output. }
-    procedure WriteDirect(const t: string; Newline: boolean); overload; virtual;
+    { Simply writes T to CurrentStream, with optional LineEnding. }
+    procedure WriteDirect(const t: string; Newline: boolean); overload;
 
-    procedure WriteDirect(const t: string); overload; virtual; 
+    { Simply writes T to CurrentStream. }
+    procedure WriteDirect(const t: string); overload;
+    
+    { Simply writes T followed by LineEnding to CurrentStream. }
+    procedure WriteDirectLine(const t: string);
     
     { Writes collection T, which is supposed to contain type items (TPasItem) to
       output at heading level HL with heading FLanguage.Translation[trTYPES) calling
@@ -1426,17 +1436,36 @@ end;
 
 procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean);
 begin
-  WriteDirect(ConvertString(s), Newline);
+  WriteDirect(ConvertString(s), Newline);  
+end;
+
+procedure TDocGenerator.WriteConverted(const s: string);
+begin
+  WriteDirect(ConvertString(s));
+end;
+
+procedure TDocGenerator.WriteConvertedLine(const s: string);
+begin
+  WriteDirectLine(ConvertString(s));
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean);
 begin
-  if length(t) > 0 then
-    CurrentStream.WriteBuffer(t[1], Length(t));
-  if Newline then
-    StreamUtils.WriteLine(CurrentStream, '');
+  if NewLine then
+    WriteDirectLine(T) else
+    WriteDirect(T);
+end;
+
+procedure TDocGenerator.WriteDirect(const t: string);
+begin
+  StreamWriteString(CurrentStream, t);
+end;
+
+procedure TDocGenerator.WriteDirectLine(const t: string);
+begin
+  StreamWriteLine(CurrentStream, t);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1782,16 +1811,6 @@ function TDocGenerator.ParameterString(const ParamType,
   Param: string): string;
 begin
   Result := #10 + ParamType + ' ' + Param;
-end;
-
-procedure TDocGenerator.WriteDirect(const t: string);
-begin
-  WriteDirect(t, false);
-end;
-
-procedure TDocGenerator.WriteConverted(const s: string);
-begin
-  WriteConverted(s, false);
 end;
 
 function TDocGenerator.FormatPascalCode(const Line: string): string;

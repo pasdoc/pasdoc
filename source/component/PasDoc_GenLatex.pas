@@ -282,7 +282,7 @@ begin
   WriteDirect(PASDOC_HOMEPAGE+ PASDOC_NAME_AND_VERSION);
   WriteDirect(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
-  WriteDirect('', true);
+  WriteDirectLine('');
 end;
 
 procedure TTexDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -572,7 +572,7 @@ begin
   if LastMod <> '' then begin
     WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteConverted(LastMod, true);
+    WriteConvertedLine(LastMod);
     WriteEndOfParagraph;
   end;
 end;
@@ -629,7 +629,7 @@ end;
 
 procedure TTexDocGenerator.WriteEndOfParagraph;
 begin
-  WriteDirect('', true);
+  WriteDirectLine('');
   WriteDirect('',true);
 end;
 
@@ -1102,19 +1102,19 @@ begin
     1: begin
         WriteDirect('\chapter{');
         WriteConverted(s);
-        WriteDirect('}', true);
+        WriteDirectLine('}');
        end; 
     2: begin
         WriteDirect('\section{');
         WriteConverted(s);
-        WriteDirect('}', true);
+        WriteDirectLine('}');
        end; 
     3: begin
           if latex2rtf then
             begin
               WriteDirect('\subsection*{');
               WriteConverted(s);
-              WriteDirect('}', true);
+              WriteDirectLine('}');
             end
           else
             begin
@@ -1122,11 +1122,11 @@ begin
               WriteDirect('\subsection*{');
               WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
                 '\hrulefill');
-              WriteDirect('}', true);
+              WriteDirectLine('}');
               WriteDirect('\else',true);
               WriteDirect('\subsection*{');
               WriteConverted(s);
-              WriteDirect('}', true);
+              WriteDirectLine('}');
               WriteDirect('\fi',true);
             end;
        end; 
@@ -1139,7 +1139,7 @@ begin
     5: begin
         WriteDirect('\paragraph*{');
         WriteConverted(s);
-        WriteDirect('}\hspace*{\fill}', true);
+        WriteDirectLine('}\hspace*{\fill}');
         WriteDirect('',true);
        end; 
   end;
@@ -1306,7 +1306,7 @@ begin
       if HasDescription(Item) then
         WriteItemDetailedDescription(Item);
       if TPasEnum(Item).Members.Count > 0 then begin
-        WriteDirect('\begin{description}', true);
+        WriteDirectLine('\begin{description}');
         for k := 0 to TPasEnum(Item).Members.Count-1 do begin
           WriteDirect('\item[\texttt{');
           { add the first character for enums }
@@ -1314,9 +1314,9 @@ begin
           { add the end characters for enums }
           WriteDirect('}] ');
           WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
-          WriteDirect('', true);
+          WriteDirectLine('');
         end;
-        WriteDirect('\end{description}', true);
+        WriteDirectLine('\end{description}');
       end;
     end;
     WriteEndList;
@@ -1933,6 +1933,12 @@ end;
 
 (*
   $Log$
+  Revision 1.40  2005/05/17 11:56:22  kambi
+  * Generators use WriteDirect everywhere instead of StreamUtils.WriteLine, to be consequent.
+  * StreamUtils.WriteLine renamed to StreamWriteLine.
+  * WriteDirectLine and WriteConvertedLine, for comfort (since usually 2nd arg of WriteDirect and WriteConverted is constant).
+  * WriteDirect and WriteConverted are *not* virtual (after all, ConvertString is virtual).
+
   Revision 1.39  2005/05/11 01:43:49  kambi
   * You can add explicit name to @link tag
 
