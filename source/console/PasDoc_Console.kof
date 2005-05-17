@@ -48,7 +48,7 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=../component:../OptionParser
+SearchPath=../component:../OptionParser:../component/tipue
 Packages=rtl:visualclx:visualdbclx:dataclx:xmlrtl:netdataclx:netclx:indy:soaprtl
 Conditionals=
 DebugSourceDirs=
@@ -62,24 +62,25 @@ UseLauncher=1
 DebugCWD=
 
 [Excluded Packages]
-/usr/local/kylix3/bin/dclsoap.so.6.9=Borland SOAP Components
+/d/mojepasy/kylix/units/indy/dclindy.so.6=Internet Direct "Indy" for Kylix Property and Component Editors
 
 [HistoryLists\hlConditionals]
 Count=1
 Item0=PROFILE
 
 [HistoryLists\hlSearchPath]
-Count=10
-Item0=../component:../OptionParser
-Item1=../component:../source//OptionParser
-Item2=../component:../../../OptionParser
-Item3=../component:../../OptionParser
-Item4=../component
-Item5=$(DELPHI)/lib/debug:../component
-Item6=../component:/tmp
-Item7=../Component
-Item8=$(DELPHI)/lib/debug:../Component
-Item9=../Component:/tmp
+Count=11
+Item0=../component:../OptionParser:../component/tipue
+Item1=../component:../OptionParser
+Item2=../component:../source//OptionParser
+Item3=../component:../../../OptionParser
+Item4=../component:../../OptionParser
+Item5=../component
+Item6=$(DELPHI)/lib/debug:../component
+Item7=../component:/tmp
+Item8=../Component
+Item9=$(DELPHI)/lib/debug:../Component
+Item10=../Component:/tmp
 
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
