@@ -22,7 +22,7 @@ endif
 # DATE : Utility name to get the ISO Date
 PACKAGENAME:=pasdoc
 DOCTITLE:=Pasdoc documentation
-UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser
+UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser ./source/component/tipue
 INCLUDEDIRS := ./source/component
 FILE:=./source/console/PasDoc_Console.dpr
 BINFILES:=./bin/pasdoc_console
