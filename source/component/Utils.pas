@@ -116,6 +116,10 @@ const
 procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);
 
+{ Returns S with all Chars replaced by ReplacementChar }
+function SCharsReplace(const S: string; const Chars: TCharSet; 
+  ReplacementChar: char): string;
+
 implementation
 uses
   SysUtils,
@@ -334,6 +338,17 @@ begin
   try
     F.WriteBuffer(Data, High(Data) + 1);
   finally F.Free end;
+end;
+
+function SCharsReplace(const S: string; const Chars: TCharSet; 
+  ReplacementChar: char): string;
+var 
+  i: Integer;
+begin
+  Result := S;
+  for i := 1 to Length(Result) do
+    if Result[i] in Chars then
+      Result[i] := ReplacementChar;
 end;
 
 end.
