@@ -56,7 +56,7 @@ PASDOC=../console/PasDoc_Console
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
   ../component/*.pas ../component/tipue/*.pas ../OptionParser/*.pas ../console/*.pas \
-  --title "PasDoc's autodoc" --write-uses-list
+  --title "PasDoc's autodoc" --write-uses-list  --auto-abstract
 
 # How to call hhc (html help compiler) ?
 # Default value means that it must be available on path.
@@ -70,7 +70,7 @@ html:
 	$(PASDOC) $(PASDOC_OPTIONS) \
 	  --graphviz-classes --graphviz-uses \
 	  --link-gv-classes jpg --link-gv-uses jpg \
-	  --output=html/ --use-tipue-search --auto-abstract
+	  --output=html/ --use-tipue-search
 	dot -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
 	dot -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
 
