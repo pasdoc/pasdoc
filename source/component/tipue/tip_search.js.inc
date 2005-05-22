@@ -8,9 +8,9 @@
 '' + LineEnding + 
 'var results_location = "_tipue_results.html";' + LineEnding + 
 'var return_results = 10;' + LineEnding + 
-'var include_num = 0;' + LineEnding + 
-'var bold_query = 0;' + LineEnding + 
-'var include_url = 1;' + LineEnding + 
+'var include_num = 1;' + LineEnding + 
+'var bold_query = 1;' + LineEnding + 
+'var include_url = 0;' + LineEnding + 
 '' + LineEnding + 
 '' + LineEnding + 
 '// ---------- end of script properties ----------' + LineEnding + 

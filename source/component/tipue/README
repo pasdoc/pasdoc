@@ -41,7 +41,24 @@ tip_form.js:
 tip_search.js
   results_location = "results.html";
   -> results_location = "_tipue_results.html";
+  
+  include_url is set to 0
+  (including urls is not much useful for pasdoc-made docs,
+  since our pasdoc's internal tipue index generator will always
+  give nice detailed title (QualifiedName) for each entry;
+  and all URLs refer to html files in the same directory...
+  so showing URL is hardly useful)
 
+  bold_query is set to 1
+  (very useful, because in pasdoc-made docs search phrase
+  will often be found in item's short description)
+  
+  include_num is set to 1
+  (very useful, because results page does not show which
+  result entries are currently displayed (first 10 ? last 10 ?)
+  so after clicking a few times on "Next 10" and "Previous 10"
+  user gets easily confused where he is)
+  
 _tipue_results.html (based on results.html example page in tipue sources)
 
   Our results page is named "_tipue_results.html",
