@@ -70,7 +70,7 @@ html:
 	$(PASDOC) $(PASDOC_OPTIONS) \
 	  --graphviz-classes --graphviz-uses \
 	  --link-gv-classes jpg --link-gv-uses jpg \
-	  --output=html/
+	  --output=html/ --use-tipue-search --auto-abstract
 	dot -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
 	dot -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
 
