@@ -676,7 +676,7 @@ begin
   begin
     DoMessage(2, mtInformation, 
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(DestinationDirectory);
+    TipueAddFiles(Units, DestinationDirectory);
   end;
   EndSpellChecking;
 end;

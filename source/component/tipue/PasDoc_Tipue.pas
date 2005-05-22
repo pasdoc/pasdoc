@@ -5,6 +5,8 @@ unit PasDoc_Tipue;
 
 interface
 
+uses PasDoc_Items;
+
 { Put this in <head> of page with search button. }
 function TipueSearchButtonHead: string;
 
@@ -15,8 +17,10 @@ function TipueSearchButton: string;
 { Adds some additional files to html documentation, needed for tipue engine.
 
   OutputPath is our output path, where html output must be placed.
-  Must end with PathDelim. }
-procedure TipueAddFiles(const OutputPath: string);
+  Must end with PathDelim. 
+  
+  Units must be non-nil. It will be used to generate index data for tipue. }
+procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
 
 implementation
 
@@ -39,7 +43,118 @@ begin
     '</form>' + LineEnding;
 end;
 
-procedure TipueAddFiles(const OutputPath: string);
+procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
+
+  procedure WriteTipueIndexData(const FileName: string);
+  var 
+    OutFile: TextFile;
+    IndexDataNum: Cardinal;
+    
+    { Write one line of index data.
+      Title, URL, ShortDescription, LongDescription 
+      are 1st four parameters of data, see tipue docs. }
+    procedure WriteIndexData(
+      const Title, URL, ShortDescription, LongDescription: string);
+    begin
+      Writeln(OutFile, 's[', IndexDataNum, '] = "', Title, '^', URL, '^', 
+        ShortDescription, '^', LongDescription, '^0"');
+      Inc(IndexDataNum);
+    end;
+    
+    procedure WriteItemIndexData(Item: TPasItem);
+    
+      function EscapeIndexEntry(const S: string): string;
+      const
+        { We want to avoid introducing special chars in JavaScript string,
+          so \ and " and newline markers must be escaped.
+          ^ must be escaped because it's a field-marker for tipue index data
+          entry. }
+        ReplacementArray: array[0..4] of TCharReplacement = (
+          (cChar: #10; sSpec: ' '),
+          (cChar: #13; sSpec: ' '),
+          (cChar: '"'; sSpec: '\"'),
+          (cChar: '\'; sSpec: '\\'),
+          (cChar: '^'; sSpec: '&circ;')
+        );
+      begin
+        Result := StringReplaceChars(S, ReplacementArray);
+      end;
+      
+    var
+      ShortDescription, LongDescription: string;
+    begin
+      { calculate ShortDescription }
+      ShortDescription := EscapeIndexEntry(Item.AbstractDescription);
+      
+      { calculate LongDescription.
+        Note that LongDescription will not be shown to user anywhere
+        (it will only be searched by tipue), so we don't care how 
+        things look here. We just glue some properties of Item together. }
+      LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
+        ' ' + EscapeIndexEntry(Item.Authors.Text);
+      if Item is TPasMethod then
+        LongDescription := LongDescription + 
+          ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text) +
+          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns) +
+          ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text);
+       
+      WriteIndexData(Item.QualifiedName, Item.FullLink, 
+        ShortDescription, LongDescription);
+    end;
+    
+    procedure WriteItemsIndexData(Items: TPasItems);
+    var
+      i: Integer;
+    begin
+      for i := 0 to Items.Count - 1 do
+        WriteItemIndexData(Items.PasItemAt[i]);
+    end;
+    
+    procedure WriteCIOsIndexData(CIOs: TPasItems);
+    var 
+      i: Integer;
+      CIO: TPasCIO;
+    begin
+      for i := 0 to CIOs.Count - 1 do
+      begin
+        CIO := CIOs[i] as TPasCIO;
+        WriteItemIndexData(CIO);
+        WriteItemsIndexData(CIO.Fields);
+        WriteItemsIndexData(CIO.Methods);
+        WriteItemsIndexData(CIO.Properties);
+      end;
+    end;
+    
+    procedure WriteUnitsIndexData(Units: TPasUnits);
+    var 
+      i: Integer;
+      U: TPasUnit;
+    begin
+      for i := 0 to Units.Count - 1 do
+      begin
+        U := Units[i] as TPasUnit;
+        WriteItemIndexData(U);
+        WriteCIOsIndexData(U.CIOs);
+        WriteItemsIndexData(U.Constants);
+        WriteItemsIndexData(U.FuncsProcs);
+        WriteItemsIndexData(U.Types);
+        WriteItemsIndexData(U.Variables);
+      end;
+    end;
+    
+  begin
+    Assign(OutFile, FileName);
+    Rewrite(OutFile);
+    try
+      Writeln(OutFile, 'var s = new Array()');
+      Writeln(OutFile);
+      
+      IndexDataNum := 0;
+      
+      WriteUnitsIndexData(Units);
+    finally CloseFile(OutFile) end;
+  end;
+
 const
   TipFormScript = {$I tip_form.js.inc};
   TipSearchScript = {$I tip_search.js.inc};
@@ -50,6 +165,7 @@ begin
   StringToFile(OutputPath + 'tip_form.js', TipFormScript);
   StringToFile(OutputPath + '_tipue_results.html', TipResultsPage);
   DataToFile(OutputPath + 'tipue_b1.png', TipLogoImage);
+  WriteTipueIndexData(OutputPath + 'tip_data.js');
 end;
 
 end.
