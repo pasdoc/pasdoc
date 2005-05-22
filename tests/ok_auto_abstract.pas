@@ -35,6 +35,13 @@ type
   TTest3 = class
   end;
 
+  { First sentence, auto-abstracted, and the 1st paragraph at the same time. 
+
+    Notice that html output will add <p> to DetailedDescription, but not
+    to AbstractDescription. This is second paragraph. }
+  TTest4 = class
+  end;
+
 implementation
 
 end.

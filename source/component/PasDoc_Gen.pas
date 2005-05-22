@@ -991,8 +991,12 @@ procedure TDocGenerator.ExpandDescriptions;
   begin
     if Item = nil then Exit;
 
-    Item.DetailedDescription := TrimCompress(
-      ExpandDescription(Item, Item.RawDescription, true, FirstSentenceEnd));
+    { Note: don't just Trim or TrimCompress here resulting 
+      Item.DetailedDescription (because whitespaces,
+      including leading and trailing, may be important for final doc format;
+      moreover, you would break the value of FirstSentenceEnd by such thing). }
+    Item.DetailedDescription := ExpandDescription(
+      Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
 
     Item.AbstractDescriptionWasAutomatic := 
       AutoAbstract and (Trim(Item.AbstractDescription) = '');
