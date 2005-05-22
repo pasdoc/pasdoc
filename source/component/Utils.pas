@@ -2,7 +2,6 @@
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @abstract(Some utility functions)
-  This unit contains some utility functions
 }
 unit Utils;
 

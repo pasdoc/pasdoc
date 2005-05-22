@@ -554,8 +554,9 @@ end;
       LaTeX markup can override this with simple "Result := S". }
     function LatexString(const S: string): string; virtual;
     
-    { This returns markup that forces line break in given output
-      format (e.g. '<br>' in html or '\\' in LaTeX).
+    { @abstract(This returns markup that forces line break in given 
+      output format (e.g. '<br>' in html or '\\' in LaTeX).)
+      
       It is used on @br tag (but may also be used on other 
       occasions in the future).
       
