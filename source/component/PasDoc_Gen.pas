@@ -235,11 +235,10 @@ end;
     { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
-    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html.
+    { @abstract(Makes a String look like a coded String, 
+      i.e. <CODE>TheString</CODE> in Html.)
       @param(s is the string to format)
-      @returns(the formatted string) 
-    }
+      @returns(the formatted string) }
     function CodeString(const s: string): string; virtual; abstract;
 
     { Mark the string as a parameter, e.g. <b>TheString</b> }
