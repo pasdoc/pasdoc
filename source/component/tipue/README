@@ -48,10 +48,6 @@ tip_search.js
   give nice detailed title (QualifiedName) for each entry;
   and all URLs refer to html files in the same directory...
   so showing URL is hardly useful)
-
-  bold_query is set to 1
-  (very useful, because in pasdoc-made docs search phrase
-  will often be found in item's short description)
   
   include_num is set to 1
   (very useful, because results page does not show which
@@ -59,6 +55,15 @@ tip_search.js
   so after clicking a few times on "Next 10" and "Previous 10"
   user gets easily confused where he is)
   
+  Note that bold_query must remain at 0.
+  It's would be very useful to set this to 1, because in pasdoc-made 
+  docs search phrase is often found in item's short description.
+  But, unfortunately, the way how tip_search inserts <b>..</b> into
+  resulting output is too dumb when pasdoc writes index data entry's
+  short description in html. E.g. tip_search can accidentaly insert <b>...</b>
+  inside target URL of link, making nasty things like 
+  <a href="PageName#<b>FoundWord</b>">
+
 _tipue_results.html (based on results.html example page in tipue sources)
 
   Our results page is named "_tipue_results.html",

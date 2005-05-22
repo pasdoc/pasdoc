@@ -7,7 +7,7 @@
 var results_location = "_tipue_results.html";
 var return_results = 10;
 var include_num = 1;
-var bold_query = 1;
+var bold_query = 0;
 var include_url = 0;
 
 
