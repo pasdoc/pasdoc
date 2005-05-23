@@ -816,58 +816,6 @@ end;
 procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
   Boolean; const FuncsProcs: TPasMethods);
 
-  procedure WriteParameter(const ParamName: string; const Desc: string);
-  begin
-    WriteDirectLine('<dt class="parameters">');
-    WriteDirect(ParamName);
-    WriteDirectLine('</dt>');
-    WriteDirectLine('<dd class="parameters">');
-    WriteSpellChecked(Desc);
-    WriteDirectLine('</dd>');
-  end;
-
-  { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector; LinkToParamNames: boolean);
-  var
-    i: integer;
-    s: string;
-    ParamName: string;
-  begin
-    if StringVectorIsNilOrEmpty(List) then
-      exit;
-
-    WriteHeading(6, Caption);
-    WriteDirectLine('<dl class="parameters">');
-    for i := 0 to List.Count - 1 do begin
-      s := List[i];
-
-      { TODO -- splitting S to ParamName and the rest should be done
-        inside TTagManager.Execute, not here. See analogous place in
-        TTexDocgenerator.WriteParamsOrRaises for more comments
-        about why & how. }
- 
-      ParamName := ExtractFirstWord(s);
-      
-      if LinkToParamNames then
-       ParamName := SearchLinkOrWarning(ParamName, Func, '',
-         'Could not resolve link to "%s" from description of item "%s"');
-      
-      WriteParameter(ParamName, s);
-    end;
-    WriteDirectLine('</dl>');
-  end;
-
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
-  begin
-    if ReturnDesc = '' then
-      exit;
-    WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
-    WriteDirect('<p class="return">');
-    WriteSpellChecked(ReturnDesc);
-    WriteDirect('</p>');
-  end;
-
   procedure WriteMethodTableRow(p: TPasMethod; const ItemLink: string;
     MakeAnchor: boolean);
   begin
@@ -938,12 +886,6 @@ begin
     WriteEndOfTable;
 
     WriteItemDetailedDescription(p);
-
-    WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trParameters]), 
-      p.Params, false);
-    WriteReturnDesc(p, p.Returns);
-    WriteParamsOrRaises(p, LowerCase(FLanguage.Translation[trExceptions]), 
-      p.Raises, true);
   end;
 end;
 
@@ -981,6 +923,59 @@ end;
 
 procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
+  { writes the parameters or exceptions list }
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+    List: TStringVector; LinkToParamNames: boolean);
+    
+    procedure WriteParameter(const ParamName: string; const Desc: string);
+    begin
+      WriteDirectLine('<dt class="parameters">');
+      WriteDirect(ParamName);
+      WriteDirectLine('</dt>');
+      WriteDirectLine('<dd class="parameters">');
+      WriteSpellChecked(Desc);
+      WriteDirectLine('</dd>');
+    end;
+    
+  var
+    i: integer;
+    s: string;
+    ParamName: string;
+  begin
+    if StringVectorIsNilOrEmpty(List) then
+      exit;
+
+    WriteHeading(6, Caption);
+    WriteDirectLine('<dl class="parameters">');
+    for i := 0 to List.Count - 1 do begin
+      s := List[i];
+
+      { TODO -- splitting S to ParamName and the rest should be done
+        inside TTagManager.Execute, not here. See analogous place in
+        TTexDocgenerator.WriteParamsOrRaises for more comments
+        about why & how. }
+ 
+      ParamName := ExtractFirstWord(s);
+      
+      if LinkToParamNames then
+       ParamName := SearchLinkOrWarning(ParamName, Func, '',
+         'Could not resolve link to "%s" from description of item "%s"');
+      
+      WriteParameter(ParamName, s);
+    end;
+    WriteDirectLine('</dl>');
+  end;
+
+  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  begin
+    if ReturnDesc = '' then
+      exit;
+    WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
+    WriteDirect('<p class="return">');
+    WriteSpellChecked(ReturnDesc);
+    WriteDirect('</p>');
+  end;
+
   procedure WriteHintDirective(const S: string);
   begin
     WriteDirect('<p class="hint_directive">');
@@ -991,6 +986,7 @@ procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 var
   Ancestor: TPasItem;
   AncestorName: string;
+  AItemMethod: TPasMethod;
 begin
   if not Assigned(AItem) then Exit;
   
@@ -1040,6 +1036,16 @@ begin
       end;
     end;
   end;
+  
+  if AItem is TPasMethod then
+  begin
+    AItemMethod := TPasMethod(AItem);
+    WriteParamsOrRaises(AItemMethod, 
+      LowerCase(FLanguage.Translation[trParameters]), AItemMethod.Params, false);
+    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
+    WriteParamsOrRaises(AItemMethod, 
+      LowerCase(FLanguage.Translation[trExceptions]), AItemMethod.Raises, true);
+ end;
 end;
 
 procedure THTMLDocGenerator.WriteItems(HL: integer; Heading: string; const

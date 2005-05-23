@@ -60,7 +60,8 @@ mk_test "$FORMAT"/ \
   -iname 'ok_link_1_char.pas' -or \
   -iname 'ok_const_1st_comment_missing.pas' -or \
   -iname 'ok_auto_abstract.pas' -or \
-  -iname 'warning_incorrect_tag_nesting.pas' \
+  -iname 'warning_incorrect_tag_nesting.pas' -or \
+  -iname 'ok_param_raises_returns_proctype.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -71,3 +72,4 @@ mk_special_test ok_const_1st_comment_missing --marker=: ok_const_1st_comment_mis
 mk_special_test ok_link_1_char --visible-members 'private,public,published' ok_link_1_char.pas
 mk_special_test ok_auto_abstract --auto-abstract ok_auto_abstract.pas
 mk_special_test warning_incorrect_tag_nesting warning_incorrect_tag_nesting.pas
+mk_special_test ok_param_raises_returns_proctype ok_param_raises_returns_proctype.pas

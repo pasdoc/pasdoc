@@ -310,8 +310,10 @@ type
   TMethodType = (METHOD_CONSTRUCTOR, METHOD_DESTRUCTOR,
     METHOD_FUNCTION_PROCEDURE);
 
-  { extends @link(TPasItem) to store method and function-/procedure-specific
-    information }
+  { This represents:
+    - global function/procedure,
+    - method (function/procedure of a class/interface/object),
+    - pointer type to one of the above. }
   TPasMethod = class(TPasItem)
   protected
     FParams: TStringVector;
@@ -351,6 +353,11 @@ type
     property Params: TStringVector read FParams write SetParams;
     property Returns: string read FReturns;
     property Raises: TStringVector read FRaises;
+    
+    { Are some optional properties (i.e. the ones that may be empty for 
+      TPasMethod after parsing unit and expanding tags -- currently this
+      means @link(Params), @link(Returns) and @link(Raises)) specified ? }
+    function HasMethodOptionalInfo: boolean;
   end;
 
   TPasProperty = class(TPasItem)
@@ -1354,6 +1361,14 @@ begin
   if TagDesc = '' then exit;
   FReturns := TagDesc;
   ReplaceStr := '';
+end;
+
+function TPasMethod.HasMethodOptionalInfo: boolean;
+begin
+  Result := 
+    (Returns <> '') or
+    (not StringVectorIsNilOrEmpty(Params)) or
+    (not StringVectorIsNilOrEmpty(Raises));
 end;
 
 procedure TPasItem.Deserialize(const ASource: TStream);

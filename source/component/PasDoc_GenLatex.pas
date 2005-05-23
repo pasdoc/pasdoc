@@ -55,9 +55,22 @@ type
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
     procedure WriteItemDescription(const AItem: TPasItem);
-    { Writes the Item's DetailedDescription. If the Item also has
+    (*
+      Writes the Item's DetailedDescription. If the Item also has
       AbstractDescription this is written in front of the
-      DetailedDescription. }
+      DetailedDescription. 
+      
+      TODO: this should be fixed to write 
+      @longcode(#
+        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+      #)
+      inside it, and to take care of writing paragraph markers inside it.
+      Right now this is messy -- to many paragraphs may be written around
+      (which does not hurt, but is unclean) and 
+      FLanguage.Translation[trDescription] header may be written when
+      there is actually no description (only e.g. Params or Raises or Returns
+      information).
+    *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
@@ -174,10 +187,6 @@ type
     property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
     
   private
-    procedure WriteParameter(const ParamName: string; const Desc: string);
-    procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-      List: TStringVector; LinkToParamNames: boolean);
-    procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
     { PDF Conditional support routines }
     procedure WriteStartFlushLeft;
     procedure WritePDFIfdef;
@@ -804,83 +813,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-  procedure TTexDocGenerator.WriteParameter(const ParamName: string; const Desc: string);
-  begin
-    WriteDirect('\item[');
-    WriteDirect(ParamName);
-    WriteDirect('] ');
-    WriteSpellChecked(Desc);
-    WriteDirect('',true);
-  end;
-
-  { writes the parameters or exceptions list }
-  procedure TTexDocgenerator.WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector; LinkToParamNames: boolean);
-  var
-    i: integer;
-    s: string;
-    ParamName: string;
-  begin
-    if StringVectorIsNilOrEmpty(List) then
-      exit;
-
-    WriteDirect('\item[\textbf{'+Caption+'}]',true);
-    WriteDirect('\begin{description}',true);
-    { Terrible hack : To fix and replace by a clean solution,
-      we need to add an empty item so that the list starts
-      at the correct margin.
-    }
-{    WriteDirect('\item',true);}
-    for i := 0 to List.Count - 1 do begin
-      s := List[i];
-      
-      { TODO -- splitting S to ParamName and the rest should be done
-        inside TTagManager.Execute, working with raw text, instead
-        of here, where the text is already expanded and converted.
-        
-        TPasMethod should provide properties Params and Raises 
-        as a TStringPairVector, holding pairs of strings: 
-        for each item, 
-        a string being the name of raised exception (or paramater name)
-        and and accompanying description (description that is of course 
-        already expanded recursively).
-        
-        Actually, current approach works for now perfectly,
-        but only because neighter html generator nor LaTeX generator
-        change text in such way that first word of the text
-        (assuming it's a normal valid Pascal identifier) is changed.
-        
-        E.g. '@raises(EFoo with some link @link(Blah))'
-        is expanded to 'EFoo with some link <a href="...">Blah</a>'
-        so the 1st word ('EFoo') is preserved.
-        
-        But this is obviously unclean approach. 
-        It's also unclean that mechanics of splitting (ExtractFirstWord)
-        must be called from each generator class. Such thing like 
-        ExtractFirstWord should not only be implemented once,
-        but should also be called from only one place in code. }
-
-      ParamName := ExtractFirstWord(s);
-
-      if LinkToParamNames then
-       ParamName := SearchLinkOrWarning(ParamName, Func, '',
-         'Could not resolve link to "%s" from description of item "%s"');
-
-      WriteParameter(ParamName, s);
-    end;
-    WriteDirect('\end{description}',true);
-  end;
-
-  procedure TTexDocGenerator.WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
-  begin
-    if ReturnDesc = '' then
-      exit;
-    WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
-    WriteSpellChecked(ReturnDesc);
-    WriteDirect('',true);
-  end;
-
-
 procedure TTexDocGenerator.WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
 var
   j: Integer;
@@ -969,12 +901,6 @@ begin
         WriteItemDetailedDescription(p);
         WriteEndOfParagraph;
       end;
-
-      WriteParamsOrRaises(p, FLanguage.Translation[trParameters], 
-        p.Params, false);
-      WriteReturnDesc(p, p.Returns);
-      WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], 
-        p.Raises, true);
 
       WriteEndList;
   end;
@@ -1078,12 +1004,6 @@ begin
           WriteItemDetailedDescription(p);
           WriteEndOfParagraph;
         end;
-
-        WriteParamsOrRaises(p, FLanguage.Translation[trParameters], 
-          p.Params, false);
-        WriteReturnDesc(p, p.Returns);
-        WriteParamsOrRaises(p, FLanguage.Translation[trExceptions], 
-          p.Raises, true);
         
         WriteEndList;
         
@@ -1168,8 +1088,11 @@ begin
   if not Assigned(AItem) then Exit;
   
   Result := AItem.HasDescription or
-    { some hint directive ? }
-    AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific;
+    { Some hint directive ? }
+    AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
+    { Some TPasMethod optional info ? }
+    ( (AItem is TPasMethod) and
+      TPasMethod(AItem).HasMethodOptionalInfo );
 
   if Result then Exit;
 
@@ -1187,6 +1110,83 @@ end;
 
 procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
+  { writes the parameters or exceptions list }
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+    List: TStringVector; LinkToParamNames: boolean);
+    
+    procedure WriteParameter(const ParamName: string; const Desc: string);
+    begin
+      WriteDirect('\item[');
+      WriteDirect(ParamName);
+      WriteDirect('] ');
+      WriteSpellChecked(Desc);
+      WriteDirect('',true);
+    end;    
+    
+  var
+    i: integer;
+    s: string;
+    ParamName: string;
+  begin
+    if StringVectorIsNilOrEmpty(List) then
+      exit;
+
+    WriteDirect('\item[\textbf{'+Caption+'}]',true);
+    WriteDirect('\begin{description}',true);
+    { Terrible hack : To fix and replace by a clean solution,
+      we need to add an empty item so that the list starts
+      at the correct margin.
+    }
+{    WriteDirect('\item',true);}
+    for i := 0 to List.Count - 1 do begin
+      s := List[i];
+      
+      { TODO -- splitting S to ParamName and the rest should be done
+        inside TTagManager.Execute, working with raw text, instead
+        of here, where the text is already expanded and converted.
+        
+        TPasMethod should provide properties Params and Raises 
+        as a TStringPairVector, holding pairs of strings: 
+        for each item, 
+        a string being the name of raised exception (or paramater name)
+        and and accompanying description (description that is of course 
+        already expanded recursively).
+        
+        Actually, current approach works for now perfectly,
+        but only because neighter html generator nor LaTeX generator
+        change text in such way that first word of the text
+        (assuming it's a normal valid Pascal identifier) is changed.
+        
+        E.g. '@raises(EFoo with some link @link(Blah))'
+        is expanded to 'EFoo with some link <a href="...">Blah</a>'
+        so the 1st word ('EFoo') is preserved.
+        
+        But this is obviously unclean approach. 
+        It's also unclean that mechanics of splitting (ExtractFirstWord)
+        must be called from each generator class. Such thing like 
+        ExtractFirstWord should not only be implemented once,
+        but should also be called from only one place in code. }
+
+      ParamName := ExtractFirstWord(s);
+
+      if LinkToParamNames then
+       ParamName := SearchLinkOrWarning(ParamName, Func, '',
+         'Could not resolve link to "%s" from description of item "%s"');
+
+      WriteParameter(ParamName, s);
+    end;
+    WriteDirect('\end{description}',true);
+  end;
+
+  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  begin
+    if ReturnDesc = '' then
+      exit;
+    WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
+    WriteSpellChecked(ReturnDesc);
+    WriteDirect('',true);
+  end;
+
   procedure WriteHintDirective(const S: string);
   begin
     WriteConverted('Warning: ' + S + '.' + LineEnding + LineEnding);
@@ -1195,6 +1195,7 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 var
   Ancestor: TPasItem;
   AncestorName: string;
+  AItemMethod: TPasMethod;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1240,6 +1241,17 @@ begin
       end;
     end;
   end;
+
+  if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then
+  begin
+    WriteStartOfParagraph;
+    AItemMethod := TPasMethod(AItem); 
+    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters], 
+      AItemMethod.Params, false);
+    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
+    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
+      AItemMethod.Raises, true);
+ end;
 end;
 
 procedure TTexDocGenerator.WriteItems(HL: integer; Heading: string; const
@@ -1933,6 +1945,9 @@ end;
 
 (*
   $Log$
+  Revision 1.41  2005/05/23 08:01:27  kambi
+  * Fixed printing Params, Raises, Returns for procedure/method pointers
+
   Revision 1.40  2005/05/17 11:56:22  kambi
   * Generators use WriteDirect everywhere instead of StreamUtils.WriteLine, to be consequent.
   * StreamUtils.WriteLine renamed to StreamWriteLine.
