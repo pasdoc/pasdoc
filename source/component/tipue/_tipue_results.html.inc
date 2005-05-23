@@ -6,6 +6,8 @@
 '<head>' + LineEnding + 
 '<title>Search Results</title>' + LineEnding + 
 '' + LineEnding + 
+'<link rel="StyleSheet" type="text/css" href="pasdoc.css">' + LineEnding + 
+'' + LineEnding + 
 '<!-- The following lines are required and must be in the <head> section of your HTML document -->' + LineEnding + 
 '' + LineEnding + 
 '<script language="JavaScript1.3" type="text/javascript" src="tip_data.js"></script>' + LineEnding + 
