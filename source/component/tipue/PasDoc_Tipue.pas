@@ -82,6 +82,8 @@ procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
       
     var
       ShortDescription, LongDescription: string;
+      EnumMember: TPasItem;
+      i: Integer;
     begin
       { calculate ShortDescription }
       ShortDescription := EscapeIndexEntry(Item.AbstractDescription);
@@ -97,7 +99,19 @@ procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
           ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text) +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Returns) +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text);
-       
+      if Item is TPasEnum then
+      begin
+        for i := 0 to TPasEnum(Item).Members.Count - 1 do
+        begin
+          EnumMember := TPasEnum(Item).Members.PasItemAt[i];
+          LongDescription := LongDescription + 
+            ' ' + EscapeIndexEntry(EnumMember.Name) +
+            ' ' + EscapeIndexEntry(EnumMember.AbstractDescription) +
+            ' ' + EscapeIndexEntry(EnumMember.DetailedDescription) +
+            ' ' + EscapeIndexEntry(EnumMember.Authors.Text);
+        end;
+      end;
+      
       WriteIndexData(Item.QualifiedName, Item.FullLink, 
         ShortDescription, LongDescription);
     end;
