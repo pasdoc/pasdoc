@@ -37,6 +37,7 @@ uses
   ;
   
 const
+  { }
   DEFAULT_VERBOSITY_LEVEL = 2;
 
 type
@@ -213,7 +214,9 @@ const
   { }
   PASDOC_HOMEPAGE = 'http://pasdoc.sourceforge.net/';
 
-{ This is a function only because we can't nicely declare it as a constant.
+{ Returns pasdoc name, version, used compiler version, etc.
+
+  This is a function only because we can't nicely declare it as a constant.
   But this behaves like a constant, i.e. every time you call it
   it returns the same thing (as long as this is the same binary). }
 function PASDOC_FULL_INFO: string;
