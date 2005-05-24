@@ -98,7 +98,6 @@ type
       #) *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
-    procedure WriteParagraph(HL: integer; s: string; t: string);
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
 
     { Writes an opening A element, including a name attribute given by the
@@ -1260,15 +1259,6 @@ begin
   CloseStream;
 end;
 
-procedure THTMLDocGenerator.WriteParagraph(HL: integer; s: string; t: string);
-begin
-  // if (not Assigned(t)) or (t.Content < 1) then Exit;
-  WriteHeading(HL, s);
-  WriteStartOfParagraph;
-  WriteSpellChecked(t);
-  WriteEndOfParagraph;
-end;
-
 procedure THTMLDocGenerator.WriteProperties(HL: integer; const p:
   TPasProperties);
 var
@@ -1288,7 +1278,7 @@ begin
 
     WriteStartOfTableCell('width="100%"', '');
     WriteAnchor(Prop.Name);
-    WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration, '');
+    WriteCodeWithLinks(Prop, Prop.FullDeclaration, '');
 
     WriteEndOfTableCell;
     WriteEndOfTableRow;
@@ -1318,13 +1308,9 @@ begin
     WriteStartOfTableRow('');
 
     WriteVisibilityCell(Prop);
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
+    WriteStartOfTableCell('width="100%"', '');
 
-    WriteCodeWithLinks(Prop, 'property ' + Prop.FullDeclaration,
-      Prop.FullLink);
+    WriteCodeWithLinks(Prop, Prop.FullDeclaration, Prop.FullLink);
 
     WriteEndOfTableCell;
     WriteEndOfTableRow;
