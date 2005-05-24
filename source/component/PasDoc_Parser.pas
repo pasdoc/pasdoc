@@ -1118,36 +1118,45 @@ begin
   end;
   p := TPasProperty.Create;
   p.Name := t.Data;
+  FreeAndNil(t);
   DoMessage(5, mtInformation, 'Parsing property %s', [p.Name]);
   p.IndexDecl := '';
   p.Proptype := '';
-  FreeAndNil(t);
+  p.FullDeclaration := 'property ' + p.Name;
   p.RawDescription := GetLastComment(True);
-  if (not GetNextNonWCToken(t)) then Exit;
+  if not GetNextNonWCToken(t) then Exit;
+
+  { Is this only a redeclaration of property from ancestor
+    (to e.g. change it's visibility) }
+  if t.IsSymbol(SYM_SEMICOLON) then
+  begin
+    p.FullDeclaration := p.FullDeclaration + ';';
+    FreeAndNil(t);
+    ParseProperty := True;
+    Exit;
+  end;
+
   { get index }
-  if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
+  if t.IsSymbol(SYM_LEFT_BRACKET) then
+  begin
     FreeAndNil(t);
     p.IndexDecl := '[';
     repeat
       if not Scanner.GetToken(t) then
         DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo], 0);
 
-      if not (t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE, TOK_DIRECTIVE]) then
+      if not (t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
+        TOK_COMMENT_CSTYLE, TOK_DIRECTIVE]) then
+      begin
         p.IndexDecl := p.IndexDecl + t.Data;
+        p.FullDeclaration := p.FullDeclaration + t.Data;
+      end;
       Finished := t.IsSymbol(SYM_RIGHT_BRACKET);
       FreeAndNil(t);
     until Finished;
-      { next nonwc token should be the colon }
-    if (not GetNextNonWCToken(t)) then
+
+    if not GetNextNonWCToken(t) then
       Exit;
-  end
-  else begin
-    if (t.IsSymbol(SYM_SEMICOLON)) then begin
-      p.FullDeclaration := p.Name + ';';
-      FreeAndNil(t);
-      ParseProperty := True;
-      Exit;
-    end;
   end;
 
   { now if there is a colon, it is followed by the type }
@@ -1161,14 +1170,15 @@ begin
 
     p.Proptype := t.Data;
     FreeAndNil(t);
-    p.FullDeclaration := p.Name + p.IndexDecl + ': ' + p.Proptype + ';';
-  end
-  else
-    p.FullDeclaration := p.Name + ';';
+    p.FullDeclaration := p.FullDeclaration + ': ' + p.Proptype;
+  end;
+  
+  p.FullDeclaration := p.FullDeclaration + ';';
 
   { simply skipping the rest of declaration }
   if not SkipDeclaration(nil) then
-    DoError('Could not skip rest of declaration in file %s', [Scanner.GetStreamInfo], 0);
+    DoError('Could not skip rest of declaration in file %s', 
+      [Scanner.GetStreamInfo], 0);
 
   Result := True;
 end;
