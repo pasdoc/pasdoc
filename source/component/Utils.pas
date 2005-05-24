@@ -1,6 +1,7 @@
 {
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
+  @author(Michalis Kamburelis)
   @abstract(Some utility functions)
 }
 unit Utils;

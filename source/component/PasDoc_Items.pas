@@ -4,6 +4,7 @@
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
+  @author(Michalis Kamburelis)
 
 For each type, variable, class etc. (short: item) that may appear in a Pascal
 source code file and can thus be taken into the documentation, this unit

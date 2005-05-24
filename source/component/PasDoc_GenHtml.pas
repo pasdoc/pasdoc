@@ -9,6 +9,7 @@
   @author(Thomas W. Mueller <no-email>)
   @author(David Berg (HTML Layout) <david@sipsolutions.de>)
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
+  @author(Michalis Kamburelis)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of

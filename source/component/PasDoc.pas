@@ -5,6 +5,7 @@
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michael van Canneyt (michael@tfdec1.fys.kuleuven.ac.be))
+  @author(Michalis Kamburelis)
   @created(24 Sep 1999)
 }
 

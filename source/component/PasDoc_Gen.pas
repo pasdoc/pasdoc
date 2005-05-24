@@ -8,6 +8,7 @@
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @author(Pierre Woestyn <pwoestyn@users.sourceforge.net>)
+  @author(Michalis Kamburelis)
   @created(30 Aug 1998)
   @cvs($Date$)
 

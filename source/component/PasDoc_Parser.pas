@@ -2,6 +2,7 @@
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Johannes Berg <johannes@sipsolutions.de>)
+  @author(Michalis Kamburelis)
   @cvs($Date$)
 
   Parsing implements most of the functionality of the pasdoc program.

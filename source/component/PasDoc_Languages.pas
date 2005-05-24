@@ -16,6 +16,7 @@
   @author(Vitaly Kovalenko <v_l_kovalenko@alsy.by> (Russian translation))
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl> (corrected Polish translation))
   @author(Jónás Gergõ <jonas.gergo@ch...> (Hungarian translation))
+  @author(Michalis Kamburelis)
   }
 
 unit PasDoc_Languages;
@@ -1635,6 +1636,9 @@ end;
 
 {
   $Log$
+  Revision 1.21  2005/05/24 21:02:40  kambi
+  * Shamelessly inserted my own name in couple of units where @author was used
+
   Revision 1.20  2005/05/10 07:28:27  kambi
   * Updates to Brasilian translation from Alexandre da Silva
 

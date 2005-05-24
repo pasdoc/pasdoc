@@ -1,6 +1,7 @@
 {
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
+  @author(Michalis Kamburelis)
   @abstract(string vector - based on TStringList)
   The string vector is based on TStringList and simply exports
   a few extra functions - I did this so I didn't have to change
