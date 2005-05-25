@@ -72,7 +72,6 @@ type
       information).
     *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
-    procedure WriteOverviewFiles;
     procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
 
     { Writes an opening A element, including a name attribute given by the
@@ -91,8 +90,6 @@ type
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
 
-    { Creates an output stream that lists up all units and short descriptions. }
-    procedure WriteUnitOverviewFile;
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
 
@@ -1335,157 +1332,6 @@ begin
   end;
 end;
 
-{ ---------- }
-
-procedure TTexDocGenerator.WriteOverviewFiles;
-var
-  ItemsToCopy: TPasItems;
-  PartialItems: TPasItems;
-  TotalItems: TPasItems; // Collect all Items for final listing.
-  i: Integer;
-  Item: TPasItem;
-  j: Integer;
-  PU: TPasUnit;
-begin
-  WriteUnitOverviewFile;
-
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
-
-  // Make sure we don't free the Itmes when we free the container.
-  TotalItems := TPasItems.Create(False);
-
-  for i := 2 to NUM_OVERVIEW_FILES_USED - 1  do begin
-    if (CreateStream(OverviewFilenames[i] + GetFileExtension, True) = csError)
-      then begin
-      DoMessage(1, mtError, 'Error: Could not create output file "' +
-        OverviewFilenames[i] + '".', []);
-      Exit;
-    end;
-    DoMessage(3, mtInformation, 'Writing overview file ' +
-      OverviewFilenames[i] + '...', []);
-
-    case i of
-      2: WriteStartOfDocument(FLanguage.Translation[trHeadlineCio]);
-      3: WriteStartOfDocument(FLanguage.Translation[trHeadlineTypes]);
-      4: WriteStartOfDocument(FLanguage.Translation[trHeadlineVariables]);
-      5: WriteStartOfDocument(FLanguage.Translation[trHeadlineConstants]);
-      6: WriteStartOfDocument(FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-    end;
-
-    case i of
-      2: WriteHeading(1, FLanguage.Translation[trHeadlineCio]);
-      3: WriteHeading(1, FLanguage.Translation[trHeadlineTypes]);
-      4: WriteHeading(1, FLanguage.Translation[trHeadlineVariables]);
-      5: WriteHeading(1, FLanguage.Translation[trHeadlineConstants]);
-      6: WriteHeading(1, FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
-    end;
-
-      // Make sure we don't free the Itmes when we free the container.
-    PartialItems := TPasItems.Create(False);
-
-    for j := 0 to Units.Count - 1 do begin
-      PU := Units.UnitAt[j];
-      case i of
-        2: ItemsToCopy := PU.CIOs;
-        3: ItemsToCopy := PU.Types;
-        4: ItemsToCopy := PU.Variables;
-        5: ItemsToCopy := PU.Constants;
-        6: ItemsToCopy := PU.FuncsProcs;
-      else
-        ItemsToCopy := nil;
-      end;
-      PartialItems.InsertItems(ItemsToCopy);
-    end;
-
-    if not ObjectVectorIsNilOrEmpty(PartialItems) then begin
-      WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
-        FLanguage.Translation[trDescription]);
-
-      PartialItems.SortByPasItemName;
-
-      for j := 0 to PartialItems.Count - 1 do begin
-        Item := PartialItems.PasItemAt[j];
-        WriteStartOfTableRow('');
-
-        WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-        WriteLink(Item.FullLink, Item.Name, 'bold');
-        WriteEndOfTableCell;
-
-        WriteStartOfTableCell;
-        WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
-        WriteEndOfTableCell;
-
-        if j = 0 then
-          WriteStartOfTableCell('width="100%"', '')
-        else
-          WriteStartOfTableCell;
-        WriteItemDescription(Item);
-        WriteEndOfTableCell;
-
-        WriteEndOfTableRow;
-      end;
-      WriteEndOfTable;
-    end
-    else begin
-      WriteStartOfParagraph;
-      WriteConverted(FLanguage.Translation[trNone]);
-      WriteEndOfParagraph;
-    end;
-
-    TotalItems.InsertItems(PartialItems);
-    PartialItems.Free;
-    WriteFooter;
-    WriteEndOfDocument;
-    CloseStream;
-  end;
-
-  if CreateStream(OverviewFilenames[7] + GetFileExtension, True) = csError then
-    begin
-    DoMessage(1, mtError, 'Could not create overview output file "' +
-      OverviewFilenames[7] + '".', []);
-    Exit;
-  end;
-  DoMessage(3, mtInformation, 'Writing overview file ' + OverviewFilenames[7]
-    + '...', []);
-  WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-  WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
-  WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
-    FLanguage.Translation[trDescription]);
-
-  TotalItems.SortByPasItemName;
-  for j := 0 to TotalItems.Count - 1 do begin
-    Item := TotalItems.PasItemAt[j];
-    WriteStartOfTableRow('');
-
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteLink(Item.FullLink, Item.Name, 'bold');
-    WriteEndOfTableCell;
-
-    WriteStartOfTableCell;
-    WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
-    WriteEndOfTableCell;
-
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-    WriteItemDescription(Item);
-    WriteEndOfTableCell;
-
-    WriteEndOfTableRow;
-  end;
-
-  TotalItems.Free;
-
-  WriteEndOfTable;
-  WriteFooter;
-  WriteEndOfDocument;
-  CloseStream;
-end;
-
-
 procedure TTexDocGenerator.WriteProperties(HL: integer; const p:
   TPasProperties);
 var
@@ -1778,48 +1624,6 @@ begin
   WriteDirect('',true);
 end;
 
-procedure TTexDocGenerator.WriteUnitOverviewFile;
-var
-  c: TPasItems;
-  Item: TPasItem;
-  j: Integer;
-begin
-  c := Units;
-  if CreateStream(OverviewFilenames[0] + GetFileExtension, True) = csError
-    then begin
-    DoMessage(1, mtError, 'Could not create overview output file "' +
-      OverviewFilenames[0] + '".', []);
-    Exit;
-  end;
-  DoMessage(3, mtInformation, 'Writing unit overview file "%s" ...',
-    [OverviewFilenames[0]]);
-  WriteStartOfDocument(FLanguage.Translation[trHeadlineUnits]);
-  WriteHeading(1, FLanguage.Translation[trHeadlineUnits]);
-  if Assigned(c) and (c.Count > 0) then begin
-    WriteStartOfTable2Columns(FLanguage.Translation[trName],
-      FLanguage.Translation[trDescription]);
-    for j := 0 to c.Count - 1 do begin
-      Item := c.PasItemAt[j];
-      WriteStartOfTableRow('');
-      WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-      WriteLink(Item.FullLink, Item.Name, 'bold');
-      WriteEndOfTableCell;
-
-      if j = 0 then
-        WriteStartOfTableCell('width="100%"', '')
-      else
-        WriteStartOfTableCell;
-      WriteItemDescription(Item);
-      WriteEndOfTableCell;
-      WriteEndOfTableRow;
-    end;
-    WriteEndOfTable;
-  end;
-  WriteFooter;
-  WriteEndOfDocument;
-  CloseStream;
-end;
-
 procedure TTexDocGenerator.WriteImage(const src, alt, css: string);
 var
   s: string;
@@ -1945,6 +1749,11 @@ end;
 
 (*
   $Log$
+  Revision 1.42  2005/05/25 01:25:24  kambi
+  * NUM_OVERVIEW_FILES, NUM_OVERVIEW_FILES_USED, OverviewFilenames
+    replaced with cleaner TOverview, TCreatedOverviewFile, OverviewFilesInfo
+  * Cleaned many stuff related to writing overview files
+
   Revision 1.41  2005/05/23 08:01:27  kambi
   * Fixed printing Params, Raises, Returns for procedure/method pointers
 

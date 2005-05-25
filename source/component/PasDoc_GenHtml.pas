@@ -82,8 +82,7 @@ type
     procedure WriteEndOfTableRow;
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
-    { Writes a Hireachy list - this is more useful than the simple class list }
-    procedure WriteHierarchy;
+
     procedure WriteItemDescription(const AItem: TPasItem);
     (*Writes the Item's DetailedDescription. If the Item also has
       AbstractDescription, this is also written in front of the 
@@ -127,8 +126,6 @@ type
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
 
-    { Creates an output stream that lists up all units and short descriptions. }
-    procedure WriteUnitOverviewFile;
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
 
@@ -667,7 +664,6 @@ begin
   StartSpellChecking('sgml');
   inherited;
   WriteUnits(1);
-  WriteHierarchy;
   WriteBinaryFiles;
   WriteOverviewFiles;
   WriteVisibilityLegendFile;
@@ -1108,64 +1104,154 @@ end;
 { ---------- }
 
 procedure THTMLDocGenerator.WriteOverviewFiles;
+
+  function CreateOverviewStream(Overview: TCreatedOverviewFile): boolean;
+  var BaseFileName, Headline: string;
+  begin
+    BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
+    Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
+    
+    if not Result then
+    begin
+      DoMessage(1, mtError, 'Error: Could not create output file "' +
+        BaseFileName + '".', []);
+      Exit;
+    end;
+    
+    DoMessage(3, mtInformation, 'Writing overview file "' +
+      BaseFileName + '" ...', []);
+
+    Headline := FLanguage.Translation[
+      OverviewFilesInfo[Overview].TranslationHeadlineId];
+    WriteStartOfDocument(Headline);
+    WriteHeading(1, Headline);  
+  end;
+
+  { Creates an output stream that lists up all units and short descriptions. }
+  procedure WriteUnitOverviewFile;
+  var
+    c: TPasItems;
+    Item: TPasItem;
+    j: Integer;
+  begin
+    c := Units;
+    
+    if not CreateOverviewStream(ofUnits) then Exit;
+    
+    if Assigned(c) and (c.Count > 0) then begin
+      WriteStartOfTable2Columns(FLanguage.Translation[trName],
+        FLanguage.Translation[trDescription]);
+      for j := 0 to c.Count - 1 do begin
+        Item := c.PasItemAt[j];
+        WriteStartOfTableRow('');
+        WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
+        WriteLink(Item.FullLink, Item.Name, 'bold');
+        WriteEndOfTableCell;
+
+        if j = 0 then
+          WriteStartOfTableCell('width="100%"', '')
+        else
+          WriteStartOfTableCell;
+        WriteItemDescription(Item);
+        WriteEndOfTableCell;
+        WriteEndOfTableRow;
+      end;
+      WriteEndOfTable;
+    end;
+    WriteFooter;
+    WriteAppInfo;
+    WriteEndOfDocument;
+    CloseStream;
+  end;
+
+  { Writes a Hireachy list - this is more useful than the simple class list }
+  procedure WriteHierarchy;
+  var
+    Level, OldLevel: Integer;
+    Node: TPasItemNode;
+  begin
+    CreateClassHierarchy;
+
+    if not CreateOverviewStream(ofClassHierarchy) then Exit;
+
+    if FClassHierarchy.IsEmpty then begin
+      WriteStartOfParagraph;
+      WriteConverted(FLanguage.Translation[trNone]);
+      WriteEndOfParagraph;
+    end else begin
+      OldLevel := -1;
+      Node := FClassHierarchy.FirstItem;
+      while Node <> nil do begin
+        Level := Node.Level;
+        if Level > OldLevel then
+          WriteDirect('<ul>')
+        else
+          while Level < OldLevel do begin
+            WriteDirect('</ul>');
+            Dec(OldLevel);
+          end;
+        OldLevel := Level;
+
+        WriteDirect('<li>');
+        if Node.Item = nil then
+          WriteConverted(Node.Name) else
+          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
+        { We can't simply write here an explicit '</li>' because current 
+          list item may be not finished yet (in case next Nodes 
+          (with larger Level) will follow in the FClassHierarchy). }
+
+        Node := FClassHierarchy.NextItem(Node);
+      end;
+
+      while OldLevel > 0 do begin
+        WriteDirect('</ul>');
+        Dec(OldLevel);
+      end;
+    end;
+
+    WriteFooter;
+    WriteAppInfo;
+    WriteEndOfDocument;
+
+    CloseStream;
+  end;
+
 var
   ItemsToCopy: TPasItems;
   PartialItems: TPasItems;
   TotalItems: TPasItems; // Collect all Items for final listing.
-  i: Integer;
   Item: TPasItem;
   j: Integer;
   PU: TPasUnit;
+  Overview: TCreatedOverviewFile;
 begin
   if HtmlHelp then
     WriteHtmlHelpProject;
 
   WriteUnitOverviewFile;
+  WriteHierarchy;
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   // Make sure we don't free the Itmes when we free the container.
   TotalItems := TPasItems.Create(False);
 
-  for i := 2 to NUM_OVERVIEW_FILES_USED - 1  do begin
-    if (CreateStream(OverviewFilenames[i] + GetFileExtension, True) = csError)
-      then begin
-      DoMessage(1, mtError, 'Error: Could not create output file "' +
-        OverviewFilenames[i] + '".', []);
-      Exit;
-    end;
-    DoMessage(3, mtInformation, 'Writing overview file ' +
-      OverviewFilenames[i] + '...', []);
-
-    case i of
-      2: WriteStartOfDocument(FLanguage.Translation[trHeadlineCio]);
-      3: WriteStartOfDocument(FLanguage.Translation[trHeadlineTypes]);
-      4: WriteStartOfDocument(FLanguage.Translation[trHeadlineVariables]);
-      5: WriteStartOfDocument(FLanguage.Translation[trHeadlineConstants]);
-      6: WriteStartOfDocument(FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-    end;
-
-    case i of
-      2: WriteHeading(1, FLanguage.Translation[trHeadlineCio]);
-      3: WriteHeading(1, FLanguage.Translation[trHeadlineTypes]);
-      4: WriteHeading(1, FLanguage.Translation[trHeadlineVariables]);
-      5: WriteHeading(1, FLanguage.Translation[trHeadlineConstants]);
-      6: WriteHeading(1, FLanguage.Translation[trHeadlineFunctionsAndProcedures]);
-      7: WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
-    end;
+  for Overview := ofCios to HighCreatedOverviewFile do
+  begin
+    if not CreateOverviewStream(Overview) then Exit;
 
       // Make sure we don't free the Itmes when we free the container.
     PartialItems := TPasItems.Create(False);
 
-    for j := 0 to Units.Count - 1 do begin
+    for j := 0 to Units.Count - 1 do
+    begin
       PU := Units.UnitAt[j];
-      case i of
-        2: ItemsToCopy := PU.CIOs;
-        3: ItemsToCopy := PU.Types;
-        4: ItemsToCopy := PU.Variables;
-        5: ItemsToCopy := PU.Constants;
-        6: ItemsToCopy := PU.FuncsProcs;
+      case Overview of
+        ofCIos                  : ItemsToCopy := PU.CIOs;
+        ofTypes                 : ItemsToCopy := PU.Types;
+        ofVariables             : ItemsToCopy := PU.Variables;
+        ofConstants             : ItemsToCopy := PU.Constants;
+        ofFunctionsAndProcedures: ItemsToCopy := PU.FuncsProcs;
       else
         ItemsToCopy := nil;
       end;
@@ -1215,17 +1301,11 @@ begin
     CloseStream;
   end;
 
-  if CreateStream(OverviewFilenames[7] + GetFileExtension, True) = csError then
-    begin
-    DoMessage(1, mtError, 'Could not create overview output file "' +
-      OverviewFilenames[7] + '".', []);
-    Exit;
-  end;
-  DoMessage(3, mtInformation, 'Writing overview file ' + OverviewFilenames[7]
-    + '...', []);
-  WriteStartOfDocument(FLanguage.Translation[trHeadlineIdentifiers]);
-  WriteHeading(1, FLanguage.Translation[trHeadlineIdentifiers]);
-  WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
+  CreateOverviewStream(ofIdentifiers);
+  
+  WriteStartOfTable3Columns(
+    FLanguage.Translation[trName],
+    FLanguage.Translation[trUnit],
     FLanguage.Translation[trDescription]);
 
   TotalItems.SortByPasItemName;
@@ -1602,9 +1682,9 @@ var
     PU: TPasUnit;
   begin
     if Text <> '' then
-      WriteLiObject(Text, OverviewFilenames[0] + GetFileExtension)
+      WriteLiObject(Text, OverviewFilesInfo[ofUnits].BaseFileName + GetFileExtension)
     else
-      WriteLiObject(FLanguage.Translation[trUnits], OverviewFilenames[0] +
+      WriteLiObject(FLanguage.Translation[trUnits], OverviewFilesInfo[ofUnits].BaseFileName +
         GetFileExtension);
     WriteDirectLine('<ul>');
 
@@ -1648,13 +1728,14 @@ var
     c: TPasItems;
     j: Integer;
     PU: TPasUnit;
+    FileName: string;
   begin
+    FileName := OverviewFilesInfo[ofCios].BaseFileName + GetFileExtension;
+    
     // Write Classes to Contents
     if Text <> '' then
-      WriteLiObject(Text, OverviewFilenames[2] + GetFileExtension)
-    else
-      WriteLiObject(FLanguage.Translation[trClasses], OverviewFilenames[2] +
-        GetFileExtension);
+      WriteLiObject(Text, FileName) else
+      WriteLiObject(FLanguage.Translation[trClasses], FileName);
     WriteDirectLine('<ul>');
 
     c := TPasItems.Create(False);
@@ -1674,12 +1755,15 @@ var
   { ---------- }
 
   procedure ContentWriteClassHierarchy(const Text: string);
+  var
+    FileName: string;
   begin
+    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName + 
+      GetFileExtension;
+    
     if Text <> '' then
-      WriteLiObject(Text, OverviewFilenames[1] + GetFileExtension)
-    else
-      WriteLiObject(FLanguage.Translation[trClassHierarchy], OverviewFilenames[1] +
-        GetFileExtension);
+      WriteLiObject(Text, FileName) else
+      WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
   end;
 
   { ---------- }
@@ -1694,27 +1778,19 @@ var
     end;
 
   var
-    j: Integer;
+    Overview: TCreatedOverviewFile;
   begin
     if Text <> '' then
       WriteLiObject(Text, '')
     else
       WriteLiObject(FLanguage.Translation[trOverview], '');
     WriteDirectLine('<ul>');
-    for j := 0 to NUM_OVERVIEW_FILES_USED - 1 do begin
+    for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+    begin
       WriteDirectLine('<li><object type="text/sitemap">');
-      case j of
-        0: WriteParam(trHeadlineUnits);
-        1: WriteParam(trClassHierarchy);
-        2: WriteParam(trHeadlineCio);
-        3: WriteParam(trHeadlineTypes);
-        4: WriteParam(trHeadlineVariables);
-        5: WriteParam(trHeadlineConstants);
-        6: WriteParam(trHeadlineFunctionsAndProcedures);
-        7: WriteParam(trHeadlineIdentifiers);
-      end;
+      WriteParam(OverviewFilesInfo[Overview].TranslationHeadlineId);
       WriteDirect('<param name="Local" value="');
-      WriteConverted(OverviewFilenames[j] + GetFileExtension);
+      WriteConverted(OverviewFilesInfo[Overview].BaseFileName + GetFileExtension);
       WriteDirectLine('">');
       WriteDirectLine('</object>');
     end;
@@ -1724,29 +1800,39 @@ var
   { ---------- }
 
   procedure ContentWriteLegend(const Text: string);
+  var
+    FileName: string;
   begin
+    FileName := 'Legend' + GetFileExtension;
     if Text <> '' then
-      WriteLiObject(Text, 'Legend' + GetFileExtension)
-    else
-      WriteLiObject(FLanguage.Translation[trLegend], 'Legend' + GetFileExtension);
+      WriteLiObject(Text, FileName) else
+      WriteLiObject(FLanguage.Translation[trLegend], FileName);
   end;
 
   { ---------- }
 
   procedure ContentWriteGVUses();
+  var
+    FileName: string;
   begin
-    if (LinkGraphVizUses <> '') then
-      WriteLiObject(FLanguage.Translation[trGvUses],
-        OverviewFilenames[8] + '.' + LinkGraphVizUses);
+    FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + 
+      LinkGraphVizUses;
+      
+    if LinkGraphVizUses <> '' then
+      WriteLiObject(FLanguage.Translation[trGvUses], FileName);
   end;
 
   { ---------- }
 
   procedure ContentWriteGVClasses();
+  var
+    FileName: string;
   begin
-    if (LinkGraphVizClasses <> '') then
-      WriteLiObject(FLanguage.Translation[trGvClasses],
-        OverviewFilenames[9] + '.' + LinkGraphVizClasses);
+    FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName + 
+      LinkGraphVizClasses;
+      
+    if LinkGraphVizClasses <> '' then
+      WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
   end;
 
   { ---------- }
@@ -1813,6 +1899,7 @@ var
   Item2: TPasCio;
   s, Text, Link: string;
   SL: TStringVector;
+  Overview: TCreatedOverviewFile;
 begin
   { At this point, at least one unit has been parsed:
     Units is assigned and Units.Count > 0
@@ -2037,12 +2124,15 @@ begin
   WriteDirectLine('Legend.html');
 
   if (LinkGraphVizClasses <> '') then
-    WriteDirectLine(OverviewFilenames[9]+'.'+LinkGraphVizClasses);
-  if (LinkGraphVizUses <> '') then
-    WriteDirectLine(OverviewFilenames[8]+'.'+LinkGraphVizUses);
+    WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
+      LinkGraphVizClasses);
+    
+  if LinkGraphVizUses <> '' then
+    WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + 
+      LinkGraphVizUses);
 
-  for k := 0 to NUM_OVERVIEW_FILES_USED - 1 do
-    WriteDirectLine(OverviewFilenames[k] + '.html');
+  for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+    WriteDirectLine(OverviewFilesInfo[Overview].BaseFileName + '.html');
 
   if Assigned(Units) then
     for k := 0 to units.Count - 1 do
@@ -2187,49 +2277,6 @@ begin
   WriteItemDetailedDescription(U);
 end;
 
-procedure THTMLDocGenerator.WriteUnitOverviewFile;
-var
-  c: TPasItems;
-  Item: TPasItem;
-  j: Integer;
-begin
-  c := Units;
-  if CreateStream(OverviewFilenames[0] + GetFileExtension, True) = csError
-    then begin
-    DoMessage(1, mtError, 'Could not create overview output file "' +
-      OverviewFilenames[0] + '".', []);
-    Exit;
-  end;
-  DoMessage(3, mtInformation, 'Writing unit overview file "%s" ...',
-    [OverviewFilenames[0]]);
-  WriteStartOfDocument(FLanguage.Translation[trHeadlineUnits]);
-  WriteHeading(1, FLanguage.Translation[trHeadlineUnits]);
-  if Assigned(c) and (c.Count > 0) then begin
-    WriteStartOfTable2Columns(FLanguage.Translation[trName],
-      FLanguage.Translation[trDescription]);
-    for j := 0 to c.Count - 1 do begin
-      Item := c.PasItemAt[j];
-      WriteStartOfTableRow('');
-      WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-      WriteLink(Item.FullLink, Item.Name, 'bold');
-      WriteEndOfTableCell;
-
-      if j = 0 then
-        WriteStartOfTableCell('width="100%"', '')
-      else
-        WriteStartOfTableCell;
-      WriteItemDescription(Item);
-      WriteEndOfTableCell;
-      WriteEndOfTableRow;
-    end;
-    WriteEndOfTable;
-  end;
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
-  CloseStream;
-end;
-
 procedure THTMLDocGenerator.WriteImage(const src, alt, localcss: string);
 var
   s: string;
@@ -2314,64 +2361,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure THTMLDocGenerator.WriteHierarchy;
-var
-  Level, OldLevel: Integer;
-  Node: TPasItemNode;
-begin
-  CreateClassHierarchy;
-
-  if CreateStream(OverviewFilenames[1] + GetFileExtension, True) = csError then begin
-    DoMessage(1, mtError, 'Could not create output file "%s".',
-      [OverviewFilenames[1] + GetFileExtension]);
-    Abort;
-  end;
-
-  WriteStartOfDocument(FLanguage.Translation[trClassHierarchy]);
-  WriteHeading(1, FLanguage.Translation[trClassHierarchy]);
-
-  if FClassHierarchy.IsEmpty then begin
-    WriteStartOfParagraph;
-    WriteConverted(FLanguage.Translation[trNone]);
-    WriteEndOfParagraph;
-  end else begin
-    OldLevel := -1;
-    Node := FClassHierarchy.FirstItem;
-    while Node <> nil do begin
-      Level := Node.Level;
-      if Level > OldLevel then
-        WriteDirect('<ul>')
-      else
-        while Level < OldLevel do begin
-          WriteDirect('</ul>');
-          Dec(OldLevel);
-        end;
-      OldLevel := Level;
-
-      WriteDirect('<li>');
-      if Node.Item = nil then
-        WriteConverted(Node.Name) else
-        WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
-      { We can't simply write here an explicit '</li>' because current 
-        list item may be not finished yet (in case next Nodes 
-        (with larger Level) will follow in the FClassHierarchy). }
-
-      Node := FClassHierarchy.NextItem(Node);
-    end;
-
-    while OldLevel > 0 do begin
-      WriteDirect('</ul>');
-      Dec(OldLevel);
-    end;
-  end;
-
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
-
-  CloseStream;
-end;
 
 procedure THTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
 begin
@@ -2556,18 +2545,6 @@ end;
 
 procedure THTMLDocGenerator.WriteFramesetFiles;
 
-const
-  TRANSLATION_IDS: array[0..NUM_OVERVIEW_FILES_USED-1] of TTranslationId = (
-      trUnits,
-      trClassHierarchy,
-      trCio,
-      trTypes,
-      trVariables,
-      trConstants,
-      trFunctionsAndProcedures,
-      trIdentifiers
-  );
-
   procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID);
   begin
     WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
@@ -2576,7 +2553,7 @@ const
   end;
 
 var
-  i: Integer;
+  Overview: TCreatedOverviewFile;
 begin
   CreateStream('index.html', True);
   WriteDirectLine(DoctypeFrameset);
@@ -2605,14 +2582,25 @@ begin
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
     + '" width="100%">', true);
-  for i := 0 to NUM_OVERVIEW_FILES_USED - 1 do 
-    LocalWriteLink(OverviewFilenames[i] + GetFileExtension, TRANSLATION_IDS[i]);
-  if (LinkGraphVizUses <> '') then
-    LocalWriteLink(OverviewFilenames[8] + '.' + LinkGraphVizUses , trGvUses);
-  if (LinkGraphVizClasses <> '') then
-    LocalWriteLink(OverviewFilenames[9] + '.' + LinkGraphVizClasses , trGvClasses);
+    
+  for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+    LocalWriteLink(
+      OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
+      OverviewFilesInfo[Overview].TranslationId);
+      
+  if LinkGraphVizUses <> '' then
+    LocalWriteLink(
+      OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
+      OverviewFilesInfo[ofGraphVizUses].TranslationId);
+
+  if LinkGraphVizClasses <> '' then
+    LocalWriteLink(
+      OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
+      OverviewFilesInfo[ofGraphVizClasses].TranslationId);  
+
   if UseTipueSearch then
     WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
+    
   WriteDirectLine('</table>');
   WriteDirectLine('</body></html>');
   CloseStream;
