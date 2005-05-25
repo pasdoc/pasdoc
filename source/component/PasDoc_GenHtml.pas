@@ -1215,57 +1215,27 @@ procedure THTMLDocGenerator.WriteOverviewFiles;
 
     CloseStream;
   end;
-
-var
-  ItemsToCopy: TPasItems;
-  PartialItems: TPasItems;
-  TotalItems: TPasItems; // Collect all Items for final listing.
-  Item: TPasItem;
-  j: Integer;
-  PU: TPasUnit;
-  Overview: TCreatedOverviewFile;
-begin
-  if HtmlHelp then
-    WriteHtmlHelpProject;
-
-  WriteUnitOverviewFile;
-  WriteHierarchy;
-
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
-
-  // Make sure we don't free the Itmes when we free the container.
-  TotalItems := TPasItems.Create(False);
-
-  for Overview := ofCios to HighCreatedOverviewFile do
+  
+  procedure WriteItemsOverviewFile(Overview: TCreatedOverviewFile; 
+    Items: TPasItems);
+  var
+    Item: TPasItem;
+    j: Integer;
   begin
     if not CreateOverviewStream(Overview) then Exit;
-
-      // Make sure we don't free the Itmes when we free the container.
-    PartialItems := TPasItems.Create(False);
-
-    for j := 0 to Units.Count - 1 do
+    
+    if not ObjectVectorIsNilOrEmpty(Items) then 
     begin
-      PU := Units.UnitAt[j];
-      case Overview of
-        ofCIos                  : ItemsToCopy := PU.CIOs;
-        ofTypes                 : ItemsToCopy := PU.Types;
-        ofVariables             : ItemsToCopy := PU.Variables;
-        ofConstants             : ItemsToCopy := PU.Constants;
-        ofFunctionsAndProcedures: ItemsToCopy := PU.FuncsProcs;
-      else
-        ItemsToCopy := nil;
-      end;
-      PartialItems.InsertItems(ItemsToCopy);
-    end;
-
-    if not ObjectVectorIsNilOrEmpty(PartialItems) then begin
-      WriteStartOfTable3Columns(FLanguage.Translation[trName], FLanguage.Translation[trUnit],
+      WriteStartOfTable3Columns(
+        FLanguage.Translation[trName], 
+        FLanguage.Translation[trUnit],
         FLanguage.Translation[trDescription]);
 
-      PartialItems.SortByPasItemName;
+      Items.SortByPasItemName;
 
-      for j := 0 to PartialItems.Count - 1 do begin
-        Item := PartialItems.PasItemAt[j];
+      for j := 0 to Items.Count - 1 do
+      begin
+        Item := Items.PasItemAt[j];
         WriteStartOfTableRow('');
 
         WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
@@ -1286,58 +1256,64 @@ begin
         WriteEndOfTableRow;
       end;
       WriteEndOfTable;
-    end
-    else begin
+    end else
+    begin
       WriteStartOfParagraph;
       WriteConverted(FLanguage.Translation[trNone]);
       WriteEndOfParagraph;
     end;
 
-    TotalItems.InsertItems(PartialItems);
-    PartialItems.Free;
     WriteFooter;
     WriteAppInfo;
     WriteEndOfDocument;
     CloseStream;
   end;
 
-  CreateOverviewStream(ofIdentifiers);
-  
-  WriteStartOfTable3Columns(
-    FLanguage.Translation[trName],
-    FLanguage.Translation[trUnit],
-    FLanguage.Translation[trDescription]);
+var
+  ItemsToCopy: TPasItems;
+  PartialItems: TPasItems;
+  TotalItems: TPasItems; // Collect all Items for final listing.
+  PU: TPasUnit;
+  Overview: TCreatedOverviewFile;
+  j: Integer;
+begin
+  if HtmlHelp then
+    WriteHtmlHelpProject;
 
-  TotalItems.SortByPasItemName;
-  for j := 0 to TotalItems.Count - 1 do begin
-    Item := TotalItems.PasItemAt[j];
-    WriteStartOfTableRow('');
+  WriteUnitOverviewFile;
+  WriteHierarchy;
 
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteLink(Item.FullLink, Item.Name, 'bold');
-    WriteEndOfTableCell;
+  // Make sure we don't free the Items when we free the container.
+  TotalItems := TPasItems.Create(False);
+  try
+    for Overview := ofCios to HighCreatedOverviewFile do
+    begin
+      // Make sure we don't free the Items when we free the container.
+      PartialItems := TPasItems.Create(False);
+      try
+        for j := 0 to Units.Count - 1 do
+        begin
+          PU := Units.UnitAt[j];
+          case Overview of
+            ofCIos                  : ItemsToCopy := PU.CIOs;
+            ofTypes                 : ItemsToCopy := PU.Types;
+            ofVariables             : ItemsToCopy := PU.Variables;
+            ofConstants             : ItemsToCopy := PU.Constants;
+            ofFunctionsAndProcedures: ItemsToCopy := PU.FuncsProcs;
+          else
+            ItemsToCopy := nil;
+          end;
+          PartialItems.InsertItems(ItemsToCopy);
+        end;
 
-    WriteStartOfTableCell;
-    WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
-    WriteEndOfTableCell;
+        WriteItemsOverviewFile(Overview, PartialItems);
 
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-    WriteItemDescription(Item);
-    WriteEndOfTableCell;
+        TotalItems.InsertItems(PartialItems);
+      finally PartialItems.Free end;
+    end;
 
-    WriteEndOfTableRow;
-  end;
-
-  TotalItems.Free;
-
-  WriteEndOfTable;
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
-  CloseStream;
+    WriteItemsOverviewFile(ofIdentifiers, TotalItems);
+  finally TotalItems.Free end;
 end;
 
 procedure THTMLDocGenerator.WriteProperties(HL: integer; const p:
