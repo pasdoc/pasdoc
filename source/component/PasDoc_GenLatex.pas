@@ -373,9 +373,6 @@ begin
 
   if SectionsAvailable = [] then exit;
 
-  CIO.SortPasItems;
-  
-
   WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
   WriteAnchor(CIO.Name,CIO.FullLink);
 
@@ -818,9 +815,6 @@ var
 begin
   if FuncsProcs.Count = 0 then Exit;
   
-  // Sort alphabatically
-  FuncsProcs.SortByPasItemName;
-
   WriteDirect('\begin{description}',true);
 
   // two passes, in the first (i=0) we write the overview
@@ -915,8 +909,6 @@ begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
   if FuncsProcs.Count = 0 then exit;
 
-  // Sort alphabatically
-  FuncsProcs.SortByPasItemName;
   WriteDirect('\begin{description}',true);
 
   for j := 0 to FuncsProcs.Count - 1 do 
@@ -1749,6 +1741,11 @@ end;
 
 (*
   $Log$
+  Revision 1.43  2005/05/25 04:25:29  kambi
+  * Cleaned sorting: comfortable and flexible methods TPasItems.SortDeep, SortShallow, SortOnlyInsideItems, and virtual TPasItem.Sort
+  * One simple FUnits.SortDeep in PasDoc.pas sorts everything, no need to care about this in html/latex generators. This is prerequsite for --sort command-line option
+  * Fixed bug 1095129 while I was at it. Testcase in tests/ok_no_sort.pas
+
   Revision 1.42  2005/05/25 01:25:24  kambi
   * NUM_OVERVIEW_FILES, NUM_OVERVIEW_FILES_USED, OverviewFilenames
     replaced with cleaner TOverview, TCreatedOverviewFile, OverviewFilesInfo

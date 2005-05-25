@@ -454,7 +454,6 @@ begin
   if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
     Include(SectionsAvailable, dsProperties);
 
-  CIO.SortPasItems;
   s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
@@ -848,9 +847,6 @@ begin
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
-  // now resort the list alphabetically
-  FuncsProcs.SortByPasItemName;
-
   // 1st pass: write the overview
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
   WriteStartOfTable1Column('');
@@ -1231,7 +1227,7 @@ procedure THTMLDocGenerator.WriteOverviewFiles;
         FLanguage.Translation[trUnit],
         FLanguage.Translation[trDescription]);
 
-      Items.SortByPasItemName;
+      Items.SortShallow;
 
       for j := 0 to Items.Count - 1 do
       begin
@@ -1999,7 +1995,7 @@ begin
 
   // Write all Items to KeyWord Index
 
-  c.SortByPasItemName;
+  c.SortShallow;
 
   if c.Count > 0 then begin
     Item := c.PasItemAt[0];

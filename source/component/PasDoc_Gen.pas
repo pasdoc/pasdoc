@@ -1578,7 +1578,7 @@ begin
     if PU.CIOs = nil then Continue;
     for classLoop := 0 to PU.CIOs.Count - 1 do begin
       ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
-      if ACIO.MyType in CIO_NonHierarchy then continue;
+      if ACIO.MyType in CIONonHierarchy then continue;
 
       if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
         ParentItem := FindGlobal(ACIO.Ancestors.FirstName, '', '', 0);

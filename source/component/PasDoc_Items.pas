@@ -276,6 +276,23 @@ type
       read FIsLibrarySpecific write FIsLibrarySpecific;
     property Authors: TStringVector read FAuthors write SetAuthors;
     property Created: string read FCreated;
+    
+    { This recursively sorts all items inside this item,
+      and all items inside these items, etc.
+      E.g. in case of TPasUnit, this method sorts all variables, 
+      consts, CIOs etc. inside, and also calls Sort for every CIO. 
+      
+      Note that this does not guarantee that absolutely everything
+      inside will be really sorted. Some items may be deliberately
+      left unsorted, e.g. Members of TPasEnum (it's obvious that
+      their declared order matters, so we shouldn't sort them
+      when displaying their documentation !) and fields of record
+      (their order also matters for some low-level tricks;
+      see pasdoc bug 1095129).
+      
+      So actually this method *makes sure that all things that should
+      be sorted are really sorted*. }
+    procedure Sort; virtual;
   end;
 
   { @abstract(used for constants/variables) }
@@ -423,7 +440,7 @@ type
       returned. }
     function FindItem(const ItemName: string): TPasItem; override;
 
-    procedure SortPasItems;
+    procedure Sort; override;
 
     procedure RegisterTagHandlers(TagManager: TTagManager); override;
   public
@@ -472,7 +489,7 @@ type
     function FindFieldMethodProperty(const S1, S2: string): TPasItem;
     function FindItem(const ItemName: string): TPasItem; override;
 
-    procedure SortPasItems;
+    procedure Sort; override;
   public
     { list of classes and objects defined in this unit }
     property CIOs: TPasItems read FCIOs;
@@ -558,7 +575,24 @@ type
     property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
       write SetPasItemAt;
 
-    procedure SortByPasItemName;
+    { This sorts all items on this list by their name,
+      and also calls @link(TPasItem.Sort Sort) for each of these items.
+      This way it sorts recursively everything in this list. 
+      
+      This is equivalent to doing both 
+      @link(SortShallow) and @link(SortOnlyInsideItems). }
+    procedure SortDeep;
+    
+    { This calls @link(TPasItem.Sort Sort) for each of items on the list.
+      It does *not* sort the items on this list. }
+    procedure SortOnlyInsideItems;
+
+    { This sorts all items on this list by their name.
+      Unlike @link(SortDeep), it does *not* call @link(TPasItem.Sort Sort) 
+      for each of these items.
+      So "items inside items" (e.g. class methods, if this list contains
+      TPasCio objects) remain unsorted. }
+    procedure SortShallow;
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name *before* calling Add(AObject). }
@@ -609,7 +643,8 @@ type
   end;
 
 const
-  CIO_NonHierarchy = [Low(TCIOType)..High(TCIOType)] - [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT];
+  CIORecordType = [CIO_RECORD, CIO_PACKEDRECORD];
+  CIONonHierarchy = CIORecordType;
 
 implementation
 
@@ -843,6 +878,11 @@ begin
   HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
 end;
 
+procedure TPasItem.Sort;
+begin
+  { Nothing to sort in TPasItem }
+end;
+
 { ---------------------------------------------------------------------------- }
 { TPasItems }
 { ---------------------------------------------------------------------------- }
@@ -981,11 +1021,16 @@ begin
   Result := inherited FindItem(ItemName);
 end;
 
-procedure TPasCio.SortPasItems;
+procedure TPasCio.Sort;
 begin
-  if Fields <> nil then Fields.SortByPasItemName;
+  inherited;
+  
+  if not (MyType in CIORecordType) then
+    if Fields <> nil then Fields.SortShallow;
+    
   if Methods <> nil then Methods.Sort(@ComparePasMethods);
-  if Properties <> nil then Properties.SortByPasItemName;
+  
+  if Properties <> nil then Properties.SortShallow;
 end;
 
 procedure TPasCio.RegisterTagHandlers(TagManager: TTagManager);
@@ -1146,9 +1191,21 @@ begin
   Items[AIndex] := Value;
 end;
 
-procedure TPasItems.SortByPasItemName;
+procedure TPasItems.SortShallow;
 begin
   Sort(@ComparePasItemsByName);
+end;
+
+procedure TPasItems.SortOnlyInsideItems;
+var i: Integer;
+begin
+  for i := 0 to Count - 1 do PasItemAt[i].Sort;
+end;
+
+procedure TPasItems.SortDeep;
+begin
+  SortShallow;
+  SortOnlyInsideItems;
 end;
 
 function TPasItem.QualifiedName: String;
@@ -1163,21 +1220,17 @@ begin
   Result := Result + Name;
 end;
 
-procedure TPasUnit.SortPasItems;
-var
-  i: Integer;
+procedure TPasUnit.Sort;
 begin
-  if CIOs <> nil then
-    begin
-      CIOs.SortByPasItemName;
-      { Also sort Fields / Methods / Properties of each CIO. }
-      for i := 0 to CIOs.Count - 1 do
-        TPasCio(CIOs.PasItemAt[i]).SortPasItems;
-    end;
-  if Constants <> nil then Constants.SortByPasItemName;
-  if FuncsProcs <> nil then FuncsProcs.SortByPasItemName;
-  if Types <> nil then Types.SortByPasItemName;
-  if Variables <> nil then Variables.SortByPasItemName;
+  inherited;
+  { TODO: to sort or not to sort ? 
+  if CIOs <> nil then CIOs.SortDeep;
+  if Constants <> nil then Constants.SortDeep; }
+  if CIOs <> nil then CIOs.SortOnlyInsideItems;
+  if FuncsProcs <> nil then FuncsProcs.SortDeep;
+  { TODO: to sort or not to sort ? 
+  if Types <> nil then Types.SortDeep;
+  if Variables <> nil then Variables.SortDeep; }
 end;
 
 procedure TPasItem.StoreCVSTag(TagManager: TTagManager; 

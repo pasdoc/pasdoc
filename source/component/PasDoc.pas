@@ -390,7 +390,7 @@ begin
       end;
     end;
   end;
-  FUnits.SortByPasItemName;
+
   DoMessage(2, mtInformation, '... %d Source File(s) parsed', [Count]);
 end;
 
@@ -466,8 +466,8 @@ begin
   t1 := Now;
   ParseFiles;
   RemoveExcludedItems(TPasItems(FUnits));
-  { check if parsing was successful }
 
+  { check if parsing was successful }
   if ObjectVectorIsNilOrEmpty(FUnits) then begin
     DoError('At least one unit must have been successfully parsed to write docs.', [], 1);
   end;
@@ -481,6 +481,8 @@ begin
   Generator.Title := Title;
   Generator.Units := FUnits;
   Generator.BuildLinks;
+
+  FUnits.SortDeep;
 
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
   Generator.ExpandDescriptions;  
