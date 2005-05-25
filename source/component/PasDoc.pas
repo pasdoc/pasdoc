@@ -27,7 +27,8 @@ uses
   PasDoc_Languages,
   PasDoc_Gen,
   PasDoc_Types,
-  StringVector
+  StringVector,
+  PasDoc_SortSettings
 {$IFNDEF FPC}
 {$IFDEF WIN32}
 {$IFNDEF DELPHI_6_UP}
@@ -69,6 +70,7 @@ type
     FClassMembers: TAccessibilities;
     FMarkerOptional: boolean;
     FCacheDir: string;
+    FSortSettings: TSortSettings;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -158,6 +160,11 @@ type
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
     property CacheDir: string read FCacheDir write FCacheDir; 
+    
+    { This determines how items inside will be sorted.
+      See "--sort" command-line option documentation. }
+    property SortSettings: TSortSettings 
+      read FSortSettings write FSortSettings default [];
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -482,7 +489,7 @@ begin
   Generator.Units := FUnits;
   Generator.BuildLinks;
 
-  FUnits.SortDeep;
+  FUnits.SortDeep(SortSettings);
 
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
   Generator.ExpandDescriptions;  

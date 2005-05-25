@@ -27,7 +27,8 @@ uses
   PasDoc_Tokenizer,
   PasDoc_Serialize,
   PasDoc_Scanner,
-  PasDoc_TagManager;
+  PasDoc_TagManager,
+  PasDoc_SortSettings;
 
 var
   GPasDoc: TPasDoc;
@@ -68,6 +69,7 @@ var
   GOption_AutoAbstract: TBoolOption;
   GOption_LinkLook: TStringOption;
   GOption_UseTipueSearch: TBoolOption;
+  GOption_Sort: TSetOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -230,6 +232,12 @@ begin
   GOption_UseTipueSearch := TBoolOption.Create(#0, 'use-tipue-search');
   GOption_UseTipueSearch.Explanation := 'use tipue search engine in HTML output';
   GOptionParser.AddOption(GOption_UseTipueSearch);
+  
+  GOption_Sort := TSetOption.Create(#0, 'sort');
+  GOption_Sort.Explanation := 'specifies what groups of items are sorted (the rest is presented in the same order they were declared in your source files)';
+  GOption_Sort.PossibleValues := SortSettingsToName(AllSortSettings);
+  GOption_Sort.Values := '';
+  GOptionParser.AddOption(GOption_Sort);
 end;
 
 procedure PrintHeader;
@@ -262,6 +270,7 @@ procedure ParseCommandLine;
 var
   i: Integer;
   lng: TLanguageID;
+  SS: TSortSetting;
 begin
   GOption_Format.Value := LowerCase(GOption_Format.Value);
   { install a default generator }
@@ -392,6 +401,12 @@ begin
 
   if GOption_FullLink.TurnedOn then
     GPasDoc.Generator.LinkLook := llFull;
+
+  { interpret GOption_Sort value }
+  GPasDoc.SortSettings := [];
+  for SS := Low(SS) to High(SS) do
+    if GOption_Sort.HasValue(SortSettingNames[SS]) then
+      GPasDoc.SortSettings := GPasDoc.SortSettings + [SS];
 end;
 
 { ---------------------------------------------------------------------------- }
