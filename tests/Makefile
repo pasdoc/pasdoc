@@ -2,7 +2,7 @@
 
 # Making docs ----------------------------------------
 
-.PHONY: html pdf latex dvi
+.PHONY: html pdf latex dvi htmlhelp
 
 html:
 	scripts/mk_tests.sh html
