@@ -290,7 +290,7 @@ begin
   end else 
   if GOption_Format.Value = 'htmlhelp' then 
   begin
-    GPasDoc.Generator := THtmlHelpDocGenerator.Create(GPasDoc);
+    GPasDoc.Generator := THTMLHelpDocGenerator.Create(GPasDoc);
     THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
   end else
   begin

@@ -5,7 +5,7 @@ interface
 uses PasDoc_GenHtml;
 
 type
-  THtmlHelpDocGenerator = class(THTMLDocGenerator)
+  THTMLHelpDocGenerator = class(THTMLDocGenerator)
   private
     FContentsFile: string;
     
@@ -64,15 +64,15 @@ begin
   Delete(s, 1, Result);
 end;
 
-{ THtmlHelpDocGenerator ------------------------------------------------------ }
+{ THTMLHelpDocGenerator ------------------------------------------------------ }
 
-procedure THtmlHelpDocGenerator.WriteDocumentation; 
+procedure THTMLHelpDocGenerator.WriteDocumentation; 
 begin
   inherited;
   WriteHtmlHelpProject;
 end;
 
-procedure THtmlHelpDocGenerator.WriteHtmlHelpProject;
+procedure THTMLHelpDocGenerator.WriteHtmlHelpProject;
 var
   DefaultContentsWritten: Boolean;
   DefaultTopic: string;

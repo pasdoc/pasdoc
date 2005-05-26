@@ -1,19 +1,20 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  ActiveControl = tabOptions
   Caption = 'pasdoc gui'
-  ClientHeight = 332
+  ClientHeight = 325
   ClientWidth = 575
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
+  PixelsPerInch = 61
   Position = poDefaultPosOnly
   TextHeight = 20
   HorzScrollBar.Page = 574
-  VertScrollBar.Page = 331
+  VertScrollBar.Page = 324
+  Left = 202
   Height = 351
+  Top = 126
   Width = 575
   object PageControl1: TPageControl
     ActivePage = tabOptions
@@ -21,22 +22,24 @@ object frmHelpGenerator: TfrmHelpGenerator
     BorderSpacing.OnChange = nil
     TabIndex = 0
     TabOrder = 0
-    Height = 332
+    Height = 325
     Width = 575
     object tabOptions: TTabSheet
       Caption = 'Options'
-      ClientHeight = 306
-      ClientWidth = 567
+      ClientHeight = 295
+      ClientWidth = 571
       ImageIndex = 2
-      Height = 306
-      Width = 567
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object Label1: TLabel
         Anchors = [akTop, akRight]
         BorderSpacing.OnChange = nil
         Caption = 'Properties, Methods, Events, and Fields to include'
         Color = clNone
         WordWrap = True
-        Left = 327
+        Left = 331
         Height = 28
         Top = 20
         Width = 208
@@ -102,7 +105,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ItemHeight = 20
         OnClick = clbMethodVisibilityClick
         TabOrder = 3
-        Left = 327
+        Left = 331
         Height = 120
         Top = 57
         Width = 223
@@ -118,7 +121,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 6
         Height = 21
         Top = 152
-        Width = 312
+        Width = 316
       end
       object edOutput: TEdit
         Anchors = [akTop, akLeft, akRight]
@@ -128,7 +131,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 8
         Height = 23
         Top = 218
-        Width = 455
+        Width = 459
       end
       object btnBrowseOutputDirectory: TButton
         Anchors = [akTop, akRight]
@@ -136,7 +139,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Caption = 'Browse'
         OnClick = btnBrowseOutputDirectoryClick
         TabOrder = 5
-        Left = 470
+        Left = 474
         Height = 25
         Top = 218
         Width = 75
@@ -149,7 +152,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 8
         Height = 23
         Top = 56
-        Width = 304
+        Width = 308
       end
       object seVerbosity: TSpinEdit
         BorderSpacing.OnChange = nil
@@ -184,10 +187,12 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object tabHeadFoot: TTabSheet
       Caption = 'Header / Footer'
-      ClientHeight = 306
-      ClientWidth = 567
-      Height = 306
-      Width = 567
+      ClientHeight = 295
+      ClientWidth = 571
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object Label4: TLabel
         Caption = 'Footer (This text will appear at the bottom of the web page)'
         Color = clNone
@@ -210,9 +215,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 0
         WordWrap = False
         Left = 14
-        Height = 107
+        Height = 96
         Top = 172
-        Width = 545
+        Width = 549
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
@@ -222,16 +227,18 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 14
         Height = 81
         Top = 44
-        Width = 545
+        Width = 549
       end
     end
     object tabSourceFiles: TTabSheet
       Caption = 'Source Files'
-      ClientHeight = 306
-      ClientWidth = 567
+      ClientHeight = 295
+      ClientWidth = 571
       ImageIndex = 3
-      Height = 306
-      Width = 567
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object memoFiles: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
@@ -290,11 +297,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object tabIncludeDirectories: TTabSheet
       Caption = 'Include Directories'
-      ClientHeight = 306
-      ClientWidth = 567
+      ClientHeight = 295
+      ClientWidth = 571
       ImageIndex = 4
-      Height = 306
-      Width = 567
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object memoIncludeDirectories: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
@@ -353,11 +362,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object tabDefines: TTabSheet
       Caption = 'Defines'
-      ClientHeight = 306
-      ClientWidth = 567
+      ClientHeight = 295
+      ClientWidth = 571
       ImageIndex = 5
-      Height = 306
-      Width = 567
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object PanelDefinesTop: TPanel
         Align = alTop
         BorderSpacing.OnChange = nil
@@ -394,10 +405,12 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object tabGenerate: TTabSheet
       Caption = 'Generate'
-      ClientHeight = 306
-      ClientWidth = 567
-      Height = 306
-      Width = 567
+      ClientHeight = 295
+      ClientWidth = 571
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object memoMessages: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
@@ -454,11 +467,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object tabWebPage: TTabSheet
       Caption = 'Web Page'
-      ClientHeight = 306
-      ClientWidth = 567
+      ClientHeight = 295
+      ClientWidth = 571
       ImageIndex = 1
-      Height = 306
-      Width = 567
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
       object MemoCommandLog: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
@@ -588,7 +603,11 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object DocBrowserProcess: TProcess
     Priority = ppNormal
-    left = 240
+    left = 280
+    top = 528
+  end
+  object HtmlHelpDocGenerator: THTMLHelpDocGenerator
+    left = 232
     top = 528
   end
 end

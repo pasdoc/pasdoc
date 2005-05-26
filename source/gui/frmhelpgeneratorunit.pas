@@ -39,7 +39,7 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, Process, PasDoc_Serialize,
-  IniFiles;
+  IniFiles, PasDoc_GenHtmlHelp;
 
 type
   // @abstract(TfrmHelpGenerator is the class of the main form of Help
@@ -47,6 +47,7 @@ type
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
     EditHtmlBrowserCommand: TEdit;
+    HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     Label13: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -293,7 +294,7 @@ begin
   if Changed then NewCaption += '*';
   if SettingsFileName = '' then
    NewCaption += 'Unsaved PasDoc settings' else
-   NewCaption += SettingsFileName;
+   NewCaption += ExtractFileName(SettingsFileName);
   NewCaption += ' - PasDoc GUI';
   Caption := NewCaption;
 end;
@@ -397,27 +398,26 @@ begin
   Screen.Cursor := crHourGlass;
   try
     memoMessages.Clear;
+    
     case comboGenerateFormat.ItemIndex of
-      0, 1:
-        begin
-          PasDoc1.Generator := HtmlDocGenerator;
-          HtmlDocGenerator.Header := memoHeader.Lines.Text;
-          HtmlDocGenerator.Footer := memoFooter.Lines.Text;
-          HtmlDocGenerator.HtmlHelp := (comboGenerateFormat.ItemIndex = 1);
-        end;
+      0: PasDoc1.Generator := HtmlDocGenerator;
+      1: PasDoc1.Generator := HtmlHelpDocGenerator;
       2, 3:
-        begin
-          PasDoc1.Generator := TexDocGenerator;
-          TexDocGenerator.Header := memoHeader.Lines.Text;
-          TexDocGenerator.Footer := memoFooter.Lines.Text;
-          TexDocGenerator.Latex2rtf := (comboGenerateFormat.ItemIndex = 3);
-        end;
+         begin
+           PasDoc1.Generator := TexDocGenerator;
+           TexDocGenerator.Latex2rtf := (comboGenerateFormat.ItemIndex = 3);
+         end;
     else
       Assert(False);
     end;
 
+    if PasDoc1.Generator is THTMLDocGenerator then
+    begin
+      THTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
+      THTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
+    end;
+    
     // Create the output directory if it does not exist.
-
     if not DirectoryExists(edOutput.Text) then
     begin
       CreateDir(edOutput.Text)
