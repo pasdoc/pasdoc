@@ -36,8 +36,6 @@ function TrimCompress(const AString: string): string;
 function StrCountCharA(const AString: string; const AChar: Char): Integer;
 { Position of the ASub in AString. Return 0 if not found }
 function StrPosIA(const ASub, AString: string): Integer;
-{ loads a file into a string }
-function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
@@ -113,6 +111,7 @@ const
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
+function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);
 
@@ -169,25 +168,6 @@ end;
 function StrPosIA(const ASub, AString: string): Integer;
 begin
   Result := Pos(LowerCase(ASub), LowerCase(AString))
-end;
-
-function LoadStrFromFileA(const AFile: string; var AStr: string): boolean;
-var
-  str: TFileStream;
-  strstr: TStringStream;
-begin
-  Result := FileExists(AFile);
-  strstr := tstringstream.create('');
-  str := nil;
-  if Result then try
-    str := TFileStream.Create(AFile, fmOpenRead);
-    strstr.CopyFrom(str, 0);
-  except
-    Result := false;
-  end;
-  str.Free;
-  AStr := strstr.DataString;
-  strstr.free;
 end;
 
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
@@ -320,6 +300,16 @@ procedure ExtractFirstWord(const S: string; var FirstWord, Rest: string);
 begin
   Rest := S;
   FirstWord := ExtractFirstWord(Rest);
+end;
+
+function FileToString(const FileName: string): string;
+var F: TFileStream;
+begin
+  F := TFileStream.Create(FileName, fmOpenRead);
+  try
+    SetLength(Result, F.Size);
+    F.ReadBuffer(Pointer(Result)^, F.Size);
+  finally F.Free end;
 end;
 
 procedure StringToFile(const FileName, S: string);
