@@ -199,18 +199,6 @@ type
     function HasDescription(const AItem: TPasItem): boolean;
   end;
 
-{$I automated.inc}
-{$I private.inc}
-{$I public.inc}
-{$I published.inc}
-{$I protected.inc}
-
-const
-  { HTML table padding inside each cell. }
-  HTML_TABLE_CELLPADNG = '4';
-  { HTML table spacing between cells. }
-  HTML_TABLE_CELLSPACING = '2';
-
 implementation
 
 uses
@@ -1742,6 +1730,9 @@ end;
 
 (*
   $Log$
+  Revision 1.45  2005/05/26 10:39:44  kambi
+  * Cleaned some HTML-specific things
+
   Revision 1.44  2005/05/26 10:23:04  kambi
   * Previous THTMLGenerator splitted to TGenericHTMLGenerator and new THTMLDocGenerator (descendant of TGenericHTMLGenerator with functionality that is *not* useful for HtmlHelp output)
   * Fixed mem leak in PasDoc_Main.pas
