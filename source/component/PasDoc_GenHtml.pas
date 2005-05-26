@@ -44,6 +44,13 @@ type
     
     function MakeLinkTarget(
       const href, caption, localcss, target: string): string;    
+      
+    { Used by WriteItemsSummary and WriteItemsDetailed }
+    procedure WriteItemTableRow(Item: TPasItem; OfObject: boolean;
+      const ItemLink: string; MakeAnchor: boolean);
+      
+    procedure WriteItemsSummary(Items: TPasItems; OfObject: boolean);
+    procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean);
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -808,77 +815,93 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; const Methods:
-  Boolean; const FuncsProcs: TPasMethods);
+procedure THTMLDocGenerator.WriteItemTableRow(
+  Item: TPasItem; OfObject: boolean; 
+  const ItemLink: string; MakeAnchor: boolean);
+begin
+  WriteStartOfTableRow('');
 
-  procedure WriteMethodTableRow(p: TPasMethod; const ItemLink: string;
-    MakeAnchor: boolean);
+  if OfObject then WriteVisibilityCell(Item);
+
+  WriteStartOfTableCell('width="100%"', '');
+
+  if MakeAnchor then WriteAnchor(Item.Name);
+
+  WriteCodeWithLinks(Item, Item.FullDeclaration, ItemLink);
+
+  WriteEndOfTableCell;
+  WriteEndOfTableRow;
+end;
+
+procedure THTMLDocGenerator.WriteItemsSummary(
+  Items: TPasItems; OfObject: boolean);
+var 
+  ItemLink: string;
+  Item: TPasItem;
+  i: Integer;
+begin
+  if ObjectVectorIsNilOrEmpty(Items) then Exit;
+  
+  WriteStartOfTable1Column('');
+
+  for i := 0 to Items.Count - 1 do
   begin
-    WriteStartOfTableRow('');
+    Item := Items.PasItemAt[i];
 
-    { Only write visibility for methods of classes and objects. }
-    if Methods then WriteVisibilityCell(p);
+    ItemLink := Item.FullLink;
+    if Assigned(Item.MyUnit) then
+      if CompareText(Item.MyUnit.FullLink, 
+        Copy(ItemLink, 1, Length(Item.MyUnit.FullLink))) = 0 then
+        Delete(ItemLink, 1, Length(Item.MyUnit.FullLink));
 
-    WriteStartOfTableCell('width="100%"', '');
-
-    if MakeAnchor then WriteAnchor(p.Name);
-
-    WriteCodeWithLinks(p, p.FullDeclaration, ItemLink);
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
+    WriteItemTableRow(Item, OfObject, ItemLink, false);
   end;
 
-var
-  j: Integer;
-  p: TPasMethod;
-  s: string;
+  WriteEndOfTable;  
+end;
+
+procedure THTMLDocGenerator.WriteItemsDetailed(
+  Items: TPasItems; OfObject: boolean);
+var 
+  Item: TPasItem;
+  i: Integer;
+begin
+  if ObjectVectorIsNilOrEmpty(Items) then Exit;
+  
+  for i := 0 to Items.Count - 1 do
+  begin
+    Item := Items.PasItemAt[i];
+
+    WriteStartOfTable1Column('');
+    WriteItemTableRow(Item, OfObject, '', true);
+    WriteEndOfTable;
+
+    WriteItemDetailedDescription(Item);
+  end;
+end;
+
+procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; 
+  const Methods: Boolean; const FuncsProcs: TPasMethods);
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
 
-  if Methods then begin
-//    if HtmlHelp then
-      WriteAnchor('@Methods');
+  if Methods then 
+  begin
+    WriteAnchor('@Methods');
     WriteHeading(HL, FLanguage.Translation[trMethods]);
-  end
-  else begin
-//    if HtmlHelp then
-      WriteAnchor('@FuncsProcs');
+  end else 
+  begin
+    WriteAnchor('@FuncsProcs');
     WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
   end;
 
   // 1st pass: write the overview
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  WriteStartOfTable1Column('');
-
-  for j := 0 to FuncsProcs.Count - 1 do
-  begin
-    p := TPasMethod(FuncsProcs.PasItemAt[j]);
-
-    s := p.FullLink;
-    if Assigned(p.MyUnit) then
-      if CompareText(p.MyUnit.FullLink, Copy(s, 1,
-        Length(p.MyUnit.FullLink))) = 0 then
-        Delete(s, 1, Length(p.MyUnit.FullLink));
-
-    WriteMethodTableRow(p, s, false);
-  end;
-
-  WriteEndOfTable;
+  WriteItemsSummary(FuncsProcs, Methods);
 
   // 2nd pass: write the detailed descriptions
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-
-  for j := 0 to FuncsProcs.Count - 1 do
-  begin
-    p := TPasMethod(FuncsProcs.PasItemAt[j]);
-
-    WriteStartOfTable1Column('');
-    WriteMethodTableRow(p, '', true);
-    WriteEndOfTable;
-
-    WriteItemDetailedDescription(p);
-  end;
+  WriteItemsDetailed(FuncsProcs, Methods);
 end;
 
 procedure THTMLDocGenerator.WriteHeading(Level: integer; const s: string);
@@ -1314,61 +1337,24 @@ end;
 
 procedure THTMLDocGenerator.WriteProperties(HL: integer; const p:
   TPasProperties);
-var
-  j: Integer;
-  Prop: TPasProperty;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
   WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-  for j := 0 to p.Count - 1 do begin
-    Prop := TPasProperty(p.PasItemAt[j]);
-
-    WriteStartOfTable1Column('');
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Prop);
-
-    WriteStartOfTableCell('width="100%"', '');
-    WriteAnchor(Prop.Name);
-    WriteCodeWithLinks(Prop, Prop.FullDeclaration, '');
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-    WriteEndOfTable;
-
-    WriteItemDetailedDescription(Prop);
-  end;
+  WriteItemsDetailed(P, true);
 end;
 
 procedure THTMLDocGenerator.WritePropertiesSummary(HL: integer; p:
   TPasProperties);
-var
-  j: Integer;
-  Prop: TPasProperty;
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
 
-//  if HtmlHelp then
-    WriteAnchor('@Properties');
+  WriteAnchor('@Properties');
 
   WriteHeading(HL, FLanguage.Translation[trProperties]);
   WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
 
-  WriteStartOfTable1Column('');
-  for j := 0 to p.Count - 1 do begin
-    Prop := TPasProperty(p.PasItemAt[j]);
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Prop);
-    WriteStartOfTableCell('width="100%"', '');
-
-    WriteCodeWithLinks(Prop, Prop.FullDeclaration, Prop.FullLink);
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-  WriteEndOfTable;
+  WriteItemsSummary(P, true);
 end;
 
 { ---------------------------------------------------------------------------- }
