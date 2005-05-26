@@ -17,6 +17,7 @@ uses
   ObjectVector,
   PasDoc_GenHtml,
   PasDoc_GenLatex,
+  PasDoc_GenHtmlHelp,
   PasDoc_Gen,
   PasDoc_Items,
   OptionParser,
@@ -276,26 +277,25 @@ begin
   { install a default generator }
   GPasDoc.Generator:=THTMLDocGenerator.Create(GPasDoc);
   if GOption_Format.Value = 'html' then begin
-    GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
+    GPasDoc.Generator := THtmlDocGenerator.Create(GPasDoc);
   end else 
   if GOption_Format.Value = 'latex' then 
   begin
-    GPasDoc.Generator := TTEXDocGenerator.Create(GPasDoc);
+    GPasDoc.Generator := TTexDocGenerator.Create(GPasDoc);
   end else 
   if GOption_Format.Value = 'latex2rtf' then 
   begin
-    GPasDoc.Generator := TTEXDocGenerator.Create(GPasDoc);
+    GPasDoc.Generator := TTexDocGenerator.Create(GPasDoc);
     TTexDocGenerator(GPasDoc.Generator).Latex2rtf := True;
   end else 
+  if GOption_Format.Value = 'htmlhelp' then 
   begin
-    if GOption_Format.Value = 'htmlhelp' then begin
-      GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
-      THTMLDocGenerator(GPasDoc.Generator).HtmlHelp := True;
-      THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
-    end else begin
-      GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), using defaults.',
-        [GOption_Format.Value]);
-    end;
+    GPasDoc.Generator := THtmlHelpDocGenerator.Create(GPasDoc);
+    THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
+  end else
+  begin
+    GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), using defaults.',
+      [GOption_Format.Value]);
   end;
 
   GPasDoc.HtmlHelpContentsFileName := GOption_ContentFile.Value;
