@@ -51,6 +51,8 @@ contains
   StreamUtils in '..\..\..\..\component\StreamUtils.pas',
   StringVector in '..\..\..\..\component\StringVector.pas',
   Hashes in '..\..\..\..\component\Hashes.pas',
-  PasDoc_Tipue in '..\..\..\..\component\tipue\PasDoc_Tipue.pas';
+  PasDoc_Tipue in '..\..\..\..\component\tipue\PasDoc_Tipue.pas',
+  PasDoc_SortSettings in '..\..\..\..\component\PasDoc_SortSettings.pas',
+  PasDoc_GenHtmlHelp in '..\..\..\..\component\PasDoc_GenHtmlHelp.pas';
 
 end.
