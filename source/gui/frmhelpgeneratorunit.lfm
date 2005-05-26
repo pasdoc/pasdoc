@@ -19,7 +19,6 @@ object frmHelpGenerator: TfrmHelpGenerator
   object PageControl1: TPageControl
     ActivePage = tabOptions
     Align = alClient
-    BorderSpacing.OnChange = nil
     TabIndex = 0
     TabOrder = 0
     Height = 325
@@ -35,7 +34,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object Label1: TLabel
         Anchors = [akTop, akRight]
-        BorderSpacing.OnChange = nil
         Caption = 'Properties, Methods, Events, and Fields to include'
         Color = clNone
         WordWrap = True
@@ -45,7 +43,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 208
       end
       object Label2: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Language (This is the language used in the web page.)'
         Color = clNone
         Left = 8
@@ -54,7 +51,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 298
       end
       object Label3: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Output directory (This is the directory where the web pages will be created.)'
         Color = clNone
         Left = 8
@@ -63,7 +59,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 532
       end
       object Label6: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Project Name (The Project Name is used to name some of the generated web pages.)'
         Color = clNone
         WordWrap = True
@@ -73,7 +68,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 278
       end
       object Label7: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Message level (This controls what sort of messages will apear on the Generate tab when web pages are created.)'
         Color = clNone
         WordWrap = True
@@ -83,7 +77,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 452
       end
       object Label11: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Output Type :'
         Color = clNone
         FocusControl = comboGenerateFormat
@@ -94,7 +87,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object clbMethodVisibility: TCheckListBox
         Anchors = [akTop, akRight]
-        BorderSpacing.OnChange = nil
         Items.Strings = (
           'Published'
           'Public'
@@ -112,7 +104,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object comboLanguages: TComboBox
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         ItemHeight = 20
         MaxLength = 0
         OnChange = comboLanguagesChange
@@ -125,7 +116,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object edOutput: TEdit
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         TabOrder = 4
         Left = 8
@@ -135,7 +125,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object btnBrowseOutputDirectory: TButton
         Anchors = [akTop, akRight]
-        BorderSpacing.OnChange = nil
         Caption = 'Browse'
         OnClick = btnBrowseOutputDirectoryClick
         TabOrder = 5
@@ -146,7 +135,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object edProjectName: TEdit
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         TabOrder = 0
         Left = 8
@@ -155,7 +143,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 308
       end
       object seVerbosity: TSpinEdit
-        BorderSpacing.OnChange = nil
         DecimalPlaces = 0
         MaxValue = 6
         OnChange = edProjectNameChange
@@ -167,7 +154,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 64
       end
       object comboGenerateFormat: TComboBox
-        BorderSpacing.OnChange = nil
         ItemHeight = 20
         Items.Strings = (
           'HTML'
@@ -194,6 +180,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 28
       Width = 571
       object Label4: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Footer (This text will appear at the bottom of the web page)'
         Color = clNone
         Left = 14
@@ -202,6 +189,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 429
       end
       object Label5: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Header (This text will appear at the top of the web page)'
         Color = clNone
         Left = 14
@@ -211,6 +199,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoFooter: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         TabOrder = 0
         WordWrap = False
@@ -221,6 +210,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         TabOrder = 1
         WordWrap = False
@@ -241,7 +231,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object memoFiles: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         ScrollBars = ssBoth
         TabOrder = 0
@@ -252,7 +241,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelSourceFilesBottom: TPanel
         Align = alBottom
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 41
         ClientWidth = 571
@@ -262,7 +250,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 254
         Width = 571
         object btnBrowseSourceFiles: TButton
-          BorderSpacing.OnChange = nil
           Caption = 'Browse'
           OnClick = btnBrowseSourceFilesClick
           TabOrder = 0
@@ -274,7 +261,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelSourceFilesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 57
         ClientWidth = 571
@@ -284,7 +270,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 571
         object Label8: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
           Color = clNone
           WordWrap = True
@@ -306,7 +291,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object memoIncludeDirectories: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         ScrollBars = ssBoth
         TabOrder = 0
@@ -317,7 +301,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelIncludeDirectoriesBottom: TPanel
         Align = alBottom
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 41
         ClientWidth = 571
@@ -327,7 +310,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 254
         Width = 571
         object btnBrowseIncludeDirectory: TButton
-          BorderSpacing.OnChange = nil
           Caption = 'Browse'
           OnClick = btnBrowseIncludeDirectoryClick
           TabOrder = 0
@@ -339,7 +321,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelIncludeDirectoriesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 65
         ClientWidth = 571
@@ -349,7 +330,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 571
         object Label9: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
           Color = clNone
           WordWrap = True
@@ -371,7 +351,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object PanelDefinesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 76
         ClientWidth = 571
@@ -381,7 +360,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 571
         object Label12: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
           Color = clNone
           WordWrap = True
@@ -393,7 +371,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = edProjectNameChange
         ScrollBars = ssBoth
         TabOrder = 0
@@ -413,7 +390,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object memoMessages: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         ScrollBars = ssBoth
         TabOrder = 0
         Height = 165
@@ -422,7 +398,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object Panel1: TPanel
         Align = alBottom
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 41
         ClientWidth = 571
@@ -432,7 +407,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 254
         Width = 571
         object btnGenerateWebPages: TButton
-          BorderSpacing.OnChange = nil
           Caption = 'Generate documentation'
           OnClick = btnGenerateWebPagesClick
           TabOrder = 0
@@ -444,7 +418,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelGenerateTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 89
         ClientWidth = 571
@@ -454,7 +427,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 571
         object Label10: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'When you click the "Generate web pages" button, Help Generator will begin to process your input files and create web pages for them.  Messages describing what is happening will appear in the area below.  You can control how many messages appear using the "Message Level" on the Options tab. When it is done, a preview of the web pages will appear on the "Web Page" tab.'
           Color = clNone
           WordWrap = True
@@ -476,7 +448,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 571
       object MemoCommandLog: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         ReadOnly = True
         ScrollBars = ssAutoBoth
         TabOrder = 0
@@ -486,7 +457,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelWebPageTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 118
         ClientWidth = 571
@@ -495,6 +465,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 118
         Width = 571
         object LabelHtmlBrowserCommand: TLabel
+          BorderSpacing.OnChange = nil
           Caption = 'Command to run browser: (%s will be replaced with HTML filename, %% with %)'
           Color = clNone
           Left = 14
@@ -503,6 +474,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 449
         end
         object Label13: TLabel
+          BorderSpacing.OnChange = nil
           Caption = 'TODO: here should be embedded html browser component. But for now this just runs external browser.'
           Color = clNone
           WordWrap = True
@@ -512,6 +484,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 538
         end
         object EditHtmlBrowserCommand: TEdit
+          BorderSpacing.OnChange = nil
           TabOrder = 0
           Text = 'sensible-browser %s'
           Left = 14

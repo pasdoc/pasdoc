@@ -272,12 +272,11 @@ var
   i: Integer;
   lng: TLanguageID;
   SS: TSortSetting;
+  HtmlGen: TGenericHTMLDocGenerator;
 begin
   GOption_Format.Value := LowerCase(GOption_Format.Value);
-  { install a default generator }
-  GPasDoc.Generator:=THTMLDocGenerator.Create(GPasDoc);
   if GOption_Format.Value = 'html' then begin
-    GPasDoc.Generator := THtmlDocGenerator.Create(GPasDoc);
+    GPasDoc.Generator := THTMLDocGenerator.Create(GPasDoc);
   end else 
   if GOption_Format.Value = 'latex' then 
   begin
@@ -287,15 +286,15 @@ begin
   begin
     GPasDoc.Generator := TTexDocGenerator.Create(GPasDoc);
     TTexDocGenerator(GPasDoc.Generator).Latex2rtf := True;
-  end else 
+  end else
   if GOption_Format.Value = 'htmlhelp' then 
   begin
     GPasDoc.Generator := THTMLHelpDocGenerator.Create(GPasDoc);
-    THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
+    TGenericHTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
   end else
   begin
-    GPasDoc.DoMessage(1, mtWarning, 'Unknown output format (%s), using defaults.',
-      [GOption_Format.Value]);
+    raise EInvalidCommandLine.CreateFmt(
+      'Unknown output format "%s"', [GOption_Format.Value]);
   end;
 
   GPasDoc.HtmlHelpContentsFileName := GOption_ContentFile.Value;
@@ -331,25 +330,24 @@ begin
   
   GPasDoc.Generator.NoGeneratorInfo := GOption_Generator.TurnedOn;
 
-  if GPasDoc.Generator is THTMLDocGenerator then begin    
+  if GPasDoc.Generator is TGenericHTMLDocGenerator then
+  begin    
+    HtmlGen := TGenericHTMLDocGenerator(GPasDoc.Generator);
 
-    if GOption_Footer.WasSpecified then begin
-      THTMLDocGenerator(GPasDoc.Generator).LoadFooterFromFile(GOption_Footer.Value);
-    end;
+    if GOption_Footer.WasSpecified then
+      HtmlGen.LoadFooterFromFile(GOption_Footer.Value);
 
-    if GOption_Header.WasSpecified then begin
-      THTMLDocGenerator(GPasDoc.Generator).LoadHeaderFromFile(GOption_Header.Value);
-    end;
+    if GOption_Header.WasSpecified then
+      HtmlGen.LoadHeaderFromFile(GOption_Header.Value);
 
     { If external CSS file was specified }
-    if GOption_CSS.WasSpecified then begin
-     THTMLDocGenerator(GPasDoc.Generator).CSS := GOption_CSS.Value;
-    end;
+    if GOption_CSS.WasSpecified then
+     HtmlGen.CSS := GOption_CSS.Value;
 
-    THTMLDocGenerator(GPasDoc.Generator).NumericFilenames := GOption_NumericFilenames.TurnedOn;
-    THTMLDocGenerator(GPasDoc.Generator).WriteUsesClause := GOption_WriteUsesList.TurnedOn;
+    HtmlGen.NumericFilenames := GOption_NumericFilenames.TurnedOn;
+    HtmlGen.WriteUsesClause := GOption_WriteUsesList.TurnedOn;
     
-    THTMLDocGenerator(GPasDoc.Generator).UseTipueSearch := GOption_UseTipueSearch.TurnedOn;
+    HtmlGen.UseTipueSearch := GOption_UseTipueSearch.TurnedOn;
   end else
   begin
     if GOption_UseTipueSearch.TurnedOn then

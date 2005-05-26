@@ -411,10 +411,10 @@ begin
       Assert(False);
     end;
 
-    if PasDoc1.Generator is THTMLDocGenerator then
+    if PasDoc1.Generator is TGenericHTMLDocGenerator then
     begin
-      THTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
-      THTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
     end;
     
     // Create the output directory if it does not exist.

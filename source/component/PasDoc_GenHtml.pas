@@ -30,11 +30,8 @@ uses
 type
   { @abstract(generates HTML documentation)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in HTML (HyperText Markup Language) format.
-    This type of output is well suited to be read with a web browser at the
-    computer, as a reference manual that does not have to be printed.
-    For printed output, use @link(TTexDocGenerator). }
-  THTMLDocGenerator = class(TDocGenerator)
+    output in HTML (HyperText Markup Language) format. }
+  TGenericHTMLDocGenerator = class(TDocGenerator)
   private
     FUseTipueSearch: boolean;
     
@@ -242,6 +239,12 @@ type
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch;
   end;
 
+  { Right now this is the same thing as TGenericHTMLDocGenerator.
+    In the future it may be extended to include some things not needed
+    for HtmlHelp generator. }
+  THTMLDocGenerator = class(TGenericHTMLDocGenerator)
+  end;
+
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
 {$INCLUDE public.inc}
@@ -289,37 +292,37 @@ const
     '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
 
 
-function THTMLDocGenerator.HtmlString(const S: string): string; 
+function TGenericHTMLDocGenerator.HtmlString(const S: string): string; 
 begin
   Result := S;
 end;
 
-function THTMLDocGenerator.FormatString(AString: string): string;
+function TGenericHTMLDocGenerator.FormatString(AString: string): string;
 begin
   result := '<span class="pascal_string">' + AString + '</span>';
 end;
 
-function THTMLDocGenerator.FormatKeyWord(AString: string): string;
+function TGenericHTMLDocGenerator.FormatKeyWord(AString: string): string;
 begin
   result := '<span class="pascal_keyword">' + AString + '</span>';
 end;
 
-function THTMLDocGenerator.FormatComment(AString: string): string;
+function TGenericHTMLDocGenerator.FormatComment(AString: string): string;
 begin
   result := '<span class="pascal_comment">' + AString + '</span>';
 end;
 
-function THTMLDocGenerator.FormatCompilerComment(AString: string): string;
+function TGenericHTMLDocGenerator.FormatCompilerComment(AString: string): string;
 begin
   result := '<span class="pascal_compiler_comment">' + AString + '</span>';
 end;
 
-function THTMLDocGenerator.CodeString(const s: string): string;
+function TGenericHTMLDocGenerator.CodeString(const s: string): string;
 begin
   Result := '<code>' + s + '</code>';
 end;
 
-function THTMLDocGenerator.CreateLink(const Item: TPasItem): string;
+function TGenericHTMLDocGenerator.CreateLink(const Item: TPasItem): string;
   function NewLink(const AFullName: string): string;
   begin
     if NumericFilenames then begin
@@ -352,18 +355,18 @@ begin
   end;
 end;
 
-function THTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
+function TGenericHTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
   string;
 begin
   Result := '<a class="normal" href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
 end;
 
-function THTMLDocGenerator.GetFileExtension: string;
+function TGenericHTMLDocGenerator.GetFileExtension: string;
 begin
   Result := '.html';
 end;
 
-procedure THTMLDocGenerator.WriteAppInfo;
+procedure TGenericHTMLDocGenerator.WriteAppInfo;
 begin
   { check if user does not want a link to the pasdoc homepage }
   if NoGeneratorInfo then Exit;
@@ -376,7 +379,7 @@ begin
   WriteDirectLine('</em>');
 end;
 
-procedure THTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
+procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
 var
   i: Integer;
   s, S1, S2: string;
@@ -405,7 +408,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
+procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
@@ -552,7 +555,7 @@ begin
   WriteEndOfDocument;
 end;
 
-procedure THTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
+procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
 var
   i: Integer;
   p: TPasCio;
@@ -588,7 +591,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
+procedure TGenericHTMLDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 var
   j: Integer;
   p: TPasCio;
@@ -627,7 +630,7 @@ begin
   WriteEndOfTable;
 end;
 
-procedure THTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
   const Code: string; const ItemLink: string);
 begin
   WriteCodeWithLinksCommon(p, Code, ItemLink, '<b>', '</b>', 
@@ -636,7 +639,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteDates(const HL: integer; const Created,
+procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer; const Created,
   LastMod: string);
 begin
   if Created <> '' then begin
@@ -655,7 +658,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteDocumentation;
+procedure TGenericHTMLDocGenerator.WriteDocumentation;
 begin
   StartSpellChecking('sgml');
   inherited;
@@ -675,38 +678,38 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteEmptyCell;
+procedure TGenericHTMLDocGenerator.WriteEmptyCell;
 begin
   WriteDirect('&nbsp;');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfDocument;
+procedure TGenericHTMLDocGenerator.WriteEndOfDocument;
 begin
   WriteDirect('</body>');
   WriteDirectLine('</html>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfAnchor;
+procedure TGenericHTMLDocGenerator.WriteEndOfAnchor;
 begin
   WriteDirect('</a>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfLink;
+procedure TGenericHTMLDocGenerator.WriteEndOfLink;
 begin
   WriteDirect('</a>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfCode;
+procedure TGenericHTMLDocGenerator.WriteEndOfCode;
 begin
   WriteDirect('</code>');
 end;
 
-procedure THTMLDocGenerator.WriteLink(const href, caption, localcss: string);
+procedure TGenericHTMLDocGenerator.WriteLink(const href, caption, localcss: string);
 begin
   WriteLinkTarget(href, caption, localcss, '');
 end;
 
-function THTMLDocGenerator.MakeLinkTarget(
+function TGenericHTMLDocGenerator.MakeLinkTarget(
   const href, caption, localcss, target: string): string;
 var
   s: string;
@@ -720,35 +723,35 @@ begin
   Result := Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]);
 end;
 
-procedure THTMLDocGenerator.WriteLinkTarget(
+procedure TGenericHTMLDocGenerator.WriteLinkTarget(
   const href, caption, localcss, target: string);
 begin
   WriteDirect(MakeLinkTarget(href, caption, localcss, target));
 end;
 
-procedure THTMLDocGenerator.WriteEndOfParagraph;
+procedure TGenericHTMLDocGenerator.WriteEndOfParagraph;
 begin
   WriteDirectLine('</p>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfTableCell;
+procedure TGenericHTMLDocGenerator.WriteEndOfTableCell;
 begin
   WriteDirectLine('</td>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfTable;
+procedure TGenericHTMLDocGenerator.WriteEndOfTable;
 begin
   WriteDirectLine('</table>');
 end;
 
-procedure THTMLDocGenerator.WriteEndOfTableRow;
+procedure TGenericHTMLDocGenerator.WriteEndOfTableRow;
 begin
   WriteDirectLine('</tr>');
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteFields(const Order: integer; const Fields:
+procedure TGenericHTMLDocGenerator.WriteFields(const Order: integer; const Fields:
   TPasItems);
 var
   j: Integer;
@@ -798,14 +801,14 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteFooter;
+procedure TGenericHTMLDocGenerator.WriteFooter;
 begin
   WriteDirect(Footer);
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteItemTableRow(
+procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; OfObject: boolean; 
   const ItemLink: string; MakeAnchor: boolean);
 begin
@@ -823,7 +826,7 @@ begin
   WriteEndOfTableRow;
 end;
 
-procedure THTMLDocGenerator.WriteItemsSummary(
+procedure TGenericHTMLDocGenerator.WriteItemsSummary(
   Items: TPasItems; OfObject: boolean);
 var 
   ItemLink: string;
@@ -850,7 +853,7 @@ begin
   WriteEndOfTable;  
 end;
 
-procedure THTMLDocGenerator.WriteItemsDetailed(
+procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
   Items: TPasItems; OfObject: boolean);
 var 
   Item: TPasItem;
@@ -870,7 +873,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteFuncsProcs(const HL: integer; 
+procedure TGenericHTMLDocGenerator.WriteFuncsProcs(const HL: integer; 
   const Methods: Boolean; const FuncsProcs: TPasMethods);
 begin
   if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
@@ -894,7 +897,7 @@ begin
   WriteItemsDetailed(FuncsProcs, Methods);
 end;
 
-procedure THTMLDocGenerator.WriteHeading(Level: integer; const s: string);
+procedure TGenericHTMLDocGenerator.WriteHeading(Level: integer; const s: string);
 var
   c: string;
 begin
@@ -911,7 +914,7 @@ end;
 
 { ---------- }
 
-procedure THTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
 
@@ -926,7 +929,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
@@ -1053,7 +1056,7 @@ begin
  end;
 end;
 
-procedure THTMLDocGenerator.WriteItems(HL: integer; Heading: string; const
+procedure TGenericHTMLDocGenerator.WriteItems(HL: integer; Heading: string; const
   Anchor: string; const i: TPasItems);
 var
   j, k: Integer;
@@ -1112,7 +1115,7 @@ end;
 
 { ---------- }
 
-procedure THTMLDocGenerator.WriteOverviewFiles;
+procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
   function CreateOverviewStream(Overview: TCreatedOverviewFile): boolean;
   var BaseFileName, Headline: string;
@@ -1322,7 +1325,7 @@ begin
   finally TotalItems.Free end;
 end;
 
-procedure THTMLDocGenerator.WriteProperties(HL: integer; const p:
+procedure TGenericHTMLDocGenerator.WriteProperties(HL: integer; const p:
   TPasProperties);
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
@@ -1331,7 +1334,7 @@ begin
   WriteItemsDetailed(P, true);
 end;
 
-procedure THTMLDocGenerator.WritePropertiesSummary(HL: integer; p:
+procedure TGenericHTMLDocGenerator.WritePropertiesSummary(HL: integer; p:
   TPasProperties);
 begin
   if ObjectVectorIsNilOrEmpty(p) then Exit;
@@ -1346,31 +1349,31 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteAnchor(const AName: string);
+procedure TGenericHTMLDocGenerator.WriteAnchor(const AName: string);
 begin
   WriteAnchor(AName, '');
 end;
 
-procedure THTMLDocGenerator.WriteAnchor(const AName, Caption: string);
+procedure TGenericHTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
   WriteDirect(Format('<a name="%s">%s</a>', [AName, Caption]));
 end;
 
-procedure THTMLDocGenerator.WriteStartOfAnchor(const AName: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfAnchor(const AName: string);
 begin
   WriteDirect('<a name="' + AName + '">');
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteStartOfCode;
+procedure TGenericHTMLDocGenerator.WriteStartOfCode;
 begin
   WriteDirect('<code>');
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteMetaContentType;
+procedure TGenericHTMLDocGenerator.WriteMetaContentType;
 begin
   if FLanguage.CharSet <> '' then begin
     WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' 
@@ -1378,7 +1381,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteStartOfDocument(AName: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
   WriteDirectLine(DoctypeNormal);
   WriteDirectLine('<html>');
@@ -1404,7 +1407,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const href, localcss, Target: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href, localcss, Target: string);
 var
   s: string;
 begin
@@ -1417,29 +1420,29 @@ begin
   WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const href, localcss: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href, localcss: string);
 begin
   WriteStartOfLink(href, localcss, '');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfLink(const href: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href: string);
 begin
   WriteStartOflink(href, '', '');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfParagraph;
+procedure TGenericHTMLDocGenerator.WriteStartOfParagraph;
 begin
   WriteDirect('<p>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTable1Column(t: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTable1Column(t: string);
 begin
   FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG + '" width="100%">', true);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTable2ColumnsExt(t1, t2: string;
+procedure TGenericHTMLDocGenerator.WriteStartOfTable2ColumnsExt(t1, t2: string;
   Width100: boolean);
 begin
   FOddTableRow := 0;
@@ -1455,12 +1458,12 @@ begin
   WriteDirectLine('</th></tr>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTable2Columns(t1, t2: string);
 begin
   WriteStartOfTable2ColumnsExt(t1, t2, true);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTable3Columns(t1, t2, T3: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTable3Columns(t1, t2, T3: string);
 begin
   FOddTableRow := 0;
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
@@ -1474,7 +1477,7 @@ begin
   WriteDirectLine('</th></tr>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell(const Params, localcss: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const Params, localcss: string);
 var
   s: string;
 begin
@@ -1487,17 +1490,17 @@ begin
   WriteDirect(s+'>');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell(const localcss: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const localcss: string);
 begin
   WriteStartOfTableCell('', localcss);
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableCell;
+procedure TGenericHTMLDocGenerator.WriteStartOfTableCell;
 begin
   WriteStartOfTableCell('', '');
 end;
 
-procedure THTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
 var
   s: string;
 begin
@@ -1516,7 +1519,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 type
   TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
     dsTypes, dsConstants, dsVariables);
@@ -1544,9 +1547,8 @@ var
 
 begin
   if not Assigned(U) then begin
-    DoMessage(1, mtError,
-      'THTMLDocGenerator.WriteUnit: Unit variable has not been initialized.',
-      []);
+    DoMessage(1, mtError, 'TGenericHTMLDocGenerator.WriteUnit: ' +
+      'Unit variable has not been initialized.', []);
     Exit;
   end;
   
@@ -1622,13 +1624,13 @@ begin
   WriteCIOs(HL, U.CIOs);
 end;
 
-procedure THTMLDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
+procedure TGenericHTMLDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
 begin
   WriteHeading(HL, FLanguage.Translation[trDescription]);
   WriteItemDetailedDescription(U);
 end;
 
-procedure THTMLDocGenerator.WriteImage(const src, alt, localcss: string);
+procedure TGenericHTMLDocGenerator.WriteImage(const src, alt, localcss: string);
 var
   s: string;
 begin
@@ -1639,7 +1641,7 @@ begin
   WriteDirect(Format('%s src="%s" alt="%s" title="%s">', [s, src, alt, alt]));
 end;
 
-procedure THTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
   procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
   begin
@@ -1667,7 +1669,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.WriteVisibilityLegendFile;
+procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 
   procedure WriteLegendEntry(const Image: string; trans: TTranslationID);
   begin
@@ -1713,17 +1715,17 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure THTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
+procedure TGenericHTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
 begin
   LoadStrFromFileA(AFileName, FFooter);
 end;
 
-procedure THTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
+procedure TGenericHTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
 begin
   LoadStrFromFileA(AFileName, FHeader);
 end;
 
-procedure THTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
+procedure TGenericHTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
 var
   i: Integer;
   ULink: TPasItem;
@@ -1745,7 +1747,7 @@ begin
   end;
 end;
 
-procedure THTMLDocGenerator.WriteSpellChecked(const AString: string);
+procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
 var
   LErrors: TObjectVector;
   i, temp: Integer;
@@ -1777,7 +1779,7 @@ begin
   LErrors.Free;
 end;
 
-procedure THTMLDocGenerator.WriteBinaryFiles;
+procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 
   procedure WriteGifFile(const Img: array of byte; const Filename: string);
   begin
@@ -1894,7 +1896,7 @@ begin
       [PasdocCssFileName]);
 end;
 
-procedure THTMLDocGenerator.WriteFramesetFiles;
+procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
 
   procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID);
   begin
@@ -1957,7 +1959,7 @@ begin
   CloseStream;
 end;
 
-function THTMLDocGenerator.ConvertString(const S: String): String;
+function TGenericHTMLDocGenerator.ConvertString(const S: String): String;
 const
   ReplacementArray: array[0..5] of TCharReplacement = (
     (cChar: '<'; sSpec: '&lt;'),
@@ -1971,19 +1973,19 @@ begin
   Result := StringReplaceChars(S, ReplacementArray);
 end;
 
-function THTMLDocGenerator.ConvertChar(c: char): String;
+function TGenericHTMLDocGenerator.ConvertChar(c: char): String;
 begin
   ConvertChar := ConvertString(c);
 end;
 
 
-procedure THTMLDocGenerator.BuildLinks;
+procedure TGenericHTMLDocGenerator.BuildLinks;
 begin
   FLinkCount := 1;
   inherited;
 end;
 
-function THTMLDocGenerator.EscapeURL(const AString: string): string;
+function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
 var
   i: Integer;
 begin
@@ -2008,7 +2010,7 @@ begin
   end;
 end;
 
-function THTMLDocGenerator.FormatPascalCode(const Line: string): string;
+function TGenericHTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
   { Why these </p> and <p> are needed ?
     Well, basic idea is that pasdoc should always try to make closing
@@ -2038,17 +2040,17 @@ begin
     inherited FormatPascalCode(ConvertString(Line)) + '</pre><p>';
 end;
 
-function THTMLDocGenerator.Paragraph: string; 
+function TGenericHTMLDocGenerator.Paragraph: string; 
 begin
   Result := '<p>';
 end;
 
-function THTMLDocGenerator.LineBreak: string; 
+function TGenericHTMLDocGenerator.LineBreak: string; 
 begin
   Result := '<br>';
 end;
 
-function THTMLDocGenerator.URLLink(const URL: string): string; 
+function TGenericHTMLDocGenerator.URLLink(const URL: string): string; 
 begin
   Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
 end;

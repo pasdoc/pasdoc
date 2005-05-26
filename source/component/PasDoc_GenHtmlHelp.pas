@@ -5,7 +5,7 @@ interface
 uses PasDoc_GenHtml;
 
 type
-  THTMLHelpDocGenerator = class(THTMLDocGenerator)
+  THTMLHelpDocGenerator = class(TGenericHTMLDocGenerator)
   private
     FContentsFile: string;
     

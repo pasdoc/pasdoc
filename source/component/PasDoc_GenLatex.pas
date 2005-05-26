@@ -1684,7 +1684,8 @@ begin
     CheckString(AString, LErrors);
     WriteDirect(AString);
     
-    { TODO: write here LErrors, like in THTMLDocGenerator.WriteSpellChecked }
+    { TODO: write here LErrors, like in 
+      TGenericHTMLDocGenerator.WriteSpellChecked }
   finally LErrors.Free end;
 end;
 
@@ -1741,6 +1742,10 @@ end;
 
 (*
   $Log$
+  Revision 1.44  2005/05/26 10:23:04  kambi
+  * Previous THTMLGenerator splitted to TGenericHTMLGenerator and new THTMLDocGenerator (descendant of TGenericHTMLGenerator with functionality that is *not* useful for HtmlHelp output)
+  * Fixed mem leak in PasDoc_Main.pas
+
   Revision 1.43  2005/05/25 04:25:29  kambi
   * Cleaned sorting: comfortable and flexible methods TPasItems.SortDeep, SortShallow, SortOnlyInsideItems, and virtual TPasItem.Sort
   * One simple FUnits.SortDeep in PasDoc.pas sorts everything, no need to care about this in html/latex generators. This is prerequsite for --sort command-line option
