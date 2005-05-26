@@ -115,11 +115,10 @@ procedure TipueAddFiles(Units: TPasUnits;
             ' ' + EscapeIndexEntry(EnumMember.Authors.Text);
         end;
       end;
-
       if Item is TExtraDescription then
       begin
-        LongDescription := TExtraDescription(Item).Title + ' '
-          + LongDescription;
+        LongDescription := LongDescription +
+          ' ' + EscapeIndexEntry(TExtraDescription(Item).Title);
       end;
       
       WriteIndexData(Item.QualifiedName, Item.FullLink, 

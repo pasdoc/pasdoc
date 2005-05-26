@@ -1715,12 +1715,12 @@ end;
 
 procedure TGenericHTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
 begin
-  LoadStrFromFileA(AFileName, FFooter);
+  FFooter := FileToString(AFileName);
 end;
 
 procedure TGenericHTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
 begin
-  LoadStrFromFileA(AFileName, FHeader);
+  FHeader := FileToString(AFileName);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
@@ -1896,18 +1896,18 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
 
-  procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID);
-  begin
-    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
-    WriteConverted(FLanguage.Translation[CaptionId]);
-    WriteDirectLine('</a></td></tr>');
-  end;
-  procedure WriteExtraLink(const Filename, Caption: string);
+  procedure LocalWriteLink(const Filename, Caption: string); overload;
   begin
     WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
     WriteConverted(Caption);
     WriteDirectLine('</a></td></tr>');
+  end;  
+
+  procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID); overload;
+  begin
+    LocalWriteLink(Filename, FLanguage.Translation[CaptionId]);
   end;
+
 var
   Overview: TCreatedOverviewFile;
 begin
@@ -1944,10 +1944,9 @@ begin
     if Introduction.ShortTitle = '' then
     begin
       LocalWriteLink(Introduction.OutputFileName, trIntroduction);
-    end
-    else
+    end else
     begin
-      WriteExtraLink(Introduction.OutputFileName, Introduction.ShortTitle)
+      LocalWriteLink(Introduction.OutputFileName, Introduction.ShortTitle)
     end;
   end;
     
@@ -1971,10 +1970,9 @@ begin
     if Conclusion.ShortTitle = '' then
     begin
       LocalWriteLink(Conclusion.OutputFileName, trConclusion);
-    end
-    else
+    end else
     begin
-      WriteExtraLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
+      LocalWriteLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
     end;
   end;
     

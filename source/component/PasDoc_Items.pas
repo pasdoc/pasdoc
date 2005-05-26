@@ -1647,7 +1647,7 @@ begin
   SaveStringToStream(FReader, ADestination);
 end;
 
-{ TExtraDescription }
+{ TExtraDescription ---------------------------------------------------------- }
 
 procedure TExtraDescription.HandleShortTitleTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);

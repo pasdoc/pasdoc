@@ -389,23 +389,17 @@ var
   Count, i: Integer;
   p: string;
   InputStream: TStream;
+  
   procedure ParseExtraFiles(const FileName: string;
     var ExtraDescription: TExtraDescription);
   begin
     if FileName <> '' then
     begin
-      if not FileExists(FileName) then
-      begin
-         DoMessage(1, mtError, 'Could not find or open file "%s", skipping',
-           [FileName]);
-      end
-      else
-      begin
-        HandleExtraFile(FileName, ExtraDescription);
-        Inc(Count);
-      end;
+      HandleExtraFile(FileName, ExtraDescription);
+      Inc(Count);
     end;
   end;
+  
 begin
   FUnits.clear;
 
@@ -736,34 +730,19 @@ end;
 
 procedure TPasDoc.HandleExtraFile(const FileName: string;
   out ExtraDescription: TExtraDescription);
-var
-  RawDescription: string;
 begin
-  ExtraDescription := nil;
-  DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
-  Assert(FileExists(FileName));
-
   ExtraDescription := TExtraDescription.Create;
-  ExtraDescription.Name := ExtractFileName(FileName);
-  ExtraDescription.Name := ChangeFileExt(ExtraDescription.Name, '');
+  try
+    DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
 
-  ExtraDescription.Name := SCharsReplace(ExtraDescription.Name, [' '], '_');
-  // In Delphi, the following could be used.
-  // It might not work with FPC.
-//  ExtraDescription.Name := AnsiReplaceStr(ExtraDescription.Name, ' ', '_');
 
-  // Avoid overwriting original file.
-  if Generator.DestinationDirectory + ExtraDescription.Name
-    + Generator.GetFileExtension = FileName then
-  begin
-    DoMessage(2, mtInformation,
-      'Error: input file name and output file name are the same: %s...', [FileName]);
+    ExtraDescription.Name := SCharsReplace(
+      ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
+
+    ExtraDescription.RawDescription := FileToString(FileName);
+  except 
     FreeAndNil(ExtraDescription);
-  end
-  else
-  begin
-    LoadStrFromFileA(FileName, RawDescription);
-    ExtraDescription.RawDescription := RawDescription;
+    raise;
   end;
 end;
 
