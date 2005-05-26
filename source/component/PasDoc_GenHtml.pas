@@ -46,8 +46,12 @@ type
     procedure WriteItemTableRow(Item: TPasItem; OfObject: boolean;
       const ItemLink: string; MakeAnchor: boolean);
       
-    procedure WriteItemsSummary(Items: TPasItems; OfObject: boolean);
-    procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean);
+    procedure WriteItemsSummary(Items: TPasItems; OfObject: boolean; 
+      HeadingLevel: Integer;
+      const SectionAnchor: string; SectionName: TTranslationId);
+      
+    procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean;
+      HeadingLevel: Integer);
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -97,7 +101,6 @@ type
       #) *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
-    procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
 
     { Writes an opening A element, including a name attribute given by the
       argument. }
@@ -136,7 +139,6 @@ type
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     procedure WriteUnitUses(const HL: integer; U: TPasUnit);
     procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-    procedure WriteProperties(HL: integer; const p: TPasProperties); override;
 
     procedure WriteSpellChecked(const AString: string);
 
@@ -189,14 +191,6 @@ type
     procedure WriteHeading(Level: integer; const s: string); override;
 
     procedure WriteEndOfCode; override;
-    { Writes information on functions and procedures or methods of a unit or
-      class, interface or object to output.
-      If argument Methods is true, they will be considered methods of a class,
-      interface or object, otherwise they're considered functions or procedures
-      of a unit.
-      The functions are stored in the FuncsProcs argument. }
-    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const
-      FuncsProcs: TPasMethods); override;
 
     { output all the necessary images }
     procedure WriteBinaryFiles;
@@ -409,6 +403,28 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
+
+  procedure WriteMethodsSummary(HeadingLevel: Integer; Items: TPasMethods);
+  begin
+    WriteItemsSummary(Items, true, HeadingLevel, '@Methods', trMethods);
+  end;
+
+  procedure WriteMethodsDetailed(HeadingLevel: Integer; Items: TPasMethods);
+  begin
+    WriteItemsDetailed(Items, true, HeadingLevel);
+  end;
+
+  procedure WritePropertiesSummary(HeadingLevel: Integer; 
+    Items: TPasProperties);
+  begin
+    WriteItemsSummary(Items, true, HeadingLevel, '@Properties', trProperties);
+  end;
+
+  procedure WritePropertiesDetailed(HeadingLevel: Integer; Items: TPasProperties);
+  begin
+    WriteItemsDetailed(Items, true, HeadingLevel);
+  end;
+
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
@@ -541,12 +557,11 @@ begin
 
   WriteFields(HL + 1, CIO.Fields);
 
-  WriteFuncsProcs(HL + 1, True, CIO.Methods);
+  WriteMethodsSummary (HL + 1, CIO.Methods);
+  WriteMethodsDetailed(HL + 1, CIO.Methods);
 
-  if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then begin
-    WritePropertiesSummary(HL + 1, CIO.Properties);
-    WriteProperties(HL + 1, CIO.Properties);
-  end;
+  WritePropertiesSummary (HL + 1, CIO.Properties);
+  WritePropertiesDetailed(HL + 1, CIO.Properties);
 
   WriteAuthors(HL + 1, CIO.Authors);
   WriteDates(HL + 1, CIO.Created, CIO.LastMod);
@@ -827,13 +842,19 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsSummary(
-  Items: TPasItems; OfObject: boolean);
+  Items: TPasItems; OfObject: boolean; HeadingLevel: Integer;
+  const SectionAnchor: string; SectionName: TTranslationId);
 var 
   ItemLink: string;
   Item: TPasItem;
   i: Integer;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
+  
+  WriteAnchor(SectionAnchor);
+
+  WriteHeading(HeadingLevel, FLanguage.Translation[SectionName]);
+  WriteHeading(HeadingLevel + 1, FLanguage.Translation[trOverview]);
   
   WriteStartOfTable1Column('');
 
@@ -854,12 +875,15 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
-  Items: TPasItems; OfObject: boolean);
+  Items: TPasItems; OfObject: boolean;
+  HeadingLevel: Integer);
 var 
   Item: TPasItem;
   i: Integer;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
+  
+  WriteHeading(HeadingLevel + 1, FLanguage.Translation[trDescription]);
   
   for i := 0 to Items.Count - 1 do
   begin
@@ -871,30 +895,6 @@ begin
 
     WriteItemDetailedDescription(Item);
   end;
-end;
-
-procedure TGenericHTMLDocGenerator.WriteFuncsProcs(const HL: integer; 
-  const Methods: Boolean; const FuncsProcs: TPasMethods);
-begin
-  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
-
-  if Methods then 
-  begin
-    WriteAnchor('@Methods');
-    WriteHeading(HL, FLanguage.Translation[trMethods]);
-  end else 
-  begin
-    WriteAnchor('@FuncsProcs');
-    WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
-  end;
-
-  // 1st pass: write the overview
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  WriteItemsSummary(FuncsProcs, Methods);
-
-  // 2nd pass: write the detailed descriptions
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-  WriteItemsDetailed(FuncsProcs, Methods);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteHeading(Level: integer; const s: string);
@@ -1325,28 +1325,6 @@ begin
   finally TotalItems.Free end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteProperties(HL: integer; const p:
-  TPasProperties);
-begin
-  if ObjectVectorIsNilOrEmpty(p) then Exit;
-
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
-  WriteItemsDetailed(P, true);
-end;
-
-procedure TGenericHTMLDocGenerator.WritePropertiesSummary(HL: integer; p:
-  TPasProperties);
-begin
-  if ObjectVectorIsNilOrEmpty(p) then Exit;
-
-  WriteAnchor('@Properties');
-
-  WriteHeading(HL, FLanguage.Translation[trProperties]);
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-
-  WriteItemsSummary(P, true);
-end;
-
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName: string);
@@ -1520,6 +1498,18 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+
+  procedure WriteFuncsProcsSummary(HeadingLevel: Integer; Items: TPasMethods);
+  begin
+    WriteItemsSummary(Items, false, HeadingLevel, '@FuncsProcs', 
+      trFunctionsAndProcedures);
+  end;
+
+  procedure WriteFuncsProcsDetailed(HeadingLevel: Integer; Items: TPasMethods);
+  begin
+    WriteItemsDetailed(Items, false, HeadingLevel);
+  end;
+
 type
   TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
     dsTypes, dsConstants, dsVariables);
@@ -1607,7 +1597,8 @@ begin
 
   WriteCIOSummary(HL + 1, U.CIOs);
 
-  WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
+  WriteFuncsProcsSummary (HL + 1, U.FuncsProcs);
+  WriteFuncsProcsDetailed(HL + 1, U.FuncsProcs);
 
   WriteTypes(HL + 1, U.Types);
 
@@ -1977,7 +1968,6 @@ function TGenericHTMLDocGenerator.ConvertChar(c: char): String;
 begin
   ConvertChar := ConvertString(c);
 end;
-
 
 procedure TGenericHTMLDocGenerator.BuildLinks;
 begin

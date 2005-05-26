@@ -21,6 +21,17 @@ type
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
+  private
+    { Writes information on functions and procedures or methods of a unit or
+      class, interface or object to output.
+      If argument Methods is true, they will be considered methods of a class,
+      interface or object, otherwise they're considered functions or procedures
+      of a unit.
+      The functions are stored in the FuncsProcs argument. }
+    procedure WriteFuncsProcs(const HL: integer; 
+      const Methods: Boolean; const FuncsProcs: TPasMethods); 
+        
+    procedure WriteProperties(HL: integer; const p: TPasProperties);
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -72,7 +83,6 @@ type
       information).
     *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
-    procedure WritePropertiesSummary(HL: integer; p: TPasProperties);
 
     { Writes an opening A element, including a name attribute given by the
       argument. }
@@ -102,7 +112,6 @@ type
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     procedure WriteUnitUses(const HL: integer; U: TPasUnit);
     procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-    procedure WriteProperties(HL: integer; const p: TPasProperties); override;
 
     procedure WriteSpellChecked(const AString: string);
 
@@ -140,13 +149,6 @@ type
     procedure WriteHeading(Level: integer; const s: string); override;
 
     procedure WriteEndOfCode; override;
-    { Writes information on functions and procedures or methods of a unit or
-      class, interface or object to output.
-      If argument Methods is true, they will be considered methods of a class,
-      interface or object, otherwise they're considered functions or procedures
-      of a unit.
-      The functions are stored in the FuncsProcs argument. }
-    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const FuncsProcs: TPasMethods); override;
       
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
@@ -1393,11 +1395,6 @@ begin
   end;
 end;
 
-procedure TTexDocGenerator.WritePropertiesSummary(HL: integer; p:
-  TPasProperties);
-begin
-end;
-
 { ---------------------------------------------------------------------------- }
 procedure TTexDocGenerator.WriteAnchor(ItemName, Link: string);
 begin
@@ -1730,6 +1727,9 @@ end;
 
 (*
   $Log$
+  Revision 1.46  2005/05/26 13:47:47  kambi
+  * Cleaning implementation
+
   Revision 1.45  2005/05/26 10:39:44  kambi
   * Cleaned some HTML-specific things
 

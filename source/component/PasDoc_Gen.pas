@@ -423,17 +423,6 @@ end;
     procedure WriteDescription(HL: integer; const Heading: string; const Item:
       TPasItem);
 
-    { Writes a list of functions / procedure or constructors / destructors /
-      methods I to output.
-      Heading level HL is used.
-      If Methods is true, the 'Methods' heading is used, 'Functions and
-      procedures' otherwise.
-      Usually, a list of all items is written first, followed by detailed
-      descriptions of each item.
-      However, this is dependent on the output format. }
-    procedure WriteFuncsProcs(const HL: integer; const Methods: Boolean; const
-      FuncsProcs: TPasMethods); virtual; abstract;
-
     { Abstract procedure that must be overwritten by descendants.
       Writes a heading S at level HL to output.
       In HTML, heading levels are regarded by choosing the appropriate
@@ -453,13 +442,6 @@ end;
       In HTML, this results in a table with two columns. }
     procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
       const i: TPasItems); virtual; abstract;
-
-    { Abstract method, must be overwritten by descendants to implement
-      functionality.
-      Writes a list of properties P to output.
-      Heading level HL is used for the heading FLanguage.Translation[trPROPERTIES). }
-    procedure WriteProperties(HL: integer; const p: TPasProperties); virtual;
-      abstract;
 
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then optionally writes LineEnding. }
