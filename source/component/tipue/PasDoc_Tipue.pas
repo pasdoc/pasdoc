@@ -20,7 +20,9 @@ function TipueSearchButton: string;
   Must end with PathDelim. 
   
   Units must be non-nil. It will be used to generate index data for tipue. }
-procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
+procedure TipueAddFiles(Units: TPasUnits;
+  const Introduction, Conclusion: TExtraDescription;
+  const OutputPath: string);
 
 implementation
 
@@ -43,7 +45,9 @@ begin
     '</form>' + LineEnding;
 end;
 
-procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
+procedure TipueAddFiles(Units: TPasUnits;
+  const Introduction, Conclusion: TExtraDescription;
+  const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
   var 
@@ -95,7 +99,7 @@ procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
       LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
         ' ' + EscapeIndexEntry(Item.Authors.Text);
       if Item is TPasMethod then
-        LongDescription := LongDescription + 
+        LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text) +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Returns) +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text);
@@ -110,6 +114,12 @@ procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
             ' ' + EscapeIndexEntry(EnumMember.DetailedDescription) +
             ' ' + EscapeIndexEntry(EnumMember.Authors.Text);
         end;
+      end;
+
+      if Item is TExtraDescription then
+      begin
+        LongDescription := TExtraDescription(Item).Title + ' '
+          + LongDescription;
       end;
       
       WriteIndexData(Item.QualifiedName, Item.FullLink, 
@@ -165,6 +175,15 @@ procedure TipueAddFiles(Units: TPasUnits; const OutputPath: string);
       
       IndexDataNum := 0;
       
+      if Introduction <> nil then
+      begin
+        WriteItemIndexData(Introduction);
+      end;
+      if Conclusion <> nil then
+      begin
+        WriteItemIndexData(Conclusion);
+      end;
+
       WriteUnitsIndexData(Units);
     finally CloseFile(OutFile) end;
   end;

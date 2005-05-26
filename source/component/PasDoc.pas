@@ -6,6 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michael van Canneyt (michael@tfdec1.fys.kuleuven.ac.be))
   @author(Michalis Kamburelis)
+  @author(Richard B. Winston <rbwinst@usgs.gov>)
   @created(24 Sep 1999)
 }
 
@@ -71,6 +72,10 @@ type
     FMarkerOptional: boolean;
     FCacheDir: string;
     FSortSettings: TSortSettings;
+    FConclusionFileName: string;
+    FIntroductionFileName: string;
+    FConclusion: TExtraDescription;
+    FIntroduction: TExtraDescription;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -87,6 +92,9 @@ type
     procedure HandleStream(
       const InputStream: TStream;
       const SourceFileName: string);
+    procedure HandleExtraFile(
+      const FileName: string;
+      out ExtraDescription: TExtraDescription);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
   protected
@@ -165,6 +173,10 @@ type
       See "--sort" command-line option documentation. }
     property SortSettings: TSortSettings 
       read FSortSettings write FSortSettings default [];
+    property IntroductionFileName: string read FIntroductionFileName
+      write FIntroductionFileName;
+    property ConclusionFileName: string read FConclusionFileName
+      write FConclusionFileName;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -264,6 +276,8 @@ begin
   FIncludeDirectories.Free;
   FSourceFileNames.Free;
   FUnits.Free;
+  FConclusion.Free;
+  FIntroduction.Free;
   inherited;
 end;
 
@@ -375,6 +389,23 @@ var
   Count, i: Integer;
   p: string;
   InputStream: TStream;
+  procedure ParseExtraFiles(const FileName: string;
+    var ExtraDescription: TExtraDescription);
+  begin
+    if FileName <> '' then
+    begin
+      if not FileExists(FileName) then
+      begin
+         DoMessage(1, mtError, 'Could not find or open file "%s", skipping',
+           [FileName]);
+      end
+      else
+      begin
+        HandleExtraFile(FileName, ExtraDescription);
+        Inc(Count);
+      end;
+    end;
+  end;
 begin
   FUnits.clear;
 
@@ -397,6 +428,11 @@ begin
       end;
     end;
   end;
+
+  FreeAndNil(FIntroduction);
+  ParseExtraFiles(IntroductionFileName, FIntroduction);
+  FreeAndNil(FConclusion);
+  ParseExtraFiles(ConclusionFileName, FConclusion);
 
   DoMessage(2, mtInformation, '... %d Source File(s) parsed', [Count]);
 end;
@@ -487,6 +523,8 @@ begin
 
   Generator.Title := Title;
   Generator.Units := FUnits;
+  Generator.Introduction := FIntroduction;
+  Generator.Conclusion := FConclusion;
   Generator.BuildLinks;
 
   FUnits.SortDeep(SortSettings);
@@ -694,6 +732,39 @@ end;
 procedure TPasDoc.SetCommentMarkers(const Value: TStringList);
 begin
   FCommentMarkers.Assign(Value);
+end;
+
+procedure TPasDoc.HandleExtraFile(const FileName: string;
+  out ExtraDescription: TExtraDescription);
+var
+  RawDescription: string;
+begin
+  ExtraDescription := nil;
+  DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
+  Assert(FileExists(FileName));
+
+  ExtraDescription := TExtraDescription.Create;
+  ExtraDescription.Name := ExtractFileName(FileName);
+  ExtraDescription.Name := ChangeFileExt(ExtraDescription.Name, '');
+
+  ExtraDescription.Name := SCharsReplace(ExtraDescription.Name, [' '], '_');
+  // In Delphi, the following could be used.
+  // It might not work with FPC.
+//  ExtraDescription.Name := AnsiReplaceStr(ExtraDescription.Name, ' ', '_');
+
+  // Avoid overwriting original file.
+  if Generator.DestinationDirectory + ExtraDescription.Name
+    + Generator.GetFileExtension = FileName then
+  begin
+    DoMessage(2, mtInformation,
+      'Error: input file name and output file name are the same: %s...', [FileName]);
+    FreeAndNil(ExtraDescription);
+  end
+  else
+  begin
+    LoadStrFromFileA(FileName, RawDescription);
+    ExtraDescription.RawDescription := RawDescription;
+  end;
 end;
 
 { non-object routines -------------------------------------------------------- }

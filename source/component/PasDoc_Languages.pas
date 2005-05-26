@@ -111,7 +111,10 @@ type
     
     trDeprecated,
     trPlatformSpecific,
-    trLibrarySpecific);
+    trLibrarySpecific,
+
+    trIntroduction,
+    trConclusion);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
@@ -280,6 +283,8 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library';
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -349,6 +354,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -418,6 +427,10 @@ begin
   FTranslation[trDeprecated] := 'este símbolo está depreciado';
   FTranslation[trPlatformSpecific] := 'este símbolo é específico para alguma plataforma';
   FTranslation[trLibrarySpecific] := 'este símbolo é específico para alguma biblioteca';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -487,6 +500,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -503,6 +520,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -573,6 +594,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -643,6 +668,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -712,6 +741,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -779,6 +812,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -847,6 +884,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -916,6 +957,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -984,6 +1029,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1053,6 +1102,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1120,6 +1173,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1188,6 +1245,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1256,6 +1317,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1324,6 +1389,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1385,6 +1454,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1449,6 +1522,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1520,6 +1597,10 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1589,6 +1670,10 @@ procedure TPasDocLanguages.SetLanguageHungarian_1250;
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+
+  { TODO : Translation needed. }
+  FTranslation[trIntroduction] := 'Introduction';
+  FTranslation[trConclusion] := 'Conclusion';
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1636,6 +1721,9 @@ end;
 
 {
   $Log$
+  Revision 1.22  2005/05/26 16:57:22  kambi
+  * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
+
   Revision 1.21  2005/05/24 21:02:40  kambi
   * Shamelessly inserted my own name in couple of units where @author was used
 

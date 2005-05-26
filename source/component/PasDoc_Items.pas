@@ -5,6 +5,7 @@
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
+  @author(Richard B. Winston <rbwinst@usgs.gov>)
 
   For each item (type, variable, class etc.) that may appear in a Pascal
   source code file and can thus be taken into the documentation, this unit
@@ -456,6 +457,30 @@ type
     { name of documentation output file (if each class / object gets
       its own file, that's the case for HTML, but not for TeX) }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
+  end;
+
+
+  {@name extends @link(TPasItem) to store extra information about a project.
+   @name is used to hold an introduction and conclusion to the project.}
+  TExtraDescription = class(TPasItem)
+  private
+    FSourceFilename: string;
+    FTitle: string;
+    FShortTitle: string;
+    FOutputFileName: string;
+    procedure SetOutputFileName(const Value: string);
+  protected
+    procedure HandleTitleTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleShortTitleTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
+  public
+    { name of documentation output file }
+    property OutputFileName: string read FOutputFileName write SetOutputFileName;
+    property ShortTitle: string read FShortTitle write FShortTitle;
+    property SourceFileName: string read FSourceFilename write FSourceFilename;
+    property Title: string read FTitle write FTitle;
   end;
 
   { extends @link(TPasItem) to store anything about a unit, its constants,
@@ -1620,6 +1645,46 @@ begin
   SaveStringToStream(FWriter, ADestination);
   SaveStringToStream(FPropType, ADestination);
   SaveStringToStream(FReader, ADestination);
+end;
+
+{ TExtraDescription }
+
+procedure TExtraDescription.HandleShortTitleTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  if ShortTitle <> '' then
+    TagManager.DoMessage(1, mtWarning,
+      '@shorttitle tag was already specified for this item. ' +
+      'It was specified as "%s"', [ShortTitle]);
+  ShortTitle := TagDesc;
+  ReplaceStr := '';
+end;
+
+procedure TExtraDescription.HandleTitleTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  if Title <> '' then
+    TagManager.DoMessage(1, mtWarning,
+      '@title tag was already specified for this item. ' +
+      'It was specified as "%s"', [Title]);
+  Title := TagDesc;
+  ReplaceStr := '';
+end;
+
+
+procedure TExtraDescription.RegisterTagHandlers(TagManager: TTagManager);
+begin
+  inherited;
+  TagManager.AddHandler('title', {$IFDEF FPC}@{$ENDIF}HandleTitleTag,
+    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOther]);
+  TagManager.AddHandler('shorttitle', {$IFDEF FPC}@{$ENDIF}HandleShortTitleTag,
+    [toParameterRequired, toTopLevel], [aiOther]);
+
+end;
+
+procedure TExtraDescription.SetOutputFileName(const Value: string);
+begin
+  FOutputFileName := Value;
 end;
 
 initialization

@@ -10,6 +10,7 @@
   @author(David Berg (HTML Layout) <david@sipsolutions.de>)
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @author(Michalis Kamburelis)
+  @author(Richard B. Winston <rbwinst@usgs.gov>)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
@@ -168,8 +169,6 @@ type
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
-    { Returns HTML file extension ".htm". }
-    function GetFileExtension: string; override;
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
     procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
@@ -212,7 +211,13 @@ type
     function LineBreak: string; override;
     
     function URLLink(const URL: string): string; override;
+    procedure WriteIntroduction;
+    procedure WriteConclusion;
+    procedure WriteExtra(const ExtraItem: TExtraDescription;
+      const Id: TTranslationID);
   public
+    { Returns HTML file extension ".htm". }
+    function GetFileExtension: string; override;
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
@@ -681,12 +686,14 @@ begin
   WriteBinaryFiles;
   WriteOverviewFiles;
   WriteVisibilityLegendFile;
+  WriteIntroduction;
+  WriteConclusion;
   WriteFramesetFiles;
   if UseTipueSearch then
   begin
     DoMessage(2, mtInformation, 
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(Units, DestinationDirectory);
+    TipueAddFiles(Units, Introduction, Conclusion, DestinationDirectory);
   end;
   EndSpellChecking;
 end;
@@ -1895,7 +1902,12 @@ procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
     WriteConverted(FLanguage.Translation[CaptionId]);
     WriteDirectLine('</a></td></tr>');
   end;
-
+  procedure WriteExtraLink(const Filename, Caption: string);
+  begin
+    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
+    WriteConverted(Caption);
+    WriteDirectLine('</a></td></tr>');
+  end;
 var
   Overview: TCreatedOverviewFile;
 begin
@@ -1926,6 +1938,18 @@ begin
   WriteDirect('<table cellspacing="' + HTML_TABLE_CELLSPACING
     + '" cellpadding="' + HTML_TABLE_CELLPADNG
     + '" width="100%">', true);
+
+  if Introduction <> nil then
+  begin
+    if Introduction.ShortTitle = '' then
+    begin
+      LocalWriteLink(Introduction.OutputFileName, trIntroduction);
+    end
+    else
+    begin
+      WriteExtraLink(Introduction.OutputFileName, Introduction.ShortTitle)
+    end;
+  end;
     
   for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     LocalWriteLink(
@@ -1942,6 +1966,18 @@ begin
       OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
       OverviewFilesInfo[ofGraphVizClasses].TranslationId);  
 
+  if Conclusion <> nil then
+  begin
+    if Conclusion.ShortTitle = '' then
+    begin
+      LocalWriteLink(Conclusion.OutputFileName, trConclusion);
+    end
+    else
+    begin
+      WriteExtraLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
+    end;
+  end;
+    
   if UseTipueSearch then
     WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
     
@@ -2043,6 +2079,73 @@ end;
 function TGenericHTMLDocGenerator.URLLink(const URL: string): string; 
 begin
   Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
+end;
+
+procedure TGenericHTMLDocGenerator.WriteExtra(const ExtraItem: TExtraDescription;
+  const Id: TTranslationID);
+var
+  HL: integer;
+  ShortTitle: string;
+begin
+  if not Assigned(ExtraItem) then
+  begin
+    Exit;
+  end;
+
+  case CreateStream(ExtraItem.OutputFileName, true) of
+    csError: begin
+      DoMessage(1, mtError, 'Could not create HTML unit doc file '
+        + 'for the %s file %s.', [FLanguage.Translation[Id], ExtraItem.Name]);
+      Exit;
+    end;
+  end;
+
+  DoMessage(2, mtInformation, 'Writing Docs for %s, "%s"',
+    [FLanguage.Translation[Id], ExtraItem.Name]);
+
+  // This should probably be moved elsewhere.
+  If ExtraItem.Title = '' then
+  begin
+    ExtraItem.Title := FLanguage.Translation[Id];
+  end;
+
+  ShortTitle := ExtraItem.ShortTitle;
+
+  If ShortTitle = '' then
+  begin
+    ShortTitle := ExtraItem.Title;
+  end;
+
+  WriteStartOfDocument(ShortTitle);
+
+  HL := 1;
+
+
+  WriteHeading(HL, ExtraItem.Title);
+
+
+//  WriteAnchor(SectionAnchors[dsDescription]);
+//  WriteUnitDescription(HL + 1, U);
+  WriteItemDetailedDescription(ExtraItem);
+
+
+  WriteAuthors(HL + 1, ExtraItem.Authors);
+  WriteDates(HL + 1, ExtraItem.Created, ExtraItem.LastMod);
+  WriteFooter;
+  WriteAppInfo;
+  WriteEndOfDocument;
+  CloseStream;
+
+end;
+
+procedure TGenericHTMLDocGenerator.WriteIntroduction;
+begin
+  WriteExtra(Introduction, trIntroduction);
+end;
+
+procedure TGenericHTMLDocGenerator.WriteConclusion;
+begin
+  WriteExtra(Conclusion, trConclusion);
 end;
 
 end.

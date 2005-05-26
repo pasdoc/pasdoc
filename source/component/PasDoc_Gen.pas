@@ -9,6 +9,7 @@
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @author(Pierre Woestyn <pwoestyn@users.sourceforge.net>)
   @author(Michalis Kamburelis)
+  @author(Richard B. Winston <rbwinst@usgs.gov>)
   @created(30 Aug 1998)
   @cvs($Date$)
 
@@ -154,6 +155,8 @@ type
     FCurrentItem: TPasItem;
     FAutoAbstract: boolean;
     FLinkLook: TLinkLook;
+    FConclusion: TExtraDescription;
+    FIntroduction: TExtraDescription;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -348,10 +351,6 @@ end;
     function FindGlobal(const S1, S2, S3: string; const n: Integer): TPasItem;
 
     function GetCIOTypeName(MyType: TCIOType): string;
-
-    { Abstract function that provides file extension for documentation format.
-      Must be overwritten by descendants. }
-    function GetFileExtension: string; virtual; abstract;
 
     { Loads descriptions from file N and replaces or fills the corresponding
       comment sections of items. }
@@ -603,6 +602,10 @@ end;
       @link(Units). }
     procedure ExpandDescriptions;
 
+    { Abstract function that provides file extension for documentation format.
+      Must be overwritten by descendants. }
+    function GetFileExtension: string; virtual; abstract;
+
     { Assumes C contains file names as PString variables.
       Calls @link(LoadDescriptionFile) with each file name. }
     procedure LoadDescriptionFiles(const c: TStringVector);
@@ -619,6 +622,9 @@ end;
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
+    property Introduction: TExtraDescription read FIntroduction
+      write FIntroduction;
+    property Conclusion: TExtraDescription read FConclusion write FConclusion;
   published
     { the (human) output language of the documentation file(s) }
     property Language: TLanguageID read GetLanguage write SetLanguage
@@ -725,6 +731,18 @@ var
 begin
   DoMessage(2, mtInformation, 'Creating links ...', []);
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
+
+  if Introduction <> nil then
+  begin
+    Introduction.FullLink := CreateLink(Introduction);
+    Introduction.OutputFileName := Introduction.FullLink;
+  end;
+
+  if Conclusion <> nil then
+  begin
+    Conclusion.FullLink := CreateLink(Conclusion);
+    Conclusion.OutputFileName := Conclusion.FullLink;
+  end;
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
@@ -1050,6 +1068,15 @@ begin
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
+  if Introduction <> nil then
+  begin
+    ExpandItem(Introduction);
+  end;
+  if Conclusion <> nil then
+  begin
+    ExpandItem(Conclusion);
+  end;
+
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
 
@@ -1120,18 +1147,32 @@ begin
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
   
   case n of
-    0: for i := 0 to Units.Count - 1 do
-       begin
-         U := Units.UnitAt[i];
+    0: begin
+        if (Introduction <> nil) and SameText(Introduction.Name, S1) then
+        begin
+          Result := Introduction;
+          Exit;
+        end;
 
-         if SameText(U.Name, S1) then
+        if (Conclusion <> nil) and SameText(Conclusion.Name, S1) then
+        begin
+          Result := Conclusion;
+          Exit;
+        end;
+
+        for i := 0 to Units.Count - 1 do
          begin
-           Result := U;
-           Exit;
-         end;
+           U := Units.UnitAt[i];
 
-         Result := U.FindItem(S1);
-         if Result <> nil then Exit;
+           if SameText(U.Name, S1) then
+           begin
+             Result := U;
+             Exit;
+           end;
+
+           Result := U.FindItem(S1);
+           if Result <> nil then Exit;
+         end;
        end;
     1: begin
          { object.field_method_property }

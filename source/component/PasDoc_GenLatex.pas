@@ -126,8 +126,6 @@ type
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
-    { Returns HTML file extension ".htm". }
-    function GetFileExtension: string; override;
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
     procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
@@ -172,6 +170,8 @@ type
   public
     function FormatPascalCode(const Line: string): string; override;
 
+    { Returns Latex file extension ".tex". }
+    function GetFileExtension: string; override;
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
@@ -1727,6 +1727,9 @@ end;
 
 (*
   $Log$
+  Revision 1.47  2005/05/26 16:57:21  kambi
+  * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
+
   Revision 1.46  2005/05/26 13:47:47  kambi
   * Cleaning implementation
 

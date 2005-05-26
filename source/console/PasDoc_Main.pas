@@ -71,6 +71,8 @@ var
   GOption_LinkLook: TStringOption;
   GOption_UseTipueSearch: TBoolOption;
   GOption_Sort: TSetOption;
+  GOption_Introduction: TStringOption;
+  GOption_Conclusion: TStringOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -229,16 +231,26 @@ begin
   GOption_AutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
   GOption_AutoAbstract.Explanation := 'if set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
   GOptionParser.AddOption(GOption_AutoAbstract);
-  
+
   GOption_UseTipueSearch := TBoolOption.Create(#0, 'use-tipue-search');
   GOption_UseTipueSearch.Explanation := 'use tipue search engine in HTML output';
   GOptionParser.AddOption(GOption_UseTipueSearch);
-  
+
   GOption_Sort := TSetOption.Create(#0, 'sort');
   GOption_Sort.Explanation := 'specifies what groups of items are sorted (the rest is presented in the same order they were declared in your source files)';
   GOption_Sort.PossibleValues := SortSettingsToName(AllSortSettings);
   GOption_Sort.Values := '';
   GOptionParser.AddOption(GOption_Sort);
+
+  GOption_Introduction := TStringOption.Create(#0, 'Introduction');
+  GOption_Introduction.Explanation := 'The name of a text file with introductory materials for the project';
+  GOption_Introduction.Value := '';
+  GOptionParser.AddOption(GOption_Introduction);
+
+  GOption_Conclusion := TStringOption.Create(#0, 'Conclusion');
+  GOption_Conclusion.Explanation := 'The name of a text file with concluding materials for the project';
+  GOption_Conclusion.Value := '';
+  GOptionParser.AddOption(GOption_Conclusion);
 end;
 
 procedure PrintHeader;
@@ -405,6 +417,9 @@ begin
   for SS := Low(SS) to High(SS) do
     if GOption_Sort.HasValue(SortSettingNames[SS]) then
       GPasDoc.SortSettings := GPasDoc.SortSettings + [SS];
+
+  GPasDoc.IntroductionFileName := GOption_Introduction.Value;
+  GPasDoc.ConclusionFileName := GOption_Conclusion.Value;
 end;
 
 { ---------------------------------------------------------------------------- }
