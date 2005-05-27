@@ -13,7 +13,7 @@ type
   private
     FWasDeserialized: boolean;
   protected
-    procedure Serialize(const ADestination: TStream); virtual; abstract;
+    procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
   public  
     class function LoadStringFromStream(const ASource: TStream): string;
@@ -44,6 +44,10 @@ var
 constructor TSerializable.Create;
 begin
   inherited;
+end;
+
+procedure TSerializable.Serialize(const ADestination: TStream); 
+begin
 end;
 
 procedure TSerializable.Deserialize(const ASource: TStream);

@@ -21,7 +21,7 @@ function TipueSearchButton: string;
   
   Units must be non-nil. It will be used to generate index data for tipue. }
 procedure TipueAddFiles(Units: TPasUnits;
-  const Introduction, Conclusion: TExtraDescription;
+  const Introduction, Conclusion: TExternalItem;
   const OutputPath: string);
 
 implementation
@@ -46,7 +46,7 @@ begin
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;
-  const Introduction, Conclusion: TExtraDescription;
+  const Introduction, Conclusion: TExternalItem;
   const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
@@ -65,7 +65,7 @@ procedure TipueAddFiles(Units: TPasUnits;
       Inc(IndexDataNum);
     end;
     
-    procedure WriteItemIndexData(Item: TPasItem);
+    procedure WriteItemIndexData(Item: TBaseItem);
     
       function EscapeIndexEntry(const S: string): string;
       const
@@ -90,7 +90,13 @@ procedure TipueAddFiles(Units: TPasUnits;
       i: Integer;
     begin
       { calculate ShortDescription }
-      ShortDescription := EscapeIndexEntry(Item.AbstractDescription);
+      if Item is TPasItem then
+        ShortDescription := 
+          EscapeIndexEntry(TPasItem(Item).AbstractDescription) else
+      if Item is TExternalItem then
+        ShortDescription := 
+          EscapeIndexEntry(TExternalItem(Item).ShortTitle) else
+        ShortDescription := '';
       
       { calculate LongDescription.
         Note that LongDescription will not be shown to user anywhere
@@ -115,10 +121,10 @@ procedure TipueAddFiles(Units: TPasUnits;
             ' ' + EscapeIndexEntry(EnumMember.Authors.Text);
         end;
       end;
-      if Item is TExtraDescription then
+      if Item is TExternalItem then
       begin
         LongDescription := LongDescription +
-          ' ' + EscapeIndexEntry(TExtraDescription(Item).Title);
+          ' ' + EscapeIndexEntry(TExternalItem(Item).Title);
       end;
       
       WriteIndexData(Item.QualifiedName, Item.FullLink, 

@@ -122,7 +122,7 @@ type
     function CodeString(const s: string): string; override;
     { Returns a link to an anchor within a document. HTML simply concatenates
       the strings with a "-" character between them. }
-    function CreateLink(const Item: TPasItem): string; override;
+    function CreateLink(const Item: TBaseItem): string; override;
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
@@ -224,7 +224,8 @@ begin
   Result := '\begin{ttfamily}' + s + '\end{ttfamily}';
 end;
 
-function TTexDocGenerator.CreateLink(const Item: TPasItem): string;
+function TTexDocGenerator.CreateLink(const Item: TBaseItem): string;
+
   function NewLink(const AFullName: string): string;
   begin
     if NumericFilenames then begin
@@ -237,22 +238,25 @@ function TTexDocGenerator.CreateLink(const Item: TPasItem): string;
 
 begin
   Result := '';
+  
   if (not Assigned(Item)) then Exit;
-  if Assigned(Item.MyUnit) then begin
-    if Assigned(Item.MyObject) then begin
+  
+  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then 
+  begin
+    if Assigned(TPasItem(Item).MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
-      Result := Item.MyObject.FullLink + '-' + Item.Name;
+      Result := TPasItem(Item).MyObject.FullLink + '-' + Item.Name;
     end else begin
-      if Item.ClassType = TPasCio then begin
+      if Item is TPasCio then 
+      begin
         { it's an object / a class }
-        Result := NewLink(Item.MyUnit.Name + '.' + Item.Name);
+        Result := NewLink(TPasItem(Item).MyUnit.Name + '.' + Item.Name);
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := Item.MyUnit.FullLink + '-' + Item.Name;
+        Result := TPasItem(Item).MyUnit.FullLink + '-' + Item.Name;
       end;
     end;
   end else begin
-    { it's a unit - only units don't have a MyUnit pointer }
     Result := NewLink(Item.Name);
   end;
 end;
@@ -337,7 +341,7 @@ type
   TSectionSet = set of TSections;
 var
   s: string;
-  Item: TPasItem;
+  Item: TBaseItem;
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
 begin
@@ -1060,7 +1064,7 @@ end;
 
 function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
 var
-  Ancestor: TPasItem;
+  Ancestor: TBaseItem;
   AncestorName: string;
 begin
   Result := false;
@@ -1079,11 +1083,11 @@ begin
   begin
     AncestorName := TPasCio(AItem).Ancestors.FirstName;
     Ancestor := SearchItem(AncestorName, AItem);
-    if Assigned(Ancestor) then
-      begin
-        HasDescription:=HasDescription(Ancestor);
-        exit;
-      end;
+    if Assigned(Ancestor) and (Ancestor is TPasItem) then
+    begin
+      HasDescription := HasDescription(TPasItem(Ancestor));
+      exit;
+    end;
   end;    
 end;
 
@@ -1172,7 +1176,7 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
   end;
 
 var
-  Ancestor: TPasItem;
+  Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
 begin
@@ -1209,10 +1213,10 @@ begin
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := SearchItem(AncestorName, AItem);
-        if Assigned(Ancestor) then
+        if Assigned(Ancestor) and (Ancestor is TPasItem) then
           begin
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteItemDetailedDescription(Ancestor);
+            WriteItemDetailedDescription(TPasItem(Ancestor));
           end;
       end else
       begin
@@ -1727,6 +1731,11 @@ end;
 
 (*
   $Log$
+  Revision 1.48  2005/05/27 19:37:59  kambi
+  * TExtraDescription renamed to TExternalItem, many names like "Extra" changed to "External"
+  + TBaseItem as a common ancestor for TPasItem and TExternalItem, no longer TExternalItem descends from TPasItem
+  * TSerializable.Serialize is not abstract, for consistency with TSerializable.Deserialize
+
   Revision 1.47  2005/05/26 16:57:21  kambi
   * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
 

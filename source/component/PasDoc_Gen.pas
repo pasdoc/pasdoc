@@ -152,11 +152,11 @@ type
     FAspellMode: string;
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
-    FCurrentItem: TPasItem;
+    FCurrentItem: TBaseItem;
     FAutoAbstract: boolean;
     FLinkLook: TLinkLook;
-    FConclusion: TExtraDescription;
-    FIntroduction: TExtraDescription;
+    FConclusion: TExternalItem;
+    FIntroduction: TExternalItem;
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -298,7 +298,7 @@ end;
     { This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
       HTML or a page number in Tex. }
-    function CreateLink(const Item: TPasItem): string; virtual;
+    function CreateLink(const Item: TBaseItem): string; virtual;
 
     { If @link(CurrentStream) still exists (<> nil), it is closed.
       Then, a new output stream in the destination directory with given
@@ -332,13 +332,13 @@ end;
       
       Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
       see @link(TTagManager.Execute). *)
-    function ExpandDescription(Item: TPasItem; 
+    function ExpandDescription(Item: TBaseItem; 
       const Description: string;
       WantFirstSentenceEnd: boolean;
       var FirstSentenceEnd: Integer): string; overload; 
 
     { Same thing as ExpandDescription(Item, Description, false, Dummy) }
-    function ExpandDescription(Item: TPasItem; 
+    function ExpandDescription(Item: TBaseItem; 
       const Description: string): string; overload;
 
     { Searches for an email address in String S. Searches for first appearance
@@ -348,7 +348,7 @@ end;
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
       Returns a pointer to the item on success, nil otherwise. }
-    function FindGlobal(const S1, S2, S3: string; const n: Integer): TPasItem;
+    function FindGlobal(const S1, S2, S3: string; const n: Integer): TBaseItem;
 
     function GetCIOTypeName(MyType: TCIOType): string;
 
@@ -356,7 +356,7 @@ end;
       comment sections of items. }
     procedure LoadDescriptionFile(n: string);
 
-    function SearchItem(s: string; const Item: TPasItem): TPasItem;
+    function SearchItem(s: string; const Item: TBaseItem): TBaseItem;
 
     { Searches for an item of name S which was linked in the description
       of Item. Starts search within item, then does a search on all items in all
@@ -366,7 +366,7 @@ end;
       How exactly link does look like is controlled by @link(LinkLook) property. 
       
       LinkDisplay, if not '', specifies explicite the display text for link. }
-    function SearchLink(s: string; const Item: TPasItem;
+    function SearchLink(s: string; const Item: TBaseItem;
       const LinkDisplay: string): string;
 
     { This calls SearchLink(Identifier, Item).
@@ -378,7 +378,7 @@ end;
         Format(WarningFormat, [Identifier, Item.QualifiedName]
       - returns CodeString(ConvertString(Identifier)) }
     function SearchLinkOrWarning(const Identifier: string; 
-      Item: TPasItem; const LinkDisplay: string;
+      Item: TBaseItem; const LinkDisplay: string;
       const WarningFormat: string): string;
 
     { A link provided in a tag can be made up of up to three parts,
@@ -622,9 +622,9 @@ end;
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
-    property Introduction: TExtraDescription read FIntroduction
+    property Introduction: TExternalItem read FIntroduction
       write FIntroduction;
-    property Conclusion: TExtraDescription read FConclusion write FConclusion;
+    property Conclusion: TExternalItem read FConclusion write FConclusion;
   published
     { the (human) output language of the documentation file(s) }
     property Language: TLanguageID read GetLanguage write SetLanguage
@@ -789,7 +789,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.CreateLink(const Item: TPasItem): string;
+function TDocGenerator.CreateLink(const Item: TBaseItem): string;
 begin
   Result := Item.Name;
 end;
@@ -846,12 +846,24 @@ end;
 
 procedure TDocGenerator.HandleClassnameTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);
+var ItemClassName: string;
 begin
-  if Assigned(fCurrentItem.MyObject) then begin
-    ReplaceStr := CodeString(ConvertString(fCurrentItem.MyObject.Name));
-  end else if fCurrentItem is TPasCio then begin
-    ReplaceStr := CodeString(ConvertString(fCurrentItem.Name));
-  end
+  { TODO: this should be moved to TPasItem handler, so that @classname
+    is registered only for TPasItem (or, even better, for TPasCio
+    and TPasItem with MyObject <> nil). }
+    
+  ItemClassName := '';
+  if FCurrentItem is TPasItem then
+  begin
+    if Assigned(TPasItem(fCurrentItem).MyObject) then
+      ItemClassName := TPasItem(fCurrentItem).MyObject.Name else
+    if fCurrentItem is TPasCio then
+      ItemClassName := fCurrentItem.Name;
+  end;
+  
+  if ItemClassName <> '' then
+    ReplaceStr := CodeString(ConvertString(ItemClassName)) else
+    TagManager.DoMessage(1, mtWarning, '@classname not available here', []);
 end;
 
 // handles @true, @false, @nil (Who uses these tags anyway?)
@@ -865,29 +877,35 @@ procedure TDocGenerator.HandleInheritedTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);
 var
   TheObject: TPasCio;
-  Ancestor: TPasItem;
+  Ancestor: TBaseItem;
   s: string;
   TheLink: string;
 begin
-  if Assigned(fCurrentItem.MyObject) then
-    TheObject := fCurrentItem.MyObject
-  else if fCurrentItem is TPasCio then
-    TheObject := TPasCio(fCurrentItem)
-  else
-    TheObject := nil;
+  { TODO: this should be moved to TPasItem handler, so that @inherited
+    is registered only for TPasItem (or, even better, for TPasCio
+    and TPasItem with MyObject <> nil). }
+
+  TheObject := nil;
+  if FCurrentItem is TPasItem then
+  begin
+    if Assigned(TPasItem(fCurrentItem).MyObject) then
+      TheObject := TPasItem(fCurrentItem).MyObject
+    else if fCurrentItem is TPasCio then
+      TheObject := TPasCio(fCurrentItem);
+  end;
 
   // Try to find inherited property of item.
   // Updated 14 Jun 2002
 
-   TheLink := '';
+  TheLink := '';
   if Assigned(TheObject)
     and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
     s := TheObject.Ancestors.FirstName;
     Ancestor := SearchItem(s, fCurrentItem);
-    if Assigned(Ancestor) and (Ancestor.ClassType = TPasCio)
-      then begin
+    if Assigned(Ancestor) and (Ancestor is TPasCio) then 
+    begin
       repeat
-        if fCurrentItem.MyObject = nil then
+        if TPasItem(fCurrentItem).MyObject = nil then
           // we are looking for the ancestor itself
           TheLink := SearchLink(s, fCurrentItem, '')
         else
@@ -908,14 +926,15 @@ begin
 
   if TheLink <> '' then begin
     ReplaceStr := TheLink;
-  end else begin
-    DoMessage(2, mtWarning, 'Could not resolve "@Inherited" (%s)', [fCurrentItem.QualifiedName]);
+  end else
+  begin
+    TagManager.DoMessage(2, mtWarning, 'Could not resolve @inherited', []);
     ReplaceStr := CodeString(ConvertString(fCurrentItem.Name));
   end;
 end;
 
 function TDocGenerator.SearchLinkOrWarning(const Identifier: string; 
-  Item: TPasItem; const LinkDisplay: string;
+  Item: TBaseItem; const LinkDisplay: string;
   const WarningFormat: string): string;
 begin
   Result := SearchLink(Identifier, Item, LinkDisplay);
@@ -957,7 +976,7 @@ begin
       ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
 end;
 
-function TDocGenerator.ExpandDescription(Item: TPasItem; 
+function TDocGenerator.ExpandDescription(Item: TBaseItem; 
   const Description: string;
   WantFirstSentenceEnd: boolean;
   var FirstSentenceEnd: Integer): string;
@@ -1007,7 +1026,7 @@ begin
   end;
 end;
 
-function TDocGenerator.ExpandDescription(Item: TPasItem; 
+function TDocGenerator.ExpandDescription(Item: TBaseItem; 
   const Description: string): string; 
 var Dummy: Integer;
 begin
@@ -1021,7 +1040,7 @@ procedure TDocGenerator.ExpandDescriptions;
   procedure ExpandCollection(c: TPasItems); forward;
 
   { expands RawDescription of Item }
-  procedure ExpandItem(Item: TPasItem);
+  procedure ExpandPasItem(Item: TPasItem);
   var FirstSentenceEnd: Integer;
   begin
     if Item = nil then Exit;
@@ -1047,6 +1066,12 @@ procedure TDocGenerator.ExpandDescriptions;
     if Item is TPasEnum then
       ExpandCollection(TPasEnum(Item).Members);
   end;
+  
+  procedure ExpandExternalItem(Item: TExternalItem);
+  begin
+    Item.DetailedDescription := ExpandDescription(
+      Item, Trim(Item.RawDescription));
+  end;
 
   { for all items in collection C, expands descriptions }
   procedure ExpandCollection(c: TPasItems);
@@ -1055,7 +1080,7 @@ procedure TDocGenerator.ExpandDescriptions;
   begin
     if c = nil then Exit;
     for i := 0 to c.Count - 1 do 
-      ExpandItem(c.PasItemAt[i]);
+      ExpandPasItem(c.PasItemAt[i]);
   end;
 
 var
@@ -1070,17 +1095,17 @@ begin
 
   if Introduction <> nil then
   begin
-    ExpandItem(Introduction);
+    ExpandExternalItem(Introduction);
   end;
   if Conclusion <> nil then
   begin
-    ExpandItem(Conclusion);
+    ExpandExternalItem(Conclusion);
   end;
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
 
-    ExpandItem(U);
+    ExpandPasItem(U);
     ExpandCollection(U.Constants);
     ExpandCollection(U.Variables);
     ExpandCollection(U.Types);
@@ -1089,7 +1114,7 @@ begin
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then
       for j := 0 to U.CIOs.Count - 1 do begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
-        ExpandItem(CO);
+        ExpandPasItem(CO);
         ExpandCollection(CO.Fields);
         ExpandCollection(CO.Methods);
         ExpandCollection(CO.Properties);
@@ -1136,10 +1161,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer): TPasItem;
+function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer): 
+  TBaseItem;
 var
   i: Integer;
-  Item: TPasItem;
+  Item: TBaseItem;
   U: TPasUnit;
 begin
   Result := nil;
@@ -1286,7 +1312,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SearchItem(s: string; const Item: TPasItem): TPasItem;
+function TDocGenerator.SearchItem(s: string; const Item: TBaseItem): TBaseItem;
 var
   n: Integer;
   S1: string;
@@ -1313,22 +1339,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SearchLink(s: string; const Item: TPasItem;
+function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string): string;
 var
   n: Integer;
   S1: string;
   S2: string;
   S3: string;
-  FoundItem: TPasItem;
+  FoundItem: TBaseItem;
 begin
   { S is supposed to have 0 to 2 dots in it - S1, S2 and S3 contain
     the parts between the dots, N the number of dots }
-  if (not SplitLink(s, S1, S2, S3, n)) then begin
-    if Item.MyUnit = nil then
-      DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.Name + ')', [])
-    else
-      DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.MyUnit.Name + '.' + Item.Name + ')', []);
+  if (not SplitLink(s, S1, S2, S3, n)) then
+  begin
+    DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
     Result := 'UNKNOWN';
     Exit;
   end;
@@ -1431,7 +1455,7 @@ end;
 
 procedure TDocGenerator.StoreDescription(ItemName: string; var t: string);
 var
-  Item: TPasItem;
+  Item: TBaseItem;
   n: Integer;
   S1: string;
   S2: string;
@@ -1586,6 +1610,16 @@ begin
 end;
 
 procedure TDocGenerator.CreateClassHierarchy;
+
+  function FindGlobalPasItem(const S1, S2, S3: string; const n: Integer): TPasItem;
+  var BaseResult: TBaseItem;
+  begin
+    BaseResult := FindGlobal(S1, S2, S3, n);
+    if (BaseResult <> nil) and (BaseResult is TPasItem) then
+      Result := TPasItem(BaseResult) else
+      Result := nil;
+  end;
+
 var
   unitLoop: Integer;
   classLoop: Integer;
@@ -1604,7 +1638,7 @@ begin
       if ACIO.MyType in CIONonHierarchy then continue;
 
       if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
-        ParentItem := FindGlobal(ACIO.Ancestors.FirstName, '', '', 0);
+        ParentItem := FindGlobalPasItem(ACIO.Ancestors.FirstName, '', '', 0);
         if Assigned(ParentItem) then begin
           Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
           // Add parent if not already there.
@@ -2247,7 +2281,7 @@ procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem;
     
     TODO -- this should be merged with @link(SearchLink) method
     for clarity. But this should never display a warning for user. }
-  function DoSearchForLink(const S: string): TPasItem;
+  function DoSearchForLink(const S: string): TBaseItem;
   var
     S1: string;
     S2: string;
@@ -2265,7 +2299,7 @@ procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem;
 
 var
   NameFound, SearchForLink: Boolean;
-  FoundItem: TPasItem;
+  FoundItem: TBaseItem;
   i, j, l: Integer;
   s: string;
   pl: TStandardDirective;  

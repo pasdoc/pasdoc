@@ -165,7 +165,7 @@ type
     function CodeString(const s: string): string; override;
     { Returns a link to an anchor within a document. HTML simply concatenates
       the strings with a "#" character between them. }
-    function CreateLink(const Item: TPasItem): string; override;
+    function CreateLink(const Item: TBaseItem): string; override;
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
@@ -213,7 +213,7 @@ type
     function URLLink(const URL: string): string; override;
     procedure WriteIntroduction;
     procedure WriteConclusion;
-    procedure WriteExtra(const ExtraItem: TExtraDescription;
+    procedure WriteExternal(const ExternalItem: TExternalItem;
       const Id: TTranslationID);
   public
     { Returns HTML file extension ".htm". }
@@ -321,7 +321,8 @@ begin
   Result := '<code>' + s + '</code>';
 end;
 
-function TGenericHTMLDocGenerator.CreateLink(const Item: TPasItem): string;
+function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
+
   function NewLink(const AFullName: string): string;
   begin
     if NumericFilenames then begin
@@ -334,22 +335,27 @@ function TGenericHTMLDocGenerator.CreateLink(const Item: TPasItem): string;
 
 begin
   Result := '';
+  
   if (not Assigned(Item)) then Exit;
-  if Assigned(Item.MyUnit) then begin
-    if Assigned(Item.MyObject) then begin
+  
+  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then
+  begin
+    if Assigned(TPasItem(Item).MyObject) then 
+    begin
       { it's a method, a field or a property - only those have MyObject initialized }
-      Result := Item.MyObject.FullLink + '#' + Item.Name;
+      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
     end else begin
-      if Item.ClassType = TPasCio then begin
+      if Item is TPasCio then 
+      begin
         { it's an object / a class }
-        Result := NewLink(Item.MyUnit.Name + '.' + Item.Name);
+        Result := NewLink(TPasItem(Item).MyUnit.Name + '.' + Item.Name);
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := Item.MyUnit.FullLink + '#' + Item.Name;
+        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
       end;
     end;
-  end else begin
-    { it's a unit - only units don't have a MyUnit pointer }
+  end else
+  begin
     Result := NewLink(Item.Name);
   end;
 end;
@@ -452,7 +458,7 @@ const
 var
   i: Integer;
   s: string;
-  Item: TPasItem;
+  Item: TBaseItem;
   TheLink: string;
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
@@ -999,7 +1005,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
   end;
 
 var
-  Ancestor: TPasItem;
+  Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
 begin
@@ -1039,13 +1045,13 @@ begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := SearchItem(AncestorName, AItem);
-        if Assigned(Ancestor) then
-          begin
-            WriteDirect('<div class="nodescription">');
-            WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteDirect('</div>');
-            WriteItemDetailedDescription(Ancestor);
-          end;
+        if Assigned(Ancestor) and (Ancestor is TPasItem) then
+        begin
+          WriteDirect('<div class="nodescription">');
+          WriteConverted(Format('no description available, %s description follows', [AncestorName]));
+          WriteDirect('</div>');
+          WriteItemDetailedDescription(TPasItem(Ancestor));
+        end;
       end else begin
         WriteDirect('&nbsp;');
       end;
@@ -2079,39 +2085,40 @@ begin
   Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteExtra(const ExtraItem: TExtraDescription;
+procedure TGenericHTMLDocGenerator.WriteExternal(
+  const ExternalItem: TExternalItem;
   const Id: TTranslationID);
 var
   HL: integer;
   ShortTitle: string;
 begin
-  if not Assigned(ExtraItem) then
+  if not Assigned(ExternalItem) then
   begin
     Exit;
   end;
 
-  case CreateStream(ExtraItem.OutputFileName, true) of
+  case CreateStream(ExternalItem.OutputFileName, true) of
     csError: begin
       DoMessage(1, mtError, 'Could not create HTML unit doc file '
-        + 'for the %s file %s.', [FLanguage.Translation[Id], ExtraItem.Name]);
+        + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
       Exit;
     end;
   end;
 
   DoMessage(2, mtInformation, 'Writing Docs for %s, "%s"',
-    [FLanguage.Translation[Id], ExtraItem.Name]);
+    [FLanguage.Translation[Id], ExternalItem.Name]);
 
   // This should probably be moved elsewhere.
-  If ExtraItem.Title = '' then
+  If ExternalItem.Title = '' then
   begin
-    ExtraItem.Title := FLanguage.Translation[Id];
+    ExternalItem.Title := FLanguage.Translation[Id];
   end;
 
-  ShortTitle := ExtraItem.ShortTitle;
+  ShortTitle := ExternalItem.ShortTitle;
 
   If ShortTitle = '' then
   begin
-    ShortTitle := ExtraItem.Title;
+    ShortTitle := ExternalItem.Title;
   end;
 
   WriteStartOfDocument(ShortTitle);
@@ -2119,16 +2126,12 @@ begin
   HL := 1;
 
 
-  WriteHeading(HL, ExtraItem.Title);
+  WriteHeading(HL, ExternalItem.Title);
 
+  WriteDirect(ExternalItem.DetailedDescription);
 
-//  WriteAnchor(SectionAnchors[dsDescription]);
-//  WriteUnitDescription(HL + 1, U);
-  WriteItemDetailedDescription(ExtraItem);
-
-
-  WriteAuthors(HL + 1, ExtraItem.Authors);
-  WriteDates(HL + 1, ExtraItem.Created, ExtraItem.LastMod);
+  WriteAuthors(HL + 1, ExternalItem.Authors);
+  WriteDates(HL + 1, ExternalItem.Created, ExternalItem.LastMod);
   WriteFooter;
   WriteAppInfo;
   WriteEndOfDocument;
@@ -2138,12 +2141,12 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteIntroduction;
 begin
-  WriteExtra(Introduction, trIntroduction);
+  WriteExternal(Introduction, trIntroduction);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteConclusion;
 begin
-  WriteExtra(Conclusion, trConclusion);
+  WriteExternal(Conclusion, trConclusion);
 end;
 
 end.

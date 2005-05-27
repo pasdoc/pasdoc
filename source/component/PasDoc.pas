@@ -74,8 +74,8 @@ type
     FSortSettings: TSortSettings;
     FConclusionFileName: string;
     FIntroductionFileName: string;
-    FConclusion: TExtraDescription;
-    FIntroduction: TExtraDescription;
+    FConclusion: TExternalItem;
+    FIntroduction: TExternalItem;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -92,9 +92,9 @@ type
     procedure HandleStream(
       const InputStream: TStream;
       const SourceFileName: string);
-    procedure HandleExtraFile(
+    procedure HandleExternalFile(
       const FileName: string;
-      out ExtraDescription: TExtraDescription);
+      out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
   protected
@@ -390,12 +390,12 @@ var
   p: string;
   InputStream: TStream;
   
-  procedure ParseExtraFiles(const FileName: string;
-    var ExtraDescription: TExtraDescription);
+  procedure ParseExternalFile(const FileName: string;
+    var ExternalItem: TExternalItem);
   begin
     if FileName <> '' then
     begin
-      HandleExtraFile(FileName, ExtraDescription);
+      HandleExternalFile(FileName, ExternalItem);
       Inc(Count);
     end;
   end;
@@ -424,9 +424,9 @@ begin
   end;
 
   FreeAndNil(FIntroduction);
-  ParseExtraFiles(IntroductionFileName, FIntroduction);
+  ParseExternalFile(IntroductionFileName, FIntroduction);
   FreeAndNil(FConclusion);
-  ParseExtraFiles(ConclusionFileName, FConclusion);
+  ParseExternalFile(ConclusionFileName, FConclusion);
 
   DoMessage(2, mtInformation, '... %d Source File(s) parsed', [Count]);
 end;
@@ -728,10 +728,10 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
-procedure TPasDoc.HandleExtraFile(const FileName: string;
-  out ExtraDescription: TExtraDescription);
+procedure TPasDoc.HandleExternalFile(const FileName: string;
+  out ExternalItem: TExternalItem);
 begin
-  ExtraDescription := TExtraDescription.Create;
+  ExternalItem := TExternalItem.Create;
   try
     DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
 
@@ -746,12 +746,12 @@ begin
         ' is the same as file extension of generated documentation ("%s"), ' +
         'refusing to generate documentation', [Generator.GetFileExtension]);
 
-    ExtraDescription.Name := SCharsReplace(
+    ExternalItem.Name := SCharsReplace(
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
-    ExtraDescription.RawDescription := FileToString(FileName);
+    ExternalItem.RawDescription := FileToString(FileName);
   except 
-    FreeAndNil(ExtraDescription);
+    FreeAndNil(ExternalItem);
     raise;
   end;
 end;
