@@ -12,7 +12,7 @@ type
   { @param(A Description of param A)
     @returns(@true or @false)
     @raises(EFoo Description when EFoo is raised) }
-  TMyMethod = function(A: integer): boolean;
+  TMyMethod = function(A: integer): boolean of object;
 
 implementation
 
