@@ -55,14 +55,6 @@ const
                {$ifdef MSWINDOWS} #13#10 {$endif};
 {$endif}
 
-{$ifdef VER1_0}
-{ This is only for compatibity with FPC 1.0.x.
-  FPC 1.9.x and Delphi/Kylix have this is StrUtils unit.
-  Implementation of this is copied from FPC 1.9.9 RTL sources. }
-Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
-Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
-{$endif}
-
 type
   TCharReplacement = 
   record
@@ -196,39 +188,6 @@ begin
   Result := FileGetAttr(name) or faAnyFile <> 0;
 end;
 {$ENDIF}
-
-{$ifdef VER1_0}
-Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
-
-var i : pchar;
-begin
-  if (offset<1) or (offset>length(s)) then exit(0);
-  i:=strpos(@s[offset],@substr[1]);
-  if i=nil then
-    PosEx:=0
-  else
-    PosEx:=succ(i-pchar(s));
-end;
-
-Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
-
-var l : longint;
-begin
-  if (offset<1) or (offset>length(s)) then exit(0);
-  l:=length(s);
-{$ifndef useindexbyte}
-  while (offset<=l) and (s[offset]<>c) do inc(offset);
-  if offset>l then
-   posex:=0
-  else
-   posex:=offset;
-{$else}
-  posex:=offset+indexbyte(s[offset],l-offset+1);
-  if posex=(offset-1) then
-    posex:=0;
-{$endif}
-end;
-{$endif}
 
 function StringReplaceChars(const S: string; 
   const ReplacementArray: array of TCharReplacement): string;

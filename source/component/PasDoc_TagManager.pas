@@ -243,7 +243,7 @@ type
 
 implementation
 
-uses Utils {$ifndef VER1_0}, StrUtils {$endif};
+uses Utils;
 
 { TTag ------------------------------------------------------------  }
 
