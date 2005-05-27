@@ -154,9 +154,9 @@ type
     procedure SetLanguageItalian;
     { Defines translations for Javanese. }
     procedure SetLanguageJavanese;
-    { Defines translations for Polish (Codepage 1250. }
+    { Defines translations for Polish (Codepage 1250). }
     procedure SetLanguagePolish_CP1250;           
-    { Defines translations for Polish (Codepage ISO 8859-2. }
+    { Defines translations for Polish (Codepage ISO 8859-2). }
     procedure SetLanguagePolish_ISO_8859_2;       
     { Defines translations for Russian (Codepage 1251). }
     procedure SetLanguageRussian_1251;
@@ -1103,9 +1103,8 @@ begin
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
 
-  { TODO : Translation needed. }
-  FTranslation[trIntroduction] := 'Introduction';
-  FTranslation[trConclusion] := 'Conclusion';
+  FTranslation[trIntroduction] := 'Wstêp';
+  FTranslation[trConclusion] := 'Podsumowanie';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1174,9 +1173,8 @@ begin
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
 
-  { TODO : Translation needed. }
-  FTranslation[trIntroduction] := 'Introduction';
-  FTranslation[trConclusion] := 'Conclusion';
+  FTranslation[trIntroduction] := 'Wstêp';
+  FTranslation[trConclusion] := 'Podsumowanie';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1721,6 +1719,9 @@ end;
 
 {
   $Log$
+  Revision 1.23  2005/05/27 02:09:07  kambi
+  * Polish translation for introduction/conclusion
+
   Revision 1.22  2005/05/26 16:57:22  kambi
   * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
 
