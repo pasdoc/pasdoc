@@ -735,7 +735,6 @@ begin
   try
     DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
 
-
     ExtraDescription.Name := SCharsReplace(
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
