@@ -94,7 +94,7 @@ type
       const SourceFileName: string);
     procedure HandleExternalFile(
       const FileName: string;
-      out ExternalItem: TExternalItem);
+      {$ifdef VER1_0} var {$else} out {$endif} ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
   protected
@@ -729,7 +729,7 @@ begin
 end;
 
 procedure TPasDoc.HandleExternalFile(const FileName: string;
-  out ExternalItem: TExternalItem);
+  {$ifdef VER1_0} var {$else} out {$endif} ExternalItem: TExternalItem);
 begin
   ExternalItem := TExternalItem.Create;
   try
