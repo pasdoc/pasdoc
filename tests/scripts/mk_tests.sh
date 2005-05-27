@@ -66,7 +66,8 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'warning_incorrect_tag_nesting.pas' -or \
   -iname 'ok_param_raises_returns_proctype.pas' -or \
   -iname 'ok_no_sort.pas' -or \
-  -iname 'ok_sorting.pas' \
+  -iname 'ok_sorting.pas' -or \
+  -iname 'ok_introduction_conclusion.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -84,3 +85,4 @@ mk_special_test ok_param_raises_returns_proctype "$SORT_OLD" ok_param_raises_ret
 mk_special_test ok_no_sort '--sort=functions,non-record-fields,methods,properties' ok_no_sort.pas
 mk_special_test ok_sorting_all "$SORT_ALL" ok_sorting.pas
 mk_special_test ok_sorting_none --sort= ok_sorting.pas
+mk_special_test ok_introduction_conclusion ok_introduction_conclusion.pas --introduction=ok_introduction.txt --conclusion=ok_conclusion.txt
