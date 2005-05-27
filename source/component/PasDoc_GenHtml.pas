@@ -1100,10 +1100,7 @@ begin
 
     WriteStartOfTableCell('itemname');
     WriteAnchor(Item.Name);
-    WriteConverted(Item.Name);
-    if Item is TPasVarConst then begin
-      WriteCodeWithLinks(Item, TPasVarConst(Item).FullDeclaration, '');
-    end;
+    WriteCodeWithLinks(Item, Item.FullDeclaration, '');
     WriteEndOfTableCell;
 
     WriteStartOfTableCell;

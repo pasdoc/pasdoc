@@ -1270,18 +1270,10 @@ begin
     
     WriteStartList(s);
 
-    if Item is TPasVarConst then 
-      begin
-        WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
-            Item.Name+TPasVarConst(Item).FullDeclaration);
-      end
-    else
-        WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
-            Item.Name);
+    WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
+      Item.FullDeclaration);
       
     WriteDirect('',true);
-
-    
     
     if not (Item is TPasEnum) then
       begin
@@ -1731,6 +1723,11 @@ end;
 
 (*
   $Log$
+  Revision 1.49  2005/05/27 23:46:51  kambi
+  * Html and Latex generators in WriteItems write simply Item.FullDeclaration.
+    No prefixing with Item.Name, no checking is Item of TPasVarConst.
+  * Much cleaning and changing of parser code to make sure that FullDeclaration of Variables and Constants is good.
+
   Revision 1.48  2005/05/27 19:37:59  kambi
   * TExtraDescription renamed to TExternalItem, many names like "Extra" changed to "External"
   + TBaseItem as a common ancestor for TPasItem and TExternalItem, no longer TExternalItem descends from TPasItem

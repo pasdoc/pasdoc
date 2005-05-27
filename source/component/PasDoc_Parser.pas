@@ -118,12 +118,19 @@ type
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
-      CDFP contains the keyword constructor, destructor, function or procedure
-      in the exact spelling as it was found in input.
+      
+      KeyWordString contains the keyword constructor, destructor, 
+      function or procedure in the exact spelling as it was found in input.
+      You can specify KeyWordString = '', this way you avoid including
+      such keyword at the beginning of returned M.FullDeclaration.
+      
       Key contains one of the KEY_xxx constants for the What field of the
-      resulting method object.
+      resulting method object. Yes, this is the keyword that should correspond 
+      to KeyWordString.
+      
       D may contain a description or nil. }
-    function ParseCDFP(var M: TPasMethod; const CDFPS: string; Key: TKeyWord;
+    function ParseCDFP(var M: TPasMethod; 
+      const KeyWordString: string; Key: TKeyWord;
       d: string; const NeedName: boolean): Boolean;
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
@@ -134,12 +141,17 @@ type
       TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
     { }
     function ParseRecordCase(const R: TPasCio; const SubCase: boolean): boolean;
-    function ParseConstant(const U: TPasUnit; t: TToken): Boolean;
+    function ParseConstant(const U: TPasUnit; 
+      const ConstantName: string): Boolean;
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
     function ParseProperty(var p: TPasProperty): Boolean;
     function ParseType(const U: TPasUnit; var t: TToken): Boolean;
     
-    function ParseEnum(var p: TPasEnum): boolean;
+    { This assumes that you just read left parenthesis starting
+      an enumerated type. It finishes parsing of TPasEnum,
+      returning is as P. }
+    function ParseEnum(var p: TPasEnum; 
+      const Name, RawDescription: string): boolean;
 
     function ParseUses(const U: TPasUnit): Boolean;
     function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
@@ -363,8 +375,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCDFP(var M: TPasMethod; const CDFPS: string; Key:
-  TKeyword; d: string; const NeedName: boolean): Boolean;
+function TParser.ParseCDFP(var M: TPasMethod; 
+  const KeyWordString: string; Key: TKeyword; 
+  d: string; const NeedName: boolean): Boolean;
 var
   IsSemicolon: Boolean;
   t: TToken;
@@ -385,6 +398,8 @@ begin
   else
     DoError('FATAL ERROR: CDFP got invalid key.', [], 1);
   end;
+  
+  M.FullDeclaration := KeyWordString;
 
   { next non-wc token must be the name }
   if NeedName then begin
@@ -407,8 +422,9 @@ begin
       DoError('Could not get next identifier', [], 0);
     end;
     M.Name := t.Data;
-    DoMessage(5, mtInformation, 'Parsing %s %s', [CDFPS, M.Name]);
-    M.FullDeclaration := CDFPS + ' ' + M.Name;
+    DoMessage(5, mtInformation, 'Parsing %s "%s"',
+      [LowerCase(KeyWordArray[Key]), M.Name]);
+    M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
     FreeAndNil(t);
   end;
 
@@ -956,16 +972,19 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseConstant(const U: TPasUnit; t: TToken): Boolean;
+function TParser.ParseConstant(const U: TPasUnit; 
+  const ConstantName: string): Boolean;
 var
   i: TPasVarConst;
 begin
   Result := False;
   i := TPasVarConst.Create;
-  i.Name := t.Data;
+  i.Name := ConstantName;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
   i.RawDescription := GetLastComment(True);
-  if SkipDeclaration(i) then begin
+  i.FullDeclaration := ConstantName;
+  if SkipDeclaration(i) then
+  begin
     U.AddConstant(i);
     Result := True;
   end
@@ -975,13 +994,17 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseEnum(var p: TPasEnum): boolean;
+function TParser.ParseEnum(var p: TPasEnum;
+  const Name, RawDescription: string): boolean;
 var
   t: TToken;
   item: TPasItem;
 begin
   t := nil;
   p := TPasEnum.Create;
+  p.Name := Name;
+  p.RawDescription := RawDescription;
+  p.FullDeclaration := Name; { TODO -- FullDeclaration of enum should be better }
 
   GetNextNonWCToken(t);
   while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
@@ -1032,7 +1055,7 @@ begin
           // s := t.Data;
           case Mode of
             MODE_CONST:
-              if (not ParseConstant(U, t)) then Exit;
+              if (not ParseConstant(U, t.Data)) then Exit;
             MODE_TYPE:
               if (not ParseType(U, t)) then Exit;
             MODE_VAR:
@@ -1349,14 +1372,14 @@ function TParser.ParseType(const U: TPasUnit; var t: TToken): Boolean;
 var
   d: string;
   i: TPasItem;
-  n: string;
+  TypeName: string;
   LCollected, LTemp: string;
   M: TPasMethod;
   E: TPasEnum;
 begin
   Result := False;
-  n := t.Data;
-  DoMessage(5, mtInformation, 'Parsing type "%s"', [n]);
+  TypeName := t.Data;
+  DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
   FreeAndNil(t);
   d := GetLastComment(True);
   if (not GetNextNonWCToken(t, LCollected)) then
@@ -1372,7 +1395,7 @@ begin
     FreeAndNil(t);
     DoError('"=" expected in file %s', [Scanner.GetStreamInfo], 0);
   end;
-  LCollected := LCollected + t.Data;
+  LCollected := TypeName + LCollected + t.Data;
   FreeAndNil(t);
 
   if (not GetNextNonWCToken(t, LTemp)) then
@@ -1390,32 +1413,32 @@ begin
           end else begin
             Scanner.UnGetToken(t);
             t := nil;
-            if not ParseCIO(U, n, CIO_CLASS, d, False) then Exit;
+            if not ParseCIO(U, TypeName, CIO_CLASS, d, False) then Exit;
             Result := True;
             Exit;
           end;
         end;
       KEY_DISPINTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_SPINTERFACE, d, False) then Exit;
+          if not ParseCIO(U, TypeName, CIO_SPINTERFACE, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_INTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_INTERFACE, d, False) then Exit;
+          if not ParseCIO(U, TypeName, CIO_INTERFACE, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_OBJECT: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_OBJECT, d, False) then Exit;
+          if not ParseCIO(U, TypeName, CIO_OBJECT, d, False) then Exit;
           Result := True;
           Exit;
         end;
       KEY_RECORD: begin
           FreeAndNil(t);
-          if not ParseCIO(U, n, CIO_RECORD, d, False) then Exit;
+          if not ParseCIO(U, TypeName, CIO_RECORD, d, False) then Exit;
           Result := True;
           Exit;
         end;
@@ -1425,7 +1448,7 @@ begin
           LCollected := LCollected + LTemp + t.Data;
           if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then begin
             FreeAndNil(t);
-            if not ParseCIO(U, n, CIO_PACKEDRECORD, d, False) then exit;
+            if not ParseCIO(U, TypeName, CIO_PACKEDRECORD, d, False) then exit;
             Result := True;
             exit;
           end;
@@ -1435,7 +1458,8 @@ begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
         if ParseCDFP(M, t.Data, t.Info.KeyWord, d, False) then begin
-          M.Name := n;
+          M.Name := TypeName;
+          M.FullDeclaration := TypeName + ' = ' + M.FullDeclaration;
           U.AddType(M);
           Result := True;
           exit;
@@ -1445,9 +1469,8 @@ begin
       end;
     end;
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
-      if ParseEnum(E) then begin
-        E.Name := n;
-        E.RawDescription := d;
+      if ParseEnum(E, TypeName, d) then 
+      begin
         U.AddType(E);
         Result := True;
         exit;
@@ -1462,7 +1485,7 @@ begin
   if not SkipDeclaration(TPasVarConst(i)) then begin
     i.Free;
   end else begin
-    i.Name := n;
+    i.Name := TypeName;
     i.RawDescription := d;
     U.AddType(i);
     Result := True;
@@ -1601,8 +1624,15 @@ begin
     ClearLastComment;
     GetNextNonWCToken(t, LCollector);
     dummy.FullDeclaration := dummy.FullDeclaration + LCollector + t.Data;
-    if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
-      ParseCDFP(m, t.Data, t.Info.KeyWord, '', False);
+    if (t.MyType = TOK_KEYWORD) and 
+       (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
+    begin
+      { KeyWordString for ParseCDFP below is '', because we already included
+        t.Data inside Dummy.FullDeclaration. 
+        If KeyWordString would be t.Data, then we would incorrectly
+        append t.Data twice to Dummy.FullDeclaration
+        when appending m.FullDeclaration to dummy.FullDeclaration. }
+      ParseCDFP(m, '', t.Info.KeyWord, '', False);
       dummy.FullDeclaration := dummy.FullDeclaration + m.FullDeclaration;
       m.Free;
       FreeAndNil(t);
@@ -1669,7 +1699,8 @@ begin
 
     Result := True;
     for j := LNew.Count-1 downto 0 do begin
-      TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := dummy.FullDeclaration;
+      TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := 
+        LNew.PasItemAt[j].Name + dummy.FullDeclaration;
     end;
     LNew.SetIsDeprecated(dummy.IsDeprecated);
     LNew.SetIsPlatformSpecific(dummy.IsPlatformSpecific);
