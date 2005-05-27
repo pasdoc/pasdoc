@@ -1142,6 +1142,7 @@ begin
   begin
     FreeAndNil(t);
     p.IndexDecl := '[';
+    p.FullDeclaration := p.FullDeclaration + '[';
     repeat
       if not Scanner.GetToken(t) then
         DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo], 0);
