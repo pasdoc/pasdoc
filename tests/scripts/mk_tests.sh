@@ -68,7 +68,8 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'ok_no_sort.pas' -or \
   -iname 'ok_sorting.pas' -or \
   -iname 'ok_introduction_conclusion.pas' -or \
-  -iname 'ok_property_decl.pas' \
+  -iname 'ok_property_decl.pas' -or \
+  -iname 'ok_multiple_vars.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -88,3 +89,4 @@ mk_special_test ok_sorting_all "$SORT_ALL" ok_sorting.pas
 mk_special_test ok_sorting_none --sort= ok_sorting.pas
 mk_special_test ok_introduction_conclusion ok_introduction_conclusion.pas --introduction=ok_introduction.txt --conclusion=ok_conclusion.txt
 mk_special_test ok_property_decl ok_property_decl.pas
+mk_special_test ok_multiple_vars ok_multiple_vars.pas
