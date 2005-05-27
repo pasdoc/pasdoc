@@ -735,6 +735,17 @@ begin
   try
     DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
 
+    { This check tries to avoid the possibility of accidentaly
+      overwriting user introduction/conclusion file
+      (in case some user would incorrectly think that 
+      introduction/conclusion is in raw html, and would create file like
+      my_introduction.html -- without this check, pasdoc could 
+      overwrite this file too easily). }
+    if SameText(ExtractFileExt(FileName), Generator.GetFileExtension) then
+      raise Exception.CreateFmt('Introduction/conclusion file extension' +
+        ' is the same as file extension of generated documentation ("%s"), ' +
+        'refusing to generate documentation', [Generator.GetFileExtension]);
+
     ExtraDescription.Name := SCharsReplace(
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
