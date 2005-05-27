@@ -118,14 +118,12 @@ type
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
-      CS may contain the 'class' keyword - its exact spelling is taken from
-      this variable.
       CDFP contains the keyword constructor, destructor, function or procedure
       in the exact spelling as it was found in input.
       Key contains one of the KEY_xxx constants for the What field of the
       resulting method object.
       D may contain a description or nil. }
-    function ParseCDFP(var M: TPasMethod; CS, CDFPS: string; Key: TKeyWord;
+    function ParseCDFP(var M: TPasMethod; const CDFPS: string; Key: TKeyWord;
       d: string; const NeedName: boolean): Boolean;
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
@@ -365,7 +363,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCDFP(var M: TPasMethod; CS, CDFPS: string; Key:
+function TParser.ParseCDFP(var M: TPasMethod; const CDFPS: string; Key:
   TKeyword; d: string; const NeedName: boolean): Boolean;
 var
   IsSemicolon: Boolean;
@@ -408,10 +406,9 @@ begin
       FreeAndNil(t);
       DoError('Could not get next identifier', [], 0);
     end;
-    if (Length(CS) > 0) then CS := CS + ' ';
     M.Name := t.Data;
     DoMessage(5, mtInformation, 'Parsing %s %s', [CDFPS, M.Name]);
-    M.FullDeclaration := CS + CDFPS + ' ' + M.Name;
+    M.FullDeclaration := CDFPS + ' ' + M.Name;
     FreeAndNil(t);
   end;
 
@@ -646,7 +643,7 @@ function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
         if (t.MyType = TOK_KEYWORD) then begin
           case t.Info.KeyWord of
             KEY_FUNCTION, KEY_PROCEDURE: begin
-                if ParseCDFP(M,'','',t.Info.KeyWord,d,false) then begin
+                if ParseCDFP(M, '', t.Info.KeyWord, d, false) then begin
                   M.Free;
                   FreeAndNil(t);
                 end else begin
@@ -690,8 +687,6 @@ function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
   end;
   
 var
-  CS: string;
-  CSFound: Boolean;
   Finished: Boolean;
   i: TPasCio;
   M: TPasMethod;
@@ -812,9 +807,6 @@ begin
       Scanner.UnGetToken(t);
     end;
 
-    { now collect methods, fields and properties }
-    CS := '';
-
     (* Members at the beginning of a class declaration that don<92>t have a specified
        visibility are by default published, provided the class is compiled in the
        $M+ state or is derived from a class compiled in the $M+ state;
@@ -827,9 +819,10 @@ begin
       State := STATE_PUBLIC;
     end;
 
+    { now collect methods, fields and properties }
+
     Finished := False;
     repeat
-      CSFound := False;
       FreeAndNil(t);
       if not GetNextNonWCToken(t) then begin
         i.Free;
@@ -845,16 +838,12 @@ begin
       else
         if (t.MyType = TOK_KEYWORD) then
           case t.Info.KeyWord of
-            KEY_CLASS: begin
-                CS := t.Data;
-                CSFound := True;
-              end;
             KEY_CONSTRUCTOR,
               KEY_DESTRUCTOR,
               KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, CS, t.Data, t.Info.KeyWord, d, True))
+                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
                   then begin
                   i.Free;
                   FreeAndNil(t);
@@ -911,7 +900,6 @@ begin
         else
           if (t.MyType = TOK_IDENTIFIER) then
           begin
-            CS := t.Data;
             case t.Info.StandardDirective of
               SD_DEFAULT: begin
                   if not SkipDeclaration(nil) then begin
@@ -929,7 +917,6 @@ begin
                   Exit;
             end;
           end;
-      if (not CSFound) then CS := '';
       FreeAndNil(t);
     until Finished;
     
@@ -1062,7 +1049,7 @@ begin
               Mode := MODE_CONST;
             KEY_OPERATOR: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
+                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
                 then begin
                   Exit;
                 end;
@@ -1073,7 +1060,7 @@ begin
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
+                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
                   then begin
                   Exit;
                 end;
@@ -1447,7 +1434,7 @@ begin
   if Assigned(t) then begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(M, d, t.Data, t.Info.KeyWord, d, False) then begin
+        if ParseCDFP(M, t.Data, t.Info.KeyWord, d, False) then begin
           M.Name := n;
           U.AddType(M);
           Result := True;
@@ -1615,7 +1602,7 @@ begin
     GetNextNonWCToken(t, LCollector);
     dummy.FullDeclaration := dummy.FullDeclaration + LCollector + t.Data;
     if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then begin
-      ParseCDFP(m, '', t.Data, t.Info.KeyWord, '', False);
+      ParseCDFP(m, t.Data, t.Info.KeyWord, '', False);
       dummy.FullDeclaration := dummy.FullDeclaration + m.FullDeclaration;
       m.Free;
       FreeAndNil(t);
