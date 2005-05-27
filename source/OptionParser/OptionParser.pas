@@ -47,12 +47,16 @@ type
     procedure SetValue(const AValue: Variant); virtual; abstract;
 {$ENDIF}
   public
-    { Create a new Option, almost never overridden. Set AShort to #0 in order
-      to have no short option. }
-    constructor Create(const AShort:char); overload; virtual;
-    constructor Create(const AShort:char; const ALong: string); overload; virtual;
-    constructor Create(const AShort:char; const ALong: string; const AShortCaseSensitive: boolean); overload; virtual;
-    constructor Create(const AShort:char; const ALong: string; const AShortCaseSensitive: boolean; const ALongCaseSensitive: boolean); overload; virtual; 
+    { Create a new Option.
+      Set AShort to #0 in order to have no short option. 
+      Technically you can set ALong to '' to have no long option,
+      but in practive *every* option should have long form. 
+      Don't override this in descendants (this always simply calls
+      CreateEx). Override only CreateEx. }
+    constructor Create(const AShort:char; const ALong: string);
+    
+    constructor CreateEx(const AShort:char; const ALong: string; 
+      const AShortCaseSensitive, ALongCaseSensitive: boolean); virtual; 
 
     { returns the width of the string "-s, --long-option" where s is the short option.
       Removes non-existant options (longoption = '' or shortoption = #0) }
@@ -142,8 +146,8 @@ type
 {$ENDIF}
   public
     property Values: TStringList read FValues;
-    constructor Create(const AShort: Char; const ALong: String;
-      const AShortCaseSensitive, ALongCaseSensitive: Boolean); overload; override;
+    constructor CreateEx(const AShort: Char; const ALong: String;
+      const AShortCaseSensitive, ALongCaseSensitive: Boolean); override;
     destructor Destroy; override;
   end;
 
@@ -176,8 +180,8 @@ type
     procedure SetValues(const Value: string);
   public
     property PossibleValues: string read GetPossibleValues write SetPossibleValues;
-    constructor Create(const AShort: Char; const ALong: String;
-      const AShortCaseSensitive, ALongCaseSensitive: Boolean); overload; override;
+    constructor CreateEx(const AShort: Char; const ALong: String;
+      const AShortCaseSensitive, ALongCaseSensitive: Boolean); override;
     destructor Destroy; override;
 
     function HasValue(const AValue: string): boolean;
@@ -384,7 +388,7 @@ end;
 
 { TOption }
 
-constructor TOption.Create(const AShort: char; const ALong: string;
+constructor TOption.CreateEx(const AShort: char; const ALong: string;
   const AShortCaseSensitive, ALongCaseSensitive: boolean);
 begin
   inherited Create;
@@ -394,20 +398,9 @@ begin
   FLongSens := ALongCaseSensitive;
 end;
 
-constructor TOption.Create(const AShort: char);
-begin
-  Create(AShort, '', True, False);
-end;
-
 constructor TOption.Create(const AShort: char; const ALong: string);
 begin
-  Create(AShort, ALong, True, False);
-end;
-
-constructor TOption.Create(const AShort: char; const ALong: string;
-  const AShortCaseSensitive: boolean);
-begin
-  Create(AShort, ALong, AShortCaseSensitive, False);
+  CreateEx(AShort, ALong, True, False);
 end;
 
 function TOption.GetOptionWidth: Integer;
@@ -629,7 +622,7 @@ begin
   FValues.Add(AString);
 end;
 
-constructor TStringOptionList.Create(const AShort: Char;
+constructor TStringOptionList.CreateEx(const AShort: Char;
   const ALong: String; const AShortCaseSensitive,
   ALongCaseSensitive: Boolean);
 begin
@@ -726,7 +719,7 @@ begin
   end;
 end;
 
-constructor TSetOption.Create(const AShort: Char; const ALong: String;
+constructor TSetOption.CreateEx(const AShort: Char; const ALong: String;
   const AShortCaseSensitive, ALongCaseSensitive: Boolean); 
 begin
   inherited;

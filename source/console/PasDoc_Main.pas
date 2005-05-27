@@ -82,7 +82,7 @@ var
 begin
   GOptionParser := TOptionParser.Create;
 
-  GOption_Help := TBoolOption.Create('?', 'help', True, False);
+  GOption_Help := TBoolOption.Create('?', 'help');
   GOption_Help.Explanation := 'Show this help';
   GOptionParser.AddOption(GOption_Help);
 
@@ -90,122 +90,122 @@ begin
   GOption_Version.Explanation := 'Show pasdoc version (and related info)';
   GOptionParser.AddOption(GOption_Version);
 
-  GOption_Verbosity := TIntegerOption.Create('v', 'verbosity', True, False);
+  GOption_Verbosity := TIntegerOption.Create('v', 'verbosity');
   GOption_Verbosity.Value := DEFAULT_VERBOSITY_LEVEL;
   GOption_Verbosity.Explanation := 'Set log verbosity (0-6) ['+IntToStr(DEFAULT_VERBOSITY_LEVEL)+']';
   GOptionParser.AddOption(GOption_Verbosity);
 
-  GOption_Define := TStringOptionList.Create('D', 'define', True, False);
+  GOption_Define := TStringOptionList.Create('D', 'define');
   GOption_Define.Explanation := 'Define conditional';
   GOptionParser.AddOption(GOption_Define);
 
-  GOption_Descriptions := TStringOptionList.Create('R', 'description', True, False);
+  GOption_Descriptions := TStringOptionList.Create('R', 'description');
   GOption_Descriptions.Explanation := 'Read description from this file';
   GOptionParser.AddOption(GOption_Descriptions);
 
-  GOption_ConditionalFile := TStringOptionList.Create('d', 'conditionals', True, False);
+  GOption_ConditionalFile := TStringOptionList.Create('d', 'conditionals');
   GOption_ConditionalFile.Explanation := 'Read conditionals from this file';
   GOptionParser.AddOption(GOption_ConditionalFile);
 
-  GOption_IncludePaths := TPathListOption.Create('I', 'include', True, False);
+  GOption_IncludePaths := TPathListOption.Create('I', 'include');
   GOption_IncludePaths.Explanation := 'Includes search path';
   GOptionParser.AddOption(GOption_IncludePaths);
 
-  GOption_SourceList := TStringOptionList.Create('S', 'source', True, False);
+  GOption_SourceList := TStringOptionList.Create('S', 'source');
   GOption_SourceList.Explanation := 'Read source filenames from file';
   GOptionParser.AddOption(GOption_SourceList);
 
-  GOption_ContentFile := TStringOption.Create('C', 'content', True, False);
+  GOption_ContentFile := TStringOption.Create('C', 'content');
   GOption_ContentFile.Explanation := 'Read Contents for HtmlHelp from file';
   GOptionParser.AddOption(GOption_ContentFile);
 
-  GOption_Footer := TStringOption.Create('F', 'footer', True, False);
+  GOption_Footer := TStringOption.Create('F', 'footer');
   GOption_Footer.Explanation := 'Include file as footer';
   GOptionParser.AddOption(GOption_Footer);
 
-  GOption_Header := TStringOption.Create('H', 'header', True, False);
+  GOption_Header := TStringOption.Create('H', 'header');
   GOption_Header.Explanation := 'Include file as header';
   GOptionParser.AddOption(GOption_Header);
 
-  GOption_Name := TStringOption.Create('N', 'name', True, False);
+  GOption_Name := TStringOption.Create('N', 'name');
   GOption_Name.Explanation := 'Name for documentation';
   GOptionParser.AddOption(GOption_Name);
 
-  GOption_Title := TStringOption.Create('T', 'title', True, False);
+  GOption_Title := TStringOption.Create('T', 'title');
   GOption_Title.Explanation := 'Documentation title';
   GOptionParser.AddOption(GOption_Title);
 
-  GOption_Format := TStringOption.Create('O', 'format', True, False);
+  GOption_Format := TStringOption.Create('O', 'format');
   GOption_Format.Explanation := 'Output format: html, latex, latex2rtf or htmlhelp';
   GOption_Format.Value := 'html';
   GOptionParser.AddOption(GOption_Format);
 
-  GOption_OutputPath := TStringOption.Create('E', 'output', True, False);
+  GOption_OutputPath := TStringOption.Create('E', 'output');
   GOption_OutputPath.Explanation := 'Output path';
   GOptionParser.AddOption(GOption_OutputPath);
 
-  GOption_Generator := TBoolOption.Create('X', 'exclude-generator', True, False);
+  GOption_Generator := TBoolOption.Create('X', 'exclude-generator');
   GOption_Generator.Explanation := 'Exclude generator information';
   GOptionParser.AddOption(GOption_Generator);
 
-  GOption_Language := TStringOption.Create('L', 'language', True, False);
+  GOption_Language := TStringOption.Create('L', 'language');
   GOption_Language.Explanation := 'Output language. Valid languages are: ' + #10;
   for l := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
     GOption_Language.Explanation := GOption_Language.Explanation + '  ' +
       LANGUAGE_ARRAY[l].Syntax + ': ' + LANGUAGE_ARRAY[l].Name + #10;
   GOptionParser.AddOption(GOption_Language);
 
-  GOption_StarOnly := TBoolOption.Create(#0, 'staronly', True, False);
+  GOption_StarOnly := TBoolOption.Create(#0, 'staronly');
   GOption_StarOnly.Explanation := 'Parse only {**, (*** and //** style comments';
   GOptionParser.AddOption(GOption_StarOnly);
 
-  GOption_CommentMarker := TStringOptionList.Create(#0, 'marker', True, False);
+  GOption_CommentMarker := TStringOptionList.Create(#0, 'marker');
   GOption_CommentMarker.Explanation := 'Parse only {<marker>, (*<marker> and //<marker> comments. Overrides the staronly option, which is a shortcut for ''--marker=**''';
   GOptionParser.AddOption(GOption_CommentMarker);
 
-  GOption_MarkerOptional := TBoolOption.Create(#0, 'marker-optional', True, False);
+  GOption_MarkerOptional := TBoolOption.Create(#0, 'marker-optional');
   GOption_MarkerOptional.Explanation := 'Do not require the markers given in --marker but remove them from the comment if they exist.';
   GOptionParser.AddOption(GOption_MarkerOptional);
 
-  GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames', True, False);
+  GOption_NumericFilenames := TBoolOption.Create(#0, 'numericfilenames');
   GOption_NumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
   GOptionParser.AddOption(GOption_NumericFilenames);
 
-  GOption_VisibleMembers := TSetOption.Create('M','visible-members', True, False);
+  GOption_VisibleMembers := TSetOption.Create('M','visible-members');
   GOption_VisibleMembers.Explanation := 'Include / Exclude class Members by visiblity';
   GOption_VisibleMembers.PossibleValues := 'private,protected,public,published,automated';
   GOption_VisibleMembers.Values := 'protected,public,published,automated';
   GOptionParser.AddOption(GOption_VisibleMembers);
 
-  GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list', True, False);
+  GOption_WriteUsesList := TBoolOption.Create(#0, 'write-uses-list');
   GOption_WriteUsesList.Explanation := 'Put uses list into output';
   GOptionParser.AddOption(GOption_WriteUsesList);
 
-  GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses', True, False);
+  GOption_WriteGVUses := TBoolOption.Create(#0, 'graphviz-uses');
   GOption_WriteGVUses.Explanation := 'Write a GVUses.dot file that can be used for the `dot` program from GraphViz to generate a unit dependency graph';
   GOptionParser.AddOption(GOption_WriteGVUses);
 
-  GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes', True, False);
+  GOption_WriteGVClasses := TBoolOption.Create(#0, 'graphviz-classes');
   GOption_WriteGVClasses.Explanation := 'Write a GVClasses.dot file that can be used for the `dot` program from GraphViz to generate a class hierarchy graph';
   GOptionParser.AddOption(GOption_WriteGVClasses);
 
-  Goption_LinkGVUses := TStringOption.Create(#0, 'link-gv-uses', True, False);
+  Goption_LinkGVUses := TStringOption.Create(#0, 'link-gv-uses');
   Goption_LinkGVUses.Explanation := 'Add a link to a GVUses.<format> file generated by the `dot` program where <format> is any extension that `dot` can generate (e.g. jpg). (currently only for HTML output)';
   GOptionParser.AddOption(Goption_LinkGVUses);
 
-  Goption_LinkGVClasses := TStringOption.Create(#0, 'link-gv-classes', True, False);
+  Goption_LinkGVClasses := TStringOption.Create(#0, 'link-gv-classes');
   Goption_LinkGVClasses.Explanation := 'Add a link to a GVClasses.<format> file generated by the `dot` program where <format> is any extension that `dot` can generate (e.g. jpg). (currently only for HTML output)';
   GOptionParser.AddOption(Goption_LinkGVClasses);
 
-  GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations', True, False);
+  GOption_AbbrevFiles := TStringOptionList.Create(#0, 'abbreviations');
   GOption_AbbrevFiles.Explanation := 'Abbreviation file, format is "[name]  value", value is trimmed, lines that do not start with ''['' (or whitespace before that) are ignored';
   GOptionParser.AddOption(GOption_AbbrevFiles);
 
-  GOption_ASPELL := TStringOption.Create(#0, 'aspell', True, False);
+  GOption_ASPELL := TStringOption.Create(#0, 'aspell');
   GOption_ASPELL.Explanation := 'Enable aspell, giving language as parameter, currently only done in HTML output';
   GOptionParser.AddOption(GOption_ASPELL);
 
-  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words', True, False);
+  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words');
   GOption_IgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line, no comments allowed';
   GOptionParser.AddOption(GOption_IgnoreWords);
 
