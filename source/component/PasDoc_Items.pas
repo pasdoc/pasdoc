@@ -158,8 +158,10 @@ type
       of this item. }
     function FindName(S1, S2, S3: string; n: Integer): TBaseItem; virtual;
     
-    { Detailed description of this item, something more elaborate
-      than @link(AbstractDescription).
+    { Detailed description of this item.
+      
+      In case of TPasItem, this is something more elaborate
+      than @link(TPasItem.AbstractDescription).
       
       This is already in the form suitable for final output,
       ready to be put inside final documentation. }
