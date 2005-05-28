@@ -669,6 +669,16 @@ type
     
     { Set IsLibrarySpecific property of all Items to given Value }
     procedure SetIsLibrarySpecific(Value: boolean);
+    
+    { Sets FullDeclaration of every item to 
+      1. Name of this item (only if PrefixName) 
+      2. + Suffix. 
+      Very useful if you have a couple of items that share a common
+      declaration in source file, e.g. variables or fields declared like
+      @longcode(#
+        A, B: Integer;
+      #) }
+    procedure SetFullDeclaration(PrefixName: boolean; const Suffix: string);
   end;
 
   { @Name holds a collection of methods. It introduces no
@@ -1295,6 +1305,20 @@ var i: Integer;
 begin
   for i := 0 to Count - 1 do 
     PasItemAt[i].IsLibrarySpecific := Value;
+end;
+
+procedure TPasItems.SetFullDeclaration(PrefixName: boolean; const Suffix: string);
+var i: Integer;
+begin
+  if PrefixName then
+  begin
+    for i := 0 to Count - 1 do 
+      PasItemAt[i].FullDeclaration := PasItemAt[i].Name + Suffix;
+  end else
+  begin
+    for i := 0 to Count - 1 do 
+      PasItemAt[i].FullDeclaration := Suffix;
+  end;
 end;
 
 { TPasCio -------------------------------------------------------------------- }
