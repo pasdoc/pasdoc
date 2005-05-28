@@ -36,7 +36,10 @@ type
     
     - Of every TPasItem :
       Name, RawDescription, State, IsDeprecated, IsPlatformSpecific, 
-      IsLibrarySpecific. 
+      IsLibrarySpecific, FullDeclararation (note: for now not all items
+      get sensible FullDeclararation, but the intention is to improve this
+      over time; see @link(TPasItem.FullDeclararation) to know where 
+      FullDeclararation is available now).
       
       Note to IsDeprecated: parser inits it basing on hint directive
       "deprecated" presence in source file; it doesn't handle the fact 
@@ -49,7 +52,7 @@ type
       
     - Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
     - Of TPasEnum: Members.
-    - Of TPasMethod: What, FullDeclararation.
+    - Of TPasMethod: What.
     - Of TPasVarConst: FullDeclaration.
     - Of TPasProperty: IndexDecl, FullDeclaration.
       PropType (only if was specified in property declaration).
@@ -908,10 +911,10 @@ end;
 function TParser.ParseConstant(const U: TPasUnit; 
   const ConstantName: string): Boolean;
 var
-  i: TPasVarConst;
+  i: TPasConstant;
 begin
   Result := False;
-  i := TPasVarConst.Create;
+  i := TPasConstant.Create;
   i.Name := ConstantName;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
   i.RawDescription := GetLastComment(True);
@@ -1307,11 +1310,11 @@ end;
 function TParser.ParseType(const U: TPasUnit; var t: TToken): Boolean;
 var
   d: string;
-  i: TPasItem;
+  NormalType: TPasType;
   TypeName: string;
   LCollected, LTemp: string;
-  M: TPasMethod;
-  E: TPasEnum;
+  MethodType: TPasMethod;
+  EnumType: TPasEnum;
 begin
   Result := False;
   TypeName := t.Data;
@@ -1393,10 +1396,11 @@ begin
   if Assigned(t) then begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(M, t.Data, t.Info.KeyWord, d, False) then begin
-          M.Name := TypeName;
-          M.FullDeclaration := TypeName + ' = ' + M.FullDeclaration;
-          U.AddType(M);
+        if ParseCDFP(MethodType, t.Data, t.Info.KeyWord, d, False) then begin
+          MethodType.Name := TypeName;
+          MethodType.FullDeclaration := 
+            TypeName + ' = ' + MethodType.FullDeclaration;
+          U.AddType(MethodType);
           Result := True;
           exit;
         end else begin
@@ -1405,9 +1409,9 @@ begin
       end;
     end;
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
-      if ParseEnum(E, TypeName, d) then 
+      if ParseEnum(EnumType, TypeName, d) then 
       begin
-        U.AddType(E);
+        U.AddType(EnumType);
         Result := True;
         exit;
       end;
@@ -1416,14 +1420,14 @@ begin
     Scanner.UnGetToken(t);
   end;
 
-  i := TPasVarConst.Create;
-  TPasVarConst(i).FullDeclaration := LCollected;
-  if not SkipDeclaration(TPasVarConst(i)) then begin
-    i.Free;
+  NormalType := TPasType.Create;
+  NormalType.FullDeclaration := LCollected;
+  if not SkipDeclaration(NormalType) then begin
+    NormalType.Free;
   end else begin
-    i.Name := TypeName;
-    i.RawDescription := d;
-    U.AddType(i);
+    NormalType.Name := TypeName;
+    NormalType.RawDescription := d;
+    U.AddType(NormalType);
     Result := True;
   end;
 end;
@@ -1520,8 +1524,8 @@ function TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
 var
   Finished: Boolean;
   FirstLoop: Boolean;
-  NewItem: TPasItem;
-  ItemCollector: TPasItem;
+  NewItem: TPasFieldVariable;
+  ItemCollector: TPasFieldVariable;
   m: TPasMethod;
   ItemsParsed: TPasItems;
   LCollector: string;
@@ -1530,15 +1534,13 @@ var
 begin
   Result := false;
   
-  ItemCollector := TPasItem.Create;
+  ItemCollector := TPasFieldVariable.Create;
   try
     ItemsParsed := TPasItems.Create(false);
     try
       FirstLoop := True;
       repeat
-        if OfObject then
-          NewItem := TPasItem.Create else
-          NewItem := TPasVarConst.Create;
+        NewItem := TPasFieldVariable.Create;
         if FirstLoop then 
         begin
           NewItem.Name := t.Data;

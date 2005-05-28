@@ -340,7 +340,9 @@ type
        
        Note that that this is not used for some descendants.
        Right now it's used only with 
-       - TPasVarConst (includes type, default values, etc.) 
+       - TPasConstant 
+       - TPasFieldVariable (includes type, default values, etc.) 
+       - TPasType
        - TPasMethod (includes parameter list, procedural directives, etc.)
        - TPasProperty (includes read/write and storage specifiers, etc.) 
        - TEnum (for now it's just the same thing as Name)
@@ -353,12 +355,33 @@ type
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
   end;
 
-  { @abstract(used for constants/variables) }
-  TPasVarConst = class(TPasItem)
+  { @abstract(Pascal constant.)
+    
+    Precise definition of "constant" for pasdoc purposes is 
+    "a name associated with a value".
+    Optionally, constant type may also be specified in declararion.
+    Well, Pascal constant always has some type, but pasdoc is too weak
+    to determine the implicit type of a constant, i.e. to unserstand that
+    constand @code(const A = 1) is of type Integer. }
+  TPasConstant = class(TPasItem)
   end;
 
-  { @abstract(Enumerated types) }
-  TPasEnum = class(TPasVarConst)
+  { @abstract(Pascal global variable or field of CIO.)
+  
+    Precise definition is "a name with some type".
+    And optionally with some initial value, for global variables.
+    
+    In the future we may introduce here some property like Type: TPasType. }
+  TPasFieldVariable = class(TPasItem)
+  end;
+  
+  { @abstract(Pascal type (but not a procedural type -- these are expressed
+    as @link(TPasMethod).)) }
+  TPasType = class(TPasItem)
+  end;
+
+  { @abstract(Enumerated type.) }
+  TPasEnum = class(TPasType)
   protected
     FMembers: TPasItems;
     procedure Serialize(const ADestination: TStream); override;
@@ -380,7 +403,7 @@ type
   { This represents:
     - global function/procedure,
     - method (function/procedure of a class/interface/object),
-    - pointer type to one of the above. }
+    - pointer type to one of the above (in this case Name is the type name). }
   TPasMethod = class(TPasItem)
   protected
     FParams: TStringVector;
@@ -461,7 +484,7 @@ type
 
   { @abstract(Extends @link(TPasItem) to store all items in 
     a class / an object, e.g. fields.) }
-  TPasCio = class(TPasItem)
+  TPasCio = class(TPasType)
   protected
     FFields: TPasItems;
     FMethods: TPasMethods;
@@ -1788,7 +1811,9 @@ end;
 
 initialization
   TSerializable.Register(TPasItem);
-  TSerializable.Register(TPasVarConst);
+  TSerializable.Register(TPasConstant);
+  TSerializable.Register(TPasFieldVariable);
+  TSerializable.Register(TPasType);
   TSerializable.Register(TPasEnum);
   TSerializable.Register(TPasMethod);
   TSerializable.Register(TPasProperty);
