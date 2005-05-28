@@ -243,18 +243,6 @@ type
   THTMLDocGenerator = class(TGenericHTMLDocGenerator)
   end;
 
-{$INCLUDE automated.inc}
-{$INCLUDE private.inc}
-{$INCLUDE public.inc}
-{$INCLUDE published.inc}
-{$INCLUDE protected.inc}
-
-const
-  { HTML table padding inside each cell. }
-  HTML_TABLE_CELLPADNG = '4';
-  { HTML table spacing between cells. }
-  HTML_TABLE_CELLSPACING = '2';
-
 implementation
 
 uses
@@ -269,17 +257,17 @@ uses
   PasDoc_HierarchyTree,
   PasDoc_Tipue;
 
-{ HTML things to be customized:
-    - standard background color (white)
-    - background color for table headings and overview list at the top of each file (light gray)
-    - background color for normal table cells (light gray, slightly lighter than the above)
-    - standard foreground color (black)
-    - unused link color (blue)
-    - used link color (purple)
-    - link color while being clicked on (red)
-    - normal font (Times Roman)
-    - heading font (Helvetica)
-    - code font (Courier New) }
+{$INCLUDE automated.inc}
+{$INCLUDE private.inc}
+{$INCLUDE public.inc}
+{$INCLUDE published.inc}
+{$INCLUDE protected.inc}
+
+const
+  { HTML table padding inside each cell. }
+  HTML_TABLE_CELLPADNG = '4';
+  { HTML table spacing between cells. }
+  HTML_TABLE_CELLSPACING = '2';
 
 const
   DoctypeFrameset = '<!DOCTYPE HTML PUBLIC ' +
