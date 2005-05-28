@@ -154,8 +154,19 @@ type
       const Name, RawDescription: string): boolean;
 
     function ParseUses(const U: TPasUnit): Boolean;
+    
     function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
-    function SkipDeclaration(const VC: TPasVarConst): Boolean;
+    
+    { Parse one variables or fields clause 
+      ("one clause" is something like 
+        NAME1, NAME2, ... : TYPE;
+      i.e. a list of variables/fields sharing one type declaration.)
+      @param Items If Items <> nil then it adds parsed variables/fields to Items.
+      @param State is the state to assign to each variable/field instance. }
+    function ParseFieldsVariables(Items: TPasItems; var t: TToken;
+      OfObject: boolean; State: TAccessibility): Boolean;
+    
+    function SkipDeclaration(const Item: TPasItem): Boolean;
     
     { Reads tokens and throws them away as long as they are either whitespace
       or comments. 
@@ -584,122 +595,18 @@ end;
 function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
   TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
 
-  { Parse field declaration, i.e. something like
+  { Parse fields clause, i.e. something like
       NAME1, NAME2, ... : TYPE;
     If AddToFields then adds parsed fields to i.Fields.
     State of created fields is set to given State parameter. }
-  function ParseCIOField(var t: TToken; 
+  function ParseFields(var t: TToken; 
     i: TPasCio; AddToFields: boolean; State: TAccessibility): boolean;
-  var
-    FirstFieldLoop: Boolean;
-    FieldsAdded: TPasItems;
-    f: TPasItem;
-    DummyField: TPasVarConst;
-    M: TPasMethod;
+  var Items: TPasItems;
   begin
-    Result := false;
-    
-    FieldsAdded := TPasItems.Create(false);
-    try
-      FirstFieldLoop := True;
-      repeat
-        f := TPasItem.Create;
-        if FirstFieldLoop then begin
-          f.Name := t.Data;
-          FirstFieldLoop := False;
-        end else begin
-          if not GetNextNonWCToken(t) then Exit;
-          if t.MyType <> TOK_IDENTIFIER then begin
-            DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
-          end;
-          f.Name := t.Data;
-        end;
-
-        f.State := State;
-        f.RawDescription := GetLastComment(False);
-        if AddToFields then begin
-          i.Fields.Add(f);
-          FieldsAdded.Add(f);
-        end else begin
-          f.Free;
-        end;
-        FreeAndNil(t);
-
-        if not GetNextNonWCToken(t) then Exit;
-
-        if t.MyType = TOK_SYMBOL then begin
-          case t.Info.SymbolType of
-            SYM_COMMA:
-              begin
-                FreeAndNil(t);
-                Continue;
-              end;
-            SYM_COLON:
-              begin
-                Break;
-              end;
-          end;
-        end;
-        // We reach here only if token is not a comma or a colon.
-        FreeAndNil(t);
-        DoError('%s: Expected comma or colon in Field declaration.', [Scanner.GetStreamInfo], 0);
-      until False;
-      ClearLastComment;
-      FreeAndNil(t);
-      GetNextNonWCToken(t);
-      
-      { This is the place where DummyField and FieldsAdded are useful:
-        we will try to parse the rest of fields declaration to DummyField
-        properties. Then we will copy some properties from DummyField
-        to all items in FieldsAdded. This way we e.g. parse hint directives
-        (like deprecated, platform etc.) into DummyField properties
-        and then copy them into FieldsAdded items. }
-      DummyField := TPasVarConst.Create;
-      try
-        if (t.MyType = TOK_KEYWORD) then begin
-          case t.Info.KeyWord of
-            KEY_FUNCTION, KEY_PROCEDURE: begin
-                if ParseCDFP(M, '', t.Info.KeyWord, d, false) then begin
-                  M.Free;
-                  FreeAndNil(t);
-                end else begin
-                  FreeAndNil(t);
-                  exit;
-                end;
-              end;
-            KEY_RECORD: begin
-              ParseCIO(nil, '', CIO_RECORD, '', False);
-              end;
-            KEY_PACKED: begin
-                FreeAndNil(t);
-                GetNextNonWCToken(t);
-                if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
-                  ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
-                end else begin
-                  SkipDeclaration(DummyField);
-                end;
-              end;
-            else begin
-                FreeAndNil(t);
-                if not SkipDeclaration(DummyField) then begin
-                  exit;
-                end;
-              end;
-            end;
-        end else begin
-          FreeAndNil(t);
-          if not SkipDeclaration(DummyField) then begin
-            Exit;
-          end;
-        end;
-        
-        FieldsAdded.SetIsDeprecated(DummyField.IsDeprecated);
-        FieldsAdded.SetIsPlatformSpecific(DummyField.IsPlatformSpecific);
-        FieldsAdded.SetIsLibrarySpecific(DummyField.IsLibrarySpecific);
-      finally DummyField.Free end;
-    finally FieldsAdded.Free end;
-    
-    Result := true;
+    if AddToFields then
+      Items := i.Fields else
+      Items := nil;
+    Result := ParseFieldsVariables(Items, t, true, State);
   end;
   
 var
@@ -929,7 +836,7 @@ begin
               SD_PROTECTED: State := STATE_PROTECTED;
               SD_AUTOMATED: State := STATE_AUTOMATED;
               else
-                if not ParseCIOField(t, i, State in ClassMembers, State) then
+                if not ParseFields(t, i, State in ClassMembers, State) then
                   Exit;
             end;
           end;
@@ -1575,140 +1482,184 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TParser.ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
+begin
+  Result := ParseFieldsVariables(U.Variables, t, false, STATE_PUBLISHED);
+end;
+
+function TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
+  OfObject: boolean; State: TAccessibility): Boolean;
 var
   Finished: Boolean;
   FirstLoop: Boolean;
-  i, dummy: TPasVarConst;
+  NewItem: TPasItem;
+  ItemCollector: TPasItem;
   m: TPasMethod;
-  LNew: TPasItems;
-  j: Integer;
+  ItemsParsed: TPasItems;
   LCollector: string;
   ttemp: TToken;
   FirstCheck: boolean;
 begin
-  Result := False;
-  dummy := TPasVarConst.Create;
-  LNew := TPasItems.Create(false);
-  FirstLoop := True;
+  Result := false;
+  
+  ItemCollector := TPasItem.Create;
   try
-    repeat
-      i := TPasVarConst.Create;
-      if FirstLoop then begin
-        i.Name := t.Data;
-        FirstLoop := False;
-      end else begin
-        if (not GetNextNonWCToken(t, LCollector)) then Exit;
-        dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
-        if (t.MyType <> TOK_IDENTIFIER) then
-          DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
-        i.Name := t.Data;
-      end;
-      i.RawDescription := GetLastComment(False);
-      U.AddVariable(i);
-      LNew.Add(i);
-      FreeAndNil(t);
-      if (not GetNextNonWCToken(t, LCollector)) then Exit;
-      dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
-      if (t.MyType <> TOK_SYMBOL) or
-        ((t.Info.SymbolType <> SYM_COMMA) and
-        (t.Info.SymbolType <> SYM_COLON)) then
-        DoError('%s: Expected comma or colon in var declaration.',
-          [Scanner.GetStreamInfo], 0);
+    ItemsParsed := TPasItems.Create(false);
+    try
+      FirstLoop := True;
+      repeat
+        if OfObject then
+          NewItem := TPasItem.Create else
+          NewItem := TPasVarConst.Create;
+        if FirstLoop then 
+        begin
+          NewItem.Name := t.Data;
+          FirstLoop := False;
+        end else 
+        begin
+          if not GetNextNonWCToken(t, LCollector) then Exit;
+          ItemCollector.FullDeclaration := 
+            ItemCollector.FullDeclaration + LCollector;
+          if (t.MyType <> TOK_IDENTIFIER) then
+            DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
+          NewItem.Name := t.Data;
+        end;       
 
-      Finished := (t.Info.SymbolType = SYM_COLON);
-      if (t.MyType <> TOK_SYMBOL) OR (t.Info.SymbolType <> SYM_COMMA) then begin
-        dummy.FullDeclaration := dummy.FullDeclaration + t.Data;
-      end;
-      FreeAndNil(t);
-    until Finished;
-    ClearLastComment;
-    GetNextNonWCToken(t, LCollector);
-    dummy.FullDeclaration := dummy.FullDeclaration + LCollector + t.Data;
-    if (t.MyType = TOK_KEYWORD) and 
-       (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
-    begin
-      { KeyWordString for ParseCDFP below is '', because we already included
-        t.Data inside Dummy.FullDeclaration. 
-        If KeyWordString would be t.Data, then we would incorrectly
-        append t.Data twice to Dummy.FullDeclaration
-        when appending m.FullDeclaration to dummy.FullDeclaration. }
-      ParseCDFP(m, '', t.Info.KeyWord, '', False);
-      dummy.FullDeclaration := dummy.FullDeclaration + m.FullDeclaration;
-      m.Free;
-      FreeAndNil(t);
+        if Items <> nil then
+        begin
+          NewItem.State := State;
+          NewItem.RawDescription := GetLastComment(false);
+          Items.Add(NewItem);
+          ItemsParsed.Add(NewItem);
+        end else
+        begin
+          FreeAndNil(NewItem);
+        end;
+
+        FreeAndNil(t);
+        if not GetNextNonWCToken(t, LCollector) then Exit;
+        ItemCollector.FullDeclaration := 
+          ItemCollector.FullDeclaration + LCollector;
+          
+        if (t.MyType <> TOK_SYMBOL) or
+          ((t.Info.SymbolType <> SYM_COMMA) and
+          (t.Info.SymbolType <> SYM_COLON)) then
+          DoError('%s: Expected comma or colon in variable or field declaration.',
+            [Scanner.GetStreamInfo], 0);
+
+        Finished := (t.Info.SymbolType = SYM_COLON);
+        if (t.MyType <> TOK_SYMBOL) or (t.Info.SymbolType <> SYM_COMMA) then 
+          ItemCollector.FullDeclaration := 
+            ItemCollector.FullDeclaration + t.Data;
+        FreeAndNil(t);
+      until Finished;
+      
+      ClearLastComment;
       GetNextNonWCToken(t, LCollector);
-      dummy.FullDeclaration := dummy.FullDeclaration + LCollector;
-      if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then begin
-        dummy.FullDeclaration := dummy.FullDeclaration + t.Data;
-        SkipDeclaration(dummy);
-      end else begin
-        Scanner.UnGetToken(t);
-      end;
-    end else begin
-      if not SkipDeclaration(dummy) then Exit;
-    end;
-
-    // The following section allows PasDoc to parse variable modifiers in FPC.
-    // See: http://www.freepascal.org/docs-html/ref/refse19.html
-    ClearLastComment;
-    Finished := False;
-    FirstCheck := True;
-    repeat
-      ttemp := nil;
-      if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
-      if FirstCheck then
+      ItemCollector.FullDeclaration := 
+        ItemCollector.FullDeclaration + LCollector + t.Data;
+      if (t.MyType = TOK_KEYWORD) and 
+         (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
       begin
-        // If the first non-white character token after the semicolon
-        // is "cvar", "export', "external", or "public", there is
-        // a variable modifier present.
-
-        // This does not take into account the "absolute" modifier
-        // (which is not preceeded by a semicolon).
-        FirstCheck := False;
-        if ( (ttemp.MyType = TOK_KEYWORD) and 
-             (ttemp.Info.KeyWord in [KEY_CVAR]) ) or
-           ( (ttemp.MyType = TOK_IDENTIFIER) and 
-             (ttemp.Info.StandardDirective in 
-               [SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) ) then 
+        { KeyWordString for ParseCDFP below is '', because we already included
+          t.Data inside ItemCollector.FullDeclaration. 
+          If KeyWordString would be t.Data, then we would incorrectly
+          append t.Data twice to ItemCollector.FullDeclaration
+          when appending m.FullDeclaration to ItemCollector.FullDeclaration. }
+        ParseCDFP(M, '', t.Info.KeyWord, '', false);
+        ItemCollector.FullDeclaration := 
+          ItemCollector.FullDeclaration + M.FullDeclaration;
+        M.Free;
+        FreeAndNil(t);
+        GetNextNonWCToken(t, LCollector);
+        ItemCollector.FullDeclaration := 
+          ItemCollector.FullDeclaration + LCollector;
+        if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then
         begin
-          dummy.FullDeclaration := dummy.FullDeclaration +  ' ' + ttemp.Data;
-          FreeAndNil(ttemp)
-        end
-        else
+          ItemCollector.FullDeclaration := 
+            ItemCollector.FullDeclaration + t.Data;
+          SkipDeclaration(ItemCollector);
+        end else 
         begin
-          Finished := True;
-          Scanner.UnGetToken(ttemp);
+          Scanner.UnGetToken(t);
         end;
-        while not Finished do
-        begin
-          if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
-          if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
-          begin
-            Finished := True;
-            FirstCheck := False;
-            dummy.FullDeclaration := dummy.FullDeclaration +  ttemp.Data;
-          end
-          else
-          begin
-            dummy.FullDeclaration := dummy.FullDeclaration +  ' ' + ttemp.Data;
-          end;
-          FreeAndNil(ttemp)
-        end;
+      end else
+      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then
+      begin
+        ParseCIO(nil, '', CIO_RECORD, '', false);
+      end else
+      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then
+      begin 
+        FreeAndNil(t);
+        GetNextNonWCToken(t);
+        if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
+          ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
+        end else begin
+          SkipDeclaration(ItemCollector);
+        end;      
+      end else
+      begin
+        if not SkipDeclaration(ItemCollector) then Exit;
       end;
-    until Finished and not FirstCheck;
 
-    Result := True;
-    for j := LNew.Count-1 downto 0 do begin
-      TPasVarConst(LNew.PasItemAt[j]).FullDeclaration := 
-        LNew.PasItemAt[j].Name + dummy.FullDeclaration;
-    end;
-    LNew.SetIsDeprecated(dummy.IsDeprecated);
-    LNew.SetIsPlatformSpecific(dummy.IsPlatformSpecific);
-    LNew.SetIsLibrarySpecific(dummy.IsLibrarySpecific);
-  finally
-    dummy.free;
-    LNew.Free;
-  end;
+      if not OfObject then
+      begin
+        // The following section allows PasDoc to parse variable modifiers in FPC.
+        // See: http://www.freepascal.org/docs-html/ref/refse19.html
+        ClearLastComment;
+        Finished := False;
+        FirstCheck := True;
+        repeat
+          ttemp := nil;
+          if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+          if FirstCheck then
+          begin
+            // If the first non-white character token after the semicolon
+            // is "cvar", "export', "external", or "public", there is
+            // a variable modifier present.
+
+            // This does not take into account the "absolute" modifier
+            // (which is not preceeded by a semicolon).
+            FirstCheck := False;
+            if ( (ttemp.MyType = TOK_KEYWORD) and 
+                 (ttemp.Info.KeyWord in [KEY_CVAR]) ) or
+               ( (ttemp.MyType = TOK_IDENTIFIER) and 
+                 (ttemp.Info.StandardDirective in 
+                   [SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) ) then 
+            begin
+              ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
+              FreeAndNil(ttemp)
+            end
+            else
+            begin
+              Finished := True;
+              Scanner.UnGetToken(ttemp);
+            end;
+            while not Finished do
+            begin
+              if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+              if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
+              begin
+                Finished := True;
+                FirstCheck := False;
+                ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ttemp.Data;
+              end
+              else
+              begin
+                ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
+              end;
+              FreeAndNil(ttemp)
+            end;
+          end;
+        until Finished and not FirstCheck;
+      end;
+
+      Result := True;
+      ItemsParsed.SetFullDeclaration(true, ItemCollector.FullDeclaration);
+      ItemsParsed.SetIsDeprecated(ItemCollector.IsDeprecated);
+      ItemsParsed.SetIsPlatformSpecific(ItemCollector.IsPlatformSpecific);
+      ItemsParsed.SetIsLibrarySpecific(ItemCollector.IsLibrarySpecific);
+    finally ItemsParsed.Free end; 
+  finally ItemCollector.Free end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1718,7 +1669,7 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
-function TParser.SkipDeclaration(const VC: TPasVarConst): Boolean;
+function TParser.SkipDeclaration(const Item: TPasItem): Boolean;
 var
   EndLevel: Integer;
   IsSemicolon: Boolean;
@@ -1732,8 +1683,8 @@ begin
   t := nil;
   repeat
     if not GetNextNonWCToken(t, LCollector) then Exit;
-    if Assigned(VC) then begin
-      VC.FullDeclaration := VC.FullDeclaration + LCollector;
+    if Assigned(Item) then begin
+      Item.FullDeclaration := Item.FullDeclaration + LCollector;
     end;
     case t.MyType of
       TOK_SYMBOL:
@@ -1746,19 +1697,19 @@ begin
           KEY_END: Dec(EndLevel);
           KEY_RECORD: Inc(EndLevel);
           KEY_LIBRARY: 
-            if Assigned(VC) then VC.IsLibrarySpecific := true;
+            if Assigned(Item) then Item.IsLibrarySpecific := true;
         end;
       TOK_IDENTIFIER:
         case t.Info.StandardDirective of
           SD_PLATFORM: 
-            if Assigned(VC) then VC.IsPlatformSpecific := true;
+            if Assigned(Item) then Item.IsPlatformSpecific := true;
           SD_DEPRECATED: 
-            if Assigned(VC) then VC.IsDeprecated := true;
+            if Assigned(Item) then Item.IsDeprecated := true;
         end;
     end;
     IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
       SYM_SEMICOLON);
-    if Assigned(VC) then VC.FullDeclaration := VC.FullDeclaration + t.Data;
+    if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
     if EndLevel<0 then begin
       // within records et al. the last declaration need not be terminated by ;
       Scanner.UnGetToken(t);
