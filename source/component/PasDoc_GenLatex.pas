@@ -738,14 +738,8 @@ begin
         WriteAnchor(Item.Name,Item.FullLink);
         WriteStartList(s);
         
-        if Item is TPasVarConst then 
-        begin
-          WriteDeclarationItem(Item,FLanguage.Translation[trDeclaration],
-            AccessibilityStr[Item.State]+' '+TPasVarConst(Item).FullDeclaration);
-        end
-        else
-          WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration], 
-          AccessibilityStr[Item.State]+' '+Item.name);
+        WriteDeclarationItem(Item,FLanguage.Translation[trDeclaration],
+          AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
           
         if HasDescription(Item) then
         begin
@@ -777,13 +771,10 @@ begin
       begin
         Item := Fields.PasItemAt[j];
         WriteAnchor(Item.Name,Item.FullLink);
-        if Item is TPasVarConst then 
-        begin
-          WriteDeclarationItem(Item, Item.name, AccessibilityStr[Item.State]+' '+
-            TPasVarConst(Item).FullDeclaration);
-        end
-        else
-          WriteDeclarationItem(Item, Item.name, AccessibilityStr[Item.State]+' '+Item.name);
+
+        WriteDeclarationItem(Item, Item.name, 
+          AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
+
         WriteDirect('',true);
         WriteDirect('\par ');
         WriteItemDetailedDescription(Item);
@@ -1723,6 +1714,14 @@ end;
 
 (*
   $Log$
+  Revision 1.50  2005/05/28 04:17:11  kambi
+  * Html generator: fields are now written using WriteItemsSummary + WriteItemsDetailed, that display FullDeclaration of each field.
+  * Latex generator: fields are still being written using messy WriteFields, but this displays now FullDeclaration of each field.
+
+  This partially fixes 1199354 (only partially, because for fields in record case FullDeclaration is still not as it should be (tested by tests/todo/ok_record_with_case.pas) and records in records are not properly displayed (tested by tests/todo/ok_record_descr.pas)).
+
+  * Comments in tests/todo/ok_record_descr.pas and tests/todo/ok_record_in_record.pas updated.
+
   Revision 1.49  2005/05/27 23:46:51  kambi
   * Html and Latex generators in WriteItems write simply Item.FullDeclaration.
     No prefixing with Item.Name, no checking is Item of TPasVarConst.

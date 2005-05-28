@@ -84,7 +84,6 @@ type
     procedure WriteEndOfTable;
     { Finishes an HTML table row by writing a closing TR tag. }
     procedure WriteEndOfTableRow;
-    procedure WriteFields(const Order: integer; const Fields: TPasItems);
     procedure WriteFooter;
 
     procedure WriteItemDescription(const AItem: TPasItem);
@@ -436,6 +435,17 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
     WriteItemsDetailed(Items, true, HeadingLevel);
   end;
 
+  procedure WriteFieldsSummary(HeadingLevel: Integer; 
+    Items: TPasItems);
+  begin
+    WriteItemsSummary(Items, true, HeadingLevel, '@Fields', trFields);
+  end;
+
+  procedure WriteFieldsDetailed(HeadingLevel: Integer; Items: TPasItems);
+  begin
+    WriteItemsDetailed(Items, true, HeadingLevel);
+  end;
+
 type
   TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
@@ -566,7 +576,8 @@ begin
     if Item = nil then WriteDirect(s);
   end;
 
-  WriteFields(HL + 1, CIO.Fields);
+  WriteFieldsSummary (HL + 1, CIO.Fields);
+  WriteFieldsDetailed(HL + 1, CIO.Fields);
 
   WriteMethodsSummary (HL + 1, CIO.Methods);
   WriteMethodsDetailed(HL + 1, CIO.Methods);
@@ -775,56 +786,6 @@ end;
 procedure TGenericHTMLDocGenerator.WriteEndOfTableRow;
 begin
   WriteDirectLine('</tr>');
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TGenericHTMLDocGenerator.WriteFields(const Order: integer; const Fields:
-  TPasItems);
-var
-  j: Integer;
-  Item: TPasItem;
-begin
-  if ObjectVectorIsNilOrEmpty(Fields) then Exit;
-
-  WriteAnchor('@Fields');
-  WriteHeading(Order, FLanguage.Translation[trFields]);
-
-  { TODO: this should call WriteStartOfTable* }
-  FOddTableRow := 0;
-  WriteDirect('<table class="fields" cellspacing="' +
-    HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
-    '" width="100%">');
-  WriteDirect('<tr class="listheader">');
-  WriteDirect('<th>&nbsp;</th><th class="listheader">');
-  WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th class="listheader">');
-  WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirectLine('</th></tr>');
-
-  for j := 0 to Fields.Count - 1 do begin
-    Item := Fields.PasItemAt[j];
-    WriteStartOfTableRow('');
-
-    WriteVisibilityCell(Item);
-
-    WriteStartOfTableCell('nowrap="nowrap"', 'itemname');
-    WriteAnchor(Item.Name);
-    { TODO -otwm : This should not only write the name but the full declaration of the field. }
-    WriteDirect(CodeString(Item.Name));
-    WriteEndOfTableCell;
-
-    if j = 0 then
-      WriteStartOfTableCell('width="100%"', '')
-    else
-      WriteStartOfTableCell;
-
-    WriteItemDetailedDescription(Item);
-    WriteEndOfTableCell;
-
-    WriteEndOfTableRow;
-  end;
-  WriteDirect('</table>');
 end;
 
 { ---------------------------------------------------------------------------- }
