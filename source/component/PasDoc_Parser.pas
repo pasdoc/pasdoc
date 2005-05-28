@@ -1166,6 +1166,7 @@ begin
       P := TPasItem.Create;
       p.Name := t1.Data;
       p.RawDescription := GetLastComment(True);
+      p.FullDeclaration := p.Name + ': ' + t2.Data;
       R.Fields.Add(p);
     end else begin
       // case Type of
@@ -1219,7 +1220,8 @@ begin
         if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
           P := TPasItem.Create;
           p.RawDescription := GetLastComment(True);
-          P.Name:=t1.Data;
+          P.Name := t1.Data;
+          P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
           R.Fields.Add(p);
           if (ParenCount = 0) then
           begin
@@ -1237,6 +1239,7 @@ begin
                 p := TPasItem.Create;
                 p.RawDescription := GetLastComment(True);
                 p.Name := t1.data;
+                P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
                 R.Fields.Add(p);
               end;
             end;
