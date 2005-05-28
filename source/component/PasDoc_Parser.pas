@@ -138,6 +138,10 @@ type
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
       
+      ClassKeywordString contains the keyword 'class'
+      in the exact spelling as it was found in input,
+      for class methods. Else it contains ''.
+      
       KeyWordString contains the keyword constructor, destructor, 
       function or procedure in the exact spelling as it was found in input.
       You can specify KeyWordString = '', this way you avoid including
@@ -149,6 +153,7 @@ type
       
       D may contain a description or nil. }
     function ParseCDFP(var M: TPasMethod; 
+      const ClassKeywordString: string;
       const KeyWordString: string; Key: TKeyWord;
       d: string; const NeedName: boolean): Boolean;
     { Parses a class, an interface or an object.
@@ -416,6 +421,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TParser.ParseCDFP(var M: TPasMethod; 
+  const ClassKeywordString: string;
   const KeyWordString: string; Key: TKeyword; 
   d: string; const NeedName: boolean): Boolean;
 var
@@ -439,7 +445,9 @@ begin
     DoError('FATAL ERROR: CDFP got invalid key.', [], 1);
   end;
   
-  M.FullDeclaration := KeyWordString;
+  if ClassKeyWordString <> '' then
+    M.FullDeclaration :=  ClassKeyWordString + ' ';
+  M.FullDeclaration := M.FullDeclaration + KeyWordString;
 
   { next non-wc token must be the name }
   if NeedName then begin
@@ -646,6 +654,7 @@ var
   s: string;
   State: TAccessibility;
   t: TToken;
+  ClassKeyWordString: string;
 begin
   t := nil;
   Result := False;
@@ -772,6 +781,10 @@ begin
     end;
 
     { now collect methods, fields and properties }
+    
+    { This is needed to include ClassKeyWordString in 
+      class methods declarations. }
+    ClassKeyWordString := '';
 
     Finished := False;
     repeat
@@ -790,17 +803,21 @@ begin
       else
         if (t.MyType = TOK_KEYWORD) then
           case t.Info.KeyWord of
+            KEY_CLASS: ClassKeyWordString := t.Data;
             KEY_CONSTRUCTOR,
-              KEY_DESTRUCTOR,
-              KEY_FUNCTION,
-              KEY_PROCEDURE: begin
+            KEY_DESTRUCTOR,
+            KEY_FUNCTION,
+            KEY_PROCEDURE: 
+              begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
-                  then begin
+                if not ParseCDFP(M, ClassKeyWordString, 
+                  t.Data, t.Info.KeyWord, d, True) then
+                begin
                   i.Free;
                   FreeAndNil(t);
                   Exit;
                 end;
+                ClassKeyWordString := '';
                 M.State := State;
                 if State in ClassMembers then begin
                   i.Methods.Add(M);
@@ -1008,7 +1025,7 @@ begin
               Mode := MODE_CONST;
             KEY_OPERATOR: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
+                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
                 then begin
                   Exit;
                 end;
@@ -1019,7 +1036,7 @@ begin
             KEY_FUNCTION,
               KEY_PROCEDURE: begin
                 d := GetLastComment(True);
-                if (not ParseCDFP(M, t.Data, t.Info.KeyWord, d, True))
+                if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
                   then begin
                   Exit;
                 end;
@@ -1396,7 +1413,7 @@ begin
   if Assigned(t) then begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(MethodType, t.Data, t.Info.KeyWord, d, False) then begin
+        if ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, False) then begin
           MethodType.Name := TypeName;
           MethodType.FullDeclaration := 
             TypeName + ' = ' + MethodType.FullDeclaration;
@@ -1592,7 +1609,7 @@ begin
           If KeyWordString would be t.Data, then we would incorrectly
           append t.Data twice to ItemCollector.FullDeclaration
           when appending m.FullDeclaration to ItemCollector.FullDeclaration. }
-        ParseCDFP(M, '', t.Info.KeyWord, '', false);
+        ParseCDFP(M, '', '', t.Info.KeyWord, '', false);
         ItemCollector.FullDeclaration := 
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;

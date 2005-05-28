@@ -70,7 +70,7 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'ok_introduction_conclusion.pas' -or \
   -iname 'ok_property_decl.pas' -or \
   -iname 'ok_multiple_vars.pas' -or \
-  -iname 'ok_record_with_case.pas' \
+  -iname 'ok_class_function.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -91,4 +91,4 @@ mk_special_test ok_sorting_none --sort= ok_sorting.pas
 mk_special_test ok_introduction_conclusion ok_introduction_conclusion.pas --introduction=ok_introduction.txt --conclusion=ok_conclusion.txt
 mk_special_test ok_property_decl ok_property_decl.pas
 mk_special_test ok_multiple_vars ok_multiple_vars.pas
-#mk_special_test ok_record_with_case ok_record_with_case.pas
+mk_special_test ok_class_function ok_class_function.pas
