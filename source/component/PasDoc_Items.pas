@@ -339,10 +339,17 @@ type
        This is full parsed declaration of the given item.
        
        Note that that this is not used for some descendants.
-       Tight now it's used only with 
+       Right now it's used only with 
        - TPasVarConst (includes type, default values, etc.) 
        - TPasMethod (includes parameter list, procedural directives, etc.)
-       - TPasProperty (includes read/write and storage specifiers, etc.) }
+       - TPasProperty (includes read/write and storage specifiers, etc.) 
+       - TEnum (for now it's just the same thing as Name)
+       - TPasItem when it's a CIO's field. 
+       
+       The intention is that in the future all TPasItem descendants
+       will always have approprtate FullDeclaration set.
+       It all requires adjusting appropriate places in PasDoc_Parser to
+       generate appropriate FullDeclaration. }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
   end;
 
