@@ -111,10 +111,26 @@ type
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
     function GetLastComment(const AClearLastComment: Boolean): String;
+    
     { Get next token T from scanner that is neither whitespace nor comment.
-      Return true on success. }
+      Return true on success. 
+      
+      Sets LCollector to skipped tokens data (does *not* append them
+      to LCollector, it *sets* LCollector to them, deleting previous
+      LCollector contents). }
     function GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean; overload;
+    
+    { Get next token T from scanner that is neither whitespace nor comment.
+      Return true on success. 
+      
+      When it returns true, then it also appends to 
+      Item.FullDeclaration skipped tokens data (does not
+      delete previous Item.FullDeclaration contents, it only appends
+      more content). }
+    function GetNextNonWCToken(var t: TToken; Item: TPasItem): Boolean; overload;
+    
     function GetNextNonWCToken(var t: TToken): Boolean; overload;
+    
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
@@ -169,7 +185,9 @@ type
     function SkipDeclaration(const Item: TPasItem): Boolean;
     
     { Reads tokens and throws them away as long as they are either whitespace
-      or comments. 
+      or comments.
+      
+      Sets LCollector to skipped tokens data.
 
       @returns(true if a non-white token is found (then you know that 
       Scanner.PeekToken or Scanner.GetToken will return with true) 
@@ -332,12 +350,20 @@ end;
 
 function TParser.GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean;
 begin
-  Assert(t=nil);
+  Assert(t = nil);
   if SkipWhitespaceAndComments(LCollector) then begin
     Result := Scanner.GetToken(t)
   end else begin
     Result := False;
   end;
+end;
+
+function TParser.GetNextNonWCToken(var t: TToken; Item: TPasItem): Boolean; 
+var LCollector: string;
+begin
+  Result := GetNextNonWCToken(t, LCollector);
+  if Result then
+    Item.FullDeclaration := Item.FullDeclaration + LCollector;
 end;
 
 function TParser.GetNextNonWCToken(var t: TToken): Boolean;
@@ -1516,9 +1542,7 @@ begin
           FirstLoop := False;
         end else 
         begin
-          if not GetNextNonWCToken(t, LCollector) then Exit;
-          ItemCollector.FullDeclaration := 
-            ItemCollector.FullDeclaration + LCollector;
+          if not GetNextNonWCToken(t, ItemCollector) then Exit;
           if (t.MyType <> TOK_IDENTIFIER) then
             DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
           NewItem.Name := t.Data;
@@ -1536,9 +1560,7 @@ begin
         end;
 
         FreeAndNil(t);
-        if not GetNextNonWCToken(t, LCollector) then Exit;
-        ItemCollector.FullDeclaration := 
-          ItemCollector.FullDeclaration + LCollector;
+        if not GetNextNonWCToken(t, ItemCollector) then Exit;
           
         if (t.MyType <> TOK_SYMBOL) or
           ((t.Info.SymbolType <> SYM_COMMA) and
@@ -1554,9 +1576,9 @@ begin
       until Finished;
       
       ClearLastComment;
-      GetNextNonWCToken(t, LCollector);
+      GetNextNonWCToken(t, ItemCollector);
       ItemCollector.FullDeclaration := 
-        ItemCollector.FullDeclaration + LCollector + t.Data;
+        ItemCollector.FullDeclaration + t.Data;
       if (t.MyType = TOK_KEYWORD) and 
          (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
       begin
@@ -1570,9 +1592,8 @@ begin
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;
         FreeAndNil(t);
-        GetNextNonWCToken(t, LCollector);
-        ItemCollector.FullDeclaration := 
-          ItemCollector.FullDeclaration + LCollector;
+        GetNextNonWCToken(t, ItemCollector);
+
         if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then
         begin
           ItemCollector.FullDeclaration := 
