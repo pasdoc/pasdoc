@@ -38,7 +38,7 @@ type
       Name, RawDescription, State, IsDeprecated, IsPlatformSpecific, 
       IsLibrarySpecific, FullDeclararation (note: for now not all items
       get sensible FullDeclararation, but the intention is to improve this
-      over time; see @link(TPasItem.FullDeclararation) to know where 
+      over time; see @link(TPasItem.FullDeclaration) to know where 
       FullDeclararation is available now).
       
       Note to IsDeprecated: parser inits it basing on hint directive
@@ -190,6 +190,17 @@ type
     function ParseFieldsVariables(Items: TPasItems; var t: TToken;
       OfObject: boolean; State: TAccessibility): Boolean;
     
+    { Read all tokens until you find a semicolon at brace-level 0 and
+      end-level (between "record" and "end" keywords) also 0.
+
+      Alternatively, also stops before reading "end" without beginning
+      "record" (so it can handle some cases where declaration doesn't end
+      with semicolon).
+
+      If you pass Item <> nil then all read data will be 
+      appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
+      Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
+      if appropriate hint directive will occur in source file. }    
     function SkipDeclaration(const Item: TPasItem): Boolean;
     
     { Reads tokens and throws them away as long as they are either whitespace
@@ -1088,7 +1099,7 @@ begin
   p.Proptype := '';
   p.FullDeclaration := 'property ' + p.Name;
   p.RawDescription := GetLastComment(True);
-  if not GetNextNonWCToken(t) then Exit;
+  if not GetNextNonWCToken(t, P) then Exit;
 
   { Is this only a redeclaration of property from ancestor
     (to e.g. change it's visibility) }
@@ -1136,12 +1147,14 @@ begin
     p.Proptype := t.Data;
     FreeAndNil(t);
     p.FullDeclaration := p.FullDeclaration + ': ' + p.Proptype;
+  end else
+  begin
+    p.FullDeclaration := p.FullDeclaration + t.Data;
+    FreeAndNil(t);
   end;
   
-  p.FullDeclaration := p.FullDeclaration + ';';
-
-  { simply skipping the rest of declaration }
-  if not SkipDeclaration(nil) then
+  { read the rest of declaration }
+  if not SkipDeclaration(P) then
     DoError('Could not skip rest of declaration in file %s', 
       [Scanner.GetStreamInfo], 0);
 
