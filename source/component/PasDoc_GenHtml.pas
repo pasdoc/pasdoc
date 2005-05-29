@@ -1044,45 +1044,10 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItems(HL: integer; Heading: string; const
   Anchor: string; const i: TPasItems);
-var
-  j: Integer;
-  Item: TPasItem;
 begin
-  if Anchor <> '' then
-    WriteAnchor('@' + Anchor);
-
-  if ObjectVectorIsNilOrEmpty(i) then Exit;
-
-  WriteHeading(HL, Heading);
-
-  { TODO: this should call WriteStartOfTable* }
-  FOddTableRow := 0;
-  WriteDirect('<table class="itemlist" cellspacing="' +
-    HTML_TABLE_CELLSPACING + '" cellpadding="' + HTML_TABLE_CELLPADNG +
-    '" width="100%">');
-  WriteDirect('<tr class="listheader">');
-  WriteDirect('<th class="listheader" nowrap="nowrap">');
-  WriteConverted(FLanguage.Translation[trName]);
-  WriteDirect('</th><th class="listheader" width="100%">');
-  WriteConverted(FLanguage.Translation[trDescription]);
-  WriteDirectLine('</th></tr>');
-
-  for j := 0 to i.Count - 1 do begin
-    Item := i.PasItemAt[j];
-    WriteStartOfTableRow('');
-
-    WriteStartOfTableCell('itemname');
-    WriteAnchor(Item.Name);
-    WriteCodeWithLinks(Item, Item.FullDeclaration, '');
-    WriteEndOfTableCell;
-
-    WriteStartOfTableCell;
-    WriteItemDetailedDescription(Item);
-    WriteEndOfTableCell;
-
-    WriteEndOfTableRow;
-  end;
-  WriteDirect('</table>');
+  raise Exception.Create('TGenericHTMLDocGenerator.WriteItems should ' + 
+    'never be used. You should use WriteItemsSummary and WriteItemsDetailed ' +
+    'instead');
 end;
 
 { ---------- }
