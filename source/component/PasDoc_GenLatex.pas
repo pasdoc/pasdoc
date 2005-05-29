@@ -22,6 +22,16 @@ type
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   private
+    FNumericFilenames: boolean;
+    FWriteUses: boolean;
+    FLinkCount: Integer;
+    FOddTableRow: Integer;
+    { number of cells (= columns) per table row }
+    NumCells: Integer;
+    { number of cells we've already written in current table row }
+    CellCounter: LongInt;
+    FLatex2Rtf: Boolean;
+    
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
       If argument Methods is true, they will be considered methods of a class,
@@ -32,17 +42,7 @@ type
       const Methods: Boolean; const FuncsProcs: TPasMethods); 
         
     procedure WriteProperties(HL: integer; const p: TPasProperties);
-  protected
-    FNumericFilenames: boolean;
-    FWriteUses: boolean;
-    FLinkCount: Integer;
-    FOddTableRow: Integer;
-    { number of cells (= columns) per table row }
-    NumCells: Integer;
-    { number of cells we've already written in current table row }
-    CellCounter: LongInt;
-    { Indicate if the output must be simplified for latex2rtf }
-    FLatex2Rtf: Boolean;
+
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -99,51 +99,6 @@ type
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
-
-    function ConvertString(const s: string): string; override;
-    { Called by @link(ConvertString) to convert a character.
-      Will convert special characters to their html escape sequence
-      -> test }
-    function ConvertChar(c: char): String; override;
-
-    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-    procedure WriteUnitUses(const HL: integer; U: TPasUnit);
-    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-
-    procedure WriteSpellChecked(const AString: string);
-
-    function LatexString(const S: string): string; override;
-
-    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html. }
-    function CodeString(const s: string): string; override;
-    { Returns a link to an anchor within a document. HTML simply concatenates
-      the strings with a "-" character between them. }
-    function CreateLink(const Item: TBaseItem): string; override;
-    { Creates a valid HTML link, starting with an anchor that points to Link,
-      encapsulating the text ItemName in it. }
-    function CreateReferencedLink(ItemName, Link: string): string; override;
-    { Writes a single class, interface or object CIO to output, at heading
-      level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
-    { Calls @link(WriteCIO) with each element in the argument collection C,
-      using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); override;
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
-    { Writes dates Created and LastMod at heading level HL to output
-      (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
-    procedure WriteStartOfCode; override;
-    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
-      const i: TPasItems); override;
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(Level: integer; const s: string); override;
-
-    procedure WriteEndOfCode; override;
       
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
@@ -152,11 +107,82 @@ type
       of a unit.
       The functions are stored in the FuncsProcs argument. }
     procedure WriteMethods(const HL: integer; const FuncsProcs: TPasMethods); 
+    
     procedure WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
+    
     procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
+        
+    procedure WriteSpellChecked(const AString: string);
+    
+    { PDF Conditional support routines }
+    procedure WriteStartFlushLeft;
+    procedure WritePDFIfdef;
+    procedure WriteEndFlushLeft; 
+    procedure WritePDFDocInfo(LocalTitle: string); 
+    procedure WriteStartList(s: string);
+    procedure WriteEndList;
+    function HasDescriptions(c: TPasItems):boolean;
+    procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
+    {** Returns @true if this item or its ancestor has a description, otherwise
+        returns @false.
+    }    
+    function HasDescription(const AItem: TPasItem): boolean;
+  protected
+  
+    function ConvertString(const s: string): string; override;
+    
+    { Called by @link(ConvertString) to convert a character.
+      Will convert special characters to their html escape sequence
+      -> test }
+    function ConvertChar(c: char): String; override;
+
+    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
+    
+    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
+
+    function LatexString(const S: string): string; override;
+
+    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
+      in Html. }
+    function CodeString(const s: string): string; override;
+    
+    { Returns a link to an anchor within a document. HTML simply concatenates
+      the strings with a "-" character between them. }
+    function CreateLink(const Item: TBaseItem): string; override;
+    
+    { Creates a valid HTML link, starting with an anchor that points to Link,
+      encapsulating the text ItemName in it. }
+    function CreateReferencedLink(ItemName, Link: string): string; override;
+    
+    { Writes a single class, interface or object CIO to output, at heading
+      level HL. }
+    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
+    
+    { Calls @link(WriteCIO) with each element in the argument collection C,
+      using heading level HL. }
+    procedure WriteCIOs(HL: integer; c: TPasItems); override;
+    
+    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
+    
+    { Writes dates Created and LastMod at heading level HL to output
+      (if at least one the two has a value assigned). }
+    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
+    
+    procedure WriteStartOfCode; override;
+    procedure WriteEndOfCode; override;
+    
+    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
+      const i: TPasItems); override;
+      
+    { Writes heading S to output, at heading level I.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(Level: integer; const s: string); override;
     
     function Paragraph: string; override;
     
@@ -179,22 +205,8 @@ type
       default false;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses
       default false;
+    { Indicate if the output must be simplified for latex2rtf }
     property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
-    
-  private
-    { PDF Conditional support routines }
-    procedure WriteStartFlushLeft;
-    procedure WritePDFIfdef;
-    procedure WriteEndFlushLeft; 
-    procedure WritePDFDocInfo(LocalTitle: string); 
-    procedure WriteStartList(s: string);
-    procedure WriteEndList;
-    function HasDescriptions(c: TPasItems):boolean;
-    procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
-    {** Returns @true if this item or its ancestor has a description, otherwise
-        returns @false.
-    }    
-    function HasDescription(const AItem: TPasItem): boolean;
   end;
 
 implementation
@@ -1515,6 +1527,29 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+
+  procedure WriteUnitUses(const HL: integer; U: TPasUnit);
+  var
+    i: Integer;
+    ULink: TPasItem;
+  begin
+    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+      WriteHeading(HL, 'uses');
+      WriteDirect('\begin{itemize}',true);
+      for i := 0 to U.UsesUnits.Count-1 do begin
+        WriteDirect('\item ');
+        ULink := TPasUnit(U.UsesUnits.Objects[i]);
+        if ULink is TPasUnit then begin
+          WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
+        end else begin
+          WriteDirect(U.UsesUnits[i]);
+        end;
+        WriteDirect('');
+      end;   
+      WriteDirect('\end{itemize}',true);
+    end;
+  end;
+
 type
   TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
     dsTypes, dsConstants, dsVariables);
@@ -1584,28 +1619,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
-var
-  i: Integer;
-  ULink: TPasItem;
-begin
-  if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-    WriteHeading(HL, 'uses');
-    WriteDirect('\begin{itemize}',true);
-    for i := 0 to U.UsesUnits.Count-1 do begin
-      WriteDirect('\item ');
-      ULink := TPasUnit(U.UsesUnits.Objects[i]);
-      if ULink is TPasUnit then begin
-        WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
-      end else begin
-        WriteDirect(U.UsesUnits[i]);
-      end;
-      WriteDirect('');
-    end;   
-    WriteDirect('\end{itemize}',true);
-  end;
-end;
 
 procedure TTexDocGenerator.WriteSpellChecked(const AString: string);
 var

@@ -35,6 +35,14 @@ type
   TGenericHTMLDocGenerator = class(TDocGenerator)
   private
     FUseTipueSearch: boolean;
+    FNumericFilenames: boolean;
+    FWriteUses: boolean;
+    FLinkCount: Integer;
+    FFooter: string;
+    { If specified, using external CSS file }
+    FCSS: string;
+    FHeader: string;
+    FOddTableRow: Integer;
     
     { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
       html element describing current charset (from FLanguage). }
@@ -53,15 +61,7 @@ type
       
     procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean;
       HeadingLevel: Integer; SectionName: TTranslationId);
-  protected
-    FNumericFilenames: boolean;
-    FWriteUses: boolean;
-    FLinkCount: Integer;
-    FFooter: string;
-    { If specified, using external CSS file }
-    FCSS: string;
-    FHeader: string;
-    FOddTableRow: Integer;
+
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -128,68 +128,7 @@ type
 
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
-
-    function ConvertString(const s: string): string; override;
-    { Called by @link(ConvertString) to convert a character.
-      Will convert special characters to their html escape sequence
-      -> test }
-    function ConvertChar(c: char): string; override;
     
-
-    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-    procedure WriteUnitUses(const HL: integer; U: TPasUnit);
-    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-
-    procedure WriteSpellChecked(const AString: string);
-
-    function HtmlString(const S: string): string; override;
-    // FormatPascalCode will cause Line to be formatted in
-    // the way that Pascal code is formatted in Delphi.
-    function FormatPascalCode(const Line: string): string; override;
-    // FormatComment will cause AString to be formatted in
-    // the way that comments other than compiler directives are
-    // formatted in Delphi.  See: @link(FormatCompilerComment).
-    function FormatComment(AString: string): string; override;
-    // FormatKeyWord will cause AString to be formatted in
-    // the way that strings are formatted in Delphi.
-    function FormatString(AString: string): string; override;
-    // FormatKeyWord will cause AString to be formatted in
-    // the way that reserved words are formatted in Delphi.
-    function FormatKeyWord(AString: string): string; override;
-    // FormatCompilerComment will cause AString to be formatted in
-    // the way that compiler directives are formatted in Delphi.
-    function FormatCompilerComment(AString: string): string; override;
-    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html. }
-    function CodeString(const s: string): string; override;
-    { Returns a link to an anchor within a document. HTML simply concatenates
-      the strings with a "#" character between them. }
-    function CreateLink(const Item: TBaseItem): string; override;
-    { Creates a valid HTML link, starting with an anchor that points to Link,
-      encapsulating the text ItemName in it. }
-    function CreateReferencedLink(ItemName, Link: string): string; override;
-    { Writes a single class, interface or object CIO to output, at heading
-      level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
-    { Calls @link(WriteCIO) with each element in the argument collection C,
-      using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); override;
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
-    { Writes dates Created and LastMod at heading level HL to output
-      (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
-    procedure WriteStartOfCode; override;
-    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
-      const i: TPasItems); override;
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(Level: integer; const s: string); override;
-
-    procedure WriteEndOfCode; override;
-
     { output all the necessary images }
     procedure WriteBinaryFiles;
 
@@ -201,19 +140,96 @@ type
     procedure WriteImage(const src, alt, localcss: string);
     procedure WriteLink(const href, caption, localcss: string);
     procedure WriteLinkTarget(const href, caption, localcss, target: string);
+    procedure WriteEndOfLink;
+
+    procedure WriteSpellChecked(const AString: string);
+
+    procedure WriteIntroduction;
+    procedure WriteConclusion;
+    procedure WriteExternal(const ExternalItem: TExternalItem;
+      const Id: TTranslationID);
+  protected
+    function ConvertString(const s: string): string; override;
+    
+    { Called by @link(ConvertString) to convert a character.
+      Will convert special characters to their html escape sequence
+      -> test }
+    function ConvertChar(c: char): string; override;
+
+    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
+    
+    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
+
+    function HtmlString(const S: string): string; override;
+    
+    // FormatPascalCode will cause Line to be formatted in
+    // the way that Pascal code is formatted in Delphi.
+    function FormatPascalCode(const Line: string): string; override;
+    
+    // FormatComment will cause AString to be formatted in
+    // the way that comments other than compiler directives are
+    // formatted in Delphi.  See: @link(FormatCompilerComment).
+    function FormatComment(AString: string): string; override;
+    
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that strings are formatted in Delphi.
+    function FormatString(AString: string): string; override;
+    
+    // FormatKeyWord will cause AString to be formatted in
+    // the way that reserved words are formatted in Delphi.
+    function FormatKeyWord(AString: string): string; override;
+    
+    // FormatCompilerComment will cause AString to be formatted in
+    // the way that compiler directives are formatted in Delphi.
+    function FormatCompilerComment(AString: string): string; override;
+    
+    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
+      in Html. }
+    function CodeString(const s: string): string; override;
+    
+    { Returns a link to an anchor within a document. HTML simply concatenates
+      the strings with a "#" character between them. }
+    function CreateLink(const Item: TBaseItem): string; override;
+    
+    { Creates a valid HTML link, starting with an anchor that points to Link,
+      encapsulating the text ItemName in it. }
+    function CreateReferencedLink(ItemName, Link: string): string; override;
+    
+    { Writes a single class, interface or object CIO to output, at heading
+      level HL. }
+    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
+    
+    { Calls @link(WriteCIO) with each element in the argument collection C,
+      using heading level HL. }
+    procedure WriteCIOs(HL: integer; c: TPasItems); override;
+    
+    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
+    
+    { Writes dates Created and LastMod at heading level HL to output
+      (if at least one the two has a value assigned). }
+    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
+    
+    procedure WriteStartOfCode; override;
+    procedure WriteEndOfCode; override;
+    
+    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
+      const i: TPasItems); override;
+      
+    { Writes heading S to output, at heading level I.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(Level: integer; const s: string); override;
+
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
-    procedure WriteEndOfLink;
-    
+
     function Paragraph: string; override;
     
     function LineBreak: string; override;
     
     function URLLink(const URL: string): string; override;
-    procedure WriteIntroduction;
-    procedure WriteConclusion;
-    procedure WriteExternal(const ExternalItem: TExternalItem;
-      const Id: TTranslationID);
   public
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
@@ -1436,6 +1452,28 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 
+  procedure WriteUnitUses(const HL: integer; U: TPasUnit);
+  var
+    i: Integer;
+    ULink: TPasItem;
+  begin
+    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+      WriteHeading(HL, 'uses');
+      WriteDirect('<ul>');
+      for i := 0 to U.UsesUnits.Count-1 do begin
+        WriteDirect('<li>');
+        ULink := TPasUnit(U.UsesUnits.Objects[i]);
+        if ULink <> nil then begin
+          WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
+        end else begin
+          WriteDirect(U.UsesUnits[i]);
+        end;
+        WriteDirect('</li>');
+      end;   
+      WriteDirect('</ul>');
+    end;
+  end;
+
   procedure WriteFuncsProcsSummary;
   begin
     WriteItemsSummary(U.FuncsProcs, false, HL + 1, '@FuncsProcs', 
@@ -1703,28 +1741,6 @@ end;
 procedure TGenericHTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
 begin
   FHeader := FileToString(AFileName);
-end;
-
-procedure TGenericHTMLDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
-var
-  i: Integer;
-  ULink: TPasItem;
-begin
-  if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-    WriteHeading(HL, 'uses');
-    WriteDirect('<ul>');
-    for i := 0 to U.UsesUnits.Count-1 do begin
-      WriteDirect('<li>');
-      ULink := TPasUnit(U.UsesUnits.Objects[i]);
-      if ULink <> nil then begin
-        WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
-      end else begin
-        WriteDirect(U.UsesUnits[i]);
-      end;
-      WriteDirect('</li>');
-    end;   
-    WriteDirect('</ul>');
-  end;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
