@@ -64,7 +64,7 @@ type
     { Finishes an HTML table row by writing a closing TR tag. }
     procedure WriteEndOfTableRow;
     procedure WriteFields(const Order: integer; const Fields: TPasItems);
-    procedure WriteFooter;
+
     procedure WriteItemDescription(const AItem: TPasItem);
     (*
       Writes the Item's DetailedDescription. If the Item also has
@@ -108,9 +108,7 @@ type
       The functions are stored in the FuncsProcs argument. }
     procedure WriteMethods(const HL: integer; const FuncsProcs: TPasMethods); 
     
-    procedure WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
-    
-    procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
+    procedure WriteItemsSummary(const Items: TPasItems);
 
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
@@ -164,8 +162,6 @@ type
     { Calls @link(WriteCIO) with each element in the argument collection C,
       using heading level HL. }
     procedure WriteCIOs(HL: integer; c: TPasItems); override;
-    
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
     
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
@@ -457,35 +453,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
-var
-  j: Integer;
-  CIO: TPasCio;
-begin
-  if ObjectVectorIsNilOrEmpty(c) then Exit;
-  if c.Count = 0 then exit;
-  
-  WriteDirect('\begin{description}',true);
-  
-  for j := 0 to c.Count - 1 do 
-    begin
-      CIO := TPasCio(c.PasItemAt[j]);
-      WriteDirect('\item[\texttt{');
-      WriteLink(CIO.FullLink, CodeString(ConvertString(CIO.Name)), 'bold');
-      { name of class/interface/object and unit }
-      WriteDirect(' ');
-      WriteConverted(GETCIOTypeName(CIO.MyType));
-      WriteDirect('}]');
-
-      { Write only the AbstractDescription and do not opt for DetailedDescription,
-        like WriteItemDescription does. }
-      if CIO.AbstractDescription <> '' then
-        WriteSpellChecked(CIO.AbstractDescription);
-      WriteDirect('',true);
-    end;
-  WriteDirect('\end{description}',true);
-end;
 
 procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
   string; const ItemLink: string);
@@ -793,51 +760,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteFooter;
-begin
-{  WriteConverted(Footer);}
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
-var
-  j: Integer;
-  p: TPasMethod;
-  s: string;
-begin
-  if FuncsProcs.Count = 0 then Exit;
-  
-  WriteDirect('\begin{description}',true);
-
-  // two passes, in the first (i=0) we write the overview
-  // in the second (i=1) we write the descriptions
-  WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  for j := 0 to FuncsProcs.Count - 1 do 
-  begin
-    p := TPasMethod(FuncsProcs.PasItemAt[j]);
-
-    WriteDirect('\item[\texttt{');
-    { overview of functions and procedures }
-
-    s := p.FullLink;
-      if Assigned(p.MyUnit) then
-         if CompareText(p.MyUnit.FullLink, Copy(s, 1,
-            Length(p.MyUnit.FullLink))) = 0 then
-            begin
-              Delete(s, 1, Length(p.MyUnit.FullLink));
-              { remove - character from the link }
-              Delete(s, 1,1);
-            end;
-
-    WriteConverted(p.name);
-    WriteDirect('}]');
-
-    WriteItemDescription(p);
-  end;
-  WriteDirect('\end{description}',true);
-end;
-
 procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
 var
   j: Integer;
@@ -891,40 +813,38 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
+procedure TTexDocGenerator.WriteItemsSummary(const Items: TPasItems);
 var
-  j: Integer;
-  p: TPasMethod;
-  s: string;
+  i: Integer;
+  Item: TPasItem;
 begin
-  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
-  if FuncsProcs.Count = 0 then exit;
+  if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
   WriteDirect('\begin{description}',true);
 
-  for j := 0 to FuncsProcs.Count - 1 do 
+  for i := 0 to Items.Count - 1 do 
   begin
-    p := TPasMethod(FuncsProcs.PasItemAt[j]);
+    Item := Items.PasItemAt[i];
     
     WriteDirect('\item[\texttt{');
     
-    { overview of functions and procedures }
-
-    s := p.FullLink;
-      if Assigned(p.MyUnit) then
-         if CompareText(p.MyUnit.FullLink, Copy(s, 1,
-            Length(p.MyUnit.FullLink))) = 0 then
-            begin
-              Delete(s, 1, Length(p.MyUnit.FullLink));
-              { remove - character from the link }
-              Delete(s, 1,1);
-            end;
-
-    WriteConverted(p.name);
+    if Item is TPasCio then
+    begin
+      WriteDirect(CodeString(ConvertString(Item.Name)));
+      WriteDirect(' ');
+      WriteConverted(GETCIOTypeName(TPasCio(Item).MyType));
+    end else
+    begin
+      WriteConverted(Item.Name);
+    end;
+    
     WriteDirect('}]');
-    WriteItemDescription(p);
+    
+    WriteSpellChecked(Item.AbstractDescription);
+    
+    WriteDirectLine('');
   end;
-  WriteDirect('\end{description}',true);
+  WriteDirect('\end{description}', true);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1594,8 +1514,9 @@ begin
   
   if (U.CIOs.count <> 0) or (U.FuncsProcs.count <> 0) then
     WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-  WriteCIOSummary(HL + 1, U.CIOs);
-  WriteFuncsProcsSummary(HL + 1, U.FuncsProcs);
+    
+  WriteItemsSummary(U.CIOs);
+  WriteItemsSummary(U.FuncsProcs);
   
   WriteCIOs(HL + 1, U.CIOs);
 
