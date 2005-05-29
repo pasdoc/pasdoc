@@ -52,7 +52,7 @@ type
       const SectionAnchor: string; SectionName: TTranslationId);
       
     procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean;
-      HeadingLevel: Integer);
+      HeadingLevel: Integer; SectionName: TTranslationId);
   protected
     FNumericFilenames: boolean;
     FWriteUses: boolean;
@@ -402,36 +402,34 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 
-  procedure WriteMethodsSummary(HeadingLevel: Integer; Items: TPasMethods);
+  procedure WriteMethodsSummary;
   begin
-    WriteItemsSummary(Items, true, HeadingLevel, '@Methods', trMethods);
+    WriteItemsSummary(CIO.Methods, true, HL + 1, '@Methods', trMethods);
   end;
 
-  procedure WriteMethodsDetailed(HeadingLevel: Integer; Items: TPasMethods);
+  procedure WriteMethodsDetailed;
   begin
-    WriteItemsDetailed(Items, true, HeadingLevel);
+    WriteItemsDetailed(CIO.Methods, true, HL + 1, trMethods);
   end;
 
-  procedure WritePropertiesSummary(HeadingLevel: Integer; 
-    Items: TPasProperties);
+  procedure WritePropertiesSummary;
   begin
-    WriteItemsSummary(Items, true, HeadingLevel, '@Properties', trProperties);
+    WriteItemsSummary(CIO.Properties, true, HL + 1, '@Properties', trProperties);
   end;
 
-  procedure WritePropertiesDetailed(HeadingLevel: Integer; Items: TPasProperties);
+  procedure WritePropertiesDetailed;
   begin
-    WriteItemsDetailed(Items, true, HeadingLevel);
+    WriteItemsDetailed(CIO.Properties, true, HL + 1, trProperties);
   end;
 
-  procedure WriteFieldsSummary(HeadingLevel: Integer; 
-    Items: TPasItems);
+  procedure WriteFieldsSummary;
   begin
-    WriteItemsSummary(Items, true, HeadingLevel, '@Fields', trFields);
+    WriteItemsSummary(CIO.Fields, true, HL + 1, '@Fields', trFields);
   end;
 
-  procedure WriteFieldsDetailed(HeadingLevel: Integer; Items: TPasItems);
+  procedure WriteFieldsDetailed;
   begin
-    WriteItemsDetailed(Items, true, HeadingLevel);
+    WriteItemsDetailed(CIO.Fields, true, HL + 1, trFields);
   end;
 
 type
@@ -461,6 +459,7 @@ var
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
   Section: TSections;
+  AnyItem: boolean;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -563,15 +562,26 @@ begin
     end;
     if Item = nil then WriteDirect(s);
   end;
+  
+  AnyItem := 
+    (not ObjectVectorIsNilOrEmpty(CIO.Fields)) or
+    (not ObjectVectorIsNilOrEmpty(CIO.Methods)) or
+    (not ObjectVectorIsNilOrEmpty(CIO.Properties));
 
-  WriteFieldsSummary (HL + 1, CIO.Fields);
-  WriteFieldsDetailed(HL + 1, CIO.Fields);
+  { AnyItem is used here to avoid writing headers "Overview"
+    and "Description" when there are no items. }
+  if AnyItem then
+  begin
+    WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+    WriteFieldsSummary;
+    WriteMethodsSummary;
+    WritePropertiesSummary;
 
-  WriteMethodsSummary (HL + 1, CIO.Methods);
-  WriteMethodsDetailed(HL + 1, CIO.Methods);
-
-  WritePropertiesSummary (HL + 1, CIO.Properties);
-  WritePropertiesDetailed(HL + 1, CIO.Properties);
+    WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+    WriteFieldsDetailed;
+    WriteMethodsDetailed;
+    WritePropertiesDetailed;
+  end;
 
   WriteAuthors(HL + 1, CIO.Authors);
   WriteDates(HL + 1, CIO.Created, CIO.LastMod);
@@ -815,8 +825,7 @@ begin
   
   WriteAnchor(SectionAnchor);
 
-  WriteHeading(HeadingLevel, FLanguage.Translation[SectionName]);
-  WriteHeading(HeadingLevel + 1, FLanguage.Translation[trOverview]);
+  WriteHeading(HeadingLevel + 1, FLanguage.Translation[SectionName]);
   
   WriteStartOfTable1Column('');
 
@@ -838,14 +847,14 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
   Items: TPasItems; OfObject: boolean;
-  HeadingLevel: Integer);
+  HeadingLevel: Integer; SectionName: TTranslationId);
 var 
   Item: TPasItem;
   i: Integer;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
-  
-  WriteHeading(HeadingLevel + 1, FLanguage.Translation[trDescription]);
+
+  WriteHeading(HeadingLevel + 1, FLanguage.Translation[SectionName]);
   
   for i := 0 to Items.Count - 1 do
   begin
@@ -957,6 +966,7 @@ var
   Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
+  i: Integer;
 begin
   if not Assigned(AItem) then Exit;
   
@@ -1015,13 +1025,27 @@ begin
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
     WriteParamsOrRaises(AItemMethod, 
       LowerCase(FLanguage.Translation[trExceptions]), AItemMethod.Raises, true);
- end;
+  end;
+ 
+  if AItem is TPasEnum then 
+  begin
+    WriteDirectLine('<ul>');
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
+    begin
+      WriteDirectLine('<li>');
+      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].Name);
+      WriteConverted(': ');
+      WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
+      WriteDirectLine('</li>');
+    end;
+    WriteDirectLine('</ul>');
+  end;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItems(HL: integer; Heading: string; const
   Anchor: string; const i: TPasItems);
 var
-  j, k: Integer;
+  j: Integer;
   Item: TPasItem;
 begin
   if Anchor <> '' then
@@ -1054,17 +1078,6 @@ begin
 
     WriteStartOfTableCell;
     WriteItemDetailedDescription(Item);
-    if Item is TPasEnum then begin
-      WriteDirectLine('<ul>');
-      for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-        WriteDirectLine('<li>');
-        WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
-        WriteConverted(': ');
-        WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
-        WriteDirectLine('</li>');
-      end;
-      WriteDirectLine('</ul>');
-    end;
     WriteEndOfTableCell;
 
     WriteEndOfTableRow;
@@ -1458,15 +1471,46 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 
-  procedure WriteFuncsProcsSummary(HeadingLevel: Integer; Items: TPasMethods);
+  procedure WriteFuncsProcsSummary;
   begin
-    WriteItemsSummary(Items, false, HeadingLevel, '@FuncsProcs', 
+    WriteItemsSummary(U.FuncsProcs, false, HL + 1, '@FuncsProcs', 
       trFunctionsAndProcedures);
   end;
 
-  procedure WriteFuncsProcsDetailed(HeadingLevel: Integer; Items: TPasMethods);
+  procedure WriteFuncsProcsDetailed;
   begin
-    WriteItemsDetailed(Items, false, HeadingLevel);
+    WriteItemsDetailed(U.FuncsProcs, false, HL + 1,
+      trFunctionsAndProcedures);
+  end;
+
+  procedure WriteTypesSummary;
+  begin
+    WriteItemsSummary(U.Types, false, HL + 1, '@Types', trTypes);
+  end;
+
+  procedure WriteTypesDetailed;
+  begin
+    WriteItemsDetailed(U.Types, false, HL + 1, trTypes);
+  end;
+
+  procedure WriteConstantsSummary;
+  begin
+    WriteItemsSummary(U.Constants, false, HL + 1, '@Constants', trConstants);
+  end;
+
+  procedure WriteConstantsDetailed;
+  begin
+    WriteItemsDetailed(U.Constants, false, HL + 1, trConstants);
+  end;
+
+  procedure WriteVariablesSummary;
+  begin
+    WriteItemsSummary(U.Variables, false, HL + 1, '@Variables', trVariables);
+  end;
+
+  procedure WriteVariablesDetailed;
+  begin
+    WriteItemsDetailed(U.Variables, false, HL + 1, trVariables);
   end;
 
 type
@@ -1494,6 +1538,8 @@ var
       Include(SectionsAvailable, Section);
   end;
 
+var
+  AnyItemSummary, AnyItemDetailed: boolean;
 begin
   if not Assigned(U) then begin
     DoMessage(1, mtError, 'TGenericHTMLDocGenerator.WriteUnit: ' +
@@ -1554,16 +1600,35 @@ begin
 
   WriteUnitUses(HL + 1, U);
 
-  WriteCIOSummary(HL + 1, U.CIOs);
+  AnyItemDetailed := 
+    (not ObjectVectorIsNilOrEmpty(U.FuncsProcs)) or
+    (not ObjectVectorIsNilOrEmpty(U.Types)) or
+    (not ObjectVectorIsNilOrEmpty(U.Constants)) or
+    (not ObjectVectorIsNilOrEmpty(U.Variables));
 
-  WriteFuncsProcsSummary (HL + 1, U.FuncsProcs);
-  WriteFuncsProcsDetailed(HL + 1, U.FuncsProcs);
+  AnyItemSummary := AnyItemDetailed or
+    (not ObjectVectorIsNilOrEmpty(U.CIOs));
 
-  WriteTypes(HL + 1, U.Types);
-
-  WriteConstants(HL + 1, U.Constants);
-
-  WriteVariables(HL + 1, U.Variables);
+  { AnyItemSummary/Detailed are used here to avoid writing headers 
+    "Overview" and "Description" when there are no items. }
+  if AnyItemSummary then
+  begin
+    WriteHeading(HL + 1, FLanguage.Translation[trOverview]);  
+    WriteCIOSummary(HL + 2, U.CIOs);
+    WriteFuncsProcsSummary;
+    WriteTypesSummary;
+    WriteConstantsSummary;
+    WriteVariablesSummary;
+  end;
+  
+  if AnyItemDetailed then
+  begin
+    WriteHeading(HL + 1, FLanguage.Translation[trDescription]);  
+    WriteFuncsProcsDetailed;
+    WriteTypesDetailed;
+    WriteConstantsDetailed;
+    WriteVariablesDetailed;
+  end;
 
   WriteAuthors(HL + 1, U.Authors);
   WriteDates(HL + 1, U.Created, U.LastMod);
