@@ -325,6 +325,26 @@ var
               WriteLiObject(Text, Link);
   end;
 
+  { ---------- }
+
+  Procedure ContentWriteIntroduction;
+  begin
+    if Introduction <> nil then
+    begin
+      WriteLiObject(Introduction.ShortTitle, Introduction.FullLink);
+    end;
+  end;
+
+  { ---------- }
+
+  Procedure ContentWriteConclusion;
+  begin
+    if Conclusion <> nil then
+    begin
+      WriteLiObject(Conclusion.ShortTitle, Conclusion.FullLink);
+    end;
+  end;
+
   procedure IndexWriteItem(const Item, PreviousItem, NextItem: TPasItem);
     { Item is guaranteed to be assigned, i.e. not to be nil. }
   begin
@@ -428,6 +448,7 @@ begin
   end;
 
   if not DefaultContentsWritten then begin
+    ContentWriteIntroduction;
     ContentWriteUnits('');
     ContentWriteClassHierarchy(FLanguage.Translation[trClassHierarchy]);
     ContentWriteClasses('');
@@ -435,6 +456,7 @@ begin
     ContentWriteLegend('');
     ContentWriteGVClasses();
     ContentWriteGVUses();
+    ContentWriteConclusion;
   end;
 
   // End of File
@@ -581,6 +603,11 @@ begin
 
   WriteDirectLine('Legend.html');
 
+  If Introduction <> nil then
+  begin
+    WriteDirectLine(Introduction.FullLink);
+  end;
+
   if (LinkGraphVizClasses <> '') then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
       LinkGraphVizClasses);
@@ -606,6 +633,11 @@ begin
               WriteDirectLine(Item2.OutputFilename);
             end;
       end;
+
+  If Conclusion <> nil then
+  begin
+    WriteDirectLine(Conclusion.FullLink);
+  end;
 
   WriteDirectLine('');
 
