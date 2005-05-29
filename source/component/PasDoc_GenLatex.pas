@@ -100,9 +100,6 @@ type
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
 
-    { Writes a cell into a table row with the Item's visibility image. }
-    procedure WriteVisibilityCell(const Item: TPasItem);
-
     function ConvertString(const s: string): string; override;
     { Called by @link(ConvertString) to convert a character.
       Will convert special characters to their html escape sequence
@@ -158,7 +155,6 @@ type
     procedure WriteMethodsSummary(const HL: integer; const FuncsProcs: TPasMethods); 
     procedure WriteFuncsProcsSummary(const HL: integer; const FuncsProcs: TPasMethods);
 
-    procedure WriteImage(const src, alt, css: string);
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
     
@@ -811,8 +807,6 @@ begin
 
     WriteDirect('\item[\texttt{');
     { overview of functions and procedures }
-    { Only write visibility for methods of classes and objects. }
-    WriteVisibilityCell(p);
 
     s := p.FullLink;
       if Assigned(p.MyUnit) then
@@ -901,8 +895,9 @@ begin
     p := TPasMethod(FuncsProcs.PasItemAt[j]);
     
     WriteDirect('\item[\texttt{');
+    
     { overview of functions and procedures }
-    { Only write visibility for methods of classes and objects. }
+
     s := p.FullLink;
       if Assigned(p.MyUnit) then
          if CompareText(p.MyUnit.FullLink, Copy(s, 1,
@@ -1588,41 +1583,6 @@ begin
   WriteDirect('',true);
 end;
 
-procedure TTexDocGenerator.WriteImage(const src, alt, css: string);
-var
-  s: string;
-begin
-  if css <> '' then
-    s := Format('<img class="%s"', [css])
-  else
-    s := '<img border="0"';
-  WriteDirect(Format('%s src="%s" alt="%s"/>', [s, src, alt]));
-end;
-
-procedure TTexDocGenerator.WriteVisibilityCell(const Item: TPasItem);
-
-  procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
-  begin
-    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
-  end;
-
-begin
-{
-  case Item.State of
-    STATE_PRIVATE:
-      WriteVisibilityImage('private.gif', trPrivate);
-    STATE_PROTECTED:
-      WriteVisibilityImage('protected.gif', trProtected);
-    STATE_PUBLIC:
-      WriteVisibilityImage('public.gif', trPublic);
-    STATE_PUBLISHED:
-      WriteVisibilityImage('published.gif', trPublished);
-    STATE_AUTOMATED:
-      WriteVisibilityImage('automated.gif', trAutomated);
-  end;
-}  
-end;
-
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteUnitUses(const HL: integer; U: TPasUnit);
@@ -1711,212 +1671,6 @@ function TTexDocGenerator.URLLink(const URL: string): string;
 begin
   Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
 end;
-
-(*
-  $Log$
-  Revision 1.50  2005/05/28 04:17:11  kambi
-  * Html generator: fields are now written using WriteItemsSummary + WriteItemsDetailed, that display FullDeclaration of each field.
-  * Latex generator: fields are still being written using messy WriteFields, but this displays now FullDeclaration of each field.
-
-  This partially fixes 1199354 (only partially, because for fields in record case FullDeclaration is still not as it should be (tested by tests/todo/ok_record_with_case.pas) and records in records are not properly displayed (tested by tests/todo/ok_record_descr.pas)).
-
-  * Comments in tests/todo/ok_record_descr.pas and tests/todo/ok_record_in_record.pas updated.
-
-  Revision 1.49  2005/05/27 23:46:51  kambi
-  * Html and Latex generators in WriteItems write simply Item.FullDeclaration.
-    No prefixing with Item.Name, no checking is Item of TPasVarConst.
-  * Much cleaning and changing of parser code to make sure that FullDeclaration of Variables and Constants is good.
-
-  Revision 1.48  2005/05/27 19:37:59  kambi
-  * TExtraDescription renamed to TExternalItem, many names like "Extra" changed to "External"
-  + TBaseItem as a common ancestor for TPasItem and TExternalItem, no longer TExternalItem descends from TPasItem
-  * TSerializable.Serialize is not abstract, for consistency with TSerializable.Deserialize
-
-  Revision 1.47  2005/05/26 16:57:21  kambi
-  * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
-
-  Revision 1.46  2005/05/26 13:47:47  kambi
-  * Cleaning implementation
-
-  Revision 1.45  2005/05/26 10:39:44  kambi
-  * Cleaned some HTML-specific things
-
-  Revision 1.44  2005/05/26 10:23:04  kambi
-  * Previous THTMLGenerator splitted to TGenericHTMLGenerator and new THTMLDocGenerator (descendant of TGenericHTMLGenerator with functionality that is *not* useful for HtmlHelp output)
-  * Fixed mem leak in PasDoc_Main.pas
-
-  Revision 1.43  2005/05/25 04:25:29  kambi
-  * Cleaned sorting: comfortable and flexible methods TPasItems.SortDeep, SortShallow, SortOnlyInsideItems, and virtual TPasItem.Sort
-  * One simple FUnits.SortDeep in PasDoc.pas sorts everything, no need to care about this in html/latex generators. This is prerequsite for --sort command-line option
-  * Fixed bug 1095129 while I was at it. Testcase in tests/ok_no_sort.pas
-
-  Revision 1.42  2005/05/25 01:25:24  kambi
-  * NUM_OVERVIEW_FILES, NUM_OVERVIEW_FILES_USED, OverviewFilenames
-    replaced with cleaner TOverview, TCreatedOverviewFile, OverviewFilesInfo
-  * Cleaned many stuff related to writing overview files
-
-  Revision 1.41  2005/05/23 08:01:27  kambi
-  * Fixed printing Params, Raises, Returns for procedure/method pointers
-
-  Revision 1.40  2005/05/17 11:56:22  kambi
-  * Generators use WriteDirect everywhere instead of StreamUtils.WriteLine, to be consequent.
-  * StreamUtils.WriteLine renamed to StreamWriteLine.
-  * WriteDirectLine and WriteConvertedLine, for comfort (since usually 2nd arg of WriteDirect and WriteConverted is constant).
-  * WriteDirect and WriteConverted are *not* virtual (after all, ConvertString is virtual).
-
-  Revision 1.39  2005/05/11 01:43:49  kambi
-  * You can add explicit name to @link tag
-
-  Revision 1.38  2005/05/10 20:35:16  kambi
-  * Improved explicit paragraphs begin/end, some fixes to autodoc
-
-  Revision 1.37  2005/05/10 15:55:32  kambi
-  * TPasItem.Description property renamed to AbstractDescription
-  * Parser cleaned up: always sets DetailedDescription, never touches AbstractDescription
-  * many code related to descriptions here and there cleaned
-
-  Revision 1.36  2005/05/08 23:25:57  kambi
-  * When Description was automatically deduced (with --auto-abstract),
-    WriteItemDetailedDescription should not separate Description and DetailedDescription with paragraph.
-
-  Revision 1.35  2005/05/08 03:32:52  kambi
-  * Applied patch from Damien Honeyford to implement @value and @member tags, see thread "Record and Enum handling" on pasdoc-main mail list around 2005-05-07
-
-  Revision 1.34  2005/05/07 19:03:41  kambi
-  * Displaying hint directives in html and latex output
-
-  Revision 1.33  2005/05/07 00:07:19  kambi
-  * Removed Header and Footer properties (they were not initialized properly by command-line options anyway)
-
-  Revision 1.32  2005/05/06 22:26:48  kambi
-  + TDocGenerator.URLLink, TTagManager.URLLink, FindURL in TagManager
-  - TPasDoc_Gen.WriteWithURLs, TPasDoc_Gen.ExtractLink
-  * parsing url links is now done in TagManager, this way TDocGenerator.URLLink gets unconverted URL, which allows to differentiate between EscapeURL(URL) and ConvertString(URL), also markup introduced by ConvertString doesn't confuse FindURL.
-  * now URLs in LaTeX output are presented using \html command
-  * TTagManager.StringConverter -> TTagManager.ConvertString (for consistency)
-  + dvi target to tests/Makefile
-
-  Revision 1.31  2005/05/06 20:41:56  kambi
-  * Cleaned out inserting paragraphs: instead of those ugly InsertParagraphs
-    methods and procedure in Utils, now it's handled by simple Paragraph property
-    and recognized inside TagManager.Execute. This way inserting paragraphs
-    and ConvertString do not interfere -- paragraphs are found in raw
-    (unprocessed) Description, not in somehow processed Description.
-
-  Revision 1.30  2005/05/06 18:04:21  kambi
-  * TPasUnit.UsesUnits.Objects[] now contain links to TPasUnit instances.
-    This simplifies some code, like TDocGenerator.SearchLink
-    that can be now implemented cleaner and more functional in TPasItem.FindName.
-
-  Revision 1.29  2005/05/05 09:14:34  kambi
-  + @br tag implementation and test in tests/ok_line_break.pas
-
-  Revision 1.28  2005/05/03 18:44:01  kambi
-  * Removed HTML-specific implementation of TTexDocGenerator.WriteSpellChecked
-
-  Revision 1.27  2005/04/14 10:21:51  kambi
-  * Specified default values for many properties. This means that code is better self-documenting,
-    and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
-
-  Revision 1.26  2005/04/12 23:34:44  kambi
-  * Made NoGeneratorInfo work with LaTeX generator
-
-  Revision 1.25  2005/04/12 21:25:13  kambi
-  * Cleaning up THTMLGenerator.ConvertString and TTexGenerator.ConvertString:
-    - code shared in Utils.StringReplaceChars
-    - removed wrong conversions of chars that used to broke pasdoc's output in
-      various non-ISO-8859-1 charsets. This fixes bug 1109867 and actually
-      more general problems with many charsets, see my letter on pasdoc-main
-      [http://sourceforge.net/mailarchive/forum.php?thread_id=7028980&forum_id=4647].
-    - accidentaly this also fixes a bug in THTMLGenerator.ConvertString
-      (previous check
-      "if (ord(Result[i]) > 127) or (Result[i] in ['<','>','&','"']) then"
-      prevented convertion of some chars like '^' to '&circ;')
-
-  Revision 1.24  2005/04/10 06:06:16  kambi
-  * Corrected autodoc output (some broken @links etc.)
-
-  Revision 1.23  2005/04/08 17:56:17  twm
-  removed some unused variable declarations
-  checkt that it still compiles with Kylix
-
-  Revision 1.22  2005/04/06 12:52:42  kambi
-  * Two similiar implementations of WriteCodeWithLinks in tex and html generator
-    merged to one code in TDocGenerator.WriteCodeWithLinksCommon
-  * WriteLink(4 args) renamed to WriteLinkTarget,
-    to be able to take address of WriteLink
-  * WriteCodeWithLinksCommon does check whether S = P.Name before checking
-    whether S in a Pascal directive
-
-  Revision 1.21  2005/04/05 07:36:15  kambi
-  * @html tag is ignored in non-html output, @latex tag implemented
-
-  Revision 1.20  2005/04/04 21:14:10  kambi
-  Commiting my fixes sent to pasdoc-main.
-  "Trailer of my next patch" [http://sourceforge.net/mailarchive/forum.php?thread_id=6919292&forum_id=4647]
-  "Fixes to TTagManager.Execute" [http://sourceforge.net/mailarchive/forum.php?thread_id=6934185&forum_id=4647]
-  "Small fix for LaTeX output" [http://sourceforge.net/mailarchive/forum.php?thread_id=6946611&forum_id=4647]
-  "Fix for LaTeX genetator omitting some things" [http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&forum_id=4647]
-  "Fix for --name parameter with Latex generator" [http://sourceforge.net/mailarchive/forum.php?thread_id=6959580&forum_id=4647]
-
-  Revision 1.19  2005/03/29 06:55:48  johill
-  patches from Michalis Kamburelis
-
-  Revision 1.18  2005/01/22 13:03:17  twm
-  moved description comment of ConvertChar from ConvertString to where it belongs
-
-  Revision 1.17  2004/08/20 00:34:44  ccodere
-    * bugfixes when writing URL's in LaTeX
-
-  Revision 1.16  2004/07/16 16:34:16  johill
-  some code cleanup, fixes from Pierre Woestyn
-
-  Revision 1.15  2004/07/09 14:03:28  johill
-  fix things, apply patches from mailing list.
-
-  Revision 1.14  2004/06/20 18:36:26  johill
-  Changes from Grzegorz Skoczylas: character set handling + updated Polish
-  translation
-
-  Revision 1.13  2004/05/07 18:13:24  ccodere
-    * fixes for compilation with different compiler targets
-
-  Revision 1.12  2004/05/07 07:14:27  johill
-  fix bug: write \begin{description} only if it will be non-empty, achieved by writing it lazily only when real output comes. Something like this should possibly be done in more places.
-
-  Revision 1.11  2004/05/06 19:50:27  johill
-  clean up source a bit, fix warnings and some hints
-
-  Revision 1.10  2004/04/20 01:58:20  ccodere
-  + now all non-documented items will not be output, there is still a bug with the CIO Heading though that might appear with an empty section.
-
-  Revision 1.9  2004/03/19 17:15:13  ccodere
-    - remove description and headings with no data
-
-  Revision 1.8  2004/03/19 15:55:09  ccodere
-    * bugfix with parsing field names with _ charactersa
-    + added longcode support
-
-  Revision 1.7  2004/03/17 05:06:03  ccodere
-    bugfix with return values, title was not in correct font.
-
-  Revision 1.6  2004/03/16 07:11:57  ccodere
-  + if no project is defined, the document will be called docs
-  + htmlstring now works as expected
-
-  Revision 1.5  2004/03/13 02:21:17  ccodere
-  1) added latex2rtf support
-  2) now independent from paper size
-  3) table of contents
-  4) several several bugfixes
-
-  Revision 1.4  2004/03/12 05:01:21  ccodere
-  added support for properties.
-  added support for overview of functions
-  some fixes regarding illegal characters
-  some fixes regarding some vertical spacing
-
-*) // GSk: commend moved before last *end* to eliminate compiler warning
 
 end.
 
