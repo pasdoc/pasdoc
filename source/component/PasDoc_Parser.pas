@@ -968,7 +968,7 @@ begin
   p := TPasEnum.Create;
   p.Name := Name;
   p.RawDescription := RawDescription;
-  p.FullDeclaration := Name; { TODO -- FullDeclaration of enum should be better }
+  p.FullDeclaration := Name + ' = (...);'; 
 
   GetNextNonWCToken(t);
   while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
