@@ -19,7 +19,17 @@ uses
 type
   { @abstract(generates latex documentation)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in LaTex format. }
+    output in LaTex format. 
+    
+    TODO:
+      WriteFields
+      WriteMethods
+      WriteFuncsProcs
+      WriteItems
+      WriteProperties
+    are a horrible mess that look like they were copy&pasted all over,
+    only to change a small detail here and there. 
+    Merge them -- preferably into one thing. }
   TTexDocGenerator = class(TDocGenerator)
   private
     FNumericFilenames: boolean;
