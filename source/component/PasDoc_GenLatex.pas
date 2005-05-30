@@ -19,16 +19,7 @@ uses
 type
   { @abstract(generates latex documentation)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in LaTex format. 
-    
-    TODO:
-      WriteFields
-      WriteMethods
-      WriteItems
-      WriteProperties
-    are a horrible mess that look like they were copy&pasted all over,
-    only to change a small detail here and there. 
-    Merge them -- preferably into one thing. }
+    output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   private
     FNumericFilenames: boolean;
@@ -41,8 +32,6 @@ type
     CellCounter: LongInt;
     FLatex2Rtf: Boolean;
     
-    procedure WriteProperties(HL: integer; const p: TPasProperties);
-
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -63,7 +52,6 @@ type
     procedure WriteEndOfTable;
     { Finishes an HTML table row by writing a closing TR tag. }
     procedure WriteEndOfTableRow;
-    procedure WriteFields(const Order: integer; const Fields: TPasItems);
 
     procedure WriteItemDescription(const AItem: TPasItem);
     (*
@@ -99,17 +87,16 @@ type
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
-      
-    { Writes information on functions and procedures or methods of a unit or
-      class, interface or object to output.
-      If argument OfObject is true, they will be considered methods of a class,
-      interface or object, otherwise they're considered functions or procedures
-      of a unit.
-      The functions are stored in the Items argument. }
-    procedure WriteMethods(const HL: integer; const Items: TPasMethods;
-      OfObject: boolean); 
-    
+          
     procedure WriteItemsSummary(const Items: TPasItems);
+
+    { Writes information about all Items.
+      If OfObject then their State will also be shown. }
+    procedure WriteItemsDetailed(const HL: integer; 
+      const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId); 
+
+    procedure WriteFieldsProperties(HL: integer; 
+      const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
 
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
@@ -421,14 +408,12 @@ begin
     end
   else
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
-    
-        
-  if (CIO.MyType in [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE]) then 
-    WriteProperties(HL + 2, CIO.Properties);
-        
-  WriteFields(HL + 2, CIO.Fields);
+       
+  WriteFieldsProperties(HL + 2, CIO.Properties, true, trProperties);
 
-  WriteMethods(HL + 2, CIO.Methods, true);
+  WriteFieldsProperties(HL + 2, CIO.Fields, true, trFields);
+
+  WriteItemsDetailed(HL + 2, CIO.Methods, true, trMethods);
 
   WriteAuthors(HL + 2, CIO.Authors);
   WriteDates(HL + 2, CIO.Created, CIO.LastMod);
@@ -679,89 +664,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteFields(const Order: integer; const Fields:
-  TPasItems);
-var
-  j: Integer;
-  Item: TPasItem;
-  s: string;
-begin
-  if ObjectVectorIsNilOrEmpty(Fields) then Exit;
-  
-  WriteHeading(Order, FLanguage.Translation[trFields]);
-  
-  if FLatex2Rtf then
-    begin
-    { Determine the longest string used.
-      This is the one we will use for determining the label width.
-    }
-    s:=FLanguage.Translation[trDescription];
-    if length(s) < length(FLanguage.Translation[trDeclaration])  then
-       s:= FLanguage.Translation[trDeclaration];
-    if length(s) < length(FLanguage.Translation[trReturns])  then
-       s:=FLanguage.Translation[trReturns];
-    if length(s) < length(FLanguage.Translation[trParameters])  then
-       s:=FLanguage.Translation[trParameters];
-    if length(s) < length(FLanguage.Translation[trExceptions])  then
-       s:=FLanguage.Translation[trExceptions];
-
-    for j := 0 to Fields.Count - 1 do 
-      begin
-        Item := Fields.PasItemAt[j];
-
-        WriteHeading(Order+1, Item.Name);
-        WriteAnchor(Item.Name,Item.FullLink);
-        WriteStartList(s);
-        
-        WriteDeclarationItem(Item,FLanguage.Translation[trDeclaration],
-          AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
-          
-        if HasDescription(Item) then
-        begin
-          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-          WriteStartOfParagraph;
-          WriteItemDetailedDescription(Item);
-          WriteEndOfParagraph;
-        end;
-
-        WriteEndList;
-      end;
-    end
-   else
-  begin  
-    { get the longest string for names }
-    s:='';
-    for j := 0 to Fields.Count - 1 do 
-      begin
-        Item := Fields.PasItemAt[j];
-        if length(s) < length(Item.Name) then
-          s:=Item.Name;
-      end;
-    
-    { Determine the longest string used.
-      This is the one we will use for determining the label width.
-    }
-    WriteStartList(s);
-    for j := 0 to Fields.Count - 1 do 
-      begin
-        Item := Fields.PasItemAt[j];
-        WriteAnchor(Item.Name,Item.FullLink);
-
-        WriteDeclarationItem(Item, Item.name, 
-          AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
-
-        WriteDirect('',true);
-        WriteDirect('\par ');
-        WriteItemDetailedDescription(Item);
-      end;
-     WriteEndList; 
-  end;     
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteMethods(const HL: integer; 
-  const Items: TPasMethods; OfObject: boolean);
+procedure TTexDocGenerator.WriteItemsDetailed(const HL: integer; 
+  const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
 var
   j: Integer;
   Item: TPasItem;
@@ -770,10 +674,8 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
-  if OfObject then
-    WriteHeading(HL, FLanguage.Translation[trMethods]) else
-    WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
-
+  WriteHeading(HL, FLanguage.Translation[SectionName]);
+  
   { Determine the longest string used.
     This is the one we will use for determining the label width.
   }
@@ -813,7 +715,6 @@ begin
     WriteEndList;
   end;
 end;
- 
 
 { ---------------------------------------------------------------------------- }
 
@@ -930,6 +831,8 @@ begin
   if not Assigned(AItem) then Exit;
   
   Result := AItem.HasDescription or
+    { TPasEnum always has some description: list of it's members }
+    (AItem is TPasEnum) or
     { Some hint directive ? }
     AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
     { Some TPasMethod optional info ? }
@@ -1038,6 +941,7 @@ var
   Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
+  i: Integer;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1093,160 +997,71 @@ begin
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
     WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
       AItemMethod.Raises, true);
- end;
+  end;
+
+  if AItem is TPasEnum then
+  begin
+    WriteDirectLine('\begin{description}');
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
+      WriteDirect('\item[\texttt{');
+      { add the first character for enums }
+      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].Name);
+      { add the end characters for enums }
+      WriteDirect('}] ');
+      WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
+      WriteDirectLine('');
+    end;
+    WriteDirectLine('\end{description}');
+  end;
 end;
 
 procedure TTexDocGenerator.WriteItems(HL: integer; Heading: string; const
   Anchor: string; const i: TPasItems);
+begin
+  raise Exception.Create('TTexDocGenerator.WriteItems should ' + 
+    'never be used. You should use WriteItemsSummary and WriteItemsDetailed ' +
+    'instead');
+end;
+
+procedure TTexDocGenerator.WriteFieldsProperties(HL: integer; 
+  const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
 var
-  j, k: Integer;
+  j: Integer;
   Item: TPasItem;
   s: string;
 begin
-  if ObjectVectorIsNilOrEmpty(i) then Exit;
-  if i.count = 0 then exit;
-
-  WriteHeading(HL, Heading);
-  
-  s:=FLanguage.Translation[trDescription];
-  if length(s) < length(FLanguage.Translation[trDeclaration])  then
-     s:= FLanguage.Translation[trDeclaration];
-  if length(s) < length(FLanguage.Translation[trReturns])  then
-     s:=FLanguage.Translation[trReturns];
-  if length(s) < length(FLanguage.Translation[trParameters])  then
-     s:=FLanguage.Translation[trParameters];
-  
-  
-  for j := 0 to i.Count - 1 do begin
-    Item := i.PasItemAt[j];
-
-    if Item is TPasEnum then
-      WriteHeading(HL+1, Item.Name+' '+LowerCase(FLanguage.Translation[trEnum]))
-    else
-      WriteHeading(HL+1, Item.Name);
-    
-    WriteAnchor(Item.Name,Item.FullLink);
-    
-    WriteStartList(s);
-
-    WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
-      Item.FullDeclaration);
-      
-    WriteDirect('',true);
-    
-    if not (Item is TPasEnum) then
-      begin
-        if HasDescription(Item) then
-        begin
-          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-          WriteItemDetailedDescription(Item);
-          WriteDirect('\par ',true);
-        end;
-      end
-    else
-     begin
-      WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-      { We may be here if the subitems have descriptions, 
-        if the main has no enumerations then simply skip it. 
-      }
-      if HasDescription(Item) then
-        WriteItemDetailedDescription(Item);
-      if TPasEnum(Item).Members.Count > 0 then begin
-        WriteDirectLine('\begin{description}');
-        for k := 0 to TPasEnum(Item).Members.Count-1 do begin
-          WriteDirect('\item[\texttt{');
-          { add the first character for enums }
-          WriteConverted(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).Name);
-          { add the end characters for enums }
-          WriteDirect('}] ');
-          WriteSpellChecked(TPasItem(TPasEnum(Item).Members.PasItemAt[k]).GetDescription);
-          WriteDirectLine('');
-        end;
-        WriteDirectLine('\end{description}');
-      end;
-    end;
-    WriteEndList;
-  end;
-end;
-
-procedure TTexDocGenerator.WriteProperties(HL: integer; const p:
-  TPasProperties);
-var
-  j: Integer;
-  Prop: TPasProperty;
-  s: string;
-begin
-  if ObjectVectorIsNilOrEmpty(p) then Exit;
-
-  WriteHeading(HL, FLanguage.Translation[trProperties]);
-  
   if FLatex2Rtf then
-    begin
+    WriteItemsDetailed(HL, Items, OfObject, SectionName) else
+  begin
+    if ObjectVectorIsNilOrEmpty(Items) then Exit;
+
+    WriteHeading(HL, FLanguage.Translation[SectionName]);
+  
     { Determine the longest string used.
       This is the one we will use for determining the label width.
     }
-    s:=FLanguage.Translation[trDescription];
-    if length(s) < length(FLanguage.Translation[trDeclaration])  then
-       s:= FLanguage.Translation[trDeclaration];
-    if length(s) < length(FLanguage.Translation[trReturns])  then
-       s:=FLanguage.Translation[trReturns];
-    if length(s) < length(FLanguage.Translation[trParameters])  then
-       s:=FLanguage.Translation[trParameters];
-    if length(s) < length(FLanguage.Translation[trExceptions])  then
-       s:=FLanguage.Translation[trExceptions];
-  
-
-    for j := 0 to p.Count - 1 do 
-      begin
-        Prop := TpasProperty(p.PasItemAt[j]);
-
-        WriteHeading(HL+1, Prop.Name);
-        WriteAnchor(Prop.Name,Prop.FullLink);
-        WriteStartList(s);        
-        
-        WriteDeclarationItem(Prop, FLanguage.Translation[trDeclaration], 
-          AccessibilityStr[Prop.State]+ ' '+Prop.Fulldeclaration);
-          
-        if HasDescription(Prop) then
-        begin
-          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-          WriteStartOfParagraph;
-          WriteItemDetailedDescription(Prop);
-          WriteEndOfParagraph;
-        end;
-        
-        WriteEndList;        
-      end;
-    end
-   else
-  begin    
-  
-    { get the longest string for names }
     s:='';
-    for j := 0 to p.Count - 1 do
-      begin
-        Prop := TpasProperty(p.PasItemAt[j]);
-        if length(s) < length(Prop.Name) then
-          s:=Prop.Name;
-      end;
+    for j := 0 to Items.Count - 1 do
+    begin
+      Item := Items.PasItemAt[j];
+      if length(s) < length(Item.Name) then
+        s := Item.Name;
+    end;
     
-    { Determine the longest string used.
-      This is the one we will use for determining the label width.
-    }
     WriteStartList(s);
     
-    for j := 0 to p.Count - 1 do 
-      begin
-        Prop := TPasProperty(p.PasItemAt[j]);
-        WriteAnchor(Prop.Name,Prop.FullLink);
-        WriteDeclarationItem(Prop, Prop.Name, AccessibilityStr[Prop.State]+' '+
-           Prop.FullDeclaration);
-        WriteDirect('',true);
-        WriteDirect('\par ');
-        WriteItemDetailedDescription(Prop);
-      end;
-    
-     WriteEndList; 
+    for j := 0 to Items.Count - 1 do 
+    begin
+      Item := Items.PasItemAt[j];
+      WriteAnchor(Item.Name, Item.FullLink);
+      WriteDeclarationItem(Item, Item.Name, 
+        AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
+      WriteDirectLine('');
+      WriteDirect('\par ');
+      WriteItemDetailedDescription(Item);
+    end;
+
+    WriteEndList; 
   end;
 end;
 
@@ -1461,13 +1276,13 @@ begin
   
   WriteCIOs(HL + 1, U.CIOs);
 
-  WriteMethods(HL + 1, U.FuncsProcs, false);
+  WriteItemsDetailed(HL + 1, U.FuncsProcs, false, trFunctionsAndProcedures);
 
-  WriteTypes(HL + 1, U.Types);
+  WriteItemsDetailed(HL + 1, U.Types, false, trTypes);
 
-  WriteConstants(HL + 1, U.Constants);
+  WriteItemsDetailed(HL + 1, U.Constants, false, trConstants);
 
-  WriteVariables(HL + 1, U.Variables);
+  WriteItemsDetailed(HL + 1, U.Variables, false, trVariables);
 
   WriteAuthors(HL + 1, U.Authors);
   WriteDates(HL + 1, U.Created, U.LastMod);
