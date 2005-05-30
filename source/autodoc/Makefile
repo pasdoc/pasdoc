@@ -56,7 +56,7 @@ PASDOC=../console/PasDoc_Console
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
   ../component/*.pas ../component/tipue/*.pas ../OptionParser/*.pas ../console/*.pas \
-  --title "PasDoc's autodoc" --write-uses-list  --auto-abstract
+  --title "PasDoc's autodoc" --write-uses-list  --auto-abstract --introduction=introduction.txt
 
 # How to call hhc (html help compiler) ?
 # Default value means that it must be available on path.
