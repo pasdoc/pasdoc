@@ -100,7 +100,15 @@ type
 
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
-        
+    
+    { Writes a single class, interface or object CIO to output, at heading
+      level HL. }
+    procedure WriteCIO(HL: integer; const CIO: TPasCio); 
+    
+    { Calls @link(WriteCIO) with each element in the argument collection C,
+      using heading level HL. }
+    procedure WriteCIOs(HL: integer; c: TPasItems); 
+            
     procedure WriteSpellChecked(const AString: string);
     
     { PDF Conditional support routines }
@@ -116,6 +124,17 @@ type
         returns @false.
     }    
     function HasDescription(const AItem: TPasItem): boolean;
+
+    { Writes heading S to output, at heading level I.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(Level: integer; const s: string); 
+
+    { Writes dates Created and LastMod at heading level HL to output
+      (if at least one the two has a value assigned). }
+    procedure WriteDates(const HL: integer; const Created, LastMod: string);
   protected
   
     function ConvertString(const s: string): string; override;
@@ -127,8 +146,6 @@ type
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     
-    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-
     function LatexString(const S: string): string; override;
 
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
@@ -142,31 +159,9 @@ type
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
-    
-    { Writes a single class, interface or object CIO to output, at heading
-      level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
-    
-    { Calls @link(WriteCIO) with each element in the argument collection C,
-      using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); override;
-    
-    { Writes dates Created and LastMod at heading level HL to output
-      (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
-    
+
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
-    
-    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
-      const i: TPasItems); override;
-      
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(Level: integer; const s: string); override;
     
     function Paragraph: string; override;
     
@@ -1015,14 +1010,6 @@ begin
   end;
 end;
 
-procedure TTexDocGenerator.WriteItems(HL: integer; Heading: string; const
-  Anchor: string; const i: TPasItems);
-begin
-  raise Exception.Create('TTexDocGenerator.WriteItems should ' + 
-    'never be used. You should use WriteItemsSummary and WriteItemsDetailed ' +
-    'instead');
-end;
-
 procedure TTexDocGenerator.WriteFieldsProperties(HL: integer; 
   const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
 var
@@ -1204,6 +1191,13 @@ end;
 
 procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 
+  procedure WriteUnitDescription(HL: integer; U: TPasUnit);
+  begin
+    WriteHeading(HL, FLanguage.Translation[trDescription]);
+    WriteItemDetailedDescription(U);
+    WriteDirect('',true);
+  end;
+
   procedure WriteUnitUses(const HL: integer; U: TPasUnit);
   var
     i: Integer;
@@ -1286,13 +1280,6 @@ begin
 
   WriteAuthors(HL + 1, U.Authors);
   WriteDates(HL + 1, U.Created, U.LastMod);
-end;
-
-procedure TTexDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
-begin
-  WriteHeading(HL, FLanguage.Translation[trDescription]);
-  WriteItemDetailedDescription(U);
-  WriteDirect('',true);
 end;
 
 { ---------------------------------------------------------------------------- }

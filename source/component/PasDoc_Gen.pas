@@ -158,6 +158,34 @@ type
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
 
+    FAbbreviations: TStringList;
+    FGraphVizClasses: boolean;
+    FGraphVizUses: boolean;
+
+    { Name of the project to create. }
+    FProjectName: string;
+    { if true, no link to pasdoc homepage will be included at the bottom of
+      HTML files;
+      default is false }
+    FNoGeneratorInfo: Boolean;
+    { the output stream that is currently written to; depending on the
+      output format, more than one output stream will be necessary to
+      store all documentation }
+    FCurrentStream: TStream;
+    { Title of documentation. }
+    FTitle: string;
+    { destination directory for documentation; must include terminating
+      forward slash or backslash so that valid file names can be created
+      by concatenating DestinationDirectory and a pathless file name }
+    FDestDir: string;
+
+    FOnMessage: TPasDocMessageEvent;
+
+    procedure SetAbbreviations(const Value: TStringList);
+    function GetLanguage: TLanguageID;
+    procedure SetLanguage(const Value: TLanguageID);
+    procedure SetDestDir(const Value: string);
+
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
     procedure DoMessageFromExpandDescription(
@@ -215,39 +243,13 @@ end;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleBrTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
-
+    
   protected
-    FAbbreviations: TStringList;
-    FGraphVizClasses: boolean;
-    FGraphVizUses: boolean;
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
-    { Name of the project to create. }
-    FProjectName: string;
-    { if true, no link to pasdoc homepage will be included at the bottom of
-      HTML files;
-      default is false }
-    FNoGeneratorInfo: Boolean;
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
-    FCurrentStream: TStream;
-    { Title of documentation. }
-    FTitle: string;
-    { destination directory for documentation; must include terminating
-      forward slash or backslash so that valid file names can be created
-      by concatenating DestinationDirectory and a pathless file name }
-    FDestDir: string;
-
-    FOnMessage: TPasDocMessageEvent;
-
+    
     FClassHierarchy: TStringCardinalTree;
-
-    procedure SetAbbreviations(const Value: TStringList);
-    function GetLanguage: TLanguageID;
-    procedure SetLanguage(const Value: TLanguageID);
-    procedure SetDestDir(const Value: string);
-
+  
     procedure DoError(const AMessage: string; const AArguments: array of const;
       const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal;
@@ -391,58 +393,6 @@ end;
 
     procedure StoreDescription(ItemName: string; var t: string);
 
-    { Writes all information on a class, object or interface (CIO) to output,
-      at heading level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); virtual; abstract;
-
-    { Writes all classes, interfaces and objects in C to output, calling
-      @link(WriteCIO) with each, at heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); virtual;
-
-    { Abstract procedure, must be overwritten by descendants.
-      Writes a list of all classes, interfaces and objects in C at heading
-      level HL to output. }
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); virtual;
-
-    { Writes collection T, which is supposed to contain constant items only
-      to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
-      @link(WriteItems).
-      Can be overwritten by descendants. }
-    procedure WriteConstants(HL: integer; c: TPasItems); virtual;
-
-    { If they are assigned, the date values for creation time and time of last
-      modification are written to output at heading level HL. }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string);
-      virtual; abstract;
-
-    { Writes an already-converted description T to output.
-      Takes @link(TBaseItem.DetailedDescription Item.DetailedDescription) 
-      if available, @link(TPasItem.AbstractDescription 
-      Item.AbstractDescription) otherwise.
-      If none of them is assigned, nothing is written. }
-    procedure WriteDescription(HL: integer; const Heading: string; const Item:
-      TPasItem);
-
-    { Abstract procedure that must be overwritten by descendants.
-      Writes a heading S at level HL to output.
-      In HTML, heading levels are regarded by choosing the appropriate
-      element from H1 to H6.
-      The minimum heading level is 1, the maximum level depends on the
-      output format.
-      However, it is no good idea to choose a heading level larger than
-      five or six.
-      Anyway, a descendant should be able to deal with to large HL values,
-      e.g. by assigning subsubsection to all Tex headings >= 4. }
-    procedure WriteHeading(HL: integer; const s: string); virtual; abstract;
-
-    { Writes items in I to output, including a heading of level HL and text
-      Heading.
-      Each item in I should be written with its short description and a
-      reference.
-      In HTML, this results in a table with two columns. }
-    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
-      const i: TPasItems); virtual; abstract;
-
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then optionally writes LineEnding. }
     procedure WriteConverted(const s: string; Newline: boolean); overload; 
@@ -463,36 +413,17 @@ end;
     
     { Simply writes T followed by LineEnding to CurrentStream. }
     procedure WriteDirectLine(const t: string);
-    
-    { Writes collection T, which is supposed to contain type items (TPasItem) to
-      output at heading level HL with heading FLanguage.Translation[trTYPES) calling
-      @link(WriteItems).
-      Can be overwritten in descendants. }
-    procedure WriteTypes(const HL: integer; const t: TPasItems); virtual;
 
     { Abstract method that writes all documentation for a single unit U to
       output, starting at heading level HL.
       Implementation must be provided by descendant objects and is dependent
-      on output format.
-      Will call some of the WriteXXX methods like @link(WriteHeading),
-      @link(WriteCIOs) or @link(WriteUnitDescription). }
+      on output format. }
     procedure WriteUnit(const HL: integer; const U: TPasUnit); virtual;
       abstract;
-
-    { Abstract method to be implemented by descendant objects.
-      Writes the (detailed, if available) description T of a unit to output,
-      including a FLanguage.Translation[trDESCRIPTION) headline at heading level HL. }
-    procedure WriteUnitDescription(HL: integer; U: TPasUnit); virtual; abstract;
 
     { Writes documentation for all units, calling @link(WriteUnit) for each
       unit. }
     procedure WriteUnits(const HL: integer);
-    
-    { Writes collection V, which is supposed to contain variable items (TPasItem)
-      to output at heading level HL with heading FLanguage.Translation[trTYPES) calling
-      @link(WriteItems).
-      Can be overwritten in descendants. }
-    procedure WriteVariables(const HL: integer; const V: TPasItems); virtual;
 
     procedure WriteStartOfCode; virtual;
 
@@ -521,25 +452,31 @@ end;
 
     { closes the spellchecker }
     procedure EndSpellChecking;
+    
     { FormatPascalCode will cause Line to be formatted in
       the way that Pascal code is formatted in Delphi.
       Note that given Line is taken directly from what user put
       inside @longcode(), it is not even processed by ConvertString.
       You should process it with ConvertString if you want. }
     function FormatPascalCode(const Line: string): string; virtual;
+    
     // FormatCode will cause AString to be formatted in the
     // way that Pascal statements are in Delphi.
     function FormatCode(AString: string): string; virtual;
+    
     // FormatComment will cause AString to be formatted in
     // the way that comments other than compiler directives are
     // formatted in Delphi.  See: @link(FormatCompilerComment).
     function FormatComment(AString: string): string; virtual;
+    
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; virtual;
+    
     // FormatKeyWord will cause AString to be formatted in
     // the way that reserved words are formatted in Delphi.
     function FormatKeyWord(AString: string): string; virtual;
+    
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; virtual;
@@ -1487,40 +1424,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
-var
-  i: Integer;
-begin
-  if ObjectVectorIsNilOrEmpty(c) then Exit;
-  for i := 0 to c.Count - 1 do
-    WriteCIO(HL, TPasCio(c.PasItemAt[i]));
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
-begin
-  WriteItems(HL, FLanguage.Translation[trSummaryCio], 'Classes', c);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.WriteConstants(HL: integer; c: TPasItems);
-begin
-  WriteItems(HL, FLanguage.Translation[trConstants], 'Constants', c);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.WriteDescription(HL: integer; const Heading: string;
-  const Item: TPasItem);
-begin
-  if Length(Heading) > 0 then WriteHeading(HL, Heading);
-  WriteDirect(Item.GetDescription);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean);
 begin
   WriteDirect(ConvertString(s), Newline);  
@@ -1557,13 +1460,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.WriteTypes(const HL: integer; const t: TPasItems);
-begin
-  WriteItems(HL, FLanguage.Translation[trTypes], 'Types', t);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TDocGenerator.WriteUnits(const HL: integer);
 var
   i: Integer;
@@ -1572,13 +1468,6 @@ begin
   for i := 0 to Units.Count - 1 do begin
     WriteUnit(HL, Units.UnitAt[i]);
   end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.WriteVariables(const HL: integer; const V: TPasItems);
-begin
-  WriteItems(HL, FLanguage.Translation[trVariables], 'Variables', V);
 end;
 
 { ---------------------------------------------------------------------------- }

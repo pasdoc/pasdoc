@@ -143,6 +143,27 @@ type
     procedure WriteEndOfLink;
 
     procedure WriteSpellChecked(const AString: string);
+    
+    { Writes a single class, interface or object CIO to output, at heading
+      level HL. }
+    procedure WriteCIO(HL: integer; const CIO: TPasCio); 
+    
+    { Calls @link(WriteCIO) with each element in the argument collection C,
+      using heading level HL. }
+    procedure WriteCIOs(HL: integer; c: TPasItems); 
+    
+    procedure WriteCIOSummary(HL: integer; c: TPasItems); 
+
+    { Writes heading S to output, at heading level I.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(Level: integer; const s: string);
+
+    { Writes dates Created and LastMod at heading level HL to output
+      (if at least one the two has a value assigned). }
+    procedure WriteDates(const HL: integer; const Created, LastMod: string); 
 
     procedure WriteIntroduction;
     procedure WriteConclusion;
@@ -158,8 +179,6 @@ type
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
     
-    procedure WriteUnitDescription(HL: integer; U: TPasUnit); override;
-
     function HtmlString(const S: string): string; override;
     
     // FormatPascalCode will cause Line to be formatted in
@@ -194,34 +213,10 @@ type
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
-    
-    { Writes a single class, interface or object CIO to output, at heading
-      level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); override;
-    
-    { Calls @link(WriteCIO) with each element in the argument collection C,
-      using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); override;
-    
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); override;
-    
-    { Writes dates Created and LastMod at heading level HL to output
-      (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string); override;
-    
+
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
     
-    procedure WriteItems(HL: integer; Heading: string; const Anchor: string;
-      const i: TPasItems); override;
-      
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(Level: integer; const s: string); override;
-
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
 
@@ -1058,14 +1053,6 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteItems(HL: integer; Heading: string; const
-  Anchor: string; const i: TPasItems);
-begin
-  raise Exception.Create('TGenericHTMLDocGenerator.WriteItems should ' + 
-    'never be used. You should use WriteItemsSummary and WriteItemsDetailed ' +
-    'instead');
-end;
-
 { ---------- }
 
 procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
@@ -1452,6 +1439,12 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 
+  procedure WriteUnitDescription(HL: integer; U: TPasUnit);
+  begin
+    WriteHeading(HL, FLanguage.Translation[trDescription]);
+    WriteItemDetailedDescription(U);
+  end;
+
   procedure WriteUnitUses(const HL: integer; U: TPasUnit);
   var
     i: Integer;
@@ -1640,12 +1633,6 @@ begin
   WriteEndOfDocument;
   CloseStream;
   WriteCIOs(HL, U.CIOs);
-end;
-
-procedure TGenericHTMLDocGenerator.WriteUnitDescription(HL: integer; U: TPasUnit);
-begin
-  WriteHeading(HL, FLanguage.Translation[trDescription]);
-  WriteItemDetailedDescription(U);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteImage(const src, alt, localcss: string);
