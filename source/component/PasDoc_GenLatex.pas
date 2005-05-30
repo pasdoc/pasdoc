@@ -24,7 +24,6 @@ type
     TODO:
       WriteFields
       WriteMethods
-      WriteFuncsProcs
       WriteItems
       WriteProperties
     are a horrible mess that look like they were copy&pasted all over,
@@ -42,15 +41,6 @@ type
     CellCounter: LongInt;
     FLatex2Rtf: Boolean;
     
-    { Writes information on functions and procedures or methods of a unit or
-      class, interface or object to output.
-      If argument Methods is true, they will be considered methods of a class,
-      interface or object, otherwise they're considered functions or procedures
-      of a unit.
-      The functions are stored in the FuncsProcs argument. }
-    procedure WriteFuncsProcs(const HL: integer; 
-      const Methods: Boolean; const FuncsProcs: TPasMethods); 
-        
     procedure WriteProperties(HL: integer; const p: TPasProperties);
 
     { Writes information on doc generator to current output stream,
@@ -112,11 +102,12 @@ type
       
     { Writes information on functions and procedures or methods of a unit or
       class, interface or object to output.
-      If argument Methods is true, they will be considered methods of a class,
+      If argument OfObject is true, they will be considered methods of a class,
       interface or object, otherwise they're considered functions or procedures
       of a unit.
-      The functions are stored in the FuncsProcs argument. }
-    procedure WriteMethods(const HL: integer; const FuncsProcs: TPasMethods); 
+      The functions are stored in the Items argument. }
+    procedure WriteMethods(const HL: integer; const Items: TPasMethods;
+      OfObject: boolean); 
     
     procedure WriteItemsSummary(const Items: TPasItems);
 
@@ -437,8 +428,7 @@ begin
         
   WriteFields(HL + 2, CIO.Fields);
 
-  WriteMethods(HL + 2, CIO.Methods);
-        
+  WriteMethods(HL + 2, CIO.Methods, true);
 
   WriteAuthors(HL + 2, CIO.Authors);
   WriteDates(HL + 2, CIO.Created, CIO.LastMod);
@@ -770,16 +760,19 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteMethods(const HL: integer; const FuncsProcs: TPasMethods);
+procedure TTexDocGenerator.WriteMethods(const HL: integer; 
+  const Items: TPasMethods; OfObject: boolean);
 var
   j: Integer;
-  p: TPasMethod;
+  Item: TPasItem;
   s: string;
+  Accessibility: string;
 begin
-  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
-  if FuncsProcs.Count = 0 then exit;
+  if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
-  WriteHeading(HL, FLanguage.Translation[trMethods]);
+  if OfObject then
+    WriteHeading(HL, FLanguage.Translation[trMethods]) else
+    WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
 
   { Determine the longest string used.
     This is the one we will use for determining the label width.
@@ -794,29 +787,30 @@ begin
   if length(s) < length(FLanguage.Translation[trExceptions])  then
      s:=FLanguage.Translation[trExceptions];
 
-
-  for j := 0 to FuncsProcs.Count - 1 do 
+  for j := 0 to Items.Count - 1 do 
   begin
-      p := TPasMethod(FuncsProcs.PasItemAt[j]);
+    Item := Items.PasItemAt[j];
       
-      { overview of functions and procedures }
-      WriteHeading(HL+1,p.Name);
-      WriteAnchor(p.Name,p.FullLink);
+    WriteHeading(HL+1, Item.Name);
+    WriteAnchor(Item.Name, Item.FullLink);
 
-      WriteStartList(s);
+    WriteStartList(s);
 
-      WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
-        AccessibilityStr[p.State]+' '+p.FullDeclaration);
+    if OfObject then
+      Accessibility := AccessibilityStr[Item.State] + ' ' else
+      Accessibility := '';
+    WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
+      Accessibility + Item.FullDeclaration);
 
-      if HasDescription(p) then
-      begin
-        WriteStartOfParagraph;
-        WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-        WriteItemDetailedDescription(p);
-        WriteEndOfParagraph;
-      end;
+    if HasDescription(Item) then
+    begin
+      WriteStartOfParagraph;
+      WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
+      WriteItemDetailedDescription(Item);
+      WriteEndOfParagraph;
+    end;
 
-      WriteEndList;
+    WriteEndList;
   end;
 end;
  
@@ -858,69 +852,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TTexDocGenerator.WriteFuncsProcs(const HL: integer; const Methods: boolean; const FuncsProcs: TPasMethods);
-
-
-var
-  j: Integer;
-  p: TPasMethod;
-  s: string;
-  procstr: string;
-begin
-  if ObjectVectorIsNilOrEmpty(FuncsProcs) then Exit;
-  if FuncsProcs.Count = 0 then exit;
-
-  WriteHeading(HL, FLanguage.Translation[trFunctionsAndProcedures]);
-
-  { Determine the longest string used.
-    This is the one we will use for determining the label width.
-  }
-  s:=FLanguage.Translation[trDescription];
-  if length(s) < length(FLanguage.Translation[trDeclaration])  then
-     s:= FLanguage.Translation[trDeclaration];
-  if length(s) < length(FLanguage.Translation[trReturns])  then
-     s:=FLanguage.Translation[trReturns];
-  if length(s) < length(FLanguage.Translation[trParameters])  then
-     s:=FLanguage.Translation[trParameters];
-
-
-  for j := 0 to FuncsProcs.Count - 1 do
-  begin
-      p := TPasMethod(FuncsProcs.PasItemAt[j]);
-      { overview of functions and procedures }
-      begin
-        { Check if this is a function or a procedure }
-        { and add it as an end string                }
-        procstr:=p.FullDeclaration;
-        procstr:=trimleft(procstr);
-        procstr:=trimright(procstr);
-        if (pos('procedure',LowerCase(procstr)) >= 1) then
-          procstr:='procedure'
-        else
-          procstr:='function';
-
-        WriteHeading(HL+1,p.Name+' '+procstr);
-        WriteAnchor(p.Name,p.FullLink);
-
-        WriteStartList(s);
-        
-        WriteDeclarationItem(p,FLanguage.Translation[trDeclaration],
-          p.FullDeclaration);
-
-        if HasDescription(p) then
-        begin
-          WriteStartOfParagraph;
-          WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-          WriteItemDetailedDescription(p);
-          WriteEndOfParagraph;
-        end;
-        
-        WriteEndList;
-        
-      end;
-  end;
-end;
 
 procedure TTexDocGenerator.WriteHeading(Level: integer; const s: string);
 begin
@@ -1530,7 +1461,7 @@ begin
   
   WriteCIOs(HL + 1, U.CIOs);
 
-  WriteFuncsProcs(HL + 1, False, U.FuncsProcs);
+  WriteMethods(HL + 1, U.FuncsProcs, false);
 
   WriteTypes(HL + 1, U.Types);
 
