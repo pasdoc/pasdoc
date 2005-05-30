@@ -741,10 +741,13 @@ const
   CIORecordType = [CIO_RECORD, CIO_PACKEDRECORD];
   CIONonHierarchy = CIORecordType;
 
+{ Returns lowercased keyword associated with given method type. }
+function MethodTypeToString(const MethodType: TMethodType): string;
+
 implementation
 
 uses
-  SysUtils, PasDoc_Types, Utils;
+  SysUtils, PasDoc_Types, Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -1809,6 +1812,18 @@ end;
 procedure TExternalItem.SetOutputFileName(const Value: string);
 begin
   FOutputFileName := Value;
+end;
+
+{ global things ------------------------------------------------------------ }
+
+function MethodTypeToString(const MethodType: TMethodType): string;
+const
+  { Map TMethodType to TKeyWord }
+  MethodTypeToKeyWord: array[TMethodType] of TKeyWord =
+  ( KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
+    KEY_FUNCTION, KEY_PROCEDURE, KEY_OPERATOR );
+begin
+  Result := LowerCase(KeyWordArray[MethodTypeToKeyWord[MethodType]]);
 end;
 
 initialization
