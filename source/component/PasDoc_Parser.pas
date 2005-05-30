@@ -446,12 +446,11 @@ begin
   M.RawDescription := d;
   t := nil;
   case Key of
-    KEY_CONSTRUCTOR:
-      M.What := METHOD_CONSTRUCTOR;
-    KEY_DESTRUCTOR:
-      M.What := METHOD_DESTRUCTOR;
-    KEY_FUNCTION, KEY_PROCEDURE, KEY_OPERATOR:
-      M.What := METHOD_FUNCTION_PROCEDURE;
+    KEY_CONSTRUCTOR: M.What := METHOD_CONSTRUCTOR;
+    KEY_DESTRUCTOR:  M.What := METHOD_DESTRUCTOR;
+    KEY_FUNCTION:    M.What := METHOD_FUNCTION;
+    KEY_PROCEDURE:   M.What := METHOD_PROCEDURE;
+    KEY_OPERATOR:    M.What := METHOD_OPERATOR;
   else
     DoError('FATAL ERROR: CDFP got invalid key.', [], 1);
   end;

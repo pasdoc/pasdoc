@@ -400,7 +400,7 @@ type
 
   { Methodtype for @link(TPasMethod) }
   TMethodType = (METHOD_CONSTRUCTOR, METHOD_DESTRUCTOR,
-    METHOD_FUNCTION_PROCEDURE);
+    METHOD_FUNCTION, METHOD_PROCEDURE, METHOD_OPERATOR);
 
   { This represents:
     - global function/procedure,
