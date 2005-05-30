@@ -1363,7 +1363,7 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfParagraph;
 begin
-  WriteDirect('<p>');
+  WriteDirect(Paragraph);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTable1Column(t: string);
@@ -2058,13 +2058,19 @@ begin
     So the clean solution must be to mark explicitly that paragraph
     always ends before <pre> and always begins after </pre>. }
 
-  result := '</p><pre class="longcode">' + 
-    inherited FormatPascalCode(ConvertString(Line)) + '</pre><p>';
+  result := '</p>' + LineEnding + LineEnding + 
+    '<pre class="longcode">' + 
+       inherited FormatPascalCode(ConvertString(Line)) + '</pre>' +
+     LineEnding + LineEnding + '<p>';
 end;
 
 function TGenericHTMLDocGenerator.Paragraph: string; 
-begin
-  Result := '<p>';
+begin 
+  { LineEndings are inserted here only to make HTML sources look
+    more readable (this makes life easier when looking for pasdoc's bugs,
+    comparing generating two tests results etc.).
+    They are of course meaningless for anything that interprets this HTML. }
+  Result := LineEnding + LineEnding + '<p>';
 end;
 
 function TGenericHTMLDocGenerator.LineBreak: string; 
