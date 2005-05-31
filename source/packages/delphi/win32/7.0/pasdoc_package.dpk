@@ -53,6 +53,7 @@ contains
   Hashes in '..\..\..\..\component\Hashes.pas',
   PasDoc_Tipue in '..\..\..\..\component\tipue\PasDoc_Tipue.pas',
   PasDoc_SortSettings in '..\..\..\..\component\PasDoc_SortSettings.pas',
-  PasDoc_GenHtmlHelp in '..\..\..\..\component\PasDoc_GenHtmlHelp.pas';
+  PasDoc_GenHtmlHelp in '..\..\..\..\component\PasDoc_GenHtmlHelp.pas',
+  PasDoc_StringPairVector in '..\..\..\..\component\PasDoc_StringPairVector.pas';
 
 end.

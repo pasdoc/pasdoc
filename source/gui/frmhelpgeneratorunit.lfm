@@ -8,13 +8,13 @@ object frmHelpGenerator: TfrmHelpGenerator
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 61
-  Position = poDefaultPosOnly
+  Position = poScreenCenter
   TextHeight = 20
   HorzScrollBar.Page = 574
   VertScrollBar.Page = 324
-  Left = 202
+  Left = 128
   Height = 351
-  Top = 126
+  Top = 132
   Width = 575
   object PageControl1: TPageControl
     ActivePage = tabOptions
@@ -169,6 +169,105 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 21
         Top = 92
         Width = 210
+      end
+    end
+    object TabMoreOptions: TTabSheet
+      Caption = 'More Options'
+      ClientHeight = 295
+      ClientWidth = 571
+      Left = 2
+      Height = 295
+      Top = 28
+      Width = 571
+      object Label14: TLabel
+        Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
+        Color = clNone
+        Left = 15
+        Height = 12
+        Top = 192
+        Width = 448
+      end
+      object Label15: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Use introduction file:'
+        Color = clNone
+        Left = 14
+        Height = 12
+        Top = 84
+        Width = 113
+      end
+      object Label16: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Use conclusion file :'
+        Color = clNone
+        Left = 14
+        Height = 12
+        Top = 137
+        Width = 113
+      end
+      object EditCssFileName: TFileNameEdit
+        DialogTitle = 'Choose custom CSS file'
+        Filter = 'Cascading Style Sheets (*.css)|*.css'
+        ButtonWidth = 23
+        NumGlyphs = 1
+        TabOrder = 0
+        OnChange = SomethingChanged
+        OnChange = SomethingChanged
+        TabOrder = 0
+        Left = 15
+        Height = 23
+        Top = 208
+        Width = 314
+      end
+      object EditIntroductionFileName: TFileNameEdit
+        DialogTitle = 'Choose introduction file'
+        ButtonWidth = 23
+        NumGlyphs = 1
+        BorderSpacing.OnChange = nil
+        TabOrder = 1
+        OnChange = SomethingChanged
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 1
+        Left = 14
+        Height = 23
+        Top = 102
+        Width = 314
+      end
+      object EditConclusionFileName: TFileNameEdit
+        DialogTitle = 'Choose conclusion file'
+        ButtonWidth = 23
+        NumGlyphs = 1
+        BorderSpacing.OnChange = nil
+        TabOrder = 2
+        OnChange = SomethingChanged
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 2
+        Left = 14
+        Height = 23
+        Top = 153
+        Width = 314
+      end
+      object CheckAutoAbstract: TCheckBox
+        BorderSpacing.OnChange = nil
+        Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
+        OnChange = SomethingChanged
+        TabOrder = 3
+        Left = 15
+        Height = 23
+        Top = 12
+        Width = 473
+      end
+      object CheckUseTipueSearch: TCheckBox
+        BorderSpacing.OnChange = nil
+        Caption = 'Use tipue search engine in HTML output'
+        OnChange = SomethingChanged
+        TabOrder = 4
+        Left = 15
+        Height = 23
+        Top = 40
+        Width = 251
       end
     end
     object tabHeadFoot: TTabSheet
@@ -550,12 +649,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         OnClick = New1Click
       end
       object Open1: TMenuItem
-        Caption = '&Open'
+        Caption = '&Open ...'
         ShortCut = 16463
         OnClick = btnOpenClick
       end
       object Save1: TMenuItem
-        Caption = '&Save'
+        Caption = '&Save ...'
         ShortCut = 16467
         OnClick = Save1Click
       end
@@ -564,9 +663,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         OnClick = Exit1Click
       end
     end
-    object About1: TMenuItem
-      Caption = 'About'
-      OnClick = About1Click
+    object MenuHelp: TMenuItem
+      Caption = '&Help'
+      object MenuAbout: TMenuItem
+        Caption = '&About'
+        OnClick = MenuAboutClick
+      end
     end
   end
   object TexDocGenerator: TTexDocGenerator

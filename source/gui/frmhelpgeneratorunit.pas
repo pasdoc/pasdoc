@@ -39,22 +39,32 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, Process, PasDoc_Serialize,
-  IniFiles, PasDoc_GenHtmlHelp;
+  IniFiles, PasDoc_GenHtmlHelp, EditBtn;
 
 type
   // @abstract(TfrmHelpGenerator is the class of the main form of Help
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
+   CheckAutoAbstract: TCheckBox;
+   CheckUseTipueSearch: TCheckBox;
+    EditCssFileName: TFileNameEdit;
     EditHtmlBrowserCommand: TEdit;
+    CssFileNameFileNameEdit1: TFileNameEdit;
+    EditIntroductionFileName: TFileNameEdit;
+    EditConclusionFileName: TFileNameEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     LabelHtmlBrowserCommand: TLabel;
     MemoCommandLog: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
+    MenuAbout: TMenuItem;
     PanelWebPageTop: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
@@ -69,6 +79,7 @@ type
     // memoMessages displays compiler warnings.  See also @link(seVerbosity);
     memoMessages: TMemo;
     tabHeadFoot: TTabSheet;
+    TabMoreOptions: TTabSheet;
     tabWebPage: TTabSheet;
     tabOptions: TTabSheet;
     // @name controls whether of private, protected, public, published and
@@ -136,7 +147,9 @@ type
     PanelDefinesTop: TPanel;
     Label12: TLabel;
     memoDefines: TMemo;
-    About1: TMenuItem;
+    MenuHelp: TMenuItem;
+    procedure SomethingChanged(Sender: TObject);
+    procedure MenuAboutClick(Sender: TObject);
     procedure PasDoc1Warning(const MessageType: TMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
@@ -153,7 +166,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure New1Click(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
-    procedure About1Click(Sender: TObject);
   private
     FChanged: boolean;
     FSettingsFileName: string;
@@ -187,6 +199,16 @@ procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 begin
   memoMessages.Lines.Add(AMessage);
+end;
+
+procedure TfrmHelpGenerator.MenuAboutClick(Sender: TObject);
+begin
+  frmAbout.ShowModal;
+end;
+
+procedure TfrmHelpGenerator.SomethingChanged(Sender: TObject);
+begin
+  Changed := true;
 end;
 
 procedure TfrmHelpGenerator.btnBrowseSourceFilesClick(Sender: TObject);
@@ -229,34 +251,34 @@ end;
 
 procedure TfrmHelpGenerator.clbMethodVisibilityClick(Sender: TObject);
 var
-  Options: TAccessibilities;
+  Options: TVisibilities;
 begin
   Options := [];
   if clbMethodVisibility.Checked[0] then
   begin
-    Include(Options, STATE_PUBLISHED);
+    Include(Options, viPublished);
   end;
   if clbMethodVisibility.Checked[1] then
   begin
-    Include(Options, STATE_PUBLIC);
+    Include(Options, viPublic);
   end;
   if clbMethodVisibility.Checked[2] then
   begin
-    Include(Options, STATE_PROTECTED);
+    Include(Options, viProtected);
   end;
   if clbMethodVisibility.Checked[3] then
   begin
-    Include(Options, STATE_PRIVATE);
+    Include(Options, viPrivate);
   end;
   if clbMethodVisibility.Checked[4] then
   begin
-    Include(Options, STATE_AUTOMATED);
+    Include(Options, viAutomated);
   end;
 
-  if PasDoc1.ClassMembers <> Options then
+  if PasDoc1.ShowVisibilities <> Options then
   begin
     Changed := True;
-    PasDoc1.ClassMembers := Options;
+    PasDoc1.ShowVisibilities := Options;
   end;
 end;
 
@@ -282,6 +304,12 @@ begin
 
   memoDefines.Lines.Assign(DefaultDirectives);
 
+  EditCssFileName.FileName := '';
+  EditIntroductionFileName.FileName := '';
+  EditConclusionFileName.FileName := '';
+  CheckAutoAbstract.Checked := false;
+  CheckUseTipueSearch.Checked := false;
+  
   Changed := False;
 end;
 
@@ -289,7 +317,7 @@ procedure TfrmHelpGenerator.UpdateCaption;
 var
   NewCaption: string;
 begin
-  { Caption value follows GNOME HIO 2.0 standard }
+  { Caption value follows GNOME HIG 2.0 standard }
   NewCaption := '';
   if Changed then NewCaption += '*';
   if SettingsFileName = '' then
@@ -415,6 +443,9 @@ begin
     begin
       TGenericHTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
       TGenericHTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).CSS := EditCssFileName.Text;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
+        CheckUseTipueSearch.Checked;
     end;
     
     // Create the output directory if it does not exist.
@@ -422,9 +453,14 @@ begin
     begin
       CreateDir(edOutput.Text)
     end;
-
     PasDoc1.Generator.DestinationDirectory := edOutput.Text;
+    
+    PasDoc1.Generator.AutoAbstract := CheckAutoAbstract.Checked;
+    
     PasDoc1.ProjectName := edProjectName.Text;
+    PasDoc1.IntroductionFileName := EditIntroductionFileName.Text;
+    PasDoc1.ConclusionFileName := EditConclusionFileName.Text;
+
     Files := TStringList.Create;
     try
       Files.AddStrings(memoFiles.Lines);
@@ -442,6 +478,7 @@ begin
       Files.Free;
     end;
     PasDoc1.Verbosity := Round(seVerbosity.Value);
+    
     PasDoc1.Execute;
 
     case comboGenerateFormat.ItemIndex of
@@ -462,7 +499,6 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
-
 end;
 
 procedure TfrmHelpGenerator.comboLanguagesChange(Sender: TObject);
@@ -559,7 +595,7 @@ begin
       edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
       seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
 
-      for i := Ord(Low(TAccessibility)) to Ord(High(TAccessibility)) do
+      for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
         clbMethodVisibility.Checked[i] := Ini.ReadBool(
           'Main', 'ClassMembers_' + IntToStr(i), true);
       clbMethodVisibilityClick(nil);
@@ -569,6 +605,14 @@ begin
       ReadStrings('Footer', memoFooter.Lines);
       ReadStrings('IncludeDirectories', memoIncludeDirectories.Lines);
       ReadStrings('Files', memoFiles.Lines);
+      
+      EditCssFileName.FileName := Ini.ReadString('Main', 'CssFileName', '');
+      EditIntroductionFileName.FileName :=
+        Ini.ReadString('Main', 'IntroductionFileName', '');
+      EditConclusionFileName.FileName :=
+        Ini.ReadString('Main', 'ConclusionFileName', '');
+      CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
+      CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
     finally Ini.Free end;
 
     Changed := False;
@@ -606,7 +650,7 @@ begin
       Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
       Ini.WriteInteger('Main', 'Verbosity', Round(seVerbosity.Value));
 
-      for i := Ord(Low(TAccessibility)) to Ord(High(TAccessibility)) do
+      for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
         Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
           clbMethodVisibility.Checked[i]);
 
@@ -615,6 +659,14 @@ begin
       WriteStrings('Footer', memoFooter.Lines);
       WriteStrings('IncludeDirectories', memoIncludeDirectories.Lines);
       WriteStrings('Files', memoFiles.Lines);
+
+      Ini.WriteString('Main', 'CssFileName', EditCssFileName.FileName);
+      Ini.WriteString('Main', 'IntroductionFileName',
+        EditIntroductionFileName.FileName);
+      Ini.WriteString('Main', 'ConclusionFileName',
+        EditConclusionFileName.FileName);
+      Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
+      Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
 
       Ini.UpdateFile;
     finally Ini.Free end;
@@ -688,11 +740,6 @@ end;
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 begin
   Changed := true;
-end;
-
-procedure TfrmHelpGenerator.About1Click(Sender: TObject);
-begin
-  frmAbout.ShowModal;
 end;
 
 initialization

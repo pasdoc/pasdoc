@@ -284,6 +284,7 @@ var
   lng: TLanguageID;
   SS: TSortSetting;
   HtmlGen: TGenericHTMLDocGenerator;
+  Vis: TVisibility;
 begin
   GOption_Format.Value := LowerCase(GOption_Format.Value);
   if GOption_Format.Value = 'html' then begin
@@ -375,12 +376,10 @@ begin
 
   GPasDoc.AddSourceFileNames(GOptionParser.LeftList);
 
-  GPasDoc.ClassMembers := [];
-  if GOption_VisibleMembers.HasValue('private') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PRIVATE];
-  if GOption_VisibleMembers.HasValue('protected') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PROTECTED];
-  if GOption_VisibleMembers.HasValue('public') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLIC];
-  if GOption_VisibleMembers.HasValue('published') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_PUBLISHED];
-  if GOption_VisibleMembers.HasValue('automated') then GPasDoc.ClassMembers :=  GPasDoc.ClassMembers+[STATE_AUTOMATED];
+  GPasDoc.ShowVisibilities := [];
+  for Vis := Low(Vis) to High(Vis) do
+    if GOption_VisibleMembers.HasValue(VisibilityStr[Vis]) then
+      GPasDoc.ShowVisibilities :=  GPasDoc.ShowVisibilities + [Vis];
 
   GPasDoc.Generator.OutputGraphVizUses := GOption_WriteGVUses.TurnedOn;
   GPasDoc.Generator.OutputGraphVizClassHierarchy := GOption_WriteGVClasses.TurnedOn;

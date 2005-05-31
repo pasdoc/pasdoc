@@ -23,30 +23,28 @@ uses
   Classes,
   PasDoc_TagManager,
   PasDoc_Serialize,
-  PasDoc_SortSettings;
+  PasDoc_SortSettings,
+  PasDoc_StringPairVector;
 
 type
-  { Accessibility of a field/method.
-    
-    Do not change the order of these fields without adapting the string
-    table below. }
-  TAccessibility = (
+  { Visibility of a field/method. }
+  TVisibility = (
     { indicates field or method is published }
-    STATE_PUBLISHED,
+    viPublished,
     { indicates field or method is public }
-    STATE_PUBLIC,
+    viPublic,
     { indicates field or method is protected }
-    STATE_PROTECTED,
+    viProtected,
     { indicates field or method is private }
-    STATE_PRIVATE,
+    viPrivate,
     { indicates field or method is automated }
-    STATE_AUTOMATED
+    viAutomated
     );
 
-  TAccessibilities = set of TAccessibility;
+  TVisibilities = set of TVisibility;
 
 const
-  AccessibilityStr: Array[STATE_PUBLISHED..STATE_AUTOMATED] of string[16] =
+  VisibilityStr: array[TVisibility] of string[16] =
   (
    'published',
    'public',
@@ -204,7 +202,7 @@ type
   private
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
-    FState: TAccessibility;
+    FVisibility: TVisibility;
     FMyObject: TPasCio;
     FMyUnit: TPasUnit;
     FIsDeprecated: boolean;
@@ -300,9 +298,7 @@ type
       info object is stored here, nil otherwise }
     property MyObject: TPasCio read FMyObject write FMyObject;
       
-    { One of the STATE_xxx constants, determines access rights
-      (public, private, etc.). }
-    property State: TAccessibility read FState write FState;
+    property Visibility: TVisibility read FVisibility write FVisibility;
     
     { is this item deprecated? }
     property IsDeprecated: boolean read FIsDeprecated write FIsDeprecated;
@@ -408,13 +404,12 @@ type
     - pointer type to one of the above (in this case Name is the type name). }
   TPasMethod = class(TPasItem)
   protected
-    FParams: TStringVector;
+    FParams: TStringPairVector;
     FReturns: string;
-    FRaises: TStringVector;
+    FRaises: TStringPairVector;
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure SetParams(const Value: TStringVector);
     procedure StoreRaisesTag(TagManager: TTagManager; 
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure StoreParamTag(TagManager: TTagManager; 
@@ -439,9 +434,18 @@ type
       writing to the final docs) once again (by some ExpandDescription or
       ConvertString or anything like that). }
     { }
-    property Params: TStringVector read FParams write SetParams;
+    
+    { Name of each item is the name of parameter (without any surrounding 
+      whitespace), Value of each item is users description for this item
+      (in already-expanded form). }
+    property Params: TStringPairVector read FParams;
+    
     property Returns: string read FReturns;
-    property Raises: TStringVector read FRaises;
+    
+    { Name of each item is the name of exception class (without any surrounding
+      whitespace), Value of each item is users description for this item
+      (in already-expanded form). }
+    property Raises: TStringPairVector read FRaises;
     
     { Are some optional properties (i.e. the ones that may be empty for 
       TPasMethod after parsing unit and expanding tags -- currently this
@@ -525,6 +529,9 @@ type
     { name of documentation output file (if each class / object gets
       its own file, that's the case for HTML, but not for TeX) }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
+
+    { Is Visibility of items (Fields, Methods, Properties) important ? }
+    function ShowVisibility: boolean;
   end;
 
   {@name extends @link(TPasItem) to store extra information about a project.
@@ -657,8 +664,8 @@ type
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
     procedure InsertItems(const c: TPasItems);
-    { Checks each element's State field and removes all elements with a value
-      of STATE_PRIVATE. }
+    { Checks each element's Visibility field and removes all elements with a value
+      of viPrivate. }
     procedure RemovePrivateItems;
 
     property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
@@ -777,10 +784,10 @@ begin
   { compare 'method type', order is constructor > destructor > visibility > function, procedure }
   if P1.What = P2.What then begin
     { if 'method type' is equal, compare names }
-    if P1.State = P2.State then begin
+    if P1.Visibility = P2.Visibility then begin
       Result := CompareText(P1.Name, P2.Name)
     end else begin
-      if P1.State < P2.State then begin
+      if P1.Visibility < P2.Visibility then begin
         Result := -1
       end else begin
         Result := 1;
@@ -1079,7 +1086,7 @@ end;
 procedure TPasItem.Deserialize(const ASource: TStream);
 begin
   inherited;
-  ASource.Read(FState, SizeOf(State));
+  ASource.Read(FVisibility, SizeOf(Visibility));
   ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
   ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
@@ -1094,7 +1101,7 @@ end;
 procedure TPasItem.Serialize(const ADestination: TStream);
 begin
   inherited;
-  ADestination.Write(FState, SizeOf(State));
+  ADestination.Write(FVisibility, SizeOf(Visibility));
   ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
   ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
@@ -1258,7 +1265,7 @@ begin
   i := 0;
   while (i < Count) do begin
     Item := PasItemAt[i];
-    if Assigned(Item) and (Item.State = STATE_PRIVATE) then
+    if Assigned(Item) and (Item.Visibility = viPrivate) then
       Delete(i)
     else
       Inc(i);
@@ -1490,6 +1497,11 @@ begin
       '@member tag specifies unknown member "%s".', [MemberName]);
 end;
 
+function TPasCio.ShowVisibility: boolean;
+begin
+  Result := not (MyType in CIORecordType);
+end;
+
 { TPasUnit ------------------------------------------------------------------- }
 
 constructor TPasUnit.Create;
@@ -1660,6 +1672,13 @@ end;
 
 { TPasMethod ----------------------------------------------------------------- }
 
+constructor TPasMethod.Create;
+begin
+  inherited;
+  FParams := TStringPairVector.Create(true);
+  FRaises := TStringPairVector.Create(true);
+end;
+
 destructor TPasMethod.Destroy;
 begin
   FParams.Free;
@@ -1667,19 +1686,59 @@ begin
   inherited Destroy;
 end;
 
+{ TODO for StoreRaisesTag and StoreParamTag:
+  splitting TagDesc using ExtractFirstWord should be done
+  inside TTagManager.Execute, working with raw text, instead
+  of here, where the TagDesc is already expanded and converted.
+
+  Actually, current approach works for now perfectly,
+  but only because neighter html generator nor LaTeX generator
+  change text in such way that first word of the text
+  (assuming it's a normal valid Pascal identifier) is changed.
+
+  E.g. '@raises(EFoo with some link @link(Blah))'
+  is expanded to 'EFoo with some link <a href="...">Blah</a>'
+  so the 1st word ('EFoo') is preserved.
+
+  But this is obviously unclean approach. }
+
 procedure TPasMethod.StoreRaisesTag(TagManager: TTagManager; 
   const TagName, TagDesc: string; var ReplaceStr: string);
+var 
+  Pair: TStringPair;
 begin
-  if TagDesc = '' then exit;
-  FRaises.Add(TagDesc);
+  Pair := TStringPair.CreateExtractFirstWord(TagDesc);
+
+  if Pair.Name = '' then 
+  begin
+    FreeAndNil(Pair);
+    TagManager.DoMessage(2, mtWarning,
+      '@raises tag doesn''t specify exception name, skipped', []);
+  end else
+  begin
+    FRaises.Add(Pair);
+  end;
+  
   ReplaceStr := '';
 end;
 
 procedure TPasMethod.StoreParamTag(TagManager: TTagManager; 
   const TagName, TagDesc: string; var ReplaceStr: string);
+var 
+  Pair: TStringPair;
 begin
-  if TagDesc = '' then exit;
-  FParams.Add(TagDesc);
+  Pair := TStringPair.CreateExtractFirstWord(TagDesc);
+
+  if Name = '' then 
+  begin
+    FreeAndNil(Pair);
+    TagManager.DoMessage(2, mtWarning,
+      '@param tag doesn''t specify parameter name, skipped', []);
+  end else
+  begin
+    FParams.Add(Pair);
+  end;
+  
   ReplaceStr := '';
 end;
 
@@ -1695,8 +1754,8 @@ function TPasMethod.HasMethodOptionalInfo: boolean;
 begin
   Result := 
     (Returns <> '') or
-    (not StringVectorIsNilOrEmpty(Params)) or
-    (not StringVectorIsNilOrEmpty(Raises));
+    (not ObjectVectorIsNilOrEmpty(Params)) or
+    (not ObjectVectorIsNilOrEmpty(Raises));
 end;
 
 procedure TPasMethod.Deserialize(const ASource: TStream);
@@ -1719,18 +1778,6 @@ begin
   Params.SaveToBinaryStream(ADestination);
   SaveStringToStream(FReturns, ADestination);
   FRaises.SaveToBinaryStream(ADestination); }  
-end;
-
-constructor TPasMethod.Create;
-begin
-  inherited;
-  FParams := TStringVector.Create;
-  FRaises := TStringVector.Create;
-end;
-
-procedure TPasMethod.SetParams(const Value: TStringVector);
-begin
-  FParams.Assign(Value);
 end;
 
 procedure TPasMethod.RegisterTagHandlers(TagManager: TTagManager);

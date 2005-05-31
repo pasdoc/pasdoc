@@ -68,7 +68,7 @@ type
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
     FGenerator: TDocGenerator;
-    FClassMembers: TAccessibilities;
+    FShowVisibilities: TVisibilities;
     FMarkerOptional: boolean;
     FCacheDir: string;
     FSortSettings: TSortSettings;
@@ -166,7 +166,7 @@ type
       default false;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
-    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
+    property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
     property CacheDir: string read FCacheDir write FCacheDir; 
     
     { This determines how items inside will be sorted.
@@ -296,7 +296,7 @@ begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName);
-  p.ClassMembers := ClassMembers;
+  p.ShowVisibilities := ShowVisibilities;
   try
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;

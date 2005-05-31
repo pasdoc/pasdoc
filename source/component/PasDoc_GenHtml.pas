@@ -51,15 +51,15 @@ type
     function MakeLinkTarget(
       const href, caption, localcss, target: string): string;    
       
-    { Used by WriteItemsSummary and WriteItemsDetailed }
-    procedure WriteItemTableRow(Item: TPasItem; OfObject: boolean;
+    { Used by WriteItemsSummary and WriteItemsDetailed. }
+    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
       const ItemLink: string; MakeAnchor: boolean);
       
-    procedure WriteItemsSummary(Items: TPasItems; OfObject: boolean; 
+    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean; 
       HeadingLevel: Integer;
       const SectionAnchor: string; SectionName: TTranslationId);
       
-    procedure WriteItemsDetailed(Items: TPasItems; OfObject: boolean;
+    procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
       HeadingLevel: Integer; SectionName: TTranslationId);
 
     { Writes information on doc generator to current output stream,
@@ -266,7 +266,8 @@ uses
   StreamUtils,
   Utils,
   PasDoc_HierarchyTree,
-  PasDoc_Tipue;
+  PasDoc_Tipue,
+  PasDoc_StringPairVector;
 
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
@@ -415,32 +416,32 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 
   procedure WriteMethodsSummary;
   begin
-    WriteItemsSummary(CIO.Methods, true, HL + 1, '@Methods', trMethods);
+    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1, '@Methods', trMethods);
   end;
 
   procedure WriteMethodsDetailed;
   begin
-    WriteItemsDetailed(CIO.Methods, true, HL + 1, trMethods);
+    WriteItemsDetailed(CIO.Methods, CIO.ShowVisibility, HL + 1, trMethods);
   end;
 
   procedure WritePropertiesSummary;
   begin
-    WriteItemsSummary(CIO.Properties, true, HL + 1, '@Properties', trProperties);
+    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1, '@Properties', trProperties);
   end;
 
   procedure WritePropertiesDetailed;
   begin
-    WriteItemsDetailed(CIO.Properties, true, HL + 1, trProperties);
+    WriteItemsDetailed(CIO.Properties, CIO.ShowVisibility, HL + 1, trProperties);
   end;
 
   procedure WriteFieldsSummary;
   begin
-    WriteItemsSummary(CIO.Fields, true, HL + 1, '@Fields', trFields);
+    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1, '@Fields', trFields);
   end;
 
   procedure WriteFieldsDetailed;
   begin
-    WriteItemsDetailed(CIO.Fields, true, HL + 1, trFields);
+    WriteItemsDetailed(CIO.Fields, CIO.ShowVisibility, HL + 1, trFields);
   end;
 
 type
@@ -807,12 +808,12 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteItemTableRow(
-  Item: TPasItem; OfObject: boolean; 
+  Item: TPasItem; ShowVisibility: boolean; 
   const ItemLink: string; MakeAnchor: boolean);
 begin
   WriteStartOfTableRow('');
 
-  if OfObject then WriteVisibilityCell(Item);
+  if ShowVisibility then WriteVisibilityCell(Item);
 
   WriteStartOfTableCell('width="100%"', '');
 
@@ -825,7 +826,7 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsSummary(
-  Items: TPasItems; OfObject: boolean; HeadingLevel: Integer;
+  Items: TPasItems; ShowVisibility: boolean; HeadingLevel: Integer;
   const SectionAnchor: string; SectionName: TTranslationId);
 var 
   ItemLink: string;
@@ -850,14 +851,14 @@ begin
         Copy(ItemLink, 1, Length(Item.MyUnit.FullLink))) = 0 then
         Delete(ItemLink, 1, Length(Item.MyUnit.FullLink));
 
-    WriteItemTableRow(Item, OfObject, ItemLink, false);
+    WriteItemTableRow(Item, ShowVisibility, ItemLink, false);
   end;
 
   WriteEndOfTable;  
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
-  Items: TPasItems; OfObject: boolean;
+  Items: TPasItems; ShowVisibility: boolean;
   HeadingLevel: Integer; SectionName: TTranslationId);
 var 
   Item: TPasItem;
@@ -872,7 +873,7 @@ begin
     Item := Items.PasItemAt[i];
 
     WriteStartOfTable1Column('');
-    WriteItemTableRow(Item, OfObject, '', true);
+    WriteItemTableRow(Item, ShowVisibility, '', true);
     WriteEndOfTable;
 
     WriteItemDetailedDescription(Item);
@@ -915,7 +916,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector; LinkToParamNames: boolean);
+    List: TStringPairVector; LinkToParamNames: boolean);
     
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
@@ -929,29 +930,22 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     
   var
     i: integer;
-    s: string;
     ParamName: string;
   begin
-    if StringVectorIsNilOrEmpty(List) then
-      exit;
+    if ObjectVectorIsNilOrEmpty(List) then
+      Exit;
 
     WriteHeading(6, Caption);
     WriteDirectLine('<dl class="parameters">');
-    for i := 0 to List.Count - 1 do begin
-      s := List[i];
-
-      { TODO -- splitting S to ParamName and the rest should be done
-        inside TTagManager.Execute, not here. See analogous place in
-        TTexDocgenerator.WriteParamsOrRaises for more comments
-        about why & how. }
- 
-      ParamName := ExtractFirstWord(s);
+    for i := 0 to List.Count - 1 do 
+    begin
+      ParamName := List[i].Name;
       
       if LinkToParamNames then
        ParamName := SearchLinkOrWarning(ParamName, Func, '',
          'Could not resolve link to "%s" from description of item "%s"');
       
-      WriteParameter(ParamName, s);
+      WriteParameter(ParamName, List[i].Value);
     end;
     WriteDirectLine('</dl>');
   end;
@@ -1657,16 +1651,16 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
 begin
   WriteStartOfTableCell;
-  case Item.State of
-    STATE_PRIVATE:
+  case Item.Visibility of
+    viPrivate:
       WriteVisibilityImage('private.gif', trPrivate);
-    STATE_PROTECTED:
+    viProtected:
       WriteVisibilityImage('protected.gif', trProtected);
-    STATE_PUBLIC:
+    viPublic:
       WriteVisibilityImage('public.gif', trPublic);
-    STATE_PUBLISHED:
+    viPublished:
       WriteVisibilityImage('published.gif', trPublished);
-    STATE_AUTOMATED:
+    viAutomated:
       WriteVisibilityImage('automated.gif', trAutomated);
   end;
   WriteEndOfTableCell;

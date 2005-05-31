@@ -91,12 +91,14 @@ type
     procedure WriteItemsSummary(const Items: TPasItems);
 
     { Writes information about all Items.
-      If OfObject then their State will also be shown. }
+      If ShowVisibility then their Visibility will also be shown. }
     procedure WriteItemsDetailed(const HL: integer; 
-      const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId); 
+      const Items: TPasItems; ShowVisibility: boolean; 
+      SectionName: TTranslationId); 
 
     procedure WriteFieldsProperties(HL: integer; 
-      const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
+      const Items: TPasItems; ShowVisibility: boolean; 
+      SectionName: TTranslationId);
 
     procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
@@ -194,7 +196,8 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
-  Utils;
+  Utils, 
+  PasDoc_StringPairVector;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -404,15 +407,14 @@ begin
   else
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
        
-  WriteFieldsProperties(HL + 2, CIO.Properties, true, trProperties);
+  WriteFieldsProperties(HL + 2, CIO.Properties, CIO.ShowVisibility, trProperties);
 
-  WriteFieldsProperties(HL + 2, CIO.Fields, true, trFields);
+  WriteFieldsProperties(HL + 2, CIO.Fields, CIO.ShowVisibility, trFields);
 
-  WriteItemsDetailed(HL + 2, CIO.Methods, true, trMethods);
+  WriteItemsDetailed(HL + 2, CIO.Methods, CIO.ShowVisibility, trMethods);
 
   WriteAuthors(HL + 2, CIO.Authors);
   WriteDates(HL + 2, CIO.Created, CIO.LastMod);
-  
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
@@ -660,12 +662,12 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteItemsDetailed(const HL: integer; 
-  const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
+  const Items: TPasItems; ShowVisibility: boolean; SectionName: TTranslationId);
 var
   j: Integer;
   Item: TPasItem;
   s: string;
-  Accessibility: string;
+  Visibility: string;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
@@ -693,11 +695,11 @@ begin
 
     WriteStartList(s);
 
-    if OfObject then
-      Accessibility := AccessibilityStr[Item.State] + ' ' else
-      Accessibility := '';
+    if ShowVisibility then
+      Visibility := VisibilityStr[Item.Visibility] + ' ' else
+      Visibility := '';
     WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
-      Accessibility + Item.FullDeclaration);
+      Visibility + Item.FullDeclaration);
 
     if HasDescription(Item) then
     begin
@@ -852,7 +854,7 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringVector; LinkToParamNames: boolean);
+    List: TStringPairVector; LinkToParamNames: boolean);
     
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
@@ -865,11 +867,10 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
     
   var
     i: integer;
-    s: string;
     ParamName: string;
   begin
-    if StringVectorIsNilOrEmpty(List) then
-      exit;
+    if objectVectorIsNilOrEmpty(List) then
+      Exit;
 
     WriteDirect('\item[\textbf{'+Caption+'}]',true);
     WriteDirect('\begin{description}',true);
@@ -878,42 +879,15 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
       at the correct margin.
     }
 {    WriteDirect('\item',true);}
-    for i := 0 to List.Count - 1 do begin
-      s := List[i];
-      
-      { TODO -- splitting S to ParamName and the rest should be done
-        inside TTagManager.Execute, working with raw text, instead
-        of here, where the text is already expanded and converted.
-        
-        TPasMethod should provide properties Params and Raises 
-        as a TStringPairVector, holding pairs of strings: 
-        for each item, 
-        a string being the name of raised exception (or paramater name)
-        and and accompanying description (description that is of course 
-        already expanded recursively).
-        
-        Actually, current approach works for now perfectly,
-        but only because neighter html generator nor LaTeX generator
-        change text in such way that first word of the text
-        (assuming it's a normal valid Pascal identifier) is changed.
-        
-        E.g. '@raises(EFoo with some link @link(Blah))'
-        is expanded to 'EFoo with some link <a href="...">Blah</a>'
-        so the 1st word ('EFoo') is preserved.
-        
-        But this is obviously unclean approach. 
-        It's also unclean that mechanics of splitting (ExtractFirstWord)
-        must be called from each generator class. Such thing like 
-        ExtractFirstWord should not only be implemented once,
-        but should also be called from only one place in code. }
-
-      ParamName := ExtractFirstWord(s);
+    for i := 0 to List.Count - 1 do
+    begin
+      ParamName := List[i].Name;
 
       if LinkToParamNames then
        ParamName := SearchLinkOrWarning(ParamName, Func, '',
          'Could not resolve link to "%s" from description of item "%s"');
 
-      WriteParameter(ParamName, s);
+      WriteParameter(ParamName, List[i].Value);
     end;
     WriteDirect('\end{description}',true);
   end;
@@ -1011,14 +985,14 @@ begin
 end;
 
 procedure TTexDocGenerator.WriteFieldsProperties(HL: integer; 
-  const Items: TPasItems; OfObject: boolean; SectionName: TTranslationId);
+  const Items: TPasItems; ShowVisibility: boolean; SectionName: TTranslationId);
 var
   j: Integer;
   Item: TPasItem;
-  s: string;
+  s, Visibility: string;
 begin
   if FLatex2Rtf then
-    WriteItemsDetailed(HL, Items, OfObject, SectionName) else
+    WriteItemsDetailed(HL, Items, ShowVisibility, SectionName) else
   begin
     if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
@@ -1041,8 +1015,13 @@ begin
     begin
       Item := Items.PasItemAt[j];
       WriteAnchor(Item.Name, Item.FullLink);
+      
+      if ShowVisibility then
+        Visibility := VisibilityStr[Item.Visibility] + ' ' else
+        Visibility := '';
       WriteDeclarationItem(Item, Item.Name, 
-        AccessibilityStr[Item.State] + ' ' + Item.FullDeclaration);
+        Visibility + Item.FullDeclaration);
+        
       WriteDirectLine('');
       WriteDirect('\par ');
       WriteItemDetailedDescription(Item);

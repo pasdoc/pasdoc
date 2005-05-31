@@ -35,7 +35,7 @@ type
     Things that parser inits in items it returns:
     
     - Of every TPasItem :
-      Name, RawDescription, State, IsDeprecated, IsPlatformSpecific, 
+      Name, RawDescription, Visibility, IsDeprecated, IsPlatformSpecific, 
       IsLibrarySpecific, FullDeclararation (note: for now not all items
       get sensible FullDeclararation, but the intention is to improve this
       over time; see @link(TPasItem.FullDeclaration) to know where 
@@ -93,7 +93,7 @@ type
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
     FMarkersOptional: boolean;
-    FClassMembers: TAccessibilities;
+    FShowVisibilities: TVisibilities;
 
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Word);
@@ -186,9 +186,10 @@ type
         NAME1, NAME2, ... : TYPE;
       i.e. a list of variables/fields sharing one type declaration.)
       @param Items If Items <> nil then it adds parsed variables/fields to Items.
-      @param State is the state to assign to each variable/field instance. }
+      @param(Visibility will be assigned to Visibility of 
+       each variable/field instance.) }
     function ParseFieldsVariables(Items: TPasItems; var t: TToken;
-      OfObject: boolean; State: TAccessibility): Boolean;
+      OfObject: boolean; Visibility: TVisibility): Boolean;
     
     { Read all tokens until you find a semicolon at brace-level 0 and
       end-level (between "record" and "end" keywords) also 0.
@@ -232,7 +233,8 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
-    property ClassMembers: TAccessibilities read FClassMembers write FClassMembers;
+    property ShowVisibilities: TVisibilities 
+      read FShowVisibilities write FShowVisibilities;
   end;
 
 implementation
@@ -645,15 +647,15 @@ function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
   { Parse fields clause, i.e. something like
       NAME1, NAME2, ... : TYPE;
     If AddToFields then adds parsed fields to i.Fields.
-    State of created fields is set to given State parameter. }
+    Visibility of created fields is set to given Visibility parameter. }
   function ParseFields(var t: TToken; 
-    i: TPasCio; AddToFields: boolean; State: TAccessibility): boolean;
+    i: TPasCio; AddToFields: boolean; Visibility: TVisibility): boolean;
   var Items: TPasItems;
   begin
     if AddToFields then
       Items := i.Fields else
       Items := nil;
-    Result := ParseFieldsVariables(Items, t, true, State);
+    Result := ParseFieldsVariables(Items, t, true, Visibility);
   end;
   
 var
@@ -662,7 +664,7 @@ var
   M: TPasMethod;
   p: TPasProperty;
   s: string;
-  State: TAccessibility;
+  Visibility: TVisibility;
   t: TToken;
   ClassKeyWordString: string;
 begin
@@ -785,9 +787,9 @@ begin
 
        How do we resolve the inherited classes' $M+ state? *)
     if Scanner.SwitchOptions['M'] then begin
-      State := STATE_PUBLISHED;
+      Visibility := viPublished;
     end else begin
-      State := STATE_PUBLIC;
+      Visibility := viPublic;
     end;
 
     { now collect methods, fields and properties }
@@ -828,8 +830,8 @@ begin
                   Exit;
                 end;
                 ClassKeyWordString := '';
-                M.State := State;
-                if State in ClassMembers then begin
+                M.Visibility := Visibility;
+                if Visibility in ShowVisibilities then begin
                   i.Methods.Add(M);
                 end
                 else
@@ -844,8 +846,8 @@ begin
                   i.Free;
                   Exit;
                 end;
-                p.State := State;
-                if State in ClassMembers then begin
+                p.Visibility := Visibility;
+                if Visibility in ShowVisibilities then begin
                   i.Properties.Add(p);
                 end
                 else
@@ -886,13 +888,13 @@ begin
                   end;
                   DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
                 end;
-              SD_PUBLIC: State := STATE_PUBLIC;
-              SD_PUBLISHED: State := STATE_PUBLISHED;
-              SD_PRIVATE: State := STATE_PRIVATE;
-              SD_PROTECTED: State := STATE_PROTECTED;
-              SD_AUTOMATED: State := STATE_AUTOMATED;
+              SD_PUBLIC:    Visibility := viPublic;
+              SD_PUBLISHED: Visibility := viPublished;
+              SD_PRIVATE:   Visibility := viPrivate;
+              SD_PROTECTED: Visibility := viProtected;
+              SD_AUTOMATED: Visibility := viAutomated;
               else
-                if not ParseFields(t, i, State in ClassMembers, State) then
+                if not ParseFields(t, i, Visibility in ShowVisibilities, Visibility) then
                   Exit;
             end;
           end;
@@ -1545,11 +1547,11 @@ end;
 
 function TParser.ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
 begin
-  Result := ParseFieldsVariables(U.Variables, t, false, STATE_PUBLISHED);
+  Result := ParseFieldsVariables(U.Variables, t, false, viPublished);
 end;
 
 function TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
-  OfObject: boolean; State: TAccessibility): Boolean;
+  OfObject: boolean; Visibility: TVisibility): Boolean;
 var
   Finished: Boolean;
   FirstLoop: Boolean;
@@ -1584,7 +1586,7 @@ begin
 
         if Items <> nil then
         begin
-          NewItem.State := State;
+          NewItem.Visibility := Visibility;
           NewItem.RawDescription := GetLastComment(false);
           Items.Add(NewItem);
           ItemsParsed.Add(NewItem);
