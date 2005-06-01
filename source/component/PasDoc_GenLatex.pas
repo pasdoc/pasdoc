@@ -1325,7 +1325,11 @@ end;
 
 function TTexDocGenerator.URLLink(const URL: string): string; 
 begin
-  Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
+  if Latex2Rtf then
+    (* latex2rtf doesn't understand \href (well, actually it doesn't 
+       understand \usepackage{hyperref} at all) *)
+    Result := ConvertString(URL) else
+    Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
 end;
 
 end.
