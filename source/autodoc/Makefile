@@ -7,7 +7,7 @@
 #
 # Targets:
 #
-#   html latex pdf dvi ps html-latex
+#   html latex pdf dvi ps html-latex htmlhelp rtf
 #     Make documentation in requested format.
 #
 #   clean
@@ -63,7 +63,7 @@ PASDOC_OPTIONS=--include ../component \
 # As usual, remember you can override it at make's command-line.
 HHC=hhc
 
-.PHONY: html latex pdf dvi ps html-latex clean htmlhelp
+.PHONY: html latex pdf dvi ps html-latex clean htmlhelp rtf
 
 html:
 	mkdir -p html/
@@ -87,6 +87,7 @@ pdf: latex/docs.pdf
 dvi: latex/docs.dvi
 ps: latex/docs.ps
 html-latex: latex/docs.html
+rtf: latex2rtf/docs.rtf
 
 latex/docs.tex:
 	mkdir -p latex/
@@ -110,10 +111,24 @@ latex/docs.ps: latex/docs.dvi
 # When working htlatex overrides latex/docs.dvi with a version
 # that is not really a useful to browse (it's only for htlatex internals).
 # That's why I `rm' it afterwards.
+#
+# As far as I understand how htlatex works, it's not needed to run
+# htlatex twice (like it's needed with pdflatex and latex).
 latex/docs.html: latex/docs.tex
 	cd latex; htlatex docs.tex
-	cd latex; htlatex docs.tex
 	rm latex/docs.dvi
+
+latex2rtf/docs.tex:
+	mkdir -p latex2rtf/
+	$(PASDOC) $(PASDOC_OPTIONS) \
+	  --format=latex2rtf --output=latex2rtf/
+
+# I must have latex/docs.tex as a prerequisite, to run latex over it
+# to generate docs.aux file. Then I can use latex/docs.aux file with latex2rtf
+# so that latex2rtf can make appropriate links.
+latex2rtf/docs.rtf: latex2rtf/docs.tex latex/docs.tex
+	cd latex/; latex --file-line-error-style -interaction=nonstopmode docs.tex
+	cd latex2rtf/; latex2rtf -a ../latex/docs.aux docs.tex
 
 clean:
 	rm -Rf html/ latex/ latex2rtf/ htmlhelp/
@@ -123,7 +138,7 @@ clean:
 
 .PHONY:	public upload
 
-public: html pdf latex html-latex
+public: html pdf latex html-latex rtf
 
 # Override this at command-line to your username,
 # like `make upload SF_USERNAME=my_user_name'
@@ -137,11 +152,12 @@ SF_CONNECT=$(SF_USERNAME)@$(SF_HOST):$(SF_PATH)
 SCP_OPTIONS=
 
 upload:
+	scp $(SCP_OPTIONS) -r html/ $(SF_CONNECT)
 	scp $(SCP_OPTIONS) latex/docs.pdf $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.tex $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.html $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.css $(SF_CONNECT)latex/
-	scp $(SCP_OPTIONS) -r html/ $(SF_CONNECT)
+	scp $(SCP_OPTIONS) latex2rtf/docs.rtf $(SF_CONNECT)latex2rtf/
 	../../tests/scripts/ssh_chmod_writeable_by_pasdoc.sh \
 	  $(SF_USERNAME) $(SF_PATH)
 
