@@ -763,7 +763,7 @@ function TGenericHTMLDocGenerator.MakeLinkTarget(
 var
   s: string;
 begin
-  if css <> '' then
+  if localcss <> '' then
     s := Format('<a class="%s"', [localcss])
   else
     s := '<a class="normal"';
@@ -1323,7 +1323,7 @@ procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href, localcss, Target
 var
   s: string;
 begin
-  if css <> '' then
+  if localcss <> '' then
     s := Format('<a class="%s"', [localcss])
   else
     s := '<a class="normal"';
@@ -1393,7 +1393,7 @@ procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const Params, localcss:
 var
   s: string;
 begin
-  if css <> '' then
+  if localcss <> '' then
     s := Format('<td class="%s"',[localcss])
   else
     s := '<td';
@@ -1633,7 +1633,7 @@ procedure TGenericHTMLDocGenerator.WriteImage(const src, alt, localcss: string);
 var
   s: string;
 begin
-  if css <> '' then
+  if localcss <> '' then
     s := Format('<img class="%s"', [localcss])
   else
     s := '<img border="0"';
