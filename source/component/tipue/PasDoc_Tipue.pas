@@ -40,8 +40,8 @@ begin
     I only changed "Go" to "Search" (this is more standard name) }
   Result :=
     '<form name="tip_Form" onsubmit="search_form(tip_Form);return false">' + LineEnding +
-    '<input type="text" name="d">' + LineEnding +
-    '<input type="submit" value="Search">' + LineEnding +
+    '<input type="text" id="search_text" name="d">' + LineEnding +
+    '<input type="submit" id="search_submit_button" value="Search">' + LineEnding +
     '</form>' + LineEnding;
 end;
 

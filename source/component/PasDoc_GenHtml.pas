@@ -1866,6 +1866,9 @@ begin
       WriteDirectLine(
         'p.hint_directive { color: red; }');
 
+      WriteDirectLine('input#search_text { }');
+      WriteDirectLine('input#search_submit_button { }');
+
       CloseStream;
     end;
   end else
