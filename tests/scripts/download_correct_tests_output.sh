@@ -17,9 +17,14 @@ set -eu
 FORMAT="$1"
 shift 1
 
-rm -Rf ../correct_output/"$FORMAT"/ ../correct_output/"$FORMAT".tar.gz
+ARCHIVE_FILENAME_NONDIR="$FORMAT".tar.gz
+
+rm -Rf ../correct_output/"$FORMAT"/ ../correct_output/"$ARCHIVE_FILENAME_NONDIR"
 mkdir -p ../correct_output/
 
 cd ../correct_output/
-wget http://pasdoc.sourceforge.net/correct_tests_output/"$FORMAT".tar.gz
-tar xzvf "$FORMAT".tar.gz
+echo "Downloading $ARCHIVE_FILENAME_NONDIR ..."
+wget http://pasdoc.sourceforge.net/correct_tests_output/"$ARCHIVE_FILENAME_NONDIR"
+
+echo "Unpacking $ARCHIVE_FILENAME_NONDIR ..."
+tar xzf "$ARCHIVE_FILENAME_NONDIR"

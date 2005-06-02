@@ -57,26 +57,39 @@ mkdir "$TEMP_PATH"
 # Prepare tar.gz archive
 ARCHIVE_FILENAME_NONDIR="$FORMAT.tar.gz"
 ARCHIVE_FILENAME="$TEMP_PATH""$ARCHIVE_FILENAME_NONDIR"
+echo "Creating $ARCHIVE_FILENAME_NONDIR ..."
 # Note: We temporary jump to ../, this way we can pack files using 
 # "$FORMAT"/ instead of ../"$FORMAT"/. Some tar versions would
 # strip "../" automatically, but some would not.
 cd ../
-tar czvf scripts/"$ARCHIVE_FILENAME" "$FORMAT"/
+tar czf scripts/"$ARCHIVE_FILENAME" "$FORMAT"/
 cd scripts/
 
 # Prepare timestamp file
-TIMESTAMP_FILENAME="$TEMP_PATH""$FORMAT.timestamp"
+TIMESTAMP_FILENAME_NONDIR="$FORMAT.timestamp"
+TIMESTAMP_FILENAME="$TEMP_PATH""$TIMESTAMP_FILENAME_NONDIR"
+echo "Creating $TIMESTAMP_FILENAME_NONDIR ..."
 date '+%F %T' > "$TIMESTAMP_FILENAME"
 echo "$SF_USERNAME" >> "$TIMESTAMP_FILENAME"
 
 # Do the actual uploading to the server
+
+echo "Uploading ..."
 
 SF_PATH=/home/groups/p/pa/pasdoc/htdocs/correct_tests_output/
 SF_CONNECT="$SF_USERNAME"@shell.sourceforge.net:"$SF_PATH"
 
 scp "$ARCHIVE_FILENAME" "$SF_CONNECT"
 scp "$TIMESTAMP_FILENAME" "$SF_CONNECT"
-scp -r ../"$FORMAT"/ "$SF_CONNECT"
+
+# I could do here simple
+#   scp -r ../"$FORMAT"/ "$SF_CONNECT"
+# but this requires uploading all files unpacked.
+# It's much quickier to just log to server and untar there uploaded archive.
+ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
+  cd "$SF_PATH"
+  tar xzf "$ARCHIVE_FILENAME_NONDIR"
+EOF
 
 ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
 
