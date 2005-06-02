@@ -531,6 +531,30 @@ end;
       This is good if your documentation format does not support
       anything like URL links. }
     function URLLink(const URL: string): string; virtual;
+    
+    {@name is used to write the introduction and conclusion
+     of the project.}
+    procedure WriteExternal(const ExternalItem: TExternalItem;
+      const Id: TTranslationID);
+      
+    { This is called from @link(WriteExternal) when
+      ExternalItem.Title and ShortTitle are already set,
+      message about generating appropriate item is printed etc.
+      This should write ExternalItem, including
+      ExternalItem.DetailedDescription,
+      ExternalItem.Authors,
+      ExternalItem.Created,
+      ExternalItem.LastMod. }
+    procedure WriteExternalCore(const ExternalItem: TExternalItem; 
+      const Id: TTranslationID); virtual; abstract;
+      
+    {@name writes a conclusion for the project.
+     See @link(WriteExternal).}
+    procedure WriteConclusion;
+    
+    {@name writes an introduction for the project.
+     See @link(WriteExternal).}
+    procedure WriteIntroduction;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -2301,6 +2325,41 @@ begin
   end;
   WriteConverted(Copy(Code, ncstart, i - ncstart));
   WriteEndOfCode;
+end;
+
+procedure TDocGenerator.WriteExternal(
+  const ExternalItem: TExternalItem;
+  const Id: TTranslationID);
+begin
+  if not Assigned(ExternalItem) then
+  begin
+    Exit;
+  end;
+
+  DoMessage(2, mtInformation, 'Writing Docs for %s, "%s"',
+    [FLanguage.Translation[Id], ExternalItem.Name]);
+
+  If ExternalItem.Title = '' then
+  begin
+    ExternalItem.Title := FLanguage.Translation[Id];
+  end;
+
+  If ExternalItem.ShortTitle = '' then
+  begin
+    ExternalItem.ShortTitle := ExternalItem.Title;
+  end;
+
+  WriteExternalCore(ExternalItem, Id);
+end;
+
+procedure TDocGenerator.WriteIntroduction;
+begin
+  WriteExternal(Introduction, trIntroduction);
+end;
+
+procedure TDocGenerator.WriteConclusion;
+begin
+  WriteExternal(Conclusion, trConclusion);
 end;
 
 initialization

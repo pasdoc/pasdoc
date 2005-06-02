@@ -164,11 +164,6 @@ type
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string); 
-
-    procedure WriteIntroduction;
-    procedure WriteConclusion;
-    procedure WriteExternal(const ExternalItem: TExternalItem;
-      const Id: TTranslationID);
   protected
     function ConvertString(const s: string): string; override;
     
@@ -225,6 +220,9 @@ type
     function LineBreak: string; override;
     
     function URLLink(const URL: string): string; override;
+    
+    procedure WriteExternalCore(const ExternalItem: TExternalItem;
+      const Id: TTranslationID); override;
   public
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
@@ -2067,18 +2065,12 @@ begin
   Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteExternal(
+procedure TGenericHTMLDocGenerator.WriteExternalCore(
   const ExternalItem: TExternalItem;
   const Id: TTranslationID);
 var
   HL: integer;
-  ShortTitle: string;
 begin
-  if not Assigned(ExternalItem) then
-  begin
-    Exit;
-  end;
-
   case CreateStream(ExternalItem.OutputFileName, true) of
     csError: begin
       DoMessage(1, mtError, 'Could not create HTML unit doc file '
@@ -2087,26 +2079,9 @@ begin
     end;
   end;
 
-  DoMessage(2, mtInformation, 'Writing Docs for %s, "%s"',
-    [FLanguage.Translation[Id], ExternalItem.Name]);
-
-  // This should probably be moved elsewhere.
-  If ExternalItem.Title = '' then
-  begin
-    ExternalItem.Title := FLanguage.Translation[Id];
-  end;
-
-  ShortTitle := ExternalItem.ShortTitle;
-
-  If ShortTitle = '' then
-  begin
-    ShortTitle := ExternalItem.Title;
-  end;
-
-  WriteStartOfDocument(ShortTitle);
+  WriteStartOfDocument(ExternalItem.ShortTitle);
 
   HL := 1;
-
 
   WriteHeading(HL, ExternalItem.Title);
 
@@ -2118,17 +2093,6 @@ begin
   WriteAppInfo;
   WriteEndOfDocument;
   CloseStream;
-
-end;
-
-procedure TGenericHTMLDocGenerator.WriteIntroduction;
-begin
-  WriteExternal(Introduction, trIntroduction);
-end;
-
-procedure TGenericHTMLDocGenerator.WriteConclusion;
-begin
-  WriteExternal(Conclusion, trConclusion);
 end;
 
 end.
