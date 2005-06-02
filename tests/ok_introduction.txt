@@ -1,6 +1,9 @@
 @title(Long descriptive name of my introduction)
 @shorttitle(My introduction)
 
+@author(Kambi)
+@created(On some rainy day)
+
 This file is supposed to contain some introductory
 material about whole code included in your documentation.
 You can note that all rules that apply to normal pasdoc
