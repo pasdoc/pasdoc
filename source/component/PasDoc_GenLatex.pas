@@ -1242,8 +1242,8 @@ begin
 
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
-  WriteAnchor(U.Name, U.FullLink);
   WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
+  WriteAnchor(U.Name, U.FullLink);
 
   if HasDescription(U) then
     WriteUnitDescription(HL + 1, U);
@@ -1349,8 +1349,8 @@ var
 begin
   HL := 1;
 
-  WriteAnchor(ExternalItem.Name, ExternalItem.FullLink);
   WriteHeading(HL, ExternalItem.Title);
+  WriteAnchor(ExternalItem.Name, ExternalItem.FullLink);
 
   WriteDirect(ExternalItem.DetailedDescription);
 
