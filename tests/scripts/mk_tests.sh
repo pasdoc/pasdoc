@@ -70,7 +70,8 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'ok_introduction_conclusion.pas' -or \
   -iname 'ok_property_decl.pas' -or \
   -iname 'ok_multiple_vars.pas' -or \
-  -iname 'ok_class_function.pas' \
+  -iname 'ok_class_function.pas' -or \
+  -iname 'ok_latex_head.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -92,3 +93,4 @@ mk_special_test ok_introduction_conclusion ok_introduction_conclusion.pas --intr
 mk_special_test ok_property_decl ok_property_decl.pas
 mk_special_test ok_multiple_vars ok_multiple_vars.pas
 mk_special_test ok_class_function ok_class_function.pas
+mk_special_test ok_latex_head --latex-head=ok_latex_head.tex ok_latex_head.pas
