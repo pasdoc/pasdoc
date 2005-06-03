@@ -64,6 +64,7 @@ var
   GOption_Sort: TSetOption;
   GOption_Introduction: TStringOption;
   GOption_Conclusion: TStringOption;
+  GOption_LatexHead: TStringOption;
 
   { ---------------------------------------------------------------------------- }
 
@@ -241,6 +242,12 @@ begin
   GOption_Conclusion.Explanation := 'The name of a text file with concluding materials for the project';
   GOption_Conclusion.Value := '';
   GOptionParser.AddOption(GOption_Conclusion);
+
+  GOption_LatexHead := TStringOption.Create(#0, 'latex-head');
+  GOption_LatexHead.Explanation := 'The name of a text file that includes lines to be inserted into the preamble of a LaTeX file';
+  GOption_LatexHead.Value := '';
+  GOptionParser.AddOption(GOption_LatexHead);
+
 end;
 
 procedure PrintHeader;
@@ -409,6 +416,23 @@ begin
 
   GPasDoc.IntroductionFileName := GOption_Introduction.Value;
   GPasDoc.ConclusionFileName := GOption_Conclusion.Value;
+
+  if GPasDoc.Generator is TTexDocGenerator then
+  begin
+    if GOption_LatexHead.Value <> '' then
+    begin
+      TTexDocGenerator(GPasDoc.Generator).LatexHead.LoadFromFile(
+        GOption_LatexHead.Value);
+    end;
+  end
+  else
+  begin
+    if GOption_LatexHead.Value <> '' then
+    begin
+      raise EInvalidCommandLine.Create(
+        'You can only use the "latex-head" option with LaTeX output.');
+    end;
+  end
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -31,6 +31,7 @@ type
     { number of cells we've already written in current table row }
     CellCounter: LongInt;
     FLatex2Rtf: Boolean;
+    FLatexHead: TStrings;
     
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
@@ -130,6 +131,7 @@ type
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
+    procedure SetLatexHead(const Value: TStrings);
   protected
   
     function ConvertString(const s: string): string; override;
@@ -175,7 +177,8 @@ type
       and creates overview files. }
     procedure WriteDocumentation; override;
     procedure BuildLinks; override;
-
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     function EscapeURL(const AString: string): string; virtual;
   published
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
@@ -184,6 +187,7 @@ type
       default false;
     { Indicate if the output must be simplified for latex2rtf }
     property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
+    property LatexHead: TStrings read FLatexHead write SetLatexHead;
   end;
 
 implementation
@@ -1040,6 +1044,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTexDocGenerator.WriteStartOfDocument(AName: string);
+var
+  Index: integer;
 begin
   { write basic header }
   WriteAppInfo;
@@ -1051,6 +1057,12 @@ begin
   WriteDirect('\marginparsep 0cm',true);
   WriteDirect('\marginparwidth 0cm',true);
   WriteDirect('\parindent 0cm',true);
+
+  for Index := 0 to LatexHead.Count -1 do
+  begin
+    WriteDirect(LatexHead[Index], true);
+  end;
+
   if not FLatex2Rtf then
   begin
     WriteDirect('\setlength{\textwidth}{\paperwidth}',true);
@@ -1308,6 +1320,23 @@ begin
 
   WriteAuthors(HL + 1, ExternalItem.Authors);
   WriteDates(HL + 1, ExternalItem.Created, ExternalItem.LastMod);
+end;
+
+constructor TTexDocGenerator.Create(AOwner: TComponent);
+begin
+  inherited;
+  FLatexHead := TStringList.Create;
+end;
+
+destructor TTexDocGenerator.Destroy;
+begin
+  FLatexHead.Free;
+  inherited;
+end;
+
+procedure TTexDocGenerator.SetLatexHead(const Value: TStrings);
+begin
+  FLatexHead.Assign(Value);
 end;
 
 end.

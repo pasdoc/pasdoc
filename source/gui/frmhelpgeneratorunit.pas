@@ -46,8 +46,11 @@ type
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
-   CheckAutoAbstract: TCheckBox;
-   CheckUseTipueSearch: TCheckBox;
+    CheckAutoAbstract: TCheckBox;
+    cbVizGraphClasses: TCheckBox;
+    cbVizGraphUses: TCheckBox;
+    CheckUseTipueSearch: TCheckBox;
+    edTitle: TEdit;
     EditCssFileName: TFileNameEdit;
     EditHtmlBrowserCommand: TEdit;
     CssFileNameFileNameEdit1: TFileNameEdit;
@@ -58,9 +61,14 @@ type
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     LabelHtmlBrowserCommand: TLabel;
+    memoCommentMarkers: TMemo;
+    memoHyphenatedWords: TMemo;
     MemoCommandLog: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
@@ -75,11 +83,15 @@ type
     OpenDialog1: TOpenDialog;
     PageControl1: TPageControl;
     DocBrowserProcess: TProcess;
+    rgCommentMarkers: TRadioGroup;
+    rgLineBreakQuality: TRadioGroup;
     tabGenerate: TTabSheet;
     // memoMessages displays compiler warnings.  See also @link(seVerbosity);
     memoMessages: TMemo;
     tabHeadFoot: TTabSheet;
     TabMoreOptions: TTabSheet;
+    tabLatexOptions: TTabSheet;
+    tabMarkers: TTabSheet;
     tabWebPage: TTabSheet;
     tabOptions: TTabSheet;
     // @name controls whether of private, protected, public, published and
@@ -166,6 +178,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure New1Click(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
+    procedure rgCommentMarkersClick(Sender: TObject);
   private
     FChanged: boolean;
     FSettingsFileName: string;
@@ -416,13 +429,22 @@ begin
   seVerbosity.Constraints.MinWidth := 60;
   seVerbosity.Width := seVerbosity.Constraints.MinWidth;
   {$ENDIF}
-
 end;
 
 procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
 var
   Files: TStringList;
+  index: integer;
+const
+  VizGraphImageExtension = 'png';
 begin
+  if edOutput.Text = '' then
+  begin
+    Beep;
+    MessageDlg('You need to specify the output directory on the "Options" tab.',
+      Dialogs.mtWarning, [mbOK], 0);
+    Exit;
+  end;
   Screen.Cursor := crHourGlass;
   try
     memoMessages.Clear;
@@ -434,6 +456,21 @@ begin
          begin
            PasDoc1.Generator := TexDocGenerator;
            TexDocGenerator.Latex2rtf := (comboGenerateFormat.ItemIndex = 3);
+
+           TexDocGenerator.LatexHead.Clear;
+           if rgLineBreakQuality.ItemIndex = 1 then
+           begin
+             TexDocGenerator.LatexHead.Add('\sloppy');
+           end;
+           if memoHyphenatedWords.Lines.Count > 0 then
+           begin
+             TexDocGenerator.LatexHead.Add('\hyphenation{');
+             for Index := 0 to memoHyphenatedWords.Lines.Count -1 do
+             begin
+               TexDocGenerator.LatexHead.Add(memoHyphenatedWords.Lines[Index]);
+             end;
+             TexDocGenerator.LatexHead.Add('}');
+           end;
          end;
     else
       Assert(False);
@@ -479,7 +516,59 @@ begin
     end;
     PasDoc1.Verbosity := Round(seVerbosity.Value);
     
+    case rgCommentMarkers.ItemIndex of
+      0:
+        begin
+          PasDoc1.CommentMarkers.Clear;
+          PasDoc1.MarkerOptional := True;
+        end;
+      1:
+        begin
+          PasDoc1.MarkerOptional := True;
+          PasDoc1.CommentMarkers.Assign(memoCommentMarkers.Lines);
+        end;
+      2:
+        begin
+          PasDoc1.MarkerOptional := False;
+          PasDoc1.CommentMarkers.Assign(memoCommentMarkers.Lines);
+        end;
+    else
+      Assert(False);
+    end;
+    
+    if edTitle.Text = '' then begin
+      PasDoc1.Title := edProjectName.Text;
+    end
+    else begin
+      PasDoc1.Title := edTitle.Text;
+    end;
+    
+    if cbVizGraphClasses.Checked then begin
+      PasDoc1.Generator.OutputGraphVizClassHierarchy := True;
+      PasDoc1.Generator.LinkGraphVizClasses := VizGraphImageExtension;
+    end
+    else begin
+      PasDoc1.Generator.OutputGraphVizClassHierarchy := False;
+      PasDoc1.Generator.LinkGraphVizClasses := '';
+    end;
+    
+    if cbVizGraphUses.Checked then begin
+      PasDoc1.Generator.OutputGraphVizUses := True;
+      PasDoc1.Generator.LinkGraphVizUses := VizGraphImageExtension;
+    end
+    else begin
+      PasDoc1.Generator.OutputGraphVizUses := False;
+      PasDoc1.Generator.LinkGraphVizUses := '';
+    end;
+
     PasDoc1.Execute;
+
+    if cbVizGraphUses.Checked or cbVizGraphClasses.Checked then begin
+      // To do: actually start dot here.
+      MessageDlg('You will have to run the GraphViz "dot" program to generate '
+        + 'the images used in your documentation.', Dialogs.mtInformation,
+        [mbOK], 0);
+    end;
 
     case comboGenerateFormat.ItemIndex of
       0, 1:
@@ -563,6 +652,13 @@ var
 
 var i: Integer;
 begin
+  // TODO: The following is needed and should work but does not.
+  {if Changed then
+  if (MessageDlg('Do you want to save your current file first?',
+    Dialogs.mtInformation, [mbYes, mbNo], 0) = mrYes) then
+  begin
+    Save1Click(Sender);
+  end; }
   if OpenDialog2.Execute then
   begin
     SettingsFileName := OpenDialog2.FileName;
@@ -613,6 +709,13 @@ begin
         Ini.ReadString('Main', 'ConclusionFileName', '');
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
       CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
+      rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
+      ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
+      rgCommentMarkers.ItemIndex := Ini.ReadInteger('Main', 'SpecialMarkerTreatment', 1);
+      ReadStrings('SpecialMarkers', memoCommentMarkers.Lines);
+      edTitle.Text := Ini.ReadString('Main', 'Title', '');
+      cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
+      cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
     finally Ini.Free end;
 
     Changed := False;
@@ -667,6 +770,14 @@ begin
         EditConclusionFileName.FileName);
       Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
       Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
+      Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
+      WriteStrings('HyphenatedWords', memoHyphenatedWords.Lines);
+      Ini.WriteInteger('Main', 'SpecialMarkerTreatment', rgCommentMarkers.ItemIndex);
+      WriteStrings('SpecialMarkers', memoCommentMarkers.Lines);
+      Ini.WriteString('Main', 'Title', edTitle.Text);
+
+      Ini.WriteBool('Main', 'VizGraphClasses', cbVizGraphClasses.Checked);
+      Ini.WriteBool('Main', 'VizGraphUses', cbVizGraphUses.Checked);
 
       Ini.UpdateFile;
     finally Ini.Free end;
@@ -740,6 +851,18 @@ end;
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 begin
   Changed := true;
+end;
+
+procedure TfrmHelpGenerator.rgCommentMarkersClick(Sender: TObject);
+begin
+  Changed := True;
+  memoCommentMarkers.Enabled := (rgCommentMarkers.ItemIndex >= 1);
+  if memoCommentMarkers.Enabled then begin
+    memoCommentMarkers.Color := clWindow;
+  end
+  else begin
+    memoCommentMarkers.Color := clBtnFace;
+  end;
 end;
 
 initialization
