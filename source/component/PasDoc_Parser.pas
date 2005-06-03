@@ -13,6 +13,8 @@
 
 unit PasDoc_Parser;
 
+{$I DEFINES.INC}
+
 interface
 
 uses
@@ -121,7 +123,7 @@ type
       Sets LCollector to skipped tokens data (does *not* append them
       to LCollector, it *sets* LCollector to them, deleting previous
       LCollector contents). }
-    function GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean; overload;
+    function GetNextNonWCToken(var t: TToken; out LCollector: string): Boolean; overload;
     
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. 
@@ -152,7 +154,7 @@ type
       to KeyWordString.
       
       D may contain a description or nil. }
-    function ParseCDFP(var M: TPasMethod; 
+    function ParseCDFP(out M: TPasMethod; 
       const ClassKeywordString: string;
       const KeyWordString: string; Key: TKeyWord;
       d: string; const NeedName: boolean): Boolean;
@@ -168,13 +170,13 @@ type
     function ParseConstant(const U: TPasUnit; 
       const ConstantName: string): Boolean;
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
-    function ParseProperty(var p: TPasProperty): Boolean;
+    function ParseProperty(out p: TPasProperty): Boolean;
     function ParseType(const U: TPasUnit; var t: TToken): Boolean;
     
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning is as P. }
-    function ParseEnum(var p: TPasEnum; 
+    function ParseEnum(out p: TPasEnum; 
       const Name, RawDescription: string): boolean;
 
     function ParseUses(const U: TPasUnit): Boolean;
@@ -212,7 +214,7 @@ type
       @returns(true if a non-white token is found (then you know that 
       Scanner.PeekToken or Scanner.GetToken will return with true) 
       or false if stream ended.) }
-    function SkipWhitespaceAndComments(var LCollector: string): Boolean; overload;
+    function SkipWhitespaceAndComments(out LCollector: string): Boolean; overload;
     
     { Same thing as SkipWhitespaceAndComments(Dummy) }
     function SkipWhitespaceAndComments: Boolean; overload;
@@ -369,7 +371,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetNextNonWCToken(var t: TToken; var LCollector: string): Boolean;
+function TParser.GetNextNonWCToken(var t: TToken; out LCollector: string): Boolean;
 begin
   Assert(t = nil);
   if SkipWhitespaceAndComments(LCollector) then begin
@@ -401,6 +403,7 @@ var
 begin
   Finished := False;
   a := '';
+  t := nil;
   repeat
     if Scanner.GetToken(t) then begin
       if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
@@ -433,7 +436,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCDFP(var M: TPasMethod; 
+function TParser.ParseCDFP(out M: TPasMethod; 
   const ClassKeywordString: string;
   const KeyWordString: string; Key: TKeyword; 
   d: string; const NeedName: boolean): Boolean;
@@ -959,7 +962,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseEnum(var p: TPasEnum;
+function TParser.ParseEnum(out p: TPasEnum;
   const Name, RawDescription: string): boolean;
 var
   t: TToken;
@@ -1079,7 +1082,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseProperty(var p: TPasProperty): Boolean;
+function TParser.ParseProperty(out p: TPasProperty): Boolean;
 var
   Finished: Boolean;
   t: TToken;
@@ -1780,7 +1783,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.SkipWhitespaceAndComments(var LCollector: string): Boolean;
+function TParser.SkipWhitespaceAndComments(out LCollector: string): Boolean;
 var
   t: TToken;
 begin

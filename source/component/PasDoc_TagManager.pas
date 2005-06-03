@@ -1,5 +1,7 @@
 unit PasDoc_TagManager;
 
+{$I DEFINES.INC}
+
 interface
 
 uses
@@ -159,7 +161,7 @@ type
     function CoreExecute(const Description: string;
       EnclosingTag: TTag;
       WantFirstSentenceEnd: boolean;
-      var FirstSentenceEnd: Integer): string; overload;
+      out FirstSentenceEnd: Integer): string; overload;
 
     function CoreExecute(const Description: string;
       EnclosingTag: TTag): string; overload;
@@ -216,9 +218,9 @@ type
       correctly translating it, and translating rest of the "normal" text
       via ConvertString.
       
-      If WantFirstSentenceEnd then upon completion,
-      then we will look for '.' char followed by any whitespace in
-      Description. Moreover, this '.' must be outside of any @-tags
+      If WantFirstSentenceEnd then we will look for '.' char 
+      followed by any whitespace in Description. 
+      Moreover, this '.' must be outside of any @-tags
       parameter. Under FirstSentenceEnd we will return the number
       of beginning characters *in the output string* that will
       include correspong '.' character (note that this definition
@@ -228,10 +230,10 @@ type
       be set to Length(Result), so the whole Description will be treated
       as it's first sentence.
       
-      If WantFirstSentenceEnd, FirstSentenceEnd will not be modified. }
+      If WantFirstSentenceEnd, FirstSentenceEnd will not be set. }
     function Execute(const Description: string;
       WantFirstSentenceEnd: boolean;
-      var FirstSentenceEnd: Integer): string; overload;
+      out FirstSentenceEnd: Integer): string; overload;
       
     { This is equivalent to Execute(Description, false, Dummy) }
     function Execute(const Description: string): string; overload;
@@ -343,7 +345,7 @@ end;
 function TTagManager.CoreExecute(const Description: string;
   EnclosingTag: TTag;
   WantFirstSentenceEnd: boolean;
-  var FirstSentenceEnd: Integer): string;
+  out FirstSentenceEnd: Integer): string;
 var
   { This is the position of next char in Description to work with,
     i.e. first FOffset-1 chars in Description are considered "done"
@@ -358,15 +360,15 @@ var
     -- OffsetEnd to the index of *next* character in Description right
        after this tag (including it's parameters, if there were any)
 
-    Note that it may also change it's var parameters even when it returns
+    Note that it may also change it's out parameters even when it returns
     false; this doesn't harm anything for now, so I don't think there's
     a reason to correct this for now.
 
     In case some string looking as tag name (A-Za-z*) is here,
     but it's not a name of any existing tag,
     it not only returns false but also emits a warning for user. }
-  function FindTag(var Tag: TTag;
-    var Parameters: string; var OffsetEnd: Integer): Boolean;
+  function FindTag(out Tag: TTag;
+    out Parameters: string; out OffsetEnd: Integer): Boolean;
   var
     i: Integer;
     BracketCount: integer;
@@ -474,7 +476,7 @@ var
     
     For your comfort, returns also URL (this is *always*
     Copy(Description, FOffset, OffsetEnd - FOffset)). }
-  function FindURL(var OffsetEnd: Integer; var URL: string): boolean;
+  function FindURL(var OffsetEnd: Integer; out URL: string): boolean;
 
   { Here's how it works, and what is the meaning of constants below:
 
@@ -689,7 +691,7 @@ end;
 
 function TTagManager.Execute(const Description: string;
   WantFirstSentenceEnd: boolean;
-  var FirstSentenceEnd: Integer): string;
+  out FirstSentenceEnd: Integer): string;
 begin
   Result := CoreExecute(Description, nil, 
     WantFirstSentenceEnd, FirstSentenceEnd);

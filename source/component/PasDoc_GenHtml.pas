@@ -261,7 +261,6 @@ uses
   SysUtils,
   PasDoc,
   ObjectVector,
-  StreamUtils,
   Utils,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,

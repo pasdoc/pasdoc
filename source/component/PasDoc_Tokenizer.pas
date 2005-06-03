@@ -14,6 +14,8 @@ which are comments that start with a dollar sign. }
 
 unit PasDoc_Tokenizer;
 
+{$I DEFINES.INC}
+
 interface
 
 uses
@@ -219,8 +221,8 @@ type
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
     function CreateSymbolToken(const st: TSymbolType; const s: string): TToken;
-    function GetChar(var c: Char): Boolean;
-    function PeekChar(var c: Char): Boolean;
+    function GetChar(out c: Char): Boolean;
+    function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
     function ReadCommentType3: TToken;
@@ -441,7 +443,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.GetChar(var c: Char): Boolean;
+function TTokenizer.GetChar(out c: Char): Boolean;
 begin
   if IsCharBuffered then begin
     c := BufferedChar;
@@ -634,7 +636,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.PeekChar(var c: Char): Boolean;
+function TTokenizer.PeekChar(out c: Char): Boolean;
 begin
   if IsCharBuffered then begin
     c := BufferedChar;

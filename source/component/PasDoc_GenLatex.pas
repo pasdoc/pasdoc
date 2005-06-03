@@ -40,8 +40,6 @@ type
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
     procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; const
       ItemLink: string);
-    { Writes an empty table cell, '&nbsp;'. }
-    procedure WriteEmptyCell;
 
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
@@ -53,7 +51,6 @@ type
     { Finishes an HTML table row by writing a closing TR tag. }
     procedure WriteEndOfTableRow;
 
-    procedure WriteItemDescription(const AItem: TPasItem);
     (*
       Writes the Item's DetailedDescription. If the Item also has
       AbstractDescription this is written in front of the
@@ -79,15 +76,11 @@ type
     { Starts an HTML paragraph element by writing an opening P tag. }
     procedure WriteStartOfParagraph;
 
-    procedure WriteStartOfTableCell; overload;
-    procedure WriteStartOfTableCell(const css: string); overload;
-    procedure WriteStartOfTableCell(const Params, css: string); overload;
-
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
-    procedure WriteStartOfTableRow(const CssClass: string);
-          
+    procedure WriteStartOfTableRow;
+
     procedure WriteItemsSummary(const Items: TPasItems);
 
     { Writes information about all Items.
@@ -567,10 +560,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteEmptyCell;
-begin
-end;
-
 procedure TTexDocGenerator.WriteEndOfDocument;
 begin
   WriteDirect('\end{document}',true);
@@ -811,18 +800,6 @@ begin
 end;
 
 { ---------- }
-
-procedure TTexDocGenerator.WriteItemDescription(const AItem: TPasItem);
-begin
-  if AItem = nil then Exit;
-  if AItem.AbstractDescription <> '' then
-    begin
-      WriteSpellChecked(AItem.AbstractDescription);
-    end
-  else
-      WriteDirect(' ');
-end;
-
 
 function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
 var
@@ -1155,22 +1132,7 @@ begin
   NumCells := 3;
 end;
 
-
-procedure TTexDocGenerator.WriteStartOfTableCell(const Params, css: string);
-begin
-end;
-
-procedure TTexDocGenerator.WriteStartOfTableCell(const css: string);
-begin
-  WriteStartOfTableCell('', css);
-end;
-
-procedure TTexDocGenerator.WriteStartOfTableCell;
-begin
-  WriteStartOfTableCell('', '');
-end;
-
-procedure TTexDocGenerator.WriteStartOfTableRow(const CssClass: string);
+procedure TTexDocGenerator.WriteStartOfTableRow;
 begin
   CellCounter := 0;
 end;
@@ -1214,7 +1176,6 @@ type
   TSectionSet = set of TSections;
 var
   SectionsAvailable: TSectionSet;
-  SectionHeads: array[TSections] of string;
 
   procedure ConditionallyAddSection(Section: TSections; Condition: boolean);
   begin
@@ -1223,15 +1184,6 @@ var
   end;
 
 begin
-
-  SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
-  SectionHeads[dsUses] := 'uses';
-  SectionHeads[dsClasses] := FLanguage.Translation[trCio];
-  SectionHeads[dsFuncsProcs]:= FLanguage.Translation[trFunctionsAndProcedures];
-  SectionHeads[dsTypes]:= FLanguage.Translation[trTypes];
-  SectionHeads[dsConstants]:= FLanguage.Translation[trConstants];
-  SectionHeads[dsVariables]:= FLanguage.Translation[trVariables];
-
   SectionsAvailable := [dsDescription];
   ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
   ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));

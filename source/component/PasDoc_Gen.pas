@@ -1,4 +1,3 @@
-{$B-}
 { @abstract(basic doc generator object)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -19,6 +18,8 @@
   They override @link(TDocGenerator)'s virtual methods. }
 
 unit PasDoc_Gen;
+
+{$I DEFINES.INC}
 
 interface
 
@@ -337,7 +338,7 @@ end;
     function ExpandDescription(Item: TBaseItem; 
       const Description: string;
       WantFirstSentenceEnd: boolean;
-      var FirstSentenceEnd: Integer): string; overload; 
+      out FirstSentenceEnd: Integer): string; overload; 
 
     { Same thing as ExpandDescription(Item, Description, false, Dummy) }
     function ExpandDescription(Item: TBaseItem; 
@@ -345,7 +346,7 @@ end;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
-    function ExtractEmailAddress(s: string; var S1, S2, EmailAddress: string): Boolean;
+    function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
 
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
@@ -389,7 +390,7 @@ end;
       three parts, false is returned, true otherwise.
       The parts are returned in S1, S2 and S3, with the number of
       parts minus one being returned in N. }
-    function SplitLink(s: string; var S1, S2, S3: string; var n: Integer): Boolean;
+    function SplitLink(s: string; out S1, S2, S3: string; out n: Integer): Boolean;
 
     procedure StoreDescription(ItemName: string; var t: string);
 
@@ -941,7 +942,7 @@ end;
 function TDocGenerator.ExpandDescription(Item: TBaseItem; 
   const Description: string;
   WantFirstSentenceEnd: boolean;
-  var FirstSentenceEnd: Integer): string;
+  out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
 begin
@@ -1088,7 +1089,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.ExtractEmailAddress(s: string; var S1, S2,
+function TDocGenerator.ExtractEmailAddress(s: string; out S1, S2,
   EmailAddress: string): Boolean;
 const
   ALLOWED_CHARS = ['a'..'z', 'A'..'Z', '-', '.', '_', '0'..'9'];
@@ -1362,8 +1363,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SplitLink(s: string; var S1, S2, S3: string;
-  var n: Integer): Boolean;
+function TDocGenerator.SplitLink(s: string; out S1, S2, S3: string;
+  out n: Integer): Boolean;
 
   procedure SplitInTwo(s: string; var S1, S2: string);
   var

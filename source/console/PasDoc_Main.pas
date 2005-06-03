@@ -11,10 +11,6 @@ uses
   PasDoc_Languages,
   SysUtils,
   Utils,
-  PasDoc_HierarchyTree,
-  StreamUtils,
-  StringVector,
-  ObjectVector,
   PasDoc_GenHtml,
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp,
@@ -22,13 +18,8 @@ uses
   PasDoc_Items,
   OptionParser,
   PasDoc_Types,
-  PasDoc_RunHelp,
-  Hashes,
-  PasDoc_Parser,
   PasDoc_Tokenizer,
   PasDoc_Serialize,
-  PasDoc_Scanner,
-  PasDoc_TagManager,
   PasDoc_SortSettings;
 
 var

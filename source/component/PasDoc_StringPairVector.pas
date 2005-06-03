@@ -3,7 +3,6 @@ unit PasDoc_StringPairVector;
 interface
 
 uses
-  Contnrs,
   Classes,
   ObjectVector;
 
@@ -82,7 +81,7 @@ begin
   begin
     Result := Items[0].Name + NameValueSepapator + Items[0].Value;
     for i := 1 to Count - 1 do
-      Result := Result + 
+      Result := Result + ItemSeparator +
         Items[i].Name + NameValueSepapator + Items[i].Value;
   end;
 end;

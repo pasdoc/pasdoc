@@ -10,11 +10,6 @@
   @created(24 Sep 1999)
 }
 
-{$ifdef FPC}
-  { Turn macro on to get FPC_VERSION, FPC_RELEASE, FPC_PATCH macros }
-  {$macro on}
-{$endif}
-
 unit PasDoc;
 
 {$I DEFINES.INC}
@@ -93,8 +88,7 @@ type
       const InputStream: TStream;
       const SourceFileName: string);
     procedure HandleExternalFile(
-      const FileName: string;
-      {$ifdef VER1_0} var {$else} out {$endif} ExternalItem: TExternalItem);
+      const FileName: string; out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
   protected
@@ -245,7 +239,6 @@ implementation
 
 uses
   PasDoc_Parser,
-  PasDoc_TagManager,
   ObjectVector,
   Utils, PasDoc_Serialize;
 
@@ -729,7 +722,7 @@ begin
 end;
 
 procedure TPasDoc.HandleExternalFile(const FileName: string;
-  {$ifdef VER1_0} var {$else} out {$endif} ExternalItem: TExternalItem);
+  out ExternalItem: TExternalItem);
 begin
   ExternalItem := TExternalItem.Create;
   try

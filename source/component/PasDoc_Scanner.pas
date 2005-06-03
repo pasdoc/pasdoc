@@ -14,6 +14,8 @@
 
 unit PasDoc_Scanner;
 
+{$I DEFINES.INC}
+
 interface
 
 uses
@@ -57,7 +59,7 @@ type
     function IsDirectiveDefined(const n: string): Boolean;
     function IsSwitchDefined(n: string): Boolean;
     function OpenIncludeFile(const n: string): Boolean;
-    function SkipUntilElseOrEndif(var FoundElse: Boolean): Boolean;
+    function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
     procedure DoError(const AMessage: string; const AArguments: array of
@@ -111,7 +113,7 @@ const
 
   { this function recognizes only those directives we'll need for the scanner }
 
-function SplitDirective(const t: string; var DirectiveName, Params: string):
+function SplitDirective(const t: string; out DirectiveName, Params: string):
   Boolean;
 var
   i: Integer;
@@ -151,7 +153,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function IdentifyDirective(const t: string; var dt: TDirectiveType; var DirectiveName, DirectiveParam: string): Boolean;
+function IdentifyDirective(const t: string;  
+  out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
 var
   i: TDirectiveType;
 begin
@@ -482,7 +485,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.SkipUntilElseOrEndif(var FoundElse: Boolean): Boolean;
+function TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
 var
   dt: TDirectiveType;
   Level: Integer;

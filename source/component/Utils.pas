@@ -12,21 +12,28 @@ interface
 
 uses PasDoc_Types;
 
-{$IFNDEF DELPHI_6_UP}
+{ TMethod is not defined for FPC 1.0.x and Delphi < 6, so we have to define 
+  it here. }
+
+{$define GOT_TMETHOD}
+{$ifdef VER1_0} {$undef GOT_TMETHOD} {$endif}
+{$ifndef FPC} {$ifndef DELPHI_6_UP} {$undef GOT_TMETHOD} {$endif} {$endif}
+
+{$ifndef GOT_TMETHOD}
 type
   TMethod = record
     code, data: Pointer;
   end;
-{$ENDIF}
+{$endif}
 
-{$IFNDEF DELPHI_6_UP}
-{$IFNDEF FPC}
-{$IFNDEF LINUX}
+{$ifndef DELPHI_6_UP}
+{$ifndef FPC}
+{$ifndef LINUX}
 const
   DirectorySeparator = '\';
-{$ENDIF}
-{$ENDIF}
-{$ENDIF}
+{$endif}
+{$endif}
+{$endif}
 
 { string empty means it contains only whitespace }
 function IsStrEmptyA(const AString: string): boolean;
@@ -93,7 +100,7 @@ function ExtractFirstWord(var s: string): string; overload;
   
   Both FirstWord and Rest are trimmed. }
 procedure ExtractFirstWord(const S: string; 
-  var FirstWord, Rest: string); overload;
+  out FirstWord, Rest: string); overload;
 
 const
   { Whitespace that is not any part of newline. }
@@ -131,11 +138,6 @@ begin
   end;
 end;
 {$ENDIF}
-
-function StrCompIA(const A, B: string): Integer;
-begin
-  Result := CompareText(A, B);
-end;
 
 function IsStrEmptyA(const AString: string): boolean;
 begin
@@ -255,7 +257,7 @@ begin
   end;
 end;
 
-procedure ExtractFirstWord(const S: string; var FirstWord, Rest: string);
+procedure ExtractFirstWord(const S: string; out FirstWord, Rest: string);
 begin
   Rest := S;
   FirstWord := ExtractFirstWord(Rest);

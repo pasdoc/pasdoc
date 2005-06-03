@@ -548,8 +548,8 @@ type
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleShortTitleTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
-    procedure RegisterTagHandlers(TagManager: TTagManager); override;
   public
+    procedure RegisterTagHandlers(TagManager: TTagManager); override;
     { name of documentation output file }
     property OutputFileName: string read FOutputFileName write SetOutputFileName;
     property ShortTitle: string read FShortTitle write FShortTitle;
