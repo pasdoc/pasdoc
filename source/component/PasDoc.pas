@@ -50,7 +50,6 @@ type
     FTitle: string;
     FDirectives: TStringVector;
     FGeneratorInfo: Boolean;
-    FHtmlHelpContentsFileName: string;
     FIncludeDirectories: TStringVector;
     FOnMessage: TPasDocMessageEvent;
     { The name PasDoc shall give to this documentation project,
@@ -136,8 +135,6 @@ type
     property DescriptionFileNames: TStringVector read FDescriptionFileNames
       write SetDescriptionFileNames;
     property Directives: TStringVector read FDirectives write SetDirectives;
-    property HtmlHelpContentsFileName: string read FHtmlHelpContentsFileName
-      write FHtmlHelpContentsFileName;
     property IncludeDirectories: TStringVector read FIncludeDirectories write
       SetIncludeDirectories;
 

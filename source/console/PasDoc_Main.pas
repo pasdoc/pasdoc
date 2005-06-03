@@ -34,7 +34,7 @@ var
   GOption_ConditionalFile,
   GOption_SourceList,
   GOption_AbbrevFiles: TStringOptionList;
-  GOption_ContentFile,
+  GOption_ContentsFile,
   GOption_Footer,
   GOption_Header,
   GOption_Name,
@@ -107,9 +107,9 @@ begin
   GOption_SourceList.Explanation := 'Read source filenames from file';
   GOptionParser.AddOption(GOption_SourceList);
 
-  GOption_ContentFile := TStringOption.Create('C', 'content');
-  GOption_ContentFile.Explanation := 'Read Contents for HtmlHelp from file';
-  GOptionParser.AddOption(GOption_ContentFile);
+  GOption_ContentsFile := TStringOption.Create(#0, 'html-help-contents');
+  GOption_ContentsFile.Explanation := 'Read Contents for HtmlHelp from file';
+  GOptionParser.AddOption(GOption_ContentsFile);
 
   GOption_Footer := TStringOption.Create('F', 'footer');
   GOption_Footer.Explanation := 'Include file as footer';
@@ -306,8 +306,6 @@ begin
     raise EInvalidCommandLine.CreateFmt(
       'Unknown output format "%s"', [GOption_Format.Value]);
   end;
-
-  GPasDoc.HtmlHelpContentsFileName := GOption_ContentFile.Value;
   
   GPasDoc.Directives.Assign(GOption_Define.Values);
   for i := 0 to GOption_ConditionalFile.Values.Count - 1 do begin
@@ -363,6 +361,17 @@ begin
     if GOption_UseTipueSearch.TurnedOn then
       raise EInvalidCommandLine.Create(
         'You can''t specify --use-tipue-search option for non-html output formats');
+  end;
+
+  if GPasDoc.Generator is THTMLHelpDocGenerator then
+  begin
+    THTMLHelpDocGenerator(GPasDoc.Generator).ContentsFile := 
+      GOption_ContentsFile.Value;
+  end else
+  begin
+    if GOption_ContentsFile.Value <> '' then
+      raise EInvalidCommandLine.Create('You can specify --html-help-contents' +
+        ' option only for HTMLHelp output format');
   end;
 
   if GOption_CommentMarker.WasSpecified then begin
