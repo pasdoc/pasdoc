@@ -34,7 +34,7 @@ var
   GOption_ConditionalFile,
   GOption_SourceList,
   GOption_AbbrevFiles: TStringOptionList;
-  GOption_ContentsFile,
+  GOption_HtmlHelpContents,
   GOption_Footer,
   GOption_Header,
   GOption_Name,
@@ -107,9 +107,9 @@ begin
   GOption_SourceList.Explanation := 'Read source filenames from file';
   GOptionParser.AddOption(GOption_SourceList);
 
-  GOption_ContentsFile := TStringOption.Create(#0, 'html-help-contents');
-  GOption_ContentsFile.Explanation := 'Read Contents for HtmlHelp from file';
-  GOptionParser.AddOption(GOption_ContentsFile);
+  GOption_HtmlHelpContents := TStringOption.Create(#0, 'html-help-contents');
+  GOption_HtmlHelpContents.Explanation := 'Read Contents for HtmlHelp from file';
+  GOptionParser.AddOption(GOption_HtmlHelpContents);
 
   GOption_Footer := TStringOption.Create('F', 'footer');
   GOption_Footer.Explanation := 'Include file as footer';
@@ -366,10 +366,10 @@ begin
   if GPasDoc.Generator is THTMLHelpDocGenerator then
   begin
     THTMLHelpDocGenerator(GPasDoc.Generator).ContentsFile := 
-      GOption_ContentsFile.Value;
+      GOption_HtmlHelpContents.Value;
   end else
   begin
-    if GOption_ContentsFile.Value <> '' then
+    if GOption_HtmlHelpContents.Value <> '' then
       raise EInvalidCommandLine.Create('You can specify --html-help-contents' +
         ' option only for HTMLHelp output format');
   end;
