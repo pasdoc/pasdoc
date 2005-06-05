@@ -202,8 +202,7 @@ uses
   PasDoc,
   ObjectVector,
   Utils, 
-  PasDoc_StringPairVector,
-  StrUtils;
+  PasDoc_StringPairVector;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -231,7 +230,7 @@ begin
       end
       else
       begin
-        ALine := AnsiReplaceStr(ALine, ' ', '~');
+        ALine := SCharsReplace(ALine, [' '], '~');
         if ALine[1] = '~' then
         begin
           for CharIndex := 2 to Length(ALine) do
