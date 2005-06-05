@@ -95,10 +95,6 @@ const
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
 
 type
-  TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
-    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment,
-    ctEndComment);
-
   { @abstract(class for spell-checking) }
   TSpellingError = class
   public
@@ -120,18 +116,6 @@ type
     csError
   );
 
-  { This is a temporary thing, needed to implement WriteCodeWithLinksCommon,
-    that replaces previous TGenericHTMLDocGenerator.WriteCodeWithLinks
-    and TTexGenerator.WriteCodeWithLinks that previously shared some
-    copy&pasted code.
-    
-    This will be replaced with a protected virtual method of TDocGenerator 
-    later, and with a different parameter list (for now, noone knows
-    what href and localcss params should do in latex output (actually
-    they are ignored in latex output),  but I'll try to not fix everything 
-    at once, to not break some things). }
-  TWriteLinkProc = procedure (const href, caption, localcss: string) of object;
-  
   TLinkLook = (llDefault, llFull, llStripped);
 
   { @abstract(basic documentation generator object)
@@ -254,15 +238,20 @@ end;
     property CurrentStream: TStream read FCurrentStream;
 
     procedure CreateClassHierarchy;
+    
+    { Return a link to item Item which will be displayed as LinkCaption.
+      Returned string may be directly inserted inside output documentation. 
+      LinkCaption will be always converted using ConvertString. }
+    function MakeItemLink(const Item: TBaseItem;
+      const LinkCaption: string): string; virtual; abstract;
 
-    { This is used in descendants in their WriteCodeWithLinks routines.
-      Sorry, no better docs for it yet, because this is a work-in-progress
-      on merging code that was previously copy&pasted between html and latex
-      generator. See also comments at @link(TWriteLinkProc) }
-    procedure WriteCodeWithLinksCommon(const p: TPasItem;
-      const Code: string; const ItemLink: string;
-      const NameLinkBegin, NameLinkEnd: string;
-      WriteLink: TWriteLinkProc);
+    { This writes Code as a Pascal code.
+      Links inside the code are resolved from Item.
+      If WriteItemLink then Item.Name is made a link.
+      Item.Name is printed between NameLinkBegin and NameLinkEnd. }
+    procedure WriteCodeWithLinksCommon(const Item: TPasItem;
+      const Code: string; WriteItemLink: boolean;
+      const NameLinkBegin, NameLinkEnd: string);
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
@@ -1828,6 +1817,10 @@ begin
 end;
 
 function TDocGenerator.FormatPascalCode(const Line: string): string;
+type
+  TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
+    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment,
+    ctEndComment);
 var
   CharIndex: integer;
   CodeType: TCodeType;
@@ -2177,10 +2170,9 @@ begin
   Result := ConvertString(URL);
 end;
 
-procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem; 
-  const Code: string; const ItemLink: string;
-  const NameLinkBegin, NameLinkEnd: string;
-  WriteLink: TWriteLinkProc);
+procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem; 
+  const Code: string; WriteItemLink: boolean;
+  const NameLinkBegin, NameLinkEnd: string);
 
   { Tries to find a link from string S. 
     Tries to split S using SplitLink, if succeeds then tries using p.FindName,
@@ -2199,7 +2191,7 @@ procedure TDocGenerator.WriteCodeWithLinksCommon(const p: TPasItem;
   begin
     if SplitLink(s, S1, S2, S3, n) then 
     begin
-      Result := p.FindName(S1, S2, S3, n);
+      Result := Item.FindName(S1, S2, S3, n);
       if not Assigned(Result) then
         Result := FindGlobal(S1, S2, S3, n);
     end else
@@ -2235,11 +2227,11 @@ begin
             (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
-          if not NameFound and (s = p.Name) then 
+          if not NameFound and (s = Item.Name) then 
           begin
             WriteDirect(NameLinkBegin);
-            if ItemLink <> '' then
-              WriteLink(ItemLink, ConvertString(s), '') else
+            if WriteItemLink then
+              WriteDirect(MakeItemLink(Item, s)) else
               WriteConverted(s);
             WriteDirect(NameLinkEnd);
             NameFound := True;
@@ -2261,8 +2253,8 @@ begin
               SearchForLink state variables.
               
               That said, WriteCodeWithLinksCommon still remains a hackish 
-              excuse to not implement a real Pascal parser logic...
-              Improve this if you know how. }
+              excuse to not cooperate better with PasDoc_Parser when
+              generating FullDeclaration of every item. }
               
             pl := StandardDirectiveByName(s);
             case pl of
@@ -2285,7 +2277,7 @@ begin
                     FoundItem := nil;
 
                   if Assigned(FoundItem) then
-                    WriteLink(FoundItem.FullLink, ConvertString(s), '') else
+                    WriteDirect(MakeItemLink(FoundItem, s)) else
                     WriteConverted(s);
                 end;
             end;

@@ -53,7 +53,7 @@ type
       
     { Used by WriteItemsSummary and WriteItemsDetailed. }
     procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
-      const ItemLink: string; MakeAnchor: boolean);
+      WriteItemLink: boolean; MakeAnchor: boolean);
       
     procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean; 
       HeadingLevel: Integer;
@@ -68,8 +68,8 @@ type
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; const
-      ItemLink: string);
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; 
+      WriteItemLink: boolean);
     { Writes an empty table cell, '&nbsp;'. }
     procedure WriteEmptyCell;
 
@@ -223,6 +223,9 @@ type
     
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
+
+    function MakeItemLink(const Item: TBaseItem;
+      const LinkCaption: string): string; override;
   public
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
@@ -675,10 +678,9 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
-  const Code: string; const ItemLink: string);
+  const Code: string; WriteItemLink: boolean);
 begin
-  WriteCodeWithLinksCommon(p, Code, ItemLink, '<b>', '</b>', 
-    {$ifdef FPC}@{$endif} WriteLink);
+  WriteCodeWithLinksCommon(p, Code, WriteItemLink, '<b>', '</b>');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -756,6 +758,12 @@ begin
   WriteLinkTarget(href, caption, localcss, '');
 end;
 
+function TGenericHTMLDocGenerator.MakeItemLink(const Item: TBaseItem;
+  const LinkCaption: string): string;
+begin
+  Result := MakeLinkTarget(Item.FullLink, ConvertString(LinkCaption), '', '');
+end;
+
 function TGenericHTMLDocGenerator.MakeLinkTarget(
   const href, caption, localcss, target: string): string;
 var
@@ -807,7 +815,7 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean; 
-  const ItemLink: string; MakeAnchor: boolean);
+  WriteItemLink: boolean; MakeAnchor: boolean);
 begin
   WriteStartOfTableRow('');
 
@@ -817,7 +825,7 @@ begin
 
   if MakeAnchor then WriteAnchor(Item.Name);
 
-  WriteCodeWithLinks(Item, Item.FullDeclaration, ItemLink);
+  WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
 
   WriteEndOfTableCell;
   WriteEndOfTableRow;
@@ -827,8 +835,6 @@ procedure TGenericHTMLDocGenerator.WriteItemsSummary(
   Items: TPasItems; ShowVisibility: boolean; HeadingLevel: Integer;
   const SectionAnchor: string; SectionName: TTranslationId);
 var 
-  ItemLink: string;
-  Item: TPasItem;
   i: Integer;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
@@ -840,17 +846,7 @@ begin
   WriteStartOfTable1Column('');
 
   for i := 0 to Items.Count - 1 do
-  begin
-    Item := Items.PasItemAt[i];
-
-    ItemLink := Item.FullLink;
-    if Assigned(Item.MyUnit) then
-      if CompareText(Item.MyUnit.FullLink, 
-        Copy(ItemLink, 1, Length(Item.MyUnit.FullLink))) = 0 then
-        Delete(ItemLink, 1, Length(Item.MyUnit.FullLink));
-
-    WriteItemTableRow(Item, ShowVisibility, ItemLink, false);
-  end;
+    WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false);
 
   WriteEndOfTable;  
 end;
@@ -871,7 +867,7 @@ begin
     Item := Items.PasItemAt[i];
 
     WriteStartOfTable1Column('');
-    WriteItemTableRow(Item, ShowVisibility, '', true);
+    WriteItemTableRow(Item, ShowVisibility, false, true);
     WriteEndOfTable;
 
     WriteItemDetailedDescription(Item);

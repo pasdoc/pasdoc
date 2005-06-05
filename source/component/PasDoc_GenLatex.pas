@@ -39,8 +39,8 @@ type
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; const
-      ItemLink: string);
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; 
+      WriteItemLink: boolean);
 
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
@@ -94,7 +94,6 @@ type
       const Items: TPasItems; ShowVisibility: boolean; 
       SectionName: TTranslationId);
 
-    procedure WriteLink(const href, caption, css: string);
     procedure WriteAnchor(ItemName, Link: string);
     
     { Writes a single class, interface or object CIO to output, at heading
@@ -168,11 +167,15 @@ type
     
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
+      
     function FormatKeyWord(AString: string): string; override;
     function FormatCompilerComment(AString: string): string; override;
     function FormatComment(AString: string): string; override;
     function FormatString(AString: string): string; override;
     function FormatCode(AString: string): string; override;
+    
+    function MakeItemLink(const Item: TBaseItem;
+      const LinkCaption: string): string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -493,11 +496,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; const Code:
-  string; const ItemLink: string);
+procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+  const Code: string; WriteItemLink: boolean);
 begin
-  WriteCodeWithLinksCommon(p, Code, ItemLink, '', '', 
-    {$ifdef FPC}@{$endif} WriteLink);
+  WriteCodeWithLinksCommon(p, Code, WriteItemLink, '', '');
   WriteDirect('',true);
 end;
 
@@ -631,9 +633,10 @@ begin
   WriteDirect('\end{ttfamily}',true);
 end;
 
-procedure TTexDocGenerator.WriteLink(const href, caption, css: string);
+function TTexDocGenerator.MakeItemLink(const Item: TBaseItem;
+  const LinkCaption: string): string; 
 begin
-  WriteDirect(caption);
+  Result := ConvertString(LinkCaption);
 end;
 
 procedure TTexDocGenerator.WriteEndOfParagraph;
@@ -700,7 +703,7 @@ begin
     begin
       WriteStartFlushLeft;
       WriteDirect('\item[\textbf{'+convertstring(itemname)+'}\hfill]',true);
-      WriteCodeWithLinks(p, itemdesc, '');
+      WriteCodeWithLinks(p, itemdesc, false);
       WriteDirect('',true);
       WriteEndFlushLeft;
     end
@@ -708,7 +711,7 @@ begin
     begin
       WriteDirect('\item[\textbf{'+convertstring(itemname)+'}\hfill]',true);
       WriteStartFlushLeft;
-      WriteCodeWithLinks(p, itemdesc, '');
+      WriteCodeWithLinks(p, itemdesc, false);
       WriteEndFlushLeft;
       WriteDirect('',true);
     end;
@@ -1229,7 +1232,7 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
         WriteDirect('\item ');
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
         if ULink is TPasUnit then begin
-          WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
+          WriteConverted(U.UsesUnits[i]);
         end else begin
           WriteDirect(U.UsesUnits[i]);
         end;
