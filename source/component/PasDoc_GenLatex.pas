@@ -168,6 +168,11 @@ type
     
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
+    function FormatKeyWord(AString: string): string; override;
+    function FormatCompilerComment(AString: string): string; override;
+    function FormatComment(AString: string): string; override;
+    function FormatString(AString: string): string; override;
+    function FormatCode(AString: string): string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -197,7 +202,8 @@ uses
   PasDoc,
   ObjectVector,
   Utils, 
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  StrUtils;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -205,8 +211,60 @@ begin
 end;
 
 function TTexDocGenerator.FormatPascalCode(const Line: string): string;
+var
+  AStringList: TStringList;
+  LineIndex: integer;
+  CharIndex: integer;
+  ALine: string;
+  InnerCharIndex: integer;
+  Spaces: string;
 begin
-  result := '\begin{verbatim}' + inherited FormatPascalCode(Line) + '\end{verbatim}';
+  AStringList := TStringList.Create;
+  try
+    AStringList.Text := inherited FormatPascalCode(Line);
+    for LineIndex := 0 to AStringList.Count -1 do
+    begin
+      ALine := AStringList[LineIndex];
+      if Trim(ALine) = '' then
+      begin
+        ALine := '\\';
+      end
+      else
+      begin
+        ALine := AnsiReplaceStr(ALine, ' ', '~');
+        if ALine[1] = '~' then
+        begin
+          for CharIndex := 2 to Length(ALine) do
+          begin
+            if ALine[CharIndex] <> '~' then
+            begin
+              Spaces := '';
+              for InnerCharIndex := 1 to CharIndex -1 do
+              begin
+                Spaces := Spaces + ' ';
+              end;
+
+              ALine := '}\verb|' + Spaces + '|\texttt{'
+                + Copy(ALine,CharIndex, MAXINT);
+              break;
+            end;
+          end;
+        end;
+        ALine := ALine + '\\';
+      end;
+      if LineIndex < AStringList.Count -1 then
+      begin
+        ALine := ALine + '\nopagebreak[3]'
+      end;
+
+      AStringList[LineIndex] := ALine;
+    end;
+
+    result := '\texttt{' + AStringList.Text + '}';
+
+  finally
+    AStringList.Free;
+  end;
 end;
 
 function TTexDocGenerator.CodeString(const s: string): string;
@@ -1337,6 +1395,38 @@ end;
 procedure TTexDocGenerator.SetLatexHead(const Value: TStrings);
 begin
   FLatexHead.Assign(Value);
+end;
+
+function TTexDocGenerator.FormatKeyWord(AString: string): string;
+begin
+  result := '}\textbf{' + ConvertString(AString) + '}\texttt{';
+end;
+
+function TTexDocGenerator.FormatCompilerComment(AString: string): string;
+begin
+  result := '\textit{' + ConvertString(AString) + '}';
+end;
+
+function TTexDocGenerator.FormatComment(AString: string): string;
+begin
+  result := '\textit{' + ConvertString(AString) + '}';
+end;
+
+function TTexDocGenerator.FormatCode(AString: string): string;
+begin
+  if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
+  begin
+    Result := FormatKeyWord(AString);
+  end
+  else
+  begin
+    result := ConvertString(AString);
+  end;
+end;
+
+function TTexDocGenerator.FormatString(AString: string): string;
+begin
+  result := ConvertString(AString);
 end;
 
 end.

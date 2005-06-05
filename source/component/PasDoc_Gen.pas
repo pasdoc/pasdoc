@@ -196,15 +196,9 @@ type
     procedure HandleLinkTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
 
-    (* Called when an @longcode tag is encountered. This tag is used to format
+    (* Called when a @@longcode tag is encountered. This tag is used to format
       the enclosed text in the same way it would be in Delphi (using the
       default settings in Delphi).
-
-    Because any character including the ')' character might be in your code,
-    there needs to be a special way to mark the end of the @longCode tag.
-    To do this include a special character such as "#' just after the opening
-    '(' of the @longcode tag.  Include that same character again just before
-    the closing ')' of the @longcode tag.
 
       Here is an example of the @@longcode tag in use. Check the source code
       to see how it was done.
