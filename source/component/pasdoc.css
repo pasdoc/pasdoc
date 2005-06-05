@@ -1,0 +1,48 @@
+body { font-family: Verdana,Arial; 
+  color: black; background-color: white; 
+  font-size: 12px; }
+body.navigationframe { font-family: Verdana,Arial; 
+  color: white; background-color: #787878; 
+  font-size: 12px; }
+
+a.navigation:link { color: white; text-decoration: none; font-size: 12px;}
+a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}
+a.navigation:hover { color: white; font-weight: bold; 
+  text-decoration: none; font-size: 12px; }
+a.navigation:active { color: white; text-decoration: none; font-size: 12px;}
+
+a.normal:link {color:#C91E0C; text-decoration: none; }
+a.normal:visited {color:#7E5C31; text-decoration: none; }
+a.normal:hover {text-decoration: underline; }
+a.normal:active {text-decoration: underline; }
+
+a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
+a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
+a.bold:hover {text-decoration: underline; font-weight:bold; }
+a.bold:active {text-decoration: underline; font-weight:bold; }
+
+tr.list { background: #FFBF44; }
+tr.list2 { background: #FFC982; }
+tr.listheader { background: #C91E0C; }
+th.listheader { color: white; }
+
+a.section {color: green; text-decoration: none; font-weight: bold; }
+a.section:hover {color: green; text-decoration: underline; font-weight: bold; }
+
+td.itemname {white-space:nowrap; }
+div.nodescription {color:red;}
+dl.parameters {;}
+dt.parameters {color:blue;}
+dd.parameters {;}
+
+/* Style applied to Pascal code in documentation 
+   (e.g. produced by @longcode tag) } */
+span.pascal_string { color: #000080; }
+span.pascal_keyword { font-weight: bolder; }
+span.pascal_comment { color: #000080; font-style: italic; }
+span.pascal_compiler_comment { color: #008000; }
+
+p.hint_directive { color: red; }
+
+input#search_text { }
+input#search_submit_button { }

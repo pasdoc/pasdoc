@@ -118,6 +118,8 @@ procedure DataToFile(const FileName: string; const Data: array of Byte);
 function SCharsReplace(const S: string; const Chars: TCharSet; 
   ReplacementChar: char): string;
 
+procedure CopyFile(const SourceFileName, DestinationFileName: string);
+
 implementation
 uses
   SysUtils,
@@ -300,6 +302,18 @@ begin
   for i := 1 to Length(Result) do
     if Result[i] in Chars then
       Result[i] := ReplacementChar;
+end;
+
+procedure CopyFile(const SourceFileName, DestinationFileName: string);
+var Source, Destination: TFileStream;
+begin
+  Destination := TFileStream.Create(DestinationFileName, fmCreate);
+  try
+    Source := TFileStream.Create(SourceFileName, fmOpenRead);
+    try
+      Destination.CopyFrom(Source, Source.Size);
+    finally Source.Free end;
+  finally Destination.Free end;
 end;
 
 end.

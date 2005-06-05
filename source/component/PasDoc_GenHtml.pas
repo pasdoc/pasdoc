@@ -1766,10 +1766,9 @@ procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
     CloseStream;
   end;
 
+const
+  DefaultPasdocCss = {$I pasdoc.css.inc};
 var
-  { If external CSS file specified, copy set CSS file to pasdoc.css.
-    Fin: open external file, Fout: target file (pasdoc.css). }
-  Fin, Fout:TFileStream; 
   PasdocCssFileName: string;
 begin
   WriteGifFile(img_automated, 'automated.gif');
@@ -1780,97 +1779,14 @@ begin
   
   PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
 
-  if not FileExists(PasdocCssFileName) then begin
+  if CSS <> '' then 
+  begin
     { If external CSS specified, copy it to pasdoc.css file. }
-    if FCSS <> '' then begin
-      FIn := TFileStream.Create(FCSS, fmOpenRead);
-      FOut := TFileStream.Create(PasdocCssFileName, fmCreate or fmOpenWrite);
-      FOut.CopyFrom(FIn, FIn.Size);
-      FIn.Free;
-      FOut.Free;
-    end else begin
-      CreateStream('pasdoc.css', True);
-      WriteDirectLine('body {' +
-        'font-family: Verdana,Arial;' +
-        'color: black;' +
-        'background-color: white; font-size: 12px; }');
-      WriteDirectLine('body.navigationframe {' +
-        'font-family: Verdana,Arial;' +
-        'color: white;' +
-        'background-color: #787878; font-size: 12px; }');
-
-      WriteDirectLine('a.navigation:link {' +
-        'color: white; text-decoration: none;  font-size: 12px;}');
-      WriteDirectLine('a.navigation:visited {' +
-        'color: white; text-decoration: none;  font-size: 12px;}');
-      WriteDirectLine('a.navigation:hover {' +
-        'color: white;' +
-        'font-weight: bold; text-decoration: none;  font-size: 12px;}');
-      WriteDirectLine('a.navigation:active {' +
-        'color: white; text-decoration: none;  font-size: 12px;}');
-
-      WriteDirectLine('a.normal:link {' +
-        'color:#C91E0C; text-decoration: none; }');
-      WriteDirectLine('a.normal:visited {' +
-        'color:#7E5C31; text-decoration: none; }');
-      WriteDirectLine('a.normal:hover {' +
-        'text-decoration: underline; }');
-      WriteDirectLine('a.normal:active {' +
-        'text-decoration: underline; }');
-
-      WriteDirectLine('a.bold:link {' +
-        'color:#C91E0C; text-decoration: none; font-weight:bold; }');
-      WriteDirectLine('a.bold:visited {' +
-        'color:#7E5C31; text-decoration: none; font-weight:bold; }');
-      WriteDirectLine('a.bold:hover {' +
-        'text-decoration: underline; font-weight:bold; }');
-      WriteDirectLine('a.bold:active {' +
-        'text-decoration: underline; font-weight:bold; }');
-
-      WriteDirectLine('tr.list { background: #FFBF44; }');
-      WriteDirectLine('tr.list2 { background: #FFC982; }');
-      WriteDirectLine('tr.listheader { background: #C91E0C; }');
-      WriteDirectLine('th.listheader { color: white; }');
-
-      WriteDirectLine('a.section {' +
-        'color: green; '+
-        'text-decoration: none; '+
-        'font-weight: bold; }');
-      WriteDirectLine('a.section:hover {' +
-        'color: green; '+
-        'text-decoration: underline; '+
-        'font-weight: bold; }');
-      WriteDirectLine('td.itemname {' +
-        'white-space:nowrap; }');
-      WriteDirectLine('div.nodescription {' +
-        'color:red;}');
-      WriteDirectLine('dl.parameters {;}');
-      WriteDirectLine('dt.parameters {' +
-        'color:blue;}');
-      WriteDirectLine('dd.parameters {;}');
-
-      { Style applied to Pascal code in documentation 
-        (e.g. produced by @longcode tag) }
-      WriteDirectLine(
-        'span.pascal_string { color: #000080; }');
-      WriteDirectLine(
-        'span.pascal_keyword { font-weight: bolder; }');
-      WriteDirectLine(
-        'span.pascal_comment { color: #000080; font-style: italic; }');
-      WriteDirectLine(
-        'span.pascal_compiler_comment { color: #008000; }');
-
-      WriteDirectLine(
-        'p.hint_directive { color: red; }');
-
-      WriteDirectLine('input#search_text { }');
-      WriteDirectLine('input#search_submit_button { }');
-
-      CloseStream;
-    end;
+    CopyFile(CSS, PasdocCssFileName);
   end else
-    DoMessage(2, mtInformation, '"%s" file already exists, not overwriting', 
-      [PasdocCssFileName]);
+  begin
+    StringToFile(PasdocCssFileName, DefaultPasdocCss);
+  end;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
