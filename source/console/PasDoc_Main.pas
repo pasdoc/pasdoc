@@ -429,9 +429,16 @@ begin
   if GPasDoc.Generator is TTexDocGenerator then
   begin
     if GOption_LatexHead.Value <> '' then
-    begin
+    try
       TTexDocGenerator(GPasDoc.Generator).LatexHead.LoadFromFile(
         GOption_LatexHead.Value);
+    except
+      on E: Exception do
+      begin
+        E.Message := 
+          'Error when opening file for "--latex-head" option: ' + E.Message;
+        raise;
+      end;
     end;
   end
   else
