@@ -72,13 +72,15 @@ _tipue_results.html (based on results.html example page in tipue sources)
 
   Modifications:
   * excessive css removed
-    (let's be more usable instead of looking "cool" without any purpose)
+    (let's be more usable instead of looking "cool" without any purpose),
+    can be always adjusted by pasdoc.css
   * we open external links with target="_parent"
   * removed <form> to search from results page
     (since our search form is visible all the time in navigation frame,
     so it's needless/confusing to show second "Search" edit box and button
     that do the same thing)
   * links to png version of the logo
+  * Added ###-PASDOC-INSERT-HEAD-###
 
 tipue_b1.png
   This is converted to png version of tipue_b1.gif

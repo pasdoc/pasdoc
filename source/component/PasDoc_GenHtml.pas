@@ -44,10 +44,10 @@ type
     FHeader: string;
     FOddTableRow: Integer;
     
-    { Writes line (using WriteDirect) with <meta http-equiv="Content-Type" ...>
-      html element describing current charset (from FLanguage). }
-    procedure WriteMetaContentType;
-    
+    { Returns line with <meta http-equiv="Content-Type" ...>
+      describing current charset (from FLanguage). }
+    function MetaContentType: string;
+
     function MakeLinkTarget(
       const href, caption, localcss, target: string): string;    
       
@@ -717,7 +717,8 @@ begin
   begin
     DoMessage(2, mtInformation, 
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(Units, Introduction, Conclusion, DestinationDirectory);
+    TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
+    DestinationDirectory);
   end;
   EndSpellChecking;
 end;
@@ -1282,12 +1283,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TGenericHTMLDocGenerator.WriteMetaContentType;
+function TGenericHTMLDocGenerator.MetaContentType: string;
 begin
-  if FLanguage.CharSet <> '' then begin
-    WriteDirect('<meta http-equiv="content-type" content="text/html; charset=' 
-      + FLanguage.CharSet + '">', true);
-  end;
+  if FLanguage.CharSet <> '' then
+    Result := '<meta http-equiv="content-type" content="text/html; charset='
+      + FLanguage.CharSet + '">' + LineEnding else
+    Result := '';
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
@@ -1296,7 +1297,7 @@ begin
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
   WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
-  WriteMetaContentType;
+  WriteDirect(MetaContentType);
   // Title
   WriteDirect('<title>');
   if Title <> '' then 
@@ -1809,7 +1810,7 @@ begin
   CreateStream('index.html', True);
   WriteDirectLine(DoctypeFrameset);
   WriteDirectLine('<html><head>');
-  WriteMetaContentType;
+  WriteDirect(MetaContentType);
   WriteDirectLine('<title>'+Title+'</title>');
   WriteDirectLine('</head><frameset cols="200,*">');
   WriteDirectLine('<frame src="navigation.html" frameborder="0">');
@@ -1823,7 +1824,7 @@ begin
   WriteDirect('<link rel="StyleSheet" type="text/css" href="');
   WriteDirect(EscapeURL('pasdoc.css'));
   WriteDirectLine('">');
-  WriteMetaContentType;
+  WriteDirect(MetaContentType);
   WriteDirectLine('<title>Navigation</title>');
   if UseTipueSearch then
     WriteDirect(TipueSearchButtonHead);

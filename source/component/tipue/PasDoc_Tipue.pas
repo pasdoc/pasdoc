@@ -22,6 +22,7 @@ function TipueSearchButton: string;
   Units must be non-nil. It will be used to generate index data for tipue. }
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
+  const MetaContentType: string;
   const OutputPath: string);
 
 implementation
@@ -47,6 +48,7 @@ end;
 
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
+  const MetaContentType: string;
   const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
@@ -201,7 +203,9 @@ const
 begin
   StringToFile(OutputPath + 'tip_search.js', TipSearchScript);
   StringToFile(OutputPath + 'tip_form.js', TipFormScript);
-  StringToFile(OutputPath + '_tipue_results.html', TipResultsPage);
+  StringToFile(OutputPath + '_tipue_results.html', 
+    StringReplace(TipResultsPage, 
+      '###-PASDOC-INSERT-HEAD-###', MetaContentType, []));
   DataToFile(OutputPath + 'tipue_b1.png', TipLogoImage);
   WriteTipueIndexData(OutputPath + 'tip_data.js');
 end;

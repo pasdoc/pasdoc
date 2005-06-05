@@ -15,6 +15,8 @@
 '' + LineEnding + 
 '<!-- End of required <head> section -->' + LineEnding + 
 '' + LineEnding + 
+'###-PASDOC-INSERT-HEAD-###' + LineEnding + 
+'' + LineEnding + 
 '</head>' + LineEnding + 
 '<body>' + LineEnding + 
 '' + LineEnding + 
