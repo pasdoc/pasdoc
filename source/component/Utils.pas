@@ -37,8 +37,6 @@ const
 
 { string empty means it contains only whitespace }
 function IsStrEmptyA(const AString: string): boolean;
-{ trim compress - only trims right now, TODO: compress whitespace }
-function TrimCompress(const AString: string): string;
 { count occurences of AChar in AString }
 function StrCountCharA(const AString: string; const AChar: Char): Integer;
 { Position of the ASub in AString. Return 0 if not found }
@@ -144,11 +142,6 @@ end;
 function IsStrEmptyA(const AString: string): boolean;
 begin
   Result := Length(Trim(AString)) = 0;
-end;
-
-function TrimCompress(const AString: string): string;
-begin
-  Result := Trim(AString);
 end;
 
 function StrCountCharA(const AString: string; const AChar: Char): Integer;
