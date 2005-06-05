@@ -144,6 +144,7 @@ type
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
     FParagraph: string;
+    FSpace: string;
     FURLLink: TStringConverter;
 
     function DoConvertString(const s: string): string;
@@ -193,6 +194,21 @@ type
       
       Default value is ' ' (one space). }
     property Paragraph: string read FParagraph write FParagraph;
+
+    { This will be inserted on each whitespace sequence (but not on 
+      paragraph break). This is consistent with 
+      [http://pasdoc.sipsolutions.net/WritingDocumentation]
+      that clearly says that "amount of whitespace does not matter".
+      
+      Although in some pasdoc output formats amount of whitespace also
+      does not matter (e.g. HTML and LaTeX) but in other (e.g. plain text)
+      it matters, so such space compression is needed.
+      In other output formats (no examples yet) it may need to be expressed
+      by something else than simple space, that's why this property
+      is exposed. 
+      
+      Default value is ' ' (one space). }
+    property Space: string read FSpace write FSpace;
     
     { This will be called from @link(Execute) when URL will be found
       in Description. Note that passed here URL will *not* be processed by
@@ -291,6 +307,7 @@ begin
   inherited Create;
   FTags := TTagVector.Create(true);
   FParagraph := ' ';
+  FSpace := ' ';
 end;
 
 destructor TTagManager.Destroy;
@@ -442,7 +459,7 @@ var
           some more optional whitespaces and newlines)
     and if it is so, returns true and sets OffsetEnd to the next
     index in Description after this paragraph marker. }
-  function FindParagraph(var OffsetEnd: Integer): boolean;
+  function FindParagraph(out OffsetEnd: Integer): boolean;
   var i: Integer;
   begin
     Result := false;
@@ -468,6 +485,19 @@ var
     OffsetEnd := i;
   end;
 
+  { This checks whether we are looking (i.e. Description[FOffset] 
+    starts with) at some whitespace.
+    If true, then it also sets OffsetEnd to next index after whitespace. }
+  function FindWhitespace(out OffsetEnd: Integer): boolean;
+  begin
+    Result := SCharIs(Description, FOffset, WhiteSpace);
+    if Result then
+    begin
+      OffsetEnd := FOffset + 1;
+      while SCharIs(Description, OffsetEnd, WhiteSpace) do Inc(OffsetEnd);
+    end;
+  end;
+
   { Checks does Description[FOffset] may be a beginning of some URL.
     (xxx://xxxx/.../).
       
@@ -476,7 +506,7 @@ var
     
     For your comfort, returns also URL (this is *always*
     Copy(Description, FOffset, OffsetEnd - FOffset)). }
-  function FindURL(var OffsetEnd: Integer; out URL: string): boolean;
+  function FindURL(out OffsetEnd: Integer; out URL: string): boolean;
 
   { Here's how it works, and what is the meaning of constants below:
 
@@ -642,6 +672,17 @@ begin
       DoConvert;
       
       Result := Result + Paragraph;
+      FOffset := OffsetEnd;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    { FindWhitespace must be checked after FindParagraph,
+      otherwise we would take paragraph as just some whitespace. }
+    if FindWhitespace(OffsetEnd) then
+    begin
+      DoConvert;
+      
+      Result := Result + Space;
       FOffset := OffsetEnd;
       
       ConvertBeginOffset := FOffset;
