@@ -7,32 +7,34 @@ set -eu
 #
 # This script uploads to
 # [http://pasdoc.sourceforge.net/correct_tests_output/]
-# current output of tests generated in ../$1/.
+# current output of tests generated in ../ .
 # This means that you're accepting current output of tests
-# (for this output format) as "correct".
+# (for some output formats) as "correct".
 #
-# Option "$1" is the name of output format (as for pasdoc's
-# --format option), this says which subdirectory of ../tests/
-# should be uploaded.
+# Options "$2" and following are the names of output formats
+# (as for pasdoc's --format option), these say which subdirectory
+# of ../tests/ should be uploaded.
 #
-# Option "$2" is your username on sourceforge.
+# Option "$1" is your username on sourceforge.
 # Note that you will be asked (more than once) for your password
 # unless you configured your ssh keys, which is recommended.
 #
-# After uploading it calls ./download_correct_tests_output.sh "$1"
+# After uploading it calls ./download_correct_tests_output.sh
+# for every uploaded output.
 # This way it checks that files were correctly uploaded
 # and also sets your local version of ../correct_output/ directory
 # to the correct state.
 # So after calling this script successfully, directories
-# ../$1/ and ../correct_output/$1/ are always equal.
+# ../$2/ and ../correct_output/$2/ are always equal.
+# (and ../$3/ and ../correct_output/$3/, and so on).
 #
-# Precisely what files are uploaded:
-# - $1.tar.gz -- archived contents of ../$1/
+# Precisely what files are uploaded for each format $FORMAT:
+# - $FORMAT.tar.gz -- archived contents of ../$FORMAT/
 #   Easily downloadable, e.g. by download_correct_tests_output.
-# - $1 directory -- copy of ../$1/
+# - $FORMAT directory -- copy of ../$FORMAT/
 #   Easy to browse, so we can e.g. make links from pasdoc's wiki
 #   page ProjectsUsingPasDoc to this.
-# - $1.timestamp -- current date/time, your username (taken from $2)
+# - $FORMAT.timestamp -- current date/time, your username (taken from $1)
 #   to make this information easy available.
 #   (to be able to always answer the question "who and when uploaded this ?")
 #
@@ -46,54 +48,65 @@ set -eu
 # to set group/permissions.
 
 # Parse options
-FORMAT="$1"
-SF_USERNAME="$2"
+SF_USERNAME="$1"
+shift 1
 
-# Prepare clean TEMP_PATH
-TEMP_PATH=upload_correct_tests_output_tmp/
-rm -Rf "$TEMP_PATH"
-mkdir "$TEMP_PATH"
+upload_one_format ()
+{
+  # Parse options
+  FORMAT="$1"
+  shift 1
 
-# Prepare tar.gz archive
-ARCHIVE_FILENAME_NONDIR="$FORMAT.tar.gz"
-ARCHIVE_FILENAME="$TEMP_PATH""$ARCHIVE_FILENAME_NONDIR"
-echo "Creating $ARCHIVE_FILENAME_NONDIR ..."
-# Note: We temporary jump to ../, this way we can pack files using 
-# "$FORMAT"/ instead of ../"$FORMAT"/. Some tar versions would
-# strip "../" automatically, but some would not.
-cd ../
-tar czf scripts/"$ARCHIVE_FILENAME" "$FORMAT"/
-cd scripts/
+  # Prepare clean TEMP_PATH
+  TEMP_PATH=upload_correct_tests_output_tmp/
+  rm -Rf "$TEMP_PATH"
+  mkdir "$TEMP_PATH"
 
-# Prepare timestamp file
-TIMESTAMP_FILENAME_NONDIR="$FORMAT.timestamp"
-TIMESTAMP_FILENAME="$TEMP_PATH""$TIMESTAMP_FILENAME_NONDIR"
-echo "Creating $TIMESTAMP_FILENAME_NONDIR ..."
-date '+%F %T' > "$TIMESTAMP_FILENAME"
-echo "$SF_USERNAME" >> "$TIMESTAMP_FILENAME"
+  # Prepare tar.gz archive
+  ARCHIVE_FILENAME_NONDIR="$FORMAT.tar.gz"
+  ARCHIVE_FILENAME="$TEMP_PATH""$ARCHIVE_FILENAME_NONDIR"
+  echo "Creating $ARCHIVE_FILENAME_NONDIR ..."
+  # Note: We temporary jump to ../, this way we can pack files using
+  # "$FORMAT"/ instead of ../"$FORMAT"/. Some tar versions would
+  # strip "../" automatically, but some would not.
+  cd ../
+  tar czf scripts/"$ARCHIVE_FILENAME" "$FORMAT"/
+  cd scripts/
 
-# Do the actual uploading to the server
+  # Prepare timestamp file
+  TIMESTAMP_FILENAME_NONDIR="$FORMAT.timestamp"
+  TIMESTAMP_FILENAME="$TEMP_PATH""$TIMESTAMP_FILENAME_NONDIR"
+  echo "Creating $TIMESTAMP_FILENAME_NONDIR ..."
+  date '+%F %T' > "$TIMESTAMP_FILENAME"
+  echo "$SF_USERNAME" >> "$TIMESTAMP_FILENAME"
 
-echo "Uploading ..."
+  # Do the actual uploading to the server
 
-SF_PATH=/home/groups/p/pa/pasdoc/htdocs/correct_tests_output/
-SF_CONNECT="$SF_USERNAME"@shell.sourceforge.net:"$SF_PATH"
+  echo "Uploading ..."
 
-scp "$ARCHIVE_FILENAME" "$SF_CONNECT"
-scp "$TIMESTAMP_FILENAME" "$SF_CONNECT"
+  SF_PATH=/home/groups/p/pa/pasdoc/htdocs/correct_tests_output/
+  SF_CONNECT="$SF_USERNAME"@shell.sourceforge.net:"$SF_PATH"
 
-# I could do here simple
-#   scp -r ../"$FORMAT"/ "$SF_CONNECT"
-# but this requires uploading all files unpacked.
-# It's much quickier to just log to server and untar there uploaded archive.
-ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
+  scp "$ARCHIVE_FILENAME" "$SF_CONNECT"
+  scp "$TIMESTAMP_FILENAME" "$SF_CONNECT"
+
+  # I could do here simple
+  #   scp -r ../"$FORMAT"/ "$SF_CONNECT"
+  # but this requires uploading all files unpacked.
+  # It's much quickier to just log to server and untar there uploaded archive.
+  ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
   cd "$SF_PATH"
   tar xzf "$ARCHIVE_FILENAME_NONDIR"
 EOF
 
-./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
+  ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
 
-# Clean temp dir
-rm -Rf upload_correct_tests_output_tmp/
+  # Clean temp dir
+  rm -Rf upload_correct_tests_output_tmp/
 
-./download_correct_tests_output.sh "$FORMAT"
+  ./download_correct_tests_output.sh "$FORMAT"
+}
+
+for FORMAT; do
+  upload_one_format "$FORMAT"
+done

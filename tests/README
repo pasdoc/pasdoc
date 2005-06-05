@@ -133,14 +133,14 @@ Possible tests to be done:
    from "correct output" and also he carefully checked that "current
    output" is still correct, than he should upload his "current output"
    as new "correct output" by entering scripts/ directory and executing
-     ./uplad_correct_tests_output.sh html username
+     ./upload_correct_tests_output.sh username html
    See documentation inside scripts/upload_correct_tests_output.sh
    for more detailed docs. Note that before uploading you should
    be relatively sure that you compared against most recent version
    of "correct output", to save yourself trouble of unnecessary
    uploading.
 
-   Beware that script `upload_correct_tests_output.sh format ...'
+   Beware that script `upload_correct_tests_output.sh'
    will upload everything that you will have inside subdirectory
    of given format. This is painful in case of output like LaTeX,
    where you can accidentally upload files like docs.pdf or docs.dvi
