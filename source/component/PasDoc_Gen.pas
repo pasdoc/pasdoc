@@ -12,7 +12,7 @@
   @created(30 Aug 1998)
   @cvs($Date$)
 
-  GenDoc contains the basic documentation generator object @link(TDocGenerator).
+  @name contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce
   documentation in a specific format like HTML or LaTex.
   They override @link(TDocGenerator)'s virtual methods. }
