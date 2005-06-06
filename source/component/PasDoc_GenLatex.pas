@@ -593,7 +593,7 @@ procedure TTexDocGenerator.WriteDocumentation;
 var
  OutputFileName: string;
 begin
-{  StartSpellChecking('sgml');}
+  StartSpellChecking('tex');
   inherited;
 
   if ProjectName <> '' then
@@ -615,7 +615,7 @@ begin
   WriteConclusion;
   WriteEndOfDocument;
   CloseStream;
-{  EndSpellChecking;}
+  EndSpellChecking;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1367,7 +1367,7 @@ begin
   WriteHeading(HL, ExternalItem.Title);
   WriteAnchor(ExternalItem.Name, ExternalItem.FullLink);
 
-  WriteDirect(ExternalItem.DetailedDescription);
+  WriteSpellChecked(ExternalItem.DetailedDescription);
 
   WriteAuthors(HL + 1, ExternalItem.Authors);
   WriteDates(HL + 1, ExternalItem.Created, ExternalItem.LastMod);
