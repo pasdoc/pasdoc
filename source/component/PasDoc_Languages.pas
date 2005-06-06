@@ -1604,74 +1604,73 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDocLanguages.SetLanguageHungarian_1250;
- begin
-   FTranslation[trAuthor] := 'Szerzõ';
-   FTranslation[trAuthors] := 'Szerzõk';
-   FTranslation[trAutomated] := 'Automatikus';
-   FTranslation[trCio] := 'Osztályok, Kapcsolódási felületek és Objektumok';
-   FTranslation[trClass] := 'Osztály';
-   FTranslation[trClasses] := 'Osztályok';
-   FTranslation[trClassHierarchy] := 'Osztály hierarchia';
-   FTranslation[trConstants] := 'Konstansok';
-   FTranslation[trCreated] := 'Készült';
-   FTranslation[trDeclaration] := 'Deklaráció';
-   FTranslation[trDescription] := 'Megjegyzés';
-   FTranslation[trParameters] := 'Paraméterek';
-   FTranslation[trReturns] := 'Visszatérési értékek';
-   FTranslation[trExceptions] := 'Kivételek';
-   FTranslation[trEnum] := 'Felsorolások';
-   FTranslation[trDispInterface] := 'Képernyõ felületek';
-   FTranslation[trFields] := 'Mezõk';
-   FTranslation[trFunctionsAndProcedures] := 'Függvények és Eljárások';
-   FTranslation[trHelp] := 'Súgó';
-   FTranslation[trHierarchy] := 'Hierarchia';
-   FTranslation[trIdentifiers] := 'Azonosítók';
-   FTranslation[trInterface] := 'Kapcsolódási felület';
-   FTranslation[trLegend] := 'Történet';
-   FTranslation[trMethods] := 'Metódusok';
-   FTranslation[trLastModified] := 'Utolsó módosítás';
-   FTranslation[trName] := 'Név';
-   FTranslation[trNone] := 'Nincs';
-   FTranslation[trObject] := 'Objektum';
-   FTranslation[trObjects] := 'Objektumok';
-   FTranslation[trOverview] := 'Áttekintés';
-   FTranslation[trPrivate] := 'Privát';
-   FTranslation[trProperties] := 'Tulajdonságok';
-   FTranslation[trProtected] := 'Védett';
-   FTranslation[trPublic] := 'Publikus';
-   FTranslation[trPublished] := 'Publikált';
-   FTranslation[trType] := 'Típus';
-   FTranslation[trTypes] := 'Típusok';
-   FTranslation[trUnit] := 'Egység';
-   FTranslation[trUnits] := 'Egységek';
-   FTranslation[trVariables] := 'Változók';
-  { TODO : add translation }
-//  FTranslation[trGvUses] := 'Unit dependency graph';
-//  FTranslation[trGvClasses] := 'Classes hierarchy graph';
+begin
+  FTranslation[trAuthor] := 'Szerzõ';
+  FTranslation[trAuthors] := 'Szerzõk';
+  FTranslation[trAutomated] := 'Automatikus';
+  FTranslation[trCio] := 'Osztályok, Kapcsolódási felületek és Objektumok';
+  FTranslation[trClass] := 'Osztály';
+  FTranslation[trClasses] := 'Osztályok';
+  FTranslation[trClassHierarchy] := 'Osztály hierarchia';
+  FTranslation[trConstants] := 'Konstansok';
+  FTranslation[trCreated] := 'Készült';
+  FTranslation[trDeclaration] := 'Deklaráció';
+  FTranslation[trDescription] := 'Megjegyzés';
+  FTranslation[trParameters] := 'Paraméterek';
+  FTranslation[trReturns] := 'Visszatérési értékek';
+  FTranslation[trExceptions] := 'Kivételek';
+  FTranslation[trEnum] := 'Felsorolások';
+  FTranslation[trDispInterface] := 'Képernyõ felületek';
+  FTranslation[trFields] := 'Mezõk';
+  FTranslation[trFunctionsAndProcedures] := 'Függvények és Eljárások';
+  FTranslation[trHelp] := 'Súgó';
+  FTranslation[trHierarchy] := 'Hierarchia';
+  FTranslation[trIdentifiers] := 'Azonosítók';
+  FTranslation[trInterface] := 'Kapcsolódási felület';
+  FTranslation[trLegend] := 'Történet';
+  FTranslation[trMethods] := 'Metódusok';
+  FTranslation[trLastModified] := 'Utolsó módosítás';
+  FTranslation[trName] := 'Név';
+  FTranslation[trNone] := 'Nincs';
+  FTranslation[trObject] := 'Objektum';
+  FTranslation[trObjects] := 'Objektumok';
+  FTranslation[trOverview] := 'Áttekintés';
+  FTranslation[trPrivate] := 'Privát';
+  FTranslation[trProperties] := 'Tulajdonságok';
+  FTranslation[trProtected] := 'Védett';
+  FTranslation[trPublic] := 'Publikus';
+  FTranslation[trPublished] := 'Publikált';
+  FTranslation[trType] := 'Típus';
+  FTranslation[trTypes] := 'Típusok';
+  FTranslation[trUnit] := 'Egység';
+  FTranslation[trUnits] := 'Egységek';
+  FTranslation[trVariables] := 'Változók';
 
-   FTranslation[trHeadlineCio] := 'Összes Osztály, Kapcsolódási felület és Objektumok';
-   FTranslation[trHeadlineConstants] := 'Összes Kontans';
-   FTranslation[trHeadlineFunctionsAndProcedures] := 'Összes Függvény és Eljárás';
-   FTranslation[trHeadlineIdentifiers] := 'Összes Azonosító';
-   FTranslation[trHeadlineTypes] := 'Összes Típus';
-   FTranslation[trHeadlineUnits] := 'Összes Egység';
-   FTranslation[trHeadlineVariables] := 'Összes Változó';
-  
-   FTranslation[trSummaryCio] := 'Öszefoglaló az Osztályokról, Kapcsoldási felületekrõl és Objektumokról';
-  
-   FTranslation[trWarningOverwrite] :=
-     'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne';
-  
-   FTranslation[trGeneratedBy] := 'Készítette';
-   FTranslation[trOnDateTime] := ''; //none in Hungarian language
+  FTranslation[trGvUses] := 'Egység függõségi gráf';
+  FTranslation[trGvClasses] := 'Osztály hierarchia gráf';
+
+  FTranslation[trHeadlineCio] := 'Összes Osztály, Kapcsolódási felület és Objektumok';
+  FTranslation[trHeadlineConstants] := 'Összes Kontans';
+  FTranslation[trHeadlineFunctionsAndProcedures] := 'Összes Függvény és Eljárás';
+  FTranslation[trHeadlineIdentifiers] := 'Összes Azonosító';
+  FTranslation[trHeadlineTypes] := 'Összes Típus';
+  FTranslation[trHeadlineUnits] := 'Összes Egység';
+  FTranslation[trHeadlineVariables] := 'Összes Változó';
+
+  FTranslation[trSummaryCio] := 'Öszefoglaló az Osztályokról, Kapcsoldási felületekrõl és Objektumokról';
+
+  FTranslation[trWarningOverwrite] :=
+    'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne';
+
+  FTranslation[trGeneratedBy] := 'Készítette';
+  FTranslation[trOnDateTime] := ''; //none in Hungarian language
    
-  FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
+  FTranslation[trDeprecated] := 'ez az azonosító érték nélküli';
+  FTranslation[trPlatformSpecific] := 'ez az azonosító szükséges némely platform számára';
+  FTranslation[trLibrarySpecific] := 'ez az azonosító szükséges némely library számára';
 
-  { TODO : Translation needed. }
-  FTranslation[trIntroduction] := 'Introduction';
-  FTranslation[trConclusion] := 'Conclusion';
+  FTranslation[trIntroduction] := 'Bevezetõ';
+  FTranslation[trConclusion] := 'Összefoglaló';
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1719,6 +1718,9 @@ end;
 
 {
   $Log$
+  Revision 1.24  2005/06/06 11:28:37  kambi
+  * Updated Hungarian translation from Gergõ Jónás
+
   Revision 1.23  2005/05/27 02:09:07  kambi
   * Polish translation for introduction/conclusion
 
