@@ -22,15 +22,18 @@ type
   private
     FProcess: TProcessLineTalk;
     FAspellMode: string;
+    FAspellLanguage: string;
   public
     { Values for AspellMode and AspellLanguage are the same as for
       aspell --mode and --lang command-line options.
       You can pass here '', they we will not pass appropriate
       command-line option to aspell. }
-    constructor Create(const AspellMode, AspellLanguage: string);
+    constructor Create(const AAspellMode, AAspellLanguage: string);
     destructor Destroy; override;
 
     property AspellMode: string read FAspellMode;
+    
+    property AspellLanguage: string read FAspellLanguage;
 
     procedure SetIgnoreWords(Value: TStringList);
 
@@ -45,12 +48,16 @@ implementation
 
 uses Utils;
 
-constructor TAspellProcess.Create(const AspellMode, AspellLanguage: string);
+constructor TAspellProcess.Create(const AAspellMode, AAspellLanguage: string);
 var FirstAspellLine: string;
 begin
   inherited Create;
+  
+  FAspellMode := AAspellMode;
+  FAspellLanguage := AAspellLanguage;
+  
   FProcess := TProcessLineTalk.Create(nil);
-
+  
   { calculate FProcess.CommandLine }
   FProcess.CommandLine := 'aspell -a';
   if AspellMode <> '' then
