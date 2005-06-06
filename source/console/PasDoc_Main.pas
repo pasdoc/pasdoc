@@ -42,8 +42,8 @@ var
   GOption_Format,
   GOption_OutputPath,
   GOption_Language,
-  GOption_ASPELL,
-  GOption_IgnoreWords: TStringOption;
+  GOption_Aspell,
+  GOption_SpellCheckIgnoreWords: TStringOption;
   GOption_StarOnly,
   GOption_Generator,
   GOption_NumericFilenames,
@@ -197,9 +197,9 @@ begin
   GOption_ASPELL.Explanation := 'Enable aspell, giving language as parameter, currently only done in HTML output';
   GOptionParser.AddOption(GOption_ASPELL);
 
-  GOption_IgnoreWords := TStringOption.Create(#0, 'ignore-words');
-  GOption_IgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line, no comments allowed';
-  GOptionParser.AddOption(GOption_IgnoreWords);
+  GOption_SpellCheckIgnoreWords := TStringOption.Create(#0, 'spell-check-ignore-words');
+  GOption_SpellCheckIgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line';
+  GOptionParser.AddOption(GOption_SpellCheckIgnoreWords);
 
   GOption_CacheDir := TStringOption.Create(#0, 'cache-dir');
   GOption_CacheDir.Explanation := 'Cache directory for parsed files (default not set)';
@@ -399,7 +399,10 @@ begin
 
   GPasDoc.Generator.CheckSpelling := GOption_ASPELL.WasSpecified;
   GPasDoc.Generator.AspellLanguage := GOption_ASPELL.Value;
-  GPasDoc.Generator.IgnoreWordsFile := GOption_IgnoreWords.Value;
+  if GOption_SpellCheckIgnoreWords.Value <> '' then
+    GPasDoc.Generator.SpellCheckIgnoreWords.LoadFromFile(
+      GOption_SpellCheckIgnoreWords.Value);      
+  
   GPasDoc.CacheDir := GOption_CacheDir.Value;
 
   GPasDoc.Generator.AutoAbstract := GOption_AutoAbstract.TurnedOn;

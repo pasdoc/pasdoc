@@ -46,3 +46,5 @@ p.hint_directive { color: red; }
 
 input#search_text { }
 input#search_submit_button { }
+
+acronym.mispelling { background-color: #ffa; }

@@ -267,7 +267,8 @@ uses
   Utils,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  PasDoc_Aspell;
 
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
@@ -1719,6 +1720,20 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
+
+{ TODO -- this code is scheduled to convert it to some generic
+  version like WriteSpellCheckedGeneric in TDocGenerator to be able
+  to easily do the similar trick for other output formats like LaTeX
+  and future output formats.
+  
+  Note: don't you dare to copy&paste this code to TTexDocGenerator !
+  If you want to work on it, make it generic, i.e. copy&paste this code
+  to TDocGenerator and make it "generic" there. *Then* create specialized
+  version in TTexDocGenerator that calls the generic version. 
+  
+  Or maybe such generic version should be better inside PasDoc_Aspell ? 
+  This doesn't really matter. }
+
 var
   LErrors: TObjectVector;
   i, temp: Integer;
@@ -1732,7 +1747,8 @@ begin
     // build s
     s := '';
     LString := AString;
-    for i := LErrors.Count-1 downto 0 do begin
+    for i := LErrors.Count-1 downto 0 do 
+    begin
       // everything after the offending word
       temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
       s := ( '">' + TSpellingError(LErrors.Items[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
@@ -1741,7 +1757,7 @@ begin
       end else begin
         s := 'no suggestions' + s;
       end;
-      s := '<acronym style="#0000FF; border-bottom: 1px solid crimson" title="' + s;
+      s := '<acronym class="mispelling" title="' + s;
       SetLength(LString, TSpellingError(LErrors.Items[i]).Offset);
     end;
     WriteDirect(LString);
@@ -1997,7 +2013,7 @@ begin
 
   WriteHeading(HL, ExternalItem.Title);
 
-  WriteDirect(ExternalItem.DetailedDescription);
+  WriteSpellChecked(ExternalItem.DetailedDescription);
 
   WriteAuthors(HL + 1, ExternalItem.Authors);
   WriteDates(HL + 1, ExternalItem.Created, ExternalItem.LastMod);

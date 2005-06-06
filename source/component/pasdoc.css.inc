@@ -48,4 +48,6 @@
 '' + LineEnding + 
 'input#search_text { }' + LineEnding + 
 'input#search_submit_button { }' + LineEnding + 
+'' + LineEnding + 
+'acronym.mispelling { background-color: #ffa; }' + LineEnding + 
 ''

@@ -30,9 +30,9 @@ uses
   ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
-  PasDoc_RunHelp,
   Classes,
-  PasDoc_TagManager;
+  PasDoc_TagManager,
+  PasDoc_Aspell;
 
 const
   { set of characters, including all letters and the underscore }
@@ -95,17 +95,6 @@ const
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
 
 type
-  { @abstract(class for spell-checking) }
-  TSpellingError = class
-  public
-    { the mis-spelled word }
-    Word: string;
-    { offset inside the checked string }
-    Offset: Integer;
-    { comma-separated list of suggestions }
-    Suggestions: string;
-  end;
-
   { Result for @link(TDocGenerator.CreateStream) }
   TCreateStreamResult = (
     { normal result }
@@ -129,12 +118,12 @@ type
     will create several, Tex only one). }
   TDocGenerator = class(TComponent)
   private
-    FCheckSpelling,
-    FSpellCheckStarted: boolean;
+    { Things related to spell checking }
+    FCheckSpelling: boolean;
     FAspellLanguage: string;
-    FAspellPipe: TRunRecord;
-    FIgnoreWordsFile,
-    FAspellMode: string;
+    FAspellProcess: TAspellProcess;
+    FSpellCheckIgnoreWords: TStringList;
+    
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
     FCurrentItem: TBaseItem;
@@ -223,6 +212,7 @@ end;
     procedure HandleBrTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
     
+    procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -420,20 +410,15 @@ end;
     { output graphviz class tree }
     procedure WriteGVClasses;
 
-    { starts the spell checker - currently linux only }
+    { starts the spell checker }
     procedure StartSpellChecking(const AMode: string);
 
-    { checks a word and returns suggestions.
-      Will create an entry in AErrors for each wrong word,
-      and the object (if not nil meaning no suggestions) will contain
-      another string list with suggestions. The value will be the
-      offset from the start of AString.
-      Example:
-        check the string "the quieck brown fox"
-        result is:
-        AErrors contains a single item:
-          quieck=5 with object a stringlist containing something like the words
-          quick, quiesce, ... }
+    { If CheckSpelling and spell checking was successfully started,
+      this will run @link(TAspellProcess.CheckString FAspellProcess.CheckString)
+      and will report all errors using DoMessage with mtWarning.
+      
+      Otherwise this just clears AErrors, which means that no errors
+      were found. }
     procedure CheckString(const AString: string; const AErrors: TObjectVector);
 
     { closes the spellchecker }
@@ -626,8 +611,11 @@ end;
 
     property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling
       default false;
+      
     property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
-    property IgnoreWordsFile: string read FIgnoreWordsFile write FIgnoreWordsFile;
+    
+    property SpellCheckIgnoreWords: TStringList
+      read FSpellCheckIgnoreWords write SetSpellCheckIgnoreWords;
 
     { The meaning of this is just like --auto-abstract command-line option.
       It is used in @link(ExpandDescriptions). }
@@ -1507,6 +1495,17 @@ begin
   FLanguage := TPasDocLanguages.Create;
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;
+  FSpellCheckIgnoreWords := TStringList.Create;
+end;
+
+destructor TDocGenerator.Destroy;
+begin
+  FSpellCheckIgnoreWords.Free;
+  FLanguage.Free;
+  FClassHierarchy.Free;
+  FAbbreviations.Free;
+  FCurrentStream.Free;
+  inherited;
 end;
 
 procedure TDocGenerator.CreateClassHierarchy;
@@ -1566,15 +1565,6 @@ begin
     end;
   end;
   FClassHierarchy.Sort;
-end;
-
-destructor TDocGenerator.Destroy;
-begin
-  FLanguage.Free;
-  FClassHierarchy.Free;
-  FAbbreviations.Free;
-  FCurrentStream.Free;
-  inherited;
 end;
 
 procedure TDocGenerator.WriteEndOfCode;
@@ -1712,104 +1702,48 @@ end;
 
 procedure TDocGenerator.CheckString(const AString: string;
   const AErrors: TObjectVector);
-var
-  s: string;
-  p, p2: Integer;
-  LError: TSpellingError;
+var i: Integer;
 begin
-  AErrors.Clear;
-  if FCheckSpelling and FSpellCheckStarted then begin
-    s := StringReplace(AString, #10, ' ', [rfReplaceAll]);
-    s := StringReplace(AString, #13, ' ', [rfReplaceAll]);
-    if Length(FAspellMode) > 0 then begin
-      PasDoc_RunHelp.WriteLine('-', FAspellPipe);
-      PasDoc_RunHelp.WriteLine('+'+FAspellMode, FAspellPipe);
-    end;
-    PasDoc_RunHelp.WriteLine('^'+s, FAspellPipe);
-    s := ReadLine(FAspellPipe);
-    while Length(s) > 0 do begin
-      case s[1] of
-        '*': continue; // no error
-        '#': begin
-               LError := TSpellingError.Create; 
-               s := copy(s, 3, MaxInt); // get rid of '# '
-               p := Pos(' ', s);
-               LError.Word := copy(s, 1, p-1); // get word
-               LError.Suggestions := '';
-               s := copy(s, p+1, MaxInt);
-               LError.Offset := StrToIntDef(s, 0)-1;
-               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Add(LError);
-             end;
-        '&': begin
-               LError := TSpellingError.Create; 
-               s := copy(s, 3, MaxInt); // get rid of '& '
-               p := Pos(' ', s);
-               LError.Word := copy(s, 1, p-1); // get word
-               s := copy(s, p+1, MaxInt);
-               p := Pos(' ', s);
-               s := copy(s, p+1, MaxInt);
-               p2 := Pos(':', s);
-               LError.Suggestions := Copy(s, Pos(':', s)+2, MaxInt);
-               SetLength(s, p2-1);
-               LError.Offset := StrToIntDef(s, 0)-1;
-               DoMessage(2, mtWarning, 'possible spelling error for word "%s"', [LError.Word]);
-               AErrors.Add(LError);
-             end;
-      end;
-      s := ReadLine(FAspellPipe);
-    end;
-  end;
+  if FCheckSpelling and (FAspellProcess <> nil) then
+  begin
+    FAspellProcess.CheckString(AString, AErrors);
+    for i := 0 to AErrors.Count - 1 do
+      DoMessage(2, mtWarning, 'Word mispelled "%s"', 
+        [TSpellingError(AErrors[i]).Word]);
+  end else
+    AErrors.Clear;
 end;
 
 procedure TDocGenerator.EndSpellChecking;
 begin
-  if FCheckSpelling and FSpellCheckStarted then begin
-    CloseProgram(FAspellPipe);
-  end;
+  { If CheckSpelling was false or StartSpellChecking failed then
+    FAspellPipe will be nil, so it's safe to just always call FreeAndNil here. }
+  FreeAndNil(FAspellProcess);
 end;
 
 procedure TDocGenerator.StartSpellChecking(const AMode: string);
-var
-  s: string;
-  L: TStringList;
-  i: Integer;
 begin
-  FSpellCheckStarted := False;
-  if FCheckSpelling then begin
+  { Make sure that previous aspell process is closed }
+  FreeAndNil(FAspellProcess);
+
+  if CheckSpelling then 
+  begin
     try
-      FAspellMode := AMode;
-      if AMode <> '' then begin
-        FAspellPipe := RunProgram('/usr/bin/aspell', '-a --lang='+FAspellLanguage+' --mode='+AMode);
-      end else begin
-        FAspellPipe := RunProgram('/usr/bin/aspell', '-a --lang='+FAspellLanguage);
-      end;
-      FSpellCheckStarted := True;
+      FAspellProcess := TAspellProcess.Create(AMode, FAspellLanguage);
     except
-      DoMessage(1, mtWarning, 'spell checking is not supported yet, disabling', []);
-      FSpellCheckStarted := False;
-    end;
-    s := ReadLine(FAspellPipe);
-    if copy(s,1,4) <> '@(#)' then begin
-      CloseProgram(FAspellPipe);
-      FSpellCheckStarted := False;
-      DoError('Could not initialize aspell: "%s"', [s], 1);
-    end else begin
-      PasDoc_RunHelp.WriteLine('!', FAspellPipe);
-      if Length(IgnoreWordsFile)>0 then begin
-        L := TStringList.Create;
-        try
-          L.LoadFromFile(IgnoreWordsFile);
-          for i := L.Count-1 downto 0 do begin
-            PasDoc_RunHelp.WriteLine('@'+L[i], FAspellPipe);
-          end;
-        except
-          DoMessage(1, mtWarning, 'Could not load ignore words file %s', [IgnoreWordsFile]);
-        end;
-        L.Free;
+      on E: Exception do
+      begin
+        DoMessage(1, mtWarning, 'Executing aspell failed, ' +
+          'disabling spell checking: "%s"', [E.Message]);
+        Exit;
       end;
     end;
   end;
+end;
+
+procedure TDocGenerator.SetSpellCheckIgnoreWords(Value: TStringList);
+begin
+  SpellCheckIgnoreWords.Assign(Value);
 end;
 
 function TDocGenerator.FormatPascalCode(const Line: string): string;
