@@ -1,3 +1,5 @@
+- Integrate spell checking in gui (--aspell and --spell-check-ignore-words equivalents)
+
 - Default value of EditHtmlBrowserCommand.Text
   should be read from some user's config file.
 
