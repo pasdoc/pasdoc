@@ -241,9 +241,14 @@ end;
     
     { Return a link to item Item which will be displayed as LinkCaption.
       Returned string may be directly inserted inside output documentation. 
-      LinkCaption will be always converted using ConvertString. }
+      LinkCaption will be always converted using ConvertString before writing,
+      so don't worry about doing this yourself when calling this method. 
+      
+      If some output format doesn't support this feature, 
+      it can return simply ConvertString(LinkCaption).
+      This is the default implementation of this method in this class. }
     function MakeItemLink(const Item: TBaseItem;
-      const LinkCaption: string): string; virtual; abstract;
+      const LinkCaption: string): string; virtual;
 
     { This writes Code as a Pascal code.
       Links inside the code are resolved from Item.
@@ -264,9 +269,6 @@ end;
       @param(s is the string to format)
       @returns(the formatted string) }
     function CodeString(const s: string): string; virtual; abstract;
-
-    { Mark the string as a parameter, e.g. <b>TheString</b> }
-    function ParameterString(const ParamType, Param: string): string; virtual;
 
     { Converts for each character in S, thus assembling a
       String that is returned and can be written to the documentation file.
@@ -422,7 +424,7 @@ end;
     procedure StartSpellChecking(const AMode: string);
 
     { checks a word and returns suggestions.
-      Will create an entry in AWords for each wrong word,
+      Will create an entry in AErrors for each wrong word,
       and the object (if not nil meaning no suggestions) will contain
       another string list with suggestions. The value will be the
       offset from the start of AString.
@@ -1810,12 +1812,6 @@ begin
   end;
 end;
 
-function TDocGenerator.ParameterString(const ParamType,
-  Param: string): string;
-begin
-  Result := #10 + ParamType + ' ' + Param;
-end;
-
 function TDocGenerator.FormatPascalCode(const Line: string): string;
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
@@ -2168,6 +2164,12 @@ end;
 function TDocGenerator.URLLink(const URL: string): string; 
 begin
   Result := ConvertString(URL);
+end;
+
+function TDocGenerator.MakeItemLink(const Item: TBaseItem;
+  const LinkCaption: string): string; 
+begin
+  Result := ConvertString(LinkCaption);
 end;
 
 procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem; 

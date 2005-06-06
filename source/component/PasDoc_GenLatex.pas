@@ -173,9 +173,6 @@ type
     function FormatComment(AString: string): string; override;
     function FormatString(AString: string): string; override;
     function FormatCode(AString: string): string; override;
-    
-    function MakeItemLink(const Item: TBaseItem;
-      const LinkCaption: string): string; override;
   public
     function FormatPascalCode(const Line: string): string; override;
 
@@ -631,12 +628,6 @@ end;
 procedure TTexDocGenerator.WriteEndOfCode;
 begin
   WriteDirect('\end{ttfamily}',true);
-end;
-
-function TTexDocGenerator.MakeItemLink(const Item: TBaseItem;
-  const LinkCaption: string): string; 
-begin
-  Result := ConvertString(LinkCaption);
 end;
 
 procedure TTexDocGenerator.WriteEndOfParagraph;
