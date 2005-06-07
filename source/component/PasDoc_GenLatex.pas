@@ -1175,10 +1175,15 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('\item ');
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
-        if ULink <> nil then begin
+        if ULink <> nil then
+        begin
           WriteDirect(CreateReferencedLink(U.UsesUnits[i], ULink.FullLink));
-        end else begin
-          WriteConverted(U.UsesUnits[i]);
+        end else 
+        begin
+          { CreateReferencedLink writes link names in tt font, so we follow 
+            the convention here and also use tt font. }
+          WriteDirect('\begin{ttfamily}' + 
+            ConvertString(U.UsesUnits[i]) + '\end{ttfamily}');
         end;
       end;
       WriteDirect('\end{itemize}',true);
