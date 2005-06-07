@@ -1448,7 +1448,7 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
         if ULink <> nil then begin
           WriteLink(ULink.FullLink, U.UsesUnits[i], 'bold');
         end else begin
-          WriteDirect(U.UsesUnits[i]);
+          WriteConverted(U.UsesUnits[i]);
         end;
         WriteDirect('</li>');
       end;   
