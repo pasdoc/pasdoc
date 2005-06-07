@@ -22,9 +22,7 @@ type
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   private
-    FNumericFilenames: boolean;
     FWriteUses: boolean;
-    FLinkCount: Integer;
     FOddTableRow: Integer;
     { number of cells (= columns) per table row }
     NumCells: Integer;
@@ -181,13 +179,10 @@ type
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
-    procedure BuildLinks; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function EscapeURL(const AString: string): string; virtual;
   published
-    property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
-      default false;
     property WriteUsesClause: boolean read FWriteUses write FWriteUses
       default false;
     { Indicate if the output must be simplified for latex2rtf }
@@ -244,17 +239,6 @@ begin
 end;
 
 function TTexDocGenerator.CreateLink(const Item: TBaseItem): string;
-
-  function NewLink(const AFullName: string): string;
-  begin
-    if NumericFilenames then begin
-      Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
-      Inc(FLinkCount);
-    end else begin
-      Result := AFullName + GetFileExtension;
-    end;
-  end;
-
 begin
   Result := '';
   
@@ -269,14 +253,14 @@ begin
       if Item is TPasCio then 
       begin
         { it's an object / a class }
-        Result := NewLink(TPasItem(Item).MyUnit.Name + '.' + Item.Name);
+        Result := TPasItem(Item).MyUnit.Name + '.' + Item.Name;
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
         Result := TPasItem(Item).MyUnit.FullLink + '-' + Item.Name;
       end;
     end;
   end else begin
-    Result := NewLink(Item.Name);
+    Result := Item.Name;
   end;
 end;
 
@@ -1295,13 +1279,6 @@ end;
 function TTexDocGenerator.ConvertChar(c: char): String;
 begin
   ConvertChar := ConvertString(c);
-end;
-
-
-procedure TTexDocGenerator.BuildLinks;
-begin
-  FLinkCount := 1;
-  inherited;
 end;
 
 function TTexDocGenerator.EscapeURL(const AString: string): string;
