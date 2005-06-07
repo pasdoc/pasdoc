@@ -136,6 +136,8 @@ type
     FGraphVizClasses: boolean;
     FGraphVizUses: boolean;
 
+    FWriteUsesClause: boolean;
+
     { Name of the project to create. }
     FProjectName: string;
     { if true, no link to pasdoc homepage will be included at the bottom of
@@ -624,6 +626,9 @@ end;
     { This controls @link(SearchLink) behavior, as described in
       [http://pasdoc.sipsolutions.net/LinkLookOption]. }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook;
+    
+    property WriteUsesClause: boolean 
+      read FWriteUsesClause write FWriteUsesClause default false;
   end;
 
 var

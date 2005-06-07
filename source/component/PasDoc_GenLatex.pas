@@ -22,7 +22,6 @@ type
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   private
-    FWriteUses: boolean;
     FOddTableRow: Integer;
     { number of cells (= columns) per table row }
     NumCells: Integer;
@@ -183,8 +182,6 @@ type
     destructor Destroy; override;
     function EscapeURL(const AString: string): string; virtual;
   published
-    property WriteUsesClause: boolean read FWriteUses write FWriteUses
-      default false;
     { Indicate if the output must be simplified for latex2rtf }
     property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
     property LatexHead: TStrings read FLatexHead write SetLatexHead;

@@ -36,7 +36,6 @@ type
   private
     FUseTipueSearch: boolean;
     FNumericFilenames: boolean;
-    FWriteUses: boolean;
     FLinkCount: Integer;
     FFooter: string;
     { If specified, using external CSS file }
@@ -241,12 +240,13 @@ type
     property Header: string read FHeader write FHeader;
     property Footer: string read FFooter write FFooter;
     property CSS: string read FCSS write FCSS;
+    
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-    property WriteUsesClause: boolean read FWriteUses write FWriteUses
-      default false;
 
-    property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch;
+    { See [http://pasdoc.sipsolutions.net/UseTipueSearchOption] }
+    property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
+      default false;
   end;
 
   { Right now this is the same thing as TGenericHTMLDocGenerator.

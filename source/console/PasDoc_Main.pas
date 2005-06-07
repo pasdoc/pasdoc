@@ -336,6 +336,7 @@ begin
   GPasDoc.Verbosity := GOption_Verbosity.Value;
   
   GPasDoc.Generator.NoGeneratorInfo := GOption_Generator.TurnedOn;
+  GPasDoc.Generator.WriteUsesClause := GOption_WriteUsesList.TurnedOn;
 
   if GPasDoc.Generator is TGenericHTMLDocGenerator then
   begin    
@@ -352,7 +353,6 @@ begin
      HtmlGen.CSS := GOption_CSS.Value;
 
     HtmlGen.NumericFilenames := GOption_NumericFilenames.TurnedOn;
-    HtmlGen.WriteUsesClause := GOption_WriteUsesList.TurnedOn;
     
     HtmlGen.UseTipueSearch := GOption_UseTipueSearch.TurnedOn;
   end else
