@@ -1763,7 +1763,7 @@ const
   Separators = [' ', ',', '(', ')', #9, #10, #13, ';', '[', ']', '{', '}',
     '''', ':', '<', '>', '=', '+', '-', '*', '/', '@', '.'];
   LineEnd = [#10, #13];
-  AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z'];
+  AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
   function TestCommentStart: boolean;
   begin
     result := False;
