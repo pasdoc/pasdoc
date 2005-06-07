@@ -72,7 +72,8 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'ok_multiple_vars.pas' -or \
   -iname 'ok_class_function.pas' -or \
   -iname 'ok_latex_head.pas' -or \
-  -iname 'ok_longcode_underscores.pas' \
+  -iname 'ok_longcode_underscores.pas' -or \
+  -iname 'ok_longcode_comment.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -96,3 +97,4 @@ mk_special_test ok_multiple_vars ok_multiple_vars.pas
 mk_special_test ok_class_function ok_class_function.pas
 mk_special_test ok_latex_head --latex-head=ok_latex_head.tex ok_latex_head.pas
 mk_special_test ok_longcode_underscores ok_longcode_underscores.pas
+mk_special_test ok_longcode_comment ok_longcode_comment.pas

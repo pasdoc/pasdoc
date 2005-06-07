@@ -202,7 +202,8 @@ uses
   PasDoc,
   ObjectVector,
   Utils, 
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  StrUtils;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -213,49 +214,20 @@ function TTexDocGenerator.FormatPascalCode(const Line: string): string;
 var
   AStringList: TStringList;
   LineIndex: integer;
-  CharIndex: integer;
   ALine: string;
-  InnerCharIndex: integer;
-  Spaces: string;
 begin
   AStringList := TStringList.Create;
   try
     AStringList.Text := inherited FormatPascalCode(Line);
+    
     for LineIndex := 0 to AStringList.Count -1 do
     begin
       ALine := AStringList[LineIndex];
-      if Trim(ALine) = '' then
-      begin
-        ALine := '\\';
-      end
-      else
-      begin
-        ALine := SCharsReplace(ALine, [' '], '~');
-        if ALine[1] = '~' then
-        begin
-          for CharIndex := 2 to Length(ALine) do
-          begin
-            if ALine[CharIndex] <> '~' then
-            begin
-              Spaces := '';
-              for InnerCharIndex := 1 to CharIndex -1 do
-              begin
-                Spaces := Spaces + ' ';
-              end;
-
-              ALine := '}\verb|' + Spaces + '|\texttt{'
-                + Copy(ALine,CharIndex, MAXINT);
-              break;
-            end;
-          end;
-        end;
-        ALine := ALine + '\\';
-      end;
+      ALine := SCharsReplace(ALine, [' '], '~') + '\\';
       if LineIndex < AStringList.Count -1 then
       begin
         ALine := ALine + '\nopagebreak[3]'
       end;
-
       AStringList[LineIndex] := ALine;
     end;
 
