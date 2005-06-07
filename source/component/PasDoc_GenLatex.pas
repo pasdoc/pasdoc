@@ -1175,13 +1175,12 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('\item ');
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
-        if ULink is TPasUnit then begin
-          WriteConverted(U.UsesUnits[i]);
+        if ULink <> nil then begin
+          WriteDirect(CreateReferencedLink(U.UsesUnits[i], ULink.FullLink));
         end else begin
-          WriteDirect(U.UsesUnits[i]);
+          WriteConverted(U.UsesUnits[i]);
         end;
-        WriteDirect('');
-      end;   
+      end;
       WriteDirect('\end{itemize}',true);
     end;
   end;
