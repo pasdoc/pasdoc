@@ -300,7 +300,6 @@ begin
   if GOption_Format.Value = 'htmlhelp' then 
   begin
     GPasDoc.Generator := THTMLHelpDocGenerator.Create(GPasDoc);
-    TGenericHTMLDocGenerator(GPasDoc.Generator).NumericFilenames := True;
   end else
   begin
     raise EInvalidCommandLine.CreateFmt(
