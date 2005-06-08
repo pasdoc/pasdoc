@@ -213,7 +213,7 @@ end;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleBrTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
-    
+
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
@@ -297,7 +297,7 @@ end;
 
     (*Takes description D of the Item, expands links (using Item),
       converts output-specific characters.
-      
+
       Note that you can't process with this function more than once
       the same Description (i.e. like
       @longcode(#
@@ -307,23 +307,27 @@ end;
       #)) because output of this function is already something
       ready to be included in final doc output, it shouldn't be
       processed once more, moreover this function initializes
-      some properties of Item to make them also in the 
+      some properties of Item to make them also in the
       "already-processed" form (ready to be included in final docs).
-      
+
       Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
       see @link(TTagManager.Execute). *)
-    function ExpandDescription(Item: TBaseItem; 
+    function ExpandDescription(Item: TBaseItem;
       const Description: string;
       WantFirstSentenceEnd: boolean;
-      out FirstSentenceEnd: Integer): string; overload; 
+      out FirstSentenceEnd: Integer): string; overload;
 
     { Same thing as ExpandDescription(Item, Description, false, Dummy) }
-    function ExpandDescription(Item: TBaseItem; 
+    function ExpandDescription(Item: TBaseItem;
       const Description: string): string; overload;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
+
+    { Searches for a web address in String S. It must either contain a http:// or
+      start with www. }
+    function ExtractWebAddress(s: string; out S1, S2, WebAddress: string): Boolean;
 
     { Searches all items in all units (given by field @link(Units)) for item
       S1.S2.S3 (first N  strings not empty).
@@ -1100,9 +1104,45 @@ begin
   Result := True;
 end;
 
+function TDocGenerator.ExtractWebAddress(s: string; out S1, S2,
+  WebAddress: string): Boolean;
+const
+  ALLOWED_CHARS = ['a'..'z', 'A'..'Z', '-', '.', '_', '0'..'9'];
+var
+  p: integer;
+begin
+  Result := false;
+  p := Pos('http://', s);
+  if p > 0 then begin
+    { if it starts with "http://" it is at least meant to be a web address }
+    S1 := Copy(s, 1, p - 1);
+    WebAddress := Copy(s, p + 7, 255);
+    p := 1;
+    while (p < Length(WebAddress)) and (WebAddress[p] in ALLOWED_CHARS) do
+      Inc(p);
+    S2 := Copy(WebAddress, p, 255);
+    WebAddress := Copy(WebAddress, 1, p - 1);
+    Result := true;
+  end else begin
+    p := Pos('www.', s);
+    if p = 0 then
+      exit;
+    { if it starts with "www.", its most likely a web address, we could probably
+      add more checks here (like: does it contain an additional dot for the TLD?) }
+    S1 := Copy(s, 1, p - 1);
+    WebAddress := Copy(s, p, 255);
+    p := 1;
+    while (p < Length(WebAddress)) and (WebAddress[p] in ALLOWED_CHARS) do
+      Inc(p);
+    S2 := Copy(WebAddress, p, 255);
+    WebAddress := Copy(WebAddress, 1, p - 1);
+    Result := true;
+  end;
+end;
+
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer): 
+function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer):
   TBaseItem;
 var
   i: Integer;

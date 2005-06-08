@@ -6,7 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Hendy Irawan (ceefour@gauldong.net))
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
-  @author(Thomas W. Mueller <no-email>)
+  @author(Thomas Mueller (www.dummzeuch.de))
   @author(David Berg (HTML Layout) <david@sipsolutions.de>)
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @author(Michalis Kamburelis)
@@ -162,7 +162,7 @@ type
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string); 
+    procedure WriteDates(const HL: integer; const Created, LastMod: string);
   protected
     function ConvertString(const s: string): string; override;
     
@@ -388,7 +388,7 @@ procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVec
 var
   i: Integer;
   s, S1, S2: string;
-  EmailAddress: string;
+  Address: string;
 begin
   if StringVectorIsNilOrEmpty(Authors) then Exit;
 
@@ -401,9 +401,13 @@ begin
     s := Authors[i];
     WriteStartOfParagraph;
 
-    if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
+    if ExtractEmailAddress(s, S1, S2, Address) then begin
       WriteConverted(S1);
-      WriteLink('mailto:' + EmailAddress, ConvertString(EmailAddress), '');
+      WriteLink('mailto:' + Address, ConvertString(Address), '');
+      WriteConverted(S2);
+    end else if ExtractWebAddress(s, S1, S2, Address) then begin
+      WriteConverted(S1);
+      WriteLink('http://' + Address, ConvertString(Address), '');
       WriteConverted(S2);
     end else begin
       WriteConverted(s);
