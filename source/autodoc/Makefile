@@ -71,8 +71,8 @@ html:
 	  --graphviz-classes --graphviz-uses \
 	  --link-gv-classes jpg --link-gv-uses jpg \
 	  --output=html/ --use-tipue-search
-	dot -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
-	dot -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
+	dot -Grankdir=LR -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
+	dot -Grankdir=LR -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
 
 # Ignore exit code from hhc (it's always 1 ???)
 htmlhelp:
