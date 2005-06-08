@@ -1826,7 +1826,16 @@ begin
   WriteDirectLine('<title>'+Title+'</title>');
   WriteDirectLine('</head><frameset cols="200,*">');
   WriteDirectLine('<frame src="navigation.html" frameborder="0">');
-  WriteDirectLine('<frame src="AllUnits.html" frameborder="0" name="content">');
+  if Introduction <> nil then
+  begin
+    WriteDirectLine('<frame src="' +
+      Introduction.OutputFileName +
+      '" frameborder="0" name="content">');
+  end
+  else
+  begin
+    WriteDirectLine('<frame src="AllUnits.html" frameborder="0" name="content">');
+  end;
   WriteDirectLine('</frameset></html>');
   CloseStream;
 
