@@ -45,7 +45,7 @@ DynamicLoader=/lib/ld-linux.so.2
 
 [Directories]
 OutputDir=
-UnitOutputDir=
+UnitOutputDir=lib
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=../component:../OptionParser:../component/tipue
@@ -60,33 +60,3 @@ HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1
 DebugCWD=
-
-[Excluded Packages]
-/d/mojepasy/kylix/units/indy/dclindy.so.6=Internet Direct "Indy" for Kylix Property and Component Editors
-
-[HistoryLists\hlConditionals]
-Count=1
-Item0=PROFILE
-
-[HistoryLists\hlSearchPath]
-Count=11
-Item0=../component:../OptionParser:../component/tipue
-Item1=../component:../OptionParser
-Item2=../component:../source//OptionParser
-Item3=../component:../../../OptionParser
-Item4=../component:../../OptionParser
-Item5=../component
-Item6=$(DELPHI)/lib/debug:../component
-Item7=../component:/tmp
-Item8=../Component
-Item9=$(DELPHI)/lib/debug:../Component
-Item10=../Component:/tmp
-
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=$(HOME)/out/test/dcu
-
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=$(HOME)/out/test
-
