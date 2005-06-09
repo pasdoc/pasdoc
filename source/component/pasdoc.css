@@ -5,35 +5,62 @@ body.navigationframe { font-family: Verdana,Arial;
   color: white; background-color: #787878; 
   font-size: 12px; }
 
+img { border:0px; }
+
+a:link {color:#C91E0C; text-decoration: none; }
+a:visited {color:#7E5C31; text-decoration: none; }
+a:hover {text-decoration: underline; }
+a:active {text-decoration: underline; }
+
 a.navigation:link { color: white; text-decoration: none; font-size: 12px;}
 a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}
 a.navigation:hover { color: white; font-weight: bold; 
   text-decoration: none; font-size: 12px; }
 a.navigation:active { color: white; text-decoration: none; font-size: 12px;}
 
-a.normal:link {color:#C91E0C; text-decoration: none; }
-a.normal:visited {color:#7E5C31; text-decoration: none; }
-a.normal:hover {text-decoration: underline; }
-a.normal:active {text-decoration: underline; }
-
 a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
 a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
 a.bold:hover {text-decoration: underline; font-weight:bold; }
 a.bold:active {text-decoration: underline; font-weight:bold; }
 
-tr.list { background: #FFBF44; }
-tr.list2 { background: #FFC982; }
-tr.listheader { background: #C91E0C; }
-th.listheader { color: white; }
-
 a.section {color: green; text-decoration: none; font-weight: bold; }
 a.section:hover {color: green; text-decoration: underline; font-weight: bold; }
 
+ul.useslist a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
+ul.useslist a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
+ul.useslist a:hover {text-decoration: underline; font-weight:bold; }
+ul.useslist a:active {text-decoration: underline; font-weight:bold; }
+
+ul.hierarchy { list-style-type:none; }
+ul.hierarchylevel { list-style-type:none; }
+
+p.unitlink a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
+p.unitlink a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
+p.unitlink a:hover {text-decoration: underline; font-weight:bold; }
+p.unitlink a:active {text-decoration: underline; font-weight:bold; }
+
+tr.list { background: #FFBF44; }
+tr.list2 { background: #FFC982; }
+tr.listheader { background: #C91E0C; color: white; }
+
+table { border-spacing:2px; padding:4px; width:100%; }
+
+table.markerlegend { width:auto; }
+table.markerlegend td.legendmarker { text-align:center; }
+
+table.sections { background:white; }
+table.sections td {background:lightgray; }
+
+td { vertical-align:top; }
+
 td.itemname {white-space:nowrap; }
+td.itemunit {white-space:nowrap; }
+td.itemdesc { width:100%; }
+
 div.nodescription {color:red;}
 dl.parameters {;}
-dt.parameters {color:blue;}
-dd.parameters {;}
+dl.parameters dt {color:blue;}
+dl.parameters dd {;}
 
 /* Style applied to Pascal code in documentation 
    (e.g. produced by @longcode tag) } */
