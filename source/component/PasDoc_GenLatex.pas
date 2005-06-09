@@ -194,8 +194,7 @@ uses
   PasDoc,
   ObjectVector,
   Utils, 
-  PasDoc_StringPairVector,
-  StrUtils;
+  PasDoc_StringPairVector;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
