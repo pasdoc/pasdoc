@@ -1983,7 +1983,7 @@ begin
 
   result := '</p>' + LineEnding + LineEnding + 
     '<pre class="longcode">' + 
-       inherited FormatPascalCode(ConvertString(Line)) + '</pre>' +
+       inherited FormatPascalCode(Line) + '</pre>' +
      LineEnding + LineEnding + '<p>';
 end;
 

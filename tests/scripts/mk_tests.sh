@@ -58,6 +58,9 @@ shift 1
 # otherwise find outputs files in pretty much random (as they happened to
 # returned by OS calls), and this can accidentaly change order of lines in
 # PASDOC-OUTPUT files.
+#
+# TODO: soon this will be changed to explicitly mention filenames to *include*
+# (except mentioning files to *exclude*, like it does now).
 mk_test "$FORMAT"/ "$SORT_OLD" \
 `find . -iname '*.pas' -maxdepth 1 -not '(' \
   -iname 'ok_link_1_char.pas' -or \
@@ -73,7 +76,8 @@ mk_test "$FORMAT"/ "$SORT_OLD" \
   -iname 'ok_class_function.pas' -or \
   -iname 'ok_latex_head.pas' -or \
   -iname 'ok_longcode_underscores.pas' -or \
-  -iname 'ok_longcode_comment.pas' \
+  -iname 'ok_longcode_comment.pas' -or \
+  -iname 'ok_longcode_dash.pas' \
   ')' | sort`
 
 # Make a specialized test of some units that need special
@@ -98,3 +102,4 @@ mk_special_test ok_class_function ok_class_function.pas
 mk_special_test ok_latex_head --latex-head=ok_latex_head.tex ok_latex_head.pas
 mk_special_test ok_longcode_underscores ok_longcode_underscores.pas
 mk_special_test ok_longcode_comment ok_longcode_comment.pas
+mk_special_test ok_longcode_dash ok_longcode_dash.pas

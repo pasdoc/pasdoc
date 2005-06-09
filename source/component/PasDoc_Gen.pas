@@ -1893,8 +1893,8 @@ begin
           end;
           if EndOfCode then
           begin
-            result := result + (Copy(Line, WhiteSpaceBeginning, CharIndex -
-              WhiteSpaceBeginning));
+            result := result + ConvertString(Copy(Line, WhiteSpaceBeginning, 
+              CharIndex - WhiteSpaceBeginning));
           end;
         end;
       ctString:
