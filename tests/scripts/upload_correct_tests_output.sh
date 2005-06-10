@@ -43,9 +43,7 @@ set -eu
 # This is done in order to allow other pasdoc developers
 # to also execute this script, overriding files uploaded by you.
 #
-# Requisites: uploading is done using `scp' command.
-# Also `ssh' command is used by ./ssh_chmod_writeable_by_pasdoc.sh
-# to set group/permissions.
+# Requisites: `scp' command, `ssh' command.
 
 # Parse options
 SF_USERNAME="$1"
@@ -94,12 +92,21 @@ upload_one_format ()
   #   scp -r ../"$FORMAT"/ "$SF_CONNECT"
   # but this requires uploading all files unpacked.
   # It's much quickier to just log to server and untar there uploaded archive.
+  #
+  # After uploading, I change permission of uploaded and unpacked 
+  # files so that they are writeable by pasdoc group 
+  # (which means pasdoc developers).
+  # Note that I don't do here simple
+  #   ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
+  # because I can chmod only the files that "$SF_USERNAME" owns
+  # (so I chmod only the files that I uploaded).
   ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
   cd "$SF_PATH"
   tar xzf "$ARCHIVE_FILENAME_NONDIR"
+  
+  chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
+  chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
 EOF
-
-  ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
 
   # Clean temp dir
   rm -Rf upload_correct_tests_output_tmp/

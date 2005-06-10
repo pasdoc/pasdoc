@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eu
 
-# This is small script used by upload_correct_tests_output.sh and
-# source/autodoc/Makefile.
-#
 # $1 is your username on sourceforge,
 # $2 is directory on sourcefore (usually you will start this with
 # /home/groups/p/pa/pasdoc/...).
