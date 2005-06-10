@@ -51,7 +51,10 @@ table.markerlegend td.legendmarker { text-align:center; }
 table.sections { background:white; }
 table.sections td {background:lightgray; }
 
-td { vertical-align:top; }
+table.summary td.itemcode { width:100%; }
+table.detail td.itemcode { width:100%; }
+
+td { vertical-align:top; padding:4px; }
 
 td.itemname {white-space:nowrap; }
 td.itemunit {white-space:nowrap; }

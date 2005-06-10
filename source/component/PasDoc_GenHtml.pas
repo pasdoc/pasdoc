@@ -819,9 +819,10 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
 begin
   WriteStartOfTableRow('');
 
-  if ShowVisibility then WriteVisibilityCell(Item);
+  if ShowVisibility then
+    WriteVisibilityCell(Item);
   { todo: assign a class }
-  WriteStartOfTableCell('');
+  WriteStartOfTableCell('itemcode');
 
   if MakeAnchor then WriteAnchor(Item.Name);
 
@@ -1185,7 +1186,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteLink(Item.FullLink, Item.Name, 'bold');
         WriteEndOfTableCell;
 
-        WriteStartOfTableCell;
+        WriteStartOfTableCell('itemunit');
         WriteLink(Item.MyUnit.FullLink, Item.MyUnit.Name, 'bold');
         WriteEndOfTableCell;
 
@@ -1656,7 +1657,7 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
   end;
 
 begin
-  WriteStartOfTableCell;
+  WriteStartOfTableCell('visibility');
   case Item.Visibility of
     viPrivate:
       WriteVisibilityImage('private.gif', trPrivate);

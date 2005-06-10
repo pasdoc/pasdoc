@@ -176,7 +176,7 @@ type
     { the exact character representation of this token as it was found in the
       input file }
     Data: string;
-    { additional information on this token as a record of variant fields }
+    { additional information on this token as a variant record depending on the token's MyType }
     Info: record
       case Integer of
         0: (WhitespaceRows: Integer);
@@ -189,7 +189,7 @@ type
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
-    { Returns if argument ST equals @link(MyType) }
+    { Returns true if argument ST equals @link(MyType), false otherwise }
     function IsSymbol(const st: TSymbolType): Boolean;
   end;
 
