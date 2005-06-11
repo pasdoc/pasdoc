@@ -158,7 +158,7 @@ type
       than 1 will be set to 1 and arguments larger than 6 are set to 6.
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
-    procedure WriteHeading(Level: integer; const s: string);
+    procedure WriteHeading(Level: integer; const CssClass: string; const s: string);
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
@@ -376,14 +376,17 @@ end;
 procedure TGenericHTMLDocGenerator.WriteAppInfo;
 begin
   { check if user does not want a link to the pasdoc homepage }
-  if NoGeneratorInfo then Exit;
+  if NoGeneratorInfo then
+    Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
+  WriteDirect('<span class="appinfo">');
   WriteDirect('<hr noshade size="1"><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
   WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirectLine('</em>');
+  WriteDirectLine('</span>');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -395,13 +398,14 @@ begin
   if StringVectorIsNilOrEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
-    WriteHeading(HL, FLanguage.Translation[trAuthor])
+    WriteHeading(HL, 'authors', FLanguage.Translation[trAuthor])
   else
-    WriteHeading(HL, FLanguage.Translation[trAuthors]);
+    WriteHeading(HL, 'authors', FLanguage.Translation[trAuthors]);
 
+  WriteDirectLine('<ul class="authors">');
   for i := 0 to Authors.Count - 1 do begin
     s := Authors[i];
-    WriteStartOfParagraph;
+    WriteDirect('<li>');
 
     if ExtractEmailAddress(s, S1, S2, Address) then begin
       WriteConverted(S1);
@@ -415,8 +419,9 @@ begin
       WriteConverted(s);
     end;
 
-    WriteEndOfParagraph;
+    WriteDirectLine('</li>');
   end;
+  WriteDirectLine('</ul>');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
@@ -523,7 +528,7 @@ begin
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
 
   WriteAnchor(CIO.Name);
-  WriteHeading(HL, s);
+  WriteHeading(HL, 'cio', s);
 
   WriteStartOfTable('sections');
   WriteDirectLine('<tr>');
@@ -542,14 +547,14 @@ begin
 
   { write unit link }
   if Assigned(CIO.MyUnit) then begin
-    WriteHeading(HL + 1, FLanguage.Translation[trUnit]);
+    WriteHeading(HL + 1, 'unit', FLanguage.Translation[trUnit]);
     WriteStartOfParagraph('unitlink');
     WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
     WriteEndOfParagraph;
   end;
 
   { write declaration link }
-  WriteHeading(HL + 1, FLanguage.Translation[trDeclaration]);
+  WriteHeading(HL + 1, 'declaration', FLanguage.Translation[trDeclaration]);
   WriteStartOfParagraph('declaration');
   WriteStartOfCode;
   WriteConverted('type ' + CIO.Name + ' = ');
@@ -572,13 +577,13 @@ begin
   WriteEndOfParagraph;
 
   { Write Description }
-  WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+  WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
   WriteItemDetailedDescription(CIO);
 
   { Write Hierarchy }
   if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
     WriteAnchor(SectionAnchors[dsHierarchy]);
-    WriteHeading(HL + 1, SectionHeads[dsHierarchy]);
+    WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
     s := CIO.Ancestors.FirstName;
     WriteHierarchy(s, SearchItem(s, Cio));
@@ -595,12 +600,12 @@ begin
     and "Description" when there are no items. }
   if AnyItem then
   begin
-    WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
+    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
     WriteFieldsSummary;
     WriteMethodsSummary;
     WritePropertiesSummary;
 
-    WriteHeading(HL + 1, FLanguage.Translation[trDescription]);
+    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
     WriteFieldsDetailed;
     WriteMethodsDetailed;
     WritePropertiesDetailed;
@@ -658,7 +663,7 @@ begin
 
   WriteAnchor('@Classes');
 
-  WriteHeading(HL, FLanguage.Translation[trCio]);
+  WriteHeading(HL, 'cio', FLanguage.Translation[trCio]);
   WriteStartOfTable2Columns('classestable', FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
   for j := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[j]);
@@ -697,13 +702,13 @@ procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer; const Created,
   LastMod: string);
 begin
   if Created <> '' then begin
-    WriteHeading(HL, FLanguage.Translation[trCreated]);
+    WriteHeading(HL, 'created', FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
     WriteConverted(Created);
     WriteEndOfParagraph;
   end;
   if LastMod <> '' then begin
-    WriteHeading(HL, FLanguage.Translation[trLastModified]);
+    WriteHeading(HL, 'modified', FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
     WriteConvertedLine(LastMod);
     WriteEndOfParagraph;
@@ -850,7 +855,7 @@ begin
   
   WriteAnchor(SectionAnchor);
 
-  WriteHeading(HeadingLevel + 1, FLanguage.Translation[SectionName]);
+  WriteHeading(HeadingLevel + 1, 'summary', FLanguage.Translation[SectionName]);
   
   WriteStartOfTable1Column('summary', '');
 
@@ -869,7 +874,7 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
-  WriteHeading(HeadingLevel + 1, FLanguage.Translation[SectionName]);
+  WriteHeading(HeadingLevel + 1, 'detail', FLanguage.Translation[SectionName]);
   
   for i := 0 to Items.Count - 1 do
   begin
@@ -883,7 +888,7 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteHeading(Level: integer; const s: string);
+procedure TGenericHTMLDocGenerator.WriteHeading(Level: integer; const CssClass: string; const s: string);
 var
   c: string;
 begin
@@ -893,7 +898,7 @@ begin
     Level := 6;
   end;
   c := IntToStr(Level);
-  WriteDirect('<h' + c + '>');
+  WriteDirect('<h' + c + ' class="' + CssClass + '">');
   WriteConverted(s);
   WriteDirectLine('</h' + c + '>');
 end;
@@ -923,10 +928,10 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
-      WriteDirect('<dt>');
+      WriteDirect('<dt>'); // doesn't need a class, can be accessed via "dl.parameters dt"
       WriteDirect(ParamName);
       WriteDirectLine('</dt>');
-      WriteDirect('<dd>');
+      WriteDirect('<dd>');  // doesn't need a class, can be accessed via "dl.parameters dd"
       WriteSpellChecked(Desc);
       WriteDirectLine('</dd>');
     end;
@@ -938,7 +943,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     if ObjectVectorIsNilOrEmpty(List) then
       Exit;
 
-    WriteHeading(6, Caption);
+    WriteHeading(6, 'parameters', Caption);
     WriteDirectLine('<dl class="parameters">');
     for i := 0 to List.Count - 1 do 
     begin
@@ -957,7 +962,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
   begin
     if ReturnDesc = '' then
       exit;
-    WriteHeading(6, LowerCase(FLanguage.Translation[trReturns]));
+    WriteHeading(6, 'return', LowerCase(FLanguage.Translation[trReturns]));
     WriteDirect('<p class="return">');
     WriteSpellChecked(ReturnDesc);
     WriteDirect('</p>');
@@ -1055,7 +1060,8 @@ end;
 procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
   function CreateOverviewStream(Overview: TCreatedOverviewFile): boolean;
-  var BaseFileName, Headline: string;
+  var
+    BaseFileName, Headline: string;
   begin
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
     Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
@@ -1073,7 +1079,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     Headline := FLanguage.Translation[
       OverviewFilesInfo[Overview].TranslationHeadlineId];
     WriteStartOfDocument(Headline);
-    WriteHeading(1, Headline);  
+    WriteHeading(1, 'allitems', Headline);  
   end;
 
   { Creates an output stream that lists up all units and short descriptions. }
@@ -1085,7 +1091,8 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
   begin
     c := Units;
 
-    if not CreateOverviewStream(ofUnits) then Exit;
+    if not CreateOverviewStream(ofUnits) then
+      Exit;
 
     if Assigned(c) and (c.Count > 0) then begin
       WriteStartOfTable2Columns('unitstable', FLanguage.Translation[trName],
@@ -1449,7 +1456,7 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
 
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
-    WriteHeading(HL, FLanguage.Translation[trDescription]);
+    WriteHeading(HL, 'description', FLanguage.Translation[trDescription]);
     WriteItemDetailedDescription(U);
   end;
 
@@ -1459,7 +1466,7 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
     ULink: TPasItem;
   begin
     if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-      WriteHeading(HL, 'uses');
+      WriteHeading(HL, 'uses', 'uses');
       WriteDirect('<ul class="useslist">');
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('<li>');
@@ -1585,7 +1592,7 @@ begin
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
-  WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name);
+  WriteHeading(HL, 'unit', FLanguage.Translation[trUnit] + ' ' + U.Name);
 
   WriteStartOfTable('sections');
   WriteDirectLine('<tr>');
@@ -1618,7 +1625,7 @@ begin
     "Overview" and "Description" when there are no items. }
   if AnyItemSummary then
   begin
-    WriteHeading(HL + 1, FLanguage.Translation[trOverview]);  
+    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);  
     WriteCIOSummary(HL + 2, U.CIOs);
     WriteFuncsProcsSummary;
     WriteTypesSummary;
@@ -1628,7 +1635,7 @@ begin
   
   if AnyItemDetailed then
   begin
-    WriteHeading(HL + 1, FLanguage.Translation[trDescription]);  
+    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);  
     WriteFuncsProcsDetailed;
     WriteTypesDetailed;
     WriteConstantsDetailed;
@@ -1708,7 +1715,7 @@ begin
     end;
   WriteStartOfDocument(FLanguage.Translation[trLegend]);
 
-  WriteHeading(1, FLanguage.Translation[trLegend]);
+  WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
 
   WriteStartOfTable2Columns('markerlegend',
     { TODO -otwm : needs translation } 'Marker',
@@ -2012,7 +2019,7 @@ begin
 
   HL := 1;
 
-  WriteHeading(HL, ExternalItem.Title);
+  WriteHeading(HL, 'externalitem', ExternalItem.Title);
 
   WriteSpellChecked(ExternalItem.DetailedDescription);
 

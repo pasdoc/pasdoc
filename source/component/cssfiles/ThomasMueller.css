@@ -54,6 +54,11 @@ ul.hierarchylevel {
   margin-left:20px;
 }
 
+ul.authors{
+  list-style-type:none;
+  margin-left:10px;
+}
+
 p.unitlink {
   padding-left:10px; 
 }
