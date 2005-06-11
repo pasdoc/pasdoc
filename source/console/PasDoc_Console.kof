@@ -55,7 +55,7 @@ DebugSourceDirs=
 UsePackages=0
 
 [Parameters]
-RunParams=--css ../component/cssfiles/ThomasMueller.css --include ../component ../component/*.pas --write-uses-list --auto-abstract --output ../autodoc/html
+RunParams=--visible-members private,protected,public,published,automated --css ../component/cssfiles/ThomasMueller.css --include ../component ../component/*.pas --write-uses-list --auto-abstract --output ../autodoc/html
 HostApplication=
 Launcher=/usr/X11R6/bin/xterm -T KylixDebuggerOutput -e bash -i -c %debuggee%
 UseLauncher=1

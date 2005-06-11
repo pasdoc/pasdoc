@@ -46,9 +46,13 @@ type
     { Returns line with <meta http-equiv="Content-Type" ...>
       describing current charset (from FLanguage). }
     function MetaContentType: string;
-
-    function MakeLinkTarget(
-      const href, caption, localcss, target: string): string;    
+    { makes a link with a target frame
+      @param href is the link's reference
+      @param caption is the link's text
+      @param CssClass is the link's CSS class
+      @param TargetFrame is the link's target frame (or empty) }
+    function MakeTargettedLink(
+      const href, caption, CssClass, TargetFrame: string): string;
       
     { Used by WriteItemsSummary and WriteItemsDetailed. }
     procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
@@ -69,11 +73,6 @@ type
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
     procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
-    { Writes an empty table cell, '&nbsp;'. }
-    {unused: procedure WriteEmptyCell;}
-
-    { Writes the end of an HTML anchor, '</A>'. }
-    {unused: procedure WriteEndOfAnchor; }
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
     procedure WriteEndOfParagraph;
@@ -101,14 +100,7 @@ type
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
 
-    { Writes an opening A element, including a name attribute given by the
-      argument. }
-    {unused: procedure WriteStartOfAnchor(const AName: string); }
     procedure WriteStartOfDocument(AName: string);
-
-    procedure WriteStartOfLink(const href: string); overload;
-    procedure WriteStartOfLink(const href, localcss: string); overload;
-    procedure WriteStartOfLink(const href, localcss, Target: string); overload;
 
     { Starts an HTML paragraph element by writing an opening P tag. }
     procedure WriteStartOfParagraph; overload;
@@ -118,7 +110,7 @@ type
     procedure WriteStartOfTable(const CssClass: string);
 
     procedure WriteStartOfTableCell; overload;
-    procedure WriteStartOfTableCell(const localcss: string); overload;
+    procedure WriteStartOfTableCell(const CssClass: string); overload;
 
     procedure WriteStartOfTable1Column(const CssClass: string; const t: string);
     procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
@@ -136,43 +128,52 @@ type
 
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
-    procedure WriteImage(const src, alt, localcss: string);
-    procedure WriteLink(const href, caption, localcss: string);
-    procedure WriteLinkTarget(const href, caption, localcss, target: string);
-    procedure WriteEndOfLink;
+    function MakeImage(const src, alt, CssClass: string): string;
+    { writes a link
+      @param href is the link's reference
+      @param caption is the link's caption (must already been converted)
+      @param CssClass is the link's CSS class }
+    procedure WriteLink(const href, caption, CssClass: string);
+    { writes a link with a target frame
+      @param href is the link's reference
+      @param caption is the link's caption (must already been converted)
+      @parem CssClass is the link's CSS class
+      @param TargetFrame is the link's target frame (or empty) }
+    procedure WriteTargettedLink(const href, caption, CssClass, TargetFrame: string);
 
     procedure WriteSpellChecked(const AString: string);
-    
+
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); 
-    
+    procedure WriteCIO(HL: integer; const CIO: TPasCio);
+
     { Calls @link(WriteCIO) with each element in the argument collection C,
       using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); 
-    
-    procedure WriteCIOSummary(HL: integer; c: TPasItems); 
+    procedure WriteCIOs(HL: integer; c: TPasItems);
+
+    procedure WriteCIOSummary(HL: integer; c: TPasItems);
 
     { Writes heading S to output, at heading level I.
       For HTML, only levels 1 to 6 are valid, so that values smaller
       than 1 will be set to 1 and arguments larger than 6 are set to 6.
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
-    procedure WriteHeading(Level: integer; const CssClass: string; const s: string);
+    procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
   protected
     function ConvertString(const s: string): string; override;
-    
+
     { Called by @link(ConvertString) to convert a character.
       Will convert special characters to their html escape sequence
       -> test }
     function ConvertChar(c: char): string; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-    
+
+    { overrides @parent.HtmlString to return the string verbatim (Parent discards those strings) }
     function HtmlString(const S: string): string; override;
     
     // FormatPascalCode will cause Line to be formatted in
@@ -262,6 +263,7 @@ uses
   Windows,
 {$ENDIF}
   SysUtils,
+  StrUtils,
   PasDoc,
   ObjectVector,
   Utils,
@@ -382,7 +384,7 @@ begin
   WriteDirect('<span class="appinfo">');
   WriteDirect('<hr noshade size="1"><em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteLinkTarget(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
+  WriteTargettedLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirectLine('</em>');
@@ -740,25 +742,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-{procedure TGenericHTMLDocGenerator.WriteEmptyCell;
-begin
-  WriteDirect('&nbsp;');
-end;}
-
 procedure TGenericHTMLDocGenerator.WriteEndOfDocument;
 begin
   WriteDirect('</body>');
   WriteDirectLine('</html>');
-end;
-
-{procedure TGenericHTMLDocGenerator.WriteEndOfAnchor;
-begin
-  WriteDirect('</a>');
-end;}
-
-procedure TGenericHTMLDocGenerator.WriteEndOfLink;
-begin
-  WriteDirect('</a>');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteEndOfCode;
@@ -766,35 +753,30 @@ begin
   WriteDirect('</code>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteLink(const href, caption, localcss: string);
+procedure TGenericHTMLDocGenerator.WriteLink(const href, caption, CssClass: string);
 begin
-  WriteLinkTarget(href, caption, localcss, '');
+  WriteTargettedLink(href, caption, CssClass, '');
 end;
 
 function TGenericHTMLDocGenerator.MakeItemLink(const Item: TBaseItem;
   const LinkCaption: string): string;
 begin
-  Result := MakeLinkTarget(Item.FullLink, ConvertString(LinkCaption), '', '');
+  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption), '', '');
 end;
 
-function TGenericHTMLDocGenerator.MakeLinkTarget(
-  const href, caption, localcss, target: string): string;
-var
-  s: string;
+function TGenericHTMLDocGenerator.MakeTargettedLink(
+  const href, caption, CssClass, TargetFrame: string): string;
 begin
-  if localcss <> '' then
-    s := Format('<a class="%s"', [localcss])
-  else { todo: There should not be such a class as "normal" }
-    s := '<a class="normal"';
-  if target <> '' then
-    s := Format('%s target="%s"', [s, target]);
-  Result := Format('%s href="%s">%s</a>', [s, EscapeURL(href), caption]);
+  Result := Format('<a %s %s href="%s">%s</a>',
+    [ifthen(CssClass = '', '', 'class="' + CssClass + '"'),
+     ifthen(TargetFrame = '', '', 'target="' + TargetFrame + '"'),
+     EscapeURL(href), caption]);
 end;
 
-procedure TGenericHTMLDocGenerator.WriteLinkTarget(
-  const href, caption, localcss, target: string);
+procedure TGenericHTMLDocGenerator.WriteTargettedLink(
+  const href, caption, CssClass, TargetFrame: string);
 begin
-  WriteDirect(MakeLinkTarget(href, caption, localcss, target));
+  WriteDirect(MakeTargettedLink(href, caption, CssClass, TargetFrame));
 end;
 
 procedure TGenericHTMLDocGenerator.WriteEndOfParagraph;
@@ -888,16 +870,16 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteHeading(Level: integer; const CssClass: string; const s: string);
+procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; const CssClass: string; const s: string);
 var
   c: string;
 begin
-  if (Level < 1) then Level := 1;
-  if Level > 6 then begin
+  if (HL < 1) then HL := 1;
+  if HL > 6 then begin
     DoMessage(2, mtWarning, 'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.', []);
-    Level := 6;
+    HL := 6;
   end;
-  c := IntToStr(Level);
+  c := IntToStr(HL);
   WriteDirect('<h' + c + ' class="' + CssClass + '">');
   WriteConverted(s);
   WriteDirectLine('</h' + c + '>');
@@ -1329,29 +1311,6 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href, localcss, Target: string);
-var
-  s: string;
-begin
-  if localcss <> '' then
-    s := Format('<a class="%s"', [localcss])
-  else
-    s := '<a class="normal"';
-  if target <> '' then
-    s := Format('%s target="%s"', [s, target]);
-  WriteDirect(Format('%s href="%s">', [s, EscapeURL(href)]));
-end;
-
-procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href, localcss: string);
-begin
-  WriteStartOfLink(href, localcss, '');
-end;
-
-procedure TGenericHTMLDocGenerator.WriteStartOfLink(const href: string);
-begin
-  WriteStartOflink(href, '', '');
-end;
-
 procedure TGenericHTMLDocGenerator.WriteStartOfParagraph(const CssClass: string);
 begin
   if CssClass <> '' then
@@ -1373,11 +1332,6 @@ begin
   else
     WriteDirectLine('<table>');
 end;
-
-//procedure TGenericHTMLDocGenerator.WriteStartOfTable;
-//begin
-//  WriteStartOfTable('');
-//end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTable1Column(const CssClass: string; const t: string);
 begin { TODO -ccheck : Why isn't the parameter t used? Is it always empty? If yes, remove it! }      
@@ -1417,12 +1371,12 @@ begin
   WriteDirectLine('</tr>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const localcss: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const CssClass: string);
 var
   s: string;
 begin
-  if localcss <> '' then
-    s := Format('<td class="%s"',[localcss])
+  if CssClass <> '' then
+    s := Format('<td class="%s"',[CssClass])
   else
     s := '<td';
   WriteDirect(s+'>');
@@ -1651,24 +1605,18 @@ begin
   WriteCIOs(HL, U.CIOs);
 end;
 
-procedure TGenericHTMLDocGenerator.WriteImage(const src, alt, localcss: string);
-var
-  s: string;
+function TGenericHTMLDocGenerator.MakeImage(const src, alt, CssClass: string): string;
 begin
-  if localcss <> '' then
-    s := Format('<img class="%s"', [localcss])
-  else
-    s := '<img ';
-  WriteDirect(Format('%s src="%s" alt="%s" title="%s">', [s, src, alt, alt]));
+  Result := Format('<img %s src="%s" alt="%s" title="%s">',
+    [IfThen(CssClass = '', '', 'class="' + CssClass + '"'),
+     src, alt, alt]);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
   procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
   begin
-    WriteStartOfLink('legend.html');
-    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
-    WriteEndOfLink;
+    WriteLink('legend.html', MakeImage(Image, ConvertString(FLanguage.Translation[trans]), ''), '');
   end;
 
 begin
@@ -1696,7 +1644,7 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
   begin
     WriteStartOfTableRow('');
     WriteStartOfTableCell('legendmarker');
-    WriteImage(Image, ConvertString(FLanguage.Translation[trans]), '');
+    WriteDirect(MakeImage(Image, ConvertString(FLanguage.Translation[trans]), ''));
     WriteEndOfTableCell;
     WriteStartOfTableCell('legenddesc');
     WriteConverted(FLanguage.Translation[trans]);
@@ -1988,7 +1936,7 @@ begin
     more readable (this makes life easier when looking for pasdoc's bugs,
     comparing generating two tests results etc.).
     They are of course meaningless for anything that interprets this HTML. }
-  Result := LineEnding + LineEnding + '<p>';
+  Result := LineEnding + '<p>' + LineEnding;
 end;
 
 function TGenericHTMLDocGenerator.LineBreak: string; 
@@ -1996,9 +1944,9 @@ begin
   Result := '<br>';
 end;
 
-function TGenericHTMLDocGenerator.URLLink(const URL: string): string; 
+function TGenericHTMLDocGenerator.URLLink(const URL: string): string;
 begin
-  Result := MakeLinkTarget(URL, ConvertString(URL), '', '_parent');
+  Result := MakeTargettedLink(URL, ConvertString(URL), '', '_parent');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteExternalCore(
