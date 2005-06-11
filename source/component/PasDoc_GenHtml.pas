@@ -38,7 +38,7 @@ type
     FNumericFilenames: boolean;
     FLinkCount: Integer;
     FFooter: string;
-    { If specified, using external CSS file }
+    { The content of the CSS file. }
     FCSS: string;
     FHeader: string;
     FOddTableRow: boolean;
@@ -67,7 +67,7 @@ type
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; 
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
     { Writes an empty table cell, '&nbsp;'. }
     {unused: procedure WriteEmptyCell;}
@@ -87,7 +87,7 @@ type
 
     procedure WriteItemDescription(const AItem: TPasItem);
     (*Writes the Item's DetailedDescription. If the Item also has
-      AbstractDescription, this is also written in front of the 
+      AbstractDescription, this is also written in front of the
       DetailedDescription.
       
       Code here will open and close paragraph for itself, so you shouldn't
@@ -178,7 +178,7 @@ type
     // FormatPascalCode will cause Line to be formatted in
     // the way that Pascal code is formatted in Delphi.
     function FormatPascalCode(const Line: string): string; override;
-    
+
     // FormatComment will cause AString to be formatted in
     // the way that comments other than compiler directives are
     // formatted in Delphi.  See: @link(FormatCompilerComment).
@@ -199,25 +199,25 @@ type
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
-    
+
     { Returns a link to an anchor within a document. HTML simply concatenates
       the strings with a "#" character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
-    
+
     { Creates a valid HTML link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
 
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
-    
+
     procedure WriteAnchor(const AName: string); overload;
     procedure WriteAnchor(const AName, Caption: string); overload;
 
     function Paragraph: string; override;
-    
+
     function LineBreak: string; override;
-    
+
     function URLLink(const URL: string): string; override;
 
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
@@ -225,28 +225,28 @@ type
 
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string): string; override;
+    function EscapeURL(const AString: string): string; virtual;
   public
+    constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
-    procedure LoadFooterFromFile(const AFileName: string);
-    procedure LoadHeaderFromFile(const AFileName: string);
-    procedure BuildLinks; override;
 
-    function EscapeURL(const AString: string): string; virtual;
   published
+    { some HTML code to be written as header for every page }
     property Header: string read FHeader write FHeader;
+    { some HTML code to be written as footer for every page }
     property Footer: string read FFooter write FFooter;
+    { the content of the cascading stylesheet }
     property CSS: string read FCSS write FCSS;
-    
+    { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-
-    { See [http://pasdoc.sipsolutions.net/UseTipueSearchOption] }
+    { Enable Tiptue fulltext search. See [http://pasdoc.sipsolutions.net/UseTipueSearchOption] }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
-      default false;
+      default False;
   end;
 
   { Right now this is the same thing as TGenericHTMLDocGenerator.
@@ -283,9 +283,17 @@ const
   DoctypeNormal = '<!DOCTYPE HTML PUBLIC ' +
     '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
     '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
+const
+  DefaultPasdocCss = {$I pasdoc.css.inc};
 
+constructor TGenericHTMLDocGenerator.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FLinkCount := 1;
+  FCSS := DefaultPasdocCss;
+end;
 
-function TGenericHTMLDocGenerator.HtmlString(const S: string): string; 
+function TGenericHTMLDocGenerator.HtmlString(const S: string): string;
 begin
   Result := S;
 end;
@@ -1720,16 +1728,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TGenericHTMLDocGenerator.LoadFooterFromFile(const AFileName: string);
-begin
-  FFooter := FileToString(AFileName);
-end;
-
-procedure TGenericHTMLDocGenerator.LoadHeaderFromFile(const AFileName: string);
-begin
-  FHeader := FileToString(AFileName);
-end;
-
 procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
 
 { TODO -- this code is scheduled to convert it to some generic
@@ -1790,8 +1788,6 @@ procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
     CloseStream;
   end;
 
-const
-  DefaultPasdocCss = {$I pasdoc.css.inc};
 var
   PasdocCssFileName: string;
 begin
@@ -1800,17 +1796,9 @@ begin
   WriteGifFile(img_protected, 'protected.gif');
   WriteGifFile(img_public, 'public.gif');
   WriteGifFile(img_published, 'published.gif');
-  
-  PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
 
-  if CSS <> '' then 
-  begin
-    { If external CSS specified, copy it to pasdoc.css file. }
-    CopyFile(CSS, PasdocCssFileName);
-  end else
-  begin
-    StringToFile(PasdocCssFileName, DefaultPasdocCss);
-  end;
+  PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
+  StringToFile(PasdocCssFileName, CSS);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
@@ -1928,12 +1916,6 @@ end;
 function TGenericHTMLDocGenerator.ConvertChar(c: char): String;
 begin
   ConvertChar := ConvertString(c);
-end;
-
-procedure TGenericHTMLDocGenerator.BuildLinks;
-begin
-  FLinkCount := 1;
-  inherited;
 end;
 
 function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
