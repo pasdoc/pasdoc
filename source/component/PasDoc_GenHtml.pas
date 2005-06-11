@@ -292,22 +292,22 @@ end;
 
 function TGenericHTMLDocGenerator.FormatString(AString: string): string;
 begin
-  result := '<span class="pascal_string">' + AString + '</span>';
+  result := '<span class="pascal_string">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.FormatKeyWord(AString: string): string;
 begin
-  result := '<span class="pascal_keyword">' + AString + '</span>';
+  result := '<span class="pascal_keyword">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.FormatComment(AString: string): string;
 begin
-  result := '<span class="pascal_comment">' + AString + '</span>';
+  result := '<span class="pascal_comment">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.FormatCompilerComment(AString: string): string;
 begin
-  result := '<span class="pascal_compiler_comment">' + AString + '</span>';
+  result := '<span class="pascal_compiler_comment">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.CodeString(const s: string): string;
