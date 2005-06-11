@@ -521,7 +521,7 @@ begin
     try
       PasDoc := TPasDoc.Create(nil);
       try
-        PasDoc.OnMessage := WriteWarning;
+        PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
         OptionParser.InterpretCommandline(PasDoc);
         PasDoc.Execute;
       finally
