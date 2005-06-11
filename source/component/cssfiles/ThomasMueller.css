@@ -1,0 +1,187 @@
+body { 
+  font-family: Verdana,Arial; 
+  color: black; 
+  background-color: white; 
+  font-size: 12px; }
+body.navigationframe { 
+  font-family: Verdana,Arial; 
+  color: black; 
+  background-color: white; 
+  font-size: 12px; }
+
+img { border:0px; }
+
+body.navigationframe h2 {
+  background:darkblue;
+  color:white;
+  text-align:center;
+  padding:0;
+}
+
+h1 { 
+  border-color:black; 
+  border-top-style:solid; 
+  border-left-style:solid; 
+  color:darkblue; 
+  font-weight:normal; 
+  padding-left:4px; 
+}
+h2 { 
+  font-weight:normal; 
+}
+h3 { 
+  font-weight:bold; 
+  color:darkblue; 
+}
+
+a {
+  color:darkblue; 
+  text-decoration: none; 
+  border-bottom:dashed 1px; }
+
+ul.useslist {
+  list-style-type:none;
+  margin-left:10px;
+}
+
+ul.hierarchy {
+  list-style-type:none; 
+  margin-left:10px;
+}
+
+ul.hierarchylevel { 
+  list-style-type:none; 
+  margin-left:20px;
+}
+
+p.unitlink {
+  padding-left:10px; 
+}
+
+p.declaration { padding-left:10px; color:darkblue; }
+
+table { border-spacing:2px; padding:4px; width:100%; }
+
+table.markerlegend { width:auto; }
+table.markerlegend td.legendmarker { text-align:center; }
+
+table.sections {
+  border-collapse: collapse;
+  background:white; 
+  width:auto;
+}
+table.sections tr {
+  border-left: hidden;
+}
+table.sections td {
+  border-left: solid 1px darkgray;
+}
+
+table.summary { 
+  border-collapse:collapse;
+  border-top:double gray; 
+  border-bottom:double gray; 
+}
+table.summary tr { 
+  background:transparent;
+  padding:5px;
+  border-top:solid 1px gray; 
+}
+
+table.summary b { font-weight:normal; }
+table.summary td { border:none; }
+
+table.summary td.itemcode { width:100%; }
+table.detail td.itemcode { width:100%; }
+
+table.detail {
+  border-collapse:collapse;
+  border-top:solid 2px black;
+  border-left:solid 2px black;
+}
+table.detail tr {
+  background:transparent;
+  font-weight:normal;
+  color:black;
+}
+table.detail b {
+  font-weight:normal;
+  color:darkblue;
+}
+table.detail td.visibility img {
+  display:none;
+}
+
+table.unitstable {
+  border-collapse:collapse;
+  border-top:double black;
+  border-bottom:double black;
+}
+table.unitstable tr {
+  background:transparent;
+  border-top:solid 1px gray; 
+}
+table.unitstable tr.listheader {
+  color:darkblue;
+  text-align:left;
+  border-top:double black;
+  border-bottom:double black;
+}
+
+table.classestable {
+  border-collapse:collapse;
+  border-top:double black;
+  border-bottom:double black;
+}
+table.classestable tr {
+  background:transparent;
+  border-top:solid 1px gray; 
+}
+table.classestable tr.listheader {
+  color:darkblue;
+  text-align:left;
+  border-top:double black;
+  border-bottom:double black;
+}
+
+table.itemstable {
+  border-collapse:collapse;
+  border-top:double black;
+  border-bottom:double black;
+}
+table.itemstable tr {
+  background:transparent;
+  border-top:solid 1px gray; 
+}
+table.itemstable tr.listheader {
+  color:darkblue;
+  text-align:left;
+  border-top:double black;
+  border-bottom:double black;
+}
+
+td { vertical-align:top; padding:4px; }
+
+td.itemname {white-space:nowrap; }
+td.itemunit {white-space:nowrap; }
+td.itemdesc { width:100%; }
+td.visibility a { border:none; }
+
+div.nodescription {color:red;}
+dl.parameters {;}
+dl.parameters dt {color:blue;}
+dl.parameters dd {;}
+
+/* Style applied to Pascal code in documentation 
+   (e.g. produced by @longcode tag) } */
+span.pascal_string { color: #000080; }
+span.pascal_keyword { font-weight: bolder; }
+span.pascal_comment { color: #000080; font-style: italic; }
+span.pascal_compiler_comment { color: #008000; }
+
+p.hint_directive { color: red; }
+
+input#search_text { }
+input#search_submit_button { }
+
+acronym.mispelling { background-color: #ffa; }
