@@ -2395,10 +2395,11 @@ begin
   ExtractFirstWord(Remainder, AnchorString, CaptionString);
   try
     HeadingLevel := StrToInt(HeadingLevelString);
-  except on EConvertError do
+  except on E: EConvertError do
     begin
       TagManager.DoMessage(1, mtWarning,
-        'Invalid heading level in @section tag: ' + TagDesc, []);
+        'Invalid heading level in @section tag: "%s". %s', 
+        [HeadingLevelString, E.Message]);
       Exit;
     end;
   end;
