@@ -396,8 +396,9 @@ begin
   if NoGeneratorInfo then
     Exit;
   { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
+  WriteDirect('<hr noshade size="1">');
   WriteDirect('<span class="appinfo">');
-  WriteDirect('<hr noshade size="1"><em>');
+  WriteDirect('<em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
   WriteTargettedLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
