@@ -159,10 +159,15 @@ type
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
     procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
+    
+    function FormatHeading(HL: integer; const CssClass: string; 
+      const s: string): string;
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
+    
+    function FormatAnAnchor(const AName, Caption: string): string; 
   protected
     function ConvertString(const s: string): string; override;
 
@@ -173,7 +178,8 @@ type
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
 
-    { overrides @parent.HtmlString to return the string verbatim (Parent discards those strings) }
+    { overrides @inherited.HtmlString to return the string verbatim 
+      (@inherited discards those strings) }
     function HtmlString(const S: string): string; override;
     
     // FormatPascalCode will cause Line to be formatted in
@@ -226,7 +232,12 @@ type
 
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string): string; override;
+      
     function EscapeURL(const AString: string): string; virtual;
+    
+    function FormatSection(HL: integer; const Anchor: string;
+      const Caption: string): string; override;
+    function FormatAnchor(const Anchor: string): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -358,7 +369,11 @@ begin
         Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
       end;
     end;
-  end else
+  end else if Item is TSubItem then
+  begin
+    Result := TSubItem(Item).ExternalItem.FullLink + '#' + Item.Name;
+  end
+  else
   begin
     Result := NewLink(Item.Name);
   end;
@@ -870,7 +885,8 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; const CssClass: string; const s: string);
+function TGenericHTMLDocGenerator.FormatHeading(HL: integer; 
+  const CssClass: string; const s: string): string;
 var
   c: string;
 begin
@@ -880,12 +896,18 @@ begin
     HL := 6;
   end;
   c := IntToStr(HL);
-  WriteDirect('<h' + c + ' class="' + CssClass + '">');
-  WriteConverted(s);
-  WriteDirectLine('</h' + c + '>');
+  
+  Result := '<h' + c + ' class="' + CssClass + '">' +
+    ConvertString(s) +
+    '</h' + c + '>' +
+    LineEnding;
 end;
 
-{ ---------- }
+procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; 
+  const CssClass: string; const s: string);
+begin
+  WriteDirect(FormatHeading(HL, CssClass, s));
+end;
 
 procedure TGenericHTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
 begin
@@ -1253,6 +1275,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function TGenericHTMLDocGenerator.FormatAnAnchor(
+  const AName, Caption: string): string;
+begin
+  result := Format('<a name="%s">%s</a>', [AName, Caption]);
+end;
+
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName: string);
 begin
   WriteAnchor(AName, '');
@@ -1260,7 +1288,7 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
-  WriteDirect(Format('<a name="%s">%s</a>', [AName, Caption]));
+  WriteDirect(FormatAnAnchor(AName, Caption));
 end;
 
 { procedure TGenericHTMLDocGenerator.WriteStartOfAnchor(const AName: string);
@@ -1936,7 +1964,7 @@ begin
     more readable (this makes life easier when looking for pasdoc's bugs,
     comparing generating two tests results etc.).
     They are of course meaningless for anything that interprets this HTML. }
-  Result := LineEnding + '<p>' + LineEnding;
+  Result := LineEnding + LineEnding + '<p>';
 end;
 
 function TGenericHTMLDocGenerator.LineBreak: string; 
@@ -1978,5 +2006,21 @@ begin
   WriteEndOfDocument;
   CloseStream;
 end;
+
+function TGenericHTMLDocGenerator.FormatSection(HL: integer;
+  const Anchor, Caption: string): string;
+begin
+  { We use `HL + 1' because user is allowed to use levels
+    >= 1, and heading level 1 is reserved for section title. }
+  result := FormatAnAnchor(Anchor, '') +
+    FormatHeading(HL + 1, '', Caption);
+end;
+
+function TGenericHTMLDocGenerator.FormatAnchor(
+  const Anchor: string): string;
+begin
+  result := FormatAnAnchor(Anchor, '');
+end;
+
 
 end.

@@ -434,7 +434,7 @@ begin
     p := c.PasItemAt[i];
     
     { TODO -- code below checks for @exclude tag too trivially,
-      it accidentaly excludes items with comments like '@@exclude'
+      it accidentally excludes items with comments like '@@exclude'
       or '@html(@exclude)'. Checking for exclude should be
       incorporated into doing TTagManager.Execute
       in ExpandDescription. }

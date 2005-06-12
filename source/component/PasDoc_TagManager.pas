@@ -468,7 +468,7 @@ var
     while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
     if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
     { In case newline is two-characters wide, read it to the end
-      (to not accidentaly take #13#10 as two newlines.) }
+      (to not accidentally take #13#10 as two newlines.) }
     Inc(i);
     if (i <= Length(Description)) and
        ( ((Description[i-1] = #10) and (Description[i] = #13)) or

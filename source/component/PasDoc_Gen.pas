@@ -214,6 +214,11 @@ end;
     procedure HandleBrTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
 
+    procedure HandleSectionTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleAnchorTag(TagManager: TTagManager; const TagName,
+      TagDesc: string; var ReplaceStr: string);
+      
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
@@ -532,6 +537,13 @@ end;
     {@name writes an introduction for the project.
      See @link(WriteExternal).}
     procedure WriteIntroduction;
+
+    // @name writes a section heading and a link-anchor;
+    function FormatSection(HL: integer; const Anchor: string;
+      const Caption: string): string; virtual; abstract;
+      
+    // @name writes a link-anchor;
+    function FormatAnchor(const Anchor: string): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -654,7 +666,7 @@ uses
 procedure TDocGenerator.BuildLinks;
 
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
-    const DocName: string; c: TPasItems);
+    c: TPasItems);
   var
     i: Integer;
     p: TPasItem;
@@ -701,10 +713,10 @@ begin
       U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
     end;
 
-    AssignLinks(U, nil, U.FullLink, U.Constants);
-    AssignLinks(U, nil, U.FullLink, U.Variables);
-    AssignLinks(U, nil, U.FullLink, U.Types);
-    AssignLinks(U, nil, U.FullLink, U.FuncsProcs);
+    AssignLinks(U, nil, U.Constants);
+    AssignLinks(U, nil, U.Variables);
+    AssignLinks(U, nil, U.Types);
+    AssignLinks(U, nil, U.FuncsProcs);
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
@@ -713,9 +725,9 @@ begin
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := CO.FullLink;
 
-        AssignLinks(U, CO, CO.FullLink, CO.Fields);
-        AssignLinks(U, CO, CO.FullLink, CO.Methods);
-        AssignLinks(U, CO, CO.FullLink, CO.Properties);
+        AssignLinks(U, CO, CO.Fields);
+        AssignLinks(U, CO, CO.Methods);
+        AssignLinks(U, CO, CO.Properties);
       end;
     end;
   end;
@@ -964,6 +976,14 @@ begin
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags], [aiOther]);
 
+    if FCurrentItem is TExternalItem then
+    begin
+      TagManager.AddHandler('section', {$IFDEF FPC}@{$ENDIF}HandleSectionTag,
+        [toParameterRequired, toTopLevel], [aiOther]);
+      TagManager.AddHandler('anchor', {$IFDEF FPC}@{$ENDIF}HandleAnchorTag,
+        [toParameterRequired, toTopLevel], [aiOther]);
+    end;
+
     Result := TagManager.Execute(Description,
       WantFirstSentenceEnd, FirstSentenceEnd);
   finally
@@ -1155,16 +1175,26 @@ begin
   
   case n of
     0: begin
-        if (Introduction <> nil) and SameText(Introduction.Name, S1) then
+        if (Introduction <> nil) then
         begin
-          Result := Introduction;
-          Exit;
+          if  SameText(Introduction.Name, S1) then
+          begin
+            Result := Introduction;
+            Exit;
+          end;
+          Result := Introduction.FindItem(S1);
+          if Result <> nil then Exit;
         end;
 
-        if (Conclusion <> nil) and SameText(Conclusion.Name, S1) then
+        if (Conclusion <> nil) then
         begin
-          Result := Conclusion;
-          Exit;
+          if  SameText(Conclusion.Name, S1) then
+          begin
+            Result := Conclusion;
+            Exit;
+          end;
+          Result := Conclusion.FindItem(S1);
+          if Result <> nil then Exit;
         end;
 
         for i := 0 to Units.Count - 1 do
@@ -2225,7 +2255,7 @@ begin
               mistakenly think that 'register' is a standard directive
               in Code
                 'procedure Register;'
-              This shouldn't cause another problem (accidentaly
+              This shouldn't cause another problem (accidentally
               making standard directive a link, e.g. in code like
                 'procedure Foo; register'
               or even
@@ -2328,6 +2358,63 @@ end;
 procedure TDocGenerator.WriteConclusion;
 begin
   WriteExternal(Conclusion, trConclusion);
+end;
+
+procedure TDocGenerator.HandleAnchorTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+var
+  AnchorString: string;
+  NewSubItem: TSubItem;
+begin
+  AnchorString := Trim(TagDesc);
+  
+  if not IsValidIdent(AnchorString) then
+  begin
+    TagManager.DoMessage(1, mtWarning,
+      'Invalid anchor name: "%s"', [AnchorString]);
+    Exit;
+  end;
+  
+  ReplaceStr := FormatAnchor(AnchorString);
+  
+  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
+  NewSubItem.FullLink := CreateLink(NewSubItem);
+end;
+
+procedure TDocGenerator.HandleSectionTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+var
+  HeadingLevelString: string;
+  AnchorString: string;
+  CaptionString: string;
+  Remainder: string;
+  HeadingLevel: integer;
+  NewSubItem: TSubItem;
+begin
+  ExtractFirstWord(TagDesc, HeadingLevelString, Remainder);
+  ExtractFirstWord(Remainder, AnchorString, CaptionString);
+  try
+    HeadingLevel := StrToInt(HeadingLevelString);
+  except on EConvertError do
+    begin
+      TagManager.DoMessage(1, mtWarning,
+        'Invalid heading level in @section tag: ' + TagDesc, []);
+      Exit;
+    end;
+  end;
+  
+  if HeadingLevel < 1 then
+  begin
+    TagManager.DoMessage(1, mtWarning,
+      'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
+      [HeadingLevel]);
+    Exit;
+  end;
+  
+  ReplaceStr := FormatSection(HeadingLevel, AnchorString, CaptionString);
+  
+  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
+  NewSubItem.FullLink := CreateLink(NewSubItem);
 end;
 
 initialization

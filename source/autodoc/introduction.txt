@@ -6,9 +6,7 @@ For user's documentation see [http://pasdoc.sourceforge.net/].
 
 General overview of the data flow in pasdoc:
 
-----------------------------------------
-
-Parsing:
+@section(1 SecParsing Parsing)
 
 @link(TTokenizer) reads the source file, and converts it to a series
 of @link(TToken)s.
@@ -52,18 +50,14 @@ compared to "normal" parsers that are used e.g. in Pascal compilers.
    (while "normal" parsers usually treat comments as a meaningless
    white-space).
 
-----------------------------------------
-
-Storing:
+@section(1 SecStoring Storing)
 
 The unit @link(PasDoc_Items) provides a comfortable class hierarchy
 to store a parsed Pascal source tree. @link(TPasUnit) is a "root class"
 (container-wise), it contains references to all other items within a unit,
 every item is some instance of @link(TPasItem).
 
-----------------------------------------
-
-Generators:
+@section(1 SecGenerators Generators)
 
 The last link in the chain are the generators. A generator uses the
 stored @link(TPasItem)
@@ -74,9 +68,7 @@ descend more specialized generator classes, like
 @link(TGenericHTMLDocGenerator), @link(THTMLDocGenerator),
 @link(TTexDocGenerator) and others.
 
-----------------------------------------
-
-Notes:
+@section(1 SecNotes Notes)
 
 Note that the parser and the generators do not communicate with each
 other directly. The parser stores things in the @link(TPasItem) tree.

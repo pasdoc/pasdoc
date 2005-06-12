@@ -40,13 +40,13 @@ type
       WriteItemLink: boolean);
 
     procedure WriteEndOfDocument;
-    { Finishes an HTML paragraph element by writing a closing P tag. }
+    { Finishes a LaTeX paragraph by writing a blank line. }
     procedure WriteEndOfParagraph;
-    { Finishes an HTML table cell by writing a closing TD tag. }
+    { Finishes an Latex table cell by writing ' & '. }
     procedure WriteEndOfTableCell;
     { Finishes an HTML table by writing a closing TABLE tag. }
     procedure WriteEndOfTable;
-    { Finishes an HTML table row by writing a closing TR tag. }
+    { Finishes a LaTeX table row by writing '\\'. }
     procedure WriteEndOfTableRow;
 
     (*
@@ -67,11 +67,11 @@ type
     *)
     procedure WriteItemDetailedDescription(const AItem: TPasItem);
 
-    { Writes an opening A element, including a name attribute given by the
-      argument. }
+    { @name writes the preamble of a LaTeX document and the begining of the
+      document itself up through the table of contents.}
     procedure WriteStartOfDocument(AName: string);
 
-    { Starts an HTML paragraph element by writing an opening P tag. }
+    { Starts an LaTeX paragraph element by writing '\par'. }
     procedure WriteStartOfParagraph;
 
     procedure WriteStartOfTable1Column(t: string);
@@ -122,12 +122,13 @@ type
       than 1 will be set to 1 and arguments larger than 6 are set to 6.
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
-    procedure WriteHeading(Level: integer; const s: string); 
+    procedure WriteHeading(HL: integer; const s: string); 
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
     procedure SetLatexHead(const Value: TStrings);
+    function FormatHeading(HL: integer; const s: string): string;
   protected
   
     function ConvertString(const s: string): string; override;
@@ -141,15 +142,16 @@ type
     
     function LatexString(const S: string): string; override;
 
-    { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
-      in Html. }
+    // Makes a String look like a coded String, i.e.
+    // '\begin{ttfamily}TheString\end{ttfamily}'
+    //  in LaTeX. }
     function CodeString(const s: string): string; override;
     
-    { Returns a link to an anchor within a document. HTML simply concatenates
-      the strings with a "-" character between them. }
+    { Returns a link to an anchor within a document. LaTeX simply concatenates
+      the strings with either a "-" or "." character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
     
-    { Creates a valid HTML link, starting with an anchor that points to Link,
+    { Creates a valid LaTeX link, starting with an anchor that points to Link,
       encapsulating the text ItemName in it. }
     function CreateReferencedLink(ItemName, Link: string): string; override;
 
@@ -165,12 +167,35 @@ type
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
       
+{ TODO : FormatKeyWord, FormatCompilerComment, FormatComment,
+FormatString, FormatCode, and FormatPascalCode are all closely related.
+Maybe they should be extracted into an abstract base class.  There
+could be descendents of the abstract ancestor associated with the HTML and
+Latex DocGenerators.}
+
+    // @name is called from within @link(FormatPascalCode)
+    // and @link(FormatCode) to
+    // return AString in a bold font.
     function FormatKeyWord(AString: string): string; override;
+    // @name is called from within @link(FormatPascalCode) to
+    // return AString in italics
     function FormatCompilerComment(AString: string): string; override;
+    // @name is called from within @link(FormatPascalCode) to
+    // return AString in italics
     function FormatComment(AString: string): string; override;
+    // @name is called from within @link(FormatPascalCode)
+    // and @link(FormatCode) to
+    // return AString after converting special characters.
     function FormatString(AString: string): string; override;
+    // @name is called from within @link(FormatPascalCode) to
+    // format AString as compileable code.
     function FormatCode(AString: string): string; override;
+    function FormatAnchor(const Anchor: string): string; override;
   public
+    // @name is intended to format Line as if it were Object Pascal
+    // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
+    // colored text is not used because printing colored text tends to
+    // be much more expensive than printing all black text.
     function FormatPascalCode(const Line: string): string; override;
 
     { Returns Latex file extension ".tex". }
@@ -181,9 +206,14 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function EscapeURL(const AString: string): string; virtual;
+    
+    function FormatSection(HL: integer; const Anchor: string;
+      const Caption: string): string; override;
   published
     { Indicate if the output must be simplified for latex2rtf }
     property Latex2rtf: boolean read FLatex2rtf write FLatex2rtf default false;
+    // The strings in @name are inserted directly into the preamble of
+    // the LaTeX document.  Therefore they must be valid LaTeX code.
     property LatexHead: TStrings read FLatexHead write SetLatexHead;
   end;
 
@@ -194,7 +224,8 @@ uses
   PasDoc,
   ObjectVector,
   Utils, 
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  StrUtils;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -752,14 +783,71 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteHeading(Level: integer; const s: string);
+function TTexDocGenerator.FormatHeading(HL: integer; const s: string): string;
 begin
-  if (Level < 1) then Level := 1;
-  if Level > 5 then begin
-    DoMessage(2, mtWarning, 'latex generator cannot write headlines of level 4 or greater; will use 4 instead.', []);
-    Level := 5;
+  if (HL < 1) then HL := 1;
+  if HL > 5 then begin
+    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+      + 'level 5 or greater; will create a new paragraph instead.', []);
+    HL := 5;
   end;
-  case Level of
+  case HL of
+    1: begin
+         result :=  '\chapter{'
+           + ConvertString(s)
+           + '}' + LineEnding;
+       end;
+    2: begin
+         result :=  '\section{'
+           + ConvertString(s)
+           + '}' + LineEnding;
+       end;
+    3: begin
+          if latex2rtf then
+            begin
+               result := '\subsection*{'
+                 + ConvertString(s)
+                 + '}' + LineEnding;
+            end
+          else
+            begin
+              result := '\ifpdf' + LineEnding
+                + '\subsection*{'
+                +'\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
+                '\hrulefill'
+                + '}'
+                + '\else'+ LineEnding
+
+                + '\subsection*{'
+                + ConvertString(s)
+                + '}'+ LineEnding
+                + '\fi'+ LineEnding;
+            end;
+       end;
+    4: begin
+         result := '\subsubsection*{'
+           + '\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
+          '\hfill'
+            + '}'+ LineEnding;
+       end;
+    5: begin
+        result := '\paragraph*{'
+          + ConvertString(s)
+          + '}\hspace*{\fill}'+ LineEnding
+          + ''+ LineEnding;
+       end;
+  end;
+end;
+
+procedure TTexDocGenerator.WriteHeading(HL: integer; const s: string);
+begin
+  if (HL < 1) then HL := 1;
+  if HL > 5 then begin
+    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+      + 'level 5 or greater; will a new paragraph instead.', []);
+    HL := 5;
+  end;
+  case HL of
     1: begin
         WriteDirect('\chapter{');
         WriteConverted(s);
@@ -1369,6 +1457,31 @@ end;
 function TTexDocGenerator.FormatString(AString: string): string;
 begin
   result := ConvertString(AString);
+end;
+
+function TTexDocGenerator.FormatAnchor(const Anchor: string): string;
+begin
+  { No links in RTF documentation -- latex2rtf can't really handle them.
+    docs.aux must be generated by user using some normal latex program
+    (like latex or pdflatex), and then passed to latex2rtf.
+    See Latex2RtfOutput page on pasdoc wiki. }
+  if not FLatex2rtf then
+  begin
+    result := '\label{'+Anchor+'}' + LineEnding
+  end
+  else
+  begin
+    result := '';
+  end;
+end;
+
+function TTexDocGenerator.FormatSection(HL: integer;
+  const Anchor, Caption: string): string;
+begin
+  { We use `HL + 1' because user is allowed to use levels
+    >= 1, and heading level 1 is reserved for section title. }
+  result := FormatAnchor(Anchor)
+    + FormatHeading(HL + 1, Caption);
 end;
 
 end.

@@ -1,0 +1,4 @@
+Sections with the same internal anchor-names are bad:
+
+@section(1 SecName 1st section)
+@section(1 SecName 2nd section)
