@@ -71,6 +71,8 @@ span.pascal_string { color: #000080; }
 span.pascal_keyword { font-weight: bolder; }
 span.pascal_comment { color: #000080; font-style: italic; }
 span.pascal_compiler_comment { color: #008000; }
+span.pascal_numeric { }
+span.pascal_hex { }
 
 p.hint_directive { color: red; }
 

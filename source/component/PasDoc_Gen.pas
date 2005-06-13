@@ -450,7 +450,15 @@ end;
     // the way that comments other than compiler directives are
     // formatted in Delphi.  See: @link(FormatCompilerComment).
     function FormatComment(AString: string): string; virtual;
+
+    // FormatHex will cause AString to be formatted in
+    // the way that Hex are formatted in Delphi.
+    function FormatHex(AString: string): string; virtual;
     
+    // FormatNumeric will cause AString to be formatted in
+    // the way that Numeric are formatted in Delphi.
+    function FormatNumeric(AString: string): string; virtual;
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; virtual;
@@ -1824,14 +1832,16 @@ end;
 function TDocGenerator.FormatPascalCode(const Line: string): string;
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
-    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment,
-    ctEndComment);
+    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
+    ctEndComment, ctHex, ctNumeric);
 var
   CharIndex: integer;
   CodeType: TCodeType;
   CommentBegining: integer;
   StringBeginning: integer;
   CodeBeginning: integer;
+  HexBeginning: Integer;
+  NumBeginning: Integer;
   EndOfCode: boolean;
   WhiteSpaceBeginning: integer;
 const
@@ -1839,6 +1849,7 @@ const
     '''', ':', '<', '>', '=', '+', '-', '*', '/', '@', '.'];
   LineEnd = [#10, #13];
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
+  Numeric = ['0'..'9'];
   function TestCommentStart: boolean;
   begin
     result := False;
@@ -1891,6 +1902,8 @@ const
 begin
   CommentBegining := 1;
   StringBeginning := 1;
+  HexBeginning    := 1;
+  NumBeginning    := 1;
   result := '';
   CodeType := ctWhiteSpace;
   WhiteSpaceBeginning := 1;
@@ -1904,18 +1917,30 @@ begin
           if TestStringBeginning then
           begin
             EndOfCode := True;
-          end
-          else if Line[CharIndex] = '#' then
+          end else 
+          if Line[CharIndex] = '#' then
           begin
             StringBeginning := CharIndex;
             CodeType := ctChar;
             EndOfCode := True;
-          end
-          else if TestCommentStart then
+          end else 
+          if TestCommentStart then
           begin
             EndOfCode := True;
-          end
-          else if Line[CharIndex] in AlphaNumeric then
+          end else 
+          if Line[CharIndex] = '$' Then
+          begin
+            CodeType := ctHex;
+            HexBeginning := CharIndex;
+            EndOfCode := True;
+          end else 
+          if Line[CharIndex] in Numeric then
+          begin
+            CodeType := ctNumeric;
+            NumBeginning := CharIndex;
+            EndOfCode := True;
+          end else
+          if Line[CharIndex] in AlphaNumeric then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -2064,6 +2089,26 @@ begin
             CodeBeginning := CharIndex;
           end;
         end;
+      ctHex:
+        begin
+          if Line[CharIndex] in Separators then
+          begin
+            CodeType := ctWhiteSpace;
+            result := result + FormatHex(Copy(Line, HexBeginning,
+              CharIndex - HexBeginning));
+            WhiteSpaceBeginning := CharIndex;
+          end;
+        end;
+      ctNumeric:
+        begin
+          if Line[CharIndex] in Separators then
+          begin
+            CodeType := ctWhiteSpace;
+            result := result + FormatNumeric(Copy(Line, NumBeginning,
+              CharIndex - NumBeginning));
+            WhiteSpaceBeginning := CharIndex;
+          end;
+        end;
     else
       Assert(False);
     end;
@@ -2131,6 +2176,16 @@ begin
 end;
 
 function TDocGenerator.FormatComment(AString: string): string;
+begin
+  result := AString;
+end;
+
+function TDocGenerator.FormatHex(AString: string): string;
+begin
+  result := AString;
+end;
+
+function TDocGenerator.FormatNumeric(AString: string): string;
 begin
   result := AString;
 end;

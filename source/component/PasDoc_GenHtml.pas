@@ -190,6 +190,14 @@ type
     // the way that comments other than compiler directives are
     // formatted in Delphi.  See: @link(FormatCompilerComment).
     function FormatComment(AString: string): string; override;
+
+    // FormatHex will cause AString to be formatted in
+    // the way that Hex are formatted in Delphi.
+    function FormatHex(AString: string): string; override;
+
+    // FormatNumeric will cause AString to be formatted in
+    // the way that Numeric are formatted in Delphi.
+    function FormatNumeric(AString: string): string; override;
     
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
@@ -324,6 +332,16 @@ end;
 function TGenericHTMLDocGenerator.FormatComment(AString: string): string;
 begin
   result := '<span class="pascal_comment">' + ConvertString(AString) + '</span>';
+end;
+
+function TGenericHTMLDocGenerator.FormatHex(AString: string): string;
+begin
+  result := '<span class="pascal_hex">' + ConvertString(AString) + '</span>';
+end;
+
+function TGenericHTMLDocGenerator.FormatNumeric(AString: string): string;
+begin
+  result := '<span class="pascal_numeric">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.FormatCompilerComment(AString: string): string;
