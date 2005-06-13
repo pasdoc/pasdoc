@@ -6,6 +6,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
+  @author(Damien Honeyford)
 
   For each item (type, variable, class etc.) that may appear in a Pascal
   source code file and can thus be taken into the documentation, this unit

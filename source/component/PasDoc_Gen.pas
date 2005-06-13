@@ -9,6 +9,7 @@
   @author(Pierre Woestyn <pwoestyn@users.sourceforge.net>)
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
+  @author(Ascanio Pressato)
   @created(30 Aug 1998)
   @cvs($Date$)
 

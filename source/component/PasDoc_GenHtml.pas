@@ -11,6 +11,7 @@
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
+  @author(Ascanio Pressato)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
