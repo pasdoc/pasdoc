@@ -321,7 +321,7 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
   begin
     Generator.ContentsFile := OptionHtmlHelpContents.Value;
 
-    Result := Generator;
+    Result := SetHtmlOptions(Generator);
   end;
 
   { Sets Latex specific options and returns its parameter as TDocGenerator }
