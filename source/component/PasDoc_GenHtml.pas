@@ -276,9 +276,6 @@ type
   THTMLDocGenerator = class(TGenericHTMLDocGenerator)
   end;
 
-const
-  DefaultPasdocCss = {$I pasdoc.css.inc};
-
 implementation
 
 uses
@@ -294,6 +291,9 @@ uses
   PasDoc_Tipue,
   PasDoc_StringPairVector,
   PasDoc_Aspell;
+
+const
+  DefaultPasdocCss = {$I pasdoc.css.inc};
 
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
