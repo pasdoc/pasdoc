@@ -39,9 +39,11 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, Process, PasDoc_Serialize,
-  IniFiles, PasDoc_GenHtmlHelp, EditBtn;
+  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils;
 
 type
+  EInvalidSpellingLanguage = class(Exception);
+  
   // @abstract(TfrmHelpGenerator is the class of the main form of Help
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
@@ -49,6 +51,7 @@ type
     CheckAutoAbstract: TCheckBox;
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
+    cbCheckSpelling: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
     edTitle: TEdit;
     EditCssFileName: TFileNameEdit;
@@ -64,9 +67,11 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label20: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     LabelHtmlBrowserCommand: TLabel;
+    memoSpellCheckingIgnore: TMemo;
     memoCommentMarkers: TMemo;
     memoHyphenatedWords: TMemo;
     MemoCommandLog: TMemo;
@@ -92,6 +97,7 @@ type
     TabMoreOptions: TTabSheet;
     tabLatexOptions: TTabSheet;
     tabMarkers: TTabSheet;
+    tabSpellChecking: TTabSheet;
     tabWebPage: TTabSheet;
     tabOptions: TTabSheet;
     // @name controls whether of private, protected, public, published and
@@ -165,6 +171,7 @@ type
     procedure PasDoc1Warning(const MessageType: TMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
+    procedure cbCheckSpellingChange(Sender: TObject);
     procedure clbMethodVisibilityClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnGenerateWebPagesClick(Sender: TObject);
@@ -187,6 +194,8 @@ type
     procedure SetDefaults;
     procedure SetSettingsFileName(const AValue: string);
     procedure UpdateCaption;
+    function LanguageIdToString(const LanguageID: TLanguageID): string;
+    procedure CheckIfSpellCheckingAvailable;
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
@@ -259,6 +268,39 @@ begin
     finally
       Files.Free;
     end;
+  end;
+end;
+
+procedure TfrmHelpGenerator.CheckIfSpellCheckingAvailable;
+var
+  CheckIfSpellCheckingAvailable: boolean;
+begin
+  if not cbCheckSpelling.Enabled or not cbCheckSpelling.Checked then
+  begin
+    Exit;
+  end;
+  
+  CheckIfSpellCheckingAvailable := comboGenerateFormat.ItemIndex in [0,1];
+  if CheckIfSpellCheckingAvailable then
+  begin
+    try
+      LanguageIdToString(TLanguageID(comboLanguages.ItemIndex));
+    except on E: EInvalidSpellingLanguage do
+      begin
+        CheckIfSpellCheckingAvailable := False;
+        Beep;
+        MessageDlg(E.Message, Dialogs.mtError, [mbOK], 0);
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmHelpGenerator.cbCheckSpellingChange(Sender: TObject);
+begin
+  Changed := True;
+  if cbCheckSpelling.Checked then
+  begin
+    CheckIfSpellCheckingAvailable;
   end;
 end;
 
@@ -340,6 +382,45 @@ begin
   Caption := NewCaption;
 end;
 
+function TfrmHelpGenerator.LanguageIdToString(const LanguageID: TLanguageID
+  ): string;
+begin
+  try
+    result := 'en';
+    case LanguageID of
+      lgBosnian: result := 'bs';
+      lgBrasilian: result := 'pt';  // Portuguese used for brazilian.
+      lgCatalan: result := 'ca';
+      lgChinese_950: raise EInvalidSpellingLanguage.Create(
+        'Sorry, that language is not supported for spell checking');
+      lgDanish: result := 'da';
+      lgDutch: result := 'nl';
+      lgEnglish: result := 'en';
+      lgFrench: result := 'fr';
+      lgGerman: result := 'de';
+      lgIndonesian: result := 'id';
+      lgItalian: result := 'it';
+      lgJavanese: result := 'jv';
+      lgPolish_CP1250: result := 'pl';
+      lgPolish_ISO_8859_2: result := 'pl';
+      lgRussian_1251: result := 'ru';
+      lgRussian_866: result := 'ru';
+      lgRussian_koi8: result := 'ru';
+      lgSlovak: result := 'sk';
+      lgSpanish: result := 'es';
+      lgSwedish: result := 'sv';
+      lgHungarian_1250: result := 'hu';
+    else raise EInvalidSpellingLanguage.Create(
+        'Sorry, that language is not supported for spell checking');
+    end;
+  except on EInvalidSpellingLanguage do
+    begin
+      cbCheckSpelling.Checked := False;
+      raise;
+    end;
+  end;
+end;
+
 procedure TfrmHelpGenerator.SetChanged(const AValue: boolean);
 begin
   if FChanged = AValue then Exit;
@@ -361,8 +442,8 @@ begin
     {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
   comboLanguages.Items.Capacity :=
-    Ord(High(LanguageIndex)) - Ord(Low(TLanguageID)) + 1;
-  for LanguageIndex := Low(TLanguageID) to High(LanguageIndex) do
+    Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
+  for LanguageIndex := Low(TLanguageID) to High(TLanguageID) do
   begin
     comboLanguages.Items.Add(LANGUAGE_ARRAY[LanguageIndex].Name);
   end;
@@ -475,16 +556,29 @@ begin
     else
       Assert(False);
     end;
+    
+    PasDoc1.Generator.Language := TLanguageID(comboLanguages.ItemIndex);
 
     if PasDoc1.Generator is TGenericHTMLDocGenerator then
     begin
       TGenericHTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
       TGenericHTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
-      TGenericHTMLDocGenerator(PasDoc1.Generator).CSS := EditCssFileName.Text;
+      
+      if EditCssFileName.FileName <> '' then
+        TGenericHTMLDocGenerator(PasDoc1.Generator).CSS :=
+          FileToString(EditCssFileName.FileName) else
+        TGenericHTMLDocGenerator(PasDoc1.Generator).CSS := DefaultPasDocCss;
+        
       TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
         CheckUseTipueSearch.Checked;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageIdToString(TLanguageID(comboLanguages.ItemIndex));
+      TGenericHTMLDocGenerator(PasDoc1.Generator).CheckSpelling := cbCheckSpelling.Checked;
+      if cbCheckSpelling.Checked then
+      begin
+        TGenericHTMLDocGenerator(PasDoc1.Generator).SpellCheckIgnoreWords.Assign(memoSpellCheckingIgnore.Lines);
+      end;
     end;
-    
+
     // Create the output directory if it does not exist.
     if not DirectoryExists(edOutput.Text) then
     begin
@@ -592,8 +686,7 @@ end;
 
 procedure TfrmHelpGenerator.comboLanguagesChange(Sender: TObject);
 begin
-  HtmlDocGenerator.Language := TLanguageID(comboLanguages.ItemIndex);
-  TexDocGenerator.Language := TLanguageID(comboLanguages.ItemIndex);
+  CheckIfSpellCheckingAvailable;
   Changed := True;
 end;
 
@@ -716,6 +809,9 @@ begin
       edTitle.Text := Ini.ReadString('Main', 'Title', '');
       cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
       cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
+      
+      cbCheckSpelling.Checked := Ini.ReadBool('Main', 'CheckSpelling', false);
+      ReadStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
     finally Ini.Free end;
 
     Changed := False;
@@ -778,6 +874,9 @@ begin
 
       Ini.WriteBool('Main', 'VizGraphClasses', cbVizGraphClasses.Checked);
       Ini.WriteBool('Main', 'VizGraphUses', cbVizGraphUses.Checked);
+
+      Ini.WriteBool('Main', 'CheckSpelling', cbCheckSpelling.Checked);
+      WriteStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
 
       Ini.UpdateFile;
     finally Ini.Free end;

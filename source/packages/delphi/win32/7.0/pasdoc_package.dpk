@@ -42,7 +42,6 @@ contains
   PasDoc_Languages in '..\..\..\..\component\PasDoc_Languages.pas',
   PasDoc_Parser in '..\..\..\..\component\PasDoc_Parser.pas',
   PasDoc_Reg in '..\..\..\..\component\PasDoc_Reg.pas',
-  PasDoc_RunHelp in '..\..\..\..\component\PasDoc_RunHelp.pas',
   PasDoc_Scanner in '..\..\..\..\component\PasDoc_Scanner.pas',
   PasDoc_Serialize in '..\..\..\..\component\PasDoc_Serialize.pas',
   PasDoc_TagManager in '..\..\..\..\component\PasDoc_TagManager.pas',
@@ -54,6 +53,8 @@ contains
   PasDoc_Tipue in '..\..\..\..\component\tipue\PasDoc_Tipue.pas',
   PasDoc_SortSettings in '..\..\..\..\component\PasDoc_SortSettings.pas',
   PasDoc_GenHtmlHelp in '..\..\..\..\component\PasDoc_GenHtmlHelp.pas',
-  PasDoc_StringPairVector in '..\..\..\..\component\PasDoc_StringPairVector.pas';
+  PasDoc_StringPairVector in '..\..\..\..\component\PasDoc_StringPairVector.pas',
+  PasDoc_Aspell in '..\..\..\..\component\PasDoc_Aspell.pas',
+  PasDoc_ProcessLineTalk in '..\..\..\..\component\PasDoc_ProcessLineTalk.pas';
 
 end.

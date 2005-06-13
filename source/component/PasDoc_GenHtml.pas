@@ -138,7 +138,7 @@ type
     { writes a link with a target frame
       @param href is the link's reference
       @param caption is the link's caption (must already been converted)
-      @parem CssClass is the link's CSS class
+      @param CssClass is the link's CSS class
       @param TargetFrame is the link's target frame (or empty) }
     procedure WriteTargettedLink(const href, caption, CssClass, TargetFrame: string);
 
@@ -276,6 +276,9 @@ type
   THTMLDocGenerator = class(TGenericHTMLDocGenerator)
   end;
 
+const
+  DefaultPasdocCss = {$I pasdoc.css.inc};
+
 implementation
 
 uses
@@ -305,8 +308,6 @@ const
   DoctypeNormal = '<!DOCTYPE HTML PUBLIC ' +
     '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
     '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
-const
-  DefaultPasdocCss = {$I pasdoc.css.inc};
 
 constructor TGenericHTMLDocGenerator.Create(AOwner: TComponent);
 begin
