@@ -205,9 +205,9 @@ type
     function GetOptionByShortname(const AName: char): TOption;
   public
     { Create without any options - this will parse the current command line }
-    constructor Create; overload; virtual;
+    constructor Create; virtual;
     { Create with parameters to be used instead of command line }
-    constructor Create(const AParams: TStrings); overload; virtual;
+    constructor CreateParams(const AParams: TStrings); virtual;
     { destroy the option parser object and all associated @link(TOption) objects }
     destructor Destroy; override;
     { Add a @link(TOption) descendant to be included in parsing the command line }
@@ -257,7 +257,7 @@ end;
 
 constructor TOptionParser.Create;
 begin
-  Create(nil);
+  CreateParams(nil);
 end;
 
 function TOptionParser.AddOption(const AOption: TOption): TOption;
@@ -267,7 +267,7 @@ begin
   AOption.FParser := Self;
 end;
 
-constructor TOptionParser.Create(const AParams: TStrings);
+constructor TOptionParser.CreateParams(const AParams: TStrings);
 var
   i: Integer;
 begin
