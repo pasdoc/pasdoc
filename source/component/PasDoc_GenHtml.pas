@@ -22,6 +22,7 @@ unit PasDoc_GenHtml;
 interface
 
 uses
+  Utils,
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_Languages,
@@ -276,6 +277,9 @@ type
   THTMLDocGenerator = class(TGenericHTMLDocGenerator)
   end;
 
+const
+  DefaultPasdocCss = {$I pasdoc.css.inc};
+
 implementation
 
 uses
@@ -286,14 +290,10 @@ uses
   StrUtils,
   PasDoc,
   ObjectVector,
-  Utils,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_StringPairVector,
   PasDoc_Aspell;
-
-const
-  DefaultPasdocCss = {$I pasdoc.css.inc};
 
 {$INCLUDE automated.inc}
 {$INCLUDE private.inc}
