@@ -287,7 +287,7 @@ uses
   Windows,
 {$ENDIF}
   SysUtils,
-  StrUtils,
+  StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc,
   ObjectVector,
   PasDoc_HierarchyTree,
