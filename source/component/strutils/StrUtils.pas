@@ -32,7 +32,13 @@ interface
 Function IfThen(AValue: Boolean; const ATrue: string; AFalse: string): string; overload;
 Function IfThen(AValue: Boolean; const ATrue: string): string; overload; // ; AFalse: string = ''
 
+Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer; overload;
+Function PosEx(const SubStr, S: string): Integer; overload; // Offset: Cardinal = 1
+Function PosEx(c:char; const S: string; Offset: Cardinal): Integer; overload;
+
 implementation
+
+uses SysUtils;
 
 Function IfThen(AValue: Boolean; const ATrue: string; AFalse: string): string;
 
@@ -50,6 +56,49 @@ begin
     result:=atrue
   else
     result:='';
+end;
+
+Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
+
+var i : pchar;
+begin
+  if (offset<1) or (offset>length(s)) then
+  begin 
+    Result := 0; 
+    Exit 
+  end;
+  
+  i:=strpos(@s[offset],@substr[1]);
+  if i=nil then
+    PosEx:=0
+  else
+    PosEx:=succ(i-pchar(s));
+end;
+
+
+Function PosEx(const SubStr, S: string): Integer; // Offset: Cardinal = 1
+
+begin
+  posex:=posex(substr,s,1);
+end;
+
+Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
+
+var l : longint;
+begin
+  if (offset<1) or (offset>length(s)) then 
+  begin 
+    Result := 0; 
+    Exit 
+  end;
+  
+  l:=length(s);
+
+  while (offset<=l) and (s[offset]<>c) do inc(offset);
+  if offset>l then
+   posex:=0
+  else
+   posex:=offset;
 end;
 
 end.
