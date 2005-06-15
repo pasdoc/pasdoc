@@ -1138,8 +1138,7 @@ begin
   FTranslation[trIntroduction] := 'Wstêp';
   FTranslation[trConclusion] := 'Podsumowanie';
 
-  { TODO : Translation needed. }
-  FTranslation[trSearch] := 'Search';
+  FTranslation[trSearch] := 'Szukaj';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1211,8 +1210,7 @@ begin
   FTranslation[trIntroduction] := 'Wstêp';
   FTranslation[trConclusion] := 'Podsumowanie';
 
-  { TODO : Translation needed. }
-  FTranslation[trSearch] := 'Search';
+  FTranslation[trSearch] := 'Szukaj';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1777,6 +1775,9 @@ end;
 
 {
   $Log$
+  Revision 1.26  2005/06/15 10:15:58  kambi
+  * Polish translation for trSearch
+
   Revision 1.25  2005/06/15 09:26:21  twm
   * localized Tipue search button
   * added German and French translations for introduction, conclusion and Search
