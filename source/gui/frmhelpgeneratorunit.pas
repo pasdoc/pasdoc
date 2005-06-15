@@ -39,7 +39,7 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, Process, PasDoc_Serialize,
-  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils;
+  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils, LCLType;
 
 type
   EInvalidSpellingLanguage = class(Exception);
@@ -142,10 +142,10 @@ type
     SaveDialog1: TSaveDialog;
     OpenDialog2: TOpenDialog;
     MainMenu1: TMainMenu;
-    File1: TMenuItem;
-    Open1: TMenuItem;
-    Save1: TMenuItem;
-    Exit1: TMenuItem;
+    MenuFile: TMenuItem;
+    MenuOpen: TMenuItem;
+    MenuSave: TMenuItem;
+    MenuExit: TMenuItem;
     // @name controls the severity of the messages that are displayed.
     seVerbosity: TSpinEdit;
     Label7: TLabel;
@@ -158,7 +158,7 @@ type
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
     Label11: TLabel;
-    New1: TMenuItem;
+    MenuNew: TMenuItem;
     // @name generates Latex output.
     TexDocGenerator: TTexDocGenerator;
     tabDefines: TTabSheet;
@@ -509,6 +509,14 @@ begin
   seVerbosity.Constraints.MinWidth := 60;
   seVerbosity.Width := seVerbosity.Constraints.MinWidth;
   {$ENDIF}
+  
+  { Workaround for Lazarus bug 0000713,
+    [http://www.lazarus.freepascal.org/mantis/view.php?id=713]:
+    we set menu shortcuts at runtime.
+    (the bug is only for Win32, but we must do this workaround for every
+    target). }
+  MenuOpen.ShortCut := ShortCut(VK_O, [ssCtrl]);
+  MenuSave.ShortCut := ShortCut(VK_S, [ssCtrl]);
 end;
 
 procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
