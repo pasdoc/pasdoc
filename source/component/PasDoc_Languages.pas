@@ -1114,9 +1114,9 @@ begin
   FTranslation[trIdentifiers] := 'Identyfikatory';
   FTranslation[trInterface] := 'Interfejs';
   FTranslation[trLegend] := 'Legenda';
-  { todo: add translation }
-  FTranslation[trMarker] := 'Marker';
-  FTranslation[trVisibility] := 'Visibility';
+
+  FTranslation[trMarker] := 'Kolor';
+  FTranslation[trVisibility] := 'Widocznoœæ';
 
   FTranslation[trMethods] := 'Metody';
   FTranslation[trLastModified] := 'Ostatnia modyfikacja';
@@ -1190,9 +1190,9 @@ begin
   FTranslation[trIdentifiers] := 'Identyfikatory';
   FTranslation[trInterface] := 'Interfejs';
   FTranslation[trLegend] := 'Legenda';
-  { todo: add translation }
-  FTranslation[trMarker] := 'Marker';
-  FTranslation[trVisibility] := 'Visibility';
+
+  FTranslation[trMarker] := 'Kolor';
+  FTranslation[trVisibility] := 'Widoczno¶æ';
 
   FTranslation[trMethods] := 'Metody';
   FTranslation[trLastModified] := 'Ostatnia modyfikacja';
@@ -1827,6 +1827,9 @@ end;
 
 {
   $Log$
+  Revision 1.28  2005/06/15 11:51:54  kambi
+  * Updated Polish translation for Marker and Visibility
+
   Revision 1.27  2005/06/15 11:17:45  twm
   * added localization for "Marker" and "Visibility"
   * added and corrected translations to German and French
