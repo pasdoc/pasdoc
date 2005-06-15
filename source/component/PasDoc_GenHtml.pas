@@ -1715,8 +1715,8 @@ begin
   WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
 
   WriteStartOfTable2Columns('markerlegend',
-    { TODO -otwm : needs translation } 'Marker',
-    { TODO -otwm : needs translation } 'Visibility');
+    FLanguage.Translation[trMarker],
+    FLanguage.Translation[trVisibility]);
 
   WriteLegendEntry('private.gif', trPrivate);
   WriteLegendEntry('protected.gif', trProtected);
