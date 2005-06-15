@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="\"/>
+    <PathDelim Value="/"/>
     <Version Value="5"/>
     <General>
       <Flags>
@@ -13,65 +13,57 @@
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
     </General>
-    <JumpHistory Count="14" HistoryIndex="13">
+    <JumpHistory Count="12" HistoryIndex="11">
       <Position1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="446" Column="33" TopLine="417"/>
+        <Caret Line="172" Column="5" TopLine="171"/>
       </Position1>
       <Position2>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="75" Column="21" TopLine="42"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="240" Column="2" TopLine="238"/>
       </Position2>
       <Position3>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="188" Column="1" TopLine="163"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="171" Column="1" TopLine="154"/>
       </Position3>
       <Position4>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="330" Column="74" TopLine="313"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="236" Column="1" TopLine="228"/>
       </Position4>
       <Position5>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="331" Column="39" TopLine="314"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="330" Column="19" TopLine="314"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="91" Column="27" TopLine="82"/>
       </Position6>
       <Position7>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Caret Line="374" Column="16" TopLine="355"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="507" Column="10" TopLine="498"/>
       </Position7>
       <Position8>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\lcltype.pp"/>
-        <Caret Line="895" Column="30" TopLine="895"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="172" Column="5" TopLine="171"/>
       </Position8>
       <Position9>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\lcltype.pp"/>
-        <Caret Line="2136" Column="2" TopLine="2103"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="240" Column="2" TopLine="238"/>
       </Position9>
       <Position10>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\lcltype.pp"/>
-        <Caret Line="2697" Column="2" TopLine="2664"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
       <Position11>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\lcltype.pp"/>
-        <Caret Line="2144" Column="3" TopLine="2126"/>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="91" Column="27" TopLine="82"/>
       </Position11>
       <Position12>
         <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="39" Column="51" TopLine="1"/>
+        <Caret Line="171" Column="1" TopLine="162"/>
       </Position12>
-      <Position13>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="515" Column="11" TopLine="487"/>
-      </Position13>
-      <Position14>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="512" Column="56" TopLine="497"/>
-      </Position14>
     </JumpHistory>
-    <Units Count="5">
+    <Units Count="3">
       <Unit0>
         <CursorPos X="1" Y="1"/>
         <Filename Value="pasdoc_gui.lpr"/>
@@ -81,18 +73,18 @@
         <UsageCount Value="63"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="8" Y="501"/>
+        <CursorPos X="1" Y="236"/>
         <EditorIndex Value="0"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="505"/>
+        <TopLine Value="228"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
         <UsageCount Value="63"/>
         <Bookmarks Count="1">
-          <Item0 X="7" Y="621" ID="1"/>
+          <Item0 X="7" Y="623" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>
@@ -105,28 +97,10 @@
         <UnitName Value="frmAboutUnit"/>
         <UsageCount Value="63"/>
       </Unit2>
-      <Unit3>
-        <CursorPos X="36" Y="48"/>
-        <EditorIndex Value="1"/>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\Menus.pp"/>
-        <Loaded Value="True"/>
-        <TopLine Value="35"/>
-        <UnitName Value="Menus"/>
-        <UsageCount Value="11"/>
-      </Unit3>
-      <Unit4>
-        <CursorPos X="1" Y="30"/>
-        <EditorIndex Value="2"/>
-        <Filename Value="D:\sources\fpc_and_lazarus\latest\lazarus\lcl\lcltype.pp"/>
-        <Loaded Value="True"/>
-        <TopLine Value="18"/>
-        <UnitName Value="LCLType"/>
-        <UsageCount Value="11"/>
-      </Unit4>
     </Units>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="\tmp\aaa\"/>
+      <DestinationDirectory Value="/tmp/aaa/"/>
       <IgnoreBinaries Value="False"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
@@ -134,7 +108,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -152,9 +126,8 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
-    <PathDelim Value="\"/>
     <SearchPaths>
-      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+      <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>

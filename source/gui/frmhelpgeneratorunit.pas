@@ -48,10 +48,10 @@ type
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
+   cbCheckSpelling: TCheckBox;
     CheckAutoAbstract: TCheckBox;
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
-    cbCheckSpelling: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
     edTitle: TEdit;
     EditCssFileName: TFileNameEdit;
@@ -78,6 +78,8 @@ type
     memoFooter: TMemo;
     memoHeader: TMemo;
     MenuAbout: TMenuItem;
+    PanelSpellCheckingTop: TPanel;
+    PanelMarkersTop: TPanel;
     PanelWebPageTop: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
