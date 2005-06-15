@@ -5,20 +5,29 @@ unit PasDoc_Tipue;
 
 interface
 
-uses PasDoc_Items;
+uses Utils, PasDoc_Items;
 
 { Put this in <head> of page with search button. }
 function TipueSearchButtonHead: string;
 
 { Put this in content of some page --
-  this will place a form with search button. }
-function TipueSearchButton: string;
+  this will place a form with search button.
+  You will need to use Format to insert the localized word for "Search", e.g.:
+  Format(TipueSearchButton, ['Search'])
+  for English.}
+const
+  TipueSearchButton =
+    '<form name="tip_Form" onsubmit="search_form(tip_Form);return false">' + LineEnding +
+    '<input type="text" id="search_text" name="d">' + LineEnding +
+    '<input type="submit" id="search_submit_button" value="%s">' + LineEnding +
+    '</form>' + LineEnding;
+
 
 { Adds some additional files to html documentation, needed for tipue engine.
 
   OutputPath is our output path, where html output must be placed.
-  Must end with PathDelim. 
-  
+  Must end with PathDelim.
+
   Units must be non-nil. It will be used to generate index data for tipue. }
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
@@ -27,23 +36,12 @@ procedure TipueAddFiles(Units: TPasUnits;
 
 implementation
 
-uses Classes, SysUtils, Utils;
+uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
   Result := '<script language="JavaScript1.3" ' +
     'type="text/javascript" src="tip_form.js"></script>';
-end;
-
-function TipueSearchButton: string;
-begin
-  { Based on tipue docs.
-    I only changed "Go" to "Search" (this is more standard name) }
-  Result :=
-    '<form name="tip_Form" onsubmit="search_form(tip_Form);return false">' + LineEnding +
-    '<input type="text" id="search_text" name="d">' + LineEnding +
-    '<input type="submit" id="search_submit_button" value="Search">' + LineEnding +
-    '</form>' + LineEnding;
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;

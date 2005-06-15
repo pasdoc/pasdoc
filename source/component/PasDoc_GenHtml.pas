@@ -771,7 +771,7 @@ begin
     DoMessage(2, mtInformation, 
       'Writing additional files for tipue search engine', []);
     TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
-    DestinationDirectory);
+      DestinationDirectory);
   end;
   EndSpellChecking;
 end;
@@ -1896,7 +1896,7 @@ begin
   end;
     
   if UseTipueSearch then
-    WriteDirect('<tr><td>' + TipueSearchButton + '</td></tr>');
+    WriteDirect('<tr><td>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</td></tr>');
     
   WriteDirectLine('</table>');
   WriteDirectLine('</body></html>');

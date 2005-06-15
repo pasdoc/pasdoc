@@ -114,7 +114,9 @@ type
     trLibrarySpecific,
 
     trIntroduction,
-    trConclusion);
+    trConclusion,
+
+    trSearch);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
@@ -358,6 +360,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -431,6 +436,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -504,6 +512,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -524,6 +535,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -598,6 +612,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -672,6 +689,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -742,9 +762,10 @@ begin
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform (PLEASE TRANSLATE THIS STRING)';
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
 
-  { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  FTranslation[trSearch] := 'Recherce';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -806,7 +827,7 @@ begin
   FTranslation[trWarningOverwrite] :=
     'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben';
 
-  FTranslation[trGeneratedBy] := 'Erstellt von';
+  FTranslation[trGeneratedBy] := 'Erstellt mit';
   FTranslation[trOnDateTime] := 'am';
   
   FTranslation[trDeprecated] := 'this symbol is deprecated (PLEASE TRANSLATE THIS STRING)';
@@ -814,8 +835,10 @@ begin
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library (PLEASE TRANSLATE THIS STRING)';
 
   { TODO : Translation needed. }
-  FTranslation[trIntroduction] := 'Introduction';
-  FTranslation[trConclusion] := 'Conclusion';
+  FTranslation[trIntroduction] := 'Einführung';
+  FTranslation[trConclusion] := 'Fazit';
+
+  FTranslation[trSearch] := 'Suchen';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -888,6 +911,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -961,6 +987,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1033,6 +1062,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1105,6 +1137,9 @@ begin
 
   FTranslation[trIntroduction] := 'Wstêp';
   FTranslation[trConclusion] := 'Podsumowanie';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1175,6 +1210,9 @@ begin
 
   FTranslation[trIntroduction] := 'Wstêp';
   FTranslation[trConclusion] := 'Podsumowanie';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1247,6 +1285,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1319,6 +1360,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1391,6 +1435,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1456,6 +1503,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1524,6 +1574,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1599,6 +1652,9 @@ begin
   { TODO : Translation needed. }
   FTranslation[trIntroduction] := 'Introduction';
   FTranslation[trConclusion] := 'Conclusion';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1671,6 +1727,9 @@ begin
 
   FTranslation[trIntroduction] := 'Bevezetõ';
   FTranslation[trConclusion] := 'Összefoglaló';
+
+  { TODO : Translation needed. }
+  FTranslation[trSearch] := 'Search';
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1718,6 +1777,10 @@ end;
 
 {
   $Log$
+  Revision 1.25  2005/06/15 09:26:21  twm
+  * localized Tipue search button
+  * added German and French translations for introduction, conclusion and Search
+
   Revision 1.24  2005/06/06 11:28:37  kambi
   * Updated Hungarian translation from Gergõ Jónás
 
