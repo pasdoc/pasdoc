@@ -1,3 +1,23 @@
+- Provide easy way to look into documentation for given option,
+  wiki page documenting given feature. pasdoc_gui would automatically
+  fire up user's WWW browser with appropriate page, e.g.
+  [http://pasdoc.sipsolutions.net/AutoAbstractOption] would be the help
+  page for "Automatically deduce @abstract..." checkbox.
+
+  See e.g. Gimp, that also keeps documentation in HTML, and allows
+  user to easily open WWW browser with docs for given control.
+
+  We already have edit box that allows user to specify browser command,
+  so this is simple.
+
+  When we will learn how to generate nice offline documentation
+  from our moinmoin wiki and we will distribute pasdoc + pasdoc_gui +
+  offline docs in one package, this will fire up WWW browser
+  with a local HTML page (still, configuration option will
+  be added to allow users who are always online to see the latest
+  version of documentation from WWW, instead of looking at offline
+  version).
+
 - Move "Generate" and "Web page" tabs to a separate window which opens once
   the user generates the documentation.
 
@@ -5,7 +25,7 @@
   and as a menu item. Then we could add some shortcut like Ctrl+G
   (or maybe F9, to follow Delphi and Lazarus shortcut that we all know ?)
   to trigger it. The "command to run browser" edit box should be probably
-  moved to a separate window like "Preferences", and then it's saved 
+  moved to a separate window like "Preferences", and then it's saved
   in user configuration file.
 
 - Default value of EditHtmlBrowserCommand.Text
