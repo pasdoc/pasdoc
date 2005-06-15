@@ -12,15 +12,15 @@ object frmHelpGenerator: TfrmHelpGenerator
   TextHeight = 20
   HorzScrollBar.Page = 588
   VertScrollBar.Page = 386
-  Left = 96
+  Left = 202
   Height = 413
-  Top = 64
+  Top = 22
   Width = 589
   object PageControl1: TPageControl
-    ActivePage = tabOptions
+    ActivePage = tabIncludeDirectories
     Align = alClient
     BorderSpacing.OnChange = nil
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     Height = 387
     Width = 589
@@ -156,7 +156,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object edProjectName: TEdit
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.OnChange = nil
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         TabOrder = 0
         Left = 8
         Height = 23
@@ -167,7 +167,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.OnChange = nil
         DecimalPlaces = 0
         MaxValue = 6
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         TabOrder = 6
         Value = 2
         Left = 6
@@ -342,7 +342,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'strict'
           'sloppy'
         )
-        OnClick = edProjectNameChange
+        OnClick = SomethingChanged
         ParentColor = True
         Left = 12
         Height = 63
@@ -351,7 +351,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoHyphenatedWords: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         TabOrder = 1
         Left = 124
         Height = 307
@@ -385,7 +385,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoFooter: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         TabOrder = 0
         WordWrap = False
         Left = 14
@@ -395,7 +395,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         TabOrder = 1
         WordWrap = False
         Left = 14
@@ -497,7 +497,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object memoFiles: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
@@ -562,7 +562,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object memoIncludeDirectories: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
@@ -649,7 +649,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object memoDefines: TMemo
         Align = alClient
         BorderSpacing.OnChange = nil
-        OnChange = edProjectNameChange
+        OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False

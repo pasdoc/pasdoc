@@ -181,7 +181,6 @@ type
     procedure btnOpenClick(Sender: TObject);
     procedure Save1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
-    procedure edProjectNameChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure New1Click(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
@@ -888,11 +887,6 @@ end;
 procedure TfrmHelpGenerator.Exit1Click(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TfrmHelpGenerator.edProjectNameChange(Sender: TObject);
-begin
-  Changed := True;
 end;
 
 procedure TfrmHelpGenerator.SaveChanges(var Action: TCloseAction);
