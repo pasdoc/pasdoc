@@ -460,6 +460,10 @@ end;
     // the way that Numeric are formatted in Delphi.
     function FormatNumeric(AString: string): string; virtual;
 
+    // FormatFloat will cause AString to be formatted in
+    // the way that Float are formatted in Delphi.
+    function FormatFloat(AString: string): string; virtual;
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; virtual;
@@ -1834,7 +1838,7 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
     ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
-    ctEndComment, ctHex, ctNumeric);
+    ctEndComment, ctHex, ctEndHex, ctNumeric, ctEndNumeric);
 var
   CharIndex: integer;
   CodeType: TCodeType;
@@ -1845,12 +1849,15 @@ var
   NumBeginning: Integer;
   EndOfCode: boolean;
   WhiteSpaceBeginning: integer;
+  NumberSubBlock: String;
+  NumberRange: Integer;
 const
   Separators = [' ', ',', '(', ')', #9, #10, #13, ';', '[', ']', '{', '}',
     '''', ':', '<', '>', '=', '+', '-', '*', '/', '@', '.'];
   LineEnd = [#10, #13];
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
-  Numeric = ['0'..'9'];
+  Numeric = ['0'..'9','.'];
+  Hexadec = ['0'..'9', 'a'..'f', 'A'..'F', '$'];
   function TestCommentStart: boolean;
   begin
     result := False;
@@ -2004,6 +2011,16 @@ begin
           begin
             // do nothing
           end
+          else if Line[CharIndex] = '$' Then
+          Begin
+            CodeType := ctHex;
+            HexBeginning := CharIndex;
+          End
+          else if Line[CharIndex] in Numeric then
+          begin
+            CodeType := ctNumeric;
+            NumBeginning := CharIndex;
+          end
           else if Line[CharIndex] in AlphaNumeric then
           begin
             CodeType := ctCode;
@@ -2084,6 +2101,16 @@ begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
           end
+          else if Line[CharIndex] = '$' Then
+          Begin
+            CodeType := ctHex;
+            HexBeginning := CharIndex;
+          End
+          else if Line[CharIndex] in Numeric then
+          begin
+            CodeType := ctNumeric;
+            NumBeginning := CharIndex;
+          end
           else if Line[CharIndex] in AlphaNumeric then
           begin
             CodeType := ctCode;
@@ -2091,22 +2118,91 @@ begin
           end;
         end;
       ctHex:
+        Begin
+          If (Line[CharIndex] in (Separators)) Or
+              Not(Line[CharIndex] in Hexadec) then
+          begin
+            CodeType := ctEndHex;
+            result := result + FormatHex(Copy(Line, HexBeginning,
+                      CharIndex - HexBeginning));
+            result := result + FormatCode(Copy(Line, CharIndex, 1));
+          end;
+        End;
+      ctNumeric:
+        Begin
+          If (Line[CharIndex] in (Separators - ['.'])) Or
+              Not(Line[CharIndex] in Numeric) then
+          begin
+            CodeType := ctEndNumeric;
+            If Pos('.', Copy(Line, NumBeginning, CharIndex - NumBeginning)) > 0 Then
+            Begin
+              NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
+              NumberRange := Pos('..', NumberSubBlock);
+              If NumberRange > 0 Then
+              Begin
+                result := result + FormatNumeric(
+                          Copy(NumberSubBlock, 1, NumberRange - 1));
+                result := result + FormatCode(
+                          Copy(NumberSubBlock, NumberRange, Length(NumberSubBlock)));
+              End
+              Else
+                result := result + FormatFloat(NumberSubBlock);
+            End
+            Else
+              result := result + FormatNumeric(Copy(Line, NumBeginning,
+                        CharIndex - NumBeginning));
+            result := result + FormatCode(Copy(Line, CharIndex, 1));
+          end;
+        End;
+      ctEndHex:
         begin
-          if Line[CharIndex] in Separators then
+          if Line[CharIndex] = '#' then
+          begin
+            CodeType := ctChar;
+          end
+          else if TestCommentStart then
+          begin
+            // do nothing
+          end
+          else if Line[CharIndex] in Numeric then
+          begin
+            CodeType := ctNumeric;
+            NumBeginning := CharIndex;
+          end
+          else if Line[CharIndex] in AlphaNumeric then
+          begin
+            CodeType := ctCode;
+            CodeBeginning := CharIndex;
+          end
+          else
           begin
             CodeType := ctWhiteSpace;
-            result := result + FormatHex(Copy(Line, HexBeginning,
-              CharIndex - HexBeginning));
             WhiteSpaceBeginning := CharIndex;
           end;
         end;
-      ctNumeric:
+      ctEndNumeric:
         begin
-          if Line[CharIndex] in Separators then
+          if Line[CharIndex] = '#' then
+          begin
+            CodeType := ctChar;
+          end
+          else if TestCommentStart then
+          begin
+            // do nothing
+          end
+          else if Line[CharIndex] = '$' Then
+          Begin
+            CodeType := ctHex;
+            HexBeginning := CharIndex;
+          End
+          else if Line[CharIndex] in AlphaNumeric then
+          begin
+            CodeType := ctCode;
+            CodeBeginning := CharIndex;
+          end
+          else
           begin
             CodeType := ctWhiteSpace;
-            result := result + FormatNumeric(Copy(Line, NumBeginning,
-              CharIndex - NumBeginning));
             WhiteSpaceBeginning := CharIndex;
           end;
         end;
@@ -2160,6 +2256,18 @@ begin
         result := result + FormatComment(Copy(Line, CommentBegining,
           CharIndex - CommentBegining + 1));
       end;
+    ctHex:
+      begin
+      end;
+    ctEndHex:
+      begin
+      end;
+    ctNumeric:
+      begin
+      end;
+    ctEndNumeric:
+      begin
+      end;
   else Assert(False);
   end;
 end;
@@ -2178,32 +2286,37 @@ end;
 
 function TDocGenerator.FormatComment(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatHex(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatNumeric(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
+end;
+
+function TDocGenerator.FormatFloat(AString: string): string;
+begin
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatCompilerComment(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatKeyWord(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatString(AString: string): string;
 begin
-  result := AString;
+  result := ConvertString(AString);
 end;
 
 function TDocGenerator.Paragraph: string; 

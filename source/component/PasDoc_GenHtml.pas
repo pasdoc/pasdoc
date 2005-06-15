@@ -200,7 +200,11 @@ type
     // FormatNumeric will cause AString to be formatted in
     // the way that Numeric are formatted in Delphi.
     function FormatNumeric(AString: string): string; override;
-    
+
+    // FormatFloat will cause AString to be formatted in
+    // the way that Float are formatted in Delphi.
+    function FormatFloat(AString: string): string; override;
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; override;
@@ -344,6 +348,11 @@ end;
 function TGenericHTMLDocGenerator.FormatNumeric(AString: string): string;
 begin
   result := '<span class="pascal_numeric">' + ConvertString(AString) + '</span>';
+end;
+
+function TGenericHTMLDocGenerator.FormatFloat(AString: string): string;
+begin
+  result := '<span class="pascal_float">' + ConvertString(AString) + '</span>';
 end;
 
 function TGenericHTMLDocGenerator.FormatCompilerComment(AString: string): string;
