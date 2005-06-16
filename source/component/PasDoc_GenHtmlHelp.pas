@@ -274,7 +274,7 @@ var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + 
-      LinkGraphVizUses;
+      '.' + LinkGraphVizUses;
       
     if LinkGraphVizUses <> '' then
       WriteLiObject(FLanguage.Translation[trGvUses], FileName);
@@ -287,7 +287,7 @@ var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName + 
-      LinkGraphVizClasses;
+      '.' + LinkGraphVizClasses;
       
     if LinkGraphVizClasses <> '' then
       WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
