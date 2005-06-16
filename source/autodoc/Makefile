@@ -57,6 +57,9 @@ PASDOC_OPTIONS=--include ../component \
   --title "PasDoc's autodoc" --write-uses-list  --auto-abstract \
   --introduction=introduction.txt
 
+GRAPHVIZ_COMMANDS=dot -Grankdir=LR -Tjpg -oGVClasses.jpg GVClasses.dot; \
+                  dot -Grankdir=LR -Tjpg -oGVUses.jpg GVUses.dot
+
 # These options will be passed only when making docs in format that
 # supports including graphviz graphs.
 PASDOC_GRAPHVIZ_OPTIONS=--graphviz-classes --graphviz-uses \
@@ -67,25 +70,21 @@ PASDOC_GRAPHVIZ_OPTIONS=--graphviz-classes --graphviz-uses \
 # As usual, remember you can override it at make's command-line.
 HHC=hhc
 
-.PHONY: html latex pdf dvi ps html-latex clean htmlhelp rtf graphviz
+.PHONY: html latex pdf dvi ps html-latex clean htmlhelp rtf
 
 html:
 	mkdir -p html/
 	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --output=html/ --use-tipue-search
-	$(MAKE) graphviz
+	cd html/; $(GRAPHVIZ_COMMANDS)
 
 # Ignore exit code from hhc (it's always 1 ???)
 htmlhelp:
 	mkdir -p htmlhelp/
 	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --format=htmlhelp --output=htmlhelp/
+	cd htmlhelp/; $(GRAPHVIZ_COMMANDS)
 	-cd htmlhelp/; $(HHC) docs.hhp
-	$(MAKE) graphviz
-
-graphviz:
-	dot -Grankdir=LR -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
-	dot -Grankdir=LR -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
 
 # Just shortcuts
 latex: latex/docs.tex
