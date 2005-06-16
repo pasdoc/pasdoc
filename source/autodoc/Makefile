@@ -2,9 +2,6 @@
 # Documentation is created in subdirectories named after pasdoc's --format
 # names (html/, latex/ etc.)
 #
-# Includes a Classes and Uses hierarchy graph (requires GraphViz).
-# TODO: for now this GraphViz graph's are only included in Html output.
-#
 # Targets:
 #
 #   html latex pdf dvi ps html-latex htmlhelp rtf
@@ -60,28 +57,35 @@ PASDOC_OPTIONS=--include ../component \
   --title "PasDoc's autodoc" --write-uses-list  --auto-abstract \
   --introduction=introduction.txt
 
+# These options will be passed only when making docs in format that
+# supports including graphviz graphs.
+PASDOC_GRAPHVIZ_OPTIONS=--graphviz-classes --graphviz-uses \
+  --link-gv-classes jpg --link-gv-uses jpg
+
 # How to call hhc (html help compiler) ?
 # Default value means that it must be available on path.
 # As usual, remember you can override it at make's command-line.
 HHC=hhc
 
-.PHONY: html latex pdf dvi ps html-latex clean htmlhelp rtf
+.PHONY: html latex pdf dvi ps html-latex clean htmlhelp rtf graphviz
 
 html:
 	mkdir -p html/
-	$(PASDOC) $(PASDOC_OPTIONS) \
-	  --graphviz-classes --graphviz-uses \
-	  --link-gv-classes jpg --link-gv-uses jpg \
+	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --output=html/ --use-tipue-search
-	dot -Grankdir=LR -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
-	dot -Grankdir=LR -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
+	$(MAKE) graphviz
 
 # Ignore exit code from hhc (it's always 1 ???)
 htmlhelp:
 	mkdir -p htmlhelp/
-	$(PASDOC) $(PASDOC_OPTIONS) \
+	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --format=htmlhelp --output=htmlhelp/
 	-cd htmlhelp/; $(HHC) docs.hhp
+	$(MAKE) graphviz
+
+graphviz:
+	dot -Grankdir=LR -Tjpg -ohtml/GVClasses.jpg html/GVClasses.dot
+	dot -Grankdir=LR -Tjpg -ohtml/GVUses.jpg html/GVUses.dot
 
 # Just shortcuts
 latex: latex/docs.tex
