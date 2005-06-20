@@ -143,7 +143,7 @@ clean:
 
 .PHONY:	public upload
 
-public: html pdf latex html-latex rtf
+public: html pdf latex html-latex
 
 # Override this at command-line to your username,
 # like `make upload SF_USERNAME=my_user_name'
@@ -162,7 +162,6 @@ upload:
 	scp $(SCP_OPTIONS) latex/docs.tex $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.html $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.css $(SF_CONNECT)latex/
-	scp $(SCP_OPTIONS) latex2rtf/docs.rtf $(SF_CONNECT)latex2rtf/
 	../../tests/scripts/ssh_chmod_writeable_by_pasdoc.sh \
 	  $(SF_USERNAME) $(SF_PATH)
 
