@@ -1708,12 +1708,19 @@ begin
     end;
     
     WriteDirect('DiGraph Classes {', true);
-    while Assigned(LNode) do begin
-      if Assigned(LNode.Parent) then begin
-        if Length(LNode.Parent.Name) > 0 then begin
-          WriteDirect('  '+LNode.Name + ' -> '+LNode.Parent.Name, true);
-        end;
+    while Assigned(LNode) do 
+    begin
+      if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then 
+      begin
+        WriteDirectLine('  ' + LNode.Name + ' -> '+LNode.Parent.Name);
       end;
+      
+      if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
+      begin
+        WriteDirectLine('  ' + LNode.Name + 
+          ' [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
+      end;
+
       LNode := FClassHierarchy.NextItem(LNode);
     end;
 
@@ -1739,14 +1746,20 @@ begin
     end;
     
     WriteDirect('DiGraph Uses {', true);
-    for i := 0 to FUnits.Count-1 do begin
-      if FUnits.PasItemAt[i] is TPasUnit then begin
+    for i := 0 to FUnits.Count-1 do 
+    begin
+      if FUnits.PasItemAt[i] is TPasUnit then 
+      begin
         U := TPasUnit(FUnits.PasItemAt[i]);
-        if not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-          for j := 0 to U.UsesUnits.Count-1 do begin
-            WriteDirect('  '+U.Name+' -> '+U.UsesUnits[j], true);
+        if not StringVectorIsNilOrEmpty(U.UsesUnits) then 
+        begin
+          for j := 0 to U.UsesUnits.Count-1 do 
+          begin
+            WriteDirectLine('  ' + U.Name + ' -> ' + U.UsesUnits[j]);
           end;
         end;
+
+        WriteDirectLine('  ' + U.Name + ' [href="' + U.OutputFileName + '"]');
       end;
     end;
     WriteDirect('}', true);
