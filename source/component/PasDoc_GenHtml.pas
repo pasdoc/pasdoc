@@ -1622,6 +1622,7 @@ begin
   WriteAnchor(SectionAnchors[dsDescription]);
   WriteUnitDescription(HL + 1, U);
 
+  WriteAnchor(SectionAnchors[dsUses]);
   WriteUnitUses(HL + 1, U);
 
   AnyItemDetailed := 
