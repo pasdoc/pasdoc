@@ -22,7 +22,7 @@ endif
 # DATE : Utility name to get the ISO Date
 PACKAGENAME:=pasdoc
 DOCTITLE:=Pasdoc documentation
-UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser ./source/component/tipue
+UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser ./source/component/tipue ./source/component/strutils
 INCLUDEDIRS := ./source/component
 FILE:=./source/console/PasDoc_Console.dpr
 BINFILES:=./bin/pasdoc_console
@@ -31,8 +31,8 @@ DOCFILES:= LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.
 
 
 PATHSEP:=\\
-BINDIR := ./bin
-OUTDIR := ./lib
+BINDIR := bin
+OUTDIR := lib
 DATE := getdate.exe
 
 ############################################################################
@@ -76,7 +76,7 @@ FPCAMIGA = C:\pp\cross\m68k-amiga\bin\ppc68k.exe
 FPCBEOS = C:\pp\cross\i386-beos\bin\ppc386.exe
 FPCOS2 = C:\pp\cross\i386-os2\bin\ppc386.exe
 
-FPC2   = C:\pp2\bin\win32\ppc386.exe
+FPC2   = C:\pp2\bin\i386-win32\ppc386.exe
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
 FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR)  -S2 -vihwn -Sh -Ct $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
@@ -103,10 +103,10 @@ default: build-fpc-default
 # Clean up the output files.
 clean:
 ifdef OUTDIR
-	del /Q $(OUTDIR)\*.*
+	rm -f $(OUTDIR)/*
 endif	
 ifdef BINDIR
-	del /Q $(BINDIR)\*.*
+	rm -f $(BINDIR)/*
 endif	
 
 build-fpc-default:
