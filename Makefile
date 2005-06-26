@@ -1,39 +1,44 @@
-ifndef VERSION
-VERSION=0.0
-endif
+#######################################################################
+# BASE CONFIGURATION
+#######################################################################
 
-#######################################################################
-# USER CONFIGURATION : These should be configured manually 
-#######################################################################
-# PACKAGENAME : The name of the package / file name
-# VERSION : The version of the package
-# DOCTITLE : The title of the final documentation
-# PATHSEP : Operating system path separator
-# UNITDIRS : Location of units source code and units
-# FILE : Base file to compile
-# BINDIR : Base directory where binaries will go
+# The version of the package.
+# This must be changed on each version change,
+# documented at ReleaseMaking wiki page.
+VERSION := 0.8.8.3
+
+# The name of the package / file name
+PACKAGENAME := pasdoc
+
+# Location of units source code
+# TODO: ./source/component/strutils should be given only for
+# compilers that don't have StrUtils unit (Delphi 5, FPC 1.0.10)
+UNITDIRS := ./source/component ./source/console ./source/OptionParser \
+  ./source/component/tipue ./source/component/strutils
+
+INCLUDEDIRS := ./source/component
+
+# Base file to compile
+FILE := ./source/console/PasDoc_Console.dpr
+
 # The following is for creating the final package, comment out
 # if that particular section is not used.
 # BINFILES: Files that will go into the resulting bin directory
 # SRCFILES: Files that will go into the resulting src directory
 # DOCFILES: Files that will go into the resulting docs directory
-# OUTDIR : Base directory where libs, units, objects files will go
-# DATAFILES : Files to copy for the tests
-# DATE : Utility name to get the ISO Date
-PACKAGENAME:=pasdoc
-DOCTITLE:=Pasdoc documentation
-UNITDIRS := ./source ./source/component ./source/console ./source/OptionParser ./source/component/tipue ./source/component/strutils
-INCLUDEDIRS := ./source/component
-FILE:=./source/console/PasDoc_Console.dpr
-BINFILES:=./bin/pasdoc_console
-DOCFILES:= LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
+BINFILES := ./bin/pasdoc_console
+DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
 #SRCFILES:=./source/*
 
+# Operating system path separator.
+# Note that default value, /, is good not only for Unices but also for Win32.
+PATHSEP := /
 
-PATHSEP:=\\
+# Base directory where binaries will go
 BINDIR := bin
+
+# Base directory where libs, units, objects files will go
 OUTDIR := lib
-DATE := getdate.exe
 
 ############################################################################
 # Change the paths to the correct types
@@ -57,14 +62,12 @@ ifdef SRCFILES
 SRCFILES:=$(subst /,$(PATHSEP),$(SRCFILES))
 endif
 
-# Get the current date
-DATESTR:= $(shell $(DATE))
 CURRENTDIR:=$(shell pwd)
 
 
 # FREEPASCAL CONFIGURATION
 
-# FPCDEFAULT means "use current os and processor", 
+# FPCDEFAULT means "use current os and processor",
 # calling just fpc binary on the path
 FPCDEFAULT = fpc
 
@@ -104,10 +107,10 @@ default: build-fpc-default
 clean:
 ifdef OUTDIR
 	rm -f $(OUTDIR)/*
-endif	
+endif
 ifdef BINDIR
 	rm -f $(BINDIR)/*
-endif	
+endif
 
 build-fpc-default:
 	$(FPCDEFAULT) $(FPCFLAGS) $(FILE)
@@ -137,13 +140,13 @@ build-fpc-os2:
 build-fpc2:
 	$(FPC2) $(FPCFLAGS) $(FILE)
 
-build-dcc:	
+build-dcc:
 	$(DCC) $(DCCFLAGS) $(DCCUNITDIRS) $(FILE)
 
-build-vpc-win32:	
+build-vpc-win32:
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
 
-build-vpc-os2:	
+build-vpc-os2:
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
 
@@ -174,14 +177,14 @@ buildall:
 	$(MAKE) -s -C . clean
 	$(MAKE) -s -C . clean
 
-makepkg:	
+makepkg:
 	rm -rf $(ZIPPKGDIR)
 	mkdir $(ZIPPKGDIR)
-ifdef BINFILES	
+ifdef BINFILES
 	mkdir $(ZIPPKGDIR)$(PATHSEP)bin
 	mv $(BINFILES)$(EXE) pasdoc$(EXE)
 	cp -R pasdoc$(EXE) $(ZIPPKGDIR)$(PATHSEP)bin
-endif	
+endif
 ifdef DOCFILES
 	mkdir $(ZIPPKGDIR)$(PATHSEP)docs
 	cp -R $(DOCFILES) $(ZIPPKGDIR)$(PATHSEP)docs
@@ -189,7 +192,7 @@ endif
 ifdef SRCFILES
 	mkdir $(ZIPPKGDIR)$(PATHSEP)src
 	cp -R $(SRCFILES) $(ZIPPKGDIR)$(PATHSEP)src
-endif	
+endif
 	rmcvsdir $(ZIPPKGDIR)
 	echo cd /D $(ZIPPKGDIR) > zipit.bat
 	echo cd.. >> zipit.bat
@@ -200,16 +203,16 @@ endif
 	cp $(TEMP)$(PATHSEP)$(PACKAGENAME).zip .
 	rm -f $(TEMP)$(PATHSEP)$(PACKAGENAME).zip
 
-makego32:	
+makego32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-go32
 	$(MAKE) -C . makepkg EXE=.exe
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-go32.zip
 
-makewin32:	
+makewin32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-win32
-	$(MAKE) -C . makepkg EXE=.exe 
+	$(MAKE) -C . makepkg EXE=.exe
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-win32.zip
 
 makeos2:
@@ -252,7 +255,7 @@ makesrc:
 
 makeall:
 	$(MAKE) -C . clean
-	$(MAKE) -s -C . buildall  
+	$(MAKE) -s -C . buildall
 	$(MAKE) -C . clean
 	$(MAKE) -C . makego32
 	$(MAKE) -C . makewin32
