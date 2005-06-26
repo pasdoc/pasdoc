@@ -35,13 +35,16 @@ OUTDIR := lib
 # SRCFILES: Files that will go into the resulting src directory
 # DOCFILES: Files that will go into the resulting docs directory
 BINFILES := $(BINDIR)/pasdoc_console
-DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
-#SRCFILES:=./source/*
+DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf
+SRCFILES := ./source/*
+
+# Temporary directory used for preparing archives
+PACKAGEDIR := $(TEMP)/$(PACKAGENAME)
 
 ############################################################################
 # Change the paths to the correct types
-PACKAGEDIR := $(TEMP)/$(PACKAGENAME)
-ZIPPKGDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
+
+PACKAGEDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
 ifdef OUTDIR
 OUTDIR:= $(subst /,$(PATHSEP),$(OUTDIR))
 endif
@@ -161,78 +164,72 @@ help:
 	@echo make makeamiga: Create a package compiled for AmigaOS (FPC)
 
 makepkg:
-	rm -rf $(ZIPPKGDIR)
-	mkdir $(ZIPPKGDIR)
+	rm -rf $(PACKAGEDIR)
+	mkdir $(PACKAGEDIR)
 ifdef BINFILES
-	mkdir $(ZIPPKGDIR)$(PATHSEP)bin
+	mkdir $(PACKAGEDIR)$(PATHSEP)bin
 	mv $(BINFILES)$(EXE) pasdoc$(EXE)
-	cp -R pasdoc$(EXE) $(ZIPPKGDIR)$(PATHSEP)bin
+	cp -R pasdoc$(EXE) $(PACKAGEDIR)$(PATHSEP)bin
 endif
 ifdef DOCFILES
-	mkdir $(ZIPPKGDIR)$(PATHSEP)docs
-	cp -R $(DOCFILES) $(ZIPPKGDIR)$(PATHSEP)docs
+	mkdir $(PACKAGEDIR)$(PATHSEP)docs
+	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef SRCFILES
-	mkdir $(ZIPPKGDIR)$(PATHSEP)src
-	cp -R $(SRCFILES) $(ZIPPKGDIR)$(PATHSEP)src
+	mkdir $(PACKAGEDIR)$(PATHSEP)src
+	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
+	find $(PACKAGEDIR)$(PATHSEP)src -name CVS -prune -exec rm -fR '{}' ';'
 endif
-	rmcvsdir $(ZIPPKGDIR)
-	echo cd /D $(ZIPPKGDIR) > zipit.bat
-	echo cd.. >> zipit.bat
-	echo zip -r $(PACKAGENAME) $(PACKAGENAME)/* >> zipit.bat
-	echo cd /D %%1 >> zipit.bat
-	zipit $(CURRENTDIR)
-	rm -f zipit.bat
-	cp $(TEMP)$(PATHSEP)$(PACKAGENAME).zip .
-	rm -f $(TEMP)$(PATHSEP)$(PACKAGENAME).zip
+	cd $(PACKAGEDIR)$(PATHSEP)..; zip -r $(PACKAGENAME) $(PACKAGENAME)/*
+	mv $(PACKAGEDIR)$(PATHSEP)..$(PATHSEP)$(PACKAGENAME).zip .
 
 makego32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-go32
-	$(MAKE) -C . makepkg EXE=.exe
+	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-go32.zip
 
 makewin32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-win32
-	$(MAKE) -C . makepkg EXE=.exe
+	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-win32.zip
 
 makeos2:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-os2
-	$(MAKE) -C . makepkg EXE=.exe
+	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-os2.zip
 
 makebeos:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-beos
-	$(MAKE) -C . makepkg
+	$(MAKE) -C . makepkg SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-be-x86.zip
 
 makelinuxm68k:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-linuxm68k
-	$(MAKE) -C . makepkg
+	$(MAKE) -C . makepkg SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-linux-m68k.zip
 
 makelinux:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-linux
-	$(MAKE) -C . makepkg
+	$(MAKE) -C . makepkg SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-linux-x86.zip
 
 
 makeamiga:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-amiga
-	$(MAKE) -C . makepkg
+	$(MAKE) -C . makepkg SRCFILES=
 	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-amiga-m68k.zip
 
 makesrc:
 	$(MAKE) -C . clean
-	$(MAKE) -C . makepkg
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)src.zip
+	$(MAKE) -C . makepkg BINFILES=
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-src.zip
 
 
 
