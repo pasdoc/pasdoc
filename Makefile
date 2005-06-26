@@ -10,11 +10,9 @@ VERSION := 0.8.8.3
 # The name of the package / file name
 PACKAGENAME := pasdoc
 
-# Location of units source code
-# TODO: ./source/component/strutils should be given only for
-# compilers that don't have StrUtils unit (Delphi 5, FPC 1.0.10)
+# Location of units source code.
 UNITDIRS := ./source/component ./source/console ./source/OptionParser \
-  ./source/component/tipue ./source/component/strutils
+  ./source/component/tipue
 
 INCLUDEDIRS := ./source/component
 
@@ -82,7 +80,10 @@ FPCOS2 = C:\pp\cross\i386-os2\bin\ppc386.exe
 FPC2   = C:\pp2\bin\i386-win32\ppc386.exe
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
 FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
-FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR)  -S2 -vihwn -Sh -Ct $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
+
+# TODO: provide variables and targets to compile by default in debug mode.
+
+FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR) -dRELEASE @pasdoc-fpc.cfg $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
 
 
 # DELPHI CONFIGURATION
