@@ -19,15 +19,6 @@ INCLUDEDIRS := ./source/component
 # Base file to compile
 FILE := ./source/console/PasDoc_Console.dpr
 
-# The following is for creating the final package, comment out
-# if that particular section is not used.
-# BINFILES: Files that will go into the resulting bin directory
-# SRCFILES: Files that will go into the resulting src directory
-# DOCFILES: Files that will go into the resulting docs directory
-BINFILES := ./bin/pasdoc_console
-DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
-#SRCFILES:=./source/*
-
 # Operating system path separator.
 # Note that default value, /, is good not only for Unices but also for Win32.
 PATHSEP := /
@@ -37,6 +28,15 @@ BINDIR := bin
 
 # Base directory where libs, units, objects files will go
 OUTDIR := lib
+
+# The following is for creating the final package, comment out
+# if that particular section is not used.
+# BINFILES: Files that will go into the resulting bin directory
+# SRCFILES: Files that will go into the resulting src directory
+# DOCFILES: Files that will go into the resulting docs directory
+BINFILES := $(BINDIR)/pasdoc_console
+DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf ./docs/pasdoc.html
+#SRCFILES:=./source/*
 
 ############################################################################
 # Change the paths to the correct types
@@ -77,7 +77,6 @@ FPCAMIGA = C:\pp\cross\m68k-amiga\bin\ppc68k.exe
 FPCBEOS = C:\pp\cross\i386-beos\bin\ppc386.exe
 FPCOS2 = C:\pp\cross\i386-os2\bin\ppc386.exe
 
-FPC2   = C:\pp2\bin\i386-win32\ppc386.exe
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
 FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 
@@ -137,10 +136,6 @@ build-fpc-beos:
 build-fpc-os2:
 	$(FPCOS2) $(FPCFLAGS) $(FILE)
 
-
-build-fpc2:
-	$(FPC2) $(FPCFLAGS) $(FILE)
-
 build-dcc:
 	$(DCC) $(DCCFLAGS) $(DCCUNITDIRS) $(FILE)
 
@@ -154,7 +149,6 @@ build-vpc-os2:
 help:
 	@echo Commands for building the targets.
 	@echo Important commands ----------------------------------
-	@echo make buildall : Test compilation on different compiler types.
 	@echo make makeall: Create a package compiled for all KNOWN targets
 	@echo make clean : Clean all unused files
 	@echo Other commands --------------------------------------
@@ -165,18 +159,6 @@ help:
 	@echo make makelinuxm68k: Create a package compiled for Linux-m68k (FPC)
 	@echo make makelinux: Create a package compiled for Linux-x86 (FPC)
 	@echo make makeamiga: Create a package compiled for AmigaOS (FPC)
-
-
-buildall:
-	echo Building all
-	$(MAKE) -s -C . clean
-	$(MAKE) -s -C . build-fpc-win32
-	$(MAKE) -s -C . clean
-	$(MAKE) -s -C . build-fpc2
-	$(MAKE) -s -C . clean
-	$(MAKE) -s -C . build-dcc
-	$(MAKE) -s -C . clean
-	$(MAKE) -s -C . clean
 
 makepkg:
 	rm -rf $(ZIPPKGDIR)
@@ -255,8 +237,6 @@ makesrc:
 
 
 makeall:
-	$(MAKE) -C . clean
-	$(MAKE) -s -C . buildall
 	$(MAKE) -C . clean
 	$(MAKE) -C . makego32
 	$(MAKE) -C . makewin32
