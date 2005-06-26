@@ -43,6 +43,7 @@ PACKAGEDIR := $(TEMP)/$(PACKAGENAME)
 
 ############################################################################
 # Change the paths to the correct types
+#######################################################################
 
 PACKAGEDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
 ifdef OUTDIR
@@ -65,20 +66,25 @@ endif
 
 CURRENTDIR:=$(shell pwd)
 
-
-# FREEPASCAL CONFIGURATION
+############################################################################
+# FreePascal Configuration
+############################################################################
 
 # FPCDEFAULT means "use current os and processor",
 # calling just fpc binary on the path
 FPCDEFAULT = fpc
 
-FPCWIN32    = fpc
-FPCGO32 = C:\pp\cross\i386-go32v2\bin\ppc386.exe
-FPCLINUXX86 = C:\pp\cross\i386-linux\bin\ppc386.exe
-FPCLINUXM68K = C:\pp\cross\m68k-linux\bin\ppc68k.exe
-FPCAMIGA = C:\pp\cross\m68k-amiga\bin\ppc68k.exe
-FPCBEOS = C:\pp\cross\i386-beos\bin\ppc386.exe
-FPCOS2 = C:\pp\cross\i386-os2\bin\ppc386.exe
+# By default all of below variables are set to $(FPCDEFAULT), because
+# $(FPCDEFAULT) is the only good default value that can possibly work
+# for everyone. You can override them at `make' command-line,
+# e.g. if you have different FPC versions and you use them to do cross-compiling.
+FPCWIN32 = $(FPCDEFAULT)
+FPCGO32 = $(FPCDEFAULT)
+FPCLINUXX86 = $(FPCDEFAULT)
+FPCLINUXM68K = $(FPCDEFAULT)
+FPCAMIGA = $(FPCDEFAULT)
+FPCBEOS = $(FPCDEFAULT)
+FPCOS2 = $(FPCDEFAULT)
 
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
 FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
@@ -87,13 +93,22 @@ FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 
 FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR) -dRELEASE @pasdoc-fpc.cfg $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
 
+############################################################################
+# Delphi configuration
+############################################################################
 
-# DELPHI CONFIGURATION
 DCC	= dcc32
 DCCFLAGS = -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -$$J+ -$$R+ -U..\common\src\delphi -DCPU86 -DENDIAN_LITTLE
 DCCUNITDIRS = $(foreach units,$(UNITDIRS),-U$(units))
 
+############################################################################
 # Virtual Pascal configuration
+############################################################################
+
+# TODO: check this, either remove (if vpc does not work anymore),
+# or add to CompilingPasDoc as supported compiler,
+# remove hardcoded paths to vpc installation.
+
 VPC	= F:\vp21\bin.w32\vpc.exe
 VPCRTLWIN32UNITDIR = F:\vp21\units.w32
 VPCRTLWIN32LIBDIR = -LF:\vp21\units.w32 -LF:\vp21\lib.w32
@@ -102,6 +117,16 @@ VPCRTLOS2LIBDIR = -LF:\vp21\units.os2 -LF:\vp21\lib.os2
 VPCUNITDIRS = $(foreach units,$(UNITDIRS),-U$(units))
 VPCINCDIRS = $(foreach units,$(UNITDIRS),-I$(units))
 VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCINCDIRS) -L$(OUTDIR)
+
+############################################################################
+# Targets
+############################################################################
+
+.PHONY: default clean build-fpc-default build-fpc-win32 build-fpc-go32 \
+  build-fpc-linux build-fpc-linuxm68k build-fpc-amiga build-fpc-beos \
+  build-fpc-os2 build-dcc build-vpc-win32 build-vpc-os2 help \
+  makepkg makego32 makewin32 makeos2 makebeos makelinuxm68k \
+  makelinux makeamiga makesrc makeall
 
 # Default target
 default: build-fpc-default
@@ -187,49 +212,49 @@ makego32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-go32
 	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-go32.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-go32.zip
 
 makewin32:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-win32
 	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-win32.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-win32.zip
 
 makeos2:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-os2
 	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-os2.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-os2.zip
 
 makebeos:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-beos
 	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-be-x86.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-be-x86.zip
 
 makelinuxm68k:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-linuxm68k
 	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-linux-m68k.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-linux-m68k.zip
 
 makelinux:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-linux
 	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-linux-x86.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-linux-x86.zip
 
 
 makeamiga:
 	$(MAKE) -C . clean
 	$(MAKE) -C . build-fpc-amiga
 	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-amiga-m68k.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-amiga-m68k.zip
 
 makesrc:
 	$(MAKE) -C . clean
 	$(MAKE) -C . makepkg BINFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)$(VERSION)-src.zip
+	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-src.zip
 
 
 
