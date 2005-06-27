@@ -240,7 +240,7 @@ endif
 	cd $(PACKAGEBASEDIR); zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
 
-makego32: cleanbuild-fpc-go32
+makego32: clean build-fpc-go32
 	$(MAKE) --no-print-directory \
 	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=go32
 
