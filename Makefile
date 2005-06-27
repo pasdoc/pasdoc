@@ -11,10 +11,10 @@ VERSION := 0.8.8.3
 PACKAGENAME := pasdoc
 
 # Location of units source code.
-UNITDIRS := ./source/component ./source/console ./source/OptionParser \
+UNIT_DIRS := ./source/component ./source/console ./source/OptionParser \
   ./source/component/tipue
 
-INCLUDEDIRS := ./source/component
+INCLUDE_DIRS := ./source/component
 
 # Base file to compile
 FILE := ./source/console/PasDoc_Console.dpr
@@ -70,7 +70,8 @@ ifdef BINDIR
 BINDIR:= $(subst /,$(PATHSEP),$(BINDIR))
 endif
 FILE:=$(subst /,$(PATHSEP),$(FILE))
-UNITDIRS:=$(subst /,$(PATHSEP),$(UNITDIRS))
+UNIT_DIRS:=$(subst /,$(PATHSEP),$(UNIT_DIRS))
+INCLUDE_DIRS:=$(subst /,$(PATHSEP),$(INCLUDE_DIRS))
 ifdef BINFILES
 BINFILES:=$(subst /,$(PATHSEP),$(BINFILES))
 endif
@@ -87,25 +88,25 @@ CURRENTDIR:=$(shell pwd)
 # FreePascal Configuration
 ############################################################################
 
-# FPCDEFAULT means "use current os and processor",
+# FPC_DEFAULT means "use current os and processor",
 # calling just fpc binary on the path
-FPCDEFAULT = fpc
+FPC_DEFAULT = fpc
 
-# By default all of below variables are set to $(FPCDEFAULT), because
-# $(FPCDEFAULT) is the only good default value that can possibly work
+# By default all of below variables are set to $(FPC_DEFAULT), because
+# $(FPC_DEFAULT) is the only good default value that can possibly work
 # for everyone. You can override them at `make' command-line,
 # e.g. if you have different FPC versions and you use them to do cross-compiling.
-FPCWIN32 = $(FPCDEFAULT)
-FPCGO32 = $(FPCDEFAULT)
-FPCLINUXX86 = $(FPCDEFAULT)
-FPCLINUXM68K = $(FPCDEFAULT)
-FPCLINUXPPC = $(FPCDEFAULT)
-FPCAMIGA = $(FPCDEFAULT)
-FPCBEOS = $(FPCDEFAULT)
-FPCOS2 = $(FPCDEFAULT)
+FPC_WIN32 = $(FPC_DEFAULT)
+FPC_GO32 = $(FPC_DEFAULT)
+FPC_LINUX_X86 = $(FPC_DEFAULT)
+FPC_LINUX_M68K = $(FPC_DEFAULT)
+FPC_LINUX_PPC = $(FPC_DEFAULT)
+FPC_AMIGA = $(FPC_DEFAULT)
+FPC_BEOS = $(FPC_DEFAULT)
+FPC_OS2 = $(FPC_DEFAULT)
 
-FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
-FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
+FPC_UNIT_DIRS = $(foreach units,$(UNIT_DIRS),-Fu$(units))
+FPC_INCLUDE_DIRS = $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 
 # Note that this -opasdoc_console is needed, otherwise FPC >= 1.9.x
 # would produce `PasDoc_Console', and this is of course something
@@ -119,7 +120,7 @@ FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 # release [http://sourceforge.net/mailarchive/message.php?msg_id=11455093],
 # so I'm waiting.
 FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
-  $(FPCUNITDIRS) $(FPCINCLUDEDIRS) -opasdoc_console
+  $(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS) -opasdoc_console
 
 FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
 
@@ -129,9 +130,14 @@ FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 # Delphi configuration
 ############################################################################
 
-DCC	= dcc32
-DCCFLAGS = -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -$$J+ -$$R+ -U..\common\src\delphi -DCPU86 -DENDIAN_LITTLE
-DCCUNITDIRS = $(foreach units,$(UNITDIRS),-U$(units))
+# Don't ask me why, but Borland named Delphi/Win32 command-line compiler 
+# dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
+DCC_WIN32 := dcc32
+DCC_LINUX := dcc
+DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
+DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
+DCC_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -$$J+ -$$R+ \
+  -DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
 
 ############################################################################
 # Virtual Pascal configuration
@@ -146,8 +152,8 @@ VPCRTLWIN32UNITDIR = F:\vp21\units.w32
 VPCRTLWIN32LIBDIR = -LF:\vp21\units.w32 -LF:\vp21\lib.w32
 VPCRTLOS2UNITDIR = F:\vp21\units.os2
 VPCRTLOS2LIBDIR = -LF:\vp21\units.os2 -LF:\vp21\lib.os2
-VPCUNITDIRS = $(foreach units,$(UNITDIRS),-U$(units))
-VPCINCDIRS = $(foreach units,$(UNITDIRS),-I$(units))
+VPCUNITDIRS = $(foreach units,$(UNIT_DIRS),-U$(units))
+VPCINCDIRS = $(foreach units,$(INCLUDE_DIRS),-I$(units))
 VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCINCDIRS) -L$(OUTDIR)
 
 ############################################################################
@@ -157,7 +163,8 @@ VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCI
 .PHONY: default clean build-fpc-default-debug build-fpc-default \
   build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-fpc-linux-ppc build-dcc build-vpc-win32 build-vpc-os2
+  build-fpc-os2 build-fpc-linux-ppc build-delphi-win32 build-delphi-linux \
+  build-vpc-win32 build-vpc-os2
 
 # Default target
 default: build-fpc-default-debug
@@ -174,39 +181,42 @@ endif
 # fpc- build targets
 
 build-fpc-default-debug:
-	$(FPCDEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
 
 build-fpc-default:
-	$(FPCDEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-win32:
-	$(FPCWIN32) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_WIN32) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-go32:
-	$(FPCGO32) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_GO32) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-x86:
-	$(FPCLINUXX86) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_LINUX_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-m68k:
-	$(FPCLINUXM68K) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-amiga:
-	$(FPCAMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_AMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-beos:
-	$(FPCBEOS) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_BEOS) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-os2:
-	$(FPCOS2) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_OS2) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-ppc:
-	$(FPCLINUXPPC) $(FPC_RELEASE_FLAGS) $(FILE)
+	$(FPC_LINUX_PPC) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Delphi/Kylix build targets
 
-build-dcc:
-	$(DCC) $(DCCFLAGS) $(DCCUNITDIRS) $(FILE)
+build-delphi-win32:
+	$(DCC_WIN32) $(DCC_FLAGS) $(FILE)
+
+build-delphi-linux:
+	$(DCC_LINUX) $(DCC_FLAGS) $(FILE)
 
 # vpc build targets
 
@@ -245,7 +255,7 @@ help:
 # that build and archive for particular target. Note that they assume
 # that according build-xxx target really produces a pasdoc binary
 # that works under xxx target. If you want to use cross-compiling
-# to build releases archives, you must make sure that proper FPCXxx
+# to build releases archives, you must make sure that proper FPC_<target-name>
 # variable is properly set.
 #
 # Note that dist targets generally try to use the "most common"
