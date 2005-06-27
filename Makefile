@@ -99,6 +99,7 @@ FPCWIN32 = $(FPCDEFAULT)
 FPCGO32 = $(FPCDEFAULT)
 FPCLINUXX86 = $(FPCDEFAULT)
 FPCLINUXM68K = $(FPCDEFAULT)
+FPCLINUXPPC = $(FPCDEFAULT)
 FPCAMIGA = $(FPCDEFAULT)
 FPCBEOS = $(FPCDEFAULT)
 FPCOS2 = $(FPCDEFAULT)
@@ -153,7 +154,7 @@ VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCI
 
 .PHONY: default clean build-fpc-default build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-dcc build-vpc-win32 build-vpc-os2
+  build-fpc-os2 build-fpc-linux-ppc build-dcc build-vpc-win32 build-vpc-os2
 
 # Default target
 default: build-fpc-default
@@ -169,6 +170,8 @@ endif
 
 build-fpc-default:
 	$(FPCDEFAULT) $(FPCFLAGS) $(FILE)
+
+# fpc- build targets
 
 build-fpc-win32:
 	$(FPCWIN32) $(FPCFLAGS) $(FILE)
@@ -191,8 +194,15 @@ build-fpc-beos:
 build-fpc-os2:
 	$(FPCOS2) $(FPCFLAGS) $(FILE)
 
+build-fpc-linux-ppc:
+	$(FPCLINUXPPC) $(FPCFLAGS) $(FILE)
+
+# Delphi/Kylix build targets
+
 build-dcc:
 	$(DCC) $(DCCFLAGS) $(DCCUNITDIRS) $(FILE)
+
+# vpc build targets
 
 build-vpc-win32:
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
@@ -306,6 +316,10 @@ dist-linux-x86: clean build-fpc-linux-x86
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
 	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=amiga-m68k
+
+dist-linux-ppc: clean build-fpc-linux-ppc
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-ppc
 
 dist-src: clean
 	$(MAKE) --no-print-directory \
