@@ -10,9 +10,26 @@ set -eu
 # See ../README for comments.
 
 for FFF in *.html; do
-  if [ "$FFF" = index.html ]; then
-    echo "---- Not validating $FFF due to problems with Cygwin's onsgmls"
-  else
+
+  # Why do I check for index.html here ?
+  #
+  # Because I can't force onsgmls installed from Cygwin to properly 
+  # validate <frameset> document. (While version installed 
+  # from Debian package works OK). This is probably not really 
+  # related to Cygwin "core" functionality, but to some specific 
+  # problem of Cygwin installation of onsgmls. So I decided to simply 
+  # disable validating index.html, so that Cygwin users will not 
+  # have problems.
+  #
+  # It's not a big deal because index.html is a small file, 
+  # and you can always check it manually with `onsgmls -s -e -g index.html'.
+  #
+  # Earlier I printed here a warning:
+  #   echo "---- Not validating $FFF due to problems with Cygwin's onsgmls"
+  # but it seems that this warning is too terse, so now
+  # index.html is just "silently" ignored.
+
+  if [ "$FFF" != index.html ]; then
     echo "---- Validating $FFF"
     onsgmls -s -e -g "$FFF"
   fi
