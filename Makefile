@@ -118,10 +118,12 @@ FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 # "pasdoc[.exe]" binary. Johannes says to do it after pasdoc 0.9.0
 # release [http://sourceforge.net/mailarchive/message.php?msg_id=11455093],
 # so I'm waiting.
-FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR) -dRELEASE @pasdoc-fpc.cfg \
+FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
   $(FPCUNITDIRS) $(FPCINCLUDEDIRS) -opasdoc_console
 
-# TODO: provide variables and targets to compile by default in debug mode.
+FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
+
+FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 
 ############################################################################
 # Delphi configuration
@@ -152,12 +154,13 @@ VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCI
 # Targets to build (and clean after build)
 ############################################################################
 
-.PHONY: default clean build-fpc-default build-fpc-win32 build-fpc-go32 \
+.PHONY: default clean build-fpc-default-debug build-fpc-default \
+  build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
   build-fpc-os2 build-fpc-linux-ppc build-dcc build-vpc-win32 build-vpc-os2
 
 # Default target
-default: build-fpc-default
+default: build-fpc-default-debug
 
 # Clean up the output files.
 clean:
@@ -168,34 +171,37 @@ ifdef BINDIR
 	rm -f $(BINDIR)/*
 endif
 
-build-fpc-default:
-	$(FPCDEFAULT) $(FPCFLAGS) $(FILE)
-
 # fpc- build targets
 
+build-fpc-default-debug:
+	$(FPCDEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
+
+build-fpc-default:
+	$(FPCDEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
+
 build-fpc-win32:
-	$(FPCWIN32) $(FPCFLAGS) $(FILE)
+	$(FPCWIN32) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-go32:
-	$(FPCGO32) $(FPCFLAGS) $(FILE)
+	$(FPCGO32) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-x86:
-	$(FPCLINUXX86) $(FPCFLAGS) $(FILE)
+	$(FPCLINUXX86) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-m68k:
-	$(FPCLINUXM68K) $(FPCFLAGS) $(FILE)
+	$(FPCLINUXM68K) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-amiga:
-	$(FPCAMIGA) $(FPCFLAGS) $(FILE)
+	$(FPCAMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-beos:
-	$(FPCBEOS) $(FPCFLAGS) $(FILE)
+	$(FPCBEOS) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-os2:
-	$(FPCOS2) $(FPCFLAGS) $(FILE)
+	$(FPCOS2) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-ppc:
-	$(FPCLINUXPPC) $(FPCFLAGS) $(FILE)
+	$(FPCLINUXPPC) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Delphi/Kylix build targets
 
