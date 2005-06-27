@@ -148,14 +148,12 @@ VPCINCDIRS = $(foreach units,$(UNITDIRS),-I$(units))
 VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCINCDIRS) -L$(OUTDIR)
 
 ############################################################################
-# Targets
+# Targets to build (and clean after build)
 ############################################################################
 
 .PHONY: default clean build-fpc-default build-fpc-win32 build-fpc-go32 \
   build-fpc-linux build-fpc-linuxm68k build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-dcc build-vpc-win32 build-vpc-os2 help \
-  makepkg makego32 makewin32 makeos2 makebeos makelinuxm68k \
-  makelinux makeamiga makesrc makeall
+  build-fpc-os2 build-dcc build-vpc-win32 build-vpc-os2
 
 # Default target
 default: build-fpc-default
@@ -202,25 +200,54 @@ build-vpc-win32:
 build-vpc-os2:
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
+############################################################################
+# Help targets
+############################################################################
+
+.PHONY: help
+
+# TODO: update this text
 
 help:
 	@echo Commands for building the targets.
 	@echo Important commands ----------------------------------
-	@echo make makeall: Create a package compiled for all KNOWN targets
-	@echo make clean : Clean all unused files
+	@echo make dist-all: Create release packages for all KNOWN targets
+	@echo make clean : Clean all files created while building
 	@echo Other commands --------------------------------------
-	@echo make makewin32: Create a package compiled for Win32 (FPC)
-	@echo make makeos2: Create a package compiled for OS/2 (VPC)
-	@echo make makego32: Create a package compiled for GO32V2 (FPC)
-	@echo make makebeos: Create a package compiled for BeOS x86 (FPC)
-	@echo make makelinuxm68k: Create a package compiled for Linux-m68k (FPC)
-	@echo make makelinux: Create a package compiled for Linux-x86 (FPC)
-	@echo make makeamiga: Create a package compiled for AmigaOS (FPC)
+	@echo make dist-win32: Create a package compiled for Win32 (FPC)
+	@echo make dist-os2: Create a package compiled for OS/2 (VPC)
+	@echo make dist-go32: Create a package compiled for GO32V2 (FPC)
+	@echo make dist-beos: Create a package compiled for BeOS x86 (FPC)
+	@echo make dist-linux-m68k: Create a package compiled for Linux-m68k (FPC)
+	@echo make dist-linux-x86: Create a package compiled for Linux-x86 (FPC)
+	@echo make dist-amiga: Create a package compiled for AmigaOS (FPC)
 
-# Implementation notes: note that zip will add files to existing zip archive,
-# if it already exists, so for safety below I'm first `rm -f ...' zip archive,
-# then creating it.
-makepkg:
+############################################################################
+# Targets to make distribution archives
+#
+# There are some general targets here, and there are targets
+# that build and archive for particular target. Note that they assume
+# that according build-xxx target really produces a pasdoc binary
+# that works under xxx target. If you want to use cross-compiling
+# to build releases archives, you must make sure that proper FPCXxx
+# variable is properly set.
+#
+# Note that dist targets generally try to use the "most common"
+# archive format for given target. E.g. for Unices this is tar.gz,
+# for Win32/DOS this is zip. E.g. there are no problems with creating
+# zip for Unices, it's just a common practice to use tar.gz instead
+# of zip for Unices.
+#
+############################################################################
+
+.PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
+  dist-beos dist-linux-m68k dist-linux-x86 dist-amiga dist-src dist-all
+
+# This target creates and fills directory $(PACKAGEDIR)
+# (it's *always* the subdirectory $(PACKAGENAME) inside $(PACKAGEBASEDIR)).
+# Use this to prepare file tree before archiving --- the only remaining
+# thing after executing this target is to archive $(PACKAGEDIR).
+dist-prepare:
 	rm -rf $(PACKAGEDIR)
 	mkdir $(PACKAGEDIR)
 ifdef BINFILES
@@ -236,41 +263,53 @@ ifdef SRCFILES
 	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
 	find $(PACKAGEDIR)$(PATHSEP)src -name CVS -prune -exec rm -fR '{}' ';'
 endif
+
+# This target archives distribution into a zip file.
+#
+# Implementation notes: note that zip will add files to existing zip archive,
+# if it already exists, so for safety below I'm first `rm -f ...' zip archive,
+# then creating it.
+dist-zip: dist-prepare
 	rm -f $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip
 	cd $(PACKAGEBASEDIR); zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
 
-makego32: clean build-fpc-go32
-	$(MAKE) --no-print-directory \
-	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=go32
+# This target archives distribution into a tar.gz file.
+dist-tar-gz: dist-prepare
+	cd $(PACKAGEBASEDIR); tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
+	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).tar.gz .
 
-makewin32: clean build-fpc-win32
+dist-go32: clean build-fpc-go32
 	$(MAKE) --no-print-directory \
-	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=win32
+	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=go32
 
-makeos2: clean build-fpc-os2
+dist-win32: clean build-fpc-win32
 	$(MAKE) --no-print-directory \
-	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=os2
+	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=win32
 
-makebeos: clean build-fpc-beos
+dist-os2: clean build-fpc-os2
 	$(MAKE) --no-print-directory \
-	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=be-x86
+	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=os2
 
-makelinuxm68k: clean build-fpc-linuxm68k
+dist-beos: clean build-fpc-beos
 	$(MAKE) --no-print-directory \
-	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-m68k
+	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=be-x86
 
-makelinux: clean build-fpc-linux
+dist-linux-m68k: clean build-fpc-linuxm68k
 	$(MAKE) --no-print-directory \
-	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-x86
+	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-m68k
 
-makeamiga: clean build-fpc-amiga
+dist-linux-x86: clean build-fpc-linux
 	$(MAKE) --no-print-directory \
-	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=amiga-m68k
+	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-x86
 
-makesrc: clean
+dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
-	  makepkg BINFILES= PACKAGE_BASENAME_SUFFIX=src
+	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=amiga-m68k
 
-makeall: clean makego32 makewin32 makebeos makelinuxm68k makelinux \
-  makeamiga makesrc
+dist-src: clean
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz BINFILES= PACKAGE_BASENAME_SUFFIX=src
+
+dist-all: dist-go32 dist-win32 dist-beos dist-linuxm68k dist-linux \
+  dist-amiga dist-src
