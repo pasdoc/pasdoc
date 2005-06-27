@@ -206,7 +206,7 @@ build-vpc-os2:
 
 .PHONY: help
 
-# TODO: update this text
+# TODO: update this text, there are important building targets also.
 
 help:
 	@echo Commands for building the targets.
