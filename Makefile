@@ -152,7 +152,7 @@ VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCI
 ############################################################################
 
 .PHONY: default clean build-fpc-default build-fpc-win32 build-fpc-go32 \
-  build-fpc-linux build-fpc-linuxm68k build-fpc-amiga build-fpc-beos \
+  build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
   build-fpc-os2 build-dcc build-vpc-win32 build-vpc-os2
 
 # Default target
@@ -176,10 +176,10 @@ build-fpc-win32:
 build-fpc-go32:
 	$(FPCGO32) $(FPCFLAGS) $(FILE)
 
-build-fpc-linux:
+build-fpc-linux-x86:
 	$(FPCLINUXX86) $(FPCFLAGS) $(FILE)
 
-build-fpc-linuxm68k:
+build-fpc-linux-m68k:
 	$(FPCLINUXM68K) $(FPCFLAGS) $(FILE)
 
 build-fpc-amiga:
@@ -295,11 +295,11 @@ dist-beos: clean build-fpc-beos
 	$(MAKE) --no-print-directory \
 	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=be-x86
 
-dist-linux-m68k: clean build-fpc-linuxm68k
+dist-linux-m68k: clean build-fpc-linux-m68k
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-m68k
 
-dist-linux-x86: clean build-fpc-linux
+dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-x86
 
@@ -311,5 +311,5 @@ dist-src: clean
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz BINFILES= PACKAGE_BASENAME_SUFFIX=src
 
-dist-all: dist-go32 dist-win32 dist-beos dist-linuxm68k dist-linux \
+dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
   dist-amiga dist-src
