@@ -35,16 +35,33 @@ OUTDIR := lib
 # SRCFILES: Files that will go into the resulting src directory
 # DOCFILES: Files that will go into the resulting docs directory
 BINFILES := $(BINDIR)/pasdoc_console
-DOCFILES := LICENSE ChangeLog ./docs/pasdoc.css ./docs/pasdoc.html ./docs/pasdoc.pdf
+DOCFILES := LICENSE ChangeLog docs/README
 SRCFILES := ./source/*
 
 # Temporary directory used for preparing archives
-PACKAGEDIR := $(TEMP)/$(PACKAGENAME)
+ifdef TEMP
+PACKAGEBASEDIR := $(TEMP)
+else
+# /tmp is a good guess for Unices, and for Win32 if someone uses Cygwin's make
+PACKAGEBASEDIR := /tmp
+endif
+
+PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
+
+############################################################################
+# Variables below are *not* configurable, i.e. don't change them (unless
+# you know what you're doing and you're able to accordingly change
+# some rules later in this Makefile, that may depend on given variable's
+# value).
+############################################################################
+
+PACKAGEDIR := $(PACKAGEBASEDIR)/$(PACKAGENAME)
 
 ############################################################################
 # Change the paths to the correct types
 #######################################################################
 
+PACKAGEBASEDIR := $(subst /,$(PATHSEP),$(PACKAGEBASEDIR))
 PACKAGEDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
 ifdef OUTDIR
 OUTDIR:= $(subst /,$(PATHSEP),$(OUTDIR))
@@ -89,9 +106,21 @@ FPCOS2 = $(FPCDEFAULT)
 FPCUNITDIRS = $(foreach units,$(UNITDIRS),-Fu$(units))
 FPCINCLUDEDIRS = $(foreach units,$(INCLUDEDIRS),-Fi$(units))
 
-# TODO: provide variables and targets to compile by default in debug mode.
+# Note that this -opasdoc_console is needed, otherwise FPC >= 1.9.x
+# would produce `PasDoc_Console', and this is of course something
+# different than 'pasdoc_console' on case-sens filesystem.
+#
+# This all confusion will be removed after pasdoc 0.9.0 release
+# when I will change the dafault .dpr of pasdoc to be pasdoc.dpr
+# (the unit PasDoc.pas will have to be renamed then too),
+# then all compiler versions, fpc and others, will just produce
+# "pasdoc[.exe]" binary. Johannes says to do it after pasdoc 0.9.0
+# release [http://sourceforge.net/mailarchive/message.php?msg_id=11455093],
+# so I'm waiting.
+FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR) -dRELEASE @pasdoc-fpc.cfg \
+  $(FPCUNITDIRS) $(FPCINCLUDEDIRS) -opasdoc_console
 
-FPCFLAGS = -FE$(BINDIR) -FU$(OUTDIR) -dRELEASE @pasdoc-fpc.cfg $(FPCUNITDIRS) $(FPCINCLUDEDIRS)
+# TODO: provide variables and targets to compile by default in debug mode.
 
 ############################################################################
 # Delphi configuration
@@ -188,13 +217,15 @@ help:
 	@echo make makelinux: Create a package compiled for Linux-x86 (FPC)
 	@echo make makeamiga: Create a package compiled for AmigaOS (FPC)
 
+# Implementation notes: note that zip will add files to existing zip archive,
+# if it already exists, so for safety below I'm first `rm -f ...' zip archive,
+# then creating it.
 makepkg:
 	rm -rf $(PACKAGEDIR)
 	mkdir $(PACKAGEDIR)
 ifdef BINFILES
 	mkdir $(PACKAGEDIR)$(PATHSEP)bin
-	mv $(BINFILES)$(EXE) pasdoc$(EXE)
-	cp -R pasdoc$(EXE) $(PACKAGEDIR)$(PATHSEP)bin
+	cp $(BINFILES)$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)pasdoc$(EXE)
 endif
 ifdef DOCFILES
 	mkdir $(PACKAGEDIR)$(PATHSEP)docs
@@ -205,66 +236,41 @@ ifdef SRCFILES
 	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
 	find $(PACKAGEDIR)$(PATHSEP)src -name CVS -prune -exec rm -fR '{}' ';'
 endif
-	cd $(PACKAGEDIR)$(PATHSEP)..; zip -r $(PACKAGENAME) $(PACKAGENAME)/*
-	mv $(PACKAGEDIR)$(PATHSEP)..$(PATHSEP)$(PACKAGENAME).zip .
+	rm -f $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip
+	cd $(PACKAGEBASEDIR); zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
+	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
 
-makego32:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-go32
-	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-go32.zip
+makego32: cleanbuild-fpc-go32
+	$(MAKE) --no-print-directory \
+	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=go32
 
-makewin32:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-win32
-	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-win32.zip
+makewin32: clean build-fpc-win32
+	$(MAKE) --no-print-directory \
+	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=win32
 
-makeos2:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-os2
-	$(MAKE) -C . makepkg EXE=.exe SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-os2.zip
+makeos2: clean build-fpc-os2
+	$(MAKE) --no-print-directory \
+	  makepkg EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=os2
 
-makebeos:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-beos
-	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-be-x86.zip
+makebeos: clean build-fpc-beos
+	$(MAKE) --no-print-directory \
+	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=be-x86
 
-makelinuxm68k:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-linuxm68k
-	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-linux-m68k.zip
+makelinuxm68k: clean build-fpc-linuxm68k
+	$(MAKE) --no-print-directory \
+	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-m68k
 
-makelinux:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-linux
-	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-linux-x86.zip
+makelinux: clean build-fpc-linux
+	$(MAKE) --no-print-directory \
+	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-x86
 
+makeamiga: clean build-fpc-amiga
+	$(MAKE) --no-print-directory \
+	  makepkg SRCFILES= PACKAGE_BASENAME_SUFFIX=amiga-m68k
 
-makeamiga:
-	$(MAKE) -C . clean
-	$(MAKE) -C . build-fpc-amiga
-	$(MAKE) -C . makepkg SRCFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-amiga-m68k.zip
+makesrc: clean
+	$(MAKE) --no-print-directory \
+	  makepkg BINFILES= PACKAGE_BASENAME_SUFFIX=src
 
-makesrc:
-	$(MAKE) -C . clean
-	$(MAKE) -C . makepkg BINFILES=
-	mv -f $(PACKAGENAME).zip $(PACKAGENAME)-$(VERSION)-src.zip
-
-
-
-makeall:
-	$(MAKE) -C . clean
-	$(MAKE) -C . makego32
-	$(MAKE) -C . makewin32
-	$(MAKE) -C . makebeos
-	$(MAKE) -C . makelinuxm68k
-	$(MAKE) -C . makelinux
-	$(MAKE) -C . makeamiga
-	$(MAKE) -C . makesrc BINFILES=
-
+makeall: clean makego32 makewin32 makebeos makelinuxm68k makelinux \
+  makeamiga makesrc
