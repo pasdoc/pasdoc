@@ -232,8 +232,14 @@ build-fpc-linux-ppc: make-dirs
 
 # Delphi/Kylix build targets
 
+# Implementation note: this $(subst...) is needed, otherwise under Windows 
+# dcc dumbly prints "file not found" when $(FILE) uses "/" (yes, "/" is allowed
+# path separator in all normal Windows programs...) (and $(FILE) uses
+# "/" because this is sensible default value for $(PATHSEP), otherwise we would 
+# have to do dirty checks to guess whether we're used under Unix or Win32 in 
+# this Makefile).
 build-delphi-win32: make-dirs
-	$(DCC_WIN32) $(DCC_FLAGS) $(FILE)
+	$(DCC_WIN32) $(DCC_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
 
 build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_FLAGS) $(FILE)
