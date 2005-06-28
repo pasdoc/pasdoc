@@ -163,7 +163,7 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
   build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
   build-fpc-os2 build-fpc-linux-ppc build-delphi-win32 build-delphi-linux-x86 \
-  build-vpc-win32 build-vpc-os2
+  build-vpc-win32 build-vpc-os2 make-dirs
 
 # Default target
 default: build-fpc-default-debug
@@ -171,58 +171,79 @@ default: build-fpc-default-debug
 # Clean up the output files.
 clean:
 ifdef OUTDIR
-	rm -f $(OUTDIR)/*
+	rm -Rf $(OUTDIR)
 endif
 ifdef BINDIR
-	rm -f $(BINDIR)/*
+	rm -Rf $(BINDIR)
+endif
+
+# Make sure that $(BINDIR) and $(OUTDIR) exist, create them if necessary.
+# This is executed before executing any `build-xxx' target,
+# to make sure that compilation works "out of the box".
+#
+# Always using special directories for $(BINDIR) and $(OUTDIR) is handy
+# -- reduces clutter, allows us to easily write `clean' target.
+#
+# Note that, unless you override $(BINDIR) and $(OUTDIR) at command-line,
+# they don't really help you when you have various compilers, for
+# various os/arch etc. because $(BINDIR) and $(OUTDIR) are always the same
+# anyway, so all compilers reuse the same dirs... In the future various
+# build-<compiler>-<os/arch> targets may be tweaked to use different
+# $(BINDIR) and $(OUTDIR).
+make-dirs:
+ifdef OUTDIR
+	mkdir -p $(OUTDIR)
+endif
+ifdef BINDIR
+	mkdir -p $(BINDIR)
 endif
 
 # fpc- build targets
 
-build-fpc-default-debug:
+build-fpc-default-debug: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
 
-build-fpc-default:
+build-fpc-default: make-dirs
 	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-win32:
+build-fpc-win32: make-dirs
 	$(FPC_WIN32) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-go32:
+build-fpc-go32: make-dirs
 	$(FPC_GO32) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-linux-x86:
+build-fpc-linux-x86: make-dirs
 	$(FPC_LINUX_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-linux-m68k:
+build-fpc-linux-m68k: make-dirs
 	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-amiga:
+build-fpc-amiga: make-dirs
 	$(FPC_AMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-beos:
+build-fpc-beos: make-dirs
 	$(FPC_BEOS) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-os2:
+build-fpc-os2: make-dirs
 	$(FPC_OS2) $(FPC_RELEASE_FLAGS) $(FILE)
 
-build-fpc-linux-ppc:
+build-fpc-linux-ppc: make-dirs
 	$(FPC_LINUX_PPC) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Delphi/Kylix build targets
 
-build-delphi-win32:
+build-delphi-win32: make-dirs
 	$(DCC_WIN32) $(DCC_FLAGS) $(FILE)
 
-build-delphi-linux-x86:
+build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_FLAGS) $(FILE)
 
 # vpc build targets
 
-build-vpc-win32:
+build-vpc-win32: make-dirs
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
 
-build-vpc-os2:
+build-vpc-os2: make-dirs
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
 ############################################################################
