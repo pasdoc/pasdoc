@@ -64,25 +64,23 @@ PACKAGEDIR := $(PACKAGEBASEDIR)/$(PACKAGENAME)
 PACKAGEBASEDIR := $(subst /,$(PATHSEP),$(PACKAGEBASEDIR))
 PACKAGEDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
 ifdef OUTDIR
-OUTDIR:= $(subst /,$(PATHSEP),$(OUTDIR))
+OUTDIR := $(subst /,$(PATHSEP),$(OUTDIR))
 endif
 ifdef BINDIR
-BINDIR:= $(subst /,$(PATHSEP),$(BINDIR))
+BINDIR := $(subst /,$(PATHSEP),$(BINDIR))
 endif
-FILE:=$(subst /,$(PATHSEP),$(FILE))
-UNIT_DIRS:=$(subst /,$(PATHSEP),$(UNIT_DIRS))
-INCLUDE_DIRS:=$(subst /,$(PATHSEP),$(INCLUDE_DIRS))
+FILE := $(subst /,$(PATHSEP),$(FILE))
+UNIT_DIRS := $(subst /,$(PATHSEP),$(UNIT_DIRS))
+INCLUDE_DIRS := $(subst /,$(PATHSEP),$(INCLUDE_DIRS))
 ifdef BINFILES
-BINFILES:=$(subst /,$(PATHSEP),$(BINFILES))
+BINFILES := $(subst /,$(PATHSEP),$(BINFILES))
 endif
 ifdef DOCFILES
-DOCFILES:=$(subst /,$(PATHSEP),$(DOCFILES))
+DOCFILES := $(subst /,$(PATHSEP),$(DOCFILES))
 endif
 ifdef SRCFILES
-SRCFILES:=$(subst /,$(PATHSEP),$(SRCFILES))
+SRCFILES := $(subst /,$(PATHSEP),$(SRCFILES))
 endif
-
-CURRENTDIR:=$(shell pwd)
 
 ############################################################################
 # FreePascal Configuration
@@ -90,23 +88,23 @@ CURRENTDIR:=$(shell pwd)
 
 # FPC_DEFAULT means "use current os and processor",
 # calling just fpc binary on the path
-FPC_DEFAULT = fpc
+FPC_DEFAULT := fpc
 
 # By default all of below variables are set to $(FPC_DEFAULT), because
 # $(FPC_DEFAULT) is the only good default value that can possibly work
 # for everyone. You can override them at `make' command-line,
 # e.g. if you have different FPC versions and you use them to do cross-compiling.
-FPC_WIN32 = $(FPC_DEFAULT)
-FPC_GO32 = $(FPC_DEFAULT)
-FPC_LINUX_X86 = $(FPC_DEFAULT)
-FPC_LINUX_M68K = $(FPC_DEFAULT)
-FPC_LINUX_PPC = $(FPC_DEFAULT)
-FPC_AMIGA = $(FPC_DEFAULT)
-FPC_BEOS = $(FPC_DEFAULT)
-FPC_OS2 = $(FPC_DEFAULT)
+FPC_WIN32 := $(FPC_DEFAULT)
+FPC_GO32 := $(FPC_DEFAULT)
+FPC_LINUX_X86 := $(FPC_DEFAULT)
+FPC_LINUX_M68K := $(FPC_DEFAULT)
+FPC_LINUX_PPC := $(FPC_DEFAULT)
+FPC_AMIGA := $(FPC_DEFAULT)
+FPC_BEOS := $(FPC_DEFAULT)
+FPC_OS2 := $(FPC_DEFAULT)
 
-FPC_UNIT_DIRS = $(foreach units,$(UNIT_DIRS),-Fu$(units))
-FPC_INCLUDE_DIRS = $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
+FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
+FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 
 # Note that this -opasdoc_console is needed, otherwise FPC >= 1.9.x
 # would produce `PasDoc_Console', and this is of course something
@@ -147,14 +145,15 @@ DCC_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -$$J+ -$$R+ \
 # or add to CompilingPasDoc as supported compiler,
 # remove hardcoded paths to vpc installation.
 
-VPC	= F:\vp21\bin.w32\vpc.exe
-VPCRTLWIN32UNITDIR = F:\vp21\units.w32
-VPCRTLWIN32LIBDIR = -LF:\vp21\units.w32 -LF:\vp21\lib.w32
-VPCRTLOS2UNITDIR = F:\vp21\units.os2
-VPCRTLOS2LIBDIR = -LF:\vp21\units.os2 -LF:\vp21\lib.os2
-VPCUNITDIRS = $(foreach units,$(UNIT_DIRS),-U$(units))
-VPCINCDIRS = $(foreach units,$(INCLUDE_DIRS),-I$(units))
-VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCINCDIRS) -L$(OUTDIR)
+VPC := F:\vp21\bin.w32\vpc.exe
+VPCRTLWIN32UNITDIR := F:\vp21\units.w32
+VPCRTLWIN32LIBDIR := -LF:\vp21\units.w32 -LF:\vp21\lib.w32
+VPCRTLOS2UNITDIR := F:\vp21\units.os2
+VPCRTLOS2LIBDIR := -LF:\vp21\units.os2 -LF:\vp21\lib.os2
+VPCUNITDIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
+VPCINCDIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
+VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
+  $(VPCINCDIRS) -L$(OUTDIR)
 
 ############################################################################
 # Targets to build (and clean after build)
@@ -163,7 +162,7 @@ VPCFLAGS = -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) $(VPCI
 .PHONY: default clean build-fpc-default-debug build-fpc-default \
   build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-fpc-linux-ppc build-delphi-win32 build-delphi-linux \
+  build-fpc-os2 build-fpc-linux-ppc build-delphi-win32 build-delphi-linux-x86 \
   build-vpc-win32 build-vpc-os2
 
 # Default target
@@ -215,7 +214,7 @@ build-fpc-linux-ppc:
 build-delphi-win32:
 	$(DCC_WIN32) $(DCC_FLAGS) $(FILE)
 
-build-delphi-linux:
+build-delphi-linux-x86:
 	$(DCC_LINUX) $(DCC_FLAGS) $(FILE)
 
 # vpc build targets
@@ -232,21 +231,57 @@ build-vpc-os2:
 
 .PHONY: help
 
-# TODO: update this text, there are important building targets also.
-
 help:
-	@echo Commands for building the targets.
-	@echo Important commands ----------------------------------
-	@echo make dist-all: Create release packages for all KNOWN targets
-	@echo make clean : Clean all files created while building
-	@echo Other commands --------------------------------------
-	@echo make dist-win32: Create a package compiled for Win32 (FPC)
-	@echo make dist-os2: Create a package compiled for OS/2 (VPC)
-	@echo make dist-go32: Create a package compiled for GO32V2 (FPC)
-	@echo make dist-beos: Create a package compiled for BeOS x86 (FPC)
-	@echo make dist-linux-m68k: Create a package compiled for Linux-m68k (FPC)
-	@echo make dist-linux-x86: Create a package compiled for Linux-x86 (FPC)
-	@echo make dist-amiga: Create a package compiled for AmigaOS (FPC)
+	@echo "Available targets of this Makefile:"
+	@echo 
+	@echo "Compiling:"
+	@echo
+	@echo "  default, build-fpc-default-debug:"
+	@echo "    Compile debug version with FPC. This is the default target."
+	@echo
+	@echo "  build-fpc-default:"
+	@echo "    Compile release version with FPC."
+	@echo
+	@echo "  build-<compiler>-<os/arch>:"
+	@echo "    Compile release version with given compiler for given OS"
+	@echo "    and architecture. Available values for <compiler> are:"
+	@echo "      fpc"
+	@echo "      delphi"
+	@echo "      vpc"
+	@echo "    Available values for <os/arch> are:"
+	@echo "      win32"
+	@echo "      go32"
+	@echo "      linux-x86"
+	@echo "      linux-m68k"
+	@echo "      amiga"
+	@echo "      beos"
+	@echo "      os2"
+	@echo "      linux-ppc"
+	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
+	@echo "    are available..."
+	@echo
+	@echo "    Note that in case of FPC, these targets assume that variable"
+	@echo "    FPC_<os/arch> points to a compiler that produces"
+	@echo "    a binary for given <os/arch>. So if you want to cross-compile"
+	@echo "    with FPC, make sure that these variables are correctly set."
+	@echo
+	@echo "  clean:"
+	@echo "    Clean files produced during compilation."
+	@echo
+	@echo "Archiving a release:"
+	@echo
+	@echo "  dist-<os/arch>:"
+	@echo "    This calls \"clean\", then \"build-<compiler>-<os/arch>\""
+	@echo "    (using the preferred <compiler> for making a release on"
+	@echo "    this <os/arch> -- currently, always FPC)"
+	@echo "    and then makes a release archive for given <os/arch>."
+	@echo
+	@echo "  dist-src:"
+	@echo "    This creates a source archive, from sources in source/."
+	@echo "    We will probably change implementation of this target,"
+	@echo "    to checkout from public CVS (with given tag PASDOC_x_y_z),"
+	@echo "    this would be safer and better (and was used to make 0.8.8"
+	@echo "    release anyway)."
 
 ############################################################################
 # Targets to make distribution archives
@@ -287,7 +322,10 @@ endif
 ifdef SRCFILES
 	mkdir $(PACKAGEDIR)$(PATHSEP)src
 	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
-	find $(PACKAGEDIR)$(PATHSEP)src -name CVS -prune -exec rm -fR '{}' ';'
+	find $(PACKAGEDIR)$(PATHSEP)src \
+	  '(' -name CVS -prune -exec rm -fR '{}' ';' ')' -or \
+	  '(' -name .cvsignore -exec rm -f '{}' ';' ')'
+	$(MAKE) -C $(PACKAGEDIR)$(PATHSEP)src$(PATHSEP)autodoc/ clean
 endif
 
 # This target archives distribution into a zip file.
