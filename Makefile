@@ -192,10 +192,10 @@ endif
 # $(BINDIR) and $(OUTDIR).
 make-dirs:
 ifdef OUTDIR
-	mkdir -p $(OUTDIR)
+	-mkdir $(OUTDIR)
 endif
 ifdef BINDIR
-	mkdir -p $(BINDIR)
+	-mkdir $(BINDIR)
 endif
 
 # fpc- build targets
