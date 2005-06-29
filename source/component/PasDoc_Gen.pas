@@ -91,7 +91,9 @@ const
     where Overview: TCreatedOverviewFile
     in PasDoc_GenHtml produces internal error in FPC 2.0.0.
     Same for Low(TCreatedOverviewFile).
-    TODO: submit separated testcase to FPC devels. }
+    
+    This is submitted as FPC bug 4140,
+    [http://www.freepascal.org/bugs/showrec.php3?ID=4140]. }
   LowCreatedOverviewFile = Low(TCreatedOverviewFile);
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
 
