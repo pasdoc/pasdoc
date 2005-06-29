@@ -155,7 +155,7 @@ Possible tests to be done:
    onsgmls program must be installed for this to work.
 
    Links how to install onsgmls may be found here
-   [http://pasdoc.sourceforge.net/phpwiki/index.php/HtmlOutput].
+   [http://pasdoc.sipsolutions.net/HtmlOutput].
 
 4. cd scripts/
    ./check_cache.sh html
