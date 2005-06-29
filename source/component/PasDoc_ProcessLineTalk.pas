@@ -5,12 +5,12 @@ unit PasDoc_ProcessLineTalk;
 {$I DEFINES.INC}
 
 {$ifdef FPC}
-{$IFDEF LINUX}
-  {$define HAS_PROCESS}
-{$ENDIF}
-{$IFDEF WIN32}
-  {$define HAS_PROCESS}
-{$ENDIF}
+  {$ifdef UNIX}
+    {$define HAS_PROCESS}
+  {$endif}
+  {$ifdef WIN32}
+    {$define HAS_PROCESS}
+  {$endif}
 {$endif}
 
 interface
