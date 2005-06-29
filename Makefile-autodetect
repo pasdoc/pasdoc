@@ -111,7 +111,7 @@ endif
 endif
 
 ###########################################################################
-# Guessing $(TEMP)
+# Guessing $(PACKAGEBASEDIR)
 ###########################################################################
 
 # Temporary directory used for preparing archives
