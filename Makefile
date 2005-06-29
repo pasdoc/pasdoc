@@ -1,3 +1,5 @@
+include Makefile-autodetect
+
 #######################################################################
 # BASE CONFIGURATION
 #######################################################################
@@ -18,10 +20,6 @@ INCLUDE_DIRS := ./source/component
 
 # Base file to compile
 FILE := ./source/console/PasDoc_Console.dpr
-
-# Operating system path separator.
-# Note that default value, /, is good not only for Unices but also for Win32.
-PATHSEP := /
 
 # Base directory where binaries will go
 BINDIR := bin
@@ -192,10 +190,10 @@ endif
 # $(BINDIR) and $(OUTDIR).
 make-dirs:
 ifdef OUTDIR
-	-mkdir $(OUTDIR)
+	$(MKDIRPROG) -p $(OUTDIR)
 endif
 ifdef BINDIR
-	-mkdir $(BINDIR)
+	$(MKDIRPROG) -p $(BINDIR)
 endif
 
 # fpc- build targets
@@ -337,17 +335,17 @@ help:
 # thing after executing this target is to archive $(PACKAGEDIR).
 dist-prepare:
 	rm -rf $(PACKAGEDIR)
-	mkdir $(PACKAGEDIR)
+	$(MKDIRPROG) $(PACKAGEDIR)
 ifdef BINFILES
-	mkdir $(PACKAGEDIR)$(PATHSEP)bin
+	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)bin
 	cp $(BINFILES)$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)pasdoc$(EXE)
 endif
 ifdef DOCFILES
-	mkdir $(PACKAGEDIR)$(PATHSEP)docs
+	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)docs
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef SRCFILES
-	mkdir $(PACKAGEDIR)$(PATHSEP)src
+	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)src
 	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
 	find $(PACKAGEDIR)$(PATHSEP)src \
 	  '(' -name CVS -prune -exec rm -fR '{}' ';' ')' -or \
