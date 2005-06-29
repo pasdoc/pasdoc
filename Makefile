@@ -36,14 +36,6 @@ BINFILES := $(BINDIR)/pasdoc_console
 DOCFILES := LICENSE ChangeLog docs/README
 SRCFILES := ./source/*
 
-# Temporary directory used for preparing archives
-ifdef TEMP
-PACKAGEBASEDIR := $(TEMP)
-else
-# /tmp is a good guess for Unices, and for Win32 if someone uses Cygwin's make
-PACKAGEBASEDIR := /tmp
-endif
-
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 
 ############################################################################
@@ -53,14 +45,12 @@ PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 # value).
 ############################################################################
 
-PACKAGEDIR := $(PACKAGEBASEDIR)/$(PACKAGENAME)
+PACKAGEDIR := $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGENAME)
 
 ############################################################################
 # Change the paths to the correct types
 #######################################################################
 
-PACKAGEBASEDIR := $(subst /,$(PATHSEP),$(PACKAGEBASEDIR))
-PACKAGEDIR := $(subst /,$(PATHSEP),$(PACKAGEDIR))
 ifdef OUTDIR
 OUTDIR := $(subst /,$(PATHSEP),$(OUTDIR))
 endif
@@ -100,6 +90,7 @@ FPC_LINUX_PPC := $(FPC_DEFAULT)
 FPC_AMIGA := $(FPC_DEFAULT)
 FPC_BEOS := $(FPC_DEFAULT)
 FPC_OS2 := $(FPC_DEFAULT)
+FPC_FREEBSD_X86 := $(FPC_DEFAULT)
 
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
@@ -160,7 +151,8 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
 .PHONY: default clean build-fpc-default-debug build-fpc-default \
   build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-fpc-linux-ppc build-delphi-win32 build-delphi-linux-x86 \
+  build-fpc-os2 build-fpc-linux-ppc build-fpc-freebsd-x86 \
+  build-delphi-win32 build-delphi-linux-x86 \
   build-vpc-win32 build-vpc-os2 make-dirs
 
 # Default target
@@ -228,6 +220,9 @@ build-fpc-os2: make-dirs
 build-fpc-linux-ppc: make-dirs
 	$(FPC_LINUX_PPC) $(FPC_RELEASE_FLAGS) $(FILE)
 
+build-fpc-freebsd-x86: make-dirs
+	$(FPC_FREEBSD_X86) $(FPC_RELEASE_FLAGS) $(FILE)
+
 # Delphi/Kylix build targets
 
 # Implementation note: this $(subst...) is needed, otherwise under Windows 
@@ -282,6 +277,7 @@ help:
 	@echo "      beos"
 	@echo "      os2"
 	@echo "      linux-ppc"
+	@echo "      freebsd-x86"
 	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
 	@echo "    are available..."
 	@echo
@@ -327,7 +323,8 @@ help:
 ############################################################################
 
 .PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
-  dist-beos dist-linux-m68k dist-linux-x86 dist-amiga dist-src dist-all
+  dist-beos dist-linux-m68k dist-linux-x86 dist-amiga dist-freebsd-x86 \
+  dist-src dist-all
 
 # This target creates and fills directory $(PACKAGEDIR)
 # (it's *always* the subdirectory $(PACKAGENAME) inside $(PACKAGEBASEDIR)).
@@ -400,9 +397,13 @@ dist-linux-ppc: clean build-fpc-linux-ppc
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-ppc
 
+dist-freebsd-x86: clean build-fpc-freebsd-x86
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=freebsd-x86
+
 dist-src: clean
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz BINFILES= PACKAGE_BASENAME_SUFFIX=src
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
-  dist-amiga dist-src
+  dist-amiga dist-linux-ppc dist-freebsd-x86 dist-src
