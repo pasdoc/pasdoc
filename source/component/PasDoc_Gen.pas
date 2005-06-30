@@ -93,7 +93,8 @@ const
     Same for Low(TCreatedOverviewFile).
     
     This is submitted as FPC bug 4140,
-    [http://www.freepascal.org/bugs/showrec.php3?ID=4140]. }
+    [http://www.freepascal.org/bugs/showrec.php3?ID=4140].
+    Fixed in FPC 2.0.1 and FPC 2.1.1. }
   LowCreatedOverviewFile = Low(TCreatedOverviewFile);
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
 
