@@ -397,20 +397,24 @@ begin
   if FSourceFileNames.IsEmpty then Exit;
 
   Count := 0;
-  for i := 0 to FSourceFileNames.Count - 1 do begin
+  for i := 0 to FSourceFileNames.Count - 1 do
+  begin
     p := FSourceFileNames[i];
-    if not FileExists(p) then begin
-       DoMessage(1, mtError, 'Could not find or open file "%s", skipping', [p]);
-    end else begin
+    try
       InputStream := TFileStream.Create(p, fmOpenRead);
-      if Assigned(InputStream) then begin
-        // HandleStream frees InputStream!
-        HandleStream(InputStream, p);
-        Inc(Count);
-      end else begin
-        DoMessage(2, mtError, 'Parsing "%s"', [p]);
+    except
+      on E: Exception do
+      begin
+        DoMessage(1, mtError, 'Cannot open file "%s", skipping', [p]);
+        Continue;
       end;
     end;
+
+    { Note that HandleStream frees InputStream.
+      Note that Delphi 7 reports here warning ("Variable "InputStream"
+      might not have been initialized") that should be ignored. }
+    HandleStream(InputStream, p);
+    Inc(Count);
   end;
 
   FreeAndNil(FIntroduction);

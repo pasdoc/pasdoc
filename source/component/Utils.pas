@@ -12,7 +12,7 @@ interface
 
 uses PasDoc_Types;
 
-{ TMethod is not defined for FPC 1.0.x and Delphi < 6, so we have to define 
+{ TMethod is not defined for FPC 1.0.x and Delphi < 6, so we have to define
   it here. }
 
 {$define GOT_TMETHOD}
@@ -61,7 +61,7 @@ const
 {$endif}
 
 type
-  TCharReplacement = 
+  TCharReplacement =
   record
     cChar: Char;
     sSpec: string;
@@ -69,35 +69,35 @@ type
 
 { Returns S with each char from ReplacementArray[].cChar replaced
   with ReplacementArray[].sSpec. }
-function StringReplaceChars(const S: string; 
+function StringReplaceChars(const S: string;
   const ReplacementArray: array of TCharReplacement): string;
 
 { Comfortable shortcut for Index <= Length(S) and S[Index] = C. }
 function SCharIs(const S: string; Index: integer; C: char): boolean; overload;
 { Comfortable shortcut for Index <= Length(S) and S[Index] in Chars. }
-function SCharIs(const S: string; Index: integer; 
+function SCharIs(const S: string; Index: integer;
   const Chars: TCharSet): boolean; overload;
 
 { Extracts all characters up to the first white-space encountered
   (ignoring white-space at the very beginning of the string)
-  from the string specified by S. 
-  
+  from the string specified by S.
+
   If there is no white-space in S (or there is white-space
   only at the beginning of S, in which case it is ignored)
   then the whole S is regarded as it's first word.
-  
+
   Both S and result are trimmed, i.e. they don't have any
   excessive white-space at the beginning or end. }
 function ExtractFirstWord(var s: string): string; overload;
 
 { Another version of ExtractFirstWord.
 
-  Splits S by it's first white-space (ignoring white-space at the 
+  Splits S by it's first white-space (ignoring white-space at the
   very beginning of the string). No such white-space means that
   whole S is regarded as the FirstWord.
-  
+
   Both FirstWord and Rest are trimmed. }
-procedure ExtractFirstWord(const S: string; 
+procedure ExtractFirstWord(const S: string;
   out FirstWord, Rest: string); overload;
 
 const
@@ -113,10 +113,23 @@ procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);
 
 { Returns S with all Chars replaced by ReplacementChar }
-function SCharsReplace(const S: string; const Chars: TCharSet; 
+function SCharsReplace(const S: string; const Chars: TCharSet;
   ReplacementChar: char): string;
 
 procedure CopyFile(const SourceFileName, DestinationFileName: string);
+
+{$ifdef DELPHI_1_UP}
+{ Default Delphi (under Windows) implementation of ExtractFilePath
+  has a problem -- it doesn't treat '/' as a valid path delimiter
+  under Windows (yes, it is valid path delimiter under Windows, just like '\').
+  This is the fixed version (actually taken from FPC sources). }
+function ExtractFilePath(const FileName: string): string;
+
+{ Just like @link(ExtractFilePath), also default Delphi (under Windows) 
+  implementation of ExtractFileName  is buggy. 
+  This is the fixed version (actually taken from FPC sources). }
+function ExtractFileName(const FileName: string): string;
+{$endif}
 
 implementation
 uses
@@ -127,7 +140,7 @@ uses
 function SameText(const A, B: string): boolean;
 var
   i: Integer;
-begin  
+begin
   Result := Length(A) = Length(B);
   if Result then begin
     for i := 1 to Length(A) do begin
@@ -186,7 +199,7 @@ begin
 end;
 {$ENDIF}
 
-function StringReplaceChars(const S: string; 
+function StringReplaceChars(const S: string;
   const ReplacementArray: array of TCharReplacement): string;
 
   function Replacement(const Special: Char): String;
@@ -218,7 +231,7 @@ begin
   Result := (Index <= Length(S)) and (S[Index] = C);
 end;
 
-function SCharIs(const S: string; Index: integer; 
+function SCharIs(const S: string; Index: integer;
   const Chars: TCharSet): boolean; overload;
 begin
   Result := (Index <= Length(S)) and (S[Index] in Chars);
@@ -286,9 +299,9 @@ begin
   finally F.Free end;
 end;
 
-function SCharsReplace(const S: string; const Chars: TCharSet; 
+function SCharsReplace(const S: string; const Chars: TCharSet;
   ReplacementChar: char): string;
-var 
+var
   i: Integer;
 begin
   Result := S;
@@ -308,5 +321,26 @@ begin
     finally Source.Free end;
   finally Destination.Free end;
 end;
+
+{$ifdef DELPHI_1_UP}
+function ExtractFilePath(const FileName: string): string;
+var i: longint;
+begin
+i := Length(FileName);
+while (i > 0) and not (FileName[i] in ['/', '\', ':']) do Dec(i);
+If I>0 then
+  Result := Copy(FileName, 1, i)
+else
+  Result:='';
+end;
+
+function ExtractFileName(const FileName: string): string;
+var i: longint;
+begin
+I := Length(FileName);
+while (I > 0) and not (FileName[I] in ['/', '\', ':']) do Dec(I);
+Result := Copy(FileName, I + 1, 255);
+end;
+{$endif}
 
 end.
