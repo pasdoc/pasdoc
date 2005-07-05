@@ -123,8 +123,13 @@ DCC_WIN32 := dcc32
 DCC_LINUX := dcc
 DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
 DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
-DCC_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -$$J+ -$$R+ \
+
+DCC_COMMON_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W \
   -DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
+
+DCC_DEBUG_FLAGS := -$$Q+ -$$R+ $(DCC_COMMON_FLAGS)
+
+DCC_RELEASE_FLAGS := -$$O+ $(DCC_COMMON_FLAGS)
 
 ############################################################################
 # Virtual Pascal configuration
@@ -232,10 +237,10 @@ build-fpc-freebsd-x86: make-dirs
 # have to do dirty checks to guess whether we're used under Unix or Win32 in 
 # this Makefile).
 build-delphi-win32: make-dirs
-	$(DCC_WIN32) $(DCC_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
+	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
 
 build-delphi-linux-x86: make-dirs
-	$(DCC_LINUX) $(DCC_FLAGS) $(FILE)
+	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
 # vpc build targets
 
