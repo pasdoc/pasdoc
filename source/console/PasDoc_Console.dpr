@@ -34,6 +34,7 @@ program PasDoc_Console;
 {$ENDIF}
 
 uses
+  {$ifdef USE_FASTMM} FastMM4, {$endif}
   PasDoc_Main;
 
 begin
