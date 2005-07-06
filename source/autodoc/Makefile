@@ -45,9 +45,9 @@
 # TODO: It would be nice if this part of Makefile would share some
 # source with Makefile in ../../tests/Makefile
 
-# Name of pasdoc binary.
-# Remember you can override it at make's command-line, like `make PASDOC=pasdoc'
-PASDOC=../console/PasDoc_Console
+# Name of pasdoc binary. Remember that you can override it at 
+# make's command-line, like `make PASDOC=my_pasdoc'
+PASDOC=pasdoc
 
 # These options will be passed to every pasdoc invocation,
 # i.e. for every output format.
