@@ -1720,24 +1720,26 @@ begin
         [Filename + GetFileExtension]);
       Abort;
     end;
-  WriteStartOfDocument(FLanguage.Translation[trLegend]);
+  try
+    WriteStartOfDocument(FLanguage.Translation[trLegend]);
 
-  WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
+    WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
 
-  WriteStartOfTable2Columns('markerlegend',
-    FLanguage.Translation[trMarker],
-    FLanguage.Translation[trVisibility]);
+    WriteStartOfTable2Columns('markerlegend',
+      FLanguage.Translation[trMarker],
+      FLanguage.Translation[trVisibility]);
 
-  WriteLegendEntry('private.gif', trPrivate);
-  WriteLegendEntry('protected.gif', trProtected);
-  WriteLegendEntry('public.gif', trPublic);
-  WriteLegendEntry('published.gif', trPublished);
-  WriteLegendEntry('automated.gif', trAutomated);
-  WriteEndOfTable;
+    WriteLegendEntry('private.gif', trPrivate);
+    WriteLegendEntry('protected.gif', trProtected);
+    WriteLegendEntry('public.gif', trPublic);
+    WriteLegendEntry('published.gif', trPublished);
+    WriteLegendEntry('automated.gif', trAutomated);
+    WriteEndOfTable;
 
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
+    WriteFooter;
+    WriteAppInfo;
+    WriteEndOfDocument;
+  finally CloseStream; end;
 end;
 
 { ---------------------------------------------------------------------------- }
