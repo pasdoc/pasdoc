@@ -30,11 +30,9 @@ OUTDIR := lib
 # The following is for creating the final package, comment out
 # if that particular section is not used.
 # BINFILES: Files that will go into the resulting bin directory
-# SRCFILES: Files that will go into the resulting src directory
 # DOCFILES: Files that will go into the resulting docs directory
 BINFILES := $(BINDIR)/pasdoc_console
 DOCFILES := LICENSE ChangeLog docs/README
-SRCFILES := ./source/*
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 
@@ -65,9 +63,6 @@ BINFILES := $(subst /,$(PATHSEP),$(BINFILES))
 endif
 ifdef DOCFILES
 DOCFILES := $(subst /,$(PATHSEP),$(DOCFILES))
-endif
-ifdef SRCFILES
-SRCFILES := $(subst /,$(PATHSEP),$(SRCFILES))
 endif
 
 ############################################################################
@@ -303,11 +298,15 @@ help:
 	@echo "    and then makes a release archive for given <os/arch>."
 	@echo
 	@echo "  dist-src:"
-	@echo "    This creates a source archive, from sources in source/."
-	@echo "    We will probably change implementation of this target,"
-	@echo "    to checkout from public CVS (with given tag PASDOC_x_y_z),"
-	@echo "    this would be safer and better (and was used to make 0.8.8"
-	@echo "    release anyway)."
+	@echo "    This creates source archive, by checking out whole pasdoc sources"
+	@echo "    from pasdoc public CVS. It checks out using cvs tag PASDOC_x_y_z"
+	@echo "    (where x_y_z is derived from VERSION variable in this Makefile)."
+	@echo "    This way user can easily update downloaded sources tree by"
+	@echo "    simple \"cvs -z3 update -Pd\"' command."
+	@echo
+	@echo "    Note: before using this target for the 1st time, you should"
+	@echo "    manually do cvs...login to pasdoc public CVS"
+	@echo "    (see [http://sourceforge.net/cvs/?group_id=4213])"
 
 ############################################################################
 # Targets to make distribution archives
@@ -346,14 +345,6 @@ ifdef DOCFILES
 	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)docs
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
-ifdef SRCFILES
-	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)src
-	cp -R $(SRCFILES) $(PACKAGEDIR)$(PATHSEP)src
-	find $(PACKAGEDIR)$(PATHSEP)src \
-	  '(' -name CVS -prune -exec rm -fR '{}' ';' ')' -or \
-	  '(' -name .cvsignore -exec rm -f '{}' ';' ')'
-	$(MAKE) -C $(PACKAGEDIR)$(PATHSEP)src$(PATHSEP)autodoc/ clean
-endif
 
 # This target archives distribution into a zip file.
 #
@@ -372,43 +363,49 @@ dist-tar-gz: dist-prepare
 
 dist-go32: clean build-fpc-go32
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=go32
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=go32
 
 dist-win32: clean build-fpc-win32
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=win32
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32
 
 dist-os2: clean build-fpc-os2
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe SRCFILES= PACKAGE_BASENAME_SUFFIX=os2
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=os2
 
 dist-beos: clean build-fpc-beos
 	$(MAKE) --no-print-directory \
-	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=be-x86
+	  dist-zip PACKAGE_BASENAME_SUFFIX=be-x86
 
 dist-linux-m68k: clean build-fpc-linux-m68k
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-m68k
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-m68k
 
 dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-x86
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86
 
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
-	  dist-zip SRCFILES= PACKAGE_BASENAME_SUFFIX=amiga-m68k
+	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k
 
 dist-linux-ppc: clean build-fpc-linux-ppc
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=linux-ppc
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-ppc
 
 dist-freebsd-x86: clean build-fpc-freebsd-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz SRCFILES= PACKAGE_BASENAME_SUFFIX=freebsd-x86
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86
 
-dist-src: clean
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz BINFILES= PACKAGE_BASENAME_SUFFIX=src
+SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
+
+dist-src:
+	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)PasDoc-0.8/
+	cd $(PACKAGEBASEDIR); \
+	  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pasdoc \
+	    co -P -r PASDOC_$(subst .,_,$(VERSION)) PasDoc-0.8
+	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz PasDoc-0.8/
+	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
   dist-amiga dist-linux-ppc dist-freebsd-x86 dist-src
