@@ -1,3 +1,86 @@
+2005-07-09 v0.9.9
+
+  End-user visible changes:
+  + New command-line options:
+    --auto-abstract
+      (see [http://pasdoc.sipsolutions.net/AutoAbstractOption])
+    --introduction and --conclusion
+      (see [http://pasdoc.sipsolutions.net/IntroductionAndConclusion])
+    --latex-head
+      (see appropriate part of [http://pasdoc.sipsolutions.net/CommandLine])
+    --link-gv-uses and --link-gv-classes
+      (see [http://pasdoc.sipsolutions.net/GraphVizSupport])
+    --link-look
+      (see [http://pasdoc.sipsolutions.net/LinkLookOption])
+    --sort
+      (see [http://pasdoc.sipsolutions.net/SortOption])
+    --use-tipue-search
+      (see [http://pasdoc.sipsolutions.net/UseTipueSearchOption])
+    --version
+      (see appropriate part of [http://pasdoc.sipsolutions.net/CommandLine])
+  + New @-tags:
+    @br
+      (see [http://pasdoc.sipsolutions.net/BrTag]) 
+    @latex
+      (see [http://pasdoc.sipsolutions.net/LatexTag])
+    @section, @anchor, @title, @shorttitle tags in introduction/conclusion
+      (see [http://pasdoc.sipsolutions.net/IntroductionAndConclusion])
+    @deprecated
+      (see [http://pasdoc.sipsolutions.net/DeprecatedTag])
+    @value and @member
+      (see [http://pasdoc.sipsolutions.net/MemberValueTag])
+  + pasdoc_gui, a GUI alternative to console pasdoc version.
+  + Spell checking (see [http://pasdoc.sipsolutions.net/SpellChecking])
+  * Cache is now independent from output format
+    (see [http://pasdoc.sipsolutions.net/CacheOption])
+  * Many fixes and improvements to HTML output,
+    it's now structured a little more consistently,
+    it's more configurable by CSS,
+    it's 100% conforming HTML 4.01 Transitional.
+  * Many fixes and improvements to LaTeX output, 
+    it's also structured more consistently, 
+    and it doesn't omit undocumented items
+    (see the bottom of [http://pasdoc.sipsolutions.net/WritingDocumentation]).
+  * @longcode improvements: 
+    it's now formatted in LaTeX output,
+    the look of float and hex values inside @longcode in HTML output
+    is configurable by CSS.
+  * Parsing improvements:
+    * Better full declaration of items is now displayed in documentation
+    * FPC overloaded operators are now parsed
+    * Delphi hint directives (deprecated, platform, library) are now parsed
+  * You don't have to enclose tag parameters in parenthesis
+    (see [http://pasdoc.sipsolutions.net/TagsParametersWithoutParenthesis])
+  * Many many other small fixes and improvements.
+
+  Many internal improvements, like:
+  + We maintain a large set of tests (regression tests,
+    conformance tests etc.) in pasdoc sources 
+    (see tests/README file in pasdoc sources and
+    [http://pasdoc.sipsolutions.net/RegressionTesting]).
+
+  Documentation:
+    You can find the most complete and up-to-date documentation
+    of pasdoc features in our wiki, [http://pasdoc.sipsolutions.net/].
+    Unfortunately, with pasdoc 0.9.0, offline documentation 
+    (previously in docs/ directory of released archives) is no longer 
+    provided, this is intended to be fixed in future releases 
+    (see [http://pasdoc.sipsolutions.net/ToDoOfflineDocs]).
+
+  Some compatibility had to be broken:
+  * pasdoc.css will be always overwritten when you generate HTML documentation.
+    You must use --css command-line option 
+    (see [http://pasdoc.sipsolutions.net/CssOption])
+    if you want to use your custom css.
+  * By default no items are sorted.
+    You must use --sort command-line option
+    (see [http://pasdoc.sipsolutions.net/SortOption])
+    if you want to change this.
+  * @links look now a little different, see
+    [http://pasdoc.sipsolutions.net/LinkLookOption] and
+    [http://pasdoc.sipsolutions.net/LinkTag], 
+    use --link-look=stripped if you really need old behavior.
+
 2004-07-12 v0.8.8.1 to v0.8.8.3 Johannes Berg, others
  + applied a bunch of patches that were floating around on the mailing list
  + some code cleanup
