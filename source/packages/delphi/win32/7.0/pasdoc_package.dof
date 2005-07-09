@@ -113,8 +113,8 @@ RootDir=C:\Program Files\Borland\Delphi7\Bin\
 IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=0
-MinorVer=8
-Release=8
+MinorVer=9
+Release=0
 Build=0
 Debug=0
 PreRelease=0
@@ -126,13 +126,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=0.8.8.0
+FileVersion=0.9.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=1.0.0.0
+ProductVersion=0.9.0
 Comments=
 [HistoryLists\hlUnitAliases]
 Count=1
