@@ -1348,7 +1348,8 @@ begin
   WriteDirectLine(DoctypeNormal);
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
+  if not NoGeneratorInfo then
+    WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
   WriteDirect(MetaContentType);
   // Title
   WriteDirect('<title>');

@@ -395,8 +395,9 @@ begin
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  WriteDirect('<meta name="GENERATOR" content="' +
-    PASDOC_NAME_AND_VERSION + '">', true);
+  if not NoGeneratorInfo then
+    WriteDirect('<meta name="GENERATOR" content="' +
+      PASDOC_NAME_AND_VERSION + '">', true);
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
 
@@ -497,7 +498,9 @@ begin
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
+  if not NoGeneratorInfo then
+    WriteDirectLine('<meta name="GENERATOR" content="' + 
+      PASDOC_NAME_AND_VERSION + '">');
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
 
