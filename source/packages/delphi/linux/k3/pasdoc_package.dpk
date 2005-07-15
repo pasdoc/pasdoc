@@ -31,7 +31,7 @@ requires
 contains
   Utils in '../../../../component/Utils.pas',
   ObjectVector in '../../../../component/ObjectVector.pas',
-  PasDoc in '../../../../component/PasDoc.pas',
+  PasDoc_Base in '../../../../component/PasDoc_Base.pas',
   PasDoc_Gen in '../../../../component/PasDoc_Gen.pas',
   PasDoc_GenHtml in '../../../../component/PasDoc_GenHtml.pas',
   PasDoc_GenLatex in '../../../../component/PasDoc_GenLatex.pas',
