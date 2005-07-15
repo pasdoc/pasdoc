@@ -36,7 +36,7 @@ interface
 
 uses
   SysUtils, Classes, LResources, Graphics, Controls, Forms,
-  Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc, StdCtrls, PasDoc_Types,
+  Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc_Base, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, Process, PasDoc_Serialize,
   IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils, LCLType;

@@ -46,13 +46,14 @@
         <UnitName Value="ObjectVector"/>
       </Item2>
       <Item3>
-        <Filename Value="../../component/PasDoc.pas"/>
-        <UnitName Value="PasDoc"/>
-      </Item3>
-      <Item4>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="PasDoc_Aspell"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../component/PasDoc_Base.pas"/>
+        <AddToUsesPkgSection Value="False"/>
+        <UnitName Value="PasDoc_Base"/>
       </Item4>
       <Item5>
         <Filename Value="../../component/PasDoc_Gen.pas"/>
