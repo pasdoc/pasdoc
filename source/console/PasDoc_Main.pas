@@ -9,7 +9,7 @@ procedure Main;
 implementation
 
 uses
-  PasDoc,
+  PasDoc_Base,
   PasDoc_Languages,
   SysUtils,
   Utils,

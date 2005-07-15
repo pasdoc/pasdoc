@@ -19,7 +19,7 @@ implementation
 
 uses
   Classes,
-  PasDoc,
+  PasDoc_Base,
   PasDoc_GenHtml,
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp;

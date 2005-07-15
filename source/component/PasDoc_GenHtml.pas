@@ -292,7 +292,7 @@ uses
 {$ENDIF}
   SysUtils,
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
-  PasDoc,
+  PasDoc_Base,
   ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,

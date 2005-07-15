@@ -19,7 +19,7 @@ UNIT_DIRS := ./source/component ./source/console ./source/OptionParser \
 INCLUDE_DIRS := ./source/component
 
 # Base file to compile
-FILE := ./source/console/PasDoc_Console.dpr
+FILE := ./source/console/pasdoc.dpr
 
 # Base directory where binaries will go
 BINDIR := bin
@@ -31,7 +31,7 @@ OUTDIR := lib
 # if that particular section is not used.
 # BINFILES: Files that will go into the resulting bin directory
 # DOCFILES: Files that will go into the resulting docs directory
-BINFILES := $(BINDIR)/pasdoc_console
+BINFILES := $(BINDIR)/pasdoc
 DOCFILES := LICENSE ChangeLog docs/README
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
@@ -90,19 +90,8 @@ FPC_FREEBSD_X86 := $(FPC_DEFAULT)
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 
-# Note that this -opasdoc_console is needed, otherwise FPC >= 1.9.x
-# would produce `PasDoc_Console', and this is of course something
-# different than 'pasdoc_console' on case-sens filesystem.
-#
-# This all confusion will be removed after pasdoc 0.9.0 release
-# when I will change the dafault .dpr of pasdoc to be pasdoc.dpr
-# (the unit PasDoc.pas will have to be renamed then too),
-# then all compiler versions, fpc and others, will just produce
-# "pasdoc[.exe]" binary. Johannes says to do it after pasdoc 0.9.0
-# release [http://sourceforge.net/mailarchive/message.php?msg_id=11455093],
-# so I'm waiting.
 FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
-  $(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS) -opasdoc_console
+  $(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS)
 
 FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
 

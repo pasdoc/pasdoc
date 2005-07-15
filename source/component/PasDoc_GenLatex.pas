@@ -221,7 +221,7 @@ implementation
 
 uses
   SysUtils,
-  PasDoc,
+  PasDoc_Base,
   ObjectVector,
   Utils, 
   PasDoc_StringPairVector,

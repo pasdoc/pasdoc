@@ -27,7 +27,7 @@
 
 ------------------------------------------------------------------------------ }
 
-program PasDoc_Console;
+program pasdoc;
 
 {$IFNDEF VPASCAL}
 {$APPTYPE CONSOLE}

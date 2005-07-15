@@ -1,4 +1,4 @@
-{ @abstract(Contains the main TPasDoc component. )
+{ @abstract(Contains the main TPasDoc component.)
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -8,9 +8,12 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @created(24 Sep 1999)
+  
+  Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
+  to not conflict with the name of base program name @code(pasdoc.dpr).
 }
 
-unit PasDoc;
+unit PasDoc_Base;
 
 {$I DEFINES.INC}
 
