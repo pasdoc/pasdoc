@@ -346,7 +346,19 @@ type
        - TPasType
        - TPasMethod (includes parameter list, procedural directives, etc.)
        - TPasProperty (includes read/write and storage specifiers, etc.) 
-       - TEnum (for now it's just the same thing as Name)
+       - TPasEnum 
+         
+         But in this special case, '...' is used instead of listing individual 
+         members, e.g. 'TEnumName = (...)'. You can get list of Members using
+         TPasEnum.Members. Eventual specifics of each member should be also
+         specified somewhere inside Members items, e.g.
+           @longcode# TMyEnum = (meOne, meTwo = 3); #
+         and
+           @longcode# TMyEnum = (meOne, meTwo); #
+         will both result in TPasEnum with equal FullDeclaration
+         (just @code('TMyEnum = (...)')) but this @code('= 3') should be
+         marked somewhere inside Members[1] properties.
+         
        - TPasItem when it's a CIO's field. 
        
        The intention is that in the future all TPasItem descendants
