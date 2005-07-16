@@ -674,6 +674,15 @@ uses
 
 procedure TDocGenerator.BuildLinks;
 
+  { Assign Cio.Ancestors.Objects[i] for every i }
+  procedure AssignCioAncestorLinks(Cio: TPasCio);
+  var
+    i: Integer;
+  begin
+    for i := 0 to Cio.Ancestors.Count - 1 do
+      Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio);
+  end;
+
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
     c: TPasItems);
   var
@@ -733,6 +742,8 @@ begin
         CO.MyUnit := U;
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := CO.FullLink;
+        
+        AssignCioAncestorLinks(CO);
 
         AssignLinks(U, CO, CO.Fields);
         AssignLinks(U, CO, CO.Methods);
@@ -867,10 +878,15 @@ begin
   if Assigned(TheObject)
     and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
     s := TheObject.Ancestors.FirstName;
-    Ancestor := SearchItem(s, fCurrentItem);
+    Ancestor := TheObject.FirstAncestor;
     if Assigned(Ancestor) and (Ancestor is TPasCio) then 
     begin
       repeat
+        { TODO: in both cases below SearchLink will actually do more work
+          than it should, because in fact we already have a pointer
+          to Ancestor (so why should we call SearchLink(s, ...)
+          for the second time ? For now., e.g. to take into account
+          LinkLook value). This should be cleaned up at some time. }
         if TPasItem(fCurrentItem).MyObject = nil then
           // we are looking for the ancestor itself
           TheLink := SearchLink(s, fCurrentItem, '')
@@ -882,7 +898,7 @@ begin
         if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
           then begin
           s := TPasCio(Ancestor).Ancestors.FirstName;
-          Ancestor := SearchItem(s, Ancestor);
+          Ancestor := TPasCio(Ancestor).FirstAncestor;
         end else begin
           Break;
         end;

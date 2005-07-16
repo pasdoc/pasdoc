@@ -414,7 +414,7 @@ begin
           WriteConverted(CIO.Name);
           WriteConverted(' > ');
           s := CIO.Ancestors.FirstName;
-          Item := SearchItem(s, CIO);
+          Item := CIO.FirstAncestor;
           if Assigned(Item) and (Item is TPasCio) then 
             begin
               repeat
@@ -424,7 +424,7 @@ begin
                 if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
                   begin
                     s := TPasCio(Item).Ancestors.FirstName;
-                    Item := SearchItem(s, Item);
+                    Item := TPasCio(Item).FirstAncestor;
 
                     WriteConverted(' > ');
                     if (Item <> nil) and (Item is TPasCio) then 
@@ -903,7 +903,6 @@ end;
 function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
 var
   Ancestor: TBaseItem;
-  AncestorName: string;
 begin
   Result := false;
   if not Assigned(AItem) then Exit;
@@ -921,8 +920,7 @@ begin
 
   if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
   begin
-    AncestorName := TPasCio(AItem).Ancestors.FirstName;
-    Ancestor := SearchItem(AncestorName, AItem);
+    Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) and (Ancestor is TPasItem) then
     begin
       HasDescription := HasDescription(TPasItem(Ancestor));
@@ -1025,7 +1023,7 @@ begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := SearchItem(AncestorName, AItem);
+        Ancestor := TPasCio(AItem).FirstAncestor;
         if Assigned(Ancestor) and (Ancestor is TPasItem) then
           begin
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));

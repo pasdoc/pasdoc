@@ -497,7 +497,6 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
   { writes all ancestors of the given item and the item itself }
   procedure WriteHierarchy(Name: string; Item: TBaseItem);
   var
-    s: string;
     CIO: TPasCio;
   begin
     if not Assigned(Item) then begin
@@ -506,11 +505,10 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
     end else if Item is TPasCio then begin
       CIO := TPasCio(Item);
       { first, write the ancestors }
-      s := CIO.Ancestors.FirstName;
-      WriteHierarchy(s, SearchItem(s, Item));
+      WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
       { then write itself }
-      s := MakeItemLink(CIO, CIO.Name, lcNormal);
-      WriteDirectLine('<li class="ancestor">' + s + '</li>')
+      WriteDirectLine('<li class="ancestor">' + 
+        MakeItemLink(CIO, CIO.Name, lcNormal) + '</li>')
     end;
     { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
   end;
@@ -537,7 +535,6 @@ const
 var
   i: Integer;
   s: string;
-  TheLink: string;
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
   Section: TSections;
@@ -600,12 +597,12 @@ begin
 
   if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
     WriteConverted('(');
-    for i := 0 to CIO.Ancestors.Count - 1 do begin
-      s := CIO.Ancestors[i];
-      TheLink := SearchLink(s, CIO, '');
-      if TheLink <> '' then
-        s := TheLink;
-      WriteDirect(s);
+    for i := 0 to CIO.Ancestors.Count - 1 do
+    begin
+      if CIO.Ancestors.Objects[i] <> nil then
+        WriteDirect(MakeItemLink(CIO.Ancestors.Objects[i] as TPasItem, 
+          CIO.Ancestors[i], lcNormal)) else
+        WriteConverted(CIO.Ancestors[i]);
       if (i <> CIO.Ancestors.Count - 1) then
         WriteConverted(', ');
     end;
@@ -623,8 +620,7 @@ begin
     WriteAnchor(SectionAnchors[dsHierarchy]);
     WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
-    s := CIO.Ancestors.FirstName;
-    WriteHierarchy(s, SearchItem(s, Cio));
+    WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
     WriteDirect('<li class="thisitem">' + CIO.Name + '</li>');
     WriteDirect('</ul>');
   end;
@@ -1050,11 +1046,12 @@ begin
     begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := SearchItem(AncestorName, AItem);
+        Ancestor := TPasCio(AItem).FirstAncestor;
         if Assigned(Ancestor) and (Ancestor is TPasItem) then
         begin
           WriteDirect('<div class="nodescription">');
-          WriteConverted(Format('no description available, %s description follows', [AncestorName]));
+          WriteConverted(Format(
+            'no description available, %s description follows', [AncestorName]));
           WriteDirect('</div>');
           WriteItemDetailedDescription(TPasItem(Ancestor));
         end;

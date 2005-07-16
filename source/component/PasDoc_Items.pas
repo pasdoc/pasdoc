@@ -530,16 +530,41 @@ type
 
     procedure RegisterTagHandlers(TagManager: TTagManager); override;
   public
-    { name of the ancestor class / object }
+
+    { Name of the ancestor class / object.
+      Objects[] of this vector are assigned in TDocGenerator.BuildLinks to
+      TPasItem instances of ancestors (or nil if such ancestor is not found).
+      
+      Note that they are TPasItem, *not necessarily* TPasCio.
+      Consider e.g. the case
+      @longcode(#
+        TMyStringList = Classes.TStringList;
+        TMyExtendedStringList = class(TMyStringList)
+          ...
+        end;
+      #)
+      At least for now, such declaration will result in TPasType
+      (not TPasCio!) with Name = 'TMyStringList', which means that
+      ancestor of TMyExtendedStringList will be a TPasType instance. }
     property Ancestors: TStringVector read FAncestors;
+    
+    { This returns Ancestors.Objects[0], i.e. instance of the first
+      ancestor of this Cio (or nil if it couldn't be found),
+      or nil if Ancestors.Count = 0. }
+    function FirstAncestor: TPasItem;
+    
     { list of all fields }
     property Fields: TPasItems read FFields;
+    
     { list of all methods }
     property Methods: TPasMethods read FMethods;
+    
     { list of properties }
     property Properties: TPasProperties read FProperties;
+    
     { determines if this is a class, an interface or an object }
     property MyType: TCIOType read FMyType write FMyType;
+    
     { name of documentation output file (if each class / object gets
       its own file, that's the case for HTML, but not for TeX) }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
@@ -1540,6 +1565,13 @@ end;
 function TPasCio.ShowVisibility: boolean;
 begin
   Result := not (MyType in CIORecordType);
+end;
+
+function TPasCio.FirstAncestor: TPasItem;
+begin
+  if Ancestors.Count <> 0 then
+    Result := Ancestors.Objects[0] as TPasItem else
+    Result := nil;
 end;
 
 { TPasUnit ------------------------------------------------------------------- }

@@ -18,7 +18,9 @@ type
   TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
+    { This is the same thing as Items[0] }
     function FirstName: string;
+    
     procedure LoadFromTextFileAdd(const AFilename: string); overload;
     procedure LoadFromTextFileAdd(var ATextFile: TextFile); overload;
     procedure RemoveAllNamesCI(const AName: string);
