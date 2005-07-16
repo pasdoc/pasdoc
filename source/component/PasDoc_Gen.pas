@@ -351,11 +351,15 @@ end;
     procedure LoadDescriptionFile(n: string);
 
     { Searches for item with name S.
-      If S is not splittable by SplitNameParts, returns nil and does 
+    
+      If S is not splittable by SplitNameParts, returns nil.
+      If WarningIfNotSplittable, additionally does 
       DoMessage with appropriate warning.
-      Else, seeks for S (first trying Item.FindName, if Item is not nil,
-      then trying FindGlobal). Returns nil if not found. }
-    function SearchItem(s: string; const Item: TBaseItem): TBaseItem;
+      
+      Else (if S is "splittable"), seeks for S (first trying Item.FindName, 
+      if Item is not nil, then trying FindGlobal). Returns nil if not found. }
+    function SearchItem(s: string; const Item: TBaseItem;
+      WarningIfNotSplittable: boolean): TBaseItem;
 
     { Searches for an item of name S which was linked in the description
       of Item. Starts search within item, then does a search on all items in all
@@ -693,7 +697,7 @@ procedure TDocGenerator.BuildLinks;
     i: Integer;
   begin
     for i := 0 to Cio.Ancestors.Count - 1 do
-      Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio);
+      Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio, true);
   end;
 
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
@@ -1347,13 +1351,15 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SearchItem(s: string; const Item: TBaseItem): TBaseItem;
+function TDocGenerator.SearchItem(s: string; const Item: TBaseItem;
+  WarningIfNotSplittable: boolean): TBaseItem;
 var
   NameParts: TNameParts;
 begin
   if not SplitNameParts(s, NameParts) then 
   begin
-    DoMessage(2, mtWarning, 'The link "' + s + '" is invalid', []);
+    if WarningIfNotSplittable then
+      DoMessage(2, mtWarning, 'The link "' + s + '" is invalid', []);
     Result := nil;
     Exit;
   end;
@@ -2332,28 +2338,6 @@ end;
 procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem; 
   const Code: string; WriteItemLink: boolean;
   const NameLinkBegin, NameLinkEnd: string);
-
-  { Tries to find a link from string S. 
-    Tries to split S using SplitLink, if succeeds then tries using p.FindName,
-    if that does not resolve the link then tries using FindGlobal.
-    
-    Returns nil if S couldn't be resolved. 
-    
-    TODO -- this should be merged with @link(SearchLink) method
-    for clarity. But this should never display a warning for user. }
-  function DoSearchForLink(const S: string): TBaseItem;
-  var
-    NameParts: TNameParts;
-  begin
-    if SplitNameParts(s, NameParts) then 
-    begin
-      Result := Item.FindName(NameParts);
-      if not Assigned(Result) then
-        Result := FindGlobal(NameParts);
-    end else
-      Result := nil;
-  end;
-
 var
   NameFound, SearchForLink: Boolean;
   FoundItem: TBaseItem;
@@ -2429,7 +2413,7 @@ begin
               else
                 begin
                   if SearchForLink then
-                    FoundItem := DoSearchForLink(S) else
+                    FoundItem := SearchItem(S, Item, false) else
                     FoundItem := nil;
 
                   if Assigned(FoundItem) then
