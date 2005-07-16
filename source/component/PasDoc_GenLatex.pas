@@ -151,10 +151,6 @@ type
       the strings with either a "-" or "." character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
     
-    { Creates a valid LaTeX link, starting with an anchor that points to Link,
-      encapsulating the text ItemName in it. }
-    function CreateReferencedLink(ItemName, Link: string): string; override;
-
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
     
@@ -191,6 +187,10 @@ Latex DocGenerators.}
     // format AString as compileable code.
     function FormatCode(AString: string): string; override;
     function FormatAnchor(const Anchor: string): string; override;
+    
+    function MakeItemLink(const Item: TBaseItem;
+      const LinkCaption: string;
+      const LinkContext: TLinkContext): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -291,11 +291,15 @@ begin
   end;
 end;
 
-function TTexDocGenerator.CreateReferencedLink(ItemName, Link: string):
-  string;
+function TTexDocGenerator.MakeItemLink(const Item: TBaseItem;
+  const LinkCaption: string;
+  const LinkContext: TLinkContext): string;
 begin
-  Result :=  '\begin{ttfamily}'+ConvertString(ItemName) +'\end{ttfamily}(\ref{' + 
-     EscapeURL(Link) + '})'; 
+  if LinkContext = lcCode then
+    { Links inside lcCode context look bad... }
+    Result := ConvertString(LinkCaption) else
+    Result :=  '\begin{ttfamily}' + ConvertString(LinkCaption) + 
+      '\end{ttfamily}(\ref{' + EscapeURL(Item.FullLink) + '})';
 end;
 
 function TTexDocGenerator.GetFileExtension: string;
@@ -414,7 +418,7 @@ begin
           if Assigned(Item) and (Item is TPasCio) then 
             begin
               repeat
-                s := CreateReferencedLink(Item.Name, Item.FullLink);
+                s := MakeItemLink(Item, Item.Name, lcNormal);
                 WriteDirect(s);
 
                 if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
@@ -1264,10 +1268,10 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
         if ULink <> nil then
         begin
-          WriteDirect(CreateReferencedLink(U.UsesUnits[i], ULink.FullLink));
+          WriteDirect(MakeItemLink(ULink, U.UsesUnits[i], lcNormal));
         end else 
         begin
-          { CreateReferencedLink writes link names in tt font, so we follow 
+          { MakeItemLink writes link names in tt font, so we follow 
             the convention here and also use tt font. }
           WriteDirect('\begin{ttfamily}' + 
             ConvertString(U.UsesUnits[i]) + '\end{ttfamily}');

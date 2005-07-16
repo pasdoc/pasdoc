@@ -225,10 +225,6 @@ type
       the strings with a "#" character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
 
-    { Creates a valid HTML link, starting with an anchor that points to Link,
-      encapsulating the text ItemName in it. }
-    function CreateReferencedLink(ItemName, Link: string): string; override;
-
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
 
@@ -245,7 +241,8 @@ type
       const Id: TTranslationID); override;
 
     function MakeItemLink(const Item: TBaseItem;
-      const LinkCaption: string): string; override;
+      const LinkCaption: string;
+      const LinkContext: TLinkContext): string; override;
       
     function EscapeURL(const AString: string): string; virtual;
     
@@ -408,12 +405,6 @@ begin
   end;
 end;
 
-function TGenericHTMLDocGenerator.CreateReferencedLink(ItemName, Link: string):
-  string;
-begin { todo: change class to something more generic }
-  Result := '<a class="normal" href="' + EscapeURL(Link) + '">' + ItemName + '</a>';
-end;
-
 function TGenericHTMLDocGenerator.GetFileExtension: string;
 begin
   Result := '.html';
@@ -518,7 +509,7 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
       s := CIO.Ancestors.FirstName;
       WriteHierarchy(s, SearchItem(s, Item));
       { then write itself }
-      s := CreateReferencedLink(CIO.Name, CIO.FullLink);
+      s := MakeItemLink(CIO, CIO.Name, lcNormal);
       WriteDirectLine('<li class="ancestor">' + s + '</li>')
     end;
     { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
@@ -803,10 +794,19 @@ begin
   WriteTargettedLink(href, caption, CssClass, '');
 end;
 
-function TGenericHTMLDocGenerator.MakeItemLink(const Item: TBaseItem;
-  const LinkCaption: string): string;
+function TGenericHTMLDocGenerator.MakeItemLink(
+  const Item: TBaseItem;
+  const LinkCaption: string;
+  const LinkContext: TLinkContext): string;
+var 
+  CssClass: string;
 begin
-  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption), '', '');
+  if LinkContext = lcNormal then
+    CssClass := 'normal' else
+    CssClass := '';
+
+  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption), 
+    CssClass, '');
 end;
 
 function TGenericHTMLDocGenerator.MakeTargettedLink(

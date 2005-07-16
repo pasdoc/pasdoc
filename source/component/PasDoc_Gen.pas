@@ -102,6 +102,16 @@ type
   );
 
   TLinkLook = (llDefault, llFull, llStripped);
+  
+  { This is used by @link(TDocGenerator.MakeItemLink) }
+  TLinkContext = (
+    { This means that link is inside some larger code piece, 
+      e.g. within FullDeclaration of some item etc.
+      This means that we *may* be inside a context where
+      used font has constant width. }
+    lcCode, 
+    { This means that link is inside some "normal" description text. }
+    lcNormal);
 
   { @abstract(basic documentation generator object)
     @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -237,11 +247,15 @@ end;
       LinkCaption will be always converted using ConvertString before writing,
       so don't worry about doing this yourself when calling this method. 
       
+      LinkContext may be used in some descendants to present
+      the link differently, see @link(TLinkContext) for it's meaning.
+      
       If some output format doesn't support this feature, 
       it can return simply ConvertString(LinkCaption).
       This is the default implementation of this method in this class. }
     function MakeItemLink(const Item: TBaseItem;
-      const LinkCaption: string): string; virtual;
+      const LinkCaption: string; 
+      const LinkContext: TLinkContext): string; virtual;
 
     { This writes Code as a Pascal code.
       Links inside the code are resolved from Item.
@@ -290,11 +304,6 @@ end;
       Returns true if creation was successful, false otherwise. }
     function CreateStream(const AName: string; const AOverwrite: boolean): 
       TCreateStreamResult;
-
-    { Must be overwritten.
-      From an item name and its link, this creates a language-specific
-      reference to that item. }
-    function CreateReferencedLink(ItemName, Link: string): string; virtual; abstract;
 
     (*Takes description D of the Item, expands links (using Item),
       converts output-specific characters.
@@ -1371,21 +1380,21 @@ begin
   if Assigned(FoundItem) then
   begin
     if LinkDisplay <> '' then
-      Result := CreateReferencedLink(LinkDisplay, FoundItem.FullLink) else
+      Result := MakeItemLink(FoundItem, LinkDisplay, lcNormal) else
     case LinkLook of
       llDefault:
-        Result := CreateReferencedLink(S, FoundItem.FullLink);
+        Result := MakeItemLink(FoundItem, S, lcNormal);
       llStripped: 
-        Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink);
+        Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
       llFull:
         begin
-          Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink);
+          Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
           
           if Length(NameParts) = 3 then
           begin
             SetLength(NameParts, 2);
             FoundItem := FindGlobal(NameParts);
-            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) +
+            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
               '.' + Result;
           end;
 
@@ -1393,7 +1402,7 @@ begin
           begin
             SetLength(NameParts, 1);
             FoundItem := FindGlobal(NameParts);
-            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + 
+            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) + 
               '.' + Result;
           end;          
         end;
@@ -2283,7 +2292,8 @@ begin
 end;
 
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;
-  const LinkCaption: string): string; 
+  const LinkCaption: string;
+  const LinkContext: TLinkContext): string; 
 begin
   Result := ConvertString(LinkCaption);
 end;
@@ -2346,7 +2356,7 @@ begin
           begin
             WriteDirect(NameLinkBegin);
             if WriteItemLink then
-              WriteDirect(MakeItemLink(Item, s)) else
+              WriteDirect(MakeItemLink(Item, s, lcCode)) else
               WriteConverted(s);
             WriteDirect(NameLinkEnd);
             NameFound := True;
@@ -2392,7 +2402,7 @@ begin
                     FoundItem := nil;
 
                   if Assigned(FoundItem) then
-                    WriteDirect(MakeItemLink(FoundItem, s)) else
+                    WriteDirect(MakeItemLink(FoundItem, s, lcCode)) else
                     WriteConverted(s);
                 end;
             end;
