@@ -19,6 +19,7 @@ interface
 
 uses
   SysUtils,
+  PasDoc_Types,
   StringVector,
   ObjectVector,
   Hashes,
@@ -148,16 +149,14 @@ type
       Override as necessary. }
     function FindItem(const ItemName: string): TBaseItem; virtual;
     
-    { This does all it can to resolve link specified by S1, S2, S3.
-      n is 0, 1, 2 and specifies how many parts (from S1, S2, S3)
-      were actually specified.
+    { This does all it can to resolve link specified by NameParts.
       
       While searching this tries to mimic ObjectPascal identifier scope
       as much as it can. It seaches within this item,
       but also within class enclosing this item,
       within unit enclosing this item, then within units used by unit
       of this item. }
-    function FindName(S1, S2, S3: string; n: Integer): TBaseItem; virtual;
+    function FindName(const NameParts: TNameParts): TBaseItem; virtual;
     
     { Detailed description of this item.
       
@@ -227,9 +226,9 @@ type
       unit.
       
       Actually @link(FindName) uses this function. }
-    function FindNameWithinUnit(S1, S2, S3: string; n: Integer): TBaseItem; virtual;
+    function FindNameWithinUnit(const NameParts: TNameParts): TBaseItem; virtual;
   public
-    function FindName(S1, S2, S3: string; n: Integer): TBaseItem; override;
+    function FindName(const NameParts: TNameParts): TBaseItem; override;
     
     procedure RegisterTagHandlers(TagManager: TTagManager); override;
     
@@ -795,7 +794,7 @@ function MethodTypeToString(const MethodType: TMethodType): string;
 implementation
 
 uses
-  PasDoc_Types, Utils, PasDoc_Tokenizer;
+  Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -862,7 +861,7 @@ begin
   Result := nil;
 end;
 
-function TBaseItem.FindName(S1, S2, S3: string; n: Integer): TBaseItem;
+function TBaseItem.FindName(const NameParts: TNameParts): TBaseItem;
 begin
   Result := nil;
 end;
@@ -976,20 +975,20 @@ end;
 
 { TPasItem ------------------------------------------------------------------- }
 
-function TPasItem.FindNameWithinUnit(S1, S2, S3: string; n: Integer): TBaseItem;
+function TPasItem.FindNameWithinUnit(const NameParts: TNameParts): TBaseItem;
 var
   p: TBaseItem;
-  LS1: string;
+  LNameParts0: string;
 begin
   Result := nil;
-  LS1 := LowerCase(S1);
-  case n of
-    0: begin
-         Result := FindItem(S1);
+  LNameParts0 := LowerCase(NameParts[0]);
+  case Length(NameParts) of
+    1: begin
+         Result := FindItem(NameParts[0]);
          if Result <> nil then Exit;
          
          if Assigned(MyObject) then begin { this item is a method or field }
-           p := MyObject.FindItem(S1);
+           p := MyObject.FindItem(NameParts[0]);
            if Assigned(p) then begin
              Result := p;
              Exit;
@@ -997,23 +996,23 @@ begin
          end;
 
          if Assigned(MyUnit) then begin
-           p := MyUnit.FindItem(S1);
+           p := MyUnit.FindItem(NameParts[0]);
            if Assigned(p) then begin
              Result := p;
              Exit;
            end;
          end;
 
-         if Assigned(MyUnit) and (LS1 = LowerCase(MyUnit.Name)) then begin
+         if Assigned(MyUnit) and (LNameParts0 = LowerCase(MyUnit.Name)) then begin
            Result := MyUnit;
            Exit;
          end;
        end;
 
-    1: begin
+    2: begin
         if Assigned(MyObject) then begin
-          if LowerCase(MyObject.Name) = LS1 then begin
-            p := MyObject.FindItem(S2);
+          if LowerCase(MyObject.Name) = LNameParts0 then begin
+            p := MyObject.FindItem(NameParts[1]);
             if Assigned(p) then begin
               Result := p;
               Exit;
@@ -1023,7 +1022,7 @@ begin
 
         // RJ: To find links in Unit's objects!
         if Assigned(MyUnit) then begin
-          p := MyUnit.FindFieldMethodProperty(S1, S2);
+          p := MyUnit.FindFieldMethodProperty(NameParts[0], NameParts[1]);
           if Assigned(p) then begin
             Result := p;
             Exit;
@@ -1033,7 +1032,7 @@ begin
   end;
 end;
 
-function TPasItem.FindName(S1, S2, S3: string; n: Integer): TBaseItem;
+function TPasItem.FindName(const NameParts: TNameParts): TBaseItem;
 
   procedure SearchUsedUnits(UsesUnits: TStringVector);
   var 
@@ -1045,7 +1044,7 @@ function TPasItem.FindName(S1, S2, S3: string; n: Integer): TBaseItem;
       U := TPasUnit(UsesUnits.Objects[i]);
       if U <> nil then
       begin
-        Result := U.FindNameWithinUnit(S1, S2, S3, n);
+        Result := U.FindNameWithinUnit(NameParts);
         if Result <> nil then Exit;
       end;
     end;
@@ -1053,7 +1052,7 @@ function TPasItem.FindName(S1, S2, S3: string; n: Integer): TBaseItem;
   end;
 
 begin
-  Result := FindNameWithinUnit(S1, S2, S3, n);
+  Result := FindNameWithinUnit(NameParts);
 
   if Result = nil then
   begin

@@ -35,14 +35,6 @@ uses
   PasDoc_TagManager,
   PasDoc_Aspell;
 
-const
-  { set of characters, including all letters and the underscore }
-  IdentifierStart = ['A'..'Z', 'a'..'z', '_'];
-
-  { set of characters, including all characters from @link(IdentifierStart)
-    plus the ten decimal digits }
-  IdentifierOther = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
-
 type
   { Overview files that pasdoc generates for multiple-document-formats 
     like HTML (see @link(TGenericHTMLDocGenerator)).
@@ -339,9 +331,9 @@ end;
     function ExtractWebAddress(s: string; out S1, S2, WebAddress: string): Boolean;
 
     { Searches all items in all units (given by field @link(Units)) for item
-      S1.S2.S3 (first N  strings not empty).
+      with NameParts.
       Returns a pointer to the item on success, nil otherwise. }
-    function FindGlobal(const S1, S2, S3: string; const n: Integer): TBaseItem;
+    function FindGlobal(const NameParts: TNameParts): TBaseItem;
 
     function GetCIOTypeName(MyType: TCIOType): string;
 
@@ -373,14 +365,6 @@ end;
     function SearchLinkOrWarning(const Identifier: string; 
       Item: TBaseItem; const LinkDisplay: string;
       const WarningFormat: string): string;
-
-    { A link provided in a tag can be made up of up to three parts,
-      separated by dots.
-      If this link is not a valid identifier or if it has more than
-      three parts, false is returned, true otherwise.
-      The parts are returned in S1, S2 and S3, with the number of
-      parts minus one being returned in N. }
-    function SplitLink(s: string; out S1, S2, S3: string; out n: Integer): Boolean;
 
     procedure StoreDescription(ItemName: string; var t: string);
 
@@ -1178,8 +1162,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.FindGlobal(const S1, S2, S3: string; const n: Integer):
-  TBaseItem;
+function TDocGenerator.FindGlobal(
+  const NameParts: TNameParts): TBaseItem;
 var
   i: Integer;
   Item: TBaseItem;
@@ -1189,27 +1173,27 @@ begin
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
   
-  case n of
-    0: begin
+  case Length(NameParts) of
+    1: begin
         if (Introduction <> nil) then
         begin
-          if  SameText(Introduction.Name, S1) then
+          if  SameText(Introduction.Name, NameParts[0]) then
           begin
             Result := Introduction;
             Exit;
           end;
-          Result := Introduction.FindItem(S1);
+          Result := Introduction.FindItem(NameParts[0]);
           if Result <> nil then Exit;
         end;
 
         if (Conclusion <> nil) then
         begin
-          if  SameText(Conclusion.Name, S1) then
+          if  SameText(Conclusion.Name, NameParts[0]) then
           begin
             Result := Conclusion;
             Exit;
           end;
-          Result := Conclusion.FindItem(S1);
+          Result := Conclusion.FindItem(NameParts[0]);
           if Result <> nil then Exit;
         end;
 
@@ -1217,35 +1201,35 @@ begin
          begin
            U := Units.UnitAt[i];
 
-           if SameText(U.Name, S1) then
+           if SameText(U.Name, NameParts[0]) then
            begin
              Result := U;
              Exit;
            end;
 
-           Result := U.FindItem(S1);
+           Result := U.FindItem(NameParts[0]);
            if Result <> nil then Exit;
          end;
        end;
-    1: begin
+    2: begin
          { object.field_method_property }
          for i := 0 to Units.Count - 1 do begin
-           Result := Units.UnitAt[i].FindFieldMethodProperty(S1, S2);
+           Result := Units.UnitAt[i].FindFieldMethodProperty(NameParts[0], NameParts[1]);
            if Assigned(Result) then Exit;
          end;
 
          { unit.cio_var_const_type }
-         U := TPasUnit(Units.FindName(S1));
+         U := TPasUnit(Units.FindName(NameParts[0]));
          if Assigned(U) then 
-           Result := U.FindItem(S2);
+           Result := U.FindItem(NameParts[1]);
        end;
-    2: begin
+    3: begin
          { unit.objectorclassorinterface.fieldormethodorproperty } 
-         U := TPasUnit(Units.FindName(S1));
+         U := TPasUnit(Units.FindName(NameParts[0]));
          if (not Assigned(U)) then Exit;
-         Item := U.FindItem(S2);
+         Item := U.FindItem(NameParts[1]);
          if (not Assigned(Item)) then Exit;
-         Item := Item.FindItem(S3);
+         Item := Item.FindItem(NameParts[2]);
          if (not Assigned(Item)) then Exit;
          Result := Item;
          Exit;
@@ -1341,27 +1325,22 @@ end;
 
 function TDocGenerator.SearchItem(s: string; const Item: TBaseItem): TBaseItem;
 var
-  n: Integer;
-  S1: string;
-  S2: string;
-  S3: string;
+  NameParts: TNameParts;
 begin
-  { S is supposed to have 0 to 2 dots in it - S1, S2 and S3 contain
-    the parts between the dots, N the number of dots }
-  if (not SplitLink(s, S1, S2, S3, n)) then begin
+  if not SplitNameParts(s, NameParts) then 
+  begin
     DoMessage(2, mtWarning, 'The link "' + s + '" is invalid', []);
     Result := nil;
     Exit;
   end;
 
   { first try to find link starting at Item }
-  if Assigned(Item) then begin
-    Result := Item.FindName(S1, S2, S3, n);
-  end
-  else
+  if Assigned(Item) then 
+    Result := Item.FindName(NameParts) else
     Result := nil;
 
-  if not Assigned(Result) then Result := FindGlobal(S1, S2, S3, n);
+  if not Assigned(Result) then 
+    Result := FindGlobal(NameParts);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1369,15 +1348,10 @@ end;
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string): string;
 var
-  n: Integer;
-  S1: string;
-  S2: string;
-  S3: string;
+  NameParts: TNameParts;
   FoundItem: TBaseItem;
 begin
-  { S is supposed to have 0 to 2 dots in it - S1, S2 and S3 contain
-    the parts between the dots, N the number of dots }
-  if (not SplitLink(s, S1, S2, S3, n)) then
+  if (not SplitNameParts(s, NameParts)) then
   begin
     DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
     Result := 'UNKNOWN';
@@ -1387,12 +1361,12 @@ begin
   { first try to find link starting at Item }
   FoundItem := nil;
   if Assigned(Item) then begin
-    FoundItem := Item.FindName(S1, S2, S3, n);
+    FoundItem := Item.FindName(NameParts);
   end;
 
   { Find Global }
   if FoundItem = nil then
-    FoundItem := FindGlobal(S1, S2, S3, n);
+    FoundItem := FindGlobal(NameParts);
 
   if Assigned(FoundItem) then
   begin
@@ -1407,16 +1381,20 @@ begin
         begin
           Result := CreateReferencedLink(FoundItem.Name, FoundItem.FullLink);
           
-          if S3 <> '' then
+          if Length(NameParts) = 3 then
           begin
-            FoundItem := FindGlobal(S1, S2, '', 1);
-            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+            SetLength(NameParts, 2);
+            FoundItem := FindGlobal(NameParts);
+            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) +
+              '.' + Result;
           end;
 
-          if S2 <> '' then
+          if Length(NameParts) = 2 then
           begin
-            FoundItem := FindGlobal(S1, '', '', 0);
-            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + '.' + Result;
+            SetLength(NameParts, 1);
+            FoundItem := FindGlobal(NameParts);
+            Result := CreateReferencedLink(FoundItem.Name,FoundItem.FullLink) + 
+              '.' + Result;
           end;          
         end;
       else Assert(false, 'LinkLook = ??');
@@ -1427,72 +1405,16 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.SplitLink(s: string; out S1, S2, S3: string;
-  out n: Integer): Boolean;
-
-  procedure SplitInTwo(s: string; var S1, S2: string);
-  var
-    i: Integer;
-  begin
-    i := Pos('.', s);
-    if (i = 0) then begin
-      S1 := s;
-      S2 := '';
-    end
-    else begin
-      S1 := System.Copy(s, 1, i - 1);
-      S2 := System.Copy(s, i + 1, Length(s));
-    end;
-  end;
-
-var
-  i: Integer;
-  t: string;
-begin
-  Result := False;
-  S1 := '';
-  S2 := '';
-  S3 := '';
-  n := 0;
-  {  I := 1;}
-  s := Trim(s);
-  if (Length(s) = 0) then Exit;
-  if (not (s[1] in IdentifierStart)) then Exit;
-  i := 2;
-  while (i <= Length(s)) do begin
-    if (not (s[i] in IdentifierOther)) then Exit;
-    Inc(i);
-  end;
-  SplitInTwo(s, S1, S2);
-  if (Length(S2) = 0) then begin
-    n := 0;
-  end
-  else begin
-    t := S2;
-    SplitInTwo(t, S2, S3);
-    if (Length(S3) = 0) then
-      n := 1
-    else
-      n := 2;
-  end;
-  Result := True;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TDocGenerator.StoreDescription(ItemName: string; var t: string);
 var
   Item: TBaseItem;
-  n: Integer;
-  S1: string;
-  S2: string;
-  S3: string;
+  NameParts: TNameParts;
 begin
   if t = '' then Exit;
 
   DoMessage(5, mtInformation, 'Storing description for ' + ItemName, []);
-  if SplitLink(ItemName, S1, S2, S3, n) then begin
-    Item := FindGlobal(S1, S2, S3, n);
+  if SplitNameParts(ItemName, NameParts) then begin
+    Item := FindGlobal(NameParts);
     if Assigned(Item) then begin
       if Item.RawDescription <> '' then begin
         DoMessage(2, mtWarning, 'More than one description for ' + ItemName,
@@ -1601,10 +1523,10 @@ end;
 
 procedure TDocGenerator.CreateClassHierarchy;
 
-  function FindGlobalPasItem(const S1, S2, S3: string; const n: Integer): TPasItem;
+  function FindGlobalPasItem(const NameParts: TNameParts): TPasItem;
   var BaseResult: TBaseItem;
   begin
-    BaseResult := FindGlobal(S1, S2, S3, n);
+    BaseResult := FindGlobal(NameParts);
     if (BaseResult <> nil) and (BaseResult is TPasItem) then
       Result := TPasItem(BaseResult) else
       Result := nil;
@@ -1628,7 +1550,7 @@ begin
       if ACIO.MyType in CIONonHierarchy then continue;
 
       if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
-        ParentItem := FindGlobalPasItem(ACIO.Ancestors.FirstName, '', '', 0);
+        ParentItem := FindGlobalPasItem(OneNamePart(ACIO.Ancestors.FirstName));
         if Assigned(ParentItem) then begin
           Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
           // Add parent if not already there.
@@ -2380,16 +2302,13 @@ procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem;
     for clarity. But this should never display a warning for user. }
   function DoSearchForLink(const S: string): TBaseItem;
   var
-    S1: string;
-    S2: string;
-    S3: string;
-    n: Integer;
+    NameParts: TNameParts;
   begin
-    if SplitLink(s, S1, S2, S3, n) then 
+    if SplitNameParts(s, NameParts) then 
     begin
-      Result := Item.FindName(S1, S2, S3, n);
+      Result := Item.FindName(NameParts);
       if not Assigned(Result) then
-        Result := FindGlobal(S1, S2, S3, n);
+        Result := FindGlobal(NameParts);
     end else
       Result := nil;
   end;
