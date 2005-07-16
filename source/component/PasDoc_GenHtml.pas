@@ -980,8 +980,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
       ParamName := List[i].Name;
       
       if LinkToParamNames then
-       ParamName := SearchLinkOrWarning(ParamName, Func, '',
-         'Could not resolve link to "%s" from description of item "%s"');
+       ParamName := SearchLink(ParamName, Func, '', true);
       
       WriteParameter(ParamName, List[i].Value);
     end;

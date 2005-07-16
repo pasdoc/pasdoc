@@ -350,30 +350,43 @@ end;
       comment sections of items. }
     procedure LoadDescriptionFile(n: string);
 
+    { Searches for item with name S.
+      If S is not splittable by SplitNameParts, returns nil and does 
+      DoMessage with appropriate warning.
+      Else, seeks for S (first trying Item.FindName, if Item is not nil,
+      then trying FindGlobal). Returns nil if not found. }
     function SearchItem(s: string; const Item: TBaseItem): TBaseItem;
 
     { Searches for an item of name S which was linked in the description
       of Item. Starts search within item, then does a search on all items in all
       units using @link(FindGlobal).
-      Returns a link as String on success or an empty String on failure. 
+      Returns a link as String on success. 
       
-      How exactly link does look like is controlled by @link(LinkLook) property. 
-      
-      LinkDisplay, if not '', specifies explicite the display text for link. }
+      If S is not splittable by SplitNameParts, it always does 
+      DoMessage with appropriate warning and returns something like 'UNKNOWN' 
+      (no matter what is the value of WarningIfLinkNotFound).
+           
+      When item will not be found then:
+      - if WarningIfLinkNotFound is true then it returns
+        CodeString(ConvertString(S)) and
+        makes DoMessage with appropriate warning.
+      - else it returns '' (and does not do any DoMessage)
+ 
+      If LinkDisplay is not '', then it specifies explicite the display text for 
+      link. Else how exactly link does look like is controlled by 
+      @link(LinkLook) property.
+ 
+      @param(FoundItem is the found item instance or nil if not found.) }
     function SearchLink(s: string; const Item: TBaseItem;
-      const LinkDisplay: string): string;
+      const LinkDisplay: string; 
+      const WarningIfLinkNotFound: boolean;
+      var FoundItem: TBaseItem): string; overload;
 
-    { This calls SearchLink(Identifier, Item).
-      If SearchLink succeeds (returns something <> ''), it simply returns
-      what SearchLink returned.
-
-      But if SearchLink fails, it
-      - gives a warning to a user
-        Format(WarningFormat, [Identifier, Item.QualifiedName]
-      - returns CodeString(ConvertString(Identifier)) }
-    function SearchLinkOrWarning(const Identifier: string; 
-      Item: TBaseItem; const LinkDisplay: string;
-      const WarningFormat: string): string;
+    { Just like previous overloaded version, but this doesn't return
+      FoundItem (in case you don't need it). }
+    function SearchLink(s: string; const Item: TBaseItem;
+      const LinkDisplay: string;
+      const WarningIfLinkNotFound: boolean): string; overload;
 
     procedure StoreDescription(ItemName: string; var t: string);
 
@@ -889,10 +902,10 @@ begin
           LinkLook value). This should be cleaned up at some time. }
         if TPasItem(fCurrentItem).MyObject = nil then
           // we are looking for the ancestor itself
-          TheLink := SearchLink(s, fCurrentItem, '')
+          TheLink := SearchLink(s, fCurrentItem, '', false)
         else
           // we are looking for an ancestor's property or method
-          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem, '');
+          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem, '', false);
         if TheLink <> '' then Break;
 
         if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
@@ -915,26 +928,12 @@ begin
   end;
 end;
 
-function TDocGenerator.SearchLinkOrWarning(const Identifier: string; 
-  Item: TBaseItem; const LinkDisplay: string;
-  const WarningFormat: string): string;
-begin
-  Result := SearchLink(Identifier, Item, LinkDisplay);
-
-  if Result = '' then
-  begin
-    DoMessage(1, mtWarning, WarningFormat, [Identifier, Item.QualifiedName]);
-    Result := CodeString(ConvertString(Identifier));
-  end;
-end;
-
 procedure TDocGenerator.HandleLinkTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);
 var LinkTarget, LinkDisplay: string;
 begin
   ExtractFirstWord(TagDesc, LinkTarget, LinkDisplay);
-  ReplaceStr := SearchLinkOrWarning(LinkTarget, FCurrentItem, LinkDisplay,
-    'Could not resolve "@Link(%s)" (%s)');
+  ReplaceStr := SearchLink(LinkTarget, FCurrentItem, LinkDisplay, true);
 end;
 
 procedure TDocGenerator.HandleCodeTag(TagManager: TTagManager;
@@ -1371,10 +1370,11 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
-  const LinkDisplay: string): string;
+  const LinkDisplay: string; 
+  const WarningIfLinkNotFound: boolean;
+  var FoundItem: TBaseItem): string;
 var
   NameParts: TNameParts;
-  FoundItem: TBaseItem;
 begin
   if (not SplitNameParts(s, NameParts)) then
   begin
@@ -1425,7 +1425,22 @@ begin
       else Assert(false, 'LinkLook = ??');
     end;
   end else
+  if WarningIfLinkNotFound then
+  begin
+    DoMessage(1, mtWarning, 'Could not resolve link "%s" (from description of "%s")', 
+      [S, Item.QualifiedName]);
+    Result := CodeString(ConvertString(S));
+  end else
     Result := '';
+end;
+
+function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
+  const LinkDisplay: string;
+  const WarningIfLinkNotFound: boolean): string; 
+var 
+  Dummy: TBaseItem;
+begin
+  Result := SearchLink(S, Item, LinkDisplay, WarningIfLinkNotFound, Dummy);
 end;
 
 { ---------------------------------------------------------------------------- }
