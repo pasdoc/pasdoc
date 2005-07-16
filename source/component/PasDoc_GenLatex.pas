@@ -65,7 +65,8 @@ type
       there is actually no description (only e.g. Params or Raises or Returns
       information).
     *)
-    procedure WriteItemDetailedDescription(const AItem: TPasItem);
+    procedure WriteItemDetailedDescription(const AItem: TPasItem;
+       AlreadyWithinAList: boolean);
 
     { @name writes the preamble of a LaTeX document and the begining of the
       document itself up through the table of contents.}
@@ -446,7 +447,7 @@ begin
   if dsDescription in SectionsAvailable then
     begin
       WriteHeading(HL + 2, SectionHeads[dsDescription]);
-      WriteItemDetailedDescription(CIO);
+      WriteItemDetailedDescription(CIO, false);
     end
   else
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
@@ -741,7 +742,7 @@ begin
     begin
       WriteStartOfParagraph;
       WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-      WriteItemDetailedDescription(Item);
+      WriteItemDetailedDescription(Item, true);
       WriteEndOfParagraph;
     end;
 
@@ -914,7 +915,9 @@ begin
     AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
     { Some TPasMethod optional info ? }
     ( (AItem is TPasMethod) and
-      TPasMethod(AItem).HasMethodOptionalInfo );
+      TPasMethod(AItem).HasMethodOptionalInfo ) or
+    { Seealso section ? }
+    (AItem.SeeAlso.Count <> 0);
 
   if Result then Exit;
 
@@ -929,7 +932,8 @@ begin
   end;    
 end;
 
-procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem;
+  AlreadyWithinAList: boolean);
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
@@ -968,6 +972,41 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
       WriteParameter(ParamName, List[i].Value);
     end;
     WriteDirect('\end{description}',true);
+  end;
+
+  procedure WriteSeeAlso(SeeAlso: TStringPairVector);
+  var
+    i: integer;
+    SeeAlsoItem: TBaseItem;
+    SeeAlsoLink: string;
+  begin
+    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+      Exit;
+
+    if not AlreadyWithinAList then
+      WriteStartList(FLanguage.Translation[trSeeAlso]);
+
+    WriteDirect('\item[\textbf{' + FLanguage.Translation[trSeeAlso] + '}]',true);
+    WriteDirect('\begin{description}',true);
+
+    for i := 0 to SeeAlso.Count - 1 do
+    begin
+      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
+        SeeAlso[i].Value, true, SeeAlsoItem);
+      WriteDirect('\item[');
+      if SeeAlsoItem <> nil then
+        WriteDirect(SeeAlsoLink) else
+        WriteConverted(SeeAlso[i].Name);
+      WriteDirectLine('] ');
+      
+      if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
+        WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
+      WriteDirectLine('');
+    end;
+    WriteDirect('\end{description}',true);
+    
+    if not AlreadyWithinAList then
+      WriteEndList;
   end;
 
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
@@ -1026,7 +1065,7 @@ begin
         if Assigned(Ancestor) and (Ancestor is TPasItem) then
           begin
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteItemDetailedDescription(TPasItem(Ancestor));
+            WriteItemDetailedDescription(TPasItem(Ancestor), AlreadyWithinAList);
           end;
       end else
       begin
@@ -1045,6 +1084,8 @@ begin
     WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
       AItemMethod.Raises, true);
   end;
+
+  WriteSeeAlso(AItem.SeeAlso);
 
   if AItem is TPasEnum then
   begin
@@ -1102,7 +1143,7 @@ begin
         
       WriteDirectLine('');
       WriteDirect('\par ');
-      WriteItemDetailedDescription(Item);
+      WriteItemDetailedDescription(Item, true);
     end;
 
     WriteEndList; 
@@ -1248,7 +1289,7 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
     WriteHeading(HL, FLanguage.Translation[trDescription]);
-    WriteItemDetailedDescription(U);
+    WriteItemDetailedDescription(U, false);
     WriteDirect('',true);
   end;
 
