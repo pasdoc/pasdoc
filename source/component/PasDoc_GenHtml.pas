@@ -952,6 +952,11 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
+const
+  { This is used for WriteHeading for 'raises', 'parameters' 
+    and 'see also' sections }
+  SectionHeadingLevel = 6;
+
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
     List: TStringPairVector; LinkToParamNames: boolean);
@@ -973,7 +978,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     if ObjectVectorIsNilOrEmpty(List) then
       Exit;
 
-    WriteHeading(6, 'parameters', Caption);
+    WriteHeading(SectionHeadingLevel, 'parameters', Caption);
     WriteDirectLine('<dl class="parameters">');
     for i := 0 to List.Count - 1 do 
     begin
@@ -987,11 +992,40 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     WriteDirectLine('</dl>');
   end;
 
+  procedure WriteSeeAlso(SeeAlso: TStringPairVector);
+  var
+    i: integer;
+    SeeAlsoItem: TBaseItem;
+    SeeAlsoLink: string;
+  begin
+    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+      Exit;
+
+    WriteHeading(SectionHeadingLevel, 'see_also', FLanguage.Translation[trSeeAlso]);
+    WriteDirectLine('<dl class="see_also">');
+    for i := 0 to SeeAlso.Count - 1 do
+    begin
+      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
+        SeeAlso[i].Value, true, SeeAlsoItem);
+      WriteDirect('  <dt>');
+      if SeeAlsoItem <> nil then
+        WriteDirect(SeeAlsoLink) else
+        WriteConverted(SeeAlso[i].Name);
+      WriteDirectLine('</dt>');
+      
+      WriteDirect('  <dd>');
+      if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
+        WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
+      WriteDirectLine('</dd>');
+    end;
+    WriteDirectLine('</dl>');
+  end;
+
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   begin
     if ReturnDesc = '' then
       exit;
-    WriteHeading(6, 'return', LowerCase(FLanguage.Translation[trReturns]));
+    WriteHeading(SectionHeadingLevel, 'return', LowerCase(FLanguage.Translation[trReturns]));
     WriteDirect('<p class="return">');
     WriteSpellChecked(ReturnDesc);
     WriteDirect('</p>');
@@ -1069,6 +1103,8 @@ begin
     WriteParamsOrRaises(AItemMethod, 
       LowerCase(FLanguage.Translation[trExceptions]), AItemMethod.Raises, true);
   end;
+  
+  WriteSeeAlso(AItem.SeeAlso);
  
   if AItem is TPasEnum then 
   begin
