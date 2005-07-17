@@ -1081,6 +1081,13 @@ begin
     WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters], 
       AItemMethod.Params, false);
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
+    
+    { In LaTeX generator I use trExceptions, not trExceptionsRaised,
+      because trExceptionsRaised is just too long and so everything 
+      would look too ugly. However it's preferred to use
+      trExceptionsRaised in the future (then trExceptions can be simply
+      removed from PasDoc_Languages), because trExceptionsRaised
+      is just more understandable to the reader of documentation. }
     WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
       AItemMethod.Raises, true);
   end;

@@ -65,6 +65,7 @@ type
     trParameters,
     trReturns,
     trExceptions,
+    trExceptionsRaised,
     trEnum,
     trDispInterface,
     trFields,
@@ -270,6 +271,7 @@ begin
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
   FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptionsRaised] := 'Exceptions raised';
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Fields';
@@ -337,7 +339,8 @@ begin
   FTranslation[trDescription] := 'Opis';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Polja';
@@ -408,6 +411,7 @@ begin
   FTranslation[trParameters] := 'Par‚metros';
   FTranslation[trReturns] := 'Retornos';
   FTranslation[trExceptions] := 'ExceÁıes';
+  FTranslation[trExceptionsRaised] := 'ExceÁıes'; // TODO: translate as "Exceptions raised" instead of just "Exceptions"
   FTranslation[trEnum] := 'EnumeraÁıes';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
@@ -475,7 +479,8 @@ begin
   FTranslation[trDescription] := 'Descripci¢';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Camps';
@@ -560,7 +565,8 @@ begin
   FTranslation[trDescription] := 'Beskrivelse';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felter';
@@ -629,7 +635,8 @@ begin
   FTranslation[trDescription] := 'Omschrijving';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Velden';
@@ -700,7 +707,8 @@ begin
   FTranslation[trDescription] := 'Description';
   FTranslation[trParameters] := 'ParamËtres';
   FTranslation[trReturns] := 'Retourne';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Champs';
@@ -769,7 +777,8 @@ begin
   FTranslation[trDescription] := 'Beschreibung';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Felder';
@@ -836,7 +845,8 @@ begin
   FTranslation[trDescription] := 'Definisi';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
@@ -904,7 +914,8 @@ begin
   FTranslation[trDescription] := 'Descrizione';
   FTranslation[trParameters] := 'Parametri';
   FTranslation[trReturns] := 'Ritorni';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campi';
@@ -972,7 +983,8 @@ begin
   FTranslation[trDescription] := 'Katrangan';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Field';
@@ -1043,6 +1055,7 @@ begin
   FTranslation[trParameters] := 'Parametry';
   FTranslation[trReturns] := 'Wynik';
   FTranslation[trExceptions] := 'Wyjπtki';
+  FTranslation[trExceptionsRaised] := 'Wyjπtki'; // TODO: translate as "Exceptions raised" instead of just "Exceptions"
   FTranslation[trEnum] := 'Wyliczenie';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Pola';
@@ -1111,6 +1124,7 @@ begin
   FTranslation[trParameters] := 'Parametry';
   FTranslation[trReturns] := 'Wynik';
   FTranslation[trExceptions] := 'Wyj±tki';
+  FTranslation[trExceptionsRaised] := 'Zg≥aszane wyj±tki';
   FTranslation[trEnum] := 'Wyliczenie';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Pola';
@@ -1177,7 +1191,8 @@ begin
   FTranslation[trDeclaration] := 'Œ·˙ˇ‚ÎÂÌËˇ';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDescription] := 'ŒÔËÒ‡ÌËÂ';
   FTranslation[trDispInterface] := 'DispInterface';
@@ -1246,7 +1261,8 @@ begin
   FTranslation[trDescription] := 'éØ®·†≠®•';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'èÆ´Ô';
@@ -1314,7 +1330,8 @@ begin
   FTranslation[trDescription] := 'Ô–…”¡Œ…≈';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trParameters] := 'Parameters';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trReturns] := 'Returns';
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trFields] := 'œÃ—';
@@ -1382,7 +1399,8 @@ begin
   FTranslation[trDescription] := 'Popis';
   FTranslation[trParameters] := 'Parameters';
   FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trFields] := 'Poloûky';
   FTranslation[trFunctionsAndProcedures] := 'Funkcie a proced˙ry';
@@ -1443,7 +1461,8 @@ begin
   FTranslation[trDescription] := 'DescripciÛn';
   FTranslation[trParameters] := 'Par·metros';
   FTranslation[trReturns] := 'Vueltas';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
@@ -1509,7 +1528,8 @@ begin
   FTranslation[trDescription] := 'Beskrivning';
   FTranslation[trParameters] := 'Se parameter';
   FTranslation[trReturns] := 'Retur';
-  FTranslation[trExceptions] := 'Exceptions';
+  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
+  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'F‰lt';
@@ -1582,6 +1602,7 @@ begin
   FTranslation[trParameters] := 'ParamÈterek';
   FTranslation[trReturns] := 'VisszatÈrÈsi ÈrtÈkek';
   FTranslation[trExceptions] := 'KivÈtelek';
+  FTranslation[trExceptionsRaised] := 'KivÈtelek'; // TODO: translate as "Exceptions raised" instead of just "Exceptions"
   FTranslation[trEnum] := 'Felsorol·sok';
   FTranslation[trDispInterface] := 'KÈpernyı fel¸letek';
   FTranslation[trFields] := 'Mezık';
@@ -1678,6 +1699,10 @@ end;
 
 {
   $Log$
+  Revision 1.30  2005/07/17 12:21:49  kambi
+  * trReturns, trParameters and trExceptions are *not* lowercased in HTML output -- because lowercase looks ugly, there was no good reason to make them lowercase, and it's inconsistent with LaTeX generator. (actually, in the beginning, they were hardcoded lowercased strings in GenHtml, and LaTeX generator didn't use raises/parameters/exceptions at all)
+  + trExceptionsRaised added, used in HTML generator instead of trExceptions (because trExceptionsRaised is more verbose and clearer, and actually initial implementation of Thomas had 'exceptions raised' instead of just 'exceptions'), comments in LaTeX generator why it has to still use trExceptions
+
   Revision 1.29  2005/07/16 17:17:51  kambi
   + 'See also' added
   * Rearrangements and comments for consistent SetLanguageXxx implementations

@@ -1025,7 +1025,7 @@ const
   begin
     if ReturnDesc = '' then
       exit;
-    WriteHeading(SectionHeadingLevel, 'return', LowerCase(FLanguage.Translation[trReturns]));
+    WriteHeading(SectionHeadingLevel, 'return', FLanguage.Translation[trReturns]);
     WriteDirect('<p class="return">');
     WriteSpellChecked(ReturnDesc);
     WriteDirect('</p>');
@@ -1098,10 +1098,10 @@ begin
   begin
     AItemMethod := TPasMethod(AItem);
     WriteParamsOrRaises(AItemMethod, 
-      LowerCase(FLanguage.Translation[trParameters]), AItemMethod.Params, false);
+      FLanguage.Translation[trParameters], AItemMethod.Params, false);
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
     WriteParamsOrRaises(AItemMethod, 
-      LowerCase(FLanguage.Translation[trExceptions]), AItemMethod.Raises, true);
+      FLanguage.Translation[trExceptionsRaised], AItemMethod.Raises, true);
   end;
   
   WriteSeeAlso(AItem.SeeAlso);
