@@ -120,7 +120,8 @@ type
     trConclusion,
 
     trSearch,
-    trSeeAlso);
+    trSeeAlso,
+    trValues);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
@@ -321,6 +322,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion';
   FTranslation[trSearch] := 'Search';
   FTranslation[trSeeAlso] := 'See also';
+  FTranslation[trValues] := 'Values';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -391,6 +393,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -462,6 +465,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -531,6 +535,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -548,6 +553,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -618,6 +624,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -688,6 +695,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -758,6 +766,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Recherce';
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -828,6 +837,7 @@ begin
   FTranslation[trConclusion] := 'Fazit';
   FTranslation[trSearch] := 'Suchen';
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -897,6 +907,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -966,6 +977,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1035,6 +1047,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1106,6 +1119,7 @@ begin
   FTranslation[trConclusion] := 'Podsumowanie';
   FTranslation[trSearch] := 'Szukaj';
   FTranslation[trSeeAlso] := 'Zobacz tak¿e';
+  FTranslation[trValues] := 'Wartoœci';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1175,6 +1189,7 @@ begin
   FTranslation[trConclusion] := 'Podsumowanie';
   FTranslation[trSearch] := 'Szukaj';
   FTranslation[trSeeAlso] := 'Zobacz tak¿e';
+  FTranslation[trValues] := 'Warto¶ci';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1244,6 +1259,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1313,6 +1329,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1382,6 +1399,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1442,6 +1460,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1511,6 +1530,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1582,6 +1602,7 @@ begin
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1652,6 +1673,7 @@ begin
   FTranslation[trConclusion] := 'Összefoglaló';
   FTranslation[trSearch] := 'Search'; // TODO: translate
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
+  FTranslation[trValues] := 'Values'; // TODO: translate
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1699,6 +1721,9 @@ end;
 
 {
   $Log$
+  Revision 1.31  2005/07/17 15:36:25  kambi
+  + 'Values' heading written before writing TPasEnum.Members in description of enum value, this makes description of enum value more readable
+
   Revision 1.30  2005/07/17 12:21:49  kambi
   * trReturns, trParameters and trExceptions are *not* lowercased in HTML output -- because lowercase looks ugly, there was no good reason to make them lowercase, and it's inconsistent with LaTeX generator. (actually, in the beginning, they were hardcoded lowercased strings in GenHtml, and LaTeX generator didn't use raises/parameters/exceptions at all)
   + trExceptionsRaised added, used in HTML generator instead of trExceptions (because trExceptionsRaised is more verbose and clearer, and actually initial implementation of Thomas had 'exceptions raised' instead of just 'exceptions'), comments in LaTeX generator why it has to still use trExceptions

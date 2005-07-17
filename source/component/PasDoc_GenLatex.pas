@@ -1096,6 +1096,7 @@ begin
 
   if AItem is TPasEnum then
   begin
+    WriteDirect('\item[\textbf{' + FLanguage.Translation[trValues] + '}]',true);
     WriteDirectLine('\begin{description}');
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
       WriteDirect('\item[\texttt{');

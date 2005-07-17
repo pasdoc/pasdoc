@@ -1112,6 +1112,7 @@ begin
  
   if AItem is TPasEnum then 
   begin
+    WriteDescriptionSectionHeading(trValues);
     WriteDirectLine('<ul>');
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
     begin
