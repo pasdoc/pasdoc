@@ -952,14 +952,15 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
 
-const
-  { This is used for WriteHeading for 'raises', 'parameters' 
-    and 'see also' sections }
-  SectionHeadingLevel = 6;
+  procedure WriteDescriptionSectionHeading(const Caption: TTranslationID);
+  begin
+    WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
+  end;
 
   { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
-    List: TStringPairVector; LinkToParamNames: boolean);
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
+    List: TStringPairVector; LinkToParamNames: boolean; 
+    const CssListClass: string);
     
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
@@ -978,8 +979,8 @@ const
     if ObjectVectorIsNilOrEmpty(List) then
       Exit;
 
-    WriteHeading(SectionHeadingLevel, 'parameters', Caption);
-    WriteDirectLine('<dl class="parameters">');
+    WriteDescriptionSectionHeading(Caption);
+    WriteDirectLine('<dl class="' + CssListClass + '">');
     for i := 0 to List.Count - 1 do 
     begin
       ParamName := List[i].Name;
@@ -1001,7 +1002,7 @@ const
     if ObjectVectorIsNilOrEmpty(SeeAlso) then
       Exit;
 
-    WriteHeading(SectionHeadingLevel, 'see_also', FLanguage.Translation[trSeeAlso]);
+    WriteDescriptionSectionHeading(trSeeAlso);
     WriteDirectLine('<dl class="see_also">');
     for i := 0 to SeeAlso.Count - 1 do
     begin
@@ -1025,7 +1026,7 @@ const
   begin
     if ReturnDesc = '' then
       exit;
-    WriteHeading(SectionHeadingLevel, 'return', FLanguage.Translation[trReturns]);
+    WriteDescriptionSectionHeading(trReturns);
     WriteDirect('<p class="return">');
     WriteSpellChecked(ReturnDesc);
     WriteDirect('</p>');
@@ -1097,11 +1098,11 @@ begin
   if AItem is TPasMethod then
   begin
     AItemMethod := TPasMethod(AItem);
-    WriteParamsOrRaises(AItemMethod, 
-      FLanguage.Translation[trParameters], AItemMethod.Params, false);
+    WriteParamsOrRaises(AItemMethod, trParameters, 
+      AItemMethod.Params, false, 'parameters');
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    WriteParamsOrRaises(AItemMethod, 
-      FLanguage.Translation[trExceptionsRaised], AItemMethod.Raises, true);
+    WriteParamsOrRaises(AItemMethod, trExceptionsRaised, 
+      AItemMethod.Raises, true, 'exceptions_raised');
   end;
   
   WriteSeeAlso(AItem.SeeAlso);
