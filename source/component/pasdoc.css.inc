@@ -45,7 +45,7 @@
 'tr.list2 { background: #FFC982; }' + LineEnding + 
 'tr.listheader { background: #C91E0C; color: white; }' + LineEnding + 
 '' + LineEnding + 
-'table { border-spacing:2px; padding:4px; width:100%; }' + LineEnding + 
+'table { border-spacing:2px; width:100%; }' + LineEnding + 
 '' + LineEnding + 
 'table.markerlegend { width:auto; }' + LineEnding + 
 'table.markerlegend td.legendmarker { text-align:center; }' + LineEnding + 
