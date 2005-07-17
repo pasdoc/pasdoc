@@ -62,10 +62,25 @@
 'td.itemunit {white-space:nowrap; }' + LineEnding + 
 'td.itemdesc { width:100%; }' + LineEnding + 
 '' + LineEnding + 
-'div.nodescription {color:red;}' + LineEnding + 
-'dl.parameters {;}' + LineEnding + 
-'dl.parameters dt {color:blue;}' + LineEnding + 
-'dl.parameters dd {;}' + LineEnding + 
+'div.nodescription { color:red; }' + LineEnding + 
+'dl.parameters dt { color:blue; }' + LineEnding + 
+'' + LineEnding + 
+'/* Various browsers have various default styles for <h6>,' + LineEnding + 
+'   sometimes ugly for our purposes, so it''s best to set things' + LineEnding + 
+'   like font-size and font-weight in out pasdoc.css explicitly. */' + LineEnding + 
+'h6.description_section { ' + LineEnding + 
+'  /* font-size 100% means that it has the same font size as the ' + LineEnding + 
+'     parent element, i.e. normal description text */' + LineEnding + 
+'  font-size: 100%;' + LineEnding + 
+'  font-weight: bold; ' + LineEnding + 
+'  /* By default browsers usually have some large margin-bottom and ' + LineEnding + 
+'     margin-top for <h1-6> tags. In our case, margin-bottom is' + LineEnding + 
+'     unnecessary, we want to visually show that description_section' + LineEnding + 
+'     is closely related to content below. In this situation' + LineEnding + 
+'     (where the font size is just as a normal text), smaller bottom' + LineEnding + 
+'     margin seems to look good. */' + LineEnding + 
+'  margin-bottom: 0em;' + LineEnding + 
+'}' + LineEnding + 
 '' + LineEnding + 
 '/* Style applied to Pascal code in documentation ' + LineEnding + 
 '   (e.g. produced by @longcode tag) } */' + LineEnding + 

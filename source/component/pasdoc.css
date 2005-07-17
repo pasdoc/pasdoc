@@ -60,10 +60,25 @@ td.itemname {white-space:nowrap; }
 td.itemunit {white-space:nowrap; }
 td.itemdesc { width:100%; }
 
-div.nodescription {color:red;}
-dl.parameters {;}
-dl.parameters dt {color:blue;}
-dl.parameters dd {;}
+div.nodescription { color:red; }
+dl.parameters dt { color:blue; }
+
+/* Various browsers have various default styles for <h6>,
+   sometimes ugly for our purposes, so it's best to set things
+   like font-size and font-weight in out pasdoc.css explicitly. */
+h6.description_section { 
+  /* font-size 100% means that it has the same font size as the 
+     parent element, i.e. normal description text */
+  font-size: 100%;
+  font-weight: bold; 
+  /* By default browsers usually have some large margin-bottom and 
+     margin-top for <h1-6> tags. In our case, margin-bottom is
+     unnecessary, we want to visually show that description_section
+     is closely related to content below. In this situation
+     (where the font size is just as a normal text), smaller bottom
+     margin seems to look good. */
+  margin-bottom: 0em;
+}
 
 /* Style applied to Pascal code in documentation 
    (e.g. produced by @longcode tag) } */
