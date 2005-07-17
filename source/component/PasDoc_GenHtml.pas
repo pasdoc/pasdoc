@@ -964,10 +964,13 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
     
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
-      WriteDirect('<dt>'); // doesn't need a class, can be accessed via "dl.parameters dt"
+      { Note that <dt> and <dd> below don't need any CSS class,
+        they can be accessed via "dl.parameters dt" or "dl.parameters dd"
+        (assuming that CssListClass = 'parameters'). }
+      WriteDirect('<dt>');
       WriteDirect(ParamName);
       WriteDirectLine('</dt>');
-      WriteDirect('<dd>');  // doesn't need a class, can be accessed via "dl.parameters dd"
+      WriteDirect('<dd>');
       WriteSpellChecked(Desc);
       WriteDirectLine('</dd>');
     end;
