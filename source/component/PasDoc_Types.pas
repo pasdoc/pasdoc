@@ -42,6 +42,11 @@ function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 { Simply returns an array with Length = 1 and one item = S. }
 function OneNamePart(S: string): TNameParts;
 
+type
+  { See command-line option --implicit-visibility documentation at
+    [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
+  TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
+
 implementation
 
 { EPasDoc -------------------------------------------------------------------- }

@@ -67,6 +67,7 @@ type
     OptionIntroduction: TStringOption;
     OptionConclusion: TStringOption;
     OptionLatexHead: TStringOption;
+    OptionImplicitVisibility: TStringOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -183,8 +184,8 @@ begin
 
   OptionVisibleMembers := TSetOption.Create('M','visible-members');
   OptionVisibleMembers.Explanation := 'Include / Exclude class Members by visiblity';
-  OptionVisibleMembers.PossibleValues := 'private,protected,public,published,automated';
-  OptionVisibleMembers.Values := 'protected,public,published,automated';
+  OptionVisibleMembers.PossibleValues := VisibilitiesToStr(AllVisibilities);
+  OptionVisibleMembers.Values := VisibilitiesToStr(DefaultVisibilities);
   AddOption(OptionVisibleMembers);
 
   OptionWriteUsesList := TBoolOption.Create(#0, 'write-uses-list');
@@ -266,6 +267,10 @@ begin
   OptionLatexHead.Value := '';
   AddOption(OptionLatexHead);
 
+  OptionImplicitVisibility := TStringOption.Create(#0, 'implicit-visibility');
+  OptionImplicitVisibility.Explanation := 'How pasdoc should handle class members within default class visibility';
+  OptionImplicitVisibility.Value := 'public';
+  AddOption(OptionImplicitVisibility);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -482,7 +487,17 @@ begin
       raise EInvalidCommandLine.Create(
         'You can only use the "latex-head" option with LaTeX output.');
     end;
-  end
+  end;
+  
+  if SameText(OptionImplicitVisibility.Value, 'public') then
+    PasDoc.ImplicitVisibility := ivPublic else
+  if SameText(OptionImplicitVisibility.Value, 'published') then
+    PasDoc.ImplicitVisibility := ivPublished else
+  if SameText(OptionImplicitVisibility.Value, 'implicit') then
+    PasDoc.ImplicitVisibility := ivImplicit else
+    raise EInvalidCommandLine.CreateFmt(
+      'Invalid argument for "--implicit-visibility" option : "%s"',
+      [OptionImplicitVisibility.Value]);
 end;
 
 { TPasdocMain }

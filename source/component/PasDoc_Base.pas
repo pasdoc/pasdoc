@@ -73,6 +73,7 @@ type
     FIntroductionFileName: string;
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
+    FImplicitVisibility: TImplicitVisibility;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -167,10 +168,18 @@ type
       See "--sort" command-line option documentation. }
     property SortSettings: TSortSettings 
       read FSortSettings write FSortSettings default [];
+      
     property IntroductionFileName: string read FIntroductionFileName
       write FIntroductionFileName;
+      
     property ConclusionFileName: string read FConclusionFileName
       write FConclusionFileName;
+      
+    { See command-line option --implicit-visibility documentation at
+      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption].
+      This will be passed to parser instance. }
+    property ImplicitVisibility: TImplicitVisibility
+      read FImplicitVisibility write FImplicitVisibility default ivPublic;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -253,6 +262,7 @@ begin
   FSourceFileNames := NewStringVector;
 
   FVerbosity := DEFAULT_VERBOSITY_LEVEL;
+  FImplicitVisibility := ivPublic;
 
   FGenerator := nil;
   FCommentMarkers := TStringList.Create;
@@ -289,8 +299,9 @@ begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName);
-  p.ShowVisibilities := ShowVisibilities;
   try
+    p.ShowVisibilities := ShowVisibilities;
+    p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;
 

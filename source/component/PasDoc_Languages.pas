@@ -89,6 +89,7 @@ type
     trProtected,
     trPublic,
     trPublished,
+    trImplicit,
     trType,
     trTypes,
     trUnit,
@@ -295,6 +296,7 @@ begin
   FTranslation[trProperties] := 'Properties';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Types';
@@ -365,6 +367,7 @@ begin
   FTranslation[trProperties] := 'Osibine';
   FTranslation[trProtected] := 'Zaštiæen';
   FTranslation[trPublic] := 'Publikovan';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Javan';
   FTranslation[trType] := 'Tip';
   FTranslation[trTypes] := 'Tipovi';
@@ -437,6 +440,7 @@ begin
   FTranslation[trProperties] := 'Properties';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipo';
   FTranslation[trTypes] := 'Tipos';
@@ -507,6 +511,7 @@ begin
   FTranslation[trProperties] := 'Propietats';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipus';
   FTranslation[trTypes] := 'Tipus';
@@ -595,6 +600,7 @@ begin
   FTranslation[trProperties] := 'Egenskaber';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Typer';
@@ -666,6 +672,7 @@ begin
   FTranslation[trProperties] := 'Eigenschappen';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Typen';
@@ -739,6 +746,7 @@ begin
   FTranslation[trProperties] := 'Propriétés';
   FTranslation[trProtected] := 'Protégé';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Publiés';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Types';
@@ -810,6 +818,7 @@ begin
   FTranslation[trProperties] := 'Eigenschaften';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Type';
   FTranslation[trTypes] := 'Typen';
@@ -879,6 +888,7 @@ begin
   FTranslation[trProperties] := 'Property';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipe Bentukan';
   FTranslation[trTypes] := 'Tipe Bentukan';
@@ -949,6 +959,7 @@ begin
   FTranslation[trProperties] := 'Proprietà';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipo';
   FTranslation[trTypes] := 'Tipi';
@@ -1019,6 +1030,7 @@ begin
   FTranslation[trProperties] := 'Property';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Macem Gawean';
   FTranslation[trTypes] := 'Macem Gawean';
@@ -1091,6 +1103,7 @@ begin
   FTranslation[trProperties] := 'W³aœciwoœci';
   FTranslation[trProtected] := 'Chronione';
   FTranslation[trPublic] := 'Publiczne';
+  FTranslation[trImplicit] := 'Domyœlne';
   FTranslation[trPublished] := 'Publikowane';
   FTranslation[trType] := 'Typ';
   FTranslation[trTypes] := 'Typy';
@@ -1161,6 +1174,7 @@ begin
   FTranslation[trProperties] := 'W³a¶ciwo¶ci';
   FTranslation[trProtected] := 'Chronione';
   FTranslation[trPublic] := 'Publiczne';
+  FTranslation[trImplicit] := 'Domy¶lne';
   FTranslation[trPublished] := 'Publikowane';
   FTranslation[trType] := 'Typ';
   FTranslation[trTypes] := 'Typy';
@@ -1232,6 +1246,7 @@ begin
   FTranslation[trProperties] := 'Ñâîéñòâà';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Òèï';
   FTranslation[trTypes] := 'Òèïû';
@@ -1302,6 +1317,7 @@ begin
   FTranslation[trProperties] := '‘¢®©áâ¢ ';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := '’¨¯';
   FTranslation[trTypes] := '’¨¯ë';
@@ -1372,6 +1388,7 @@ begin
   FTranslation[trProperties] := 'ó×ÏÊÓÔ×Á';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'ôÉÐ';
   FTranslation[trTypes] := 'ôÉÐÙ';
@@ -1504,6 +1521,7 @@ begin
   FTranslation[trProperties] := 'Propiedades';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Tipo';
   FTranslation[trTypes] := 'Tipos';
@@ -1573,6 +1591,7 @@ begin
   FTranslation[trProperties] := 'Properties';
   FTranslation[trProtected] := 'Protected';
   FTranslation[trPublic] := 'Public';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
   FTranslation[trType] := 'Typer';
   FTranslation[trTypes] := 'Typer';
@@ -1646,6 +1665,7 @@ begin
   FTranslation[trProperties] := 'Tulajdonságok';
   FTranslation[trProtected] := 'Védett';
   FTranslation[trPublic] := 'Publikus';
+  FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Publikált';
   FTranslation[trType] := 'Típus';
   FTranslation[trTypes] := 'Típusok';
@@ -1721,6 +1741,12 @@ end;
 
 {
   $Log$
+  Revision 1.32  2005/07/19 22:55:44  kambi
+  + --implicit-visibility command-line option, new visibility kind "implicit"
+  + ok_implicit_visibility.pas testcase to test --implicit-visibility
+  * AllVisibilities, DefaultVisibilities, VisibilitiesToStr for cleaner code
+  * Start of ChangeLog entry for next pasdoc version
+
   Revision 1.31  2005/07/17 15:36:25  kambi
   + 'Values' heading written before writing TPasEnum.Members in description of enum value, this makes description of enum value more readable
 

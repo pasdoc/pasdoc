@@ -1,3 +1,11 @@
+[Next release -- release date and new version number unknown yet...]
+  + New command-line options:
+    --implicit-visibility
+      (see [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption])
+  + New @-tags:
+    @seealso
+      (see [http://pasdoc.sipsolutions.net/SeeAlsoTag])
+
 2005-07-09 v0.9.9
 
   End-user visible changes:

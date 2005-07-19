@@ -75,6 +75,8 @@ type
     methods to exit with false, some errors cause raising an exception. }
   TParser = class
   private
+    FImplicitVisibility: TImplicitVisibility;
+    
     procedure SetCommentMarkers(const Value: TStringList);
     
     { Skips all whitespace and comments and while it sees some hint directive
@@ -237,6 +239,11 @@ type
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
     property ShowVisibilities: TVisibilities 
       read FShowVisibilities write FShowVisibilities;
+      
+    { See command-line option --implicit-visibility documentation at
+      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
+    property ImplicitVisibility: TImplicitVisibility
+      read FImplicitVisibility write FImplicitVisibility;
   end;
 
 implementation
@@ -783,16 +790,19 @@ begin
       Scanner.UnGetToken(t);
     end;
 
-    (* Members at the beginning of a class declaration that don<92>t have a specified
-       visibility are by default published, provided the class is compiled in the
-       $M+ state or is derived from a class compiled in the $M+ state;
-       otherwise, such members are public.
-
-       How do we resolve the inherited classes' $M+ state? *)
-    if Scanner.SwitchOptions['M'] then begin
-      Visibility := viPublished;
-    end else begin
-      Visibility := viPublic;
+    { Visibility of members at the beginning of a class declaration
+      that don't have a specified visibility is controlled
+      by ImplicitVisibility value. }
+    case ImplicitVisibility of
+      ivPublic:
+        if Scanner.SwitchOptions['M'] then 
+          Visibility := viPublished else 
+          Visibility := viPublic;
+      ivPublished:
+        Visibility := viPublished;
+      ivImplicit:
+        Visibility := viImplicit;
+      else raise EInternalError.Create('ImplicitVisibility = ??');
     end;
 
     { now collect methods, fields and properties }

@@ -41,7 +41,10 @@ type
     { indicates field or method is private }
     viPrivate,
     { indicates field or method is automated }
-    viAutomated
+    viAutomated,
+    { implicit visibility, marks the implicit members if user
+      used --implicit-visibility=implicit command-line option. }
+    viImplicit
     );
 
   TVisibilities = set of TVisibility;
@@ -53,8 +56,13 @@ const
    'public',
    'protected',
    'private',
-   'automated'
+   'automated',
+   'implicit'
   );
+  
+  AllVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)];
+  DefaultVisibilities: TVisibilities = 
+    [viProtected, viPublic, viPublished, viAutomated];
 
 type
   TPasCio = class;
@@ -827,6 +835,10 @@ const
 
 { Returns lowercased keyword associated with given method type. }
 function MethodTypeToString(const MethodType: TMethodType): string;
+
+{ Returns VisibilityStr for each value in Visibilities,
+  delimited by commas. }
+function VisibilitiesToStr(const Visibilities: TVisibilities): string;
 
 implementation
 
@@ -2032,6 +2044,18 @@ const
     KEY_FUNCTION, KEY_PROCEDURE, KEY_OPERATOR );
 begin
   Result := LowerCase(KeyWordArray[MethodTypeToKeyWord[MethodType]]);
+end;
+
+function VisibilitiesToStr(const Visibilities: TVisibilities): string;
+var Vis: TVisibility;
+begin
+  Result := '';
+  for Vis := Low(Vis) to High(Vis) do
+    if Vis in Visibilities then
+    begin
+      if Result <> '' then Result := Result + ',';
+      Result := Result + VisibilityStr[Vis];
+    end;
 end;
 
 initialization

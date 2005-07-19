@@ -118,3 +118,7 @@ mk_special_test ok_longcode_special_chars ok_longcode_special_chars.pas
 mk_special_test error_introduction_twice_anchors_unit --introduction=error_introduction_twice_anchors.txt error_introduction_twice_anchors_unit.pas
 mk_special_test ok_longcode_float_hex ok_longcode_float_hex.pas
 mk_special_test ok_see_also ok_see_also.pas
+mk_special_test ok_implicit_visibility_public ok_implicit_visibility.pas
+mk_special_test ok_implicit_visibility_published --implicit-visibility=published ok_implicit_visibility.pas
+mk_special_test ok_implicit_visibility_implicit_yes --implicit-visibility=implicit --visible-members=public,implicit ok_implicit_visibility.pas
+mk_special_test ok_implicit_visibility_implicit_no  --implicit-visibility=implicit --visible-members=public          ok_implicit_visibility.pas

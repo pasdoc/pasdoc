@@ -1729,6 +1729,11 @@ begin
       WriteVisibilityImage('published.gif', trPublished);
     viAutomated:
       WriteVisibilityImage('automated.gif', trAutomated);
+    viImplicit:
+      { Implicit visibility uses published visibility image, for now }
+      WriteVisibilityImage('published.gif', trImplicit);
+    else raise EInternalError.Create(
+      'TGenericHTMLDocGenerator.WriteVisibilityCell: Item.Visibility = ??');
   end;
   WriteEndOfTableCell;
 end;
@@ -1772,6 +1777,7 @@ begin
     WriteLegendEntry('public.gif', trPublic);
     WriteLegendEntry('published.gif', trPublished);
     WriteLegendEntry('automated.gif', trAutomated);
+    WriteLegendEntry('published.gif', trImplicit);
     WriteEndOfTable;
 
     WriteFooter;
