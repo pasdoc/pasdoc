@@ -1709,32 +1709,37 @@ begin
      src, alt, alt]);
 end;
 
+const
+  VisibilityImageName: array[TVisibility] of string =
+  ( 'published.gif',
+    'public.gif',
+    'protected.gif',
+    'private.gif',
+    'automated.gif',
+    { Implicit visibility uses published visibility image, for now }
+    'published.gif'
+  );
+  VisibilityTranslation: array[TVisibility] of TTranslationID =
+  ( trPublished,
+    trPublic,
+    trProtected,
+    trPrivate,
+    trAutomated,
+    trImplicit
+  );
+
 procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 
-  procedure WriteVisibilityImage(const Image: string; trans: TTranslationID);
+  procedure WriteVisibilityImage(Vis: TVisibility);
   begin
-    WriteLink('legend.html', MakeImage(Image, ConvertString(FLanguage.Translation[trans]), ''), '');
+    WriteLink('legend.html', MakeImage(VisibilityImageName[Vis],
+      ConvertString(FLanguage.Translation[
+        VisibilityTranslation[Vis]]), ''), '');
   end;
 
 begin
   WriteStartOfTableCell('visibility');
-  case Item.Visibility of
-    viPrivate:
-      WriteVisibilityImage('private.gif', trPrivate);
-    viProtected:
-      WriteVisibilityImage('protected.gif', trProtected);
-    viPublic:
-      WriteVisibilityImage('public.gif', trPublic);
-    viPublished:
-      WriteVisibilityImage('published.gif', trPublished);
-    viAutomated:
-      WriteVisibilityImage('automated.gif', trAutomated);
-    viImplicit:
-      { Implicit visibility uses published visibility image, for now }
-      WriteVisibilityImage('published.gif', trImplicit);
-    else raise EInternalError.Create(
-      'TGenericHTMLDocGenerator.WriteVisibilityCell: Item.Visibility = ??');
-  end;
+  WriteVisibilityImage(Item.Visibility);
   WriteEndOfTableCell;
 end;
 
@@ -1742,14 +1747,17 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 
-  procedure WriteLegendEntry(const Image: string; trans: TTranslationID);
+  procedure WriteLegendEntry(Vis: TVisibility);
+  var VisTrans: string;
   begin
+    VisTrans := FLanguage.Translation[VisibilityTranslation[Vis]];
     WriteStartOfTableRow('');
     WriteStartOfTableCell('legendmarker');
-    WriteDirect(MakeImage(Image, ConvertString(FLanguage.Translation[trans]), ''));
+    WriteDirect(MakeImage(VisibilityImageName[Vis],
+      ConvertString(VisTrans), ''));
     WriteEndOfTableCell;
     WriteStartOfTableCell('legenddesc');
-    WriteConverted(FLanguage.Translation[trans]);
+    WriteConverted(VisTrans);
     WriteEndOfTableCell;
     WriteEndOfTableRow;
   end;
@@ -1772,12 +1780,15 @@ begin
       FLanguage.Translation[trMarker],
       FLanguage.Translation[trVisibility]);
 
-    WriteLegendEntry('private.gif', trPrivate);
-    WriteLegendEntry('protected.gif', trProtected);
-    WriteLegendEntry('public.gif', trPublic);
-    WriteLegendEntry('published.gif', trPublished);
-    WriteLegendEntry('automated.gif', trAutomated);
-    WriteLegendEntry('published.gif', trImplicit);
+    { Order of entries below is important (because it is shown to the user),
+      so we don't just write all TVisibility values in the order they
+      were declared in TVisibility type. }
+    WriteLegendEntry(viPrivate);
+    WriteLegendEntry(viProtected);
+    WriteLegendEntry(viPublic);
+    WriteLegendEntry(viPublished);
+    WriteLegendEntry(viAutomated);
+    WriteLegendEntry(viImplicit);
     WriteEndOfTable;
 
     WriteFooter;
