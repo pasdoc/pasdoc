@@ -10,7 +10,7 @@ unit Utils;
 
 interface
 
-uses PasDoc_Types;
+uses SysUtils, PasDoc_Types;
 
 { TMethod is not defined for FPC 1.0.x and Delphi < 6, so we have to define
   it here. }
@@ -131,9 +131,20 @@ function ExtractFilePath(const FileName: string): string;
 function ExtractFileName(const FileName: string): string;
 {$endif}
 
+type
+  { Raise this when some impossible situation (indicating bug in 
+    pasdoc) occurs. }
+  EInternalError = class(Exception)
+    { Calls inherited with Message like
+      'Internal error occured :' + BaseMessage,
+      so BaseMessage should only contain text relevant to this
+      particular internal error. }
+    constructor Create(const BaseMessage: string);
+  end;
+
 implementation
+
 uses
-  SysUtils,
   Classes;
 
 {$IFDEF FPC}
@@ -342,5 +353,12 @@ while (I > 0) and not (FileName[I] in ['/', '\', ':']) do Dec(I);
 Result := Copy(FileName, I + 1, 255);
 end;
 {$endif}
+
+{ EInternalError ------------------------------------------------------------- }
+
+constructor EInternalError.Create(const BaseMessage: string);
+begin
+  inherited Create('Internal error occured : ' + BaseMessage);
+end;
 
 end.
