@@ -389,11 +389,11 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
 dist-src:
-	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)PasDoc-0.8/
+	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
 	cd $(PACKAGEBASEDIR); \
 	  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pasdoc \
-	    co -P -r PASDOC_$(subst .,_,$(VERSION)) PasDoc-0.8
-	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz PasDoc-0.8/
+	    co -P -r PASDOC_$(subst .,_,$(VERSION)) pasdoc
+	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz pasdoc/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
