@@ -54,7 +54,7 @@ var
 
 implementation
 
-uses PasDoc;
+uses PasDoc_Base;
 
 { TfrmAbout }
 
