@@ -291,7 +291,7 @@ help:
 	@echo "    from pasdoc public CVS. It checks out using cvs tag PASDOC_x_y_z"
 	@echo "    (where x_y_z is derived from VERSION variable in this Makefile)."
 	@echo "    This way user can easily update downloaded sources tree by"
-	@echo "    simple \"cvs -z3 update -PdA\"' command."
+	@echo "    simple \"cvs -z3 update -PdA\" command."
 	@echo
 	@echo "    Note: before using this target for the 1st time, you should"
 	@echo "    manually do cvs...login to pasdoc public CVS"
