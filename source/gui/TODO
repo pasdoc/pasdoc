@@ -1,3 +1,5 @@
+- reflect in gui --implicit-visibility option
+
 - Provide easy way to look into documentation for given option,
   wiki page documenting given feature. pasdoc_gui would automatically
   fire up user's WWW browser with appropriate page, e.g.
