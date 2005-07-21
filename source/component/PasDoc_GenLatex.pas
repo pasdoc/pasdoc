@@ -192,6 +192,9 @@ Latex DocGenerators.}
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string;
       const LinkContext: TLinkContext): string; override;
+      
+    function FormatBold(const Text: string): string; override;
+    function FormatItalic(const Text: string): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1532,6 +1535,16 @@ begin
     >= 1, and heading level 1 is reserved for section title. }
   result := FormatAnchor(Anchor)
     + FormatHeading(HL + 1, Caption);
+end;
+
+function TTexDocGenerator.FormatBold(const Text: string): string;
+begin
+  Result := '\textbf{' + Text + '}';
+end;
+
+function TTexDocGenerator.FormatItalic(const Text: string): string;
+begin
+  Result := '\textit{' + Text + '}';
 end;
 
 end.

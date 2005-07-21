@@ -225,6 +225,11 @@ end;
     procedure HandleAnchorTag(TagManager: TTagManager; const TagName,
       TagDesc: string; var ReplaceStr: string);
       
+    procedure HandleBoldTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleItalicTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+      
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
@@ -570,6 +575,23 @@ end;
       
     // @name writes a link-anchor;
     function FormatAnchor(const Anchor: string): string; virtual; abstract;
+    
+    { This returns Text formatted using bold font.
+    
+      Given Text is already in the final output format
+      (with characters converted using @link(ConvertString), @@-tags
+      expanded etc.).
+      
+      Implementation of this method in this class simply returns
+      @code(Result := Text). Output generators that can somehow express bold
+      formatting (or at least emphasis of some text) should override this. 
+      
+      @seealso(FormatItalic) }
+    function FormatBold(const Text: string): string; virtual;
+    
+    { This returns Text formatted using italic font.
+      Equivalent to @link(FormatBold). }
+    function FormatItalic(const Text: string): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -952,6 +974,18 @@ begin
   ReplaceStr := LineBreak;
 end;
 
+procedure TDocGenerator.HandleBoldTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatBold(TagDesc);
+end;
+
+procedure TDocGenerator.HandleItalicTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatItalic(TagDesc);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1003,6 +1037,10 @@ begin
     { Tags with recursive params }
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags], [aiOther]);
+    TagManager.AddHandler('bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
+      [toParameterRequired, toRecursiveTags], [aiSelf, aiOther]);
+    TagManager.AddHandler('italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
+      [toParameterRequired, toRecursiveTags], [aiSelf, aiOther]);
 
     if FCurrentItem is TExternalItem then
     begin
@@ -2326,6 +2364,16 @@ end;
 function TDocGenerator.URLLink(const URL: string): string; 
 begin
   Result := ConvertString(URL);
+end;
+
+function TDocGenerator.FormatBold(const Text: string): string;
+begin
+  Result := Text;
+end;
+
+function TDocGenerator.FormatItalic(const Text: string): string;
+begin
+  Result := Text;
 end;
 
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;

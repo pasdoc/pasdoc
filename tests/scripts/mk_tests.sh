@@ -122,3 +122,4 @@ mk_special_test ok_implicit_visibility_public ok_implicit_visibility.pas
 mk_special_test ok_implicit_visibility_published --implicit-visibility=published ok_implicit_visibility.pas
 mk_special_test ok_implicit_visibility_implicit_yes --implicit-visibility=implicit --visible-members=public,implicit ok_implicit_visibility.pas
 mk_special_test ok_implicit_visibility_implicit_no  --implicit-visibility=implicit --visible-members=public          ok_implicit_visibility.pas
+mk_special_test ok_bold_italic ok_bold_italic.pas

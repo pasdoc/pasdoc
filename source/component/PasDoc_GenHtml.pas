@@ -249,6 +249,9 @@ type
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; override;
     function FormatAnchor(const Anchor: string): string; override;
+    
+    function FormatBold(const Text: string): string; override;
+    function FormatItalic(const Text: string): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2110,5 +2113,14 @@ begin
   result := FormatAnAnchor(Anchor, '');
 end;
 
+function TGenericHTMLDocGenerator.FormatBold(const Text: string): string;
+begin
+  Result := '<b>' + Text + '</b>';
+end;
+
+function TGenericHTMLDocGenerator.FormatItalic(const Text: string): string;
+begin
+  Result := '<i>' + Text + '</i>';
+end;
 
 end.
