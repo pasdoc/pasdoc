@@ -111,15 +111,7 @@ end;
 
 class procedure TSerializable.Register(const AClass: TSerializableClass);
 begin
-{$ifdef fpc}
-{$ifdef ver1_0}
-  GClassNames.AddObject(AClass.ClassName, TObject(pointer(AClass)));
-{$else}
   GClassNames.AddObject(AClass.ClassName, TObject(AClass));
-{$endif}  
-{$else}
-  GClassNames.AddObject(AClass.ClassName, TObject(AClass));
-{$endif}
 end;
 
 class procedure TSerializable.SaveIntegerToStream(

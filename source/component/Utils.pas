@@ -44,15 +44,13 @@ function StrPosIA(const ASub, AString: string): Integer;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
-{$IFNDEF DELPHI_6_UP}
-{$IFNDEF KYLIX}
+{$ifndef DELPHI_6_UP}
+{$ifndef KYLIX}
+{$ifndef FPC}
 function IncludeTrailingPathDelimiter(const S: string): string;
-{$ENDIF}
-{$ENDIF}
-{$IFDEF FPC}
-function SameText(const A, B: string): boolean;
-function DirectoryExists(const name: string): boolean;
-{$ENDIF}
+{$endif}
+{$endif}
+{$endif}
 
 {$ifndef FPC}
 const
@@ -147,22 +145,6 @@ implementation
 uses
   Classes;
 
-{$IFDEF FPC}
-function SameText(const A, B: string): boolean;
-var
-  i: Integer;
-begin
-  Result := Length(A) = Length(B);
-  if Result then begin
-    for i := 1 to Length(A) do begin
-      if LowerCase(A[i]) <> LowerCase(B[i]) then begin
-        Result := false; break;
-      end;
-    end;
-  end;
-end;
-{$ENDIF}
-
 function IsStrEmptyA(const AString: string): boolean;
 begin
   Result := Length(Trim(AString)) = 0;
@@ -189,8 +171,9 @@ begin
   Result.Data := AObject;
 end;
 
-{$IFNDEF DELPHI_6_UP}
-{$IFNDEF KYLIX}
+{$ifndef DELPHI_6_UP}
+{$ifndef KYLIX}
+{$ifndef FPC}
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
@@ -200,15 +183,9 @@ begin
     end;
   end;
 end;
-{$ENDIF}
-{$ENDIF}
-
-{$IFDEF FPC}
-function DirectoryExists(const name: string): boolean;
-begin
-  Result := FileGetAttr(name) or faAnyFile <> 0;
-end;
-{$ENDIF}
+{$endif}
+{$endif}
+{$endif}
 
 function StringReplaceChars(const S: string;
   const ReplacementArray: array of TCharReplacement): string;
