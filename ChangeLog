@@ -7,6 +7,8 @@
       (see [http://pasdoc.sipsolutions.net/BoldAndItalicTags])
     @seealso
       (see [http://pasdoc.sipsolutions.net/SeeAlsoTag])
+    @inheritedClass
+      (see [http://pasdoc.sipsolutions.net/InheritedClassnameNameTag])
 
 2005-07-09 v0.9.9
 

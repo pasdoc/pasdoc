@@ -545,6 +545,12 @@ type
       property with the name of ItemName, the corresponding item pointer is
       returned. }
     function FindItem(const ItemName: string): TBaseItem; override;
+    
+    { This searches for item (field, method or property) defined
+      in ancestor of this cio. I.e. searches within the FirstAncestor,
+      then within FirstAncestor.FirstAncestor, and so on. 
+      Returns nil if not found. }
+    function FindItemInAncestors(const ItemName: string): TPasItem;
 
     procedure Sort(const SortSettings: TSortSettings); override;
 
@@ -565,13 +571,42 @@ type
       #)
       At least for now, such declaration will result in TPasType
       (not TPasCio!) with Name = 'TMyStringList', which means that
-      ancestor of TMyExtendedStringList will be a TPasType instance. }
+      ancestor of TMyExtendedStringList will be a TPasType instance. 
+      
+      Note that the PasDoc_Parser already takes care of correctly
+      setting Ancestors when user didn't specify ancestor name
+      at cio declaration. E.g. if this cio is a class, 
+      and user didn't specify ancestor name at class declaration,
+      and this class name is not 'TObject' (in case pasdoc parses the RTL),
+      the Ancestors[0] will be set to 'TObject'. }
     property Ancestors: TStringVector read FAncestors;
     
     { This returns Ancestors.Objects[0], i.e. instance of the first
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
     function FirstAncestor: TPasItem;
+    
+    { This returns the name of first ancestor of this Cio.
+      
+      If Ancestor.Count > 0 then it simply returns Ancestors[0],
+      i.e. the name of the first ancestor as was specified at class declaration,
+      else it returns ''.
+      
+      So this method is @italic(roughly) something like
+      @code(FirstAncestor.Name), but with a few notable differences:
+      - FirstAncestor is nil if the ancestor was not found in items parsed 
+        by pasdoc.
+        But this method will still return in this case name of ancestor.
+      - @code(FirstAncestor.Name) is the name of ancestor as specified
+        at declaration of an ancestor.
+        But this method is the name of ancestor as specified at declaration
+        of this cio -- with the same letter case, with optional unit specifier. 
+      
+      If this function returns '', then you can be sure that
+      FirstAncestor returns nil. The other way around is not necessarily true
+      -- FirstAncestor may be nil, but still this function may return something 
+      <> ''. }
+    function FirstAncestorName: string;
     
     { list of all fields }
     property Fields: TPasItems read FFields;
@@ -1632,6 +1667,27 @@ begin
   if Ancestors.Count <> 0 then
     Result := Ancestors.Objects[0] as TPasItem else
     Result := nil;
+end;
+
+function TPasCio.FirstAncestorName: string;
+begin
+  if Ancestors.Count <> 0 then
+    Result := Ancestors[0] else
+    Result := '';
+end;
+
+function TPasCio.FindItemInAncestors(const ItemName: string): TPasItem;
+var Ancestor: TBaseItem;
+begin
+  Ancestor := FirstAncestor;
+  Result := nil;
+  while (Result = nil) and (Ancestor <> nil) and (Ancestor is TPasCio) do
+  begin
+    { TPasCio.FindItem always returns some TPasItem, so the cast below
+      of Ancestor.FindItem to TPasItem should always be OK. }
+    Result := Ancestor.FindItem(ItemName) as TPasItem;
+    Ancestor := TPasCio(Ancestor).FirstAncestor;
+  end;
 end;
 
 { TPasUnit ------------------------------------------------------------------- }

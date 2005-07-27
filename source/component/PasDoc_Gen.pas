@@ -209,6 +209,8 @@ end;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleLatexTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleInheritedClassTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleInheritedTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleNameTag(TagManager: TTagManager;
@@ -889,69 +891,79 @@ begin
   ReplaceStr := CodeString(UpCase(TagName[1]) + Copy(TagName, 2, 255));
 end;
 
+procedure TDocGenerator.HandleInheritedClassTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+
+  procedure InheritedClassCannotResolve(const Msg: string);
+  begin
+    TagManager.DoMessage(2, mtWarning, 'Can''t resolve @inheritedClass: ' + Msg, []);
+    ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
+  end;
+
+  procedure HandleFromClass(TheObject: TPasCio);
+  begin
+    if TheObject.FirstAncestorName = '' then
+      InheritedClassCannotResolve('No ancestor class') else
+    if TheObject.FirstAncestor = nil then
+      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName)) else
+      ReplaceStr := MakeItemLink(TheObject.FirstAncestor, 
+        TheObject.FirstAncestorName, lcNormal);
+  end;
+  
+begin
+  if FCurrentItem is TPasCio then
+    HandleFromClass(TPasCio(FCurrentItem)) else
+  if FCurrentItem is TPasItem then
+  begin
+    if Assigned(TPasItem(FCurrentItem).MyObject) then
+      HandleFromClass(TPasItem(FCurrentItem).MyObject) else
+      InheritedClassCannotResolve('This item is not a member of a class/interface/etc.');
+  end else
+    InheritedClassCannotResolve('You can''t use @inheritedClass here');
+end;
+
 procedure TDocGenerator.HandleInheritedTag(TagManager: TTagManager;
   const TagName, TagDesc: string; var ReplaceStr: string);
+  
+  procedure InheritedCannotResolve(const Msg: string);
+  begin
+    TagManager.DoMessage(2, mtWarning, 'Can''t resolve @inherited: ' + Msg, []);
+    ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
+  end;
+  
 var
   TheObject: TPasCio;
-  Ancestor: TBaseItem;
-  s: string;
-  TheLink: string;
+  InheritedItem: TPasItem;
 begin
   { TODO: this should be moved to TPasItem handler, so that @inherited
     is registered only for TPasItem (or, even better, for TPasCio
     and TPasItem with MyObject <> nil). }
 
-  TheObject := nil;
+  if FCurrentItem is TPasCio then
+  begin
+    TheObject := TPasCio(FCurrentItem);
+    if TheObject.FirstAncestorName = '' then
+      InheritedCannotResolve('No ancestor class') else
+    if TheObject.FirstAncestor = nil then
+      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName)) else
+      ReplaceStr := MakeItemLink(TheObject.FirstAncestor, 
+        TheObject.FirstAncestorName, lcNormal);
+  end else
   if FCurrentItem is TPasItem then
   begin
-    if Assigned(TPasItem(fCurrentItem).MyObject) then
-      TheObject := TPasItem(fCurrentItem).MyObject
-    else if fCurrentItem is TPasCio then
-      TheObject := TPasCio(fCurrentItem);
-  end;
-
-  // Try to find inherited property of item.
-  // Updated 14 Jun 2002
-
-  TheLink := '';
-  if Assigned(TheObject)
-    and not StringVectorIsNilOrEmpty(TheObject.Ancestors) then begin
-    s := TheObject.Ancestors.FirstName;
-    Ancestor := TheObject.FirstAncestor;
-    if Assigned(Ancestor) and (Ancestor is TPasCio) then 
+    if Assigned(TPasItem(FCurrentItem).MyObject) then
     begin
-      repeat
-        { TODO: in both cases below SearchLink will actually do more work
-          than it should, because in fact we already have a pointer
-          to Ancestor (so why should we call SearchLink(s, ...)
-          for the second time ? For now., e.g. to take into account
-          LinkLook value). This should be cleaned up at some time. }
-        if TPasItem(fCurrentItem).MyObject = nil then
-          // we are looking for the ancestor itself
-          TheLink := SearchLink(s, fCurrentItem, '', false)
-        else
-          // we are looking for an ancestor's property or method
-          TheLink := SearchLink(s + '.' + fCurrentItem.Name, fCurrentItem, '', false);
-        if TheLink <> '' then Break;
-
-        if not StringVectorIsNilOrEmpty(TPasCio(Ancestor).Ancestors)
-          then begin
-          s := TPasCio(Ancestor).Ancestors.FirstName;
-          Ancestor := TPasCio(Ancestor).FirstAncestor;
-        end else begin
-          Break;
-        end;
-      until Ancestor = nil;
-    end;
-  end;
-
-  if TheLink <> '' then begin
-    ReplaceStr := TheLink;
+      InheritedItem := TPasItem(FCurrentItem).MyObject.FindItemInAncestors(
+        FCurrentItem.Name);
+      if InheritedItem = nil then
+        InheritedCannotResolve(Format('Member "%s" not found in ancestors', 
+          [FCurrentItem.Name])) else
+        ReplaceStr := MakeItemLink(InheritedItem,
+          InheritedItem.MyObject.Name + '.' + InheritedItem.Name, lcNormal);
+    end else
+      InheritedCannotResolve('This item is not a member of a class/interface/etc.');
   end else
-  begin
-    TagManager.DoMessage(2, mtWarning, 'Could not resolve @inherited', []);
-    ReplaceStr := CodeString(ConvertString(fCurrentItem.Name));
-  end;
+    InheritedCannotResolve('You can''t use @inherited here');
 end;
 
 procedure TDocGenerator.HandleLinkTag(TagManager: TTagManager;
@@ -1020,6 +1032,8 @@ begin
     TagManager.AddHandler('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
     TagManager.AddHandler('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
     TagManager.AddHandler('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TagManager.AddHandler('inheritedclass',{$IFDEF FPC}@{$ENDIF} 
+      HandleInheritedClassTag, [], []);
     TagManager.AddHandler('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, [], []);
     TagManager.AddHandler('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, [], []);
     TagManager.AddHandler('br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, [], []);
