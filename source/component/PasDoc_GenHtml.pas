@@ -252,6 +252,8 @@ type
     
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
+
+    function FormatPreformatted(const Text: string): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2121,6 +2123,18 @@ end;
 function TGenericHTMLDocGenerator.FormatItalic(const Text: string): string;
 begin
   Result := '<i>' + Text + '</i>';
+end;
+
+function TGenericHTMLDocGenerator.FormatPreformatted(
+  const Text: string): string;
+begin
+  { See TGenericHTMLDocGenerator.FormatPascalCode
+    for comments why these </p> and <p> are needed here.
+    LineEndings are added only to make html source more readable. }
+  result := '</p>' + LineEnding + LineEnding +
+    '<pre class="preformatted">' +
+       inherited FormatPreformatted(Text) + '</pre>' +
+     LineEnding + LineEnding + '<p>';
 end;
 
 end.

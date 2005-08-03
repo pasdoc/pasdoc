@@ -124,3 +124,4 @@ mk_special_test ok_implicit_visibility_implicit_yes --implicit-visibility=implic
 mk_special_test ok_implicit_visibility_implicit_no  --implicit-visibility=implicit --visible-members=public          ok_implicit_visibility.pas
 mk_special_test ok_bold_italic ok_bold_italic.pas
 mk_special_test warning_inherited_test warning_inherited_test.pas
+mk_special_test ok_preformatted_test ok_preformatted_test.pas

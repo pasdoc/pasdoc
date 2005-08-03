@@ -231,7 +231,10 @@ end;
       const TagName, TagDesc: string; var ReplaceStr: string);
     procedure HandleItalicTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
-      
+
+    procedure HandlePreformattedTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
@@ -590,10 +593,16 @@ end;
       
       @seealso(FormatItalic) }
     function FormatBold(const Text: string): string; virtual;
-    
+
     { This returns Text formatted using italic font.
       Equivalent to @link(FormatBold). }
     function FormatItalic(const Text: string): string; virtual;
+
+    { This returns Text preserving spaces and line breaks.
+      Note that Text passed here is not yet converted with ConvertString. 
+      The implementation of this method in this class just returns
+      ConvertString(Text). }
+    function FormatPreformatted(const Text: string): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -998,6 +1007,12 @@ begin
   ReplaceStr := FormatItalic(TagDesc);
 end;
 
+procedure TDocGenerator.HandlePreformattedTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatPreformatted(TagDesc);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1046,6 +1061,8 @@ begin
     TagManager.AddHandler('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
       [toParameterRequired], []);
     TagManager.AddHandler('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
+      [toParameterRequired], []);
+    TagManager.AddHandler('preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
       [toParameterRequired], []);
 
     { Tags with recursive params }
@@ -2388,6 +2405,11 @@ end;
 function TDocGenerator.FormatItalic(const Text: string): string;
 begin
   Result := Text;
+end;
+
+function TDocGenerator.FormatPreformatted(const Text: string): string;
+begin
+  Result := ConvertString(Text);
 end;
 
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;

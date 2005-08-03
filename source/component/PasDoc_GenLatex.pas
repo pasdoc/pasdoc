@@ -195,6 +195,7 @@ Latex DocGenerators.}
       
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
+    function FormatPreformatted(const Text: string): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1545,6 +1546,11 @@ end;
 function TTexDocGenerator.FormatItalic(const Text: string): string;
 begin
   Result := '\textit{' + Text + '}';
+end;
+
+function TTexDocGenerator.FormatPreformatted(const Text: string): string;
+begin
+  Result := '\begin{verbatim}' + Text +  '\end{verbatim}';
 end;
 
 end.

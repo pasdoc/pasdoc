@@ -17,6 +17,7 @@
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl> (corrected Polish translation))
   @author(Jónás Gergõ <jonas.gergo@ch...> (Hungarian translation))
   @author(Michalis Kamburelis)
+  @author(Ascanio Pressato (Some Italian translation)))
   }
 
 unit PasDoc_Languages;
@@ -935,8 +936,8 @@ begin
   FTranslation[trDescription] := 'Descrizione';
   FTranslation[trParameters] := 'Parametri';
   FTranslation[trReturns] := 'Ritorni';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
+  FTranslation[trExceptions] := 'Eccezione';
+  FTranslation[trExceptionsRaised] := 'Eccezioni sollevate';
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campi';
@@ -966,8 +967,8 @@ begin
   FTranslation[trUnit] := 'Unit';
   FTranslation[trUnits] := 'Units';
   FTranslation[trVariables] := 'Variabili';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
+  FTranslation[trGvUses] := 'Grafico dipendenze Unit';
+  FTranslation[trGvClasses] := 'Grafico gerarchia Classi';
   FTranslation[trHeadlineCio] := 'Tutte le Classi, Interfacce ed Oggetti';
   FTranslation[trHeadlineConstants] := 'Tutte le Costanti';
   FTranslation[trHeadlineFunctionsAndProcedures] :=
@@ -984,11 +985,11 @@ begin
   FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
   FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
   FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
+  FTranslation[trIntroduction] := 'Introduczione';
   FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
+  FTranslation[trSearch] := 'Cerca';
+  FTranslation[trSeeAlso] := 'Vedere Anche';
+  FTranslation[trValues] := 'Valori';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1741,6 +1742,10 @@ end;
 
 {
   $Log$
+  Revision 1.33  2005/08/03 02:32:34  kambi
+  + @preformatted tag from Ascanio Pressato, and a testcase of it
+  * Updated Italian translation also by Ascanio
+
   Revision 1.32  2005/07/19 22:55:44  kambi
   + --implicit-visibility command-line option, new visibility kind "implicit"
   + ok_implicit_visibility.pas testcase to test --implicit-visibility

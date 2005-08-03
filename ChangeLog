@@ -1,4 +1,5 @@
 [Next release -- release date and new version number unknown yet...]
+
   + New command-line options:
     --implicit-visibility
       (see [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption])
@@ -9,6 +10,11 @@
       (see [http://pasdoc.sipsolutions.net/SeeAlsoTag])
     @inheritedClass
       (see [http://pasdoc.sipsolutions.net/InheritedClassnameNameTag])
+    @preformatted (by Ascanio Pressato)
+      (see [http://pasdoc.sipsolutions.net/PreformattedTag])
+
+  Authors: features above not explicitly marked by author were
+  done by Michalis Kamburelis.
 
 2005-07-09 v0.9.9
 
@@ -92,6 +98,8 @@
     [http://pasdoc.sipsolutions.net/LinkLookOption] and
     [http://pasdoc.sipsolutions.net/LinkTag], 
     use --link-look=stripped if you really need old behavior.
+
+  Authors: many. See @author tags at the beginning of pasdoc 0.9.0 units.
 
 2004-07-12 v0.8.8.1 to v0.8.8.3 Johannes Berg, others
  + applied a bunch of patches that were floating around on the mailing list
