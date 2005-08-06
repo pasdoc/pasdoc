@@ -13,56 +13,7 @@
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
     </General>
-    <JumpHistory Count="12" HistoryIndex="11">
-      <Position1>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="172" Column="5" TopLine="171"/>
-      </Position1>
-      <Position2>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="240" Column="2" TopLine="238"/>
-      </Position2>
-      <Position3>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="171" Column="1" TopLine="154"/>
-      </Position3>
-      <Position4>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="236" Column="1" TopLine="228"/>
-      </Position4>
-      <Position5>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="91" Column="27" TopLine="82"/>
-      </Position6>
-      <Position7>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="507" Column="10" TopLine="498"/>
-      </Position7>
-      <Position8>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="172" Column="5" TopLine="171"/>
-      </Position8>
-      <Position9>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="240" Column="2" TopLine="238"/>
-      </Position9>
-      <Position10>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="91" Column="27" TopLine="82"/>
-      </Position11>
-      <Position12>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="171" Column="1" TopLine="162"/>
-      </Position12>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
     <Units Count="3">
       <Unit0>
         <CursorPos X="1" Y="1"/>
