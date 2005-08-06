@@ -1,10 +1,8 @@
-PasDoc_Console
-PasDoc_Console.hst
-PasDoc_Console.map
-PasDoc_Console.conf
-PasDoc_Console.cfg
-PasDoc_VerInfo.res
-pasdoc_console
+pasdoc
+pasdoc.hst
+pasdoc.map
+pasdoc.conf
+pasdoc.cfg
 *~*
 *.ppu
 *.dcu
