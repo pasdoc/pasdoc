@@ -233,6 +233,9 @@ type
 
     function Paragraph: string; override;
 
+    function EnDash: string; override;
+    function EmDash: string; override;
+
     function LineBreak: string; override;
 
     function URLLink(const URL: string): string; override;
@@ -743,13 +746,13 @@ begin
   if Created <> '' then begin
     WriteHeading(HL, 'created', FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteConverted(Created);
+    WriteDirectLine(Created);
     WriteEndOfParagraph;
   end;
   if LastMod <> '' then begin
     WriteHeading(HL, 'modified', FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteConvertedLine(LastMod);
+    WriteDirectLine(LastMod);
     WriteEndOfParagraph;
   end;
 end;
@@ -2058,6 +2061,16 @@ begin
     comparing generating two tests results etc.).
     They are of course meaningless for anything that interprets this HTML. }
   Result := LineEnding + LineEnding + '<p>';
+end;
+
+function TGenericHTMLDocGenerator.EnDash: string; 
+begin
+  Result := '&ndash;';
+end;
+
+function TGenericHTMLDocGenerator.EmDash: string; 
+begin
+  Result := '&mdash;';
 end;
 
 function TGenericHTMLDocGenerator.LineBreak: string; 

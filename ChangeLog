@@ -13,6 +13,19 @@
     @preformatted (by Ascanio Pressato)
       (see [http://pasdoc.sipsolutions.net/PreformattedTag])
 
+  * Dashes rules: em-dash, en-dash, short dash, "@-"
+    (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
+  
+  Some compatibility had to be broken:
+  * New dashes rules break compatibility. But actually previous
+    behavior with regards to dashes was broken, because "-"
+    was just always directly copied to output. So previously
+    in HTML "-" always meant just a short dash (there was no
+    way to write en-dash or em-dash). And in LaTeX
+    "---"/"--"/"-" meant em-dash/en-dash/short dash,
+    but there was no way to escape it (i.e. there was no "@-"
+    construct).
+
   Authors: features above not explicitly marked by author were
   done by Michalis Kamburelis.
 

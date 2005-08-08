@@ -187,7 +187,9 @@ type
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write FFullLink;
     
-    { if assigned, contains string with date of last modification }
+    { Contains '' or string with date of last modification.
+      This string is already in the form suitable for final output
+      format (i.e. already processed by TDocGenerator.ConvertString). }
     property LastMod: string read FLastMod write FLastMod;
     
     { name of the item }
@@ -204,7 +206,9 @@ type
     { list of strings, each representing one author of this item }
     property Authors: TStringVector read FAuthors write SetAuthors;
     
-    { contains '' or string with date of creation }
+    { Contains '' or string with date of creation.
+      This string is already in the form suitable for final output
+      format (i.e. already processed by TDocGenerator.ConvertString). }
     property Created: string read FCreated;
   end;
   

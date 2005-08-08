@@ -1,4 +1,4 @@
-{ Test unit to test various --sort settings. }
+{ Test unit to test various @--sort settings. }
 
 unit ok_sorting;
 

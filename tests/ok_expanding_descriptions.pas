@@ -3,7 +3,7 @@
     See also @link(TestPasMethodTags))
 
   This whole unit is actually a big test of many things
-  related to pasdoc's @-tags.
+  related to pasdoc's @@-tags.
 
   @author(Michalis <my@email.address>)
   @created(2005-03-30)

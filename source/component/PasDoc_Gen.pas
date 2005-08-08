@@ -505,6 +505,18 @@ end;
       (one space). }
     function Paragraph: string; virtual;
     
+    { See @link(TTagManager.ShortDash). Default implementation in this
+      class returns '-'. }
+    function ShortDash: string; virtual;
+    
+    { See @link(TTagManager.EnDash). Default implementation in this
+      class returns '--'. }
+    function EnDash: string; virtual;
+    
+    { See @link(TTagManager.EmDash). Default implementation in this
+      class returns '---'. }
+    function EmDash: string; virtual;
+    
     { S is guaranteed (guaranteed by the user) to be correct html content,
       this is taken directly from parameters of @html tag.
       Override this function to decide what to put in output on such thing.
@@ -1039,6 +1051,9 @@ begin
     TagManager.URLLink := {$IFDEF FPC}@{$ENDIF}URLLink;
     TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF}DoMessageFromExpandDescription;
     TagManager.Paragraph := Paragraph;
+    TagManager.ShortDash := ShortDash;
+    TagManager.EnDash := EnDash;
+    TagManager.EmDash := EmDash;
     
     Item.RegisterTagHandlers(TagManager);
 
@@ -2375,6 +2390,21 @@ end;
 function TDocGenerator.Paragraph: string; 
 begin
   Result := ' ';
+end;
+
+function TDocGenerator.ShortDash: string;
+begin
+  Result := '-';
+end;
+
+function TDocGenerator.EnDash: string;
+begin
+  Result := '--';
+end;
+
+function TDocGenerator.EmDash: string;
+begin
+  Result := '---';
 end;
 
 function TDocGenerator.HtmlString(const S: string): string;

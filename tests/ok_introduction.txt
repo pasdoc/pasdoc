@@ -15,7 +15,7 @@ New paragraph.
 
 3rd paragraph. URLs are automatically recognized, like this:
 http://pasdoc.sourceforge.net/. You have to write the @@ twice
-(like @@@@) to get one @@ in the output. Also normal @-tags work:
+(like @@@@) to get one @@ in the output. Also normal @@-tags work:
 @code(This is some code.)
 
 @section(1 SecSecond Second section)

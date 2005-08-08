@@ -157,6 +157,8 @@ type
     
     function Paragraph: string; override;
     
+    function ShortDash: string; override;
+    
     function LineBreak: string; override;
     
     function URLLink(const URL: string): string; override;
@@ -568,13 +570,13 @@ begin
   if Created <> '' then begin
     WriteHeading(HL, FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteConverted(Created);
+    WriteDirectLine(Created);
     WriteEndOfParagraph;
   end;
   if LastMod <> '' then begin
     WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteConvertedLine(LastMod);
+    WriteDirectLine(LastMod);
     WriteEndOfParagraph;
   end;
 end;
@@ -1431,6 +1433,11 @@ end;
 function TTexDocGenerator.Paragraph: string; 
 begin
   Result := LineEnding + LineEnding;
+end;
+
+function TTexDocGenerator.ShortDash: string;
+begin
+  Result := '{-}';
 end;
 
 function TTexDocGenerator.LineBreak: string; 

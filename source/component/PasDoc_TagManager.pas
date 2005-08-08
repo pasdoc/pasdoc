@@ -145,6 +145,7 @@ type
     FOnMessage: TPasDocMessageEvent;
     FParagraph: string;
     FSpace: string;
+    FShortDash, FEnDash, FEmDash: string;
     FURLLink: TStringConverter;
 
     function DoConvertString(const s: string): string;
@@ -209,6 +210,31 @@ type
       
       Default value is ' ' (one space). }
     property Space: string read FSpace write FSpace;
+    
+    { This will be inserted on @code(@@@-) in description,
+      and on a normal single dash in description that is not a part
+      of en-dash or em-dash.
+      This should produce just a short dash.
+      
+      Default value is '@-'. 
+      
+      You will never get any '-' character to be converted by ConvertString. 
+      Convertion of '-' is controlled solely by XxxDash properties of 
+      tag manager.
+      
+      @seealso EnDash
+      @seealso EmDash }
+    property ShortDash: string read FShortDash write FShortDash;
+
+    { This will be inserted on @code(@-@-) in description.
+      This should produce en-dash (as in LaTeX).
+      Default value is '@-@-'. }
+    property EnDash: string read FEnDash write FEnDash;
+
+    { This will be inserted on @code(@-@-@-) in description.
+      This should produce em-dash (as in LaTeX).
+      Default value is '@-@-@-'. }
+    property EmDash: string read FEmDash write FEmDash;
     
     { This will be called from @link(Execute) when URL will be found
       in Description. Note that passed here URL will *not* be processed by
@@ -308,6 +334,9 @@ begin
   FTags := TTagVector.Create(true);
   FParagraph := ' ';
   FSpace := ' ';
+  FShortDash := '-';
+  FEnDash := '--';
+  FEmDash := '---';
 end;
 
 destructor TTagManager.Destroy;
@@ -655,15 +684,54 @@ begin
       
       ConvertBeginOffset := FOffset;
     end else
-    if (Description[FOffset] = '@') and
-       (FOffset < Length(Description)) and
-       (Description[FOffset + 1] = '@') then
+    if Copy(Description, FOffset, 2) = '@@' then
     begin
       DoConvert;
       
       { convert '@@' to '@' }      
       Result := Result + '@';
       FOffset := FOffset + 2;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    if Copy(Description, FOffset, 2) = '@-' then
+    begin
+      DoConvert;
+      
+      { convert '@-' to ShortDash }
+      Result := Result + ShortDash;
+      FOffset := FOffset + 2;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    { Note that we must scan for '---' in Description before scanning for '--'. }
+    if Copy(Description, FOffset, 3) = '---' then
+    begin
+      DoConvert;
+      
+      { convert '---' to EmDash }
+      Result := Result + EmDash;
+      FOffset := FOffset + 3;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    if Copy(Description, FOffset, 2) = '--' then
+    begin
+      DoConvert;
+      
+      { convert '--' to EnDash }
+      Result := Result + EnDash;
+      FOffset := FOffset + 2;
+      
+      ConvertBeginOffset := FOffset;
+    end else
+    if Description[FOffset] = '-' then
+    begin
+      DoConvert;
+      
+      { So '-' is just a normal ShortDash }
+      Result := Result + ShortDash;
+      FOffset := FOffset + 1;
       
       ConvertBeginOffset := FOffset;
     end else
