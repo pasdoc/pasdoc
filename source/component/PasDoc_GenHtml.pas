@@ -170,6 +170,9 @@ type
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
     
     function FormatAnAnchor(const AName, Caption: string): string; 
+    
+    function FormatList(const ListItems: string; 
+      const ListTag: string): string;
   protected
     function ConvertString(const s: string): string; override;
 
@@ -257,6 +260,10 @@ type
     function FormatItalic(const Text: string): string; override;
 
     function FormatPreformatted(const Text: string): string; override;
+    
+    function FormatOrderedList(const ListItems: string): string; override;
+    function FormatUnorderedList(const ListItems: string): string; override;
+    function FormatListItem(const Text: string): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2144,10 +2151,41 @@ begin
   { See TGenericHTMLDocGenerator.FormatPascalCode
     for comments why these </p> and <p> are needed here.
     LineEndings are added only to make html source more readable. }
-  result := '</p>' + LineEnding + LineEnding +
+  Result := '</p>' + LineEnding + LineEnding +
     '<pre class="preformatted">' +
        inherited FormatPreformatted(Text) + '</pre>' +
      LineEnding + LineEnding + '<p>';
+end;
+
+function TGenericHTMLDocGenerator.FormatList(const ListItems: string; 
+  const ListTag: string): string;
+begin
+  { We're explicitly marking end of previous paragraph and beginning
+    of next one. }
+  Result := '</p>';
+  
+  { HTML requires that <ol> / <ul> contains at least one <li>. }
+  if ListItems <> '' then
+    Result := Result + '<' + ListTag + '>' + ListItems + '</' + ListTag + '>';
+    
+  Result := Result + '<p>';
+end;
+
+function TGenericHTMLDocGenerator.FormatOrderedList(const ListItems: string): string; 
+begin
+  Result := FormatList(ListItems, 'ol');
+end;
+
+function TGenericHTMLDocGenerator.FormatUnorderedList(const ListItems: string): string; 
+begin
+  Result := FormatList(ListItems, 'ul');
+end;
+
+function TGenericHTMLDocGenerator.FormatListItem(const Text: string): string; 
+begin
+  { We're explicitly marking end of previous paragraph and beginning
+    of next one. }
+  Result := '<li><p>' + Text + '</p></li>';
 end;
 
 end.

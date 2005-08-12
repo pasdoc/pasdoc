@@ -126,3 +126,5 @@ mk_special_test ok_bold_italic ok_bold_italic.pas
 mk_special_test warning_inherited_test warning_inherited_test.pas
 mk_special_test ok_preformatted_test ok_preformatted_test.pas
 mk_special_test ok_dashes ok_dashes.pas
+mk_special_test ok_lists ok_lists.pas
+mk_special_test warning_lists warning_lists.pas

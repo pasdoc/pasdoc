@@ -197,7 +197,12 @@ Latex DocGenerators.}
       
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
+    
     function FormatPreformatted(const Text: string): string; override;
+    
+    function FormatOrderedList(const ListItems: string): string; override;
+    function FormatUnorderedList(const ListItems: string): string; override;
+    function FormatListItem(const Text: string): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1558,6 +1563,25 @@ end;
 function TTexDocGenerator.FormatPreformatted(const Text: string): string;
 begin
   Result := '\begin{verbatim}' + Text +  '\end{verbatim}';
+end;
+
+function TTexDocGenerator.FormatOrderedList(const ListItems: string): string; 
+begin
+  { LaTeX doesn't allow empty lists }
+  if ListItems <> '' then
+    Result := '\begin{enumerate}' + ListItems + '\end{enumerate}';
+end;
+
+function TTexDocGenerator.FormatUnorderedList(const ListItems: string): string; 
+begin
+  { LaTeX doesn't allow empty lists }
+  if ListItems <> '' then
+    Result := '\begin{itemize}' + ListItems + '\end{itemize}';
+end;
+
+function TTexDocGenerator.FormatListItem(const Text: string): string; 
+begin
+  Result := '\item ' + Text;
 end;
 
 end.

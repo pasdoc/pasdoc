@@ -235,6 +235,13 @@ end;
     procedure HandlePreformattedTag(TagManager: TTagManager;
       const TagName, TagDesc: string; var ReplaceStr: string);
 
+    procedure HandleOrderedListTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleUnorderedListTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+    procedure HandleItemTag(TagManager: TTagManager;
+      const TagName, TagDesc: string; var ReplaceStr: string);
+
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
   protected
     { the (human) output language of the documentation file(s) }
@@ -615,6 +622,43 @@ end;
       The implementation of this method in this class just returns
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
+    
+    { Format an ordered list from ListItems,
+      which contains concatenated results of FormatListItem
+      for all list items. 
+      
+      Note that @orderedList should contain only @item tags
+      (tag manager makes sure that anything else is
+      ignored (like whitespace) or reported as an error to the user
+      (like anything other than whitespace)).
+      So you can safely assume that ListItems are @italic(only)
+      the concatenated results of FormatListItem, with absolutely
+      nothing additional. Therefore if you want to test whether
+      the list is empty (i.e. zero items), you can simply check
+      ListItems = '' (no need to even do Trim(ListItems). 
+      
+      @seealso FormatUnorderedList 
+      @seealso FormatListItem }
+    function FormatOrderedList(const ListItems: string): string; virtual; abstract;
+    
+    { Format an unordered list from ListItems,
+      which contains concatenated results of FormatListItem
+      for all list items. 
+      
+      Note that @unorderedList should contain only @item tags.
+      See comments at @link(FormatOrderedList) for what this means. 
+      
+      @seealso FormatOrderedList
+      @seealso FormatListItem }
+    function FormatUnorderedList(const ListItems: string): string; virtual; abstract;
+    
+    { This formats list item. Text is already passed
+      in a form converted for final output
+      (converted by ConvertString, with tags etc. expanded). 
+      
+      @seealso FormatOrderedList
+      @seealso FormatUnorderedList }
+    function FormatListItem(const Text: string): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1025,6 +1069,24 @@ begin
   ReplaceStr := FormatPreformatted(TagDesc);
 end;
 
+procedure TDocGenerator.HandleOrderedListTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatOrderedList(TagDesc);
+end;
+
+procedure TDocGenerator.HandleUnorderedListTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatUnorderedList(TagDesc);
+end;
+
+procedure TDocGenerator.HandleItemTag(TagManager: TTagManager;
+  const TagName, TagDesc: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatListItem(TagDesc);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1082,18 +1144,24 @@ begin
 
     { Tags with recursive params }
     TagManager.AddHandler('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-      [toParameterRequired, toRecursiveTags], [aiOther]);
+      [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
     TagManager.AddHandler('bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
-      [toParameterRequired, toRecursiveTags], [aiSelf, aiOther]);
+      [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
     TagManager.AddHandler('italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
-      [toParameterRequired, toRecursiveTags], [aiSelf, aiOther]);
+      [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
+    TagManager.AddHandler('orderedlist', {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
+      [toParameterRequired, toRecursiveTags], [aiOtherTags]);
+    TagManager.AddHandler('unorderedlist', {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
+      [toParameterRequired, toRecursiveTags], [aiOtherTags]);
+    TagManager.AddHandler('item', {$IFDEF FPC}@{$ENDIF} HandleItemTag,
+      [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
 
     if FCurrentItem is TExternalItem then
     begin
-      TagManager.AddHandler('section', {$IFDEF FPC}@{$ENDIF}HandleSectionTag,
-        [toParameterRequired, toTopLevel], [aiOther]);
-      TagManager.AddHandler('anchor', {$IFDEF FPC}@{$ENDIF}HandleAnchorTag,
-        [toParameterRequired, toTopLevel], [aiOther]);
+      TagManager.AddHandler('section', {$IFDEF FPC}@{$ENDIF} HandleSectionTag,
+        [toParameterRequired, toTopLevel], []);
+      TagManager.AddHandler('anchor', {$IFDEF FPC}@{$ENDIF} HandleAnchorTag,
+        [toParameterRequired, toTopLevel], []);
     end;
 
     Result := TagManager.Execute(Description,

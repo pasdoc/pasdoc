@@ -12,6 +12,8 @@
       (see [http://pasdoc.sipsolutions.net/InheritedClassnameNameTag])
     @preformatted (by Ascanio Pressato)
       (see [http://pasdoc.sipsolutions.net/PreformattedTag])
+    @orderedList, @unorderedList, @item
+      (see [http://pasdoc.sipsolutions.net/ListTags])
 
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
@@ -29,7 +31,7 @@
   Authors: features above not explicitly marked by author were
   done by Michalis Kamburelis.
 
-2005-07-09 v0.9.9
+2005-07-09 v0.9.0
 
   End-user visible changes:
   + New command-line options:

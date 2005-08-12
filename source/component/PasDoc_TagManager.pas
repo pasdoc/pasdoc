@@ -77,35 +77,51 @@ type
   TTagOptions = set of TTagOption;
 
   { If a tag has toRecursiveTags in TagOptions, then values of these
-    type will specify exactly what tags are allowed inside.
+    type will specify exactly what content is allowed inside
+    parameter of this tag.
     If toRecursiveTags is not included in TagOptions
-    then TagsAllowedInside value for this tag doesn't matter. 
+    then ContentAllowedInside value for this tag doesn't matter. 
     
-    There are three groups of tags that we consider:
+    There are four groups of content that we consider:
     
     - toTopLevel tags. These are never allowed inside.
     
     - Self tag, e.g. is 
         @@code(This is some @@code(code) that I wrote) 
       allowed ?
-      This is decided by aiSelf.
-      Note that if self tag is toTopLevel, then whether aiSelf
+      This is decided by aiSelfTag.
+      Note that if self tag is toTopLevel, then whether aiSelfTag
       is specified does not matter -- toplevel tag is never allowed
       inside any other tag (even in itself).
       
     - Non-toTopLevel tags, that are not equal to self.
-      This is decided by aiOther. }
-  TTagsAllowedInsideOption = (
-    aiSelf,
-    aiOther);
+      This is decided by aiOtherTags. 
+      
+    - Other content (i.e. normal text, paragraph breaks,
+      various dashes, URLs, and literal @@ character
+      (expressed by @@@@ in descriptions)).
+      This is decided by aiNormalText. 
+      
+      If aiNormalText will not be included,
+      then normal text (not enclosed within other @@-tags) will
+      not be allowed inside. Only whitespace will be allowed, and 
+      it will be ignored anyway (i.e. will not be passed to
+      ConvertString, empty line will not produce any Paragraph etc.).
+      This is useful for tags like @@orderedList that should only contain
+      other @@item tags inside. 
+  }
+  TContentAllowedInsideOption = (
+    aiSelfTag,
+    aiOtherTags,
+    aiNormalText);
     
-  TTagsAllowedInside = set of TTagsAllowedInsideOption;
+  TContentAllowedInside = set of TContentAllowedInsideOption;
 
   TTag = class
   private
     FTagHandler: TTagHandler;
     FTagOptions: TTagOptions;
-    FTagsAllowedInside: TTagsAllowedInside;
+    FContentAllowedInside: TContentAllowedInside;
     FName: string;
   public
     { Note that AName will be converted to lowercase before assigning 
@@ -113,12 +129,12 @@ type
     constructor Create(const AName: string;
       ATagHandler: TTagHandler;
       const ATagOptions: TTagOptions;
-      const ATagsAllowedInside: TTagsAllowedInside);
+      const AContentAllowedInside: TContentAllowedInside);
 
     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
     
-    property TagsAllowedInside: TTagsAllowedInside
-      read FTagsAllowedInside write FTagsAllowedInside;
+    property ContentAllowedInside: TContentAllowedInside
+      read FContentAllowedInside write FContentAllowedInside;
 
     { Note that this must always be lowercase. }
     property Name: string read FName write FName;
@@ -159,7 +175,7 @@ type
       
       If EnclosingTag <> nil then this is not toplevel.
       So toTopLevel tags are not allowed and other tags are allowed 
-      on the basis of EnclosingTag.TagsAllowedInside. }
+      on the basis of EnclosingTag.ContentAllowedInside. }
     function CoreExecute(const Description: string;
       EnclosingTag: TTag;
       WantFirstSentenceEnd: boolean;
@@ -249,7 +265,7 @@ type
       Don't worry about the case of TagName, it does *not* matter. }
     procedure AddHandler(const TagName: string; Handler: TTagHandler;
       const TagOptions: TTagOptions;
-      const TagsAllowedInside: TTagsAllowedInside);
+      const ContentAllowedInside: TContentAllowedInside);
 
     { This method is the very essence of this class and this unit.
       It expands Description, which means that it processes Description
@@ -294,13 +310,13 @@ uses Utils;
 constructor TTag.Create(const AName: string;
   ATagHandler: TTagHandler;
   const ATagOptions: TTagOptions;
-  const ATagsAllowedInside: TTagsAllowedInside);
+  const AContentAllowedInside: TContentAllowedInside);
 begin
   inherited Create;
   FName := LowerCase(AName);
   FTagHandler := ATagHandler;
   FTagOptions := ATagOptions;
-  FTagsAllowedInside := ATagsAllowedInside;
+  FContentAllowedInside := AContentAllowedInside;
 end;
 
 procedure TTag.Execute(TagManager: TTagManager;
@@ -347,9 +363,9 @@ end;
 
 procedure TTagManager.AddHandler(const TagName: string; Handler: TTagHandler;
   const TagOptions: TTagOptions;
-  const TagsAllowedInside: TTagsAllowedInside);
+  const ContentAllowedInside: TContentAllowedInside);
 begin
-  FTags.Add(TTag.Create(TagName, Handler, TagOptions, TagsAllowedInside));
+  FTags.Add(TTag.Create(TagName, Handler, TagOptions, ContentAllowedInside));
 end;
 
 function TTagManager.DoConvertString(const s: string): string;
@@ -579,6 +595,20 @@ var
     Result := (Description[FOffset] = '.') and 
       SCharIs(Description, FOffset + 1, WhiteSpace);
   end;
+  
+  function IsNormalTextAllowed: boolean;
+  begin
+    Result := (EnclosingTag = nil) or
+      (aiNormalText in EnclosingTag.ContentAllowedInside);
+  end;
+  
+  procedure CheckNormalTextAllowed(const NormalText: string);
+  begin
+    if not IsNormalTextAllowed then
+      DoMessage(1, mtWarning,
+        'Such content, "%s", is not allowed '+
+        'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
+  end;
 
 var
   { Always ConvertBeginOffset <= FOffset. 
@@ -591,10 +621,17 @@ var
     Description[ConvertBeginOffset ... FOffset - 1]
     to Result. }
   procedure DoConvert;
+  var
+    ToAppend: string;
   begin
-    Result := Result + DoConvertString(
-      Copy(Description, ConvertBeginOffset, FOffset - ConvertBeginOffset));
-    ConvertBeginOffset := FOffset;
+    ToAppend := Copy(Description, ConvertBeginOffset, 
+      FOffset - ConvertBeginOffset);
+    if ToAppend <> '' then
+    begin
+      CheckNormalTextAllowed(ToAppend);
+      Result := Result + DoConvertString(ToAppend);
+      ConvertBeginOffset := FOffset;
+    end;
   end;
 
 var
@@ -635,11 +672,11 @@ begin
         end else
         if FoundTag = EnclosingTag then
         begin
-          if not (aiSelf in EnclosingTag.TagsAllowedInside) then
+          if not (aiSelfTag in EnclosingTag.ContentAllowedInside) then
             DoMessage(1, mtWarning,
               'The tag "%s" cannot be embedded within itself', [FoundTag.Name]);
         end else
-        if not (aiOther in EnclosingTag.TagsAllowedInside) then
+        if not (aiOtherTags in EnclosingTag.ContentAllowedInside) then
         begin
           DoMessage(1, mtWarning,
             'The tag "%s" cannot contain other tags', [EnclosingTag.Name]);
@@ -688,7 +725,8 @@ begin
     begin
       DoConvert;
       
-      { convert '@@' to '@' }      
+      { convert '@@' to '@' }
+      CheckNormalTextAllowed('@@');
       Result := Result + '@';
       FOffset := FOffset + 2;
       
@@ -699,6 +737,7 @@ begin
       DoConvert;
       
       { convert '@-' to ShortDash }
+      CheckNormalTextAllowed('@-');
       Result := Result + ShortDash;
       FOffset := FOffset + 2;
       
@@ -710,6 +749,7 @@ begin
       DoConvert;
       
       { convert '---' to EmDash }
+      CheckNormalTextAllowed('---');
       Result := Result + EmDash;
       FOffset := FOffset + 3;
       
@@ -720,6 +760,7 @@ begin
       DoConvert;
       
       { convert '--' to EnDash }
+      CheckNormalTextAllowed('--');
       Result := Result + EnDash;
       FOffset := FOffset + 2;
       
@@ -730,16 +771,20 @@ begin
       DoConvert;
       
       { So '-' is just a normal ShortDash }
+      CheckNormalTextAllowed('-');
       Result := Result + ShortDash;
-      FOffset := FOffset + 1;
+      FOffset := FOffset + 1;      
       
       ConvertBeginOffset := FOffset;
     end else
     if FindParagraph(OffsetEnd) then
     begin
       DoConvert;
-      
-      Result := Result + Paragraph;
+
+      { If normal text is allowed then append Paragraph to Result.
+        Otherwise just ignore any whitespace in Description. }
+      if IsNormalTextAllowed then
+        Result := Result + Paragraph;
       FOffset := OffsetEnd;
       
       ConvertBeginOffset := FOffset;
@@ -750,7 +795,10 @@ begin
     begin
       DoConvert;
       
-      Result := Result + Space;
+      { If normal text is allowed then append Space to Result.
+        Otherwise just ignore any whitespace in Description. }
+      if IsNormalTextAllowed then
+        Result := Result + Space;
       FOffset := OffsetEnd;
       
       ConvertBeginOffset := FOffset;
@@ -758,7 +806,8 @@ begin
     if FindURL(OffsetEnd, URL) then
     begin
       DoConvert;
-      
+
+      CheckNormalTextAllowed(URL);
       Result := Result + DoURLLink(URL);
       FOffset := OffsetEnd;
       
@@ -770,6 +819,7 @@ begin
     begin
       DoConvert;
       
+      CheckNormalTextAllowed('.');
       Result := Result + ConvertString('.');
       FirstSentenceEnd := Length(Result);
       Inc(FOffset);
