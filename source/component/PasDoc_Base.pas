@@ -361,7 +361,9 @@ begin
     end;
   except
      on e: Exception do begin
-       DoMessage(2, mtWarning, 'Error %s: %s parsing unit %s, continuing...', [e.ClassName, e.Message, ExtractFileName(SourceFileName)]); 
+       DoMessage(2, mtWarning, 
+         'Error %s: %s while parsing unit %s, continuing...', 
+         [e.ClassName, e.Message, ExtractFileName(SourceFileName)]); 
      end;
   end;
   p.Free;

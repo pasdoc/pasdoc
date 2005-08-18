@@ -1538,7 +1538,7 @@ begin
   repeat
     if not GetNextNonWCToken(t) then Exit;
     if t.MyType <> TOK_IDENTIFIER then
-      DoError('%s: Error, unit name expected (found %s, %s.',
+      DoError('%s: Error, unit name expected (found %s "%s")',
         [Scanner.GetStreamInfo, t.GetTypeName, t.Data], 0);
     U.UsesUnits.Add(t.Data);
     FreeAndNil(t);

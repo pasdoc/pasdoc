@@ -155,10 +155,13 @@ type
     SD_VARARGS);
 
 const
-  { Names of the token types }
+  { Names of the token types. All start with lower letter.
+    They should somehow describe (in a few short words) given 
+    TTokenType. }
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
-  ('Whitespace', 'Comment (Pascal)', 'Comment (extended)', 'Comment (C-Style)', 
-    'Identifier', 'Number', 'String', 'Symbol', 'Directive', 'Reserved');
+  ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)', 
+    'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
+    'directive', 'reserved word');
 
 type
   { enumeration type that provides all types of symbols; each
