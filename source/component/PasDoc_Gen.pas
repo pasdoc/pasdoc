@@ -174,7 +174,7 @@ type
       const MessageType: TMessageType; const AMessage: string; 
       const AVerbosity: Cardinal);
 
-    procedure HandleLinkTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleLinkTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
 
@@ -202,62 +202,62 @@ end;
       #)
       *)
 
-    procedure HandleLongCodeTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleLongCodeTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleClassnameTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleClassnameTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleHtmlTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleHtmlTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleLatexTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleLatexTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleInheritedClassTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleInheritedClassTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleInheritedTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleInheritedTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleNameTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleNameTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleCodeTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleCodeTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleLiteralTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleLiteralTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleBrTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleBrTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
 
-    procedure HandleSectionTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleSectionTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleAnchorTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleAnchorTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
       
-    procedure HandleBoldTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleBoldTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleItalicTag(ThisTag: TTag; TagManager: TTagManager;
-      EnclosingTag: TTag; const TagParameter: string;
-      var ReplaceStr: string);
-
-    procedure HandlePreformattedTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleItalicTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
 
-    procedure HandleOrderedListTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandlePreformattedTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleUnorderedListTag(ThisTag: TTag; TagManager: TTagManager;
+
+    procedure HandleOrderedListTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleItemTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleUnorderedListTag(ThisTag: TTag;
+      EnclosingTag: TTag; const TagParameter: string;
+      var ReplaceStr: string);
+    procedure HandleItemTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
 
@@ -646,7 +646,7 @@ end;
       which contains concatenated results of FormatListItem
       for all list items. 
       
-      Note that @orderedList should contain only @item tags
+      Note that @@orderedList should contain only @@item tags
       (tag manager makes sure that anything else is
       ignored (like whitespace) or reported as an error to the user
       (like anything other than whitespace)).
@@ -664,7 +664,7 @@ end;
       which contains concatenated results of FormatListItem
       for all list items. 
       
-      Note that @unorderedList should contain only @item tags.
+      Note that @@unorderedList should contain only @@item tags.
       See comments at @link(FormatOrderedList) for what this means. 
       
       @seealso FormatOrderedList
@@ -917,7 +917,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.HandleLongCodeTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleLongCodeTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -929,28 +929,28 @@ begin
     Copy(TagParameter, 2, Length(TagParameter) - 2));
 end;
 
-procedure TDocGenerator.HandleHtmlTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleHtmlTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := HtmlString(TagParameter);
 end;
 
-procedure TDocGenerator.HandleLatexTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleLatexTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := LatexString(TagParameter);
 end;
 
-procedure TDocGenerator.HandleNameTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleNameTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
 end;
 
-procedure TDocGenerator.HandleClassnameTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleClassnameTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var ItemClassName: string;
@@ -970,11 +970,11 @@ begin
   
   if ItemClassName <> '' then
     ReplaceStr := CodeString(ConvertString(ItemClassName)) else
-    TagManager.DoMessage(1, mtWarning, '@classname not available here', []);
+    ThisTag.TagManager.DoMessage(1, mtWarning, '@classname not available here', []);
 end;
 
 // handles @true, @false, @nil (Who uses these tags anyway?)
-procedure TDocGenerator.HandleLiteralTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleLiteralTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -982,13 +982,14 @@ begin
     Copy(ThisTag.Name, 2, MaxInt));
 end;
 
-procedure TDocGenerator.HandleInheritedClassTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleInheritedClassTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 
   procedure InheritedClassCannotResolve(const Msg: string);
   begin
-    TagManager.DoMessage(2, mtWarning, 'Can''t resolve @inheritedClass: ' + Msg, []);
+    ThisTag.TagManager.DoMessage(2, mtWarning, 
+      'Can''t resolve @inheritedClass: ' + Msg, []);
     ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
   end;
 
@@ -1014,13 +1015,14 @@ begin
     InheritedClassCannotResolve('You can''t use @inheritedClass here');
 end;
 
-procedure TDocGenerator.HandleInheritedTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleInheritedTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
   
   procedure InheritedCannotResolve(const Msg: string);
   begin
-    TagManager.DoMessage(2, mtWarning, 'Can''t resolve @inherited: ' + Msg, []);
+    ThisTag.TagManager.DoMessage(2, mtWarning, 
+      'Can''t resolve @inherited: ' + Msg, []);
     ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
   end;
   
@@ -1059,7 +1061,7 @@ begin
     InheritedCannotResolve('You can''t use @inherited here');
 end;
 
-procedure TDocGenerator.HandleLinkTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleLinkTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var LinkTarget, LinkDisplay: string;
@@ -1068,56 +1070,56 @@ begin
   ReplaceStr := SearchLink(LinkTarget, FCurrentItem, LinkDisplay, true);
 end;
 
-procedure TDocGenerator.HandleCodeTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleCodeTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(TagParameter);
 end;
 
-procedure TDocGenerator.HandleBrTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleBrTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := LineBreak;
 end;
 
-procedure TDocGenerator.HandleBoldTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleBoldTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := FormatBold(TagParameter);
 end;
 
-procedure TDocGenerator.HandleItalicTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleItalicTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := FormatItalic(TagParameter);
 end;
 
-procedure TDocGenerator.HandlePreformattedTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandlePreformattedTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := FormatPreformatted(TagParameter);
 end;
 
-procedure TDocGenerator.HandleOrderedListTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleOrderedListTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := FormatOrderedList(TagParameter);
 end;
 
-procedure TDocGenerator.HandleUnorderedListTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleUnorderedListTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   ReplaceStr := FormatUnorderedList(TagParameter);
 end;
 
-procedure TDocGenerator.HandleItemTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleItemTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -1157,47 +1159,47 @@ begin
     Item.RegisterTags(TagManager);
 
     { Tags without params }
-    TagManager.AddTag('classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, [], []);
-    TagManager.AddTag('true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
-    TagManager.AddTag('false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
-    TagManager.AddTag('nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
-    TagManager.AddTag('inheritedclass',{$IFDEF FPC}@{$ENDIF} 
+    TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, [], []);
+    TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TTag.Create(TagManager, 'inheritedclass',{$IFDEF FPC}@{$ENDIF} 
       HandleInheritedClassTag, [], []);
-    TagManager.AddTag('inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, [], []);
-    TagManager.AddTag('name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, [], []);
-    TagManager.AddTag('br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, [], []);
+    TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, [], []);
+    TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, [], []);
+    TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, [], []);
 
     { Tags with non-recursive params }
-    TagManager.AddTag('longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
+    TTag.Create(TagManager, 'longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
       [toParameterRequired], []);
-    TagManager.AddTag('html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
+    TTag.Create(TagManager, 'html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
       [toParameterRequired], []);
-    TagManager.AddTag('latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
+    TTag.Create(TagManager, 'latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
       [toParameterRequired], []);
-    TagManager.AddTag('link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
+    TTag.Create(TagManager, 'link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
       [toParameterRequired], []);
-    TagManager.AddTag('preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
+    TTag.Create(TagManager, 'preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
       [toParameterRequired], []);
 
     { Tags with recursive params }
-    TagManager.AddTag('code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+    TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
-    TagManager.AddTag('bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
+    TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
       [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
-    TagManager.AddTag('italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
+    TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
       [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
-    TagManager.AddTag('orderedlist', {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
+    TTag.Create(TagManager, 'orderedlist', {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags]);
-    TagManager.AddTag('unorderedlist', {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
+    TTag.Create(TagManager, 'unorderedlist', {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags]);
-    TagManager.AddTag('item', {$IFDEF FPC}@{$ENDIF} HandleItemTag,
+    TTag.Create(TagManager, 'item', {$IFDEF FPC}@{$ENDIF} HandleItemTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
 
     if FCurrentItem is TExternalItem then
     begin
-      TagManager.AddTag('section', {$IFDEF FPC}@{$ENDIF} HandleSectionTag,
+      TTag.Create(TagManager, 'section', {$IFDEF FPC}@{$ENDIF} HandleSectionTag,
         [toParameterRequired, toTopLevel], []);
-      TagManager.AddTag('anchor', {$IFDEF FPC}@{$ENDIF} HandleAnchorTag,
+      TTag.Create(TagManager, 'anchor', {$IFDEF FPC}@{$ENDIF} HandleAnchorTag,
         [toParameterRequired, toTopLevel], []);
     end;
 
@@ -2708,7 +2710,7 @@ begin
   WriteExternal(Conclusion, trConclusion);
 end;
 
-procedure TDocGenerator.HandleAnchorTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleAnchorTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var
@@ -2719,7 +2721,7 @@ begin
   
   if not IsValidIdent(AnchorString) then
   begin
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       'Invalid anchor name: "%s"', [AnchorString]);
     Exit;
   end;
@@ -2730,7 +2732,7 @@ begin
   NewSubItem.FullLink := CreateLink(NewSubItem);
 end;
 
-procedure TDocGenerator.HandleSectionTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TDocGenerator.HandleSectionTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var
@@ -2747,7 +2749,7 @@ begin
     HeadingLevel := StrToInt(HeadingLevelString);
   except on E: EConvertError do
     begin
-      TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, mtWarning,
         'Invalid heading level in @section tag: "%s". %s', 
         [HeadingLevelString, E.Message]);
       Exit;
@@ -2756,7 +2758,7 @@ begin
   
   if HeadingLevel < 1 then
   begin
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
       [HeadingLevel]);
     Exit;

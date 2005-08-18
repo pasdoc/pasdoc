@@ -87,16 +87,16 @@ type
     FCreated: string;
     
     procedure SetAuthors(const Value: TStringVector);
-    procedure StoreAuthorTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreAuthorTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure StoreCreatedTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreCreatedTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure StoreLastModTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreLastModTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure StoreCVSTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreCVSTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   protected
@@ -229,13 +229,13 @@ type
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
 
-    procedure StoreAbstractTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreAbstractTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleDeprecatedTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleDeprecatedTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleSeeAlsoTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleSeeAlsoTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   protected
@@ -429,7 +429,7 @@ type
     FMembers: TPasItems;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure StoreValueTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreValueTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   public
@@ -456,13 +456,13 @@ type
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure StoreRaisesTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreRaisesTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure StoreParamTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreParamTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure StoreReturnsTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreReturnsTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   public
@@ -550,7 +550,7 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
-    procedure StoreMemberTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure StoreMemberTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   public
@@ -658,10 +658,10 @@ type
     FAnchors: TPasItems;
     procedure SetOutputFileName(const Value: string);
   protected
-    procedure HandleTitleTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleTitleTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
-    procedure HandleShortTitleTag(ThisTag: TTag; TagManager: TTagManager;
+    procedure HandleShortTitleTag(ThisTag: TTag;
       EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
   public
@@ -968,7 +968,7 @@ begin
   Result := nil;
 end;
 
-procedure TBaseItem.StoreAuthorTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TBaseItem.StoreAuthorTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -979,7 +979,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TBaseItem.StoreCreatedTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TBaseItem.StoreCreatedTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -988,7 +988,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TBaseItem.StoreLastModTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TBaseItem.StoreLastModTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -997,7 +997,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TBaseItem.StoreCVSTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TBaseItem.StoreCVSTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var
@@ -1031,13 +1031,13 @@ end;
 procedure TBaseItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddTag('author', {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
+  TTag.Create(TagManager, 'author', {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
     [toParameterRequired], []);
-  TagManager.AddTag('created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
+  TTag.Create(TagManager, 'created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
     [toParameterRequired, toRecursiveTags], [aiNormalText]);
-  TagManager.AddTag('lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
+  TTag.Create(TagManager, 'lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
     [toParameterRequired, toRecursiveTags], [aiNormalText]);
-  TagManager.AddTag('cvs', {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
+  TTag.Create(TagManager, 'cvs', {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
     [toParameterRequired], []);
 end;
 
@@ -1192,19 +1192,19 @@ begin
   end;
 end;
 
-procedure TPasItem.StoreAbstractTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasItem.StoreAbstractTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   if AbstractDescription <> '' then
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       '@abstract tag was already specified for this item. ' +
       'It was specified as "%s"', [AbstractDescription]);
   AbstractDescription := TagParameter;
   ReplaceStr := '';
 end;
 
-procedure TPasItem.HandleDeprecatedTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasItem.HandleDeprecatedTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -1212,7 +1212,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TPasItem.HandleSeeAlsoTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasItem.HandleSeeAlsoTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var 
@@ -1223,7 +1223,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, mtWarning,
       '@seealso tag doesn''t specify any name to link to, skipped', []);
   end else
   begin
@@ -1236,11 +1236,11 @@ end;
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddTag('abstract', {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
+  TTag.Create(TagManager, 'abstract', {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TagManager.AddTag('deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
+  TTag.Create(TagManager, 'deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
     [], []);
-  TagManager.AddTag('seealso', {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
+  TTag.Create(TagManager, 'seealso', {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
     [toParameterRequired, toTopLevel], []);
 end;
 
@@ -1327,7 +1327,7 @@ begin
     and they will be expanded when this member will be expanded
     by TDocGenerator.ExpandDescriptions.
     This way they will be expanded exactly once, as they should be. }
-  TagManager.AddTag('value', {$IFDEF FPC}@{$ENDIF}StoreValueTag,
+  TTag.Create(TagManager, 'value', {$IFDEF FPC}@{$ENDIF} StoreValueTag,
     [toParameterRequired], []);
 end;
 
@@ -1337,7 +1337,7 @@ begin
   Members.Serialize(ADestination);
 end;
 
-procedure TPasEnum.StoreValueTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasEnum.StoreValueTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var
@@ -1354,11 +1354,11 @@ begin
   begin
     if Value.RawDescription = '' then
       Value.RawDescription := ValueDesc else
-      TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, mtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);
   end else
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
@@ -1651,11 +1651,11 @@ begin
     
     Moreover, this allows you to correctly use tags like @param
     and @raises inside @member for a method. }
-  TagManager.AddTag('member', {$IFDEF FPC}@{$ENDIF}StoreMemberTag,
+  TTag.Create(TagManager, 'member', {$IFDEF FPC}@{$ENDIF} StoreMemberTag,
     [toParameterRequired], []);
 end;
 
-procedure TPasCio.StoreMemberTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasCio.StoreMemberTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var
@@ -1674,11 +1674,11 @@ begin
       already }
     if Member.RawDescription = '' then
       Member.RawDescription := MemberDesc else
-      TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, mtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
   end else
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
 end;
 
@@ -1915,7 +1915,7 @@ end;
 
   But this is obviously unclean approach. }
 
-procedure TPasMethod.StoreRaisesTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasMethod.StoreRaisesTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var 
@@ -1926,7 +1926,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, mtWarning,
       '@raises tag doesn''t specify exception name, skipped', []);
   end else
   begin
@@ -1936,7 +1936,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TPasMethod.StoreParamTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasMethod.StoreParamTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 var 
@@ -1947,7 +1947,7 @@ begin
   if Name = '' then 
   begin
     FreeAndNil(Pair);
-    TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, mtWarning,
       '@param tag doesn''t specify parameter name, skipped', []);
   end else
   begin
@@ -1957,7 +1957,7 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TPasMethod.StoreReturnsTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TPasMethod.StoreReturnsTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
@@ -1999,13 +1999,13 @@ end;
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddTag('raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
+  TTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TagManager.AddTag('param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
+  TTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TagManager.AddTag('returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+  TTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TagManager.AddTag('return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+  TTag.Create(TagManager, 'return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
 end;
 
@@ -2080,24 +2080,24 @@ begin
 
 end;
 
-procedure TExternalItem.HandleShortTitleTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TExternalItem.HandleShortTitleTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   if ShortTitle <> '' then
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       '@shorttitle tag was already specified for this item. ' +
       'It was specified as "%s"', [ShortTitle]);
   ShortTitle := TagParameter;
   ReplaceStr := '';
 end;
 
-procedure TExternalItem.HandleTitleTag(ThisTag: TTag; TagManager: TTagManager;
+procedure TExternalItem.HandleTitleTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   if Title <> '' then
-    TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, mtWarning,
       '@title tag was already specified for this item. ' +
       'It was specified as "%s"', [Title]);
   Title := TagParameter;
@@ -2108,9 +2108,9 @@ end;
 procedure TExternalItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TagManager.AddTag('title', {$IFDEF FPC}@{$ENDIF}HandleTitleTag,
+  TTag.Create(TagManager, 'title', {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
     [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TagManager.AddTag('shorttitle', {$IFDEF FPC}@{$ENDIF}HandleShortTitleTag,
+  TTag.Create(TagManager, 'shorttitle', {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
     [toParameterRequired, toTopLevel], []);
 end;
 

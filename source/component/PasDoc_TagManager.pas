@@ -14,40 +14,9 @@ type
   TTagManager = class;
   TTag = class;
 
-  { This callback will be used to do main work when given
-    @@-tag occured in description.
-    
-    TagManager parameter can be useful for various things:
-
-    E.g. you can use it in tag handler to report a message
-    by @code(TagManager.DoMessage(...)), this is e.g. used
-    by implementation of TPasItem.StoreAbstractTag.
-    
-    You could also use this to manually force recursive
-    behavior of a given tag. I.e let's suppose that you
-    have a tag with TagOptions = [toParameterRequired],
-    so the TagParameter parameter passed to handler was
-    not recursively expanded. Then you can do inside your handler
-    @longcode# NewTagParameter := TagManager.Execute(TagParameter) #
-    and this way you have explicitly recursively expanded the tag.
-
-    This is not used anywhere for now, but this will be used
-    when I will implement auto-linking (making links without
-    the need to use @@link tag). Then I will have to make @@nolink
-    tag, and TTagManager.Execute will get a parameter
-    @code(AutoLink: boolean). Then inside @@nolink tag I will
-    be able to call TTagManager.Execute(TagParameter, false)
-    thus preventing auto-linking inside text within @@nolink. 
-    
-    EnclosingTag parameter specifies enclosing tag. This
-    is useful for tags that must behave differently in different
-    contexts, e.g. in plain-text output @@item tag will behave
-    differently inside @@orderedList and @@unorderedList.
-    EnclosingTag is nil when the tag occured at top level of the
-    description. }
-  TTagExecuteEvent = procedure(ThisTag: TTag; TagManager: TTagManager;
-    EnclosingTag: TTag; const TagParameter: string;
-    var ReplaceStr: string) of object;
+  { @seealso TTag.Execute }
+  TTagExecuteEvent = procedure(ThisTag: TTag; EnclosingTag: TTag; 
+    const TagParameter: string; var ReplaceStr: string) of object;
     
   TStringConverter = function(const s: string): string of object;
   
@@ -132,28 +101,70 @@ type
     FTagOptions: TTagOptions;
     FContentAllowedInside: TContentAllowedInside;
     FName: string;
+    FTagManager: TTagManager;
   public
     { Note that AName will be converted to lowercase before assigning 
       to Name. }
-    constructor Create(const AName: string;
-      AOnExecute: TTagExecuteEvent;
+    constructor Create(ATagManager: TTagManager;
+      const AName: string; AOnExecute: TTagExecuteEvent;
       const ATagOptions: TTagOptions;
       const AContentAllowedInside: TContentAllowedInside);
 
     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
     
+    { TagManager that will recognize and handle this tag.
+      Note that the tag instance is owned by this tag manager
+      (i.e. it will be freed inside this tag manager). 
+      It can be nil if no tag manager currently owns this tag. 
+      
+      Note that it's very useful in @link(Execute) or
+      @link(OnExecute) implementations.
+
+      E.g. you can use it to report a message
+      by @code(TagManager.DoMessage(...)), this is e.g. used
+      by implementation of TPasItem.StoreAbstractTag.
+
+      You could also use this to manually force recursive
+      behavior of a given tag. I.e let's suppose that you
+      have a tag with TagOptions = [toParameterRequired],
+      so the TagParameter parameter passed to handler was
+      not recursively expanded. Then you can do inside your handler
+      @longcode# NewTagParameter := TagManager.Execute(TagParameter) #
+      and this way you have explicitly recursively expanded the tag.
+
+      This is not used anywhere for now, but this will be used
+      when I will implement auto-linking (making links without
+      the need to use @@link tag). Then I will have to make @@nolink
+      tag, and TTagManager.Execute will get a parameter
+      @code(AutoLink: boolean). Then inside @@nolink tag I will
+      be able to call TTagManager.Execute(TagParameter, false)
+      thus preventing auto-linking inside text within @@nolink. }
+    property TagManager: TTagManager read FTagManager;
+    
     property ContentAllowedInside: TContentAllowedInside
       read FContentAllowedInside write FContentAllowedInside;
 
-    { Note that this must always be lowercase. }
+    { Name of the tag, that must be specified by user after the "@@" sign.
+      Value of this property must always be lowercase. }
     property Name: string read FName write FName;
     
     property OnExecute: TTagExecuteEvent 
       read FOnExecute write FOnExecute;
 
-    procedure Execute(TagManager: TTagManager;
-      EnclosingTag: TTag; const TagParameter: string;
-      var ReplaceStr: string);
+    { This will be used to do main work when this
+      @@-tag occured in description.
+
+      EnclosingTag parameter specifies enclosing tag. This
+      is useful for tags that must behave differently in different
+      contexts, e.g. in plain-text output @@item tag will behave
+      differently inside @@orderedList and @@unorderedList.
+      EnclosingTag is nil when the tag occured at top level of the
+      description.
+   
+      In this class this method simply calls @link(OnExecute) 
+      (if assigned). }
+    procedure Execute(EnclosingTag: TTag; const TagParameter: string;
+      var ReplaceStr: string); virtual;
   end;
 
   { All Items of this list must be non-nil TTag objects. }
@@ -274,12 +285,6 @@ type
       to Result in @link(Execute). }
     property URLLink: TStringConverter read FURLLink write FURLLink;
 
-    { See @link(TTag) for the meaning of parameter TagOption.
-      Don't worry about the case of TagName, it does @bold(not) matter. }
-    procedure AddTag(const TagName: string; OnExecute: TTagExecuteEvent;
-      const TagOptions: TTagOptions;
-      const ContentAllowedInside: TContentAllowedInside);
-
     { This method is the very essence of this class and this unit.
       It expands Description, which means that it processes Description
       (text supplied by user in some comment in parsed unit)
@@ -320,8 +325,8 @@ uses Utils;
 
 { TTag ------------------------------------------------------------  }
 
-constructor TTag.Create(const AName: string;
-  AOnExecute: TTagExecuteEvent;
+constructor TTag.Create(ATagManager: TTagManager;
+  const AName: string; AOnExecute: TTagExecuteEvent;
   const ATagOptions: TTagOptions;
   const AContentAllowedInside: TContentAllowedInside);
 begin
@@ -330,14 +335,17 @@ begin
   FOnExecute := AOnExecute;
   FTagOptions := ATagOptions;
   FContentAllowedInside := AContentAllowedInside;
+  
+  FTagManager := ATagManager;
+  if TagManager <> nil then
+    TagManager.FTags.Add(Self);
 end;
 
-procedure TTag.Execute(TagManager: TTagManager;
-  EnclosingTag: TTag; const TagParameter: string;
+procedure TTag.Execute(EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
   if Assigned(OnExecute) then
-    OnExecute(Self, TagManager, EnclosingTag, TagParameter, ReplaceStr);
+    OnExecute(Self, EnclosingTag, TagParameter, ReplaceStr);
 end;
 
 { TTagVector ------------------------------------------------------------ }
@@ -373,14 +381,6 @@ destructor TTagManager.Destroy;
 begin
   FreeAndNil(FTags);
   inherited;
-end;
-
-procedure TTagManager.AddTag(const TagName: string; 
-  OnExecute: TTagExecuteEvent;
-  const TagOptions: TTagOptions;
-  const ContentAllowedInside: TContentAllowedInside);
-begin
-  FTags.Add(TTag.Create(TagName, OnExecute, TagOptions, ContentAllowedInside));
 end;
 
 function TTagManager.DoConvertString(const s: string): string;
@@ -729,7 +729,7 @@ begin
         ReplaceStr := DoConvertString('@' + FoundTag.Name);
         
       { execute tag handler }
-      FoundTag.Execute(Self, EnclosingTag, Params, ReplaceStr);
+      FoundTag.Execute(EnclosingTag, Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
       FOffset := OffsetEnd;
