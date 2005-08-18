@@ -1,4 +1,4 @@
-{ @abstract(The @name unit - easing command line parsing)
+{ @abstract(The @name unit --- easing command line parsing)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @cvs($Date$)
 
@@ -58,15 +58,15 @@ type
     constructor CreateEx(const AShort:char; const ALong: string; 
       const AShortCaseSensitive, ALongCaseSensitive: boolean); virtual; 
 
-    { returns the width of the string "-s, --long-option" where s is the short option.
+    { returns the width of the string "-s, @--long-option" where s is the short option.
       Removes non-existant options (longoption = '' or shortoption = #0) }
     function GetOptionWidth: Integer;
     { writes the wrapped explanation including option format,
       AOptWidth determines how much it is indented & wrapped }
     procedure WriteExplanation(const AOptWidth: Integer);
-    { Short form of the option - single character - if #0 then not used }
+    { Short form of the option --- single character --- if #0 then not used }
     property ShortForm: char read FShort write FShort;
-    { long form of the option - string - if empty, then not used }
+    { long form of the option --- string --- if empty, then not used }
     property LongForm: string read FLong write FLong;
     { specified whether the short form should be case sensitive or not }
     property ShortCaseSensitive: boolean read FShortSens write FShortSens;
@@ -77,14 +77,14 @@ type
     { explanation for the option, see also @link(WriteExplanation) }
     property Explanation: string read FExplanation write FExplanation;
 {$IFDEF USE_VARIANTS}
-    { Value as Variant - for easier access through the @link(TOptionParser.ByName) property }
+    { Value as Variant --- for easier access through the @link(TOptionParser.ByName) property }
     property Value: Variant read GetValue write SetValue;
 {$ENDIF}
   end;
 
   { @abstract(simple boolean option)
     turned off when not specified,
-    turned on when specified. Cannot handle --option=false et al. }
+    turned on when specified. Cannot handle @--option=false et al. }
   TBoolOption = class(TOption)
   protected
     function ParseOption(const AWords: TStrings): boolean; override;
@@ -98,7 +98,7 @@ type
 
   { @abstract(base class for all options that values)
     base class for all options that take one or more values
-    of the form --option=value or --option value etc }
+    of the form @--option=value or @--option value etc }
   TValueOption = class(TOption)
   protected
     function CheckValue(const AString: String): boolean; virtual; abstract;
@@ -189,7 +189,7 @@ type
     property Values: string read GetValues write SetValues;
   end;
 
-  { @abstract(OptionParser - instantiate one of these for commandline parsing)
+  { @abstract(OptionParser --- instantiate one of these for commandline parsing)
     This class is the main parsing class, although a lot of parsing is handled
     by @link(TOption) and its descendants instead. }
   TOptionParser = class
@@ -204,7 +204,7 @@ type
     function GetOptionByLongName(const AName: string): TOption;
     function GetOptionByShortname(const AName: char): TOption;
   public
-    { Create without any options - this will parse the current command line }
+    { Create without any options --- this will parse the current command line }
     constructor Create; virtual;
     { Create with parameters to be used instead of command line }
     constructor CreateParams(const AParams: TStrings); virtual;
@@ -223,7 +223,7 @@ type
     property LeftList: TStringList read FLeftList;
     { The number of option objects that were added to this parser }
     property OptionsCount: Integer read GetOptionsCount;
-    { retrieve an option by index - you can use this and @link(OptionsCount)
+    { retrieve an option by index --- you can use this and @link(OptionsCount)
       to iterate through the options that this parser owns }
     property Options[const AIndex: Integer]: TOption read GetOption;
     { retrieve an option by its long form. Case sensitivity of the options

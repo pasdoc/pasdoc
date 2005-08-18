@@ -8,7 +8,7 @@
   StrUtils provided by them.
   
   It seems that many people are committed to keeping Delphi 5
-  compatibility of pasdoc sources -- OK, so you will have to maintain 
+  compatibility of pasdoc sources --- OK, so you will have to maintain 
   this unit and make sure that it works with Delphi 5 and allows compiling
   pasdoc with Delphi 5.
 

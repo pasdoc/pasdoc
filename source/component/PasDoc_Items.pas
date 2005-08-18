@@ -43,7 +43,7 @@ type
     { indicates field or method is automated }
     viAutomated,
     { implicit visibility, marks the implicit members if user
-      used --implicit-visibility=implicit command-line option. }
+      used @--implicit-visibility=implicit command-line option. }
     viImplicit
     );
 
@@ -131,7 +131,7 @@ type
       You can override it to add more handlers. }
     procedure RegisterTags(TagManager: TTagManager); virtual;
 
-    { This searches for item with ItemName *inside* *this* item. 
+    { This searches for item with ItemName @italic(inside this item). 
       This means that e.g. for units it checks whether
       there is some item declared in this unit (like procedure, or class).
       For classes this means that some item is declared within the class
@@ -139,7 +139,7 @@ type
       
       All normal rules of ObjectPascal scope apply, which means that
       e.g. if this item is a unit, @name searches for a class named
-      ItemName but it *doesn't* search for a method named ItemName
+      ItemName but it @italic(doesn't) search for a method named ItemName
       inside some class of this unit. Just like in ObjectPascal
       the scope of identifiers declared within the class always
       stays within the class. Of course, in ObjectPascal you can
@@ -242,7 +242,7 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     
-    { This does the same thing as @link(FindName) but it *doesn't*
+    { This does the same thing as @link(FindName) but it @italic(doesn't)
       scan other units. If this item is a unit, it searches only
       inside this unit, else it searches only inside @link(MyUnit)
       unit.
@@ -263,7 +263,7 @@ type
       
       This will be inited from @@abstract tag in RawDescription, 
       or cutted out from first sentence in RawDescription 
-      if --auto-abstract was used.
+      if @--auto-abstract was used.
     
       Note that this is already in the form suitable for final output,
       with tags expanded, chars converted etc. }
@@ -280,10 +280,10 @@ type
       was no @@abstract and AutoAbstract was false) this is set to false. 
       
       This is a useful hint for generators: it tells them that when they
-      are printing *both* AbstractDescription and DetailedDescription of the item
+      are printing @italic(both) AbstractDescription and DetailedDescription of the item
       in one place (e.g. TTexDocGenerator.WriteItemDetailedDescription
       and TGenericHTMLDocGenerator.WriteItemDetailedDescription both do this)
-      then they should *not* put any additional space between
+      then they should @italic(not) put any additional space between
       AbstractDescription and DetailedDescription.
       
       This way when user will specify description like
@@ -293,7 +293,7 @@ type
         procedure Foo;
       #)
       
-      and --auto-abstract was on, then "First sentence." is the
+      and @--auto-abstract was on, then "First sentence." is the
       AbstractDescription, " Second sentence." is DetailedDescription,
       AbstractDescriptionWasAutomatic is true and
       and TGenericHTMLDocGenerator.WriteItemDetailedDescription
@@ -352,8 +352,8 @@ type
       left unsorted, e.g. Members of TPasEnum are never sorted
       (their declared order always matters,
       so we shouldn't sort them when displaying their documentation
-      -- reader of such documentation would be seriously misleaded).
-      Sorting of other things depends on SortSettings -- 
+      --- reader of such documentation would be seriously misleaded).
+      Sorting of other things depends on SortSettings ---
       e.g. without ssMethods, CIOs methods will not be sorted.
       
       So actually this method *makes sure that all things that should
@@ -365,25 +365,27 @@ type
        
        Note that that this is not used for some descendants.
        Right now it's used only with 
-       - TPasConstant 
-       - TPasFieldVariable (includes type, default values, etc.) 
-       - TPasType
-       - TPasMethod (includes parameter list, procedural directives, etc.)
-       - TPasProperty (includes read/write and storage specifiers, etc.) 
-       - TPasEnum 
+       @unorderedList(
+         @item TPasConstant 
+         @item TPasFieldVariable (includes type, default values, etc.) 
+         @item TPasType
+         @item TPasMethod (includes parameter list, procedural directives, etc.)
+         @item TPasProperty (includes read/write and storage specifiers, etc.) 
+         @item(TPasEnum 
          
-         But in this special case, '...' is used instead of listing individual 
-         members, e.g. 'TEnumName = (...)'. You can get list of Members using
-         TPasEnum.Members. Eventual specifics of each member should be also
-         specified somewhere inside Members items, e.g.
-           @longcode# TMyEnum = (meOne, meTwo = 3); #
-         and
-           @longcode# TMyEnum = (meOne, meTwo); #
-         will both result in TPasEnum with equal FullDeclaration
-         (just @code('TMyEnum = (...)')) but this @code('= 3') should be
-         marked somewhere inside Members[1] properties.
+           But in this special case, '...' is used instead of listing individual 
+           members, e.g. 'TEnumName = (...)'. You can get list of Members using
+           TPasEnum.Members. Eventual specifics of each member should be also
+           specified somewhere inside Members items, e.g.
+             @longcode# TMyEnum = (meOne, meTwo = 3); #
+           and
+             @longcode# TMyEnum = (meOne, meTwo); #
+           will both result in TPasEnum with equal FullDeclaration
+           (just @code('TMyEnum = (...)')) but this @code('= 3') should be
+           marked somewhere inside Members[1] properties.)
          
-       - TPasItem when it's a CIO's field. 
+         @item TPasItem when it's a CIO's field.
+       )
        
        The intention is that in the future all TPasItem descendants
        will always have approprtate FullDeclaration set.
@@ -418,7 +420,7 @@ type
   TPasFieldVariable = class(TPasItem)
   end;
   
-  { @abstract(Pascal type (but not a procedural type -- these are expressed
+  { @abstract(Pascal type (but not a procedural type --- these are expressed
     as @link(TPasMethod).)) }
   TPasType = class(TPasItem)
   end;
@@ -445,9 +447,11 @@ type
     METHOD_FUNCTION, METHOD_PROCEDURE, METHOD_OPERATOR);
 
   { This represents:
-    - global function/procedure,
-    - method (function/procedure of a class/interface/object),
-    - pointer type to one of the above (in this case Name is the type name). }
+    @orderedList(
+      @item global function/procedure,
+      @item method (function/procedure of a class/interface/object),
+      @item pointer type to one of the above (in this case Name is the type name). 
+    ) }
   TPasMethod = class(TPasItem)
   protected
     FParams: TStringPairVector;
@@ -479,7 +483,7 @@ type
     
     { Note that Params, Returns, Raises are already in the form processed by
       @link(TTagManager.Execute), i.e. with links resolved,
-      html characters escaped etc. So *don't* convert them (e.g. before
+      html characters escaped etc. So @italic(don't) convert them (e.g. before
       writing to the final docs) once again (by some ExpandDescription or
       ConvertString or anything like that). }
     { }
@@ -497,7 +501,7 @@ type
     property Raises: TStringPairVector read FRaises;
     
     { Are some optional properties (i.e. the ones that may be empty for 
-      TPasMethod after parsing unit and expanding tags -- currently this
+      TPasMethod after parsing unit and expanding tags --- currently this
       means @link(Params), @link(Returns) and @link(Raises)) specified ? }
     function HasMethodOptionalInfo: boolean;
   end;
@@ -577,7 +581,7 @@ type
       Objects[] of this vector are assigned in TDocGenerator.BuildLinks to
       TPasItem instances of ancestors (or nil if such ancestor is not found).
       
-      Note that they are TPasItem, *not necessarily* TPasCio.
+      Note that they are TPasItem, @italic(not necessarily) TPasCio.
       Consider e.g. the case
       @longcode(#
         TMyStringList = Classes.TStringList;
@@ -610,17 +614,22 @@ type
       
       So this method is @italic(roughly) something like
       @code(FirstAncestor.Name), but with a few notable differences:
-      - FirstAncestor is nil if the ancestor was not found in items parsed 
-        by pasdoc.
-        But this method will still return in this case name of ancestor.
-      - @code(FirstAncestor.Name) is the name of ancestor as specified
+      
+      @unorderedList(
+        @item(
+          FirstAncestor is nil if the ancestor was not found in items parsed 
+          by pasdoc.
+          But this method will still return in this case name of ancestor.)
+          
+        @item(@code(FirstAncestor.Name) is the name of ancestor as specified
         at declaration of an ancestor.
         But this method is the name of ancestor as specified at declaration
-        of this cio -- with the same letter case, with optional unit specifier. 
+        of this cio --- with the same letter case, with optional unit specifier.)
+      )
       
       If this function returns '', then you can be sure that
       FirstAncestor returns nil. The other way around is not necessarily true
-      -- FirstAncestor may be nil, but still this function may return something 
+      --- FirstAncestor may be nil, but still this function may return something 
       <> ''. }
     function FirstAncestorName: string;
     
@@ -820,18 +829,18 @@ type
     
     { This calls @link(TPasItem.Sort Sort(SortSettings)) 
       for each of items on the list.
-      It does *not* sort the items on this list. }
+      It does @italic(not) sort the items on this list. }
     procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
 
     { This sorts all items on this list by their name.
-      Unlike @link(SortDeep), it does *not* call @link(TPasItem.Sort Sort) 
+      Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort) 
       for each of these items.
       So "items inside items" (e.g. class methods, if this list contains
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
     { During Add, AObject is associated with AObject.Name using hash table,
-      so remember to set AObject.Name *before* calling Add(AObject). }
+      so remember to set AObject.Name @italic(before) calling Add(AObject). }
     procedure Add(const AObject: TPasItem);
     procedure Delete(const AIndex: Integer);
     constructor Create(const AOwnsObject: Boolean); override;

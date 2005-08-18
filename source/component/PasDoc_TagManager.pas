@@ -32,7 +32,7 @@ type
       before passing them to @link(TTag.Execute).
       This means that we will expand recursive tags inside
       parameters, that we will ConvertString inside parameters,
-      that we will handle paragraphs inside parameters etc. --
+      that we will handle paragraphs inside parameters etc. ---
       all that does @link(TTagManager.Execute).
 
       If toParameterRequired is not present in TTagOptions than
@@ -62,60 +62,66 @@ type
     
     There are four groups of content that we consider:
     
-    - toTopLevel tags. These are never allowed inside.
-    
-    - Self tag, e.g. is 
-        @@code(This is some @@code(code) that I wrote) 
-      allowed ?
-      This is decided by aiSelfTag.
-      Note that if self tag is toTopLevel, then whether aiSelfTag
-      is specified does not matter -- toplevel tag is never allowed
-      inside any other tag (even in itself).
+    @orderedList(
+      @item(
+        toTopLevel tags. These are never allowed inside.)
       
-    - Non-toTopLevel tags, that are not equal to self.
-      This is decided by aiOtherTags. 
+      @item(
+        Self tag, e.g. is
+          @@code(This is some @@code(code) that I wrote)
+        allowed ?
+        This is decided by aiSelfTag.
+        Note that if self tag is toTopLevel, then whether aiSelfTag
+        is specified does not matter --- toplevel tag is never allowed
+        inside any other tag (even in itself).)
       
-    - Other content (i.e. normal text, paragraph breaks,
-      various dashes, URLs, and literal @@ character
-      (expressed by @@@@ in descriptions)).
-      This is decided by aiNormalText. 
+      @item(
+        Non-toTopLevel tags, that are not equal to self.
+        This is decided by aiOtherTags.)
       
-      If aiNormalText will not be included,
-      then normal text (not enclosed within other @@-tags) will
-      not be allowed inside. Only whitespace will be allowed, and 
-      it will be ignored anyway (i.e. will not be passed to
-      ConvertString, empty line will not produce any Paragraph etc.).
-      This is useful for tags like @@orderedList that should only contain
-      other @@item tags inside. 
-  }
-  TContentAllowedInsideOption = (
-    aiSelfTag,
-    aiOtherTags,
-    aiNormalText);
-    
-  TContentAllowedInside = set of TContentAllowedInsideOption;
+      @item(
+        Other content (i.e. normal text, paragraph breaks,
+         various dashes, URLs, and literal @@ character
+         (expressed by @@@@ in descriptions)).
+         This is decided by aiNormalText. 
 
-  TTag = class
-  private
-    FOnExecute: TTagExecuteEvent;
-    FTagOptions: TTagOptions;
-    FContentAllowedInside: TContentAllowedInside;
-    FName: string;
-    FTagManager: TTagManager;
-  public
-    { Note that AName will be converted to lowercase before assigning 
-      to Name. }
-    constructor Create(ATagManager: TTagManager;
-      const AName: string; AOnExecute: TTagExecuteEvent;
-      const ATagOptions: TTagOptions;
-      const AContentAllowedInside: TContentAllowedInside);
+         If aiNormalText will not be included,
+         then normal text (not enclosed within other @@-tags) will
+         not be allowed inside. Only whitespace will be allowed, and 
+         it will be ignored anyway (i.e. will not be passed to
+         ConvertString, empty line will not produce any Paragraph etc.).
+         This is useful for tags like @@orderedList that should only contain
+         other @@item tags inside.)
+     )
+   }
+   TContentAllowedInsideOption = (
+     aiSelfTag,
+     aiOtherTags,
+     aiNormalText);
 
-    property TagOptions: TTagOptions read FTagOptions write FTagOptions;
-    
-    { TagManager that will recognize and handle this tag.
-      Note that the tag instance is owned by this tag manager
-      (i.e. it will be freed inside this tag manager). 
-      It can be nil if no tag manager currently owns this tag. 
+   TContentAllowedInside = set of TContentAllowedInsideOption;
+
+   TTag = class
+   private
+     FOnExecute: TTagExecuteEvent;
+     FTagOptions: TTagOptions;
+     FContentAllowedInside: TContentAllowedInside;
+     FName: string;
+     FTagManager: TTagManager;
+   public
+     { Note that AName will be converted to lowercase before assigning 
+       to Name. }
+     constructor Create(ATagManager: TTagManager;
+       const AName: string; AOnExecute: TTagExecuteEvent;
+       const ATagOptions: TTagOptions;
+       const AContentAllowedInside: TContentAllowedInside);
+
+     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
+
+     { TagManager that will recognize and handle this tag.
+       Note that the tag instance is owned by this tag manager
+       (i.e. it will be freed inside this tag manager). 
+       It can be nil if no tag manager currently owns this tag. 
       
       Note that it's very useful in @link(Execute) or
       @link(OnExecute) implementations.
@@ -169,7 +175,7 @@ type
 
   { All Items of this list must be non-nil TTag objects. }
   TTagVector = class(TObjectVector)
-    { Case of Name does *not* matter (so don't bother converting it to 
+    { Case of Name does @italic(not) matter (so don't bother converting it to 
       lowercase or something like that before using this method). 
       Returns nil if not found. 
       
@@ -256,7 +262,7 @@ type
       of en-dash or em-dash.
       This should produce just a short dash.
       
-      Default value is '@-'. 
+      Default value is '-'. 
       
       You will never get any '-' character to be converted by ConvertString. 
       Convertion of '-' is controlled solely by XxxDash properties of 
@@ -266,18 +272,18 @@ type
       @seealso EmDash }
     property ShortDash: string read FShortDash write FShortDash;
 
-    { This will be inserted on @code(@-@-) in description.
+    { This will be inserted on @code(@--) in description.
       This should produce en-dash (as in LaTeX).
-      Default value is '@-@-'. }
+      Default value is '@--'. }
     property EnDash: string read FEnDash write FEnDash;
 
-    { This will be inserted on @code(@-@-@-) in description.
+    { This will be inserted on @code(@-@--) in description.
       This should produce em-dash (as in LaTeX).
-      Default value is '@-@-@-'. }
+      Default value is '@-@--'. }
     property EmDash: string read FEmDash write FEmDash;
     
     { This will be called from @link(Execute) when URL will be found
-      in Description. Note that passed here URL will *not* be processed by
+      in Description. Note that passed here URL will @italic(not) be processed by
       @link(ConvertString). 
       
       This tells what to put in result on URL.
@@ -289,16 +295,16 @@ type
       It expands Description, which means that it processes Description
       (text supplied by user in some comment in parsed unit)
       into something ready to be included in output documentation.
-      This means that this handles parsing @-tags, inserting
+      This means that this handles parsing @@-tags, inserting
       paragraph markers, recognizing URLs in Description and
       correctly translating it, and translating rest of the "normal" text
       via ConvertString.
       
       If WantFirstSentenceEnd then we will look for '.' char 
       followed by any whitespace in Description. 
-      Moreover, this '.' must be outside of any @-tags
+      Moreover, this '.' must be outside of any @@-tags
       parameter. Under FirstSentenceEnd we will return the number
-      of beginning characters *in the output string* that will
+      of beginning characters @italic(in the output string) that will
       include correspong '.' character (note that this definition
       takes into account that ConvertString may translate '.' into
       something longer).

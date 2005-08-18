@@ -118,7 +118,7 @@ procedure CopyFile(const SourceFileName, DestinationFileName: string);
 
 {$ifdef DELPHI_1_UP}
 { Default Delphi (under Windows) implementation of ExtractFilePath
-  has a problem -- it doesn't treat '/' as a valid path delimiter
+  has a problem --- it doesn't treat '/' as a valid path delimiter
   under Windows (yes, it is valid path delimiter under Windows, just like '\').
   This is the fixed version (actually taken from FPC sources). }
 function ExtractFilePath(const FileName: string): string;

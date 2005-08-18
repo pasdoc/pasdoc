@@ -107,14 +107,13 @@ type
   TLinkContext = (
     { This means that link is inside some larger code piece, 
       e.g. within FullDeclaration of some item etc.
-      This means that we *may* be inside a context where
+      This means that we @italic(may) be inside a context where
       used font has constant width. }
     lcCode, 
     { This means that link is inside some "normal" description text. }
     lcNormal);
 
   { @abstract(basic documentation generator object)
-    @author(Marco Schmidt (marcoschmidt@geocities.com))
     This abstract object will do the complete process of writing
     documentation files.
     It will be given the collection of units that was the result of the
@@ -411,10 +410,13 @@ end;
       (no matter what is the value of WarningIfLinkNotFound).
            
       When item will not be found then:
-      - if WarningIfLinkNotFound is true then it returns
-        CodeString(ConvertString(S)) and
-        makes DoMessage with appropriate warning.
-      - else it returns '' (and does not do any DoMessage)
+      @unorderedList(
+        @item(
+          if WarningIfLinkNotFound is true then it returns
+          CodeString(ConvertString(S)) and
+          makes DoMessage with appropriate warning.)
+        @item(else it returns '' (and does not do any DoMessage))
+      )
  
       If LinkDisplay is not '', then it specifies explicite the display text for 
       link. Else how exactly link does look like is controlled by 
@@ -540,11 +542,11 @@ end;
     function ShortDash: string; virtual;
     
     { See @link(TTagManager.EnDash). Default implementation in this
-      class returns '--'. }
+      class returns '@--'. }
     function EnDash: string; virtual;
     
     { See @link(TTagManager.EmDash). Default implementation in this
-      class returns '---'. }
+      class returns '@-@--'. }
     function EmDash: string; virtual;
     
     { S is guaranteed (guaranteed by the user) to be correct html content,
@@ -582,7 +584,7 @@ end;
       E.g. HTML generator will want to wrap this in 
       <a href="...">...</a>.
       
-      Note that passed here URL is *not* processed by @link(ConvertString)
+      Note that passed here URL is @italic(not) processed by @link(ConvertString)
       (because sometimes it could be undesirable).
       If you want you can process URL with ConvertString when
       overriding this method.
@@ -718,10 +720,12 @@ end;
       with different pasdoc binary etc.
       
       This includes
-      - time of generating docs
-      - compiler name and version used to compile pasdoc, 
-        time of compilation and such
-      - pasdoc's version
+      @unorderedList(
+        @item(time of generating docs)
+        @item(compiler name and version used to compile pasdoc, 
+          time of compilation and such)
+        @item(pasdoc's version)
+      )
       See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
       Default value is false (i.e. show them),
       as this information is generally considered useful.
@@ -765,7 +769,7 @@ end;
     property SpellCheckIgnoreWords: TStringList
       read FSpellCheckIgnoreWords write SetSpellCheckIgnoreWords;
 
-    { The meaning of this is just like --auto-abstract command-line option.
+    { The meaning of this is just like @--auto-abstract command-line option.
       It is used in @link(ExpandDescriptions). }
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
     

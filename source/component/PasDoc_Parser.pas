@@ -36,33 +36,40 @@ type
     
     Things that parser inits in items it returns:
     
-    - Of every TPasItem :
-      Name, RawDescription, Visibility, IsDeprecated, IsPlatformSpecific, 
-      IsLibrarySpecific, FullDeclararation (note: for now not all items
-      get sensible FullDeclararation, but the intention is to improve this
-      over time; see @link(TPasItem.FullDeclaration) to know where 
-      FullDeclararation is available now).
+    @unorderedList(
+      @item(Of every TPasItem :
+        Name, RawDescription, Visibility, IsDeprecated, IsPlatformSpecific, 
+        IsLibrarySpecific, FullDeclararation (note: for now not all items
+        get sensible FullDeclararation, but the intention is to improve this
+        over time; see @link(TPasItem.FullDeclaration) to know where 
+        FullDeclararation is available now).
+
+        Note to IsDeprecated: parser inits it basing on hint directive
+        "deprecated" presence in source file; it doesn't handle the fact 
+        that @@deprecated tag may be specified inside RawDescription.
+
+        Note to RawDescription: parser inits them from user's comments
+        that preceded given item in source file.
+        It doesn't handle the fact that @@member and @@value tags
+        may also assign RawDescription for some item.)
       
-      Note to IsDeprecated: parser inits it basing on hint directive
-      "deprecated" presence in source file; it doesn't handle the fact 
-      that @@deprecated tag may be specified inside RawDescription.
+      @item Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
       
-      Note to RawDescription: parser inits them from user's comments
-      that preceded given item in source file.
-      It doesn't handle the fact that @@member and @@value tags
-      may also assign RawDescription for some item.
+      @item Of TPasEnum: Members.
       
-    - Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
-    - Of TPasEnum: Members.
-    - Of TPasMethod: What.
-    - Of TPasVarConst: FullDeclaration.
-    - Of TPasProperty: IndexDecl, FullDeclaration.
-      PropType (only if was specified in property declaration).
-      It was intended that parser will also set Default,
-      NoDefault, StoredId, DefaultId, Reader, Writer attributes, 
-      but it's still not implemented.
-    - Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
-      FuncsProcs.
+      @item Of TPasMethod: What.
+      
+      @item Of TPasVarConst: FullDeclaration.
+      
+      @item(Of TPasProperty: IndexDecl, FullDeclaration.
+        PropType (only if was specified in property declaration).
+        It was intended that parser will also set Default,
+        NoDefault, StoredId, DefaultId, Reader, Writer attributes, 
+        but it's still not implemented.)
+      
+      @item(Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
+        FuncsProcs.)
+    )
     
     It doesn't init other values. 
     E.g. AbstractDescription or DetailedDescription of TPasItem 
@@ -70,7 +77,7 @@ type
     E.g. SourceFileDateTime and SourceFileName of TPasUnit must
     be set by other means.
 
-    TODO -- for now it's not really consistent how the errors in parsing
+    TODO --- for now it's not really consistent how the errors in parsing
     are reported. Some errors cause @link(ParseUnit) and other ParseXxx
     methods to exit with false, some errors cause raising an exception. }
   TParser = class
@@ -122,8 +129,8 @@ type
     { Get next token T from scanner that is neither whitespace nor comment.
       Return true on success. 
       
-      Sets LCollector to skipped tokens data (does *not* append them
-      to LCollector, it *sets* LCollector to them, deleting previous
+      Sets LCollector to skipped tokens data (does @italic(not) append them
+      to LCollector, it @italic(sets) LCollector to them, deleting previous
       LCollector contents). }
     function GetNextNonWCToken(var t: TToken; out LCollector: string): Boolean; overload;
     
@@ -240,7 +247,7 @@ type
     property ShowVisibilities: TVisibilities 
       read FShowVisibilities write FShowVisibilities;
       
-    { See command-line option --implicit-visibility documentation at
+    { See command-line option @--implicit-visibility documentation at
       [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;

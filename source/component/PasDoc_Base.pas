@@ -167,7 +167,7 @@ type
     property CacheDir: string read FCacheDir write FCacheDir; 
     
     { This determines how items inside will be sorted.
-      See "--sort" command-line option documentation. }
+      See [http://pasdoc.sipsolutions.net/SortOption]. }
     property SortSettings: TSortSettings 
       read FSortSettings write FSortSettings default [];
       
@@ -177,7 +177,7 @@ type
     property ConclusionFileName: string read FConclusionFileName
       write FConclusionFileName;
       
-    { See command-line option --implicit-visibility documentation at
+    { See command-line option @--implicit-visibility documentation at
       [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption].
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility

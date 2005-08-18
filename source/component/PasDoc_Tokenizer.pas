@@ -33,11 +33,10 @@ type
     standard directive (e.g. 'Register') as an identifier
     (e.g. you're declaring procedure named 'Register')
     or as a real standard directive (e.g. a calling specifier 'register').
-    So there is *no* value like TOK_STANDARD_DIRECTIVE here,
+    So there is @italic(no) value like TOK_STANDARD_DIRECTIVE here,
     standard directives are always reported as TOK_IDENTIFIER.
     You can check TToken.Info.StandardDirective to know whether
-    this identifier is *maybe* used as real standard directive.
-    }
+    this identifier is @italic(maybe) used as real standard directive. }
   TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
                 TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
                 TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD);

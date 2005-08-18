@@ -59,7 +59,7 @@ type
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
       #)
       inside it, and to take care of writing paragraph markers inside it.
-      Right now this is messy -- to many paragraphs may be written around
+      Right now this is messy --- to many paragraphs may be written around
       (which does not hurt, but is unclean) and 
       FLanguage.Translation[trDescription] header may be written when
       there is actually no description (only e.g. Params or Raises or Returns
@@ -213,7 +213,7 @@ Latex DocGenerators.}
 
     { Returns Latex file extension ".tex". }
     function GetFileExtension: string; override;
-    { The method that does everything - writes documentation for all units
+    { The method that does everything --- writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
     constructor Create(AOwner: TComponent); override;

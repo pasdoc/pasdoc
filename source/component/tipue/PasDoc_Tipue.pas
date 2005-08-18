@@ -10,7 +10,7 @@ uses Utils, PasDoc_Items;
 { Put this in <head> of page with search button. }
 function TipueSearchButtonHead: string;
 
-{ Put this in content of some page --
+{ Put this in content of some page ---
   this will place a form with search button.
   You will need to use Format to insert the localized word for "Search", e.g.:
   Format(TipueSearchButton, ['Search'])

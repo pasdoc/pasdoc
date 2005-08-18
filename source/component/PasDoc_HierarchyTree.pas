@@ -1,7 +1,7 @@
 {
   @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
-  a n-ary tree for PasItems - for use in Class Hierarchy
+  a n-ary tree for PasItems --- for use in Class Hierarchy
 }
 unit PasDoc_HierarchyTree;
 

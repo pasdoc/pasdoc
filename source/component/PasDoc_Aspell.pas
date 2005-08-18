@@ -25,8 +25,8 @@ type
     FAspellLanguage: string;
   public
     { Values for AspellMode and AspellLanguage are the same as for
-      aspell --mode and --lang command-line options.
-      You can pass here '', they we will not pass appropriate
+      aspell @--mode and @--lang command-line options.
+      You can pass here '', then we will not pass appropriate
       command-line option to aspell. }
     constructor Create(const AAspellMode, AAspellLanguage: string);
     destructor Destroy; override;

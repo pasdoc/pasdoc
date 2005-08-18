@@ -30,7 +30,7 @@ type
     e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
     converts it to TNameParts like 
     ['UnitName', 'ClassName', 'ProcedureName'].
-    Length must be *always* between 1 and 3. }
+    Length must be @italic(always) between 1 and 3. }
   TNameParts = array of string;
 
 { Splits S, which can be made of up to three parts, separated by dots.
@@ -43,7 +43,7 @@ function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 function OneNamePart(S: string): TNameParts;
 
 type
-  { See command-line option --implicit-visibility documentation at
+  { See command-line option @--implicit-visibility documentation at
     [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
   TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
 
