@@ -12,9 +12,10 @@ uses
 
 type
   TTagManager = class;
+  TTag = class;
 
-  { This callback will be used to do main work specific for
-    particular @-tag.
+  { This callback will be used to do main work when given
+    @@-tag occured in description.
     
     TagManager parameter can be useful for various things:
 
@@ -25,9 +26,9 @@ type
     You could also use this to manually force recursive
     behavior of a given tag. I.e let's suppose that you
     have a tag with TagOptions = [toParameterRequired],
-    so the TagDesc parameter passed to handler was
+    so the TagParameter parameter passed to handler was
     not recursively expanded. Then you can do inside your handler
-    @longcode# NewTagDesc := TagManager.Execute(TagDesc) #
+    @longcode# NewTagParameter := TagManager.Execute(TagParameter) #
     and this way you have explicitly recursively expanded the tag.
 
     This is not used anywhere for now, but this will be used
@@ -35,17 +36,25 @@ type
     the need to use @@link tag). Then I will have to make @@nolink
     tag, and TTagManager.Execute will get a parameter
     @code(AutoLink: boolean). Then inside @@nolink tag I will
-    be able to call TTagManager.Execute(TagDesc, false)
-    thus preventing auto-linking inside text within @@nolink. }
-  TTagHandler = procedure(TagManager: TTagManager;
-    const TagName: string; const TagDesc: string; var ReplaceStr: string)
-    of object;
+    be able to call TTagManager.Execute(TagParameter, false)
+    thus preventing auto-linking inside text within @@nolink. 
+    
+    EnclosingTag parameter specifies enclosing tag. This
+    is useful for tags that must behave differently in different
+    contexts, e.g. in plain-text output @@item tag will behave
+    differently inside @@orderedList and @@unorderedList.
+    EnclosingTag is nil when the tag occured at top level of the
+    description. }
+  TTagExecuteEvent = procedure(ThisTag: TTag; TagManager: TTagManager;
+    EnclosingTag: TTag; const TagParameter: string;
+    var ReplaceStr: string) of object;
+    
   TStringConverter = function(const s: string): string of object;
   
   TTagOption = (
     { This means that tag expects parameters. If this is not included 
       in TagOptions then tag should not be given any parameters,
-      i.e. TagDesc passed to @link(TTag.Execute) should be ''.
+      i.e. TagParameter passed to @link(TTag.Execute) should be ''.
       We will display a warning if user will try to give
       some parameters for such tag. }
     toParameterRequired, 
@@ -119,7 +128,7 @@ type
 
   TTag = class
   private
-    FTagHandler: TTagHandler;
+    FOnExecute: TTagExecuteEvent;
     FTagOptions: TTagOptions;
     FContentAllowedInside: TContentAllowedInside;
     FName: string;
@@ -127,7 +136,7 @@ type
     { Note that AName will be converted to lowercase before assigning 
       to Name. }
     constructor Create(const AName: string;
-      ATagHandler: TTagHandler;
+      AOnExecute: TTagExecuteEvent;
       const ATagOptions: TTagOptions;
       const AContentAllowedInside: TContentAllowedInside);
 
@@ -138,9 +147,13 @@ type
 
     { Note that this must always be lowercase. }
     property Name: string read FName write FName;
+    
+    property OnExecute: TTagExecuteEvent 
+      read FOnExecute write FOnExecute;
 
     procedure Execute(TagManager: TTagManager;
-      const TagDesc: string; var ReplaceStr: string);
+      EnclosingTag: TTag; const TagParameter: string;
+      var ReplaceStr: string);
   end;
 
   { All Items of this list must be non-nil TTag objects. }
@@ -262,8 +275,8 @@ type
     property URLLink: TStringConverter read FURLLink write FURLLink;
 
     { See @link(TTag) for the meaning of parameter TagOption.
-      Don't worry about the case of TagName, it does *not* matter. }
-    procedure AddHandler(const TagName: string; Handler: TTagHandler;
+      Don't worry about the case of TagName, it does @bold(not) matter. }
+    procedure AddTag(const TagName: string; OnExecute: TTagExecuteEvent;
       const TagOptions: TTagOptions;
       const ContentAllowedInside: TContentAllowedInside);
 
@@ -308,22 +321,23 @@ uses Utils;
 { TTag ------------------------------------------------------------  }
 
 constructor TTag.Create(const AName: string;
-  ATagHandler: TTagHandler;
+  AOnExecute: TTagExecuteEvent;
   const ATagOptions: TTagOptions;
   const AContentAllowedInside: TContentAllowedInside);
 begin
   inherited Create;
   FName := LowerCase(AName);
-  FTagHandler := ATagHandler;
+  FOnExecute := AOnExecute;
   FTagOptions := ATagOptions;
   FContentAllowedInside := AContentAllowedInside;
 end;
 
 procedure TTag.Execute(TagManager: TTagManager;
-  const TagDesc: string; var ReplaceStr: string);
+  EnclosingTag: TTag; const TagParameter: string;
+  var ReplaceStr: string);
 begin
-  if Assigned(fTagHandler) then
-    FTagHandler(TagManager, Name, TagDesc, ReplaceStr);
+  if Assigned(OnExecute) then
+    OnExecute(Self, TagManager, EnclosingTag, TagParameter, ReplaceStr);
 end;
 
 { TTagVector ------------------------------------------------------------ }
@@ -361,11 +375,12 @@ begin
   inherited;
 end;
 
-procedure TTagManager.AddHandler(const TagName: string; Handler: TTagHandler;
+procedure TTagManager.AddTag(const TagName: string; 
+  OnExecute: TTagExecuteEvent;
   const TagOptions: TTagOptions;
   const ContentAllowedInside: TContentAllowedInside);
 begin
-  FTags.Add(TTag.Create(TagName, Handler, TagOptions, ContentAllowedInside));
+  FTags.Add(TTag.Create(TagName, OnExecute, TagOptions, ContentAllowedInside));
 end;
 
 function TTagManager.DoConvertString(const s: string): string;
@@ -714,7 +729,7 @@ begin
         ReplaceStr := DoConvertString('@' + FoundTag.Name);
         
       { execute tag handler }
-      FoundTag.Execute(Self, Params, ReplaceStr);
+      FoundTag.Execute(Self, EnclosingTag, Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
       FOffset := OffsetEnd;

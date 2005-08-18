@@ -27,7 +27,8 @@ uses
   PasDoc_Gen,
   PasDoc_Types,
   StringVector,
-  PasDoc_SortSettings
+  PasDoc_SortSettings,
+  PasDoc_TagManager
 {$IFNDEF FPC}
 {$IFDEF WIN32}
 {$IFNDEF DELPHI_6_UP}
@@ -82,7 +83,8 @@ type
     procedure SetStarStyle(const Value: boolean);
     function GetStarStyle: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
-    procedure HandleDescrfileTag(const TagName, TagDesc: string;
+    procedure HandleDescrfileTag(ThisTag: TTag; TagManager: TTagManager;
+      EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string);
       
     { Creates a @link(TPasUnit) object from the stream and adds it to
@@ -549,10 +551,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDoc.HandleDescrfileTag(const TagName, TagDesc: string; var ReplaceStr: string);
+procedure TPasDoc.HandleDescrfileTag(ThisTag: TTag; TagManager: TTagManager;
+  EnclosingTag: TTag; const TagParameter: string;
+  var ReplaceStr: string);
 begin
-  DoMessage(3, mtInformation, 'Adding description file "%s"', [TagDesc]);
-  DescriptionFileNames.Add(TagDesc);
+  DoMessage(3, mtInformation, 'Adding description file "%s"', [TagParameter]);
+  DescriptionFileNames.Add(TagParameter);
   ReplaceStr := '';
 end;
 
@@ -584,7 +588,7 @@ begin
     if p.RawDescription <> '' then begin
       TagManager := TTagManager.Create;
       try
-        TagManager.AddHandler('descrfile', 
+        TagManager.AddTag('descrfile', 
           {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag, false, false);
         s := TagManager.Execute(p.RawDescription);
       finally
