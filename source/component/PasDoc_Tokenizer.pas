@@ -54,7 +54,6 @@ type
     KEY_CLASS,
     KEY_CONST,
     KEY_CONSTRUCTOR,
-    KEY_CVAR,
     KEY_DESTRUCTOR,
     KEY_DISPINTERFACE,
     KEY_DIV,
@@ -121,6 +120,7 @@ type
     SD_ASSEMBLER,
     SD_AUTOMATED,
     SD_CDECL,
+    SD_CVAR,
     SD_DEFAULT,
     SD_SPID,
     SD_DYNAMIC,
@@ -258,7 +258,7 @@ const
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'CVAR',  'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
+    'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
@@ -273,7 +273,7 @@ const
     array[Low(TStandardDirective)..High(TStandardDirective)] of PChar =
   ('x', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
-    'CDECL', 'DEFAULT', 'SPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
+    'CDECL', 'CVAR', 'DEFAULT', 'SPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
     'FAR', 'FORWARD', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
     'NODEFAULT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',

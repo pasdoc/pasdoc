@@ -1690,11 +1690,9 @@ begin
             // This does not take into account the "absolute" modifier
             // (which is not preceeded by a semicolon).
             FirstCheck := False;
-            if ( (ttemp.MyType = TOK_KEYWORD) and 
-                 (ttemp.Info.KeyWord in [KEY_CVAR]) ) or
-               ( (ttemp.MyType = TOK_IDENTIFIER) and 
-                 (ttemp.Info.StandardDirective in 
-                   [SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) ) then 
+            if (ttemp.MyType = TOK_IDENTIFIER) and 
+               (ttemp.Info.StandardDirective in 
+                 [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then 
             begin
               ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
               FreeAndNil(ttemp)
