@@ -170,9 +170,6 @@ type
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
     
     function FormatAnAnchor(const AName, Caption: string): string; 
-    
-    function FormatList(const ListItems: string; 
-      const ListTag: string): string;
   protected
     function ConvertString(const s: string): string; override;
 
@@ -261,9 +258,10 @@ type
 
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatOrderedList(const ListItems: string): string; override;
-    function FormatUnorderedList(const ListItems: string): string; override;
-    function FormatListItem(const Text: string): string; override;
+    function FormatList(const ListItems: string;
+      Ordered: boolean): string; override;
+    function FormatListItem(const Text: string;
+      Ordered: boolean): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2158,30 +2156,27 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatList(const ListItems: string; 
-  const ListTag: string): string;
+  Ordered: boolean): string;
+const
+  ListTag: array[boolean]of string =
+  ( 'ul', 'ol' );
 begin
   { We're explicitly marking end of previous paragraph and beginning
-    of next one. }
+    of next one. This is required to always validate clearly.
+    This also makes empty lists (no items) be handled correctly,
+    i.e. they should produce paragraph break. }
   Result := '</p>';
   
   { HTML requires that <ol> / <ul> contains at least one <li>. }
   if ListItems <> '' then
-    Result := Result + '<' + ListTag + '>' + ListItems + '</' + ListTag + '>';
+    Result := Result + Format('<%s>%s</%0:s>', 
+      [ListTag[Ordered], ListItems]);
     
   Result := Result + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.FormatOrderedList(const ListItems: string): string; 
-begin
-  Result := FormatList(ListItems, 'ol');
-end;
-
-function TGenericHTMLDocGenerator.FormatUnorderedList(const ListItems: string): string; 
-begin
-  Result := FormatList(ListItems, 'ul');
-end;
-
-function TGenericHTMLDocGenerator.FormatListItem(const Text: string): string; 
+function TGenericHTMLDocGenerator.FormatListItem(const Text: string;
+  Ordered: boolean): string; 
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. }

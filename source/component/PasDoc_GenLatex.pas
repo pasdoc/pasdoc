@@ -200,9 +200,10 @@ Latex DocGenerators.}
     
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatOrderedList(const ListItems: string): string; override;
-    function FormatUnorderedList(const ListItems: string): string; override;
-    function FormatListItem(const Text: string): string; override;
+    function FormatList(const ListItems: string;
+      Ordered: boolean): string; override;
+    function FormatListItem(const Text: string;
+      Ordered: boolean): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1565,21 +1566,20 @@ begin
   Result := '\begin{verbatim}' + Text +  '\end{verbatim}';
 end;
 
-function TTexDocGenerator.FormatOrderedList(const ListItems: string): string; 
+function TTexDocGenerator.FormatList(const ListItems: string;
+  Ordered: boolean): string;
+const
+  ListEnvironment: array[boolean]of string =
+  ( 'itemize', 'enumerate' );
 begin
   { LaTeX doesn't allow empty lists }
   if ListItems <> '' then
-    Result := '\begin{enumerate}' + ListItems + '\end{enumerate}';
+    Result := Format('\begin{%s}%s\end{%0:s}', 
+      [ListEnvironment[Ordered], ListItems]);
 end;
 
-function TTexDocGenerator.FormatUnorderedList(const ListItems: string): string; 
-begin
-  { LaTeX doesn't allow empty lists }
-  if ListItems <> '' then
-    Result := '\begin{itemize}' + ListItems + '\end{itemize}';
-end;
-
-function TTexDocGenerator.FormatListItem(const Text: string): string; 
+function TTexDocGenerator.FormatListItem(const Text: string;
+  Ordered: boolean): string; 
 begin
   Result := '\item ' + Text;
 end;

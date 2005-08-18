@@ -132,7 +132,6 @@ type
     
     FLinkGraphVizUses: string;
     FLinkGraphVizClasses: string;
-    FCurrentItem: TBaseItem;
     FAutoAbstract: boolean;
     FLinkLook: TLinkLook;
     FConclusion: TExternalItem;
@@ -162,6 +161,11 @@ type
     FDestDir: string;
 
     FOnMessage: TPasDocMessageEvent;
+
+    { These fields are available only for tags OnExecute handlers.
+      They are set in ExpandDescription. }
+    FCurrentItem: TBaseItem;
+    OrderedListTag: TTag;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -642,42 +646,34 @@ end;
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
     
-    { Format an ordered list from ListItems,
+    { Format a list from ListItems,
       which contains concatenated results of FormatListItem
-      for all list items. 
+      for all list items.
       
-      Note that @@orderedList should contain only @@item tags
-      (tag manager makes sure that anything else is
+      Note that @@orderedList and @@unorderedList should contain only @@item 
+      tags (tag manager makes sure that anything else is
       ignored (like whitespace) or reported as an error to the user
       (like anything other than whitespace)).
       So you can safely assume that ListItems are @italic(only)
       the concatenated results of FormatListItem, with absolutely
       nothing additional. Therefore if you want to test whether
       the list is empty (i.e. zero items), you can simply check
-      ListItems = '' (no need to even do Trim(ListItems). 
+      ListItems = '' (no need to even do Trim(ListItems)). 
       
-      @seealso FormatUnorderedList 
       @seealso FormatListItem }
-    function FormatOrderedList(const ListItems: string): string; virtual; abstract;
-    
-    { Format an unordered list from ListItems,
-      which contains concatenated results of FormatListItem
-      for all list items. 
-      
-      Note that @@unorderedList should contain only @@item tags.
-      See comments at @link(FormatOrderedList) for what this means. 
-      
-      @seealso FormatOrderedList
-      @seealso FormatListItem }
-    function FormatUnorderedList(const ListItems: string): string; virtual; abstract;
-    
+    function FormatList(const ListItems: string;
+      Ordered: boolean): string; virtual; abstract;
+
     { This formats list item. Text is already passed
       in a form converted for final output
       (converted by ConvertString, with tags etc. expanded). 
       
-      @seealso FormatOrderedList
-      @seealso FormatUnorderedList }
-    function FormatListItem(const Text: string): string; virtual; abstract;
+      Parameter Ordered says whether this is an item within 
+      ordered or unordered list.
+      
+      @seealso FormatList }
+    function FormatListItem(const Text: string;
+      Ordered: boolean): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1109,21 +1105,21 @@ procedure TDocGenerator.HandleOrderedListTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
-  ReplaceStr := FormatOrderedList(TagParameter);
+  ReplaceStr := FormatList(TagParameter, true);
 end;
 
 procedure TDocGenerator.HandleUnorderedListTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
-  ReplaceStr := FormatUnorderedList(TagParameter);
+  ReplaceStr := FormatList(TagParameter, false);
 end;
 
 procedure TDocGenerator.HandleItemTag(ThisTag: TTag;
   EnclosingTag: TTag; const TagParameter: string;
   var ReplaceStr: string);
 begin
-  ReplaceStr := FormatListItem(TagParameter);
+  ReplaceStr := FormatListItem(TagParameter, EnclosingTag = OrderedListTag);
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
@@ -1188,7 +1184,8 @@ begin
       [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
     TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
       [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
-    TTag.Create(TagManager, 'orderedlist', {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
+    OrderedListTag := TTag.Create(TagManager, 'orderedlist', 
+      {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags]);
     TTag.Create(TagManager, 'unorderedlist', {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
       [toParameterRequired, toRecursiveTags], [aiOtherTags]);
