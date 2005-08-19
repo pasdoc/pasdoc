@@ -164,7 +164,7 @@ type
     { These fields are available only for tags OnExecute handlers.
       They are set in ExpandDescription. }
     FCurrentItem: TBaseItem;
-    OrderedListTag: TTag;
+    OrderedListTag, UnorderedListTag: TTag;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -265,6 +265,9 @@ end;
       var ReplaceStr: string);
 
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
+    
+    procedure ItemTagAllowedInside(
+      ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -1141,6 +1144,7 @@ function TDocGenerator.ExpandDescription(Item: TBaseItem;
   out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
+  ItemTag: TTag;
 begin
   // make it available to the handlers
   FCurrentItem := Item;
@@ -1182,26 +1186,33 @@ begin
       [toParameterRequired], []);
 
     { Tags with recursive params }
-    TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-      [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
+    TNonSelfTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+      [aiNormalText]);
     TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
-      [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+      [aiNormalText]);
     TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
-      [toParameterRequired, toRecursiveTags], [aiSelfTag, aiOtherTags, aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+      [aiNormalText]);
     OrderedListTag := TTag.Create(TagManager, 'orderedlist', 
       {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
-      [toParameterRequired, toRecursiveTags], [aiOtherTags]);
-    TTag.Create(TagManager, 'unorderedlist', {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
-      [toParameterRequired, toRecursiveTags], [aiOtherTags]);
-    TTag.Create(TagManager, 'item', {$IFDEF FPC}@{$ENDIF} HandleItemTag,
-      [toParameterRequired, toRecursiveTags], [aiOtherTags, aiNormalText]);
+      [toParameterRequired, toRecursiveTags], []);
+    UnorderedListTag := TTag.Create(TagManager, 'unorderedlist', 
+      {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
+      [toParameterRequired, toRecursiveTags], []);
+    ItemTag := TTag.Create(TagManager, 'item', 
+      {$IFDEF FPC}@{$ENDIF} HandleItemTag,
+      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+      [aiNormalText]);
+    ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} ItemTagAllowedInside;
 
     if FCurrentItem is TExternalItem then
     begin
-      TTag.Create(TagManager, 'section', {$IFDEF FPC}@{$ENDIF} HandleSectionTag,
-        [toParameterRequired, toTopLevel], []);
-      TTag.Create(TagManager, 'anchor', {$IFDEF FPC}@{$ENDIF} HandleAnchorTag,
-        [toParameterRequired, toTopLevel], []);
+      TTopLevelTag.Create(TagManager, 'section', 
+        {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired], []);
+      TTopLevelTag.Create(TagManager, 'anchor', 
+        {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired], []);
     end;
 
     Result := TagManager.Execute(Description,
@@ -2769,6 +2780,13 @@ begin
   
   NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
   NewSubItem.FullLink := CreateLink(NewSubItem);
+end;
+
+procedure TDocGenerator.ItemTagAllowedInside(
+  ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+begin
+  Allowed := (EnclosingTag = OrderedListTag) or 
+    (EnclosingTag = UnorderedListTag);
 end;
 
 initialization

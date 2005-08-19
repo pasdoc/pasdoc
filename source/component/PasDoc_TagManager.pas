@@ -17,7 +17,11 @@ type
   { @seealso TTag.Execute }
   TTagExecuteEvent = procedure(ThisTag: TTag; EnclosingTag: TTag; 
     const TagParameter: string; var ReplaceStr: string) of object;
-    
+
+  { @seealso TTag.AllowedInside }
+  TTagAllowedInsideEvent = procedure(
+    ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean) of object;
+
   TStringConverter = function(const s: string): string of object;
   
   TTagOption = (
@@ -35,22 +39,27 @@ type
       that we will handle paragraphs inside parameters etc. ---
       all that does @link(TTagManager.Execute).
 
-      If toParameterRequired is not present in TTagOptions than
+      If toParameterRequired is not present in TTagOptions then
       it's not important whether you included toRecursiveTags.
 
       It's useful for some tags to include toParameterRequired
       without including toRecursiveTags, e.g. @@longcode or @@html,
-      that want to get their parameters "verbatim", not processed. }
+      that want to get their parameters "verbatim", not processed. 
+      
+      Note that if toRecursiveTags is not included in tag options,
+      then @italic(everything) is allowed within parameter of this tag,
+      but nothing is interpreted. E.g. you can freely use @@ char,
+      and even write various @@-tags inside @@html tag --- this doesn't
+      matter, because @@-tags will not be interpreted (they will
+      not be even searched !) inside @@html tag. In other words,
+      @@ character means literally "@@" inside @@html, nothing more. }
     toRecursiveTags,
     
-    { This means that this tag is allowed at toplevel of description, 
-      but not inside parameter of any other tag.
-      
-      (We're talking here only about the case when "other tag"
-      does have toRecursiveTags included. Without toRecursiveTags,
-      tag parameters are always valid, not parsed, not checked
-      for anything that looks like a tag etc.) }
-    toTopLevel);
+    { This is meaningful only if toRecursiveTags is included.
+      Then toAllowsOtherTagsInsideByDefault determines
+      are other tags allowed by the default implementation
+      of @link(TTag.AllowedInside). }
+    toAllowsOtherTagsInsideByDefault);
       
   TTagOptions = set of TTagOption;
 
@@ -59,26 +68,8 @@ type
     parameter of this tag.
     If toRecursiveTags is not included in TagOptions
     then ContentAllowedInside value for this tag doesn't matter. 
-    
-    There are four groups of content that we consider:
-    
+
     @orderedList(
-      @item(
-        toTopLevel tags. These are never allowed inside.)
-      
-      @item(
-        Self tag, e.g. is
-          @@code(This is some @@code(code) that I wrote)
-        allowed ?
-        This is decided by aiSelfTag.
-        Note that if self tag is toTopLevel, then whether aiSelfTag
-        is specified does not matter --- toplevel tag is never allowed
-        inside any other tag (even in itself).)
-      
-      @item(
-        Non-toTopLevel tags, that are not equal to self.
-        This is decided by aiOtherTags.)
-      
       @item(
         Other content (i.e. normal text, paragraph breaks,
          various dashes, URLs, and literal @@ character
@@ -93,10 +84,11 @@ type
          This is useful for tags like @@orderedList that should only contain
          other @@item tags inside.)
      )
+     
+     TODO --- move this to toNormalTextAllowedInside, remove
+     ContentAllowedInsideOption and all related properties/types.
    }
    TContentAllowedInsideOption = (
-     aiSelfTag,
-     aiOtherTags,
      aiNormalText);
 
    TContentAllowedInside = set of TContentAllowedInsideOption;
@@ -108,6 +100,7 @@ type
      FContentAllowedInside: TContentAllowedInside;
      FName: string;
      FTagManager: TTagManager;
+     FOnAllowedInside: TTagAllowedInsideEvent;
    public
      { Note that AName will be converted to lowercase before assigning 
        to Name. }
@@ -171,6 +164,49 @@ type
       (if assigned). }
     procedure Execute(EnclosingTag: TTag; const TagParameter: string;
       var ReplaceStr: string); virtual;
+      
+    property OnAllowedInside: TTagAllowedInsideEvent
+      read FOnAllowedInside write FOnAllowedInside;
+      
+    { This will be checked always when this tag occurs within description.
+      Given EnclosingTag is enclosing tag, nil if we're in top level.
+      If this returns false then this tag will not be allowed inside
+      EnclosingTag.
+      
+      In this class this method 
+      @orderedList(
+        @item(
+          Assumes that Result = true if we're at top level
+          or EnclosingTag.TagOptions contains
+          toAllowsOtherTagsInsideByDefault.
+          Else it assumes Result = false.)
+        @item(
+          Then it calls @link(OnAllowedInside
+            OnAllowedInside(Self, EnclosingTag, Result)) 
+          (if OnAllowedInside is assigned).)
+      ) }
+    function AllowedInside(EnclosingTag: TTag): boolean; virtual;
+  end;
+  
+  TTopLevelTag = class(TTag)
+    { This returns just @code(EnclosingTag = nil).
+    
+      Which means that this tag is allowed only at top level of
+      description, never inside parameter of some tag. }
+    function AllowedInside(EnclosingTag: TTag): boolean; override;
+  end;
+  
+  TNonSelfTag = class(TTag)
+    { This returns just @code(inherited and (EnclosingTag <> Self)).
+    
+      Which means that (assuming that @link(OnAllowedInside) 
+      is not assigned) this tag is allowed at top level of
+      description and inside parameter of any tag
+      @italic(but not within itself and not within tags 
+      without toAllowsOtherTagsInsideByDefault).
+      
+      E.g. @@code(This is some @@code(code) that I wrote) is not allowed. }
+    function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
   { All Items of this list must be non-nil TTag objects. }
@@ -203,9 +239,7 @@ type
       If EnclosingTag = nil then this is understood to be 
       toplevel of description, which means that all tags are allowed inside.
       
-      If EnclosingTag <> nil then this is not toplevel.
-      So toTopLevel tags are not allowed and other tags are allowed 
-      on the basis of EnclosingTag.ContentAllowedInside. }
+      If EnclosingTag <> nil then this is not toplevel. }
     function CoreExecute(const Description: string;
       EnclosingTag: TTag;
       WantFirstSentenceEnd: boolean;
@@ -352,6 +386,29 @@ procedure TTag.Execute(EnclosingTag: TTag; const TagParameter: string;
 begin
   if Assigned(OnExecute) then
     OnExecute(Self, EnclosingTag, TagParameter, ReplaceStr);
+end;
+
+function TTag.AllowedInside(EnclosingTag: TTag): boolean;
+begin
+  Result := (EnclosingTag = nil) or
+    (toAllowsOtherTagsInsideByDefault in EnclosingTag.TagOptions);
+
+  if Assigned(OnAllowedInside) then
+    OnAllowedInside(Self, EnclosingTag, Result);
+end;
+
+{ TTopLevelTag ---------------------------------------------------------- }
+
+function TTopLevelTag.AllowedInside(EnclosingTag: TTag): boolean;
+begin
+  Result := EnclosingTag = nil;
+end;
+
+{ TNonSelfTag ----------------------------------------------------------- }
+
+function TNonSelfTag.AllowedInside(EnclosingTag: TTag): boolean;
+begin
+  Result := inherited AllowedInside(EnclosingTag) and (EnclosingTag <> Self);
 end;
 
 { TTagVector ------------------------------------------------------------ }
@@ -680,28 +737,14 @@ begin
       DoConvert;
       
       { Check is it allowed for this tag to be here }
-      if EnclosingTag <> nil then
+      if not FoundTag.AllowedInside(EnclosingTag) then
       begin
-        { To which category Tag belongs ?
-          As outlined in comments at TTagsAllowedIndideOption,
-          there are three groups: toplevel tag, self tag, and other. }
-        if toTopLevel in FoundTag.TagOptions then
-        begin
-          { toplevel tags are never allowed here }
-          DoMessage(1, mtWarning,
-            'The tag "%s" cannot be embedded within other tags', [FoundTag.Name]);
-        end else
-        if FoundTag = EnclosingTag then
-        begin
-          if not (aiSelfTag in EnclosingTag.ContentAllowedInside) then
-            DoMessage(1, mtWarning,
-              'The tag "%s" cannot be embedded within itself', [FoundTag.Name]);
-        end else
-        if not (aiOtherTags in EnclosingTag.ContentAllowedInside) then
-        begin
-          DoMessage(1, mtWarning,
-            'The tag "%s" cannot contain other tags', [EnclosingTag.Name]);
-        end;
+        if EnclosingTag = nil then
+          DoMessage(1, mtWarning, 'The tag "@%s" cannot be used at the ' +
+            'top level of description, it must be used within some other @-tag', 
+            [FoundTag.Name]) else
+          DoMessage(1, mtWarning, 'The tag "@%s" cannot be used inside ' +
+            'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
       end;
       
       { Process Params }

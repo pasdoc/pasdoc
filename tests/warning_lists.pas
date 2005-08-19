@@ -7,6 +7,16 @@
   @unorderedList( @item(One) --- )
   @orderedList( foo @item(One) bar )
   @orderedList( http://pasdoc.sf.net/ @item(One) )
+  
+  These should cause warnings, because @@item must always
+  be placed directly inside @@orderedList or @@unorderedList,
+  and @@orderedList and @@unorderedList can contain only
+  @@item tags.
+  
+  @orderedList( @author(kambi) )
+  @unorderedList( @code(begin end) )
+  @item(Item at toplevel is not allowed.)
+  @code( @item(Item inside @@-tag other than @@xxxList is not allowed.) )
 }
 unit warning_lists;
 

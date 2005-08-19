@@ -1251,12 +1251,15 @@ end;
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTag.Create(TagManager, 'abstract', {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'abstract', 
+    {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
+    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+    [aiNormalText]);
   TTag.Create(TagManager, 'deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
     [], []);
-  TTag.Create(TagManager, 'seealso', {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
-    [toParameterRequired, toTopLevel], []);
+  TTopLevelTag.Create(TagManager, 'seealso', 
+    {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
+    [toParameterRequired], []);
 end;
 
 function TPasItem.HasDescription: Boolean;
@@ -2014,14 +2017,18 @@ end;
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TTag.Create(TagManager, 'return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
+    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+    [aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
+    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+    [aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+    [aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
+    [aiNormalText]);
 end;
 
 { TPasProperty --------------------------------------------------------------- }
@@ -2123,10 +2130,12 @@ end;
 procedure TExternalItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTag.Create(TagManager, 'title', {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
-    [toParameterRequired, toRecursiveTags, toTopLevel], [aiOtherTags, aiNormalText]);
-  TTag.Create(TagManager, 'shorttitle', {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
-    [toParameterRequired, toTopLevel], []);
+  TTopLevelTag.Create(TagManager, 'title', 
+    {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
+    [toParameterRequired, toRecursiveTags], [aiNormalText]);
+  TTopLevelTag.Create(TagManager, 'shorttitle', 
+    {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
+    [toParameterRequired], []);
 end;
 
 procedure TExternalItem.SetOutputFileName(const Value: string);
