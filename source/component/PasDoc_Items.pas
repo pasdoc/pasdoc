@@ -165,11 +165,18 @@ type
       Override as necessary. }
     function FindItem(const ItemName: string): TBaseItem; virtual;
     
+    { This is just like @link(FindItem), but in case of classes
+      or such it should also search within ancestors.
+      In this class, the default implementation just calls FindItem. }
+    function FindItemMaybeInAncestors(const ItemName: string): 
+      TBaseItem; virtual;
+    
     { This does all it can to resolve link specified by NameParts.
       
       While searching this tries to mimic ObjectPascal identifier scope
       as much as it can. It seaches within this item,
       but also within class enclosing this item,
+      within ancestors of this class,
       within unit enclosing this item, then within units used by unit
       of this item. }
     function FindName(const NameParts: TNameParts): TBaseItem; virtual;
@@ -569,6 +576,9 @@ type
       property with the name of ItemName, the corresponding item pointer is
       returned. }
     function FindItem(const ItemName: string): TBaseItem; override;
+    
+    function FindItemMaybeInAncestors(const ItemName: string): 
+      TBaseItem; override;
     
     { This searches for item (field, method or property) defined
       in ancestor of this cio. I.e. searches within the FirstAncestor,
@@ -978,6 +988,12 @@ begin
   Result := nil;
 end;
 
+function TBaseItem.FindItemMaybeInAncestors(const ItemName: string): 
+  TBaseItem;
+begin
+  Result := FindItem(ItemName);
+end;
+
 function TBaseItem.FindName(const NameParts: TNameParts): TBaseItem;
 begin
   Result := nil;
@@ -1117,11 +1133,11 @@ begin
   LNameParts0 := LowerCase(NameParts[0]);
   case Length(NameParts) of
     1: begin
-         Result := FindItem(NameParts[0]);
+         Result := FindItemMaybeInAncestors(NameParts[0]);
          if Result <> nil then Exit;
          
          if Assigned(MyObject) then begin { this item is a method or field }
-           p := MyObject.FindItem(NameParts[0]);
+           p := MyObject.FindItemMaybeInAncestors(NameParts[0]);
            if Assigned(p) then begin
              Result := p;
              Exit;
@@ -1630,6 +1646,14 @@ begin
   end;
 
   Result := inherited FindItem(ItemName);
+end;
+
+function TPasCio.FindItemMaybeInAncestors(const ItemName: string): 
+  TBaseItem;
+begin
+  Result := inherited;
+  if Result = nil then
+    Result := FindItemInAncestors(ItemName);
 end;
 
 procedure TPasCio.Sort(const SortSettings: TSortSettings);
