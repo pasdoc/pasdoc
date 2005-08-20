@@ -34,21 +34,26 @@ and a parser (@link(TParser)).
 It is important to note that pasdoc's parser is somewhat unusual,
 compared to "normal" parsers that are used e.g. in Pascal compilers.
 
-1. Pasdoc's parser does not read the implementation section of a unit file
-   (although this may change some day, see
-   [http://pasdoc.sipsolutions.net/WantedFeaturesParsingImplementation]).
+@orderedList(
+  @item(
+    Pasdoc's parser does not read the implementation section of a unit file
+    (although this may change some day, see
+    [http://pasdoc.sipsolutions.net/WantedFeaturesParsingImplementation]).)
 
-2. Pasdoc's parser is "cheating": It does not really understand everything it
-   reads. E.g. the parameter section of a procedure declaration is parsed
-   "blindly", by simply reading tokens up to a matching closing
-   parenthesis. Such cheating obviously simplifies the parser
-   implementation, but it also makes pasdoc's parser "dumber",
-   see [http://pasdoc.sipsolutions.net/ToDoParser].
+  @item(
+    Pasdoc's parser is "cheating": It does not really understand everything it
+    reads. E.g. the parameter section of a procedure declaration is parsed
+    "blindly", by simply reading tokens up to a matching closing
+    parenthesis. Such cheating obviously simplifies the parser
+    implementation, but it also makes pasdoc's parser "dumber",
+    see [http://pasdoc.sipsolutions.net/ToDoParser].)
 
-3. Pasdoc's parser collects the comments before each declaration,
-   since these comments must be converted and placed in the final documentation
-   (while "normal" parsers usually treat comments as a meaningless
-   white-space).
+  @item(
+    Pasdoc's parser collects the comments before each declaration,
+    since these comments must be converted and placed in the final documentation
+    (while "normal" parsers usually treat comments as a meaningless
+    white-space).)
+)
 
 @section(1 SecStoring Storing)
 
