@@ -56,65 +56,49 @@ type
     toRecursiveTags,
     
     { This is meaningful only if toRecursiveTags is included.
-      Then toAllowsOtherTagsInsideByDefault determines
+      Then toAllowOtherTagsInsideByDefault determines
       are other tags allowed by the default implementation
       of @link(TTag.AllowedInside). }
-    toAllowsOtherTagsInsideByDefault);
-      
+    toAllowOtherTagsInsideByDefault,
+    
+    { This is meaningful only if toRecursiveTags is included.
+      Then @name says that normal text is allowed
+      inside parameter of this tag.
+      @italic("Normal text") is anything except other @@-tags:
+      normal text, paragraph breaks, various dashes, URLs, 
+      and literal @@ character (expressed by @@@@ in descriptions).
+
+      If @name will not be included,
+      then normal text (not enclosed within other @@-tags) will
+      not be allowed inside. Only whitespace will be allowed, and 
+      it will be ignored anyway (i.e. will not be passed to
+      ConvertString, empty line will not produce any Paragraph etc.).
+      This is useful for tags like @@orderedList that should only contain
+      other @@item tags inside. }
+    toAllowNormalTextInside);
+
   TTagOptions = set of TTagOption;
 
-  { If a tag has toRecursiveTags in TagOptions, then values of these
-    type will specify exactly what content is allowed inside
-    parameter of this tag.
-    If toRecursiveTags is not included in TagOptions
-    then ContentAllowedInside value for this tag doesn't matter. 
+  TTag = class
+  private
+    FOnExecute: TTagExecuteEvent;
+    FTagOptions: TTagOptions;
+    FName: string;
+    FTagManager: TTagManager;
+    FOnAllowedInside: TTagAllowedInsideEvent;
+  public
+    { Note that AName will be converted to lowercase before assigning 
+      to Name. }
+    constructor Create(ATagManager: TTagManager;
+      const AName: string; AOnExecute: TTagExecuteEvent;
+      const ATagOptions: TTagOptions);
 
-    @orderedList(
-      @item(
-        Other content (i.e. normal text, paragraph breaks,
-         various dashes, URLs, and literal @@ character
-         (expressed by @@@@ in descriptions)).
-         This is decided by aiNormalText. 
+    property TagOptions: TTagOptions read FTagOptions write FTagOptions;
 
-         If aiNormalText will not be included,
-         then normal text (not enclosed within other @@-tags) will
-         not be allowed inside. Only whitespace will be allowed, and 
-         it will be ignored anyway (i.e. will not be passed to
-         ConvertString, empty line will not produce any Paragraph etc.).
-         This is useful for tags like @@orderedList that should only contain
-         other @@item tags inside.)
-     )
-     
-     TODO --- move this to toNormalTextAllowedInside, remove
-     ContentAllowedInsideOption and all related properties/types.
-   }
-   TContentAllowedInsideOption = (
-     aiNormalText);
-
-   TContentAllowedInside = set of TContentAllowedInsideOption;
-
-   TTag = class
-   private
-     FOnExecute: TTagExecuteEvent;
-     FTagOptions: TTagOptions;
-     FContentAllowedInside: TContentAllowedInside;
-     FName: string;
-     FTagManager: TTagManager;
-     FOnAllowedInside: TTagAllowedInsideEvent;
-   public
-     { Note that AName will be converted to lowercase before assigning 
-       to Name. }
-     constructor Create(ATagManager: TTagManager;
-       const AName: string; AOnExecute: TTagExecuteEvent;
-       const ATagOptions: TTagOptions;
-       const AContentAllowedInside: TContentAllowedInside);
-
-     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
-
-     { TagManager that will recognize and handle this tag.
-       Note that the tag instance is owned by this tag manager
-       (i.e. it will be freed inside this tag manager). 
-       It can be nil if no tag manager currently owns this tag. 
+    { TagManager that will recognize and handle this tag.
+      Note that the tag instance is owned by this tag manager
+      (i.e. it will be freed inside this tag manager). 
+      It can be nil if no tag manager currently owns this tag. 
       
       Note that it's very useful in @link(Execute) or
       @link(OnExecute) implementations.
@@ -140,9 +124,6 @@ type
       thus preventing auto-linking inside text within @@nolink. }
     property TagManager: TTagManager read FTagManager;
     
-    property ContentAllowedInside: TContentAllowedInside
-      read FContentAllowedInside write FContentAllowedInside;
-
     { Name of the tag, that must be specified by user after the "@@" sign.
       Value of this property must always be lowercase. }
     property Name: string read FName write FName;
@@ -178,7 +159,7 @@ type
         @item(
           Assumes that Result = true if we're at top level
           or EnclosingTag.TagOptions contains
-          toAllowsOtherTagsInsideByDefault.
+          toAllowOtherTagsInsideByDefault.
           Else it assumes Result = false.)
         @item(
           Then it calls @link(OnAllowedInside
@@ -203,7 +184,7 @@ type
       is not assigned) this tag is allowed at top level of
       description and inside parameter of any tag
       @italic(but not within itself and not within tags 
-      without toAllowsOtherTagsInsideByDefault).
+      without toAllowOtherTagsInsideByDefault).
       
       E.g. @@code(This is some @@code(code) that I wrote) is not allowed. }
     function AllowedInside(EnclosingTag: TTag): boolean; override;
@@ -367,14 +348,12 @@ uses Utils;
 
 constructor TTag.Create(ATagManager: TTagManager;
   const AName: string; AOnExecute: TTagExecuteEvent;
-  const ATagOptions: TTagOptions;
-  const AContentAllowedInside: TContentAllowedInside);
+  const ATagOptions: TTagOptions);
 begin
   inherited Create;
   FName := LowerCase(AName);
   FOnExecute := AOnExecute;
   FTagOptions := ATagOptions;
-  FContentAllowedInside := AContentAllowedInside;
   
   FTagManager := ATagManager;
   if TagManager <> nil then
@@ -391,7 +370,7 @@ end;
 function TTag.AllowedInside(EnclosingTag: TTag): boolean;
 begin
   Result := (EnclosingTag = nil) or
-    (toAllowsOtherTagsInsideByDefault in EnclosingTag.TagOptions);
+    (toAllowOtherTagsInsideByDefault in EnclosingTag.TagOptions);
 
   if Assigned(OnAllowedInside) then
     OnAllowedInside(Self, EnclosingTag, Result);
@@ -677,7 +656,7 @@ var
   function IsNormalTextAllowed: boolean;
   begin
     Result := (EnclosingTag = nil) or
-      (aiNormalText in EnclosingTag.ContentAllowedInside);
+      (toAllowNormalTextInside in EnclosingTag.TagOptions);
   end;
   
   procedure CheckNormalTextAllowed(const NormalText: string);

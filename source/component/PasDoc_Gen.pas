@@ -1163,56 +1163,56 @@ begin
     Item.RegisterTags(TagManager);
 
     { Tags without params }
-    TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, [], []);
-    TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
-    TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
-    TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, [], []);
+    TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
+    TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+    TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+    TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
     TTag.Create(TagManager, 'inheritedclass',{$IFDEF FPC}@{$ENDIF} 
-      HandleInheritedClassTag, [], []);
-    TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, [], []);
-    TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, [], []);
-    TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, [], []);
+      HandleInheritedClassTag, []);
+    TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
+    TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
+    TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
 
     { Tags with non-recursive params }
     TTag.Create(TagManager, 'longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
-      [toParameterRequired], []);
+      [toParameterRequired]);
     TTag.Create(TagManager, 'html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
-      [toParameterRequired], []);
+      [toParameterRequired]);
     TTag.Create(TagManager, 'latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
-      [toParameterRequired], []);
+      [toParameterRequired]);
     TTag.Create(TagManager, 'link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
-      [toParameterRequired], []);
+      [toParameterRequired]);
     TTag.Create(TagManager, 'preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
-      [toParameterRequired], []);
+      [toParameterRequired]);
 
     { Tags with recursive params }
     TNonSelfTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-      [aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
     TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
-      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-      [aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
     TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
-      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-      [aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
     OrderedListTag := TTag.Create(TagManager, 'orderedlist', 
       {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
-      [toParameterRequired, toRecursiveTags], []);
+      [toParameterRequired, toRecursiveTags]);
     UnorderedListTag := TTag.Create(TagManager, 'unorderedlist', 
       {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
-      [toParameterRequired, toRecursiveTags], []);
+      [toParameterRequired, toRecursiveTags]);
     ItemTag := TTag.Create(TagManager, 'item', 
       {$IFDEF FPC}@{$ENDIF} HandleItemTag,
-      [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-      [aiNormalText]);
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
     ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} ItemTagAllowedInside;
 
     if FCurrentItem is TExternalItem then
     begin
       TTopLevelTag.Create(TagManager, 'section', 
-        {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired], []);
+        {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
       TTopLevelTag.Create(TagManager, 'anchor', 
-        {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired], []);
+        {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
     end;
 
     Result := TagManager.Execute(Description,

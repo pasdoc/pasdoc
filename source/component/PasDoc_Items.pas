@@ -1063,13 +1063,13 @@ procedure TBaseItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTag.Create(TagManager, 'author', {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
   TTag.Create(TagManager, 'created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
-    [toParameterRequired, toRecursiveTags], [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
   TTag.Create(TagManager, 'lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
-    [toParameterRequired, toRecursiveTags], [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
   TTag.Create(TagManager, 'cvs', {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
 end;
 
 procedure TBaseItem.SetAuthors(const Value: TStringVector);
@@ -1269,13 +1269,13 @@ begin
   inherited;
   TTopLevelTag.Create(TagManager, 'abstract', 
     {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
-    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-    [aiNormalText]);
-  TTag.Create(TagManager, 'deprecated', {$ifdef FPC}@{$endif} HandleDeprecatedTag,
-    [], []);
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+     toAllowNormalTextInside]);
+  TTag.Create(TagManager, 'deprecated', 
+    {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
   TTopLevelTag.Create(TagManager, 'seealso', 
     {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
 end;
 
 function TPasItem.HasDescription: Boolean;
@@ -1362,7 +1362,7 @@ begin
     by TDocGenerator.ExpandDescriptions.
     This way they will be expanded exactly once, as they should be. }
   TTag.Create(TagManager, 'value', {$IFDEF FPC}@{$ENDIF} StoreValueTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
 end;
 
 procedure TPasEnum.Serialize(const ADestination: TStream);
@@ -1694,7 +1694,7 @@ begin
     Moreover, this allows you to correctly use tags like @param
     and @raises inside @member for a method. }
   TTag.Create(TagManager, 'member', {$IFDEF FPC}@{$ENDIF} StoreMemberTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
 end;
 
 procedure TPasCio.StoreMemberTag(ThisTag: TTag;
@@ -2042,17 +2042,17 @@ procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTopLevelTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
-    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-    [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+     toAllowNormalTextInside]);
   TTopLevelTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
-    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-    [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+     toAllowNormalTextInside]);
   TTopLevelTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-    [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+     toAllowNormalTextInside]);
   TTopLevelTag.Create(TagManager, 'return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
-    [toParameterRequired, toRecursiveTags, toAllowsOtherTagsInsideByDefault], 
-    [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+     toAllowNormalTextInside]);
 end;
 
 { TPasProperty --------------------------------------------------------------- }
@@ -2156,10 +2156,10 @@ begin
   inherited;
   TTopLevelTag.Create(TagManager, 'title', 
     {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
-    [toParameterRequired, toRecursiveTags], [aiNormalText]);
+    [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
   TTopLevelTag.Create(TagManager, 'shorttitle', 
     {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
-    [toParameterRequired], []);
+    [toParameterRequired]);
 end;
 
 procedure TExternalItem.SetOutputFileName(const Value: string);
