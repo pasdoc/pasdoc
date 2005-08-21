@@ -15,7 +15,8 @@ type
   TTag = class;
 
   { @seealso TTag.Execute }
-  TTagExecuteEvent = procedure(ThisTag: TTag; EnclosingTag: TTag; 
+  TTagExecuteEvent = procedure(ThisTag: TTag; ThisTagData: Pointer;
+    EnclosingTag: TTag; var EnclosingTagData: Pointer;
     const TagParameter: string; var ReplaceStr: string) of object;
 
   { @seealso TTag.AllowedInside }
@@ -140,11 +141,32 @@ type
       differently inside @@orderedList and @@unorderedList.
       EnclosingTag is nil when the tag occured at top level of the
       description.
-   
+      
+      ThisTagData and EnclosingTagData form a mechanism to pass
+      arbitraty data between child tags enclosed within one
+      parent tag. E.g. this is the way for multiple @@item tags
+      inside @@orderedList tag to count themselves (to provide
+      list item numbers, for pasdoc output formats that can't
+      automatically number list items). This is the way for 
+      @@itemSpacing tag to communicate with enclosing
+      @@orderedList tag to specify list style.
+      How does it work:
+      
+      When we start parsing parameter of some tag with
+      toRecursiveTags, we create a new pointer inited to nil.
+      When @@-tags occur inside this parameter, we pass them 
+      this pointer as EnclosingTagData (this way all @@-tags
+      with the same parent can use this pointer to communicate
+      with each other). At the end, when parameter was parsed,
+      we call given tag's Execute method passing the resulting 
+      pointer as ThisTagData (this way @@-tags with the same parent
+      can use this pointer to pass some data to their parent).
+
       In this class this method simply calls @link(OnExecute) 
       (if assigned). }
-    procedure Execute(EnclosingTag: TTag; const TagParameter: string;
-      var ReplaceStr: string); virtual;
+    procedure Execute(ThisTagData: Pointer;
+      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+      const TagParameter: string; var ReplaceStr: string); virtual;
       
     property OnAllowedInside: TTagAllowedInsideEvent
       read FOnAllowedInside write FOnAllowedInside;
@@ -220,14 +242,18 @@ type
       If EnclosingTag = nil then this is understood to be 
       toplevel of description, which means that all tags are allowed inside.
       
-      If EnclosingTag <> nil then this is not toplevel. }
+      If EnclosingTag <> nil then this is not toplevel. 
+      
+      EnclosingTagData returns collected data for given EnclosingTag
+      (it was inited to nil and then passed as EnclosingTagData
+      to each of @@-tags found inside Description). }
     function CoreExecute(const Description: string;
-      EnclosingTag: TTag;
+      EnclosingTag: TTag; out EnclosingTagData: Pointer;
       WantFirstSentenceEnd: boolean;
       out FirstSentenceEnd: Integer): string; overload;
 
     function CoreExecute(const Description: string;
-      EnclosingTag: TTag): string; overload;
+      EnclosingTag: TTag; out EnclosingTagData: Pointer): string; overload;
   public
     constructor Create;
     destructor Destroy; override;
@@ -360,11 +386,13 @@ begin
     TagManager.FTags.Add(Self);
 end;
 
-procedure TTag.Execute(EnclosingTag: TTag; const TagParameter: string;
-  var ReplaceStr: string);
+procedure TTag.Execute(ThisTagData: Pointer;
+  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  const TagParameter: string; var ReplaceStr: string);
 begin
   if Assigned(OnExecute) then
-    OnExecute(Self, EnclosingTag, TagParameter, ReplaceStr);
+    OnExecute(Self, ThisTagData, EnclosingTag, EnclosingTagData,
+      TagParameter, ReplaceStr);
 end;
 
 function TTag.AllowedInside(EnclosingTag: TTag): boolean;
@@ -462,7 +490,7 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTag;
+  EnclosingTag: TTag; out EnclosingTagData: Pointer;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
 var
@@ -697,10 +725,12 @@ var
   OffsetEnd: Integer;
   FoundTag: TTag;
   URL: string;
+  FoundTagData: Pointer;
 begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
+  EnclosingTagData := nil;
   
   if WantFirstSentenceEnd then
     FirstSentenceEnd := 0;
@@ -734,7 +764,7 @@ begin
           Unabbreviate(Params);
           if toRecursiveTags in FoundTag.TagOptions then
             { recursively expand Params }
-            Params := CoreExecute(Params, FoundTag);
+            Params := CoreExecute(Params, FoundTag, FoundTagData);
         end else
         begin
           { Note that in this case we ignore whether
@@ -757,7 +787,8 @@ begin
         ReplaceStr := DoConvertString('@' + FoundTag.Name);
         
       { execute tag handler }
-      FoundTag.Execute(EnclosingTag, Params, ReplaceStr);
+      FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData, 
+        Params, ReplaceStr);
 
       Result := Result + ReplaceStr;
       FOffset := OffsetEnd;
@@ -885,22 +916,27 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTag): string;
+  EnclosingTag: TTag; out EnclosingTagData: Pointer): string;
 var Dummy: Integer;
 begin
-  Result := CoreExecute(Description, EnclosingTag, false, Dummy);
+  Result := CoreExecute(Description, EnclosingTag, EnclosingTagData,
+    false, Dummy);
 end;
 
 function TTagManager.Execute(const Description: string;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
+var 
+  EnclosingTagData: Pointer;
 begin
-  Result := CoreExecute(Description, nil, 
+  { Just ignore resulting EnclosingTagData }
+  Result := CoreExecute(Description, nil, EnclosingTagData,
     WantFirstSentenceEnd, FirstSentenceEnd);
 end;
 
 function TTagManager.Execute(const Description: string): string; 
-var Dummy: Integer;
+var 
+  Dummy: Integer;
 begin
   Result := Execute(Description, false, Dummy);
 end;
