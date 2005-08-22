@@ -180,31 +180,6 @@ type
     procedure HandleLinkTag(ThisTag: TTag; ThisTagData: Pointer;
       EnclosingTag: TTag; var EnclosingTagData: Pointer;
       const TagParameter: string; var ReplaceStr: string);
-
-    (* Called when a @@longcode tag is encountered. This tag is used to format
-      the enclosed text in the same way it would be in Delphi (using the
-      default settings in Delphi).
-
-      Here is an example of the @@longcode tag in use. Check the source code
-      to see how it was done.
-
-      @longCode(#
-procedure TForm1.FormCreate(Sender: TObject);
-var
-  i: integer;
-begin
-  // Note that your comments are formatted.
-  {$H+} // You can even include compiler directives.
-  // reserved words are formatted in bold.
-  for i := 1 to 10 do
-  begin
-    It is OK to include pseudo-code like this line.
-    // It will be formatted as if it were meaningful pascal code.
-  end;
-end;
-      #)
-      *)
-
     procedure HandleLongCodeTag(ThisTag: TTag; ThisTagData: Pointer;
       EnclosingTag: TTag; var EnclosingTagData: Pointer;
       const TagParameter: string; var ReplaceStr: string);
