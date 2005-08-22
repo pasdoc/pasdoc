@@ -642,7 +642,7 @@ end;
     function FormatBold(const Text: string): string; virtual;
 
     { This returns Text formatted using italic font.
-      Equivalent to @link(FormatBold). }
+      Analogous to @link(FormatBold). }
     function FormatItalic(const Text: string): string; virtual;
 
     { This returns Text preserving spaces and line breaks.
@@ -673,12 +673,16 @@ end;
       in a form converted for final output
       (converted by ConvertString, with tags etc. expanded). 
       
-      Parameter Ordered says whether this is an item within 
-      ordered or unordered list.
+      @param(Ordered says whether this is an item within 
+        ordered or unordered list.)
+        
+      @param(ItemIndex is 1-based number of this item.
+        Useful for output generators that must explicitly write
+        item numbers in ordered lists, e.g. in plain text output.)
       
       @seealso FormatList }
     function FormatListItem(const Text: string;
-      Ordered: boolean): string; virtual; abstract;
+      Ordered: boolean; ItemIndex: Cardinal): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1122,6 +1126,18 @@ begin
   ReplaceStr := FormatPreformatted(TagParameter);
 end;
 
+type
+  TListItemSpacing = (lisCompact, lisParagraph);
+  
+  TListTagsData = class
+    { This is used to count @@item tags, to provide ItemIndex
+      parameter for FormatListItem. }
+    ItemsCount: Cardinal;
+    { This is used by @@itemSpacing tag,
+      to provide ItemSpacing parameter for FormatList. }
+    ItemSpacing: TListItemSpacing;
+  end;
+
 procedure TDocGenerator.HandleOrderedListTag(
   ThisTag: TTag; ThisTagData: Pointer;
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
@@ -1142,8 +1158,17 @@ procedure TDocGenerator.HandleItemTag(
   ThisTag: TTag; ThisTagData: Pointer;
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
   const TagParameter: string; var ReplaceStr: string);
+var
+  ListTagsData: TListTagsData;
 begin
-  ReplaceStr := FormatListItem(TagParameter, EnclosingTag = OrderedListTag);
+  if EnclosingTagData = nil then
+    EnclosingTagData := TListTagsData.Create;
+  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+  
+  Inc(ListTagsData.ItemsCount);
+    
+  ReplaceStr := FormatListItem(TagParameter, 
+    EnclosingTag = OrderedListTag, ListTagsData.ItemsCount);
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(

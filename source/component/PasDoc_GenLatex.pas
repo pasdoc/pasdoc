@@ -203,7 +203,7 @@ Latex DocGenerators.}
     function FormatList(const ListItems: string;
       Ordered: boolean): string; override;
     function FormatListItem(const Text: string;
-      Ordered: boolean): string; override;
+      Ordered: boolean; ItemIndex: Cardinal): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1579,7 +1579,7 @@ begin
 end;
 
 function TTexDocGenerator.FormatListItem(const Text: string;
-  Ordered: boolean): string; 
+  Ordered: boolean; ItemIndex: Cardinal): string; 
 begin
   Result := '\item ' + Text;
 end;

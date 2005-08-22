@@ -261,7 +261,7 @@ type
     function FormatList(const ListItems: string;
       Ordered: boolean): string; override;
     function FormatListItem(const Text: string;
-      Ordered: boolean): string; override;
+      Ordered: boolean; ItemIndex: Cardinal): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2176,7 +2176,7 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatListItem(const Text: string;
-  Ordered: boolean): string; 
+  Ordered: boolean; ItemIndex: Cardinal): string; 
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. }
