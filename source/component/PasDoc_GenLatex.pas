@@ -201,9 +201,11 @@ Latex DocGenerators.}
     function FormatPreformatted(const Text: string): string; override;
     
     function FormatList(const ListItems: string;
-      Ordered: boolean): string; override;
+      ListType: TListType): string; override;
     function FormatListItem(const Text: string;
       Ordered: boolean; ItemIndex: Cardinal): string; override;
+    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
+      ItemIndex: Cardinal): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1567,21 +1569,27 @@ begin
 end;
 
 function TTexDocGenerator.FormatList(const ListItems: string;
-  Ordered: boolean): string;
+  ListType: TListType): string;
 const
-  ListEnvironment: array[boolean]of string =
-  ( 'itemize', 'enumerate' );
+  ListEnvironment: array[TListType]of string =
+  ( 'itemize', 'enumerate', 'itemize' );
 begin
   { LaTeX doesn't allow empty lists }
   if ListItems <> '' then
-    Result := Format('\begin{%s}%s\end{%0:s}', 
-      [ListEnvironment[Ordered], ListItems]);
+    Result := Format('\begin{%s}%s%s\end{%0:s}', 
+      [ListEnvironment[ListType], LineEnding, ListItems]);
 end;
 
 function TTexDocGenerator.FormatListItem(const Text: string;
   Ordered: boolean; ItemIndex: Cardinal): string; 
 begin
-  Result := '\item ' + Text;
+  Result := '\item ' + Text + LineEnding;
+end;
+
+function TTexDocGenerator.FormatDefinitionListItem(
+  const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
+begin
+  Result := '\item[' + ItemLabel + '] ' + ItemText + LineEnding;
 end;
 
 end.

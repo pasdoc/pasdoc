@@ -113,6 +113,8 @@ type
     { This means that link is inside some "normal" description text. }
     lcNormal);
 
+  TListType = (ltUnordered, ltOrdered, ltDefinition);
+
   { @abstract(basic documentation generator object)
     This abstract object will do the complete process of writing
     documentation files.
@@ -164,7 +166,7 @@ type
     { These fields are available only for tags OnExecute handlers.
       They are set in ExpandDescription. }
     FCurrentItem: TBaseItem;
-    OrderedListTag, UnorderedListTag: TTag;
+    OrderedListTag, UnorderedListTag, DefinitionListTag: TTag;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -235,13 +237,21 @@ type
     procedure HandleUnorderedListTag(ThisTag: TTag; ThisTagData: Pointer;
       EnclosingTag: TTag; var EnclosingTagData: Pointer;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleDefinitionListTag(ThisTag: TTag; ThisTagData: Pointer;
+      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+      const TagParameter: string; var ReplaceStr: string);
     procedure HandleItemTag(ThisTag: TTag; ThisTagData: Pointer;
+      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleItemLabelTag(ThisTag: TTag; ThisTagData: Pointer;
       EnclosingTag: TTag; var EnclosingTagData: Pointer;
       const TagParameter: string; var ReplaceStr: string);
 
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
     
     procedure ItemTagAllowedInside(
+      ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+    procedure ItemLabelTagAllowedInside(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
   protected
     { the (human) output language of the documentation file(s) }
@@ -625,27 +635,31 @@ type
       The implementation of this method in this class just returns
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
-    
+
     { Format a list from ListItems,
       which contains concatenated results of FormatListItem
-      for all list items.
+      (or FormatDefinitionListItem) for all list items.
       
-      Note that @@orderedList and @@unorderedList should contain only @@item 
+      Note that @@orderedList and @@unorderedList and 
+      @@definitionList should contain only @@item and @@itemLabel
       tags (tag manager makes sure that anything else is
       ignored (like whitespace) or reported as an error to the user
       (like anything other than whitespace)).
       So you can safely assume that ListItems are @italic(only)
-      the concatenated results of FormatListItem, with absolutely
-      nothing additional. Therefore if you want to test whether
+      the concatenated results of FormatListItem
+      (or FormatDefinitionListItem, for @@definitionList),
+      with absolutely nothing additional. 
+      Therefore if you want to test whether
       the list is empty (i.e. zero items), you can simply check
       ListItems = '' (no need to even do Trim(ListItems)). 
       
-      @seealso FormatListItem }
+      @seealso FormatListItem
+      @seealso FormatDefinitionListItem }
     function FormatList(const ListItems: string;
-      Ordered: boolean): string; virtual; abstract;
+      ListType: TListType): string; virtual; abstract;
 
-    { This formats list item. Text is already passed
-      in a form converted for final output
+    { This formats list item, for @@orderedList and @@unorderedList. 
+      Text is already passed in a form converted for final output
       (converted by ConvertString, with tags etc. expanded). 
       
       @param(Ordered says whether this is an item within 
@@ -658,6 +672,21 @@ type
       @seealso FormatList }
     function FormatListItem(const Text: string;
       Ordered: boolean; ItemIndex: Cardinal): string; virtual; abstract;
+
+    { This is used to format @@definitionList item from an
+      @@itemLabel + @@item pair.
+
+      @param(ItemLabel Corresponding @@itemLabel content,
+        in already processed form (processed by ConvertString etc.),
+        or '' if there was no @@itemLabel before this @@item.)
+      @param(ItemText Corresponding @@item content,
+        in already processed form,
+        or '' if there was no @@item after this @@itemLabel.)
+      @param(ItemIndex 1-based number of this item.)
+      
+      @seealso FormatList }
+    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
+      ItemIndex: Cardinal): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1105,12 +1134,19 @@ type
   TListItemSpacing = (lisCompact, lisParagraph);
   
   TListTagsData = class
-    { This is used to count @@item tags, to provide ItemIndex
-      parameter for FormatListItem. }
+    { This is used to count items, to provide ItemIndex
+      parameter for FormatListItem and FormatDefinitionListItem. }
     ItemsCount: Cardinal;
+    
     { This is used by @@itemSpacing tag,
       to provide ItemSpacing parameter for FormatList. }
     ItemSpacing: TListItemSpacing;
+    
+    { This is only for DefinitionListTag.
+      This is already expanded (by TTagManager.Execute) parameter
+      of @@itemLabel tag, or '' if there is no pending (pending =
+      not passed yet to FormatDefinitionListItem) @@itemLabel content. }
+    LastItemLabel: string;
   end;
 
 procedure TDocGenerator.HandleOrderedListTag(
@@ -1118,7 +1154,7 @@ procedure TDocGenerator.HandleOrderedListTag(
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  ReplaceStr := FormatList(TagParameter, true);
+  ReplaceStr := FormatList(TagParameter, ltOrdered);
 end;
 
 procedure TDocGenerator.HandleUnorderedListTag(
@@ -1126,7 +1162,31 @@ procedure TDocGenerator.HandleUnorderedListTag(
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  ReplaceStr := FormatList(TagParameter, false);
+  ReplaceStr := FormatList(TagParameter, ltUnordered);
+end;
+
+procedure TDocGenerator.HandleDefinitionListTag(
+  ThisTag: TTag; ThisTagData: Pointer;
+  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  ListTagsData: TListTagsData;
+  ListItems: string;
+begin
+  ListItems := TagParameter;
+  
+  if ThisTagData = nil then
+    ThisTagData := TListTagsData.Create;
+  ListTagsData := TObject(ThisTagData) as TListTagsData;
+  
+  if ListTagsData.LastItemLabel <> '' then
+  begin
+    Inc(ListTagsData.ItemsCount);
+    ListItems := ListItems + FormatDefinitionListItem(
+      ListTagsData.LastItemLabel, '', ListTagsData.ItemsCount);
+  end;
+  
+  ReplaceStr := FormatList(ListItems, ltDefinition);
 end;
 
 procedure TDocGenerator.HandleItemTag(
@@ -1142,8 +1202,43 @@ begin
   
   Inc(ListTagsData.ItemsCount);
     
-  ReplaceStr := FormatListItem(TagParameter, 
-    EnclosingTag = OrderedListTag, ListTagsData.ItemsCount);
+  if EnclosingTag = DefinitionListTag then
+  begin
+    ReplaceStr := FormatDefinitionListItem(
+      ListTagsData.LastItemLabel, TagParameter, ListTagsData.ItemsCount);
+    ListTagsData.LastItemLabel := '';
+  end else
+  begin
+    ReplaceStr := FormatListItem(TagParameter, 
+      EnclosingTag = OrderedListTag, ListTagsData.ItemsCount);
+  end;
+end;
+
+procedure TDocGenerator.HandleItemLabelTag(
+  ThisTag: TTag; ThisTagData: Pointer;
+  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  ListTagsData: TListTagsData;
+begin
+  if EnclosingTagData = nil then
+    EnclosingTagData := TListTagsData.Create;
+  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+  
+  ReplaceStr := '';
+  
+  { If last tag was also @@itemLabel, not @@item, then pass
+    last item to FormatDefinitionListItem. }
+  if ListTagsData.LastItemLabel <> '' then
+  begin
+    Inc(ListTagsData.ItemsCount);
+    ReplaceStr := ReplaceStr + FormatDefinitionListItem(
+      ListTagsData.LastItemLabel, '', ListTagsData.ItemsCount);
+  end;
+  
+  { This @@itemLabel is stored inside ListTagsData.LastItemLabel.
+    Will be passed later to FormatDefinitionListItem. }  
+  ListTagsData.LastItemLabel := TagParameter;
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
@@ -1161,7 +1256,7 @@ function TDocGenerator.ExpandDescription(Item: TBaseItem;
   out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
-  ItemTag: TTag;
+  ItemTag, ItemLabelTag: TTag;
 begin
   // make it available to the handlers
   FCurrentItem := Item;
@@ -1218,11 +1313,20 @@ begin
     UnorderedListTag := TTag.Create(TagManager, 'unorderedlist', 
       {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
       [toParameterRequired, toRecursiveTags]);
+    DefinitionListTag := TTag.Create(TagManager, 'definitionlist', 
+      {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
+      [toParameterRequired, toRecursiveTags]);
     ItemTag := TTag.Create(TagManager, 'item', 
       {$IFDEF FPC}@{$ENDIF} HandleItemTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
     ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} ItemTagAllowedInside;
+    ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
+      {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
+    ItemLabelTag.OnAllowedInside := 
+      {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
 
     if FCurrentItem is TExternalItem then
     begin
@@ -2804,8 +2908,16 @@ end;
 procedure TDocGenerator.ItemTagAllowedInside(
   ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 begin
-  Allowed := (EnclosingTag = OrderedListTag) or 
-    (EnclosingTag = UnorderedListTag);
+  Allowed := 
+    (EnclosingTag = OrderedListTag) or 
+    (EnclosingTag = UnorderedListTag) or
+    (EnclosingTag = DefinitionListTag);
+end;
+
+procedure TDocGenerator.ItemLabelTagAllowedInside(
+  ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+begin
+  Allowed := (EnclosingTag = DefinitionListTag);
 end;
 
 initialization

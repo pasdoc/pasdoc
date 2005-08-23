@@ -17,6 +17,11 @@
   @unorderedList( @code(begin end) )
   @item(Item at toplevel is not allowed.)
   @code( @item(Item inside @@-tag other than @@xxxList is not allowed.) )
+  
+  Warnings related to @@definitionList and @@itemLabel:
+  
+  @orderedList( @itemLabel( @@itemLabel is allowed only inside
+    @@definitionList ) )
 }
 unit warning_lists;
 

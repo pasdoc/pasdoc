@@ -259,9 +259,11 @@ type
     function FormatPreformatted(const Text: string): string; override;
     
     function FormatList(const ListItems: string;
-      Ordered: boolean): string; override;
+      ListType: TListType): string; override;
     function FormatListItem(const Text: string;
       Ordered: boolean; ItemIndex: Cardinal): string; override;
+    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
+      ItemIndex: Cardinal): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -2156,21 +2158,21 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatList(const ListItems: string; 
-  Ordered: boolean): string;
+  ListType: TListType): string;
 const
-  ListTag: array[boolean]of string =
-  ( 'ul', 'ol' );
+  ListTag: array[TListType]of string =
+  ( 'ul', 'ol', 'dl' );
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. This is required to always validate clearly.
     This also makes empty lists (no items) be handled correctly,
     i.e. they should produce paragraph break. }
-  Result := '</p>';
+  Result := '</p>' + LineEnding + LineEnding;
   
   { HTML requires that <ol> / <ul> contains at least one <li>. }
   if ListItems <> '' then
-    Result := Result + Format('<%s>%s</%0:s>', 
-      [ListTag[Ordered], ListItems]);
+    Result := Result + Format('<%s>%s%s</%0:s>%1:s%1:s', 
+      [ListTag[ListType], LineEnding, ListItems]);
     
   Result := Result + '<p>';
 end;
@@ -2180,7 +2182,15 @@ function TGenericHTMLDocGenerator.FormatListItem(const Text: string;
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. }
-  Result := '<li><p>' + Text + '</p></li>';
+  Result := '  <li><p>' + Text + '</p></li>' + LineEnding;
+end;
+
+function TGenericHTMLDocGenerator.FormatDefinitionListItem(
+  const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
+begin
+  Result := 
+    '  <dt><p>' + ItemLabel + '</p></dt>' + LineEnding +
+    '  <dd><p>' + ItemText + '</p></dd>' + LineEnding;
 end;
 
 end.

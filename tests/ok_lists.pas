@@ -47,6 +47,25 @@
       (Source code of this example begins to look like LISP :)
     )
   )
+  
+  Definition lists tests:
+  
+  @definitionList(
+    @item 1st item
+    @item 2nd item
+  )
+  
+  @definitionList(
+    @itemLabel 1st item label
+    @item 1st item
+    @itemLabel 2nd item label
+    @item 2nd item
+  )
+  
+  @definitionList(
+    @itemLabel 1st item label
+    @itemLabel 2nd item label
+  )
 }
 unit ok_lists;
 
