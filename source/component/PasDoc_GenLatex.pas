@@ -201,7 +201,7 @@ Latex DocGenerators.}
     function FormatPreformatted(const Text: string): string; override;
     
     function FormatList(const ListItems: string;
-      ListType: TListType): string; override;
+      ListType: TListType; ItemSpacing: TListItemSpacing): string; override;
     function FormatListItem(const Text: string;
       Ordered: boolean; ItemIndex: Cardinal): string; override;
     function FormatDefinitionListItem(const ItemLabel, ItemText: string;
@@ -1569,7 +1569,7 @@ begin
 end;
 
 function TTexDocGenerator.FormatList(const ListItems: string;
-  ListType: TListType): string;
+  ListType: TListType; ItemSpacing: TListItemSpacing): string;
 const
   ListEnvironment: array[TListType]of string =
   ( 'itemize', 'enumerate', 'itemize' );

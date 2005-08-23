@@ -12,7 +12,8 @@
       (see [http://pasdoc.sipsolutions.net/InheritedClassnameNameTag])
     @preformatted (by Ascanio Pressato)
       (see [http://pasdoc.sipsolutions.net/PreformattedTag])
-    @orderedList, @unorderedList, @definitionList, @item, @itemLabel
+    @orderedList, @unorderedList, @definitionList, 
+      @item, @itemLabel, @itemSpacing 
       (see [http://pasdoc.sipsolutions.net/ListTags])
 
   * Dashes rules: em-dash, en-dash, short dash, "@-"

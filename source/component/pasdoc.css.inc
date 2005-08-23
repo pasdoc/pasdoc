@@ -97,4 +97,15 @@
 'input#search_submit_button { }' + LineEnding + 
 '' + LineEnding + 
 'acronym.mispelling { background-color: #ffa; }' + LineEnding + 
+'' + LineEnding + 
+'/* Actually this reduces vertical space between *every* paragraph' + LineEnding + 
+'   inside list with @itemSpacing(compact). ' + LineEnding + 
+'   While we would like to reduce this space only for the' + LineEnding + 
+'   top of 1st and bottom of last paragraph within each list item.' + LineEnding + 
+'   But, well, user probably will not do any paragraph breaks' + LineEnding + 
+'   within a list with @itemSpacing(compact) anyway, so it''s' + LineEnding + 
+'   acceptable solution. */' + LineEnding + 
+'UL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'OL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'DL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
 ''

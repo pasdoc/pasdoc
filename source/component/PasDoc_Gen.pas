@@ -115,6 +115,8 @@ type
 
   TListType = (ltUnordered, ltOrdered, ltDefinition);
 
+  TListItemSpacing = (lisCompact, lisParagraph);
+
   { @abstract(basic documentation generator object)
     This abstract object will do the complete process of writing
     documentation files.
@@ -246,10 +248,13 @@ type
     procedure HandleItemLabelTag(ThisTag: TTag; ThisTagData: Pointer;
       EnclosingTag: TTag; var EnclosingTagData: Pointer;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleItemSpacingTag(ThisTag: TTag; ThisTagData: Pointer;
+      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+      const TagParameter: string; var ReplaceStr: string);
 
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
     
-    procedure ItemTagAllowedInside(
+    procedure TagAllowedInsideLists(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure ItemLabelTagAllowedInside(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
@@ -656,7 +661,8 @@ type
       @seealso FormatListItem
       @seealso FormatDefinitionListItem }
     function FormatList(const ListItems: string;
-      ListType: TListType): string; virtual; abstract;
+      ListType: TListType;
+      ItemSpacing: TListItemSpacing): string; virtual; abstract;
 
     { This formats list item, for @@orderedList and @@unorderedList. 
       Text is already passed in a form converted for final output
@@ -1131,8 +1137,6 @@ begin
 end;
 
 type
-  TListItemSpacing = (lisCompact, lisParagraph);
-  
   TListTagsData = class
     { This is used to count items, to provide ItemIndex
       parameter for FormatListItem and FormatDefinitionListItem. }
@@ -1147,22 +1151,44 @@ type
       of @@itemLabel tag, or '' if there is no pending (pending =
       not passed yet to FormatDefinitionListItem) @@itemLabel content. }
     LastItemLabel: string;
+    
+    constructor Create;
   end;
+
+constructor TListTagsData.Create;
+begin
+  inherited;
+  ItemSpacing := lisParagraph;
+end;
 
 procedure TDocGenerator.HandleOrderedListTag(
   ThisTag: TTag; ThisTagData: Pointer;
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
   const TagParameter: string; var ReplaceStr: string);
-begin
-  ReplaceStr := FormatList(TagParameter, ltOrdered);
+var
+  ListTagsData: TListTagsData;
+begin  
+  if ThisTagData = nil then
+    ThisTagData := TListTagsData.Create;
+  ListTagsData := TObject(ThisTagData) as TListTagsData;
+
+  ReplaceStr := FormatList(TagParameter, ltOrdered,
+    ListTagsData.ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleUnorderedListTag(
   ThisTag: TTag; ThisTagData: Pointer;
   EnclosingTag: TTag; var EnclosingTagData: Pointer;
   const TagParameter: string; var ReplaceStr: string);
-begin
-  ReplaceStr := FormatList(TagParameter, ltUnordered);
+var
+  ListTagsData: TListTagsData;
+begin  
+  if ThisTagData = nil then
+    ThisTagData := TListTagsData.Create;
+  ListTagsData := TObject(ThisTagData) as TListTagsData;
+
+  ReplaceStr := FormatList(TagParameter, ltUnordered,
+    ListTagsData.ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleDefinitionListTag(
@@ -1186,7 +1212,8 @@ begin
       ListTagsData.LastItemLabel, '', ListTagsData.ItemsCount);
   end;
   
-  ReplaceStr := FormatList(ListItems, ltDefinition);
+  ReplaceStr := FormatList(ListItems, ltDefinition,
+    ListTagsData.ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleItemTag(
@@ -1241,6 +1268,31 @@ begin
   ListTagsData.LastItemLabel := TagParameter;
 end;
 
+procedure TDocGenerator.HandleItemSpacingTag(
+  ThisTag: TTag; ThisTagData: Pointer;
+  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  ListTagsData: TListTagsData;
+  LTagParameter: string;
+begin
+  if EnclosingTagData = nil then
+    EnclosingTagData := TListTagsData.Create;
+  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+
+  { @itemSpacing does not generate any output to ReplaceStr. 
+    It only sets ListTagsData.ItemSpacing }
+  ReplaceStr := '';
+
+  LTagParameter := LowerCase(TagParameter);
+  if LTagParameter = 'compact' then
+    ListTagsData.ItemSpacing := lisCompact else
+  if LTagParameter = 'paragraph' then
+    ListTagsData.ItemSpacing := lisParagraph else
+    ThisTag.TagManager.DoMessage(1, mtWarning, 
+      'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1256,7 +1308,7 @@ function TDocGenerator.ExpandDescription(Item: TBaseItem;
   out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
-  ItemTag, ItemLabelTag: TTag;
+  ItemTag, ItemLabelTag, ItemSpacingTag: TTag;
 begin
   // make it available to the handlers
   FCurrentItem := Item;
@@ -1316,17 +1368,25 @@ begin
     DefinitionListTag := TTag.Create(TagManager, 'definitionlist', 
       {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
       [toParameterRequired, toRecursiveTags]);
+      
     ItemTag := TTag.Create(TagManager, 'item', 
       {$IFDEF FPC}@{$ENDIF} HandleItemTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
-    ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} ItemTagAllowedInside;
+    ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+    
     ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
       {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
     ItemLabelTag.OnAllowedInside := 
       {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
+      
+    ItemSpacingTag := TTag.Create(TagManager, 'itemspacing', 
+      {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
+      [toParameterRequired]);
+    ItemSpacingTag.OnAllowedInside := 
+      {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
     if FCurrentItem is TExternalItem then
     begin
@@ -2905,7 +2965,7 @@ begin
   NewSubItem.FullLink := CreateLink(NewSubItem);
 end;
 
-procedure TDocGenerator.ItemTagAllowedInside(
+procedure TDocGenerator.TagAllowedInsideLists(
   ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 begin
   Allowed := 

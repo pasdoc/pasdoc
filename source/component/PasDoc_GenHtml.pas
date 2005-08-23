@@ -259,7 +259,7 @@ type
     function FormatPreformatted(const Text: string): string; override;
     
     function FormatList(const ListItems: string;
-      ListType: TListType): string; override;
+      ListType: TListType; ItemSpacing: TListItemSpacing): string; override;
     function FormatListItem(const Text: string;
       Ordered: boolean; ItemIndex: Cardinal): string; override;
     function FormatDefinitionListItem(const ItemLabel, ItemText: string;
@@ -2158,10 +2158,12 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatList(const ListItems: string; 
-  ListType: TListType): string;
+  ListType: TListType; ItemSpacing: TListItemSpacing): string;
 const
   ListTag: array[TListType]of string =
   ( 'ul', 'ol', 'dl' );
+  ListClass: array[TListItemSpacing]of string =
+  ( 'compact_spacing', 'paragraph_spacing' );
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. This is required to always validate clearly.
@@ -2171,8 +2173,9 @@ begin
   
   { HTML requires that <ol> / <ul> contains at least one <li>. }
   if ListItems <> '' then
-    Result := Result + Format('<%s>%s%s</%0:s>%1:s%1:s', 
-      [ListTag[ListType], LineEnding, ListItems]);
+    Result := Result + Format('<%s class="%s">%s%s</%0:s>%2:s%2:s', 
+      [ListTag[ListType], ListClass[ItemSpacing], 
+       LineEnding, ListItems]);
     
   Result := Result + '<p>';
 end;

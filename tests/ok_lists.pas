@@ -66,6 +66,25 @@
     @itemLabel 1st item label
     @itemLabel 2nd item label
   )
+  
+  Item spacing tests:
+  
+  @definitionList(
+    @itemLabel 1st item label
+    @item 1st item
+    @itemLabel 2nd item label
+    @item 2nd item
+    
+    @itemSpacing(Paragraph)
+    @itemSpacing(Compact)
+  )
+  
+  @orderedList(
+    @itemSpacing Compact
+    @item One
+    @item Two
+    @item Three
+  )
 }
 unit ok_lists;
 

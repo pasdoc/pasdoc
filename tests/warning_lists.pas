@@ -22,6 +22,11 @@
   
   @orderedList( @itemLabel( @@itemLabel is allowed only inside
     @@definitionList ) )
+    
+  Warnings related to @@itemSpacing:
+    
+  @itemSpacing(compact)
+  @orderedList( @itemSpacing(ThisIsInvalid) )
 }
 unit warning_lists;
 
