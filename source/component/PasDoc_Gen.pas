@@ -117,6 +117,37 @@ type
 
   TListItemSpacing = (lisCompact, lisParagraph);
 
+  { Collected information about @@row (or @@rowHead). }
+  TRowData = class
+  public
+    { @true if this is for @@rowHead tag. }
+    Head: boolean;
+    
+    { Each item on this list is already converted
+      (with @@-tags parsed, converted by ConvertString etc.)
+      content of given cell tag. }
+    Cells: TStringList;
+    
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { Collected information about @@table. Passed to 
+    @link(TDocGenerator.FormatTable). Every item of this list 
+    should be non-nil instance of @link(TRowData). }
+  TTableData = class(TObjectVector)
+  private
+    FMaxCellCount: Cardinal;
+    FMinCellCount: Cardinal;
+    procedure CalculateCellCount;
+  public
+    { Maximum Cells.Count, considering all rows. }
+    property MaxCellCount: Cardinal read FMaxCellCount;
+    
+    { Minimum Cells.Count, considering all rows. }
+    property MinCellCount: Cardinal read FMinCellCount;
+  end;
+
   { @abstract(basic documentation generator object)
     This abstract object will do the complete process of writing
     documentation files.
@@ -168,7 +199,8 @@ type
     { These fields are available only for tags OnExecute handlers.
       They are set in ExpandDescription. }
     FCurrentItem: TBaseItem;
-    OrderedListTag, UnorderedListTag, DefinitionListTag: TTag;
+    OrderedListTag, UnorderedListTag, DefinitionListTag,
+      TableTag, RowTag, RowHeadTag: TTag;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -181,75 +213,85 @@ type
       const MessageType: TMessageType; const AMessage: string; 
       const AVerbosity: Cardinal);
 
-    procedure HandleLinkTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleLinkTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleLongCodeTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleLongCodeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleClassnameTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleClassnameTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleHtmlTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleHtmlTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleLatexTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleLatexTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleInheritedClassTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleInheritedClassTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleInheritedTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleInheritedTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleNameTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleNameTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleCodeTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleCodeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleLiteralTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleLiteralTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleBrTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleBrTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
-    procedure HandleSectionTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleAnchorTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleAnchorTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
       
-    procedure HandleBoldTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleBoldTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleItalicTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
-      const TagParameter: string; var ReplaceStr: string);
-
-    procedure HandlePreformattedTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleItalicTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
-    procedure HandleOrderedListTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandlePreformattedTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleUnorderedListTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+
+    procedure HandleOrderedListTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleDefinitionListTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleUnorderedListTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleItemTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleDefinitionListTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleItemLabelTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleItemTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleItemSpacingTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleItemLabelTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleItemSpacingTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
+    procedure HandleTableTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleSomeRowTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleCellTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
@@ -257,6 +299,10 @@ type
     procedure TagAllowedInsideLists(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure ItemLabelTagAllowedInside(
+      ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+    procedure TagAllowedInsideTable(
+      ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+    procedure TagAllowedInsideRows(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
   protected
     { the (human) output language of the documentation file(s) }
@@ -693,6 +739,12 @@ type
       @seealso FormatList }
     function FormatDefinitionListItem(const ItemLabel, ItemText: string;
       ItemIndex: Cardinal): string; virtual; abstract;
+      
+    { This should return appropriate content for given Table.
+      It's guaranteed that the Table passed here will have
+      at least one row and in each row there will be at least
+      one cell, so you don't have to check it within descendants. }
+    function FormatTable(Table: TTableData): string; virtual; abstract;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -809,6 +861,37 @@ uses
   StreamUtils,
   Utils,
   PasDoc_Tokenizer;
+
+{ TRowData ------------------------------------------------------------------- }
+
+constructor TRowData.Create;
+begin
+  inherited;
+  Cells := TStringList.Create;
+end;
+
+destructor TRowData.Destroy;
+begin
+  FreeAndNil(Cells);
+  inherited;
+end;
+
+{ TTableData ----------------------------------------------------------------- }
+
+procedure TTableData.CalculateCellCount;
+var
+  i: Integer;
+  CC: Cardinal;
+begin
+  FMinCellCount := MaxInt;
+  FMaxCellCount := 0;
+  for i := 0 to Count - 1 do
+  begin
+    CC := TRowData(Items[i]).Cells.Count;
+    if CC < FMinCellCount then FMinCellCount := CC;
+    if CC > FMaxCellCount then FMaxCellCount := CC;
+  end;
+end;
 
 { ---------------------------------------------------------------------------- }
 { TDocGenerator                                                                }
@@ -935,8 +1018,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.HandleLongCodeTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then
@@ -948,32 +1031,32 @@ begin
 end;
 
 procedure TDocGenerator.HandleHtmlTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := HtmlString(TagParameter);
 end;
 
 procedure TDocGenerator.HandleLatexTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := LatexString(TagParameter);
 end;
 
 procedure TDocGenerator.HandleNameTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
 end;
 
 procedure TDocGenerator.HandleClassnameTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var ItemClassName: string;
 begin
@@ -997,8 +1080,8 @@ end;
 
 // handles @true, @false, @nil (Who uses these tags anyway?)
 procedure TDocGenerator.HandleLiteralTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(UpCase(ThisTag.Name[1]) + 
@@ -1006,8 +1089,8 @@ begin
 end;
 
 procedure TDocGenerator.HandleInheritedClassTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 
   procedure InheritedClassCannotResolve(const Msg: string);
@@ -1040,8 +1123,8 @@ begin
 end;
 
 procedure TDocGenerator.HandleInheritedTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
   
   procedure InheritedCannotResolve(const Msg: string);
@@ -1087,8 +1170,8 @@ begin
 end;
 
 procedure TDocGenerator.HandleLinkTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var LinkTarget, LinkDisplay: string;
 begin
@@ -1097,47 +1180,47 @@ begin
 end;
 
 procedure TDocGenerator.HandleCodeTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := CodeString(TagParameter);
 end;
 
 procedure TDocGenerator.HandleBrTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := LineBreak;
 end;
 
 procedure TDocGenerator.HandleBoldTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := FormatBold(TagParameter);
 end;
 
 procedure TDocGenerator.HandleItalicTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := FormatItalic(TagParameter);
 end;
 
 procedure TDocGenerator.HandlePreformattedTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := FormatPreformatted(TagParameter);
 end;
 
 type
-  TListTagsData = class
+  TListData = class
     { This is used to count items, to provide ItemIndex
       parameter for FormatListItem and FormatDefinitionListItem. }
     ItemsCount: Cardinal;
@@ -1155,142 +1238,211 @@ type
     constructor Create;
   end;
 
-constructor TListTagsData.Create;
+  { For @@orderedList, @@unorderedList and @@definitionList tags. }
+  TListTag = class(TTag)
+    function CreateOccurenceData: TObject; override;
+  end;
+
+constructor TListData.Create;
 begin
   inherited;
   ItemSpacing := lisParagraph;
 end;
 
-procedure TDocGenerator.HandleOrderedListTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
-  const TagParameter: string; var ReplaceStr: string);
-var
-  ListTagsData: TListTagsData;
-begin  
-  if ThisTagData = nil then
-    ThisTagData := TListTagsData.Create;
-  ListTagsData := TObject(ThisTagData) as TListTagsData;
+function TListTag.CreateOccurenceData: TObject;
+begin
+  Result := TListData.Create;
+end;
 
+procedure TDocGenerator.HandleOrderedListTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin  
   ReplaceStr := FormatList(TagParameter, ltOrdered,
-    ListTagsData.ItemSpacing);
+    (ThisTagData as TListData).ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleUnorderedListTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-var
-  ListTagsData: TListTagsData;
 begin  
-  if ThisTagData = nil then
-    ThisTagData := TListTagsData.Create;
-  ListTagsData := TObject(ThisTagData) as TListTagsData;
-
   ReplaceStr := FormatList(TagParameter, ltUnordered,
-    ListTagsData.ItemSpacing);
+    (ThisTagData as TListData).ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleDefinitionListTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  ListTagsData: TListTagsData;
+  ListData: TListData;
   ListItems: string;
 begin
   ListItems := TagParameter;
   
-  if ThisTagData = nil then
-    ThisTagData := TListTagsData.Create;
-  ListTagsData := TObject(ThisTagData) as TListTagsData;
+  ListData := ThisTagData as TListData;
   
-  if ListTagsData.LastItemLabel <> '' then
+  if ListData.LastItemLabel <> '' then
   begin
-    Inc(ListTagsData.ItemsCount);
+    Inc(ListData.ItemsCount);
     ListItems := ListItems + FormatDefinitionListItem(
-      ListTagsData.LastItemLabel, '', ListTagsData.ItemsCount);
+      ListData.LastItemLabel, '', ListData.ItemsCount);
   end;
   
   ReplaceStr := FormatList(ListItems, ltDefinition,
-    ListTagsData.ItemSpacing);
+    ListData.ItemSpacing);
 end;
 
 procedure TDocGenerator.HandleItemTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  ListTagsData: TListTagsData;
+  ListData: TListData;
 begin
-  if EnclosingTagData = nil then
-    EnclosingTagData := TListTagsData.Create;
-  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+  ListData := EnclosingTagData as TListData;
   
-  Inc(ListTagsData.ItemsCount);
+  Inc(ListData.ItemsCount);
     
   if EnclosingTag = DefinitionListTag then
   begin
     ReplaceStr := FormatDefinitionListItem(
-      ListTagsData.LastItemLabel, TagParameter, ListTagsData.ItemsCount);
-    ListTagsData.LastItemLabel := '';
+      ListData.LastItemLabel, TagParameter, ListData.ItemsCount);
+    ListData.LastItemLabel := '';
   end else
   begin
     ReplaceStr := FormatListItem(TagParameter, 
-      EnclosingTag = OrderedListTag, ListTagsData.ItemsCount);
+      EnclosingTag = OrderedListTag, ListData.ItemsCount);
   end;
 end;
 
 procedure TDocGenerator.HandleItemLabelTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  ListTagsData: TListTagsData;
+  ListData: TListData;
 begin
-  if EnclosingTagData = nil then
-    EnclosingTagData := TListTagsData.Create;
-  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+  ListData := EnclosingTagData as TListData;
   
   ReplaceStr := '';
   
   { If last tag was also @@itemLabel, not @@item, then pass
     last item to FormatDefinitionListItem. }
-  if ListTagsData.LastItemLabel <> '' then
+  if ListData.LastItemLabel <> '' then
   begin
-    Inc(ListTagsData.ItemsCount);
+    Inc(ListData.ItemsCount);
     ReplaceStr := ReplaceStr + FormatDefinitionListItem(
-      ListTagsData.LastItemLabel, '', ListTagsData.ItemsCount);
+      ListData.LastItemLabel, '', ListData.ItemsCount);
   end;
   
-  { This @@itemLabel is stored inside ListTagsData.LastItemLabel.
+  { This @@itemLabel is stored inside ListData.LastItemLabel.
     Will be passed later to FormatDefinitionListItem. }  
-  ListTagsData.LastItemLabel := TagParameter;
+  ListData.LastItemLabel := TagParameter;
 end;
 
 procedure TDocGenerator.HandleItemSpacingTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  ListTagsData: TListTagsData;
+  ListData: TListData;
   LTagParameter: string;
 begin
-  if EnclosingTagData = nil then
-    EnclosingTagData := TListTagsData.Create;
-  ListTagsData := TObject(EnclosingTagData) as TListTagsData;
+  ListData := EnclosingTagData as TListData;
 
   { @itemSpacing does not generate any output to ReplaceStr. 
-    It only sets ListTagsData.ItemSpacing }
+    It only sets ListData.ItemSpacing }
   ReplaceStr := '';
 
   LTagParameter := LowerCase(TagParameter);
   if LTagParameter = 'compact' then
-    ListTagsData.ItemSpacing := lisCompact else
+    ListData.ItemSpacing := lisCompact else
   if LTagParameter = 'paragraph' then
-    ListTagsData.ItemSpacing := lisParagraph else
+    ListData.ItemSpacing := lisParagraph else
     ThisTag.TagManager.DoMessage(1, mtWarning, 
       'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
+end;
+
+type
+  { For @@row and @@rowHead tags. }
+  TRowTag = class(TTag)
+    function CreateOccurenceData: TObject; override;
+  end;
+  
+  TTableTag = class(TTag)
+    function CreateOccurenceData: TObject; override;
+  end;
+
+function TRowTag.CreateOccurenceData: TObject;
+begin
+  Result := TRowData.Create;
+end;
+
+function TTableTag.CreateOccurenceData: TObject;
+begin
+  Result := TTableData.Create(true);
+end;
+
+procedure TDocGenerator.HandleTableTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+  
+  procedure Error(const S: string);
+  begin
+    ThisTag.TagManager.DoMessage(1, mtWarning, S, []);
+    ReplaceStr := ConvertString(S);
+  end;
+  
+var
+  TableData: TTableData;
+begin
+  TableData := ThisTagData as TTableData;
+  
+  if TableData.Count = 0 then
+  begin
+    Error('Invalid @table: no rows');
+    Exit;
+  end;
+  
+  TableData.CalculateCellCount;
+  
+  if TableData.MinCellCount = 0 then
+  begin
+    Error('Invalid table @row: no cells');
+    Exit;
+  end;
+  
+  ReplaceStr := FormatTable(TableData);
+end;
+
+procedure TDocGenerator.HandleSomeRowTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '';
+  
+  (ThisTagData as TRowData).Head := ThisTag = RowHeadTag;
+  (EnclosingTagData as TTableData).Add(ThisTagData);
+  
+  { Since we just added ThisTagData to EnclosingTagData,
+    it should no longer be freed by DestroyOccurenceData.
+    It will be freed when EnclosingTagData will be freed. }
+  ThisTagData := nil;
+end;
+
+procedure TDocGenerator.HandleCellTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '';
+  
+  (EnclosingTagData as TRowData).Cells.Append(TagParameter);
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
@@ -1308,7 +1460,7 @@ function TDocGenerator.ExpandDescription(Item: TBaseItem;
   out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
-  ItemTag, ItemLabelTag, ItemSpacingTag: TTag;
+  ItemTag, ItemLabelTag, ItemSpacingTag, CellTag: TTag;
 begin
   // make it available to the handlers
   FCurrentItem := Item;
@@ -1359,13 +1511,14 @@ begin
     TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
-    OrderedListTag := TTag.Create(TagManager, 'orderedlist', 
+       
+    OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
       {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
       [toParameterRequired, toRecursiveTags]);
-    UnorderedListTag := TTag.Create(TagManager, 'unorderedlist', 
+    UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
       {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
       [toParameterRequired, toRecursiveTags]);
-    DefinitionListTag := TTag.Create(TagManager, 'definitionlist', 
+    DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
       {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
       [toParameterRequired, toRecursiveTags]);
       
@@ -1387,6 +1540,26 @@ begin
       [toParameterRequired]);
     ItemSpacingTag.OnAllowedInside := 
       {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+
+    TableTag := TTableTag.Create(TagManager, 'table',
+      {$IFDEF FPC}@{$ENDIF} HandleTableTag,
+      [toParameterRequired, toRecursiveTags]);
+
+    RowTag := TRowTag.Create(TagManager, 'row',
+      {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+      [toParameterRequired, toRecursiveTags]);
+    RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
+
+    RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
+      {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+      [toParameterRequired, toRecursiveTags]);
+    RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
+
+    CellTag := TTag.Create(TagManager, 'cell',
+      {$IFDEF FPC}@{$ENDIF} HandleCellTag,
+      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
+    CellTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
 
     if FCurrentItem is TExternalItem then
     begin
@@ -2904,8 +3077,8 @@ begin
 end;
 
 procedure TDocGenerator.HandleAnchorTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
   AnchorString: string;
@@ -2927,8 +3100,8 @@ begin
 end;
 
 procedure TDocGenerator.HandleSectionTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
   HeadingLevelString: string;
@@ -2977,7 +3150,21 @@ end;
 procedure TDocGenerator.ItemLabelTagAllowedInside(
   ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 begin
-  Allowed := (EnclosingTag = DefinitionListTag);
+  Allowed := EnclosingTag = DefinitionListTag;
+end;
+
+procedure TDocGenerator.TagAllowedInsideTable(
+  ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+begin
+  Allowed := EnclosingTag = TableTag;
+end;
+
+procedure TDocGenerator.TagAllowedInsideRows(
+  ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+begin
+  Allowed :=
+    (EnclosingTag = RowTag) or
+    (EnclosingTag = RowHeadTag);
 end;
 
 initialization

@@ -45,7 +45,8 @@
 'tr.list2 { background: #FFC982; }' + LineEnding + 
 'tr.listheader { background: #C91E0C; color: white; }' + LineEnding + 
 '' + LineEnding + 
-'table { border-spacing:2px; width:100%; }' + LineEnding + 
+'table.wide_list { border-spacing:2px; width:100%; }' + LineEnding + 
+'table.wide_list td { vertical-align:top; padding:4px; }' + LineEnding + 
 '' + LineEnding + 
 'table.markerlegend { width:auto; }' + LineEnding + 
 'table.markerlegend td.legendmarker { text-align:center; }' + LineEnding + 
@@ -55,8 +56,6 @@
 '' + LineEnding + 
 'table.summary td.itemcode { width:100%; }' + LineEnding + 
 'table.detail td.itemcode { width:100%; }' + LineEnding + 
-'' + LineEnding + 
-'td { vertical-align:top; padding:4px; }' + LineEnding + 
 '' + LineEnding + 
 'td.itemname {white-space:nowrap; }' + LineEnding + 
 'td.itemunit {white-space:nowrap; }' + LineEnding + 
@@ -105,7 +104,24 @@
 '   But, well, user probably will not do any paragraph breaks' + LineEnding + 
 '   within a list with @itemSpacing(compact) anyway, so it''s' + LineEnding + 
 '   acceptable solution. */' + LineEnding + 
-'UL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
-'OL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
-'DL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'ul.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'ol.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'dl.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
+'' + LineEnding + 
+'/* Style for table created by @table tags:' + LineEnding + 
+'   just some lightgray thin border.' + LineEnding + 
+'   ' + LineEnding + 
+'   This way we have some borders around the cells' + LineEnding + 
+'   (so cells are visibly separated), but the border ' + LineEnding + 
+'   "blends with the background" so it doesn''t look too ugly.' + LineEnding + 
+'   Hopefully it looks satisfactory in most cases and for most' + LineEnding + 
+'   people. ' + LineEnding + 
+'   ' + LineEnding + 
+'   We add padding for cells, otherwise they look too close.' + LineEnding + 
+'   This is normal thing to do when border-collapse is set to' + LineEnding + 
+'   collapse (because this eliminates spacing between cells). ' + LineEnding + 
+'*/' + LineEnding + 
+'table.table_tag { border-collapse: collapse; }' + LineEnding + 
+'table.table_tag td { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
+'table.table_tag th { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
 ''

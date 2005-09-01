@@ -43,7 +43,8 @@ tr.list { background: #FFBF44; }
 tr.list2 { background: #FFC982; }
 tr.listheader { background: #C91E0C; color: white; }
 
-table { border-spacing:2px; width:100%; }
+table.wide_list { border-spacing:2px; width:100%; }
+table.wide_list td { vertical-align:top; padding:4px; }
 
 table.markerlegend { width:auto; }
 table.markerlegend td.legendmarker { text-align:center; }
@@ -53,8 +54,6 @@ table.sections td {background:lightgray; }
 
 table.summary td.itemcode { width:100%; }
 table.detail td.itemcode { width:100%; }
-
-td { vertical-align:top; padding:4px; }
 
 td.itemname {white-space:nowrap; }
 td.itemunit {white-space:nowrap; }
@@ -103,6 +102,23 @@ acronym.mispelling { background-color: #ffa; }
    But, well, user probably will not do any paragraph breaks
    within a list with @itemSpacing(compact) anyway, so it's
    acceptable solution. */
-UL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }
-OL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }
-DL.compact_spacing P { margin-top: 0em; margin-bottom: 0em; }
+ul.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }
+ol.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }
+dl.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }
+
+/* Style for table created by @table tags:
+   just some lightgray thin border.
+   
+   This way we have some borders around the cells
+   (so cells are visibly separated), but the border 
+   "blends with the background" so it doesn't look too ugly.
+   Hopefully it looks satisfactory in most cases and for most
+   people. 
+   
+   We add padding for cells, otherwise they look too close.
+   This is normal thing to do when border-collapse is set to
+   collapse (because this eliminates spacing between cells). 
+*/
+table.table_tag { border-collapse: collapse; }
+table.table_tag td { border: 1pt solid lightgray; padding: 0.3em; }
+table.table_tag th { border: 1pt solid lightgray; padding: 0.3em; }

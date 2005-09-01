@@ -114,7 +114,7 @@ type
     procedure WriteStartOfTableCell; overload;
     procedure WriteStartOfTableCell(const CssClass: string); overload;
 
-    procedure WriteStartOfTable1Column(const CssClass: string; const t: string);
+    procedure WriteStartOfTable1Column(const CssClass: string);
     procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
     procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
     procedure WriteStartOfTableRow(const CssClass: string);
@@ -264,6 +264,8 @@ type
       Ordered: boolean; ItemIndex: Cardinal): string; override;
     function FormatDefinitionListItem(const ItemLabel, ItemText: string;
       ItemIndex: Cardinal): string; override;
+      
+    function FormatTable(Table: TTableData): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -895,7 +897,7 @@ begin
 
   WriteHeading(HeadingLevel + 1, 'summary', FLanguage.Translation[SectionName]);
   
-  WriteStartOfTable1Column('summary', '');
+  WriteStartOfTable1Column('summary');
 
   for i := 0 to Items.Count - 1 do
     WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false);
@@ -918,7 +920,7 @@ begin
   begin
     Item := Items.PasItemAt[i];
 
-    WriteStartOfTable1Column('detail', '');
+    WriteStartOfTable1Column('detail');
     WriteItemTableRow(Item, ShowVisibility, false, true);
     WriteEndOfTable;
 
@@ -1438,21 +1440,18 @@ end;
 procedure TGenericHTMLDocGenerator.WriteStartOfTable(const CssClass: string);
 begin
   FOddTableRow := false;
-  if CssClass <> '' then
-    WriteDirectLine('<table class="' + CssClass + '">')
-  else
-    WriteDirectLine('<table>');
+  { Every table create by WriteStartOfTable has class wide_list }
+  WriteDirectLine('<table class="' + CssClass + ' wide_list">');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTable1Column(const CssClass: string; const t: string);
-begin { TODO -ccheck : Why isn't the parameter t used? Is it always empty? If yes, remove it! }      
+procedure TGenericHTMLDocGenerator.WriteStartOfTable1Column(const CssClass: string);
+begin
   WriteStartOfTable(CssClass);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTable2Columns(const CssClass: string;
   const t1, t2: string);
 begin
-  FOddTableRow := false;
   WriteStartOfTable(CssClass);
   WriteDirectLine('<tr class="listheader">');
   WriteDirect('<th class="itemname">');
@@ -1464,10 +1463,9 @@ begin
   WriteDirectLine('</tr>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTable3Columns(const CssClass: string;
-  const t1, t2, t3: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTable3Columns(
+  const CssClass: string; const t1, t2, t3: string);
 begin
-  FOddTableRow := false;
   WriteStartOfTable(CssClass);
   WriteDirectLine('<tr class="listheader">');
   WriteDirect('<th class="itemname">');
@@ -1482,7 +1480,8 @@ begin
   WriteDirectLine('</tr>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(const CssClass: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableCell(
+  const CssClass: string);
 var
   s: string;
 begin
@@ -2194,6 +2193,58 @@ begin
   Result := 
     '  <dt><p>' + ItemLabel + '</p></dt>' + LineEnding +
     '  <dd><p>' + ItemText + '</p></dd>' + LineEnding;
+end;
+
+function TGenericHTMLDocGenerator.FormatTable(Table: TTableData): string;
+
+(*
+  TODO: about html validity and enclosing cell content within <p>:
+
+  We could enclose cell content (inside <td> and <th>) within <p></p>, 
+  to be validatable, but this introduces the ugly effect of 
+  adding additional margins between text and cell borders.
+  
+  We could get rid of this margin by using CSS below:
+    table.table_tag p { margin-top: 0em; margin-bottom: 0em; }
+  but this also makes gap between paragraphs within
+  cells too small.
+  
+  So for now, we're not HTML valid.
+*)
+
+const
+  CellTag: array[boolean]of string = ('td', 'th');
+var
+  RowNum, ColNum: Integer;
+  Row: TRowData;
+  NormalRowOdd: boolean;
+  RowClass: string;
+begin
+  Result := '</p>' + LineEnding + LineEnding + 
+    '<table class="table_tag">' + LineEnding;
+  NormalRowOdd := true;
+  for RowNum := 0 to Table.Count - 1 do
+  begin
+    Row := Table.Items[RowNum] as TRowData;
+    
+    if Row.Head then
+      RowClass := 'head' else
+    begin
+      if NormalRowOdd then
+        RowClass := 'odd' else
+        RowClass := 'even';
+      NormalRowOdd := not NormalRowOdd;
+    end;
+    
+    Result := Result + '  <tr class="' + RowClass + '">' + LineEnding;
+    
+    for ColNum := 0 to Row.Cells.Count - 1 do
+      Result := Result + Format('    <%s>%s</%0:s>%2:s',
+        [CellTag[Row.Head], Row.Cells[ColNum], LineEnding]);
+    
+    Result := Result + '  </tr>' + LineEnding;
+  end;
+  Result := Result + '</table>' + LineEnding + LineEnding + '<p>';
 end;
 
 end.

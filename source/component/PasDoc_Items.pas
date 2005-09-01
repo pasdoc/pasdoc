@@ -87,17 +87,17 @@ type
     FCreated: string;
     
     procedure SetAuthors(const Value: TStringVector);
-    procedure StoreAuthorTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure StoreCreatedTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreCreatedTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure StoreLastModTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreLastModTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure StoreCVSTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreCVSTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
     { Serialization of TPasItem need to store in stream only data
@@ -240,14 +240,14 @@ type
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
 
-    procedure StoreAbstractTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleDeprecatedTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleDeprecatedTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleSeeAlsoTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleSeeAlsoTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
     procedure Serialize(const ADestination: TStream); override;
@@ -442,8 +442,8 @@ type
     FMembers: TPasItems;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure StoreValueTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreValueTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
     procedure RegisterTags(TagManager: TTagManager); override;
@@ -471,14 +471,14 @@ type
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure StoreRaisesTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreRaisesTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure StoreParamTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreParamTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure StoreReturnsTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreReturnsTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
     constructor Create; override;
@@ -565,8 +565,8 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
-    procedure StoreMemberTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure StoreMemberTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
     constructor Create; override;
@@ -681,11 +681,11 @@ type
     FAnchors: TPasItems;
     procedure SetOutputFileName(const Value: string);
   protected
-    procedure HandleTitleTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleTitleTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure HandleShortTitleTag(ThisTag: TTag; ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure HandleShortTitleTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
     Constructor Create; override;
@@ -1000,8 +1000,8 @@ begin
 end;
 
 procedure TBaseItem.StoreAuthorTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
@@ -1012,8 +1012,8 @@ begin
 end;
 
 procedure TBaseItem.StoreCreatedTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
@@ -1022,8 +1022,8 @@ begin
 end;
 
 procedure TBaseItem.StoreLastModTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
@@ -1032,8 +1032,8 @@ begin
 end;
 
 procedure TBaseItem.StoreCVSTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
   s: string;
@@ -1228,8 +1228,8 @@ begin
 end;
 
 procedure TPasItem.StoreAbstractTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if AbstractDescription <> '' then
@@ -1241,8 +1241,8 @@ begin
 end;
 
 procedure TPasItem.HandleDeprecatedTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   IsDeprecated := true;
@@ -1250,8 +1250,8 @@ begin
 end;
 
 procedure TPasItem.HandleSeeAlsoTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var 
   Pair: TStringPair;
@@ -1379,8 +1379,8 @@ begin
 end;
 
 procedure TPasEnum.StoreValueTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
   ValueName: String;
@@ -1706,8 +1706,8 @@ begin
 end;
 
 procedure TPasCio.StoreMemberTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
   MemberName: String;
@@ -1967,8 +1967,8 @@ end;
   But this is obviously unclean approach. }
 
 procedure TPasMethod.StoreRaisesTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var 
   Pair: TStringPair;
@@ -1989,8 +1989,8 @@ begin
 end;
 
 procedure TPasMethod.StoreParamTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var 
   Pair: TStringPair;
@@ -2011,8 +2011,8 @@ begin
 end;
 
 procedure TPasMethod.StoreReturnsTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
@@ -2139,8 +2139,8 @@ begin
 end;
 
 procedure TExternalItem.HandleShortTitleTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if ShortTitle <> '' then
@@ -2152,8 +2152,8 @@ begin
 end;
 
 procedure TExternalItem.HandleTitleTag(
-  ThisTag: TTag; ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if Title <> '' then

@@ -206,6 +206,8 @@ Latex DocGenerators.}
       Ordered: boolean; ItemIndex: Cardinal): string; override;
     function FormatDefinitionListItem(const ItemLabel, ItemText: string;
       ItemIndex: Cardinal): string; override;
+      
+    function FormatTable(Table: TTableData): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
     // code in Delphi or Lazarus.  However, unlike Lazarus and Delphi,
@@ -1590,6 +1592,36 @@ function TTexDocGenerator.FormatDefinitionListItem(
   const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
 begin
   Result := '\item[' + ItemLabel + '] ' + ItemText + LineEnding;
+end;
+
+function TTexDocGenerator.FormatTable(Table: TTableData): string;
+var
+  RowNum, ColNum: Integer;
+  Row: TRowData;
+  
+  function CellContent(Row: TRowData; ColNum: Integer): string;
+  begin
+    Result := Row.Cells[ColNum];
+    if Row.Head then
+      Result := FormatBold(Result);
+  end;
+  
+begin
+  Result := Paragraph + '\begin{tabular}{' + 
+    DupeString('|l', Table.MaxCellCount) + '|}' + LineEnding + 
+    '\hline' + LineEnding;
+  for RowNum := 0 to Table.Count - 1 do
+  begin
+    Row := Table.Items[RowNum] as TRowData;
+    
+    for ColNum := 0 to Row.Cells.Count - 2 do
+      Result := Result + CellContent(Row, ColNum) + ' & ';
+      
+    { No '&' after the last cell of a row. }
+    Result := Result + CellContent(Row, Row.Cells.Count - 1) + 
+      ' \\ \hline' + LineEnding;
+  end;
+  Result := Result + '\end{tabular}' + Paragraph;
 end;
 
 end.

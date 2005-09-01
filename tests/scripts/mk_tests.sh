@@ -12,6 +12,15 @@ SORT_OLD='--sort=functions,record-fields,non-record-fields,methods,properties'
 
 # functions ----------------------------------------
 
+run_echo ()
+{
+  OUTPUT_FILENAME="$1"
+  shift 1
+
+  echo 'Running:' "$@" '>' "$OUTPUT_FILENAME"
+  "$@" > "$OUTPUT_FILENAME"
+}
+
 # $1 is name of subdir (must end with /) where to put test output
 # (including PASDOC-OUTPUT file).
 # Rest of params are pasdoc's command-line:
@@ -25,11 +34,9 @@ mk_test ()
 
   PASDOC_OUTPUT_FILENAME="$OUTPUT_PATH"PASDOC-OUTPUT
 
-  echo "Running pasdoc:"
-  echo pasdoc --format "$FORMAT" --exclude-generator \
-    --output="$OUTPUT_PATH" "$@" '>' "$PASDOC_OUTPUT_FILENAME"
-       pasdoc --format "$FORMAT" --exclude-generator \
-    --output="$OUTPUT_PATH" "$@" >   "$PASDOC_OUTPUT_FILENAME"
+  run_echo "$PASDOC_OUTPUT_FILENAME" \
+    pasdoc --format "$FORMAT" --exclude-generator \
+    --output="$OUTPUT_PATH" "$@"
 }
 
 # Like mk_test but $1 is name of subdir inside "$FORMAT" subdir.
@@ -52,17 +59,17 @@ shift 1
 #
 # Note: most new tests should not be added here.
 # It was the 1st approach to just call something like `pasdoc *.pas' here
-# to test everything. But this was not good, because 
+# to test everything. But this was not good, because
 # 1. obviously you can't do tests with specialized pasdoc command-line options
 # 2. in case of output formats that create some "index" pages
 #    (like AllClasses.html in HTML / HtmlHelp output) small
 #    changes and additions have too global impact on many parts of
 #    documentation, so output from `diff -wur correct_output/html html/'
 #    is harder to grok for humans.
-# 
+#
 # Instead, usually you should add new test units as new calls to
 # `mk_special_test ...' lower in this script.
-# 
+#
 mk_test "$FORMAT"/ "$SORT_OLD" \
   error_line_number.pas \
   ok_cdecl_external.pas \
@@ -128,3 +135,6 @@ mk_special_test ok_preformatted_test ok_preformatted_test.pas
 mk_special_test ok_dashes ok_dashes.pas
 mk_special_test ok_lists ok_lists.pas
 mk_special_test warning_lists warning_lists.pas
+mk_special_test ok_table ok_table.pas
+mk_special_test ok_table_nonlatex ok_table_nonlatex.pas
+mk_special_test warning_table warning_table.pas

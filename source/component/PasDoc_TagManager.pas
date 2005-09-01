@@ -15,8 +15,8 @@ type
   TTag = class;
 
   { @seealso TTag.Execute }
-  TTagExecuteEvent = procedure(ThisTag: TTag; ThisTagData: Pointer;
-    EnclosingTag: TTag; var EnclosingTagData: Pointer;
+  TTagExecuteEvent = procedure(ThisTag: TTag; var ThisTagData: TObject;
+    EnclosingTag: TTag; var EnclosingTagData: TObject;
     const TagParameter: string; var ReplaceStr: string) of object;
 
   { @seealso TTag.AllowedInside }
@@ -144,16 +144,31 @@ type
       
       ThisTagData and EnclosingTagData form a mechanism to pass
       arbitraty data between child tags enclosed within one
-      parent tag. E.g. this is the way for multiple @@item tags
-      inside @@orderedList tag to count themselves (to provide
-      list item numbers, for pasdoc output formats that can't
-      automatically number list items). This is the way for 
-      @@itemSpacing tag to communicate with enclosing
-      @@orderedList tag to specify list style.
-      How does it work:
+      parent tag. Example uses:
+      
+      @unorderedList(
+        @item(This is the way for multiple @@item tags
+          inside @@orderedList tag to count themselves (to provide
+          list item numbers, for pasdoc output formats that can't
+          automatically number list items).)
+          
+        @item(This is the way for 
+          @@itemSpacing tag to communicate with enclosing
+          @@orderedList tag to specify list style. )
+      
+        @item(And this is the way for @@cell tags to be collected
+          inside rows data and then @@rows tags to be collected
+          inside table data. Thanks to such collecting 
+          @link(TDocGenerator.FormatTable) receives at once all
+          information about given table, and can use it to format
+          table.)
+      )
+      
+      How does this XxxTagData mechanism work:
       
       When we start parsing parameter of some tag with
-      toRecursiveTags, we create a new pointer inited to nil.
+      toRecursiveTags, we create a new pointer inited to 
+      @link(CreateOccurenceData).
       When @@-tags occur inside this parameter, we pass them 
       this pointer as EnclosingTagData (this way all @@-tags
       with the same parent can use this pointer to communicate
@@ -164,8 +179,8 @@ type
 
       In this class this method simply calls @link(OnExecute) 
       (if assigned). }
-    procedure Execute(ThisTagData: Pointer;
-      EnclosingTag: TTag; var EnclosingTagData: Pointer;
+    procedure Execute(var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string); virtual;
       
     property OnAllowedInside: TTagAllowedInsideEvent
@@ -189,6 +204,12 @@ type
           (if OnAllowedInside is assigned).)
       ) }
     function AllowedInside(EnclosingTag: TTag): boolean; virtual;
+    
+    { In this class this simply returns @nil. }
+    function CreateOccurenceData: TObject; virtual;
+    
+    { In this class this simply does @code(Value.Free). }
+    procedure DestroyOccurenceData(Value: TObject); virtual;
   end;
   
   TTopLevelTag = class(TTag)
@@ -244,16 +265,17 @@ type
       
       If EnclosingTag <> nil then this is not toplevel. 
       
-      EnclosingTagData returns collected data for given EnclosingTag
-      (it was inited to nil and then passed as EnclosingTagData
-      to each of @@-tags found inside Description). }
+      EnclosingTagData returns collected data for given EnclosingTag.
+      You should init it to EnclosingTag.CreateOccurenceData.
+      It will be passed as EnclosingTagData to each of @@-tags 
+      found inside Description. }
     function CoreExecute(const Description: string;
-      EnclosingTag: TTag; out EnclosingTagData: Pointer;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
       WantFirstSentenceEnd: boolean;
       out FirstSentenceEnd: Integer): string; overload;
 
     function CoreExecute(const Description: string;
-      EnclosingTag: TTag; out EnclosingTagData: Pointer): string; overload;
+      EnclosingTag: TTag; var EnclosingTagData: TObject): string; overload;
   public
     constructor Create;
     destructor Destroy; override;
@@ -386,8 +408,8 @@ begin
     TagManager.FTags.Add(Self);
 end;
 
-procedure TTag.Execute(ThisTagData: Pointer;
-  EnclosingTag: TTag; var EnclosingTagData: Pointer;
+procedure TTag.Execute(var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if Assigned(OnExecute) then
@@ -402,6 +424,16 @@ begin
 
   if Assigned(OnAllowedInside) then
     OnAllowedInside(Self, EnclosingTag, Result);
+end;
+
+function TTag.CreateOccurenceData: TObject;
+begin
+  Result := nil;
+end;
+
+procedure TTag.DestroyOccurenceData(Value: TObject);
+begin
+  Value.Free;
 end;
 
 { TTopLevelTag ---------------------------------------------------------- }
@@ -490,7 +522,7 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTag; out EnclosingTagData: Pointer;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
 var
@@ -725,12 +757,11 @@ var
   OffsetEnd: Integer;
   FoundTag: TTag;
   URL: string;
-  FoundTagData: Pointer;
+  FoundTagData: TObject;
 begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
-  EnclosingTagData := nil;
   
   if WantFirstSentenceEnd then
     FirstSentenceEnd := 0;
@@ -754,41 +785,58 @@ begin
             [FoundTag.Name]) else
           DoMessage(1, mtWarning, 'The tag "@%s" cannot be used inside ' +
             'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
-      end;
-      
-      { Process Params }
-      if Params <> '' then
-      begin
-        if toParameterRequired in FoundTag.TagOptions then
-        begin
-          Unabbreviate(Params);
-          if toRecursiveTags in FoundTag.TagOptions then
-            { recursively expand Params }
-            Params := CoreExecute(Params, FoundTag, FoundTagData);
-        end else
-        begin
-          { Note that in this case we ignore whether
-            toRecursiveTags is in Tag.TagOptions,
-            we always behave like toRecursiveTags was not included.
-
-            This is reported as a serious warning,
-            because tag handler procedure will probably ignore
-            passed value of Params and will set ReplaceStr to something
-            unrelated to Params. This means that user input is completely
-            discarded. So user should really correct it.
-
-            I didn't mark this as an mtError only because some sensible
-            output will be generated anyway. }
-          DoMessage(1, mtWarning,
-            'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
-        end;
-        ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
-      end else
-        ReplaceStr := DoConvertString('@' + FoundTag.Name);
+            
+        { Assign dummy value for ReplaceStr.
         
-      { execute tag handler }
-      FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData, 
-        Params, ReplaceStr);
+          We can't proceed with normal recursive expanding and
+          calling FoundTag.Execute, because tag methods
+          (and callbacks, like TTag.OnExecute) may assume that the tag
+          is always enclosed only within allowed tags
+          (so e.g. EnclosingTag and EnclosingTagData values for
+          OnExecute are of appropriate classes etc.) }
+        ReplaceStr := '';
+      end else
+      begin
+        FoundTagData := FoundTag.CreateOccurenceData;
+        try
+          { Process Params }
+          if Params <> '' then
+          begin
+            if toParameterRequired in FoundTag.TagOptions then
+            begin
+              Unabbreviate(Params);
+              if toRecursiveTags in FoundTag.TagOptions then
+                { recursively expand Params }
+                Params := CoreExecute(Params, FoundTag, FoundTagData);
+            end else
+            begin
+              { Note that in this case we ignore whether
+                toRecursiveTags is in Tag.TagOptions,
+                we always behave like toRecursiveTags was not included.
+
+                This is reported as a serious warning,
+                because tag handler procedure will probably ignore
+                passed value of Params and will set ReplaceStr to something
+                unrelated to Params. This means that user input is completely
+                discarded. So user should really correct it.
+
+                I didn't mark this as an mtError only because some sensible
+                output will be generated anyway. }
+              DoMessage(1, mtWarning,
+                'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
+            end;
+            ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
+          end else
+            ReplaceStr := DoConvertString('@' + FoundTag.Name);
+
+          { execute tag handler }
+          FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData, 
+            Params, ReplaceStr);
+
+        finally 
+          FoundTag.DestroyOccurenceData(FoundTagData) 
+        end;
+      end;
 
       Result := Result + ReplaceStr;
       FOffset := OffsetEnd;
@@ -916,7 +964,7 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
-  EnclosingTag: TTag; out EnclosingTagData: Pointer): string;
+  EnclosingTag: TTag; var EnclosingTagData: TObject): string;
 var Dummy: Integer;
 begin
   Result := CoreExecute(Description, EnclosingTag, EnclosingTagData,
@@ -927,11 +975,12 @@ function TTagManager.Execute(const Description: string;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
 var 
-  EnclosingTagData: Pointer;
+  EnclosingTagData: TObject;
 begin
-  { Just ignore resulting EnclosingTagData }
+  EnclosingTagData := nil;
   Result := CoreExecute(Description, nil, EnclosingTagData,
     WantFirstSentenceEnd, FirstSentenceEnd);
+  { Just ignore resulting EnclosingTagData }
 end;
 
 function TTagManager.Execute(const Description: string): string; 
