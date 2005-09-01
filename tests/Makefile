@@ -38,7 +38,7 @@ latex2rtf/docs.tex:
 # Other targets ----------------------------------------
 
 validate_html:
-	cd html/; ../scripts/validate_html.sh
+	scripts/validate_html.sh
 
 clean:
 	rm -Rf html/ latex/ htmlhelp/ latex2rtf/ \
