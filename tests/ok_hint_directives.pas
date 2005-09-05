@@ -15,37 +15,45 @@
   Looking below you can see that the way how these hints are parsed
   by Delphi is pretty much stupid and non-consequent (sorry all Delphi
   lovers, but this is really a mess) :
+  
+  @orderedList(
+    @item(
+      Between "unit UnitName" and hints you @italic(mustn't) put any semicolon,
+      and you @italic(mustn't) put any semicolons between hints. @br
+      Same thing for CIOs (Classes / Interfaces / Objects / Records). @br
+      Same thing for CIOs fields. @br
+      Same thing for variables. @br
+      Same thing for constants.)
 
-  1. Between "unit UnitName" and hints you *mustn't* put any semicolon,
-     and you *mustn't* put any semicolons between hints. @br
-     Same thing for CIOs (Classes / Interfaces / Objects / Records). @br
-     Same thing for CIOs fields. @br
-     Same thing for variables. @br
-     Same thing for constants.
+    @item(
+      Between "procedure/function Name (...)" and hints you @italic(must)
+      put a semicolon, and semicolons between hints are allowed but
+      not required. It seems that you can't specify "library" directive
+      for procedures/functions -- why ? Probably because "library"
+      is a keyword and Borland was unable to correctly modify it's compiler
+      to parse such thing. But pasdoc parses library directive correctly.)
 
-  2. Between "procedure/function Name (...)" and hints you *must*
-     put a semicolon, and semicolons between hints are allowed but
-     not required. It seems that you can't specify "library" directive
-     for procedures/functions -- why ? Probably because "library"
-     is a keyword and Borland was unable to correctly modify it's compiler
-     to parse such thing. But pasdoc parses library directive correctly.
-
-  3. Between method and hints you *must* put a semicolon,
-     and semicolon between hints is *required*.
-     You can specify "library" directive for methods.
+    @item(
+      Between method and hints you @italic(must) put a semicolon,
+      and semicolon between hints is @italic(required).
+      You can specify "library" directive for methods.)
+  )
 
   I'm unable to figure out how to specify these hints for normal
   (non-structural) types. If anyone can
-  - tell me how to specify hint directives for non-structural types or
-  - explain why parsing these directives is so non-consequent in Delphi or
-  - point me to some precise documentation by Borland specifying grammar
-    rules with these directives
+  @unorderedList(
+    @itemSpacing compact
+    @item tell me how to specify hint directives for non-structural types or
+    @item explain why parsing these directives is so non-consequent in Delphi or
+    @item(point me to some precise documentation by Borland specifying grammar
+      rules with these directives)
+  )
   ... then please send email about this to pasdoc-main mailing list
   (or directly to me, Michalis Kamburelis, <kambi@@users.sourceforge.net>,
   if your comments about this do not really concern pasdoc).
   I will be grateful.
 
-  Contrary to most units in tests/, this unit *is* kept at compileable
+  Contrary to most units in tests/, this unit @italic(is) kept at compileable
   by Delphi/Kylix. That's because this unit is also a test whether we
   really specify here hint directives in the way parseable by Delphi/Kylix.
 }
