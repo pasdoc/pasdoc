@@ -133,6 +133,7 @@ type
     SD_NAME,
     SD_NEAR,
     SD_NODEFAULT,
+    SD_OUT,
     SD_OVERLOAD,
     SD_OVERRIDE,
     SD_PASCAL,
@@ -274,12 +275,17 @@ const
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
     'CDECL', 'CVAR', 'DEFAULT', 'SPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
     'FAR', 'FORWARD', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
-    'NODEFAULT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
+    'NODEFAULT', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'STDCALL', 'STORED', 'VIRTUAL',
     'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS');
 
+{ Checks is Name (case ignored) some Pascal keyword.
+  Returns SD_INVALIDSTANDARDDIRECTIVE if not. }
 function StandardDirectiveByName(const Name: string): TStandardDirective;
+
+{ Checks is Name (case ignored) some Pascal standard directive.
+  Returns KEY_INVALIDKEYWORD if not. }
 function KeyWordByName(const Name: string): TKeyword;
 
 implementation

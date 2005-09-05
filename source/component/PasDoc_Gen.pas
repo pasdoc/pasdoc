@@ -851,10 +851,6 @@ type
       read FWriteUsesClause write FWriteUsesClause default false;
   end;
 
-var
-  ReservedWords: TStringList;
-
-
 implementation
 
 uses
@@ -2382,7 +2378,7 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
     AString is keyword. }
   function FormatCode(const AString: string): string;
   begin
-    if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
+    if KeyWordByName(AString) <> KEY_INVALIDKEYWORD then
       Result := FormatKeyWord(AString) else
       Result := FormatNormalCode(AString);
   end;
@@ -3172,80 +3168,5 @@ begin
     (EnclosingTag = RowTag) or
     (EnclosingTag = RowHeadTag);
 end;
-
-initialization
-  ReservedWords := TStringList.Create;
-
-  // construct the list of reserved words.  These will be displayed
-  // in bold text.
-  ReservedWords.Add('and');
-  ReservedWords.Add('array');
-  ReservedWords.Add('as');
-  ReservedWords.Add('asm');
-  ReservedWords.Add('begin');
-  ReservedWords.Add('case');
-  ReservedWords.Add('class');
-  ReservedWords.Add('const');
-  ReservedWords.Add('constructor');
-  ReservedWords.Add('destructor');
-  ReservedWords.Add('dispinterface');
-  ReservedWords.Add('div');
-  ReservedWords.Add('do');
-  ReservedWords.Add('downto');
-  ReservedWords.Add('else');
-  ReservedWords.Add('end');
-  ReservedWords.Add('except');
-  ReservedWords.Add('exports');
-  ReservedWords.Add('file');
-  ReservedWords.Add('finalization');
-  ReservedWords.Add('finally');
-  ReservedWords.Add('for');
-  ReservedWords.Add('function');
-  ReservedWords.Add('goto');
-  ReservedWords.Add('if');
-  ReservedWords.Add('implementation');
-  ReservedWords.Add('in');
-  ReservedWords.Add('inherited');
-  ReservedWords.Add('initialization');
-  ReservedWords.Add('inline');
-  ReservedWords.Add('interface');
-  ReservedWords.Add('is');
-  ReservedWords.Add('label');
-  ReservedWords.Add('library');
-  ReservedWords.Add('mod');
-  ReservedWords.Add('nil');
-  ReservedWords.Add('not');
-  ReservedWords.Add('object');
-  ReservedWords.Add('of');
-  ReservedWords.Add('or');
-  ReservedWords.Add('out');
-  ReservedWords.Add('packed');
-  ReservedWords.Add('procedure');
-  ReservedWords.Add('program');
-  ReservedWords.Add('property');
-  ReservedWords.Add('raise');
-  ReservedWords.Add('record');
-  ReservedWords.Add('repeat');
-  ReservedWords.Add('resourcestring');
-  ReservedWords.Add('set');
-  ReservedWords.Add('shl');
-  ReservedWords.Add('shr');
-  ReservedWords.Add('string');
-  ReservedWords.Add('then');
-  ReservedWords.Add('threadvar');
-  ReservedWords.Add('to');
-  ReservedWords.Add('try');
-  ReservedWords.Add('type');
-  ReservedWords.Add('unit');
-  ReservedWords.Add('until');
-  ReservedWords.Add('uses');
-  ReservedWords.Add('var');
-  ReservedWords.Add('while');
-  ReservedWords.Add('with');
-  ReservedWords.Add('xor');
-  ReservedWords.Sorted := True;
-
-finalization
-  ReservedWords.Free;
 
 end.
