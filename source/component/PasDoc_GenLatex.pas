@@ -167,28 +167,23 @@ type
       const Id: TTranslationID); override;
       
 { TODO : FormatKeyWord, FormatCompilerComment, FormatComment,
-FormatString, FormatCode, and FormatPascalCode are all closely related.
+FormatString and FormatPascalCode are all closely related.
 Maybe they should be extracted into an abstract base class.  There
 could be descendents of the abstract ancestor associated with the HTML and
 Latex DocGenerators.}
 
     // @name is called from within @link(FormatPascalCode)
-    // and @link(FormatCode) to
-    // return AString in a bold font.
+    // to return AString in a bold font.
     function FormatKeyWord(AString: string): string; override;
+    
     // @name is called from within @link(FormatPascalCode) to
-    // return AString in italics
+    // return AString in italics.
     function FormatCompilerComment(AString: string): string; override;
+    
     // @name is called from within @link(FormatPascalCode) to
-    // return AString in italics
+    // return AString in italics.
     function FormatComment(AString: string): string; override;
-    // @name is called from within @link(FormatPascalCode)
-    // and @link(FormatCode) to
-    // return AString after converting special characters.
-    function FormatString(AString: string): string; override;
-    // @name is called from within @link(FormatPascalCode) to
-    // format AString as compileable code.
-    function FormatCode(AString: string): string; override;
+
     function FormatAnchor(const Anchor: string): string; override;
     
     function MakeItemLink(const Item: TBaseItem;
@@ -1511,23 +1506,6 @@ end;
 function TTexDocGenerator.FormatComment(AString: string): string;
 begin
   result := '\textit{' + ConvertString(AString) + '}';
-end;
-
-function TTexDocGenerator.FormatCode(AString: string): string;
-begin
-  if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
-  begin
-    Result := FormatKeyWord(AString);
-  end
-  else
-  begin
-    result := ConvertString(AString);
-  end;
-end;
-
-function TTexDocGenerator.FormatString(AString: string): string;
-begin
-  result := ConvertString(AString);
 end;
 
 function TTexDocGenerator.FormatAnchor(const Anchor: string): string;

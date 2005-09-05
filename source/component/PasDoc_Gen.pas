@@ -537,9 +537,10 @@ type
       You should process it with ConvertString if you want. }
     function FormatPascalCode(const Line: string): string; virtual;
     
-    // FormatCode will cause AString to be formatted in the
-    // way that Pascal statements are in Delphi.
-    function FormatCode(AString: string): string; virtual;
+    { This will cause AString to be formatted in the way that normal 
+      Pascal statements (not keywords, strings, comments, etc.)
+      look in Delphi. }
+    function FormatNormalCode(AString: string): string; virtual;
     
     // FormatComment will cause AString to be formatted in
     // the way that comments other than compiler directives are
@@ -558,7 +559,7 @@ type
     // the way that Float are formatted in Delphi.
     function FormatFloat(AString: string): string; virtual;
 
-    // FormatKeyWord will cause AString to be formatted in
+    // FormatString will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; virtual;
     
@@ -2376,6 +2377,16 @@ begin
 end;
 
 function TDocGenerator.FormatPascalCode(const Line: string): string;
+
+  { Calls FormatKeyWord or FormatNormalCode, depending on whether
+    AString is keyword. }
+  function FormatCode(const AString: string): string;
+  begin
+    if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
+      Result := FormatKeyWord(AString) else
+      Result := FormatNormalCode(AString);
+  end;
+
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
     ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
@@ -2399,6 +2410,7 @@ const
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
   Numeric = ['0'..'9','.'];
   Hexadec = ['0'..'9', 'a'..'f', 'A'..'F', '$'];
+  
   function TestCommentStart: boolean;
   begin
     result := False;
@@ -2448,6 +2460,7 @@ const
       result := True;
     end
   end;
+  
 begin
   CommentBegining := 1;
   StringBeginning := 1;
@@ -2813,16 +2826,9 @@ begin
   end;
 end;
 
-function TDocGenerator.FormatCode(AString: string): string;
+function TDocGenerator.FormatNormalCode(AString: string): string;
 begin
-  if ReservedWords.IndexOf(LowerCase(AString)) >= 0 then
-  begin
-    Result := FormatKeyWord(AString);
-  end
-  else
-  begin
-    result := AString;
-  end;
+  Result := ConvertString(AString);
 end;
 
 function TDocGenerator.FormatComment(AString: string): string;
