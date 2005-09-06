@@ -1,4 +1,4 @@
-- reflect in gui --implicit-visibility option
+- reflect in gui --implicit-visibility option, --no-macro option
 
 - Provide easy way to look into documentation for given option,
   wiki page documenting given feature. pasdoc_gui would automatically
