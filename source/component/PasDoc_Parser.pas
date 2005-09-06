@@ -96,7 +96,9 @@ type
     procedure ParseHintDirectives(Item: TPasItem);
   protected
     { Last comment found in input or nil if no comment available.
-    Will be modified by @link(GetLastComment). }
+      Will be modified by @link(GetLastComment).
+      Always LastCommentToken.MyType is in TokenCommentTypes
+      (as long as LastCommentToken <> nil). }
     LastCommentToken: TToken;
     { The underlying scanner object. }
     Scanner: TScanner;
@@ -115,12 +117,23 @@ type
       @link(GetLastComment) was called with @code(ClearLastComment) set to
       @False. }
     procedure ClearLastComment;
-    { Returns the comment (or other data) in t. If t = nil, the
-      Result will be an empty string. If FreeToken is @True, @Name frees t.
-      Otherwise, t stays untouched for further use. if present, comment
-      markers are removed from the beginning and end of the data.}
-    function ExtractComment(const FreeToken: Boolean;
+    
+    { Extracts the documentation comment from T.
+      Always T.MyType must be within TokenCommentTypes.
+    
+      If T = nil, the Result will be an empty string.
+      The comment is intended to be a "documentation comment",
+      i.e. we intend to put it inside output documentation.
+      So comment markers, if present, 
+      are removed from the beginning and end of the data.
+      Also, if comment markers were required but were not present,
+      then this returns empty string.
+      
+      If FreeToken is @True, @Name frees t.
+      Otherwise, T stays untouched for further use. }
+    function ExtractDocComment(const FreeToken: Boolean;
       var t: TToken): string;
+      
     { Returns the last comment that was found in input. If there was none, the
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
@@ -317,50 +330,22 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-function TParser.ExtractComment(const FreeToken: Boolean; var t: TToken): string;
+function TParser.ExtractDocComment(const FreeToken: Boolean; 
+  var t: TToken): string;
 var
   l: Integer;
   i: integer;
   Marker: string;
 begin
-  if Assigned(t) then begin
-    Result := t.Data;
-    if FreeToken then begin
+  if Assigned(t) then 
+  begin
+    Result := t.CommentContent;
+    if FreeToken then 
+    begin
       t.Free;
       t := nil;
     end;
-
-    { remove comment characters here }
-    l := Length(Result);
-
-      if l > 0 then
-        case Result[1] of
-          '{':
-            begin
-              Delete(Result, 1, 1);
-              Dec(l);
-
-              if (l > 0) and (Result[l] = '}') then
-                Delete(Result, Length(Result), 1);
-            end;
-
-          '/':
-            if (l > 1) and (Result[2] = '/') then
-              begin
-                Delete(Result, 1, 2);
-              end;
-
-          '(':
-            if (l > 1) and (Result[2] = '*') then
-              begin
-                Delete(Result, 1, 2);
-                Dec(l, 2);
-                if (l > 1) and (Result[l - 1] = '*') and (Result[l] = ')') then
-                  Delete(Result, l - 1, 2);
-              end;
-        end;
-  end
-  else
+  end else
     Result := '';
 
   if (Result = '') or (CommentMarkers.Count = 0) then
@@ -380,7 +365,7 @@ end;
 
 function TParser.GetLastComment(const AClearLastComment: Boolean): string;
 begin
-  result := ExtractComment(AClearLastComment, LastCommentToken);
+  result := ExtractDocComment(AClearLastComment, LastCommentToken);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -435,7 +420,7 @@ begin
         else if (t.MyType = TOK_WHITESPACE) then begin
           if (Length(a) > 0) and (a[Length(a)] <> ' ') then a := a + ' ';
         end
-        else if t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT, TOK_DIRECTIVE] then
+        else if t.MyType in TokenCommentTypes + [TOK_DIRECTIVE] then
           begin
               { ignore }
         end
@@ -512,19 +497,19 @@ begin
       M.Free;
       DoError('Could not get next token', [], 0);
     end;
-    case t.MyType of 
-      TOK_COMMENT_PAS, TOK_COMMENT_CSTYLE, TOK_COMMENT_EXT: { ignore };
-      TOK_WHITESPACE:
-        begin
-          { add exactly *one space* at the end of M.FullDeclaration }
-          if Length(M.FullDeclaration) > 0 then begin
-            if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
-              M.FullDeclaration := M.FullDeclaration + ' ';
-          end;
-        end
-      else
-        M.FullDeclaration := M.FullDeclaration + t.Data;
-    end;
+    if not (t.MyType in TokenCommentTypes) then
+      case t.MyType of
+        TOK_WHITESPACE:
+          begin
+            { add exactly *one space* at the end of M.FullDeclaration }
+            if Length(M.FullDeclaration) > 0 then begin
+              if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
+                M.FullDeclaration := M.FullDeclaration + ' ';
+            end;
+          end
+        else
+          M.FullDeclaration := M.FullDeclaration + t.Data;
+      end;
     if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_LEFT_PARENTHESIS)
       then Inc(level);
     if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
@@ -1142,8 +1127,7 @@ begin
       if not Scanner.GetToken(t) then
         DoError('Error, could not parse property in file %s', [Scanner.GetStreamInfo], 0);
 
-      if not (t.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
-        TOK_COMMENT_CSTYLE, TOK_DIRECTIVE]) then
+      if not (t.MyType in TokenCommentTypes + [TOK_DIRECTIVE]) then
       begin
         p.IndexDecl := p.IndexDecl + t.Data;
         p.FullDeclaration := p.FullDeclaration + t.Data;
@@ -1807,50 +1791,56 @@ begin
   LCollector := '';
   repeat
     if not Scanner.PeekToken(t) then break;
-    case t.MyType of
-      TOK_WHITESPACE: 
-        begin
-          Scanner.ConsumeToken;
-          LCollector := LCollector + t.Data;
-          FreeAndNil(t);
-        end;
-      TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE:
-        begin
-          Scanner.ConsumeToken;
-          // If there are several comments in a row, combine them.
-          if Assigned(LastCommentToken) and
-             (t.MyType = TOK_COMMENT_CSTYLE) and 
-             (t.MyType = LastCommentToken.MyType) then 
+    if t.MyType in TokenCommentTypes then
+    begin
+      Scanner.ConsumeToken;
+      // If there are several comments in a row, combine them.
+      if Assigned(LastCommentToken) and
+         (t.MyType = TOK_COMMENT_CSTYLE) and 
+         (t.MyType = LastCommentToken.MyType) then 
+      begin
+        t.CommentContent := GetLastComment(True) + LineEnding + 
+          ExtractDocComment(False, t);
+
+        (* Remember that t.Data and t.CommentContent 
+           must be in the form acceptable by ExtractDocComment again.
+           And the code above surely removed comment
+           markers from the t.CommentContent,
+           moreover we should recreate t.Data from t.CommentContent
+           (to be sure that T is in sensible state).
+           
+           This means that we must do something ugly now:
+           1. add again marker to t.CommentContent, 
+              if it's not optional (otherwise comments could be
+              errorneously rejected because they no longer have required
+              marker)
+           2. apply again comment braces for t.Data
+        *)
+        if (not MarkersOptional) and (CommentMarkers.Count > 0) then
+          t.CommentContent := CommentMarkers[0] + t.CommentContent;
+        t.Data := '{' + t.CommentContent + '}';
+      end;
+      if Assigned(LastCommentToken) then
+      begin
+        LastCommentToken.Free;
+      end;
+      LastCommentToken := t;
+      t := nil;
+    end else
+    begin
+      case t.MyType of
+        TOK_WHITESPACE: 
           begin
-            t.Data := GetLastComment(True) + LineEnding + ExtractComment(False, t);
-            
-            (* Remember that t.Data must be in the form acceptable by
-               ExtractComment again. And the code above just removed comments
-               braces and comment markers from the comment. This means that 
-               we must do something ugly now:
-               1. apply again comment braces (otherwise comments like
-                  {( * bla bla * )} could not work as expected, as they
-                  would be stripped from braces more than once.)
-               2. add again marker, if it's not optional (otherwise
-                  comments could be errorneously rejected because they no
-                  longer have required marker)
-            *)
-            if (not MarkersOptional) and (CommentMarkers.Count > 0) then
-              t.Data := CommentMarkers[0] + t.Data;
-            t.Data := '{' + t.Data + '}';
+            Scanner.ConsumeToken;
+            LCollector := LCollector + t.Data;
+            FreeAndNil(t);
           end;
-          if Assigned(LastCommentToken) then
+        else 
           begin
-            LastCommentToken.Free;
+            Result := True;
+            break;
           end;
-          LastCommentToken := t;
-          t := nil;
-        end 
-      else 
-        begin
-          Result := True;
-          break;
-        end;
+      end;
     end;
   until False;
 end;

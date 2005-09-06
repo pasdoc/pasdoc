@@ -3,6 +3,7 @@
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
+  @author(Michalis Kamburelis)
 
   @abstract(Provides a simplified Pascal scanner.)
   
@@ -111,50 +112,62 @@ const
   DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string[6] =
   ('DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF');
 
-  { this function recognizes only those directives we'll need for the scanner }
-
-function SplitDirective(const t: string; out DirectiveName, Params: string):
-  Boolean;
-var
-  i: Integer;
-  l: Integer;
-begin
-  Result := False;
-  i := 1;
-  DirectiveName := '';
-  Params := '';
-  { find dollar sign }
-  l := Length(t);
-  while (i <= l) and (t[i] <> '$') do
-    Inc(i);
-  if i > l then Exit;
-  Inc(i);
-
-  { get directive name }
-  while (i <= l) and not (t[i] in [#32, '*', '}']) do begin
-    DirectiveName := DirectiveName + UpCase(t[i]);
-    Inc(i);
-  end;
-  Result := True;
-  if t[i] in ['*', '}'] then Exit;
-
-  { skip spaces }
-  while (i <= l) and (t[i] = ' ') do
-    Inc(i);
-  if i > l then Exit;
-
-  { get parameters - no conversion to uppercase here, it could be an include
-    file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
-  while (i <= l) and not (t[i] in [#32, '*', '}']) do begin
-    Params := Params + t[i];
-    Inc(i);
-  end;
-end;
-
 { ---------------------------------------------------------------------------- }
 
+{ Assumes that T is taken from a Token.Data where
+  Token.MyType was TOK_DIRECTIVE.
+  
+  Extracts DirectiveName and DirectiveParam from T.
+  DirectiveName is the thing right after $ sign, uppercased.
+  DirectiveParam is what followed after DirectiveName.
+  E.g. for (*$define My_Symbol*) we get
+  DirectiveName = 'DEFINE' and
+  DirectiveParam = 'My_Symbol'.
+  
+  Returns true and sets Dt to appropriate directive type,
+  if DirectiveName was something known (see array DirectiveNames).
+  Else returns false. }
 function IdentifyDirective(const t: string;  
   out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
+  
+  function SplitDirective(const t: string; out DirectiveName, Params: string):
+    Boolean;
+  var
+    i: Integer;
+    l: Integer;
+  begin
+    Result := False;
+    i := 1;
+    DirectiveName := '';
+    Params := '';
+    { find dollar sign }
+    l := Length(t);
+    while (i <= l) and (t[i] <> '$') do
+      Inc(i);
+    if i > l then Exit;
+    Inc(i);
+
+    { get directive name }
+    while (i <= l) and not (t[i] in [' ', '*', '}']) do begin
+      DirectiveName := DirectiveName + UpCase(t[i]);
+      Inc(i);
+    end;
+    Result := True;
+    if t[i] in ['*', '}'] then Exit;
+
+    { skip spaces }
+    while (i <= l) and (t[i] = ' ') do
+      Inc(i);
+    if i > l then Exit;
+
+    { get parameters - no conversion to uppercase here, it could be an include
+      file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
+    while (i <= l) and not (t[i] in [' ', '*', '}']) do begin
+      Params := Params + t[i];
+      Inc(i);
+    end;
+  end;
+  
 var
   i: TDirectiveType;
 begin

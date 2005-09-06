@@ -1,8 +1,8 @@
 {
-  @lastmod(2003-03-29)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
+  @author(Michalis Kamburelis)
   @abstract(Provides simplified Pascal tokenizer.)
 
 The @link(TTokenizer) object creates @link(TToken) objects (tokens) for the
@@ -163,6 +163,9 @@ const
     'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
     'directive', 'reserved word');
 
+  TokenCommentTypes: set of TTokenType = 
+  [ TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE ];
+
 type
   { enumeration type that provides all types of symbols; each
     symbol's name starts with SYM_ }
@@ -179,16 +182,26 @@ type
     { the exact character representation of this token as it was found in the
       input file }
     Data: string;
-    { additional information on this token as a variant record depending on the token's MyType }
-    Info: record
-      case Integer of
-        0: (WhitespaceRows: Integer);
-        2: (SymbolType: TSymbolType);
-        3: (KeyWord: TKeyWord);
-        4: (StandardDirective: TStandardDirective);
-    end;
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
+    { additional information on this token as a variant record depending 
+      on the token's MyType }
+    Info: record
+      case TTokenType of
+        TOK_SYMBOL: 
+          (SymbolType: TSymbolType);
+        TOK_KEYWORD: 
+          (KeyWord: TKeyWord);
+        TOK_IDENTIFIER: 
+          (StandardDirective: TStandardDirective);
+    end;
+
+    { Contents of a comment token.
+      This is defined only when MyType is in TokenCommentTypes
+      or is TOK_DIRECTIVE.
+      This is the text within the comment @italic(without) comment delimiters. }
+    CommentContent: string;
+    
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
@@ -671,13 +684,18 @@ var
   c: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_EXT);
-  with Result do begin
-    Data := '{';
+  with Result do 
+  begin
+    CommentContent := '';
     repeat
       if not HasData or not GetChar(c) then Exit;
       if c = #10 then Inc(Row);
-      Data := Data + c; // TODO: Speed up!
+      CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
+    
+    Data := '{' + CommentContent;
+    (* Remove last '}' from CommentContent *)
+    SetLength(CommentContent, Length(CommentContent) - 1);
   end;
 end;
 
@@ -688,11 +706,11 @@ var
   c: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_PAS);
-  Result.Data := '(*';
+  Result.CommentContent := '';
   if not HasData or not GetChar(c) then Exit;
   repeat
-    Result.Data := Result.Data + c;
- 
+    Result.CommentContent := Result.CommentContent + c;
+
     if c <> '*' then begin
       if c = #10 then Inc(Row);
       if not HasData or not GetChar(c) then Exit;
@@ -701,7 +719,9 @@ begin
       if c = ')' then
         begin
           ConsumeChar;
-          Result.Data := Result.Data + c;
+          Result.Data := '(*' + Result.CommentContent + ')';
+          { Remove last '*' from Result.CommentContent }
+          SetLength(Result.CommentContent, Length(Result.CommentContent) - 1);
           Break;
         end;
     end;
@@ -715,10 +735,12 @@ var
   c: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_CSTYLE);
-  with Result do begin
-    Data := '//';
+  with Result do 
+  begin
+    CommentContent := '';
     while HasData and GetChar(c) and not (c in [#10, #13]) do
-      Data := Data + c;
+      CommentContent := CommentContent + c;
+    Data := '//' + CommentContent;
   end;
 end;
 
