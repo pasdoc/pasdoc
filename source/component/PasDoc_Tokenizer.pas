@@ -248,9 +248,10 @@ type
       t: TToken): Boolean;
 
   public
-    { Creates a TTokenizer and associates it with given input TStream. }
+    { Creates a TTokenizer and associates it with given input TStream. 
+      Note that AStream will be freed when this object will be freed. }
     constructor Create(
-      const s: TStream;
+      const AStream: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
       const AStreamName: string);
@@ -394,7 +395,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 constructor TTokenizer.Create(
-  const s: TStream;
+  const AStream: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
   const AStreamName: string);
@@ -403,7 +404,7 @@ begin
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
   Row := 1;
-  Stream := s;
+  Stream := AStream;
   FStreamName := AStreamName;
 end;
 
@@ -411,7 +412,7 @@ end;
 
 destructor TTokenizer.Destroy;
 begin
-  if Assigned(Stream) then Stream.Free;
+  Stream.Free;
   inherited;
 end;
 
