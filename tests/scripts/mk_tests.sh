@@ -18,7 +18,11 @@ run_echo ()
   shift 1
 
   echo 'Running:' "$@" '>' "$OUTPUT_FILENAME"
+  
+  # Temporary set +e, to ignore exit status from pasdoc
+  set +e
   "$@" > "$OUTPUT_FILENAME"
+  set -e
 }
 
 # $1 is name of subdir (must end with /) where to put test output
@@ -138,3 +142,6 @@ mk_special_test warning_lists warning_lists.pas
 mk_special_test ok_table ok_table.pas
 mk_special_test ok_table_nonlatex ok_table_nonlatex.pas
 mk_special_test warning_table warning_table.pas
+mk_special_test ok_macros ok_macros.pas
+mk_special_test error_macros error_macros.pas
+mk_special_test error_macros_recursive error_macros_recursive.pas

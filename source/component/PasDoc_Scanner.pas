@@ -1,5 +1,4 @@
 {
-  @lastmod(2003-03-29)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -54,7 +53,7 @@ type
     { For each symbol: 
         Name is the unique Name,
         Value is the string to be expanded into (in case of a macro),
-        LongBool(Data) says if this is a macro 
+        Data is SymbolIsMacro or SymbolIsNotMacro to say if this is a macro
           (i.e. should it be expanded). 
           
       Note the important fact: we can't use Value <> '' to decide
@@ -75,7 +74,16 @@ type
     function IsSymbolDefined(const Name: string): Boolean;
     
     function IsSwitchDefined(n: string): Boolean;
+    
+    { This creates and adds new Tokenizer to FTokenizers list and makes 
+      it the current tokenizer. It also checks MAX_TOKENIZERS limit.
+      After calling this procedure, don't free Stream -- it will be
+      owned by created Tokenizer, and created Tokenizer will be managed
+      as part of FTokenizers list. }
+    procedure OpenNewTokenizer(Stream: TStream; const StreamName: string);
+    
     function OpenIncludeFile(const n: string): Boolean;
+    
     function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
@@ -136,6 +144,9 @@ const
   DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string =
   ( 'DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF', 
     'INCLUDE' );
+
+  SymbolIsNotMacro = nil;
+  SymbolIsMacro = Pointer(1);
 
 { ---------------------------------------------------------------------------- }
 
@@ -286,10 +297,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-const
-  SymbolIsNotMacro = nil;
-  SymbolIsMacro = Pointer(1);
-
 procedure TScanner.AddSymbol(const Name: string);
 begin
   if not IsSymbolDefined(Name) then 
@@ -369,7 +376,7 @@ function TScanner.GetToken(var t: TToken): Boolean;
       AddSymbol(DirectiveParam) else
     begin
       { Split T.CommentContent once again (this time with
-        ParamsEndedByWhitespace = false. Then check is it macro. }
+        ParamsEndedByWhitespace = false). Then check is it macro. }
       SplitDirective(t.CommentContent, false, 
         TempDirectiveName, DirectiveParam);
 
@@ -385,6 +392,26 @@ function TScanner.GetToken(var t: TToken): Boolean;
       if Copy(DirectiveParam, i, 2) = ':=' then
         AddMacro(SymbolName, Copy(DirectiveParam, i + 2, MaxInt)) else
         AddSymbol(SymbolName);
+    end;
+  end;
+
+  { If T is an identifier that expands to a macro, then it handles it
+    (i.e. opens a new tokenizer that expands a macro) and returns true. 
+    Else returns false. }
+  function ExpandMacro(T: TToken): boolean;
+  var 
+    SymbolIndex: Integer;
+  begin
+    Result := T.MyType = TOK_IDENTIFIER;
+    if Result then
+    begin
+      SymbolIndex := FSymbols.FindName(T.Data);
+      Result := (SymbolIndex <> -1) and 
+         (FSymbols[SymbolIndex].Data = SymbolIsMacro);
+      if Result then
+        OpenNewTokenizer(TStringStream.Create(
+          FSymbols[SymbolIndex].Value), 
+          '<' + FSymbols[SymbolIndex].Name + ' macro>');
     end;
   end;
 
@@ -409,91 +436,100 @@ begin
     if (FCurrentTokenizer = -1) then
       DoError('End of stream reached while trying to get next token.', [], 0);
 
-    if FTokenizers[FCurrentTokenizer].HasData then begin
-        { get next token from tokenizer }
+    if FTokenizers[FCurrentTokenizer].HasData then 
+    begin
+      { get next token from tokenizer }
       t := FTokenizers[FCurrentTokenizer].GetToken;
-        { check if token is a directive }
-      if (t.MyType = TOK_DIRECTIVE) then begin
-        if not IdentifyDirective(t.CommentContent, 
+      
+      { if token is a directive, then we handle it }
+      if t.MyType = TOK_DIRECTIVE then
+      begin
+        if IdentifyDirective(t.CommentContent, 
           dt, DirectiveName, DirectiveParam) then 
         begin
+          case dt of
+            DT_DEFINE: HandleDefineDirective(DirectiveParam);
+            DT_ELSE: begin
+                DoMessage(5, mtInformation, 'ELSE encountered', []);
+                if (FDirectiveLevel > 0) then begin
+                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                  if not FoundElse then Dec(FDirectiveLevel);
+                end
+                else begin
+                  FErrorMessage := GetStreamInfo + ': unexpected $ELSE directive.';
+                  Exit;
+                end;
+              end;
+            DT_ENDIF: begin
+                DoMessage(5, mtInformation, 'ENDIF encountered', []);
+                if (FDirectiveLevel > 0) then begin
+                  Dec(FDirectiveLevel);
+                  DoMessage(6, mtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
+                end
+                else begin
+                  FErrorMessage := GetStreamInfo + ': unexpected $ENDIF directive.';
+                  Exit;
+                end;
+              end;
+            DT_IFDEF: begin
+                if IsSymbolDefined(DirectiveParam) then begin
+                  Inc(FDirectiveLevel);
+                  DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
+                end
+                else begin
+                  DoMessage(6, mtInformation, 'IFDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
+                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                  if FoundElse then
+                    Inc(FDirectiveLevel);
+                end;
+              end;
+            DT_IFNDEF: begin
+                if not IsSymbolDefined(DirectiveParam) then begin
+                  Inc(FDirectiveLevel);
+                  DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
+                end
+                else begin
+                  DoMessage(6, mtInformation, 'IFNDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
+                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                  if FoundElse then
+                    Inc(FDirectiveLevel);
+                end;
+              end;
+            DT_IFOPT: begin
+                if (not IsSwitchDefined(DirectiveParam)) then begin
+                  if (not SkipUntilElseOrEndif(FoundElse)) then Exit;
+                  if FoundElse then Inc(FDirectiveLevel);
+                end
+                else
+                  Inc(FDirectiveLevel);
+              end;
+            DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
+              if not OpenIncludeFile(DirectiveParam) then
+                DoError(GetStreamInfo + ': Error, could not open include file "'
+                  + DirectiveParam + '"', [], 0);
+            DT_UNDEF: begin
+                DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
+                DeleteSymbol(DirectiveParam);
+              end;
+          end;
+        end else
+        begin
           ResolveSwitchDirectives(t.Data);
-          t.Free;
-          Continue;
         end;
-        case dt of
-          DT_DEFINE: HandleDefineDirective(DirectiveParam);
-          DT_ELSE: begin
-              DoMessage(5, mtInformation, 'ELSE encountered', []);
-              if (FDirectiveLevel > 0) then begin
-                if not SkipUntilElseOrEndif(FoundElse) then Exit;
-                if not FoundElse then Dec(FDirectiveLevel);
-              end
-              else begin
-                FErrorMessage := GetStreamInfo + ': unexpected $ELSE directive.';
-                Exit;
-              end;
-            end;
-          DT_ENDIF: begin
-              DoMessage(5, mtInformation, 'ENDIF encountered', []);
-              if (FDirectiveLevel > 0) then begin
-                Dec(FDirectiveLevel);
-                DoMessage(6, mtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
-              end
-              else begin
-                FErrorMessage := GetStreamInfo + ': unexpected $ENDIF directive.';
-                Exit;
-              end;
-            end;
-          DT_IFDEF: begin
-              if IsSymbolDefined(DirectiveParam) then begin
-                Inc(FDirectiveLevel);
-                DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-              end
-              else begin
-                DoMessage(6, mtInformation, 'IFDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                if not SkipUntilElseOrEndif(FoundElse) then Exit;
-                if FoundElse then
-                  Inc(FDirectiveLevel);
-              end;
-            end;
-          DT_IFNDEF: begin
-              if not IsSymbolDefined(DirectiveParam) then begin
-                Inc(FDirectiveLevel);
-                DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-              end
-              else begin
-                DoMessage(6, mtInformation, 'IFNDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                if not SkipUntilElseOrEndif(FoundElse) then Exit;
-                if FoundElse then
-                  Inc(FDirectiveLevel);
-              end;
-            end;
-          DT_IFOPT: begin
-              if (not IsSwitchDefined(DirectiveParam)) then begin
-                if (not SkipUntilElseOrEndif(FoundElse)) then Exit;
-                if FoundElse then Inc(FDirectiveLevel);
-              end
-              else
-                Inc(FDirectiveLevel);
-            end;
-          DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
-            if not OpenIncludeFile(DirectiveParam) then
-              DoError(GetStreamInfo + ': Error, could not open include file "'
-                + DirectiveParam + '"', [], 0);
-          DT_UNDEF: begin
-              DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
-              DeleteSymbol(DirectiveParam);
-            end;
-        end;
-      end;
-      if t.MyType = TOK_DIRECTIVE then begin
-        t.Free;
-        t := nil;
-      end else begin
+        
+        FreeAndNil(t);
+      end else
+      if ExpandMacro(T) then
+      begin
+        FreeAndNil(t);
+      end else
+      begin
+        { If the token is not a directive, and not an identifier that expands
+          to a macro, then we just return it. }
         Finished := True;
       end;
-    end else begin
+    end else
+    begin
       DoMessage(5, mtInformation, 'Closing file "%s"', 
         [FTokenizers[FCurrentTokenizer].GetStreamInfo]);
       FTokenizers[FCurrentTokenizer].Free;
@@ -534,6 +570,30 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure TScanner.OpenNewTokenizer(Stream: TStream; const StreamName: string);
+var 
+  Tokenizer: TTokenizer;
+begin
+
+  { check if maximum number of FTokenizers has been reached }
+  if FCurrentTokenizer = MAX_TOKENIZERS - 1 then 
+  begin
+    Stream.Free;
+    DoError('%s: Maximum level of recursion (%d) reached when trying to ' +
+      'create new tokenizer "%s" (Probably you have recursive file inclusion ' +
+      '(with $include directive) or macro expansion)',
+      [GetStreamInfo, MAX_TOKENIZERS, StreamName], 0);
+  end;
+  
+  Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity, StreamName);
+  
+  { add new tokenizer }
+  Inc(FCurrentTokenizer);
+  FTokenizers[FCurrentTokenizer] := Tokenizer;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 function TScanner.OpenIncludeFile(const n: string): Boolean;
 var
   i: Integer;
@@ -542,11 +602,6 @@ var
   p: string;
   s: TStream;
 begin
-  { check if maximum number of FTokenizers has been reached }
-  if FCurrentTokenizer = MAX_TOKENIZERS - 1 then begin
-    DoError('%s: maximum number of FTokenizers reached.', [GetStreamInfo], 0);
-  end;
-
   { determine how many names we can check; number is 1 + IncludeFilePaths.Count }
   NumAttempts := 1;
 
@@ -578,8 +633,7 @@ begin
   end;
 
   { create new tokenizer with stream }
-  Inc(FCurrentTokenizer);
-  FTokenizers[FCurrentTokenizer] := TTokenizer.Create(s, FOnMessage, FVerbosity, Name);
+  OpenNewTokenizer(S, Name);
 
   Result := True;
 end;
