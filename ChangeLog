@@ -17,9 +17,9 @@
       (see [http://pasdoc.sipsolutions.net/ListTags])
     @table, @row, @rowHead, @cell
       (see [http://pasdoc.sipsolutions.net/TableTags])
-
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
+  * Various fixes.
   
   Some compatibility had to be broken:
   * New dashes rules break compatibility. But actually previous
