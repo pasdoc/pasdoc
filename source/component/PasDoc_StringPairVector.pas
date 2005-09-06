@@ -14,6 +14,8 @@ type
 
     { Init Name and Value by @link(ExtractFirstWord) from S. }
     constructor CreateExtractFirstWord(const S: string);
+    
+    constructor Create(const AName, AValue: string; AData: Pointer = nil);
   end;
   
   { This is a list of string pairs.
@@ -43,6 +45,14 @@ type
       So it's practically impossible to later convert such Text
       back to items and Names/Value pairs. }
     function Text(const NameValueSepapator, ItemSeparator: string): string;
+    
+    { Finds a string pair with given Name.
+      Returns -1 if not found. }
+    function FindName(const Name: string; IgnoreCase: boolean = true): Integer;
+    
+    { Removes first string pair with given Name. 
+      Returns if some pair was removed. }
+    function DeleteName(const Name: string; IgnoreCase: boolean = true): boolean;
   end;
 
 implementation
@@ -56,8 +66,15 @@ var
   FirstWord, Rest: string;
 begin
   ExtractFirstWord(S, FirstWord, Rest);
-  Name := FirstWord;
-  Value := Rest;
+  Create(FirstWord, Rest);
+end;
+
+constructor TStringPair.Create(const AName, AValue: string; AData: Pointer);
+begin
+  inherited Create;
+  Name := AName;
+  Value := AValue;
+  Data := AData;
 end;
 
 { TStringPairVector ---------------------------------------------------------- }
@@ -84,6 +101,38 @@ begin
       Result := Result + ItemSeparator +
         Items[i].Name + NameValueSepapator + Items[i].Value;
   end;
+end;
+
+function TStringPairVector.FindName(const Name: string; 
+  IgnoreCase: boolean): Integer;
+var
+  LowerCasedName: string;
+begin
+  if IgnoreCase then
+  begin
+    LowerCasedName := LowerCase(Name);
+    for Result := 0 to Count - 1 do
+      if LowerCase(Items[Result].Name) = LowerCasedName then
+        Exit;
+    Result := -1;
+  end else
+  begin
+    for Result := 0 to Count - 1 do
+      if Items[Result].Name = Name then
+        Exit;
+    Result := -1;
+  end;
+end;
+
+function TStringPairVector.DeleteName(const Name: string; 
+  IgnoreCase: boolean): boolean;
+var
+  i: Integer;
+begin
+  i := FindName(Name, IgnoreCase);
+  Result := i <> -1;
+  if Result then
+    Delete(i);
 end;
 
 end.
