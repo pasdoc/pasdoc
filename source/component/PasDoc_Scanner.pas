@@ -10,7 +10,8 @@
   The scanner object @link(TScanner) returns tokens from a Pascal language
   character input stream. It uses the @link(PasDoc_Tokenizer) unit to get tokens,
   regarding conditional directives that might lead to including another files
-  or will add or delete conditional directives. So, this scanner is a combined
+  or will add or delete conditional symbols. Also handles FPC macros
+  (when HandleMacros is true). So, this scanner is a combined
   tokenizer and pre-processor. }
 
 unit PasDoc_Scanner;
@@ -24,7 +25,8 @@ uses
   Classes,
   PasDoc_Types,
   PasDoc_Tokenizer,
-  StringVector;
+  StringVector,
+  PasDoc_StringPairVector;
 
 const
   { maximum number of streams we can recurse into; first one is the unit
@@ -48,16 +50,30 @@ type
     FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
     FSwitchOptions: TSwitchOptions;
     FBufferedToken: TToken;
-    FDirectives: TStringVector;
+    
+    { For each symbol: 
+        Name is the unique Name,
+        Value is the string to be expanded into (in case of a macro),
+        LongBool(Data) says if this is a macro 
+          (i.e. should it be expanded). 
+          
+      Note the important fact: we can't use Value <> '' to decide
+      if symbol is a macro. A non-macro symbol is something
+      different than a macro that expands to nothing. }
+    FSymbols: TStringPairVector;
+    
     FIncludeFilePaths: TStringVector;
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
+    FHandleMacros: boolean;
 
-    { Removes directive N from the internal list of directives.
-      If N was not in that list, nothing is done. }
-    procedure DeleteDirective(const n: string);
-    { Returns if a given directive N is defined at the moment. }
-    function IsDirectiveDefined(const n: string): Boolean;
+    { Removes symbol Name from the internal list of symbols.
+      If Name was not in that list, nothing is done. }
+    procedure DeleteSymbol(const Name: string);
+    
+    { Returns if a given symbol Name is defined at the moment. }
+    function IsSymbolDefined(const Name: string): Boolean;
+    
     function IsSwitchDefined(n: string): Boolean;
     function OpenIncludeFile(const n: string): Boolean;
     function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
@@ -73,15 +89,19 @@ type
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName: string);
+      const AStreamName: string;
+      const AHandleMacros: boolean);
     destructor Destroy; override;
 
-    { Adds parameter String to the list of directives. }
-    procedure AddDirective(const n: string);
+    { Adds Name to the list of symbols (as a normal symbol, not macro). }
+    procedure AddSymbol(const Name: string);
     
-    { Adds all directives in the parameter String collection by calling
-      @link(AddDirective) for each of the strings in that collection. }
-    procedure AddDirectives(const DL: TStringVector);
+    { Adds all symbols in the NewSymbols collection by calling
+      @link(AddSymbol) for each of the strings in that collection. }
+    procedure AddSymbols(const NewSymbols: TStringVector);
+    
+    { Adds Name as a symbol that is a macro, that expands to Value. }
+    procedure AddMacro(const Name, Value: string);
     
     { Gets next token and throws it away. }
     procedure ConsumeToken;
@@ -99,82 +119,105 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property SwitchOptions: TSwitchOptions read FSwitchOptions;
+    
+    property HandleMacros: boolean read FHandleMacros;
   end;
 
 implementation
 
+uses Utils;
+
 type
   { all directives a scanner is going to regard }
-  TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF, DT_IFNDEF,
-    DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF);
+  TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF, 
+    DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2);
 
 const
-  DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string[6] =
-  ('DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF');
+  DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string =
+  ( 'DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF', 
+    'INCLUDE' );
 
 { ---------------------------------------------------------------------------- }
 
-{ Assumes that CommentContent is taken from a Token.CommentContent where
+(*Assumes that CommentContent is taken from a Token.CommentContent where
   Token.MyType was TOK_DIRECTIVE.
   
   Extracts DirectiveName and DirectiveParam from CommentContent.
   DirectiveName is the thing right after $ sign, uppercased.
   DirectiveParam is what followed after DirectiveName.
-  E.g. for CommentContent = (*$define My_Symbol*) we get
+  E.g. for CommentContent = {$define My_Symbol} we get
   DirectiveName = 'DEFINE' and
   DirectiveParam = 'My_Symbol'.
   
-  Returns true and sets Dt to appropriate directive type,
+  If ParamsEndedByWhitespace then Params end at the 1st
+  whitespace. Else Params end when CommentContent ends.
+  This is useful: usually ParamsEndedByWhitespace = true,
+  e.g. {$ifdef foo bar xyz} is equivalent to {$ifdef foo}
+  (bar and xyz are simply ignored by Pascal compilers).
+  When using FPC and macro is off, or when using other compilers,
+  {$define foo := bar xyz} means just {$define foo}.
+  However when using FPC and macro is on,
+  then {$define foo := bar xyz} means "define foo as a macro
+  that expands to ``bar xyz'', so in this case you will need to use
+  SplitDirective with ParamsEndedByWhitespace = false.
+*)
+function SplitDirective(const CommentContent: string; 
+  const ParamsEndedByWhitespace: boolean;
+  out DirectiveName, Params: string): Boolean;
+var
+  i: Integer;
+  l: Integer;
+begin
+  Result := False;
+  DirectiveName := '';
+  Params := '';
+
+  l := Length(CommentContent);
+
+  { skip dollar sign from CommentContent }
+  i := 2;
+  if i > l then Exit;
+
+  { get directive name }
+  while (i <= l) and (CommentContent[i] <> ' ') do
+  begin
+    DirectiveName := DirectiveName + UpCase(CommentContent[i]);
+    Inc(i);
+  end;
+  Result := True;
+
+  { skip spaces }
+  while (i <= l) and (CommentContent[i] = ' ') do
+    Inc(i);
+  if i > l then Exit;
+
+  { get parameters - no conversion to uppercase here, it could be an include
+    file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
+  while (i <= l) and 
+    ((not ParamsEndedByWhitespace) or (CommentContent[i] <> ' ')) do
+  begin
+    Params := Params + CommentContent[i];
+    Inc(i);
+  end;
+end;
+
+{ First, splits CommentContent like SplitDirective.
+  
+  Then returns true and sets Dt to appropriate directive type,
   if DirectiveName was something known (see array DirectiveNames).
   Else returns false. }
 function IdentifyDirective(const CommentContent: string;  
   out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
-  
-  function SplitDirective(const CommentContent: string; 
-    out DirectiveName, Params: string): Boolean;
-  var
-    i: Integer;
-    l: Integer;
-  begin
-    Result := False;
-    DirectiveName := '';
-    Params := '';
-    
-    l := Length(CommentContent);
-    
-    { skip dollar sign from CommentContent }
-    i := 2;
-    if i > l then Exit;
-
-    { get directive name }
-    while (i <= l) and (CommentContent[i] <> ' ') do
-    begin
-      DirectiveName := DirectiveName + UpCase(CommentContent[i]);
-      Inc(i);
-    end;
-    Result := True;
-
-    { skip spaces }
-    while (i <= l) and (CommentContent[i] = ' ') do
-      Inc(i);
-    if i > l then Exit;
-
-    { get parameters - no conversion to uppercase here, it could be an include
-      file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
-    while (i <= l) and (CommentContent[i] <> ' ') do
-    begin
-      Params := Params + CommentContent[i];
-      Inc(i);
-    end;
-  end;
-  
 var
   i: TDirectiveType;
 begin
   Result := false;
-  if SplitDirective(CommentContent, DirectiveName, DirectiveParam) then begin
-    for i := DT_DEFINE to High(TDirectiveType) do begin
-      if UpperCase(DirectiveName) = DirectiveNames[i] then begin
+  if SplitDirective(CommentContent, true, DirectiveName, DirectiveParam) then 
+  begin
+    for i := DT_DEFINE to High(TDirectiveType) do 
+    begin
+      if UpperCase(DirectiveName) = DirectiveNames[i] then 
+      begin
         dt := i;
         Result := True;
         break;
@@ -191,13 +234,15 @@ constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName: string);
+  const AStreamName: string;
+  const AHandleMacros: boolean);
 var
   c: TUpperCaseLetter;
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
+  FHandleMacros := AHandleMacros;
 
   { Set default switch directives (according to the Delphi 4 Help). }
   for c := Low(SwitchOptions) to High(SwitchOptions) do
@@ -215,6 +260,8 @@ begin
   FSwitchOptions['V'] := True;
   FSwitchOptions['X'] := True;
 
+  FSymbols := TStringPairVector.Create(true);
+
   FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel, AStreamName);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;
@@ -226,7 +273,7 @@ destructor TScanner.Destroy;
 var
   i: Integer;
 begin
-  FDirectives.Free;
+  FSymbols.Free;
 
   for i := 0 to FCurrentTokenizer do begin
     FTokenizers[i].Free;
@@ -239,23 +286,47 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.AddDirective(const n: string);
+const
+  SymbolIsNotMacro = nil;
+  SymbolIsMacro = Pointer(1);
+
+procedure TScanner.AddSymbol(const Name: string);
 begin
-  if not IsDirectiveDefined(n) then begin
-    if FDirectives = nil then FDirectives := NewStringVector;
-    FDirectives.Add(n);
+  if not IsSymbolDefined(Name) then 
+  begin
+    DoMessage(6, mtInformation, 'Symbol "%s" defined', [Name]);
+    FSymbols.Add(TStringPair.Create(Name, '', SymbolIsNotMacro));
   end;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.AddDirectives(const DL: TStringVector);
+procedure TScanner.AddSymbols(const NewSymbols: TStringVector);
 var
   i: Integer;
 begin
-  if DL <> nil then
-    for i := 0 to DL.Count - 1 do
-      AddDirective(DL[i])
+  if NewSymbols <> nil then
+    for i := 0 to NewSymbols.Count - 1 do
+      AddSymbol(NewSymbols[i])
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TScanner.AddMacro(const Name, Value: string);
+var 
+  i: Integer;
+begin
+  i := FSymbols.FindName(Name);
+  if i = -1 then
+  begin
+    DoMessage(6, mtInformation, 'Macro "%s" defined as "%s"', [Name, Value]);
+    FSymbols.Add(TStringPair.Create(Name, Value, SymbolIsMacro));
+  end else
+  begin
+    DoMessage(6, mtInformation, 'Macro "%s" RE-defined as "%s"', [Name, Value]);
+    { Redefine macro in this case. }
+    FSymbols.Items[i].Value := Value;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -267,11 +338,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.DeleteDirective(const n: string);
+procedure TScanner.DeleteSymbol(const Name: string);
 begin
-  if FDirectives <> nil then begin
-    FDirectives.RemoveAllNamesCI(n);
-  end;
+  FSymbols.DeleteName(Name);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -288,6 +357,37 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TScanner.GetToken(var t: TToken): Boolean;
+
+  { Call this when token T contains $define directive }
+  procedure HandleDefineDirective(DirectiveParam: string);
+  var 
+    TempDirectiveName: string;
+    i: Integer;
+    SymbolName: string;
+  begin
+    if not HandleMacros then
+      AddSymbol(DirectiveParam) else
+    begin
+      { Split T.CommentContent once again (this time with
+        ParamsEndedByWhitespace = false. Then check is it macro. }
+      SplitDirective(t.CommentContent, false, 
+        TempDirectiveName, DirectiveParam);
+
+      i := 1;
+      while SCharIs(DirectiveParam, i, ['a'..'z', 'A'..'Z', '1'..'9', '_']) do
+        Inc(i);
+        
+      SymbolName := Copy(DirectiveParam, 1, i - 1);
+        
+      while SCharIs(DirectiveParam, i, WhiteSpace) do
+        Inc(i);
+        
+      if Copy(DirectiveParam, i, 2) = ':=' then
+        AddMacro(SymbolName, Copy(DirectiveParam, i + 2, MaxInt)) else
+        AddSymbol(SymbolName);
+    end;
+  end;
+
 var
   dt: TDirectiveType;
   Finished: Boolean;
@@ -322,10 +422,7 @@ begin
           Continue;
         end;
         case dt of
-          DT_DEFINE: begin
-              DoMessage(6, mtInformation, 'DEFINE encountered (' + DirectiveParam + ')', []);
-              AddDirective(DirectiveParam);
-            end;
+          DT_DEFINE: HandleDefineDirective(DirectiveParam);
           DT_ELSE: begin
               DoMessage(5, mtInformation, 'ELSE encountered', []);
               if (FDirectiveLevel > 0) then begin
@@ -349,7 +446,7 @@ begin
               end;
             end;
           DT_IFDEF: begin
-              if IsDirectiveDefined(DirectiveParam) then begin
+              if IsSymbolDefined(DirectiveParam) then begin
                 Inc(FDirectiveLevel);
                 DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
               end
@@ -361,7 +458,7 @@ begin
               end;
             end;
           DT_IFNDEF: begin
-              if not IsDirectiveDefined(DirectiveParam) then begin
+              if not IsSymbolDefined(DirectiveParam) then begin
                 Inc(FDirectiveLevel);
                 DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
               end
@@ -380,13 +477,13 @@ begin
               else
                 Inc(FDirectiveLevel);
             end;
-          DT_INCLUDE_FILE:
+          DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
             if not OpenIncludeFile(DirectiveParam) then
               DoError(GetStreamInfo + ': Error, could not open include file "'
                 + DirectiveParam + '"', [], 0);
           DT_UNDEF: begin
               DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
-              DeleteDirective(DirectiveParam);
+              DeleteSymbol(DirectiveParam);
             end;
         end;
       end;
@@ -397,7 +494,8 @@ begin
         Finished := True;
       end;
     end else begin
-      DoMessage(5, mtInformation, 'Closing file "%s"', [FTokenizers[FCurrentTokenizer].GetStreamInfo]);
+      DoMessage(5, mtInformation, 'Closing file "%s"', 
+        [FTokenizers[FCurrentTokenizer].GetStreamInfo]);
       FTokenizers[FCurrentTokenizer].Free;
       FTokenizers[FCurrentTokenizer] := nil;
       Dec(FCurrentTokenizer);
@@ -408,9 +506,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.IsDirectiveDefined(const n: string): Boolean;
+function TScanner.IsSymbolDefined(const Name: string): Boolean;
 begin
-  Result := (FDirectives <> nil) and FDirectives.ExistsNameCI(n);
+  Result := FSymbols.FindName(Name) <> -1;
 end;
 
 { ---------------------------------------------------------------------------- }

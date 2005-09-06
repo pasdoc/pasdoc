@@ -75,6 +75,7 @@ type
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
     FImplicitVisibility: TImplicitVisibility;
+    FHandleMacros: boolean;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -182,6 +183,9 @@ type
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
+      
+    property HandleMacros: boolean
+      read FHandleMacros write FHandleMacros default true;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -257,14 +261,16 @@ constructor TPasDoc.Create(AOwner: TComponent);
 begin
   inherited;
 
-  FGeneratorInfo := True;
   FDescriptionFileNames := NewStringVector;
   FDirectives := NewStringVector;
   FIncludeDirectories := NewStringVector;
   FSourceFileNames := NewStringVector;
 
+  { Set default property values }
+  FGeneratorInfo := true;
   FVerbosity := DEFAULT_VERBOSITY_LEVEL;
   FImplicitVisibility := ivPublic;
+  HandleMacros := true;
 
   FGenerator := nil;
   FCommentMarkers := TStringList.Create;
@@ -300,7 +306,7 @@ var
 begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName);
+    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName, HandleMacros);
   try
     p.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
