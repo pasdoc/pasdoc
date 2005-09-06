@@ -68,6 +68,7 @@ type
     OptionConclusion: TStringOption;
     OptionLatexHead: TStringOption;
     OptionImplicitVisibility: TStringOption;
+    OptionNoMacro: TBoolOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -271,6 +272,10 @@ begin
   OptionImplicitVisibility.Explanation := 'How pasdoc should handle class members within default class visibility';
   OptionImplicitVisibility.Value := 'public';
   AddOption(OptionImplicitVisibility);
+  
+  OptionNoMacro := TBoolOption.Create(#0, 'no-macro');
+  OptionNoMacro.Explanation := 'Turn FPC macro support off';
+  AddOption(OptionNoMacro);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -498,6 +503,8 @@ begin
     raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--implicit-visibility" option : "%s"',
       [OptionImplicitVisibility.Value]);
+      
+  PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
 end;
 
 { TPasdocMain }

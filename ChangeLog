@@ -3,6 +3,8 @@
   + New command-line options:
     --implicit-visibility
       (see [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption])
+    --no-macro
+      (see [http://pasdoc.sipsolutions.net/NoMacroOption])
   + New @-tags:
     @bold and @italic
       (see [http://pasdoc.sipsolutions.net/BoldAndItalicTags])

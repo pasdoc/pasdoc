@@ -145,3 +145,4 @@ mk_special_test warning_table warning_table.pas
 mk_special_test ok_macros ok_macros.pas
 mk_special_test error_macros error_macros.pas
 mk_special_test error_macros_recursive error_macros_recursive.pas
+mk_special_test ok_macros_off --no-macro ok_macros_off.pas
