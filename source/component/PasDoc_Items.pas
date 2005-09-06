@@ -71,6 +71,7 @@ type
   TPasUnit = class;
   TSubItem = class;
 
+  TBaseItems = class;
   TPasItems = class;
   TPasMethods = class;
   TPasProperties = class;
@@ -669,8 +670,8 @@ type
   
   ESubItemAlreadyExists = class(Exception);
 
-  {@name extends @link(TPasItem) to store extra information about a project.
-   @name is used to hold an introduction and conclusion to the project.}
+  { @name extends @link(TBaseItem) to store extra information about a project.
+    @name is used to hold an introduction and conclusion to the project. }
   TExternalItem = class(TBaseItem)
   private
     FSourceFilename: string;
@@ -678,7 +679,7 @@ type
     FShortTitle: string;
     FOutputFileName: string;
     // See @link(Anchors).
-    FAnchors: TPasItems;
+    FAnchors: TBaseItems;
     procedure SetOutputFileName(const Value: string);
   protected
     procedure HandleTitleTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -707,10 +708,10 @@ type
     // @name holds a list of @link(TSubItem)s that represent anchors and
     // sections within the @classname.  The  @link(TSubItem)s have no content
     // so, they should not be indexed separately.
-    property Anchors: TPasItems read FAnchors;
+    property Anchors: TBaseItems read FAnchors;
   end;
 
-  TSubItem = class(TPasItem)
+  TSubItem = class(TBaseItem)
   private
     FExternalItem: TExternalItem;
   public
@@ -804,27 +805,51 @@ type
       to cache works. }
     function FileNewerThanCache(const FileName: string): boolean;
   end;
-
-  { Container class to store a list of @link(TPasItem)s. }
-  TPasItems = class(TObjectVector)
+  
+  { Container class to store a list of @link(TBaseItem)s. }
+  TBaseItems = class(TObjectVector)
   private
     FHash: TObjectHash;
-    function GetPasItemAt(const AIndex: Integer): TPasItem;
-    procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
     procedure Serialize(const ADestination: TStream);
     procedure Deserialize(const ASource: TStream);
   public
-    { Copies all Items from c to this object, not changing c at all. }
-    procedure CopyItems(const c: TPasItems);
-    { Counts classes, interfaces and objects within this collection. }
-    procedure CountCIO(var c, i, o: Integer);
+    constructor Create(const AOwnsObject: Boolean); override;
+    destructor Destroy; override; 
+    
     { Compares each element's name field with Name and returns the item on
       success, nil otherwise.
       Name's case is not regarded. }
-    function FindName(const AName: string): TPasItem;
+    function FindName(const AName: string): TBaseItem;
+    
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
-    procedure InsertItems(const c: TPasItems);
+    procedure InsertItems(const c: TBaseItems);
+
+    { During Add, AObject is associated with AObject.Name using hash table,
+      so remember to set AObject.Name @italic(before) calling Add(AObject). }
+    procedure Add(const AObject: TBaseItem);
+    
+    procedure Delete(const AIndex: Integer);
+    procedure Clear; override;
+  end;
+
+  { Container class to store a list of @link(TPasItem)s. }
+  TPasItems = class(TBaseItems)
+  private
+    function GetPasItemAt(const AIndex: Integer): TPasItem;
+    procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
+  public
+    { This is a comfortable routine that just calls inherited and 
+      casts result to TPasItem, since every item on this list must 
+      be always TPasItem. }
+    function FindName(const AName: string): TPasItem;
+    
+    { Copies all Items from c to this object, not changing c at all. }
+    procedure CopyItems(const c: TPasItems);
+    
+    { Counts classes, interfaces and objects within this collection. }
+    procedure CountCIO(var c, i, o: Integer);
+
     { Checks each element's Visibility field and removes all elements with a value
       of viPrivate. }
     procedure RemovePrivateItems;
@@ -853,14 +878,6 @@ type
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
-    { During Add, AObject is associated with AObject.Name using hash table,
-      so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TPasItem);
-    procedure Delete(const AIndex: Integer);
-    constructor Create(const AOwnsObject: Boolean); override;
-    destructor Destroy; override;
-    procedure Clear; override;
-    
     { Set IsDeprecated property of all Items to given Value }
     procedure SetIsDeprecated(Value: boolean);
     
@@ -1404,7 +1421,91 @@ begin
       '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
+{ TBaseItems ----------------------------------------------------------------- }
+
+constructor TBaseItems.Create(const AOwnsObject: Boolean);
+begin
+  inherited;
+  FHash := TObjectHash.Create;
+end;
+
+destructor TBaseItems.Destroy;
+begin
+  FHash.Free;
+  FHash := nil;
+  inherited;
+end;
+
+procedure TBaseItems.Delete(const AIndex: Integer);
+var
+  LObj: TBaseItem;
+begin
+  LObj := TBaseItem(Items[AIndex]);
+  FHash.Delete(LowerCase(LObj.Name));
+  inherited Delete(AIndex);
+end;
+
+function TBaseItems.FindName(const AName: string): TBaseItem;
+begin
+  Result := nil;
+  if Length(AName) > 0 then begin
+    result := TPasItem(FHash.Items[LowerCase(AName)]);
+  end;
+end;
+
+procedure TBaseItems.Add(const AObject: TBaseItem);
+begin
+  inherited Add(AObject);
+  FHash.Items[LowerCase(AObject.Name)] := AObject;
+end;
+
+procedure TBaseItems.InsertItems(const c: TBaseItems);
+var
+  i: Integer;
+begin
+  if ObjectVectorIsNilOrEmpty(c) then Exit;
+  for i := 0 to c.Count - 1 do
+    Add(TBaseItem(c.Items[i]));
+end;
+
+procedure TBaseItems.Clear;
+begin
+  if Assigned(FHash) then begin
+    // not assigned if destroying
+    FHash.Free;
+    FHash := TObjectHash.Create;
+  end;
+  inherited;
+end;
+
+procedure TBaseItems.Deserialize(const ASource: TStream);
+var
+  LCount, i: Integer;
+begin
+  Clear;
+  ASource.Read(LCount, SizeOf(LCount));
+  for i := 0 to LCount - 1 do
+    Add(TBaseItem(TSerializable.DeserializeObject(ASource)));
+end;
+
+procedure TBaseItems.Serialize(const ADestination: TStream);
+var
+  LCount, i: Integer;
+begin
+  LCount := Count;
+  ADestination.Write(LCount, SizeOf(LCount));
+  { Remember to always serialize and deserialize items in the
+    same order -- this is e.g. checked by ../../tests/scripts/check_cache.sh }
+  for i := 0 to Count - 1 do
+    TSerializable.SerializeObject(TBaseItem(Items[i]), ADestination);
+end;
+
 { TPasItems ------------------------------------------------------------------ }
+
+function TPasItems.FindName(const AName: string): TPasItem;
+begin
+  Result := TPasItem(inherited FindName(AName));
+end;
 
 procedure TPasItems.CopyItems(const c: TPasItems);
 var
@@ -1434,54 +1535,9 @@ begin
     end;
 end;
 
-constructor TPasItems.Create(const AOwnsObject: Boolean);
-begin
-  inherited;
-  FHash := TObjectHash.Create;
-end;
-
-procedure TPasItems.Delete(const AIndex: Integer);
-var
-  LObj: TPasItem;
-begin
-  LObj := GetPasItemAt(AIndex);
-  FHash.Delete(LowerCase(LObj.Name));
-  inherited Delete(AIndex);
-end;
-
-destructor TPasItems.Destroy;
-begin
-  FHash.Free;
-  FHash := nil;
-  inherited;
-end;
-
-function TPasItems.FindName(const AName: string): TPasItem;
-begin
-  Result := nil;
-  if Length(AName) > 0 then begin
-    result := TPasItem(FHash.Items[LowerCase(AName)]);
-  end;
-end;
-
 function TPasItems.GetPasItemAt(const AIndex: Integer): TPasItem;
 begin
   Result := TPasItem(Items[AIndex]);
-end;
-
-procedure TPasItems.InsertItems(const c: TPasItems);
-var
-  i: Integer;
-begin
-  if ObjectVectorIsNilOrEmpty(c) then Exit;
-  for i := 0 to c.Count - 1 do
-    Add(TPasItem(c.Items[i]));
-end;
-
-procedure TPasItems.Add(const AObject: TPasItem);
-begin
-  inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Name)] := AObject;
 end;
 
 procedure TPasItems.RemovePrivateItems;
@@ -1521,38 +1577,6 @@ procedure TPasItems.SortDeep(const SortSettings: TSortSettings);
 begin
   SortShallow;
   SortOnlyInsideItems(SortSettings);
-end;
-
-procedure TPasItems.Clear;
-begin
-  if Assigned(FHash) then begin
-    // not assigned if destroying
-    FHash.Free;
-    FHash := TObjectHash.Create;
-  end;
-  inherited;
-end;
-
-procedure TPasItems.Deserialize(const ASource: TStream);
-var
-  LCount, i: Integer;
-begin
-  Clear;
-  ASource.Read(LCount, SizeOf(LCount));
-  for i := 0 to LCount - 1 do
-    Add(TPasItem(TPasItem.DeserializeObject(ASource)));
-end;
-
-procedure TPasItems.Serialize(const ADestination: TStream);
-var
-  LCount, i: Integer;
-begin
-  LCount := Count;
-  ADestination.Write(LCount, SizeOf(LCount));
-  { Remember to always serialize and deserialize items in the
-    same order -- this is e.g. checked by ../../tests/scripts/check_cache.sh }
-  for i := 0 to Count - 1 do
-    TSerializable.SerializeObject(PasItemAt[i], ADestination);
 end;
 
 procedure TPasItems.SetIsDeprecated(Value: boolean);
@@ -2119,7 +2143,7 @@ end;
 constructor TExternalItem.Create;
 begin
   inherited;
-  FAnchors := TPasItems.Create(true);
+  FAnchors := TBaseItems.Create(true);
 end;
 
 destructor TExternalItem.Destroy;
