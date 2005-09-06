@@ -114,56 +114,56 @@ const
 
 { ---------------------------------------------------------------------------- }
 
-{ Assumes that T is taken from a Token.Data where
+{ Assumes that CommentContent is taken from a Token.CommentContent where
   Token.MyType was TOK_DIRECTIVE.
   
-  Extracts DirectiveName and DirectiveParam from T.
+  Extracts DirectiveName and DirectiveParam from CommentContent.
   DirectiveName is the thing right after $ sign, uppercased.
   DirectiveParam is what followed after DirectiveName.
-  E.g. for (*$define My_Symbol*) we get
+  E.g. for CommentContent = (*$define My_Symbol*) we get
   DirectiveName = 'DEFINE' and
   DirectiveParam = 'My_Symbol'.
   
   Returns true and sets Dt to appropriate directive type,
   if DirectiveName was something known (see array DirectiveNames).
   Else returns false. }
-function IdentifyDirective(const t: string;  
+function IdentifyDirective(const CommentContent: string;  
   out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
   
-  function SplitDirective(const t: string; out DirectiveName, Params: string):
-    Boolean;
+  function SplitDirective(const CommentContent: string; 
+    out DirectiveName, Params: string): Boolean;
   var
     i: Integer;
     l: Integer;
   begin
     Result := False;
-    i := 1;
     DirectiveName := '';
     Params := '';
-    { find dollar sign }
-    l := Length(t);
-    while (i <= l) and (t[i] <> '$') do
-      Inc(i);
+    
+    l := Length(CommentContent);
+    
+    { skip dollar sign from CommentContent }
+    i := 2;
     if i > l then Exit;
-    Inc(i);
 
     { get directive name }
-    while (i <= l) and not (t[i] in [' ', '*', '}']) do begin
-      DirectiveName := DirectiveName + UpCase(t[i]);
+    while (i <= l) and (CommentContent[i] <> ' ') do
+    begin
+      DirectiveName := DirectiveName + UpCase(CommentContent[i]);
       Inc(i);
     end;
     Result := True;
-    if t[i] in ['*', '}'] then Exit;
 
     { skip spaces }
-    while (i <= l) and (t[i] = ' ') do
+    while (i <= l) and (CommentContent[i] = ' ') do
       Inc(i);
     if i > l then Exit;
 
     { get parameters - no conversion to uppercase here, it could be an include
       file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
-    while (i <= l) and not (t[i] in [' ', '*', '}']) do begin
-      Params := Params + t[i];
+    while (i <= l) and (CommentContent[i] <> ' ') do
+    begin
+      Params := Params + CommentContent[i];
       Inc(i);
     end;
   end;
@@ -172,7 +172,7 @@ var
   i: TDirectiveType;
 begin
   Result := false;
-  if SplitDirective(t, DirectiveName, DirectiveParam) then begin
+  if SplitDirective(CommentContent, DirectiveName, DirectiveParam) then begin
     for i := DT_DEFINE to High(TDirectiveType) do begin
       if UpperCase(DirectiveName) = DirectiveNames[i] then begin
         dt := i;
@@ -314,7 +314,9 @@ begin
       t := FTokenizers[FCurrentTokenizer].GetToken;
         { check if token is a directive }
       if (t.MyType = TOK_DIRECTIVE) then begin
-        if not IdentifyDirective(t.Data, dt, DirectiveName, DirectiveParam) then begin
+        if not IdentifyDirective(t.CommentContent, 
+          dt, DirectiveName, DirectiveParam) then 
+        begin
           ResolveSwitchDirectives(t.Data);
           t.Free;
           Continue;
@@ -515,7 +517,9 @@ begin
     end;
 
     if (t.MyType = TOK_DIRECTIVE) then begin
-      if IdentifyDirective(t.Data, dt, DirectiveName, DirectiveParam) then begin
+      if IdentifyDirective(t.CommentContent, 
+        dt, DirectiveName, DirectiveParam) then 
+      begin
         DoMessage(6, mtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
         case dt of
           DT_IFDEF,

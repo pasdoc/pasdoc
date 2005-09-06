@@ -199,7 +199,8 @@ type
     { Contents of a comment token.
       This is defined only when MyType is in TokenCommentTypes
       or is TOK_DIRECTIVE.
-      This is the text within the comment @italic(without) comment delimiters. }
+      This is the text within the comment @italic(without) comment delimiters. 
+      For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
     CommentContent: string;
     
     { Create a token of and assign the argument token type to @link(MyType) }
@@ -417,12 +418,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTokenizer.CheckForDirective(const t: TToken);
-var
-  l: Cardinal;
 begin
-  l := Length(t.Data);
-  if ((l >= 2) and (t.Data[1] = '{') and (t.Data[2] = '$')) or
-    ((l >= 3) and (t.Data[1] = '(') and (t.Data[2] = '*') and (t.Data[3] = '$')) then
+  if SCharIs(T.CommentContent, 1, '$') then
     t.MyType := TOK_DIRECTIVE;
 end;
 
