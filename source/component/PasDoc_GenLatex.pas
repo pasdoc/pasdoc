@@ -1447,7 +1447,14 @@ end;
 
 function TTexDocGenerator.LineBreak: string; 
 begin
-  Result := '\\';
+  (* We add '{}' at the end. Otherwise there would be LaTeX errors
+     if user will put "[" character right after @br, producing
+     LaTeX code that looks like: "...\\ [...".
+     In such case (even if you put newline between \\ and [)
+     LaTeX would think that you want to use optional \\ argument,
+     "\\[extra-space]". Putting '{}' tells LaTeX explicitly
+     that this "\\" command doesn't take the "extra-space" argument. *)
+  Result := '\\{}';
 end;
 
 function TTexDocGenerator.URLLink(const URL: string): string; 
