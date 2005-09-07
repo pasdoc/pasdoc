@@ -1570,7 +1570,19 @@ end;
 function TTexDocGenerator.FormatListItem(const Text: string;
   Ordered: boolean; ItemIndex: Cardinal): string; 
 begin
-  Result := '\item ' + Text + LineEnding;
+  if Ordered then
+    { We don't know here which counter we should set to ItemIndex.
+      So we just set *all* four counters. Simple, and works. 
+      Note that actually we set to "ItemIndex - 1", not "ItemIndex",
+      to get correct result. }
+    Result := Format(
+      '\setcounter{enumi}{%d} ' +
+      '\setcounter{enumii}{%0:d} ' +
+      '\setcounter{enumiii}{%0:d} ' +
+      '\setcounter{enumiv}{%0:d} ' + LineEnding,
+      [ItemIndex - 1]) else
+    Result := '';
+  Result := Result + '\item ' + Text + LineEnding;
 end;
 
 function TTexDocGenerator.FormatDefinitionListItem(

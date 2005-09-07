@@ -2181,10 +2181,16 @@ end;
 
 function TGenericHTMLDocGenerator.FormatListItem(const Text: string;
   Ordered: boolean; ItemIndex: Cardinal): string; 
+var 
+  Attributes: string;
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. }
-  Result := '  <li><p>' + Text + '</p></li>' + LineEnding;
+  if Ordered then
+    Attributes := Format(' value="%d"', [ItemIndex]) else
+    Attributes := '';
+  Result := Format('  <li%s><p>%s</p></li>' + LineEnding, 
+    [Attributes, Text]);
 end;
 
 function TGenericHTMLDocGenerator.FormatDefinitionListItem(

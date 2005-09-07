@@ -283,6 +283,9 @@ type
     procedure HandleItemSpacingTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleItemSetNumberTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
 
     procedure HandleTableTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -719,8 +722,10 @@ type
         ordered or unordered list.)
         
       @param(ItemIndex is 1-based number of this item.
-        Useful for output generators that must explicitly write
-        item numbers in ordered lists, e.g. in plain text output.)
+        Since there exists tag @@itemSetNumber,
+        all output generators must respect given ItemIndex and
+        be prepared that every list item may have virtually 
+        any number (well, >= 1).)
       
       @seealso FormatList }
     function FormatListItem(const Text: string;
@@ -1218,9 +1223,9 @@ end;
 
 type
   TListData = class
-    { This is used to count items, to provide ItemIndex
+    { This is used to number items, to provide ItemIndex
       parameter for FormatListItem and FormatDefinitionListItem. }
-    ItemsCount: Cardinal;
+    NextItemIndex: Cardinal;
     
     { This is used by @@itemSpacing tag,
       to provide ItemSpacing parameter for FormatList. }
@@ -1244,6 +1249,7 @@ constructor TListData.Create;
 begin
   inherited;
   ItemSpacing := lisParagraph;
+  NextItemIndex := 1;
 end;
 
 function TListTag.CreateOccurenceData: TObject;
@@ -1283,9 +1289,9 @@ begin
   
   if ListData.LastItemLabel <> '' then
   begin
-    Inc(ListData.ItemsCount);
     ListItems := ListItems + FormatDefinitionListItem(
-      ListData.LastItemLabel, '', ListData.ItemsCount);
+      ListData.LastItemLabel, '', ListData.NextItemIndex);
+    Inc(ListData.NextItemIndex);
   end;
   
   ReplaceStr := FormatList(ListItems, ltDefinition,
@@ -1300,19 +1306,19 @@ var
   ListData: TListData;
 begin
   ListData := EnclosingTagData as TListData;
-  
-  Inc(ListData.ItemsCount);
     
   if EnclosingTag = DefinitionListTag then
   begin
     ReplaceStr := FormatDefinitionListItem(
-      ListData.LastItemLabel, TagParameter, ListData.ItemsCount);
+      ListData.LastItemLabel, TagParameter, ListData.NextItemIndex);
     ListData.LastItemLabel := '';
   end else
   begin
     ReplaceStr := FormatListItem(TagParameter, 
-      EnclosingTag = OrderedListTag, ListData.ItemsCount);
+      EnclosingTag = OrderedListTag, ListData.NextItemIndex);
   end;
+  
+  Inc(ListData.NextItemIndex);
 end;
 
 procedure TDocGenerator.HandleItemLabelTag(
@@ -1330,9 +1336,9 @@ begin
     last item to FormatDefinitionListItem. }
   if ListData.LastItemLabel <> '' then
   begin
-    Inc(ListData.ItemsCount);
     ReplaceStr := ReplaceStr + FormatDefinitionListItem(
-      ListData.LastItemLabel, '', ListData.ItemsCount);
+      ListData.LastItemLabel, '', ListData.NextItemIndex);
+    Inc(ListData.NextItemIndex);
   end;
   
   { This @@itemLabel is stored inside ListData.LastItemLabel.
@@ -1361,6 +1367,26 @@ begin
     ListData.ItemSpacing := lisParagraph else
     ThisTag.TagManager.DoMessage(1, mtWarning, 
       'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
+end;
+
+procedure TDocGenerator.HandleItemSetNumberTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  NewNextItemIndex: Integer;
+begin
+  ReplaceStr := '';
+  
+  try
+    NewNextItemIndex := StrToInt(TagParameter);
+    (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex;
+  except
+    on E: EConvertError do 
+      ThisTag.TagManager.DoMessage(1, mtWarning, 
+        'Cannot convert parameter of @itemSetNumber tag ("%s") to a number: %s', 
+        [TagParameter, E.Message]);
+  end;
 end;
 
 type
@@ -1457,7 +1483,7 @@ function TDocGenerator.ExpandDescription(Item: TBaseItem;
   out FirstSentenceEnd: Integer): string;
 var
   TagManager: TTagManager;
-  ItemTag, ItemLabelTag, ItemSpacingTag, CellTag: TTag;
+  ItemTag, ItemLabelTag, ItemSpacingTag, ItemSetNumberTag, CellTag: TTag;
 begin
   // make it available to the handlers
   FCurrentItem := Item;
@@ -1524,7 +1550,7 @@ begin
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
     ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-    
+
     ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
       {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
@@ -1538,6 +1564,12 @@ begin
     ItemSpacingTag.OnAllowedInside := 
       {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
+    ItemSetNumberTag := TTag.Create(TagManager, 'itemsetnumber', 
+      {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
+      [toParameterRequired, toAllowNormalTextInside]);
+    ItemSetNumberTag.OnAllowedInside := 
+      {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+    
     TableTag := TTableTag.Create(TagManager, 'table',
       {$IFDEF FPC}@{$ENDIF} HandleTableTag,
       [toParameterRequired, toRecursiveTags]);

@@ -15,7 +15,7 @@
     @preformatted (by Ascanio Pressato)
       (see [http://pasdoc.sipsolutions.net/PreformattedTag])
     @orderedList, @unorderedList, @definitionList, 
-      @item, @itemLabel, @itemSpacing 
+      @item, @itemLabel, @itemSpacing, @itemSetNumber
       (see [http://pasdoc.sipsolutions.net/ListTags])
     @table, @row, @rowHead, @cell
       (see [http://pasdoc.sipsolutions.net/TableTags])

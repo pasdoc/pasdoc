@@ -146,3 +146,4 @@ mk_special_test ok_macros ok_macros.pas
 mk_special_test error_macros error_macros.pas
 mk_special_test error_macros_recursive error_macros_recursive.pas
 mk_special_test ok_macros_off --no-macro ok_macros_off.pas
+mk_special_test ok_item_set_number ok_item_set_number.pas
