@@ -1552,7 +1552,7 @@ function TTexDocGenerator.FormatList(const ListItems: string;
   ListType: TListType; ItemSpacing: TListItemSpacing): string;
 const
   ListEnvironment: array[TListType]of string =
-  ( 'itemize', 'enumerate', 'itemize' );
+  ( 'itemize', 'enumerate', 'description' );
 begin
   { LaTeX doesn't allow empty lists }
   if ListItems <> '' then
