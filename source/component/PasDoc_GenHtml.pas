@@ -945,7 +945,7 @@ begin
   
   Result := ConvertString(S);
   if AnchorName <> '' then
-    Result := '<a name="' + AnchorName + '">' + Result + '</a>';
+    Result := '<a name="' + AnchorName + '"></a>' + Result;
   
   Result := '<h' + c + ' class="' + CssClass + '">' + Result + 
     '</h' + c + '>' + LineEnding;
