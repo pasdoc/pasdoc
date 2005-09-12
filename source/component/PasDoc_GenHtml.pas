@@ -162,8 +162,10 @@ type
       according to the level. }
     procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
     
+    { Returns HTML heading tag. You can also make the anchor 
+      at this heading by passing AnchorName <> ''. }
     function FormatHeading(HL: integer; const CssClass: string; 
-      const s: string): string;
+      const s: string; const AnchorName: string): string;
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
@@ -929,7 +931,8 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatHeading(HL: integer; 
-  const CssClass: string; const s: string): string;
+  const CssClass: string; const s: string;
+  const AnchorName: string): string;
 var
   c: string;
 begin
@@ -940,16 +943,18 @@ begin
   end;
   c := IntToStr(HL);
   
-  Result := '<h' + c + ' class="' + CssClass + '">' +
-    ConvertString(s) +
-    '</h' + c + '>' +
-    LineEnding;
+  Result := ConvertString(S);
+  if AnchorName <> '' then
+    Result := '<a name="' + AnchorName + '">' + Result + '</a>';
+  
+  Result := '<h' + c + ' class="' + CssClass + '">' + Result + 
+    '</h' + c + '>' + LineEnding;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; 
   const CssClass: string; const s: string);
 begin
-  WriteDirect(FormatHeading(HL, CssClass, s));
+  WriteDirect(FormatHeading(HL, CssClass, s, ''));
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
@@ -2124,8 +2129,7 @@ function TGenericHTMLDocGenerator.FormatSection(HL: integer;
 begin
   { We use `HL + 1' because user is allowed to use levels
     >= 1, and heading level 1 is reserved for section title. }
-  result := FormatAnAnchor(Anchor, '') +
-    FormatHeading(HL + 1, '', Caption);
+  result := FormatHeading(HL + 1, '', Caption, Anchor);
 end;
 
 function TGenericHTMLDocGenerator.FormatAnchor(
