@@ -2396,6 +2396,7 @@ begin
         Exit;
       end;
     end;
+    FAspellProcess.SetIgnoreWords(SpellCheckIgnoreWords);
   end;
 end;
 

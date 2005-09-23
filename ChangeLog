@@ -21,7 +21,8 @@
       (see [http://pasdoc.sipsolutions.net/TableTags])
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
-  * Various fixes.
+  * Various fixes. E.g.
+    --spell-check-ignore-words works now.
   
   Some compatibility had to be broken:
   * New dashes rules break compatibility. But actually previous
