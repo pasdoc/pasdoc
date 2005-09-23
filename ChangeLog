@@ -21,6 +21,7 @@
       (see [http://pasdoc.sipsolutions.net/TableTags])
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
+  * FPC macros are now correctly parsed by pasdoc.
   * Various fixes. E.g.
     --spell-check-ignore-words works now.
   
