@@ -260,13 +260,8 @@ type
 
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatList(const ListItems: string;
-      ListType: TListType; ItemSpacing: TListItemSpacing): string; override;
-    function FormatListItem(const Text: string;
-      Ordered: boolean; ItemIndex: Cardinal): string; override;
-    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
-      ItemIndex: Cardinal): string; override;
-      
+    function FormatList(ListData: TListData): string; override;
+
     function FormatTable(Table: TTableData): string; override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -2163,13 +2158,16 @@ begin
      LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.FormatList(const ListItems: string; 
-  ListType: TListType; ItemSpacing: TListItemSpacing): string;
+function TGenericHTMLDocGenerator.FormatList(ListData: TListData): string;
 const
   ListTag: array[TListType]of string =
   ( 'ul', 'ol', 'dl' );
   ListClass: array[TListItemSpacing]of string =
   ( 'compact_spacing', 'paragraph_spacing' );
+var
+  i: Integer;
+  ListItem: TListItemData;
+  Attributes: string;
 begin
   { We're explicitly marking end of previous paragraph and beginning
     of next one. This is required to always validate clearly.
@@ -2178,48 +2176,50 @@ begin
   Result := '</p>' + LineEnding + LineEnding;
   
   { HTML requires that <ol> / <ul> contains at least one <li>. }
-  if ListItems <> '' then
-    Result := Result + Format('<%s class="%s">%s%s</%0:s>%2:s%2:s', 
-      [ListTag[ListType], ListClass[ItemSpacing], 
-       LineEnding, ListItems]);
+  if ListData.Count <> 0 then
+  begin
+    Result := Result + Format('<%s class="%s">', 
+      [ListTag[ListData.ListType], ListClass[ListData.ItemSpacing]]) + LineEnding;
+      
+    for i := 0 to ListData.Count - 1 do
+    begin
+      ListItem := ListData.Items[i] as TListItemData;
+
+      if ListData.ListType = ltDefinition then
+      begin
+        { Note: We're not writing <p> .. </p> inside <dt>, because
+          officially <dt> can't contain any paragraphs.
+
+          Yes, this means that if user will use paragraphs inside
+          @itemLabel then our output HTML will not be validated
+          as correct HTML. I don't see any easy way to fix this ?
+          After all we don't want to "fake" <dl>, <dt> and <dd>
+          using some other tags and complex css. 
+
+          So I guess that this should be blamed as an "unavoidable 
+          limitation of HTML output", if someone will ask :)
+
+          -- Michalis }
+
+        Result := Result +
+          '  <dt>' + ListItem.ItemLabel + '</dt>' + LineEnding +
+          '  <dd><p>' + ListItem.Text + '</p></dd>' + LineEnding;
+      end else
+      begin
+        if ListData.ListType = ltOrdered then
+          Attributes := Format(' value="%d"', [ListItem.Index + 1]) else
+          Attributes := '';
+
+        Result := Result + Format('  <li%s><p>%s</p></li>',
+          [Attributes, ListItem.Text])  + LineEnding;
+      end;
+    end;
+      
+    Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) + 
+      LineEnding + LineEnding;
+  end;
     
   Result := Result + '<p>';
-end;
-
-function TGenericHTMLDocGenerator.FormatListItem(const Text: string;
-  Ordered: boolean; ItemIndex: Cardinal): string; 
-var 
-  Attributes: string;
-begin
-  { We're explicitly marking end of previous paragraph and beginning
-    of next one. }
-  if Ordered then
-    Attributes := Format(' value="%d"', [ItemIndex]) else
-    Attributes := '';
-  Result := Format('  <li%s><p>%s</p></li>' + LineEnding, 
-    [Attributes, Text]);
-end;
-
-function TGenericHTMLDocGenerator.FormatDefinitionListItem(
-  const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
-begin
-  { Note: We're not writing <p> .. </p> inside <dt>, because
-    officially <dt> can't contain any paragraphs.
-    
-    Yes, this means that if user will use paragraphs inside
-    @itemLabel then our output HTML will not be validated
-    as correct HTML. I don't see any easy way to fix this ?
-    After all we don't want to "fake" <dl>, <dt> and <dd>
-    using some other tags and complex css. 
-    
-    So I guess that this should be blamed as an "unavoidable 
-    limitation of HTML output", if someone will ask :)
-    
-    -- Michalis }
-
-  Result := 
-    '  <dt>' + ItemLabel + '</dt>' + LineEnding +
-    '  <dd><p>' + ItemText + '</p></dd>' + LineEnding;
 end;
 
 function TGenericHTMLDocGenerator.FormatTable(Table: TTableData): string;

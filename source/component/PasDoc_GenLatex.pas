@@ -195,13 +195,8 @@ Latex DocGenerators.}
     
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatList(const ListItems: string;
-      ListType: TListType; ItemSpacing: TListItemSpacing): string; override;
-    function FormatListItem(const Text: string;
-      Ordered: boolean; ItemIndex: Cardinal): string; override;
-    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
-      ItemIndex: Cardinal): string; override;
-      
+    function FormatList(ListData: TListData): string; override;
+
     function FormatTable(Table: TTableData): string; override;
   public
     // @name is intended to format Line as if it were Object Pascal
@@ -1555,40 +1550,46 @@ begin
   Result := '\begin{verbatim}' + Text +  '\end{verbatim}';
 end;
 
-function TTexDocGenerator.FormatList(const ListItems: string;
-  ListType: TListType; ItemSpacing: TListItemSpacing): string;
+function TTexDocGenerator.FormatList(ListData: TListData): string;
 const
   ListEnvironment: array[TListType]of string =
   ( 'itemize', 'enumerate', 'description' );
+var
+  ListItem: TListItemData;
+  i: Integer;
 begin
   { LaTeX doesn't allow empty lists }
-  if ListItems <> '' then
-    Result := Format('\begin{%s}%s%s\end{%0:s}', 
-      [ListEnvironment[ListType], LineEnding, ListItems]);
-end;
-
-function TTexDocGenerator.FormatListItem(const Text: string;
-  Ordered: boolean; ItemIndex: Cardinal): string; 
-begin
-  if Ordered then
-    { We don't know here which counter we should set to ItemIndex.
-      So we just set *all* four counters. Simple, and works. 
-      Note that actually we set to "ItemIndex - 1", not "ItemIndex",
-      to get correct result. }
-    Result := Format(
-      '\setcounter{enumi}{%d} ' +
-      '\setcounter{enumii}{%0:d} ' +
-      '\setcounter{enumiii}{%0:d} ' +
-      '\setcounter{enumiv}{%0:d} ' + LineEnding,
-      [ItemIndex - 1]) else
-    Result := '';
-  Result := Result + '\item ' + Text + LineEnding;
-end;
-
-function TTexDocGenerator.FormatDefinitionListItem(
-  const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
-begin
-  Result := '\item[' + ItemLabel + '] ' + ItemText + LineEnding;
+  if ListData.Count <> 0 then
+  begin
+    Result := Format('\begin{%s}', 
+      [ListEnvironment[ListData.ListType]]) + LineEnding;
+    for i := 0 to ListData.Count - 1 do
+    begin
+      ListItem := ListData.Items[i] as TListItemData;
+      
+      if ListData.ListType = ltDefinition then
+      begin
+        Result := Result + 
+          '\item[' + ListItem.ItemLabel + '] ' + ListItem.Text + LineEnding;
+      end else
+      begin
+        if ListData.ListType = ltOrdered then
+          Result := Result + 
+            { We don't know here which counter we should set to Index.
+              So we just set *all* four counters. Simple, and works. }
+            Format(
+              '\setcounter{enumi}{%d} ' +
+              '\setcounter{enumii}{%0:d} ' +
+              '\setcounter{enumiii}{%0:d} ' +
+              '\setcounter{enumiv}{%0:d} ' + LineEnding, [ListItem.Index]);
+      
+        Result := Result + 
+          '\item ' + ListItem.Text + LineEnding;
+      end;
+    end;
+    Result := Result +
+      Format('\end{%s}', [ListEnvironment[ListData.ListType]]);
+  end;
 end;
 
 function TTexDocGenerator.FormatTable(Table: TTableData): string;

@@ -116,6 +116,63 @@ type
   TListType = (ltUnordered, ltOrdered, ltDefinition);
 
   TListItemSpacing = (lisCompact, lisParagraph);
+  
+  { Collected information about @@xxxList item. }
+  TListItemData = class
+  private
+    FItemLabel: string;
+    FText: string;
+    FIndex: Cardinal;
+  public
+    constructor Create(AItemLabel, AText: string; AIndex: Cardinal);
+    
+    { This is only for @@definitionList: label for this list item,
+      taken from @@itemLabel. Already in the processed form.
+      For other lists this will always be ''. }
+    property ItemLabel: string read FItemLabel;
+    
+    { This is content of this item, taken from @@item. 
+      Already in the processed form, after 
+      @link(TDocGenerator.ConvertString) etc.
+      Ready to be included in final documentation. }
+    property Text: string read FText;
+
+    { 0-based number of this item. This should be used for @@orderedList.
+      When you iterate over @link(TListData.Items), you should be aware that
+      Index of list item is @italic(not) necessarily equal
+      to the position of item inside @link(TListData.Items).
+      That's because of @@itemSetNumber tag. 
+      
+      For unordered and definition lists this is simpler:
+      Index is always equal to the position within @link(TListData.Items)
+      (because @@itemSetNumber is not allowed there).
+      And usually you will just ignore Index of items on
+      unordered and definition lists. }
+    property Index: Cardinal read FIndex;
+  end;
+
+  { Collected information about @@xxxList content. Passed to 
+    @link(TDocGenerator.FormatList). Every item of this list 
+    should be non-nil instance of @link(TListItemData). }
+  TListData = class(TObjectVector)
+  private
+    { This is used inside list tags' handlers
+      to calculate TListItemData.Index fields. }
+    NextItemIndex: Cardinal;
+        
+    { This is only for @@definitionList.
+      This is already expanded (by TTagManager.Execute) parameter
+      of @@itemLabel tag, or '' if there is no pending (pending =
+      not included in some @link(TListItemData)) @@itemLabel content. }
+    LastItemLabel: string;
+
+    FItemSpacing: TListItemSpacing;
+    FListType: TListType;
+  public
+    property ItemSpacing: TListItemSpacing read FItemSpacing;
+    property ListType: TListType read FListType;
+    constructor Create(const AOwnsObject: boolean); override;
+  end;
 
   { Collected information about @@row (or @@rowHead). }
   TRowData = class
@@ -147,7 +204,7 @@ type
     { Minimum Cells.Count, considering all rows. }
     property MinCellCount: Cardinal read FMinCellCount;
   end;
-
+  
   { @abstract(basic documentation generator object)
     This abstract object will do the complete process of writing
     documentation files.
@@ -691,61 +748,9 @@ type
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
 
-    { Format a list from ListItems,
-      which contains concatenated results of FormatListItem
-      (or FormatDefinitionListItem) for all list items.
-      
-      Note that @@orderedList and @@unorderedList and 
-      @@definitionList should contain only @@item and @@itemLabel
-      tags (tag manager makes sure that anything else is
-      ignored (like whitespace) or reported as an error to the user
-      (like anything other than whitespace)).
-      So you can safely assume that ListItems are @italic(only)
-      the concatenated results of FormatListItem
-      (or FormatDefinitionListItem, for @@definitionList),
-      with absolutely nothing additional. 
-      Therefore if you want to test whether
-      the list is empty (i.e. zero items), you can simply check
-      ListItems = '' (no need to even do Trim(ListItems)). 
-      
-      @seealso FormatListItem
-      @seealso FormatDefinitionListItem }
-    function FormatList(const ListItems: string;
-      ListType: TListType;
-      ItemSpacing: TListItemSpacing): string; virtual; abstract;
+    { Format a list from given ListData. }
+    function FormatList(ListData: TListData): string; virtual; abstract;
 
-    { This formats list item, for @@orderedList and @@unorderedList. 
-      Text is already passed in a form converted for final output
-      (converted by ConvertString, with tags etc. expanded). 
-      
-      @param(Ordered says whether this is an item within 
-        ordered or unordered list.)
-        
-      @param(ItemIndex is 1-based number of this item.
-        Since there exists tag @@itemSetNumber,
-        all output generators must respect given ItemIndex and
-        be prepared that every list item may have virtually 
-        any number (well, >= 1).)
-      
-      @seealso FormatList }
-    function FormatListItem(const Text: string;
-      Ordered: boolean; ItemIndex: Cardinal): string; virtual; abstract;
-
-    { This is used to format @@definitionList item from an
-      @@itemLabel + @@item pair.
-
-      @param(ItemLabel Corresponding @@itemLabel content,
-        in already processed form (processed by ConvertString etc.),
-        or '' if there was no @@itemLabel before this @@item.)
-      @param(ItemText Corresponding @@item content,
-        in already processed form,
-        or '' if there was no @@item after this @@itemLabel.)
-      @param(ItemIndex 1-based number of this item.)
-      
-      @seealso FormatList }
-    function FormatDefinitionListItem(const ItemLabel, ItemText: string;
-      ItemIndex: Cardinal): string; virtual; abstract;
-      
     { This should return appropriate content for given Table.
       It's guaranteed that the Table passed here will have
       at least one row and in each row there will be at least
@@ -863,6 +868,25 @@ uses
   StreamUtils,
   Utils,
   PasDoc_Tokenizer;
+
+{ TListItemData ------------------------------------------------------------- }
+
+constructor TListItemData.Create(AItemLabel, AText: string; AIndex: Cardinal);
+begin
+  inherited Create;
+  FItemLabel := AItemLabel;
+  FText := AText;
+  FIndex := AIndex;
+end;
+
+{ TListData ----------------------------------------------------------------- }
+
+constructor TListData.Create(const AOwnsObject: boolean);
+begin
+  inherited;
+  FItemSpacing := lisParagraph;
+  NextItemIndex := 0;
+end;
 
 { TRowData ------------------------------------------------------------------- }
 
@@ -1222,57 +1246,38 @@ begin
 end;
 
 type
-  TListData = class
-    { This is used to number items, to provide ItemIndex
-      parameter for FormatListItem and FormatDefinitionListItem. }
-    NextItemIndex: Cardinal;
-    
-    { This is used by @@itemSpacing tag,
-      to provide ItemSpacing parameter for FormatList. }
-    ItemSpacing: TListItemSpacing;
-    
-    { This is only for DefinitionListTag.
-      This is already expanded (by TTagManager.Execute) parameter
-      of @@itemLabel tag, or '' if there is no pending (pending =
-      not passed yet to FormatDefinitionListItem) @@itemLabel content. }
-    LastItemLabel: string;
-    
-    constructor Create;
-  end;
-
   { For @@orderedList, @@unorderedList and @@definitionList tags. }
   TListTag = class(TTag)
     function CreateOccurenceData: TObject; override;
   end;
 
-constructor TListData.Create;
-begin
-  inherited;
-  ItemSpacing := lisParagraph;
-  NextItemIndex := 1;
-end;
-
 function TListTag.CreateOccurenceData: TObject;
 begin
-  Result := TListData.Create;
+  Result := TListData.Create(true);
 end;
 
 procedure TDocGenerator.HandleOrderedListTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-begin  
-  ReplaceStr := FormatList(TagParameter, ltOrdered,
-    (ThisTagData as TListData).ItemSpacing);
+var
+  ListData: TListData;
+begin
+  ListData := ThisTagData as TListData;
+  ListData.FListType := ltOrdered;
+  ReplaceStr := FormatList(ListData);
 end;
 
 procedure TDocGenerator.HandleUnorderedListTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-begin  
-  ReplaceStr := FormatList(TagParameter, ltUnordered,
-    (ThisTagData as TListData).ItemSpacing);
+var
+  ListData: TListData;
+begin
+  ListData := ThisTagData as TListData;
+  ListData.FListType := ltUnordered;
+  ReplaceStr := FormatList(ListData);
 end;
 
 procedure TDocGenerator.HandleDefinitionListTag(
@@ -1281,21 +1286,20 @@ procedure TDocGenerator.HandleDefinitionListTag(
   const TagParameter: string; var ReplaceStr: string);
 var
   ListData: TListData;
-  ListItems: string;
 begin
-  ListItems := TagParameter;
-  
   ListData := ThisTagData as TListData;
+  ListData.FListType := ltDefinition;
   
   if ListData.LastItemLabel <> '' then
   begin
-    ListItems := ListItems + FormatDefinitionListItem(
-      ListData.LastItemLabel, '', ListData.NextItemIndex);
+    ListData.Add(TListItemData.Create(
+      ListData.LastItemLabel, '', ListData.NextItemIndex));
+      
     Inc(ListData.NextItemIndex);
+    ListData.LastItemLabel := '';
   end;
   
-  ReplaceStr := FormatList(ListItems, ltDefinition,
-    ListData.ItemSpacing);
+  ReplaceStr := FormatList(ListData);
 end;
 
 procedure TDocGenerator.HandleItemTag(
@@ -1307,18 +1311,13 @@ var
 begin
   ListData := EnclosingTagData as TListData;
     
-  if EnclosingTag = DefinitionListTag then
-  begin
-    ReplaceStr := FormatDefinitionListItem(
-      ListData.LastItemLabel, TagParameter, ListData.NextItemIndex);
-    ListData.LastItemLabel := '';
-  end else
-  begin
-    ReplaceStr := FormatListItem(TagParameter, 
-      EnclosingTag = OrderedListTag, ListData.NextItemIndex);
-  end;
-  
+  ListData.Add(TListItemData.Create(
+    ListData.LastItemLabel, TagParameter, ListData.NextItemIndex));
+    
   Inc(ListData.NextItemIndex);
+  ListData.LastItemLabel := '';
+  
+  ReplaceStr := '';
 end;
 
 procedure TDocGenerator.HandleItemLabelTag(
@@ -1330,20 +1329,22 @@ var
 begin
   ListData := EnclosingTagData as TListData;
   
-  ReplaceStr := '';
-  
-  { If last tag was also @@itemLabel, not @@item, then pass
-    last item to FormatDefinitionListItem. }
+  { If last tag was also @@itemLabel, not @@item, then make
+    new item from ListData.LastItemLabel with empty Text. }
   if ListData.LastItemLabel <> '' then
   begin
-    ReplaceStr := ReplaceStr + FormatDefinitionListItem(
-      ListData.LastItemLabel, '', ListData.NextItemIndex);
+    ListData.Add(TListItemData.Create(
+      ListData.LastItemLabel, '', ListData.NextItemIndex));
+    
     Inc(ListData.NextItemIndex);
   end;
   
   { This @@itemLabel is stored inside ListData.LastItemLabel.
-    Will be passed later to FormatDefinitionListItem. }  
+    Will be added later to ListData.Items wrapped 
+    inside some TListItemData. }
   ListData.LastItemLabel := TagParameter;
+  
+  ReplaceStr := '';
 end;
 
 procedure TDocGenerator.HandleItemSpacingTag(
@@ -1356,17 +1357,17 @@ var
 begin
   ListData := EnclosingTagData as TListData;
 
+  LTagParameter := LowerCase(TagParameter);
+  if LTagParameter = 'compact' then
+    ListData.FItemSpacing := lisCompact else
+  if LTagParameter = 'paragraph' then
+    ListData.FItemSpacing := lisParagraph else
+    ThisTag.TagManager.DoMessage(1, mtWarning, 
+      'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
+      
   { @itemSpacing does not generate any output to ReplaceStr. 
     It only sets ListData.ItemSpacing }
   ReplaceStr := '';
-
-  LTagParameter := LowerCase(TagParameter);
-  if LTagParameter = 'compact' then
-    ListData.ItemSpacing := lisCompact else
-  if LTagParameter = 'paragraph' then
-    ListData.ItemSpacing := lisParagraph else
-    ThisTag.TagManager.DoMessage(1, mtWarning, 
-      'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
 end;
 
 procedure TDocGenerator.HandleItemSetNumberTag(
@@ -1380,7 +1381,8 @@ begin
   
   try
     NewNextItemIndex := StrToInt(TagParameter);
-    (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex;
+    { TListData.NextItemIndex is 0-based, @@itemSetNumber takes 1-based arg. }
+    (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex - 1;
   except
     on E: EConvertError do 
       ThisTag.TagManager.DoMessage(1, mtWarning, 
