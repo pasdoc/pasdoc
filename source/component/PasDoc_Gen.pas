@@ -139,13 +139,13 @@ type
     property Text: string read FText;
 
     { 0-based number of this item. This should be used for @@orderedList.
-      When you iterate over @link(TListData.Items), you should be aware that
+      When you iterate over @code(TListData.Items), you should be aware that
       Index of list item is @italic(not) necessarily equal
-      to the position of item inside @link(TListData.Items).
+      to the position of item inside @code(TListData.Items).
       That's because of @@itemSetNumber tag. 
       
       For unordered and definition lists this is simpler:
-      Index is always equal to the position within @link(TListData.Items)
+      Index is always equal to the position within @code(TListData.Items)
       (because @@itemSetNumber is not allowed there).
       And usually you will just ignore Index of items on
       unordered and definition lists. }
