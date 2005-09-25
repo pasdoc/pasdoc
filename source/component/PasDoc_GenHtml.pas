@@ -2203,8 +2203,22 @@ end;
 function TGenericHTMLDocGenerator.FormatDefinitionListItem(
   const ItemLabel, ItemText: string; ItemIndex: Cardinal): string;
 begin
+  { Note: We're not writing <p> .. </p> inside <dt>, because
+    officially <dt> can't contain any paragraphs.
+    
+    Yes, this means that if user will use paragraphs inside
+    @itemLabel then our output HTML will not be validated
+    as correct HTML. I don't see any easy way to fix this ?
+    After all we don't want to "fake" <dl>, <dt> and <dd>
+    using some other tags and complex css. 
+    
+    So I guess that this should be blamed as an "unavoidable 
+    limitation of HTML output", if someone will ask :)
+    
+    -- Michalis }
+
   Result := 
-    '  <dt><p>' + ItemLabel + '</p></dt>' + LineEnding +
+    '  <dt>' + ItemLabel + '</dt>' + LineEnding +
     '  <dd><p>' + ItemText + '</p></dd>' + LineEnding;
 end;
 
