@@ -63,20 +63,21 @@ type
     BaseFileName: string;
     TranslationId: TTranslationId;
     TranslationHeadlineId: TTranslationId;
+    NoItemsTranslationId: TTranslationId;
   end;
 
 const
   OverviewFilesInfo: array[TOverviewFile] of TOverviewFileInfo = (
-    (BaseFileName: 'AllUnits'      ; TranslationId: trUnits                 ; TranslationHeadlineId: trHeadlineUnits                 ; ),
-    (BaseFileName: 'ClassHierarchy'; TranslationId: trClassHierarchy        ; TranslationHeadlineId: trClassHierarchy { no headline }; ),
-    (BaseFileName: 'AllClasses'    ; TranslationId: trCio                   ; TranslationHeadlineId: trHeadlineCio                   ; ),
-    (BaseFileName: 'AllTypes'      ; TranslationId: trTypes                 ; TranslationHeadlineId: trHeadlineTypes                 ; ),
-    (BaseFileName: 'AllVariables'  ; TranslationId: trVariables             ; TranslationHeadlineId: trHeadlineVariables             ; ),
-    (BaseFileName: 'AllConstants'  ; TranslationId: trConstants             ; TranslationHeadlineId: trHeadlineConstants             ; ),
-    (BaseFileName: 'AllFunctions'  ; TranslationId: trFunctionsAndProcedures; TranslationHeadlineId: trHeadlineFunctionsAndProcedures; ),
-    (BaseFileName: 'AllIdentifiers'; TranslationId: trIdentifiers           ; TranslationHeadlineId: trHeadlineIdentifiers           ; ),
-    (BaseFileName: 'GVUses'        ; TranslationId: trGvUses                ; TranslationHeadlineId: trGvUses { no headline }        ; ),
-    (BaseFileName: 'GVClasses'     ; TranslationId: trGvClasses             ; TranslationHeadlineId: trGvClasses { no headline }     ; )
+    (BaseFileName: 'AllUnits'      ; TranslationId: trUnits                 ; TranslationHeadlineId: trHeadlineUnits                 ; NoItemsTranslationId: trNone { unused }  ; ),
+    (BaseFileName: 'ClassHierarchy'; TranslationId: trClassHierarchy        ; TranslationHeadlineId: trClassHierarchy { no headline }; NoItemsTranslationId: trNoCIOs           ; ),
+    (BaseFileName: 'AllClasses'    ; TranslationId: trCio                   ; TranslationHeadlineId: trHeadlineCio                   ; NoItemsTranslationId: trNoCIOs           ; ),
+    (BaseFileName: 'AllTypes'      ; TranslationId: trTypes                 ; TranslationHeadlineId: trHeadlineTypes                 ; NoItemsTranslationId: trNoTypes          ; ),
+    (BaseFileName: 'AllVariables'  ; TranslationId: trVariables             ; TranslationHeadlineId: trHeadlineVariables             ; NoItemsTranslationId: trNoVariables      ; ),
+    (BaseFileName: 'AllConstants'  ; TranslationId: trConstants             ; TranslationHeadlineId: trHeadlineConstants             ; NoItemsTranslationId: trNoConstants      ; ),
+    (BaseFileName: 'AllFunctions'  ; TranslationId: trFunctionsAndProcedures; TranslationHeadlineId: trHeadlineFunctionsAndProcedures; NoItemsTranslationId: trNoFunctions      ; ),
+    (BaseFileName: 'AllIdentifiers'; TranslationId: trIdentifiers           ; TranslationHeadlineId: trHeadlineIdentifiers           ; NoItemsTranslationId: trNoIdentifiers    ; ),
+    (BaseFileName: 'GVUses'        ; TranslationId: trGvUses                ; TranslationHeadlineId: trGvUses { no headline }        ; NoItemsTranslationId: trNone { unused }  ; ),
+    (BaseFileName: 'GVClasses'     ; TranslationId: trGvClasses             ; TranslationHeadlineId: trGvClasses { no headline }     ; NoItemsTranslationId: trNoCIOs { unused }; )
   );
 
   { Using High(TCreatedOverviewFile) or High(Overview)
