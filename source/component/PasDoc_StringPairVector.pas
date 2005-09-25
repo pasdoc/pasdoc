@@ -57,7 +57,9 @@ type
 
 implementation
 
-uses Utils;
+uses 
+  SysUtils { For LowerCase under Kylix 3 }, 
+  Utils;
 
 { TStringPair ---------------------------------------------------------------- }
 

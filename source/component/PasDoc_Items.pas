@@ -1683,7 +1683,7 @@ end;
 function TPasCio.FindItemMaybeInAncestors(const ItemName: string): 
   TBaseItem;
 begin
-  Result := inherited;
+  Result := inherited FindItemMaybeInAncestors(ItemName);
   if Result = nil then
     Result := FindItemInAncestors(ItemName);
 end;
