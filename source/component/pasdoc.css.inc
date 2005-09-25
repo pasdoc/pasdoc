@@ -124,4 +124,10 @@
 'table.table_tag { border-collapse: collapse; }' + LineEnding + 
 'table.table_tag td { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
 'table.table_tag th { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
+'' + LineEnding + 
+'table.detail {' + LineEnding + 
+'  border: 1pt solid lightgray;' + LineEnding + 
+'  margin-top: 0.3em;' + LineEnding + 
+'  margin-bottom: 0.3em;' + LineEnding + 
+'}' + LineEnding + 
 ''

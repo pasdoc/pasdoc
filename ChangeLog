@@ -22,6 +22,7 @@
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
   * FPC macros are now correctly parsed by pasdoc.
+  * Each detailed description in HTML output is enclosed within lightgray frame
   * Various fixes. E.g.
     --spell-check-ignore-words works now.
   

@@ -122,3 +122,9 @@ dl.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }
 table.table_tag { border-collapse: collapse; }
 table.table_tag td { border: 1pt solid lightgray; padding: 0.3em; }
 table.table_tag th { border: 1pt solid lightgray; padding: 0.3em; }
+
+table.detail {
+  border: 1pt solid lightgray;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}

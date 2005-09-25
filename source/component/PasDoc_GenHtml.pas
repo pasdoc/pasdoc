@@ -924,9 +924,12 @@ begin
 
     WriteStartOfTable1Column('detail');
     WriteItemTableRow(Item, ShowVisibility, false, true);
-    WriteEndOfTable;
-
+    
+    WriteDirectLine('<tr><td colspan="0">');
     WriteItemDetailedDescription(Item);
+    WriteDirectLine('</td></tr>');
+
+    WriteEndOfTable;
   end;
 end;
 
