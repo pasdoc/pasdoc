@@ -719,9 +719,10 @@ var
       (toAllowNormalTextInside in EnclosingTag.TagOptions);
   end;
   
-  procedure CheckNormalTextAllowed(const NormalText: string);
+  function CheckNormalTextAllowed(const NormalText: string): boolean;
   begin
-    if not IsNormalTextAllowed then
+    Result := IsNormalTextAllowed;
+    if not Result then
       DoMessage(1, mtWarning,
         'Such content, "%s", is not allowed '+
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
@@ -745,8 +746,8 @@ var
       FOffset - ConvertBeginOffset);
     if ToAppend <> '' then
     begin
-      CheckNormalTextAllowed(ToAppend);
-      Result := Result + DoConvertString(ToAppend);
+      if CheckNormalTextAllowed(ToAppend) then
+        Result := Result + DoConvertString(ToAppend);
       ConvertBeginOffset := FOffset;
     end;
   end;
@@ -839,8 +840,8 @@ begin
       end;
 
       Result := Result + ReplaceStr;
-      FOffset := OffsetEnd;
       
+      FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@@' then
@@ -848,10 +849,10 @@ begin
       DoConvert;
       
       { convert '@@' to '@' }
-      CheckNormalTextAllowed('@@');
-      Result := Result + '@';
+      if CheckNormalTextAllowed('@@') then
+        Result := Result + '@';
+        
       FOffset := FOffset + 2;
-      
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@-' then
@@ -859,10 +860,10 @@ begin
       DoConvert;
       
       { convert '@-' to ShortDash }
-      CheckNormalTextAllowed('@-');
-      Result := Result + ShortDash;
-      FOffset := FOffset + 2;
+      if CheckNormalTextAllowed('@-') then
+        Result := Result + ShortDash;
       
+      FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     { Note that we must scan for '---' in Description before scanning for '--'. }
@@ -871,10 +872,10 @@ begin
       DoConvert;
       
       { convert '---' to EmDash }
-      CheckNormalTextAllowed('---');
-      Result := Result + EmDash;
-      FOffset := FOffset + 3;
+      if CheckNormalTextAllowed('---') then
+        Result := Result + EmDash;
       
+      FOffset := FOffset + 3;      
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '--' then
@@ -882,10 +883,10 @@ begin
       DoConvert;
       
       { convert '--' to EnDash }
-      CheckNormalTextAllowed('--');
-      Result := Result + EnDash;
-      FOffset := FOffset + 2;
+      if CheckNormalTextAllowed('--') then
+        Result := Result + EnDash;
       
+      FOffset := FOffset + 2;      
       ConvertBeginOffset := FOffset;
     end else
     if Description[FOffset] = '-' then
@@ -893,10 +894,10 @@ begin
       DoConvert;
       
       { So '-' is just a normal ShortDash }
-      CheckNormalTextAllowed('-');
-      Result := Result + ShortDash;
-      FOffset := FOffset + 1;      
-      
+      if CheckNormalTextAllowed('-') then
+        Result := Result + ShortDash;
+        
+      FOffset := FOffset + 1;            
       ConvertBeginOffset := FOffset;
     end else
     if FindParagraph(OffsetEnd) then
@@ -907,8 +908,8 @@ begin
         Otherwise just ignore any whitespace in Description. }
       if IsNormalTextAllowed then
         Result := Result + Paragraph;
+        
       FOffset := OffsetEnd;
-      
       ConvertBeginOffset := FOffset;
     end else
     { FindWhitespace must be checked after FindParagraph,
@@ -921,18 +922,18 @@ begin
         Otherwise just ignore any whitespace in Description. }
       if IsNormalTextAllowed then
         Result := Result + Space;
+        
       FOffset := OffsetEnd;
-      
       ConvertBeginOffset := FOffset;
     end else
     if FindURL(OffsetEnd, URL) then
     begin
       DoConvert;
 
-      CheckNormalTextAllowed(URL);
-      Result := Result + DoURLLink(URL);
+      if CheckNormalTextAllowed(URL) then
+        Result := Result + DoURLLink(URL);
+        
       FOffset := OffsetEnd;
-      
       ConvertBeginOffset := FOffset;
     end else
     if WantFirstSentenceEnd and
@@ -941,11 +942,13 @@ begin
     begin
       DoConvert;
       
-      CheckNormalTextAllowed('.');
-      Result := Result + ConvertString('.');
-      FirstSentenceEnd := Length(Result);
-      Inc(FOffset);
+      if CheckNormalTextAllowed('.') then
+      begin
+        Result := Result + ConvertString('.');
+        FirstSentenceEnd := Length(Result);
+      end;
       
+      Inc(FOffset);
       ConvertBeginOffset := FOffset;
     end else
       Inc(FOffset);
