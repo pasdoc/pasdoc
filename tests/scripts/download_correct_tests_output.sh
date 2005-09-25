@@ -14,17 +14,25 @@ set -eu
 #
 # Requisites: downloading is done using `wget'.
 
-FORMAT="$1"
-shift 1
+download_one_format ()
+{
+  # Parse options
+  FORMAT="$1"
+  shift 1
 
-ARCHIVE_FILENAME_NONDIR="$FORMAT".tar.gz
+  ARCHIVE_FILENAME_NONDIR="$FORMAT".tar.gz
 
-rm -Rf ../correct_output/"$FORMAT"/ ../correct_output/"$ARCHIVE_FILENAME_NONDIR"
-mkdir -p ../correct_output/
+  rm -Rf ../correct_output/"$FORMAT"/ ../correct_output/"$ARCHIVE_FILENAME_NONDIR"
+  mkdir -p ../correct_output/
 
-cd ../correct_output/
-echo "Downloading $ARCHIVE_FILENAME_NONDIR ..."
-wget http://pasdoc.sourceforge.net/correct_tests_output/"$ARCHIVE_FILENAME_NONDIR"
+  cd ../correct_output/
+  echo "Downloading $ARCHIVE_FILENAME_NONDIR ..."
+  wget http://pasdoc.sourceforge.net/correct_tests_output/"$ARCHIVE_FILENAME_NONDIR"
 
-echo "Unpacking $ARCHIVE_FILENAME_NONDIR ..."
-tar xzf "$ARCHIVE_FILENAME_NONDIR"
+  echo "Unpacking $ARCHIVE_FILENAME_NONDIR ..."
+  tar xzf "$ARCHIVE_FILENAME_NONDIR"
+}
+
+for FORMAT; do
+  download_one_format "$FORMAT"
+done
