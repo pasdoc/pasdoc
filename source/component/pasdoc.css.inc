@@ -109,7 +109,7 @@
 'dl.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }' + LineEnding + 
 '' + LineEnding + 
 '/* Style for table created by @table tags:' + LineEnding + 
-'   just some lightgray thin border.' + LineEnding + 
+'   just some thin border.' + LineEnding + 
 '   ' + LineEnding + 
 '   This way we have some borders around the cells' + LineEnding + 
 '   (so cells are visibly separated), but the border ' + LineEnding + 
@@ -122,11 +122,11 @@
 '   collapse (because this eliminates spacing between cells). ' + LineEnding + 
 '*/' + LineEnding + 
 'table.table_tag { border-collapse: collapse; }' + LineEnding + 
-'table.table_tag td { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
-'table.table_tag th { border: 1pt solid lightgray; padding: 0.3em; }' + LineEnding + 
+'table.table_tag td { border: 1pt solid gray; padding: 0.3em; }' + LineEnding + 
+'table.table_tag th { border: 1pt solid gray; padding: 0.3em; }' + LineEnding + 
 '' + LineEnding + 
 'table.detail {' + LineEnding + 
-'  border: 1pt solid lightgray;' + LineEnding + 
+'  border: 1pt solid gray;' + LineEnding + 
 '  margin-top: 0.3em;' + LineEnding + 
 '  margin-bottom: 0.3em;' + LineEnding + 
 '}' + LineEnding + 
