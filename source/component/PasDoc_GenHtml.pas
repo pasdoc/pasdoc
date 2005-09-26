@@ -908,6 +908,7 @@ procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
 var 
   Item: TPasItem;
   i: Integer;
+  ColumnsCount: Cardinal;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
@@ -917,10 +918,16 @@ begin
   begin
     Item := Items.PasItemAt[i];
 
-    WriteStartOfTable1Column('detail');
-    WriteItemTableRow(Item, ShowVisibility, false, true);
+    { calculate ColumnsCount }
+    ColumnsCount := 1;
+    if ShowVisibility then Inc(ColumnsCount);
     
-    WriteDirectLine('<tr><td colspan="0">');
+    WriteStartOfTable('detail');
+    WriteItemTableRow(Item, ShowVisibility, false, true);
+
+    { Using colspan="0" below would be easier, but Konqueror and IE
+      can't handle it correctly. It seems that they treat it as colspan="1" ? }
+    WriteDirectLine(Format('<tr><td colspan="%d">', [ColumnsCount]));
     WriteItemDetailedDescription(Item);
     WriteDirectLine('</td></tr>');
 
