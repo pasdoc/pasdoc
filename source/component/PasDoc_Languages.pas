@@ -17,7 +17,7 @@
   @author(Grzegorz Skoczylas <gskoczylas@program.z.pl> (corrected Polish translation))
   @author(Jónás Gergõ <jonas.gergo@ch...> (Hungarian translation))
   @author(Michalis Kamburelis)
-  @author(Ascanio Pressato (Some Italian translation)))
+  @author(Ascanio Pressato (Some Italian translation))
   }
 
 unit PasDoc_Languages;
@@ -1875,6 +1875,9 @@ end;
 
 {
   $Log$
+  Revision 1.35  2005/09/26 16:24:06  kambi
+  * Fixed autodoc
+
   Revision 1.34  2005/09/25 21:01:38  kambi
   * Better text on overview files when no variables or consts or funcs or cios or identifiers or types exist
 
