@@ -197,7 +197,7 @@ end;
 constructor TProcessLineTalk.Create(AOwner: TComponent);
 begin
   inherited;
-  Options := Options + [poUsePipes];
+  Options := Options + [poUsePipes, poStdErrToOutput];
 end;
 
 destructor TProcessLineTalk.Destroy;
