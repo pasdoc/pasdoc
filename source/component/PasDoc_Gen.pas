@@ -2369,7 +2369,7 @@ begin
   begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
-      DoMessage(2, mtWarning, 'Word mispelled "%s"', 
+      DoMessage(2, mtWarning, 'Word misspelled "%s"', 
         [TSpellingError(AErrors[i]).Word]);
   end else
     AErrors.Clear;
@@ -2383,6 +2383,63 @@ begin
 end;
 
 procedure TDocGenerator.StartSpellChecking(const AMode: string);
+var
+  WordsToIgnore: TStringList;
+
+  procedure AddSubItems(Items: TBaseItems);
+  var
+    SubItem: TBaseItem;
+    Index: integer;
+    AName: string;
+    NewName: string;
+  begin
+    for Index := 0 to Items.Count -1 do
+    begin
+      SubItem := Items[Index] as TBaseItem;
+      AName := Trim(SCharsReplace(SubItem.Name, ['0'..'9', '_'], ' '));
+      if AName = SubItem.Name then
+      begin
+        if (SubItem.Name <> '') then
+        begin
+          WordsToIgnore.Add(SubItem.Name);
+        end;
+      end
+      else
+      begin
+        While AName <> '' do
+        begin
+          NewName := ExtractFirstWord(AName);
+          WordsToIgnore.Add(NewName);
+        end;
+      end;
+      if SubItem is TExternalItem then
+      begin
+        AddSubItems(TExternalItem(SubItem).Anchors);
+      end
+      else if SubItem is TPasEnum then
+      begin
+        AddSubItems(TPasEnum(SubItem).Members);
+      end
+      else if SubItem is TPasCio then
+      begin
+        AddSubItems(TPasCio(SubItem).Fields);
+        AddSubItems(TPasCio(SubItem).Methods);
+        AddSubItems(TPasCio(SubItem).Properties);
+        AddSubItems(TPasCio(SubItem).Fields);
+      end
+      else if SubItem is TPasUnit then
+      begin
+        AddSubItems(TPasUnit(SubItem).CIOs);
+        AddSubItems(TPasUnit(SubItem).Constants);
+        AddSubItems(TPasUnit(SubItem).FuncsProcs);
+        AddSubItems(TPasUnit(SubItem).Types);
+        AddSubItems(TPasUnit(SubItem).Variables);
+        AddSubItems(TPasUnit(SubItem).Types);
+        AddSubItems(TPasUnit(SubItem).Types);
+      end;
+    end;
+  end;
+  
 begin
   { Make sure that previous aspell process is closed }
   FreeAndNil(FAspellProcess);
@@ -2399,7 +2456,30 @@ begin
         Exit;
       end;
     end;
-    FAspellProcess.SetIgnoreWords(SpellCheckIgnoreWords);
+    
+    FAspellProcess.OnMessage := OnMessage;
+    
+    WordsToIgnore := TStringList.Create;
+    try
+      WordsToIgnore.Sorted := True;
+      WordsToIgnore.Duplicates := dupIgnore;
+      WordsToIgnore.AddStrings(SpellCheckIgnoreWords);
+
+      if Introduction <> nil then
+      begin
+        WordsToIgnore.Add(Introduction.Name);
+        AddSubItems(Introduction.Anchors);
+      end;
+      if Conclusion <> nil then
+      begin
+        WordsToIgnore.Add(Conclusion.Name);
+        AddSubItems(Conclusion.Anchors);
+      end;
+      AddSubItems(Units);
+      FAspellProcess.SetIgnoreWords(WordsToIgnore);
+    finally
+      WordsToIgnore.Free;
+    end;
   end;
 end;
 

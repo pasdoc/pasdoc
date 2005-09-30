@@ -129,6 +129,9 @@ function ExtractFilePath(const FileName: string): string;
 function ExtractFileName(const FileName: string): string;
 {$endif}
 
+{ Checks is Prefix a prefix of S. Not case-sensitive. }
+function IsPrefix(const Prefix, S: string): boolean;
+
 type
   { Raise this when some impossible situation (indicating bug in 
     pasdoc) occurs. }
@@ -330,6 +333,11 @@ while (I > 0) and not (FileName[I] in ['/', '\', ':']) do Dec(I);
 Result := Copy(FileName, I + 1, 255);
 end;
 {$endif}
+
+function IsPrefix(const Prefix, S: string): boolean;
+begin
+  Result := AnsiSameText(Copy(S, 1, Length(Prefix)), Prefix);
+end;
 
 { EInternalError ------------------------------------------------------------- }
 

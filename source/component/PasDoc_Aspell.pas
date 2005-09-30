@@ -2,7 +2,7 @@ unit PasDoc_Aspell;
 
 interface
 
-uses SysUtils, Classes, PasDoc_ProcessLineTalk, ObjectVector;
+uses SysUtils, Classes, PasDoc_ProcessLineTalk, ObjectVector, PasDoc_Types;
 
 type
   TSpellingError = class
@@ -23,6 +23,10 @@ type
     FProcess: TProcessLineTalk;
     FAspellMode: string;
     FAspellLanguage: string;
+    FOnMessage: TPasDocMessageEvent;
+    
+    procedure DoMessage(const AVerbosity: Cardinal;
+      const MessageType: TMessageType; const AMessage: string);
   public
     { Values for AspellMode and AspellLanguage are the same as for
       aspell @--mode and @--lang command-line options.
@@ -39,9 +43,11 @@ type
 
     { Spellchecks AString and returns result.
       Will create an array of TSpellingError objects,
-      one entry for each mispelled word. 
+      one entry for each misspelled word. 
       Offsets of TSpellingErrors will be relative to AString. }
     procedure CheckString(const AString: string; const AErrors: TObjectVector);
+    
+    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   end;
 
 implementation
@@ -144,8 +150,21 @@ begin
              LError.Offset := StrToIntDef(s, 0)-1;
              AErrors.Add(LError);
            end;
+      else
+        { Actually, it's nowhere formally specified that aspell error
+          messages start with "Error:". So we can possibly accidentaly
+          skip some error messages from aspell. }
+        if IsPrefix('Error:', S) then
+          DoMessage(2, mtWarning, 'Aspell error: ' + S);
     end;
   until false;
+end;
+
+procedure TAspellProcess.DoMessage(const AVerbosity: Cardinal; 
+  const MessageType: TMessageType;  const AMessage: string);
+begin
+  if Assigned(FOnMessage) then
+    FOnMessage(MessageType, AMessage, AVerbosity);
 end;
 
 end.

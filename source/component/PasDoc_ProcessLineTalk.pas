@@ -203,6 +203,7 @@ end;
 destructor TProcessLineTalk.Destroy;
 begin
   FreeAndNil(OutputLineReader);
+  Active := False;
   inherited;
 end;
 
