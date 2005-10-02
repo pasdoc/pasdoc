@@ -138,25 +138,43 @@ type
       Result will be an empty string. If ClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
     function GetLastComment(const AClearLastComment: Boolean): String;
-    
-    { Get next token T from scanner that is neither whitespace nor comment.
-      Return true on success. 
+
+    { Reads tokens and throws them away as long as they are either whitespace
+      or comments.
       
-      Sets LCollector to skipped tokens data (does @italic(not) append them
-      to LCollector, it @italic(sets) LCollector to them, deleting previous
-      LCollector contents). }
-    function GetNextNonWCToken(var t: TToken; out LCollector: string): Boolean; overload;
-    
-    { Get next token T from scanner that is neither whitespace nor comment.
-      Return true on success. 
+      Sets WhitespaceCollector to all the whitespace that was skipped.
+      (Does @italic(not) append them to WhitespaceCollector,
+      it @italic(sets) WhitespaceCollector to them, deleting previous
+      WhitespaceCollector value.)
       
-      When it returns true, then it also appends to 
-      Item.FullDeclaration skipped tokens data (does not
-      delete previous Item.FullDeclaration contents, it only appends
-      more content). }
-    function GetNextNonWCToken(var t: TToken; Item: TPasItem): Boolean; overload;
+      Comments are collected to LastCommentToken, so that you can
+      use GetLastComment.
+
+      Returns non-white token that was found.
+      This token is equal to @code(Scanner.PeekToken).
+      Note that this token was @italic(peeked)
+      from the stream, i.e. the caller is still responsible for doing 
+      @code(Scanner.ConsumeToken).
+      Calling this method twice in a row will return the same thing.
+      
+      Returns nil if stream ended. }
+    function PeekNextToken(out WhitespaceCollector: string): TToken; overload;
     
-    function GetNextNonWCToken(var t: TToken): Boolean; overload;
+    { Same thing as PeekNextToken(Dummy) }
+    function PeekNextToken: TToken; overload;
+        
+    { Just like @link(PeekNextToken), but returned token is already consumed.
+      Next call to @name will return next token. }
+    function GetNextToken(out WhitespaceCollector: string): TToken; overload;
+    
+    { Just like @link(PeekNextToken), but returned token is already consumed.
+      Moreover, whitespace collected is appended to 
+      WhitespaceCollectorItem.FullDeclaration
+      (does not delete previous WhitespaceCollectorItem.FullDeclaration value, 
+      it only appends to it). }
+    function GetNextToken(WhitespaceCollectorItem: TPasItem): TToken; overload;
+    
+    function GetNextToken: TToken; overload;
     
     function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
@@ -227,19 +245,6 @@ type
       Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
       if appropriate hint directive will occur in source file. }    
     function SkipDeclaration(const Item: TPasItem): Boolean;
-    
-    { Reads tokens and throws them away as long as they are either whitespace
-      or comments.
-      
-      Sets LCollector to skipped tokens data.
-
-      @returns(true if a non-white token is found (then you know that 
-      Scanner.PeekToken or Scanner.GetToken will return with true) 
-      or false if stream ended.) }
-    function SkipWhitespaceAndComments(out LCollector: string): Boolean; overload;
-    
-    { Same thing as SkipWhitespaceAndComments(Dummy) }
-    function SkipWhitespaceAndComments: Boolean; overload;
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -375,29 +380,28 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetNextNonWCToken(var t: TToken; out LCollector: string): Boolean;
+function TParser.GetNextToken(out WhitespaceCollector: string): TToken;
 begin
-  Assert(t = nil);
-  if SkipWhitespaceAndComments(LCollector) then begin
-    Result := Scanner.GetToken(t)
-  end else begin
-    Result := False;
-  end;
+  Result := PeekNextToken(WhitespaceCollector);
+  if Result <> nil then
+    Scanner.ConsumeToken;
 end;
 
-function TParser.GetNextNonWCToken(var t: TToken; Item: TPasItem): Boolean; 
-var LCollector: string;
+function TParser.GetNextToken(WhitespaceCollectorItem: TPasItem): TToken;
+var
+  WhitespaceCollector: string;
 begin
-  Result := GetNextNonWCToken(t, LCollector);
-  if Result then
-    Item.FullDeclaration := Item.FullDeclaration + LCollector;
+  Result := GetNextToken(WhitespaceCollector);
+  if Result <> nil then
+    WhitespaceCollectorItem.FullDeclaration := 
+      WhitespaceCollectorItem.FullDeclaration + WhitespaceCollector;
 end;
 
-function TParser.GetNextNonWCToken(var t: TToken): Boolean;
+function TParser.GetNextToken: TToken;
 var
   LDummy: string;
 begin
-  Result := GetNextNonWCToken(t, LDummy);
+  Result := GetNextToken(LDummy);
 end;
 
 function TParser.ParseArguments(var a: string): Boolean;
@@ -469,8 +473,11 @@ begin
   M.FullDeclaration := M.FullDeclaration + KeyWordString;
 
   { next non-wc token must be the name }
-  if NeedName then begin
-    if (not GetNextNonWCToken(t)) then begin
+  if NeedName then
+  begin
+    t := GetNextToken;
+    if t = nil then
+    begin
       M.Free;
       DoError('Could not get next non white space token', [], 0);
     end;
@@ -528,7 +535,9 @@ begin
     into stream and leave; otherwise copy tokens until semicolon }
   repeat
     FreeAndNil(t);
-    if (not GetNextNonWCToken(t)) then begin
+    t := GetNextToken;
+    if t = nil then 
+    begin
       M.Free;
       DoError('Could not get next non white space token', [], 0);
     end;
@@ -544,7 +553,9 @@ begin
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
             FreeAndNil(t);
 
-            if not GetNextNonWCToken(t) then begin
+            t := GetNextToken;
+            if t = nil then
+            begin
               M.Free;
               Exit;
             end;
@@ -560,7 +571,9 @@ begin
 
             // Keep on reading up to the next semicolon or declaration
             repeat
-              if not GetNextNonWCToken(t) then begin
+              t := GetNextToken;
+              if t = nil then
+              begin
                 M.Free;
                 DoError('Could not get next non white space token', [], 0);
               end;
@@ -588,13 +601,13 @@ begin
           M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
           M.IsDeprecated := True;
           FreeAndNil(t);
-          GetNextNonWCToken(t);
+          t := GetNextToken;
         end;
         SD_PLATFORM: begin
           M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
           M.IsPlatformSpecific := True;
           FreeAndNil(t);
-          GetNextNonWCToken(t);
+          t := GetNextToken;
         end;
       else
         begin
@@ -609,14 +622,14 @@ begin
         KEY_INLINE: begin
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
             FreeAndNil(t);
-            GetNextNonWCToken(t);
+            t := GetNextToken;
           end;
         KEY_LIBRARY:
           begin
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
             M.IsLibrarySpecific := True;
             FreeAndNil(t);
-            GetNextNonWCToken(t);
+            t := GetNextToken;
           end;
         else 
           begin
@@ -680,7 +693,8 @@ begin
   DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
   i := nil;
   try
-    if not GetNextNonWCToken(t) then Exit;
+    t := GetNextToken;
+    if t = nil then Exit;
 
     { Test for forward class definition here:
         class MyClass = class;
@@ -709,7 +723,8 @@ begin
       { outer repeat loop: one ancestor per pass }
       repeat
         FreeAndNil(t);
-        if not GetNextNonWCToken(t) then Exit;
+        t := GetNextToken;
+        if t = nil then Exit;
         if t.MyType = TOK_IDENTIFIER then begin { an ancestor }
           s := t.Data;
               { inner repeat loop: one part of the ancestor per name }
@@ -768,19 +783,19 @@ begin
         end;
       end;
     end;
-    GetNextNonWCToken(t);
+    t := GetNextToken;
     if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
       FreeAndNil(t);
+      
       { for the time being, we throw away the ID itself }
-      if (not GetNextNonWCToken(t)) then begin
-        Exit;
-      end;
+      t := GetNextToken;
+      if t = nil then Exit;
       if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
         DoError('%s: Error - literal String or identifier as interface ID expected.', [Scanner.GetStreamInfo], 0);
       FreeAndNil(t);
-      if not GetNextNonWCToken(t) then begin
-        Exit;
-      end;
+      
+      t := GetNextToken;
+      if t = nil then Exit;
       if not t.IsSymbol(SYM_RIGHT_BRACKET) then
         DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo], 0);
     end else begin
@@ -811,7 +826,8 @@ begin
     Finished := False;
     repeat
       FreeAndNil(t);
-      if not GetNextNonWCToken(t) then begin
+      t := GetNextToken;
+      if t = nil then begin
         i.Free;
         Exit;
       end;
@@ -913,7 +929,7 @@ begin
     
     ParseHintDirectives(i);
     
-    GetNextNonWCToken(t);
+    t := GetNextToken;
     try
       if not t.IsSymbol(SYM_SEMICOLON) then
       begin
@@ -981,7 +997,7 @@ begin
   p.RawDescription := RawDescription;
   p.FullDeclaration := Name + ' = (...);'; 
 
-  GetNextNonWCToken(t);
+  t := GetNextToken;
   while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
     if t.MyType = TOK_IDENTIFIER then begin
       item := TPasItem.Create;
@@ -991,10 +1007,10 @@ begin
     end;
     if t.IsSymbol(SYM_EQUAL) then begin
       FreeAndNil(t);
-      GetNextNonWCToken(t);
+      t := GetNextToken;
     end;
     FreeAndNil(t);
-    GetNextNonWCToken(t);
+    t := GetNextToken;
   end;
   FreeAndNil(t);
   Scanner.GetToken(t);
@@ -1021,7 +1037,8 @@ begin
   Mode := MODE_UNDEFINED;
   t := nil;
   repeat
-    if not GetNextNonWCToken(t) then
+    t := GetNextToken;
+    if t = nil then
       DoError('Could not get next non-whitespace, non-comment token in file %s', [Scanner.GetStreamInfo], 0);
 
     try
@@ -1096,7 +1113,8 @@ var
 begin
   t := nil;
   ParseProperty := False;
-  if (not GetNextNonWCToken(t)) then Exit;
+  t := GetNextToken;
+  if t = nil then Exit;
   if (t.MyType <> TOK_IDENTIFIER) then begin
     FreeAndNil(t);
     DoError('%s: expected identifier as property name.',
@@ -1110,7 +1128,8 @@ begin
   p.Proptype := '';
   p.FullDeclaration := 'property ' + p.Name;
   p.RawDescription := GetLastComment(True);
-  if not GetNextNonWCToken(t, P) then Exit;
+  t := GetNextToken(P);
+  if t = nil then Exit;
 
   { Is this only a redeclaration of property from ancestor
     (to e.g. change it's visibility) }
@@ -1141,15 +1160,18 @@ begin
       FreeAndNil(t);
     until Finished;
 
-    if not GetNextNonWCToken(t) then
-      Exit;
+    t := GetNextToken;
+    if t = nil then Exit;
   end;
 
   { now if there is a colon, it is followed by the type }
-  if t.IsSymbol(SYM_COLON) then begin
-      { get property type }
+  if t.IsSymbol(SYM_COLON) then 
+  begin
     FreeAndNil(t);
-    if (not GetNextNonWCToken(t)) then Exit;
+    
+    { get property type }
+    t := GetNextToken;
+    if t = nil then Exit;
     if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD) then
       DoError('Identifier expected, found %s in file %s',
         [TOKEN_TYPE_NAMES[t.MyType], Scanner.GetStreamInfo], 0);
@@ -1195,17 +1217,17 @@ var
 begin
   Result := True;
   ParenCount := 0;
-  t1:=nil; t2:=nil;
-  GetNextNonWCToken(t1);
+  t2:=nil;
+  t1 := GetNextToken;
   if t1.MyType <> TOK_IDENTIFIER then begin
     Result := False;
     FreeAndNil(t1);
   end else begin
-    GetNextNonWCToken(t2);
+    t2 := GetNextToken;
     if (t2.MyType = TOK_SYMBOL) and (t2.Info.SymbolType = SYM_COLON) then begin
       // case x:Type of
       FreeAndNil(t2); // colon
-      GetNextNonWCToken(t2);
+      t2 := GetNextToken;
       P := TPasItem.Create;
       p.Name := t1.Data;
       p.RawDescription := GetLastComment(True);
@@ -1217,13 +1239,13 @@ begin
     end;
     FreeAndNil(t2);
     FreeAndNil(t1);
-    GetNextNonWCToken(t1);
+    t1 := GetNextToken;
     if (t1.MyType <> TOK_KEYWORD) or (t1.Info.KeyWord <> KEY_OF) then begin
       FreeAndNil(t1);
       DoError('OF expected',[],1);
     end;
     FreeAndNil(t1);
-    GetNextNonWCToken(t1);
+    t1 := GetNextToken;
     LNeedId := True;
     repeat
       while true do begin
@@ -1247,18 +1269,18 @@ begin
           end;
         end;
         FreeAndNil(t1);
-        GetNextNonWCToken(t1);
+        t1 := GetNextToken;
       end;
       // read all identifiers before colon
 
       FreeAndNil(t1);
-      GetNextNonWCToken(t1);
+      t1 := GetNextToken;
       if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
         FreeAndNil(t1);
         DoError('( expected', [], 1);
       end;
       FreeAndNil(t1);
-      GetNextNonWCToken(t1);
+      t1 := GetNextToken;
       while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
         if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
           P := TPasItem.Create;
@@ -1269,7 +1291,7 @@ begin
           if (ParenCount = 0) then
           begin
             FreeAndNil(t1);
-            GetNextNonWCToken(t1);
+            t1 := GetNextToken;
           end;
           LLastWasComma := false;
           while (t1.MyType <> TOK_SYMBOL)
@@ -1292,7 +1314,7 @@ begin
               end;
               if (t1.Info.KeyWord = KEY_PACKED) then begin
                 FreeAndNil(t1);
-                GetNextNonWCToken(t1);
+                t1 := GetNextToken;
                 if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_RECORD) then begin
                   ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
                 end;
@@ -1316,7 +1338,7 @@ begin
               end;
             end;
             FreeAndNil(t1);
-            GetNextNonWCToken(t1);
+            t1 := GetNextToken;
           end;
           if (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
             and (ParenCount = 0) then
@@ -1332,13 +1354,13 @@ begin
           end;
         end;
         FreeAndNil(t1); // free token
-        GetNextNonWCToken(t1);
+        t1 := GetNextToken;
       end;
       FreeAndNil(t1); // free ')' token
-      GetNextNonWCToken(t1); // next
+      t1 := GetNextToken; // next
       if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_SEMICOLON) then begin
         FreeAndNil(t1);
-        GetNextNonWCToken(t1);
+        t1 := GetNextToken;
       end;
       if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_END) then break;
       if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
@@ -1361,8 +1383,8 @@ begin
   DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
   FreeAndNil(t);
   d := GetLastComment(True);
-  if (not GetNextNonWCToken(t, LCollected)) then
-    Exit;
+  t := GetNextToken(LCollected);
+  if t = nil then Exit;
 
   if (not t.IsSymbol(SYM_EQUAL)) then begin
     if (t.IsSymbol(SYM_SEMICOLON)) then begin
@@ -1377,15 +1399,16 @@ begin
   LCollected := TypeName + LCollected + t.Data;
   FreeAndNil(t);
 
-  if (not GetNextNonWCToken(t, LTemp)) then
-    Exit;
+  t := GetNextToken(LTemp);
+  if t = nil then Exit;
   LCollected := LCollected + LTemp + t.Data;
 
   if (t.MyType = TOK_KEYWORD) then
     case t.Info.KeyWord of
       KEY_CLASS: begin
           FreeAndNil(t);
-          if (not GetNextNonWCToken(t, LTemp)) then Exit;
+          t := GetNextToken(LTemp);
+          if t = nil then Exit;
           LCollected := LCollected + LTemp + t.Data;
           if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_OF) then begin
             { include "identifier = class of something;" as standard type }
@@ -1423,7 +1446,7 @@ begin
         end;
       KEY_PACKED: begin
           FreeAndNil(t);
-          GetNextNonWCToken(t, LTemp);
+          t := GetNextToken(LTemp);
           LCollected := LCollected + LTemp + t.Data;
           if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then begin
             FreeAndNil(t);
@@ -1481,7 +1504,8 @@ begin
   t := nil;
   Result := False;
   { get 'unit' keyword }
-  if not GetNextNonWCToken(t) then Exit;
+  t := GetNextToken;
+  if t = nil then Exit;
   if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_UNIT) then
     DoError(Scanner.GetStreamInfo + ': keyword "unit" expected.', [], 0);
   
@@ -1490,9 +1514,10 @@ begin
   U := TPasUnit.Create;
   try
     U.RawDescription := GetLastComment(True);
-    if not GetNextNonWCToken(t) then Exit;
 
     { get unit name identifier }
+    t := GetNextToken;
+    if t = nil then Exit;
     if t.MyType <> TOK_IDENTIFIER then
       DoError(Scanner.GetStreamInfo + ': identifier (unit name) expected.',
         [], 0);
@@ -1502,15 +1527,18 @@ begin
     ParseHintDirectives(U);
     
     { skip semicolon }
-    if not GetNextNonWCToken(t) then Exit;
+    t := GetNextToken;
+    if t = nil then Exit;
     if not t.IsSymbol(SYM_SEMICOLON) then
       DoError(Scanner.GetStreamInfo + ': semicolon expected.', [], 0);
     FreeAndNil(t);
-    if not GetNextNonWCToken(t) then Exit;
-
+    
     { get 'interface' keyword }
+    t := GetNextToken;
+    if t = nil then Exit;
     if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INTERFACE) then
       DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', [], 0);
+      
     { now parse the interface section of that unit }
     Result := ParseInterfaceSection(U);
   except
@@ -1532,19 +1560,21 @@ begin
   Result := False;
 
   repeat
-    if not GetNextNonWCToken(t) then Exit;
+    t := GetNextToken;
+    if t = nil then Exit;
     if t.MyType <> TOK_IDENTIFIER then
       DoError('%s: Error, unit name expected (found %s "%s")',
         [Scanner.GetStreamInfo, t.GetTypeName, t.Data], 0);
     U.UsesUnits.Add(t.Data);
     FreeAndNil(t);
-    if not GetNextNonWCToken(t) then Exit;
+    
+    t := GetNextToken;
+    if t = nil then Exit;
     if (t.MyType <> TOK_SYMBOL) and
       (t.Info.SymbolType <> SYM_COMMA) and
       (t.Info.SymbolType <> SYM_SEMICOLON) then
       DoError('%s: Error, comma or semicolon expected.',
         [Scanner.GetStreamInfo], 0);
-
     Finished := t.Info.SymbolType = SYM_SEMICOLON;
     FreeAndNil(t);
   until Finished;
@@ -1568,7 +1598,7 @@ var
   ItemCollector: TPasFieldVariable;
   m: TPasMethod;
   ItemsParsed: TPasItems;
-  LCollector: string;
+  WhitespaceCollector: string;
   ttemp: TToken;
   FirstCheck: boolean;
 begin
@@ -1587,7 +1617,8 @@ begin
           FirstLoop := False;
         end else 
         begin
-          if not GetNextNonWCToken(t, ItemCollector) then Exit;
+          t := GetNextToken(ItemCollector);
+          if t = nil then Exit;
           if (t.MyType <> TOK_IDENTIFIER) then
             DoError('%s: Identifier expected.', [Scanner.GetStreamInfo], 0);
           NewItem.Name := t.Data;
@@ -1605,8 +1636,10 @@ begin
         end;
 
         FreeAndNil(t);
-        if not GetNextNonWCToken(t, ItemCollector) then Exit;
-          
+        
+        t := GetNextToken(ItemCollector);
+        if t = nil then Exit;
+        
         if (t.MyType <> TOK_SYMBOL) or
           ((t.Info.SymbolType <> SYM_COMMA) and
           (t.Info.SymbolType <> SYM_COLON)) then
@@ -1621,7 +1654,7 @@ begin
       until Finished;
       
       ClearLastComment;
-      GetNextNonWCToken(t, ItemCollector);
+      t := GetNextToken(ItemCollector);
       ItemCollector.FullDeclaration := 
         ItemCollector.FullDeclaration + t.Data;
       if (t.MyType = TOK_KEYWORD) and 
@@ -1637,7 +1670,7 @@ begin
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;
         FreeAndNil(t);
-        GetNextNonWCToken(t, ItemCollector);
+        t := GetNextToken(ItemCollector);
 
         if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then
         begin
@@ -1656,7 +1689,7 @@ begin
       if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then
       begin 
         FreeAndNil(t);
-        GetNextNonWCToken(t);
+        t := GetNextToken;
         if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
           ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
         end else begin
@@ -1675,8 +1708,8 @@ begin
         Finished := False;
         FirstCheck := True;
         repeat
-          ttemp := nil;
-          if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+          ttemp := GetNextToken(WhitespaceCollector);
+          if ttemp = nil then Exit;
           if FirstCheck then
           begin
             // If the first non-white character token after the semicolon
@@ -1700,7 +1733,8 @@ begin
             end;
             while not Finished do
             begin
-              if (not GetNextNonWCToken(ttemp, LCollector)) then Exit;
+              ttemp := GetNextToken(WhitespaceCollector);
+              if ttemp = nil then Exit;
               if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
               begin
                 Finished := True;
@@ -1739,16 +1773,16 @@ var
   IsSemicolon: Boolean;
   PLevel: Integer;
   t: TToken;
-  LCollector: string;
+  WhitespaceCollector: string;
 begin
   Result := False;
   EndLevel := 0;
   PLevel := 0;
-  t := nil;
   repeat
-    if not GetNextNonWCToken(t, LCollector) then Exit;
+    t := GetNextToken(WhitespaceCollector);
+    if t = nil then Exit;
     if Assigned(Item) then begin
-      Item.FullDeclaration := Item.FullDeclaration + LCollector;
+      Item.FullDeclaration := Item.FullDeclaration + WhitespaceCollector;
     end;
     case t.MyType of
       TOK_SYMBOL:
@@ -1787,13 +1821,13 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.SkipWhitespaceAndComments(out LCollector: string): Boolean;
+function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 var
   t: TToken;
 begin
-  Result := False;
+  Result := nil;
   t := nil;
-  LCollector := '';
+  WhitespaceCollector := '';
   repeat
     if not Scanner.PeekToken(t) then break;
     if t.MyType in TokenCommentTypes then
@@ -1837,12 +1871,12 @@ begin
         TOK_WHITESPACE: 
           begin
             Scanner.ConsumeToken;
-            LCollector := LCollector + t.Data;
+            WhitespaceCollector := WhitespaceCollector + t.Data;
             FreeAndNil(t);
           end;
         else 
           begin
-            Result := True;
+            Result := t;
             break;
           end;
       end;
@@ -1850,11 +1884,11 @@ begin
   until False;
 end;
 
-function TParser.SkipWhitespaceAndComments: Boolean; 
+function TParser.PeekNextToken: TToken; 
 var 
   Dummy: string;
 begin
-  Result := SkipWhitespaceAndComments(Dummy);
+  Result := PeekNextToken(Dummy);
 end;
 
 { ------------------------------------------------------------ }
@@ -1863,11 +1897,10 @@ procedure TParser.ParseHintDirectives(Item: TPasItem);
 var
   t: TToken;
 begin
-  t := nil;
   repeat
-    if not SkipWhitespaceAndComments then
+    t := PeekNextToken;
+    if t = nil then
       DoError('%s: Unexpected end of stream', [Scanner.GetStreamInfo], 1);
-    Scanner.PeekToken(t);
     
     if (t.MyType = TOK_IDENTIFIER) and 
        (t.Info.StandardDirective = SD_PLATFORM) then
