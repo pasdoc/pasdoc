@@ -45,7 +45,6 @@ type
   private
     FCurrentTokenizer: Integer;
     FDirectiveLevel: Integer;
-    FErrorMessage: string;
     FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
     FSwitchOptions: TSwitchOptions;
     FBufferedToken: TToken;
@@ -84,11 +83,11 @@ type
     
     function OpenIncludeFile(const n: string): Boolean;
     
-    function SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
+    procedure SkipUntilElseOrEndif(out FoundElse: Boolean);
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
-    procedure DoError(const AMessage: string; const AArguments: array of
-      const; const AExitCode: Word);
+    procedure DoError(const AMessage: string; 
+      const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
   public
@@ -114,14 +113,17 @@ type
     { Gets next token and throws it away. }
     procedure ConsumeToken;
 
-    { Returns next token as parameter. Returns true on success, false on error. }
-    function GetToken(var t: TToken): Boolean;
+    { Returns next token. 
+      Always non-nil (will raise exception in case of any problem). }
+    function GetToken: TToken;
+    
     { Returns the name of the file that is currently processed and the line
       number. Good for meaningful error messages. }
     function GetStreamInfo: string;
+    
     property IncludeFilePaths: TStringVector read FIncludeFilePaths write
       FIncludeFilePaths;
-    function PeekToken(var t: TToken): Boolean;
+    function PeekToken: TToken;
     procedure UnGetToken(var t: TToken);
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
@@ -363,10 +365,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.GetToken(var t: TToken): Boolean;
+function TScanner.GetToken: TToken;
 
   { Call this when token T contains $define directive }
-  procedure HandleDefineDirective(DirectiveParam: string);
+  procedure HandleDefineDirective(T: TToken; DirectiveParam: string);
   var 
     TempDirectiveName: string;
     i: Integer;
@@ -377,7 +379,7 @@ function TScanner.GetToken(var t: TToken): Boolean;
     begin
       { Split T.CommentContent once again (this time with
         ParamsEndedByWhitespace = false). Then check is it macro. }
-      SplitDirective(t.CommentContent, false, 
+      SplitDirective(T.CommentContent, false, 
         TempDirectiveName, DirectiveParam);
 
       i := 1;
@@ -421,107 +423,109 @@ var
   FoundElse: Boolean;
   DirectiveName, DirectiveParam: string;
 begin
-  Assert(t = nil);
-  if Assigned(FBufferedToken) then begin
+  if Assigned(FBufferedToken) then 
+  begin
     { we have a token buffered, we'll return this one }
-    t := FBufferedToken;
+    Result := FBufferedToken;
     FBufferedToken := nil;
-    Result := True;
     Exit;
   end;
-  Result := False;
+  
   Finished := False;
   repeat
     { check if we have a tokenizer left }
     if (FCurrentTokenizer = -1) then
-      DoError('End of stream reached while trying to get next token.', [], 0);
+      DoError('Unexpected end of stream', []);
 
     if FTokenizers[FCurrentTokenizer].HasData then 
     begin
       { get next token from tokenizer }
-      t := FTokenizers[FCurrentTokenizer].GetToken;
+      Result := FTokenizers[FCurrentTokenizer].GetToken;
       
       { if token is a directive, then we handle it }
-      if t.MyType = TOK_DIRECTIVE then
+      if Result.MyType = TOK_DIRECTIVE then
       begin
-        if IdentifyDirective(t.CommentContent, 
+        if IdentifyDirective(Result.CommentContent, 
           dt, DirectiveName, DirectiveParam) then 
         begin
           case dt of
-            DT_DEFINE: HandleDefineDirective(DirectiveParam);
+            DT_DEFINE: HandleDefineDirective(Result, DirectiveParam);
             DT_ELSE: begin
                 DoMessage(5, mtInformation, 'ELSE encountered', []);
-                if (FDirectiveLevel > 0) then begin
-                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                if (FDirectiveLevel > 0) then 
+                begin
+                  SkipUntilElseOrEndif(FoundElse);
                   if not FoundElse then Dec(FDirectiveLevel);
-                end
-                else begin
-                  FErrorMessage := GetStreamInfo + ': unexpected $ELSE directive.';
-                  Exit;
-                end;
+                end else 
+                  DoError(GetStreamInfo + ': unexpected $ELSE directive.', []);
               end;
-            DT_ENDIF: begin
+            DT_ENDIF: 
+              begin
                 DoMessage(5, mtInformation, 'ENDIF encountered', []);
-                if (FDirectiveLevel > 0) then begin
+                if (FDirectiveLevel > 0) then 
+                begin
                   Dec(FDirectiveLevel);
                   DoMessage(6, mtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
-                end
-                else begin
-                  FErrorMessage := GetStreamInfo + ': unexpected $ENDIF directive.';
-                  Exit;
-                end;
+                end else 
+                  DoError(GetStreamInfo + ': unexpected $ENDIF directive.', []);
               end;
-            DT_IFDEF: begin
-                if IsSymbolDefined(DirectiveParam) then begin
+            DT_IFDEF: 
+              begin
+                if IsSymbolDefined(DirectiveParam) then 
+                begin
                   Inc(FDirectiveLevel);
                   DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                end
-                else begin
+                end else 
+                begin
                   DoMessage(6, mtInformation, 'IFDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                  SkipUntilElseOrEndif(FoundElse);
                   if FoundElse then
                     Inc(FDirectiveLevel);
                 end;
               end;
-            DT_IFNDEF: begin
-                if not IsSymbolDefined(DirectiveParam) then begin
+            DT_IFNDEF: 
+              begin
+                if not IsSymbolDefined(DirectiveParam) then 
+                begin
                   Inc(FDirectiveLevel);
                   DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                end
-                else begin
+                end else 
+                begin
                   DoMessage(6, mtInformation, 'IFNDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                  if not SkipUntilElseOrEndif(FoundElse) then Exit;
+                  SkipUntilElseOrEndif(FoundElse);
                   if FoundElse then
                     Inc(FDirectiveLevel);
                 end;
               end;
-            DT_IFOPT: begin
-                if (not IsSwitchDefined(DirectiveParam)) then begin
-                  if (not SkipUntilElseOrEndif(FoundElse)) then Exit;
+            DT_IFOPT: 
+              begin
+                if (not IsSwitchDefined(DirectiveParam)) then 
+                begin
+                  SkipUntilElseOrEndif(FoundElse);
                   if FoundElse then Inc(FDirectiveLevel);
-                end
-                else
+                end else
                   Inc(FDirectiveLevel);
               end;
             DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
               if not OpenIncludeFile(DirectiveParam) then
                 DoError(GetStreamInfo + ': Error, could not open include file "'
-                  + DirectiveParam + '"', [], 0);
-            DT_UNDEF: begin
+                  + DirectiveParam + '"', []);
+            DT_UNDEF: 
+              begin
                 DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
                 DeleteSymbol(DirectiveParam);
               end;
           end;
         end else
         begin
-          ResolveSwitchDirectives(t.Data);
+          ResolveSwitchDirectives(Result.Data);
         end;
         
-        FreeAndNil(t);
+        FreeAndNil(Result);
       end else
-      if ExpandMacro(T) then
+      if ExpandMacro(Result) then
       begin
-        FreeAndNil(t);
+        FreeAndNil(Result);
       end else
       begin
         { If the token is not a directive, and not an identifier that expands
@@ -537,7 +541,6 @@ begin
       Dec(FCurrentTokenizer);
     end;
   until Finished;
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -582,7 +585,7 @@ begin
     DoError('%s: Maximum level of recursion (%d) reached when trying to ' +
       'create new tokenizer "%s" (Probably you have recursive file inclusion ' +
       '(with $include directive) or macro expansion)',
-      [GetStreamInfo, MAX_TOKENIZERS, StreamName], 0);
+      [GetStreamInfo, MAX_TOKENIZERS, StreamName]);
   end;
   
   Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity, StreamName);
@@ -629,7 +632,7 @@ begin
 
   { if we still don't have a valid open stream we failed }
   if not Assigned(s) then begin
-    DoError('%s: could not open include file %s', [GetStreamInfo, n], 0);
+    DoError('%s: could not open include file %s', [GetStreamInfo, n]);
   end;
 
   { create new tokenizer with stream }
@@ -640,19 +643,15 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.PeekToken(var t: TToken): Boolean;
+function TScanner.PeekToken: TToken;
 begin
-  if GetToken(t) then begin
-    FBufferedToken := t;
-    Result := True;
-  end else begin
-    Result := False;
-  end;
+  FBufferedToken := GetToken;
+  Result := FBufferedToken;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean): Boolean;
+procedure TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean);
 var
   dt: TDirectiveType;
   Level: Integer;
@@ -660,12 +659,11 @@ var
   t: TToken;
   TT: TTokenType;
 begin
-//  Result := False; // no hint
   Level := 1;
   repeat
     t := FTokenizers[FCurrentTokenizer].SkipUntilCompilerDirective;
     if t = nil then begin
-      DoError('SkipUntilElseOrEndif GetToken', [], 0);
+      DoError('SkipUntilElseOrEndif GetToken', []);
     end;
 
     if (t.MyType = TOK_DIRECTIVE) then begin
@@ -699,7 +697,6 @@ begin
     DirectiveParam := 'ENDIF';
   end;
   DoMessage(6, mtInformation, 'Skipped code, last token ' + DirectiveParam, []);
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -708,7 +705,7 @@ procedure TScanner.UnGetToken(var t: TToken);
 begin
   if Assigned(FBufferedToken) then
     DoError('%s: FATAL ERROR - CANNOT UNGET MORE THAN ONE TOKEN.',
-      [GetStreamInfo], 0);
+      [GetStreamInfo]);
 
   FBufferedToken := t;
   t := nil;
@@ -716,10 +713,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.DoError(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Word);
+procedure TScanner.DoError(const AMessage: string; 
+  const AArguments: array of const);
 begin
-  raise EPasDoc.Create(AMessage, AArguments, AExitCode);
+  raise EPasDoc.Create(AMessage, AArguments, 1);
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -18,7 +18,7 @@ run_echo ()
   shift 1
 
   echo 'Running:' "$@" '>' "$OUTPUT_FILENAME"
-  
+
   # Temporary set +e, to ignore exit status from pasdoc
   set +e
   "$@" > "$OUTPUT_FILENAME"
@@ -147,3 +147,5 @@ mk_special_test error_macros error_macros.pas
 mk_special_test error_macros_recursive error_macros_recursive.pas
 mk_special_test ok_macros_off --no-macro ok_macros_off.pas
 mk_special_test ok_item_set_number ok_item_set_number.pas
+mk_special_test error_unexpected_eof error_unexpected_eof.pas
+mk_special_test error_unexpected_eof_2 error_unexpected_eof_2.pas
