@@ -961,7 +961,6 @@ procedure TParser.ParseConstant(const U: TPasUnit;
 var
   i: TPasConstant;
 begin
-  Result := False;
   i := TPasConstant.Create;
   i.Name := ConstantName;
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
