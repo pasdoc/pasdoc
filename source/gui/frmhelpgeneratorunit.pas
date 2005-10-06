@@ -48,11 +48,17 @@ type
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
   TfrmHelpGenerator = class(TForm)
-   cbCheckSpelling: TCheckBox;
-    CheckAutoAbstract: TCheckBox;
+    btnBrowseOutputDirectory1: TButton;
+    cbCheckSpelling: TCheckBox;
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
+    CheckAutoAbstract: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
+    clbSorting: TCheckListBox;
+    comboLatexGraphicsPackage: TComboBox;
+    edGraphVizUrl: TEdit;
+    edSpellUrl: TEdit;
+    edOutput: TEdit;
     edTitle: TEdit;
     EditCssFileName: TFileNameEdit;
     EditHtmlBrowserCommand: TEdit;
@@ -68,9 +74,15 @@ type
     Label18: TLabel;
     Label19: TLabel;
     Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     LabelHtmlBrowserCommand: TLabel;
+    lbNavigation: TListBox;
     memoSpellCheckingIgnore: TMemo;
     memoCommentMarkers: TMemo;
     memoHyphenatedWords: TMemo;
@@ -88,7 +100,7 @@ type
     // @name generates HTML output.
     HtmlDocGenerator: THTMLDocGenerator;
     OpenDialog1: TOpenDialog;
-    PageControl1: TPageControl;
+    PageControlMain: TPageControl;
     DocBrowserProcess: TProcess;
     rgCommentMarkers: TRadioGroup;
     rgLineBreakQuality: TRadioGroup;
@@ -96,9 +108,10 @@ type
     // memoMessages displays compiler warnings.  See also @link(seVerbosity);
     memoMessages: TMemo;
     tabHeadFoot: TTabSheet;
-    TabMoreOptions: TTabSheet;
+    TabLocations: TTabSheet;
     tabLatexOptions: TTabSheet;
     tabMarkers: TTabSheet;
+    tabGraphViz: TTabSheet;
     tabSpellChecking: TTabSheet;
     tabWebPage: TTabSheet;
     tabOptions: TTabSheet;
@@ -120,10 +133,6 @@ type
     // Click @name to select one or more sorce files for the
     // project.
     btnBrowseSourceFiles: TButton;
-    // @name has the path of the directory where the web files will
-    // be created.
-    edOutput: TEdit;
-    Label3: TLabel;
     Panel1: TPanel;
     // Click @name  to generate web pages.
     btnGenerateWebPages: TButton;
@@ -135,9 +144,6 @@ type
     // Click @name  to select a directory that may
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
-    // Click @name to select the directory in whick the
-    // output files will be created.
-    btnBrowseOutputDirectory: TButton;
     Label6: TLabel;
     // @name is used to set the name of the project.
     edProjectName: TEdit;
@@ -186,10 +192,12 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure New1Click(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
+    procedure lbNavigationClick(Sender: TObject);
     procedure rgCommentMarkersClick(Sender: TObject);
   private
     FChanged: boolean;
     FSettingsFileName: string;
+    MisspelledWords: TStringList;
     procedure SaveChanges(var Action: TCloseAction);
     procedure SetChanged(const AValue: boolean);
     procedure SetDefaults;
@@ -197,6 +205,7 @@ type
     procedure UpdateCaption;
     function LanguageIdToString(const LanguageID: TLanguageID): string;
     procedure CheckIfSpellCheckingAvailable;
+    procedure FillNavigationListBox;
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
@@ -216,12 +225,27 @@ var
 
 implementation
 
-uses PasDoc_Items, frmAboutUnit;
+uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit;
+
+{$ifdef WIN32}
+  { Under GTK interface TabVisible property doesn't work as it should.
+    Under WinAPI interface it works OK. }
+  {$define HIDE_TABS}
+{$endif}
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
+const
+  MisText = 'Word misspelled "';
+var
+  MisspelledWord: string;
 begin
   memoMessages.Lines.Add(AMessage);
+  if Pos(MisText, AMessage) =1 then begin
+    MisspelledWord := Copy(AMessage, Length(MisText)+1, MAXINT);
+    SetLength(MisspelledWord, Length(MisspelledWord) -1);
+    MisspelledWords.Add(MisspelledWord)
+  end;
 end;
 
 procedure TfrmHelpGenerator.MenuAboutClick(Sender: TObject);
@@ -296,6 +320,21 @@ begin
   end;
 end;
 
+procedure TfrmHelpGenerator.FillNavigationListBox;
+var
+  Index: integer;
+  tab: TTabSheet;
+begin
+  lbNavigation.Items.Clear;
+  for Index := 0 to PageControlMain.PageCount -1 do
+  begin
+    tab := PageControlMain.Pages[Index];
+    if tab.Enabled then begin
+      lbNavigation.Items.AddObject(tab.Caption, tab);
+    end;
+  end;
+end;
+
 procedure TfrmHelpGenerator.cbCheckSpellingChange(Sender: TObject);
 begin
   Changed := True;
@@ -339,6 +378,8 @@ begin
 end;
 
 procedure TfrmHelpGenerator.SetDefaults;
+var
+  SortIndex: TSortSetting;
 begin
   clbMethodVisibility.Checked[0] := True;
   clbMethodVisibility.Checked[1] := True;
@@ -349,6 +390,9 @@ begin
 
   comboLanguages.ItemIndex := Ord(lgEnglish);
   comboLanguagesChange(nil);
+  
+  comboGenerateFormat.ItemIndex := 0;
+  comboGenerateFormatChange(nil);
 
   edProjectName.Text := '';
   edOutput.Text := '';
@@ -366,6 +410,9 @@ begin
   CheckAutoAbstract.Checked := false;
   CheckUseTipueSearch.Checked := false;
   
+  for SortIndex := Low(TSortSetting) to High(TSortSetting) do
+    clbSorting.Checked[Ord(SortIndex)] := false;
+
   Changed := False;
 end;
 
@@ -438,7 +485,11 @@ end;
 procedure TfrmHelpGenerator.FormCreate(Sender: TObject);
 var
   LanguageIndex: TLanguageID;
+  Index: integer;
 begin
+  MisspelledWords:= TStringList.Create;
+  MisspelledWords.Sorted := True;
+  MisspelledWords.Duplicates := dupIgnore;
   EditHtmlBrowserCommand.Text :=
     {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
@@ -504,7 +555,8 @@ begin
   SetDefaults;
   
   { It's too easy to change it at design-time, so we set it at runtime. }
-  PageControl1.ActivePageIndex := 0;
+  PageControlMain.ActivePageIndex := 0;
+  Application.ProcessMessages;
 
   {$IFDEF WIN32}
   // Deal with bug in display of TSpinEdit in Win32.
@@ -519,12 +571,23 @@ begin
     target). }
   MenuOpen.ShortCut := ShortCut(VK_O, [ssCtrl]);
   MenuSave.ShortCut := ShortCut(VK_S, [ssCtrl]);
+
+  {$ifdef HIDE_TABS}
+  for Index := PageControlMain.PageCount -1 downto 0 do
+  begin
+    PageControlMain.Pages[Index].TabVisible := False;
+  end;
+  {$endif HIDE_TABS}
+  
+  FillNavigationListBox;
+  Changed := False;
 end;
 
 procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
 var
   Files: TStringList;
   index: integer;
+  SortIndex: TSortSetting;
 const
   VizGraphImageExtension = 'png';
 begin
@@ -561,6 +624,24 @@ begin
              end;
              TexDocGenerator.LatexHead.Add('}');
            end;
+           
+          case comboLatexGraphicsPackage.ItemIndex of
+            0: // none
+              begin
+                // do nothing
+              end;
+            1: // PDF
+              begin
+                TexDocGenerator.LatexHead.Add('\usepackage[pdftex]{graphicx}');
+              end;
+            2: // DVI
+              begin
+                TexDocGenerator.LatexHead.Add('\usepackage[dvips]{graphicx}');
+              end;
+          else Assert(False);
+          end;
+
+           
          end;
     else
       Assert(False);
@@ -663,8 +744,25 @@ begin
       PasDoc1.Generator.OutputGraphVizUses := False;
       PasDoc1.Generator.LinkGraphVizUses := '';
     end;
-
+    
+    Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
+    PasDoc1.SortSettings := [];
+    for SortIndex := Low(TSortSetting) to High(TSortSetting) do
+    begin
+      if clbSorting.Checked[Ord(SortIndex)] then begin
+        PasDoc1.SortSettings := PasDoc1.SortSettings + [SortIndex];
+      end;
+    end;
+    
+    MisspelledWords.Clear;
     PasDoc1.Execute;
+    
+    if MisspelledWords.Count > 0 then
+    begin
+      memoMessages.Lines.Add('');
+      memoMessages.Lines.Add('Misspelled Words');
+      memoMessages.Lines.AddStrings(MisspelledWords)
+    end;
 
     if cbVizGraphUses.Checked or cbVizGraphClasses.Checked then begin
       // To do: actually start dot here.
@@ -680,7 +778,7 @@ begin
             [ HtmlDocGenerator.DestinationDirectory + 'index.html' ]);
           DocBrowserProcess.Execute;
           MemoCommandLog.Lines.Append('Executed: ' + DocBrowserProcess.CommandLine);
-          PageControl1.ActivePage := tabWebPage;
+          PageControlMain.ActivePage := tabWebPage;
         end;
       2, 3:
         begin
@@ -764,6 +862,7 @@ begin
   if OpenDialog2.Execute then
   begin
     SettingsFileName := OpenDialog2.FileName;
+    SaveDialog1.FileName := SettingsFileName;
 
     Ini := TIniFile.Create(SettingsFileName);
     try
@@ -793,10 +892,18 @@ begin
       edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
       seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
 
+      Assert(Ord(High(TVisibility)) = clbMethodVisibility.Items.Count -1);
       for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
         clbMethodVisibility.Checked[i] := Ini.ReadBool(
           'Main', 'ClassMembers_' + IntToStr(i), true);
       clbMethodVisibilityClick(nil);
+      
+      Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
+      for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
+      begin
+        clbSorting.Checked[i] := Ini.ReadBool(
+          'Main', 'Sorting_' + IntToStr(i), True);
+      end;
 
       ReadStrings('Defines', memoDefines.Lines);
       ReadStrings('Header', memoHeader.Lines);
@@ -820,6 +927,8 @@ begin
       cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
       
       cbCheckSpelling.Checked := Ini.ReadBool('Main', 'CheckSpelling', false);
+      comboLatexGraphicsPackage.ItemIndex := Ini.ReadInteger('Main', 'LatexGraphicsPackage', 0);
+
       ReadStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
     finally Ini.Free end;
 
@@ -862,6 +971,12 @@ begin
         Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
           clbMethodVisibility.Checked[i]);
 
+      for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
+      begin
+        Ini.WriteBool('Main', 'Sorting_' + IntToStr(i),
+          clbSorting.Checked[i]);
+      end;
+
       WriteStrings('Defines', memoDefines.Lines);
       WriteStrings('Header', memoHeader.Lines);
       WriteStrings('Footer', memoFooter.Lines);
@@ -885,6 +1000,7 @@ begin
       Ini.WriteBool('Main', 'VizGraphUses', cbVizGraphUses.Checked);
 
       Ini.WriteBool('Main', 'CheckSpelling', cbCheckSpelling.Checked);
+      Ini.WriteInteger('Main', 'LatexGraphicsPackage', comboLatexGraphicsPackage.ItemIndex);
       WriteStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
 
       Ini.UpdateFile;
@@ -930,6 +1046,7 @@ procedure TfrmHelpGenerator.FormClose(Sender: TObject;
 begin
   SaveChanges(Action);
   DefaultDirectives.Free;
+  MisspelledWords.Free;
 end;
 
 procedure TfrmHelpGenerator.New1Click(Sender: TObject);
@@ -953,7 +1070,41 @@ end;
 
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 begin
+  CheckUseTipueSearch.Enabled := comboGenerateFormat.ItemIndex = 0;
+  tabHeadFoot.Enabled := comboGenerateFormat.ItemIndex in [0,1];
+  tabLatexOptions.Enabled := comboGenerateFormat.ItemIndex in [2,3];
+  EditCssFileName.Enabled := comboGenerateFormat.ItemIndex in [0,1];
+  PanelWebPageTop.Enabled := comboGenerateFormat.ItemIndex in [0,1];
+  comboLatexGraphicsPackage.Enabled := comboGenerateFormat.ItemIndex in [2,3];
+  FillNavigationListBox;
   Changed := true;
+end;
+
+procedure TfrmHelpGenerator.lbNavigationClick(Sender: TObject);
+var
+  Tab: TTabSheet;
+  Temp: boolean;
+begin
+  if lbNavigation.ItemIndex = -1 then Exit;
+  
+  // Changing which tab is visible causes Changed to be set to True.
+  // This works around that problem.
+  Temp := Changed;
+  try
+    Tab := lbNavigation.Items.Objects[lbNavigation.ItemIndex] as TTabSheet;
+    
+    {$ifdef HIDE_TABS}
+    Tab.TabVisible := True;
+    {$endif HIDE_TABS}
+    
+    PageControlMain.ActivePage := Tab;
+    
+    {$ifdef HIDE_TABS}
+    Tab.TabVisible := False;
+    {$endif HIDE_TABS}
+  finally
+    Changed := Temp;
+  end;
 end;
 
 procedure TfrmHelpGenerator.rgCommentMarkersClick(Sender: TObject);
