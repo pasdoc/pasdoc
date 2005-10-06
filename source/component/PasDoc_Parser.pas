@@ -83,25 +83,16 @@ type
   TParser = class
   private
     FImplicitVisibility: TImplicitVisibility;
-    
-    procedure SetCommentMarkers(const Value: TStringList);
-    
-    { Skips all whitespace and comments and while it sees some hint directive
-      (platform, library, deprecated) it consumes it, sets appropriate
-      property of Item (IsPlatformSpecific, IsLibrarySpecific or IsDeprecated)
-      to true and goes further.
-      
-      Stops when PeekNextToken returns some non-whitespace non-comment 
-      non-hint-directive token. }
-    procedure ParseHintDirectives(Item: TPasItem);
-  protected
+
     { Last comment found in input or nil if no comment available.
       Will be modified by @link(GetLastComment).
       Always LastCommentToken.MyType is in TokenCommentTypes
       (as long as LastCommentToken <> nil). }
     LastCommentToken: TToken;
+    
     { The underlying scanner object. }
     Scanner: TScanner;
+    
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
@@ -216,8 +207,7 @@ type
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning is as P. }
-    function ParseEnum(out p: TPasEnum; 
-      const Name, RawDescription: string): boolean;
+    procedure ParseEnum(out p: TPasEnum; const Name, RawDescription: string);
 
     function ParseUses(const U: TPasUnit): Boolean;
     
@@ -245,6 +235,17 @@ type
       Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
       if appropriate hint directive will occur in source file. }    
     procedure SkipDeclaration(const Item: TPasItem);
+    
+    procedure SetCommentMarkers(const Value: TStringList);
+    
+    { Skips all whitespace and comments and while it sees some hint directive
+      (platform, library, deprecated) it consumes it, sets appropriate
+      property of Item (IsPlatformSpecific, IsLibrarySpecific or IsDeprecated)
+      to true and goes further.
+      
+      Stops when PeekNextToken returns some non-whitespace non-comment 
+      non-hint-directive token. }
+    procedure ParseHintDirectives(Item: TPasItem);
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -972,8 +973,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseEnum(out p: TPasEnum;
-  const Name, RawDescription: string): boolean;
+procedure TParser.ParseEnum(out p: TPasEnum;
+  const Name, RawDescription: string);
 var
   t: TToken;
   item: TPasItem;
@@ -1003,7 +1004,6 @@ begin
   t := GetNextToken;
   { TODO: check here that t is ; }
   FreeAndNil(t);
-  Result := true;
 end;
 
 function TParser.ParseInterfaceSection(const U: TPasUnit): Boolean;
@@ -1447,13 +1447,12 @@ begin
         end;
       end;
     end;
-    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
-      if ParseEnum(EnumType, TypeName, d) then 
-      begin
-        U.AddType(EnumType);
-        Result := True;
-        exit;
-      end;
+    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then 
+    begin
+      ParseEnum(EnumType, TypeName, d);
+      U.AddType(EnumType);
+      Result := True;
+      Exit;
     end;
     SetLength(LCollected, Length(LCollected)-Length(t.Data));
     Scanner.UnGetToken(t);
