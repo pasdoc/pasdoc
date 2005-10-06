@@ -208,8 +208,7 @@ type
       TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
     { }
     function ParseRecordCase(const R: TPasCio; const SubCase: boolean): boolean;
-    function ParseConstant(const U: TPasUnit; 
-      const ConstantName: string): Boolean;
+    procedure ParseConstant(const U: TPasUnit; const ConstantName: string);
     function ParseInterfaceSection(const U: TPasUnit): Boolean;
     function ParseProperty(out p: TPasProperty): Boolean;
     function ParseType(const U: TPasUnit; var t: TToken): Boolean;
@@ -245,7 +244,7 @@ type
       appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
       Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
       if appropriate hint directive will occur in source file. }    
-    function SkipDeclaration(const Item: TPasItem): Boolean;
+    procedure SkipDeclaration(const Item: TPasItem);
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -903,10 +902,9 @@ begin
           if (t.MyType = TOK_IDENTIFIER) then
           begin
             case t.Info.StandardDirective of
-              SD_DEFAULT: begin
-                  if not SkipDeclaration(nil) then begin
-                    DoError('%s: Could not skip declaration after default property.', [Scanner.GetStreamInfo]);
-                  end;
+              SD_DEFAULT: 
+                begin
+                  SkipDeclaration(nil);
                   DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
                 end;
               SD_PUBLIC:    Visibility := viPublic;
@@ -958,8 +956,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseConstant(const U: TPasUnit; 
-  const ConstantName: string): Boolean;
+procedure TParser.ParseConstant(const U: TPasUnit; 
+  const ConstantName: string);
 var
   i: TPasConstant;
 begin
@@ -969,13 +967,8 @@ begin
   DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
   i.RawDescription := GetLastComment(True);
   i.FullDeclaration := ConstantName;
-  if SkipDeclaration(i) then
-  begin
-    U.AddConstant(i);
-    Result := True;
-  end
-  else
-    DoError('Could not skip declaration of constant "%s".', [i.Name]);
+  SkipDeclaration(i);
+  U.AddConstant(i);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1041,7 +1034,7 @@ begin
             // s := t.Data;
             case Mode of
               MODE_CONST:
-                if (not ParseConstant(U, t.Data)) then Exit;
+                ParseConstant(U, t.Data);
               MODE_TYPE:
                 if (not ParseType(U, t)) then Exit;
               MODE_VAR:
@@ -1175,9 +1168,7 @@ begin
   end;
   
   { read the rest of declaration }
-  if not SkipDeclaration(P) then
-    DoError('Could not skip rest of declaration in file %s', 
-      [Scanner.GetStreamInfo]);
+  SkipDeclaration(P);
 
   Result := True;
 end;
@@ -1471,14 +1462,11 @@ begin
 
   NormalType := TPasType.Create;
   NormalType.FullDeclaration := LCollected;
-  if not SkipDeclaration(NormalType) then begin
-    NormalType.Free;
-  end else begin
-    NormalType.Name := TypeName;
-    NormalType.RawDescription := d;
-    U.AddType(NormalType);
-    Result := True;
-  end;
+  SkipDeclaration(NormalType);
+  NormalType.Name := TypeName;
+  NormalType.RawDescription := d;
+  U.AddType(NormalType);
+  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1672,7 +1660,7 @@ begin
         end;      
       end else
       begin
-        if not SkipDeclaration(ItemCollector) then Exit;
+        SkipDeclaration(ItemCollector);
       end;
 
       if not OfObject then
@@ -1742,7 +1730,7 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
-function TParser.SkipDeclaration(const Item: TPasItem): Boolean;
+procedure TParser.SkipDeclaration(const Item: TPasItem);
 var
   EndLevel: Integer;
   IsSemicolon: Boolean;
@@ -1750,12 +1738,11 @@ var
   t: TToken;
   WhitespaceCollector: string;
 begin
-  Result := False;
   EndLevel := 0;
   PLevel := 0;
   repeat
     t := GetNextToken(WhitespaceCollector);
-    if t = nil then Exit;
+
     if Assigned(Item) then begin
       Item.FullDeclaration := Item.FullDeclaration + WhitespaceCollector;
     end;
@@ -1786,12 +1773,10 @@ begin
     if EndLevel<0 then begin
       // within records et al. the last declaration need not be terminated by ;
       Scanner.UnGetToken(t);
-      Result := True;
-      exit;
+      Exit;
     end;
     FreeAndNil(t);
   until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
