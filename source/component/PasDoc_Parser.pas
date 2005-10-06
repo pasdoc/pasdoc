@@ -168,7 +168,6 @@ type
     
     function GetNextToken: TToken; overload;
     
-    function ParseArguments(var a: string): Boolean;
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
       
@@ -401,44 +400,6 @@ var
   LDummy: string;
 begin
   Result := GetNextToken(LDummy);
-end;
-
-function TParser.ParseArguments(var a: string): Boolean;
-var
-  Finished: Boolean;
-  t: TToken;
-begin
-  Finished := False;
-  a := '';
-  t := nil;
-  repeat
-    t := Scanner.GetToken;
-
-    if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
-      SYM_RIGHT_PARENTHESIS) then begin
-      Finished := True
-    end else begin
-      if (t.MyType = TOK_SYMBOL) and
-        ((t.Info.SymbolType = SYM_COLON) or
-        (t.Info.SymbolType = SYM_COMMA) or
-        (t.Info.SymbolType = SYM_SEMICOLON)) then begin
-        if (Length(a) > 0) and (a[Length(a)] = ' ') then
-          SetLength(a, Length(a) - 1);
-        a := a + t.Data;
-      end
-      else if (t.MyType = TOK_WHITESPACE) then begin
-        if (Length(a) > 0) and (a[Length(a)] <> ' ') then a := a + ' ';
-      end
-      else if t.MyType in TokenCommentTypes + [TOK_DIRECTIVE] then
-        begin
-            { ignore }
-      end
-      else { otherwise copy }
-        a := a + t.Data;
-    end;
-      FreeAndNil(t);
-  until Finished;
-  ParseArguments := True;
 end;
 
 { ---------------------------------------------------------------------------- }
