@@ -1,3 +1,13 @@
+- These edit boxes with URLs (graphviz, aspell) should be changed to
+  a labels that, when clicked, fire up WWW browser with given address.
+  These labels should have blue color and cursor changed to a hand, to look like
+  link in WWW browser.
+  After all, pasdoc_gui is already able to fire up WWW browser to 
+  view generated HTML docs.
+
+- Move interface from TPageControl to TNoteBook with ShowTabs = false,
+  see "Revisions to GUI" thread on pasdoc-main on 2005-10-06.
+
 - reflect in gui --implicit-visibility option, --no-macro option
 
 - Provide easy way to look into documentation for given option,
@@ -48,6 +58,11 @@
   GTK and Win32 I found that I have to readjust layout of some things
   a little... Hopefully these issues are now gone and layout looks good
   for everyone, but I'm not happy with it, really.
+
+  In the long run we should try to use auto-sizing and anchors as 
+  much as possible to layout everything. Lazarus wiki has some useful 
+  notes about using anchor sides 
+  ([http://wiki.lazarus.freepascal.org/index.php/Anchor_Sides]). 
 
 - pasdoc_gui should allow user to configure default state of "Defines".
   Actually, it should allow user to configure default state of *all* options.
