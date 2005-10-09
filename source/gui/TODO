@@ -5,9 +5,6 @@
   After all, pasdoc_gui is already able to fire up WWW browser to 
   view generated HTML docs.
 
-- Move interface from TPageControl to TNoteBook with ShowTabs = false,
-  see "Revisions to GUI" thread on pasdoc-main on 2005-10-06.
-
 - reflect in gui --implicit-visibility option, --no-macro option
 
 - Provide easy way to look into documentation for given option,
