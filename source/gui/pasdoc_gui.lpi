@@ -11,8 +11,8 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
     <Units Count="3">
       <Unit0>
         <CursorPos X="1" Y="1"/>
@@ -23,10 +23,12 @@
         <UsageCount Value="77"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="3" Y="1089"/>
+        <CursorPos X="36" Y="1095"/>
+        <EditorIndex Value="0"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
+        <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
         <TopLine Value="1079"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
@@ -68,6 +70,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
