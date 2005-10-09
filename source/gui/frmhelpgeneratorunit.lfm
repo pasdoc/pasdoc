@@ -1,7 +1,7 @@
 object frmHelpGenerator: TfrmHelpGenerator
   Caption = 'pasdoc gui'
-  ClientHeight = 467
-  ClientWidth = 734
+  ClientHeight = 448
+  ClientWidth = 739
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
@@ -10,54 +10,61 @@ object frmHelpGenerator: TfrmHelpGenerator
   PixelsPerInch = 61
   Position = poScreenCenter
   TextHeight = 20
-  HorzScrollBar.Page = 733
-  VertScrollBar.Page = 466
-  Left = 27
-  Height = 493
-  Top = 28
-  Width = 734
-  object PageControlMain: TPageControl
-    ActivePage = tabSpellChecking
-    Align = alClient
-    TabIndex = 5
+  HorzScrollBar.Page = 738
+  VertScrollBar.Page = 447
+  Left = 40
+  Height = 474
+  Top = 43
+  Width = 739
+  object lbNavigation: TListBox
+    Align = alLeft
+    OnClick = lbNavigationClick
     TabOrder = 0
+    TopIndex = -1
+    Height = 448
+    Width = 144
+  end
+  object NotebookMain: TNotebook
+    Align = alClient
+    BorderSpacing.OnChange = nil
+    PageIndex = 0
+    ShowTabs = False
     Left = 144
-    Height = 467
-    Width = 590
-    object tabOptions: TTabSheet
+    Height = 448
+    Width = 595
+    object pageOptions: TPage
       Caption = 'Options'
-      ClientHeight = 437
-      ClientWidth = 586
-      ImageIndex = 2
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
+      Height = 444
+      Top = 2
+      Width = 591
       object Label1: TLabel
         Anchors = [akTop, akRight]
-        Caption = 'Properties, Methods, Events, and Fields to include'
+        BorderSpacing.OnChange = nil
+        Caption = 'Items to sort alphabetically'
         Color = clNone
-        WordWrap = True
-        Left = 12
-        Height = 32
-        Top = 130
+        Left = 331
+        Height = 21
+        Top = 82
         Width = 208
       end
       object Label2: TLabel
-        Caption = 'Language (This is the language used in the generated output files.)'
+        Caption = 'Title :'
         Color = clNone
-        Left = 8
-        Height = 27
-        Top = 354
-        Width = 420
+        Left = 10
+        Height = 14
+        Top = 2
+        Width = 30
       end
       object Label6: TLabel
-        Caption = 'Project Name (The Project Name is used to name some of the generated output files.)'
+        Caption = 'Output Type :'
         Color = clNone
         Left = 8
-        Height = 18
-        Top = 50
-        Width = 510
+        Height = 19
+        Top = 106
+        Width = 102
       end
       object Label7: TLabel
         Caption = 'Message level (This controls what sort of messages will apear on the Generate tab when web pages are created.)'
@@ -69,128 +76,29 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 452
       end
       object Label11: TLabel
-        Caption = 'Output Type :'
+        Caption = 'Project Name (The Project Name is used to name some of the generated output files.)'
         Color = clNone
-        FocusControl = comboGenerateFormat
         Left = 8
-        Height = 19
-        Top = 106
-        Width = 102
+        Height = 18
+        Top = 50
+        Width = 510
       end
       object Label19: TLabel
-        Caption = 'Title :'
+        Caption = 'Language (This is the language used in the generated output files.)'
         Color = clNone
-        Left = 10
-        Height = 14
-        Top = 2
-        Width = 30
+        Left = 8
+        Height = 27
+        Top = 354
+        Width = 420
       end
       object Label21: TLabel
-        Anchors = [akTop, akRight]
-        BorderSpacing.OnChange = nil
-        Caption = 'Items to sort alphabetically'
+        Caption = 'Properties, Methods, Events, and Fields to include'
         Color = clNone
-        Left = 360
-        Height = 21
-        Top = 82
+        WordWrap = True
+        Left = 8
+        Height = 32
+        Top = 130
         Width = 208
-      end
-      object clbMethodVisibility: TCheckListBox
-        Anchors = [akTop, akRight]
-        Items.Strings = (
-          'Published'
-          'Public'
-          'Protected'
-          'Private'
-          'Automated'
-          'Implicit'
-        )
-        ItemHeight = 20
-        OnClick = clbMethodVisibilityClick
-        TabOrder = 3
-        Left = 12
-        Height = 130
-        Top = 167
-        Width = 223
-        Data = {
-          06000000000000000000
-        }
-      end
-      object comboLanguages: TComboBox
-        Anchors = [akTop, akLeft, akRight]
-        ItemHeight = 20
-        MaxLength = 0
-        OnChange = comboLanguagesChange
-        Style = csDropDownList
-        TabOrder = 2
-        Left = 8
-        Height = 21
-        Top = 383
-        Width = 331
-      end
-      object edProjectName: TEdit
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 0
-        Left = 8
-        Height = 23
-        Top = 74
-        Width = 323
-      end
-      object seVerbosity: TSpinEdit
-        DecimalPlaces = 0
-        MaxValue = 6
-        OnChange = SomethingChanged
-        TabOrder = 4
-        Value = 2
-        Left = 8
-        Height = 30
-        Top = 410
-        Width = 64
-      end
-      object comboGenerateFormat: TComboBox
-        ItemHeight = 20
-        Items.Strings = (
-          'HTML'
-          'HTML Help Workshop'
-          'LaTeX'
-          'LaTeX for latex2rtf'
-        )
-        MaxLength = 0
-        OnChange = comboGenerateFormatChange
-        Style = csDropDownList
-        TabOrder = 1
-        Left = 104
-        Height = 21
-        Top = 106
-        Width = 210
-      end
-      object edTitle: TEdit
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 5
-        Left = 8
-        Height = 23
-        Top = 18
-        Width = 555
-      end
-      object CheckUseTipueSearch: TCheckBox
-        Caption = 'Use tipue search engine in HTML output'
-        OnChange = SomethingChanged
-        TabOrder = 6
-        Left = 8
-        Height = 23
-        Top = 298
-        Width = 251
-      end
-      object CheckAutoAbstract: TCheckBox
-        Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
-        OnChange = SomethingChanged
-        TabOrder = 7
-        Left = 8
-        Height = 23
-        Top = 322
-        Width = 473
       end
       object clbSorting: TCheckListBox
         Anchors = [akTop, akRight]
@@ -209,31 +117,137 @@ object frmHelpGenerator: TfrmHelpGenerator
         )
         ItemHeight = 20
         OnClick = SomethingChanged
-        TabOrder = 8
-        Left = 360
+        TabOrder = 0
+        Left = 331
         Height = 207
         Top = 104
-        Width = 223
+        Width = 254
         Data = {
           0A00000000000000000000000000
         }
       end
+      object CheckAutoAbstract: TCheckBox
+        Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
+        OnChange = SomethingChanged
+        TabOrder = 1
+        Left = 8
+        Height = 23
+        Top = 322
+        Width = 473
+      end
+      object CheckUseTipueSearch: TCheckBox
+        Caption = 'Use tipue search engine in HTML output'
+        OnChange = SomethingChanged
+        TabOrder = 2
+        Left = 8
+        Height = 23
+        Top = 298
+        Width = 251
+      end
+      object edTitle: TEdit
+        Anchors = [akTop, akLeft, akRight]
+        OnChange = SomethingChanged
+        TabOrder = 3
+        Left = 8
+        Height = 23
+        Top = 18
+        Width = 577
+      end
+      object comboGenerateFormat: TComboBox
+        ItemHeight = 20
+        Items.Strings = (
+          'HTML'
+          'HTML Help Workshop'
+          'LaTeX'
+          'LaTeX for latex2rtf'
+        )
+        MaxLength = 0
+        OnChange = comboGenerateFormatChange
+        Style = csDropDownList
+        TabOrder = 4
+        Left = 104
+        Height = 21
+        Top = 106
+        Width = 210
+      end
+      object seVerbosity: TSpinEdit
+        DecimalPlaces = 0
+        MaxValue = 6
+        OnChange = SomethingChanged
+        TabOrder = 5
+        Value = 2
+        Left = 8
+        Height = 30
+        Top = 410
+        Width = 64
+      end
+      object edProjectName: TEdit
+        Anchors = [akTop, akLeft, akRight]
+        OnChange = SomethingChanged
+        TabOrder = 6
+        Left = 8
+        Height = 23
+        Top = 76
+        Width = 316
+      end
+      object comboLanguages: TComboBox
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 20
+        MaxLength = 0
+        OnChange = comboLanguagesChange
+        Style = csDropDownList
+        TabOrder = 7
+        Left = 8
+        Height = 21
+        Top = 383
+        Width = 318
+      end
+      object clbMethodVisibility: TCheckListBox
+        Items.Strings = (
+          'Published'
+          'Public'
+          'Protected'
+          'Private'
+          'Automated'
+          'Implicit'
+        )
+        ItemHeight = 20
+        OnClick = clbMethodVisibilityClick
+        TabOrder = 8
+        Left = 8
+        Height = 130
+        Top = 167
+        Width = 223
+        Data = {
+          06000000000000000000
+        }
+      end
     end
-    object TabLocations: TTabSheet
+    object pageLocations: TPage
       Caption = 'Locations'
-      ClientHeight = 437
-      ClientWidth = 586
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object Label14: TLabel
-        Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
+      Height = 444
+      Top = 2
+      Width = 591
+      object Label3: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Output directory (This is the directory where the web pages will be created.) :'
         Color = clNone
         Left = 8
-        Height = 18
-        Top = 114
-        Width = 448
+        Height = 14
+        Top = 170
+        Width = 432
+      end
+      object Label14: TLabel
+        BorderSpacing.OnChange = nil
+        Caption = 'Conclusion file (optional):'
+        Color = clNone
+        Left = 8
+        Height = 19
+        Top = 58
+        Width = 166
       end
       object Label15: TLabel
         BorderSpacing.OnChange = nil
@@ -245,174 +259,111 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 174
       end
       object Label16: TLabel
-        BorderSpacing.OnChange = nil
-        Caption = 'Conclusion file (optional):'
+        Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
         Color = clNone
         Left = 8
-        Height = 19
-        Top = 58
-        Width = 166
+        Height = 18
+        Top = 114
+        Width = 448
       end
-      object Label3: TLabel
+      object edOutput: TEdit
+        Anchors = [akTop, akLeft, akRight]
         BorderSpacing.OnChange = nil
-        Caption = 'Output directory (This is the directory where the web pages will be created.) :'
-        Color = clNone
+        OnChange = SomethingChanged
+        TabOrder = 0
         Left = 8
-        Height = 14
-        Top = 170
-        Width = 432
+        Height = 23
+        Top = 194
+        Width = 488
+      end
+      object btnBrowseOutputDirectory: TButton
+        Anchors = [akTop, akRight]
+        BorderSpacing.OnChange = nil
+        Caption = 'Browse'
+        OnClick = btnBrowseOutputDirectoryClick
+        TabOrder = 1
+        Left = 504
+        Height = 25
+        Top = 192
+        Width = 75
+      end
+      object EditConclusionFileName: TFileNameEdit
+        DialogTitle = 'Choose conclusion file'
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
+        TabOrder = 2
+        OnChange = SomethingChanged
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 2
+        Left = 8
+        Height = 23
+        Top = 81
+        Width = 488
+      end
+      object EditIntroductionFileName: TFileNameEdit
+        DialogTitle = 'Choose introduction file'
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
+        TabOrder = 3
+        OnChange = SomethingChanged
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 3
+        Left = 8
+        Height = 23
+        Top = 30
+        Width = 488
       end
       object EditCssFileName: TFileNameEdit
         DialogTitle = 'Choose custom CSS file'
         Filter = 'Cascading Style Sheets (*.css)|*.css'
         ButtonWidth = 23
         NumGlyphs = 1
-        TabOrder = 0
-        OnChange = SomethingChanged
-        OnChange = SomethingChanged
-        TabOrder = 0
-        Left = 8
-        Height = 23
-        Top = 136
-        Width = 314
-      end
-      object EditIntroductionFileName: TFileNameEdit
-        DialogTitle = 'Choose introduction file'
-        ButtonWidth = 23
-        NumGlyphs = 1
-        BorderSpacing.OnChange = nil
-        TabOrder = 1
-        OnChange = SomethingChanged
-        BorderSpacing.OnChange = nil
-        OnChange = SomethingChanged
-        TabOrder = 1
-        Left = 6
-        Height = 23
-        Top = 30
-        Width = 314
-      end
-      object EditConclusionFileName: TFileNameEdit
-        DialogTitle = 'Choose conclusion file'
-        ButtonWidth = 23
-        NumGlyphs = 1
-        BorderSpacing.OnChange = nil
-        TabOrder = 2
-        OnChange = SomethingChanged
-        BorderSpacing.OnChange = nil
-        OnChange = SomethingChanged
-        TabOrder = 2
-        Left = 4
-        Height = 23
-        Top = 81
-        Width = 314
-      end
-      object btnBrowseOutputDirectory1: TButton
-        Anchors = [akTop, akRight]
-        BorderSpacing.OnChange = nil
-        Caption = 'Browse'
-        OnClick = btnBrowseOutputDirectoryClick
-        TabOrder = 3
-        Left = 486
-        Height = 25
-        Top = 194
-        Width = 75
-      end
-      object edOutput: TEdit
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
+        TabOrder = 4
+        OnChange = SomethingChanged
+        Anchors = [akTop, akLeft, akRight]
         OnChange = SomethingChanged
         TabOrder = 4
         Left = 8
         Height = 23
-        Top = 194
-        Width = 474
+        Top = 136
+        Width = 488
       end
     end
-    object tabGraphViz: TTabSheet
-      Caption = 'GraphViz'
-      ClientHeight = 437
-      ClientWidth = 586
-      Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object Label22: TLabel
-        Caption = 'Latex graphics package'
-        Color = clNone
-        Left = 10
-        Height = 17
-        Top = 63
-        Width = 170
-      end
-      object Label24: TLabel
-        Caption = 'Required program: GraphViz'
-        Color = clNone
-        Left = 8
-        Height = 17
-        Top = 119
-        Width = 180
-      end
-      object cbVizGraphClasses: TCheckBox
-        Caption = 'Generate and use Classes diagram '
-        OnChange = SomethingChanged
-        TabOrder = 0
-        Left = 8
-        Height = 23
-        Top = 10
-        Width = 258
-      end
-      object cbVizGraphUses: TCheckBox
-        Caption = 'Generate and use Uses diagram '
-        OnChange = SomethingChanged
-        TabOrder = 1
-        Left = 8
-        Height = 23
-        Top = 34
-        Width = 239
-      end
-      object comboLatexGraphicsPackage: TComboBox
-        Enabled = False
-        Items.Strings = (
-          'None'
-          'PDF'
-          'DVI'
-        )
-        ItemIndex = 0
-        MaxLength = 0
-        OnChange = SomethingChanged
-        Style = csDropDownList
-        TabOrder = 2
-        Text = 'None'
-        Left = 10
-        Height = 21
-        Top = 88
-        Width = 148
-      end
-      object edGraphVizUrl: TEdit
-        TabOrder = 3
-        Text = 'http://www.graphviz.org/'
-        Left = 188
-        Height = 23
-        Top = 114
-        Width = 160
-      end
-    end
-    object tabLatexOptions: TTabSheet
+    object pageLatexOptions: TPage
       Caption = 'Latex Options'
-      ClientHeight = 437
-      ClientWidth = 586
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
+      Height = 444
+      Top = 2
+      Width = 591
       object Label17: TLabel
         BorderSpacing.OnChange = nil
         Caption = 'Hy-phen-at-ed words (Only English letters are allowed.)'
         Color = clNone
         Left = 124
         Height = 17
-        Top = 9
+        Top = 12
         Width = 344
+      end
+      object memoHyphenatedWords: TMemo
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 0
+        Left = 124
+        Height = 397
+        Top = 36
+        Width = 433
       end
       object rgLineBreakQuality: TRadioGroup
         Caption = 'Line Breaks'
@@ -428,35 +379,84 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 7
         Width = 98
       end
-      object memoHyphenatedWords: TMemo
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.OnChange = nil
-        OnChange = SomethingChanged
-        TabOrder = 1
-        Left = 124
-        Height = 386
-        Top = 31
-        Width = 458
+      object pageGraphViz: TPage
+        Caption = 'GraphViz'
+        ClientWidth = 591
+        ClientHeight = 444
+        Visible = False
+        Height = 444
+        Width = 591
+        object Label22: TLabel
+          Caption = 'Required program: GraphViz'
+          Color = clNone
+          Left = 8
+          Height = 17
+          Top = 119
+          Width = 180
+        end
+        object Label24: TLabel
+          Caption = 'Latex graphics package'
+          Color = clNone
+          Left = 10
+          Height = 17
+          Top = 63
+          Width = 170
+        end
+        object edGraphVizUrl: TEdit
+          TabOrder = 0
+          Text = 'http://www.graphviz.org/'
+          Left = 188
+          Height = 23
+          Top = 114
+          Width = 160
+        end
+        object comboLatexGraphicsPackage: TComboBox
+          Enabled = False
+          Items.Strings = (
+            'None'
+            'PDF'
+            'DVI'
+          )
+          ItemIndex = 0
+          MaxLength = 0
+          OnChange = SomethingChanged
+          Style = csDropDownList
+          TabOrder = 1
+          Text = 'None'
+          Left = 10
+          Height = 21
+          Top = 88
+          Width = 148
+        end
+        object cbVizGraphUses: TCheckBox
+          Caption = 'Generate and use Uses diagram '
+          OnChange = SomethingChanged
+          TabOrder = 2
+          Left = 8
+          Height = 23
+          Top = 34
+          Width = 239
+        end
+        object cbVizGraphClasses: TCheckBox
+          Caption = 'Generate and use Classes diagram '
+          OnChange = SomethingChanged
+          TabOrder = 3
+          Left = 8
+          Height = 23
+          Top = 10
+          Width = 258
+        end
       end
     end
-    object tabHeadFoot: TTabSheet
+    object pageHeadFoot: TPage
       Caption = 'Header / Footer'
-      ClientHeight = 437
-      ClientWidth = 586
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
+      Height = 444
+      Top = 2
+      Width = 591
       object Label4: TLabel
-        BorderSpacing.OnChange = nil
-        Caption = 'Footer (This text will appear at the bottom of the web page)'
-        Color = clNone
-        Left = 14
-        Height = 20
-        Top = 234
-        Width = 429
-      end
-      object Label5: TLabel
         BorderSpacing.OnChange = nil
         Caption = 'Header (This text will appear at the top of the web page)'
         Color = clNone
@@ -465,63 +465,63 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 20
         Width = 408
       end
-      object memoFooter: TMemo
-        Anchors = [akTop, akLeft, akRight, akBottom]
+      object Label5: TLabel
         BorderSpacing.OnChange = nil
-        OnChange = SomethingChanged
-        TabOrder = 0
-        WordWrap = False
+        Caption = 'Footer (This text will appear at the bottom of the web page)'
+        Color = clNone
         Left = 14
-        Height = 173
-        Top = 258
-        Width = 558
+        Height = 20
+        Top = 234
+        Width = 429
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
-        TabOrder = 1
-        WordWrap = False
-        Left = 12
-        Height = 182
-        Top = 44
-        Width = 558
-      end
-    end
-    object tabSpellChecking: TTabSheet
-      Caption = 'Spell Checking'
-      ClientHeight = 437
-      ClientWidth = 586
-      Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object memoSpellCheckingIgnore: TMemo
-        Align = alClient
-        ScrollBars = ssAutoBoth
         TabOrder = 0
         WordWrap = False
-        Height = 369
-        Top = 68
-        Width = 586
+        Left = 13
+        Height = 182
+        Top = 44
+        Width = 565
       end
-      object PanelSpellCheckingTop: TPanel
+      object memoFooter: TMemo
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
+        OnChange = SomethingChanged
+        TabOrder = 1
+        WordWrap = False
+        Left = 13
+        Height = 168
+        Top = 258
+        Width = 565
+      end
+    end
+    object pageSpellChecking: TPage
+      Caption = 'Spell Checking'
+      ClientWidth = 591
+      ClientHeight = 444
+      Left = 2
+      Height = 444
+      Top = 2
+      Width = 591
+      object PanelSpellCheckingTop1: TPanel
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 68
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
-        TabOrder = 1
+        TabOrder = 0
         Height = 68
-        Width = 586
+        Width = 591
         object Label20: TLabel
           BorderSpacing.OnChange = nil
-          Caption = 'Words to ignore when spell checking :'
+          Caption = 'Words to ignore when spell checking - One word per line'
           Color = clNone
           Left = 14
           Height = 16
           Top = 42
-          Width = 270
+          Width = 358
         end
         object Label23: TLabel
           Caption = 'Required Program: aspell'
@@ -541,7 +541,6 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 132
         end
         object edSpellUrl: TEdit
-          BorderSpacing.OnChange = nil
           TabOrder = 1
           Text = 'http://aspell.sourceforge.net/'
           Left = 412
@@ -550,34 +549,42 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 160
         end
       end
+      object memoSpellCheckingIgnore: TMemo
+        Align = alClient
+        ScrollBars = ssAutoBoth
+        TabOrder = 1
+        WordWrap = False
+        Height = 376
+        Top = 68
+        Width = 591
+      end
     end
-    object tabMarkers: TTabSheet
+    object pageMarkers: TPage
       Caption = 'Markers'
-      ClientHeight = 437
-      ClientWidth = 586
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
+      Height = 444
+      Top = 2
+      Width = 591
       object memoCommentMarkers: TMemo
         Align = alClient
         OnChange = SomethingChanged
         TabOrder = 0
-        Height = 326
-        Top = 111
-        Width = 586
+        Height = 332
+        Top = 112
+        Width = 591
       end
-      object PanelMarkersTop: TPanel
+      object PanelMarkers: TPanel
         Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 111
-        ClientWidth = 586
+        BorderSpacing.OnChange = nil
+        ClientHeight = 112
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
-        Height = 111
-        Width = 586
+        Height = 112
+        Width = 591
         object Label18: TLabel
-          BorderSpacing.OnChange = nil
           Caption = 'Special comment markers'
           Color = clNone
           Left = 4
@@ -586,7 +593,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 142
         end
         object rgCommentMarkers: TRadioGroup
-          BorderSpacing.OnChange = nil
+          Anchors = [akTop, akLeft, akRight]
           Caption = 'Comment marker treatment'
           ItemIndex = 1
           Items.Strings = (
@@ -598,39 +605,48 @@ object frmHelpGenerator: TfrmHelpGenerator
           ParentColor = True
           Left = 4
           Height = 80
-          Width = 541
+          Width = 567
         end
       end
     end
-    object tabSourceFiles: TTabSheet
+    object pageSourceFiles: TPage
       Caption = 'Source Files'
-      ClientHeight = 437
-      ClientWidth = 586
-      ImageIndex = 3
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object memoFiles: TMemo
-        Align = alClient
-        OnChange = SomethingChanged
-        ScrollBars = ssBoth
+      Height = 444
+      Top = 2
+      Width = 591
+      object PanelSourceFilesTop: TPanel
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 66
+        ClientWidth = 591
+        FullRepaint = False
         TabOrder = 0
-        WordWrap = False
-        Height = 330
-        Top = 66
-        Width = 586
+        Height = 66
+        Width = 591
+        object Label8: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 51
+          Top = 8
+          Width = 553
+        end
       end
       object PanelSourceFilesBottom: TPanel
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 41
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
         Height = 41
-        Top = 396
-        Width = 586
+        Top = 403
+        Width = 591
         object btnBrowseSourceFiles: TButton
           Caption = 'Browse'
           OnClick = btnBrowseSourceFilesClick
@@ -641,56 +657,55 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 75
         end
       end
-      object PanelSourceFilesTop: TPanel
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 66
-        ClientWidth = 586
-        FullRepaint = False
-        TabOrder = 2
-        Height = 66
-        Width = 586
-        object Label8: TLabel
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
-          Color = clNone
-          WordWrap = True
-          Left = 8
-          Height = 51
-          Top = 8
-          Width = 564
-        end
-      end
-    end
-    object tabIncludeDirectories: TTabSheet
-      Caption = 'Include Directories'
-      ClientHeight = 437
-      ClientWidth = 586
-      ImageIndex = 4
-      Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object memoIncludeDirectories: TMemo
+      object memoFiles: TMemo
         Align = alClient
         OnChange = SomethingChanged
         ScrollBars = ssBoth
-        TabOrder = 0
+        TabOrder = 2
         WordWrap = False
-        Height = 331
-        Top = 65
-        Width = 586
+        Height = 337
+        Top = 66
+        Width = 591
+      end
+    end
+    object pageIncludeDirectories: TPage
+      Caption = 'Include Directories'
+      ClientWidth = 591
+      ClientHeight = 444
+      Left = 2
+      Height = 444
+      Top = 2
+      Width = 591
+      object PanelIncludeDirectoriesTop: TPanel
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 65
+        ClientWidth = 591
+        FullRepaint = False
+        TabOrder = 0
+        Height = 65
+        Width = 591
+        object Label9: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 36
+          Top = 8
+          Width = 551
+        end
       end
       object PanelIncludeDirectoriesBottom: TPanel
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 41
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
         Height = 41
-        Top = 396
-        Width = 586
+        Top = 403
+        Width = 591
         object btnBrowseIncludeDirectory: TButton
           Caption = 'Browse'
           OnClick = btnBrowseIncludeDirectoryClick
@@ -701,45 +716,44 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 75
         end
       end
-      object PanelIncludeDirectoriesTop: TPanel
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 65
-        ClientWidth = 586
-        FullRepaint = False
+      object memoIncludeDirectories: TMemo
+        Align = alClient
+        OnChange = SomethingChanged
+        ScrollBars = ssBoth
         TabOrder = 2
-        Height = 65
-        Width = 586
-        object Label9: TLabel
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
-          Color = clNone
-          WordWrap = True
-          Left = 8
-          Height = 36
-          Top = 8
-          Width = 562
-        end
+        WordWrap = False
+        Height = 338
+        Top = 65
+        Width = 591
       end
     end
-    object tabDefines: TTabSheet
+    object pageDefines: TPage
       Caption = 'Defines'
-      ClientHeight = 437
-      ClientWidth = 586
-      ImageIndex = 5
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
+      Height = 444
+      Top = 2
+      Width = 591
+      object memoDefines: TMemo
+        Align = alClient
+        OnChange = SomethingChanged
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+        Height = 368
+        Top = 76
+        Width = 591
+      end
       object PanelDefinesTop: TPanel
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 76
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
         Height = 76
-        Width = 586
+        Width = 591
         object Label12: TLabel
           Anchors = [akTop, akLeft, akRight]
           Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
@@ -748,46 +762,48 @@ object frmHelpGenerator: TfrmHelpGenerator
           Left = 6
           Height = 48
           Top = 8
-          Width = 568
+          Width = 557
         end
       end
-      object memoDefines: TMemo
-        Align = alClient
-        OnChange = SomethingChanged
-        ScrollBars = ssBoth
-        TabOrder = 0
-        WordWrap = False
-        Height = 361
-        Top = 76
-        Width = 586
-      end
     end
-    object tabGenerate: TTabSheet
+    object pageGenerate: TPage
       Caption = 'Generate'
-      ClientHeight = 437
-      ClientWidth = 586
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object memoMessages: TMemo
-        Align = alClient
-        ScrollBars = ssBoth
+      Height = 444
+      Top = 2
+      Width = 591
+      object PanelGenerateTop: TPanel
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 97
+        ClientWidth = 591
+        FullRepaint = False
         TabOrder = 0
-        Height = 299
-        Top = 97
-        Width = 586
+        Height = 97
+        Width = 591
+        object Label10: TLabel
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'When you click the "Generate web pages" button, Help Generator will begin to process your input files and create web pages for them.  Messages describing what is happening will appear in the area below.  You can control how many messages appear using the "Message Level" on the Options tab. When it is done, a preview of the web pages will appear on the "Web Page" tab.'
+          Color = clNone
+          WordWrap = True
+          Left = 8
+          Height = 82
+          Top = 8
+          Width = 553
+        end
       end
-      object Panel1: TPanel
+      object PanelGenerageBottom: TPanel
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 41
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
         Height = 41
-        Top = 396
-        Width = 586
+        Top = 403
+        Width = 591
         object btnGenerateWebPages: TButton
           Caption = 'Generate documentation'
           OnClick = btnGenerateWebPagesClick
@@ -798,55 +814,33 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 185
         end
       end
-      object PanelGenerateTop: TPanel
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 97
-        ClientWidth = 586
-        FullRepaint = False
+      object memoMessages: TMemo
+        Align = alClient
+        ScrollBars = ssBoth
         TabOrder = 2
-        Height = 97
-        Width = 586
-        object Label10: TLabel
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'When you click the "Generate web pages" button, Help Generator will begin to process your input files and create web pages for them.  Messages describing what is happening will appear in the area below.  You can control how many messages appear using the "Message Level" on the Options tab. When it is done, a preview of the web pages will appear on the "Web Page" tab.'
-          Color = clNone
-          WordWrap = True
-          Left = 8
-          Height = 82
-          Top = 8
-          Width = 564
-        end
+        Height = 306
+        Top = 97
+        Width = 591
       end
     end
-    object tabWebPage: TTabSheet
+    object pageWebPage: TPage
       Caption = 'Web Page'
-      ClientHeight = 437
-      ClientWidth = 586
-      ImageIndex = 1
+      ClientWidth = 591
+      ClientHeight = 444
       Left = 2
-      Height = 437
-      Top = 28
-      Width = 586
-      object MemoCommandLog: TMemo
-        Align = alClient
-        ReadOnly = True
-        ScrollBars = ssAutoBoth
-        TabOrder = 0
-        Height = 319
-        Top = 118
-        Width = 586
-      end
+      Height = 444
+      Top = 2
+      Width = 591
       object PanelWebPageTop: TPanel
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 118
-        ClientWidth = 586
+        ClientWidth = 591
         FullRepaint = False
         TabOrder = 1
         Height = 118
-        Width = 586
-        object LabelHtmlBrowserCommand: TLabel
+        Width = 591
+        object LabelHtmlBrowserCommand1: TLabel
           BorderSpacing.OnChange = nil
           Caption = 'Command to run browser: (%s will be replaced with HTML filename, %% with %)'
           Color = clNone
@@ -875,16 +869,16 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 304
         end
       end
+      object MemoCommandLog: TMemo
+        Align = alClient
+        ReadOnly = True
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        Height = 326
+        Top = 118
+        Width = 591
+      end
     end
-  end
-  object lbNavigation: TListBox
-    Align = alLeft
-    BorderSpacing.OnChange = nil
-    OnClick = lbNavigationClick
-    TabOrder = 1
-    TopIndex = -1
-    Height = 467
-    Width = 144
   end
   object PasDoc1: TPasDoc
     OnWarning = PasDoc1Warning
