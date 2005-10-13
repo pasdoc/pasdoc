@@ -25,6 +25,7 @@
   * Each detailed description in HTML output is enclosed within lightgray frame
   * Various fixes. E.g.
     --spell-check-ignore-words works now.
+  * Many improvements to pasdoc_gui (by Richard B. Winston)
   
   Some compatibility had to be broken:
   * New dashes rules break compatibility. But actually previous
