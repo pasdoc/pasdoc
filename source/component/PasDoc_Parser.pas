@@ -988,8 +988,11 @@ begin
   end;
   FreeAndNil(t);
   t := GetNextToken;
-  { TODO: check here that t is ; }
-  FreeAndNil(t);
+  try
+    ExpectedSymbol(T, SYM_SEMICOLON);
+  finally
+    FreeAndNil(t);
+  end;
 end;
 
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
