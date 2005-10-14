@@ -173,17 +173,30 @@ type
     SYM_LESS_THAN, SYM_LESS_THAN_EQUAL, SYM_GREATER_THAN,
     SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
     SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
-    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, SYM_LEFT_BRACE,
-    SYM_RIGHT_BRACE, SYM_DOLLAR, SYM_NUMBER, SYM_ASSIGN, SYM_RANGE, SYM_POWER);
+    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, 
+    SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER);
 
-  { Stores the exact type and additional information on one token.
-    Additionally, @link(TToken.Data) stores the array of characters }
+const
+  { Symbols as strings. They can be useful to have some mapping
+    TSymbolType -> string, but remember that actually some symbols
+    in tokenizer have multiple possible representations,
+    e.g. "right bracket" is usually given as "]" but can also 
+    be written as ".)". }
+  SymbolNames: array[TSymbolType] of string = 
+  ( '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
+    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**' );
+
+type
+  { Stores the exact type and additional information on one token. }
   TToken = class(TObject)
+  public
     { the exact character representation of this token as it was found in the
       input file }
     Data: string;
+    
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
+    
     { additional information on this token as a variant record depending 
       on the token's MyType }
     Info: record
@@ -206,8 +219,22 @@ type
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
-    { Returns true if argument ST equals @link(MyType), false otherwise }
-    function IsSymbol(const st: TSymbolType): Boolean;
+    
+    { Does @link(MyType) is TOK_SYMBOL and @link(SymbolType) is ASymbolType ? }
+    function IsSymbol(const ASymbolType: TSymbolType): Boolean;
+    
+    { Does @link(MyType) is TOK_KEYWORD and @link(KeyWord) is AKeyWord ? }
+    function IsKeyWord(const AKeyWord: TKeyWord): Boolean;
+    
+    { Does @link(MyType) is TOK_IDENTIFIER and @link(StandardDirective) is 
+      AStandardDirective ? }
+    function IsStandardDirective(
+      const AStandardDirective: TStandardDirective): Boolean;
+      
+    { Few words long description of this token.
+      Describes MyType and Data (for those tokens that tend to have short Data).
+      Starts with lower letter. }
+    function Description: string;
   end;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
@@ -237,7 +264,13 @@ type
 
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
-    function CreateSymbolToken(const st: TSymbolType; const s: string): TToken;
+    
+    function CreateSymbolToken(const st: TSymbolType; const s: string): 
+      TToken; overload;
+      
+    { Uses default symbol representation, from SymbolNames[st] }
+    function CreateSymbolToken(const st: TSymbolType): TToken; overload;
+    
     function GetChar(out c: Char): Boolean;
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
@@ -366,9 +399,9 @@ const
     (c: '^'; s: SYM_ROOF),
     (c: '@'; s: SYM_AT));
 
-  { ---------------------------------------------------------------------------- }
-  { TToken }
-  { ---------------------------------------------------------------------------- }
+{ ---------------------------------------------------------------------------- }
+{ TToken }
+{ ---------------------------------------------------------------------------- }
 
 constructor TToken.Create(const TT: TTokenType);
 begin
@@ -385,9 +418,28 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TToken.IsSymbol(const st: TSymbolType): Boolean;
+function TToken.IsSymbol(const ASymbolType: TSymbolType): Boolean;
 begin
-  IsSymbol := (MyType = TOK_SYMBOL) and (Info.SymbolType = st);
+  Result := (MyType = TOK_SYMBOL) and (Info.SymbolType = ASymbolType);
+end;
+
+function TToken.IsKeyWord(const AKeyWord: TKeyWord): Boolean;
+begin
+  Result := (MyType = TOK_KEYWORD) and (Info.KeyWord = AKeyWord);
+end;
+
+function TToken.IsStandardDirective(
+  const AStandardDirective: TStandardDirective): Boolean;
+begin
+  Result := (MyType = TOK_IDENTIFIER) and 
+    (Info.StandardDirective = AStandardDirective);
+end;
+
+function TToken.Description: string;
+begin
+  Result := TOKEN_TYPE_NAMES[MyType];
+  if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
+    Result := Result + ' "' + Data + '"';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -433,14 +485,19 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.CreateSymbolToken(const st: TSymbolType; const s:
-  string): TToken;
+function TTokenizer.CreateSymbolToken(const st: TSymbolType; 
+  const s: string): TToken;
 begin
   Result := TToken.Create(TOK_SYMBOL);
   with Result do begin
     Info.SymbolType := st;
     Data := s;
   end;
+end;
+
+function TTokenizer.CreateSymbolToken(const st: TSymbolType): TToken;
+begin
+  Result := CreateSymbolToken(st, SymbolNames[st]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -555,12 +612,12 @@ begin
                       Result := CreateSymbolToken(SYM_LEFT_BRACKET, '(.');
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_LEFT_PARENTHESIS, '(');
+                  Result := CreateSymbolToken(SYM_LEFT_PARENTHESIS);
                 end;
               end;
             ')': begin
                 c := ' ';
-                Result := CreateSymbolToken(SYM_RIGHT_PARENTHESIS, ')');
+                Result := CreateSymbolToken(SYM_RIGHT_PARENTHESIS);
               end;
             '.': begin
                 c := ' ';
@@ -568,14 +625,14 @@ begin
                 case c of
                   '.': begin
                       ConsumeChar;
-                      Result := CreateSymbolToken(SYM_RANGE, '..');
+                      Result := CreateSymbolToken(SYM_RANGE);
                     end;
                   ')': begin
                       ConsumeChar;
                       Result := CreateSymbolToken(SYM_RIGHT_BRACKET, '.)');
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_PERIOD, '.');
+                  Result := CreateSymbolToken(SYM_PERIOD);
                 end;
               end;
             '/': begin
@@ -587,7 +644,7 @@ begin
                       Result := ReadCommentType3;
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_SLASH, '/');
+                  Result := CreateSymbolToken(SYM_SLASH);
                 end;
               end;
             ':': begin
@@ -596,10 +653,10 @@ begin
                 case c of
                   '=': begin
                       ConsumeChar;
-                      Result := CreateSymbolToken(SYM_ASSIGN, ':=');
+                      Result := CreateSymbolToken(SYM_ASSIGN);
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_COLON, ':');
+                  Result := CreateSymbolToken(SYM_COLON);
                 end;
               end;
             '<': begin
@@ -608,10 +665,10 @@ begin
                 case c of
                   '=': begin
                       ConsumeChar;
-                      Result := CreateSymbolToken(SYM_LESS_THAN_EQUAL, '<=');
+                      Result := CreateSymbolToken(SYM_LESS_THAN_EQUAL);
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_LESS_THAN, '<');
+                  Result := CreateSymbolToken(SYM_LESS_THAN);
                 end;
               end;
             '>': begin
@@ -620,11 +677,10 @@ begin
                 case c of
                   '=': begin
                       ConsumeChar;
-                      Result := CreateSymbolToken(SYM_GREATER_THAN_EQUAL,
-                        '<=');
+                      Result := CreateSymbolToken(SYM_GREATER_THAN_EQUAL);
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_GREATER_THAN, '<');
+                  Result := CreateSymbolToken(SYM_GREATER_THAN);
                 end;
               end;
             '*': begin
@@ -633,10 +689,10 @@ begin
                 case c of
                   '*': begin
                       ConsumeChar;
-                      Result := CreateSymbolToken(SYM_POWER, '**');
+                      Result := CreateSymbolToken(SYM_POWER);
                     end;
                 else
-                  Result := CreateSymbolToken(SYM_ASTERISK, '*');
+                  Result := CreateSymbolToken(SYM_ASTERISK);
                 end;
               end;
           else begin
