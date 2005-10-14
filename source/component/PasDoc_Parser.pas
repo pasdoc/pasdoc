@@ -100,6 +100,18 @@ type
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
 
+    { Checks if T.MyType is ATokenType, if not calls DoError
+      with appropriate error mesg. }
+    procedure ExpectedToken(T: TToken; ATokenType: TTokenType);
+    
+    { Checks if T.IsSymbol(ASymbolType), if not calls DoError
+      with appropriate error mesg. }
+    procedure ExpectedSymbol(T: TToken; ASymbolType: TSymbolType);
+    
+    { Checks if T.IsKeyWord(AKeyWord), if not calls DoError
+      with appropriate error mesg. }
+    procedure ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
+
     { Clears the last comment token. Should be issued soon after
       @link(GetLastComment) was called with @code(ClearLastComment) set to
       @False. }
@@ -337,6 +349,35 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
+
+const
+  SExpectedButFound = '%s: %s expected but %s found';
+
+procedure TParser.ExpectedToken(T: TToken; ATokenType: TTokenType);
+begin
+  if T.MyType <> ATokenType then
+    DoError(SExpectedButFound, [Scanner.GetStreamInfo,
+      TOKEN_TYPE_NAMES[ATokenType], T.Description]);
+end;
+
+procedure TParser.ExpectedSymbol(T: TToken; ASymbolType: TSymbolType);
+begin
+  if not T.IsSymbol(ASymbolType) then
+    DoError(SExpectedButFound, [Scanner.GetStreamInfo,
+      Format('symbol "%s"', [SymbolNames[ASymbolType]]), 
+      T.Description]);
+end;
+
+procedure TParser.ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
+begin
+  if not T.IsKeyWord(AKeyWord) then
+    DoError(SExpectedButFound, [Scanner.GetStreamInfo, 
+      Format('reserved word "%s"', [KeyWordArray[AKeyWord]]),
+      T.Description]);
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 function TParser.ExtractDocComment(const FreeToken: Boolean; 
   var t: TToken): string;
 var
@@ -1128,16 +1169,14 @@ var
   ParenCount: integer;
 begin
   ParenCount := 0;
-  t2 := nil;
+
   t1 := GetNextToken;
-  if t1.MyType <> TOK_IDENTIFIER then 
-  begin
-    DoError('Parsing record case failed, identifier expected', []);
-    FreeAndNil(t1);
-  end else 
-  begin
+  try
+    ExpectedToken(T1, TOK_IDENTIFIER);
+
     t2 := GetNextToken;
-    if (t2.MyType = TOK_SYMBOL) and (t2.Info.SymbolType = SYM_COLON) then begin
+    if t2.IsSymbol(SYM_COLON) then 
+    begin
       // case x:Type of
       FreeAndNil(t2); // colon
       t2 := GetNextToken;
@@ -1151,135 +1190,138 @@ begin
       Scanner.UnGetToken(t2);
     end;
     FreeAndNil(t2);
+  finally 
+    FreeAndNil(t1);
+  end;
+  
+  t1 := GetNextToken;
+  try
+    ExpectedKeyWord(T1, KEY_OF);
+  finally
+    FreeAndNil(t1);
+  end;
+  
+  t1 := GetNextToken;
+  LNeedId := True;
+  repeat
+    while true do begin
+      case t1.MyType of
+        TOK_SYMBOL: begin
+            case t1.Info.SymbolType of
+              SYM_COLON: break;
+              SYM_COMMA: LNeedId := True;
+            end;
+          end;
+        TOK_IDENTIFIER,
+        TOK_NUMBER: if not LNeedId then begin
+                      s := t1.Data;
+                      FreeAndNil(t1);
+                      DoError('did not expect identifier %s here!', [s]);
+                    end;
+        else begin
+          s := t1.Data;
+          FreeAndNil(t1);
+          DoError('unexpected token: %s', [s]);
+        end;
+      end;
+      FreeAndNil(t1);
+      t1 := GetNextToken;
+    end;
+    // read all identifiers before colon
+
     FreeAndNil(t1);
     t1 := GetNextToken;
-    if (t1.MyType <> TOK_KEYWORD) or (t1.Info.KeyWord <> KEY_OF) then begin
+    if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
       FreeAndNil(t1);
-      DoError('OF expected', []);
+      DoError('( expected', []);
     end;
     FreeAndNil(t1);
     t1 := GetNextToken;
-    LNeedId := True;
-    repeat
-      while true do begin
-        case t1.MyType of
-          TOK_SYMBOL: begin
-              case t1.Info.SymbolType of
-                SYM_COLON: break;
-                SYM_COMMA: LNeedId := True;
+    while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
+      if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
+        P := TPasItem.Create;
+        p.RawDescription := GetLastComment(True);
+        P.Name := t1.Data;
+        P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
+        R.Fields.Add(p);
+        if (ParenCount = 0) then
+        begin
+          FreeAndNil(t1);
+          t1 := GetNextToken;
+        end;
+        LLastWasComma := false;
+        while (t1.MyType <> TOK_SYMBOL)
+          OR ((t1.Info.SymbolType <> SYM_SEMICOLON)
+          and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS))
+          or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
+          and (ParenCount > 0)) do begin
+          if (t1.MyType = TOK_IDENTIFIER) then begin
+            if LLastWasComma then begin
+              p := TPasItem.Create;
+              p.RawDescription := GetLastComment(True);
+              p.Name := t1.data;
+              P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
+              R.Fields.Add(p);
+            end;
+          end;
+          if t1.MyType = TOK_KEYWORD then begin
+            if (t1.Info.KeyWord = KEY_RECORD) then begin
+              ParseCIO(nil, '', CIO_RECORD, '', True);
+            end;
+            if (t1.Info.KeyWord = KEY_PACKED) then begin
+              FreeAndNil(t1);
+              t1 := GetNextToken;
+              if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_RECORD) then begin
+                ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
               end;
             end;
-          TOK_IDENTIFIER,
-          TOK_NUMBER: if not LNeedId then begin
-                        s := t1.Data;
-                        FreeAndNil(t1);
-                        DoError('did not expect identifier %s here!', [s]);
-                      end;
-          else begin
-            s := t1.Data;
-            FreeAndNil(t1);
-            DoError('unexpected token: %s', [s]);
-          end;
-        end;
-        FreeAndNil(t1);
-        t1 := GetNextToken;
-      end;
-      // read all identifiers before colon
-
-      FreeAndNil(t1);
-      t1 := GetNextToken;
-      if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
-        FreeAndNil(t1);
-        DoError('( expected', []);
-      end;
-      FreeAndNil(t1);
-      t1 := GetNextToken;
-      while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
-        if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
-          P := TPasItem.Create;
-          p.RawDescription := GetLastComment(True);
-          P.Name := t1.Data;
-          P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
-          R.Fields.Add(p);
-          if (ParenCount = 0) then
-          begin
-            FreeAndNil(t1);
-            t1 := GetNextToken;
           end;
           LLastWasComma := false;
-          while (t1.MyType <> TOK_SYMBOL)
-            OR ((t1.Info.SymbolType <> SYM_SEMICOLON)
-            and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS))
-            or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
-            and (ParenCount > 0)) do begin
-            if (t1.MyType = TOK_IDENTIFIER) then begin
-              if LLastWasComma then begin
-                p := TPasItem.Create;
-                p.RawDescription := GetLastComment(True);
-                p.Name := t1.data;
-                P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
-                R.Fields.Add(p);
-              end;
-            end;
-            if t1.MyType = TOK_KEYWORD then begin
-              if (t1.Info.KeyWord = KEY_RECORD) then begin
-                ParseCIO(nil, '', CIO_RECORD, '', True);
-              end;
-              if (t1.Info.KeyWord = KEY_PACKED) then begin
-                FreeAndNil(t1);
-                t1 := GetNextToken;
-                if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_RECORD) then begin
-                  ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
-                end;
-              end;
-            end;
-            LLastWasComma := false;
-            if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
-              LLastWasComma := True;
-            end;
-            if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
-              or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and
-              (ParenCount > 0)) then begin
+          if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
+            LLastWasComma := True;
+          end;
+          if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
+            or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and
+            (ParenCount > 0)) then begin
 
-              if t1.Info.SymbolType = SYM_LEFT_PARENTHESIS then
-              begin
-                Inc(ParenCount)
-              end
-              else if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then
-              begin
-                Dec(ParenCount)
-              end;
+            if t1.Info.SymbolType = SYM_LEFT_PARENTHESIS then
+            begin
+              Inc(ParenCount)
+            end
+            else if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then
+            begin
+              Dec(ParenCount)
             end;
-            FreeAndNil(t1);
-            t1 := GetNextToken;
           end;
-          if (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
-            and (ParenCount = 0) then
-          begin
-            Scanner.UnGetToken(t1);
-          end;
-        end else begin
-          if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_CASE) then begin
-            ParseRecordCase(R, true);
-          end else begin
-            FreeAndNil(t1);
-            DoError('Invalid keyword found', []);
-          end;
+          FreeAndNil(t1);
+          t1 := GetNextToken;
         end;
-        FreeAndNil(t1); // free token
-        t1 := GetNextToken;
+        if (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
+          and (ParenCount = 0) then
+        begin
+          Scanner.UnGetToken(t1);
+        end;
+      end else begin
+        if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_CASE) then begin
+          ParseRecordCase(R, true);
+        end else begin
+          FreeAndNil(t1);
+          DoError('Invalid keyword found', []);
+        end;
       end;
-      FreeAndNil(t1); // free ')' token
-      t1 := GetNextToken; // next
-      if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_SEMICOLON) then begin
-        FreeAndNil(t1);
-        t1 := GetNextToken;
-      end;
-      if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_END) then break;
-      if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
-    until false;
-    Scanner.UnGetToken(t1);
-  end;
+      FreeAndNil(t1); // free token
+      t1 := GetNextToken;
+    end;
+    FreeAndNil(t1); // free ')' token
+    t1 := GetNextToken; // next
+    if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_SEMICOLON) then begin
+      FreeAndNil(t1);
+      t1 := GetNextToken;
+    end;
+    if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_END) then break;
+    if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
+  until false;
+  Scanner.UnGetToken(t1);
 end;
 
 procedure TParser.ParseType(const U: TPasUnit; var t: TToken);
