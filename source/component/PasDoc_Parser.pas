@@ -743,11 +743,14 @@ begin
           if (t.IsSymbol(SYM_COMMA)) then
               { comma, separating two ancestors } begin
             FreeAndNil(t);
-          end else begin
-            Finished := t.IsSymbol(SYM_RIGHT_PARENTHESIS);
-            FreeAndNil(t);
-            if not Finished then
-              DoError('Symbol ")" expected', []);
+          end else 
+          begin
+            try
+              ExpectedSymbol(T, SYM_RIGHT_PARENTHESIS);
+              Finished := true;
+            finally
+              FreeAndNil(t);
+            end;
           end;
         end;
       until Finished;
@@ -788,8 +791,7 @@ begin
       FreeAndNil(t);
       
       t := GetNextToken;
-      if not t.IsSymbol(SYM_RIGHT_BRACKET) then
-        DoError('Symbol "]" expected', []);
+      ExpectedSymbol(T, SYM_RIGHT_BRACKET);
     end else begin
       Scanner.UnGetToken(t);
     end;
@@ -1027,7 +1029,7 @@ begin
               MODE_VAR:
                 ParseVariables(U, t);
             else
-              DoError('Unexpected identifier "%s"', [t.Data]);
+              DoError('Unexpected %s', [T.Description]);
             end;
           end;
         TOK_KEYWORD: begin
@@ -1130,8 +1132,7 @@ begin
     { get property type }
     t := GetNextToken;
     if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD) then
-      DoError('Identifier expected, found %s in file %s',
-        [TOKEN_TYPE_NAMES[t.MyType], Scanner.GetStreamInfo]);
+      DoError('Identifier or keyword expected but %s found', [T.Description]);
 
     p.Proptype := t.Data;
     FreeAndNil(t);
@@ -1164,7 +1165,6 @@ var
   t1, t2: TToken;
   P: TPasItem;
   LLastWasComma: boolean;
-  s: string;
   LNeedId: boolean;
   ParenCount: integer;
 begin
@@ -1213,14 +1213,16 @@ begin
             end;
           end;
         TOK_IDENTIFIER,
-        TOK_NUMBER: if not LNeedId then begin
-                      s := t1.Data;
-                      FreeAndNil(t1);
-                      DoError('Unexpected identifier "%s"', [s]);
-                    end;
+        TOK_NUMBER: 
+          if not LNeedId then
+          try
+            DoError('Unexpected %s', [T1.Description]);
+          finally
+            FreeAndNil(t1);
+          end;
         else begin
           try
-            DoError('Unexpected token %s', [T1.Description]);
+            DoError('Unexpected %s', [T1.Description]);
           finally
             FreeAndNil(t1);
           end;
@@ -1233,11 +1235,12 @@ begin
 
     FreeAndNil(t1);
     t1 := GetNextToken;
-    if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
+    try
+      ExpectedSymbol(T1, SYM_LEFT_PARENTHESIS);
+    finally
       FreeAndNil(t1);
-      DoError('Symbol "(" expected', []);
     end;
-    FreeAndNil(t1);
+    
     t1 := GetNextToken;
     while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
       if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
@@ -1497,18 +1500,23 @@ begin
 
   repeat
     t := GetNextToken;
-    if t.MyType <> TOK_IDENTIFIER then
-      DoError('Unit name expected (found %s)', [T.Description]);
-    U.UsesUnits.Add(t.Data);
-    FreeAndNil(t);
+    try
+      ExpectedToken(T, TOK_IDENTIFIER);
+      U.UsesUnits.Add(t.Data);
+    finally
+      FreeAndNil(t);
+    end;
     
     t := GetNextToken;
-    if (t.MyType <> TOK_SYMBOL) and
-      (t.Info.SymbolType <> SYM_COMMA) and
-      (t.Info.SymbolType <> SYM_SEMICOLON) then
-      DoError('Comma or semicolon expected', []);
-    Finished := t.Info.SymbolType = SYM_SEMICOLON;
-    FreeAndNil(t);
+    try
+      if (t.MyType <> TOK_SYMBOL) or
+        ( (t.Info.SymbolType <> SYM_COMMA) and
+          (t.Info.SymbolType <> SYM_SEMICOLON) ) then
+        DoError('Comma or semicolon expected', []);
+      Finished := t.Info.SymbolType = SYM_SEMICOLON;
+    finally
+      FreeAndNil(t);
+    end;
   until Finished;
 end;
 
@@ -1546,8 +1554,7 @@ begin
         end else 
         begin
           t := GetNextToken(ItemCollector);
-          if (t.MyType <> TOK_IDENTIFIER) then
-            DoError('Identifier expected', []);
+          ExpectedToken(T, TOK_IDENTIFIER);
           NewItem.Name := t.Data;
         end;       
 
