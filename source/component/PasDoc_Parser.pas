@@ -371,7 +371,8 @@ procedure TParser.ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
 begin
   if not T.IsKeyWord(AKeyWord) then
     DoError(SExpectedButFound, 
-      [Format('reserved word "%s"', [KeyWordArray[AKeyWord]]), T.Description]);
+      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]), 
+      T.Description]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1315,11 +1316,11 @@ begin
     end;
     FreeAndNil(t1); // free ')' token
     t1 := GetNextToken; // next
-    if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_SEMICOLON) then begin
+    if t1.IsSymbol(SYM_SEMICOLON) then begin
       FreeAndNil(t1);
       t1 := GetNextToken;
     end;
-    if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_END) then break;
+    if t1.IsKeyWord(KEY_END) then break;
     if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
   until false;
   Scanner.UnGetToken(t1);
@@ -1440,9 +1441,11 @@ var
 begin
   { get 'unit' keyword }
   t := GetNextToken;
-  if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_UNIT) then
-    DoError('Keyword "unit" expected', []);
-  FreeAndNil(t);
+  try
+    ExpectedKeyWord(T, KEY_UNIT);
+  finally
+    FreeAndNil(t);
+  end;
 
   U := TPasUnit.Create;
   try
@@ -1450,32 +1453,37 @@ begin
 
     { get unit name identifier }
     t := GetNextToken;
-    if t.MyType <> TOK_IDENTIFIER then
-      DoError('Identifier (unit name) expected', []);
-    U.Name := t.Data;
-    FreeAndNil(t);
+    try
+      ExpectedToken(T, TOK_IDENTIFIER);
+      U.Name := t.Data;
+    finally
+      FreeAndNil(t);
+    end;
     
     ParseHintDirectives(U);
     
     { skip semicolon }
     t := GetNextToken;
-    if not t.IsSymbol(SYM_SEMICOLON) then
-      DoError('Semicolon expected', []);
-    FreeAndNil(t);
+    try
+      ExpectedSymbol(T, SYM_SEMICOLON);
+    finally
+      FreeAndNil(t);
+    end;
     
     { get 'interface' keyword }
     t := GetNextToken;
-    if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INTERFACE) then
-      DoError('Keyword "interface" expected', []);
-      
+    try
+      ExpectedKeyWord(T, KEY_INTERFACE);
+    finally
+      FreeAndNil(t);
+    end;
+    
     { now parse the interface section of that unit }
     ParseInterfaceSection(U);
   except
     FreeAndNil(U);
-    FreeAndNil(t);
     raise;
   end;
-  FreeAndNil(t);
 end;
 
 { ---------------------------------------------------------------------------- }
