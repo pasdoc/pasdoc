@@ -32,7 +32,7 @@ type
     an input stream and a list of directives.
     Parsing work is done by calling @link(ParseUnit) method.
     If no errors appear, should return a @link(TPasUnit) object with
-    all information on the unit. 
+    all information on the unit. Else exception is raised.
     
     Things that parser inits in items it returns:
     
@@ -75,11 +75,7 @@ type
     E.g. AbstractDescription or DetailedDescription of TPasItem 
     should be inited while expanding this item's tags.
     E.g. SourceFileDateTime and SourceFileName of TPasUnit must
-    be set by other means.
-
-    TODO --- for now it's not really consistent how the errors in parsing
-    are reported. Some errors cause ParseXxx methods to exit with false,
-    some errors cause raising an exception. }
+    be set by other means. }
   TParser = class
   private
     FImplicitVisibility: TImplicitVisibility;
@@ -185,32 +181,33 @@ type
       to KeyWordString.
       
       D may contain a description or nil. }
-    function ParseCDFP(out M: TPasMethod; 
+    procedure ParseCDFP(out M: TPasMethod; 
       const ClassKeywordString: string;
       const KeyWordString: string; Key: TKeyWord;
-      d: string; const NeedName: boolean): Boolean;
+      d: string; const NeedName: boolean);
+      
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
       N is the name of this item.
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
-    function ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-      TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
-    { }
-    function ParseRecordCase(const R: TPasCio; const SubCase: boolean): boolean;
+    procedure ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
+      TCIOType; d: string; const IsInRecordCase: boolean);
+    
+    procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
     procedure ParseConstant(const U: TPasUnit; const ConstantName: string);
-    function ParseInterfaceSection(const U: TPasUnit): Boolean;
-    function ParseProperty(out p: TPasProperty): Boolean;
-    function ParseType(const U: TPasUnit; var t: TToken): Boolean;
+    procedure ParseInterfaceSection(const U: TPasUnit);
+    procedure ParseProperty(out p: TPasProperty);
+    procedure ParseType(const U: TPasUnit; var t: TToken);
     
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning is as P. }
     procedure ParseEnum(out p: TPasEnum; const Name, RawDescription: string);
 
-    function ParseUses(const U: TPasUnit): Boolean;
+    procedure ParseUses(const U: TPasUnit);
     
-    function ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
+    procedure ParseVariables(const U: TPasUnit; var t: TToken);
     
     { Parse one variables or fields clause 
       ("one clause" is something like 
@@ -219,8 +216,8 @@ type
       @param Items If Items <> nil then it adds parsed variables/fields to Items.
       @param(Visibility will be assigned to Visibility of 
        each variable/field instance.) }
-    function ParseFieldsVariables(Items: TPasItems; var t: TToken;
-      OfObject: boolean; Visibility: TVisibility): Boolean;
+    procedure ParseFieldsVariables(Items: TPasItems; var t: TToken;
+      OfObject: boolean; Visibility: TVisibility);
     
     { Read all tokens until you find a semicolon at brace-level 0 and
       end-level (between "record" and "end" keywords) also 0.
@@ -404,17 +401,16 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCDFP(out M: TPasMethod; 
+procedure TParser.ParseCDFP(out M: TPasMethod; 
   const ClassKeywordString: string;
   const KeyWordString: string; Key: TKeyword; 
-  d: string; const NeedName: boolean): Boolean;
+  d: string; const NeedName: boolean);
 var
   IsSemicolon: Boolean;
   t: TToken;
   level: Integer;
   InvalidType: boolean;
 begin
-  Result := False;
   M := TPasMethod.Create;
   M.RawDescription := d;
   t := nil;
@@ -613,26 +609,25 @@ begin
     end;
 
   until False;
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-  TCIOType; d: string; const IsInRecordCase: boolean): Boolean;
+procedure TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
+  TCIOType; d: string; const IsInRecordCase: boolean);
 
   { Parse fields clause, i.e. something like
       NAME1, NAME2, ... : TYPE;
     If AddToFields then adds parsed fields to i.Fields.
     Visibility of created fields is set to given Visibility parameter. }
-  function ParseFields(var t: TToken; 
-    i: TPasCio; AddToFields: boolean; Visibility: TVisibility): boolean;
+  procedure ParseFields(var t: TToken; 
+    i: TPasCio; AddToFields: boolean; Visibility: TVisibility);
   var Items: TPasItems;
   begin
     if AddToFields then
       Items := i.Fields else
       Items := nil;
-    Result := ParseFieldsVariables(Items, t, true, Visibility);
+    ParseFieldsVariables(Items, t, true, Visibility);
   end;
   
 var
@@ -646,7 +641,6 @@ var
   ClassKeyWordString: string;
 begin
   t := nil;
-  Result := False;
   DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
   i := nil;
   try
@@ -656,7 +650,7 @@ begin
         class MyClass = class;
       with no ancestor or class members listed after the word class. }
     if t.IsSymbol(SYM_SEMICOLON) then begin
-      Result := True; // No error, continue the parsing.
+      // No error, continue the parsing.
       t.Free;
       Exit;
     end;
@@ -791,7 +785,6 @@ begin
           { A forward declaration of type "name = class(ancestor);" }
         FreeAndNil(t);
         if Assigned(U) then U.AddCIO(i);
-        Result := True;
         Exit;
       end
       else
@@ -804,12 +797,13 @@ begin
             KEY_PROCEDURE: 
               begin
                 d := GetLastComment(True);
-                if not ParseCDFP(M, ClassKeyWordString, 
-                  t.Data, t.Info.KeyWord, d, True) then
-                begin
+                try
+                  ParseCDFP(M, ClassKeyWordString, 
+                    t.Data, t.Info.KeyWord, d, True);
+                except
                   i.Free;
                   FreeAndNil(t);
-                  Exit;
+                  raise;
                 end;
                 ClassKeyWordString := '';
                 M.Visibility := Visibility;
@@ -823,11 +817,7 @@ begin
               end;
             KEY_END: Finished := True;
             KEY_PROPERTY: begin
-                if (not ParseProperty(p)) then begin
-                  FreeAndNil(t);
-                  i.Free;
-                  Exit;
-                end;
+                ParseProperty(p);
                 p.Visibility := Visibility;
                 if Visibility in ShowVisibilities then begin
                   i.Properties.Add(p);
@@ -838,12 +828,8 @@ begin
                 end;
               end;
             KEY_CASE: begin
-              try
-                if not ParseRecordCase(i, false) then begin
-                  FreeAndNil(t);
-                  i.Free;
-                  Exit;
-                end;
+                try
+                  ParseRecordCase(i, false);
                 except
                   FreeAndNil(t);
                   i.Free;
@@ -875,8 +861,7 @@ begin
               SD_PROTECTED: Visibility := viProtected;
               SD_AUTOMATED: Visibility := viAutomated;
               else
-                if not ParseFields(t, i, Visibility in ShowVisibilities, Visibility) then
-                  Exit;
+                ParseFields(t, i, Visibility in ShowVisibilities, Visibility);
             end;
           end;
       FreeAndNil(t);
@@ -913,7 +898,6 @@ begin
     t.Free;
     raise;
   end;
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -967,7 +951,7 @@ begin
   FreeAndNil(t);
 end;
 
-function TParser.ParseInterfaceSection(const U: TPasUnit): Boolean;
+procedure TParser.ParseInterfaceSection(const U: TPasUnit);
 const
   MODE_UNDEFINED = 0;
   MODE_CONST = 1;
@@ -981,7 +965,6 @@ var
   t: TToken;
 begin
   DoMessage(4, mtInformation, 'Entering interface section of unit %s',[U.Name]);
-  Result := False;
   Finished := False;
   Mode := MODE_UNDEFINED;
 
@@ -996,9 +979,9 @@ begin
               MODE_CONST:
                 ParseConstant(U, t.Data);
               MODE_TYPE:
-                if (not ParseType(U, t)) then Exit;
+                ParseType(U, t);
               MODE_VAR:
-                if (not ParseVariables(U, t)) then Exit;
+                ParseVariables(U, t);
             else
               DoError('%s: Error, unexpected identifier "%s".',
                 [Scanner.GetStreamInfo, t.Data]);
@@ -1011,20 +994,14 @@ begin
                 Mode := MODE_CONST;
               KEY_OPERATOR: begin
                   d := GetLastComment(True);
-                  if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
-                  then begin
-                    Exit;
-                  end;
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
               KEY_FUNCTION,
                 KEY_PROCEDURE: begin
                   d := GetLastComment(True);
-                  if (not ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True))
-                    then begin
-                    Exit;
-                  end;
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
@@ -1033,7 +1010,7 @@ begin
               KEY_TYPE:
                 Mode := MODE_TYPE;
               KEY_USES:
-                if not ParseUses(U) then Exit;
+                ParseUses(U);
               KEY_THREADVAR,
                 KEY_VAR:
                 Mode := MODE_VAR;
@@ -1047,18 +1024,16 @@ begin
       FreeAndNil(t);
     end;
   until Finished;
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseProperty(out p: TPasProperty): Boolean;
+procedure TParser.ParseProperty(out p: TPasProperty);
 var
   Finished: Boolean;
   t: TToken;
 begin
   t := nil;
-  ParseProperty := False;
   
   t := GetNextToken;
   if (t.MyType <> TOK_IDENTIFIER) then begin
@@ -1082,7 +1057,6 @@ begin
   begin
     p.FullDeclaration := p.FullDeclaration + ';';
     FreeAndNil(t);
-    ParseProperty := True;
     Exit;
   end;
 
@@ -1129,8 +1103,6 @@ begin
   
   { read the rest of declaration }
   SkipDeclaration(P);
-
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1145,8 +1117,8 @@ end;
     interface end ;              => interface
 }
 
-function TParser.ParseRecordCase(const R: TPasCio;
-  const SubCase: boolean): boolean;
+procedure TParser.ParseRecordCase(const R: TPasCio;
+  const SubCase: boolean);
 var
   t1, t2: TToken;
   P: TPasItem;
@@ -1155,14 +1127,15 @@ var
   LNeedId: boolean;
   ParenCount: integer;
 begin
-  Result := True;
   ParenCount := 0;
   t2 := nil;
   t1 := GetNextToken;
-  if t1.MyType <> TOK_IDENTIFIER then begin
-    Result := False;
+  if t1.MyType <> TOK_IDENTIFIER then 
+  begin
+    DoError('Parsing record case failed, identifier expected', []);
     FreeAndNil(t1);
-  end else begin
+  end else 
+  begin
     t2 := GetNextToken;
     if (t2.MyType = TOK_SYMBOL) and (t2.Info.SymbolType = SYM_COLON) then begin
       // case x:Type of
@@ -1309,7 +1282,7 @@ begin
   end;
 end;
 
-function TParser.ParseType(const U: TPasUnit; var t: TToken): Boolean;
+procedure TParser.ParseType(const U: TPasUnit; var t: TToken);
 var
   d: string;
   NormalType: TPasType;
@@ -1318,7 +1291,6 @@ var
   MethodType: TPasMethod;
   EnumType: TPasEnum;
 begin
-  Result := False;
   TypeName := t.Data;
   DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
   FreeAndNil(t);
@@ -1329,7 +1301,6 @@ begin
     if (t.IsSymbol(SYM_SEMICOLON)) then begin
       FreeAndNil(t);
       t := nil;
-      Result := True;
       Exit;
     end;
     FreeAndNil(t);
@@ -1352,67 +1323,58 @@ begin
           end else begin
             Scanner.UnGetToken(t);
             t := nil;
-            if not ParseCIO(U, TypeName, CIO_CLASS, d, False) then Exit;
-            Result := True;
+            ParseCIO(U, TypeName, CIO_CLASS, d, False);
             Exit;
           end;
         end;
       KEY_DISPINTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, TypeName, CIO_SPINTERFACE, d, False) then Exit;
-          Result := True;
+          ParseCIO(U, TypeName, CIO_SPINTERFACE, d, False);
           Exit;
         end;
       KEY_INTERFACE: begin
           FreeAndNil(t);
-          if not ParseCIO(U, TypeName, CIO_INTERFACE, d, False) then Exit;
-          Result := True;
+          ParseCIO(U, TypeName, CIO_INTERFACE, d, False);
           Exit;
         end;
       KEY_OBJECT: begin
           FreeAndNil(t);
-          if not ParseCIO(U, TypeName, CIO_OBJECT, d, False) then Exit;
-          Result := True;
+          ParseCIO(U, TypeName, CIO_OBJECT, d, False);
           Exit;
         end;
       KEY_RECORD: begin
           FreeAndNil(t);
-          if not ParseCIO(U, TypeName, CIO_RECORD, d, False) then Exit;
-          Result := True;
+          ParseCIO(U, TypeName, CIO_RECORD, d, False);
           Exit;
         end;
       KEY_PACKED: begin
           FreeAndNil(t);
           t := GetNextToken(LTemp);
           LCollected := LCollected + LTemp + t.Data;
-          if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then begin
+          if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then 
+          begin
             FreeAndNil(t);
-            if not ParseCIO(U, TypeName, CIO_PACKEDRECORD, d, False) then exit;
-            Result := True;
+            ParseCIO(U, TypeName, CIO_PACKEDRECORD, d, False);
             exit;
           end;
         end;
     end;
   if Assigned(t) then begin
     if (t.MyType = TOK_KEYWORD) then begin
-      if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-        if ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, False) then begin
-          MethodType.Name := TypeName;
-          MethodType.FullDeclaration := 
-            TypeName + ' = ' + MethodType.FullDeclaration;
-          U.AddType(MethodType);
-          Result := True;
-          exit;
-        end else begin
-          DoError('Very strange condition - found function but could not parse', []);
-        end;
+      if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then 
+      begin
+        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, False);
+        MethodType.Name := TypeName;
+        MethodType.FullDeclaration := 
+          TypeName + ' = ' + MethodType.FullDeclaration;
+        U.AddType(MethodType);
+        exit;
       end;
     end;
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then 
     begin
       ParseEnum(EnumType, TypeName, d);
       U.AddType(EnumType);
-      Result := True;
       Exit;
     end;
     SetLength(LCollected, Length(LCollected)-Length(t.Data));
@@ -1425,7 +1387,6 @@ begin
   NormalType.Name := TypeName;
   NormalType.RawDescription := d;
   U.AddType(NormalType);
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1465,8 +1426,7 @@ begin
       DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', []);
       
     { now parse the interface section of that unit }
-    if not ParseInterfaceSection(U) then
-      DoError('Parsing interface failed', []);
+    ParseInterfaceSection(U);
   except
     FreeAndNil(U);
     FreeAndNil(t);
@@ -1477,13 +1437,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseUses(const U: TPasUnit): Boolean;
+procedure TParser.ParseUses(const U: TPasUnit);
 var
   Finished: Boolean;
   t: TToken;
 begin
   t := nil;
-  Result := False;
 
   repeat
     t := GetNextToken;
@@ -1502,19 +1461,17 @@ begin
     Finished := t.Info.SymbolType = SYM_SEMICOLON;
     FreeAndNil(t);
   until Finished;
-
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseVariables(const U: TPasUnit; var t: TToken): Boolean;
+procedure TParser.ParseVariables(const U: TPasUnit; var t: TToken);
 begin
-  Result := ParseFieldsVariables(U.Variables, t, false, viPublished);
+  ParseFieldsVariables(U.Variables, t, false, viPublished);
 end;
 
-function TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
-  OfObject: boolean; Visibility: TVisibility): Boolean;
+procedure TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
+  OfObject: boolean; Visibility: TVisibility);
 var
   Finished: Boolean;
   FirstLoop: Boolean;
@@ -1526,8 +1483,6 @@ var
   ttemp: TToken;
   FirstCheck: boolean;
 begin
-  Result := false;
-  
   ItemCollector := TPasFieldVariable.Create;
   try
     ItemsParsed := TPasItems.Create(false);
@@ -1656,7 +1611,6 @@ begin
             while not Finished do
             begin
               ttemp := GetNextToken(WhitespaceCollector);
-              if ttemp = nil then Exit;
               if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
               begin
                 Finished := True;
@@ -1673,7 +1627,6 @@ begin
         until Finished and not FirstCheck;
       end;
 
-      Result := True;
       ItemsParsed.SetFullDeclaration(true, ItemCollector.FullDeclaration);
       ItemsParsed.SetIsDeprecated(ItemCollector.IsDeprecated);
       ItemsParsed.SetIsPlatformSpecific(ItemCollector.IsPlatformSpecific);
