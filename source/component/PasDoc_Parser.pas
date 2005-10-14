@@ -336,7 +336,7 @@ end;
 procedure TParser.DoError(const AMessage: string; 
   const AArguments: array of const);
 begin
-  raise EPasDoc.Create(AMessage, AArguments, 1);
+  raise EPasDoc.Create(Scanner.GetStreamInfo + ': ' + AMessage, AArguments, 1);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -351,29 +351,27 @@ end;
 { ---------------------------------------------------------------------------- }
 
 const
-  SExpectedButFound = '%s: %s expected but %s found';
+  SExpectedButFound = '%s expected but %s found';
 
 procedure TParser.ExpectedToken(T: TToken; ATokenType: TTokenType);
 begin
   if T.MyType <> ATokenType then
-    DoError(SExpectedButFound, [Scanner.GetStreamInfo,
-      TOKEN_TYPE_NAMES[ATokenType], T.Description]);
+    DoError(SExpectedButFound, 
+      [TOKEN_TYPE_NAMES[ATokenType], T.Description]);
 end;
 
 procedure TParser.ExpectedSymbol(T: TToken; ASymbolType: TSymbolType);
 begin
   if not T.IsSymbol(ASymbolType) then
-    DoError(SExpectedButFound, [Scanner.GetStreamInfo,
-      Format('symbol "%s"', [SymbolNames[ASymbolType]]), 
-      T.Description]);
+    DoError(SExpectedButFound, 
+      [Format('symbol "%s"', [SymbolNames[ASymbolType]]), T.Description]);
 end;
 
 procedure TParser.ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
 begin
   if not T.IsKeyWord(AKeyWord) then
-    DoError(SExpectedButFound, [Scanner.GetStreamInfo, 
-      Format('reserved word "%s"', [KeyWordArray[AKeyWord]]),
-      T.Description]);
+    DoError(SExpectedButFound, 
+      [Format('reserved word "%s"', [KeyWordArray[AKeyWord]]), T.Description]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -462,7 +460,7 @@ begin
     KEY_PROCEDURE:   M.What := METHOD_PROCEDURE;
     KEY_OPERATOR:    M.What := METHOD_OPERATOR;
   else
-    DoError('FATAL ERROR: CDFP got invalid key.', []);
+    DoError('Expected keyword starting some method/procedure', []);
   end;
   
   if ClassKeyWordString <> '' then
@@ -489,8 +487,11 @@ begin
 
     if InvalidType then begin
       M.Free;
-      FreeAndNil(t);
-      DoError('Could not get next identifier', []);
+      try
+        DoError('Unexpected token %s', [T.Description]);
+      finally
+        FreeAndNil(t);
+      end;
     end;
     M.Name := t.Data;
     DoMessage(5, mtInformation, 'Parsing %s "%s"',
@@ -731,8 +732,8 @@ begin
             s := s + '.';
             t := Scanner.GetToken;
             if t.MyType <> TOK_IDENTIFIER then
-              DoError('%s: expected class, object or interface in ancestor' +
-                ' declaration.', [Scanner.GetStreamInfo]);
+              DoError('Expected class, object or interface in ancestor' +
+                ' declaration', []);
 
             s := s + t.Data;
           until False;
@@ -745,7 +746,7 @@ begin
             Finished := t.IsSymbol(SYM_RIGHT_PARENTHESIS);
             FreeAndNil(t);
             if not Finished then
-              DoError('%s: Error - ")" expected.', [Scanner.GetStreamInfo]);
+              DoError('Symbol ")" expected', []);
           end;
         end;
       until Finished;
@@ -782,12 +783,12 @@ begin
       { for the time being, we throw away the ID itself }
       t := GetNextToken;
       if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
-        DoError('%s: Error - literal String or identifier as interface ID expected.', [Scanner.GetStreamInfo]);
+        DoError('Literal String or identifier as interface ID expected', []);
       FreeAndNil(t);
       
       t := GetNextToken;
       if not t.IsSymbol(SYM_RIGHT_BRACKET) then
-        DoError('%s: Error - "]" expected.', [Scanner.GetStreamInfo]);
+        DoError('Symbol "]" expected', []);
     end else begin
       Scanner.UnGetToken(t);
     end;
@@ -880,8 +881,7 @@ begin
           else begin
               i.Free;
               try
-                DoError('%s: Error, unexpected reserved keyword "%s".',
-                  [Scanner.GetStreamInfo, KeyWordArray[t.Info.KeyWord]]);
+                DoError('Unexpected %s', [T.Description]);
               finally
                 FreeAndNil(t);
               end;
@@ -920,14 +920,13 @@ begin
             Scanner.UnGetToken(t) else 
           begin
             i.Free;
-            DoError('%s: unexpected symbol at end of sub-record.', 
-              [Scanner.GetStreamInfo]);
+            DoError('Unexpected symbol at end of sub-record', []);
           end;
         end else 
         begin
           i.Free;
-          DoError('%s: Semicolon at the end of Class / Object / Interface' +
-            ' / Record expected.', [Scanner.GetStreamInfo]);
+          DoError('Semicolon at the end of Class / Object / Interface' +
+            ' / Record expected', []);
         end;
       end;
     finally
@@ -1027,8 +1026,7 @@ begin
               MODE_VAR:
                 ParseVariables(U, t);
             else
-              DoError('%s: Error, unexpected identifier "%s".',
-                [Scanner.GetStreamInfo, t.Data]);
+              DoError('Unexpected identifier "%s"', [t.Data]);
             end;
           end;
         TOK_KEYWORD: begin
@@ -1059,8 +1057,7 @@ begin
                 KEY_VAR:
                 Mode := MODE_VAR;
             else
-              DoError('%s: Unexpected keyword %s.', [Scanner.GetStreamInfo,
-                t.Data]);
+              DoError('Unexpected %s', [T.Description]);
             end;
           end;
       end;
@@ -1082,8 +1079,7 @@ begin
   t := GetNextToken;
   if (t.MyType <> TOK_IDENTIFIER) then begin
     FreeAndNil(t);
-    DoError('%s: expected identifier as property name.',
-      [Scanner.GetStreamInfo]);
+    DoError('Expected identifier as property name', []);
   end;
   p := TPasProperty.Create;
   p.Name := t.Data;
@@ -1219,12 +1215,14 @@ begin
         TOK_NUMBER: if not LNeedId then begin
                       s := t1.Data;
                       FreeAndNil(t1);
-                      DoError('did not expect identifier %s here!', [s]);
+                      DoError('Unexpected identifier "%s"', [s]);
                     end;
         else begin
-          s := t1.Data;
-          FreeAndNil(t1);
-          DoError('unexpected token: %s', [s]);
+          try
+            DoError('Unexpected token %s', [T1.Description]);
+          finally
+            FreeAndNil(t1);
+          end;
         end;
       end;
       FreeAndNil(t1);
@@ -1236,7 +1234,7 @@ begin
     t1 := GetNextToken;
     if (t1.MyType <> TOK_SYMBOL) or (t1.Info.SymbolType <> SYM_LEFT_PARENTHESIS) then begin
       FreeAndNil(t1);
-      DoError('( expected', []);
+      DoError('Symbol "(" expected', []);
     end;
     FreeAndNil(t1);
     t1 := GetNextToken;
@@ -1349,7 +1347,7 @@ begin
       Exit;
     end;
     FreeAndNil(t);
-    DoError('"=" expected in file %s', [Scanner.GetStreamInfo]);
+    DoError('Symbol "=" expected', []);
   end;
   LCollected := TypeName + LCollected + t.Data;
   FreeAndNil(t);
@@ -1443,7 +1441,7 @@ begin
   { get 'unit' keyword }
   t := GetNextToken;
   if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_UNIT) then
-    DoError(Scanner.GetStreamInfo + ': keyword "unit" expected.', []);
+    DoError('Keyword "unit" expected', []);
   FreeAndNil(t);
 
   U := TPasUnit.Create;
@@ -1453,7 +1451,7 @@ begin
     { get unit name identifier }
     t := GetNextToken;
     if t.MyType <> TOK_IDENTIFIER then
-      DoError(Scanner.GetStreamInfo + ': identifier (unit name) expected.', []);
+      DoError('Identifier (unit name) expected', []);
     U.Name := t.Data;
     FreeAndNil(t);
     
@@ -1462,13 +1460,13 @@ begin
     { skip semicolon }
     t := GetNextToken;
     if not t.IsSymbol(SYM_SEMICOLON) then
-      DoError(Scanner.GetStreamInfo + ': semicolon expected.', []);
+      DoError('Semicolon expected', []);
     FreeAndNil(t);
     
     { get 'interface' keyword }
     t := GetNextToken;
     if (t.MyType <> TOK_KEYWORD) or (t.Info.KeyWord <> KEY_INTERFACE) then
-      DoError(Scanner.GetStreamInfo + ': keyword "INTERFACE" expected.', []);
+      DoError('Keyword "interface" expected', []);
       
     { now parse the interface section of that unit }
     ParseInterfaceSection(U);
@@ -1492,8 +1490,7 @@ begin
   repeat
     t := GetNextToken;
     if t.MyType <> TOK_IDENTIFIER then
-      DoError('%s: Error, unit name expected (found %s "%s")',
-        [Scanner.GetStreamInfo, t.GetTypeName, t.Data]);
+      DoError('Unit name expected (found %s)', [T.Description]);
     U.UsesUnits.Add(t.Data);
     FreeAndNil(t);
     
@@ -1501,8 +1498,7 @@ begin
     if (t.MyType <> TOK_SYMBOL) and
       (t.Info.SymbolType <> SYM_COMMA) and
       (t.Info.SymbolType <> SYM_SEMICOLON) then
-      DoError('%s: Error, comma or semicolon expected.',
-        [Scanner.GetStreamInfo]);
+      DoError('Comma or semicolon expected', []);
     Finished := t.Info.SymbolType = SYM_SEMICOLON;
     FreeAndNil(t);
   until Finished;
@@ -1543,7 +1539,7 @@ begin
         begin
           t := GetNextToken(ItemCollector);
           if (t.MyType <> TOK_IDENTIFIER) then
-            DoError('%s: Identifier expected.', [Scanner.GetStreamInfo]);
+            DoError('Identifier expected', []);
           NewItem.Name := t.Data;
         end;       
 
@@ -1565,8 +1561,7 @@ begin
         if (t.MyType <> TOK_SYMBOL) or
           ((t.Info.SymbolType <> SYM_COMMA) and
           (t.Info.SymbolType <> SYM_COLON)) then
-          DoError('%s: Expected comma or colon in variable or field declaration.',
-            [Scanner.GetStreamInfo]);
+          DoError('Expected comma or colon in variable or field declaration', []);
 
         Finished := (t.Info.SymbolType = SYM_COLON);
         if (t.MyType <> TOK_SYMBOL) or (t.Info.SymbolType <> SYM_COMMA) then 
