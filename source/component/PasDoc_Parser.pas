@@ -1271,15 +1271,14 @@ begin
             if (t1.Info.KeyWord = KEY_PACKED) then begin
               FreeAndNil(t1);
               t1 := GetNextToken;
-              if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_RECORD) then begin
+              if t1.IsKeyWord(KEY_RECORD) then begin
                 ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
               end;
             end;
           end;
-          LLastWasComma := false;
-          if t1.IsSymbol(SYM_COMMA) then begin
-            LLastWasComma := True;
-          end;
+
+          LLastWasComma := t1.IsSymbol(SYM_COMMA);
+
           if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
             or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and
             (ParenCount > 0)) then begin
@@ -1302,7 +1301,7 @@ begin
           Scanner.UnGetToken(t1);
         end;
       end else begin
-        if (t1.MyType = TOK_KEYWORD) and (t1.Info.KeyWord = KEY_CASE) then begin
+        if t1.IsKeyWord(KEY_CASE) then begin
           ParseRecordCase(R, true);
         end else begin
           FreeAndNil(t1);
