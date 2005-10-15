@@ -518,12 +518,9 @@ begin
         else
           M.FullDeclaration := M.FullDeclaration + t.Data;
       end;
-    if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_LEFT_PARENTHESIS)
-      then Inc(level);
-    if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
-      then Dec(level);
-    IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
-      SYM_SEMICOLON);
+    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);
+    if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then Dec(level);
+    IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
     FreeAndNil(t);
   until IsSemicolon and (Level = 0);
   
@@ -574,7 +571,7 @@ begin
                 raise;
               end;
 
-              if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then begin
+              if t.IsSymbol(SYM_SEMICOLON) then begin
                 Break
               end else begin
                 if t.MyType = TOK_IDENTIFIER then 
@@ -644,7 +641,7 @@ begin
       even though Delphi help consistently uses them consistently.
       However, we take the compiler as a reference and try to mimic its behaviour. }
     { Is current token a semicolon? }
-    if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_SEMICOLON) then
+    if t.IsSymbol(SYM_SEMICOLON) then
       M.FullDeclaration := M.FullDeclaration + ';'
     else begin
       M.FullDeclaration := M.FullDeclaration + ' ';
@@ -1242,7 +1239,8 @@ begin
     end;
     
     t1 := GetNextToken;
-    while (t1.MyType <> TOK_SYMbol) or (T1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) do begin
+    while not t1.IsSymbol(SYM_RIGHT_PARENTHESIS) do 
+    begin
       if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
         P := TPasItem.Create;
         p.RawDescription := GetLastComment(True);
@@ -1282,7 +1280,7 @@ begin
             end;
           end;
           LLastWasComma := false;
-          if (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_COMMA) then begin
+          if t1.IsSymbol(SYM_COMMA) then begin
             LLastWasComma := True;
           end;
           if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
@@ -1324,7 +1322,7 @@ begin
       t1 := GetNextToken;
     end;
     if t1.IsKeyWord(KEY_END) then break;
-    if subcase and (t1.MyType = TOK_SYMBOL) and (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) then break;
+    if subcase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS) then break;
   until false;
   Scanner.UnGetToken(t1);
 end;
@@ -1365,7 +1363,8 @@ begin
           FreeAndNil(t);
           t := GetNextToken(LTemp);
           LCollected := LCollected + LTemp + t.Data;
-          if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_OF) then begin
+          if t.IsKeyWord(KEY_OF) then 
+          begin
             { include "identifier = class of something;" as standard type }
           end else begin
             Scanner.UnGetToken(t);
@@ -1398,7 +1397,7 @@ begin
           FreeAndNil(t);
           t := GetNextToken(LTemp);
           LCollected := LCollected + LTemp + t.Data;
-          if (t.MyType = TOK_KEYWORD) AND (t.Info.KeyWord = KEY_RECORD) then 
+          if t.IsKeyWord(KEY_RECORD) then 
           begin
             FreeAndNil(t);
             ParseCIO(U, TypeName, CIO_PACKEDRECORD, d, False);
@@ -1604,7 +1603,7 @@ begin
         FreeAndNil(t);
         t := GetNextToken(ItemCollector);
 
-        if (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType = SYM_EQUAL) then
+        if t.IsSymbol(SYM_EQUAL) then
         begin
           ItemCollector.FullDeclaration := 
             ItemCollector.FullDeclaration + t.Data;
@@ -1614,17 +1613,19 @@ begin
           Scanner.UnGetToken(t);
         end;
       end else
-      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then
+      if t.IsKeyWord(KEY_RECORD) then
       begin
         ParseCIO(nil, '', CIO_RECORD, '', false);
       end else
-      if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then
+      if t.IsKeyWord(KEY_PACKED) then
       begin 
         FreeAndNil(t);
         t := GetNextToken;
-        if (t.MyType = TOK_KEYWORD) and (t.Info.KeyWord = KEY_RECORD) then begin
+        if t.IsKeyWord(KEY_RECORD) then 
+        begin
           ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
-        end else begin
+        end else 
+        begin
           SkipDeclaration(ItemCollector);
         end;      
       end else
@@ -1666,7 +1667,7 @@ begin
             while not Finished do
             begin
               ttemp := GetNextToken(WhitespaceCollector);
-              if (ttemp.MyType = TOK_SYMBOL) and (ttemp.Info.SymbolType = SYM_SEMICOLON) then
+              if ttemp.IsSymbol(SYM_SEMICOLON) then
               begin
                 Finished := True;
                 FirstCheck := False;
@@ -1734,8 +1735,7 @@ begin
             if Assigned(Item) then Item.IsDeprecated := true;
         end;
     end;
-    IsSemicolon := (t.MyType = TOK_SYMBOL) and (t.Info.SymbolType =
-      SYM_SEMICOLON);
+    IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
     if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
     if EndLevel<0 then begin
       // within records et al. the last declaration need not be terminated by ;
@@ -1827,22 +1827,19 @@ begin
   repeat
     t := PeekNextToken;
     
-    if (t.MyType = TOK_IDENTIFIER) and 
-       (t.Info.StandardDirective = SD_PLATFORM) then
+    if t.IsStandardDirective(SD_PLATFORM) then
     begin
       Scanner.ConsumeToken;
       Item.IsPlatformSpecific := true;
       FreeAndNil(t);
     end else
-    if (t.MyType = TOK_IDENTIFIER) and 
-       (t.Info.StandardDirective = SD_DEPRECATED) then
+    if t.IsStandardDirective(SD_DEPRECATED) then
     begin
       Scanner.ConsumeToken;
       Item.IsDeprecated := true;
       FreeAndNil(t);
     end else
-    if (t.MyType = TOK_KEYWORD) and 
-       (t.Info.KeyWord = KEY_LIBRARY) then
+    if t.IsKeyWord(KEY_LIBRARY) then
     begin
       Scanner.ConsumeToken;
       Item.IsLibrarySpecific := true;
