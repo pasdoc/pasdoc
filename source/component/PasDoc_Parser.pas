@@ -219,6 +219,16 @@ type
 
     procedure ParseUses(const U: TPasUnit);
     
+    { This parses the sequence of identifiers separated by commas
+      and ended by symbol FinalSymbol. More specifically in EBNF it parses
+        TOK_IDENTIFIER (SYM_COMMA TOK_IDENTIFIER)+ FinalSymbol
+      FinalSymbol must be something else than SYM_COMMA.
+      After executing this, next token (returned by GetNextToken and PeekNextToken)
+      will point to the next token right after FinalSymbol.
+      All found identifiers will be appended to Names. }
+    procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
+      FinalSymbol: TSymbolType; out RawDescription: string);
+    
     procedure ParseVariables(const U: TPasUnit);
     
     { Parse one variables or fields clause 
@@ -1513,31 +1523,45 @@ end;
 
 procedure TParser.ParseUses(const U: TPasUnit);
 var
-  Finished: Boolean;
-  t: TToken;
+  Dummy: string;
 begin
-  t := nil;
+  ParseCommaSeparatedIdentifiers(U.UsesUnits, SYM_SEMICOLON, Dummy);
+end;
 
+{ ---------------------------------------------------------------------------- }
+
+procedure TParser.ParseCommaSeparatedIdentifiers(Names: TStrings;
+  FinalSymbol: TSymbolType; out RawDescription: string);
+var
+  T: TToken;
+begin
+  { PeekNextToken is done only to make sure that LastComment is good,
+    i.e. it must be last comment before first identifier parsed
+    by this method. }
+  PeekNextToken;
+  RawDescription := GetLastComment(true);
+  
   repeat
-    t := GetNextToken;
+    T := GetNextToken;
     try
       ExpectedToken(T, TOK_IDENTIFIER);
-      U.UsesUnits.Add(t.Data);
+      Names.Append(T.Data);
     finally
-      FreeAndNil(t);
+      FreeAndNil(T);
     end;
     
-    t := GetNextToken;
+    T := GetNextToken;
     try
-      if (t.MyType <> TOK_SYMBOL) or
-        ( (t.Info.SymbolType <> SYM_COMMA) and
-          (t.Info.SymbolType <> SYM_SEMICOLON) ) then
-        DoError('Comma or semicolon expected', []);
-      Finished := t.Info.SymbolType = SYM_SEMICOLON;
+      if (T.MyType <> TOK_SYMBOL) or
+        ( (T.Info.SymbolType <> SYM_COMMA) and
+          (T.Info.SymbolType <> FinalSymbol) ) then
+        DoError('One of symbols "," or "%s" expected', [SymbolNames[FinalSymbol]]);
+      if T.Info.SymbolType = FinalSymbol then
+        break;
     finally
-      FreeAndNil(t);
+      FreeAndNil(T);
     end;
-  until Finished;
+  until false;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1554,52 +1578,23 @@ var
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
   m: TPasMethod;
-  ItemsParsed: TPasItems;
-  WhitespaceCollector: string;
   t, ttemp: TToken;
   FirstCheck: boolean;
+  
+  NewItemNames: TStringList;
+  I: Integer;
+  RawDescription: string;
 begin
-  ItemCollector := TPasFieldVariable.Create;
+  NewItemNames := TStringList.Create;
   try
-    ItemsParsed := TPasItems.Create(false);
+    ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescription);
+    
+    ItemCollector := TPasFieldVariable.Create;
     try
-      repeat
-        NewItem := TPasFieldVariable.Create;
-        t := GetNextToken(ItemCollector);
-        ExpectedToken(T, TOK_IDENTIFIER);
-        NewItem.Name := t.Data;
-
-        if Items <> nil then
-        begin
-          NewItem.Visibility := Visibility;
-          NewItem.RawDescription := GetLastComment(false);
-          Items.Add(NewItem);
-          ItemsParsed.Add(NewItem);
-        end else
-        begin
-          FreeAndNil(NewItem);
-        end;
-
-        FreeAndNil(t);
-        
-        t := GetNextToken(ItemCollector);
-        
-        if (t.MyType <> TOK_SYMBOL) or
-          ((t.Info.SymbolType <> SYM_COMMA) and
-          (t.Info.SymbolType <> SYM_COLON)) then
-          DoError('Expected comma or colon in variable or field declaration', []);
-
-        Finished := (t.Info.SymbolType = SYM_COLON);
-        if (t.MyType <> TOK_SYMBOL) or (t.Info.SymbolType <> SYM_COMMA) then 
-          ItemCollector.FullDeclaration := 
-            ItemCollector.FullDeclaration + t.Data;
-        FreeAndNil(t);
-      until Finished;
+      ItemCollector.FullDeclaration := ':';
       
-      ClearLastComment;
       t := GetNextToken(ItemCollector);
-      ItemCollector.FullDeclaration := 
-        ItemCollector.FullDeclaration + t.Data;
+      ItemCollector.FullDeclaration := ItemCollector.FullDeclaration + t.Data;
       if (t.MyType = TOK_KEYWORD) and 
          (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
       begin
@@ -1649,11 +1644,10 @@ begin
       begin
         // The following section allows PasDoc to parse variable modifiers in FPC.
         // See: http://www.freepascal.org/docs-html/ref/refse19.html
-        ClearLastComment;
         Finished := False;
         FirstCheck := True;
         repeat
-          ttemp := GetNextToken(WhitespaceCollector);
+          ttemp := GetNextToken;
 
           if FirstCheck then
           begin
@@ -1678,7 +1672,7 @@ begin
             end;
             while not Finished do
             begin
-              ttemp := GetNextToken(WhitespaceCollector);
+              ttemp := GetNextToken;
               if ttemp.IsSymbol(SYM_SEMICOLON) then
               begin
                 Finished := True;
@@ -1695,12 +1689,23 @@ begin
         until Finished and not FirstCheck;
       end;
 
-      ItemsParsed.SetFullDeclaration(true, ItemCollector.FullDeclaration);
-      ItemsParsed.SetIsDeprecated(ItemCollector.IsDeprecated);
-      ItemsParsed.SetIsPlatformSpecific(ItemCollector.IsPlatformSpecific);
-      ItemsParsed.SetIsLibrarySpecific(ItemCollector.IsLibrarySpecific);
-    finally ItemsParsed.Free end; 
-  finally ItemCollector.Free end;
+      if Items <> nil then
+      begin
+        for I := 0 to NewItemNames.Count - 1 do
+        begin
+          NewItem := TPasFieldVariable.Create;
+          NewItem.Name := NewItemNames[i];
+          NewItem.Visibility := Visibility;
+          NewItem.RawDescription := RawDescription;
+          NewItem.FullDeclaration := NewItem.Name + ItemCollector.FullDeclaration;
+          NewItem.IsDeprecated := ItemCollector.IsDeprecated;
+          NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
+          NewItem.IsLibrarySpecific := ItemCollector.IsLibrarySpecific;
+          Items.Add(NewItem);
+        end;
+      end;
+    finally ItemCollector.Free end;
+  finally NewItemNames.Free end;
 end;
 
 { ---------------------------------------------------------------------------- }
