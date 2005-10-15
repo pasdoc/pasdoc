@@ -207,10 +207,10 @@ type
       TCIOType; d: string; const IsInRecordCase: boolean);
     
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
-    procedure ParseConstant(const U: TPasUnit; const ConstantName: string);
+    procedure ParseConstant(const U: TPasUnit);
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
-    procedure ParseType(const U: TPasUnit; var t: TToken);
+    procedure ParseType(const U: TPasUnit);
     
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
@@ -219,7 +219,7 @@ type
 
     procedure ParseUses(const U: TPasUnit);
     
-    procedure ParseVariables(const U: TPasUnit; var t: TToken);
+    procedure ParseVariables(const U: TPasUnit);
     
     { Parse one variables or fields clause 
       ("one clause" is something like 
@@ -228,7 +228,7 @@ type
       @param Items If Items <> nil then it adds parsed variables/fields to Items.
       @param(Visibility will be assigned to Visibility of 
        each variable/field instance.) }
-    procedure ParseFieldsVariables(Items: TPasItems; var t: TToken;
+    procedure ParseFieldsVariables(Items: TPasItems; 
       OfObject: boolean; Visibility: TVisibility);
     
     { Read all tokens until you find a semicolon at brace-level 0 and
@@ -660,14 +660,14 @@ procedure TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
       NAME1, NAME2, ... : TYPE;
     If AddToFields then adds parsed fields to i.Fields.
     Visibility of created fields is set to given Visibility parameter. }
-  procedure ParseFields(var t: TToken; 
-    i: TPasCio; AddToFields: boolean; Visibility: TVisibility);
+  procedure ParseFields(i: TPasCio; AddToFields: boolean; 
+    Visibility: TVisibility);
   var Items: TPasItems;
   begin
     if AddToFields then
       Items := i.Fields else
       Items := nil;
-    ParseFieldsVariables(Items, t, true, Visibility);
+    ParseFieldsVariables(Items, true, Visibility);
   end;
   
 var
@@ -902,7 +902,10 @@ begin
               SD_PROTECTED: Visibility := viProtected;
               SD_AUTOMATED: Visibility := viAutomated;
               else
-                ParseFields(t, i, Visibility in ShowVisibilities, Visibility);
+                begin
+                  Scanner.UnGetToken(T);
+                  ParseFields(i, Visibility in ShowVisibilities, Visibility);
+                end;
             end;
           end;
       FreeAndNil(t);
@@ -942,18 +945,24 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseConstant(const U: TPasUnit; 
-  const ConstantName: string);
+procedure TParser.ParseConstant(const U: TPasUnit);
 var
   i: TPasConstant;
+  T: TToken;
 begin
-  i := TPasConstant.Create;
-  i.Name := ConstantName;
-  DoMessage(5, mtInformation, 'Parsing constant %s.', [i.Name]);
-  i.RawDescription := GetLastComment(True);
-  i.FullDeclaration := ConstantName;
-  SkipDeclaration(i);
-  U.AddConstant(i);
+  T := GetNextToken;
+  try
+    ExpectedToken(T, TOK_IDENTIFIER);
+    i := TPasConstant.Create;
+    i.Name := T.Data;
+    DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
+    i.RawDescription := GetLastComment(True);
+    i.FullDeclaration := i.Name;
+    SkipDeclaration(i);
+    U.AddConstant(i);
+  finally
+    FreeAndNil(T);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1016,15 +1025,24 @@ begin
 
     try
       case t.MyType of
-        TOK_IDENTIFIER: begin
-            // s := t.Data;
+        TOK_IDENTIFIER: 
+          begin
             case Mode of
               MODE_CONST:
-                ParseConstant(U, t.Data);
+                begin
+                  Scanner.UnGetToken(T);
+                  ParseConstant(U);
+                end;
               MODE_TYPE:
-                ParseType(U, t);
+                begin
+                  Scanner.UnGetToken(T);
+                  ParseType(U);
+                end;
               MODE_VAR:
-                ParseVariables(U, t);
+                begin
+                  Scanner.UnGetToken(T);
+                  ParseVariables(U);
+                end;
             else
               DoError('Unexpected %s', [T.Description]);
             end;
@@ -1323,7 +1341,7 @@ begin
   Scanner.UnGetToken(t1);
 end;
 
-procedure TParser.ParseType(const U: TPasUnit; var t: TToken);
+procedure TParser.ParseType(const U: TPasUnit);
 var
   d: string;
   NormalType: TPasType;
@@ -1331,10 +1349,17 @@ var
   LCollected, LTemp: string;
   MethodType: TPasMethod;
   EnumType: TPasEnum;
+  T: TToken;
 begin
-  TypeName := t.Data;
-  DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
-  FreeAndNil(t);
+  T := GetNextToken;
+  try
+    ExpectedToken(T, TOK_IDENTIFIER);
+    TypeName := t.Data;
+    DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
+  finally
+    FreeAndNil(t);
+  end;
+  
   d := GetLastComment(True);
   t := GetNextToken(LCollected);
 
@@ -1517,41 +1542,32 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseVariables(const U: TPasUnit; var t: TToken);
+procedure TParser.ParseVariables(const U: TPasUnit);
 begin
-  ParseFieldsVariables(U.Variables, t, false, viPublished);
+  ParseFieldsVariables(U.Variables, false, viPublished);
 end;
 
-procedure TParser.ParseFieldsVariables(Items: TPasItems; var t: TToken;
+procedure TParser.ParseFieldsVariables(Items: TPasItems; 
   OfObject: boolean; Visibility: TVisibility);
 var
   Finished: Boolean;
-  FirstLoop: Boolean;
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
   m: TPasMethod;
   ItemsParsed: TPasItems;
   WhitespaceCollector: string;
-  ttemp: TToken;
+  t, ttemp: TToken;
   FirstCheck: boolean;
 begin
   ItemCollector := TPasFieldVariable.Create;
   try
     ItemsParsed := TPasItems.Create(false);
     try
-      FirstLoop := True;
       repeat
         NewItem := TPasFieldVariable.Create;
-        if FirstLoop then 
-        begin
-          NewItem.Name := t.Data;
-          FirstLoop := False;
-        end else 
-        begin
-          t := GetNextToken(ItemCollector);
-          ExpectedToken(T, TOK_IDENTIFIER);
-          NewItem.Name := t.Data;
-        end;       
+        t := GetNextToken(ItemCollector);
+        ExpectedToken(T, TOK_IDENTIFIER);
+        NewItem.Name := t.Data;
 
         if Items <> nil then
         begin

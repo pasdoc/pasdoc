@@ -124,6 +124,13 @@ type
     property IncludeFilePaths: TStringVector read FIncludeFilePaths write
       FIncludeFilePaths;
     function PeekToken: TToken;
+    
+    { Place T in the buffer. Next time you will call GetToken you will
+      get T. This also sets T to nil (because you shouldn't free T
+      anymore after ungetting it). Note that the buffer has room only
+      for 1 token, so you have to make sure that you will never unget
+      more than two tokens. Practically, always call UnGetToken right
+      after some GetToken. }
     procedure UnGetToken(var t: TToken);
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
