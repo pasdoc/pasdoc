@@ -1146,16 +1146,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-{
-  TYPENAME =
-    class of ... ;               => "normal" type
-    class ( ANCESTOR<S> )        => class
-          ANYTHING               => class
-    object ( ) end ;                 => object
-          ANYTHING
-    interface end ;              => interface
-}
-
 procedure TParser.ParseRecordCase(const R: TPasCio;
   const SubCase: boolean);
 var
@@ -1253,11 +1243,18 @@ begin
           t1 := GetNextToken;
         end;
         LLastWasComma := false;
-        while (t1.MyType <> TOK_SYMBOL)
-          OR ((t1.Info.SymbolType <> SYM_SEMICOLON)
-          and (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS))
-          or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
-          and (ParenCount > 0)) do begin
+        
+        { T1 must be either: 
+          - not a symbol 
+          - or a symbol other than ';' or ')'
+          - or a symbol ')' but only when ParenCount > 0 }
+        while 
+          (t1.MyType <> TOK_SYMBOL) or
+          ( (t1.Info.SymbolType <> SYM_SEMICOLON) and 
+            (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) ) or
+          ( (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and 
+            (ParenCount > 0) ) do 
+        begin
           if (t1.MyType = TOK_IDENTIFIER) then begin
             if LLastWasComma then begin
               p := TPasItem.Create;
