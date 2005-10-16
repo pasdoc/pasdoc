@@ -1580,7 +1580,6 @@ var
   m: TPasMethod;
   t, ttemp: TToken;
   FirstCheck: boolean;
-  
   NewItemNames: TStringList;
   I: Integer;
   RawDescription: string;
