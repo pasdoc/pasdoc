@@ -26,6 +26,7 @@
 
 Pasdoc creates documentation for Pascal unit files.
 
+% equivalent paragraph is in wiki at the beginning of WhereToPlaceComments page
 Descriptions for variables, constants, types (called 'items' from now on) are 
 taken from comments stored in the interface sections of unit source code files,
 each comment must be placed directly before the item's declaration.
@@ -51,6 +52,7 @@ as with Delphi and Kylix.
 
 \section{Directives}
 
+% Begin: Block below is the wiki docs (on the ConditionalDefines page)
 As you may know, Pascal allows for \emph{directives} in the source code.
 These are comments that contain commands for the compiler introduced by the
 dollar sign.
@@ -97,6 +99,7 @@ that you want this directive defined.
 
 You can do so using the \emph{Specify directive} or \emph{Add directives from
 file} switch (see sections \ref{specifydirective} and \ref{specifydirectives}).
+% End: Block above is the wiki docs (on the ConditionalDefines page)
 
 Next to those directives already presented, pasdoc also supports include
 files:
@@ -736,6 +739,7 @@ output (usually the console) and terminates.
 
 \subsubsection{Specify a directive}
 \label{specifydirective}
+% this subsubsection is present in wiki (on ConditionalDefines page)
 
 {\tt -D DIRECTIVE}\\
 {\tt --define DIRECTIVE}\\
@@ -772,6 +776,7 @@ pasdoc --include c:\mysources\include --include c:\3rdparty\somelib\include
 
 \subsubsection{Specify directive file}
 \label{specifydirectives}
+% this subsubsection is present in wiki (on ConditionalDefines page)
 
 {\tt -d DIRECTORY}\\
 {\tt --conditionals DIRECTORY}\\
