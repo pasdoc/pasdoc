@@ -102,15 +102,15 @@ type
 
     { Checks if T.MyType is ATokenType, if not calls DoError
       with appropriate error mesg. }
-    procedure ExpectedToken(T: TToken; ATokenType: TTokenType);
+    procedure CheckToken(T: TToken; ATokenType: TTokenType); overload;
     
     { Checks if T.IsSymbol(ASymbolType), if not calls DoError
       with appropriate error mesg. }
-    procedure ExpectedSymbol(T: TToken; ASymbolType: TSymbolType);
+    procedure CheckToken(T: TToken; ASymbolType: TSymbolType); overload;
     
     { Checks if T.IsKeyWord(AKeyWord), if not calls DoError
       with appropriate error mesg. }
-    procedure ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
+    procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
 
     { Clears the last comment token. Should be issued soon after
       @link(GetLastComment) was called with @code(ClearLastComment) set to
@@ -175,6 +175,24 @@ type
     function GetNextToken(WhitespaceCollectorItem: TPasItem): TToken; overload;
     
     function GetNextToken: TToken; overload;
+    
+    { This does @link(GetNextToken), then checks is it a ATokenType
+      (using @link(CheckToken)), then frees the token.
+      Returns token Data.
+      Just a comfortable routine. }
+    function GetAndCheckNextToken(ATokenType: TTokenType): string; overload;
+    
+    { This does @link(GetNextToken), then checks is it a symbol with 
+      ASymbolType (using @link(CheckToken)), then frees the token. 
+      Returns token Data.
+      Just a comfortable routine. }
+    function GetAndCheckNextToken(ASymbolType: TSymbolType): string; overload;
+    
+    { This does @link(GetNextToken), then checks is it a keyword with 
+      AKeyWord (using @link(CheckToken)), then frees the token. 
+      Returns token Data.
+      Just a comfortable routine. }
+    function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
     
     { Parses a constructor, a destructor, a function or a procedure.
       Resulting @link(TPasMethod) item will be returned in M.
@@ -363,21 +381,21 @@ end;
 const
   SExpectedButFound = '%s expected but %s found';
 
-procedure TParser.ExpectedToken(T: TToken; ATokenType: TTokenType);
+procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
   if T.MyType <> ATokenType then
     DoError(SExpectedButFound, 
       [TOKEN_TYPE_NAMES[ATokenType], T.Description]);
 end;
 
-procedure TParser.ExpectedSymbol(T: TToken; ASymbolType: TSymbolType);
+procedure TParser.CheckToken(T: TToken; ASymbolType: TSymbolType);
 begin
   if not T.IsSymbol(ASymbolType) then
     DoError(SExpectedButFound, 
       [Format('symbol "%s"', [SymbolNames[ASymbolType]]), T.Description]);
 end;
 
-procedure TParser.ExpectedKeyWord(T: TToken; AKeyWord: TKeyWord);
+procedure TParser.CheckToken(T: TToken; AKeyWord: TKeyWord);
 begin
   if not T.IsKeyWord(AKeyWord) then
     DoError(SExpectedButFound, 
@@ -447,6 +465,47 @@ var
   LDummy: string;
 begin
   Result := GetNextToken(LDummy);
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string; 
+var
+  T: TToken;
+begin
+  T := GetNextToken;
+  try
+    CheckToken(T, ATokenType);
+    Result := T.Data;
+  finally 
+    T.Free;
+  end;
+end;
+
+function TParser.GetAndCheckNextToken(ASymbolType: TSymbolType): string;
+var
+  T: TToken;
+begin
+  T := GetNextToken;
+  try
+    CheckToken(T, ASymbolType);
+    Result := T.Data;
+  finally 
+    T.Free;
+  end;
+end;
+
+function TParser.GetAndCheckNextToken(AKeyWord: TKeyWord): string;
+var
+  T: TToken;
+begin
+  T := GetNextToken;
+  try
+    CheckToken(T, AKeyWord);
+    Result := T.Data;
+  finally 
+    T.Free;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -753,7 +812,7 @@ begin
           end else 
           begin
             try
-              ExpectedSymbol(T, SYM_RIGHT_PARENTHESIS);
+              CheckToken(T, SYM_RIGHT_PARENTHESIS);
               Finished := true;
             finally
               FreeAndNil(t);
@@ -798,7 +857,7 @@ begin
       FreeAndNil(t);
       
       t := GetNextToken;
-      ExpectedSymbol(T, SYM_RIGHT_BRACKET);
+      CheckToken(T, SYM_RIGHT_BRACKET);
     end else begin
       Scanner.UnGetToken(t);
     end;
@@ -958,21 +1017,14 @@ end;
 procedure TParser.ParseConstant(const U: TPasUnit);
 var
   i: TPasConstant;
-  T: TToken;
 begin
-  T := GetNextToken;
-  try
-    ExpectedToken(T, TOK_IDENTIFIER);
-    i := TPasConstant.Create;
-    i.Name := T.Data;
-    DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
-    i.RawDescription := GetLastComment(True);
-    i.FullDeclaration := i.Name;
-    SkipDeclaration(i);
-    U.AddConstant(i);
-  finally
-    FreeAndNil(T);
-  end;
+  i := TPasConstant.Create;
+  i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+  DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
+  i.RawDescription := GetLastComment(True);
+  i.FullDeclaration := i.Name;
+  SkipDeclaration(i);
+  U.AddConstant(i);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1005,12 +1057,8 @@ begin
     t := GetNextToken;
   end;
   FreeAndNil(t);
-  t := GetNextToken;
-  try
-    ExpectedSymbol(T, SYM_SEMICOLON);
-  finally
-    FreeAndNil(t);
-  end;
+  
+  GetAndCheckNextToken(SYM_SEMICOLON);
 end;
 
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
@@ -1187,7 +1235,7 @@ begin
 
   t1 := GetNextToken;
   try
-    ExpectedToken(T1, TOK_IDENTIFIER);
+    CheckToken(T1, TOK_IDENTIFIER);
 
     t2 := GetNextToken;
     if t2.IsSymbol(SYM_COLON) then 
@@ -1209,12 +1257,7 @@ begin
     FreeAndNil(t1);
   end;
   
-  t1 := GetNextToken;
-  try
-    ExpectedKeyWord(T1, KEY_OF);
-  finally
-    FreeAndNil(t1);
-  end;
+  GetAndCheckNextToken(KEY_OF);
   
   t1 := GetNextToken;
   LNeedId := True;
@@ -1249,12 +1292,8 @@ begin
     // read all identifiers before colon
 
     FreeAndNil(t1);
-    t1 := GetNextToken;
-    try
-      ExpectedSymbol(T1, SYM_LEFT_PARENTHESIS);
-    finally
-      FreeAndNil(t1);
-    end;
+    
+    GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
     
     t1 := GetNextToken;
     while not t1.IsSymbol(SYM_RIGHT_PARENTHESIS) do 
@@ -1361,14 +1400,8 @@ var
   EnumType: TPasEnum;
   T: TToken;
 begin
-  T := GetNextToken;
-  try
-    ExpectedToken(T, TOK_IDENTIFIER);
-    TypeName := t.Data;
-    DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
-  finally
-    FreeAndNil(t);
-  end;
+  TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+  DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
   
   d := GetLastComment(True);
   t := GetNextToken(LCollected);
@@ -1469,47 +1502,23 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUnit(var U: TPasUnit);
-var
-  t: TToken;
 begin
-  { get 'unit' keyword }
-  t := GetNextToken;
-  try
-    ExpectedKeyWord(T, KEY_UNIT);
-  finally
-    FreeAndNil(t);
-  end;
+  GetAndCheckNextToken(KEY_UNIT);
 
   U := TPasUnit.Create;
   try
     U.RawDescription := GetLastComment(True);
 
     { get unit name identifier }
-    t := GetNextToken;
-    try
-      ExpectedToken(T, TOK_IDENTIFIER);
-      U.Name := t.Data;
-    finally
-      FreeAndNil(t);
-    end;
+    U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
     
     ParseHintDirectives(U);
     
     { skip semicolon }
-    t := GetNextToken;
-    try
-      ExpectedSymbol(T, SYM_SEMICOLON);
-    finally
-      FreeAndNil(t);
-    end;
+    GetAndCheckNextToken(SYM_SEMICOLON);
     
     { get 'interface' keyword }
-    t := GetNextToken;
-    try
-      ExpectedKeyWord(T, KEY_INTERFACE);
-    finally
-      FreeAndNil(t);
-    end;
+    GetAndCheckNextToken(KEY_INTERFACE);
     
     { now parse the interface section of that unit }
     ParseInterfaceSection(U);
@@ -1542,13 +1551,7 @@ begin
   RawDescription := GetLastComment(true);
   
   repeat
-    T := GetNextToken;
-    try
-      ExpectedToken(T, TOK_IDENTIFIER);
-      Names.Append(T.Data);
-    finally
-      FreeAndNil(T);
-    end;
+    Names.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
     
     T := GetNextToken;
     try
