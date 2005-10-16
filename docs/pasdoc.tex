@@ -23,6 +23,9 @@
 \newpage
 
 \section{Introduction}
+% This section is present in the wiki (more-or-less, i.e. sometimes in
+% different places with different words etc., but I think that all the
+% useful informations from this section are somehow kept in the wiki -- kambi)
 
 Pasdoc creates documentation for Pascal unit files.
 
@@ -31,10 +34,12 @@ Descriptions for variables, constants, types (called 'items' from now on) are
 taken from comments stored in the interface sections of unit source code files,
 each comment must be placed directly before the item's declaration.
 
+% This paragraph is rather obvious, will not be moved to wiki docs ?
 This way, you as a programmer can easily generate reference manuals of your
 libraries without having to deal with the details of document formats like
 HTML or \LaTeX.
 
+% This sentence is rather obvious, will not be moved to wiki docs ?
 Moreover, you can edit the source code and its descriptions in one
 place, no need to add or modify explanations in other files.
 The rest is done automatically, you should write a script / batch file that
@@ -43,16 +48,21 @@ Download the latest version from
 \begin{verbatim}
 http://pasdoc.sourceforge.net.
 \end{verbatim}
+% This is replaced by section on CommandlineExamples page (at the end,
+% ,,PasDoc autodoc'') and PasDocAutoDoc in wiki
 For an example of source code that can be used with pasdoc, try the pasdoc
 sources themselves - type {\tt pasdoc[.exe] --format html *.pas} to generate HTML
 documentation.
 
+% equivalent (and much more elaborate and up-to-date) 
+% text is in wiki on CompilingPasDoc
 You can compile pasdoc with Free Pascal (version 1.0 or higher), as well
 as with Delphi and Kylix. 
 
 \section{Directives}
+% Sense of this section is present in the wiki.
 
-% Begin: Block below is the wiki docs (on the ConditionalDefines page)
+% Begin: Block below is in the wiki docs (on the ConditionalDefines page)
 As you may know, Pascal allows for \emph{directives} in the source code.
 These are comments that contain commands for the compiler introduced by the
 dollar sign.
@@ -99,8 +109,9 @@ that you want this directive defined.
 
 You can do so using the \emph{Specify directive} or \emph{Add directives from
 file} switch (see sections \ref{specifydirective} and \ref{specifydirectives}).
-% End: Block above is the wiki docs (on the ConditionalDefines page)
+% End: Block above is in the wiki docs (on the ConditionalDefines page)
 
+% Begin: Sense of block below is in the wiki docs (on the IncludeInSearchPath page)
 Next to those directives already presented, pasdoc also supports include
 files:
 
@@ -116,7 +127,12 @@ In the above code, pasdoc would parse {\tt TInteger}, get the include
 directive and start parsing the include file {\tt numbers.inc}.
 This file could contain other directives, types or whatever.
 It is treated as it would be treated by any Pascal compiler.
+% End: Sense of block above is in the wiki docs (on the IncludeInSearchPath page)
 
+% Right now PasDoc handles switch directives and $ifopt correctly.
+% The only really meaningfull switch for pasdoc is $M, and this is said on wiki
+% page ImplicitVisibilityOption.
+% So the up-to-date sense of paragraph below is present in the wiki.
 Pascal compilers also know \emph{switch directives}.
 These are boolean options, either on or off.
 They can be checked similar to conditional directives with
@@ -125,7 +141,9 @@ Pasdoc does not yet fully support these, but at least does not give
 up when it encounters one.
 
 \section{Adding descriptions}
+% Sense of this section is present in the wiki.
 
+% Begin: Sense of block below is in the wiki docs (on the WhereToPlaceComments page)
 You can provide documentation for
 
 \begin{itemize}
@@ -157,13 +175,18 @@ type
 procedure InitCustomer(Name: String; Age: Byte;
   Gender: Boolean; var Customer: TCustomer);
 \end{verbatim}
+% End: Sense of block below is in the wiki docs (on the WhereToPlaceComments page)
 
+% Sense of this paragraph is in the wiki docs (on the WhereToPlaceComments page).
+% (and note that *all* output formats show *all* items now,
+% including undocumented ones; some reasoning is on the WritingDocumentation page).
 It is possible to specify that items will only be documented when certain
 comment markers are present at the start of the comment. Please refer
 to \ref{specifymarkers} for further information. Furthermore, undocumented
 items may or may not appear in the final document, depending on the
 output format.
 
+% Sense of this paragraph is in the wiki docs (on the LinkTag page).
 An interesting feature of pasdoc is its ability to link items from within
 comments. If you are currently writing about an array of integers {\tt TIntArray} you've
 declared as a type, you might mention that the number of values it can store
@@ -600,6 +623,8 @@ filename.
 
 
 \subsubsection{Specify footers and headers to use}
+% Text equivalent to this subsubsection is present in wiki 
+% (on FileAsHeaderOrFooter page)
 
 {\tt -F FILNAME}
 {\tt --footer FILENAME}
@@ -619,6 +644,7 @@ pasdoc --header myheader.txt --footer myfooter.txt
 
 \subsection{Comment Marker switches}
 \label{specifymarkers}
+% This subsubsection is present in wiki (on CommentMarker page)
 
 It is possible for pasdoc to ignore comments that do not
 start with the correct start markers. By default, all
@@ -635,6 +661,10 @@ remove them from the comment if they exist.
 \end{description}
 
 \subsection{Output language switches}
+% This subsubsection is more-or-less present in the wiki (on OutputLanguage page).
+% The fact that ,,stdout is always in English'' is *not* stated in the wiki,
+% and in fact it may change some day.
+% Of course the list of languages is much more up-to-date in the wiki.
 
 {\tt -L lg}\\
 {\tt --language lg}\\
@@ -673,6 +703,7 @@ The {\tt lg} parameter can take one of the following values:
 
 
 \subsubsection{Include / Exclude class Members by visiblity}
+% Sense of this subsubsection is present in wiki (on IncludeByVisibility page)
 
 {\tt -M}\\
 {\tt --visible-members}\\
@@ -698,6 +729,7 @@ pasdoc --visible-members private,protected
 \end{verbatim}
 
 \subsubsection{Output directory}
+% Sense of this subsubsection is present in wiki (on OutputOption page)
 
 {\tt -E DIRECTORY}\\
 {\tt --output DIRECTORY}\\
@@ -757,6 +789,7 @@ pasdoc --define debug,hello,world
 
 \subsubsection{Specify an include file path}
 \label{specifyincludefilepath}
+% Begin: Sense of this subsubsection is in the wiki docs (on the IncludeInSearchPath page)
 
 {\tt -I DIR}\\
 {\tt --include DIR}\\
@@ -885,6 +918,7 @@ If you're not using OOP, you could at least try to move as much code
 as possible out of the main program to make things work with pasdoc.
 
 \subsection{Records}
+% this subsection is no longer relevant, pasdoc handles records perfectly now
 
 Pasdoc cannot create separate documentation for members of a record.
 In object-oriented programs, records will not appear most of the time
