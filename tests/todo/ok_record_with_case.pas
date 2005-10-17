@@ -1,10 +1,12 @@
-{ Testing of parsing and making docs for records with case parts.
+{ @abstract(Testing of parsing and making docs for records with case parts.)
 
   It does not pass properly yet:
-  1. types for fields in record case are not printed
-     (because parser does not set their FullDeclaration properties).
-  2. Also, CaseTwoB field has no description (but it should have 
-     "Description of CaseTwoA and CaseTwoB")
+  @orderedList(
+    @item(Types for fields in record case are not printed
+      (because parser does not set their FullDeclaration properties).)
+    @item(Also, CaseTwoB field has no description (but it should have 
+      "Description of CaseTwoA and CaseTwoB"))
+  )
 }
 
 unit ok_record_with_case;
