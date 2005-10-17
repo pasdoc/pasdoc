@@ -7,6 +7,9 @@
     @item(Also, CaseTwoB field has no description (but it should have 
       "Description of CaseTwoA and CaseTwoB"))
   )
+  
+  Update 2005-10-17: now this test passes OK, both problems above
+  are solved.
 }
 
 unit ok_record_with_case;

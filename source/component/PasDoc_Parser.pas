@@ -253,11 +253,14 @@ type
       ("one clause" is something like 
         NAME1, NAME2, ... : TYPE;
       i.e. a list of variables/fields sharing one type declaration.)
-      @param Items If Items <> nil then it adds parsed variables/fields to Items.
+      
+      @param(Items If Items <> nil then it adds parsed variables/fields to Items.)
       @param(Visibility will be assigned to Visibility of 
-       each variable/field instance.) }
+        each variable/field instance.) 
+      @param(IsInRecordCase indicates if we're within record's case.
+        It's relevant only if OfObject is true.) }
     procedure ParseFieldsVariables(Items: TPasItems; 
-      OfObject: boolean; Visibility: TVisibility);
+      OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean);
     
     { Read all tokens until you find a semicolon at brace-level 0 and
       end-level (between "record" and "end" keywords) also 0.
@@ -265,12 +268,17 @@ type
       Alternatively, also stops before reading "end" without beginning
       "record" (so it can handle some cases where declaration doesn't end
       with semicolon).
+      
+      Alternatively, only if IsInRecordCase, also stops before reading
+      ')' without matching '('. That's because fields' declarations
+      inside record case may be terminated by just ')' indicating
+      that this case clause terminates, without a semicolon.
 
       If you pass Item <> nil then all read data will be 
       appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
       Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
       if appropriate hint directive will occur in source file. }    
-    procedure SkipDeclaration(const Item: TPasItem);
+    procedure SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
     
     procedure SetCommentMarkers(const Value: TStringList);
     
@@ -736,7 +744,14 @@ procedure TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
     if AddToFields then
       Items := i.Fields else
       Items := nil;
-    ParseFieldsVariables(Items, true, Visibility);
+      
+    { Note: 4th arg for ParseFieldsVariables is always "false",
+      not "IsInRecordCase". That's because even if declaration
+      of this CIO is within a record case, then we want to
+      see record's terminating "end" keyword anyway.
+      So it doesn't matter here whether our IsInRecordCase 
+      parameter is true. }
+    ParseFieldsVariables(Items, true, Visibility, false);
   end;
   
 var
@@ -962,7 +977,13 @@ begin
             case t.Info.StandardDirective of
               SD_DEFAULT: 
                 begin
-                  SkipDeclaration(nil);
+                  { Note: 2nd arg for SkipDeclaration is always "false",
+                    not "IsInRecordCase". That's because even if declaration
+                    of this CIO is within a record case, then we want to
+                    see record's terminating "end" keyword anyway.
+                    So it doesn't matter here whether our IsInRecordCase
+                    parameter is true. }
+                  SkipDeclaration(nil, false);
                   DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
                 end;
               SD_PUBLIC:    Visibility := viPublic;
@@ -1023,7 +1044,7 @@ begin
   DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
   i.RawDescription := GetLastComment(True);
   i.FullDeclaration := i.Name;
-  SkipDeclaration(i);
+  SkipDeclaration(i, false);
   U.AddConstant(i);
 end;
 
@@ -1217,7 +1238,7 @@ begin
   end;
   
   { read the rest of declaration }
-  SkipDeclaration(P);
+  SkipDeclaration(P, false);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1226,10 +1247,8 @@ procedure TParser.ParseRecordCase(const R: TPasCio;
   const SubCase: boolean);
 var
   t1: TToken;
-  P: TPasItem;
-  LLastWasComma: boolean;
   LNeedId: boolean;
-  ParenCount: integer;
+  P: TPasItem;
 begin
   t1 := GetNextToken;
   try
@@ -1253,8 +1272,6 @@ begin
   end;
   
   GetAndCheckNextToken(KEY_OF);
-  
-  ParenCount := 0;
   
   t1 := GetNextToken;
   LNeedId := True;
@@ -1292,98 +1309,28 @@ begin
     
     GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
     
-    t1 := GetNextToken;
-    while not t1.IsSymbol(SYM_RIGHT_PARENTHESIS) do 
+    while not PeekNextToken.IsSymbol(SYM_RIGHT_PARENTHESIS) do 
     begin
-      if (t1.MyType = TOK_IDENTIFIER) or (ParenCount > 0) then begin
-        P := TPasItem.Create;
-        p.RawDescription := GetLastComment(True);
-        P.Name := t1.Data;
-        P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
-        R.Fields.Add(p);
-        if (ParenCount = 0) then
-        begin
-          FreeAndNil(t1);
-          t1 := GetNextToken;
-        end;
-        LLastWasComma := false;
-        
-        { T1 must be either: 
-          - not a symbol 
-          - or a symbol other than ';' or ')'
-          - or a symbol ')' but only when ParenCount > 0 }
-        while 
-          (t1.MyType <> TOK_SYMBOL) or
-          ( (t1.Info.SymbolType <> SYM_SEMICOLON) and 
-            (t1.Info.SymbolType <> SYM_RIGHT_PARENTHESIS) ) or
-          ( (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and 
-            (ParenCount > 0) ) do 
-        begin
-          if (t1.MyType = TOK_IDENTIFIER) then begin
-            if LLastWasComma then begin
-              p := TPasItem.Create;
-              p.RawDescription := GetLastComment(True);
-              p.Name := t1.data;
-              P.FullDeclaration := P.Name; { TODO -- better FullDeclaration }
-              R.Fields.Add(p);
-            end;
-          end;
-          if t1.MyType = TOK_KEYWORD then begin
-            if (t1.Info.KeyWord = KEY_RECORD) then begin
-              ParseCIO(nil, '', CIO_RECORD, '', True);
-            end;
-            if (t1.Info.KeyWord = KEY_PACKED) then begin
-              FreeAndNil(t1);
-              t1 := GetNextToken;
-              if t1.IsKeyWord(KEY_RECORD) then begin
-                ParseCIO(nil, '', CIO_PACKEDRECORD, '', True);
-              end;
-            end;
-          end;
-
-          LLastWasComma := t1.IsSymbol(SYM_COMMA);
-
-          if (not (t1.Info.SymbolType in [SYM_RIGHT_PARENTHESIS, SYM_COLON]))
-            or ((t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS) and
-            (ParenCount > 0)) then begin
-
-            if t1.Info.SymbolType = SYM_LEFT_PARENTHESIS then
-            begin
-              Inc(ParenCount)
-            end
-            else if t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS then
-            begin
-              Dec(ParenCount)
-            end;
-          end;
-          FreeAndNil(t1);
-          t1 := GetNextToken;
-        end;
-        if (t1.Info.SymbolType = SYM_RIGHT_PARENTHESIS)
-          and (ParenCount = 0) then
-        begin
-          Scanner.UnGetToken(t1);
-        end;
-      end else begin
-        if t1.IsKeyWord(KEY_CASE) then begin
-          ParseRecordCase(R, true);
-        end else begin
-          FreeAndNil(t1);
-          DoError('Invalid keyword found', []);
-        end;
-      end;
-      FreeAndNil(t1); // free token
-      t1 := GetNextToken;
+      if PeekNextToken.IsKeyWord(KEY_CASE) then
+      begin
+        GetNextToken.Free; { consume and free "case" token }
+        ParseRecordCase(R, true);
+      end else
+        ParseFieldsVariables(R.Fields, true, viPublic, true);
     end;
-    FreeAndNil(t1); // free ')' token
-    t1 := GetNextToken; // next
-    if t1.IsSymbol(SYM_SEMICOLON) then begin
+    
+    GetNextToken.Free; // free ')' token
+    
+    t1 := GetNextToken;
+    if t1.IsSymbol(SYM_SEMICOLON) then
+    begin
       FreeAndNil(t1);
       t1 := GetNextToken;
     end;
-    if t1.IsKeyWord(KEY_END) then break;
-    if subcase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS) then break;
-  until false;
+    
+  until t1.IsKeyWord(KEY_END) or
+    (SubCase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS));
+    
   Scanner.UnGetToken(t1);
 end;
 
@@ -1490,7 +1437,7 @@ begin
 
   NormalType := TPasType.Create;
   NormalType.FullDeclaration := LCollected;
-  SkipDeclaration(NormalType);
+  SkipDeclaration(NormalType, false);
   NormalType.Name := TypeName;
   NormalType.RawDescription := d;
   U.AddType(NormalType);
@@ -1568,11 +1515,11 @@ end;
 
 procedure TParser.ParseVariables(const U: TPasUnit);
 begin
-  ParseFieldsVariables(U.Variables, false, viPublished);
+  ParseFieldsVariables(U.Variables, false, viPublished, false);
 end;
 
 procedure TParser.ParseFieldsVariables(Items: TPasItems; 
-  OfObject: boolean; Visibility: TVisibility);
+  OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean);
 var
   Finished: Boolean;
   NewItem: TPasFieldVariable;
@@ -1613,7 +1560,7 @@ begin
         begin
           ItemCollector.FullDeclaration := 
             ItemCollector.FullDeclaration + t.Data;
-          SkipDeclaration(ItemCollector);
+          SkipDeclaration(ItemCollector, IsInRecordCase);
         end else 
         begin
           Scanner.UnGetToken(t);
@@ -1621,7 +1568,7 @@ begin
       end else
       if t.IsKeyWord(KEY_RECORD) then
       begin
-        ParseCIO(nil, '', CIO_RECORD, '', false);
+        ParseCIO(nil, '', CIO_RECORD, '', IsInRecordCase);
       end else
       if t.IsKeyWord(KEY_PACKED) then
       begin 
@@ -1629,14 +1576,14 @@ begin
         t := GetNextToken;
         if t.IsKeyWord(KEY_RECORD) then 
         begin
-          ParseCIO(nil, '', CIO_PACKEDRECORD, '', False);
+          ParseCIO(nil, '', CIO_PACKEDRECORD, '', IsInRecordCase);
         end else 
         begin
-          SkipDeclaration(ItemCollector);
+          SkipDeclaration(ItemCollector, IsInRecordCase);
         end;      
       end else
       begin
-        SkipDeclaration(ItemCollector);
+        SkipDeclaration(ItemCollector, IsInRecordCase);
       end;
 
       if not OfObject then
@@ -1714,7 +1661,7 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
-procedure TParser.SkipDeclaration(const Item: TPasItem);
+procedure TParser.SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
 var
   EndLevel: Integer;
   IsSemicolon: Boolean;
@@ -1752,12 +1699,20 @@ begin
         end;
     end;
     IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
-    if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
-    if EndLevel<0 then begin
-      // within records et al. the last declaration need not be terminated by ;
+    
+    { Reason for "EndLevel < 0" condition:
+        Within records et al. the last declaration need not be terminated by ;
+      Reason for "(PLevel < 0) and IsInRecordCase" condition:
+        See autodoc of SkipDeclaration in TParser interface. }
+    if (EndLevel < 0) or
+       ( (PLevel < 0) and IsInRecordCase ) then 
+    begin
       Scanner.UnGetToken(t);
       Exit;
     end;
+    
+    if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
+    
     FreeAndNil(t);
   until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
 end;
