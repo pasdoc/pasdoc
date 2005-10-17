@@ -1225,39 +1225,36 @@ end;
 procedure TParser.ParseRecordCase(const R: TPasCio;
   const SubCase: boolean);
 var
-  t1, t2: TToken;
+  t1: TToken;
   P: TPasItem;
   LLastWasComma: boolean;
   LNeedId: boolean;
   ParenCount: integer;
 begin
-  ParenCount := 0;
-
   t1 := GetNextToken;
   try
     CheckToken(T1, TOK_IDENTIFIER);
-
-    t2 := GetNextToken;
-    if t2.IsSymbol(SYM_COLON) then 
+    
+    if PeekNextToken.IsSymbol(SYM_COLON) then
     begin
-      // case x:Type of
-      FreeAndNil(t2); // colon
-      t2 := GetNextToken;
+      { Then we have "case FieldName: FieldType of" }
+      
+      { consume and free the colon token }
+      GetNextToken.Free; 
+
       P := TPasItem.Create;
-      p.Name := t1.Data;
+      p.Name := T1.Data;
       p.RawDescription := GetLastComment(True);
-      p.FullDeclaration := p.Name + ': ' + t2.Data;
+      p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);
       R.Fields.Add(p);
-    end else begin
-      // case Type of
-      Scanner.UnGetToken(t2);
     end;
-    FreeAndNil(t2);
   finally 
     FreeAndNil(t1);
   end;
   
   GetAndCheckNextToken(KEY_OF);
+  
+  ParenCount := 0;
   
   t1 := GetNextToken;
   LNeedId := True;
