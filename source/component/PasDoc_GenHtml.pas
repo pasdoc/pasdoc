@@ -1229,7 +1229,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
     if FClassHierarchy.IsEmpty then begin
       WriteStartOfParagraph;
-      WriteConverted(FLanguage.Translation[trNoCIOs]);
+      WriteConverted(FLanguage.Translation[trNoCIOsForHierarchy]);
       WriteEndOfParagraph;
     end else begin
       OldLevel := -1;

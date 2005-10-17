@@ -126,6 +126,7 @@ type
     trValues,
 
     trNoCIOs,
+    trNoCIOsForHierarchy,
     trNoTypes,
     trNoVariables,
     trNoConstants,
@@ -334,6 +335,7 @@ begin
   FTranslation[trSeeAlso] := 'See also';
   FTranslation[trValues] := 'Values';
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.';
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.';
   FTranslation[trNoTypes] := 'The units do not contain any types.';
   FTranslation[trNoVariables] := 'The units do not contain any variables.';
   FTranslation[trNoConstants] := 'The units do not contain any constants.';
@@ -412,6 +414,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -491,6 +494,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -568,6 +572,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -592,6 +597,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -670,6 +676,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -748,6 +755,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -826,6 +834,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -904,6 +913,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -981,6 +991,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1058,6 +1069,7 @@ begin
   FTranslation[trSeeAlso] := 'Vedere Anche';
   FTranslation[trValues] := 'Valori';
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1135,6 +1147,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1214,6 +1227,7 @@ begin
   FTranslation[trSeeAlso] := 'Zobacz tak¿e';
   FTranslation[trValues] := 'Wartoœci';
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1291,6 +1305,7 @@ begin
   FTranslation[trSeeAlso] := 'Zobacz tak¿e';
   FTranslation[trValues] := 'Warto¶ci';
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1368,6 +1383,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1445,6 +1461,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1522,6 +1539,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1589,6 +1607,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1666,6 +1685,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1745,6 +1765,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1823,6 +1844,7 @@ begin
   FTranslation[trSeeAlso] := 'See also'; // TODO: translate
   FTranslation[trValues] := 'Values'; // TODO: translate
   FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
+  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
   FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
   FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
@@ -1875,6 +1897,9 @@ end;
 
 {
   $Log$
+  Revision 1.36  2005/10/17 01:37:52  kambi
+  * trNoCIOsForHierarchy. Otherwise units with some records and no classes, interfaces or objects would get under "Class Hierarchy" confusing and false statement that "no classes, interfaces, objects and records exist" (while there *are* some records).
+
   Revision 1.35  2005/09/26 16:24:06  kambi
   * Fixed autodoc
 
