@@ -103,8 +103,14 @@ FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 
 # Don't ask me why, but Borland named Delphi/Win32 command-line compiler 
 # dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
+#
+# Linux dcc has one additional deficiency: it prints non-error
+# lines while it works, I guess that it was meant to somehow indicate
+# compilation progress, although it's rather confusing.
+# That's why we pass -Q to dcc.
+
 DCC_WIN32 := dcc32
-DCC_LINUX := dcc
+DCC_LINUX := dcc  -Q
 DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
 DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
 
