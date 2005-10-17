@@ -220,13 +220,13 @@ type
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
     
-    { Does @link(MyType) is TOK_SYMBOL and @link(SymbolType) is ASymbolType ? }
+    { Does @link(MyType) is TOK_SYMBOL and Info.SymbolType is ASymbolType ? }
     function IsSymbol(const ASymbolType: TSymbolType): Boolean;
     
-    { Does @link(MyType) is TOK_KEYWORD and @link(KeyWord) is AKeyWord ? }
+    { Does @link(MyType) is TOK_KEYWORD and Info.KeyWord is AKeyWord ? }
     function IsKeyWord(const AKeyWord: TKeyWord): Boolean;
     
-    { Does @link(MyType) is TOK_IDENTIFIER and @link(StandardDirective) is 
+    { Does @link(MyType) is TOK_IDENTIFIER and Info.StandardDirective is
       AStandardDirective ? }
     function IsStandardDirective(
       const AStandardDirective: TStandardDirective): Boolean;
