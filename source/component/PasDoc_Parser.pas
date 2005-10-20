@@ -112,11 +112,6 @@ type
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
 
-    { Clears the last comment token. Should be issued soon after
-      @link(GetLastComment) was called with @code(ClearLastComment) set to
-      @False. }
-    procedure ClearLastComment;
-    
     { Extracts the documentation comment from T.
       Always T.MyType must be within TokenCommentTypes.
     
@@ -134,7 +129,7 @@ type
       var t: TToken): string;
       
     { Returns the last comment that was found in input. If there was none, the
-      Result will be an empty string. If ClearLastComment is @True, @Name clears
+      Result will be an empty string. If AClearLastComment is @True, @Name clears
       the last comment. Otherwise, it stays untouched for further use. }
     function GetLastComment(const AClearLastComment: Boolean): String;
 
@@ -336,14 +331,6 @@ uses
 { ---------------------------------------------------------------------------- }
 { TParser }
 { ---------------------------------------------------------------------------- }
-
-procedure TParser.ClearLastComment;
-begin
-  if Assigned(LastCommentToken) then begin
-    LastCommentToken.Free;
-    LastCommentToken := nil;
-  end;
-end;
 
 constructor TParser.Create(
   const InputStream: TStream;
