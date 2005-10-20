@@ -243,9 +243,17 @@ type
       FinalSymbol must be something else than SYM_COMMA.
       After executing this, next token (returned by GetNextToken and PeekNextToken)
       will point to the next token right after FinalSymbol.
-      All found identifiers will be appended to Names. }
+      All found identifiers will be appended to Names. 
+      
+      If RawDescriptions <> nil then this will also get
+      all comments documenting the identifiers in Names
+      (it will append the same number of items to 
+      RawDescriptions as it appended to Names).
+      The strategy how comments are assigned to item in this case is
+      described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
+      (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
-      FinalSymbol: TSymbolType; out RawDescription: string);
+      FinalSymbol: TSymbolType; RawDescriptions: TStringList);
     
     procedure ParseVariables(const U: TPasUnit);
     
@@ -1475,27 +1483,36 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUses(const U: TPasUnit);
-var
-  Dummy: string;
 begin
-  ParseCommaSeparatedIdentifiers(U.UsesUnits, SYM_SEMICOLON, Dummy);
+  ParseCommaSeparatedIdentifiers(U.UsesUnits, SYM_SEMICOLON, nil);
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCommaSeparatedIdentifiers(Names: TStrings;
-  FinalSymbol: TSymbolType; out RawDescription: string);
+  FinalSymbol: TSymbolType; RawDescriptions: TStringList);
 var
   T: TToken;
+  FirstIdentifier: boolean;
 begin
-  { PeekNextToken is done only to make sure that LastComment is good,
-    i.e. it must be last comment before first identifier parsed
-    by this method. }
-  PeekNextToken;
-  RawDescription := GetLastComment(true);
+  FirstIdentifier := true;
   
   repeat
     Names.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
+    
+    { Now we modify FirstIdentifier and append item to RawDescriptions }
+    if FirstIdentifier then
+    begin
+      FirstIdentifier := false;
+      if RawDescriptions <> nil then
+        RawDescriptions.Append(GetLastComment(true));
+    end else
+    if RawDescriptions <> nil then
+    begin
+      if LastCommentToken <> nil then
+        RawDescriptions.Append(GetLastComment(true)) else
+        RawDescriptions.Append(RawDescriptions[RawDescriptions.Count - 1]);
+    end;
     
     T := GetNextToken;
     try
@@ -1529,11 +1546,15 @@ var
   FirstCheck: boolean;
   NewItemNames: TStringList;
   I: Integer;
-  RawDescription: string;
+  RawDescriptions: TStringList;
 begin
-  NewItemNames := TStringList.Create;
+  NewItemNames := nil;
+  RawDescriptions := nil;
   try
-    ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescription);
+    NewItemNames := TStringList.Create;
+    RawDescriptions := TStringList.Create;
+    
+    ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
     
     ItemCollector := TPasFieldVariable.Create;
     try
@@ -1642,7 +1663,7 @@ begin
           NewItem := TPasFieldVariable.Create;
           NewItem.Name := NewItemNames[i];
           NewItem.Visibility := Visibility;
-          NewItem.RawDescription := RawDescription;
+          NewItem.RawDescription := RawDescriptions[i];
           NewItem.FullDeclaration := NewItem.Name + ItemCollector.FullDeclaration;
           NewItem.IsDeprecated := ItemCollector.IsDeprecated;
           NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
@@ -1651,7 +1672,10 @@ begin
         end;
       end;
     finally ItemCollector.Free end;
-  finally NewItemNames.Free end;
+  finally 
+    NewItemNames.Free;
+    RawDescriptions.Free;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
