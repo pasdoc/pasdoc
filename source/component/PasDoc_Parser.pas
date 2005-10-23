@@ -1417,6 +1417,7 @@ begin
         MethodType.FullDeclaration := 
           TypeName + ' = ' + MethodType.FullDeclaration;
         U.AddType(MethodType);
+        FreeAndNil(t);
         exit;
       end;
     end;
@@ -1424,11 +1425,13 @@ begin
     begin
       ParseEnum(EnumType, TypeName, d);
       U.AddType(EnumType);
+      FreeAndNil(t);
       Exit;
     end;
     SetLength(LCollected, Length(LCollected)-Length(t.Data));
     Scanner.UnGetToken(t);
   end;
+  FreeAndNil(t);
 
   NormalType := TPasType.Create;
   NormalType.FullDeclaration := LCollected;
@@ -1658,7 +1661,10 @@ begin
           Items.Add(NewItem);
         end;
       end;
-    finally ItemCollector.Free end;
+    finally
+      ItemCollector.Free;
+      FreeAndNil(t);
+    end;
   finally 
     NewItemNames.Free;
     RawDescriptions.Free;
