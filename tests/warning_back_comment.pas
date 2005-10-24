@@ -2,7 +2,7 @@
 
 { First descr of unit ok_back_comment }
 
-unit ok_back_comment;
+unit warning_back_comment;
 
 {< Descr of unit ok_back_comment }
 
