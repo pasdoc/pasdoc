@@ -1,10 +1,10 @@
 //< Back comment without anything before --- should produce a warning.
 
-{ First descr of unit ok_back_comment }
+{ First descr of unit warning_back_comment }
 
 unit warning_back_comment;
 
-{< Descr of unit ok_back_comment }
+{< Descr of unit warning_back_comment }
 
 interface
 
