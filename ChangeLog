@@ -26,6 +26,8 @@
   * Various fixes. E.g.
     --spell-check-ignore-words works now.
   * Many improvements to pasdoc_gui (by Richard B. Winston)
+  * back-comments
+    (see [http://pasdoc.sipsolutions.net/WhereToPlaceComments#head-7ce7157fefbd0d84d3577aa636f758baa813e201])
   
   Some compatibility had to be broken:
   * New dashes rules break compatibility. But actually previous
@@ -36,6 +38,11 @@
     "---"/"--"/"-" meant em-dash/en-dash/short dash,
     but there was no way to escape it (i.e. there was no "@-"
     construct).
+  * Back-comments feature breaks compatibility if you have comments
+    that have as their exact 1st character "<". Now they will be
+    interpreted as back-comments (assigned to previous item
+    with "<" stripped). To fix your docs, just add
+    a space inside such problematic comment right before "<".
 
   Authors: features above not explicitly marked by author were
   done by Michalis Kamburelis.
