@@ -204,7 +204,7 @@ type
     procedure ParseCDFP(out M: TPasMethod; 
       const ClassKeywordString: string;
       const KeyWordString: string; Key: TKeyWord;
-      d: string; const NeedName: boolean);
+      d: string; const NeedName: boolean; InitItemsForNextBackComment: boolean);
       
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
@@ -484,7 +484,7 @@ end;
 procedure TParser.ParseCDFP(out M: TPasMethod; 
   const ClassKeywordString: string;
   const KeyWordString: string; Key: TKeyword; 
-  d: string; const NeedName: boolean);
+  d: string; const NeedName: boolean; InitItemsForNextBackComment: boolean);
 var
   IsSemicolon: Boolean;
   t: TToken;
@@ -493,6 +493,9 @@ var
 begin
   M := TPasMethod.Create;
   M.RawDescription := d;
+  if InitItemsForNextBackComment then
+    ItemsForNextBackComment.ClearAndAdd(M);
+    
   t := nil;
   case Key of
     KEY_CONSTRUCTOR: M.What := METHOD_CONSTRUCTOR;
@@ -689,8 +692,6 @@ begin
     end;
 
   until False;
-  
-  ItemsForNextBackComment.ClearAndAdd(M);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -892,31 +893,36 @@ begin
                   d := GetLastComment;
                   try
                     ParseCDFP(M, ClassKeyWordString, 
-                      t.Data, t.Info.KeyWord, d, True);
+                      t.Data, t.Info.KeyWord, d, true, true);
                   except
                     i.Free;
                     FreeAndNil(t);
                     raise;
                   end;
                   ClassKeyWordString := '';
-                  M.Visibility := Visibility;
-                  if Visibility in ShowVisibilities then begin
-                    i.Methods.Add(M);
-                  end
-                  else
+                  
+                  if Visibility in ShowVisibilities then
                   begin
-                    M.Free;
+                    M.Visibility := Visibility;
+                    i.Methods.Add(M);
+                  end else
+                  begin
+                    ItemsForNextBackComment.Clear;
+                    FreeAndNil(M);
                   end;
                 end;
               KEY_END: Finished := True;
-              KEY_PROPERTY: begin
+              KEY_PROPERTY: 
+                begin
                   ParseProperty(p);
-                  p.Visibility := Visibility;
-                  if Visibility in ShowVisibilities then begin
-                    i.Properties.Add(p);
-                  end
-                  else
+                  
+                  if Visibility in ShowVisibilities then 
                   begin
+                    p.Visibility := Visibility;
+                    i.Properties.Add(p);
+                  end else
+                  begin
+                    ItemsForNextBackComment.Clear;
                     FreeAndNil(p);
                   end;
                 end;
@@ -1111,14 +1117,14 @@ begin
                 Mode := MODE_CONST;
               KEY_OPERATOR: begin
                   d := GetLastComment;
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True);
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
               KEY_FUNCTION,
                 KEY_PROCEDURE: begin
                   d := GetLastComment;
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, True);
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
@@ -1389,7 +1395,7 @@ begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then 
       begin
-        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, False);
+        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, false, true);
         MethodType.Name := TypeName;
         MethodType.FullDeclaration := 
           TypeName + ' = ' + MethodType.FullDeclaration;
@@ -1507,22 +1513,78 @@ end;
 
 procedure TParser.ParseFieldsVariables(Items: TPasItems; 
   OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean);
+  
+  // The section allows PasDoc to parse variable modifiers in FPC.
+  // See: http://www.freepascal.org/docs-html/ref/refse19.html
+  // This consumes some tokens and appends to ItemCollector.FullDeclaration.
+  procedure ParseVariableModifiers(ItemCollector: TPasFieldVariable);
+  var
+    Finished: Boolean;
+    FirstCheck: boolean;
+    ttemp: TToken;
+  begin
+    Finished := False;
+    FirstCheck := True;
+    repeat
+      ttemp := GetNextToken;
+
+      if FirstCheck then
+      begin
+        // If the first non-white character token after the semicolon
+        // is "cvar", "export', "external", or "public", there is
+        // a variable modifier present.
+
+        // This does not take into account the "absolute" modifier
+        // (which is not preceeded by a semicolon).
+        FirstCheck := False;
+        if (ttemp.MyType = TOK_IDENTIFIER) and 
+           (ttemp.Info.StandardDirective in 
+             [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then 
+        begin
+          ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
+          FreeAndNil(ttemp)
+        end
+        else
+        begin
+          Finished := True;
+          Scanner.UnGetToken(ttemp);
+        end;
+        while not Finished do
+        begin
+          ttemp := GetNextToken;
+          if ttemp.IsSymbol(SYM_SEMICOLON) then
+          begin
+            Finished := True;
+            FirstCheck := False;
+            ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ttemp.Data;
+          end
+          else
+          begin
+            ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
+          end;
+          FreeAndNil(ttemp)
+        end;
+      end;
+    until Finished and not FirstCheck;
+  end;
+  
 var
-  Finished: Boolean;
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
   m: TPasMethod;
-  t, ttemp: TToken;
-  FirstCheck: boolean;
+  t: TToken;
   NewItemNames: TStringList;
   I: Integer;
   RawDescriptions: TStringList;
+  NewItems: TPasItems;
 begin
   NewItemNames := nil;
   RawDescriptions := nil;
+  NewItems := nil;
   try
     NewItemNames := TStringList.Create;
     RawDescriptions := TStringList.Create;
+    NewItems := TPasItems.Create(false);
     
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
     
@@ -1539,8 +1601,12 @@ begin
           t.Data inside ItemCollector.FullDeclaration. 
           If KeyWordString would be t.Data, then we would incorrectly
           append t.Data twice to ItemCollector.FullDeclaration
-          when appending m.FullDeclaration to ItemCollector.FullDeclaration. }
-        ParseCDFP(M, '', '', t.Info.KeyWord, '', false);
+          when appending m.FullDeclaration to ItemCollector.FullDeclaration. 
+          
+          Note that param InitItemsForNextBackComment for ParseCDFP 
+          below is false. We will free M in the near time, and we don't
+          want M to grab back-comment intended for our fields. }
+        ParseCDFP(M, '', '', t.Info.KeyWord, '', false, false);
         ItemCollector.FullDeclaration := 
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;
@@ -1577,70 +1643,45 @@ begin
         SkipDeclaration(ItemCollector, IsInRecordCase);
       end;
 
-      if not OfObject then
-      begin
-        // The following section allows PasDoc to parse variable modifiers in FPC.
-        // See: http://www.freepascal.org/docs-html/ref/refse19.html
-        Finished := False;
-        FirstCheck := True;
-        repeat
-          ttemp := GetNextToken;
-
-          if FirstCheck then
-          begin
-            // If the first non-white character token after the semicolon
-            // is "cvar", "export', "external", or "public", there is
-            // a variable modifier present.
-
-            // This does not take into account the "absolute" modifier
-            // (which is not preceeded by a semicolon).
-            FirstCheck := False;
-            if (ttemp.MyType = TOK_IDENTIFIER) and 
-               (ttemp.Info.StandardDirective in 
-                 [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then 
-            begin
-              ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
-              FreeAndNil(ttemp)
-            end
-            else
-            begin
-              Finished := True;
-              Scanner.UnGetToken(ttemp);
-            end;
-            while not Finished do
-            begin
-              ttemp := GetNextToken;
-              if ttemp.IsSymbol(SYM_SEMICOLON) then
-              begin
-                Finished := True;
-                FirstCheck := False;
-                ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ttemp.Data;
-              end
-              else
-              begin
-                ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
-              end;
-              FreeAndNil(ttemp)
-            end;
-          end;
-        until Finished and not FirstCheck;
-      end;
-
+      { Create and add (to Items and ItemsForNextBackComment and NewItems) 
+        new items now.
+        We must do it, because we want to init ItemsForNextBackComment *now*,
+        not later (after parsing variable modifiers).
+        Otherwise we could accidentaly "miss"
+        some back-comment while searching for variable modifiers. 
+        
+        Note that when parsing variable modifiers, Get/PeekNextToken
+        inside may actually use ItemsForNextBackComment and clear it,
+        that's why we can't count on ItemsForNextBackComment to hold
+        all our new items and we have to use NewItems. }
       if Items <> nil then
       begin
         ItemsForNextBackComment.Clear;
         for I := 0 to NewItemNames.Count - 1 do
         begin
           NewItem := TPasFieldVariable.Create;
-          NewItem.Name := NewItemNames[i];
+          NewItem.Name := NewItemNames[I];
+          NewItem.RawDescription := RawDescriptions[I];
           NewItem.Visibility := Visibility;
-          NewItem.RawDescription := RawDescriptions[i];
+          Items.Add(NewItem);
+          NewItems.Add(NewItem);
+          ItemsForNextBackComment.Add(NewItem);
+        end;
+      end;
+
+      if not OfObject then
+        ParseVariableModifiers(ItemCollector);
+
+      { Now, when whole parsing work is finished, finish initializing NewItems. }
+      if Items <> nil then
+      begin
+        for I := 0 to NewItems.Count - 1 do
+        begin
+          NewItem := NewItems[I] as TPasFieldVariable;
           NewItem.FullDeclaration := NewItem.Name + ItemCollector.FullDeclaration;
           NewItem.IsDeprecated := ItemCollector.IsDeprecated;
           NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
           NewItem.IsLibrarySpecific := ItemCollector.IsLibrarySpecific;
-          Items.Add(NewItem);
-          ItemsForNextBackComment.Add(NewItem);
         end;
       end;
     finally
@@ -1650,6 +1691,7 @@ begin
   finally 
     NewItemNames.Free;
     RawDescriptions.Free;
+    NewItems.Free;
   end;
 end;
 
@@ -1778,6 +1820,7 @@ var
   T: TToken;
   TBackComment, TIsCStyle: boolean;
   TDocComment: string;
+  i: Integer;
 begin
   Result := nil;
   t := nil;
@@ -1795,7 +1838,26 @@ begin
       
       if TBackComment then
       begin
-        { TODO -- this remains to be written to properly implement back-comments }
+        if ItemsForNextBackComment.Count = 0 then
+          DoMessage(1, mtWarning, 
+            '%s: This is a back-comment (comment starting with "<") ' +
+            'but there is no item declared right before it: "%s"', 
+            [Scanner.GetStreamInfo, TDocComment]);
+
+        for i := 0 to ItemsForNextBackComment.Count - 1 do
+        begin
+          if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
+            DoMessage(1, mtWarning, 
+              '%s: Item %s already has one description, now it''s ' +
+              'overriden by back-comment (comment starting with "<"): "%s"',
+              [Scanner.GetStreamInfo,
+               ItemsForNextBackComment.PasItemAt[i].QualifiedName,
+               TDocComment]);
+              
+          ItemsForNextBackComment.PasItemAt[i].RawDescription := TDocComment;
+        end;
+        
+        ItemsForNextBackComment.Clear;
       end else
       if IsLastComment and LastCommentWasCStyle and TIsCStyle then
       begin

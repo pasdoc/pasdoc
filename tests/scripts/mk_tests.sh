@@ -153,3 +153,5 @@ mk_special_test error_expected_semicolon error_expected_semicolon.pas
 mk_special_test ok_record_case_parsing ok_record_case_parsing.pas
 mk_special_test ok_record_with_case ok_record_with_case.pas
 mk_special_test ok_multiple_fields ok_multiple_fields.pas
+mk_special_test ok_back_comment ok_back_comment.pas
+mk_special_test warning_back_comment warning_back_comment.pas
