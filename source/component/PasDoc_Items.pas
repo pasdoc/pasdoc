@@ -829,6 +829,11 @@ type
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
     procedure Add(const AObject: TBaseItem);
     
+    { This is a shortcut for doing @link(Clear) and then 
+      @link(Add Add(AObject)). Useful when you want the list
+      to contain exactly the one given AObject. }
+    procedure ClearAndAdd(const AObject: TBaseItem);
+    
     procedure Delete(const AIndex: Integer);
     procedure Clear; override;
   end;
@@ -1498,6 +1503,12 @@ begin
     same order -- this is e.g. checked by ../../tests/scripts/check_cache.sh }
   for i := 0 to Count - 1 do
     TSerializable.SerializeObject(TBaseItem(Items[i]), ADestination);
+end;
+
+procedure TBaseItems.ClearAndAdd(const AObject: TBaseItem);
+begin
+  Clear;
+  Add(AObject);
 end;
 
 { TPasItems ------------------------------------------------------------------ }
