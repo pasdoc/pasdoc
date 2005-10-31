@@ -234,6 +234,7 @@ type
     FGraphVizUses: boolean;
 
     FWriteUsesClause: boolean;
+    FAutoLink: boolean;
 
     { Name of the project to create. }
     FProjectName: string;
@@ -270,6 +271,11 @@ type
     procedure DoMessageFromExpandDescription(
       const MessageType: TMessageType; const AMessage: string; 
       const AVerbosity: Cardinal);
+
+    procedure TryAutoLink(TagManager: TTagManager;
+      const QualifiedIdentifier: TNameParts;
+      out QualifiedIdentifierReplacement: string;
+      var AutoLinked: boolean);
 
     procedure HandleLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -352,6 +358,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
     procedure HandleCellTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
+    procedure HandleNoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
@@ -860,6 +870,11 @@ type
     
     property WriteUsesClause: boolean 
       read FWriteUsesClause write FWriteUsesClause default false;
+
+    { This controls auto-linking, see
+      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
+    property AutoLink: boolean
+      read FAutoLink write FAutoLink default false;
   end;
 
 implementation
@@ -1471,6 +1486,15 @@ begin
   (EnclosingTagData as TRowData).Cells.Append(TagParameter);
 end;
 
+procedure TDocGenerator.HandleNoLinkTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := ThisTag.TagManager.CoreExecute(TagParameter, false,
+    ThisTag, ThisTagData);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1478,6 +1502,30 @@ begin
   if Assigned(OnMessage) then
     OnMessage(MessageType, AMessage + 
       ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
+end;
+
+procedure TDocGenerator.TryAutoLink(TagManager: TTagManager;
+  const QualifiedIdentifier: TNameParts;
+  out QualifiedIdentifierReplacement: string;
+  var AutoLinked: boolean);
+var
+  FoundItem: TBaseItem;
+  QualifiedIdentifierGlued: string;
+begin
+  FoundItem := FCurrentItem.FindName(QualifiedIdentifier);
+  if FoundItem = nil then
+    FoundItem := FindGlobal(QualifiedIdentifier);
+
+  AutoLinked := FoundItem <> nil;
+  if AutoLinked then
+  begin
+    QualifiedIdentifierGlued := GlueNameParts(QualifiedIdentifier);
+    if FCurrentItem <> FoundItem then
+      QualifiedIdentifierReplacement := MakeItemLink(FoundItem,
+        QualifiedIdentifierGlued, lcNormal) else
+      QualifiedIdentifierReplacement := 
+        CodeString(ConvertString(QualifiedIdentifierGlued));
+  end;
 end;
 
 function TDocGenerator.ExpandDescription(Item: TBaseItem; 
@@ -1494,9 +1542,10 @@ begin
   TagManager := TTagManager.Create;
   try
     TagManager.Abbreviations := Abbreviations;
-    TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF}ConvertString;
-    TagManager.URLLink := {$IFDEF FPC}@{$ENDIF}URLLink;
-    TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF}DoMessageFromExpandDescription;
+    TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
+    TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
+    TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
+    TagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
     TagManager.Paragraph := Paragraph;
     TagManager.ShortDash := ShortDash;
     TagManager.EnDash := EnDash;
@@ -1528,7 +1577,7 @@ begin
       [toParameterRequired]);
 
     { Tags with recursive params }
-    TNonSelfTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+    TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
     TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
@@ -1538,6 +1587,13 @@ begin
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
        
+    { Note that @nolink doesn't have toRecursiveTags flag specified.
+      But it *does* recursively expand it's parameters -- it's handled
+      by explicitly calling TagManager.Execute inside HandleNoLinkTag. }
+    TTag.Create(TagManager, 'nolink',{$IFDEF FPC}@{$ENDIF} HandleNoLinkTag,
+      [toParameterRequired, toAllowOtherTagsInsideByDefault,
+       toAllowNormalTextInside]);
+
     OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
       {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
       [toParameterRequired, toRecursiveTags]);
@@ -1601,7 +1657,7 @@ begin
         {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
     end;
 
-    Result := TagManager.Execute(Description,
+    Result := TagManager.Execute(Description, AutoLink,
       WantFirstSentenceEnd, FirstSentenceEnd);
   finally
     TagManager.Free;

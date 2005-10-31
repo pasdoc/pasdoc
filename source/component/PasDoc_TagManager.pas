@@ -113,16 +113,13 @@ type
       have a tag with TagOptions = [toParameterRequired],
       so the TagParameter parameter passed to handler was
       not recursively expanded. Then you can do inside your handler
-      @longcode# NewTagParameter := TagManager.Execute(TagParameter) #
+      @longcode# NewTagParameter := TagManager.Execute(TagParameter, ...) #
       and this way you have explicitly recursively expanded the tag.
 
-      This is not used anywhere for now, but this will be used
-      when I will implement auto-linking (making links without
-      the need to use @@link tag). Then I will have to make @@nolink
-      tag, and TTagManager.Execute will get a parameter
-      @code(AutoLink: boolean). Then inside @@nolink tag I will
-      be able to call TTagManager.Execute(TagParameter, false)
-      thus preventing auto-linking inside text within @@nolink. }
+      Scenario above is actually used in implementation of @@noLink
+      tag. There I call TagManager.Execute with parameter
+      @code(AutoLink) set to false thus preventing auto-linking 
+      inside text within @@noLink. }
     property TagManager: TTagManager read FTagManager;
     
     { Name of the tag, that must be specified by user after the "@@" sign.
@@ -229,7 +226,7 @@ type
       @italic(but not within itself and not within tags 
       without toAllowOtherTagsInsideByDefault).
       
-      E.g. @@code(This is some @@code(code) that I wrote) is not allowed. }
+      This is currently not used by any tag. }
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
@@ -242,6 +239,11 @@ type
       Maybe in the future it will use hashlist, for now it's not needed. }
     function FindByName(const Name: string): TTag;
   end;
+  
+  TTryAutoLinkEvent = procedure(TagManager: TTagManager;
+    const QualifiedIdentifier: TNameParts;
+    out QualifiedIdentifierReplacement: string;
+    var AutoLinked: boolean) of object;
 
   TTagManager = class
   private
@@ -253,29 +255,14 @@ type
     FSpace: string;
     FShortDash, FEnDash, FEmDash: string;
     FURLLink: TStringConverter;
+    FOnTryAutoLink: TTryAutoLinkEvent;
 
     function DoConvertString(const s: string): string;
     function DoURLLink(const s: string): string;
     procedure Unabbreviate(var s: string);
-    
-    { This is underlying version of Execute.
-
-      If EnclosingTag = nil then this is understood to be 
-      toplevel of description, which means that all tags are allowed inside.
       
-      If EnclosingTag <> nil then this is not toplevel. 
-      
-      EnclosingTagData returns collected data for given EnclosingTag.
-      You should init it to EnclosingTag.CreateOccurenceData.
-      It will be passed as EnclosingTagData to each of @@-tags 
-      found inside Description. }
-    function CoreExecute(const Description: string;
-      EnclosingTag: TTag; var EnclosingTagData: TObject;
-      WantFirstSentenceEnd: boolean;
-      out FirstSentenceEnd: Integer): string; overload;
-
-    function CoreExecute(const Description: string;
-      EnclosingTag: TTag; var EnclosingTagData: TObject): string; overload;
+    function TryAutoLink(const QualifiedIdentifier: TNameParts;
+      out QualifiedIdentifierReplacement: string): boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -354,6 +341,15 @@ type
       to Result in @link(Execute). }
     property URLLink: TStringConverter read FURLLink write FURLLink;
 
+    { This should check does QualifiedIdentifier looks like a name
+      of some existing identifier. If yes, sets AutoLinked to true and
+      sets QualifiedIdentifierReplacement to a link to
+      QualifiedIdentifier (QualifiedIdentifierReplacement should be 
+      ready to be put in final documentation, i.e. already in the 
+      final output format). By default AutoLinked is false. }
+    property OnTryAutoLink: TTryAutoLinkEvent
+      read FOnTryAutoLink write FOnTryAutoLink;
+
     { This method is the very essence of this class and this unit.
       It expands Description, which means that it processes Description
       (text supplied by user in some comment in parsed unit)
@@ -377,11 +373,34 @@ type
       
       If WantFirstSentenceEnd, FirstSentenceEnd will not be set. }
     function Execute(const Description: string;
+      AutoLink: boolean;
       WantFirstSentenceEnd: boolean;
       out FirstSentenceEnd: Integer): string; overload;
       
-    { This is equivalent to Execute(Description, false, Dummy) }
-    function Execute(const Description: string): string; overload;
+    { This is equivalent to Execute(Description, AutoLink, false, Dummy) }
+    function Execute(const Description: string;
+      AutoLink: boolean): string; overload;
+
+    { This is the underlying version of Execute. Use with caution!
+
+      If EnclosingTag = nil then this is understood to be 
+      toplevel of description, which means that all tags are allowed inside.
+      
+      If EnclosingTag <> nil then this is not toplevel. 
+      
+      EnclosingTagData returns collected data for given EnclosingTag.
+      You should init it to EnclosingTag.CreateOccurenceData.
+      It will be passed as EnclosingTagData to each of @@-tags 
+      found inside Description. }
+    function CoreExecute(const Description: string;
+      AutoLink: boolean;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      WantFirstSentenceEnd: boolean;
+      out FirstSentenceEnd: Integer): string; overload;
+
+    function CoreExecute(const Description: string;
+      AutoLink: boolean;
+      EnclosingTag: TTag; var EnclosingTagData: TObject): string; overload;
 
     property ConvertString: TStringConverter 
       read FConvertString write FConvertString;
@@ -521,7 +540,22 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
+function TTagManager.TryAutoLink(const QualifiedIdentifier: TNameParts;
+  out QualifiedIdentifierReplacement: string): boolean;
+begin
+  Result := false;
+  
+  if Assigned(OnTryAutoLink) then
+    OnTryAutoLink(Self, QualifiedIdentifier, 
+      QualifiedIdentifierReplacement, Result);
+  
+  if Result then
+    DoMessage(3, mtInformation, 'Automatically linked identifier "%s"',
+      [GlueNameParts(QualifiedIdentifier)]);
+end;
+
 function TTagManager.CoreExecute(const Description: string;
+  AutoLink: boolean;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
@@ -706,6 +740,65 @@ var
     
     URL := Copy(Description, FOffset, OffsetEnd - FOffset);
   end;
+
+  { Checks does Description[FOffset] may be a beginning of some 
+    qualified identifier (identifier is [A-Za-z_]([A-Za-z_0-9])*,
+    qualified identifier is a sequence of identifiers delimited
+    by dots).
+
+    If yes, returns true and sets OffsetEnd to the next
+    index in Description after this qualified ident.
+    
+    For your comfort, returns also QualifiedIdentifier 
+    (this is *always* equal to SplitNameParts(
+    Copy(Description, FOffset, OffsetEnd - FOffset))). }
+  function FindQualifiedIdentifier(out OffsetEnd: Integer; 
+    out QualifiedIdentifier: TNameParts): boolean;
+  const
+    FirstIdentChar = ['a'..'z', 'A'..'Z', '_'];
+    NonFirstIdentChar = FirstIdentChar + ['0'..'9'];
+  var
+    NamePartBegin: Integer;
+  begin
+    Result := 
+      ( (FOffset = 1) or
+        (Description[FOffset - 1] in WhiteSpace) ) and
+      SCharIs(Description, FOffset, FirstIdentChar);
+    
+    if Result then
+    begin
+      NamePartBegin := FOffset;
+      OffsetEnd := FOffset + 1;
+
+      repeat
+        { skip a sequence of NonFirstIdentChar characters }
+        while SCharIs(Description, OffsetEnd, NonFirstIdentChar) do 
+          Inc(OffsetEnd);
+          
+        if Length(QualifiedIdentifier) = MaxNameParts then
+        begin
+          { I can't add new item to QualifiedIdentifier.
+            So Result is false. }
+          Result := false;
+          Exit;
+        end;
+        
+        { Append next part to QualifiedIdentifier }
+        SetLength(QualifiedIdentifier, Length(QualifiedIdentifier) + 1);
+        QualifiedIdentifier[Length(QualifiedIdentifier) - 1] :=
+          Copy(Description, NamePartBegin, OffsetEnd - NamePartBegin);
+          
+        if SCharIs(Description, OffsetEnd, '.') and
+           SCharIs(Description, OffsetEnd + 1, FirstIdentChar) then
+        begin
+          NamePartBegin := OffsetEnd + 1;
+          { skip the dot and skip FirstIdentChar character }
+          Inc(OffsetEnd, 2); 
+        end else
+          break;
+      until false;
+    end;
+  end;
   
   function FindFirstSentenceEnd: boolean;
   begin
@@ -759,6 +852,8 @@ var
   FoundTag: TTag;
   URL: string;
   FoundTagData: TObject;
+  QualifiedIdentifier: TNameParts;
+  QualifiedIdentifierReplacement: string;
 begin
   Result := '';
   FOffset := 1;
@@ -808,7 +903,7 @@ begin
               Unabbreviate(Params);
               if toRecursiveTags in FoundTag.TagOptions then
                 { recursively expand Params }
-                Params := CoreExecute(Params, FoundTag, FoundTagData);
+                Params := CoreExecute(Params, AutoLink, FoundTag, FoundTagData);
             end else
             begin
               { Note that in this case we ignore whether
@@ -926,6 +1021,18 @@ begin
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
+    if AutoLink and
+       FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier) and
+       TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then
+    begin
+      DoConvert;
+
+      if CheckNormalTextAllowed(GlueNameParts(QualifiedIdentifier)) then
+        Result := Result + QualifiedIdentifierReplacement;
+        
+      FOffset := OffsetEnd;
+      ConvertBeginOffset := FOffset;
+    end else
     if FindURL(OffsetEnd, URL) then
     begin
       DoConvert;
@@ -967,30 +1074,35 @@ begin
 end;
 
 function TTagManager.CoreExecute(const Description: string;
+  AutoLink: boolean;
   EnclosingTag: TTag; var EnclosingTagData: TObject): string;
 var Dummy: Integer;
 begin
-  Result := CoreExecute(Description, EnclosingTag, EnclosingTagData,
+  Result := CoreExecute(Description, AutoLink,
+    EnclosingTag, EnclosingTagData,
     false, Dummy);
 end;
 
 function TTagManager.Execute(const Description: string;
+  AutoLink: boolean;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
 var 
   EnclosingTagData: TObject;
 begin
   EnclosingTagData := nil;
-  Result := CoreExecute(Description, nil, EnclosingTagData,
+  Result := CoreExecute(Description, AutoLink,
+    nil, EnclosingTagData,
     WantFirstSentenceEnd, FirstSentenceEnd);
   { Just ignore resulting EnclosingTagData }
 end;
 
-function TTagManager.Execute(const Description: string): string; 
+function TTagManager.Execute(const Description: string;
+  AutoLink: boolean): string; 
 var 
   Dummy: Integer;
 begin
-  Result := Execute(Description, false, Dummy);
+  Result := Execute(Description, AutoLink, false, Dummy);
 end;
 
 end.

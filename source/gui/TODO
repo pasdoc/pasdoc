@@ -5,7 +5,10 @@
   After all, pasdoc_gui is already able to fire up WWW browser to 
   view generated HTML docs.
 
-- reflect in gui --implicit-visibility option, --no-macro option
+- reflect in gui 
+  --implicit-visibility option, 
+  --no-macro option,
+  --auto-link option
 
 - Provide easy way to look into documentation for given option,
   wiki page documenting given feature. pasdoc_gui would automatically

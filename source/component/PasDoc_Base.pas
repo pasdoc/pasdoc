@@ -76,6 +76,7 @@ type
     FIntroduction: TExternalItem;
     FImplicitVisibility: TImplicitVisibility;
     FHandleMacros: boolean;
+    FAutoLink: boolean;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -186,6 +187,11 @@ type
       
     property HandleMacros: boolean
       read FHandleMacros write FHandleMacros default true;
+      
+    { This controls auto-linking, see
+      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
+    property AutoLink: boolean
+      read FAutoLink write FAutoLink default false;
   end;
 
   { ---------------------------------------------------------------------------- }
@@ -529,6 +535,7 @@ begin
   Generator.Units := FUnits;
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
+  Generator.AutoLink := AutoLink;
   Generator.BuildLinks;
 
   FUnits.SortDeep(SortSettings);

@@ -10,8 +10,6 @@ type
 
   pasdoc should display appropriate warnings on following input:
 
-  @code(This is a code @code(inside a code ???).)
-  
   @code(This is a code @raises(EFoo with a raises inside ???).)
 
   @raises(@raises(EFoo What are you doing, using raises inside @@raises ?!?))

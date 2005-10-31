@@ -69,6 +69,7 @@ type
     OptionLatexHead: TStringOption;
     OptionImplicitVisibility: TStringOption;
     OptionNoMacro: TBoolOption;
+    OptionAutoLink: TBoolOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -276,6 +277,10 @@ begin
   OptionNoMacro := TBoolOption.Create(#0, 'no-macro');
   OptionNoMacro.Explanation := 'Turn FPC macro support off';
   AddOption(OptionNoMacro);
+  
+  OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
+  OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
+  AddOption(OptionAutoLink);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -505,6 +510,7 @@ begin
       [OptionImplicitVisibility.Value]);
       
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
+  PasDoc.AutoLink := OptionAutoLink.TurnedOn;
 end;
 
 { TPasdocMain }

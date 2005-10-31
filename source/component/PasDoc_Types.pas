@@ -30,8 +30,11 @@ type
     e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
     converts it to TNameParts like 
     ['UnitName', 'ClassName', 'ProcedureName'].
-    Length must be @italic(always) between 1 and 3. }
+    Length must be @italic(always) between 1 and @link(MaxNameParts). }
   TNameParts = array of string;
+
+const
+  MaxNameParts = 3;
 
 { Splits S, which can be made of up to three parts, separated by dots.
   If S is not a valid identifier or if it has more than
@@ -41,6 +44,9 @@ function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 
 { Simply returns an array with Length = 1 and one item = S. }
 function OneNamePart(S: string): TNameParts;
+
+{ Simply concatenates all NameParts with dot. }
+function GlueNameParts(const NameParts: TNameParts): string;
 
 type
   { See command-line option @--implicit-visibility documentation at
@@ -125,6 +131,15 @@ function OneNamePart(S: string): TNameParts;
 begin
   SetLength(Result, 1);
   Result[0] := S;
+end;
+
+function GlueNameParts(const NameParts: TNameParts): string;
+var
+  i: Integer;
+begin
+  Result := NameParts[0];
+  for i := 1 to Length(NameParts) - 1 do
+    Result := Result + '.' + NameParts[i];
 end;
 
 end.

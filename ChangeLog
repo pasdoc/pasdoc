@@ -1,6 +1,8 @@
 [Next release -- release date and new version number unknown yet...]
 
   + New command-line options:
+    --auto-link
+      (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
     --implicit-visibility
       (see [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption])
     --no-macro
@@ -19,6 +21,8 @@
       (see [http://pasdoc.sipsolutions.net/ListTags])
     @table, @row, @rowHead, @cell
       (see [http://pasdoc.sipsolutions.net/TableTags])
+    @noLink
+      (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
   * FPC macros are now correctly parsed by pasdoc.
