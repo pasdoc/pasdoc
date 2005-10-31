@@ -774,12 +774,13 @@ var
   const
     FirstIdentChar = ['a'..'z', 'A'..'Z', '_'];
     NonFirstIdentChar = FirstIdentChar + ['0'..'9'];
+    AnyQualifiedIdentChar = NonFirstIdentChar + ['.'];
   var
     NamePartBegin: Integer;
   begin
     Result := 
       ( (FOffset = 1) or
-        (Description[FOffset - 1] in WhiteSpace) ) and
+        not (Description[FOffset - 1] in AnyQualifiedIdentChar) ) and
       SCharIs(Description, FOffset, FirstIdentChar);
     
     if Result then
