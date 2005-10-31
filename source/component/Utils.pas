@@ -99,6 +99,8 @@ procedure ExtractFirstWord(const S: string;
   out FirstWord, Rest: string); overload;
 
 const
+  AllChars = [Low(Char)..High(Char)];
+  
   { Whitespace that is not any part of newline. }
   WhiteSpaceNotNL = [' ', #9];
   { Whitespace that is some part of newline. }

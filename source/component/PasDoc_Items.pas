@@ -1304,7 +1304,7 @@ begin
     {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
   TTopLevelTag.Create(TagManager, 'seealso', 
     {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
-    [toParameterRequired]);
+    [toParameterRequired, toFirstWordVerbatim]);
 end;
 
 function TPasItem.HasDescription: Boolean;
@@ -2090,10 +2090,10 @@ begin
   inherited;
   TTopLevelTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
-     toAllowNormalTextInside]);
+     toAllowNormalTextInside, toFirstWordVerbatim]);
   TTopLevelTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
-     toAllowNormalTextInside]);
+     toAllowNormalTextInside, toFirstWordVerbatim]);
   TTopLevelTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside]);

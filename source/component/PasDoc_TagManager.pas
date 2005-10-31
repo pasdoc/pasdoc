@@ -76,7 +76,24 @@ type
       ConvertString, empty line will not produce any Paragraph etc.).
       This is useful for tags like @@orderedList that should only contain
       other @@item tags inside. }
-    toAllowNormalTextInside);
+    toAllowNormalTextInside,
+    
+    { This is useful for tags like @@raises and @@param that treat
+      1st word of their descriptions very specially
+      (where "what exactly is the 1st word" is defined by the
+      @link(ExtractFirstWord) function). This tells pasdoc to
+      leave the beginning of tag parameter (the first word and
+      the eventual whitespace before it) as it is in the parameter.
+      Don't search there for @@-tags, URLs, @-- or other special dashes,
+      don't insert paragraphs, don't try to auto-link it.
+      
+      This is meaningful only if toRecursiveTags is included
+      (otherwise the whole tag parameters are always preserved "verbatim").
+      
+      TODO: in the future TTagExecuteEvent should just get this
+      "first word" as a separate parameter, separated from TagParameters.
+      Also, this word should not be converted by ConvertString. }
+    toFirstWordVerbatim);
 
   TTagOptions = set of TTagOption;
 
@@ -858,6 +875,14 @@ begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
+  
+  if (EnclosingTag <> nil) and
+     (toFirstWordVerbatim in EnclosingTag.TagOptions) then
+  begin
+    { Skip the first word in Description }
+    while SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
+    while SCharIs(Description, FOffset, AllChars - WhiteSpace) do Inc(FOffset);
+  end;
   
   if WantFirstSentenceEnd then
     FirstSentenceEnd := 0;

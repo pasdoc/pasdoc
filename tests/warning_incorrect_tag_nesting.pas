@@ -12,7 +12,8 @@ type
 
   @code(This is a code @raises(EFoo with a raises inside ???).)
 
-  @raises(@raises(EFoo What are you doing, using raises inside @@raises ?!?))
+  @raises(EFoo @raises(EFoo What are you doing, using raises inside @@raises ?!?))
+  @raises()
   
   @created(2005-05-13 @unknowntag, this will cause a warning 
     about unknown_tag.)
