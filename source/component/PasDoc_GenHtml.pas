@@ -409,9 +409,9 @@ begin
         Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
       end;
     end;
-  end else if Item is TSubItem then
+  end else if Item is TAnchorItem then
   begin
-    Result := TSubItem(Item).ExternalItem.FullLink + '#' + Item.Name;
+    Result := TAnchorItem(Item).ExternalItem.FullLink + '#' + Item.Name;
   end
   else
   begin

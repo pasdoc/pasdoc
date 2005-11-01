@@ -69,7 +69,7 @@ type
   TPasMethod = class;
   TPasProperty = class;
   TPasUnit = class;
-  TSubItem = class;
+  TAnchorItem = class;
 
   TBaseItems = class;
   TPasItems = class;
@@ -681,7 +681,7 @@ type
     function ShowVisibility: boolean;
   end;
   
-  ESubItemAlreadyExists = class(Exception);
+  EAnchorAlreadyExists = class(Exception);
 
   { @name extends @link(TBaseItem) to store extra information about a project.
     @name is used to hold an introduction and conclusion to the project. }
@@ -711,20 +711,20 @@ type
     property SourceFileName: string read FSourceFilename write FSourceFilename;
     property Title: string read FTitle write FTitle;
     function FindItem(const ItemName: string): TBaseItem; override;
-    procedure AddSubItem(const Item: TSubItem); overload;
+    procedure AddAnchor(const AnchorItem: TAnchorItem); overload;
     
     { If item with Name (case ignored) already exists, this raises
-      exception ESubItemAlreadyExists. Otherwise it adds TSubItem
-      with given name to Anchors. It also returns created TSubItem. }
-    function AddSubItem(const SubItemName: string): TSubItem; overload;
+      exception EAnchorAlreadyExists. Otherwise it adds TAnchorItem
+      with given name to Anchors. It also returns created TAnchorItem. }
+    function AddAnchor(const AnchorName: string): TAnchorItem; overload;
     
-    // @name holds a list of @link(TSubItem)s that represent anchors and
-    // sections within the @classname.  The  @link(TSubItem)s have no content
+    // @name holds a list of @link(TAnchorItem)s that represent anchors and
+    // sections within the @classname. The @link(TAnchorItem)s have no content
     // so, they should not be indexed separately.
     property Anchors: TBaseItems read FAnchors;
   end;
 
-  TSubItem = class(TBaseItem)
+  TAnchorItem = class(TBaseItem)
   private
     FExternalItem: TExternalItem;
   public
@@ -2178,23 +2178,23 @@ end;
 
 { TExternalItem ---------------------------------------------------------- }
 
-procedure TExternalItem.AddSubItem(const Item: TSubItem);
+procedure TExternalItem.AddAnchor(const AnchorItem: TAnchorItem);
 begin
-  FAnchors.Add(Item);
+  FAnchors.Add(AnchorItem);
 end;
 
-function TExternalItem.AddSubItem(const SubItemName: string): TSubItem; 
+function TExternalItem.AddAnchor(const AnchorName: string): TAnchorItem; 
 begin
-  if FindItem(SubItemName) = nil then
+  if FindItem(AnchorName) = nil then
   begin
-    Result := TSubItem.Create;
-    Result.Name := SubItemName;
+    Result := TAnchorItem.Create;
+    Result.Name := AnchorName;
     Result.ExternalItem := Self;
-    AddSubItem(Result);
+    AddAnchor(Result);
   end else
-    raise ESubItemAlreadyExists.CreateFmt(
+    raise EAnchorAlreadyExists.CreateFmt(
       'Within "%s" there already exists anchor "%s"', 
-      [Name, SubItemName]);
+      [Name, AnchorName]);
 end;
 
 constructor TExternalItem.Create;
@@ -2216,7 +2216,6 @@ begin
     Result := FAnchors.FindName(ItemName);
     if Result <> nil then Exit;
   end;
-
 end;
 
 procedure TExternalItem.HandleShortTitleTag(
@@ -2244,7 +2243,6 @@ begin
   Title := TagParameter;
   ReplaceStr := '';
 end;
-
 
 procedure TExternalItem.RegisterTags(TagManager: TTagManager);
 begin

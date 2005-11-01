@@ -3288,27 +3288,27 @@ procedure TDocGenerator.PreHandleAnchorTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  AnchorString: string;
-  NewSubItem: TSubItem;
+  AnchorName: string;
+  AnchorItem: TAnchorItem;
 begin
-  { We add AnchorString to FCurrentItem.SubItems in the 1st pass of expanding
+  { We add AnchorName to FCurrentItem.Anchors in the 1st pass of expanding
     descriptions (i.e. in PreHandleAnchorTag instead of HandleAnchorTag),
     this way creating @links in the 2nd pass of expanding
     descriptions works good. }
   
   ReplaceStr := '';
   
-  AnchorString := Trim(TagParameter);
+  AnchorName := Trim(TagParameter);
   
-  if not IsValidIdent(AnchorString) then
+  if not IsValidIdent(AnchorName) then
   begin
     ThisTag.TagManager.DoMessage(1, mtWarning,
-      'Invalid anchor name: "%s"', [AnchorString]);
+      'Invalid anchor name: "%s"', [AnchorName]);
     Exit;
   end;
   
-  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
-  NewSubItem.FullLink := CreateLink(NewSubItem);
+  AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
+  AnchorItem.FullLink := CreateLink(AnchorItem);
 end;
 
 procedure TDocGenerator.HandleAnchorTag(
@@ -3316,20 +3316,20 @@ procedure TDocGenerator.HandleAnchorTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  AnchorString: string;
+  AnchorName: string;
 begin
-  { AnchorString is already added to FCurrentItem.SubItems,
+  { AnchorName is already added to FCurrentItem.Anchors,
     thanks to PreHandleAnchorTag.
     All we do here is to generate correct ReplaceStr. }
   
-  AnchorString := Trim(TagParameter);
+  AnchorName := Trim(TagParameter);
   
-  if not IsValidIdent(AnchorString) then
+  if not IsValidIdent(AnchorName) then
     { Warning for this case was already printed by PreHandleAnchorTag.
       That's why here we do only Exit. }
     Exit;
   
-  ReplaceStr := FormatAnchor(AnchorString);
+  ReplaceStr := FormatAnchor(AnchorName);
 end;
 
 procedure TDocGenerator.PreHandleSectionTag(
@@ -3338,12 +3338,12 @@ procedure TDocGenerator.PreHandleSectionTag(
   const TagParameter: string; var ReplaceStr: string);
 var
   HeadingLevelString: string;
-  AnchorString: string;
+  AnchorName: string;
   CaptionString: string;
   Remainder: string;
-  NewSubItem: TSubItem;
+  AnchorItem: TAnchorItem;
 begin
-  { We add AnchorString to FCurrentItem.SubItems in the 1st pass of expanding
+  { We add AnchorName to FCurrentItem.Anchors in the 1st pass of expanding
     descriptions (i.e. in PreHandleSectionTag instead of HandleSectionTag),
     this way creating @links in the 2nd pass of expanding
     descriptions works good. }
@@ -3351,10 +3351,10 @@ begin
   ReplaceStr := '';
   
   ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
-  ExtractFirstWord(Remainder, AnchorString, CaptionString);
+  ExtractFirstWord(Remainder, AnchorName, CaptionString);
   
-  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
-  NewSubItem.FullLink := CreateLink(NewSubItem);
+  AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
+  AnchorItem.FullLink := CreateLink(AnchorItem);
 end;
 
 procedure TDocGenerator.HandleSectionTag(
@@ -3363,13 +3363,13 @@ procedure TDocGenerator.HandleSectionTag(
   const TagParameter: string; var ReplaceStr: string);
 var
   HeadingLevelString: string;
-  AnchorString: string;
+  AnchorName: string;
   CaptionString: string;
   Remainder: string;
   HeadingLevel: integer;
 begin
   ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
-  ExtractFirstWord(Remainder, AnchorString, CaptionString);
+  ExtractFirstWord(Remainder, AnchorName, CaptionString);
   try
     HeadingLevel := StrToInt(HeadingLevelString);
   except on E: EConvertError do
@@ -3389,9 +3389,9 @@ begin
     Exit;
   end;
   
-  ReplaceStr := FormatSection(HeadingLevel, AnchorString, CaptionString);
+  ReplaceStr := FormatSection(HeadingLevel, AnchorName, CaptionString);
   
-  { Section is already added to FCurrentItem.SubItems,
+  { Section is already added to FCurrentItem.Anchors,
     thanks to PreHandleSectionTag. }
 end;
 
