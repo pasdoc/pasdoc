@@ -86,8 +86,10 @@ type
     FName: string;
     FAuthors: TStringVector;
     FCreated: string;
+    FAutoLinkHereAllowed: boolean;
     
     procedure SetAuthors(const Value: TStringVector);
+    
     procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -98,6 +100,12 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
     procedure StoreCVSTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure PreHandleNoAutoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleNoAutoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
@@ -226,6 +234,11 @@ type
       This string is already in the form suitable for final output
       format (i.e. already processed by TDocGenerator.ConvertString). }
     property Created: string read FCreated;
+    
+    { Is auto-link mechanism allowed to create link to this item ?
+      This may be set to @false by @@noAutoLinkHere tag in item's description. }
+    property AutoLinkHereAllowed: boolean
+      read FAutoLinkHereAllowed write FAutoLinkHereAllowed default true;
   end;
   
   TPasItem = class(TBaseItem)
@@ -997,6 +1010,7 @@ constructor TBaseItem.Create;
 begin
   inherited Create;
   FAuthors := TStringVector.Create;
+  AutoLinkHereAllowed := true;
 end;
 
 destructor TBaseItem.Destroy;
@@ -1085,6 +1099,27 @@ begin
   end;
 end;
 
+procedure TBaseItem.PreHandleNoAutoLinkTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '';
+  { We set AutoLinkHereAllowed in the 1st pass of expanding descriptions
+    (i.e. in PreHandleNoAutoLinkTag, not in HandleNoAutoLinkTag)
+    because all information about AutoLinkHereAllowed must be collected
+    before auto-linking happens in the 2nd pass of expanding descriptions. }
+  AutoLinkHereAllowed := false;
+end;
+
+procedure TBaseItem.HandleNoAutoLinkTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '';
+end;
+
 procedure TBaseItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -1096,6 +1131,9 @@ begin
     [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
   TTag.Create(TagManager, 'cvs', nil, {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
     [toParameterRequired]);
+  TTopLevelTag.Create(TagManager, 'noautolinkhere', 
+    {$IFDEF FPC}@{$ENDIF} PreHandleNoAutoLinkTag,
+    {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag, []);
 end;
 
 procedure TBaseItem.SetAuthors(const Value: TStringVector);
@@ -1119,7 +1157,8 @@ begin
   FullLink := LoadStringFromStream(ASource);
   LastMod := LoadStringFromStream(ASource);
   Authors.LoadFromBinaryStream(ASource);
-  FCreated := LoadStringFromStream(ASource); }
+  FCreated := LoadStringFromStream(ASource); 
+  AutoLinkHereAllowed }
 end;
 
 procedure TBaseItem.Serialize(const ADestination: TStream);
@@ -1133,7 +1172,8 @@ begin
   SaveStringToStream(FullLink, ADestination);
   SaveStringToStream(LastMod, ADestination);
   Authors.SaveToBinaryStream(ADestination);
-  SaveStringToStream(Created, ADestination); }
+  SaveStringToStream(Created, ADestination); 
+  AutoLinkHereAllowed }
 end;
 
 { TPasItem ------------------------------------------------------------------- }

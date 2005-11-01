@@ -21,7 +21,7 @@
       (see [http://pasdoc.sipsolutions.net/ListTags])
     @table, @row, @rowHead, @cell
       (see [http://pasdoc.sipsolutions.net/TableTags])
-    @noAutoLink
+    @noAutoLinkHere, @noAutoLink
       (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])

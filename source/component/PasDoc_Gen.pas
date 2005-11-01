@@ -1499,7 +1499,7 @@ begin
   if FoundItem = nil then
     FoundItem := FindGlobal(QualifiedIdentifier);
 
-  AutoLinked := FoundItem <> nil;
+  AutoLinked := (FoundItem <> nil) and FoundItem.AutoLinkHereAllowed;
   if AutoLinked then
   begin
     QualifiedIdentifierGlued := GlueNameParts(QualifiedIdentifier);
