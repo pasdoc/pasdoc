@@ -727,10 +727,16 @@ type
   TAnchorItem = class(TBaseItem)
   private
     FExternalItem: TExternalItem;
+    FSectionLevel: Integer;
   public
-    Property ExternalItem: TExternalItem read FExternalItem write FExternalItem;
+    property ExternalItem: TExternalItem read FExternalItem write FExternalItem;
+    
+    { If this is an anchor for a section, this tells section level
+      (as was specified in the @@section tag).
+      Otherwise this is 0. }
+    property SectionLevel: Integer
+      read FSectionLevel write FSectionLevel default 0;
   end;
-
 
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit.

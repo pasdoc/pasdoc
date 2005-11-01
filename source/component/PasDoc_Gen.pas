@@ -277,6 +277,11 @@ type
       out QualifiedIdentifierReplacement: string;
       var AutoLinked: boolean);
 
+    function SplitSectionTagParameters(
+      ThisTag: TTag; const TagParameter: string; DoMessages: boolean;
+      out HeadingLevel: integer; out AnchorName: string; out Caption: string):
+      boolean;
+
     procedure HandleLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -3332,16 +3337,52 @@ begin
   ReplaceStr := FormatAnchor(AnchorName);
 end;
 
+function TDocGenerator.SplitSectionTagParameters(
+  ThisTag: TTag; const TagParameter: string; DoMessages: boolean;
+  out HeadingLevel: integer; out AnchorName: string; out Caption: string):
+  boolean;
+var
+  HeadingLevelString: string;
+  Remainder: string;
+begin
+  Result := false;
+  
+  ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
+  ExtractFirstWord(Remainder, AnchorName, Caption);
+  
+  try
+    HeadingLevel := StrToInt(HeadingLevelString);
+  except on E: EConvertError do
+    begin
+      if DoMessages then
+        ThisTag.TagManager.DoMessage(1, mtWarning,
+          'Invalid heading level in @section tag: "%s". %s', 
+          [HeadingLevelString, E.Message]);
+      Exit;
+    end;
+  end;
+  
+  if HeadingLevel < 1 then
+  begin
+    if DoMessages then
+      ThisTag.TagManager.DoMessage(1, mtWarning,
+        'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
+        [HeadingLevel]);
+    Exit;
+  end;
+  
+  Result := true;
+end;
+
 procedure TDocGenerator.PreHandleSectionTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  HeadingLevelString: string;
   AnchorName: string;
-  CaptionString: string;
-  Remainder: string;
+  Caption: string;
   AnchorItem: TAnchorItem;
+  HeadingLevel: integer;
 begin
   { We add AnchorName to FCurrentItem.Anchors in the 1st pass of expanding
     descriptions (i.e. in PreHandleSectionTag instead of HandleSectionTag),
@@ -3349,12 +3390,14 @@ begin
     descriptions works good. }
     
   ReplaceStr := '';
-  
-  ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
-  ExtractFirstWord(Remainder, AnchorName, CaptionString);
-  
-  AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
-  AnchorItem.FullLink := CreateLink(AnchorItem);
+
+  if SplitSectionTagParameters(ThisTag, TagParameter, false,
+    HeadingLevel, AnchorName, Caption) then
+  begin
+    AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
+    AnchorItem.FullLink := CreateLink(AnchorItem);
+    AnchorItem.SectionLevel := HeadingLevel;
+  end;
 end;
 
 procedure TDocGenerator.HandleSectionTag(
@@ -3362,34 +3405,15 @@ procedure TDocGenerator.HandleSectionTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  HeadingLevelString: string;
   AnchorName: string;
-  CaptionString: string;
-  Remainder: string;
+  Caption: string;
   HeadingLevel: integer;
 begin
-  ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
-  ExtractFirstWord(Remainder, AnchorName, CaptionString);
-  try
-    HeadingLevel := StrToInt(HeadingLevelString);
-  except on E: EConvertError do
-    begin
-      ThisTag.TagManager.DoMessage(1, mtWarning,
-        'Invalid heading level in @section tag: "%s". %s', 
-        [HeadingLevelString, E.Message]);
-      Exit;
-    end;
-  end;
-  
-  if HeadingLevel < 1 then
+  if SplitSectionTagParameters(ThisTag, TagParameter, true,
+    HeadingLevel, AnchorName, Caption) then
   begin
-    ThisTag.TagManager.DoMessage(1, mtWarning,
-      'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
-      [HeadingLevel]);
-    Exit;
+    ReplaceStr := FormatSection(HeadingLevel, AnchorName, Caption);
   end;
-  
-  ReplaceStr := FormatSection(HeadingLevel, AnchorName, CaptionString);
   
   { Section is already added to FCurrentItem.Anchors,
     thanks to PreHandleSectionTag. }
