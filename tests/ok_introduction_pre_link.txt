@@ -1,0 +1,11 @@
+Link to my section before defining it : @link(MySection)
+
+@section(1 MySection My section)
+
+Link to my section after defining it : @link(MySection)
+
+Link to my anchor before defining it : @link(MyAnchor)
+
+@anchor(MyAnchor) Here's my anchor.
+
+Link to my anchor after defining it : @link(MyAnchor)

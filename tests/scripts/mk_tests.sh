@@ -156,3 +156,4 @@ mk_special_test ok_multiple_fields ok_multiple_fields.pas
 mk_special_test ok_back_comment ok_back_comment.pas
 mk_special_test warning_back_comment warning_back_comment.pas
 mk_special_test ok_auto_link --auto-link ok_auto_link.pas
+mk_special_test ok_introduction_pre_link ok_introduction_pre_link_unit.pas --introduction=ok_introduction_pre_link.txt

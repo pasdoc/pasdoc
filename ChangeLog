@@ -28,7 +28,8 @@
   * FPC macros are now correctly parsed by pasdoc.
   * Each detailed description in HTML output is enclosed within lightgray frame
   * Various fixes. E.g.
-    --spell-check-ignore-words works now.
+    * --spell-check-ignore-words works now.
+    * @links to @anchors and @sections work always now.
   * Many improvements to pasdoc_gui (by Richard B. Winston)
   * back-comments
     (see [http://pasdoc.sipsolutions.net/WhereToPlaceComments#head-7ce7157fefbd0d84d3577aa636f758baa813e201])
