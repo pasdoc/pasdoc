@@ -454,32 +454,6 @@ type
     function CreateStream(const AName: string; const AOverwrite: boolean): 
       TCreateStreamResult;
 
-    (*Takes description D of the Item, expands links (using Item),
-      converts output-specific characters.
-
-      Note that you can't process with this function more than once
-      the same Description (i.e. like
-      @longcode(#
-        { BAD EXAMPLE }
-        Description := ExpandDescription(Item, Description);
-        Description := ExpandDescription(Item, Description);
-      #)) because output of this function is already something
-      ready to be included in final doc output, it shouldn't be
-      processed once more, moreover this function initializes
-      some properties of Item to make them also in the
-      "already-processed" form (ready to be included in final docs).
-
-      Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
-      see @link(TTagManager.Execute). *)
-    function ExpandDescription(Item: TBaseItem;
-      const Description: string;
-      WantFirstSentenceEnd: boolean;
-      out FirstSentenceEnd: Integer): string; overload;
-
-    { Same thing as ExpandDescription(Item, Description, false, Dummy) }
-    function ExpandDescription(Item: TBaseItem;
-      const Description: string): string; overload;
-
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
@@ -1528,152 +1502,170 @@ begin
   end;
 end;
 
-function TDocGenerator.ExpandDescription(Item: TBaseItem; 
-  const Description: string;
-  WantFirstSentenceEnd: boolean;
-  out FirstSentenceEnd: Integer): string;
-var
-  TagManager: TTagManager;
-  ItemTag, ItemLabelTag, ItemSpacingTag, ItemSetNumberTag, CellTag: TTag;
-begin
-  // make it available to the handlers
-  FCurrentItem := Item;
-
-  TagManager := TTagManager.Create;
-  try
-    TagManager.Abbreviations := Abbreviations;
-    TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
-    TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
-    TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
-    TagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
-    TagManager.Paragraph := Paragraph;
-    TagManager.ShortDash := ShortDash;
-    TagManager.EnDash := EnDash;
-    TagManager.EmDash := EmDash;
-    
-    Item.RegisterTags(TagManager);
-
-    { Tags without params }
-    TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
-    TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'inheritedclass',{$IFDEF FPC}@{$ENDIF} 
-      HandleInheritedClassTag, []);
-    TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
-    TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
-    TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
-
-    { Tags with non-recursive params }
-    TTag.Create(TagManager, 'longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
-      [toParameterRequired]);
-    TTag.Create(TagManager, 'html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
-      [toParameterRequired]);
-    TTag.Create(TagManager, 'latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
-      [toParameterRequired]);
-    TTag.Create(TagManager, 'link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
-      [toParameterRequired]);
-    TTag.Create(TagManager, 'preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
-      [toParameterRequired]);
-
-    { Tags with recursive params }
-    TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-    TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-    TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-       
-    { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
-      But it *does* recursively expand it's parameters -- it's handled
-      by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
-    TTag.Create(TagManager, 'noautolink',{$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
-      [toParameterRequired, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-
-    OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
-      {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
-      [toParameterRequired, toRecursiveTags]);
-    UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
-      {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
-      [toParameterRequired, toRecursiveTags]);
-    DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
-      {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
-      [toParameterRequired, toRecursiveTags]);
-      
-    ItemTag := TTag.Create(TagManager, 'item', 
-      {$IFDEF FPC}@{$ENDIF} HandleItemTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-    ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-
-    ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
-      {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-    ItemLabelTag.OnAllowedInside := 
-      {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
-      
-    ItemSpacingTag := TTag.Create(TagManager, 'itemspacing', 
-      {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
-      [toParameterRequired]);
-    ItemSpacingTag.OnAllowedInside := 
-      {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-
-    ItemSetNumberTag := TTag.Create(TagManager, 'itemsetnumber', 
-      {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
-      [toParameterRequired, toAllowNormalTextInside]);
-    ItemSetNumberTag.OnAllowedInside := 
-      {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-    
-    TableTag := TTableTag.Create(TagManager, 'table',
-      {$IFDEF FPC}@{$ENDIF} HandleTableTag,
-      [toParameterRequired, toRecursiveTags]);
-
-    RowTag := TRowTag.Create(TagManager, 'row',
-      {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
-      [toParameterRequired, toRecursiveTags]);
-    RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
-
-    RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
-      {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
-      [toParameterRequired, toRecursiveTags]);
-    RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
-
-    CellTag := TTag.Create(TagManager, 'cell',
-      {$IFDEF FPC}@{$ENDIF} HandleCellTag,
-      [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-       toAllowNormalTextInside]);
-    CellTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
-
-    if FCurrentItem is TExternalItem then
-    begin
-      TTopLevelTag.Create(TagManager, 'section', 
-        {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
-      TTopLevelTag.Create(TagManager, 'anchor', 
-        {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
-    end;
-
-    Result := TagManager.Execute(Description, AutoLink,
-      WantFirstSentenceEnd, FirstSentenceEnd);
-  finally
-    TagManager.Free;
-  end;
-end;
-
-function TDocGenerator.ExpandDescription(Item: TBaseItem; 
-  const Description: string): string; 
-var Dummy: Integer;
-begin
-  Result := ExpandDescription(Item, Description, false, Dummy);
-end;
-
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.ExpandDescriptions;
+
+  (*Takes description D of the Item, expands links (using Item),
+    converts output-specific characters.
+
+    Note that you can't process with this function more than once
+    the same Description (i.e. like
+    @longcode(#
+      { BAD EXAMPLE }
+      Description := ExpandDescription(Item, Description);
+      Description := ExpandDescription(Item, Description);
+    #)) because output of this function is already something
+    ready to be included in final doc output, it shouldn't be
+    processed once more, moreover this function initializes
+    some properties of Item to make them also in the
+    "already-processed" form (ready to be included in final docs).
+
+    Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
+    see @link(TTagManager.Execute). *)
+  function ExpandDescription(Item: TBaseItem;
+    const Description: string;
+    WantFirstSentenceEnd: boolean;
+    out FirstSentenceEnd: Integer): string;
+  var
+    TagManager: TTagManager;
+    ItemTag, ItemLabelTag, ItemSpacingTag, ItemSetNumberTag, CellTag: TTag;
+  begin
+    // make it available to the handlers
+    FCurrentItem := Item;
+
+    TagManager := TTagManager.Create;
+    try
+      TagManager.Abbreviations := Abbreviations;
+      TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
+      TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
+      TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
+      TagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
+      TagManager.Paragraph := Paragraph;
+      TagManager.ShortDash := ShortDash;
+      TagManager.EnDash := EnDash;
+      TagManager.EmDash := EmDash;
+
+      Item.RegisterTags(TagManager);
+
+      { Tags without params }
+      TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
+      TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'inheritedclass',{$IFDEF FPC}@{$ENDIF} 
+        HandleInheritedClassTag, []);
+      TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
+      TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
+      TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
+
+      { Tags with non-recursive params }
+      TTag.Create(TagManager, 'longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
+        [toParameterRequired]);
+
+      { Tags with recursive params }
+      TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+
+      { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
+        But it *does* recursively expand it's parameters -- it's handled
+        by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
+      TTag.Create(TagManager, 'noautolink',{$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
+        [toParameterRequired, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+
+      OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
+        {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
+        [toParameterRequired, toRecursiveTags]);
+      UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
+        {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
+        [toParameterRequired, toRecursiveTags]);
+      DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
+        {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
+        [toParameterRequired, toRecursiveTags]);
+
+      ItemTag := TTag.Create(TagManager, 'item', 
+        {$IFDEF FPC}@{$ENDIF} HandleItemTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+
+      ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
+        {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      ItemLabelTag.OnAllowedInside := 
+        {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
+
+      ItemSpacingTag := TTag.Create(TagManager, 'itemspacing', 
+        {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
+        [toParameterRequired]);
+      ItemSpacingTag.OnAllowedInside := 
+        {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+
+      ItemSetNumberTag := TTag.Create(TagManager, 'itemsetnumber', 
+        {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
+        [toParameterRequired, toAllowNormalTextInside]);
+      ItemSetNumberTag.OnAllowedInside := 
+        {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
+
+      TableTag := TTableTag.Create(TagManager, 'table',
+        {$IFDEF FPC}@{$ENDIF} HandleTableTag,
+        [toParameterRequired, toRecursiveTags]);
+
+      RowTag := TRowTag.Create(TagManager, 'row',
+        {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+        [toParameterRequired, toRecursiveTags]);
+      RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
+
+      RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
+        {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+        [toParameterRequired, toRecursiveTags]);
+      RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
+
+      CellTag := TTag.Create(TagManager, 'cell',
+        {$IFDEF FPC}@{$ENDIF} HandleCellTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      CellTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
+
+      if FCurrentItem is TExternalItem then
+      begin
+        TTopLevelTag.Create(TagManager, 'section', 
+          {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
+        TTopLevelTag.Create(TagManager, 'anchor', 
+          {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
+      end;
+
+      Result := TagManager.Execute(Description, AutoLink,
+        WantFirstSentenceEnd, FirstSentenceEnd);
+    finally
+      TagManager.Free;
+    end;
+  end;
+
+  { Same thing as ExpandDescription(Item, Description, false, Dummy) }
+  function ExpandDescription(Item: TBaseItem; 
+    const Description: string): string; 
+  var Dummy: Integer;
+  begin
+    Result := ExpandDescription(Item, Description, false, Dummy);
+  end;
   
   procedure ExpandCollection(c: TPasItems); forward;
 
