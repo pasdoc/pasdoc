@@ -1088,13 +1088,13 @@ end;
 procedure TBaseItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTag.Create(TagManager, 'author', {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
+  TTag.Create(TagManager, 'author', nil, {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
     [toParameterRequired]);
-  TTag.Create(TagManager, 'created',{$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
+  TTag.Create(TagManager, 'created', nil, {$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
     [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
-  TTag.Create(TagManager, 'lastmod',{$IFDEF FPC}@{$ENDIF} StoreLastModTag,
+  TTag.Create(TagManager, 'lastmod', nil, {$IFDEF FPC}@{$ENDIF} StoreLastModTag,
     [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
-  TTag.Create(TagManager, 'cvs', {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
+  TTag.Create(TagManager, 'cvs', nil, {$IFDEF FPC}@{$ENDIF} StoreCVSTag,
     [toParameterRequired]);
 end;
 
@@ -1297,13 +1297,13 @@ procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTopLevelTag.Create(TagManager, 'abstract', 
-    {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
+    nil, {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside]);
   TTag.Create(TagManager, 'deprecated', 
-    {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
+    nil, {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
   TTopLevelTag.Create(TagManager, 'seealso', 
-    {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
+    nil, {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
     [toParameterRequired, toFirstWordVerbatim]);
 end;
 
@@ -1390,7 +1390,8 @@ begin
     and they will be expanded when this member will be expanded
     by TDocGenerator.ExpandDescriptions.
     This way they will be expanded exactly once, as they should be. }
-  TTag.Create(TagManager, 'value', {$IFDEF FPC}@{$ENDIF} StoreValueTag,
+  TTag.Create(TagManager, 'value', 
+    nil, {$IFDEF FPC}@{$ENDIF} StoreValueTag,
     [toParameterRequired]);
 end;
 
@@ -1736,7 +1737,8 @@ begin
     
     Moreover, this allows you to correctly use tags like @param
     and @raises inside @member for a method. }
-  TTag.Create(TagManager, 'member', {$IFDEF FPC}@{$ENDIF} StoreMemberTag,
+  TTag.Create(TagManager, 'member', 
+    nil, {$IFDEF FPC}@{$ENDIF} StoreMemberTag,
     [toParameterRequired]);
 end;
 
@@ -2088,16 +2090,20 @@ end;
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'raises', {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
+  TTopLevelTag.Create(TagManager, 'raises', 
+    nil, {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside, toFirstWordVerbatim]);
-  TTopLevelTag.Create(TagManager, 'param', {$IFDEF FPC}@{$ENDIF} StoreParamTag,
+  TTopLevelTag.Create(TagManager, 'param', 
+    nil, {$IFDEF FPC}@{$ENDIF} StoreParamTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside, toFirstWordVerbatim]);
-  TTopLevelTag.Create(TagManager, 'returns',{$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+  TTopLevelTag.Create(TagManager, 'returns',
+    nil, {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside]);
-  TTopLevelTag.Create(TagManager, 'return', {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
+  TTopLevelTag.Create(TagManager, 'return', 
+    nil, {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside]);
 end;
@@ -2204,10 +2210,10 @@ procedure TExternalItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTopLevelTag.Create(TagManager, 'title', 
-    {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
+    nil, {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
     [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
   TTopLevelTag.Create(TagManager, 'shorttitle', 
-    {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
+    nil, {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
     [toParameterRequired]);
 end;
 

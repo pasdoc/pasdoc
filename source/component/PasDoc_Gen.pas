@@ -311,7 +311,13 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+    procedure PreHandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
     procedure HandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure PreHandleAnchorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
     procedure HandleAnchorTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -746,8 +752,11 @@ type
     { Creates anchors and links for all items in all units. }
     procedure BuildLinks; virtual;
     
-    { Calls @link(ExpandDescription) for each item in each unit of
-      @link(Units). }
+    { Expands description for each item in each unit of @link(Units).
+      "Expands description" means that TTagManager.Execute is called,
+      and item's DetailedDescription, AbstractDescription,
+      AbstractDescriptionWasAutomatic (and many others, set by @@-tags
+      handlers) properties are calculated. }
     procedure ExpandDescriptions;
 
     { Abstract function that provides file extension for documentation format.
@@ -1523,7 +1532,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
     Meaning of WantFirstSentenceEnd and FirstSentenceEnd:
     see @link(TTagManager.Execute). *)
-  function ExpandDescription(Item: TBaseItem;
+  function ExpandDescription(PreExpand: boolean; Item: TBaseItem;
     const Description: string;
     WantFirstSentenceEnd: boolean;
     out FirstSentenceEnd: Integer): string;
@@ -1536,6 +1545,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
     TagManager := TTagManager.Create;
     try
+      TagManager.PreExecute := PreExpand;
       TagManager.Abbreviations := Abbreviations;
       TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
       TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
@@ -1549,97 +1559,113 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.RegisterTags(TagManager);
 
       { Tags without params }
-      TTag.Create(TagManager, 'classname',{$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
-      TTag.Create(TagManager, 'true',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'false',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'nil',{$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'inheritedclass',{$IFDEF FPC}@{$ENDIF} 
-        HandleInheritedClassTag, []);
-      TTag.Create(TagManager, 'inherited',{$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
-      TTag.Create(TagManager, 'name',{$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
-      TTag.Create(TagManager, 'br',{$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
+      TTag.Create(TagManager, 'classname',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
+      TTag.Create(TagManager, 'true',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'false',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'nil',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
+      TTag.Create(TagManager, 'inheritedclass',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedClassTag, []);
+      TTag.Create(TagManager, 'inherited',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
+      TTag.Create(TagManager, 'name',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
+      TTag.Create(TagManager, 'br',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
 
       { Tags with non-recursive params }
-      TTag.Create(TagManager, 'longcode',{$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
+      TTag.Create(TagManager, 'longcode',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
         [toParameterRequired]);
-      TTag.Create(TagManager, 'html',{$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
+      TTag.Create(TagManager, 'html',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
         [toParameterRequired]);
-      TTag.Create(TagManager, 'latex',{$IFDEF FPC}@{$ENDIF} HandleLatexTag,
+      TTag.Create(TagManager, 'latex',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLatexTag,
         [toParameterRequired]);
-      TTag.Create(TagManager, 'link',{$IFDEF FPC}@{$ENDIF} HandleLinkTag,
+      TTag.Create(TagManager, 'link',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleLinkTag,
         [toParameterRequired]);
-      TTag.Create(TagManager, 'preformatted',{$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
+      TTag.Create(TagManager, 'preformatted',
+        nil, {$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
         [toParameterRequired]);
 
       { Tags with recursive params }
-      TTag.Create(TagManager, 'code',{$IFDEF FPC}@{$ENDIF} HandleCodeTag,
+      TTag.Create(TagManager, 'code',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleCodeTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
-      TTag.Create(TagManager, 'bold',{$IFDEF FPC}@{$ENDIF} HandleBoldTag,
+      TTag.Create(TagManager, 'bold',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleBoldTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
-      TTag.Create(TagManager, 'italic',{$IFDEF FPC}@{$ENDIF} HandleItalicTag,
+      TTag.Create(TagManager, 'italic',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleItalicTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
 
       { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
         But it *does* recursively expand it's parameters -- it's handled
         by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
-      TTag.Create(TagManager, 'noautolink',{$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
+      TTag.Create(TagManager, 'noautolink',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
         [toParameterRequired, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
 
       OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
-        {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
         [toParameterRequired, toRecursiveTags]);
       UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
-        {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
         [toParameterRequired, toRecursiveTags]);
       DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
-        {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
         [toParameterRequired, toRecursiveTags]);
 
       ItemTag := TTag.Create(TagManager, 'item', 
-        {$IFDEF FPC}@{$ENDIF} HandleItemTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleItemTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
       ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
       ItemLabelTag := TTag.Create(TagManager, 'itemlabel', 
-        {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
       ItemLabelTag.OnAllowedInside := 
         {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
 
       ItemSpacingTag := TTag.Create(TagManager, 'itemspacing', 
-        {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
         [toParameterRequired]);
       ItemSpacingTag.OnAllowedInside := 
         {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
       ItemSetNumberTag := TTag.Create(TagManager, 'itemsetnumber', 
-        {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
         [toParameterRequired, toAllowNormalTextInside]);
       ItemSetNumberTag.OnAllowedInside := 
         {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
       TableTag := TTableTag.Create(TagManager, 'table',
-        {$IFDEF FPC}@{$ENDIF} HandleTableTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleTableTag,
         [toParameterRequired, toRecursiveTags]);
 
       RowTag := TRowTag.Create(TagManager, 'row',
-        {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
         [toParameterRequired, toRecursiveTags]);
       RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
 
       RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
-        {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
         [toParameterRequired, toRecursiveTags]);
       RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
 
       CellTag := TTag.Create(TagManager, 'cell',
-        {$IFDEF FPC}@{$ENDIF} HandleCellTag,
+        nil, {$IFDEF FPC}@{$ENDIF} HandleCellTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
       CellTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
@@ -1647,8 +1673,10 @@ procedure TDocGenerator.ExpandDescriptions;
       if FCurrentItem is TExternalItem then
       begin
         TTopLevelTag.Create(TagManager, 'section', 
+          {$IFDEF FPC}@{$ENDIF} PreHandleSectionTag,
           {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
         TTopLevelTag.Create(TagManager, 'anchor', 
+          {$IFDEF FPC}@{$ENDIF} PreHandleAnchorTag,
           {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
       end;
 
@@ -1659,19 +1687,21 @@ procedure TDocGenerator.ExpandDescriptions;
     end;
   end;
 
-  { Same thing as ExpandDescription(Item, Description, false, Dummy) }
-  function ExpandDescription(Item: TBaseItem; 
+  { Same thing as ExpandDescription(PreExpand, Item, Description, false, Dummy) }
+  function ExpandDescription(PreExpand: boolean; Item: TBaseItem; 
     const Description: string): string; 
   var Dummy: Integer;
   begin
-    Result := ExpandDescription(Item, Description, false, Dummy);
+    Result := ExpandDescription(PreExpand, Item, Description, false, Dummy);
   end;
   
-  procedure ExpandCollection(c: TPasItems); forward;
+  procedure ExpandCollection(PreExpand: boolean; c: TPasItems); forward;
 
   { expands RawDescription of Item }
-  procedure ExpandPasItem(Item: TPasItem);
-  var FirstSentenceEnd: Integer;
+  procedure ExpandPasItem(PreExpand: boolean; Item: TPasItem);
+  var
+    FirstSentenceEnd: Integer;
+    Expanded: string;
   begin
     if Item = nil then Exit;
 
@@ -1679,78 +1709,89 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.DetailedDescription (because whitespaces,
       including leading and trailing, may be important for final doc format;
       moreover, you would break the value of FirstSentenceEnd by such thing). }
-    Item.DetailedDescription := ExpandDescription(
+    Expanded := ExpandDescription(PreExpand,
       Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
 
-    Item.AbstractDescriptionWasAutomatic := 
-      AutoAbstract and (Trim(Item.AbstractDescription) = '');
-
-    if Item.AbstractDescriptionWasAutomatic then
+    if not PreExpand then
     begin
-      Item.AbstractDescription := 
-        Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
-      Item.DetailedDescription := 
-        Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
+      Item.DetailedDescription := Expanded;
+
+      Item.AbstractDescriptionWasAutomatic := 
+        AutoAbstract and (Trim(Item.AbstractDescription) = '');
+
+      if Item.AbstractDescriptionWasAutomatic then
+      begin
+        Item.AbstractDescription := 
+          Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
+        Item.DetailedDescription := 
+          Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
+      end;
     end;
 
     if Item is TPasEnum then
-      ExpandCollection(TPasEnum(Item).Members);
+      ExpandCollection(PreExpand, TPasEnum(Item).Members);
   end;
   
-  procedure ExpandExternalItem(Item: TExternalItem);
+  procedure ExpandExternalItem(PreExpand: boolean; Item: TExternalItem);
+  var
+    Expanded: string;
   begin
-    Item.DetailedDescription := ExpandDescription(
-      Item, Trim(Item.RawDescription));
+    Expanded := ExpandDescription(PreExpand, Item, Trim(Item.RawDescription));
+    if not PreExpand then
+      Item.DetailedDescription := Expanded;
   end;
 
   { for all items in collection C, expands descriptions }
-  procedure ExpandCollection(c: TPasItems);
+  procedure ExpandCollection(PreExpand: boolean; c: TPasItems);
   var
     i: Integer;
   begin
     if c = nil then Exit;
     for i := 0 to c.Count - 1 do 
-      ExpandPasItem(c.PasItemAt[i]);
+      ExpandPasItem(PreExpand, c.PasItemAt[i]);
   end;
 
-var
-  CO: TPasCio;
-  i: Integer;
-  j: Integer;
-  U: TPasUnit;
+  procedure ExpandEverything(PreExpand: boolean);
+  var
+    CO: TPasCio;
+    i: Integer;
+    j: Integer;
+    U: TPasUnit;
+  begin
+    if Introduction <> nil then
+    begin
+      ExpandExternalItem(PreExpand, Introduction);
+    end;
+    if Conclusion <> nil then
+    begin
+      ExpandExternalItem(PreExpand, Conclusion);
+    end;
+
+    for i := 0 to Units.Count - 1 do begin
+      U := Units.UnitAt[i];
+
+      ExpandPasItem(PreExpand, U);
+      ExpandCollection(PreExpand, U.Constants);
+      ExpandCollection(PreExpand, U.Variables);
+      ExpandCollection(PreExpand, U.Types);
+      ExpandCollection(PreExpand, U.FuncsProcs);
+
+      if not ObjectVectorIsNilOrEmpty(U.CIOs) then
+        for j := 0 to U.CIOs.Count - 1 do begin
+          CO := TPasCio(U.CIOs.PasItemAt[j]);
+          ExpandPasItem(PreExpand, CO);
+          ExpandCollection(PreExpand, CO.Fields);
+          ExpandCollection(PreExpand, CO.Methods);
+          ExpandCollection(PreExpand, CO.Properties);
+        end;
+    end;
+  end;
+  
 begin
-  DoMessage(2, mtInformation, 'Expanding descriptions ...', []);
-
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
-
-  if Introduction <> nil then
-  begin
-    ExpandExternalItem(Introduction);
-  end;
-  if Conclusion <> nil then
-  begin
-    ExpandExternalItem(Conclusion);
-  end;
-
-  for i := 0 to Units.Count - 1 do begin
-    U := Units.UnitAt[i];
-
-    ExpandPasItem(U);
-    ExpandCollection(U.Constants);
-    ExpandCollection(U.Variables);
-    ExpandCollection(U.Types);
-    ExpandCollection(U.FuncsProcs);
-
-    if not ObjectVectorIsNilOrEmpty(U.CIOs) then
-      for j := 0 to U.CIOs.Count - 1 do begin
-        CO := TPasCio(U.CIOs.PasItemAt[j]);
-        ExpandPasItem(CO);
-        ExpandCollection(CO.Fields);
-        ExpandCollection(CO.Methods);
-        ExpandCollection(CO.Properties);
-      end;
-  end;
-
+  DoMessage(2, mtInformation, 'Expanding descriptions (pass 1) ...', []);
+  ExpandEverything(true);
+  DoMessage(2, mtInformation, 'Expanding descriptions (pass 2) ...', []);
+  ExpandEverything(false);
   DoMessage(2, mtInformation, '... Descriptions expanded', []);
 end;
 
@@ -3242,7 +3283,7 @@ begin
   WriteExternal(Conclusion, trConclusion);
 end;
 
-procedure TDocGenerator.HandleAnchorTag(
+procedure TDocGenerator.PreHandleAnchorTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
@@ -3250,6 +3291,13 @@ var
   AnchorString: string;
   NewSubItem: TSubItem;
 begin
+  { We add AnchorString to FCurrentItem.SubItems in the 1st pass of expanding
+    descriptions (i.e. in PreHandleAnchorTag instead of HandleAnchorTag),
+    this way creating @links in the 2nd pass of expanding
+    descriptions works good. }
+  
+  ReplaceStr := '';
+  
   AnchorString := Trim(TagParameter);
   
   if not IsValidIdent(AnchorString) then
@@ -3259,7 +3307,51 @@ begin
     Exit;
   end;
   
+  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
+  NewSubItem.FullLink := CreateLink(NewSubItem);
+end;
+
+procedure TDocGenerator.HandleAnchorTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  AnchorString: string;
+begin
+  { AnchorString is already added to FCurrentItem.SubItems,
+    thanks to PreHandleAnchorTag.
+    All we do here is to generate correct ReplaceStr. }
+  
+  AnchorString := Trim(TagParameter);
+  
+  if not IsValidIdent(AnchorString) then
+    { Warning for this case was already printed by PreHandleAnchorTag.
+      That's why here we do only Exit. }
+    Exit;
+  
   ReplaceStr := FormatAnchor(AnchorString);
+end;
+
+procedure TDocGenerator.PreHandleSectionTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  HeadingLevelString: string;
+  AnchorString: string;
+  CaptionString: string;
+  Remainder: string;
+  NewSubItem: TSubItem;
+begin
+  { We add AnchorString to FCurrentItem.SubItems in the 1st pass of expanding
+    descriptions (i.e. in PreHandleSectionTag instead of HandleSectionTag),
+    this way creating @links in the 2nd pass of expanding
+    descriptions works good. }
+    
+  ReplaceStr := '';
+  
+  ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
+  ExtractFirstWord(Remainder, AnchorString, CaptionString);
   
   NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
   NewSubItem.FullLink := CreateLink(NewSubItem);
@@ -3275,7 +3367,6 @@ var
   CaptionString: string;
   Remainder: string;
   HeadingLevel: integer;
-  NewSubItem: TSubItem;
 begin
   ExtractFirstWord(TagParameter, HeadingLevelString, Remainder);
   ExtractFirstWord(Remainder, AnchorString, CaptionString);
@@ -3300,8 +3391,8 @@ begin
   
   ReplaceStr := FormatSection(HeadingLevel, AnchorString, CaptionString);
   
-  NewSubItem := (FCurrentItem as TExternalItem).AddSubItem(AnchorString);
-  NewSubItem.FullLink := CreateLink(NewSubItem);
+  { Section is already added to FCurrentItem.SubItems,
+    thanks to PreHandleSectionTag. }
 end;
 
 procedure TDocGenerator.TagAllowedInsideLists(

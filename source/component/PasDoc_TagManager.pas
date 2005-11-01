@@ -99,6 +99,7 @@ type
 
   TTag = class
   private
+    FOnPreExecute: TTagExecuteEvent;
     FOnExecute: TTagExecuteEvent;
     FTagOptions: TTagOptions;
     FName: string;
@@ -108,7 +109,9 @@ type
     { Note that AName will be converted to lowercase before assigning 
       to Name. }
     constructor Create(ATagManager: TTagManager;
-      const AName: string; AOnExecute: TTagExecuteEvent;
+      const AName: string;
+      AOnPreExecute: TTagExecuteEvent;
+      AOnExecute: TTagExecuteEvent;
       const ATagOptions: TTagOptions);
 
     property TagOptions: TTagOptions read FTagOptions write FTagOptions;
@@ -142,9 +145,19 @@ type
     { Name of the tag, that must be specified by user after the "@@" sign.
       Value of this property must always be lowercase. }
     property Name: string read FName write FName;
-    
+
+    property OnPreExecute: TTagExecuteEvent 
+      read FOnPreExecute write FOnPreExecute;
+       
     property OnExecute: TTagExecuteEvent 
       read FOnExecute write FOnExecute;
+
+    { This is completely analogous to @link(Execute) but used when
+      @link(TTagManager.PreExecute) is @true. 
+      In this class this simply calls @link(OnPreExecute). }
+    procedure PreExecute(var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string); virtual;
 
     { This will be used to do main work when this
       @@-tag occured in description.
@@ -273,6 +286,7 @@ type
     FShortDash, FEnDash, FEmDash: string;
     FURLLink: TStringConverter;
     FOnTryAutoLink: TTryAutoLinkEvent;
+    FPreExecute: boolean;
 
     function DoConvertString(const s: string): string;
     function DoURLLink(const s: string): string;
@@ -286,6 +300,11 @@ type
 
     { Call OnMessage (if assigned) with given params. }
     procedure DoMessage(const AVerbosity: Cardinal;
+      const MessageType: TMessageType; const AMessage: string;
+      const AArguments: array of const);
+
+    { Call @link(DoMessage) only if @link(PreExecute) is @false. }
+    procedure DoMessageNonPre(const AVerbosity: Cardinal;
       const MessageType: TMessageType; const AMessage: string;
       const AArguments: array of const);
 
@@ -422,6 +441,37 @@ type
     property ConvertString: TStringConverter 
       read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
+    
+    { When @name is @true, tag manager will work a little differently than usual:
+    
+      @unorderedList(
+        @item(Instead of @link(TTag.Execute),
+          @link(TTag.PreExecute) will be called.)
+          
+        @item(Various warnings will @italic(not) be reported.
+        
+          Assumption is that you will later process the same text
+          with @name set to @false to get all the warnings.)
+          
+        @item(AutoLink will not be used (like it was always false).
+          Also the result of @link(Execute) will be pretty much
+          random and meaningless (so you should ignore it).
+          Also this means that the TagParameter for tags with
+          toRecursiveTags should be ignored, because it will be
+          something incorrect. This means that only tags
+          without toRecursiveTags should actually use
+          TagParameter in their OnPreExecute handlers.
+        
+          Assumption is that you actually don't care about the
+          result of @link(Execute) methods,
+          and you will later process the same text
+          with @name set to @false to get the proper output.
+          
+          The goal is to make execution with PreExecute set to @true
+          as fast as possible.)
+      ) }
+    property PreExecute: boolean
+      read FPreExecute write FPreExecute;
   end;
 
 implementation
@@ -431,17 +481,29 @@ uses Utils;
 { TTag ------------------------------------------------------------  }
 
 constructor TTag.Create(ATagManager: TTagManager;
-  const AName: string; AOnExecute: TTagExecuteEvent;
+  const AName: string; 
+  AOnPreExecute: TTagExecuteEvent;
+  AOnExecute: TTagExecuteEvent;
   const ATagOptions: TTagOptions);
 begin
   inherited Create;
   FName := LowerCase(AName);
+  FOnPreExecute := AOnPreExecute;
   FOnExecute := AOnExecute;
   FTagOptions := ATagOptions;
   
   FTagManager := ATagManager;
   if TagManager <> nil then
     TagManager.FTags.Add(Self);
+end;
+
+procedure TTag.PreExecute(var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  if Assigned(OnPreExecute) then
+    OnPreExecute(Self, ThisTagData, EnclosingTag, EnclosingTagData,
+      TagParameter, ReplaceStr);
 end;
 
 procedure TTag.Execute(var ThisTagData: TObject;
@@ -557,6 +619,14 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
+procedure TTagManager.DoMessageNonPre(const AVerbosity: Cardinal;
+  const MessageType: TMessageType; const AMessage: string;
+  const AArguments: array of const);
+begin
+  if not PreExecute then
+    DoMessage(AVerbosity, MessageType, AMessage, AArguments);
+end;
+
 function TTagManager.TryAutoLink(const QualifiedIdentifier: TNameParts;
   out QualifiedIdentifierReplacement: string): boolean;
 begin
@@ -620,7 +690,7 @@ var
 
     if Tag = nil then
     begin
-      DoMessage(1, mtWarning, 'Unknown tag name "%s"', [TagName]);
+      DoMessageNonPre(1, mtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
     end;
     
@@ -650,7 +720,7 @@ var
         Parameters := Copy(Description, OffsetEnd + 1, i - OffsetEnd - 2);
         OffsetEnd := i;
       end else
-        DoMessage(1, mtWarning,
+        DoMessageNonPre(1, mtWarning,
           'No matching closing parenthesis for tag "%s"', [TagName]);
     end else
     if toParameterRequired in Tag.TagOptions then
@@ -834,7 +904,7 @@ var
   begin
     Result := IsNormalTextAllowed;
     if not Result then
-      DoMessage(1, mtWarning,
+      DoMessageNonPre(1, mtWarning,
         'Such content, "%s", is not allowed '+
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
   end;
@@ -857,7 +927,8 @@ var
       FOffset - ConvertBeginOffset);
     if ToAppend <> '' then
     begin
-      if CheckNormalTextAllowed(ToAppend) then
+      if (not PreExecute) and
+         CheckNormalTextAllowed(ToAppend) then
         Result := Result + DoConvertString(ToAppend);
       ConvertBeginOffset := FOffset;
     end;
@@ -902,20 +973,20 @@ begin
       if not FoundTag.AllowedInside(EnclosingTag) then
       begin
         if EnclosingTag = nil then
-          DoMessage(1, mtWarning, 'The tag "@%s" cannot be used at the ' +
+          DoMessageNonPre(1, mtWarning, 'The tag "@%s" cannot be used at the ' +
             'top level of description, it must be used within some other @-tag', 
             [FoundTag.Name]) else
-          DoMessage(1, mtWarning, 'The tag "@%s" cannot be used inside ' +
+          DoMessageNonPre(1, mtWarning, 'The tag "@%s" cannot be used inside ' +
             'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
             
         { Assign dummy value for ReplaceStr.
         
           We can't proceed with normal recursive expanding and
-          calling FoundTag.Execute, because tag methods
-          (and callbacks, like TTag.OnExecute) may assume that the tag
+          calling FoundTag.[Pre]Execute, because tag methods
+          (and callbacks, like TTag.On[Pre]Execute) may assume that the tag
           is always enclosed only within allowed tags
           (so e.g. EnclosingTag and EnclosingTagData values for
-          OnExecute are of appropriate classes etc.) }
+          On[Pre]Execute are of appropriate classes etc.) }
         ReplaceStr := '';
       end else
       begin
@@ -944,7 +1015,7 @@ begin
 
                 I didn't mark this as an mtError only because some sensible
                 output will be generated anyway. }
-              DoMessage(1, mtWarning,
+              DoMessageNonPre(1, mtWarning,
                 'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
             end;
             ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
@@ -952,8 +1023,11 @@ begin
             ReplaceStr := DoConvertString('@' + FoundTag.Name);
 
           { execute tag handler }
-          FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData, 
-            Params, ReplaceStr);
+          if PreExecute then
+            FoundTag.PreExecute(FoundTagData, EnclosingTag, EnclosingTagData,
+              Params, ReplaceStr) else
+            FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
+              Params, ReplaceStr);
 
         finally 
           FoundTag.DestroyOccurenceData(FoundTagData) 
@@ -1047,7 +1121,8 @@ begin
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
-    if AutoLink and
+    if (not PreExecute) and 
+       AutoLink and
        FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier) and
        TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then
     begin
