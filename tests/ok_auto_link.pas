@@ -26,15 +26,15 @@ var
         TMyClass.Field. )
       )
 
-      @itemLabel Test of @@noLink:
+      @itemLabel Test of @@noAutoLink:
       @item(
         Things below should @italic(not) be converted to links:
 
-        @noLink(
+        @noAutoLink(
           Self name is Var1, simple ident is TMyClass, qualified ident is
           TMyClass.Field.
 
-          @noLink(Simple ident once again TMyClass.)
+          @noAutoLink(Simple ident once again TMyClass.)
 
           Inside @@code:
 

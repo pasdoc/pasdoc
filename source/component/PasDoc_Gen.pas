@@ -361,7 +361,7 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
-    procedure HandleNoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
+    procedure HandleNoAutoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
@@ -1486,7 +1486,7 @@ begin
   (EnclosingTagData as TRowData).Cells.Append(TagParameter);
 end;
 
-procedure TDocGenerator.HandleNoLinkTag(
+procedure TDocGenerator.HandleNoAutoLinkTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
@@ -1587,10 +1587,10 @@ begin
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
        
-    { Note that @nolink doesn't have toRecursiveTags flag specified.
+    { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
       But it *does* recursively expand it's parameters -- it's handled
-      by explicitly calling TagManager.Execute inside HandleNoLinkTag. }
-    TTag.Create(TagManager, 'nolink',{$IFDEF FPC}@{$ENDIF} HandleNoLinkTag,
+      by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
+    TTag.Create(TagManager, 'noautolink',{$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
       [toParameterRequired, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
 

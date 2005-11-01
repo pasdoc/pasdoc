@@ -133,10 +133,10 @@ type
       @longcode# NewTagParameter := TagManager.Execute(TagParameter, ...) #
       and this way you have explicitly recursively expanded the tag.
 
-      Scenario above is actually used in implementation of @@noLink
+      Scenario above is actually used in implementation of @@noAutoLink
       tag. There I call TagManager.Execute with parameter
       @code(AutoLink) set to false thus preventing auto-linking 
-      inside text within @@noLink. }
+      inside text within @@noAutoLink. }
     property TagManager: TTagManager read FTagManager;
     
     { Name of the tag, that must be specified by user after the "@@" sign.
