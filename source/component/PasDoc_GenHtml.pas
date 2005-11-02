@@ -2289,7 +2289,12 @@ function TGenericHTMLDocGenerator.FormatTableOfContents(
 var
   i: Integer;
 begin
-  if Sections.Count = 0 then Exit;
+  if Sections.Count = 0 then
+  begin
+    Result := '';
+    Exit;
+  end;
+  
   Result := '<ol>' + LineEnding;
   for i := 0 to Sections.Count - 1 do
   begin
