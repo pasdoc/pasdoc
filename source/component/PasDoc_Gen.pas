@@ -1535,7 +1535,10 @@ var
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
           Result.Add(SectionEntry) else
+        begin
+          TStringPairVector(SectionEntry.Data).Free;
           SectionEntry.Free;
+        end;
       end else
       if Anchor.SectionLevel > MinLevel then
       begin
@@ -1549,7 +1552,10 @@ var
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
           Result.Add(SectionEntry) else
+        begin
+          TStringPairVector(SectionEntry.Data).Free;
           SectionEntry.Free;
+        end;
       end else
         { So Anchor.SectionLevel < MinLevel,
           so we have to return from recursive call. }
