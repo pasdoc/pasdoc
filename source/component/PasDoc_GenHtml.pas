@@ -28,7 +28,8 @@ uses
   PasDoc_Languages,
   StringVector,
   PasDoc_Types,
-  Classes;
+  Classes,
+  PasDoc_StringPairVector;
 
 type
   { @abstract(generates HTML documentation)
@@ -263,6 +264,8 @@ type
     function FormatList(ListData: TListData): string; override;
 
     function FormatTable(Table: TTableData): string; override;
+    
+    function FormatTableOfContents(Sections: TStringPairVector): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     { Returns HTML file extension ".htm". }
@@ -307,7 +310,6 @@ uses
   ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
-  PasDoc_StringPairVector,
   PasDoc_Aspell;
 
 {$INCLUDE automated.inc}
@@ -2280,6 +2282,24 @@ begin
     Result := Result + '  </tr>' + LineEnding;
   end;
   Result := Result + '</table>' + LineEnding + LineEnding + '<p>';
+end;
+
+function TGenericHTMLDocGenerator.FormatTableOfContents(
+  Sections: TStringPairVector): string; 
+var
+  i: Integer;
+begin
+  if Sections.Count = 0 then Exit;
+  Result := '<ol>' + LineEnding;
+  for i := 0 to Sections.Count - 1 do
+  begin
+    Result := Result + 
+      '<li><a href="#' + Sections[i].Name + '">' + Sections[i].Value + '</a>' +
+      LineEnding +
+      FormatTableOfContents(TStringPairVector(Sections[i].Data)) + '</li>' +
+      LineEnding;
+  end;
+  Result := Result + '</ol>' + LineEnding;
 end;
 
 end.

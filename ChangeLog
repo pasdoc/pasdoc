@@ -23,6 +23,8 @@
       (see [http://pasdoc.sipsolutions.net/TableTags])
     @noAutoLinkHere, @noAutoLink
       (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
+    @tableOfContents
+      (see [http://pasdoc.sipsolutions.net/TableOfContentsTag])
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
   * FPC macros are now correctly parsed by pasdoc.

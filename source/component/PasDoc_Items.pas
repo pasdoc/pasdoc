@@ -728,6 +728,7 @@ type
   private
     FExternalItem: TExternalItem;
     FSectionLevel: Integer;
+    FSectionCaption: string;
   public
     property ExternalItem: TExternalItem read FExternalItem write FExternalItem;
     
@@ -736,6 +737,11 @@ type
       Otherwise this is 0. }
     property SectionLevel: Integer
       read FSectionLevel write FSectionLevel default 0;
+      
+    { If this is an anchor for a section, this tells section caption
+      (as was specified in the @@section tag). }
+    property SectionCaption: string
+      read FSectionCaption write FSectionCaption;
   end;
 
   { extends @link(TPasItem) to store anything about a unit, its constants,

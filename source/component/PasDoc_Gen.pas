@@ -33,7 +33,8 @@ uses
   PasDoc_Types,
   Classes,
   PasDoc_TagManager,
-  PasDoc_Aspell;
+  PasDoc_Aspell,
+  PasDoc_StringPairVector;
 
 type
   { Overview files that pasdoc generates for multiple-document-formats 
@@ -373,6 +374,10 @@ type
       const TagParameter: string; var ReplaceStr: string);
 
     procedure HandleNoAutoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
+    procedure HandleTableOfContentsTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
@@ -752,6 +757,22 @@ type
       at least one row and in each row there will be at least
       one cell, so you don't have to check it within descendants. }
     function FormatTable(Table: TTableData): string; virtual; abstract;
+    
+    { Override this if you want to insert something on @@tableOfContents tag. 
+      As a parameter you get already prepared tree of sections that your
+      table of contents should show. Each item of Sections is a section
+      on the level 1. Item's Name is section name, item's Value 
+      is section caption, item's Data is a TStringPairVector instance 
+      that describes subsections (on level 2) below this section.
+      And so on, recursively. 
+      
+      Sections given here are never nil, and item's Data is never nil.
+      But of course they may contain 0 items, and this should be a signal
+      to you that given section doesn't have any subsections.
+      
+      Default implementation of this method in this class just returns
+      empty string. }
+    function FormatTableOfContents(Sections: TStringPairVector): string; virtual;
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1483,6 +1504,99 @@ begin
     ThisTag, ThisTagData);
 end;
 
+procedure TDocGenerator.HandleTableOfContentsTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  MaxLevel: Integer;
+  AnchorIndex: Integer;
+  ItemAnchors: TBaseItems;
+  
+  function CollectSections(MinLevel: Integer): TStringPairVector;
+  var
+    Anchor: TAnchorItem;
+    SectionEntry: TStringPair;
+  begin
+    Result := TStringPairVector.Create(true);
+    
+    repeat
+      if AnchorIndex = ItemAnchors.Count then
+        Exit;
+      Anchor := ItemAnchors[AnchorIndex] as TAnchorItem;
+      if Anchor.SectionLevel = 0 then
+      begin
+        Inc(AnchorIndex);
+      end else
+      if Anchor.SectionLevel = MinLevel then
+      begin
+        Inc(AnchorIndex);
+        SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
+        SectionEntry.Data := CollectSections(MinLevel + 1);
+        if MinLevel <= MaxLevel then
+          Result.Add(SectionEntry) else
+          SectionEntry.Free;
+      end else
+      if Anchor.SectionLevel > MinLevel then
+      begin
+        { This is for the case of malformed sections,
+          i.e. user suddenly specified section with level
+          greater than the "last section level + 1".
+          In the future we may just give a warning to the user
+          and refuse to work in such case ?
+          For now, we just try to go on and produce something sensible. }
+        SectionEntry := TStringPair.Create('', '');
+        SectionEntry.Data := CollectSections(MinLevel + 1);
+        if MinLevel <= MaxLevel then
+          Result.Add(SectionEntry) else
+          SectionEntry.Free;
+      end else
+        { So Anchor.SectionLevel < MinLevel,
+          so we have to return from recursive call. }
+        Exit;
+    until false;
+  end;
+  
+  procedure FreeSectionsList(List: TStringPairVector);
+  var
+    i: Integer;
+  begin
+    for i := 0 to List.Count - 1 do
+      FreeSectionsList(TStringPairVector(List[i].Data));
+    List.Free;
+  end;
+  
+var
+  TopLevelSections: TStringPairVector;
+begin
+  { calculate MaxLevel }
+  if Trim(TagParameter) = '' then
+    MaxLevel := MaxInt else
+  try
+    MaxLevel := StrToInt(TagParameter);
+  except on E: EConvertError do
+    begin
+      ThisTag.TagManager.DoMessage(1, mtWarning,
+        'Invalid parameter of @tableOfContents tag: "%s". %s', 
+        [TagParameter, E.Message]);
+      Exit;
+    end;
+  end;
+  
+  { calculate ItemAnchors }
+  ItemAnchors := (FCurrentItem as TExternalItem).Anchors;
+
+  { calculate TopLevelSections }
+  AnchorIndex := 0;
+  TopLevelSections := CollectSections(1);
+  
+  { now make use of TopLevelSections -- call FormatTableOfContents }
+  ReplaceStr := FormatTableOfContents(TopLevelSections);
+  
+  { free TopLevelSections }
+  FreeSectionsList(TopLevelSections);
+end;
+
 procedure TDocGenerator.DoMessageFromExpandDescription(
   const MessageType: TMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
@@ -1683,6 +1797,9 @@ procedure TDocGenerator.ExpandDescriptions;
         TTopLevelTag.Create(TagManager, 'anchor', 
           {$IFDEF FPC}@{$ENDIF} PreHandleAnchorTag,
           {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
+        TTopLevelTag.Create(TagManager, 'tableofcontents', 
+          nil, {$IFDEF FPC}@{$ENDIF} HandleTableOfContentsTag,
+          [toParameterRequired]);
       end;
 
       Result := TagManager.Execute(Description, AutoLink,
@@ -3127,6 +3244,11 @@ begin
   Result := ConvertString(Text);
 end;
 
+function TDocGenerator.FormatTableOfContents(Sections: TStringPairVector): string;
+begin
+  Result := '';
+end;
+
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;
   const LinkCaption: string;
   const LinkContext: TLinkContext): string; 
@@ -3387,7 +3509,9 @@ begin
   { We add AnchorName to FCurrentItem.Anchors in the 1st pass of expanding
     descriptions (i.e. in PreHandleSectionTag instead of HandleSectionTag),
     this way creating @links in the 2nd pass of expanding
-    descriptions works good. }
+    descriptions works good. 
+    
+    Also, we can handle @tableOfContents in the 2nd pass. }
     
   ReplaceStr := '';
 
@@ -3397,6 +3521,7 @@ begin
     AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
     AnchorItem.FullLink := CreateLink(AnchorItem);
     AnchorItem.SectionLevel := HeadingLevel;
+    AnchorItem.SectionCaption := Caption;
   end;
 end;
 

@@ -1,0 +1,31 @@
+Full table of contents:
+
+@tableOfContents
+
+Table of contents to level 0 (should be empty):
+
+@tableOfContents 0
+
+Table of contents to level 1 (only top-level sections):
+
+@tableOfContents 1
+
+Table of contents to level 2:
+
+@tableOfContents 2
+
+Table of contents to level 3 (should be equivalent to full toc):
+
+@tableOfContents 3
+
+@section(1 Sec1 Section 1)
+
+@section(1 Sec2 Section 2)
+
+@section(2 Sec21 Section 2.1)
+
+@section(2 Sec22 Section 2.2)
+
+@section(3 Sec221 Section 2.2.1)
+
+@section(1 Sec3 Section 3)
