@@ -1654,7 +1654,7 @@ procedure TDocGenerator.ExpandDescriptions;
   function ExpandDescription(PreExpand: boolean; Item: TBaseItem;
     const Description: string;
     WantFirstSentenceEnd: boolean;
-    out FirstSentenceEnd: Integer): string;
+    out FirstSentenceEnd: Integer): string; overload;
   var
     TagManager: TTagManager;
     ItemTag, ItemLabelTag, ItemSpacingTag, ItemSetNumberTag, CellTag: TTag;
@@ -1811,7 +1811,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
   { Same thing as ExpandDescription(PreExpand, Item, Description, false, Dummy) }
   function ExpandDescription(PreExpand: boolean; Item: TBaseItem; 
-    const Description: string): string; 
+    const Description: string): string; overload;
   var Dummy: Integer;
   begin
     Result := ExpandDescription(PreExpand, Item, Description, false, Dummy);
