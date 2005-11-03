@@ -80,7 +80,6 @@ type
     edGraphVizUrl: TEdit;
     EditConclusionFileName: TFileNameEdit;
     EditCssFileName: TFileNameEdit;
-    EditHtmlBrowserCommand: TEdit;
     EditIntroductionFileName: TFileNameEdit;
     // @name is used to set the name of the project.
     edProjectName: TEdit;
@@ -92,7 +91,6 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
-    Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
@@ -112,9 +110,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    LabelHtmlBrowserCommand1: TLabel;
     lbNavigation: TListBox;
-    MemoCommandLog: TMemo;
     memoCommentMarkers: TMemo;
     memoDefines: TMemo;
     // @name holds the complete paths of all the source files
@@ -131,6 +127,8 @@ type
     memoSpellCheckingIgnore: TMemo;
     MenuAbout: TMenuItem;
     MenuContextHelp: TMenuItem;
+    MenuEdit: TMenuItem;
+    MenuPreferences: TMenuItem;
     NotebookMain: TNotebook;
     pageDefines: TPage;
     pageGenerate: TPage;
@@ -143,7 +141,6 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
-    pageWebPage: TPage;
     PanelGenerageBottom: TPanel;
     PanelMarkers: TPanel;
     PanelDefinesTop: TPanel;
@@ -153,7 +150,6 @@ type
     PanelSourceFilesBottom: TPanel;
     PanelSourceFilesTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
-    PanelWebPageTop: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
     // and @link(TexDocGenerator) to create the output.
@@ -161,7 +157,6 @@ type
     // @name generates HTML output.
     HtmlDocGenerator: THTMLDocGenerator;
     OpenDialog1: TOpenDialog;
-    DocBrowserProcess: TProcess;
     rgCommentMarkers: TRadioGroup;
     rgLineBreakQuality: TRadioGroup;
     // @name controls the severity of the messages that are displayed.
@@ -179,6 +174,7 @@ type
     MenuHelp: TMenuItem;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
+    procedure MenuPreferencesClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure PasDoc1Warning(const MessageType: TMessageType;
@@ -230,7 +226,8 @@ var
 
 implementation
 
-uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit, HelpProcessor;
+uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
+  WWWBrowserRunnerDM, PreferencesFrm;
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
@@ -515,8 +512,6 @@ begin
   MisspelledWords:= TStringList.Create;
   MisspelledWords.Sorted := True;
   MisspelledWords.Duplicates := dupIgnore;
-  EditHtmlBrowserCommand.Text :=
-    {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
   comboLanguages.Items.Capacity :=
     Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
@@ -797,21 +792,9 @@ begin
         [mbOK], 0);
     end;
 
-    case comboGenerateFormat.ItemIndex of
-      0, 1:
-        begin
-          DocBrowserProcess.CommandLine := Format(EditHtmlBrowserCommand.Text,
-            [ HtmlDocGenerator.DestinationDirectory + 'index.html' ]);
-          DocBrowserProcess.Execute;
-          MemoCommandLog.Lines.Append('Executed: ' + DocBrowserProcess.CommandLine);
-          NotebookMain.PageIndex := pageWebPage.PageIndex;
-        end;
-      2, 3:
-        begin
-        end;
-    else
-      Assert(False);
-    end;
+    if PasDoc1.Generator is TGenericHTMLDocGenerator then
+      WWWBrowserRunner.RunBrowser(
+        HtmlDocGenerator.DestinationDirectory + 'index.html');
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1109,7 +1092,6 @@ begin
   EditCssFileName.Enabled := comboGenerateFormat.ItemIndex in [0,1];
   SetColorFromEnabled(EditCssFileName);
   
-  PageWebPage.Tag := Ord(comboGenerateFormat.ItemIndex in [0,1]);
   comboLatexGraphicsPackage.Enabled := comboGenerateFormat.ItemIndex in [2,3];
   FillNavigationListBox;
   Changed := true;
@@ -1128,9 +1110,7 @@ end;
 
 procedure TfrmHelpGenerator.MenuContextHelpClick(Sender: TObject);
 var
-  Page: TPage;
   HelpControl: TControl;
-  URL: string;
 begin
   HelpControl := nil;
   if (Sender is TMenuItem) or (Sender = lbNavigation) then
@@ -1146,13 +1126,14 @@ begin
   if HelpControl <> nil then
   begin
     Assert(HelpControl.HelpType = htKeyword);
-    URL := 'http://pasdoc.sipsolutions.net/' +
-      HelpControl.HelpKeyword;
-
-    DocBrowserProcess.CommandLine :=
-      Format(EditHtmlBrowserCommand.Text, [URL]);
-    DocBrowserProcess.Execute;
+    WWWBrowserRunner.RunBrowser(
+      WWWHelpServer + HelpControl.HelpKeyword);
   end;
+end;
+
+procedure TfrmHelpGenerator.MenuPreferencesClick(Sender: TObject);
+begin
+  TPreferences.Execute;
 end;
 
 procedure TfrmHelpGenerator.rgCommentMarkersClick(Sender: TObject);

@@ -1,0 +1,12 @@
+object WWWBrowserRunner: TWWWBrowserRunner
+  OnCreate = DataModuleCreate
+  Height = 161
+  HorizontalOffset = 350
+  VerticalOffset = 169
+  Width = 278
+  object DocBrowserProcess: TProcess
+    Priority = ppNormal
+    left = 32
+    top = 32
+  end
+end

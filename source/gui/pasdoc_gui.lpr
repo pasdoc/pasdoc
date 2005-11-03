@@ -6,12 +6,13 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms
   { add your units here }, frmAboutUnit, frmHelpGeneratorUnit, pasdoc_package,
-  helpprocessor;
+  HelpProcessor, WWWBrowserRunnerDM, PreferencesFrm;
 
 begin
   Application.Initialize;
   Application.CreateForm(TfrmHelpGenerator, frmHelpGenerator);
   Application.CreateForm(TfrmAbout, frmAbout);
+  Application.CreateForm(TWWWBrowserRunner, WWWBrowserRunner);
   Application.Run;
 end.
 
