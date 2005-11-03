@@ -20,19 +20,19 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="1"/>
         <UnitName Value="pasdoc_gui"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="5" Y="164"/>
+        <CursorPos X="5" Y="69"/>
         <EditorIndex Value="0"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="147"/>
+        <TopLine Value="69"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
       </Unit1>
       <Unit2>
         <CursorPos X="1" Y="1"/>
@@ -42,7 +42,7 @@
         <ResourceFilename Value="frmaboutunit.lrs"/>
         <TopLine Value="1"/>
         <UnitName Value="frmAboutUnit"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
       </Unit2>
     </Units>
     <PublishOptions>
