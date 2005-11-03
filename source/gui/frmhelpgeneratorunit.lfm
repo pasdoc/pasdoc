@@ -31,7 +31,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   object NotebookMain: TNotebook
     Align = alClient
     BorderSpacing.OnChange = nil
-    PageIndex = 10
+    PageIndex = 3
     ShowTabs = False
     Left = 144
     Height = 454
@@ -426,72 +426,79 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 7
         Width = 98
       end
-      object pageGraphViz: TPage
-        Caption = 'GraphViz'
-        ClientWidth = 592
-        ClientHeight = 450
-        Height = 450
-        Width = 592
-        object Label22: TLabel
-          Caption = 'Required program: GraphViz'
-          Color = clNone
-          Left = 8
-          Height = 17
-          Top = 119
-          Width = 180
-        end
-        object Label24: TLabel
-          Caption = 'Latex graphics package'
-          Color = clNone
-          Left = 10
-          Height = 17
-          Top = 63
-          Width = 170
-        end
-        object edGraphVizUrl: TEdit
-          TabOrder = 0
-          Text = 'http://www.graphviz.org/'
-          Left = 188
-          Height = 23
-          Top = 114
-          Width = 160
-        end
-        object comboLatexGraphicsPackage: TComboBox
-          Enabled = False
-          Items.Strings = (
-            'None'
-            'PDF'
-            'DVI'
-          )
-          ItemIndex = 0
-          MaxLength = 0
-          OnChange = SomethingChanged
-          Style = csDropDownList
-          TabOrder = 1
-          Text = 'None'
-          Left = 10
-          Height = 21
-          Top = 88
-          Width = 148
-        end
-        object cbVizGraphUses: TCheckBox
-          Caption = 'Generate and use Uses diagram '
-          OnChange = SomethingChanged
-          TabOrder = 2
-          Left = 8
-          Height = 23
-          Top = 34
-          Width = 239
-        end
-        object cbVizGraphClasses: TCheckBox
-          Caption = 'Generate and use Classes diagram '
-          OnChange = SomethingChanged
-          TabOrder = 3
-          Left = 8
-          Height = 23
-          Top = 10
-          Width = 258
-        end
+    end
+    object pageGraphViz: TPage
+      Caption = 'GraphViz'
+      ClientWidth = 592
+      ClientHeight = 450
+      Left = 2
+      Height = 450
+      Top = 2
+      Width = 592
+      object Label22: TLabel
+        Caption = 'Required program: GraphViz'
+        Color = clNone
+        Left = 8
+        Height = 17
+        Top = 119
+        Width = 180
+      end
+      object Label24: TLabel
+        Caption = 'LateX graphics package'
+        Color = clNone
+        FocusControl = comboLatexGraphicsPackage
+        Left = 10
+        Height = 12
+        Top = 63
+        Width = 137
+      end
+      object edGraphVizUrl: TEdit
+        TabOrder = 0
+        Text = 'http://www.graphviz.org/'
+        Left = 188
+        Height = 23
+        Top = 114
+        Width = 160
+      end
+      object comboLatexGraphicsPackage: TComboBox
+        Enabled = False
+        Items.Strings = (
+          'None'
+          'PDF'
+          'DVI'
+        )
+        ItemIndex = 0
+        MaxLength = 0
+        OnChange = SomethingChanged
+        Style = csDropDownList
+        TabOrder = 1
+        Text = 'None'
+        Left = 10
+        Height = 21
+        Top = 88
+        Width = 148
+      end
+      object cbVizGraphUses: TCheckBox
+        Caption = 'Generate and use Uses diagram '
+        OnChange = SomethingChanged
+        TabOrder = 2
+        Left = 8
+        Height = 23
+        Top = 34
+        Width = 239
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
+      end
+      object cbVizGraphClasses: TCheckBox
+        Caption = 'Generate and use Classes diagram '
+        OnChange = SomethingChanged
+        TabOrder = 3
+        Left = 8
+        Height = 23
+        Top = 10
+        Width = 258
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
       end
     end
     object pageHeadFoot: TPage
