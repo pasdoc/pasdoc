@@ -4,11 +4,13 @@ object frmHelpGenerator: TfrmHelpGenerator
   ClientWidth = 740
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
+  KeyPreview = True
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 61
   Position = poScreenCenter
+  ShowHint = True
   TextHeight = 20
   HorzScrollBar.Page = 739
   VertScrollBar.Page = 453
@@ -16,6 +18,8 @@ object frmHelpGenerator: TfrmHelpGenerator
   Height = 480
   Top = 15
   Width = 740
+  HelpType = htKeyword
+  HelpKeyword = 'PasDocGui'
   object lbNavigation: TListBox
     Align = alLeft
     OnClick = lbNavigationClick
@@ -27,7 +31,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   object NotebookMain: TNotebook
     Align = alClient
     BorderSpacing.OnChange = nil
-    PageIndex = 1
+    PageIndex = 10
     ShowTabs = False
     Left = 144
     Height = 454
@@ -45,60 +49,74 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.OnChange = nil
         Caption = 'Items to sort alphabetically'
         Color = clNone
+        FocusControl = clbSorting
         Left = 332
         Height = 21
         Top = 82
         Width = 208
+        HelpType = htKeyword
       end
       object Label2: TLabel
         Caption = 'Title :'
         Color = clNone
+        FocusControl = edTitle
         Left = 10
         Height = 14
         Top = 2
         Width = 30
+        HelpType = htKeyword
       end
       object Label6: TLabel
         Caption = 'Output Type :'
         Color = clNone
+        FocusControl = comboGenerateFormat
         Left = 8
         Height = 19
         Top = 106
         Width = 102
+        HelpType = htKeyword
       end
       object Label7: TLabel
         Caption = 'Message level (This controls what sort of messages will apear on the Generate tab when web pages are created.)'
         Color = clNone
+        FocusControl = seVerbosity
         WordWrap = True
         Left = 86
         Height = 30
         Top = 410
         Width = 452
+        HelpType = htKeyword
       end
       object Label11: TLabel
         Caption = 'Project Name (The Project Name is used to name some of the generated output files.)'
         Color = clNone
+        FocusControl = edProjectName
         Left = 8
         Height = 18
         Top = 50
         Width = 510
+        HelpType = htKeyword
       end
       object Label19: TLabel
         Caption = 'Language (This is the language used in the generated output files.)'
         Color = clNone
-        Left = 8
+        FocusControl = comboLanguages
+        Left = 10
         Height = 27
         Top = 354
         Width = 420
+        HelpType = htKeyword
       end
       object Label21: TLabel
         Caption = 'Properties, Methods, Events, and Fields to include'
         Color = clNone
+        FocusControl = clbMethodVisibility
         WordWrap = True
         Left = 8
         Height = 32
         Top = 130
         Width = 208
+        HelpType = htKeyword
       end
       object clbSorting: TCheckListBox
         Anchors = [akTop, akRight]
@@ -122,6 +140,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 207
         Top = 104
         Width = 254
+        HelpType = htKeyword
+        HelpKeyword = 'SortOption'
         Data = {
           0A00000000000000000000000000
         }
@@ -134,6 +154,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 322
         Width = 473
+        HelpType = htKeyword
+        HelpKeyword = 'AutoAbstractOption'
       end
       object CheckUseTipueSearch: TCheckBox
         Caption = 'Use tipue search engine in HTML output'
@@ -143,6 +165,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 298
         Width = 251
+        HelpType = htKeyword
+        HelpKeyword = 'UseTipueSearchOption'
       end
       object edTitle: TEdit
         Anchors = [akTop, akLeft, akRight]
@@ -150,8 +174,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 3
         Left = 8
         Height = 23
+        Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
         Top = 18
         Width = 578
+        HelpType = htKeyword
+        HelpKeyword = 'DocumentationTitle'
       end
       object comboGenerateFormat: TComboBox
         ItemHeight = 20
@@ -169,6 +196,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 21
         Top = 106
         Width = 210
+        HelpType = htKeyword
       end
       object seVerbosity: TSpinEdit
         ClimbRate = 1
@@ -180,6 +208,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 30
         Top = 410
         Width = 64
+        HelpType = htKeyword
       end
       object edProjectName: TEdit
         Anchors = [akTop, akLeft, akRight]
@@ -189,6 +218,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 76
         Width = 317
+        HelpType = htKeyword
+        HelpKeyword = 'NameOption'
       end
       object comboLanguages: TComboBox
         Anchors = [akTop, akLeft, akRight]
@@ -197,10 +228,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         OnChange = comboLanguagesChange
         Style = csDropDownList
         TabOrder = 7
-        Left = 8
+        Left = 10
         Height = 21
-        Top = 383
+        Top = 382
         Width = 319
+        HelpType = htKeyword
+        HelpKeyword = 'OutputLanguage'
       end
       object clbMethodVisibility: TCheckListBox
         Items.Strings = (
@@ -218,6 +251,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 130
         Top = 167
         Width = 223
+        HelpType = htKeyword
+        HelpKeyword = 'IncludeByVisibility'
         Data = {
           06000000000000000000
         }
@@ -235,36 +270,44 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.OnChange = nil
         Caption = 'Output directory (This is the directory where the web pages will be created.) :'
         Color = clNone
+        FocusControl = edOutput
         Left = 8
         Height = 14
         Top = 170
         Width = 432
+        HelpType = htKeyword
       end
       object Label14: TLabel
         BorderSpacing.OnChange = nil
         Caption = 'Conclusion file (optional):'
         Color = clNone
+        FocusControl = EditConclusionFileName
         Left = 8
         Height = 19
         Top = 58
         Width = 166
+        HelpType = htKeyword
       end
       object Label15: TLabel
         BorderSpacing.OnChange = nil
         Caption = 'Introduction file (optional):'
         Color = clNone
+        FocusControl = EditIntroductionFileName
         Left = 8
         Height = 14
         Top = 10
         Width = 174
+        HelpType = htKeyword
       end
       object Label16: TLabel
         Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
         Color = clNone
+        FocusControl = EditCssFileName
         Left = 8
         Height = 18
         Top = 114
         Width = 448
+        HelpType = htKeyword
       end
       object EditConclusionFileName: TFileNameEdit
         DialogTitle = 'Choose conclusion file'
@@ -282,6 +325,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 81
         Width = 489
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
       end
       object EditIntroductionFileName: TFileNameEdit
         DialogTitle = 'Choose introduction file'
@@ -299,6 +344,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 30
         Width = 489
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
       end
       object EditCssFileName: TFileNameEdit
         DialogTitle = 'Choose custom CSS file'
@@ -315,6 +362,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 136
         Width = 489
+        HelpType = htKeyword
+        HelpKeyword = 'CssOption'
       end
       object edOutput: TDirectoryEdit
         DialogTitle = 'Select output directory'
@@ -330,10 +379,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 23
         Top = 190
         Width = 489
+        HelpType = htKeyword
+        HelpKeyword = 'OutputOption'
       end
     end
     object pageLatexOptions: TPage
-      Caption = 'Latex Options'
+      Caption = 'LaTeX Options'
       ClientWidth = 592
       ClientHeight = 450
       Left = 2
@@ -344,10 +395,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.OnChange = nil
         Caption = 'Hy-phen-at-ed words (Only English letters are allowed.)'
         Color = clNone
+        FocusControl = memoHyphenatedWords
         Left = 124
         Height = 17
         Top = 12
         Width = 344
+        HelpType = htKeyword
       end
       object memoHyphenatedWords: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -453,19 +506,23 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.OnChange = nil
         Caption = 'Header (This text will appear at the top of the web page)'
         Color = clNone
+        FocusControl = memoHeader
         Left = 14
         Height = 20
         Top = 20
         Width = 408
+        HelpType = htKeyword
       end
       object Label5: TLabel
         BorderSpacing.OnChange = nil
         Caption = 'Footer (This text will appear at the bottom of the web page)'
         Color = clNone
+        FocusControl = memoFooter
         Left = 14
         Height = 20
         Top = 234
         Width = 429
+        HelpType = htKeyword
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
@@ -477,6 +534,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 182
         Top = 44
         Width = 566
+        HelpType = htKeyword
+        HelpKeyword = 'FileAsHeaderOrFooter'
       end
       object memoFooter: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -488,6 +547,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 174
         Top = 258
         Width = 566
+        HelpType = htKeyword
+        HelpKeyword = 'FileAsHeaderOrFooter'
       end
     end
     object pageSpellChecking: TPage
@@ -511,10 +572,12 @@ object frmHelpGenerator: TfrmHelpGenerator
           BorderSpacing.OnChange = nil
           Caption = 'Words to ignore when spell checking - One word per line'
           Color = clNone
+          FocusControl = memoSpellCheckingIgnore
           Left = 14
           Height = 16
           Top = 42
           Width = 358
+          HelpType = htKeyword
         end
         object Label23: TLabel
           Caption = 'Required Program: aspell'
@@ -532,6 +595,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           Height = 23
           Top = 14
           Width = 132
+          HelpType = htKeyword
+          HelpKeyword = 'SpellChecking'
         end
         object edSpellUrl: TEdit
           TabOrder = 1
@@ -550,6 +615,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 382
         Top = 68
         Width = 592
+        HelpType = htKeyword
+        HelpKeyword = 'SpellChecking'
       end
     end
     object pageMarkers: TPage
@@ -567,6 +634,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 338
         Top = 112
         Width = 592
+        HelpType = htKeyword
+        HelpKeyword = 'CommentMarker'
       end
       object PanelMarkers: TPanel
         Align = alTop
@@ -580,10 +649,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         object Label18: TLabel
           Caption = 'Special comment markers'
           Color = clNone
+          FocusControl = memoCommentMarkers
           Left = 4
           Height = 20
           Top = 87
           Width = 142
+          HelpType = htKeyword
         end
         object rgCommentMarkers: TRadioGroup
           Anchors = [akTop, akLeft, akRight]
@@ -599,6 +670,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           Left = 4
           Height = 80
           Width = 568
+          HelpType = htKeyword
+          HelpKeyword = 'CommentMarker'
         end
       end
     end
@@ -623,11 +696,13 @@ object frmHelpGenerator: TfrmHelpGenerator
           Anchors = [akTop, akLeft, akRight]
           Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
           Color = clNone
+          FocusControl = memoFiles
           WordWrap = True
           Left = 8
           Height = 51
           Top = 8
           Width = 554
+          HelpType = htKeyword
         end
       end
       object PanelSourceFilesBottom: TPanel
@@ -660,6 +735,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 343
         Top = 66
         Width = 592
+        HelpType = htKeyword
       end
     end
     object pageIncludeDirectories: TPage
@@ -683,11 +759,13 @@ object frmHelpGenerator: TfrmHelpGenerator
           Anchors = [akTop, akLeft, akRight]
           Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
           Color = clNone
+          FocusControl = memoIncludeDirectories
           WordWrap = True
           Left = 8
           Height = 36
           Top = 8
           Width = 552
+          HelpType = htKeyword
         end
       end
       object PanelIncludeDirectoriesBottom: TPanel
@@ -720,6 +798,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 344
         Top = 65
         Width = 592
+        HelpType = htKeyword
+        HelpKeyword = 'IncludeInSearchPath'
       end
     end
     object pageDefines: TPage
@@ -739,6 +819,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 374
         Top = 76
         Width = 592
+        HelpType = htKeyword
+        HelpKeyword = 'ConditionalDefines'
       end
       object PanelDefinesTop: TPanel
         Align = alTop
@@ -753,6 +835,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Anchors = [akTop, akLeft, akRight]
           Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
           Color = clNone
+          FocusControl = memoDefines
           WordWrap = True
           Left = 6
           Height = 48
@@ -782,11 +865,13 @@ object frmHelpGenerator: TfrmHelpGenerator
           Anchors = [akTop, akLeft, akRight]
           Caption = 'When you click the "Generate web pages" button, Help Generator will begin to process your input files and create web pages for them.  Messages describing what is happening will appear in the area below.  You can control how many messages appear using the "Message Level" on the Options tab. When it is done, a preview of the web pages will appear on the "Web Page" tab.'
           Color = clNone
+          FocusControl = memoMessages
           WordWrap = True
           Left = 8
           Height = 82
           Top = 8
           Width = 554
+          HelpType = htKeyword
         end
       end
       object PanelGenerageBottom: TPanel
@@ -817,6 +902,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 312
         Top = 97
         Width = 592
+        HelpType = htKeyword
       end
     end
     object pageWebPage: TPage
@@ -840,6 +926,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           BorderSpacing.OnChange = nil
           Caption = 'Command to run browser: (%s will be replaced with HTML filename, %% with %)'
           Color = clNone
+          FocusControl = EditHtmlBrowserCommand
           Left = 14
           Height = 22
           Top = 52
