@@ -130,6 +130,7 @@ type
     memoMessages: TMemo;
     memoSpellCheckingIgnore: TMemo;
     MenuAbout: TMenuItem;
+    MenuContextHelp: TMenuItem;
     NotebookMain: TNotebook;
     pageDefines: TPage;
     pageGenerate: TPage;
@@ -176,6 +177,8 @@ type
     // @name generates Latex output.
     TexDocGenerator: TTexDocGenerator;
     MenuHelp: TMenuItem;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MenuContextHelpClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure PasDoc1Warning(const MessageType: TMessageType;
@@ -207,6 +210,7 @@ type
     function LanguageIdToString(const LanguageID: TLanguageID): string;
     procedure CheckIfSpellCheckingAvailable;
     procedure FillNavigationListBox;
+    procedure SetOutputDirectory(const FileName: string);
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
@@ -226,7 +230,7 @@ var
 
 implementation
 
-uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit;
+uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit, HelpProcessor;
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
@@ -248,9 +252,27 @@ begin
   frmAbout.ShowModal;
 end;
 
+procedure TfrmHelpGenerator.SetOutputDirectory(const FileName: string);
+begin
+  edOutput.Directory := ExtractFileDir(FileName)
+    + PathDelim + 'PasDoc';
+end;
+
 procedure TfrmHelpGenerator.SomethingChanged(Sender: TObject);
 begin
   Changed := true;
+  if (memoFiles.Lines.Count > 0) and (edOutput.Directory = '') then begin
+    SetOutputDirectory(memoFiles.Lines[0]);
+  end;
+end;
+
+procedure TfrmHelpGenerator.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_F1 then
+  begin
+    MenuContextHelpClick(ActiveControl);
+  end;
 end;
 
 procedure TfrmHelpGenerator.btnBrowseSourceFilesClick(Sender: TObject);
@@ -266,7 +288,7 @@ begin
 
       if edOutput.Directory = '' then
       begin
-        edOutput.Directory := ExtractFileDir(OpenDialog1.FileName);
+        SetOutputDirectory(OpenDialog1.FileName);
       end;
 
       Files.Sorted := True;
@@ -1061,11 +1083,32 @@ begin
 end;
 
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
+
+  procedure SetColorFromEnabled(Edit: TEdit);
+  { With WinAPI interface, this is useful to give user indication of 
+    Edit.Enabled state. Other WinAPI programs also do this.
+    With other widgetsets, like GTK, this is not needed, Lazarus + GTK
+    already handle such things (e.g. edit boxes have automatically
+    slightly dimmed background when they are disabled). }
+  begin
+    {$ifdef WIN32}
+    if Edit.Enabled then begin
+      edProjectName.Color := clWindow else
+      edProjectName.Color := clBtnFace;
+    {$endif}
+  end;
+
 begin
   CheckUseTipueSearch.Enabled := comboGenerateFormat.ItemIndex = 0;
   PageHeadFoot.Tag := Ord(comboGenerateFormat.ItemIndex in [0,1]);
   PageLatexOptions.Tag := Ord(comboGenerateFormat.ItemIndex in [2,3]);
+  
+  edProjectName.Enabled := comboGenerateFormat.ItemIndex <> 0;
+  SetColorFromEnabled(edProjectName);
+  
   EditCssFileName.Enabled := comboGenerateFormat.ItemIndex in [0,1];
+  SetColorFromEnabled(EditCssFileName);
+  
   PageWebPage.Tag := Ord(comboGenerateFormat.ItemIndex in [0,1]);
   comboLatexGraphicsPackage.Enabled := comboGenerateFormat.ItemIndex in [2,3];
   FillNavigationListBox;
@@ -1081,6 +1124,35 @@ begin
   Page := lbNavigation.Items.Objects[lbNavigation.ItemIndex] as TPage;
     
   NotebookMain.PageIndex := Page.PageIndex;
+end;
+
+procedure TfrmHelpGenerator.MenuContextHelpClick(Sender: TObject);
+var
+  Page: TPage;
+  HelpControl: TControl;
+  URL: string;
+begin
+  HelpControl := nil;
+  if (Sender is TMenuItem) or (Sender = lbNavigation) then
+  begin
+    HelpControl := NotebookMain.ActivePageComponent;
+    GetHelpControl(HelpControl, HelpControl);
+  end
+  else if (Sender is TControl) then
+  begin
+    GetHelpControl(TControl(Sender), HelpControl);
+  end;
+  
+  if HelpControl <> nil then
+  begin
+    Assert(HelpControl.HelpType = htKeyword);
+    URL := 'http://pasdoc.sipsolutions.net/' +
+      HelpControl.HelpKeyword;
+
+    DocBrowserProcess.CommandLine :=
+      Format(EditHtmlBrowserCommand.Text, [URL]);
+    DocBrowserProcess.Execute;
+  end;
 end;
 
 procedure TfrmHelpGenerator.rgCommentMarkersClick(Sender: TObject);

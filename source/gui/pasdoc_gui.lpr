@@ -5,7 +5,8 @@ program pasdoc_gui;
 uses
   Interfaces, // this includes the LCL widgetset
   Forms
-  { add your units here }, frmAboutUnit, frmHelpGeneratorUnit, pasdoc_package;
+  { add your units here }, frmAboutUnit, frmHelpGeneratorUnit, pasdoc_package,
+  helpprocessor;
 
 begin
   Application.Initialize;
