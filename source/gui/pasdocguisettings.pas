@@ -26,16 +26,37 @@ var
 
 implementation
 
+{$ifdef UNIX}
+function GetApplicationNameWithDot: string;
+begin
+  Result := '.pasdoc_gui';
+end;
+{$endif}
+
 var
   ConfigDir: string;
 initialization
+  {$ifdef UNIX}
+  { Workaround for FPC problem with GetAppConfigDir(false):
+    it returns
+      GetHomeDir + ApplicationName
+    while I believe it should return
+      GetHomeDir + '.' + ApplicationName }
+  OnGetApplicationName := @GetApplicationNameWithDot;
+  {$endif}
+
   { calculate ConfigDir }
   ConfigDir := GetAppConfigDir(false);
   if not ForceDirectories(ConfigDir) then
     raise Exception.CreateFmt('Cannot create directory for config file: "%s"',
       [ConfigDir]);
   ConfigDir := IncludeTrailingPathDelimiter(ConfigDir);
-      
+
+  {$ifdef UNIX}
+  { Turn the workaround off }
+  OnGetApplicationName := nil;
+  {$endif}
+
   { initialize IniFile }
   IniFile := TIniFile.Create(ConfigDir + 'prefs.ini');
   
