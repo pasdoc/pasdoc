@@ -33,7 +33,7 @@ const
 
 implementation
 
-uses PasDocGuiSettings;
+uses {$ifdef WIN32} Windows, ShellAPI, {$endif} PasDocGuiSettings;
 
 { TWWWBrowserRunner }
 
@@ -49,7 +49,35 @@ begin
 end;
 
 procedure TWWWBrowserRunner.RunBrowser(const URL: string);
+
+  {$ifdef WIN32}
+  procedure ShellExecuteURL;
+  var
+    ExecInfo: TShellExecuteInfo;
+  const
+    OpenCommand = 'open';
+  begin
+    ExecInfo.cbSize := SizeOf(ExecInfo);
+    ExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
+    ExecInfo.hWnd := 0;
+    ExecInfo.lpVerb := PChar(OpenCommand);
+    ExecInfo.lpFile := PChar(URL);
+    ExecInfo.lpParameters := nil;
+    ExecInfo.lpDirectory := nil;
+    ExecInfo.nShow := SW_SHOWNORMAL;
+    ShellExecuteEx( LPSHELLEXECUTEINFOA(@ExecInfo) );
+  end;
+  {$endif}
+
 begin
+  {$ifdef WIN32}
+  if Trim(BrowserCommand) = '' then
+  begin
+    ShellExecuteURL;
+    Exit;
+  end;
+  {$endif}
+  
   DocBrowserProcess.CommandLine := Format(BrowserCommand, [URL]);
   DocBrowserProcess.Execute;
 end;
