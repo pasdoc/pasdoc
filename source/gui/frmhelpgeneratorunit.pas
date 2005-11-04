@@ -1076,8 +1076,8 @@ procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
   begin
     {$ifdef WIN32}
     if Edit.Enabled then
-      edProjectName.Color := clWindow else
-      edProjectName.Color := clBtnFace;
+      Edit.Color := clWindow else
+      Edit.Color := clBtnFace;
     {$endif}
   end;
 
