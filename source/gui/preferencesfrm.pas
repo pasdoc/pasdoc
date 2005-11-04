@@ -1,6 +1,6 @@
-{ This unit implements TPreferences form (run by TPreferences.Execute)
-  and declares some global settings (that didn't fit anywhere else)
-  like WWWHelpServer. }
+{ This unit implements TPreferences form (run by TPreferences.Execute).
+
+  @author(Michalis Kamburelis) }
 
 unit PreferencesFrm;
 
@@ -31,15 +31,9 @@ type
     class procedure Execute;
   end; 
 
-const
-  DefaultWWWHelpServer = 'http://pasdoc.sipsolutions.net/';
-
-var
-  WWWHelpServer: string;
-
 implementation
 
-uses WWWBrowserRunnerDM;
+uses WWWBrowserRunnerDM, PasDocGuiSettings;
 
 procedure TPreferences.BtnResetDefaultsClick(Sender: TObject);
 begin
@@ -67,8 +61,5 @@ end;
 
 initialization
   {$I preferencesfrm.lrs}
-  
-  { Assign default value for WWWHelpServer }
-  WWWHelpServer := DefaultWWWHelpServer;
 end.
 

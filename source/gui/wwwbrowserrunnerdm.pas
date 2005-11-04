@@ -1,3 +1,5 @@
+{ @author(Michalis Kamburelis) }
+
 unit WWWBrowserRunnerDM;
 
 {$mode objfpc}{$H+}
@@ -14,6 +16,7 @@ type
   TWWWBrowserRunner = class(TDataModule)
     DocBrowserProcess: TProcess;
     procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
   private
     { private declarations }
   public
@@ -30,11 +33,19 @@ const
 
 implementation
 
+uses PasDocGuiSettings;
+
 { TWWWBrowserRunner }
 
 procedure TWWWBrowserRunner.DataModuleCreate(Sender: TObject);
 begin
-  BrowserCommand := DefaultWWWBrowserCommand;
+  BrowserCommand := IniFile.ReadString('Main', 'WWWBrowserCommand',
+    DefaultWWWBrowserCommand);
+end;
+
+procedure TWWWBrowserRunner.DataModuleDestroy(Sender: TObject);
+begin
+  IniFile.WriteString('Main', 'WWWBrowserCommand', BrowserCommand);
 end;
 
 procedure TWWWBrowserRunner.RunBrowser(const URL: string);

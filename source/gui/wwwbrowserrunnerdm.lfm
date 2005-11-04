@@ -1,5 +1,6 @@
 object WWWBrowserRunner: TWWWBrowserRunner
   OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   Height = 161
   HorizontalOffset = 350
   VerticalOffset = 169

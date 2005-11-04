@@ -227,7 +227,7 @@ var
 implementation
 
 uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
-  WWWBrowserRunnerDM, PreferencesFrm;
+  WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
   const AMessage: string; const AVerbosity: Cardinal);

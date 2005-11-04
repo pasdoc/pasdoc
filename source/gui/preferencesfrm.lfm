@@ -11,6 +11,7 @@ object Preferences: TPreferences
   Top = 156
   Width = 516
   object LabelWWWBrowserCommand: TLabel
+    BorderSpacing.OnChange = nil
     Caption = 'C&ommand to run WWW browser : (%s will be replaced with the URL, %% with %)'
     Color = clNone
     FocusControl = EditWWWBrowserCommand
@@ -20,7 +21,6 @@ object Preferences: TPreferences
     Width = 459
   end
   object LabelWWWHelpServer: TLabel
-    BorderSpacing.OnChange = nil
     Caption = '&URL of server with help pages :'
     Color = clNone
     FocusControl = EditWWWHelpServer
@@ -30,6 +30,7 @@ object Preferences: TPreferences
     Width = 184
   end
   object EditWWWBrowserCommand: TEdit
+    BorderSpacing.OnChange = nil
     TabOrder = 0
     Text = 'EditWWWBrowserCommand'
     Left = 8
@@ -38,7 +39,6 @@ object Preferences: TPreferences
     Width = 392
   end
   object EditWWWHelpServer: TEdit
-    BorderSpacing.OnChange = nil
     TabOrder = 1
     Text = 'EditWWWHelpServer'
     Left = 8
@@ -48,6 +48,7 @@ object Preferences: TPreferences
   end
   object BtnOK: TButton
     Anchors = [akRight, akBottom]
+    BorderSpacing.OnChange = nil
     BorderSpacing.InnerBorder = 2
     Caption = '&OK'
     Default = True
@@ -60,6 +61,7 @@ object Preferences: TPreferences
   end
   object BtnCancel: TButton
     Anchors = [akRight, akBottom]
+    BorderSpacing.OnChange = nil
     BorderSpacing.InnerBorder = 2
     Cancel = True
     Caption = '&Cancel'
@@ -71,7 +73,6 @@ object Preferences: TPreferences
     Width = 75
   end
   object BtnResetDefaults: TButton
-    BorderSpacing.OnChange = nil
     BorderSpacing.InnerBorder = 2
     Caption = '&Reset to defaults'
     OnClick = BtnResetDefaultsClick

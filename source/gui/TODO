@@ -24,9 +24,7 @@
   The "Generate documentation" button should be then moved to some toolbar
   and as a menu item. Then we could add some shortcut like Ctrl+G
   (or maybe F9, to follow Delphi and Lazarus shortcut that we all know ?)
-  to trigger it. The "command to run browser" edit box should be probably
-  moved to a separate window like "Preferences", and then it's saved
-  in user configuration file.
+  to trigger it.
 
 - Default value of EditHtmlBrowserCommand.Text
   should be read from some user's config file.

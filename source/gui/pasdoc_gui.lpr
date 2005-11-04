@@ -6,7 +6,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms
   { add your units here }, frmAboutUnit, frmHelpGeneratorUnit, pasdoc_package,
-  HelpProcessor, WWWBrowserRunnerDM, PreferencesFrm;
+  HelpProcessor, WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
 
 begin
   Application.Initialize;
