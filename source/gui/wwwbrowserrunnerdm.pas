@@ -29,7 +29,7 @@ var
 
 const
   DefaultWWWBrowserCommand =
-    {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
+    {$ifdef WIN32} '' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
 implementation
 
