@@ -1075,7 +1075,7 @@ procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
     slightly dimmed background when they are disabled). }
   begin
     {$ifdef WIN32}
-    if Edit.Enabled then begin
+    if Edit.Enabled then
       edProjectName.Color := clWindow else
       edProjectName.Color := clBtnFace;
     {$endif}
