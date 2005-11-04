@@ -26,8 +26,18 @@ var
 
 implementation
 
+var
+  ConfigDir: string;
 initialization
-  IniFile := TIniFile.Create(GetAppConfigFile(false));
+  { calculate ConfigDir }
+  ConfigDir := GetAppConfigDir(false);
+  if not ForceDirectories(ConfigDir) then
+    raise Exception.CreateFmt('Cannot create directory for config file: "%s"',
+      [ConfigDir]);
+  ConfigDir := IncludeTrailingPathDelimiter(ConfigDir);
+      
+  { initialize IniFile }
+  IniFile := TIniFile.Create(ConfigDir + 'prefs.ini');
   
   WWWHelpServer := IniFile.ReadString('Main', 'WWWHelpServer',
     DefaultWWWHelpServer);
