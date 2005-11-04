@@ -11,25 +11,25 @@ object Preferences: TPreferences
   Top = 156
   Width = 516
   object LabelWWWBrowserCommand: TLabel
-    BorderSpacing.OnChange = nil
-    Caption = 'Command to run WWW browser : (%s will be replaced with the URL, %% with %)'
+    Caption = 'C&ommand to run WWW browser : (%s will be replaced with the URL, %% with %)'
     Color = clNone
     FocusControl = EditWWWBrowserCommand
     Left = 8
     Height = 12
     Top = 16
-    Width = 450
+    Width = 459
   end
   object LabelWWWHelpServer: TLabel
-    Caption = 'URL of server with help pages :'
+    BorderSpacing.OnChange = nil
+    Caption = '&URL of server with help pages :'
     Color = clNone
+    FocusControl = EditWWWHelpServer
     Left = 8
     Height = 12
     Top = 72
-    Width = 175
+    Width = 184
   end
   object EditWWWBrowserCommand: TEdit
-    BorderSpacing.OnChange = nil
     TabOrder = 0
     Text = 'EditWWWBrowserCommand'
     Left = 8
@@ -38,6 +38,7 @@ object Preferences: TPreferences
     Width = 392
   end
   object EditWWWHelpServer: TEdit
+    BorderSpacing.OnChange = nil
     TabOrder = 1
     Text = 'EditWWWHelpServer'
     Left = 8
@@ -47,12 +48,11 @@ object Preferences: TPreferences
   end
   object BtnOK: TButton
     Anchors = [akRight, akBottom]
-    BorderSpacing.OnChange = nil
     BorderSpacing.InnerBorder = 2
     Caption = '&OK'
     Default = True
     ModalResult = 1
-    TabOrder = 2
+    TabOrder = 3
     Left = 336
     Height = 25
     Top = 129
@@ -60,15 +60,25 @@ object Preferences: TPreferences
   end
   object BtnCancel: TButton
     Anchors = [akRight, akBottom]
-    BorderSpacing.OnChange = nil
     BorderSpacing.InnerBorder = 2
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
-    TabOrder = 3
+    TabOrder = 4
     Left = 424
     Height = 25
     Top = 128
     Width = 75
+  end
+  object BtnResetDefaults: TButton
+    BorderSpacing.OnChange = nil
+    BorderSpacing.InnerBorder = 2
+    Caption = '&Reset to defaults'
+    OnClick = BtnResetDefaultsClick
+    TabOrder = 2
+    Left = 8
+    Height = 25
+    Top = 128
+    Width = 139
   end
 end

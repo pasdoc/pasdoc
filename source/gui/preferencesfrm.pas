@@ -19,15 +19,20 @@ type
   TPreferences = class(TForm)
     BtnOK: TButton;
     BtnCancel: TButton;
+    BtnResetDefaults: TButton;
     EditWWWBrowserCommand: TEdit;
     EditWWWHelpServer: TEdit;
     LabelWWWBrowserCommand: TLabel;
     LabelWWWHelpServer: TLabel;
+    procedure BtnResetDefaultsClick(Sender: TObject);
   private
     { private declarations }
   public
     class procedure Execute;
   end; 
+
+const
+  DefaultWWWHelpServer = 'http://pasdoc.sipsolutions.net/';
 
 var
   WWWHelpServer: string;
@@ -35,6 +40,12 @@ var
 implementation
 
 uses WWWBrowserRunnerDM;
+
+procedure TPreferences.BtnResetDefaultsClick(Sender: TObject);
+begin
+  EditWWWBrowserCommand.Text := DefaultWWWBrowserCommand;
+  EditWWWHelpServer.Text := DefaultWWWHelpServer;
+end;
 
 class procedure TPreferences.Execute;
 var
@@ -58,6 +69,6 @@ initialization
   {$I preferencesfrm.lrs}
   
   { Assign default value for WWWHelpServer }
-  WWWHelpServer := 'http://pasdoc.sipsolutions.net/';
+  WWWHelpServer := DefaultWWWHelpServer;
 end.
 

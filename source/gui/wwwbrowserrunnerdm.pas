@@ -24,14 +24,17 @@ type
 var
   WWWBrowserRunner: TWWWBrowserRunner;
 
+const
+  DefaultWWWBrowserCommand =
+    {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
+
 implementation
 
 { TWWWBrowserRunner }
 
 procedure TWWWBrowserRunner.DataModuleCreate(Sender: TObject);
 begin
-  BrowserCommand :=
-    {$ifdef WIN32} 'explorer %s' {$else} 'sh -c "$BROWSER %s"' {$endif};
+  BrowserCommand := DefaultWWWBrowserCommand;
 end;
 
 procedure TWWWBrowserRunner.RunBrowser(const URL: string);

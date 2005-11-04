@@ -11,6 +11,7 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <Units Count="6">
       <Unit0>
@@ -52,22 +53,24 @@
         <UsageCount Value="22"/>
       </Unit3>
       <Unit4>
-        <CursorPos X="3" Y="1"/>
+        <CursorPos X="3" Y="37"/>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
         <ComponentName Value="WWWBrowserRunner"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
-        <TopLine Value="11"/>
+        <TopLine Value="14"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
         <UsageCount Value="22"/>
       </Unit4>
       <Unit5>
-        <CursorPos X="20" Y="5"/>
+        <CursorPos X="12" Y="31"/>
+        <EditorIndex Value="0"/>
         <Filename Value="preferencesfrm.pas"/>
         <ComponentName Value="Preferences"/>
         <IsPartOfProject Value="True"/>
+        <Loaded Value="True"/>
         <ResourceFilename Value="preferencesfrm.lrs"/>
-        <TopLine Value="1"/>
+        <TopLine Value="28"/>
         <UnitName Value="PreferencesFrm"/>
         <UsageCount Value="21"/>
       </Unit5>
@@ -97,7 +100,20 @@
         <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="preferencesfrm.pas"/>
+        <Caret Line="33" Column="23" TopLine="16"/>
+      </Position1>
+      <Position2>
+        <Filename Value="preferencesfrm.pas"/>
+        <Caret Line="56" Column="6" TopLine="33"/>
+      </Position2>
+      <Position3>
+        <Filename Value="preferencesfrm.pas"/>
+        <Caret Line="27" Column="54" TopLine="21"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
