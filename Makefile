@@ -340,6 +340,11 @@ ifdef DOCFILES
 	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)docs
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
+ifdef ADD_PASDOC_GUI
+	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)experimental
+	strip source/gui/pasdoc_gui$(EXE)
+	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)experimental$(PATHSEP)
+endif
 
 # This target archives distribution into a zip file.
 #
@@ -362,7 +367,7 @@ dist-go32: clean build-fpc-go32
 
 dist-win32: clean build-fpc-win32
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 ADD_PASDOC_GUI=t
 
 dist-os2: clean build-fpc-os2
 	$(MAKE) --no-print-directory \
@@ -378,7 +383,7 @@ dist-linux-m68k: clean build-fpc-linux-m68k
 
 dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 ADD_PASDOC_GUI=t
 
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
