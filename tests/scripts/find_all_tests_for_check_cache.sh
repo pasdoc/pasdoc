@@ -6,5 +6,5 @@ set -eu
 # E.g. I don't pass ok_macros_off.pas because it results in error
 # if --no-macro was not used.
 
-/bin/find . '(' -iname 'ok_*.pas' -or -iname 'warning_*.pas' ')' \
+/usr/bin/find . '(' -iname 'ok_*.pas' -or -iname 'warning_*.pas' ')' \
   -and -not '(' -iname 'ok_macros_off.pas' ')' 
