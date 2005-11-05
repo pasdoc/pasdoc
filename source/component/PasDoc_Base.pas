@@ -496,6 +496,7 @@ end;
 procedure TPasDoc.Execute;
 var
   t1, t2: TDateTime;
+  CacheDirNoDelim: string;
 begin
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
@@ -504,10 +505,20 @@ begin
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
   end;
-  if (CacheDir <> '') then begin
+  if (CacheDir <> '') then 
+  begin
+    {$ifdef WIN32}
+    { This is needed to make DirectoryExists and CreateDir work
+      when user used UNIX-like delimiters "/" inside CacheDir
+      (yes, it's normally allowed under Windows, so pasdoc should work with
+      it too) }
+    CacheDir := SCharsReplace(CacheDir, ['/'], DirectorySeparator);
+    {$endif}
+    
+    CacheDirNoDelim := ExcludeTrailingPathDelimiter(CacheDir);
     CacheDir := IncludeTrailingPathDelimiter(CacheDir);
-    if not DirectoryExists(CacheDir) then begin
-      if not CreateDir(CacheDir) then begin
+    if not DirectoryExists(CacheDirNoDelim) then begin
+      if not CreateDir(CacheDirNoDelim) then begin
         DoError('Cache directory does not exist and could not be created', [], 1);
       end;
     end;
