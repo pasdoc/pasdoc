@@ -12,14 +12,14 @@ set -eu
 run_echo ()
 {
   echo "$@"
-  "$@"
+  scripts/find_all_tests_for_check_cache.sh | "$@"
 }
 
 pasdoc_call ()
 {
   echo 'Running pasdoc:'
   run_echo pasdoc \
-    --format="$OUTPUT_FORMAT" ok_*.pas warning_*.pas \
+    --format="$OUTPUT_FORMAT" -S - \
     --exclude-generator \
     --cache-dir=scripts/check_cache_tmp/cache/ \
     "$@"

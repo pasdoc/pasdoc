@@ -12,15 +12,13 @@ set -eu
 run_echo ()
 {
   echo "$@"
-  "$@"
+  scripts/find_all_tests_for_check_cache.sh | "$@"
 }
 
 pasdoc_call ()
 {
   echo 'Running pasdoc:'
-  run_echo pasdoc \
-    ok_*.pas warning_*.pas \
-    --exclude-generator "$@"
+  run_echo pasdoc -S - --exclude-generator "$@"
 }
 
 # ------------------------------------------------------------
