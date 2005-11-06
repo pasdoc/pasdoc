@@ -28,6 +28,8 @@ Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer; overload;
 Function PosEx(const SubStr, S: string): Integer; overload; // Offset: Cardinal = 1
 Function PosEx(c:char; const S: string; Offset: Cardinal): Integer; overload;
 
+Function DupeString(const AText: string; ACount: Integer): string;
+
 implementation
 
 uses SysUtils;
@@ -91,6 +93,21 @@ begin
    posex:=0
   else
    posex:=offset;
+end;
+
+Function DupeString(const AText: string; ACount: Integer): string;
+
+var i,l : integer;
+
+begin
+ result:='';
+ if aCount>=0 then
+   begin
+     l:=length(atext);
+     SetLength(result,aCount*l);
+     for i:=0 to ACount-1 do
+       move(atext[1],Result[l*i+1],l);
+   end;
 end;
 
 end.

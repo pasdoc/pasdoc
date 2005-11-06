@@ -48,6 +48,7 @@ function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 {$ifndef KYLIX}
 {$ifndef FPC}
 function IncludeTrailingPathDelimiter(const S: string): string;
+function ExcludeTrailingPathDelimiter(const S: string): string;
 {$endif}
 {$endif}
 {$endif}
@@ -187,6 +188,13 @@ begin
       Result := S + DirectorySeparator;
     end;
   end;
+end;
+
+function ExcludeTrailingPathDelimiter(const S: string): string;
+begin
+  Result := S;
+  if (S <> '') and (S[Length(S)] in ['/', '\']) then
+    SetLength(Result, Length(Result) - 1);
 end;
 {$endif}
 {$endif}
