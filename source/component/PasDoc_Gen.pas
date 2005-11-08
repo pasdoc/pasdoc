@@ -508,6 +508,7 @@ type
       If S is not splittable by SplitNameParts, it always does 
       DoMessage with appropriate warning and returns something like 'UNKNOWN' 
       (no matter what is the value of WarningIfLinkNotFound).
+      FoundItem will be set to nil in this case.
            
       When item will not be found then:
       @unorderedList(
@@ -526,7 +527,7 @@ type
     function SearchLink(s: string; const Item: TBaseItem;
       const LinkDisplay: string; 
       const WarningIfLinkNotFound: boolean;
-      var FoundItem: TBaseItem): string; overload;
+      out FoundItem: TBaseItem): string; overload;
 
     { Just like previous overloaded version, but this doesn't return
       FoundItem (in case you don't need it). }
@@ -2184,10 +2185,12 @@ end;
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string; 
   const WarningIfLinkNotFound: boolean;
-  var FoundItem: TBaseItem): string;
+  out FoundItem: TBaseItem): string;
 var
   NameParts: TNameParts;
 begin
+  FoundItem := nil;
+  
   if (not SplitNameParts(s, NameParts)) then
   begin
     DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
@@ -2196,7 +2199,6 @@ begin
   end;
 
   { first try to find link starting at Item }
-  FoundItem := nil;
   if Assigned(Item) then begin
     FoundItem := Item.FindName(NameParts);
   end;
