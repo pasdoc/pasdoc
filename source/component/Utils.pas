@@ -30,7 +30,7 @@ type
 {$ifndef FPC}
 {$ifndef LINUX}
 const
-  DirectorySeparator = '\';
+  PathDelim = '\';
 {$endif}
 {$endif}
 {$endif}
@@ -184,8 +184,8 @@ function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := S;
   if Length(S)>0 then begin
-    if S[Length(S)] <> DirectorySeparator then begin
-      Result := S + DirectorySeparator;
+    if S[Length(S)] <> PathDelim then begin
+      Result := S + PathDelim;
     end;
   end;
 end;
