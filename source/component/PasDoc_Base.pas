@@ -512,7 +512,7 @@ begin
       when user used UNIX-like delimiters "/" inside CacheDir
       (yes, it's normally allowed under Windows, so pasdoc should work with
       it too) }
-    CacheDir := SCharsReplace(CacheDir, ['/'], DirectorySeparator);
+    CacheDir := SCharsReplace(CacheDir, ['/'], PathDelim);
     {$endif}
     
     CacheDirNoDelim := ExcludeTrailingPathDelimiter(CacheDir);
