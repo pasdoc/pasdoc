@@ -1,7 +1,7 @@
 include Makefile-autodetect
 
 #######################################################################
-# BASE CONFIGURATION 
+# BASE CONFIGURATION  
 #######################################################################
 
 # The version of the package.
