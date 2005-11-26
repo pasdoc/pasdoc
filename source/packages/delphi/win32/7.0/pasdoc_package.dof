@@ -126,13 +126,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=0.9.0
+FileVersion=0.10.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=0.9.0
+ProductVersion=0.10.0
 Comments=
 [HistoryLists\hlUnitAliases]
 Count=1
