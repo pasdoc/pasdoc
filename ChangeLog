@@ -1,4 +1,4 @@
-[Next release -- release date and new version number unknown yet...]
+2005-11-26 v0.10.0
 
   + New command-line options:
     --auto-link
@@ -28,7 +28,7 @@
   * Dashes rules: em-dash, en-dash, short dash, "@-"
     (see [http://pasdoc.sipsolutions.net/WritingDocumentation])
   * FPC macros are now correctly parsed by pasdoc.
-  * Each detailed description in HTML output is enclosed within lightgray frame
+  * Each detailed description in HTML output is enclosed within gray frame
   * Various fixes. E.g.
     * --spell-check-ignore-words works now.
     * @links to @anchors and @sections work always now.
