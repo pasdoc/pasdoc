@@ -174,7 +174,10 @@ type
     SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
     SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
     SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, 
-    SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER);
+    SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER,
+    { SYM_BACKSLASH may occur when writing char constant "^\",
+      see ../../tests/ok_caret_character.pas }
+    SYM_BACKSLASH);
 
 const
   { Symbols as strings. They can be useful to have some mapping
@@ -184,7 +187,7 @@ const
     be written as ".)". }
   SymbolNames: array[TSymbolType] of string = 
   ( '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
-    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**' );
+    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\' );
 
 type
   { Stores the exact type and additional information on one token. }
@@ -695,6 +698,7 @@ begin
                   Result := CreateSymbolToken(SYM_ASTERISK);
                 end;
               end;
+            '\': Result := CreateSymbolToken(SYM_BACKSLASH);
           else begin
               for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
                 if (c = SingleCharSymbols[J].c) then begin
