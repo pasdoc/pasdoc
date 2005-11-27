@@ -160,3 +160,4 @@ mk_special_test ok_introduction_pre_link ok_introduction_pre_link_unit.pas --int
 mk_special_test ok_table_of_contents ok_table_of_contents_unit.pas --introduction=ok_table_of_contents.txt
 mk_special_test warning_link_in_seealso warning_link_in_seealso.pas
 mk_special_test ok_caret_character ok_caret_character.pas
+mk_special_test ok_unit_uses_filename --write-uses-list ok_unit_uses_filename.pas

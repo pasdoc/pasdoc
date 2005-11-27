@@ -1459,8 +1459,41 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUses(const U: TPasUnit);
+var
+  T: TToken;
 begin
-  ParseCommaSeparatedIdentifiers(U.UsesUnits, SYM_SEMICOLON, nil);
+  repeat
+    U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
+    
+    T := GetNextToken;
+    try
+      if T.IsKeyWord(KEY_IN) then
+      begin
+        FreeAndNil(T);
+        
+        { Below we just ignore the value of next string token.
+        
+          We can do this -- because PasDoc (at least for now) 
+          does not recursively parse units on "uses" clause. 
+          So we are not interested in the value of
+          given string (which should be a file-name (usually relative,
+          but absolute is also allowed AFAIK) with given unit.)
+          
+          If we will ever want to implement such "recursive parsing
+          of units" in PasDoc, we will have to fix this to 
+          *not* ignore value of token below. }
+        GetAndCheckNextToken(TOK_STRING);
+        
+        T := GetNextToken;
+      end;
+    
+      if T.IsSymbol(SYM_COMMA) then Continue else
+      if T.IsSymbol(SYM_SEMICOLON) then Break else
+        DoError('One of "," or ";" expected', []);
+    finally
+      FreeAndNil(T);
+    end;
+  until false;
 end;
 
 { ---------------------------------------------------------------------------- }
