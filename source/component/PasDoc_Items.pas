@@ -2261,7 +2261,7 @@ begin
   inherited;
   TTopLevelTag.Create(TagManager, 'title', 
     nil, {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
-    [toParameterRequired, toRecursiveTags, toAllowNormalTextInside]);
+    [toParameterRequired]);
   TTopLevelTag.Create(TagManager, 'shorttitle', 
     nil, {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
     [toParameterRequired]);
