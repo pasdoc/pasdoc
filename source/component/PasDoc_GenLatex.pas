@@ -1107,7 +1107,7 @@ begin
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
       WriteDirect('\item[\texttt{');
       { add the first character for enums }
-      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].Name);
+      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       { add the end characters for enums }
       WriteDirect('}] ');
       WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);

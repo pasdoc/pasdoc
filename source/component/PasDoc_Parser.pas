@@ -55,7 +55,7 @@ type
       
       @item Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
       
-      @item Of TPasEnum: Members.
+      @item Of TPasEnum: Members, FullDeclararation.
       
       @item Of TPasMethod: What.
       
@@ -1051,12 +1051,16 @@ begin
       item := TPasItem.Create;
       item.Name := t.Data;
       item.RawDescription := GetLastComment;
+      item.FullDeclaration := item.Name;
       p.Members.Add(item);
       ItemsForNextBackComment.ClearAndAdd(Item);
     end;
-    if t.IsSymbol(SYM_EQUAL) then begin
+    if t.IsSymbol(SYM_EQUAL) or t.IsSymbol(SYM_ASSIGN) then
+    begin
+      item.FullDeclaration := item.FullDeclaration + ' ' + t.Data;
       FreeAndNil(t);
       t := GetNextToken;
+      item.FullDeclaration := item.FullDeclaration + ' ' + t.Data;
     end;
     FreeAndNil(t);
     t := GetNextToken;

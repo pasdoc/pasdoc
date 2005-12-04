@@ -1146,7 +1146,7 @@ begin
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
     begin
       WriteDirectLine('<li>');
-      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].Name);
+      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       WriteConverted(': ');
       WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
       WriteDirectLine('</li>');
