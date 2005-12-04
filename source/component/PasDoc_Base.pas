@@ -85,9 +85,6 @@ type
     procedure SetStarStyle(const Value: boolean);
     function GetStarStyle: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
-    procedure HandleDescrfileTag(ThisTag: TTag; TagManager: TTagManager;
-      EnclosingTag: TTag; const TagParameter: string;
-      var ReplaceStr: string);
       
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(FUnits). }
@@ -107,11 +104,6 @@ type
       If the collection is empty after removal of all items, it is disposed
       of and the variable is set to nil. }
     procedure RemoveExcludedItems(const c: TPasItems);
-    
-    (*
-    { Searches for descr tags in the comments of all TPasItem objects in C. }
-    procedure SearchDescrFileTags(const c: TPasItems);
-    *)
     
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -140,8 +132,8 @@ type
     { Starts creating the documentation. }
     procedure Execute;
   published
-    property DescriptionFileNames: TStringVector read FDescriptionFileNames
-      write SetDescriptionFileNames;
+    property DescriptionFileNames: TStringVector 
+      read FDescriptionFileNames write SetDescriptionFileNames;
     property Directives: TStringVector read FDirectives write SetDirectives;
     property IncludeDirectories: TStringVector read FIncludeDirectories write
       SetIncludeDirectories;
@@ -565,69 +557,6 @@ begin
   end;
 end;
 
-{ ---------------------------------------------------------------------------- }
-
-procedure TPasDoc.HandleDescrfileTag(ThisTag: TTag; TagManager: TTagManager;
-  EnclosingTag: TTag; const TagParameter: string;
-  var ReplaceStr: string);
-begin
-  DoMessage(3, mtInformation, 'Adding description file "%s"', [TagParameter]);
-  DescriptionFileNames.Add(TagParameter);
-  ReplaceStr := '';
-end;
-
-(*
-TODO -- this code is not decided to be removed, but it needs to be 
-rearranged (by someone who knows what is the intended purpose
-of DescriptionFileNames, as they don't seem to be used now
-and SearchDescrFileTags of this object is never called)
-to use TTagManager.Execute inside TDocGenerator.ExpandDescription.
-
-That's because current use of TTagManager.Execute is too simple
--- it will catch @descrfile also inside @html() and @longcode()
-and it will complain to user about unknown tags,
-since it will know only about @descrfile tag.
-
-procedure TPasDoc.SearchDescrFileTags(const c: TPasItems);
-var
-  i: Integer;
-  p: TPasItem;
-  s: string;
-  TagManager: TTagManager;
-begin
-  if (not Assigned(c)) then Exit;
-  i := 0;
-  while (i < c.Count) do begin
-    p := c.PasItemAt[i];
-    Inc(i);
-    if (not Assigned(p)) then Continue;
-    if p.RawDescription <> '' then begin
-      TagManager := TTagManager.Create;
-      try
-        TagManager.AddTag('descrfile', 
-          {$IFDEF FPC}@{$ENDIF}HandleDescrfileTag, false, false);
-        s := TagManager.Execute(p.RawDescription);
-      finally
-        TagManager.Free;
-      end;
-    end;
-
-    if p.ClassType = TPasCio then begin
-      SearchDescrFileTags(TPasCio(p).Fields);
-      SearchDescrFileTags(TPasItems(TPasCio(p).Methods));
-      SearchDescrFileTags(TPasItems(TPasCio(p).Properties));
-    end;
-
-    if p.ClassType = TPasUnit then begin
-      SearchDescrFileTags(TPasUnit(p).CIOs);
-      SearchDescrFileTags(TPasUnit(p).Constants);
-      SearchDescrFileTags(TPasItems(TPasUnit(p).FuncsProcs));
-      SearchDescrFileTags(TPasUnit(p).Types);
-      SearchDescrFileTags(TPasUnit(p).Variables);
-    end;
-  end;
-end;
-*)
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDoc.DoError(const AMessage: string; const AArguments: array of
