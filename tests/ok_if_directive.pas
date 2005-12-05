@@ -1,6 +1,14 @@
-{ PasDoc fails to parse this, it seems that $if is not understood at all.
+{ @abstract(PasDoc fails to parse this,
+  it seems that $if is not understood at all.)
+
   Bug spotted by Michalis on 2005-12-04 when
-  trying `make htmldocs' on fpc compiler sources, in file globals.pas. }
+  trying `make htmldocs' on fpc compiler sources, in file globals.pas.
+
+  Update 2005-12-05: $if is sorta handled now, and so is $ifend.
+  This testcase is parsed now. There is still work remaining to be done
+  with regards to $if and $elseif, this is documented on
+  [http://pasdoc.sipsolutions.net/ToDo].
+}
 
 unit ok_if_directive;
 
@@ -27,6 +35,17 @@ const
        MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);
 {$endif FPC_LITTLE_ENDIAN}
 {$endif}
+
+{$if defined(CPUARM) and defined(FPUFPA)}
+       Included = 1;
+{$else}
+       NotIncluded = 1;
+{$ifdef FPC_LITTLE_ENDIAN}
+       NotIncluded = 1;
+{$else FPC_LITTLE_ENDIAN}
+       NotIncluded = 1;
+{$endif FPC_LITTLE_ENDIAN}
+{$ifend}
 
 implementation
 

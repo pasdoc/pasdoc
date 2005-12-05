@@ -83,7 +83,20 @@ type
     
     function OpenIncludeFile(const n: string): Boolean;
     
-    procedure SkipUntilElseOrEndif(out FoundElse: Boolean);
+    { Returns @true if $else was found. If $endif or $ifend was found
+      then returns @false. 
+        
+      Note that for pasdoc, $endif and $ifend directives are always exactly
+      equivalent and interchangeable. For Delphi, $if/$elseif must
+      be terminated with $ifend (to be able to nest $if...$ifend
+      within $ifdef...$endif on older Delphi versions that don't
+      support $if, see Borland Delphi docs about this).
+      For FPC, $endif is valid terminator for $if.
+      
+      PasDoc way is, as usual, to leave the checking for compiler.
+      We treat $endif and $ifend the same and therefore we can parse
+      any valid Delphi or FPC code. }
+    function SkipUntilElseOrEndif: Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
   protected
     procedure DoError(const AMessage: string; 
@@ -147,12 +160,13 @@ uses Utils;
 type
   { all directives a scanner is going to regard }
   TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF, 
-    DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2);
+    DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2,
+    DT_IF, DT_ELSEIF, DT_IFEND);
 
 const
   DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string =
   ( 'DEFINE', 'ELSE', 'ENDIF', 'IFDEF', 'IFNDEF', 'IFOPT', 'I', 'UNDEF', 
-    'INCLUDE' );
+    'INCLUDE', 'IF', 'ELSEIF', 'IFEND' );
 
   SymbolIsNotMacro = nil;
   SymbolIsMacro = Pointer(1);
@@ -164,33 +178,49 @@ const
   
   Extracts DirectiveName and DirectiveParam from CommentContent.
   DirectiveName is the thing right after $ sign, uppercased.
-  DirectiveParam is what followed after DirectiveName.
+  DirectiveParam (in two versions: Black and White) is what followed 
+  after DirectiveName.
+  
   E.g. for CommentContent = {$define My_Symbol} we get
   DirectiveName = 'DEFINE' and
-  DirectiveParam = 'My_Symbol'.
+  DirectiveParamBlack = 'My_Symbol'
+  (and DirectiveParamWhite also = 'My_Symbol').
   
-  If ParamsEndedByWhitespace then Params end at the 1st
-  whitespace. Else Params end when CommentContent ends.
-  This is useful: usually ParamsEndedByWhitespace = true,
-  e.g. {$ifdef foo bar xyz} is equivalent to {$ifdef foo}
+  We get two versions of DirectiveParam:
+  @orderedList(
+    @item(DirectiveParamBlack is what followed DirectiveName and
+      ended at the 1st whitespace. So DirectiveParamBlack
+      never contains any white char.)
+  
+    @item(DirectiveParamWhite is what followed DirectiveName and
+      ended at end of CommentContent. So DirectiveParamWhite
+      may contain white characters.)
+  )
+  
+  So DirectiveParamBlack is always a prefix of DirectiveParamWhite.  
+  
+  Some directives use DirectiveParamBlack and some use
+  DirectiveParamWhite, that's why we return both.
+  E.g. {$ifdef foo bar xyz} is equivalent to {$ifdef foo}
   (bar and xyz are simply ignored by Pascal compilers).
   When using FPC and macro is off, or when using other compilers,
   {$define foo := bar xyz} means just {$define foo}.
+  So you use DirectiveParamBlack.
   However when using FPC and macro is on,
   then {$define foo := bar xyz} means "define foo as a macro
   that expands to ``bar xyz'', so in this case you will need to use
-  SplitDirective with ParamsEndedByWhitespace = false.
+  DirectiveParamWhite.
 *)
 function SplitDirective(const CommentContent: string; 
-  const ParamsEndedByWhitespace: boolean;
-  out DirectiveName, Params: string): Boolean;
+  out DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string): Boolean;
 var
   i: Integer;
   l: Integer;
 begin
   Result := False;
   DirectiveName := '';
-  Params := '';
+  DirectiveParamBlack := '';
+  DirectiveParamWhite := '';
 
   l := Length(CommentContent);
 
@@ -213,10 +243,16 @@ begin
 
   { get parameters - no conversion to uppercase here, it could be an include
     file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
-  while (i <= l) and 
-    ((not ParamsEndedByWhitespace) or (CommentContent[i] <> ' ')) do
+  while (i <= l) and (CommentContent[i] <> ' ') do
   begin
-    Params := Params + CommentContent[i];
+    DirectiveParamBlack := DirectiveParamBlack + CommentContent[i];
+    Inc(i);
+  end;
+  
+  DirectiveParamWhite := DirectiveParamBlack;
+  while (i <= l) do
+  begin
+    DirectiveParamWhite := DirectiveParamWhite + CommentContent[i];
     Inc(i);
   end;
 end;
@@ -227,12 +263,14 @@ end;
   if DirectiveName was something known (see array DirectiveNames).
   Else returns false. }
 function IdentifyDirective(const CommentContent: string;  
-  out dt: TDirectiveType; out DirectiveName, DirectiveParam: string): Boolean;
+  out dt: TDirectiveType; 
+  out DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string): Boolean;
 var
   i: TDirectiveType;
 begin
   Result := false;
-  if SplitDirective(CommentContent, true, DirectiveName, DirectiveParam) then 
+  if SplitDirective(CommentContent,
+    DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then 
   begin
     for i := DT_DEFINE to High(TDirectiveType) do 
     begin
@@ -374,32 +412,27 @@ end;
 
 function TScanner.GetToken: TToken;
 
-  { Call this when token T contains $define directive }
-  procedure HandleDefineDirective(T: TToken; DirectiveParam: string);
+  { Call this when you get $define directive }
+  procedure HandleDefineDirective(
+    const DirectiveParamBlack, DirectiveParamWhite: string);
   var 
-    TempDirectiveName: string;
     i: Integer;
     SymbolName: string;
   begin
     if not HandleMacros then
-      AddSymbol(DirectiveParam) else
+      AddSymbol(DirectiveParamBlack) else
     begin
-      { Split T.CommentContent once again (this time with
-        ParamsEndedByWhitespace = false). Then check is it macro. }
-      SplitDirective(T.CommentContent, false, 
-        TempDirectiveName, DirectiveParam);
-
       i := 1;
-      while SCharIs(DirectiveParam, i, ['a'..'z', 'A'..'Z', '1'..'9', '_']) do
+      while SCharIs(DirectiveParamWhite, i, ['a'..'z', 'A'..'Z', '1'..'9', '_']) do
         Inc(i);
         
-      SymbolName := Copy(DirectiveParam, 1, i - 1);
+      SymbolName := Copy(DirectiveParamWhite, 1, i - 1);
         
-      while SCharIs(DirectiveParam, i, WhiteSpace) do
+      while SCharIs(DirectiveParamWhite, i, WhiteSpace) do
         Inc(i);
         
-      if Copy(DirectiveParam, i, 2) = ':=' then
-        AddMacro(SymbolName, Copy(DirectiveParam, i + 2, MaxInt)) else
+      if Copy(DirectiveParamWhite, i, 2) = ':=' then
+        AddMacro(SymbolName, Copy(DirectiveParamWhite, i + 2, MaxInt)) else
         AddSymbol(SymbolName);
     end;
   end;
@@ -424,11 +457,44 @@ function TScanner.GetToken: TToken;
     end;
   end;
 
+            
+  { Call this on $ifdef, $ifndef, $ifopt, $if directives.
+    @param(IsTrue says if condition is true (so we should
+      parse the section up to $else or $elseif, and then skip to 
+      $endif or $ifend.))
+    @param(DirectiveName is used for debug messages.)
+    @param(DirectiveParam is also used for debug messages.) }
+  procedure HandleIfDirective(IsTrue: boolean; 
+    const DirectiveName, DirectiveParam: string);
+  begin
+    DoMessage(6, mtInformation, 
+      '$%s encountered (%s), condition is %s, level %d',
+      [DirectiveName, DirectiveParam, BoolToStr(IsTrue), FDirectiveLevel]);
+    if IsTrue then 
+    begin
+      Inc(FDirectiveLevel);
+    end else 
+    begin
+      if SkipUntilElseOrEndif then
+        Inc(FDirectiveLevel);
+    end;
+  end;
+  
+  { This is supposed to evaluate boolean conditions allowed after 
+    $if and $elseif directives. TODO: For now, this is dummy, and just
+    prints and warning and returns true. }
+  function IsIfConditionTrue(const Condition: string): boolean;
+  begin
+    DoMessage(2, mtWarning, 
+      'Evaluating $if and $elseif conditions is not implemented, ' +
+      'I''m simply assuming that "%s" is true', [Condition]);
+    Result := true;
+  end;
+
 var
   dt: TDirectiveType;
   Finished: Boolean;
-  FoundElse: Boolean;
-  DirectiveName, DirectiveParam: string;
+  DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string;
 begin
   if Assigned(FBufferedToken) then 
   begin
@@ -452,75 +518,48 @@ begin
       { if token is a directive, then we handle it }
       if Result.MyType = TOK_DIRECTIVE then
       begin
-        if IdentifyDirective(Result.CommentContent, 
-          dt, DirectiveName, DirectiveParam) then 
+        if IdentifyDirective(Result.CommentContent, dt, 
+          DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then 
         begin
           case dt of
-            DT_DEFINE: HandleDefineDirective(Result, DirectiveParam);
-            DT_ELSE: begin
+            DT_DEFINE: 
+              HandleDefineDirective(DirectiveParamBlack, DirectiveParamWhite);
+            DT_ELSE: 
+              begin
                 DoMessage(5, mtInformation, 'ELSE encountered', []);
                 if (FDirectiveLevel > 0) then 
                 begin
-                  SkipUntilElseOrEndif(FoundElse);
-                  if not FoundElse then Dec(FDirectiveLevel);
+                  if not SkipUntilElseOrEndif then 
+                    Dec(FDirectiveLevel);
                 end else 
-                  DoError(GetStreamInfo + ': unexpected $ELSE directive.', []);
+                  DoError(GetStreamInfo + ': unexpected $ELSE directive', []);
               end;
-            DT_ENDIF: 
+            DT_ENDIF, DT_IFEND: 
               begin
-                DoMessage(5, mtInformation, 'ENDIF encountered', []);
+                DoMessage(5, mtInformation, '$%s encountered', [DirectiveName]);
                 if (FDirectiveLevel > 0) then 
                 begin
                   Dec(FDirectiveLevel);
                   DoMessage(6, mtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
                 end else 
-                  DoError(GetStreamInfo + ': unexpected $ENDIF directive.', []);
+                  DoError(GetStreamInfo + ': unexpected $%s directive', [DirectiveName]);
               end;
-            DT_IFDEF: 
-              begin
-                if IsSymbolDefined(DirectiveParam) then 
-                begin
-                  Inc(FDirectiveLevel);
-                  DoMessage(6, mtInformation, 'IFDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                end else 
-                begin
-                  DoMessage(6, mtInformation, 'IFDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                  SkipUntilElseOrEndif(FoundElse);
-                  if FoundElse then
-                    Inc(FDirectiveLevel);
-                end;
-              end;
-            DT_IFNDEF: 
-              begin
-                if not IsSymbolDefined(DirectiveParam) then 
-                begin
-                  Inc(FDirectiveLevel);
-                  DoMessage(6, mtInformation, 'IFNDEF encountered (%s), not defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                end else 
-                begin
-                  DoMessage(6, mtInformation, 'IFNDEF encountered (%s), defined, level %d', [DirectiveParam, FDirectiveLevel]);
-                  SkipUntilElseOrEndif(FoundElse);
-                  if FoundElse then
-                    Inc(FDirectiveLevel);
-                end;
-              end;
-            DT_IFOPT: 
-              begin
-                if (not IsSwitchDefined(DirectiveParam)) then 
-                begin
-                  SkipUntilElseOrEndif(FoundElse);
-                  if FoundElse then Inc(FDirectiveLevel);
-                end else
-                  Inc(FDirectiveLevel);
-              end;
+            DT_IFDEF: HandleIfDirective(IsSymbolDefined(DirectiveParamBlack), 
+              'IFDEF', DirectiveParamBlack);
+            DT_IFNDEF: HandleIfDirective(not IsSymbolDefined(DirectiveParamBlack),
+              'IFNDEF', DirectiveParamBlack);
+            DT_IFOPT: HandleIfDirective(IsSwitchDefined(DirectiveParamBlack),
+              'IFOPT', DirectiveParamBlack);
+            DT_IF: HandleIfDirective(IsIfConditionTrue(DirectiveParamWhite),
+              'IF', DirectiveParamWhite);
             DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
-              if not OpenIncludeFile(DirectiveParam) then
+              if not OpenIncludeFile(DirectiveParamBlack) then
                 DoError(GetStreamInfo + ': Error, could not open include file "'
-                  + DirectiveParam + '"', []);
+                  + DirectiveParamBlack + '"', []);
             DT_UNDEF: 
               begin
-                DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParam]);
-                DeleteSymbol(DirectiveParam);
+                DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParamBlack]);
+                DeleteSymbol(DirectiveParamBlack);
               end;
           end;
         end else
@@ -658,11 +697,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.SkipUntilElseOrEndif(out FoundElse: Boolean);
+function TScanner.SkipUntilElseOrEndif: Boolean;
 var
   dt: TDirectiveType;
   Level: Integer;
-  DirectiveName, DirectiveParam: string;
+  DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string;
   t: TToken;
   TT: TTokenType;
 begin
@@ -675,35 +714,28 @@ begin
 
     if (t.MyType = TOK_DIRECTIVE) then begin
       if IdentifyDirective(t.CommentContent, 
-        dt, DirectiveName, DirectiveParam) then 
+        dt, DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then 
       begin
         DoMessage(6, mtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
         case dt of
-          DT_IFDEF,
-            DT_IFNDEF,
-            DT_IFOPT: Inc(Level);
+          DT_IFDEF, DT_IFNDEF, DT_IFOPT, DT_IF: Inc(Level);
           DT_ELSE:
             { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
               encountered, ignoring all $ELSEs. We must therefore not
               decrement Level at $ELSE if it is part of such a nested $IFDEF.
               $ELSE must decrement Level only for the initial $IFDEF.
-              That's why whe test Level for 1 (initial $IFDEF) here. }
+              That's why we test Level for 1 (initial $IFDEF) here. }
             if Level = 1 then Dec(Level);
-          DT_ENDIF: Dec(Level);
+          DT_ENDIF, DT_IFEND: Dec(Level);
         end;
       end;
     end;
     TT := t.MyType;
     t.Free;
-  until (Level = 0) and (TT = TOK_DIRECTIVE) and ((dt = DT_ELSE) or (dt =
-    DT_ENDIF));
-  FoundElse := (dt = DT_ELSE);
-  if FoundElse then begin
-    DirectiveParam := 'ELSE'
-  end else begin
-    DirectiveParam := 'ENDIF';
-  end;
-  DoMessage(6, mtInformation, 'Skipped code, last token ' + DirectiveParam, []);
+  until (Level = 0) and (TT = TOK_DIRECTIVE) and 
+    (dt in [DT_ELSE, DT_ENDIF, DT_IFEND]);
+  Result := (dt = DT_ELSE);
+  DoMessage(6, mtInformation, 'Skipped code, last directive is %s', [DirectiveNames[dt]]);
 end;
 
 { ---------------------------------------------------------------------------- }
