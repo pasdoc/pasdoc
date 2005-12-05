@@ -1035,8 +1035,9 @@ end;
 procedure TParser.ParseEnum(out p: TPasEnum;
   const Name, RawDescription: string);
 var
-  t: TToken;
-  item: TPasItem;
+  T: TToken;
+  Item: TPasItem;
+  ParenLevel: Integer;
 begin
   t := nil;
   p := TPasEnum.Create;
@@ -1045,27 +1046,51 @@ begin
   p.FullDeclaration := Name + ' = (...);'; 
   ItemsForNextBackComment.ClearAndAdd(P);
 
-  t := GetNextToken;
-  while not t.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
-    if t.MyType = TOK_IDENTIFIER then begin
-      item := TPasItem.Create;
-      item.Name := t.Data;
-      item.RawDescription := GetLastComment;
-      item.FullDeclaration := item.Name;
-      p.Members.Add(item);
-      ItemsForNextBackComment.ClearAndAdd(Item);
-    end;
-    if t.IsSymbol(SYM_EQUAL) or t.IsSymbol(SYM_ASSIGN) then
+  T := GetNextToken;
+  while not T.IsSymbol(SYM_RIGHT_PARENTHESIS) do
+  begin
+    CheckToken(T, TOK_IDENTIFIER);
+    Item := TPasItem.Create;
+    Item.Name := T.Data;
+    Item.RawDescription := GetLastComment;
+    Item.FullDeclaration := Item.Name;
+    p.Members.Add(Item);
+    ItemsForNextBackComment.ClearAndAdd(Item);
+    FreeAndNil(T);
+
+    T := GetNextToken;
+    if T.IsSymbol(SYM_EQUAL) or T.IsSymbol(SYM_ASSIGN) then
     begin
-      item.FullDeclaration := item.FullDeclaration + ' ' + t.Data;
-      FreeAndNil(t);
-      t := GetNextToken;
-      item.FullDeclaration := item.FullDeclaration + ' ' + t.Data;
+      Item.FullDeclaration := Item.FullDeclaration + ' ' + T.Data + ' ';
+      FreeAndNil(T);
+      
+      { Now read tokens until comma or right paren (but only on ParenLevel = 0). }
+      ParenLevel := 0;
+      repeat
+        T := GetNextToken;
+        
+        if (ParenLevel = 0) and
+           (T.IsSymbol(SYM_COMMA) or T.IsSymbol(SYM_RIGHT_PARENTHESIS)) then
+          Break;
+          
+        if T.MyType = TOK_SYMBOL then
+          case T.Info.SymbolType of
+            SYM_LEFT_PARENTHESIS, SYM_LEFT_BRACKET: Inc(ParenLevel);
+            SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET: Dec(ParenLevel);
+          end;
+            
+        Item.FullDeclaration := Item.FullDeclaration + T.Data;
+        FreeAndNil(T);
+      until false;
     end;
-    FreeAndNil(t);
-    t := GetNextToken;
+    
+    if T.IsSymbol(SYM_COMMA) then
+    begin
+      FreeAndNil(T);
+      T := GetNextToken;
+    end;
   end;
-  FreeAndNil(t);
+  FreeAndNil(T);
   
   GetAndCheckNextToken(SYM_SEMICOLON);
 end;

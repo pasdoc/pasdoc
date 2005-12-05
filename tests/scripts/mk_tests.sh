@@ -164,3 +164,4 @@ mk_special_test ok_unit_uses_filename --write-uses-list ok_unit_uses_filename.pa
 mk_special_test ok_enum_explicit_assign ok_enum_explicit_assign.pas
 mk_special_test ok_if_directive ok_if_directive.pas
 mk_special_test ok_include_environment ok_include_environment.pas
+mk_special_test ok_enum_explicit_values ok_enum_explicit_values.pas
