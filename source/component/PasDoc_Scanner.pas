@@ -553,9 +553,34 @@ begin
             DT_IF: HandleIfDirective(IsIfConditionTrue(DirectiveParamWhite),
               'IF', DirectiveParamWhite);
             DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
-              if not OpenIncludeFile(DirectiveParamBlack) then
-                DoError(GetStreamInfo + ': Error, could not open include file "'
-                  + DirectiveParamBlack + '"', []);
+              begin
+                if (Length(DirectiveParamBlack) >= 2) and
+                   (DirectiveParamBlack[1] = '%') and
+                   (DirectiveParamBlack[Length(DirectiveParamBlack)] = '%') then
+                begin
+                  (* Then this is FPC's feature, see
+                    "$I or $INCLUDE : Include compiler info" on
+                    [http://www.freepascal.org/docs-html/prog/progsu30.html]. 
+                    
+                    Unlike FPC, PasDoc will not expand the %variable%
+                    (for reasoning, see comments in 
+                    ../../tests/ok_include_environment.pas file). 
+                    We change Result to say that it's a string literal
+                    (but we leave Result.Data as it is, to show exact
+                    info to the user). We do *not* want to enclose it in
+                    quotes, because then real string literal '{$I %DATE%}'
+                    wouldn't be different than using {$I %DATE%} feature. *)
+                    
+                  Result.MyType := TOK_STRING;
+                  Break;
+                end else
+                begin
+                  if not OpenIncludeFile(DirectiveParamBlack) then
+                    DoError(GetStreamInfo + 
+                      ': Error, could not open include file "'
+                      + DirectiveParamBlack + '"', []);
+                end;
+              end;
             DT_UNDEF: 
               begin
                 DoMessage(6, mtInformation, 'UNDEF encountered (%s)', [DirectiveParamBlack]);
@@ -787,7 +812,7 @@ var
 begin
   p := Pointer(Comment);
   l := Length(Comment);
-                                                                                                                               
+
   if l < 4 then Exit;
   case p^ of
     '{':
@@ -820,9 +845,9 @@ begin
     FSwitchOptions[c] := p[1] = '+';
     Inc(p, 2);
     Dec(l, 2);
-                                                                                                                               
+
     SkipWhiteSpace;
-                                                                                                                               
+
     // Skip comma
     if (l = 0) or (p^ <> ',') then Exit;
     Inc(p);
