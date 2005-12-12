@@ -2267,23 +2267,21 @@ begin
   if t = '' then Exit;
 
   DoMessage(5, mtInformation, 'Storing description for ' + ItemName, []);
-  if SplitNameParts(ItemName, NameParts) then begin
+  if SplitNameParts(ItemName, NameParts) then
+  begin
     Item := FindGlobal(NameParts);
-    if Assigned(Item) then begin
-      if Item.RawDescription <> '' then begin
-        DoMessage(2, mtWarning, 'More than one description for ' + ItemName,
-          []);
-        t := '';
-      end else begin
-        Item.RawDescription := t;
-      end;
-    end else begin
+    if Assigned(Item) then 
+    begin
+      if Item.RawDescription <> '' then
+        { Delimit previous contents of Item.RawDescription with a paragraph }
+        Item.RawDescription := Item.RawDescription + LineEnding + LineEnding;
+        
+      Item.RawDescription := Item.RawDescription + t;
+    end else
       DoMessage(2, mtWarning, 'Could not find item ' + ItemName, []);
-      t := '';
-    end;
-  end else begin
+  end else
     DoMessage(2, mtWarning, 'Could not split item "' + ItemName + '"', []);
-  end;
+  
   t := '';
 end;
 

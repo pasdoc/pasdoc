@@ -1,0 +1,15 @@
+#TMyClass
+Description of TMyClass from external file is here.
+
+Another paragraph of TMyClass description.
+#TMyClass.Foo
+Description of @name from external file is here.
+
+Some ordered list, just to test that everything works OK:
+@orderedList(
+  @item One
+  @item Two
+  @item Three
+)
+#TMyClass
+Another description of TMyClass from external file is here.
