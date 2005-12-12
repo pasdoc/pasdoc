@@ -1305,12 +1305,18 @@ var
   Item: TBaseItem;
 begin
   seComment.Lines.Clear;
+  seComment.Hint := '';
   if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then
   begin
     if TObject(tvUnits.Selected.Data) is TBaseItem then
     begin
       Item := TBaseItem(tvUnits.Selected.Data);
       seComment.Lines.Text := Item.RawDescription;
+      seComment.Hint := Format(
+        'Comment in stream "%s", on position %d - %d',
+        [ Item.RawDescriptionInfo.StreamName,
+          Item.RawDescriptionInfo.BeginPosition,
+          Item.RawDescriptionInfo.EndPosition ]);
     end;
   end;
 end;

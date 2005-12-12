@@ -26,6 +26,32 @@ uses
   StringVector;
 
 type
+  // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).
+  // It is modelled after TStringList but has only the minimum number
+  // of methods required for use in PasDoc.
+  TRawDescriptionInfoList = class(TObject)
+  private
+    // @name holds the @link(TRawDescriptionInfo TRawDescriptionInfos) in @classname
+    FItems: array of TRawDescriptionInfo;
+    // @name holds the number of items currently stored in @classname.
+    // @seealso(Count).
+    FCount: integer;
+    // @name is the read specifier for @link(Items)
+    function GetItems(Index: integer): TRawDescriptionInfo;
+    // @name expands the capacity of @link(FItems).
+    procedure Grow;
+  public
+    // @name adds a new @link(TRawDescriptionInfo) to @classname.
+    function Append(Comment: TRawDescriptionInfo): integer;
+    // @name is the number of @link(TRawDescriptionInfo TRawDescriptionInfos) in
+    // @classname.
+    property Count: integer read FCount;
+    Constructor Create;
+    // @name provides read access to the 
+    // @link(TRawDescriptionInfo TRawDescriptionInfos) in @classname.
+    property Items[Index: integer]: TRawDescriptionInfo read GetItems; default;
+  end;
+
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
     When creating this object constructor @link(Create) takes as an argument 
@@ -90,7 +116,7 @@ type
       and markers already stripped. }
     IsLastComment: boolean;
     LastCommentWasCStyle: boolean;
-    LastCommentContent: string;
+    LastCommentInfo: TRawDescriptionInfo;
     
     { The underlying scanner object. }
     Scanner: TScanner;
@@ -124,9 +150,9 @@ type
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
 
-    { If not IsLastComment, then returns empty string,
-      otherwise returns LastCommentContent and sets IsLastComment to false. }
-    function GetLastComment: String;
+    { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
+      otherwise returns LastCommentInfo and sets IsLastComment to false. }
+    function GetLastComment: TRawDescriptionInfo;
 
     { Reads tokens and throws them away as long as they are either whitespace
       or comments.
@@ -204,15 +230,18 @@ type
     procedure ParseCDFP(out M: TPasMethod; 
       const ClassKeywordString: string;
       const KeyWordString: string; Key: TKeyWord;
-      d: string; const NeedName: boolean; InitItemsForNextBackComment: boolean);
+      const RawDescriptionInfo: TRawDescriptionInfo;
+      const NeedName: boolean; InitItemsForNextBackComment: boolean);
       
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
       N is the name of this item.
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
-    procedure ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-      TCIOType; d: string; const IsInRecordCase: boolean);
+    procedure ParseCIO(const U: TPasUnit; 
+      const CioName: string; CIOType: TCIOType; 
+      const RawDescriptionInfo: TRawDescriptionInfo;
+      const IsInRecordCase: boolean);
     
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
     procedure ParseConstant(const U: TPasUnit);
@@ -223,7 +252,8 @@ type
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning is as P. }
-    procedure ParseEnum(out p: TPasEnum; const Name, RawDescription: string);
+    procedure ParseEnum(out p: TPasEnum; const Name: string;
+      const RawDescriptionInfo: TRawDescriptionInfo);
 
     procedure ParseUses(const U: TPasUnit);
     
@@ -243,7 +273,8 @@ type
       described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
-      FinalSymbol: TSymbolType; RawDescriptions: TStringList);
+      FinalSymbol: TSymbolType; 
+      RawDescriptions: TRawDescriptionInfoList);
     
     procedure ParseVariables(const U: TPasUnit);
     
@@ -404,14 +435,14 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetLastComment: string;
+function TParser.GetLastComment: TRawDescriptionInfo;
 begin
   if IsLastComment then
   begin
-    Result := LastCommentContent;
+    Result := LastCommentInfo;
     IsLastComment := false;
   end else
-    Result := '';
+    Result := EmptyRawDescriptionInfo;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -484,7 +515,8 @@ end;
 procedure TParser.ParseCDFP(out M: TPasMethod; 
   const ClassKeywordString: string;
   const KeyWordString: string; Key: TKeyword; 
-  d: string; const NeedName: boolean; InitItemsForNextBackComment: boolean);
+  const RawDescriptionInfo: TRawDescriptionInfo;
+  const NeedName: boolean; InitItemsForNextBackComment: boolean);
 var
   IsSemicolon: Boolean;
   t: TToken;
@@ -492,7 +524,7 @@ var
   InvalidType: boolean;
 begin
   M := TPasMethod.Create;
-  M.RawDescription := d;
+  M.RawDescriptionInfo^ := RawDescriptionInfo;
   if InitItemsForNextBackComment then
     ItemsForNextBackComment.ClearAndAdd(M);
     
@@ -696,8 +728,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCIO(const U: TPasUnit; const CioName: string; CIOType:
-  TCIOType; d: string; const IsInRecordCase: boolean);
+procedure TParser.ParseCIO(const U: TPasUnit; 
+  const CioName: string; CIOType: TCIOType; 
+  const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: boolean);
 
   { Parse fields clause, i.e. something like
       NAME1, NAME2, ... : TYPE;
@@ -748,7 +782,7 @@ begin
     i := TPasCio.Create;
     try
       i.Name := CioName;
-      i.RawDescription := d;
+      i.RawDescriptionInfo^ := RawDescriptionInfo;
       i.MyType := CIOType;
 
       { get all ancestors; remember, this could look like
@@ -890,10 +924,9 @@ begin
               KEY_FUNCTION,
               KEY_PROCEDURE: 
                 begin
-                  d := GetLastComment;
                   try
                     ParseCDFP(M, ClassKeyWordString, 
-                      t.Data, t.Info.KeyWord, d, true, true);
+                      t.Data, t.Info.KeyWord, GetLastComment, true, true);
                   except
                     i.Free;
                     FreeAndNil(t);
@@ -1023,7 +1056,7 @@ begin
   i := TPasConstant.Create;
   i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
   DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
-  i.RawDescription := GetLastComment;
+  i.RawDescriptionInfo^ := GetLastComment;
   i.FullDeclaration := i.Name;
   SkipDeclaration(i, false);
   U.AddConstant(i);
@@ -1033,7 +1066,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseEnum(out p: TPasEnum;
-  const Name, RawDescription: string);
+  const Name: string; const RawDescriptionInfo: TRawDescriptionInfo);
 var
   T: TToken;
   Item: TPasItem;
@@ -1042,7 +1075,7 @@ begin
   t := nil;
   p := TPasEnum.Create;
   p.Name := Name;
-  p.RawDescription := RawDescription;
+  p.RawDescriptionInfo^ := RawDescriptionInfo;
   p.FullDeclaration := Name + ' = (...);'; 
   ItemsForNextBackComment.ClearAndAdd(P);
 
@@ -1052,7 +1085,7 @@ begin
     CheckToken(T, TOK_IDENTIFIER);
     Item := TPasItem.Create;
     Item.Name := T.Data;
-    Item.RawDescription := GetLastComment;
+    Item.RawDescriptionInfo^ := GetLastComment;
     Item.FullDeclaration := Item.Name;
     p.Members.Add(Item);
     ItemsForNextBackComment.ClearAndAdd(Item);
@@ -1102,7 +1135,6 @@ const
   MODE_TYPE = 2;
   MODE_VAR = 3;
 var
-  d: string;
   Finished: Boolean;
   Mode: Integer;
   M: TPasMethod;
@@ -1144,16 +1176,17 @@ begin
               KEY_RESOURCESTRING,
                 KEY_CONST:
                 Mode := MODE_CONST;
-              KEY_OPERATOR: begin
-                  d := GetLastComment;
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, true, true);
+              KEY_OPERATOR: 
+                begin
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, 
+                    GetLastComment, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
-              KEY_FUNCTION,
-                KEY_PROCEDURE: begin
-                  d := GetLastComment;
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, d, true, true);
+              KEY_FUNCTION, KEY_PROCEDURE: 
+                begin
+                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, 
+                    GetLastComment, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
                 end;
@@ -1190,7 +1223,7 @@ begin
   p.IndexDecl := '';
   p.Proptype := '';
   p.FullDeclaration := 'property ' + p.Name;
-  p.RawDescription := GetLastComment;
+  p.RawDescriptionInfo^ := GetLastComment;
   ItemsForNextBackComment.ClearAndAdd(P);
   
   { Is this only a redeclaration of property from ancestor
@@ -1269,7 +1302,7 @@ begin
 
       P := TPasItem.Create;
       p.Name := T1.Data;
-      p.RawDescription := GetLastComment;
+      p.RawDescriptionInfo^ := GetLastComment;
       p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);
       ItemsForNextBackComment.ClearAndAdd(P);
       R.Fields.Add(p);
@@ -1343,7 +1376,7 @@ end;
 
 procedure TParser.ParseType(const U: TPasUnit);
 var
-  d: string;
+  RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
   TypeName: string;
   LCollected, LTemp: string;
@@ -1354,7 +1387,7 @@ begin
   TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
   DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
   
-  d := GetLastComment;
+  RawDescriptionInfo := GetLastComment;
   t := GetNextToken(LCollected);
 
   if (not t.IsSymbol(SYM_EQUAL)) then begin
@@ -1384,28 +1417,33 @@ begin
           end else begin
             Scanner.UnGetToken(t);
             t := nil;
-            ParseCIO(U, TypeName, CIO_CLASS, d, False);
+            ParseCIO(U, TypeName, CIO_CLASS, 
+              RawDescriptionInfo, False);
             Exit;
           end;
         end;
       KEY_DISPINTERFACE: begin
           FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_SPINTERFACE, d, False);
+          ParseCIO(U, TypeName, CIO_SPINTERFACE, 
+            RawDescriptionInfo, False);
           Exit;
         end;
       KEY_INTERFACE: begin
           FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_INTERFACE, d, False);
+          ParseCIO(U, TypeName, CIO_INTERFACE, 
+            RawDescriptionInfo, False);
           Exit;
         end;
       KEY_OBJECT: begin
           FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_OBJECT, d, False);
+          ParseCIO(U, TypeName, CIO_OBJECT, 
+            RawDescriptionInfo, False);
           Exit;
         end;
       KEY_RECORD: begin
           FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_RECORD, d, False);
+          ParseCIO(U, TypeName, CIO_RECORD, 
+            RawDescriptionInfo, False);
           Exit;
         end;
       KEY_PACKED: begin
@@ -1415,7 +1453,8 @@ begin
           if t.IsKeyWord(KEY_RECORD) then 
           begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_PACKEDRECORD, d, False);
+            ParseCIO(U, TypeName, CIO_PACKEDRECORD, 
+              RawDescriptionInfo, False);
             exit;
           end;
         end;
@@ -1424,7 +1463,8 @@ begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then 
       begin
-        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, d, false, true);
+        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, 
+          RawDescriptionInfo, false, true);
         MethodType.Name := TypeName;
         MethodType.FullDeclaration := 
           TypeName + ' = ' + MethodType.FullDeclaration;
@@ -1435,7 +1475,7 @@ begin
     end;
     if t.IsSymbol(SYM_LEFT_PARENTHESIS) then 
     begin
-      ParseEnum(EnumType, TypeName, d);
+      ParseEnum(EnumType, TypeName, RawDescriptionInfo);
       U.AddType(EnumType);
       FreeAndNil(t);
       Exit;
@@ -1449,7 +1489,7 @@ begin
   NormalType.FullDeclaration := LCollected;
   SkipDeclaration(NormalType, false);
   NormalType.Name := TypeName;
-  NormalType.RawDescription := d;
+  NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
   U.AddType(NormalType);
   ItemsForNextBackComment.ClearAndAdd(NormalType);
 end;
@@ -1462,7 +1502,7 @@ begin
 
   U := TPasUnit.Create;
   try
-    U.RawDescription := GetLastComment;
+    U.RawDescriptionInfo^ := GetLastComment;
 
     { get unit name identifier }
     U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
@@ -1528,7 +1568,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCommaSeparatedIdentifiers(Names: TStrings;
-  FinalSymbol: TSymbolType; RawDescriptions: TStringList);
+  FinalSymbol: TSymbolType; 
+  RawDescriptions: TRawDescriptionInfoList);
 var
   T: TToken;
   FirstIdentifier: boolean;
@@ -1637,7 +1678,7 @@ var
   t: TToken;
   NewItemNames: TStringList;
   I: Integer;
-  RawDescriptions: TStringList;
+  RawDescriptions: TRawDescriptionInfoList;
   NewItems: TPasItems;
 begin
   NewItemNames := nil;
@@ -1645,7 +1686,7 @@ begin
   NewItems := nil;
   try
     NewItemNames := TStringList.Create;
-    RawDescriptions := TStringList.Create;
+    RawDescriptions := TRawDescriptionInfoList.Create;
     NewItems := TPasItems.Create(false);
     
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
@@ -1668,7 +1709,7 @@ begin
           Note that param InitItemsForNextBackComment for ParseCDFP 
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
-        ParseCDFP(M, '', '', t.Info.KeyWord, '', false, false);
+        ParseCDFP(M, '', '', t.Info.KeyWord, EmptyRawDescriptionInfo, false, false);
         ItemCollector.FullDeclaration := 
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;
@@ -1687,7 +1728,7 @@ begin
       end else
       if t.IsKeyWord(KEY_RECORD) then
       begin
-        ParseCIO(nil, '', CIO_RECORD, '', IsInRecordCase);
+        ParseCIO(nil, '', CIO_RECORD, EmptyRawDescriptionInfo, IsInRecordCase);
       end else
       if t.IsKeyWord(KEY_PACKED) then
       begin 
@@ -1695,7 +1736,7 @@ begin
         t := GetNextToken;
         if t.IsKeyWord(KEY_RECORD) then 
         begin
-          ParseCIO(nil, '', CIO_PACKEDRECORD, '', IsInRecordCase);
+          ParseCIO(nil, '', CIO_PACKEDRECORD, EmptyRawDescriptionInfo, IsInRecordCase);
         end else 
         begin
           SkipDeclaration(ItemCollector, IsInRecordCase);
@@ -1723,7 +1764,7 @@ begin
         begin
           NewItem := TPasFieldVariable.Create;
           NewItem.Name := NewItemNames[I];
-          NewItem.RawDescription := RawDescriptions[I];
+          NewItem.RawDescriptionInfo^ := RawDescriptions[I];
           NewItem.Visibility := Visibility;
           Items.Add(NewItem);
           NewItems.Add(NewItem);
@@ -1824,8 +1865,9 @@ end;
 
 function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 
-  { Extracts the documentation comment from T.CommentContent to DocComment.
-    Always T.MyType must be within TokenCommentTypes.
+  { Extracts the documentation comment from T.CommentContent 
+    (and some other T properties needed for TRawDescriptionInfo)
+    to CommentInfo. Always T.MyType must be within TokenCommentTypes.
 
     T must not be nil.
 
@@ -1834,12 +1876,13 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     So comment markers, if present, 
     are removed from the beginning and end of the data.
     Also, if comment markers were required but were not present,
-    then CommentContent is an empty string.
+    then CommentInfo.Content is an empty string.
 
     Also back-comment marker, the '<', is removed, if exists,
     and BackComment is set to @true. Otherwise BackComment is @false. }
   procedure ExtractDocComment(
-    const t: TToken; out DocComment: string; out BackComment: boolean);
+    const t: TToken; out CommentInfo: TRawDescriptionInfo; 
+    out BackComment: boolean);
   const
     BackCommentMarker = '<';
   var
@@ -1848,7 +1891,10 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     WasMarker: boolean;
   begin
     BackComment := false;
-    DocComment := t.CommentContent;
+    CommentInfo.Content := T.CommentContent;
+    CommentInfo.StreamName := T.StreamName;
+    CommentInfo.BeginPosition := T.BeginPosition;
+    CommentInfo.EndPosition := T.EndPosition;
 
     if CommentMarkers.Count <> 0 then
     begin
@@ -1856,9 +1902,9 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       for i := 0 to CommentMarkers.Count - 1 do 
       begin
         Marker := CommentMarkers[i];
-        if IsPrefix(Marker, DocComment) then
+        if IsPrefix(Marker, CommentInfo.Content) then
         begin
-          Delete(DocComment, 1, Length(Marker));
+          Delete(CommentInfo.Content, 1, Length(Marker));
           WasMarker := true;
           Break;
         end;
@@ -1866,22 +1912,22 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 
       if (not MarkersOptional) and (not WasMarker) then
       begin
-        DocComment := '';
+        CommentInfo.Content := '';
         Exit;
       end;
     end;
 
-    if SCharIs(DocComment, 1, BackCommentMarker) then
+    if SCharIs(CommentInfo.Content, 1, BackCommentMarker) then
     begin
       BackComment := true;
-      Delete(DocComment, 1, Length(BackCommentMarker));
+      Delete(CommentInfo.Content, 1, Length(BackCommentMarker));
     end;
   end;    
 
 var
   T: TToken;
   TBackComment, TIsCStyle: boolean;
-  TDocComment: string;
+  TCommentInfo: TRawDescriptionInfo;
   i: Integer;
 begin
   Result := nil;
@@ -1894,7 +1940,7 @@ begin
       Scanner.ConsumeToken;
 
       { Get info from T }
-      ExtractDocComment(T, TDocComment, TBackComment);
+      ExtractDocComment(T, TCommentInfo, TBackComment);
       TIsCStyle := t.MyType = TOK_COMMENT_CSTYLE;
       FreeAndNil(T);
       
@@ -1904,7 +1950,7 @@ begin
           DoMessage(1, mtWarning, 
             '%s: This is a back-comment (comment starting with "<") ' +
             'but there is no item declared right before it: "%s"', 
-            [Scanner.GetStreamInfo, TDocComment]);
+            [Scanner.GetStreamInfo, TCommentInfo.Content]);
 
         for i := 0 to ItemsForNextBackComment.Count - 1 do
         begin
@@ -1912,11 +1958,11 @@ begin
             DoMessage(1, mtWarning, 
               '%s: Item %s already has one description, now it''s ' +
               'overriden by back-comment (comment starting with "<"): "%s"',
-              [Scanner.GetStreamInfo,
-               ItemsForNextBackComment.PasItemAt[i].QualifiedName,
-               TDocComment]);
+              [ Scanner.GetStreamInfo,
+                ItemsForNextBackComment.PasItemAt[i].QualifiedName,
+                TCommentInfo.Content]);
               
-          ItemsForNextBackComment.PasItemAt[i].RawDescription := TDocComment;
+          ItemsForNextBackComment.PasItemAt[i].RawDescriptionInfo^ := TCommentInfo;
         end;
         
         ItemsForNextBackComment.Clear;
@@ -1924,13 +1970,19 @@ begin
       if IsLastComment and LastCommentWasCStyle and TIsCStyle then
       begin
         { If there are several //-style comments in a row, combine them }
-        LastCommentContent := LastCommentContent + LineEnding + TDocComment;
+        LastCommentInfo.Content := LastCommentInfo.Content + 
+          LineEnding + TCommentInfo.Content;
+        if LastCommentInfo.StreamName = TCommentInfo.StreamName then
+          LastCommentInfo.EndPosition := TCommentInfo.EndPosition else
+          // ' ' is used to indicate that there is no
+          // single stream containing the entire comment.
+          LastCommentInfo.StreamName := ' ';
       end else
       begin
         { This is a normal comment, so fill [Is]LastCommentXxx properties }
         IsLastComment := true;
         LastCommentWasCStyle := TIsCStyle;
-        LastCommentContent := TDocComment;
+        LastCommentInfo := TCommentInfo;
       end;
     end else
     begin
@@ -1987,6 +2039,44 @@ begin
     end else
       break;
   until false;
+end;
+
+{ TRawDescriptionInfoList --------------------------------------------------------------- }
+
+function TRawDescriptionInfoList.GetItems(Index: integer): TRawDescriptionInfo;
+begin
+  { FItems is a dynarray, so compiler will automatically
+    add appropriate range checks here in $R+ mode.
+    So no need to explicitly check Index for validity here. }
+  Result := FItems[Index];
+end;
+
+procedure TRawDescriptionInfoList.Grow;
+var
+  Delta: integer;
+begin
+  if Length(FItems) < 16 then begin
+    Delta := 4;
+  end
+  else begin
+    Delta := Length(FItems) div 4;
+  end;
+  SetLength(FItems, Length(FItems) + Delta);
+end;
+
+function TRawDescriptionInfoList.Append(Comment: TRawDescriptionInfo): integer;
+begin
+  if Length(FItems) = Count then Grow;
+  FItems[Count] := Comment;
+  result := Count;
+  Inc(FCount);
+end;
+
+constructor TRawDescriptionInfoList.Create;
+begin
+  inherited;
+  SetLength(FItems, 4);
+  FCount := 0;
 end;
 
 end.

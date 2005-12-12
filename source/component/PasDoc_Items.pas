@@ -75,11 +75,36 @@ type
   TPasItems = class;
   TPasMethods = class;
   TPasProperties = class;
-  
+
+  { Raw description, in other words: the contents of comment before
+    given item. Besides the content, this also
+    specifies filename, begin and end positions of given comment. }
+  TRawDescriptionInfo = record
+    { This is the actual content the comment. }
+    Content: string;
+    
+    // @name is the name of the TStream from which this comment was read.
+    // Will be '' if no comment was found.  It will be ' ' if
+    // the comment was somehow read from more than one stream.
+    StreamName: string;
+    
+    // @name is the position in the stream of the start of the comment.
+    BeginPosition: Int64;
+    
+    // @name is the position in the stream of the character immediately
+    // after the end of the comment describing the item.
+    EndPosition: Int64;
+  end;
+  PRawDescriptionInfo = ^TRawDescriptionInfo;
+
+const
+  EmptyRawDescriptionInfo: TRawDescriptionInfo = 
+  ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
+
+type    
   { Basic linkable item in pasdoc hierarchy }
   TBaseItem = class(TSerializable)
   private
-    FRawDescription: string;
     FDetailedDescription: string;
     FFullLink: string;
     FLastMod: string;
@@ -87,8 +112,11 @@ type
     FAuthors: TStringVector;
     FCreated: string;
     FAutoLinkHereAllowed: boolean;
+    FRawDescriptionInfo: TRawDescriptionInfo;
     
     procedure SetAuthors(const Value: TStringVector);
+    function GetRawDescription: string;
+    procedure WriteRawDescription(const Value: string);
     
     procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -204,10 +232,22 @@ type
       in user's comment in source code of parsed units)
       of description of this item. 
       
-      This is intended to be initialized by parser. }
+      Actually, this is just a short cut to @code(RawDescriptionInfo.Content) }
     property RawDescription: string 
-      read FRawDescription write FRawDescription;
-    
+      read GetRawDescription write WriteRawDescription;
+
+    { Full info about @link(RawDescription) of this item,
+      including it's filename and position.
+      
+      This is intended to be initialized by parser.
+      
+      This returns PRawDescriptionInfo instead of just
+      TRawDescriptionInfo to allow natural setting of 
+      properties of this record
+      (otherwise @longCode(# Item.RawDescriptionInfo.StreamName := 'foo'; #)
+      would not work as expected) . }
+    function RawDescriptionInfo: PRawDescriptionInfo;
+
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write FFullLink;
     
@@ -776,7 +816,7 @@ type
 
     procedure Sort(const SortSettings: TSortSettings); override;
   public
-    { list of classes and objects defined in this unit }
+    { list of classes, interfaces, objects, and records defined in this unit }
     property CIOs: TPasItems read FCIOs;
     { list of constants defined in this unit }
     property Constants: TPasItems read FConstants;
@@ -1186,6 +1226,21 @@ begin
   Authors.SaveToBinaryStream(ADestination);
   SaveStringToStream(Created, ADestination); 
   AutoLinkHereAllowed }
+end;
+
+function TBaseItem.RawDescriptionInfo: PRawDescriptionInfo;
+begin
+  Result := @FRawDescriptionInfo;
+end;
+
+function TBaseItem.GetRawDescription: string;
+begin
+  Result := FRawDescriptionInfo.Content;
+end;
+
+procedure TBaseItem.WriteRawDescription(const Value: string);
+begin
+  FRawDescriptionInfo.Content := Value;
 end;
 
 { TPasItem ------------------------------------------------------------------- }

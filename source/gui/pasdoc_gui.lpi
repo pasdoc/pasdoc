@@ -23,14 +23,14 @@
         <UsageCount Value="87"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="3" Y="230"/>
+        <CursorPos X="3" Y="1308"/>
         <EditorIndex Value="1"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="211"/>
+        <TopLine Value="1293"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
         <UsageCount Value="87"/>
         <Bookmarks Count="1">
@@ -114,7 +114,16 @@
         <MinVersion Major="1" Valid="True"/>
       </Item4>
     </RequiredPackages>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="225" Column="9" TopLine="211"/>
+      </Position1>
+      <Position2>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <Caret Line="1314" Column="32" TopLine="1289"/>
+      </Position2>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
