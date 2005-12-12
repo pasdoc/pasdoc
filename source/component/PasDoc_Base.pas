@@ -131,6 +131,13 @@ type
       AMessage: string; const AVerbosity: Cardinal);
     { Starts creating the documentation. }
     procedure Execute;
+    // After @link(Execute) has been called, @name holds the units that have
+    // been parsed.
+    property Units: TPasUnits read FUnits;
+    // After @link(Execute) has been called, @name holds the conclusion.
+    property Conclusion: TExternalItem read FConclusion;
+    // After @link(Execute) has been called, @name holds the introduction.
+    property Introduction: TExternalItem read FIntroduction;
   published
     property DescriptionFileNames: TStringVector 
       read FDescriptionFileNames write SetDescriptionFileNames;

@@ -7,7 +7,7 @@ rem in this directory instead of this BAT script.
 rem Makefile is portable and will be always more up-to-date than this
 rem BAT script, not to mention that Makefile gives you many more possibilities.
 
-set PASDOC=..\console\pasdoc_console
+set PASDOC=..\console\pasdoc
 set INCLUDE=..\component
 set SOURCE=..\component\*.pas ..\component\tiptue\*.pas ..\optionparser\*.pas ..\console\*.pas
 set OPTIONS=--write-uses-list --auto-abstract --title "PasDoc's autodoc" --introduction=introduction.txt --use-tipue-search
@@ -17,3 +17,4 @@ set OUTPUT=html\
 
 dot -Grankdir=LR -Tjpg -ohtml\GVClasses.jpg html\GVClasses.dot
 dot -Grankdir=LR -Tjpg -ohtml\GVUses.jpg html\GVUses.dot
+pause

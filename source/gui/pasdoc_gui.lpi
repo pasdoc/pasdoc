@@ -11,7 +11,7 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <Units Count="7">
       <Unit0>
@@ -24,9 +24,11 @@
       </Unit0>
       <Unit1>
         <CursorPos X="3" Y="230"/>
+        <EditorIndex Value="1"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
+        <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
         <TopLine Value="211"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
@@ -96,32 +98,23 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="pasdoc_package"/>
+        <PackageName Value="SynEdit"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pasdoc_package"/>
       </Item2>
       <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item4>
     </RequiredPackages>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="pasdocguisettings.pas"/>
-        <Caret Line="37" Column="65" TopLine="10"/>
-      </Position1>
-      <Position2>
-        <Filename Value="pasdocguisettings.pas"/>
-        <Caret Line="38" Column="27" TopLine="20"/>
-      </Position2>
-      <Position3>
-        <Filename Value="pasdocguisettings.pas"/>
-        <Caret Line="32" Column="27" TopLine="21"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
