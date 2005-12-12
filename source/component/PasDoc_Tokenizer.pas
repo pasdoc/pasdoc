@@ -244,16 +244,16 @@ type
     function Description: string;
     
     // @name is the name of the TStream from which this @classname was read.
-    // It is currently used to set @link(TBaseItem.StreamName).
+    // It is currently used to set @link(TRawDescriptionInfo.StreamName).
     property StreamName: string read FStreamName;
     
     // @name is the position in the stream of the start of the token.
-    // It is currently used to set @link(TBaseItem.BeginPosition).
+    // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
     property BeginPosition: Int64 read FBeginPosition;
     
     // @name is the position in the stream of the character immediately
     // after the end of the token.
-    // It is currently used to set @link(TBaseItem.EndPosition).
+    // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
     property EndPosition: Int64 read FEndPosition;
   end;
 
