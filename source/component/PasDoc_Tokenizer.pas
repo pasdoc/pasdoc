@@ -192,6 +192,10 @@ const
 type
   { Stores the exact type and additional information on one token. }
   TToken = class(TObject)
+  private
+    FEndPosition: Int64;
+    FBeginPosition: Int64;
+    FStreamName: string;
   public
     { the exact character representation of this token as it was found in the
       input file }
@@ -238,10 +242,28 @@ type
       Describes MyType and Data (for those tokens that tend to have short Data).
       Starts with lower letter. }
     function Description: string;
+    
+    // @name is the name of the TStream from which this @classname was read.
+    // It is currently used to set @link(TBaseItem.StreamName).
+    // TODO: @name is untested so it may or may not be correct.
+    property StreamName: string read FStreamName;
+    
+    // @name is the position in the stream of the start of the token.
+    // It is currently used to set @link(TBaseItem.BeginPosition).
+    // TODO: @name is untested so it may or may not be correct.
+    property BeginPosition: Int64 read FBeginPosition;
+    
+    // @name is the position in the stream of the character immediately
+    // after the end of the token.
+    // It is currently used to set @link(TBaseItem.EndPosition).
+    // TODO: @name is untested so it may or may not be correct.
+    property EndPosition: Int64 read FEndPosition;
   end;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
+  private
+    function StreamPosition: Int64;
   protected
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
@@ -553,164 +575,186 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function TTokenizer.StreamPosition: Int64;
+begin
+  if IsCharBuffered then
+    Result := Stream.Position - 1 else
+    Result := Stream.Position;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 function TTokenizer.GetToken: TToken;
 var
   c: Char;
   MaybeKeyword: TKeyword;
   s: string;
   J: Integer;
+  BeginPosition: integer;
 begin
   Result := nil;
-  if GetChar(c) then
-    if c in Whitespace then begin
+  try
+    BeginPosition := StreamPosition;
+
+    if not GetChar(c) then
+      DoError('Error: tokenizer: could not read character', [], 0);
+    
+    if c in Whitespace then
+    begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
             internal row counter to be able to state current row on errors;
-            caveat: will fail on Mac files (row is 13) }
+            TODO: will fail on Mac files (row is 13) }
         Inc(Row, StrCountCharA(Result.Data, #10))
       else
-        DoError('Error: tokenizer: could not read character.', [], 0);
-    end
-    else
-      if c in IdentifierStart then begin
-        if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
+        DoError('Error: tokenizer: could not read character', [], 0);
+    end else
+    if c in IdentifierStart then 
+    begin
+      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
+      begin
+        s := Result.Data;
+        { check if identifier is a keyword }
+        MaybeKeyword := KeyWordByName(s);
+        if (MaybeKeyword <> KEY_INVALIDKEYWORD) then
         begin
-          s := Result.Data;
-          { check if identifier is a keyword }
-          MaybeKeyword := KeyWordByName(s);
-          if (MaybeKeyword <> KEY_INVALIDKEYWORD) then
-          begin
-            Result.MyType := TOK_KEYWORD;
-            Result.Info.KeyWord := MaybeKeyword;
-          end else
-          begin
-            { calculate Result.Info.StandardDirective }
-            Result.Info.StandardDirective := StandardDirectiveByName(s);
+          Result.MyType := TOK_KEYWORD;
+          Result.Info.KeyWord := MaybeKeyword;
+        end else
+        begin
+          { calculate Result.Info.StandardDirective }
+          Result.Info.StandardDirective := StandardDirectiveByName(s);
+        end;
+      end;
+    end else
+    if c in NumberStart then
+      ReadToken(c, NumberOther, TOK_NUMBER, Result)
+    else
+      case c of
+        QuoteChar:
+          ReadLiteralString(Result);
+        '#':
+          ReadToken(c, CharOther, TOK_STRING, Result);
+        '{': begin
+            Result := ReadCommentType1;
+            CheckForDirective(Result);
           end;
-        end
-      end else
-        if c in NumberStart then
-          ReadToken(c, NumberOther, TOK_NUMBER, Result)
-        else
-          case c of
-            QuoteChar:
-              ReadLiteralString(Result);
-            '#':
-              ReadToken(c, CharOther, TOK_STRING, Result);
-            '{': begin
-                Result := ReadCommentType1;
-                CheckForDirective(Result);
-              end;
-            '(': begin
-                c := ' ';
-                if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', [], 0);
-                case c of
-                  '*': begin
-                      ConsumeChar;
-                      Result := ReadCommentType2;
-                      CheckForDirective(Result);
-                    end;
-                  '.': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_LEFT_BRACKET, '(.');
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_LEFT_PARENTHESIS);
+        '(': begin
+            c := ' ';
+            if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', [], 0);
+            case c of
+              '*': begin
+                  ConsumeChar;
+                  Result := ReadCommentType2;
+                  CheckForDirective(Result);
                 end;
-              end;
-            ')': begin
-                c := ' ';
-                Result := CreateSymbolToken(SYM_RIGHT_PARENTHESIS);
-              end;
-            '.': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '.': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_RANGE);
-                    end;
-                  ')': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_RIGHT_BRACKET, '.)');
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_PERIOD);
+              '.': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_LEFT_BRACKET, '(.');
                 end;
-              end;
-            '/': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '/': begin
-                      ConsumeChar;
-                      Result := ReadCommentType3;
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_SLASH);
-                end;
-              end;
-            ':': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '=': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_ASSIGN);
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_COLON);
-                end;
-              end;
-            '<': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '=': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_LESS_THAN_EQUAL);
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_LESS_THAN);
-                end;
-              end;
-            '>': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '=': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_GREATER_THAN_EQUAL);
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_GREATER_THAN);
-                end;
-              end;
-            '*': begin
-                c := ' ';
-                if HasData and (not PeekChar(c)) then Exit;
-                case c of
-                  '*': begin
-                      ConsumeChar;
-                      Result := CreateSymbolToken(SYM_POWER);
-                    end;
-                else
-                  Result := CreateSymbolToken(SYM_ASTERISK);
-                end;
-              end;
-            '\': Result := CreateSymbolToken(SYM_BACKSLASH);
-          else begin
-              for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
-                if (c = SingleCharSymbols[J].c) then begin
-                  Result := CreateSymbolToken(SingleCharSymbols[J].s, c);
-                  exit;
-                end;
-              end;
-              DoError('Error: Invalid character in Pascal input stream.', [], 0);
+            else
+              Result := CreateSymbolToken(SYM_LEFT_PARENTHESIS);
             end;
-          end
-      else
-        DoError('Error: tokenizer: could not read character.', [], 0);
+          end;
+        ')': begin
+            c := ' ';
+            Result := CreateSymbolToken(SYM_RIGHT_PARENTHESIS);
+          end;
+        '.': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '.': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_RANGE);
+                end;
+              ')': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_RIGHT_BRACKET, '.)');
+                end;
+            else
+              Result := CreateSymbolToken(SYM_PERIOD);
+            end;
+          end;
+        '/': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '/': begin
+                  ConsumeChar;
+                  Result := ReadCommentType3;
+                end;
+            else
+              Result := CreateSymbolToken(SYM_SLASH);
+            end;
+          end;
+        ':': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '=': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_ASSIGN);
+                end;
+            else
+              Result := CreateSymbolToken(SYM_COLON);
+            end;
+          end;
+        '<': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '=': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_LESS_THAN_EQUAL);
+                end;
+            else
+              Result := CreateSymbolToken(SYM_LESS_THAN);
+            end;
+          end;
+        '>': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '=': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_GREATER_THAN_EQUAL);
+                end;
+            else
+              Result := CreateSymbolToken(SYM_GREATER_THAN);
+            end;
+          end;
+        '*': begin
+            c := ' ';
+            if HasData and (not PeekChar(c)) then Exit;
+            case c of
+              '*': begin
+                  ConsumeChar;
+                  Result := CreateSymbolToken(SYM_POWER);
+                end;
+            else
+              Result := CreateSymbolToken(SYM_ASTERISK);
+            end;
+          end;
+        '\': Result := CreateSymbolToken(SYM_BACKSLASH);
+      else begin
+          for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
+            if (c = SingleCharSymbols[J].c) then begin
+              Result := CreateSymbolToken(SingleCharSymbols[J].s, c);
+              exit;
+            end;
+          end;
+          DoError('Error: Invalid character in Pascal input stream.', [], 0);
+        end;
+      end;
+  finally
+    if Result <> nil then
+    begin
+      Result.FStreamName := StreamName;
+      Result.FBeginPosition := BeginPosition;
+      Result.FEndPosition := StreamPosition;
+    end;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
