@@ -32,7 +32,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object NotebookMain: TNotebook
     Align = alClient
-    PageIndex = 11
+    PageIndex = 5
     ShowTabs = False
     Left = 144
     Height = 454
@@ -614,6 +614,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object cbCheckSpelling: TCheckBox
           Caption = 'Check Spelling'
+          OnChange = cbCheckSpellingChange
           TabOrder = 0
           Left = 12
           Height = 23

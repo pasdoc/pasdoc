@@ -1303,16 +1303,11 @@ end;
 procedure TfrmHelpGenerator.tvUnitsClick(Sender: TObject);
 var
   Item: TBaseItem;
-  AnObject: TObject;
 begin
   seComment.Lines.Clear;
   if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then
   begin
-    // FPC won't accept
-    // (tvUnits.Selected.Data is TBaseItem)
-    // which would be the natural way to code this.
-    AnObject := tvUnits.Selected.Data;
-    if AnObject is TBaseItem then
+    if TObject(tvUnits.Selected.Data) is TBaseItem then
     begin
       Item := TBaseItem(tvUnits.Selected.Data);
       seComment.Lines.Text := Item.RawDescription;
