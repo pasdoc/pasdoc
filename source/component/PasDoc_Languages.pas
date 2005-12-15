@@ -1318,13 +1318,13 @@ begin
   FTranslation[trSearch] := 'Szukaj';
   FTranslation[trSeeAlso] := 'Zobacz tak¿e';
   FTranslation[trValues] := 'Warto¶ci';
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trNoCIOs] := 'Modu³y nie zawieraj± ¿adnych klas, interfejsów, obiektów ani rekordów.';
+  FTranslation[trNoCIOsForHierarchy] := 'Modu³y nie zawieraj± ¿adnych klas, interfejsów ani obiektów.';
+  FTranslation[trNoTypes] := 'Modu³y nie zawieraj± ¿adnych typów.';
+  FTranslation[trNoVariables] := 'Modu³y nie zawieraj± ¿adnych zmiennych.';
+  FTranslation[trNoConstants] := 'Modu³y nie zawieraj± ¿adnych sta³ych.';
+  FTranslation[trNoFunctions] := 'Modu³y nie zawieraj± ¿adnych funkcji ani procedur.';
+  FTranslation[trNoIdentifiers] := 'Modu³y nie zawieraj± ¿adnych identyfikatorów.';
   FTranslation[trProgram] := 'Program';
 end;
 
@@ -1919,6 +1919,9 @@ end;
 
 {
   $Log$
+  Revision 1.38  2005/12/15 21:50:27  kambi
+  * Updated Polish_ISO_8859_2 translation
+
   Revision 1.37  2005/12/15 21:35:41  kambi
   * Parsing of program files, based on patch from Mark de Wever, modified by Michalis, see pasdoc-main thread "Comments in program file" on 2005-12-15
   + Test of the above added as tests/ok_program.pas
