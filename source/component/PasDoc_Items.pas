@@ -102,7 +102,8 @@ const
   ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
 
 type    
-  { Basic linkable item in pasdoc hierarchy }
+  { This is a basic item class, that is linkable,
+    and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
   private
     FDetailedDescription: string;
@@ -232,7 +233,8 @@ type
       in user's comment in source code of parsed units)
       of description of this item. 
       
-      Actually, this is just a short cut to @code(RawDescriptionInfo.Content) }
+      Actually, this is just a shortcut to 
+      @code(@link(RawDescriptionInfo).Content) }
     property RawDescription: string 
       read GetRawDescription write WriteRawDescription;
 
@@ -241,8 +243,8 @@ type
       
       This is intended to be initialized by parser.
       
-      This returns PRawDescriptionInfo instead of just
-      TRawDescriptionInfo to allow natural setting of 
+      This returns @link(PRawDescriptionInfo) instead of just
+      @link(TRawDescriptionInfo) to allow natural setting of 
       properties of this record
       (otherwise @longCode(# Item.RawDescriptionInfo.StreamName := 'foo'; #)
       would not work as expected) . }
@@ -280,7 +282,17 @@ type
     property AutoLinkHereAllowed: boolean
       read FAutoLinkHereAllowed write FAutoLinkHereAllowed default true;
   end;
-  
+
+  { This is a @link(TBaseItem) descendant that is always declared inside
+    some Pascal source file.
+    
+    Parser creates only items of this class
+    (e.g. never some basic @link(TBaseItem) instance).
+    This class introduces properties and methods pointing
+    to parent unit (@link(MyUnit)) and parent class/interface/object/record
+    (@link(MyObject)). Also many other things not needed at @link(TBaseItem)
+    level are introduced here: things related to handling @@abstract tag, 
+    @@seealso tag, used to sorting items inside (@link(Sort)) and some more. }
   TPasItem = class(TBaseItem)
   private
     FAbstractDescription: string;
