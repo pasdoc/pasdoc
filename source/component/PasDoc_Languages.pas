@@ -131,7 +131,8 @@ type
     trNoVariables,
     trNoConstants,
     trNoFunctions,
-    trNoIdentifiers);
+    trNoIdentifiers,
+    trProgram);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
@@ -341,6 +342,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.';
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.';
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.';
+  FTranslation[trProgram] := 'Program';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -420,6 +422,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -500,6 +503,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -578,6 +582,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -603,6 +608,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -682,6 +688,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -761,6 +768,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Programma';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -840,6 +848,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -919,6 +928,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Programm';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -997,6 +1007,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1075,6 +1086,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1153,6 +1165,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1233,6 +1246,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program';
 end;
 
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
@@ -1311,6 +1325,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1389,6 +1404,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1467,6 +1483,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1545,6 +1562,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1613,6 +1631,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1691,6 +1710,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1771,6 +1791,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1850,6 +1871,7 @@ begin
   FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1897,6 +1919,10 @@ end;
 
 {
   $Log$
+  Revision 1.37  2005/12/15 21:35:41  kambi
+  * Parsing of program files, based on patch from Mark de Wever, modified by Michalis, see pasdoc-main thread "Comments in program file" on 2005-12-15
+  + Test of the above added as tests/ok_program.pas
+
   Revision 1.36  2005/10/17 01:37:52  kambi
   * trNoCIOsForHierarchy. Otherwise units with some records and no classes, interfaces or objects would get under "Class Hierarchy" confusing and false statement that "no classes, interfaces, objects and records exist" (while there *are* some records).
 

@@ -333,9 +333,10 @@ begin
       end;
     end;
 
-    if not LLoaded then begin
+    if not LLoaded then
+    begin
       DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
-      p.ParseUnit(U);
+      p.ParseUnitOrProgram(U);
     end;
 
     if FUnits.ExistsUnit(U) then begin

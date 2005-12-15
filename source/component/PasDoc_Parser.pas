@@ -56,7 +56,7 @@ type
     include files, regarding directives.
     When creating this object constructor @link(Create) takes as an argument 
     an input stream and a list of directives.
-    Parsing work is done by calling @link(ParseUnit) method.
+    Parsing work is done by calling @link(ParseUnitOrProgram) method.
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. Else exception is raised.
     
@@ -319,6 +319,9 @@ type
       Stops when PeekNextToken returns some non-whitespace non-comment 
       non-hint-directive token. }
     procedure ParseHintDirectives(Item: TPasItem);
+    
+    procedure ParseUnit(U: TPasUnit);
+    procedure ParseProgram(U: TPasUnit);
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -334,7 +337,9 @@ type
     { Release all dynamically allocated memory. }
     destructor Destroy; override;
     
-    procedure ParseUnit(var U: TPasUnit);
+    { This does the real parsing work, creating U unit and parsing
+      InputStream and filling all U properties. }
+    procedure ParseUnitOrProgram(var U: TPasUnit);
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
@@ -1496,29 +1501,66 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseUnit(var U: TPasUnit);
+procedure TParser.ParseUnit(U: TPasUnit);
 begin
   GetAndCheckNextToken(KEY_UNIT);
+  U.RawDescriptionInfo^ := GetLastComment;
 
+  { get unit name identifier }
+  U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+
+  ItemsForNextBackComment.ClearAndAdd(U);
+
+  ParseHintDirectives(U);
+
+  { skip semicolon }
+  GetAndCheckNextToken(SYM_SEMICOLON);
+
+  { get 'interface' keyword }
+  GetAndCheckNextToken(KEY_INTERFACE);
+
+  { now parse the interface section of that unit }
+  ParseInterfaceSection(U);
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TParser.ParseProgram(U: TPasUnit);
+var
+  T: TToken;
+begin
+  GetAndCheckNextToken(KEY_PROGRAM);
+  U.RawDescriptionInfo^ := GetLastComment;
+
+  { get program name identifier }
+  U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+
+  ItemsForNextBackComment.ClearAndAdd(U);
+
+  ParseHintDirectives(U);
+
+  { skip semicolon }
+  GetAndCheckNextToken(SYM_SEMICOLON);
+
+  T := GetNextToken;
+  try
+    if T.IsKeyWord(KEY_USES) then
+      ParseUses(U);
+  finally
+    FreeAndNil(T);
+  end;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TParser.ParseUnitOrProgram(var U: TPasUnit);
+begin
   U := TPasUnit.Create;
   try
-    U.RawDescriptionInfo^ := GetLastComment;
-
-    { get unit name identifier }
-    U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
-    
-    ItemsForNextBackComment.ClearAndAdd(U);
-    
-    ParseHintDirectives(U);
-    
-    { skip semicolon }
-    GetAndCheckNextToken(SYM_SEMICOLON);
-    
-    { get 'interface' keyword }
-    GetAndCheckNextToken(KEY_INTERFACE);
-    
-    { now parse the interface section of that unit }
-    ParseInterfaceSection(U);
+    U.IsUnit := PeekNextToken.IsKeyWord(KEY_UNIT);
+    if U.IsUnit then
+      ParseUnit(U) else
+      ParseProgram(U);
   except
     FreeAndNil(U);
     raise;

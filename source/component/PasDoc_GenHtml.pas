@@ -1669,7 +1669,9 @@ begin
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
-  WriteHeading(HL, 'unit', FLanguage.Translation[trUnit] + ' ' + U.Name);
+  if U.IsUnit then
+    WriteHeading(HL, 'unit', FLanguage.Translation[trUnit] + ' ' + U.Name) else
+    WriteHeading(HL, 'program', FLanguage.Translation[trProgram] + ' ' + U.Name);
 
   WriteStartOfTable('sections');
   WriteDirectLine('<tr>');

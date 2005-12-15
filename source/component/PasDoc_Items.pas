@@ -801,6 +801,7 @@ type
     FOutputFileName: string;
     FCacheDateTime: TDateTime;
     FSourceFileDateTime: TDateTime;
+    FIsUnit: boolean;
     
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -856,6 +857,11 @@ type
       don't use it. }
     property CacheDateTime: TDateTime 
       read FCacheDateTime write FCacheDateTime;
+
+    { If @false, then this is a program file, not a regular unit
+      (though it's treated by pasdoc almost like a unit, so we use TPasUnit
+      class for this). }
+    property IsUnit: boolean read FIsUnit write FIsUnit;
       
     { Returns if unit WasDeserialized, and file FileName exists, 
       and file FileName is newer than CacheDateTime. 

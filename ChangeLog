@@ -1,6 +1,8 @@
 [Next release -- release date and new version number unknown yet...]
 
   * pasdoc_gui has "Display Comments" tab (by Richard B. Winston)
+  * program files are now parsed (their "uses" clauses are shown in output)
+    (by Mark de Wever)
   * Various bugfixes.
 
 2005-11-26 v0.10.0
