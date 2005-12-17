@@ -22,16 +22,16 @@
         <UsageCount Value="94"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="5" Y="843"/>
+        <CursorPos X="22" Y="430"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="842"/>
+        <TopLine Value="413"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
         <UsageCount Value="94"/>
         <Bookmarks Count="1">
-          <Item0 X="5" Y="784" ID="1"/>
+          <Item0 X="5" Y="798" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>

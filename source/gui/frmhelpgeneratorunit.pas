@@ -131,6 +131,7 @@ type
     MenuAbout: TMenuItem;
     MenuContextHelp: TMenuItem;
     MenuEdit: TMenuItem;
+    MenuSave: TMenuItem;
     MenuPreferences: TMenuItem;
     NotebookMain: TNotebook;
     PageVisibleMembers: TPage;
@@ -168,7 +169,7 @@ type
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
     MenuOpen: TMenuItem;
-    MenuSave: TMenuItem;
+    MenuSaveAs: TMenuItem;
     MenuExit: TMenuItem;
     MenuNew: TMenuItem;
     seVerbosity: TSpinEdit;
@@ -181,6 +182,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
     procedure MenuPreferencesClick(Sender: TObject);
+    procedure MenuSaveClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure PasDoc1Warning(const MessageType: TMessageType;
@@ -193,7 +195,7 @@ type
     procedure comboLanguagesChange(Sender: TObject);
     procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
     procedure btnOpenClick(Sender: TObject);
-    procedure Save1Click(Sender: TObject);
+    procedure MenuSaveAsClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure New1Click(Sender: TObject);
@@ -229,10 +231,21 @@ type
     property CheckListVisibleMembersValue: TVisibilities
       read GetCheckListVisibleMembersValue
       write SetCheckListVisibleMembersValue;
+
+    { Saves current settings to FileName. Additionally may
+      also do some other things commonly done at saving time:
+      
+      if SetSettingsFileName then sets SettingsFileName property
+      to FileName.
+      
+      if ClearChanged then sets Changed to false. }
+    procedure SaveSettingsToFile(const FileName: string;
+      SetSettingsFileName, ClearChanged: boolean);
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
     property Changed: boolean read FChanged write SetChanged;
+    
     { This is the settings filename (.pds file) that is currently
       opened. You can look at pasdoc_gui as a "program to edit pds files".
       It is '' if current settings are not associated with any filename
@@ -414,6 +427,7 @@ begin
   comboGenerateFormat.ItemIndex := 0;
   comboGenerateFormatChange(nil);
 
+  edTitle.Text := '';
   edProjectName.Text := '';
   edOutput.Directory := '';
   seVerbosity.Value := 2;
@@ -1096,12 +1110,14 @@ begin
   end;
 end;
 
-procedure TfrmHelpGenerator.Save1Click(Sender: TObject);
+procedure TfrmHelpGenerator.SaveSettingsToFile(const FileName: string;
+  SetSettingsFileName, ClearChanged: boolean);
 var
   Ini: TIniFile;
 
   procedure WriteStrings(const Section: string; S: TStrings);
-  var i: Integer;
+  var
+    i: Integer;
   begin
     { It's not really necessary for correctness but it's nice to protect
       user privacy by removing trash data from file (in case previous
@@ -1113,66 +1129,72 @@ var
       Ini.WriteString(Section, 'Item_' + IntToStr(i), S[i]);
   end;
 
-var i: Integer;
+var
+  i: Integer;
+begin
+  Ini := TIniFile.Create(FileName);
+  try
+    Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
+    Ini.WriteString('Main', 'OutputDir', edOutput.Directory);
+    Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
+    Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
+    Ini.WriteInteger('Main', 'Verbosity', seVerbosity.Value);
+
+    for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
+      Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
+        CheckListVisibleMembers.Checked[i]);
+
+    Ini.WriteInteger('Main', 'ImplicitVisibility',
+      RadioImplicitVisibility.ItemIndex);
+
+    for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
+    begin
+      Ini.WriteBool('Main', 'Sorting_' + IntToStr(i),
+        clbSorting.Checked[i]);
+    end;
+
+    WriteStrings('Defines', memoDefines.Lines);
+    WriteStrings('Header', memoHeader.Lines);
+    WriteStrings('Footer', memoFooter.Lines);
+    WriteStrings('IncludeDirectories', memoIncludeDirectories.Lines);
+    WriteStrings('Files', memoFiles.Lines);
+
+    Ini.WriteString('Main', 'CssFileName', EditCssFileName.FileName);
+    Ini.WriteString('Main', 'IntroductionFileName',
+      EditIntroductionFileName.FileName);
+    Ini.WriteString('Main', 'ConclusionFileName',
+      EditConclusionFileName.FileName);
+    Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
+    Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
+    Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
+    Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
+    Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
+    WriteStrings('HyphenatedWords', memoHyphenatedWords.Lines);
+    Ini.WriteInteger('Main', 'SpecialMarkerTreatment', rgCommentMarkers.ItemIndex);
+    WriteStrings('SpecialMarkers', memoCommentMarkers.Lines);
+    Ini.WriteString('Main', 'Title', edTitle.Text);
+
+    Ini.WriteBool('Main', 'VizGraphClasses', cbVizGraphClasses.Checked);
+    Ini.WriteBool('Main', 'VizGraphUses', cbVizGraphUses.Checked);
+
+    Ini.WriteBool('Main', 'CheckSpelling', cbCheckSpelling.Checked);
+    Ini.WriteInteger('Main', 'LatexGraphicsPackage', comboLatexGraphicsPackage.ItemIndex);
+    WriteStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
+
+    Ini.UpdateFile;
+  finally Ini.Free end;
+  
+  if SetSettingsFileName then
+    SettingsFileName := FileName;
+
+  if ClearChanged then
+    Changed := false;
+end;
+
+procedure TfrmHelpGenerator.MenuSaveAsClick(Sender: TObject);
 begin
   if SaveDialog1.Execute then
-  begin
-    SettingsFileName := SaveDialog1.FileName;
-
-    Ini := TIniFile.Create(SettingsFileName);
-    try
-      Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
-      Ini.WriteString('Main', 'OutputDir', edOutput.Directory);
-      Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
-      Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
-      Ini.WriteInteger('Main', 'Verbosity', seVerbosity.Value);
-
-      for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
-        Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
-          CheckListVisibleMembers.Checked[i]);
-
-      Ini.WriteInteger('Main', 'ImplicitVisibility',
-        RadioImplicitVisibility.ItemIndex);
-
-      for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
-      begin
-        Ini.WriteBool('Main', 'Sorting_' + IntToStr(i),
-          clbSorting.Checked[i]);
-      end;
-
-      WriteStrings('Defines', memoDefines.Lines);
-      WriteStrings('Header', memoHeader.Lines);
-      WriteStrings('Footer', memoFooter.Lines);
-      WriteStrings('IncludeDirectories', memoIncludeDirectories.Lines);
-      WriteStrings('Files', memoFiles.Lines);
-
-      Ini.WriteString('Main', 'CssFileName', EditCssFileName.FileName);
-      Ini.WriteString('Main', 'IntroductionFileName',
-        EditIntroductionFileName.FileName);
-      Ini.WriteString('Main', 'ConclusionFileName',
-        EditConclusionFileName.FileName);
-      Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
-      Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
-      Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
-      Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
-      Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
-      WriteStrings('HyphenatedWords', memoHyphenatedWords.Lines);
-      Ini.WriteInteger('Main', 'SpecialMarkerTreatment', rgCommentMarkers.ItemIndex);
-      WriteStrings('SpecialMarkers', memoCommentMarkers.Lines);
-      Ini.WriteString('Main', 'Title', edTitle.Text);
-
-      Ini.WriteBool('Main', 'VizGraphClasses', cbVizGraphClasses.Checked);
-      Ini.WriteBool('Main', 'VizGraphUses', cbVizGraphUses.Checked);
-
-      Ini.WriteBool('Main', 'CheckSpelling', cbCheckSpelling.Checked);
-      Ini.WriteInteger('Main', 'LatexGraphicsPackage', comboLatexGraphicsPackage.ItemIndex);
-      WriteStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
-
-      Ini.UpdateFile;
-    finally Ini.Free end;
-
-    Changed := False;
-  end;
+    SaveSettingsToFile(SaveDialog1.FileName, true, true);
 end;
 
 procedure TfrmHelpGenerator.Exit1Click(Sender: TObject);
@@ -1192,7 +1214,7 @@ begin
     case MessageResult of
       mrYes:
         begin
-          Save1Click(nil);
+          MenuSaveClick(nil);
         end;
       mrNo:
         begin
@@ -1302,6 +1324,13 @@ end;
 procedure TfrmHelpGenerator.MenuPreferencesClick(Sender: TObject);
 begin
   TPreferences.Execute;
+end;
+
+procedure TfrmHelpGenerator.MenuSaveClick(Sender: TObject);
+begin
+  if SettingsFileName = '' then
+    MenuSaveAsClick(nil) else
+    SaveSettingsToFile(SettingsFileName, true, true);
 end;
 
 procedure TfrmHelpGenerator.rgCommentMarkersClick(Sender: TObject);
