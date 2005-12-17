@@ -19,19 +19,19 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="1"/>
         <UnitName Value="pasdoc_gui"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="94"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="2" Y="752"/>
+        <CursorPos X="5" Y="843"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="743"/>
+        <TopLine Value="842"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="94"/>
         <Bookmarks Count="1">
-          <Item0 X="5" Y="791" ID="1"/>
+          <Item0 X="5" Y="784" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>
@@ -42,14 +42,14 @@
         <ResourceFilename Value="frmaboutunit.lrs"/>
         <TopLine Value="1"/>
         <UnitName Value="frmAboutUnit"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="94"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
         <IsPartOfProject Value="True"/>
         <SyntaxHighlighter Value="Text"/>
         <UnitName Value="helpprocessor"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="30"/>
       </Unit3>
       <Unit4>
         <CursorPos X="52" Y="48"/>
@@ -59,7 +59,7 @@
         <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
         <TopLine Value="27"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="30"/>
       </Unit4>
       <Unit5>
         <CursorPos X="3" Y="9"/>
@@ -69,7 +69,7 @@
         <ResourceFilename Value="preferencesfrm.lrs"/>
         <TopLine Value="1"/>
         <UnitName Value="PreferencesFrm"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="29"/>
       </Unit5>
       <Unit6>
         <CursorPos X="28" Y="45"/>
@@ -77,7 +77,7 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="28"/>
         <UnitName Value="PasDocGuiSettings"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="28"/>
       </Unit6>
     </Units>
     <PublishOptions>

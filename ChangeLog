@@ -1,6 +1,8 @@
 [Next release -- release date and new version number unknown yet...]
 
-  * pasdoc_gui has "Display Comments" tab (by Richard B. Winston)
+  * Various pasdoc_gui improvements, including
+    * "Display Comments" tab (by Richard B. Winston)
+    * "Parse FPC macros", "Auto link", "Implicit visibility" options
   * program files are now parsed (their "uses" clauses are shown in output)
     (by Mark de Wever)
   * Various bugfixes.

@@ -5,11 +5,6 @@
   After all, pasdoc_gui is already able to fire up WWW browser to 
   view generated HTML docs.
 
-- reflect in gui 
-  --implicit-visibility option, 
-  --no-macro option,
-  --auto-link option
-
 - When we will learn how to generate nice offline documentation
   from our moinmoin wiki and we will distribute pasdoc + pasdoc_gui +
   offline docs in one package, this will fire up WWW browser

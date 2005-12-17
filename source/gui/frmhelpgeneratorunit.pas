@@ -39,7 +39,8 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc_Base, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, PasDoc_Serialize,
-  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils, LCLType, SynEdit;
+  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils, LCLType, SynEdit,
+  PasDoc_Items;
 
 type
   EInvalidSpellingLanguage = class(Exception);
@@ -63,11 +64,12 @@ type
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
     CheckAutoAbstract: TCheckBox;
+    CheckAutoLink: TCheckBox;
+    CheckHandleMacros: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
-    // @name controls whether of private, protected, public, published and
-    // automated properties, methods, events, and fields will be included in
-    // generated output.
-    clbMethodVisibility: TCheckListBox;
+    // @name controls what members (based on visibility)
+    // will be included in generated output.
+    CheckListVisibleMembers: TCheckListBox;
     clbSorting: TCheckListBox;
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
@@ -91,6 +93,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    LabelImplicitVisibility: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
@@ -99,7 +102,7 @@ type
     Label19: TLabel;
     Label2: TLabel;
     Label20: TLabel;
-    Label21: TLabel;
+    LabelVisibleMembers: TLabel;
     Label22: TLabel;
     Label23: TLabel;
     Label24: TLabel;
@@ -130,6 +133,7 @@ type
     MenuEdit: TMenuItem;
     MenuPreferences: TMenuItem;
     NotebookMain: TNotebook;
+    PageVisibleMembers: TPage;
     pageEdit: TPage;
     pageDefines: TPage;
     pageGenerate: TPage;
@@ -156,6 +160,7 @@ type
     // @name generates HTML output.
     HtmlDocGenerator: THTMLDocGenerator;
     OpenDialog1: TOpenDialog;
+    RadioImplicitVisibility: TRadioGroup;
     rgCommentMarkers: TRadioGroup;
     rgLineBreakQuality: TRadioGroup;
     SaveDialog1: TSaveDialog;
@@ -182,7 +187,7 @@ type
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
     procedure cbCheckSpellingChange(Sender: TObject);
-    procedure clbMethodVisibilityClick(Sender: TObject);
+    procedure CheckListVisibleMembersClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnGenerateDocsClick(Sender: TObject);
     procedure comboLanguagesChange(Sender: TObject);
@@ -199,6 +204,9 @@ type
     // @link(tvUnits) in @link(seComment).
     procedure tvUnitsClick(Sender: TObject);
   private
+   function GetCheckListVisibleMembersValue: TVisibilities;
+   procedure SetCheckListVisibleMembersValue(const AValue: TVisibilities);
+  private
     FChanged: boolean;
     FSettingsFileName: string;
     MisspelledWords: TStringList;
@@ -214,6 +222,13 @@ type
     // @name fills @link(tvUnits) with a heirarchical representation of the
     // TPasItems in PasDoc1.
     procedure FillTreeView;
+    
+    { This property allows to get and set all
+      CheckListVisibleMembers.Checked[] values as a simple
+      TVisibilities type. }
+    property CheckListVisibleMembersValue: TVisibilities
+      read GetCheckListVisibleMembersValue
+      write SetCheckListVisibleMembersValue;
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
@@ -233,7 +248,7 @@ var
 
 implementation
 
-uses PasDoc_Items, PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
+uses PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
   WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
@@ -373,36 +388,16 @@ begin
   end;
 end;
 
-procedure TfrmHelpGenerator.clbMethodVisibilityClick(Sender: TObject);
+procedure TfrmHelpGenerator.CheckListVisibleMembersClick(Sender: TObject);
 var
-  Options: TVisibilities;
+  NewValue: TVisibilities;
 begin
-  Options := [];
-  if clbMethodVisibility.Checked[0] then
-  begin
-    Include(Options, viPublished);
-  end;
-  if clbMethodVisibility.Checked[1] then
-  begin
-    Include(Options, viPublic);
-  end;
-  if clbMethodVisibility.Checked[2] then
-  begin
-    Include(Options, viProtected);
-  end;
-  if clbMethodVisibility.Checked[3] then
-  begin
-    Include(Options, viPrivate);
-  end;
-  if clbMethodVisibility.Checked[4] then
-  begin
-    Include(Options, viAutomated);
-  end;
+  NewValue := CheckListVisibleMembersValue;
 
-  if PasDoc1.ShowVisibilities <> Options then
+  if PasDoc1.ShowVisibilities <> NewValue then
   begin
     Changed := True;
-    PasDoc1.ShowVisibilities := Options;
+    PasDoc1.ShowVisibilities := NewValue;
   end;
 end;
 
@@ -410,12 +405,8 @@ procedure TfrmHelpGenerator.SetDefaults;
 var
   SortIndex: TSortSetting;
 begin
-  clbMethodVisibility.Checked[0] := True;
-  clbMethodVisibility.Checked[1] := True;
-  clbMethodVisibility.Checked[2] := False;
-  clbMethodVisibility.Checked[3] := False;
-  clbMethodVisibility.Checked[4] := False;
-  clbMethodVisibilityClick(nil);
+  CheckListVisibleMembersValue := DefaultVisibilities;
+  RadioImplicitVisibility.ItemIndex := 0;
 
   comboLanguages.ItemIndex := Ord(lgEnglish);
   comboLanguagesChange(nil);
@@ -437,8 +428,10 @@ begin
   EditIntroductionFileName.FileName := '';
   EditConclusionFileName.FileName := '';
   CheckAutoAbstract.Checked := false;
+  CheckAutoLink.Checked := false;
+  CheckHandleMacros.Checked := true;
   CheckUseTipueSearch.Checked := false;
-  
+
   for SortIndex := Low(TSortSetting) to High(TSortSetting) do
     clbSorting.Checked[Ord(SortIndex)] := false;
 
@@ -844,10 +837,27 @@ begin
     PasDoc1.Generator.DestinationDirectory := edOutput.Directory;
     
     PasDoc1.Generator.AutoAbstract := CheckAutoAbstract.Checked;
+    PasDoc1.AutoLink := CheckAutoLink.Checked;
+    PasDoc1.HandleMacros := CheckHandleMacros.Checked;
     
     PasDoc1.ProjectName := edProjectName.Text;
     PasDoc1.IntroductionFileName := EditIntroductionFileName.Text;
     PasDoc1.ConclusionFileName := EditConclusionFileName.Text;
+
+    { CheckListVisibleMembersClick event *should* already
+      take care of setting PasDoc1.ShowVisibilities.
+      Unfortunately CheckListVisibleMembersClick is not guarenteed
+      to be fired on every change of state of
+      CheckListVisibleMembersValue. See Lazarus bug
+      [http://www.lazarus.freepascal.org/mantis/view.php?id=905].
+      So sometimes user will click on CheckListVisibleMembers
+      and Changed will not be updated as it should.
+      Below we at least make sure that PasDoc1.ShowVisibilities
+      is always updated. }
+    PasDoc1.ShowVisibilities := CheckListVisibleMembersValue;
+
+    PasDoc1.ImplicitVisibility :=
+      TImplicitVisibility(RadioImplicitVisibility.ItemIndex);
 
     Files := TStringList.Create;
     try
@@ -1037,11 +1047,14 @@ begin
       edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
       seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
 
-      Assert(Ord(High(TVisibility)) = clbMethodVisibility.Items.Count -1);
+      Assert(Ord(High(TVisibility)) = CheckListVisibleMembers.Items.Count -1);
       for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
-        clbMethodVisibility.Checked[i] := Ini.ReadBool(
+        CheckListVisibleMembers.Checked[i] := Ini.ReadBool(
           'Main', 'ClassMembers_' + IntToStr(i), true);
-      clbMethodVisibilityClick(nil);
+      CheckListVisibleMembersClick(nil);
+      
+      RadioImplicitVisibility.ItemIndex :=
+        Ini.ReadInteger('Main', 'ImplicitVisibility', 0);
       
       Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
       for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
@@ -1062,6 +1075,8 @@ begin
       EditConclusionFileName.FileName :=
         Ini.ReadString('Main', 'ConclusionFileName', '');
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
+      CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
+      CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
       CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
       rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
       ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
@@ -1114,7 +1129,10 @@ begin
 
       for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
         Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
-          clbMethodVisibility.Checked[i]);
+          CheckListVisibleMembers.Checked[i]);
+
+      Ini.WriteInteger('Main', 'ImplicitVisibility',
+        RadioImplicitVisibility.ItemIndex);
 
       for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
       begin
@@ -1134,6 +1152,8 @@ begin
       Ini.WriteString('Main', 'ConclusionFileName',
         EditConclusionFileName.FileName);
       Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
+      Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
+      Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
       Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
       Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
       WriteStrings('HyphenatedWords', memoHyphenatedWords.Lines);
@@ -1315,6 +1335,27 @@ begin
           Item.RawDescriptionInfo.EndPosition ]);
     end;
   end;
+end;
+
+function TfrmHelpGenerator.GetCheckListVisibleMembersValue: TVisibilities;
+var
+  V: TVisibility;
+begin
+  Result := [];
+  for V := Low(V) to High(V) do
+  begin
+    if CheckListVisibleMembers.Checked[Ord(V)] then
+      Include(Result, V);
+  end;
+end;
+
+procedure TfrmHelpGenerator.SetCheckListVisibleMembersValue(
+  const AValue: TVisibilities);
+var
+  V: TVisibility;
+begin
+  for V := Low(V) to High(V) do
+    CheckListVisibleMembers.Checked[Ord(V)] := V in AValue;
 end;
 
 initialization
