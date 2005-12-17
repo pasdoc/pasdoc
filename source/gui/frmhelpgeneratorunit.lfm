@@ -15,7 +15,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   TextHeight = 20
   HorzScrollBar.Page = 739
   VertScrollBar.Page = 453
-  Left = 42
+  Left = 48
   Height = 480
   Top = 28
   Width = 740
@@ -32,7 +32,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   object NotebookMain: TNotebook
     Align = alClient
     BorderSpacing.OnChange = nil
-    PageIndex = 11
+    PageIndex = 10
     ShowTabs = False
     Left = 144
     Height = 454
@@ -74,17 +74,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 19
         Top = 106
         Width = 102
-        HelpType = htKeyword
-      end
-      object Label7: TLabel
-        Caption = 'Message level (This controls what sort of messages will apear on the Generate tab when web pages are created.)'
-        Color = clNone
-        FocusControl = seVerbosity
-        WordWrap = True
-        Left = 86
-        Height = 30
-        Top = 410
-        Width = 452
         HelpType = htKeyword
       end
       object Label11: TLabel
@@ -203,23 +192,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 210
         HelpType = htKeyword
       end
-      object seVerbosity: TSpinEdit
-        ClimbRate = 1
-        MaxValue = 6
-        OnChange = SomethingChanged
-        TabOrder = 5
-        Value = 2
-        Left = 8
-        Height = 30
-        Hint = 'The higher the message level, the more messages will be shown.'
-        Top = 410
-        Width = 64
-        HelpType = htKeyword
-      end
       object edProjectName: TEdit
         Anchors = [akTop, akLeft, akRight]
         OnChange = SomethingChanged
-        TabOrder = 6
+        TabOrder = 5
         Left = 8
         Height = 23
         Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
@@ -234,7 +210,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         MaxLength = 0
         OnChange = comboLanguagesChange
         Style = csDropDownList
-        TabOrder = 7
+        TabOrder = 6
         Left = 10
         Height = 21
         Top = 382
@@ -253,7 +229,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         )
         ItemHeight = 20
         OnClick = clbMethodVisibilityClick
-        TabOrder = 8
+        TabOrder = 7
         Left = 8
         Height = 130
         Top = 167
@@ -459,7 +435,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         MaxLength = 0
         OnChange = SomethingChanged
         Style = csDropDownList
-        TabOrder = 2
+        TabOrder = 1
         Text = 'None'
         Left = 12
         Height = 21
@@ -586,7 +562,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ClientHeight = 88
         ClientWidth = 592
         FullRepaint = False
-        TabOrder = 0
+        TabOrder = 1
         Height = 88
         Width = 592
         object Label20: TLabel
@@ -632,7 +608,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object memoSpellCheckingIgnore: TMemo
         Align = alClient
         ScrollBars = ssAutoBoth
-        TabOrder = 1
+        TabOrder = 0
         WordWrap = False
         Height = 362
         Top = 88
@@ -708,15 +684,15 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelSourceFilesTop: TPanel
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 66
+        ClientHeight = 102
         ClientWidth = 592
         FullRepaint = False
-        TabOrder = 0
-        Height = 66
+        TabOrder = 1
+        Height = 102
         Width = 592
         object Label8: TLabel
           Anchors = [akTop, akLeft, akRight]
-          Caption = 'Add the full paths of all the source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+          Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
           Color = clNone
           FocusControl = memoFiles
           WordWrap = True
@@ -726,25 +702,14 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 554
           HelpType = htKeyword
         end
-      end
-      object PanelSourceFilesBottom: TPanel
-        Align = alBottom
-        BevelOuter = bvNone
-        ClientHeight = 41
-        ClientWidth = 592
-        FullRepaint = False
-        TabOrder = 1
-        Height = 41
-        Top = 409
-        Width = 592
         object btnBrowseSourceFiles: TButton
           BorderSpacing.InnerBorder = 2
           Caption = 'Browse'
           OnClick = btnBrowseSourceFilesClick
           TabOrder = 0
-          Left = 8
+          Left = 6
           Height = 25
-          Top = 8
+          Top = 62
           Width = 75
         end
       end
@@ -752,10 +717,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Align = alClient
         OnChange = SomethingChanged
         ScrollBars = ssBoth
-        TabOrder = 2
+        TabOrder = 0
         WordWrap = False
-        Height = 343
-        Top = 66
+        Height = 348
+        Top = 102
         Width = 592
         HelpType = htKeyword
       end
@@ -771,11 +736,11 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelIncludeDirectoriesTop: TPanel
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 65
+        ClientHeight = 89
         ClientWidth = 592
         FullRepaint = False
-        TabOrder = 0
-        Height = 65
+        TabOrder = 1
+        Height = 89
         Width = 592
         object Label9: TLabel
           Anchors = [akTop, akLeft, akRight]
@@ -789,25 +754,14 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 552
           HelpType = htKeyword
         end
-      end
-      object PanelIncludeDirectoriesBottom: TPanel
-        Align = alBottom
-        BevelOuter = bvNone
-        ClientHeight = 41
-        ClientWidth = 592
-        FullRepaint = False
-        TabOrder = 1
-        Height = 41
-        Top = 409
-        Width = 592
         object btnBrowseIncludeDirectory: TButton
           BorderSpacing.InnerBorder = 2
           Caption = 'Browse'
           OnClick = btnBrowseIncludeDirectoryClick
           TabOrder = 0
-          Left = 8
+          Left = 6
           Height = 25
-          Top = 8
+          Top = 54
           Width = 75
         end
       end
@@ -815,10 +769,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Align = alClient
         OnChange = SomethingChanged
         ScrollBars = ssBoth
-        TabOrder = 2
+        TabOrder = 0
         WordWrap = False
-        Height = 344
-        Top = 65
+        Height = 361
+        Top = 89
         Width = 592
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
@@ -877,52 +831,67 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelGenerateTop: TPanel
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 65
+        ClientHeight = 110
         ClientWidth = 592
         FullRepaint = False
-        TabOrder = 0
-        Height = 65
+        TabOrder = 1
+        Height = 110
         Width = 592
         object Label10: TLabel
           Anchors = [akTop, akLeft, akRight]
-          Caption = 'While generating documentation, messages describing what is happening will appear in the area below. You can control how many messages appear using the "Message level" on the "Options" page.'
+          Caption = 'While generating documentation, messages describing what is happening will appear in the area below.'
           Color = clNone
           FocusControl = memoMessages
           WordWrap = True
           Left = 8
-          Height = 42
+          Height = 27
           Top = 8
           Width = 554
           HelpType = htKeyword
         end
-      end
-      object PanelGenerageBottom: TPanel
-        Align = alBottom
-        BevelOuter = bvNone
-        ClientHeight = 41
-        ClientWidth = 592
-        FullRepaint = False
-        TabOrder = 1
-        Height = 41
-        Top = 409
-        Width = 592
-        object btnGenerateWebPages: TButton
+        object Label7: TLabel
+          BorderSpacing.OnChange = nil
+          Caption = 'Verbosity level (default is 2)'
+          Color = clNone
+          WordWrap = True
+          Left = 80
+          Height = 12
+          Top = 54
+          Width = 157
+          HelpType = htKeyword
+        end
+        object seVerbosity: TSpinEdit
+          BorderSpacing.OnChange = nil
+          ClimbRate = 1
+          MaxValue = 6
+          OnChange = SomethingChanged
+          TabOrder = 0
+          Value = 2
+          Left = 8
+          Height = 20
+          Hint = 'The higher the message level, the more messages will be shown.'
+          Top = 46
+          Width = 64
+          HelpType = htKeyword
+        end
+        object btnGenerateDocs: TButton
+          BorderSpacing.OnChange = nil
           BorderSpacing.InnerBorder = 2
           Caption = 'Generate documentation'
-          OnClick = btnGenerateWebPagesClick
-          TabOrder = 0
+          OnClick = btnGenerateDocsClick
+          TabOrder = 1
           Left = 8
           Height = 25
-          Top = 8
+          Top = 78
           Width = 185
         end
       end
       object memoMessages: TMemo
         Align = alClient
         ScrollBars = ssBoth
-        TabOrder = 2
-        Height = 344
-        Top = 65
+        TabOrder = 0
+        Height = 340
+        Top = 110
         Width = 592
         HelpType = htKeyword
       end

@@ -57,8 +57,8 @@ type
     // Click @name to select one or more sorce files for the
     // project.
     btnBrowseSourceFiles: TButton;
-   // Click @name  to generate web pages.
-    btnGenerateWebPages: TButton;
+    // Click @name to generate output
+    btnGenerateDocs: TButton;
     cbCheckSpelling: TCheckBox;
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
@@ -143,13 +143,10 @@ type
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
     pnlEditCommentInstructions: TPanel;
-    PanelGenerageBottom: TPanel;
     PanelMarkers: TPanel;
     PanelDefinesTop: TPanel;
     PanelGenerateTop: TPanel;
-    PanelIncludeDirectoriesBottom: TPanel;
     PanelIncludeDirectoriesTop: TPanel;
-    PanelSourceFilesBottom: TPanel;
     PanelSourceFilesTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
@@ -161,8 +158,6 @@ type
     OpenDialog1: TOpenDialog;
     rgCommentMarkers: TRadioGroup;
     rgLineBreakQuality: TRadioGroup;
-    // @name controls the severity of the messages that are displayed.
-    seVerbosity: TSpinEdit;
     SaveDialog1: TSaveDialog;
     OpenDialog2: TOpenDialog;
     MainMenu1: TMainMenu;
@@ -171,6 +166,7 @@ type
     MenuSave: TMenuItem;
     MenuExit: TMenuItem;
     MenuNew: TMenuItem;
+    seVerbosity: TSpinEdit;
     Splitter1: TSplitter;
     seComment: TSynEdit;
     // @name generates Latex output.
@@ -188,7 +184,7 @@ type
     procedure cbCheckSpellingChange(Sender: TObject);
     procedure clbMethodVisibilityClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure btnGenerateWebPagesClick(Sender: TObject);
+    procedure btnGenerateDocsClick(Sender: TObject);
     procedure comboLanguagesChange(Sender: TObject);
     procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
     procedure btnOpenClick(Sender: TObject);
@@ -754,7 +750,7 @@ begin
   end;
 end;
 
-procedure TfrmHelpGenerator.btnGenerateWebPagesClick(Sender: TObject);
+procedure TfrmHelpGenerator.btnGenerateDocsClick(Sender: TObject);
 var
   Files: TStringList;
   index: integer;
@@ -869,7 +865,7 @@ begin
     finally
       Files.Free;
     end;
-    PasDoc1.Verbosity := Round(seVerbosity.Value);
+    PasDoc1.Verbosity := seVerbosity.Value;
     
     case rgCommentMarkers.ItemIndex of
       0:
@@ -1114,7 +1110,7 @@ begin
       Ini.WriteString('Main', 'OutputDir', edOutput.Directory);
       Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
       Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
-      Ini.WriteInteger('Main', 'Verbosity', Round(seVerbosity.Value));
+      Ini.WriteInteger('Main', 'Verbosity', seVerbosity.Value);
 
       for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
         Ini.WriteBool('Main', 'ClassMembers_' + IntToStr(i),
