@@ -11,7 +11,6 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
-      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <Units Count="7">
       <Unit0>
@@ -20,39 +19,38 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="1"/>
         <UnitName Value="pasdoc_gui"/>
-        <UsageCount Value="94"/>
+        <UsageCount Value="95"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="3" Y="1336"/>
-        <EditorIndex Value="0"/>
+        <CursorPos X="60" Y="316"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
-        <Loaded Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="1321"/>
+        <TopLine Value="291"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="94"/>
+        <UsageCount Value="95"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="316" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="3" Y="65"/>
         <Filename Value="frmaboutunit.pas"/>
         <ComponentName Value="frmAbout"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmaboutunit.lrs"/>
-        <TopLine Value="1"/>
+        <TopLine Value="55"/>
         <UnitName Value="frmAboutUnit"/>
-        <UsageCount Value="94"/>
+        <UsageCount Value="95"/>
       </Unit2>
       <Unit3>
+        <CursorPos X="1" Y="1"/>
         <Filename Value="helpprocessor.pas"/>
         <IsPartOfProject Value="True"/>
-        <SyntaxHighlighter Value="Text"/>
-        <UnitName Value="helpprocessor"/>
-        <UsageCount Value="30"/>
+        <TopLine Value="1"/>
+        <UnitName Value="HelpProcessor"/>
+        <UsageCount Value="31"/>
       </Unit3>
       <Unit4>
         <CursorPos X="5" Y="23"/>
@@ -62,7 +60,7 @@
         <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
         <TopLine Value="12"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="31"/>
       </Unit4>
       <Unit5>
         <CursorPos X="3" Y="9"/>
@@ -72,7 +70,7 @@
         <ResourceFilename Value="preferencesfrm.lrs"/>
         <TopLine Value="1"/>
         <UnitName Value="PreferencesFrm"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="30"/>
       </Unit5>
       <Unit6>
         <CursorPos X="28" Y="45"/>
@@ -80,7 +78,7 @@
         <IsPartOfProject Value="True"/>
         <TopLine Value="28"/>
         <UnitName Value="PasDocGuiSettings"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
       </Unit6>
     </Units>
     <PublishOptions>
@@ -112,116 +110,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item4>
     </RequiredPackages>
-    <JumpHistory Count="27" HistoryIndex="26">
-      <Position1>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="182" Column="1" TopLine="167"/>
-      </Position1>
-      <Position2>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="134" Column="17" TopLine="133"/>
-      </Position2>
-      <Position3>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="187" Column="53" TopLine="186"/>
-      </Position3>
-      <Position4>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1336" Column="7" TopLine="1334"/>
-      </Position4>
-      <Position5>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1300"/>
-      </Position5>
-      <Position6>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1402" Column="5" TopLine="1377"/>
-      </Position6>
-      <Position7>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="198" Column="5" TopLine="198"/>
-      </Position7>
-      <Position8>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1336" Column="25" TopLine="1318"/>
-      </Position8>
-      <Position9>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1289"/>
-      </Position10>
-      <Position11>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1306" Column="60" TopLine="1291"/>
-      </Position11>
-      <Position12>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position12>
-      <Position13>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="316" Column="3" TopLine="301"/>
-      </Position13>
-      <Position14>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position14>
-      <Position15>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1289"/>
-      </Position15>
-      <Position16>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1306" Column="60" TopLine="1291"/>
-      </Position16>
-      <Position17>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1336" Column="25" TopLine="1321"/>
-      </Position17>
-      <Position18>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position18>
-      <Position19>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1289"/>
-      </Position19>
-      <Position20>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1306" Column="60" TopLine="1291"/>
-      </Position20>
-      <Position21>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1336" Column="25" TopLine="1321"/>
-      </Position21>
-      <Position22>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position22>
-      <Position23>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1289"/>
-      </Position23>
-      <Position24>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1300" Column="29" TopLine="1291"/>
-      </Position24>
-      <Position25>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position25>
-      <Position26>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1304" Column="28" TopLine="1289"/>
-      </Position26>
-      <Position27>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <Caret Line="1306" Column="60" TopLine="1291"/>
-      </Position27>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

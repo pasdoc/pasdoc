@@ -39,9 +39,11 @@ type
   { TfrmAbout }
 
   TfrmAbout = class(TForm)
-    Label1: TLabel;
+    ButtonPasDocURL: TButton;
+    LabelTitle: TLabel;
     BitBtn1: TBitBtn;
-    Memo1: TMemo;
+    MemoInformation: TMemo;
+    procedure ButtonPasDocURLClick(Sender: TObject);
     procedure frmAboutCreate(Sender: TObject);
   private
     { Private declarations }
@@ -54,13 +56,13 @@ var
 
 implementation
 
-uses PasDoc_Base;
+uses PasDoc_Base, WWWBrowserRunnerDM;
 
 { TfrmAbout }
 
 procedure TfrmAbout.frmAboutCreate(Sender: TObject);
 begin
-  Memo1.Lines.Text :=
+  MemoInformation.Lines.Text :=
     'Original version Richard B. Winston (rbwinst@usgs.gov), ' +
     'U.S. Geological Survey (USGS)' + LineEnding +
     LineEnding +
@@ -71,11 +73,14 @@ begin
     'pasdoc_gui and PasDoc component are free software. ' +
     'You are welcome to further modify and redistribute them on terms ' +
     'of GNU General Public License.' +LineEnding+
-    LineEnding +
-    'See http://pasdoc.sourceforge.net/' +LineEnding+
     LineEnding+
     'PasDoc version information:' +LineEnding+
     PASDOC_FULL_INFO;
+end;
+
+procedure TfrmAbout.ButtonPasDocURLClick(Sender: TObject);
+begin
+  WWWBrowserRunner.RunBrowser((Sender as TButton).Caption);
 end;
 
 initialization

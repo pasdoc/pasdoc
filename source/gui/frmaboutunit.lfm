@@ -1,50 +1,66 @@
 object frmAbout: TfrmAbout
   Caption = 'About'
-  ClientHeight = 348
-  ClientWidth = 409
+  ClientHeight = 341
+  ClientWidth = 416
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   OnCreate = frmAboutCreate
-  PixelsPerInch = 96
+  PixelsPerInch = 61
   Position = poMainFormCenter
   TextHeight = 20
-  HorzScrollBar.Page = 408
-  VertScrollBar.Page = 347
+  HorzScrollBar.Page = 415
+  VertScrollBar.Page = 340
   Left = 167
-  Height = 348
+  Height = 341
   Top = 62
-  Width = 409
-  object Label1: TLabel
-    BorderSpacing.OnChange = nil
+  Width = 416
+  object LabelTitle: TLabel
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
     Caption = 'pasdoc_gui'
+    Left = 16
+    Height = 21
+    Top = 8
+    Width = 380
     Color = clNone
     Font.Height = -19
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     Left = 13
     Height = 24
-    Top = 8
-    Width = 109
   end
   object BitBtn1: TBitBtn
     Anchors = [akRight, akBottom]
-    BorderSpacing.OnChange = nil
+    BorderSpacing.InnerBorder = 2
     Caption = '&Close'
     Kind = bkClose
     TabOrder = 0
-    Left = 319
+    Left = 326
     Height = 25
-    Top = 312
+    Top = 305
     Width = 75
   end
-  object Memo1: TMemo
+  object MemoInformation: TMemo
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.OnChange = nil
+    Color = clBtnFace
     ReadOnly = True
     TabOrder = 1
     Left = 13
-    Height = 266
+    Height = 227
     Top = 34
-    Width = 381
+    Width = 388
+  end
+  object ButtonPasDocURL: TButton
+    Anchors = [akLeft, akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.OnChange = nil
+    BorderSpacing.InnerBorder = 2
+    Caption = 'http://pasdoc.sourceforge.net/'
+    OnClick = ButtonPasDocURLClick
+    TabOrder = 2
+    Left = 16
+    Height = 26
+    Top = 272
+    Width = 182
   end
 end
