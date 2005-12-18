@@ -22,16 +22,16 @@
         <UsageCount Value="94"/>
       </Unit0>
       <Unit1>
-        <CursorPos X="22" Y="430"/>
+        <CursorPos X="1" Y="182"/>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="413"/>
+        <TopLine Value="167"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
         <UsageCount Value="94"/>
         <Bookmarks Count="1">
-          <Item0 X="5" Y="798" ID="1"/>
+          <Item0 X="1" Y="313" ID="1"/>
         </Bookmarks>
       </Unit1>
       <Unit2>
@@ -52,12 +52,12 @@
         <UsageCount Value="30"/>
       </Unit3>
       <Unit4>
-        <CursorPos X="52" Y="48"/>
+        <CursorPos X="5" Y="23"/>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
         <ComponentName Value="WWWBrowserRunner"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
-        <TopLine Value="27"/>
+        <TopLine Value="12"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
         <UsageCount Value="30"/>
       </Unit4>

@@ -60,6 +60,8 @@ type
     btnBrowseSourceFiles: TButton;
     // Click @name to generate output
     btnGenerateDocs: TButton;
+    ButtonAspellURL: TButton;
+    ButtonGraphVizURL: TButton;
     cbCheckSpelling: TCheckBox;
     cbVizGraphClasses: TCheckBox;
     cbVizGraphUses: TCheckBox;
@@ -79,14 +81,12 @@ type
     comboLanguages: TComboBox;
     comboLatexGraphicsPackage: TComboBox;
     edOutput: TDirectoryEdit;
-    edGraphVizUrl: TEdit;
     EditConclusionFileName: TFileNameEdit;
     EditCssFileName: TFileNameEdit;
     EditIntroductionFileName: TFileNameEdit;
     // @name is used to set the name of the project.
     edProjectName: TEdit;
     CssFileNameFileNameEdit1: TFileNameEdit;
-    edSpellUrl: TEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     Label1: TLabel;
@@ -179,6 +179,7 @@ type
     TexDocGenerator: TTexDocGenerator;
     MenuHelp: TMenuItem;
     tvUnits: TTreeView;
+    procedure ButtonURLClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
     procedure MenuPreferencesClick(Sender: TObject);
@@ -305,6 +306,11 @@ begin
   begin
     MenuContextHelpClick(ActiveControl);
   end;
+end;
+
+procedure TfrmHelpGenerator.ButtonURLClick(Sender: TObject);
+begin
+  WWWBrowserRunner.RunBrowser((Sender as TButton).Caption);
 end;
 
 procedure TfrmHelpGenerator.btnBrowseSourceFilesClick(Sender: TObject);

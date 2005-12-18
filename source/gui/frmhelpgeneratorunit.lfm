@@ -32,7 +32,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   object NotebookMain: TNotebook
     Align = alClient
     BorderSpacing.OnChange = nil
-    PageIndex = 1
+    PageIndex = 6
     ShowTabs = False
     Left = 144
     Height = 420
@@ -568,42 +568,46 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label22: TLabel
-        Caption = 'Required program: GraphViz'
+        Caption = 'You will have to generate graphs yourself using the dot program from GraphViz :'
         Color = clNone
-        Left = 8
-        Height = 17
-        Top = 119
-        Width = 180
-      end
-      object edGraphVizUrl: TEdit
-        TabOrder = 0
-        Text = 'http://www.graphviz.org/'
-        Left = 188
-        Height = 23
-        Top = 114
-        Width = 160
+        Left = 14
+        Height = 12
+        Top = 70
+        Width = 449
       end
       object cbVizGraphUses: TCheckBox
-        Caption = 'Generate and use Uses diagram '
+        Caption = 'Generate and use Uses graph'
         OnChange = SomethingChanged
-        TabOrder = 1
+        TabOrder = 0
         Left = 8
-        Height = 23
+        Height = 24
         Top = 34
-        Width = 239
+        Width = 191
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
       end
       object cbVizGraphClasses: TCheckBox
-        Caption = 'Generate and use Classes diagram '
+        Caption = 'Generate and use Classes graph'
         OnChange = SomethingChanged
-        TabOrder = 2
+        TabOrder = 1
         Left = 8
-        Height = 23
+        Height = 24
         Top = 10
-        Width = 258
+        Width = 208
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
+      end
+      object ButtonGraphVizURL: TButton
+        AutoSize = True
+        BorderSpacing.OnChange = nil
+        BorderSpacing.InnerBorder = 2
+        Caption = 'http://www.graphviz.org/'
+        OnClick = ButtonURLClick
+        TabOrder = 2
+        Left = 14
+        Height = 26
+        Top = 86
+        Width = 144
       end
     end
     object pageSpellChecking: TPage
@@ -617,50 +621,54 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelSpellCheckingTop1: TPanel
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 88
+        ClientHeight = 150
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
-        Height = 88
+        Height = 150
         Width = 592
         object Label20: TLabel
           BorderSpacing.OnChange = nil
-          Caption = 'Enter words that should be ignored when spell-checking.'#10'One word per line.'
+          Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
           Color = clNone
           FocusControl = memoSpellCheckingIgnore
           Left = 6
           Height = 27
-          Top = 51
-          Width = 318
+          Top = 110
+          Width = 355
           HelpType = htKeyword
         end
         object Label23: TLabel
-          Caption = 'Required Program: aspell'
+          Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
           Color = clNone
-          Left = 236
-          Height = 17
-          Top = 18
-          Width = 163
+          Left = 6
+          Height = 12
+          Top = 46
+          Width = 414
         end
         object cbCheckSpelling: TCheckBox
           BorderSpacing.OnChange = nil
           Caption = 'Check Spelling'
           OnChange = cbCheckSpellingChange
           TabOrder = 0
-          Left = 12
+          Left = 6
           Height = 23
-          Top = 14
+          Top = 6
           Width = 132
           HelpType = htKeyword
           HelpKeyword = 'SpellChecking'
         end
-        object edSpellUrl: TEdit
+        object ButtonAspellURL: TButton
+          AutoSize = True
+          BorderSpacing.OnChange = nil
+          BorderSpacing.InnerBorder = 2
+          Caption = 'http://aspell.sourceforge.net/'
+          OnClick = ButtonURLClick
           TabOrder = 1
-          Text = 'http://aspell.sourceforge.net/'
-          Left = 412
-          Height = 23
-          Top = 14
-          Width = 160
+          Left = 6
+          Height = 26
+          Top = 62
+          Width = 167
         end
       end
       object memoSpellCheckingIgnore: TMemo
@@ -668,8 +676,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         ScrollBars = ssAutoBoth
         TabOrder = 0
         WordWrap = False
-        Height = 328
-        Top = 88
+        Height = 266
+        Top = 150
         Width = 592
         HelpType = htKeyword
         HelpKeyword = 'SpellChecking'

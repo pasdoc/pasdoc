@@ -1,10 +1,3 @@
-- These edit boxes with URLs (graphviz, aspell) should be changed to
-  a labels that, when clicked, fire up WWW browser with given address.
-  These labels should have blue color and cursor changed to a hand, to look like
-  link in WWW browser.
-  After all, pasdoc_gui is already able to fire up WWW browser to 
-  view generated HTML docs.
-
 - When we will learn how to generate nice offline documentation
   from our moinmoin wiki and we will distribute pasdoc + pasdoc_gui +
   offline docs in one package, this will fire up WWW browser
@@ -32,10 +25,10 @@
   a little... Hopefully these issues are now gone and layout looks good
   for everyone, but I'm not happy with it, really.
 
-  In the long run we should try to use auto-sizing and anchors as 
-  much as possible to layout everything. Lazarus wiki has some useful 
-  notes about using anchor sides 
-  ([http://wiki.lazarus.freepascal.org/index.php/Anchor_Sides]). 
+  In the long run we should try to use auto-sizing and anchors as
+  much as possible to layout everything. Lazarus wiki has some useful
+  notes about using anchor sides
+  ([http://wiki.lazarus.freepascal.org/index.php/Anchor_Sides]).
 
 - pasdoc_gui should allow user to configure default state of "Defines".
   Actually, it should allow user to configure default state of *all* options.
@@ -49,3 +42,9 @@
   to actually have really good default values, and instead of using "SetDefaults"
   we simply load from a file where "default project settings" for this user
   are stored (like ~/.pasdoc_gui/default.pds on Unixes)
+
+- ButtonAspellURL and ButtonGraphVizURL should be changed to
+  have blue and underlined font and cursor crHand.
+  Maybe also turn them into labels.
+  This seems not possible now (with Lazarus 0.9.10 on GTK interface),
+  for now normal buttons look best.
