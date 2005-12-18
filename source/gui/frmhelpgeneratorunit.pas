@@ -59,7 +59,7 @@ type
     // project.
     btnBrowseSourceFiles: TButton;
     // Click @name to generate output
-    btnGenerateDocs: TButton;
+    ButtonGenerateDocs: TButton;
     ButtonAspellURL: TButton;
     ButtonGraphVizURL: TButton;
     cbCheckSpelling: TCheckBox;
@@ -131,6 +131,8 @@ type
     MenuAbout: TMenuItem;
     MenuContextHelp: TMenuItem;
     MenuEdit: TMenuItem;
+    MenuGenerate: TMenuItem;
+    MenuGenerateRun: TMenuItem;
     MenuSave: TMenuItem;
     MenuPreferences: TMenuItem;
     NotebookMain: TNotebook;
@@ -182,6 +184,7 @@ type
     procedure ButtonURLClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
+    procedure MenuGenerateRunClick(Sender: TObject);
     procedure MenuPreferencesClick(Sender: TObject);
     procedure MenuSaveClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
@@ -192,7 +195,7 @@ type
     procedure cbCheckSpellingChange(Sender: TObject);
     procedure CheckListVisibleMembersClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure btnGenerateDocsClick(Sender: TObject);
+    procedure ButtonGenerateDocsClick(Sender: TObject);
     procedure comboLanguagesChange(Sender: TObject);
     procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
     procedure btnOpenClick(Sender: TObject);
@@ -611,6 +614,7 @@ begin
     target). }
   MenuOpen.ShortCut := ShortCut(VK_O, [ssCtrl]);
   MenuSave.ShortCut := ShortCut(VK_S, [ssCtrl]);
+  MenuGenerateRun.ShortCut := ShortCut(VK_F9, []);
 
   // A Tag of 1 means the page should be visible.
   for Index := NotebookMain.PageCount -1 downto 0 do
@@ -763,7 +767,7 @@ begin
   end;
 end;
 
-procedure TfrmHelpGenerator.btnGenerateDocsClick(Sender: TObject);
+procedure TfrmHelpGenerator.ButtonGenerateDocsClick(Sender: TObject);
 var
   Files: TStringList;
   index: integer;
@@ -1325,6 +1329,15 @@ begin
     WWWBrowserRunner.RunBrowser(
       WWWHelpServer + HelpControl.HelpKeyword);
   end;
+end;
+
+procedure TfrmHelpGenerator.MenuGenerateRunClick(Sender: TObject);
+begin
+  { Switch to "Generate" page }
+  lbNavigation.ItemIndex := lbNavigation.Items.IndexOfObject(pageGenerate);
+  lbNavigationClick(nil);
+  
+  ButtonGenerateDocsClick(nil);
 end;
 
 procedure TfrmHelpGenerator.MenuPreferencesClick(Sender: TObject);
