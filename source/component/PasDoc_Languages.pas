@@ -18,7 +18,8 @@
   @author(Jónás Gergõ <jonas.gergo@ch...> (Hungarian translation))
   @author(Michalis Kamburelis)
   @author(Ascanio Pressato (Some Italian translation))
-  }
+  @author(JBarbero Quiter (updated Spanish translation))
+}
 
 unit PasDoc_Languages;
 
@@ -1650,9 +1651,9 @@ begin
   FTranslation[trDeclaration] := 'Declaración';
   FTranslation[trDescription] := 'Descripción';
   FTranslation[trParameters] := 'Parámetros';
-  FTranslation[trReturns] := 'Vueltas';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
+  FTranslation[trReturns] := 'Retornos';
+  FTranslation[trExceptions] := 'Excepciones';
+  FTranslation[trExceptionsRaised] := 'Excepciones lanzadas';
   FTranslation[trEnum] := 'Enumeration';
   FTranslation[trDispInterface] := 'DispInterface';
   FTranslation[trFields] := 'Campos';
@@ -1662,8 +1663,8 @@ begin
   FTranslation[trIdentifiers] := 'Identificadores';
   FTranslation[trInterface] := 'Interface';
   FTranslation[trLegend] := 'Leyenda';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
+  FTranslation[trMarker] := 'Marcador';
+  FTranslation[trVisibility] := 'Visibilidad';
   FTranslation[trMethods] := 'Métodos';
   FTranslation[trLastModified] := 'Última modificación';
   FTranslation[trName] := 'Nombre';
@@ -1682,8 +1683,8 @@ begin
   FTranslation[trUnit] := 'Unidad';
   FTranslation[trUnits] := 'Unidades';
   FTranslation[trVariables] := 'Variables';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
+  FTranslation[trGvUses] := 'Gráfico de las dependencias de unidades';
+  FTranslation[trGvClasses] := 'Gráfico de la jerarquía de clases';
   FTranslation[trHeadlineCio] := 'Todas las clases, interfaces y objetos';
   FTranslation[trHeadlineConstants] := 'Todas las constantes';
   FTranslation[trHeadlineFunctionsAndProcedures] :=    'Todos las funciones y procedimientos';
@@ -1695,21 +1696,21 @@ begin
   FTranslation[trWarningOverwrite] :=  'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito';
   FTranslation[trGeneratedBy] := 'Generador por';
   FTranslation[trOnDateTime] := 'a';
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trDeprecated] := 'Este símbolo está obsoleto'; // TODO: translate
+  FTranslation[trPlatformSpecific] := 'Este símbolo es específico para alguna plataforma';
+  FTranslation[trLibrarySpecific] := 'Este símbolo es específico para alguna librería';
+  FTranslation[trIntroduction] := 'Introducción';
+  FTranslation[trConclusion] := 'Conclusión';
+  FTranslation[trSearch] := 'Buscar';
+  FTranslation[trSeeAlso] := 'Ver';
+  FTranslation[trValues] := 'Valores';
+  FTranslation[trNoCIOs] := 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.'
+  FTranslation[trNoCIOsForHierarchy] := 'Las unidades no contienen ni clases ni interfaces ni objetos.'
+  FTranslation[trNoTypes] := 'Las unidades no contienen ningún tipo.';
+  FTranslation[trNoVariables] := 'Las unidades no contienen ningunas variables.';
+  FTranslation[trNoConstants] := 'Las unidades no contienen ningunas constantes.';
+  FTranslation[trNoFunctions] := 'Las unidades no contienen ni variables ni procedimientos.';
+  FTranslation[trNoIdentifiers] := 'Las unidades no contienen ningún Identificador.';
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
@@ -1919,6 +1920,9 @@ end;
 
 {
   $Log$
+  Revision 1.39  2005/12/19 23:15:18  kambi
+  * Updated Spanish translation from JBarbero Quiter
+
   Revision 1.38  2005/12/15 21:50:27  kambi
   * Updated Polish_ISO_8859_2 translation
 
