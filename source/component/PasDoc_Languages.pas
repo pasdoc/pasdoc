@@ -1696,7 +1696,7 @@ begin
   FTranslation[trWarningOverwrite] :=  'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito';
   FTranslation[trGeneratedBy] := 'Generador por';
   FTranslation[trOnDateTime] := 'a';
-  FTranslation[trDeprecated] := 'Este símbolo está obsoleto'; // TODO: translate
+  FTranslation[trDeprecated] := 'Este símbolo está obsoleto';
   FTranslation[trPlatformSpecific] := 'Este símbolo es específico para alguna plataforma';
   FTranslation[trLibrarySpecific] := 'Este símbolo es específico para alguna librería';
   FTranslation[trIntroduction] := 'Introducción';
@@ -1704,8 +1704,8 @@ begin
   FTranslation[trSearch] := 'Buscar';
   FTranslation[trSeeAlso] := 'Ver';
   FTranslation[trValues] := 'Valores';
-  FTranslation[trNoCIOs] := 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.'
-  FTranslation[trNoCIOsForHierarchy] := 'Las unidades no contienen ni clases ni interfaces ni objetos.'
+  FTranslation[trNoCIOs] := 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.';
+  FTranslation[trNoCIOsForHierarchy] := 'Las unidades no contienen ni clases ni interfaces ni objetos.';
   FTranslation[trNoTypes] := 'Las unidades no contienen ningún tipo.';
   FTranslation[trNoVariables] := 'Las unidades no contienen ningunas variables.';
   FTranslation[trNoConstants] := 'Las unidades no contienen ningunas constantes.';
@@ -1920,6 +1920,9 @@ end;
 
 {
   $Log$
+  Revision 1.40  2005/12/19 23:20:46  kambi
+  * Fixed Spanish translation (last commit)
+
   Revision 1.39  2005/12/19 23:15:18  kambi
   * Updated Spanish translation from JBarbero Quiter
 
