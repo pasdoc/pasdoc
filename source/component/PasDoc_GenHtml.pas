@@ -312,11 +312,12 @@ uses
   PasDoc_Tipue,
   PasDoc_Aspell;
 
-{$INCLUDE automated.inc}
-{$INCLUDE private.inc}
-{$INCLUDE public.inc}
-{$INCLUDE published.inc}
-{$INCLUDE protected.inc}
+const 
+  img_automated : {$I images/automated.gif.inc};
+  img_private   : {$I images/private.gif.inc};
+  img_public    : {$I images/public.gif.inc};
+  img_published : {$I images/published.gif.inc};
+  img_protected : {$I images/protected.gif.inc};
 
 const
   DoctypeFrameset = '<!DOCTYPE HTML PUBLIC ' +
