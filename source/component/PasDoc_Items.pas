@@ -97,11 +97,6 @@ type
   end;
   PRawDescriptionInfo = ^TRawDescriptionInfo;
 
-const
-  EmptyRawDescriptionInfo: TRawDescriptionInfo = 
-  ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
-
-type    
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
@@ -1015,6 +1010,9 @@ type
 const
   CIORecordType = [CIO_RECORD, CIO_PACKEDRECORD];
   CIONonHierarchy = CIORecordType;
+
+  EmptyRawDescriptionInfo: TRawDescriptionInfo = 
+  ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
 
 { Returns lowercased keyword associated with given method type. }
 function MethodTypeToString(const MethodType: TMethodType): string;
