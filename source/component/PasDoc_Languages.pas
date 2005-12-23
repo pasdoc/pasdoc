@@ -1813,7 +1813,7 @@ begin
   FTranslation[trParameters] := 'Paraméterek';
   FTranslation[trReturns] := 'Visszatérési értékek';
   FTranslation[trExceptions] := 'Kivételek';
-  FTranslation[trExceptionsRaised] := 'Kivételek'; // TODO: translate as "Exceptions raised" instead of just "Exceptions"
+  FTranslation[trExceptionsRaised] := 'Kivételek kiemelése';
   FTranslation[trEnum] := 'Felsorolások';
   FTranslation[trDispInterface] := 'Képernyõ felületek';
   FTranslation[trFields] := 'Mezõk';
@@ -1823,8 +1823,8 @@ begin
   FTranslation[trIdentifiers] := 'Azonosítók';
   FTranslation[trInterface] := 'Kapcsolódási felület';
   FTranslation[trLegend] := 'Történet';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
+  FTranslation[trMarker] := 'Jelölõ';
+  FTranslation[trVisibility] := 'Láthatóság';
   FTranslation[trMethods] := 'Metódusok';
   FTranslation[trLastModified] := 'Utolsó módosítás';
   FTranslation[trName] := 'Név';
@@ -1853,8 +1853,7 @@ begin
   FTranslation[trHeadlineUnits] := 'Összes Egység';
   FTranslation[trHeadlineVariables] := 'Összes Változó';
   FTranslation[trSummaryCio] := 'Öszefoglaló az Osztályokról, Kapcsoldási felületekrõl és Objektumokról';
-  FTranslation[trWarningOverwrite] :=
-    'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne';
+  FTranslation[trWarningOverwrite] := 'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne';
   FTranslation[trGeneratedBy] := 'Készítette';
   FTranslation[trOnDateTime] := ''; //none in Hungarian language
   FTranslation[trDeprecated] := 'ez az azonosító érték nélküli';
@@ -1862,16 +1861,16 @@ begin
   FTranslation[trLibrarySpecific] := 'ez az azonosító szükséges némely library számára';
   FTranslation[trIntroduction] := 'Bevezetõ';
   FTranslation[trConclusion] := 'Összefoglaló';
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
+  FTranslation[trSearch] := 'Keresés';
+  FTranslation[trSeeAlso] := 'Lásd még';
+  FTranslation[trValues] := 'Értékek';
+  FTranslation[trNoCIOs] := 'Az egységek nem tartalmaznak osztályokat, interfészeket, objektumokat vagy rekordokat.';
+  FTranslation[trNoCIOsForHierarchy] := 'Az egységek nem tartalmaznak osztályokat, interfészeket vagy objektumokat.';
+  FTranslation[trNoTypes] := 'Az egységek nem tartalmaznak típusdefiniciókat.';
+  FTranslation[trNoVariables] := 'Az egységek nem tartalmaznak változókat.';
+  FTranslation[trNoConstants] := 'Az egységek nem tartalmaznak konstansokat.';
+  FTranslation[trNoFunctions] := 'Az egységek nem tartalmaznak függvényeket vagy eljárásokat.';
+  FTranslation[trNoIdentifiers] := 'Az egységek nem tartalmaznak azonosítókat.';
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
 
@@ -1920,6 +1919,9 @@ end;
 
 {
   $Log$
+  Revision 1.41  2005/12/23 15:10:58  kambi
+  * Hungarian translation updated by Jónás Gergõ
+
   Revision 1.40  2005/12/19 23:20:46  kambi
   * Fixed Spanish translation (last commit)
 
