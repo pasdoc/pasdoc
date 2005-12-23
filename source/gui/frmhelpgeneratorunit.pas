@@ -184,6 +184,7 @@ type
     MenuHelp: TMenuItem;
     tvUnits: TTreeView;
     procedure ButtonURLClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
     procedure MenuGenerateRunClick(Sender: TObject);
@@ -204,7 +205,7 @@ type
     procedure MenuSaveAsClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure New1Click(Sender: TObject);
+    procedure MenuNewClick(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
     procedure lbNavigationClick(Sender: TObject);
     procedure rgCommentMarkersClick(Sender: TObject);
@@ -212,13 +213,21 @@ type
     // @link(tvUnits) in @link(seComment).
     procedure tvUnitsClick(Sender: TObject);
   private
-   function GetCheckListVisibleMembersValue: TVisibilities;
-   procedure SetCheckListVisibleMembersValue(const AValue: TVisibilities);
+    function GetCheckListVisibleMembersValue: TVisibilities;
+    procedure SetCheckListVisibleMembersValue(const AValue: TVisibilities);
   private
     FChanged: boolean;
     FSettingsFileName: string;
     MisspelledWords: TStringList;
-    procedure SaveChanges(var Action: TCloseAction);
+    InsideCreateWnd: boolean;
+    
+    { If Changed then this offers user the chance to save the project.
+      Returns @false when user chose to Cancel the whole operation
+      (not only file saving, but also the parent operation -- you
+      should always check the result of this function and cancel
+      anything further if result is false). }
+    function SaveChanges: boolean;
+    
     procedure SetChanged(const AValue: boolean);
     procedure SetDefaults;
     procedure SetSettingsFileName(const AValue: string);
@@ -247,6 +256,8 @@ type
       if ClearChanged then sets Changed to false. }
     procedure SaveSettingsToFile(const FileName: string;
       SetSettingsFileName, ClearChanged: boolean);
+  protected
+    procedure CreateWnd; override;
   public
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
@@ -258,6 +269,16 @@ type
       (because user did not opened any pds file, or he chose "New" menu item). }
     property SettingsFileName: string read FSettingsFileName
       write SetSettingsFileName;
+      
+    { If SettingsFileName <> '',
+      this returns ExtractFileName(SettingsFileName),
+      else it returns 'Unsaved PasDoc settings'. This is good
+      when you want to nicely present the value of SettingsFileName 
+      to the user.
+
+      This follows GNOME HIG standard for window caption. }
+    function SettingsFileNameNice: string;
+
     DefaultDirectives: TStringList;
   end;
 
@@ -298,6 +319,19 @@ end;
 
 procedure TfrmHelpGenerator.SomethingChanged(Sender: TObject);
 begin
+  { Some components (in Lazarus 0.9.10, this concerns at
+    least TMemo with GTK 1 interface) generate some OnChange
+    event when creating their widget (yes, I made sure: it doesn't
+    happen when reading their properties.)
+    
+    This is not good, because when we open pasdoc_gui,
+    the default project should be left with Changed = false.
+    
+    Checking ComponentState and ControlState to safeguard
+    against this is not possible. I'm using InsideCreateWnd to
+    safeguard against this. }
+  if InsideCreateWnd then Exit;
+
   Changed := true;
   if (memoFiles.Lines.Count > 0) and (edOutput.Directory = '') then begin
     SetOutputDirectory(memoFiles.Lines[0]);
@@ -316,6 +350,12 @@ end;
 procedure TfrmHelpGenerator.ButtonURLClick(Sender: TObject);
 begin
   WWWBrowserRunner.RunBrowser((Sender as TButton).Caption);
+end;
+
+procedure TfrmHelpGenerator.FormDestroy(Sender: TObject);
+begin
+  DefaultDirectives.Free;
+  MisspelledWords.Free;
 end;
 
 procedure TfrmHelpGenerator.btnBrowseSourceFilesClick(Sender: TObject);
@@ -473,9 +513,7 @@ begin
   { Caption value follows GNOME HIG 2.0 standard }
   NewCaption := '';
   if Changed then NewCaption += '*';
-  if SettingsFileName = '' then
-   NewCaption += 'Unsaved PasDoc settings' else
-   NewCaption += ExtractFileName(SettingsFileName);
+  NewCaption += SettingsFileNameNice;
   NewCaption += ' - PasDoc GUI';
   Caption := NewCaption;
 end;
@@ -630,6 +668,7 @@ begin
   comboGenerateFormatChange(nil);
   
   FillNavigationListBox;
+  
   Changed := False;
 end;
 
@@ -1070,13 +1109,8 @@ var
   i: Integer;
   SettingsFileNamePath: string;
 begin
-  // TODO: The following is needed and should work but does not.
-  {if Changed then
-  if (MessageDlg('Do you want to save your current file first?',
-    Dialogs.mtInformation, [mbYes, mbNo], 0) = mrYes) then
-  begin
-    Save1Click(Sender);
-  end; }
+  if not SaveChanges then Exit;
+
   if OpenDialog2.Execute then
   begin
     SettingsFileName := OpenDialog2.FileName;
@@ -1303,28 +1337,28 @@ begin
   Close;
 end;
 
-procedure TfrmHelpGenerator.SaveChanges(var Action: TCloseAction);
+function TfrmHelpGenerator.SaveChanges: boolean;
 var
   MessageResult: integer;
 begin
+  Result := true;
   if Changed then
   begin
     MessageResult := MessageDlg(
-      'Do you want to save the settings for this project?',
+      Format('Project "%s" was modified. ' +
+        'Do you want to save it now ?', [SettingsFileNameNice]),
       Dialogs.mtInformation, [mbYes, mbNo, mbCancel], 0);
     case MessageResult of
       mrYes:
         begin
-          MenuSaveClick(nil);
+          MenuSaveClick(MenuSave);
         end;
       mrNo:
         begin
           // do nothing.
         end;
     else
-      begin
-        Action := caNone;
-      end;
+      Result := false;
     end;
   end;
 end;
@@ -1332,22 +1366,13 @@ end;
 procedure TfrmHelpGenerator.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  SaveChanges(Action);
-  DefaultDirectives.Free;
-  MisspelledWords.Free;
+  if not SaveChanges then
+    Action := caNone;
 end;
 
-procedure TfrmHelpGenerator.New1Click(Sender: TObject);
-var
-  Action: TCloseAction;
+procedure TfrmHelpGenerator.MenuNewClick(Sender: TObject);
 begin
-  Action := caHide;
-  if Changed then
-  begin
-    SaveChanges(Action);
-    if Action = caNone then
-      Exit;
-  end;
+  if not SaveChanges then Exit;
 
   SetDefaults;
 
@@ -1495,6 +1520,23 @@ var
 begin
   for V := Low(V) to High(V) do
     CheckListVisibleMembers.Checked[Ord(V)] := V in AValue;
+end;
+
+procedure TfrmHelpGenerator.CreateWnd;
+begin
+  InsideCreateWnd := true;
+  try
+    inherited;
+  finally
+    InsideCreateWnd := false;
+  end;
+end;
+
+function TfrmHelpGenerator.SettingsFileNameNice: string;
+begin
+  if SettingsFileName = '' then
+    Result := 'Unsaved PasDoc settings' else
+    Result := ExtractFileName(SettingsFileName);
 end;
 
 initialization

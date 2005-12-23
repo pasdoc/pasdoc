@@ -8,6 +8,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   PixelsPerInch = 61
   Position = poScreenCenter
@@ -1434,7 +1435,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Caption = '&File'
       object MenuNew: TMenuItem
         Caption = '&New'
-        OnClick = New1Click
+        OnClick = MenuNewClick
       end
       object MenuOpen: TMenuItem
         Caption = '&Open ...'
