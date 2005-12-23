@@ -1207,9 +1207,6 @@ var
     if CheckStoreRelativePaths.Checked and (FileNameToCorrect <> '') then
       Result := ExtractRelativepath(FileName, FileNameToCorrect) else
       Result := FileNameToCorrect;
-      
-    { Tests: }
-    Writeln('Writing "', FileNameToCorrect, '" (relative to "', FileName, '") as "', Result, '"');
   end;
 
   { Modified version of WriteStrings that always write
