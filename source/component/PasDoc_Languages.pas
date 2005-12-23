@@ -1871,7 +1871,7 @@ begin
   FTranslation[trNoConstants] := 'Az egységek nem tartalmaznak konstansokat.';
   FTranslation[trNoFunctions] := 'Az egységek nem tartalmaznak függvényeket vagy eljárásokat.';
   FTranslation[trNoIdentifiers] := 'Az egységek nem tartalmaznak azonosítókat.';
-  FTranslation[trProgram] := 'Program'; // TODO: translate
+  FTranslation[trProgram] := 'Program';
 end;
 
 function TPasDocLanguages.GetTranslation(
@@ -1919,6 +1919,9 @@ end;
 
 {
   $Log$
+  Revision 1.42  2005/12/23 19:00:15  kambi
+  * From Jónás Gergõ: trProgram translation is just 'Program' in Hungarian
+
   Revision 1.41  2005/12/23 15:10:58  kambi
   * Hungarian translation updated by Jónás Gergõ
 
