@@ -32,7 +32,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object NotebookMain: TNotebook
     Align = alClient
-    PageIndex = 11
+    PageIndex = 0
     ShowTabs = False
     Left = 144
     Height = 420
@@ -136,7 +136,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 23
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 286
+        Top = 294
         Width = 473
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
@@ -150,7 +150,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 23
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 262
+        Top = 270
         Width = 251
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
@@ -222,7 +222,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 8
         Left = 10
         Height = 24
-        Top = 310
+        Top = 318
         Width = 408
         HelpType = htKeyword
         HelpKeyword = 'AutoLinkOption'
@@ -235,10 +235,33 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 7
         Left = 10
         Height = 24
-        Top = 334
+        Top = 342
         Width = 275
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
+      end
+      object CheckStoreRelativePaths: TCheckBox
+        Caption = 'Store only relative paths in project file'
+        Checked = True
+        OnChange = SomethingChanged
+        State = cbChecked
+        TabOrder = 9
+        Left = 10
+        Height = 24
+        Top = 374
+        Width = 236
+      end
+      object CheckWriteUsesList: TCheckBox
+        BorderSpacing.OnChange = nil
+        Caption = 'Show units uses list'
+        OnChange = SomethingChanged
+        TabOrder = 10
+        Left = 10
+        Height = 24
+        Top = 246
+        Width = 134
+        HelpType = htKeyword
+        HelpKeyword = 'WriteUsesList'
       end
     end
     object PageVisibleMembers: TPage

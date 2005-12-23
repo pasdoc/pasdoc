@@ -67,11 +67,13 @@ type
     cbVizGraphUses: TCheckBox;
     CheckAutoAbstract: TCheckBox;
     CheckAutoLink: TCheckBox;
+    CheckStoreRelativePaths: TCheckBox;
     CheckHandleMacros: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
     // @name controls what members (based on visibility)
     // will be included in generated output.
     CheckListVisibleMembers: TCheckListBox;
+    CheckWriteUsesList: TCheckBox;
     clbSorting: TCheckListBox;
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
@@ -450,6 +452,7 @@ begin
   EditCssFileName.FileName := '';
   EditIntroductionFileName.FileName := '';
   EditConclusionFileName.FileName := '';
+  CheckWriteUsesList.Checked := false;
   CheckAutoAbstract.Checked := false;
   CheckAutoLink.Checked := false;
   CheckHandleMacros.Checked := true;
@@ -457,6 +460,8 @@ begin
 
   for SortIndex := Low(TSortSetting) to High(TSortSetting) do
     clbSorting.Checked[Ord(SortIndex)] := false;
+
+  CheckStoreRelativePaths.Checked := true;
 
   Changed := False;
 end;
@@ -860,6 +865,7 @@ begin
     end;
     PasDoc1.Generator.DestinationDirectory := edOutput.Directory;
     
+    PasDoc1.Generator.WriteUsesClause := CheckWriteUsesList.Checked;
     PasDoc1.Generator.AutoAbstract := CheckAutoAbstract.Checked;
     PasDoc1.AutoLink := CheckAutoLink.Checked;
     PasDoc1.HandleMacros := CheckHandleMacros.Checked;
@@ -1029,7 +1035,40 @@ var
       S.Append(Ini.ReadString(Section, 'Item_' + IntToStr(i), ''));
   end;
 
-var i: Integer;
+  { When reading any filename from Ini file, we make sure
+    that it's an absolute filename. This is needed to
+    properly handle the case when user choses "Save As"
+    and stores the same project within a different directory.
+    So it's safest to always keep absolute filenames
+    when project is loaded in pasdoc_gui.
+    
+    Below are some helper wrappers around ExpandFileName
+    that help us with this. }
+    
+  { This returns '' if FileName is '', else returns
+    ExpandFileName(FileName). It's useful because often
+    FileName = '' has special meaning:
+    it means that "given filename was not chosen by user",
+    so calling ExpandFileName is not wanted in this case. }
+  function ExpandNotEmptyFileName(const FileName: string): string;
+  begin
+    if FileName = '' then
+      Result := '' else
+      Result := ExpandFileName(FileName);
+  end;
+  
+  { Call ExpandNotEmptyFileName on each item. }
+  procedure ExpandFileNames(List: TStrings);
+  var
+    I: Integer;
+  begin
+    for I := 0 to List.Count - 1 do
+      List[I] := ExpandNotEmptyFileName(List[I]);
+  end;
+
+var
+  i: Integer;
+  SettingsFileNamePath: string;
 begin
   // TODO: The following is needed and should work but does not.
   {if Changed then
@@ -1042,6 +1081,14 @@ begin
   begin
     SettingsFileName := OpenDialog2.FileName;
     SaveDialog1.FileName := SettingsFileName;
+    
+    { Change current directory now to SettingsFileNamePath,
+      this is needed to make all subsequent ExpandFileName
+      operations work with respect to SettingsFileNamePath. }
+    SettingsFileNamePath := ExtractFilePath(SettingsFileName);
+    if not SetCurrentDir(SettingsFileNamePath) then
+      raise Exception.CreateFmt('Cannot change current directory to "%s"',
+        [SettingsFileNamePath]);
 
     Ini := TIniFile.Create(SettingsFileName);
     try
@@ -1060,10 +1107,14 @@ begin
         SetDefaults method, and this is very good, as it may give us
         additional possibilities. }
 
+      CheckStoreRelativePaths.Checked :=
+        Ini.ReadBool('Main', 'StoreRelativePaths', true);
+
       comboLanguages.ItemIndex := Ini.ReadInteger('Main', 'Language', 0);
       comboLanguagesChange(nil);
 
-      edOutput.Directory := Ini.ReadString('Main', 'OutputDir', '');
+      edOutput.Directory := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'OutputDir', ''));
 
       comboGenerateFormat.ItemIndex := Ini.ReadInteger('Main', 'GenerateFormat', 0);
       comboGenerateFormatChange(nil);
@@ -1090,14 +1141,20 @@ begin
       ReadStrings('Defines', memoDefines.Lines);
       ReadStrings('Header', memoHeader.Lines);
       ReadStrings('Footer', memoFooter.Lines);
-      ReadStrings('IncludeDirectories', memoIncludeDirectories.Lines);
-      ReadStrings('Files', memoFiles.Lines);
       
-      EditCssFileName.FileName := Ini.ReadString('Main', 'CssFileName', '');
-      EditIntroductionFileName.FileName :=
-        Ini.ReadString('Main', 'IntroductionFileName', '');
-      EditConclusionFileName.FileName :=
-        Ini.ReadString('Main', 'ConclusionFileName', '');
+      ReadStrings('IncludeDirectories', memoIncludeDirectories.Lines);
+      ExpandFileNames(memoIncludeDirectories.Lines);
+      
+      ReadStrings('Files', memoFiles.Lines);
+      ExpandFileNames(memoFiles.Lines);
+      
+      EditCssFileName.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'CssFileName', ''));
+      EditIntroductionFileName.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'IntroductionFileName', ''));
+      EditConclusionFileName.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'ConclusionFileName', ''));
+      CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
       CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
       CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
@@ -1110,8 +1167,10 @@ begin
       cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
       cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
       
-      cbCheckSpelling.Checked := Ini.ReadBool('Main', 'CheckSpelling', false);
-      comboLatexGraphicsPackage.ItemIndex := Ini.ReadInteger('Main', 'LatexGraphicsPackage', 0);
+      cbCheckSpelling.Checked :=
+        Ini.ReadBool('Main', 'CheckSpelling', false);
+      comboLatexGraphicsPackage.ItemIndex :=
+        Ini.ReadInteger('Main', 'LatexGraphicsPackage', 0);
 
       ReadStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
     finally Ini.Free end;
@@ -1138,14 +1197,47 @@ var
     for i := 0 to S.Count - 1 do
       Ini.WriteString(Section, 'Item_' + IntToStr(i), S[i]);
   end;
+  
+  { If CheckStoreRelativePaths.Checked and FileNameToCorrect <> '',
+    this returns relative filename (with respect to
+    directory where FileName is stored), else returns just
+    FileNameToCorrect. }
+  function CorrectFileName(const FileNameToCorrect: string): string;
+  begin
+    if CheckStoreRelativePaths.Checked and (FileNameToCorrect <> '') then
+      Result := ExtractRelativepath(FileName, FileNameToCorrect) else
+      Result := FileNameToCorrect;
+      
+    { Tests: }
+    Writeln('Writing "', FileNameToCorrect, '" (relative to "', FileName, '") as "', Result, '"');
+  end;
+
+  { Modified version of WriteStrings that always write
+    CorrectFileName(S[I]) instead of just S[I]. }
+  procedure WriteFileNames(const Section: string; S: TStrings);
+  var
+    i: Integer;
+  begin
+    { It's not really necessary for correctness but it's nice to protect
+      user privacy by removing trash data from file (in case previous
+      value of S had larger Count). }
+    Ini.EraseSection(Section);
+
+    Ini.WriteInteger(Section, 'Count', S.Count);
+    for i := 0 to S.Count - 1 do
+      Ini.WriteString(Section, 'Item_' + IntToStr(i),
+        CorrectFileName(S[i]));
+  end;
 
 var
   i: Integer;
 begin
   Ini := TIniFile.Create(FileName);
   try
+    Ini.WriteBool('Main', 'StoreRelativePaths', CheckStoreRelativePaths.Checked);
+
     Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
-    Ini.WriteString('Main', 'OutputDir', edOutput.Directory);
+    Ini.WriteString('Main', 'OutputDir', CorrectFileName(edOutput.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
     Ini.WriteInteger('Main', 'Verbosity', seVerbosity.Value);
@@ -1166,14 +1258,16 @@ begin
     WriteStrings('Defines', memoDefines.Lines);
     WriteStrings('Header', memoHeader.Lines);
     WriteStrings('Footer', memoFooter.Lines);
-    WriteStrings('IncludeDirectories', memoIncludeDirectories.Lines);
-    WriteStrings('Files', memoFiles.Lines);
+    WriteFileNames('IncludeDirectories', memoIncludeDirectories.Lines);
+    WriteFileNames('Files', memoFiles.Lines);
 
-    Ini.WriteString('Main', 'CssFileName', EditCssFileName.FileName);
-    Ini.WriteString('Main', 'IntroductionFileName',
-      EditIntroductionFileName.FileName);
-    Ini.WriteString('Main', 'ConclusionFileName',
-      EditConclusionFileName.FileName);
+    Ini.WriteString('Main', 'CssFileName', CorrectFileName(
+      EditCssFileName.FileName));
+    Ini.WriteString('Main', 'IntroductionFileName', CorrectFileName(
+      EditIntroductionFileName.FileName));
+    Ini.WriteString('Main', 'ConclusionFileName', CorrectFileName(
+      EditConclusionFileName.FileName));
+    Ini.WriteBool('Main', 'WriteUsesList', CheckWriteUsesList.Checked);
     Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
     Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
     Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
