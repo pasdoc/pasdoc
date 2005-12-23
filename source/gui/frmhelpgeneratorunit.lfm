@@ -24,7 +24,6 @@ object frmHelpGenerator: TfrmHelpGenerator
   HelpKeyword = 'PasDocGui'
   object lbNavigation: TListBox
     Align = alLeft
-    BorderSpacing.OnChange = nil
     OnClick = lbNavigationClick
     TabOrder = 0
     TopIndex = -1
@@ -33,6 +32,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object NotebookMain: TNotebook
     Align = alClient
+    BorderSpacing.OnChange = nil
     PageIndex = 0
     ShowTabs = False
     Left = 144
@@ -47,6 +47,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label1: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Items to sort alphabetically'
         Color = clNone
         FocusControl = clbSorting
@@ -57,7 +58,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label2: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Title :'
         Color = clNone
         FocusControl = edTitle
@@ -68,7 +68,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label6: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Output Type :'
         Color = clNone
         FocusControl = comboGenerateFormat
@@ -79,7 +78,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label11: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Project Name :'
         Color = clNone
         FocusControl = edProjectName
@@ -90,7 +88,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label19: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Language used in generated documentation :'
         Color = clNone
         FocusControl = comboLanguages
@@ -102,6 +99,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object clbSorting: TCheckListBox
         Anchors = [akTop, akRight]
+        BorderSpacing.OnChange = nil
         Items.Strings = (
           'structures'
           'constants'
@@ -129,7 +127,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         }
       end
       object CheckAutoAbstract: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
         OnChange = SomethingChanged
@@ -143,7 +140,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'AutoAbstractOption'
       end
       object CheckUseTipueSearch: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Use tipue search engine in HTML output'
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
         OnChange = SomethingChanged
@@ -158,7 +154,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object edTitle: TEdit
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 3
         Left = 10
@@ -170,7 +165,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'DocumentationTitle'
       end
       object comboGenerateFormat: TComboBox
-        BorderSpacing.OnChange = nil
         ItemHeight = 20
         Items.Strings = (
           'HTML'
@@ -190,7 +184,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object edProjectName: TEdit
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 5
         Left = 10
@@ -203,7 +196,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object comboLanguages: TComboBox
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         ItemHeight = 20
         MaxLength = 0
         OnChange = comboLanguagesChange
@@ -217,7 +209,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'OutputLanguage'
       end
       object CheckAutoLink: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Automatically turn identifiers into links, without the need for @link tag'
         OnChange = SomethingChanged
         TabOrder = 8
@@ -229,6 +220,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'AutoLinkOption'
       end
       object CheckHandleMacros: TCheckBox
+        BorderSpacing.OnChange = nil
         Caption = 'Recognize FPC macros syntax when parsing'
         Checked = True
         OnChange = SomethingChanged
@@ -242,6 +234,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'NoMacroOption'
       end
       object CheckStoreRelativePaths: TCheckBox
+        BorderSpacing.OnChange = nil
         Caption = 'Store only relative paths in project file'
         Checked = True
         OnChange = SomethingChanged
@@ -251,9 +244,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 24
         Top = 374
         Width = 236
+        HelpType = htKeyword
+        HelpKeyword = 'PasDocGui/StoreRelativePaths'
       end
       object CheckWriteUsesList: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Show units uses list'
         OnChange = SomethingChanged
         TabOrder = 10
@@ -274,7 +268,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object LabelVisibleMembers: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
         Color = clNone
         FocusControl = CheckListVisibleMembers
@@ -286,7 +279,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object LabelImplicitVisibility: TLabel
-        BorderSpacing.OnChange = nil
         Color = clNone
         Left = 8
         Height = 12
@@ -294,7 +286,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 162
       end
       object CheckListVisibleMembers: TCheckListBox
-        BorderSpacing.OnChange = nil
         Items.Strings = (
           'Published'
           'Public'
@@ -317,7 +308,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         }
       end
       object RadioImplicitVisibility: TRadioGroup
-        BorderSpacing.OnChange = nil
         Caption = 'Default visibility of members'
         ItemIndex = 0
         Items.Strings = (
@@ -344,6 +334,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label3: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Output directory (This is the directory where the web pages will be created.) :'
         Color = clNone
         FocusControl = edOutput
@@ -354,6 +345,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label14: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Conclusion file :'
         Color = clNone
         FocusControl = EditConclusionFileName
@@ -364,6 +356,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label15: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Introduction file :'
         Color = clNone
         FocusControl = EditIntroductionFileName
@@ -374,7 +367,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label16: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
         Color = clNone
         FocusControl = EditCssFileName
@@ -389,9 +381,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 23
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         TabOrder = 0
         OnChange = SomethingChanged
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 0
         Left = 8
@@ -407,9 +401,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 23
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         TabOrder = 1
         OnChange = SomethingChanged
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 1
         Left = 8
@@ -426,11 +422,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 23
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         TabOrder = 2
         OnChange = SomethingChanged
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 2
         Left = 8
@@ -444,8 +438,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         DialogTitle = 'Select output directory'
         ButtonWidth = 23
         NumGlyphs = 1
+        BorderSpacing.OnChange = nil
         TabOrder = 3
         OnChange = SomethingChanged
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 3
         Left = 8
@@ -465,6 +461,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label17: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'You can specify how you want words to be hyphenated here.'#10'Just enter the word (one per line) with hyphens in the correct places.'#10'Only English letters are allowed.'
         Color = clNone
         FocusControl = memoHyphenatedWords
@@ -475,6 +472,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label24: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'LateX graphics package'
         Color = clNone
         FocusControl = comboLatexGraphicsPackage
@@ -485,6 +483,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoHyphenatedWords: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 0
         Left = 190
@@ -493,7 +492,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 346
       end
       object rgLineBreakQuality: TRadioGroup
-        BorderSpacing.OnChange = nil
         Caption = 'Line Breaks'
         ItemIndex = 0
         Items.Strings = (
@@ -510,6 +508,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'PasDocGui/LatexLineBreaks'
       end
       object comboLatexGraphicsPackage: TComboBox
+        BorderSpacing.OnChange = nil
         Enabled = False
         Items.Strings = (
           'None'
@@ -538,6 +537,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label4: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Header (This text will appear at the top of the web page)'
         Color = clNone
         FocusControl = memoHeader
@@ -548,6 +548,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
       end
       object Label5: TLabel
+        BorderSpacing.OnChange = nil
         Caption = 'Footer (This text will appear at the bottom of the web page)'
         Color = clNone
         FocusControl = memoFooter
@@ -559,6 +560,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoHeader: TMemo
         Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 0
         WordWrap = False
@@ -571,6 +573,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoFooter: TMemo
         Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 1
         WordWrap = False
@@ -591,7 +594,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 2
       Width = 592
       object Label22: TLabel
-        BorderSpacing.OnChange = nil
         Caption = 'You will have to generate graphs yourself using the dot program from GraphViz :'
         Color = clNone
         Left = 14
@@ -600,7 +602,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 449
       end
       object cbVizGraphUses: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Generate and use Uses graph'
         OnChange = SomethingChanged
         TabOrder = 0
@@ -612,7 +613,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'GraphVizSupport'
       end
       object cbVizGraphClasses: TCheckBox
-        BorderSpacing.OnChange = nil
         Caption = 'Generate and use Classes graph'
         OnChange = SomethingChanged
         TabOrder = 1
@@ -625,6 +625,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object ButtonGraphVizURL: TButton
         AutoSize = True
+        BorderSpacing.OnChange = nil
         BorderSpacing.InnerBorder = 2
         Caption = 'http://www.graphviz.org/'
         OnClick = ButtonURLClick
@@ -645,7 +646,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object PanelSpellCheckingTop1: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 150
         ClientWidth = 592
@@ -654,6 +654,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 150
         Width = 592
         object Label20: TLabel
+          BorderSpacing.OnChange = nil
           Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
           Color = clNone
           FocusControl = memoSpellCheckingIgnore
@@ -664,7 +665,6 @@ object frmHelpGenerator: TfrmHelpGenerator
           HelpType = htKeyword
         end
         object Label23: TLabel
-          BorderSpacing.OnChange = nil
           Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
           Color = clNone
           Left = 6
@@ -673,6 +673,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Width = 414
         end
         object cbCheckSpelling: TCheckBox
+          BorderSpacing.OnChange = nil
           Caption = 'Check Spelling'
           OnChange = cbCheckSpellingChange
           TabOrder = 0
@@ -685,6 +686,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object ButtonAspellURL: TButton
           AutoSize = True
+          BorderSpacing.OnChange = nil
           BorderSpacing.InnerBorder = 2
           Caption = 'http://aspell.sourceforge.net/'
           OnClick = ButtonURLClick
@@ -697,7 +699,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoSpellCheckingIgnore: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         ScrollBars = ssAutoBoth
         TabOrder = 0
         WordWrap = False
@@ -718,7 +719,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object memoCommentMarkers: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         TabOrder = 0
         Height = 304
@@ -729,6 +729,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelMarkers: TPanel
         Align = alTop
+        BorderSpacing.OnChange = nil
         ClientHeight = 112
         ClientWidth = 592
         FullRepaint = False
@@ -736,7 +737,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 112
         Width = 592
         object Label18: TLabel
-          BorderSpacing.OnChange = nil
           Caption = 'Special comment markers'
           Color = clNone
           FocusControl = memoCommentMarkers
@@ -748,7 +748,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object rgCommentMarkers: TRadioGroup
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'Comment marker treatment'
           ItemIndex = 1
           Items.Strings = (
@@ -776,7 +775,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object PanelSourceFilesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 102
         ClientWidth = 592
@@ -786,7 +784,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 592
         object Label8: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
           Color = clNone
           FocusControl = memoFiles
@@ -798,7 +795,6 @@ object frmHelpGenerator: TfrmHelpGenerator
           HelpType = htKeyword
         end
         object btnBrowseSourceFiles: TButton
-          BorderSpacing.OnChange = nil
           BorderSpacing.InnerBorder = 2
           Caption = 'Browse'
           OnClick = btnBrowseSourceFilesClick
@@ -811,7 +807,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoFiles: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
@@ -832,7 +827,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object PanelIncludeDirectoriesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 89
         ClientWidth = 592
@@ -842,7 +836,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 592
         object Label9: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
           Color = clNone
           FocusControl = memoIncludeDirectories
@@ -854,7 +847,6 @@ object frmHelpGenerator: TfrmHelpGenerator
           HelpType = htKeyword
         end
         object btnBrowseIncludeDirectory: TButton
-          BorderSpacing.OnChange = nil
           BorderSpacing.InnerBorder = 2
           Caption = 'Browse'
           OnClick = btnBrowseIncludeDirectoryClick
@@ -867,7 +859,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoIncludeDirectories: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
@@ -889,7 +880,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object memoDefines: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
@@ -902,7 +892,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelDefinesTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 76
         ClientWidth = 592
@@ -912,7 +901,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 592
         object Label12: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
           Color = clNone
           FocusControl = memoDefines
@@ -934,7 +922,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object PanelGenerateTop: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         BevelOuter = bvNone
         ClientHeight = 110
         ClientWidth = 592
@@ -944,7 +931,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 592
         object Label10: TLabel
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.OnChange = nil
           Caption = 'While generating documentation, messages describing what is happening will appear in the area below.'
           Color = clNone
           FocusControl = memoMessages
@@ -956,6 +942,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           HelpType = htKeyword
         end
         object Label7: TLabel
+          BorderSpacing.OnChange = nil
           Caption = 'Verbosity level (default is 2)'
           Color = clNone
           WordWrap = True
@@ -966,6 +953,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           HelpType = htKeyword
         end
         object seVerbosity: TSpinEdit
+          BorderSpacing.OnChange = nil
           ClimbRate = 1
           MaxValue = 6
           OnChange = SomethingChanged
@@ -980,6 +968,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object ButtonGenerateDocs: TButton
           AutoSize = True
+          BorderSpacing.OnChange = nil
           BorderSpacing.InnerBorder = 2
           Caption = 'Generate documentation'
           OnClick = ButtonGenerateDocsClick
@@ -992,7 +981,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoMessages: TMemo
         Align = alClient
-        BorderSpacing.OnChange = nil
         ScrollBars = ssBoth
         TabOrder = 0
         Height = 306
@@ -1011,7 +999,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       Width = 592
       object tvUnits: TTreeView
         Align = alClient
-        BorderSpacing.OnChange = nil
         DefaultItemHeight = 14
         TabOrder = 0
         OnClick = tvUnitsClick
@@ -1021,15 +1008,12 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object seComment: TSynEdit
         Align = alBottom
-        BorderSpacing.OnChange = nil
         Font.Height = -16
         Font.Name = 'courier'
         Height = 191
         Name = 'seComment'
         TabOrder = 1
         Width = 592
-        BookMarkOptions.OnChange = nil
-        Gutter.OnChange = nil
         Gutter.CodeFoldingWidth = 14
         Keystrokes = <        
           item
@@ -1352,7 +1336,6 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = 250
             ShortCut = 24642
           end>
-        SelectedColor.OnChange = nil
         Cursor = crIBeam
         Height = 191
         Top = 225
@@ -1371,7 +1354,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object pnlEditCommentInstructions: TPanel
         Align = alTop
-        BorderSpacing.OnChange = nil
         Caption = 'Click on an item in the tree view to see its comment.'
         ClientHeight = 28
         ClientWidth = 592
