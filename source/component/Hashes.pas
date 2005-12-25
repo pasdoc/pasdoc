@@ -145,7 +145,7 @@ type
 
   THash=class
   private
-    Feld: PFakeArray; //< ein Array
+    Feld: PFakeArray;
     FeldMaxValue: Integer;
     FeldBelegt: Integer;
     FMaxCapacity: Integer;
