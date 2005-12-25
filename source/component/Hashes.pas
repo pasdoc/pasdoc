@@ -1,14 +1,14 @@
-unit Hashes;
+(*
+  This unit implements an associative array.
+  Before writing this unit, I've always missed Perl commands
+  like @code($h{abc}='def') in Pascal.
 
-(**********************************************************************
-    This unit implements an associative array.
-    Before writing this unit, I've always missed Perl commands
-    like $h{abc}='def' in Pascal.
+  @author(Copyright (C) 2001  Wolf Behrenhoff <wolf@behrenhoff.de>)
 
-    Copyright (C) 2001  Wolf Behrenhoff <wolf@behrenhoff.de>
-    Version 0.9.1 (works fine, don't know a bug, but 1.0? No,
-                   error checks are missing!)
+  Version 0.9.1 (works fine, don't know a bug, but 1.0? No,
+                 error checks are missing!)
 
+  @italic(
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,35 +22,32 @@ unit Hashes;
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- **********************************************************************
+  )
 
   Thanks to:
-    -Larry Wall for perl! And because I found a way how to implement
-     a hash in perl's source code (hv.c and hv.h). This is not a direct
-     translation from C to Pascal, but the algortithms are more or less
-     the same.
-
- **********************************************************************
+  @unorderedList(
+    @item(Larry Wall for perl! And because I found a way how to implement
+      a hash in perl's source code (hv.c and hv.h). This is not a direct
+      translation from C to Pascal, but the algortithms are more or less
+      the same.))
 
   Be warned:
-    -There is NOT a single ERROR CHECK in this unit. So expect anything!
-     Especially there are NO checks on NEW and GETMEM functions -
-     this might be dangerous on machines with low memory.
+  @unorderedList(
+    @item(There is NOT a single ERROR CHECK in this unit. So expect anything!
+      Especially there are NO checks on NEW and GETMEM functions ---
+      this might be dangerous on machines with low memory.))
 
- **********************************************************************
+  Programmer's information:
+  @unorderedList(
+    @item(you need Freepascal (http://www.freepascal.org) or 
+      Delphi (http://www.borland.com)
+      to compile this unit)
+    @item(I recommend that you use Ansistrings {$H+} to be able to use keys
+      longer than 255 chars))
 
-  Programmer's information
-    -you need Freepascal (www.freepascal.org) or Delphi (www.borland.com)
-     to compile this unit
-    -I recommend that you use Ansistrings {$H+} to be able to use keys
-     longer than 255 chars
+  How to use this unit:
 
- **********************************************************************
-
-  How to use this unit
-  --------------------
-
+@preformatted(
   Simply put this unit in your uses line. You can use a new class - THash.
 
   Initialize a hash (assuming "var h: THash;"):
@@ -115,8 +112,10 @@ unit Hashes;
   GetStringObject(key, var string, var pointer).
 
   Happy programming!
+)
+*)
 
- **********************************************************************)
+unit Hashes;
 
 {$Q-} // no integer overflow checks (I need overflow in THash.Hash)
 {$R-} // no range checks (because free bounds of TFakeArray[0..0])
@@ -127,6 +126,7 @@ uses
   SysUtils, Classes;
 
 type
+  { }
   PPHashEntry=^PHashEntry;
   PHashEntry=^THashEntry;
   THashEntry=record
@@ -137,15 +137,15 @@ type
     data: Pointer;
   end;
 
-  TFakeArray=array[0..0] of PHashEntry;
-  PFakeArray=^TFakeArray;
   { in FPC, I can simply use PPHashEntry as an array of PHashEntry -
     Delphi doesn't allow that. I need this stupid array[0..0] definition!
     From Delphi4, I could use a dynamic array. }
+  TFakeArray=array[0..0] of PHashEntry;
+  PFakeArray=^TFakeArray;
 
   THash=class
   private
-    Feld: PFakeArray; //ein Array
+    Feld: PFakeArray; //< ein Array
     FeldMaxValue: Integer;
     FeldBelegt: Integer;
     FMaxCapacity: Integer;
