@@ -140,7 +140,7 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
   $(VPCINCDIRS) -L$(OUTDIR)
 
 ############################################################################
-# Targets to build (and clean after build)
+# Building (and cleaning after building)
 ############################################################################
 
 .PHONY: default clean build-fpc-default-debug build-fpc-default \
@@ -279,7 +279,7 @@ help:
 	@echo "    Note that in case of FPC, these targets assume that variable"
 	@echo "    FPC_<os/arch> points to a compiler that produces"
 	@echo "    a binary for given <os/arch>. So if you want to cross-compile"
-	@echo "    with FPC, make sure that these variables are correctly set."
+	@echo "    with FPC, make sure to adjust these variables accordingly."
 	@echo
 	@echo "  clean:"
 	@echo "    Clean files produced during compilation."
@@ -304,21 +304,20 @@ help:
 	@echo "    (see [http://sourceforge.net/cvs/?group_id=4213])"
 
 ############################################################################
-# Targets to make distribution archives
+# Targets to make release archives
 #
-# There are some general targets here, and there are targets
-# that build and archive for particular target. Note that they assume
-# that according build-xxx target really produces a pasdoc binary
-# that works under xxx target. If you want to use cross-compiling
-# to build releases archives, you must make sure that proper FPC_<target-name>
-# variable is properly set.
+# Some general targets are present here, and targets
+# that build and archive for particular platform. 
+# Note that each dist-<os/arch> target assumes that according build-fpc-<os/arch>
+# target produces a pasdoc binary that works under <os/arch> platform.
+# So if you want to cross-compile to create release archives,
+# make sure that variables FPC_<os/arch> are properly set.
 #
-# Note that dist targets generally try to use the "most common"
-# archive format for given target. E.g. for Unices this is tar.gz,
-# for Win32/DOS this is zip. E.g. there are no problems with creating
-# zip for Unices, it's just a common practice to use tar.gz instead
-# of zip for Unices.
-#
+# Note that dist targets use the most common archive format for given platform.
+# E.g. for Unices this is tar.gz, for Win32/DOS this is zip.
+# There would be no problems with creating zip archives under Unices 
+# (or tar.gz under Win32/DOS), but it's just more common
+# to use tar.gz under Unices.
 ############################################################################
 
 .PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
