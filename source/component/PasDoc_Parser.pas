@@ -132,6 +132,11 @@ type
       [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
+    
+    { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
+      If given KeyWord has no corresponding @link(TMethodType) value,
+      raises @link(EInternalError). }
+    function KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
 
     procedure DoError(const AMessage: string; 
       const AArguments: array of const);
@@ -210,26 +215,27 @@ type
       Just a comfortable routine. }
     function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
     
-    { Parses a constructor, a destructor, a function or a procedure.
+    { Parses a constructor, a destructor, a function or a procedure
+      or an operator (for FPC).
       Resulting @link(TPasMethod) item will be returned in M.
       
       ClassKeywordString contains the keyword 'class'
       in the exact spelling as it was found in input,
       for class methods. Else it contains ''.
       
-      KeyWordString contains the keyword constructor, destructor, 
-      function or procedure in the exact spelling as it was found in input.
-      You can specify KeyWordString = '', this way you avoid including
+      MethodTypeString contains the keyword 'constructor', 'destructor', 
+      'function' or 'procedure' or standard directive 'operator' 
+      in the exact spelling as it was found in input.
+      You can specify MethodTypeString = '', this way you avoid including
       such keyword at the beginning of returned M.FullDeclaration.
       
-      Key contains one of the KEY_xxx constants for the What field of the
-      resulting method object. Yes, this is the keyword that should correspond 
-      to KeyWordString.
+      MethodType is used for the What field of the resulting TPasMethod. 
+      This should correspond to MethodTypeString.
       
       D may contain a description or nil. }
     procedure ParseCDFP(out M: TPasMethod; 
       const ClassKeywordString: string;
-      const KeyWordString: string; Key: TKeyWord;
+      const MethodTypeString: string; MethodType: TMethodType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const NeedName: boolean; InitItemsForNextBackComment: boolean);
       
@@ -396,6 +402,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function TParser.KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
+begin
+  case KeyWord of
+    KEY_CONSTRUCTOR: Result := METHOD_CONSTRUCTOR;
+    KEY_DESTRUCTOR:  Result := METHOD_DESTRUCTOR;
+    KEY_FUNCTION:    Result := METHOD_FUNCTION;
+    KEY_PROCEDURE:   Result := METHOD_PROCEDURE;
+  else
+    raise EInternalError.Create('KeyWordToMethodType: invalid keyword');
+  end;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 procedure TParser.DoError(const AMessage: string; 
   const AArguments: array of const);
 begin
@@ -519,7 +539,7 @@ end;
 
 procedure TParser.ParseCDFP(out M: TPasMethod; 
   const ClassKeywordString: string;
-  const KeyWordString: string; Key: TKeyword; 
+  const MethodTypeString: string; MethodType: TMethodType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean);
 var
@@ -534,19 +554,11 @@ begin
     ItemsForNextBackComment.ClearAndAdd(M);
     
   t := nil;
-  case Key of
-    KEY_CONSTRUCTOR: M.What := METHOD_CONSTRUCTOR;
-    KEY_DESTRUCTOR:  M.What := METHOD_DESTRUCTOR;
-    KEY_FUNCTION:    M.What := METHOD_FUNCTION;
-    KEY_PROCEDURE:   M.What := METHOD_PROCEDURE;
-    KEY_OPERATOR:    M.What := METHOD_OPERATOR;
-  else
-    DoError('Expected keyword starting some method/procedure', []);
-  end;
+  M.What := MethodType;
   
   if ClassKeyWordString <> '' then
     M.FullDeclaration :=  ClassKeyWordString + ' ';
-  M.FullDeclaration := M.FullDeclaration + KeyWordString;
+  M.FullDeclaration := M.FullDeclaration + MethodTypeString;
 
   { next non-wc token must be the name }
   if NeedName then
@@ -557,9 +569,11 @@ begin
       M.Free;
       raise;
     end;
-    if (Key = KEY_OPERATOR) then
+    if (MethodType = METHOD_OPERATOR) then
     begin
-      InvalidType := (t.MyType <> TOK_SYMBOL);
+      { Operators "or", "and", "xor" (expressed as keywords) can be overloaded,
+        also symbolic operators like "+", "*" etc. }
+      InvalidType := (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
     end
     else
     begin
@@ -576,7 +590,7 @@ begin
     end;
     M.Name := t.Data;
     DoMessage(5, mtInformation, 'Parsing %s "%s"',
-      [LowerCase(KeyWordArray[Key]), M.Name]);
+      [MethodTypeToString(MethodType), M.Name]);
     M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
     FreeAndNil(t);
   end;
@@ -931,7 +945,8 @@ begin
                 begin
                   try
                     ParseCDFP(M, ClassKeyWordString, 
-                      t.Data, t.Info.KeyWord, GetLastComment, true, true);
+                      t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                      GetLastComment, true, true);
                   except
                     i.Free;
                     FreeAndNil(t);
@@ -1155,6 +1170,13 @@ begin
     try
       case t.MyType of
         TOK_IDENTIFIER: 
+          if T.Info.StandardDirective = SD_OPERATOR then
+          begin
+            ParseCDFP(M, '', t.Data, METHOD_OPERATOR, 
+              GetLastComment, true, true);
+            u.FuncsProcs.Add(M);
+            Mode := MODE_UNDEFINED;
+          end else
           begin
             case Mode of
               MODE_CONST:
@@ -1181,16 +1203,9 @@ begin
               KEY_RESOURCESTRING,
                 KEY_CONST:
                 Mode := MODE_CONST;
-              KEY_OPERATOR: 
-                begin
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, 
-                    GetLastComment, true, true);
-                  u.FuncsProcs.Add(M);
-                  Mode := MODE_UNDEFINED;
-                end;
               KEY_FUNCTION, KEY_PROCEDURE: 
                 begin
-                  ParseCDFP(M, '', t.Data, t.Info.KeyWord, 
+                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord), 
                     GetLastComment, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
@@ -1468,7 +1483,7 @@ begin
     if (t.MyType = TOK_KEYWORD) then begin
       if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then 
       begin
-        ParseCDFP(MethodType, '', t.Data, t.Info.KeyWord, 
+        ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord), 
           RawDescriptionInfo, false, true);
         MethodType.Name := TypeName;
         MethodType.FullDeclaration := 
@@ -1742,16 +1757,17 @@ begin
       if (t.MyType = TOK_KEYWORD) and 
          (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
       begin
-        { KeyWordString for ParseCDFP below is '', because we already included
+        { MethodTypeString for ParseCDFP below is '', because we already included
           t.Data inside ItemCollector.FullDeclaration. 
-          If KeyWordString would be t.Data, then we would incorrectly
+          If MethodTypeString would be t.Data, then we would incorrectly
           append t.Data twice to ItemCollector.FullDeclaration
           when appending m.FullDeclaration to ItemCollector.FullDeclaration. 
           
           Note that param InitItemsForNextBackComment for ParseCDFP 
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
-        ParseCDFP(M, '', '', t.Info.KeyWord, EmptyRawDescriptionInfo, false, false);
+        ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), 
+          EmptyRawDescriptionInfo, false, false);
         ItemCollector.FullDeclaration := 
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;

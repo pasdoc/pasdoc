@@ -2349,12 +2349,20 @@ end;
 
 function MethodTypeToString(const MethodType: TMethodType): string;
 const
-  { Map TMethodType to TKeyWord }
+  { Maps @link(TMethodType) value to @link(TKeyWord) value.
+    When given TMethodType value doesn't correspond to any keyword,
+    it maps it to KEY_INVALIDKEYWORD. }
   MethodTypeToKeyWord: array[TMethodType] of TKeyWord =
-  ( KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
-    KEY_FUNCTION, KEY_PROCEDURE, KEY_OPERATOR );
+  ( KEY_CONSTRUCTOR, 
+    KEY_DESTRUCTOR,
+    KEY_FUNCTION, 
+    KEY_PROCEDURE, 
+    KEY_INVALIDKEYWORD );
 begin
-  Result := LowerCase(KeyWordArray[MethodTypeToKeyWord[MethodType]]);
+  if MethodType = METHOD_OPERATOR then
+    Result := StandardDirectiveArray[SD_OPERATOR] else
+    Result := KeyWordArray[MethodTypeToKeyWord[MethodType]];
+  Result := LowerCase(Result);
 end;
 
 function VisibilitiesToStr(const Visibilities: TVisibilities): string;

@@ -167,3 +167,4 @@ mk_special_test ok_include_environment ok_include_environment.pas
 mk_special_test ok_enum_explicit_values ok_enum_explicit_values.pas
 mk_special_test ok_description_test --description ok_description_test.txt ok_description_test.pas
 mk_special_test ok_program --write-uses-list ok_program.pas
+mk_special_test ok_operator_test ok_operator_test.pas
