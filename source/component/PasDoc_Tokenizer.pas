@@ -837,8 +837,16 @@ begin
   with Result do 
   begin
     CommentContent := '';
-    while HasData and GetChar(c) and not (c in [#10, #13]) do
-      CommentContent := CommentContent + c;
+    
+    while HasData and GetChar(c) do
+    begin
+      case c of
+        #10: begin Inc(Row); break end;
+        #13: break;
+        else CommentContent := CommentContent + c;
+      end;
+    end;
+
     Data := '//' + CommentContent;
   end;
 end;
