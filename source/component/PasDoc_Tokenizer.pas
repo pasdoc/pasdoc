@@ -120,7 +120,7 @@ type
     SD_CDECL,
     SD_CVAR,
     SD_DEFAULT,
-    SD_SPID,
+    SD_DISPID,
     SD_DYNAMIC,
     SD_EXPORT,
     SD_EXTERNAL,
@@ -343,7 +343,7 @@ const
     array[Low(TStandardDirective)..High(TStandardDirective)] of PChar =
   ('x', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
-    'CDECL', 'CVAR', 'DEFAULT', 'SPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
+    'CDECL', 'CVAR', 'DEFAULT', 'DISPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
     'FAR', 'FORWARD', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
     'NODEFAULT', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',

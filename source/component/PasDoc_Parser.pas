@@ -542,10 +542,43 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
   const MethodTypeString: string; MethodType: TMethodType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean);
+  
+  { Reads tokens (adding them to M.FullDeclaration) until a semicolon
+    (on parenthesis level zero) is found (this final semicolon 
+    is also read and appended to M.FullDeclaration). }
+  procedure ReadTokensUntilSemicolon;
+  var
+    T: TToken;
+    Level: Integer;
+    IsSemicolon: Boolean;
+  begin
+    Level := 0;
+    repeat
+      T := Scanner.GetToken;
+      try
+        if T.MyType = TOK_WHITESPACE then
+        begin
+          { add exactly *one space* at the end of M.FullDeclaration }
+          if Length(M.FullDeclaration) > 0 then 
+          begin
+            if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
+              M.FullDeclaration := M.FullDeclaration + ' ';
+          end;
+        end else
+        if not (T.MyType in TokenCommentTypes) then
+          M.FullDeclaration := M.FullDeclaration + T.Data;
+
+        if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);
+        if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then Dec(level);
+        IsSemicolon := T.IsSymbol(SYM_SEMICOLON);
+      finally
+        FreeAndNil(T);
+      end;
+    until IsSemicolon and (Level = 0);
+  end;
+  
 var
-  IsSemicolon: Boolean;
   t: TToken;
-  level: Integer;
   InvalidType: boolean;
 begin
   M := TPasMethod.Create;
@@ -594,30 +627,9 @@ begin
     M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
     FreeAndNil(t);
   end;
-
-  { copy tokens until first semicolon with parenthesis level zero }
-  level := 0;
-  repeat
-    t := Scanner.GetToken;
-    if not (t.MyType in TokenCommentTypes) then
-      case t.MyType of
-        TOK_WHITESPACE:
-          begin
-            { add exactly *one space* at the end of M.FullDeclaration }
-            if Length(M.FullDeclaration) > 0 then begin
-              if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
-                M.FullDeclaration := M.FullDeclaration + ' ';
-            end;
-          end
-        else
-          M.FullDeclaration := M.FullDeclaration + t.Data;
-      end;
-    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);
-    if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then Dec(level);
-    IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
-    FreeAndNil(t);
-  until IsSemicolon and (Level = 0);
   
+  ReadTokensUntilSemicolon;
+
   { first get non-WC token - if it is not an identifier in SD_SET put it back
     into stream and leave; otherwise copy tokens until semicolon }
   repeat
@@ -633,9 +645,9 @@ begin
     begin
       case t.Info.StandardDirective of
         SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-          SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
-          SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-          SD_VARARGS:
+        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
+        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+        SD_VARARGS:
           begin
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
             FreeAndNil(t);
@@ -684,18 +696,29 @@ begin
               end;
             until False;
           end;
-        SD_DEPRECATED: begin
-          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-          M.IsDeprecated := True;
-          FreeAndNil(t);
-          t := GetNextToken;
-        end;
-        SD_PLATFORM: begin
-          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-          M.IsPlatformSpecific := True;
-          FreeAndNil(t);
-          t := GetNextToken;
-        end;
+        SD_DEPRECATED: 
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            M.IsDeprecated := True;
+            FreeAndNil(t);
+            t := GetNextToken;
+          end;
+        SD_PLATFORM: 
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            M.IsPlatformSpecific := True;
+            FreeAndNil(t);
+            t := GetNextToken;
+          end;
+        SD_DISPID: 
+          begin
+            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+            FreeAndNil(T);
+            
+            ReadTokensUntilSemicolon;
+            
+            t := GetNextToken;
+          end;
       else
         begin
           Scanner.UnGetToken(t);
