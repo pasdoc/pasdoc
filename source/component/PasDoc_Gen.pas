@@ -2711,7 +2711,8 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
     AString is keyword. }
   function FormatCode(const AString: string): string;
   begin
-    if KeyWordByName(AString) <> KEY_INVALIDKEYWORD then
+    if (KeyWordByName(AString) <> KEY_INVALIDKEYWORD) or
+       (StandardDirectiveByName(AString) <> SD_INVALIDSTANDARDDIRECTIVE) then
       Result := FormatKeyWord(AString) else
       Result := FormatNormalCode(AString);
   end;

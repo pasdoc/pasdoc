@@ -170,3 +170,4 @@ mk_special_test ok_program --write-uses-list ok_program.pas
 mk_special_test ok_operator_test ok_operator_test.pas
 mk_special_test error_line_number_2 error_line_number_2.pas
 mk_special_test ok_dispid_method ok_dispid_method.pas
+mk_special_test ok_longcode_highlight ok_longcode_highlight.pas
