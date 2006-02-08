@@ -7,6 +7,8 @@
     * Proper "Save" command on Ctrl+S (doesn't always display SaveDialog)
   * program files are now parsed (their "uses" clauses are shown in output)
     (by Mark de Wever)
+  * @( and @) construct
+    (see [http://pasdoc.sipsolutions.net/TagsParametersMatching])
   * Various bugfixes.
 
 2005-11-26 v0.10.0

@@ -711,6 +711,15 @@ var
       BracketCount := 1;
       repeat
         case Description[i] of
+          '@':
+            { Inc(I) here means that we will skip to next character
+              when we will see @@, @( or @).
+              This means that @( and @) will correctly *not* change
+              BracketCount. And @@ will be properly avoided,
+              so that e.g. "@@(" will correctly increase BracketCount
+              (because "@@(" means one "at" character and then normal
+              opening paren). }
+            Inc(I);
           '(': Inc(BracketCount);
           ')': Dec(BracketCount);
         end;
@@ -1037,6 +1046,28 @@ begin
       Result := Result + ReplaceStr;
       
       FOffset := OffsetEnd;
+      ConvertBeginOffset := FOffset;
+    end else
+    if Copy(Description, FOffset, 2) = '@(' then
+    begin
+      DoConvert;
+      
+      { convert '@(' to '(' }
+      if CheckNormalTextAllowed('@(') then
+        Result := Result + '(';
+        
+      FOffset := FOffset + 2;
+      ConvertBeginOffset := FOffset;
+    end else
+    if Copy(Description, FOffset, 2) = '@)' then
+    begin
+      DoConvert;
+      
+      { convert '@)' to '(' }
+      if CheckNormalTextAllowed('@)') then
+        Result := Result + ')';
+        
+      FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@@' then
