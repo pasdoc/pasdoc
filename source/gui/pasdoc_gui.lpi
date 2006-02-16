@@ -14,77 +14,7 @@
       <Title Value="pasdoc_gui"/>
       <ActiveEditorIndexAtStart Value="0"/>
     </General>
-    <Units Count="7">
-      <Unit0>
-        <CursorPos X="3" Y="1"/>
-        <Filename Value="pasdoc_gui.lpr"/>
-        <IsPartOfProject Value="True"/>
-        <TopLine Value="1"/>
-        <UnitName Value="pasdoc_gui"/>
-        <UsageCount Value="95"/>
-      </Unit0>
-      <Unit1>
-        <CursorPos X="13" Y="41"/>
-        <EditorIndex Value="0"/>
-        <Filename Value="frmhelpgeneratorunit.pas"/>
-        <ComponentName Value="frmHelpGenerator"/>
-        <IsPartOfProject Value="True"/>
-        <Loaded Value="True"/>
-        <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
-        <TopLine Value="16"/>
-        <UnitName Value="frmHelpGeneratorUnit"/>
-        <UsageCount Value="95"/>
-        <Bookmarks Count="1">
-          <Item0 X="1" Y="316" ID="1"/>
-        </Bookmarks>
-      </Unit1>
-      <Unit2>
-        <CursorPos X="3" Y="65"/>
-        <Filename Value="frmaboutunit.pas"/>
-        <ComponentName Value="frmAbout"/>
-        <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="frmaboutunit.lrs"/>
-        <TopLine Value="55"/>
-        <UnitName Value="frmAboutUnit"/>
-        <UsageCount Value="95"/>
-      </Unit2>
-      <Unit3>
-        <CursorPos X="1" Y="1"/>
-        <Filename Value="helpprocessor.pas"/>
-        <IsPartOfProject Value="True"/>
-        <TopLine Value="1"/>
-        <UnitName Value="HelpProcessor"/>
-        <UsageCount Value="31"/>
-      </Unit3>
-      <Unit4>
-        <CursorPos X="5" Y="23"/>
-        <Filename Value="wwwbrowserrunnerdm.pas"/>
-        <ComponentName Value="WWWBrowserRunner"/>
-        <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
-        <TopLine Value="12"/>
-        <UnitName Value="WWWBrowserRunnerDM"/>
-        <UsageCount Value="31"/>
-      </Unit4>
-      <Unit5>
-        <CursorPos X="3" Y="9"/>
-        <Filename Value="preferencesfrm.pas"/>
-        <ComponentName Value="Preferences"/>
-        <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="preferencesfrm.lrs"/>
-        <TopLine Value="1"/>
-        <UnitName Value="PreferencesFrm"/>
-        <UsageCount Value="30"/>
-      </Unit5>
-      <Unit6>
-        <CursorPos X="28" Y="45"/>
-        <Filename Value="pasdocguisettings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <TopLine Value="28"/>
-        <UnitName Value="PasDocGuiSettings"/>
-        <UsageCount Value="29"/>
-      </Unit6>
-    </Units>
+    <LazDoc Paths=""/>
     <PublishOptions>
       <Version Value="2"/>
       <DestinationDirectory Value="/tmp/aaa/"/>
@@ -114,6 +44,77 @@
         <MinVersion Major="1" Valid="True"/>
       </Item4>
     </RequiredPackages>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="pasdoc_gui.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="pasdoc_gui"/>
+        <CursorPos X="3" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="95"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="frmhelpgeneratorunit.pas"/>
+        <ComponentName Value="frmHelpGenerator"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
+        <UnitName Value="frmHelpGeneratorUnit"/>
+        <CursorPos X="23" Y="16"/>
+        <TopLine Value="16"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="95"/>
+        <Bookmarks Count="1">
+          <Item0 X="1" Y="316" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="frmaboutunit.pas"/>
+        <ComponentName Value="frmAbout"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="frmaboutunit.lrs"/>
+        <UnitName Value="frmAboutUnit"/>
+        <CursorPos X="3" Y="65"/>
+        <TopLine Value="55"/>
+        <UsageCount Value="95"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="helpprocessor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="HelpProcessor"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="31"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="wwwbrowserrunnerdm.pas"/>
+        <ComponentName Value="WWWBrowserRunner"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
+        <UnitName Value="WWWBrowserRunnerDM"/>
+        <CursorPos X="5" Y="23"/>
+        <TopLine Value="12"/>
+        <UsageCount Value="31"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="preferencesfrm.pas"/>
+        <ComponentName Value="Preferences"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="preferencesfrm.lrs"/>
+        <UnitName Value="PreferencesFrm"/>
+        <CursorPos X="3" Y="9"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="30"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="pasdocguisettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PasDocGuiSettings"/>
+        <CursorPos X="28" Y="45"/>
+        <TopLine Value="28"/>
+        <UsageCount Value="29"/>
+      </Unit6>
+    </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
