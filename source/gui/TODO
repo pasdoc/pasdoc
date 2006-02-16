@@ -3,7 +3,7 @@
   - when reading we 1st read FilePathDelim,
     then in all filenames we replace FilePathDelim with current PathDelim.
   - when writing we set FilePathDelim to current PathDelim
-  
+
   Add then to [http://pasdoc.sipsolutions.net/PasDocGui] text like
 
 Moreover, as long as you will keep ''Store relative paths in project file'' option checked, you can freely open and save the same *.pds file using any OS. E.g. you can create and save {{{test.pds}}} using Linux version of pasdoc_gui, then switch to Windows and open the same {{{test.pds}}} file using Windows version of pasdoc_gui, etc.
@@ -13,19 +13,19 @@ Moreover, as long as you will keep ''Store relative paths in project file'' opti
     (e.g. there *must* be a way to differ between svg and png formats;
     not to mention that there *should* be a way to differ between various
     pixel-based image formats).
-    
+
   - Also for command-line pasdoc:
     By default dot should be automatically run by pasdoc component,
     although there should be a way to turn it off.
     It would be also nice to have a way to let pasdoc component
     automatically call dot but at the same time change some
     dot's command-line options (e.g. force "-Grankdir=LR").
-    
+
     Last possibility could be used by pasdoc_gui to provide
     some GUI controls that affect generated command-line
     options passed to dot. E.g. pasdoc_gui could provide
     TRadioBox to control "-Grankdir=LR|RL|BT" option for dot.
-    
+
   - Also for command-line pasdoc:
     See also requests about using client-side image map generated
     by "dot", see [http://pasdoc.sipsolutions.net/WantedFeatures].
@@ -72,3 +72,17 @@ Moreover, as long as you will keep ''Store relative paths in project file'' opti
   Maybe also turn them into labels.
   This seems not possible now (with Lazarus 0.9.10 on GTK interface),
   for now normal buttons look best.
+
+- Bug (possibly in Lazarus LCL ?) with Lazarus 0.9.12 on GTK (Linux),
+  FPC 2.0.2 (was present with Lazarus 0.9.10 and FPC 2.0.0 too):
+
+  cd pasdoc/source/autodoc
+  pasdoc_gui
+  press Ctrl+O
+  choose file autodoc.pds with mouse double-click
+  -> you get segfault.
+
+  When I enter "Open" menu item by mouse (not Ctrl+O), things work OK.
+
+  Investigate this, make simple testcase, fix or submit to Lazarus
+  bug repository.
