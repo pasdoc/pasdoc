@@ -5,6 +5,8 @@
     * Many options already available in command-line pasdoc are now in pasdoc_gui too
     * "Store relative paths" option
     * Proper "Save" command on Ctrl+S (doesn't always display SaveDialog)
+  + @image tag (by Grzegorz Skoczylas)
+    (see [http://pasdoc.sipsolutions.net/ImageTag])
   * program files are now parsed (their "uses" clauses are shown in output)
     (by Mark de Wever)
   * @( and @) construct

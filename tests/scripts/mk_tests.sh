@@ -172,3 +172,12 @@ mk_special_test error_line_number_2 error_line_number_2.pas
 mk_special_test ok_dispid_method ok_dispid_method.pas
 mk_special_test ok_longcode_highlight ok_longcode_highlight.pas
 mk_special_test ok_non_matching_paren ok_non_matching_paren.pas
+
+case "$FORMAT" in
+  'latex' | 'latex2rtf')
+     mk_special_test ok_image_pdf --latex-head=usegraphics_pdf.tex ok_image.pas
+     mk_special_test ok_image_dvi --latex-head=usegraphics_dvi.tex ok_image.pas
+     ;;
+  *) mk_special_test ok_image ok_image.pas 
+     ;;
+esac

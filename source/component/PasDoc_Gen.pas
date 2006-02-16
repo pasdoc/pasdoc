@@ -262,6 +262,8 @@ type
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
 
+    FImages: TStringList;
+    
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
@@ -341,6 +343,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+    procedure HandleImageTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
     procedure HandleOrderedListTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -391,6 +397,9 @@ type
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure TagAllowedInsideRows(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
+
+    function ConvertImagePath(const Path: string; const bDir: Boolean): string;
+    procedure WriteImages;      
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -749,6 +758,14 @@ type
       The implementation of this method in this class just returns
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
+
+    { This should return markup upon including specified image in description.
+      E.g. HTML generator will want to wrap this in
+      <img src="...">.
+
+      Implementation of this method in this class simply returns
+      @code(Result := Text). Output generators should override this. }
+    function FormatImage(const Path: string): string; virtual;
 
     { Format a list from given ListData. }
     function FormatList(ListData: TListData): string; virtual; abstract;
@@ -1718,6 +1735,9 @@ procedure TDocGenerator.ExpandDescriptions;
       TTag.Create(TagManager, 'preformatted',
         nil, {$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
         [toParameterRequired]);
+      TTag.Create(TagManager, 'image',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleImageTag,
+        [toParameterRequired]);
 
       { Tags with recursive params }
       TTag.Create(TagManager, 'code',
@@ -2361,10 +2381,12 @@ begin
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;
   FSpellCheckIgnoreWords := TStringList.Create;
+  FImages := TStringList.Create;
 end;
 
 destructor TDocGenerator.Destroy;
 begin
+  FImages.Free;
   FSpellCheckIgnoreWords.Free;
   FLanguage.Free;
   FClassHierarchy.Free;
@@ -2446,6 +2468,7 @@ procedure TDocGenerator.WriteDocumentation;
 begin
   if OutputGraphVizUses then WriteGVUses;
   if OutputGraphVizClassHierarchy then WriteGVClasses;
+  WriteImages;
 end;
 
 procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
@@ -3578,6 +3601,49 @@ begin
   Allowed :=
     (EnclosingTag = RowTag) or
     (EnclosingTag = RowHeadTag);
+end;
+
+function TDocGenerator.ConvertImagePath(const Path: string;
+  const bDir: Boolean): string;
+var
+  Id: Integer;
+begin
+  Id := FImages.IndexOf(Path);
+  if Id < 0  then
+    Id := FImages.Add(Path);
+  Result := 'img' + IntToStr(Id) + ExtractFileExt(Path);
+  if bDir then
+    Insert(IncludeTrailingPathDelimiter(DestinationDirectory), Result, 1)
+end;
+
+procedure TDocGenerator.WriteImages;
+var
+  i: Integer;
+
+  procedure  CopyImageFile(const Src: string);
+  var
+    Dst: string;
+  begin
+    Dst := ConvertImagePath(Src, True);
+    CopyFile(Src, Dst);
+  end;
+
+begin
+  for i := FImages.Count - 1 downto 0 do
+    CopyImageFile(fImages[i])
+end;
+
+procedure TDocGenerator.HandleImageTag(ThisTag: TTag;
+  var ThisTagData: TObject; EnclosingTag: TTag;
+  var EnclosingTagData: TObject; const TagParameter: string;
+  var ReplaceStr: string);
+begin
+  ReplaceStr := FormatImage(ConvertImagePath(TagParameter, False));
+end;
+
+function TDocGenerator.FormatImage(const Path: string): string;
+begin
+  Result := Path
 end;
 
 end.

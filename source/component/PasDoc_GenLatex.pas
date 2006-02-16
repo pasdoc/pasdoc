@@ -195,6 +195,8 @@ Latex DocGenerators.}
     
     function FormatPreformatted(const Text: string): string; override;
     
+    function FormatImage(const Path: string): string; override;
+
     function FormatList(ListData: TListData): string; override;
 
     function FormatTable(Table: TTableData): string; override;
@@ -1623,6 +1625,14 @@ begin
       ' \\ \hline' + LineEnding;
   end;
   Result := Result + '\end{tabular}' + Paragraph;
+end;
+
+function TTexDocGenerator.FormatImage(const Path: string): string;
+begin
+  Result := 
+    '\begin{figure}' + LineEnding +
+    '\includegraphics{' + EscapeURL(Path) + '}' + LineEnding +
+    '\end{figure}' + LineEnding;
 end;
 
 end.

@@ -261,6 +261,8 @@ type
 
     function FormatPreformatted(const Text: string): string; override;
     
+    function FormatImage(const Path: string): string; override;
+
     function FormatList(ListData: TListData): string; override;
 
     function FormatTable(Table: TTableData): string; override;
@@ -268,12 +270,13 @@ type
     function FormatTableOfContents(Sections: TStringPairVector): string; override;
   public
     constructor Create(AOwner: TComponent); override;
+    
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
+    
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
-
   published
     { some HTML code to be written as header for every page }
     property Header: string read FHeader write FHeader;
@@ -2169,6 +2172,11 @@ begin
     '<pre class="preformatted">' +
        inherited FormatPreformatted(Text) + '</pre>' +
      LineEnding + LineEnding + '<p>';
+end;
+
+function TGenericHTMLDocGenerator.FormatImage(const Path: string): string;
+begin
+  Result := Format('<img src="%s" />', [Path]);
 end;
 
 function TGenericHTMLDocGenerator.FormatList(ListData: TListData): string;
