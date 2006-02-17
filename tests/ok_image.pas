@@ -1,6 +1,6 @@
 { @abstract(This is @@image tag test.)
 
-  @image(ok_image_picture.png)
+  @image(ok_image_picture.jpg)
 
   Continue...
 }
