@@ -347,6 +347,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+    procedure HandleIncludeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
     procedure HandleOrderedListTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -1737,6 +1741,11 @@ procedure TDocGenerator.ExpandDescriptions;
         [toParameterRequired]);
       TTag.Create(TagManager, 'image',
         nil, {$IFDEF FPC}@{$ENDIF} HandleImageTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'include',
+        { @include tag works the same way in both expanding passes. }
+        {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
+        {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
         [toParameterRequired]);
 
       { Tags with recursive params }
@@ -3633,10 +3642,10 @@ begin
     CopyImageFile(fImages[i])
 end;
 
-procedure TDocGenerator.HandleImageTag(ThisTag: TTag;
-  var ThisTagData: TObject; EnclosingTag: TTag;
-  var EnclosingTagData: TObject; const TagParameter: string;
-  var ReplaceStr: string);
+procedure TDocGenerator.HandleImageTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := FormatImage(ConvertImagePath(TagParameter, False));
 end;
@@ -3644,6 +3653,23 @@ end;
 function TDocGenerator.FormatImage(const Path: string): string;
 begin
   Result := Path
+end;
+
+procedure TDocGenerator.HandleIncludeTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  IncludedText: string;
+begin
+  IncludedText := FileToString(Trim(TagParameter));
+  ReplaceStr := ThisTag.TagManager.Execute(IncludedText,
+    { Note that this means that we reset auto-linking state
+      inside the include file to what was chosen by --auto-link
+      command-line option. I.e., 
+        @noAutoLink(@include(file.txt))
+      does NOT turn auto-linking off inside file.txt. }
+    AutoLink);
 end;
 
 end.

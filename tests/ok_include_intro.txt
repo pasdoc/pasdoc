@@ -1,0 +1,10 @@
+@tableOfContents
+
+Demo that you can also split introduction and conclusion using
+@@include tag:
+
+@section(1 Sec1 First section in ok_include_intro.txt file)
+
+First section dummy text.
+
+@include(ok_include_intro_include.txt)

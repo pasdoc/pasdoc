@@ -1,0 +1,4 @@
+@section(1 Sec2 Second section in ok_include_intro_include.txt file)
+
+Second section dummy text.
+

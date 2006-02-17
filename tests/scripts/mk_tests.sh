@@ -173,3 +173,4 @@ mk_special_test ok_dispid_method ok_dispid_method.pas
 mk_special_test ok_longcode_highlight ok_longcode_highlight.pas
 mk_special_test ok_non_matching_paren ok_non_matching_paren.pas
 mk_special_test ok_image ok_image.pas
+mk_special_test ok_include --introduction=ok_include_intro.txt ok_include.pas
