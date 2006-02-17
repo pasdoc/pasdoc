@@ -1221,6 +1221,15 @@ begin
     WriteDirect('\textwidth 16.5cm',true);
   WriteDirect('',true);
   WritePDFIfDef;
+  
+  { Use graphicx package (for @image tag) }
+  WriteDirectLine(
+    '\ifpdf' + LineEnding +
+    '  \usepackage[pdftex]{graphicx}' + LineEnding +
+    '\else' + LineEnding +
+    '  \usepackage[dvips]{graphicx}' + LineEnding +
+    '\fi');
+
   Title := ConvertString(Title);
   WritePDFDocInfo(Title);
   WriteDirect('',true);
