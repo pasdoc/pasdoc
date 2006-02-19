@@ -1,0 +1,1 @@
+pasdoc --output=/tmp/ dir1/unit1.pas dir2/unit2.pas
