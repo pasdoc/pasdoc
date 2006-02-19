@@ -261,8 +261,6 @@ type
     FCurrentItem: TBaseItem;
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
-
-    FImages: TStringList;
     
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -402,8 +400,6 @@ type
     procedure TagAllowedInsideRows(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 
-    function ConvertImagePath(const Path: string; const bDir: Boolean): string;
-    procedure WriteImages;      
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -764,12 +760,17 @@ type
     function FormatPreformatted(const Text: string): string; virtual;
 
     { This should return markup upon including specified image in description.
-      E.g. HTML generator will want to wrap this in
-      <img src="...">.
+      FileNames is a list of alternative filenames of an image,
+      it always contains at least one item (i.e. FileNames.Count >= 1)
+      and never contains empty lines (i.e. Trim(FileNames[I]) <> '').
+      
+      E.g. HTML generator will want to choose the best format for HTML,
+      then somehow copy the image from FileNames[Chosen] and wrap 
+      this in <img src="...">.
 
       Implementation of this method in this class simply returns
-      @code(Result := Text). Output generators should override this. }
-    function FormatImage(const Path: string): string; virtual;
+      @code(Result := FileNames[0]). Output generators should override this. }
+    function FormatImage(FileNames: TStringList): string; virtual;
 
     { Format a list from given ListData. }
     function FormatList(ListData: TListData): string; virtual; abstract;
@@ -2390,12 +2391,10 @@ begin
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;
   FSpellCheckIgnoreWords := TStringList.Create;
-  FImages := TStringList.Create;
 end;
 
 destructor TDocGenerator.Destroy;
 begin
-  FImages.Free;
   FSpellCheckIgnoreWords.Free;
   FLanguage.Free;
   FClassHierarchy.Free;
@@ -2477,7 +2476,6 @@ procedure TDocGenerator.WriteDocumentation;
 begin
   if OutputGraphVizUses then WriteGVUses;
   if OutputGraphVizClassHierarchy then WriteGVClasses;
-  WriteImages;
 end;
 
 procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
@@ -3612,47 +3610,43 @@ begin
     (EnclosingTag = RowHeadTag);
 end;
 
-function TDocGenerator.ConvertImagePath(const Path: string;
-  const bDir: Boolean): string;
-var
-  Id: Integer;
-begin
-  Id := FImages.IndexOf(Path);
-  if Id < 0  then
-    Id := FImages.Add(Path);
-  Result := 'img' + IntToStr(Id) + ExtractFileExt(Path);
-  if bDir then
-    Insert(IncludeTrailingPathDelimiter(DestinationDirectory), Result, 1)
-end;
-
-procedure TDocGenerator.WriteImages;
-var
-  i: Integer;
-
-  procedure  CopyImageFile(const Src: string);
-  var
-    Dst: string;
-  begin
-    Dst := ConvertImagePath(Src, True);
-    CopyFile(Src, Dst);
-  end;
-
-begin
-  for i := FImages.Count - 1 downto 0 do
-    CopyImageFile(fImages[i])
-end;
-
 procedure TDocGenerator.HandleImageTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
+var
+  I: Integer;
+  FileNames: TStringList;
 begin
-  ReplaceStr := FormatImage(ConvertImagePath(TagParameter, False));
+  FileNames := TStringList.Create;
+  try
+    FileNames.Text := TagParameter;
+    
+    { Trim every line in FileNames }
+    for I := 0 to FileNames.Count - 1 do
+      FileNames[I] := Trim(FileNames[I]);
+    
+    { Remove empty lines from FileNames }
+    I := 0;
+    while I < FileNames.Count do
+    begin
+      if Trim(FileNames[I]) = '' then
+        FileNames.Delete(I) else
+        Inc(I);
+    end;
+    
+    if FileNames.Count = 0 then
+    begin
+      ThisTag.TagManager.DoMessage(1, mtWarning,
+        'No parameters for @image tag', []);
+    end else
+      ReplaceStr := FormatImage(FileNames);
+  finally FileNames.Free end;
 end;
 
-function TDocGenerator.FormatImage(const Path: string): string;
+function TDocGenerator.FormatImage(FileNames: TStringList): string;
 begin
-  Result := Path
+  Result := FileNames[0];
 end;
 
 procedure TDocGenerator.HandleIncludeTag(

@@ -5,7 +5,7 @@
     * Many options already available in command-line pasdoc are now in pasdoc_gui too
     * "Store relative paths" option
     * Proper "Save" command on Ctrl+S (doesn't always display SaveDialog)
-  + @image tag (by Grzegorz Skoczylas)
+  + @image tag (by Grzegorz Skoczylas and Michalis)
     (see [http://pasdoc.sipsolutions.net/ImageTag])
   + @include tag
     (see [http://pasdoc.sipsolutions.net/IncludeTag])

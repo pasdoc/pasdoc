@@ -45,7 +45,9 @@ type
     FCSS: string;
     FHeader: string;
     FOddTableRow: boolean;
-    
+
+    FImages: TStringList;
+
     { Returns line with <meta http-equiv="Content-Type" ...>
       describing current charset (from FLanguage). }
     function MetaContentType: string;
@@ -173,6 +175,7 @@ type
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
     
     function FormatAnAnchor(const AName, Caption: string): string; 
+
   protected
     function ConvertString(const s: string): string; override;
 
@@ -261,7 +264,7 @@ type
 
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatImage(const Path: string): string; override;
+    function FormatImage(FileNames: TStringList): string; override;
 
     function FormatList(ListData: TListData): string; override;
 
@@ -270,6 +273,7 @@ type
     function FormatTableOfContents(Sections: TStringPairVector): string; override;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
@@ -335,6 +339,13 @@ begin
   inherited Create(AOwner);
   FLinkCount := 1;
   FCSS := DefaultPasdocCss;
+  FImages := TStringList.Create;
+end;
+
+destructor TGenericHTMLDocGenerator.Destroy;
+begin
+  FImages.Free;
+  inherited;
 end;
 
 function TGenericHTMLDocGenerator.HtmlString(const S: string): string;
@@ -2174,9 +2185,38 @@ begin
      LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.FormatImage(const Path: string): string;
+function TGenericHTMLDocGenerator.FormatImage(FileNames: TStringList): string;
+var
+  ChosenFileName, OutputImageFileName: string;
+  ImageId, I: Integer;
+  CopyNeeded: boolean;
 begin
-  Result := Format('<img src="%s" />', [Path]);
+  { Calculate ChosenFileName, i.e. choose right image format for html.
+    Anything other than eps or pdf is good. }
+  ChosenFileName := '';
+  for I := 0 to FileNames.Count - 1 do
+    if (LowerCase(ExtractFileExt(FileNames[I])) <> '.eps') and
+       (LowerCase(ExtractFileExt(FileNames[I])) <> '.pdf') then
+    begin
+      ChosenFileName := FileNames[I];
+      Break;
+    end;
+  if ChosenFileName = '' then
+    ChosenFileName := FileNames[0];
+
+  { Calculate ImageId and CopyNeeded }
+  ImageId := FImages.IndexOf(ChosenFileName);
+  CopyNeeded := ImageId = -1;
+  if CopyNeeded then
+    ImageId := FImages.Add(ChosenFileName);
+
+  OutputImageFileName := 
+    'image_' + IntToStr(ImageId) + ExtractFileExt(ChosenFileName);
+
+  if CopyNeeded then
+    CopyFile(ChosenFileName, DestinationDirectory + OutputImageFileName);
+
+  Result := Format('<img src="%s" />', [OutputImageFileName]);
 end;
 
 function TGenericHTMLDocGenerator.FormatList(ListData: TListData): string;

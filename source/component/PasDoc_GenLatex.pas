@@ -29,7 +29,9 @@ type
     CellCounter: LongInt;
     FLatex2Rtf: Boolean;
     FLatexHead: TStrings;
-    
+
+    FImages: TStringList;
+
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
     procedure WriteAppInfo;
@@ -195,7 +197,7 @@ Latex DocGenerators.}
     
     function FormatPreformatted(const Text: string): string; override;
     
-    function FormatImage(const Path: string): string; override;
+    function FormatImage(FileNames: TStringList): string; override;
 
     function FormatList(ListData: TListData): string; override;
 
@@ -1496,10 +1498,12 @@ constructor TTexDocGenerator.Create(AOwner: TComponent);
 begin
   inherited;
   FLatexHead := TStringList.Create;
+  FImages := TStringList.Create;
 end;
 
 destructor TTexDocGenerator.Destroy;
 begin
+  FImages.Free;
   FLatexHead.Free;
   inherited;
 end;
@@ -1636,11 +1640,94 @@ begin
   Result := Result + '\end{tabular}' + Paragraph;
 end;
 
-function TTexDocGenerator.FormatImage(const Path: string): string;
+function TTexDocGenerator.FormatImage(FileNames: TStringList): string;
+
+  { This behaves like FormatImage would behave if we would
+    take only pdflatex into account. Returns the filename that
+    you should insert into the output. }
+  function FormatImagePdf: string;
+  var
+    ChosenFileName: string;
+    ImageId, I: Integer;
+    CopyNeeded: boolean;
+  begin
+    { Calculate ChosenFileName, i.e. choose right image format for pdf.
+      pdf extension is preferred, otherwise png or jpg. }
+    ChosenFileName := '';
+    for I := 0 to FileNames.Count - 1 do
+      if LowerCase(ExtractFileExt(FileNames[I])) = '.pdf' then
+      begin
+        ChosenFileName := FileNames[I];
+        Break;
+      end;
+    if ChosenFileName = '' then
+    begin
+      for I := 0 to FileNames.Count - 1 do
+        if (LowerCase(ExtractFileExt(FileNames[I])) = '.jpg') or
+           (LowerCase(ExtractFileExt(FileNames[I])) = '.jpeg') or 
+           (LowerCase(ExtractFileExt(FileNames[I])) = '.png') then
+        begin
+          ChosenFileName := FileNames[I];
+          Break;
+        end;
+
+      if ChosenFileName = '' then
+        ChosenFileName := FileNames[0];
+    end;
+   
+    { Calculate ImageId and CopyNeeded }
+    ImageId := FImages.IndexOf(ChosenFileName);
+    CopyNeeded := ImageId = -1;
+    if CopyNeeded then
+      ImageId := FImages.Add(ChosenFileName);
+
+    Result := 'image_' + IntToStr(ImageId) + ExtractFileExt(ChosenFileName);
+
+    if CopyNeeded then
+      CopyFile(ChosenFileName, DestinationDirectory + Result);
+  end;
+
+  { This behaves like FormatImage would behave if we would
+    take only dvi output (i.e. normal latex) into account.
+    Returns the filename that you should insert into the output. }
+  function FormatImageDvi: string;
+  var
+    ChosenFileName: string;
+    ImageId, I: Integer;
+    CopyNeeded: boolean;
+  begin
+    { Calculate ChosenFileName, i.e. choose right image format for dvi.
+      eps extension is preferred. }
+    ChosenFileName := '';
+    for I := 0 to FileNames.Count - 1 do
+      if LowerCase(ExtractFileExt(FileNames[I])) = '.eps' then
+      begin
+        ChosenFileName := FileNames[I];
+        Break;
+      end;
+    if ChosenFileName = '' then
+      ChosenFileName := FileNames[0];
+
+    { Calculate ImageId and CopyNeeded }
+    ImageId := FImages.IndexOf(ChosenFileName);
+    CopyNeeded := ImageId = -1;
+    if CopyNeeded then
+      ImageId := FImages.Add(ChosenFileName);
+
+    Result := 'image_' + IntToStr(ImageId) + ExtractFileExt(ChosenFileName);
+
+    if CopyNeeded then
+      CopyFile(ChosenFileName, DestinationDirectory + Result);
+  end;
+  
 begin
   Result := 
     '\begin{figure}' + LineEnding +
-    '\includegraphics{' + EscapeURL(Path) + '}' + LineEnding +
+    '  \ifpdf' + LineEnding +
+    '    \includegraphics{' + EscapeURL(FormatImagePdf) + '}' + LineEnding +
+    '  \else' + LineEnding +
+    '    \includegraphics{' + EscapeURL(FormatImageDvi) + '}' + LineEnding +
+    '  \fi' + LineEnding +
     '\end{figure}' + LineEnding;
 end;
 
