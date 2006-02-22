@@ -94,7 +94,7 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\component;..\OptionParser;..\component\tipue
+SearchPath=..\component;..\OptionParser;..\component\tipue;..\component\images
 Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;dclOffice2k;DJcl;JVCL200_R70;qrpt
 Conditionals=
 DebugSourceDirs=..\component;..\OptionParser;..\Console;..\component\tipue
@@ -142,9 +142,10 @@ Item1=..\component;..\OptionParser;..\Console
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
-Item0=..\component;..\OptionParser;..\component\tipue
-Item1=..\component;..\OptionParser;Z:\
+Count=3
+Item0=..\component;..\OptionParser;..\component\tipue;..\component\images
+Item1=..\component;..\OptionParser;..\component\tipue
+Item2=..\component;..\OptionParser;Z:\
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=Z:\
