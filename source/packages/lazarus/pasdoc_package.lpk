@@ -6,7 +6,7 @@
     <CompilerOptions>
       <Version Value="5"/>
       <SearchPaths>
-        <IncludeFiles Value="../../component/;../../component/tipue/"/>
+        <IncludeFiles Value="../../component/;../../component/tipue/;../../component/images/"/>
         <OtherUnitFiles Value="../../component/;../../component/tipue/"/>
         <UnitOutputDirectory Value="lib/"/>
       </SearchPaths>
