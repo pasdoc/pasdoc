@@ -308,9 +308,6 @@ const
 implementation
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
   SysUtils,
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc_Base,
@@ -320,11 +317,11 @@ uses
   PasDoc_Aspell;
 
 const 
-  img_automated : {$I images/automated.gif.inc};
-  img_private   : {$I images/private.gif.inc};
-  img_public    : {$I images/public.gif.inc};
-  img_published : {$I images/published.gif.inc};
-  img_protected : {$I images/protected.gif.inc};
+  img_automated : {$I automated.gif.inc};
+  img_private   : {$I private.gif.inc};
+  img_public    : {$I public.gif.inc};
+  img_published : {$I published.gif.inc};
+  img_protected : {$I protected.gif.inc};
 
 const
   DoctypeFrameset = '<!DOCTYPE HTML PUBLIC ' +
