@@ -16,7 +16,7 @@ PACKAGENAME := pasdoc
 UNIT_DIRS := ./source/component ./source/console ./source/OptionParser \
   ./source/component/tipue
 
-INCLUDE_DIRS := ./source/component
+INCLUDE_DIRS := ./source/component ./source/component/images
 
 # Base file to compile
 FILE := ./source/console/pasdoc.dpr
@@ -103,18 +103,18 @@ FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 
 # Don't ask me why, but Borland named Delphi/Win32 command-line compiler 
 # dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
-#
-# Linux dcc has one additional deficiency: it prints non-error
-# lines while it works, I guess that it was meant to somehow indicate
-# compilation progress, although it's rather confusing.
-# That's why we pass -Q to dcc.
 
 DCC_WIN32 := dcc32
-DCC_LINUX := dcc  -Q
+DCC_LINUX := dcc
 DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
 DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
 
-DCC_COMMON_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W \
+# Command-line dcc prints non-errorlines while it works, 
+# I guess that it was meant to somehow indicate
+# compilation progress, although it's rather confusing and hides
+# meaningfull error/warning lines. That's why we pass -Q below.
+
+DCC_COMMON_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -Q \
   -DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
 
 DCC_DEBUG_FLAGS := -$$Q+ -$$R+ $(DCC_COMMON_FLAGS)
