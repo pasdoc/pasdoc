@@ -295,7 +295,8 @@ type
       @param(IsInRecordCase indicates if we're within record's case.
         It's relevant only if OfObject is true.) }
     procedure ParseFieldsVariables(Items: TPasItems; 
-      OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean);
+      OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
+      const ClassKeyWordString: string = '');
     
     { Read all tokens until you find a semicolon at brace-level 0 and
       end-level (between "record" and "end" keywords) also 0.
@@ -780,7 +781,7 @@ procedure TParser.ParseCIO(const U: TPasUnit;
     If AddToFields then adds parsed fields to i.Fields.
     Visibility of created fields is set to given Visibility parameter. }
   procedure ParseFields(i: TPasCio; AddToFields: boolean; 
-    Visibility: TVisibility);
+    Visibility: TVisibility; const ClassKeyWordString: string);
   var Items: TPasItems;
   begin
     if AddToFields then
@@ -793,7 +794,7 @@ procedure TParser.ParseCIO(const U: TPasUnit;
       see record's terminating "end" keyword anyway.
       So it doesn't matter here whether our IsInRecordCase 
       parameter is true. }
-    ParseFieldsVariables(Items, true, Visibility, false);
+    ParseFieldsVariables(Items, true, Visibility, false, ClassKeyWordString);
   end;
 
 var
@@ -960,6 +961,10 @@ begin
         else
           if (t.MyType = TOK_KEYWORD) then
             case t.Info.KeyWord of
+              KEY_VAR:
+                begin
+                  ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
+                end;
               KEY_CLASS: ClassKeyWordString := t.Data;
               KEY_CONSTRUCTOR,
               KEY_DESTRUCTOR,
@@ -1043,7 +1048,9 @@ begin
                 else
                   begin
                     Scanner.UnGetToken(T);
-                    ParseFields(i, Visibility in ShowVisibilities, Visibility);
+                    ParseFields(i, Visibility in ShowVisibilities, Visibility,
+                      ClassKeyWordString);
+                    ClassKeyWordString := '';
                   end;
               end;
             end;
@@ -1695,7 +1702,8 @@ begin
 end;
 
 procedure TParser.ParseFieldsVariables(Items: TPasItems; 
-  OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean);
+  OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
+  const ClassKeyWordString: string = '');
   
   // The section allows PasDoc to parse variable modifiers in FPC.
   // See: http://www.freepascal.org/docs-html/ref/refse19.html
@@ -1863,6 +1871,11 @@ begin
         begin
           NewItem := NewItems[I] as TPasFieldVariable;
           NewItem.FullDeclaration := NewItem.Name + ItemCollector.FullDeclaration;
+          if ClassKeyWordString <> '' then
+          begin
+            NewItem.FullDeclaration := ClassKeyWordString
+              + ' ' + NewItem.FullDeclaration;
+          end;
           NewItem.IsDeprecated := ItemCollector.IsDeprecated;
           NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
           NewItem.IsLibrarySpecific := ItemCollector.IsLibrarySpecific;

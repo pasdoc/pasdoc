@@ -39,7 +39,7 @@ Units are divided into these 3 groups because
 Notes:
 -- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
    e.g. the file-mask `ok_*' works as expected on case-sensitive file-systems.
-   Try to follow the convention 
+   Try to follow the convention
    "prefix_description_of_test_lowercase_with_underscores.pas".
 -- Most of these units will have empty implementation.
    They are not supposed to be ever compiled by anything.
@@ -59,7 +59,7 @@ Notes:
 --------------------
 Possible tests to be done:
 
-1. Generate tests output by simple 
+1. Generate tests output by simple
      make
 
    Default output is html, you should also try other output
@@ -128,7 +128,7 @@ Possible tests to be done:
    if pasdoc's output will not change very often, or if the changes
    will be very local (because then developer will be able to grok them
    by looking at output of `diff -u html/ correct_output/html/').
-   
+
    If pasdoc's developer sees at any point that "current output" differs
    from "correct output" and also he carefully checked that "current
    output" is still correct, than he should upload his "current output"
@@ -188,10 +188,10 @@ Possible tests to be done:
    and left in scripts/check_cache_tmp/, so developer can inspect
    them closer.
 
-5/  cd scripts/
+5. cd scripts/
    ./check_cache_format_independent.sh html latex
    ./check_cache_format_independent.sh latex html
-   
+
    Requires two arguments, two names of pasdoc output format.
    These two formats should be different for this test to be really sensible
    (and better than check_cache.sh), but they can also be equal and
@@ -215,7 +215,7 @@ Random notes:
 
 Note that make used must be GNU make.
 Under Linux this is standard, under FreeBSD this is called `gmake',
-under Win32 you can get this with cygwin ([http://www.cygwin.com/]).
+under Win32 you can get this with e.g. FPC, MinGW or Cygwin.
 
 scripts/ subdirectory contains some helpful things for running tests.
 These should be scripts that perform some additional tests
