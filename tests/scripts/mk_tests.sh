@@ -175,3 +175,5 @@ mk_special_test ok_non_matching_paren ok_non_matching_paren.pas
 mk_special_test ok_image ok_image.pas
 mk_special_test ok_include --introduction=ok_include_intro.txt ok_include.pas
 mk_special_test ok_class_var ok_class_var.pas
+mk_special_test error_line_number_3 error_line_number_3.pas
+mk_special_test ok_not_defined_omit ok_not_defined_omit.pas

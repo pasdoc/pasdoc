@@ -952,13 +952,23 @@ begin
           end;
         '(':
           begin
-            GetChar(c);
-            if c = '*' then begin
+            if PeekChar(c) and (c = '*') then
+            begin
+              ConsumeChar;
               Result := ReadCommentType2;
               CheckForDirective(Result);
               if Result.MyType = TOK_DIRECTIVE then break;
               FreeAndNil(Result);
             end;
+
+            (* If C was not a '*', then we don't consume it here.
+               This is important, because C could be #10 (indicates
+               newline, so we must Inc(Row)) or even '{' (which could
+               indicate compiler directive). And sequences like
+               '('#10 and '({$ifdef ...' should work, see
+               ../../tests/error_line_number_3.pas and
+               ../../tests/ok_not_defined_omit.pas *)
+
           end;
         #10: Inc(Row);
       end
