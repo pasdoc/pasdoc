@@ -622,6 +622,7 @@ begin
   WriteStartOfCode;
   WriteConverted('type ' + CIO.Name + ' = ');
   WriteConverted(CIO_NAMES[CIO.MyType]);
+  WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
   if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
     WriteConverted('(');

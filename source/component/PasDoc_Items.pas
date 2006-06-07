@@ -613,10 +613,13 @@ type
   TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT, 
     CIO_RECORD, CIO_PACKEDRECORD);
 
+  TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED);
+
   { @abstract(Extends @link(TPasItem) to store all items in 
     a class / an object, e.g. fields.) }
   TPasCio = class(TPasType)
   protected
+    FClassDirective: TClassDirective;
     FFields: TPasItems;
     FMethods: TPasMethods;
     FProperties: TPasProperties;
@@ -675,7 +678,11 @@ type
       and this class name is not 'TObject' (in case pasdoc parses the RTL),
       the Ancestors[0] will be set to 'TObject'. }
     property Ancestors: TStringVector read FAncestors;
-    
+
+    {@name is used to indicate whether a class is sealed or abstract.}
+    property ClassDirective: TClassDirective read FClassDirective
+      write FClassDirective;
+
     { This returns Ancestors.Objects[0], i.e. instance of the first
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
@@ -1754,6 +1761,7 @@ end;
 constructor TPasCio.Create;
 begin
   inherited;
+  FClassDirective := CT_NONE;
   FFields := TPasItems.Create(True);
   FMethods := TPasMethods.Create(True);
   FProperties := TPasProperties.Create(True);

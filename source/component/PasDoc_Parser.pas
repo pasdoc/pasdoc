@@ -828,6 +828,21 @@ begin
       i.RawDescriptionInfo^ := RawDescriptionInfo;
       i.MyType := CIOType;
 
+      if (CIOType = CIO_CLASS) and (t.MyType = TOK_IDENTIFIER) and
+        (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
+      begin
+        if t.Info.StandardDirective = SD_ABSTRACT then
+        begin
+          i.ClassDirective := CT_ABSTRACT;
+        end
+        else
+        begin
+          i.ClassDirective := CT_SEALED;
+        end;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end;
+
       { get all ancestors; remember, this could look like
         TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
         All class ancestors are supposed to be included in the docs!

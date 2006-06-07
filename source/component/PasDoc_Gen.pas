@@ -492,6 +492,13 @@ type
       Returns a pointer to the item on success, nil otherwise. }
     function FindGlobal(const NameParts: TNameParts): TBaseItem;
 
+    {@name returns ' abstract', or ' sealed' for classes that abstract
+     or sealed respectively.  @name is used by @link(TTexDocGenerator) and
+     @link(TGenericHTMLDocGenerator) in writing the declaration of the class.}
+    function GetClassDirectiveName(Directive: TClassDirective): string;
+
+    {@name writes a translation of MyType based on the current language.
+     However, 'record' and 'packed record' are not translated.}
     function GetCIOTypeName(MyType: TCIOType): string;
 
     { Loads descriptions from file N and replaces or fills the corresponding
@@ -2103,6 +2110,26 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
+
+function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
+begin
+  case Directive of
+    CT_NONE:
+      begin
+        result := '';
+      end;
+    CT_ABSTRACT:
+      begin
+        result := ' abstract';
+      end;
+    CT_SEALED:
+      begin
+        result := ' sealed';
+      end;
+  else
+    Assert(False);
+  end;
+end;
 
 function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin

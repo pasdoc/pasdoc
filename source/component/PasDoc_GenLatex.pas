@@ -412,7 +412,8 @@ begin
 
   if SectionsAvailable = [] then exit;
 
-  WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType)));
+  WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType))
+    + ConvertString(GetClassDirectiveName(CIO.ClassDirective)));
   WriteAnchor(CIO.Name,CIO.FullLink);
 
   if dsHierarchy in SectionsAvailable then
