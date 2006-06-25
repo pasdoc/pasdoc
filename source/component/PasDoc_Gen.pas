@@ -3385,7 +3385,8 @@ begin
             case pl of
               SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
                 SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+                SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
                 begin
                   WriteConverted(s);
                   SearchForLink := False;

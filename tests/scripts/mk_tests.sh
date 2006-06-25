@@ -178,3 +178,7 @@ mk_special_test ok_class_var ok_class_var.pas
 mk_special_test error_line_number_3 error_line_number_3.pas
 mk_special_test ok_not_defined_omit ok_not_defined_omit.pas
 mk_special_test ok_abstract_sealed ok_abstract_sealed.pas
+mk_special_test ok_library ok_library.dpr
+mk_special_test ok_static_member ok_static_member.pas
+mk_special_test ok_strict_visibilities --visible-members protected,public,strictprotected,strictprivate ok_strict_visibilities.pas
+mk_special_test ok_weird_record ok_weird_record.dpr

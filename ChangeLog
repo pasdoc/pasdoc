@@ -1,5 +1,8 @@
 [Next release -- release date and new version number unknown yet...]
 
+  * Various fixes to parsing by Richard B. Winston,
+    including fixes to Delphi 2006 syntax parsing and library files.
+    PasDoc now parses Delphi 2006 RTL and VCL sources.
   * Various pasdoc_gui improvements, including
     * "Display Comments" tab (by Richard B. Winston)
     * Many options already available in command-line pasdoc are now in pasdoc_gui too

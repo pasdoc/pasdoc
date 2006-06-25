@@ -329,6 +329,8 @@ type
     
     procedure ParseUnit(U: TPasUnit);
     procedure ParseProgram(U: TPasUnit);
+    procedure ParseProgramOrLibraryUses(U: TPasUnit);
+    procedure ParseLibrary(U: TPasUnit);
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -647,7 +649,8 @@ begin
       case t.Info.StandardDirective of
         SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
         SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
-        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+        SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
         SD_VARARGS:
           begin
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
@@ -685,7 +688,8 @@ begin
                   case t.Info.StandardDirective of
                     SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
                       SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+                      SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
                       begin
                         // FScanner.UnGetToken(t);
                         Break;
@@ -806,7 +810,9 @@ var
   Visibility: TVisibility;
   t: TToken;
   ClassKeyWordString: string;
+  StrictVisibility: boolean;
 begin
+  StrictVisibility := False;
   t := nil;
   DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
   i := nil;
@@ -975,6 +981,11 @@ begin
         end
         else
           if (t.MyType = TOK_KEYWORD) then
+          begin
+            if StrictVisibility then
+            begin
+              DoError('"strict" found in an unexpected location', []);
+            end;
             case t.Info.KeyWord of
               KEY_VAR:
                 begin
@@ -1040,12 +1051,18 @@ begin
                 end;
               end;
             end
+          end
           else
             if (t.MyType = TOK_IDENTIFIER) then
             begin
+
               case t.Info.StandardDirective of
                 SD_DEFAULT: 
                   begin
+                    if StrictVisibility then
+                    begin
+                      DoError('"strict" found in an unexpected location', []);
+                    end;
                     { Note: 2nd arg for SkipDeclaration is always "false",
                       not "IsInRecordCase". That's because even if declaration
                       of this CIO is within a record case, then we want to
@@ -1055,11 +1072,51 @@ begin
                     SkipDeclaration(nil, false);
                     DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
                   end;
-                SD_PUBLIC:    Visibility := viPublic;
-                SD_PUBLISHED: Visibility := viPublished;
-                SD_PRIVATE:   Visibility := viPrivate;
-                SD_PROTECTED: Visibility := viProtected;
-                SD_AUTOMATED: Visibility := viAutomated;
+                SD_PUBLIC:
+                  begin
+                    if StrictVisibility then
+                    begin
+                      DoError('"strict" found in an unexpected location', []);
+                    end;
+                    Visibility := viPublic;
+                  end;
+                SD_PUBLISHED:
+                  begin
+                    if StrictVisibility then
+                    begin
+                      DoError('"strict" found in an unexpected location', []);
+                    end;
+                    Visibility := viPublished;
+                  end;
+                SD_PRIVATE:
+                  begin
+                    if StrictVisibility then
+                    begin
+                      StrictVisibility := False;
+                      Visibility := viStrictPrivate;
+                    end
+                    else
+                    begin
+                      Visibility := viPrivate;
+                    end;
+                  end;
+                SD_PROTECTED:
+                  begin
+                    if StrictVisibility then
+                    begin
+                      StrictVisibility := False;
+                      Visibility := viStrictProtected;
+                    end
+                    else
+                    begin
+                      Visibility := viProtected;
+                    end;
+                  end;
+                SD_AUTOMATED:
+                  begin
+                    Visibility := viAutomated;
+                  end;
+                SD_STRICT: StrictVisibility := True;
                 else
                   begin
                     Scanner.UnGetToken(T);
@@ -1397,6 +1454,17 @@ begin
           finally
             FreeAndNil(t1);
           end;
+        TOK_KEYWORD:
+        begin
+          if not (t1.Info.KeyWord in [KEY_OR, KEY_AND]) then
+          begin
+            try
+              DoError('Unexpected %s', [T1.Description]);
+            finally
+              FreeAndNil(t1);
+            end;
+          end;
+        end
         else begin
           try
             DoError('Unexpected %s', [T1.Description]);
@@ -1584,15 +1652,13 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-procedure TParser.ParseProgram(U: TPasUnit);
+procedure TParser.ParseProgramOrLibraryUses(U: TPasUnit);
 var
   T: TToken;
 begin
-  GetAndCheckNextToken(KEY_PROGRAM);
   U.RawDescriptionInfo^ := GetLastComment;
 
-  { get program name identifier }
+  { get program/library name identifier }
   U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
 
   ItemsForNextBackComment.ClearAndAdd(U);
@@ -1611,16 +1677,41 @@ begin
   end;
 end;
 
+procedure TParser.ParseProgram(U: TPasUnit);
+begin
+  GetAndCheckNextToken(KEY_PROGRAM);
+  ParseProgramOrLibraryUses(U);
+end;
+
+procedure TParser.ParseLibrary(U: TPasUnit);
+begin
+  GetAndCheckNextToken(KEY_LIBRARY);
+  ParseProgramOrLibraryUses(U);
+end;
+
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUnitOrProgram(var U: TPasUnit);
+var
+  t: TToken;
 begin
   U := TPasUnit.Create;
   try
-    U.IsUnit := PeekNextToken.IsKeyWord(KEY_UNIT);
+    t := PeekNextToken;
+    U.IsUnit := t.IsKeyWord(KEY_UNIT);
     if U.IsUnit then
       ParseUnit(U) else
-      ParseProgram(U);
+      begin
+        U.IsProgram := t.IsKeyWord(KEY_PROGRAM);
+        if U.IsProgram  then
+        begin
+          ParseProgram(U);
+        end
+        else
+        begin
+          ParseLibrary(U);
+        end;
+      end;
   except
     FreeAndNil(U);
     raise;

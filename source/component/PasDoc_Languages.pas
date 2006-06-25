@@ -87,8 +87,10 @@ type
     trObjects,
     trOverview,
     trPrivate,
+    trStrictPrivate,
     trProperties,
     trProtected,
+    trStrictProtected,
     trPublic,
     trPublished,
     trImplicit,
@@ -133,7 +135,8 @@ type
     trNoConstants,
     trNoFunctions,
     trNoIdentifiers,
-    trProgram);
+    trProgram,
+    trLibrary);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
@@ -304,8 +307,10 @@ begin
   FTranslation[trObjects] := 'Objects';
   FTranslation[trOverview] := 'Overview';
   FTranslation[trPrivate] := 'Private';
+  FTranslation[trStrictPrivate] := 'Strict Private';
   FTranslation[trProperties] := 'Properties';
   FTranslation[trProtected] := 'Protected';
+  FTranslation[trStrictProtected] := 'Strict Protected';
   FTranslation[trPublic] := 'Public';
   FTranslation[trImplicit] := 'Implicit';
   FTranslation[trPublished] := 'Published';
@@ -344,6 +349,7 @@ begin
   FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.';
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.';
   FTranslation[trProgram] := 'Program';
+  FTranslation[trLibrary] := 'Library';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1919,6 +1925,14 @@ end;
 
 {
   $Log$
+  Revision 1.43  2006/06/25 13:56:01  kambi
+  Patch from Richard B. Winston (the non-Lazarus part of the patch):
+  * Two new visibilities are introduced: "strict private," and "strict protected."  The command line keywords for these are "strictprivate," and "strictprotected."  (In other words, leave out the space between "strict" and the following word.)
+  * In addition to "unit" and "program" a source code file may start with "library".  "Library" is now supported.
+  * If a record has variant parts, the constants used to label each part may be an expression so long as the expression can be evaluated at compile time. Thus if A and B are both constants, you can use "A or B" to label one of the variant parts.  The presence of "and" or "or" in an expression for a constant no longer generates an error.
+  * Generating the output for TObject and IInterface caused an error because neither has an ancestor.  This is now fixed.
+  * The console program has been altered to accept "strictprivate" and "strictprotected" on the command line when specifying what properties should be visible.
+
   Revision 1.42  2005/12/23 19:00:15  kambi
   * From Jónás Gergõ: trProgram translation is just 'Program' in Hungarian
 

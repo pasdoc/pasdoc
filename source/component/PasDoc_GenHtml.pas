@@ -1683,8 +1683,11 @@ begin
   WriteStartOfDocument(U.Name);
 
   if U.IsUnit then
-    WriteHeading(HL, 'unit', FLanguage.Translation[trUnit] + ' ' + U.Name) else
-    WriteHeading(HL, 'program', FLanguage.Translation[trProgram] + ' ' + U.Name);
+    WriteHeading(HL, 'unit', FLanguage.Translation[trUnit] + ' ' + U.Name)
+  else if U.IsProgram then
+    WriteHeading(HL, 'program', FLanguage.Translation[trProgram] + ' ' + U.Name)
+  else
+    WriteHeading(HL, 'library', FLanguage.Translation[trLibrary] + ' ' + U.Name);
 
   WriteStartOfTable('sections');
   WriteDirectLine('<tr>');
@@ -1756,6 +1759,8 @@ const
   ( 'published.gif',
     'public.gif',
     'protected.gif',
+    'protected.gif',
+    'private.gif',
     'private.gif',
     'automated.gif',
     { Implicit visibility uses published visibility image, for now }
@@ -1765,7 +1770,9 @@ const
   ( trPublished,
     trPublic,
     trProtected,
+    trStrictProtected,
     trPrivate,
+    trStrictPrivate,
     trAutomated,
     trImplicit
   );
@@ -1825,7 +1832,9 @@ begin
     { Order of entries below is important (because it is shown to the user),
       so we don't just write all TVisibility values in the order they
       were declared in TVisibility type. }
+    WriteLegendEntry(viStrictPrivate);
     WriteLegendEntry(viPrivate);
+    WriteLegendEntry(viStrictProtected);
     WriteLegendEntry(viProtected);
     WriteLegendEntry(viPublic);
     WriteLegendEntry(viPublished);

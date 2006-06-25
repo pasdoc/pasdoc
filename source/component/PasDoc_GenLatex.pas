@@ -1372,8 +1372,11 @@ begin
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
   if U.IsUnit then
-    WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name) else
-    WriteHeading(HL, FLanguage.Translation[trProgram] + ' ' + U.Name);
+    WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name)
+  else if U.IsProgram then
+    WriteHeading(HL, FLanguage.Translation[trProgram] + ' ' + U.Name)
+  else
+    WriteHeading(HL, FLanguage.Translation[trLibrary] + ' ' + U.Name);
 
   WriteAnchor(U.Name, U.FullLink);
 

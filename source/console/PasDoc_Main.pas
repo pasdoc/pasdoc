@@ -448,7 +448,7 @@ begin
 
   PasDoc.ShowVisibilities := [];
   for Vis := Low(Vis) to High(Vis) do
-    if OptionVisibleMembers.HasValue(VisibilityStr[Vis]) then
+    if OptionVisibleMembers.HasValue(VisToStr(Vis)) then
       PasDoc.ShowVisibilities :=  PasDoc.ShowVisibilities + [Vis];
 
   PasDoc.Generator.OutputGraphVizUses := OptionWriteGVUses.TurnedOn;

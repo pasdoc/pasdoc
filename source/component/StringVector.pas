@@ -95,7 +95,13 @@ end;
 
 function TStringVector.FirstName: string;
 begin
-  Result := Get(0);
+  if Count > 0 then
+  begin
+    Result := Get(0);
+  end else
+  begin
+    Result := '';
+  end
 end;
 
 function TStringVector.IsEmpty: boolean;
