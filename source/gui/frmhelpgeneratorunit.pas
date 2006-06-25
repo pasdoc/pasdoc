@@ -574,6 +574,7 @@ procedure TfrmHelpGenerator.FormCreate(Sender: TObject);
 var
   LanguageIndex: TLanguageID;
   Index: integer;
+  Vis: TVisibility;
 begin
   MisspelledWords:= TStringList.Create;
   MisspelledWords.Sorted := True;
@@ -637,6 +638,12 @@ begin
   {$IFDEF CONDITIONALEXPRESSIONS}
   DefaultDirectives.Append('CONDITIONALEXPRESSIONS');
   {$ENDIF}
+
+  CheckListVisibleMembers.Items.Clear;
+  for Vis := Low(TVisibility) to High(TVisibility) do
+  begin
+    CheckListVisibleMembers.Items.Add(VisibilityStr[Vis]);
+  end;
 
   SetDefaults;
   
