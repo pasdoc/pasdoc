@@ -281,6 +281,7 @@ type
     { the input stream this tokenizer is working on }
     Stream: TStream;
     FStreamName: string;
+    FStreamPath: string;
     
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Word);
@@ -312,7 +313,7 @@ type
       const AStream: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName: string);
+      const AStreamName, AStreamPath: string);
     { Releases all dynamically allocated memory. }
     destructor Destroy; override;
     function HasData: Boolean;
@@ -324,6 +325,20 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property StreamName: string read FStreamName;
+    
+    { This is the path where the underlying file of this stream is located.
+    
+      It may be an absolute path or a relative path. Relative paths
+      are always resolved vs pasdoc current directory.
+      This way user can give relative paths in command-line
+      when writing Pascal source filenames to parse.
+    
+      In particular, this may be '' to indicate current dir.
+      
+      It's always specified like it was processed by
+      IncludeTrailingPathDelimiter, so it has trailing PathDelim
+      included (unless it was '', in which case it remains empty). }
+    property StreamPath: string read FStreamPath;
   end;
 
 const
@@ -476,7 +491,7 @@ constructor TTokenizer.Create(
   const AStream: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName: string);
+  const AStreamName, AStreamPath: string);
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
@@ -484,6 +499,7 @@ begin
   Row := 1;
   Stream := AStream;
   FStreamName := AStreamName;
+  FStreamPath := AStreamPath;
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -79,9 +79,10 @@ type
       After calling this procedure, don't free Stream -- it will be
       owned by created Tokenizer, and created Tokenizer will be managed
       as part of FTokenizers list. }
-    procedure OpenNewTokenizer(Stream: TStream; const StreamName: string);
+    procedure OpenNewTokenizer(Stream: TStream; 
+      const StreamName, StreamPath: string);
     
-    function OpenIncludeFile(n: string): Boolean;
+    procedure OpenIncludeFile(n: string);
     
     { Returns @true if $else was found. If $endif or $ifend was found
       then returns @false. 
@@ -109,7 +110,7 @@ type
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName: string;
+      const AStreamName, AStreamPath: string;
       const AHandleMacros: boolean);
     destructor Destroy; override;
 
@@ -292,7 +293,7 @@ constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName: string;
+  const AStreamName, AStreamPath: string;
   const AHandleMacros: boolean);
 var
   c: TUpperCaseLetter;
@@ -320,7 +321,8 @@ begin
 
   FSymbols := TStringPairVector.Create(true);
 
-  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel, AStreamName);
+  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel, 
+    AStreamName, AStreamPath);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;
 end;
@@ -453,7 +455,9 @@ function TScanner.GetToken: TToken;
       if Result then
         OpenNewTokenizer(TStringStream.Create(
           FSymbols[SymbolIndex].Value), 
-          '<' + FSymbols[SymbolIndex].Name + ' macro>');
+          '<' + FSymbols[SymbolIndex].Name + ' macro>',
+          { Expanded macro text inherits current StreamPath }
+          FTokenizers[FCurrentTokenizer].StreamPath);
     end;
   end;
 
@@ -575,10 +579,7 @@ begin
                   Break;
                 end else
                 begin
-                  if not OpenIncludeFile(DirectiveParamBlack) then
-                    DoError(GetStreamInfo + 
-                      ': Error, could not open include file "'
-                      + DirectiveParamBlack + '"', []);
+                  OpenIncludeFile(DirectiveParamBlack);
                 end;
               end;
             DT_UNDEF: 
@@ -644,7 +645,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TScanner.OpenNewTokenizer(Stream: TStream; const StreamName: string);
+procedure TScanner.OpenNewTokenizer(Stream: TStream;
+  const StreamName, StreamPath: string);
 var 
   Tokenizer: TTokenizer;
 begin
@@ -659,7 +661,8 @@ begin
       [GetStreamInfo, MAX_TOKENIZERS, StreamName]);
   end;
   
-  Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity, StreamName);
+  Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity,
+    StreamName, StreamPath);
   
   { add new tokenizer }
   Inc(FCurrentTokenizer);
@@ -668,51 +671,51 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.OpenIncludeFile(n: string): Boolean;
-var
-  i: Integer;
-  Name: string;
-  NumAttempts: Integer;
-  p: string;
-  s: TStream;
+procedure TScanner.OpenIncludeFile(n: string);
+
+  { Check for availability of file N inside given Path
+    (that must be like after IncludeTrailingPathDelimiter --- either 
+    '' or ends with PathDelim).
+    It yes, then returns @true and opens new tokenizer with
+    appropriate stream, else returns false. }
+  function TryOpen(const Path: string): boolean;
+  var
+    Name: string;
+  begin
+    Name := Path + N;
+    
+    DoMessage(5, mtInformation, 'Trying to open include file "%s"...', [Name]);
+    
+    Result := FileExists(Name);
+    
+    if Result then
+      { create new tokenizer with stream }
+      OpenNewTokenizer(TFileStream.Create(Name, fmOpenRead),
+        Name, ExtractFilePath(Name));
+  end;
+
+  function TryOpenIncludeFilePaths: boolean;
+  var
+    I: Integer;
+  begin
+    for I := 0 to IncludeFilePaths.Count - 1 do
+      if IncludeFilePaths[I] <> '' then
+      begin
+        Result := TryOpen(IncludeFilePaths[I]);
+        if Result then Exit;
+      end;
+      
+    Result := false;
+  end;
+
 begin
   if (Length(N) > 2) and (N[1] = '''') and (N[Length(N)] = '''') then
     N := Copy(N, 2, Length(N) - 2);
 
-  { determine how many names we can check; number is 1 + IncludeFilePaths.Count }
-  NumAttempts := 1;
-
-  if IncludeFilePaths <> nil then
-    Inc(NumAttempts, IncludeFilePaths.Count);
-
-  s := nil;
-  { loop until we have checked all names or one attempt was successful }
-  for i := 0 to NumAttempts - 1 do begin
-    if i = 0 then
-      Name := n
-    else begin
-      p := IncludeFilePaths[i - 1];
-      if p <> '' then
-        Name := p + n
-      else
-        Continue; { next loop iteration }
-    end;
-    DoMessage(5, mtInformation, 'Trying to open include file "%s"...', [Name]);
-    if FileExists(Name) then begin
-      s := TFileStream.Create(Name, fmOpenRead);
-    end;
-    if Assigned(s) then Break;
-  end;
-
-  { if we still don't have a valid open stream we failed }
-  if not Assigned(s) then begin
-    DoError('%s: could not open include file %s', [GetStreamInfo, n]);
-  end;
-
-  { create new tokenizer with stream }
-  OpenNewTokenizer(S, Name);
-
-  Result := True;
+  if not TryOpen(FTokenizers[FCurrentTokenizer].StreamPath) then
+    if not TryOpenIncludeFilePaths then
+      if not TryOpen('') then
+        DoError('%s: could not open include file %s', [GetStreamInfo, n]);
 end;
 
 { ---------------------------------------------------------------------------- }

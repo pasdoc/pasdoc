@@ -340,7 +340,7 @@ type
       const IncludeFilePaths: TStringVector;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName: string;
+      const AStreamName, AStreamPath: string;
       const AHandleMacros: boolean);
       
     { Release all dynamically allocated memory. }
@@ -378,7 +378,7 @@ constructor TParser.Create(
   const IncludeFilePaths: TStringVector;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName: string;
+  const AStreamName, AStreamPath: string;
   const AHandleMacros: boolean);
 begin
   inherited Create;
@@ -386,7 +386,7 @@ begin
   FVerbosity := VerbosityLevel;
 
   Scanner := TScanner.Create(InputStream, OnMessageEvent, 
-    VerbosityLevel, AStreamName, AHandleMacros);
+    VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
   Scanner.AddSymbols(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;

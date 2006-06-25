@@ -310,7 +310,8 @@ var
 begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, SourceFileName, HandleMacros);
+    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, 
+    SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
   try
     p.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
