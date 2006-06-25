@@ -182,3 +182,4 @@ mk_special_test ok_library ok_library.dpr
 mk_special_test ok_static_member ok_static_member.pas
 mk_special_test ok_strict_visibilities --visible-members protected,public,strictprotected,strictprivate ok_strict_visibilities.pas
 mk_special_test ok_weird_record ok_weird_record.dpr
+mk_special_test ok_include_quoted ok_include_quoted.pas

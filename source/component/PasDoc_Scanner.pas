@@ -81,7 +81,7 @@ type
       as part of FTokenizers list. }
     procedure OpenNewTokenizer(Stream: TStream; const StreamName: string);
     
-    function OpenIncludeFile(const n: string): Boolean;
+    function OpenIncludeFile(n: string): Boolean;
     
     { Returns @true if $else was found. If $endif or $ifend was found
       then returns @false. 
@@ -668,7 +668,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.OpenIncludeFile(const n: string): Boolean;
+function TScanner.OpenIncludeFile(n: string): Boolean;
 var
   i: Integer;
   Name: string;
@@ -676,6 +676,9 @@ var
   p: string;
   s: TStream;
 begin
+  if (Length(N) > 2) and (N[1] = '''') and (N[Length(N)] = '''') then
+    N := Copy(N, 2, Length(N) - 2);
+
   { determine how many names we can check; number is 1 + IncludeFilePaths.Count }
   NumAttempts := 1;
 
