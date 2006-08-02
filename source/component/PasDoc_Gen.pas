@@ -124,9 +124,9 @@ type
   private
     FItemLabel: string;
     FText: string;
-    FIndex: Cardinal;
+    FIndex: Integer;
   public
-    constructor Create(AItemLabel, AText: string; AIndex: Cardinal);
+    constructor Create(AItemLabel, AText: string; AIndex: Integer);
     
     { This is only for @@definitionList: label for this list item,
       taken from @@itemLabel. Already in the processed form.
@@ -139,18 +139,22 @@ type
       Ready to be included in final documentation. }
     property Text: string read FText;
 
-    { 0-based number of this item. This should be used for @@orderedList.
+    { Number of this item. This should be used for @@orderedList.
       When you iterate over @code(TListData.Items), you should be aware that
       Index of list item is @italic(not) necessarily equal
       to the position of item inside @code(TListData.Items).
       That's because of @@itemSetNumber tag. 
       
+      Normal list numbering (when no @@itemSetNumber tag was used)
+      starts from 1. Using @@itemSetNumber user is able to change
+      following item's Index.
+
       For unordered and definition lists this is simpler:
       Index is always equal to the position within @code(TListData.Items)
       (because @@itemSetNumber is not allowed there).
       And usually you will just ignore Index of items on
       unordered and definition lists. }
-    property Index: Cardinal read FIndex;
+    property Index: Integer read FIndex;
   end;
 
   { Collected information about @@xxxList content. Passed to 
@@ -160,7 +164,7 @@ type
   private
     { This is used inside list tags' handlers
       to calculate TListItemData.Index fields. }
-    NextItemIndex: Cardinal;
+    NextItemIndex: Integer;
         
     { This is only for @@definitionList.
       This is already expanded (by TTagManager.Execute) parameter
@@ -926,7 +930,7 @@ uses
 
 { TListItemData ------------------------------------------------------------- }
 
-constructor TListItemData.Create(AItemLabel, AText: string; AIndex: Cardinal);
+constructor TListItemData.Create(AItemLabel, AText: string; AIndex: Integer);
 begin
   inherited Create;
   FItemLabel := AItemLabel;
@@ -940,7 +944,7 @@ constructor TListData.Create(const AOwnsObject: boolean);
 begin
   inherited;
   FItemSpacing := lisParagraph;
-  NextItemIndex := 0;
+  NextItemIndex := 1;
 end;
 
 { TRowData ------------------------------------------------------------------- }
@@ -1436,8 +1440,7 @@ begin
   
   try
     NewNextItemIndex := StrToInt(TagParameter);
-    { TListData.NextItemIndex is 0-based, @@itemSetNumber takes 1-based arg. }
-    (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex - 1;
+    (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex;
   except
     on E: EConvertError do 
       ThisTag.TagManager.DoMessage(1, mtWarning, 

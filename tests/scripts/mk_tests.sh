@@ -184,3 +184,4 @@ mk_special_test ok_strict_visibilities --visible-members protected,public,strict
 mk_special_test ok_weird_record ok_weird_record.dpr
 mk_special_test ok_include_quoted ok_include_quoted.pas
 mk_special_test ok_relative_include test_subdir/ok_relative_include_1.pas test_subdir/another_test_subdir/ok_relative_include_2.pas
+mk_special_test ok_list_item_set_number ok_list_item_set_number.pas

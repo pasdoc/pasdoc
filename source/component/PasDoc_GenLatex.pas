@@ -1603,7 +1603,11 @@ begin
               '\setcounter{enumi}{%d} ' +
               '\setcounter{enumii}{%0:d} ' +
               '\setcounter{enumiii}{%0:d} ' +
-              '\setcounter{enumiv}{%0:d} ' + LineEnding, [ListItem.Index]);
+              '\setcounter{enumiv}{%0:d} ' + LineEnding,
+              [ { Note that we set ListItem.Index - 1, so that resulting 
+                  document will correctly display ListItem.Index.
+                  That's how LaTeX  works. }
+                ListItem.Index - 1 ]);
       
         Result := Result + 
           '\item ' + ListItem.Text + LineEnding;

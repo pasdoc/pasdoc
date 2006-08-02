@@ -2275,7 +2275,7 @@ begin
       end else
       begin
         if ListData.ListType = ltOrdered then
-          Attributes := Format(' value="%d"', [ListItem.Index + 1]) else
+          Attributes := Format(' value="%d"', [ListItem.Index]) else
           Attributes := '';
 
         Result := Result + Format('  <li%s><p>%s</p></li>',
