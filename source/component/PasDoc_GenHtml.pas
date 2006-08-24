@@ -491,10 +491,22 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
+type
+  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
+  TSectionSet = set of TSections;
+  TSectionAnchors = array[TSections] of string;
+const
+  SectionAnchors: TSectionAnchors = (
+    '%40Description',
+    '%40Hierarchy',
+    '%40Fields',
+    '%40Methods',
+    '%40Properties');
 
   procedure WriteMethodsSummary;
   begin
-    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1, '@Methods', trMethods);
+    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1, 
+      SectionAnchors[dsMethods], trMethods);
   end;
 
   procedure WriteMethodsDetailed;
@@ -504,7 +516,8 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 
   procedure WritePropertiesSummary;
   begin
-    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1, '@Properties', trProperties);
+    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1, 
+      SectionAnchors[dsProperties], trProperties);
   end;
 
   procedure WritePropertiesDetailed;
@@ -514,7 +527,8 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 
   procedure WriteFieldsSummary;
   begin
-    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1, '@Fields', trFields);
+    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1, 
+      SectionAnchors[dsFields], trFields);
   end;
 
   procedure WriteFieldsDetailed;
@@ -542,17 +556,8 @@ procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
   end;
 
 type
-  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
-  TSectionSet = set of TSections;
-  TSectionAnchors = array[TSections] of string;
   TCIONames = array[TCIOType] of string;
 const
-  SectionAnchors: TSectionAnchors = (
-    '@Description',
-    '@Hierarchy',
-    '@Fields',
-    '@Methods',
-    '@Properties');
   CIO_NAMES: TCIONames = (
     'class',
     'dispinterface',
@@ -724,7 +729,7 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
 
-  WriteAnchor('@Classes');
+  WriteAnchor('%40Classes');
 
   WriteHeading(HL, 'cio', FLanguage.Translation[trCio]);
   WriteStartOfTable2Columns('classestable', FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
@@ -1543,6 +1548,20 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+type
+  TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
+    dsTypes, dsConstants, dsVariables);
+  TSectionSet = set of TSections;
+  TSectionAnchors = array[TSections] of string;
+const
+  SectionAnchors: TSectionAnchors = (
+    '%40Description',
+    '%40Uses',
+    '%40Classes',
+    '%40FuncsProcs',
+    '%40Types',
+    '%40Constants',
+    '%40Variables');
 
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
@@ -1574,7 +1593,7 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
 
   procedure WriteFuncsProcsSummary;
   begin
-    WriteItemsSummary(U.FuncsProcs, false, HL + 1, '@FuncsProcs', 
+    WriteItemsSummary(U.FuncsProcs, false, HL + 1, SectionAnchors[dsFuncsProcs],
       trFunctionsAndProcedures);
   end;
 
@@ -1586,7 +1605,7 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
 
   procedure WriteTypesSummary;
   begin
-    WriteItemsSummary(U.Types, false, HL + 1, '@Types', trTypes);
+    WriteItemsSummary(U.Types, false, HL + 1, SectionAnchors[dsTypes], trTypes);
   end;
 
   procedure WriteTypesDetailed;
@@ -1596,7 +1615,8 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
 
   procedure WriteConstantsSummary;
   begin
-    WriteItemsSummary(U.Constants, false, HL + 1, '@Constants', trConstants);
+    WriteItemsSummary(U.Constants, false, HL + 1, SectionAnchors[dsConstants],
+      trConstants);
   end;
 
   procedure WriteConstantsDetailed;
@@ -1606,7 +1626,8 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
 
   procedure WriteVariablesSummary;
   begin
-    WriteItemsSummary(U.Variables, false, HL + 1, '@Variables', trVariables);
+    WriteItemsSummary(U.Variables, false, HL + 1, SectionAnchors[dsVariables],
+      trVariables);
   end;
 
   procedure WriteVariablesDetailed;
@@ -1614,20 +1635,6 @@ procedure TGenericHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUni
     WriteItemsDetailed(U.Variables, false, HL + 1, trVariables);
   end;
 
-type
-  TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
-    dsTypes, dsConstants, dsVariables);
-  TSectionSet = set of TSections;
-  TSectionAnchors = array[TSections] of string;
-const
-  SectionAnchors: TSectionAnchors = (
-    '@Description',
-    '@Uses',
-    '@Classes',
-    '@FuncsProcs',
-    '@Types',
-    '@Constants',
-    '@Variables');
 var
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
