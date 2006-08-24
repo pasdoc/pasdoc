@@ -320,6 +320,9 @@ type
     procedure HandleBrTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleGroupTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
 
     procedure PreHandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -1280,6 +1283,16 @@ begin
   ReplaceStr := LineBreak;
 end;
 
+procedure TDocGenerator.HandleGroupTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := '';
+  ThisTag.TagManager.DoMessage(1, mtWarning, 
+    'Tag "%s" is not implemented yet, ignoring', [ThisTag.Name]);
+end;
+
 procedure TDocGenerator.HandleBoldTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -1733,6 +1746,10 @@ procedure TDocGenerator.ExpandDescriptions;
         nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
       TTag.Create(TagManager, 'br',
         nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
+      TTag.Create(TagManager, 'groupbegin',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
+      TTag.Create(TagManager, 'groupend',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
 
       { Tags with non-recursive params }
       TTag.Create(TagManager, 'longcode',
