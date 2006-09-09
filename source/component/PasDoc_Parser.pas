@@ -1890,7 +1890,18 @@ begin
       ItemCollector.FullDeclaration := ':';
       
       t := GetNextToken(ItemCollector);
-      ItemCollector.FullDeclaration := ItemCollector.FullDeclaration + t.Data;
+      
+      { If symnbol is "(", we will later unget it and read it once again.
+        This way SkipDeclaration can read type declaration up to the matching
+        parenthesis, which is needed to handle fiels/var declarations with
+        inline enumareted type, like
+          var MyVar: (One, Two);
+      }
+      if not t.IsSymbol(SYM_LEFT_PARENTHESIS) then
+      begin
+        ItemCollector.FullDeclaration := ItemCollector.FullDeclaration + t.Data;
+      end;
+      
       if (t.MyType = TOK_KEYWORD) and 
          (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
       begin
@@ -1938,6 +1949,10 @@ begin
         end;      
       end else
       begin
+        if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
+        begin
+          Scanner.UnGetToken(t);
+        end;
         SkipDeclaration(ItemCollector, IsInRecordCase);
       end;
 
