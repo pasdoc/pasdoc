@@ -240,6 +240,9 @@ build-vpc-win32: make-dirs
 build-vpc-os2: make-dirs
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
+build-pascal_pre_proc: make-dirs
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
+
 ############################################################################
 # Help targets
 ############################################################################

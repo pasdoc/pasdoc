@@ -38,6 +38,8 @@ type
   TUpperCaseLetter = 'A'..'Z';
   { an array of boolean values, index type is @link(TUpperCaseLetter) }
   TSwitchOptions = array[TUpperCaseLetter] of Boolean;
+  
+  ETokenizerStreamEnd = class(EPasDoc);
 
   { This class scans one unit using one or more @link(TTokenizer) objects
     to scan the unit and all nested include files. }
@@ -99,13 +101,20 @@ type
       any valid Delphi or FPC code. }
     function SkipUntilElseOrEndif: Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
+    
+    procedure SetIncludeFilePaths(Value: TStringVector);
   protected
     procedure DoError(const AMessage: string; 
       const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TMessageType; const AMessage: string; const AArguments: array of const);
   public
-    { Creates a TScanner object that scans the given input stream. }
+    { Creates a TScanner object that scans the given input stream.
+    
+      Note that the stream S will be freed by this object
+      (at destruction or when we will read all it's tokens),
+      so after creating TScanner you should leave the stream
+      to be managed completely by this TScanner. }
     constructor Create(
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
@@ -135,8 +144,11 @@ type
       number. Good for meaningful error messages. }
     function GetStreamInfo: string;
     
-    property IncludeFilePaths: TStringVector read FIncludeFilePaths write
-      FIncludeFilePaths;
+    { Paths to search for include files. 
+      When you assign something to this property
+      it causes Assign(Value) call, not a real reference copy. }
+    property IncludeFilePaths: TStringVector read FIncludeFilePaths
+      write SetIncludeFilePaths;
     function PeekToken: TToken;
     
     { Place T in the buffer. Next time you will call GetToken you will
@@ -325,6 +337,8 @@ begin
     AStreamName, AStreamPath);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;
+  
+  FIncludeFilePaths := TStringVector.Create;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -341,7 +355,16 @@ begin
 
   FBufferedToken.Free;
   
+  FIncludeFilePaths.Free;
+  
   inherited;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TScanner.SetIncludeFilePaths(Value: TStringVector);
+begin
+  FIncludeFilePaths.Assign(Value);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -512,7 +535,7 @@ begin
   repeat
     { check if we have a tokenizer left }
     if (FCurrentTokenizer = -1) then
-      DoError('Unexpected end of stream', []);
+      raise ETokenizerStreamEnd.Create('Unexpected end of stream', [], 1);
 
     if FTokenizers[FCurrentTokenizer].HasData then 
     begin

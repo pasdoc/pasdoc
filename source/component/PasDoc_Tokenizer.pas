@@ -39,7 +39,8 @@ type
     this identifier is @italic(maybe) used as real standard directive. }
   TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
                 TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
-                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD);
+                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD,
+                TOK_ATT_ASSEMBLER_REGISTER);
 
 type
   TKeyword = (
@@ -164,7 +165,7 @@ const
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
   ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)', 
     'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
-    'directive', 'reserved word');
+    'directive', 'reserved word', 'AT&T assembler register name');
 
   TokenCommentTypes: set of TTokenType = 
   [ TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE ];
@@ -302,6 +303,7 @@ type
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
     function ReadCommentType3: TToken;
+    function ReadAttAssemblerRegister: TToken;
     function ReadLiteralString(var t: TToken): Boolean;
     function ReadToken(c: Char; const s: TCharSet; const TT: TTokenType; var
       t: TToken): Boolean;
@@ -547,7 +549,8 @@ end;
 procedure TTokenizer.DoError(const AMessage: string; const AArguments: array
   of const; const AExitCode: Word);
 begin
-  raise EPasDoc.Create(AMessage, AArguments, AExitCode);
+  raise EPasDoc.Create(AMessage + Format(' (at %s)', [GetStreamInfo]),
+    AArguments, AExitCode);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -614,7 +617,7 @@ begin
     BeginPosition := StreamPosition;
 
     if not GetChar(c) then
-      DoError('Error: tokenizer: could not read character', [], 0);
+      DoError('Tokenizer: could not read character', [], 0);
     
     if c in Whitespace then
     begin
@@ -624,7 +627,7 @@ begin
             TODO: will fail on Mac files (row is 13) }
         Inc(Row, StrCountCharA(Result.Data, #10))
       else
-        DoError('Error: tokenizer: could not read character', [], 0);
+        DoError('Tokenizer: could not read character', [], 0);
     end else
     if c in IdentifierStart then 
     begin
@@ -658,7 +661,8 @@ begin
           end;
         '(': begin
             c := ' ';
-            if HasData and not PeekChar(c) then DoError('Error: tokenizer: could not read character.', [], 0);
+            if HasData and not PeekChar(c) then
+              DoError('Tokenizer: could not read character', [], 0);
             case c of
               '*': begin
                   ConsumeChar;
@@ -754,6 +758,7 @@ begin
             end;
           end;
         '\': Result := CreateSymbolToken(SYM_BACKSLASH);
+        '%': Result := ReadAttAssemblerRegister;
       else begin
           for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
             if (c = SingleCharSymbols[J].c) then begin
@@ -761,7 +766,7 @@ begin
               exit;
             end;
           end;
-          DoError('Error: Invalid character in Pascal input stream.', [], 0);
+          DoError('Invalid character in Pascal input stream', [], 0);
         end;
       end;
   finally
@@ -873,6 +878,26 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function TTokenizer.ReadAttAssemblerRegister: TToken;
+var
+  C: char;
+begin
+  Result := TToken.Create(TOK_ATT_ASSEMBLER_REGISTER);
+  
+  Result.Data := '%';
+  repeat
+    if (not HasData) or (not PeekChar(C)) then Exit;
+    if C in ['a'..'z', 'A'..'Z', '0'..'9'] then
+    begin
+      GetChar(C);
+      Result.Data := Result.Data + C;
+    end else
+      Break;
+  until false;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 function TTokenizer.ReadLiteralString(var t: TToken): Boolean;
 
   procedure ReleaseToken;
@@ -893,16 +918,16 @@ begin
   repeat
     if not (Stream.Position < Stream.Size) then begin
       ReleaseToken;
-      DoError('Error: tokenizer: unexpected end of stream.', [], 0);
+      DoError('Tokenizer: unexpected end of stream', [], 0);
     end;
     if not GetChar(c) then begin
       ReleaseToken;
-      DoError('Error: tokenizer: could not read character.', [], 0);
+      DoError('Tokenizer: could not read character', [], 0);
     end;
     if c = QuoteChar then begin
       if not PeekChar(c) then begin
         ReleaseToken;
-        DoError('Error: tokenizer: could not peek character.', [], 0)
+        DoError('Tokenizer: could not peek character', [], 0)
       end;
       if c = QuoteChar then { escaped single quote within string } begin
         ConsumeChar;
@@ -993,7 +1018,7 @@ begin
         #10: Inc(Row);
       end
     else
-      DoError('Could not read character from %s', [GetStreamInfo], 0);
+      DoError('Could not read character', [], 0);
   until False;
 end;
 
