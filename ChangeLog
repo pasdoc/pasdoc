@@ -17,6 +17,7 @@
   * @( and @) construct
     (see [http://pasdoc.sipsolutions.net/TagsParametersMatching])
   * Various bugfixes.
+  + pascal_pre_proc tool (using PasDoc scanner)
 
 2005-11-26 v0.10.0
 
