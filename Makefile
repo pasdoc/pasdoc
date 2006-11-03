@@ -1,7 +1,7 @@
 include Makefile-autodetect
 
 #######################################################################
-# BASE CONFIGURATION  
+# BASE CONFIGURATION
 #######################################################################
 
 # The version of the package.
@@ -101,7 +101,7 @@ FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 # Delphi configuration
 ############################################################################
 
-# Don't ask me why, but Borland named Delphi/Win32 command-line compiler 
+# Don't ask me why, but Borland named Delphi/Win32 command-line compiler
 # dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
 
 DCC_WIN32 := dcc32
@@ -109,7 +109,7 @@ DCC_LINUX := dcc
 DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
 DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
 
-# Command-line dcc prints non-errorlines while it works, 
+# Command-line dcc prints non-errorlines while it works,
 # I guess that it was meant to somehow indicate
 # compilation progress, although it's rather confusing and hides
 # meaningfull error/warning lines. That's why we pass -Q below.
@@ -220,11 +220,11 @@ build-fpc-freebsd-x86: make-dirs
 
 # Delphi/Kylix build targets
 
-# Implementation note: this $(subst...) is needed, otherwise under Windows 
+# Implementation note: this $(subst...) is needed, otherwise under Windows
 # dcc dumbly prints "file not found" when $(FILE) uses "/" (yes, "/" is allowed
 # path separator in all normal Windows programs...) (and $(FILE) uses
-# "/" because this is sensible default value for $(PATHSEP), otherwise we would 
-# have to do dirty checks to guess whether we're used under Unix or Win32 in 
+# "/" because this is sensible default value for $(PATHSEP), otherwise we would
+# have to do dirty checks to guess whether we're used under Unix or Win32 in
 # this Makefile).
 build-delphi-win32: make-dirs
 	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
@@ -251,7 +251,7 @@ build-pascal_pre_proc: make-dirs
 
 help:
 	@echo "Available targets of this Makefile:"
-	@echo 
+	@echo
 	@echo "Compiling:"
 	@echo
 	@echo "  default, build-fpc-default-debug:"
@@ -297,20 +297,16 @@ help:
 	@echo
 	@echo "  dist-src:"
 	@echo "    This creates source archive, by checking out whole pasdoc sources"
-	@echo "    from pasdoc public CVS. It checks out using cvs tag PASDOC_x_y_z"
-	@echo "    (where x_y_z is derived from VERSION variable in this Makefile)."
+	@echo "    from pasdoc SVN. It checks out using the tag name taken from"
+	@echo "    VERSION variable in this Makefile (currently it's "$(VERSION)")."
 	@echo "    This way user can easily update downloaded sources tree by"
-	@echo "    simple \"cvs -z3 update -PdA\" command."
-	@echo
-	@echo "    Note: before using this target for the 1st time, you should"
-	@echo "    manually do cvs...login to pasdoc public CVS"
-	@echo "    (see [http://sourceforge.net/cvs/?group_id=4213])"
+	@echo "    simple \"svn switch https://svn.sourceforge.net/svnroot/pasdoc/trunk\" command."
 
 ############################################################################
 # Targets to make release archives
 #
 # Some general targets are present here, and targets
-# that build and archive for particular platform. 
+# that build and archive for particular platform.
 # Note that each dist-<os/arch> target assumes that according build-fpc-<os/arch>
 # target produces a pasdoc binary that works under <os/arch> platform.
 # So if you want to cross-compile to create release archives,
@@ -318,7 +314,7 @@ help:
 #
 # Note that dist targets use the most common archive format for given platform.
 # E.g. for Unices this is tar.gz, for Win32/DOS this is zip.
-# There would be no problems with creating zip archives under Unices 
+# There would be no problems with creating zip archives under Unices
 # (or tar.gz under Win32/DOS), but it's just more common
 # to use tar.gz under Unices.
 ############################################################################
@@ -404,8 +400,7 @@ SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 dist-src:
 	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
 	cd $(PACKAGEBASEDIR); \
-	  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pasdoc \
-	    co -P -r PASDOC_$(subst .,_,$(VERSION)) pasdoc
+	  svn co https://svn.sourceforge.net/svnroot/pasdoc/tags/$(VERSION) pasdoc
 	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz pasdoc/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
