@@ -135,6 +135,14 @@ function ExtractFileName(const FileName: string): string;
 { Checks is Prefix a prefix of S. Not case-sensitive. }
 function IsPrefix(const Prefix, S: string): boolean;
 
+{$ifdef DELPHI_5}
+{ BoolToStr for Delphi 5 compat.
+  According to 
+  [https://sourceforge.net/tracker/?func=detail&atid=104213&aid=1595890&group_id=4213]
+  Delphi 5 RTL doesn't have this implemented. }
+function BoolToStr(Value: Boolean): string;
+{$endif DELPHI_5}
+
 type
   { Raise this when some impossible situation (indicating bug in 
     pasdoc) occurs. }
@@ -348,6 +356,15 @@ function IsPrefix(const Prefix, S: string): boolean;
 begin
   Result := AnsiSameText(Copy(S, 1, Length(Prefix)), Prefix);
 end;
+
+{$ifdef DELPHI_5}
+function BoolToStr(Value: Boolean): string;
+begin
+  if Value then
+    Result := 'TRUE' else
+    Result := 'FALSE';
+end;
+{$endif}
 
 { EInternalError ------------------------------------------------------------- }
 
