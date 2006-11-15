@@ -9,7 +9,7 @@
 @preformatted(
   pasdoc ok_back_comment_private.pas --output=/tmp/
 )
-  the comment "This should be ether omitted" is incorrectly assigned
+  the comment "This should be ether omitted..." is incorrectly assigned
   to ActionDescription.
 }
 
