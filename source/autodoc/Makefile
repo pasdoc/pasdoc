@@ -45,7 +45,7 @@
 # TODO: It would be nice if this part of Makefile would share some
 # source with Makefile in ../../tests/Makefile
 
-# Name of pasdoc binary. Remember that you can override it at 
+# Name of pasdoc binary. Remember that you can override it at
 # make's command-line, like `make PASDOC=my_pasdoc'
 PASDOC=pasdoc
 
@@ -141,9 +141,17 @@ clean:
 # ------------------------------------------------------------
 # Making and uploading autodoc for http://pasdoc.sourceforge.net/autodoc/
 
+# html-latex format output used to be included here too,
+# but honestly htlatex is too bad to show publicly.
+# Besides htlatex is broken on my system right now :)
+# If you want to restore html-latex for public autodoc demo,
+# add to the upload target
+#	scp $(SCP_OPTIONS) latex/docs.html $(SF_CONNECT)latex/
+#	scp $(SCP_OPTIONS) latex/docs.css $(SF_CONNECT)latex/
+
 .PHONY:	public upload
 
-public: html pdf latex html-latex
+public: html pdf latex
 
 # Override this at command-line to your username,
 # like `make upload SF_USERNAME=my_user_name'
@@ -160,8 +168,6 @@ upload:
 	scp $(SCP_OPTIONS) -r html/ $(SF_CONNECT)
 	scp $(SCP_OPTIONS) latex/docs.pdf $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.tex $(SF_CONNECT)latex/
-	scp $(SCP_OPTIONS) latex/docs.html $(SF_CONNECT)latex/
-	scp $(SCP_OPTIONS) latex/docs.css $(SF_CONNECT)latex/
 	../../tests/scripts/ssh_chmod_writeable_by_pasdoc.sh \
 	  $(SF_USERNAME) $(SF_PATH)
 
