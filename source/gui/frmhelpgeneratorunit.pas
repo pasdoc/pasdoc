@@ -39,7 +39,7 @@ uses
   Dialogs, PasDoc_Gen, PasDoc_GenHtml, PasDoc_Base, StdCtrls, PasDoc_Types,
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, PasDoc_Serialize,
-  IniFiles, PasDoc_GenHtmlHelp, EditBtn, Utils, LCLType, SynEdit,
+  IniFiles, PasDoc_GenHtmlHelp, EditBtn, PasDoc_Utils, LCLType, SynEdit,
   PasDoc_Items;
 
 type
