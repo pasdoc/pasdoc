@@ -22,11 +22,11 @@ unit PasDoc_GenHtml;
 interface
 
 uses
-  Utils,
+  PasDoc_Utils,
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_Languages,
-  StringVector,
+  PasDoc_StringVector,
   PasDoc_Types,
   Classes,
   PasDoc_StringPairVector;
@@ -311,7 +311,7 @@ uses
   SysUtils,
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc_Base,
-  ObjectVector,
+  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_Aspell;

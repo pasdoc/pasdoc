@@ -2,7 +2,7 @@ unit PasDoc_Aspell;
 
 interface
 
-uses SysUtils, Classes, PasDoc_ProcessLineTalk, ObjectVector, PasDoc_Types;
+uses SysUtils, Classes, PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
 
 type
   TSpellingError = class
@@ -52,7 +52,7 @@ type
 
 implementation
 
-uses Utils;
+uses PasDoc_Utils;
 
 constructor TAspellProcess.Create(const AAspellMode, AAspellLanguage: string);
 var FirstAspellLine: string;

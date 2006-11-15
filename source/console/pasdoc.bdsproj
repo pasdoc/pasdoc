@@ -123,10 +123,10 @@
       <Directories Name="UnitOutputDir"></Directories>
       <Directories Name="PackageDLLOutputDir"></Directories>
       <Directories Name="PackageDCPOutputDir"></Directories>
-      <Directories Name="SearchPath">..\component;..\OptionParser;..\component\tipue;..\component\images</Directories>
+      <Directories Name="SearchPath">..\component;..\component\tipue;..\component\images</Directories>
       <Directories Name="Packages">vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;dclOffice2k;DJcl;JVCL200_R70;qrpt</Directories>
       <Directories Name="Conditionals"></Directories>
-      <Directories Name="DebugSourceDirs">..\component;..\OptionParser;..\Console;..\component\tipue</Directories>
+      <Directories Name="DebugSourceDirs">..\component;..\Console;..\component\tipue</Directories>
       <Directories Name="UsePackages">False</Directories>
     </Directories>
     <Parameters>

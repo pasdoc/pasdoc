@@ -2,7 +2,7 @@
 
 unit PasDoc_ProcessLineTalk;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 {$ifdef FPC}
 {$IFNDEF VER1_0}
@@ -108,7 +108,7 @@ type
 
 implementation
 
-uses StreamUtils;
+uses PasDoc_StreamUtils;
 
 { TTextReader ---------------------------------------------------------------- }
 

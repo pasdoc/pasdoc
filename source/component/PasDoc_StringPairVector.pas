@@ -4,7 +4,7 @@ interface
 
 uses
   Classes,
-  ObjectVector;
+  PasDoc_ObjectVector;
 
 type
   TStringPair = class
@@ -59,7 +59,7 @@ implementation
 
 uses 
   SysUtils { For LowerCase under Kylix 3 }, 
-  Utils;
+  PasDoc_Utils;
 
 { TStringPair ---------------------------------------------------------------- }
 

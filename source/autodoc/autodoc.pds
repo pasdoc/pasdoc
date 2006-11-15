@@ -49,11 +49,10 @@ Count=1
 Item_0=../component
 
 [Files]
-Count=4
+Count=3
 Item_0=../component/*.pas
 Item_1=../component/tipue/*.pas
-Item_2=../OptionParser/*.pas
-Item_3=../console/*.pas
+Item_2=../console/*.pas
 
 [HyphenatedWords]
 Count=0

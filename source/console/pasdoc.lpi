@@ -50,7 +50,6 @@
     <Version Value="5"/>
     <SearchPaths>
       <IncludeFiles Value="../component/"/>
-      <OtherUnitFiles Value="../OptionParser/"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

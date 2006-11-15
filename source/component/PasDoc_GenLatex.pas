@@ -12,7 +12,7 @@ uses
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_Languages,
-  StringVector,
+  PasDoc_StringVector,
   PasDoc_Types,
   Classes;
 
@@ -233,8 +233,8 @@ implementation
 uses
   SysUtils,
   PasDoc_Base,
-  ObjectVector,
-  Utils, 
+  PasDoc_ObjectVector,
+  PasDoc_Utils, 
   PasDoc_StringPairVector,
   StrUtils;
 

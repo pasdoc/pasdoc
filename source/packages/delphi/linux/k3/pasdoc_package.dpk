@@ -29,8 +29,8 @@ requires
   rtl;
 
 contains
-  Utils in '../../../../component/Utils.pas',
-  ObjectVector in '../../../../component/ObjectVector.pas',
+  PasDoc_Utils in '../../../../component/PasDoc_Utils.pas',
+  PasDoc_ObjectVector in '../../../../component/PasDoc_ObjectVector.pas',
   PasDoc_Base in '../../../../component/PasDoc_Base.pas',
   PasDoc_Gen in '../../../../component/PasDoc_Gen.pas',
   PasDoc_GenHtml in '../../../../component/PasDoc_GenHtml.pas',
@@ -45,9 +45,9 @@ contains
   PasDoc_TagManager in '../../../../component/PasDoc_TagManager.pas',
   PasDoc_Tokenizer in '../../../../component/PasDoc_Tokenizer.pas',
   PasDoc_Types in '../../../../component/PasDoc_Types.pas',
-  StreamUtils in '../../../../component/StreamUtils.pas',
-  StringVector in '../../../../component/StringVector.pas',
-  Hashes in '../../../../component/Hashes.pas',
+  PasDoc_StreamUtils in '../../../../component/PasDoc_StreamUtils.pas',
+  PasDoc_StringVector in '../../../../component/PasDoc_StringVector.pas',
+  PasDoc_Hashes in '../../../../component/PasDoc_Hashes.pas',
   PasDoc_Tipue in '../../../../component/tipue/PasDoc_Tipue.pas',
   PasDoc_SortSettings in '../../../../component/PasDoc_SortSettings.pas',
   PasDoc_GenHtmlHelp in '../../../../component/PasDoc_GenHtmlHelp.pas',

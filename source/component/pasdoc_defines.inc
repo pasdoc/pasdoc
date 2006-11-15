@@ -1,4 +1,4 @@
-{$I VERSIONS.INC}
+{$I pasdoc_versions.inc}
 
 {$IFDEF DELPHI_7_UP}
 {$WARN UNSAFE_CAST OFF}

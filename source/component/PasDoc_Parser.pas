@@ -13,7 +13,7 @@
 
 unit PasDoc_Parser;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
@@ -23,7 +23,7 @@ uses
   PasDoc_Items,
   PasDoc_Scanner,
   PasDoc_Tokenizer,
-  StringVector;
+  PasDoc_StringVector;
 
 type
   // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).
@@ -366,7 +366,7 @@ implementation
 
 uses
   SysUtils,
-  Utils;
+  PasDoc_Utils;
 
 { ---------------------------------------------------------------------------- }
 { TParser }

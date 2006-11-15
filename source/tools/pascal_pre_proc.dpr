@@ -13,7 +13,7 @@
 
 program pascal_pre_proc;
 
-uses SysUtils, Classes, OptionParser, StringVector, PasDoc_Base,
+uses SysUtils, Classes, PasDoc_OptionParser, PasDoc_StringVector, PasDoc_Base,
   PasDoc_Tokenizer, PasDoc_Scanner, PasDoc_Types;
 
 { TPascalPreProcessor -------------------------------------------------------- }

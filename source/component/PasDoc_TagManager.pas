@@ -1,6 +1,6 @@
 unit PasDoc_TagManager;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
@@ -8,7 +8,7 @@ uses
   SysUtils,
   Classes,
   PasDoc_Types,
-  ObjectVector;
+  PasDoc_ObjectVector;
 
 type
   TTagManager = class;
@@ -476,7 +476,7 @@ type
 
 implementation
 
-uses Utils;
+uses PasDoc_Utils;
 
 { TTag ------------------------------------------------------------  }
 

@@ -20,9 +20,9 @@ interface
 uses
   SysUtils,
   PasDoc_Types,
-  StringVector,
-  ObjectVector,
-  Hashes,
+  PasDoc_StringVector,
+  PasDoc_ObjectVector,
+  PasDoc_Hashes,
   Classes,
   PasDoc_TagManager,
   PasDoc_Serialize,
@@ -1039,8 +1039,7 @@ function VisToStr(const Vis: TVisibility): string;
 
 implementation
 
-uses
-  Utils, PasDoc_Tokenizer;
+uses PasDoc_Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin

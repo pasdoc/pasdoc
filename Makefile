@@ -13,7 +13,7 @@ VERSION := 0.10.0
 PACKAGENAME := pasdoc
 
 # Location of units source code.
-UNIT_DIRS := ./source/component ./source/console ./source/OptionParser \
+UNIT_DIRS := ./source/component ./source/console \
   ./source/component/tipue
 
 INCLUDE_DIRS := ./source/component ./source/component/images

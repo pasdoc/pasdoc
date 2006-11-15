@@ -157,7 +157,7 @@
 
 {$IFNDEF FPC}
 {$IFDEF LINUX}
-{$I KYLIXVERSIONS.INC}
+{$I pasdoc_kylixversions.inc}
 {$ENDIF}
 {$ELSE}
 {$ENDIF}

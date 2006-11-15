@@ -14,12 +14,12 @@ which are comments that start with a dollar sign. }
 
 unit PasDoc_Tokenizer;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
 uses
-  Utils,
+  PasDoc_Utils,
   PasDoc_Types,
   Classes;
 

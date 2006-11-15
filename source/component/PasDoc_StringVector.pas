@@ -8,7 +8,7 @@
   so much old code, this has only little additional
   functionality
 }
-unit StringVector;
+unit PasDoc_StringVector;
 
 interface
 uses

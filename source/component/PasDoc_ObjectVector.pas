@@ -4,7 +4,7 @@
   @author(Michalis Kamburelis)
   a simple object vector
 }
-unit ObjectVector;
+unit PasDoc_ObjectVector;
 
 interface
 uses

@@ -15,7 +15,7 @@
 
 unit PasDoc_Scanner;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
@@ -24,7 +24,7 @@ uses
   Classes,
   PasDoc_Types,
   PasDoc_Tokenizer,
-  StringVector,
+  PasDoc_StringVector,
   PasDoc_StringPairVector;
 
 const
@@ -168,7 +168,7 @@ type
 
 implementation
 
-uses Utils;
+uses PasDoc_Utils;
 
 type
   { all directives a scanner is going to regard }

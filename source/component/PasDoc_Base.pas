@@ -15,7 +15,7 @@
 
 unit PasDoc_Base;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
@@ -26,7 +26,7 @@ uses
   PasDoc_Languages,
   PasDoc_Gen,
   PasDoc_Types,
-  StringVector,
+  PasDoc_StringVector,
   PasDoc_SortSettings,
   PasDoc_TagManager
 {$IFNDEF FPC}
@@ -259,8 +259,9 @@ implementation
 
 uses
   PasDoc_Parser,
-  ObjectVector,
-  Utils, PasDoc_Serialize;
+  PasDoc_ObjectVector,
+  PasDoc_Utils,
+  PasDoc_Serialize;
 
 constructor TPasDoc.Create(AOwner: TComponent);
 begin

@@ -4,9 +4,9 @@
   @author(Michalis Kamburelis)
   @abstract(Some utility functions)
 }
-unit Utils;
+unit PasDoc_Utils;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 

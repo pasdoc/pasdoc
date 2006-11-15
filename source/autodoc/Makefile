@@ -52,7 +52,7 @@ PASDOC=pasdoc
 # These options will be passed to every pasdoc invocation,
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
-  ../component/*.pas ../component/tipue/*.pas ../OptionParser/*.pas \
+  ../component/*.pas ../component/tipue/*.pas \
   ../console/*.pas \
   --title "PasDoc's autodoc" --write-uses-list  --auto-abstract \
   --introduction=introduction.txt

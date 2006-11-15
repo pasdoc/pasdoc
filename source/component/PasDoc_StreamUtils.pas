@@ -3,14 +3,14 @@
   @author(Johannes Berg <johannes@sipsolutions.de>)
   a few stream utility functions
 }
-unit StreamUtils;
+unit PasDoc_StreamUtils;
 
 interface
 
 uses
   Classes;
   
-{$I VERSIONS.INC}  
+{$I pasdoc_versions.inc}  
 
 function StreamReadLine(const AStream: TStream): string;
 
@@ -21,8 +21,8 @@ procedure StreamWriteLine(const AStream: TStream; const AString: string);
 procedure StreamWriteString(const AStream: TStream; const AString: string);
 
 implementation
-uses
-  Utils; // for LineEnding in Kylix/Delphi
+
+uses PasDoc_Utils; // for LineEnding in Kylix/Delphi
 
 function StreamReadLine(const AStream: TStream): string;
 // totally junky implementation!!

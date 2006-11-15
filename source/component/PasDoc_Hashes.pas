@@ -116,7 +116,7 @@
 )
 *)
 
-unit Hashes;
+unit PasDoc_Hashes;
 
 {$Q-} // no integer overflow checks (I need overflow in THash.Hash)
 {$R-} // no range checks (because free bounds of TFakeArray[0..0])

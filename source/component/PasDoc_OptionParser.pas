@@ -7,9 +7,9 @@
   Then, call your object's @link(TOptionParser.ParseOptions) 
   method and options are parsed.
   After parsing, examine your option objects. }
-unit OptionParser;
+unit PasDoc_OptionParser;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 uses
@@ -240,9 +240,6 @@ type
 
 implementation
 uses
-{$IFDEF FPC}
-  TextWrap,
-{$ENDIF}
   SysUtils;
 
 function TryStrToInt(const AString: string; var AValue: Integer): Boolean;

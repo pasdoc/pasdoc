@@ -20,15 +20,15 @@
 
 unit PasDoc_Gen;
 
-{$I DEFINES.INC}
+{$I pasdoc_defines.inc}
 
 interface
 
 uses
   PasDoc_Items,
   PasDoc_Languages,
-  StringVector,
-  ObjectVector,
+  PasDoc_StringVector,
+  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
   Classes,
@@ -927,8 +927,8 @@ implementation
 
 uses
   SysUtils,
-  StreamUtils,
-  Utils,
+  PasDoc_StreamUtils,
+  PasDoc_Utils,
   PasDoc_Tokenizer;
 
 { TListItemData ------------------------------------------------------------- }
