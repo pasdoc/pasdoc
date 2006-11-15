@@ -33,7 +33,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Height = 420
     Width = 596
     Align = alClient
-    PageIndex = 4
+    PageIndex = 3
     ShowTabs = False
     object pageOptions: TPage
       Caption = 'Options'
@@ -447,10 +447,11 @@ object frmHelpGenerator: TfrmHelpGenerator
       ClientHeight = 416
       object Label17: TLabel
         Left = 190
-        Height = 42
+        Height = 43
         Top = 14
         Width = 386
         HelpType = htKeyword
+        Anchors = [akTop, akLeft, akRight]
         Caption = 'You can specify how you want words to be hyphenated here.'#10'Just enter the word (one per line) with hyphens in the correct places.'#10'Only English letters are allowed.'
         Color = clNone
         FocusControl = memoHyphenatedWords
@@ -458,9 +459,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object Label24: TLabel
         Left = 12
-        Height = 12
+        Height = 13
         Top = 110
-        Width = 137
+        Width = 138
         Caption = 'LateX graphics package'
         Color = clNone
         FocusControl = comboLatexGraphicsPackage
@@ -470,7 +471,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 190
         Height = 329
         Top = 70
-        Width = 346
+        Width = 386
         Anchors = [akTop, akLeft, akRight, akBottom]
         OnChange = SomethingChanged
         TabOrder = 0
@@ -504,7 +505,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 12
         Height = 21
         Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
-        Top = 135
+        Top = 126
         Width = 148
         AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
         Enabled = False
@@ -1005,6 +1006,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Font.Name = 'courier'
         ParentColor = False
         TabOrder = 1
+        BookMarkOptions.OnChange = nil
+        Gutter.OnChange = nil
         Gutter.CodeFoldingWidth = 14
         Keystrokes = <        
           item
@@ -1327,6 +1330,7 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = 250
             ShortCut = 24642
           end>
+        SelectedColor.OnChange = nil
       end
       object Splitter1: TSplitter
         Cursor = crVSplit
