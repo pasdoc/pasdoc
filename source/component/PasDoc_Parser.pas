@@ -1122,6 +1122,8 @@ begin
                     Scanner.UnGetToken(T);
                     ParseFields(i, Visibility in ShowVisibilities, Visibility,
                       ClassKeyWordString);
+                    if not (Visibility in ShowVisibilities) then
+                      ItemsForNextBackComment.Clear;
                     ClassKeyWordString := '';
                   end;
               end;
