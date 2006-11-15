@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,12 +58,12 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="23" Y="16"/>
-        <TopLine Value="16"/>
+        <CursorPos X="16" Y="99"/>
+        <TopLine Value="98"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="316" ID="1"/>
+          <Item0 X="1" Y="319" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit1>
@@ -75,7 +75,7 @@
         <UnitName Value="frmAboutUnit"/>
         <CursorPos X="3" Y="65"/>
         <TopLine Value="55"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
@@ -83,7 +83,7 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="32"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -93,7 +93,7 @@
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="5" Y="23"/>
         <TopLine Value="12"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="32"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -103,7 +103,7 @@
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="3" Y="9"/>
         <TopLine Value="1"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="31"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
@@ -111,7 +111,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="28"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="30"/>
       </Unit6>
     </Units>
   </ProjectOptions>

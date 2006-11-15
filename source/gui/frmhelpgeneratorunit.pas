@@ -95,6 +95,8 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    LabelHeader: TLabel;
+    LabelFooter: TLabel;
     LabelImplicitVisibility: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -109,8 +111,6 @@ type
     Label23: TLabel;
     Label24: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -151,6 +151,8 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
+    PanelFooterHidden: TPanel;
+    PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
     PanelMarkers: TPanel;
     PanelDefinesTop: TPanel;
@@ -179,6 +181,7 @@ type
     seVerbosity: TSpinEdit;
     Splitter1: TSplitter;
     seComment: TSynEdit;
+    Splitter2: TSplitter;
     // @name generates Latex output.
     TexDocGenerator: TTexDocGenerator;
     MenuHelp: TMenuItem;
