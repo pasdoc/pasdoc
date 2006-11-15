@@ -848,6 +848,11 @@ begin
         FreeAndNil(t);
         t := GetNextToken;
       end;
+      
+      { This allows to write back-comment for class declarations like
+          TMyClass = class(TMyAncestor) //< back comment
+      }
+      ItemsForNextBackComment.ClearAndAdd(I);
 
       { get all ancestors; remember, this could look like
         TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;

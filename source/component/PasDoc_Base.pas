@@ -539,6 +539,7 @@ procedure TPasDoc.Execute;
 var
   t1, t2: TDateTime;
   CacheDirNoDelim: string;
+  UnitsCountBeforeExcluding: Cardinal;
 begin
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
@@ -571,11 +572,18 @@ begin
 
   t1 := Now;
   ParseFiles;
+  
+  UnitsCountBeforeExcluding := FUnits.Count;
   RemoveExcludedItems(TPasItems(FUnits));
 
-  { check if parsing was successful }
-  if ObjectVectorIsNilOrEmpty(FUnits) then begin
-    DoError('At least one unit must have been successfully parsed to write docs.', [], 1);
+  { check if we have any units successfully parsed and not @excluded }
+  if ObjectVectorIsNilOrEmpty(FUnits) then
+  begin
+    if UnitsCountBeforeExcluding <> 0 then
+      DoError('%d units were successfully parsed, but they are all ' + 
+        'marked with @exclude', [UnitsCountBeforeExcluding], 1) else
+      DoError('At least one unit must have been successfully parsed ' +
+        'to write docs', [], 1);
   end;
 
   if FProjectName <> '' then begin
