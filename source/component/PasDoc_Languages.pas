@@ -1829,7 +1829,7 @@ begin
   FTranslation[trIdentifiers] := 'Azonosítók';
   FTranslation[trInterface] := 'Kapcsolódási felület';
   FTranslation[trLegend] := 'Történet';
-  FTranslation[trMarker] := 'Jelölõ';
+  FTranslation[trMarker] := 'Jelzõ';
   FTranslation[trVisibility] := 'Láthatóság';
   FTranslation[trMethods] := 'Metódusok';
   FTranslation[trLastModified] := 'Utolsó módosítás';
@@ -1870,13 +1870,13 @@ begin
   FTranslation[trSearch] := 'Keresés';
   FTranslation[trSeeAlso] := 'Lásd még';
   FTranslation[trValues] := 'Értékek';
-  FTranslation[trNoCIOs] := 'Az egységek nem tartalmaznak osztályokat, interfészeket, objektumokat vagy rekordokat.';
-  FTranslation[trNoCIOsForHierarchy] := 'Az egységek nem tartalmaznak osztályokat, interfészeket vagy objektumokat.';
-  FTranslation[trNoTypes] := 'Az egységek nem tartalmaznak típusdefiniciókat.';
-  FTranslation[trNoVariables] := 'Az egységek nem tartalmaznak változókat.';
-  FTranslation[trNoConstants] := 'Az egységek nem tartalmaznak konstansokat.';
-  FTranslation[trNoFunctions] := 'Az egységek nem tartalmaznak függvényeket vagy eljárásokat.';
-  FTranslation[trNoIdentifiers] := 'Az egységek nem tartalmaznak azonosítókat.';
+  FTranslation[trNoCIOs] := 'Az egység nem tartalmaz osztályt, interfészt, objektumot, vagy rekordot.';
+  FTranslation[trNoCIOsForHierarchy] := 'Az egység nem tartalmaz osztályt, interfészt vagy objektumot.';
+  FTranslation[trNoTypes] := 'Az egység nem tartalmaz típusokat';
+  FTranslation[trNoVariables] := 'Az egység nem tartalmaz változókat.';
+  FTranslation[trNoConstants] := 'Az egység nem tartalmaz konstansokat.';
+  FTranslation[trNoFunctions] := 'Az egység nem tartalmaz függvényeket vagy eljárásokat.';
+  FTranslation[trNoIdentifiers] := 'Az egység nem tartalmaz azonosítókat.';
   FTranslation[trProgram] := 'Program';
 end;
 
