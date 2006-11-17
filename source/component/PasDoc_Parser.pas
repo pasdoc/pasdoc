@@ -1731,6 +1731,16 @@ procedure TParser.ParseUses(const U: TPasUnit);
 var
   T: TToken;
 begin
+  { Parsing uses clause clears the comment, otherwise 
+    - normal comments before "uses" clause would be assigned to normal unit
+      items (like a procedure), which is quite unexpected
+      (see ok_comment_over_uses_clause.pas testcase).
+    - analogously, back comments after "uses" clause would be assigned to the unit
+      description (see ok_comment_over_uses_clause_2.pas testcase).
+  }
+  IsLastComment := false;
+  ItemsForNextBackComment.Clear;
+  
   repeat
     U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
     
