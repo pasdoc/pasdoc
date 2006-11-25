@@ -1268,6 +1268,7 @@ var
   Mode: Integer;
   M: TPasMethod;
   t: TToken;
+  PropertyParsed: TPasProperty;
 begin
   DoMessage(4, mtInformation, 'Entering interface section of unit %s',[U.Name]);
   Finished := False;
@@ -1328,6 +1329,12 @@ begin
               KEY_THREADVAR,
                 KEY_VAR:
                 Mode := MODE_VAR;
+              KEY_PROPERTY:
+                begin
+                  ParseProperty(PropertyParsed);
+                  U.Variables.Add(PropertyParsed);
+                  Mode := MODE_UNDEFINED;
+                end;
             else
               DoError('Unexpected %s', [T.Description]);
             end;
