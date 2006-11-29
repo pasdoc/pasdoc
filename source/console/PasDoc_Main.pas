@@ -364,9 +364,20 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
     Result := SetLatexOptions(Generator);
   end;
 
+  function LanguageFromStr(S: string): TLanguageID;
+  begin
+    S := LowerCase(S);
+    for Result := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
+    begin
+      if LowerCase(LANGUAGE_ARRAY[Result].Syntax) = S then
+        Exit;
+    end;
+    
+    raise EInvalidCommandLine.CreateFmt('Unknown language code "%s"', [S]);
+  end;
+
 var
   i: Integer;
-  lng: TLanguageID;
   SS: TSortSetting;
   Vis: TVisibility;
 begin
@@ -399,14 +410,8 @@ begin
   PasDoc.Generator.DestinationDirectory := OptionOutputPath.Value;
   PasDoc.IncludeDirectories.Assign(OptionIncludePaths.Values);
 
-  OptionLanguage.Value := lowercase(OptionLanguage.Value);
-  for lng := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do begin
-    if LowerCase(LANGUAGE_ARRAY[lng].Syntax) = OptionLanguage.Value then
-      begin
-      PasDoc.Generator.Language := lng;
-      break;
-    end;
-  end;
+  if OptionLanguage.WasSpecified then
+    PasDoc.Generator.Language := LanguageFromStr(OptionLanguage.Value);
 
   PasDoc.ProjectName := OptionName.Value;
 
