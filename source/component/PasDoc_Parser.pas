@@ -948,19 +948,26 @@ begin
         Scanner.UnGetToken(t);
       end;
 
-      { Visibility of members at the beginning of a class declaration
-        that don't have a specified visibility is controlled
-        by ImplicitVisibility value. }
-      case ImplicitVisibility of
-        ivPublic:
-          if Scanner.SwitchOptions['M'] then 
-            Visibility := viPublished else 
-            Visibility := viPublic;
-        ivPublished:
-          Visibility := viPublished;
-        ivImplicit:
-          Visibility := viImplicit;
-        else raise EInternalError.Create('ImplicitVisibility = ??');
+      if I.MyType = CIO_CLASS then
+      begin
+        { Visibility of members at the beginning of a class declaration
+          that don't have a specified visibility is controlled
+          by ImplicitVisibility value. }
+        case ImplicitVisibility of
+          ivPublic:
+            if Scanner.SwitchOptions['M'] then 
+              Visibility := viPublished else 
+              Visibility := viPublic;
+          ivPublished:
+            Visibility := viPublished;
+          ivImplicit:
+            Visibility := viImplicit;
+          else raise EInternalError.Create('ImplicitVisibility = ??');
+        end;
+      end else
+      begin
+        { Everything besides a class always starts with visibility "public". }
+        Visibility := viPublic;
       end;
 
       { now collect methods, fields and properties }
