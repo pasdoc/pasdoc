@@ -202,7 +202,11 @@ type
       Returns token Data.
       Just a comfortable routine. }
     function GetAndCheckNextToken(ATokenType: TTokenType): string; overload;
-    
+    { This is an overload for parsing a unit name that may contain one or
+      more dots ('.')
+      @param AIsUnitName is a dummy parameter to allow overloading that is assumed to be true }
+    function GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string; overload;
+
     { This does @link(GetNextToken), then checks is it a symbol with 
       ASymbolType (using @link(CheckToken)), then frees the token. 
       Returns token Data.
@@ -509,6 +513,31 @@ begin
     Result := T.Data;
   finally 
     T.Free;
+  end;
+end;
+
+function TParser.GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string;
+var
+  T: TToken;
+  s: string;
+begin
+  // note: the Value of AIsUnitName is ignored, assume it is true
+  Result := '';
+  while true do begin
+    T := GetNextToken;
+    try
+      CheckToken(T, ATokenType);
+      Result := Result + T.Data;
+    finally
+      T.Free;
+    end;
+    t := PeekNextToken(s);
+    if (s = '') and t.IsSymbol(SYM_PERIOD) then begin
+      Result := Result + '.';
+      Scanner.ConsumeToken;
+      t.Free;
+    end else
+      exit;
   end;
 end;
 
@@ -1656,7 +1685,7 @@ begin
   U.RawDescriptionInfo^ := GetLastComment;
 
   { get unit name identifier }
-  U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+  U.Name := GetAndCheckNextToken(TOK_IDENTIFIER, true);
 
   ItemsForNextBackComment.ClearAndAdd(U);
 
@@ -1756,7 +1785,7 @@ begin
   ItemsForNextBackComment.Clear;
   
   repeat
-    U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
+    U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
     
     T := GetNextToken;
     try
