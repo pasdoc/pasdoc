@@ -2609,11 +2609,11 @@ begin
         begin
           for j := 0 to U.UsesUnits.Count-1 do 
           begin
-            WriteDirectLine('  ' + U.Name + ' -> ' + U.UsesUnits[j]);
+            WriteDirectLine('  "' + U.Name + '" -> "' + U.UsesUnits[j] + '"');
           end;
         end;
 
-        WriteDirectLine('  ' + U.Name + ' [href="' + U.OutputFileName + '"]');
+        WriteDirectLine('  "' + U.Name + '" [href="' + U.OutputFileName + '"]');
       end;
     end;
     WriteDirect('}', true);
