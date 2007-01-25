@@ -95,6 +95,7 @@ type
       const FileName: string; out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
+    procedure SkipBOM(InputStream: TStream);
   protected
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
@@ -340,6 +341,28 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure TPasDoc.SkipBOM(InputStream: TStream);
+const
+  BOM: string = #$EF#$BB#$BF;
+var
+  c: char;
+  i: integer;
+begin
+  i := 0;
+  repeat
+    if InputStream.Position >= InputStream.Size then
+      DoError('Tokenizer: could not read character', [], 0);
+    InputStream.Read(c, 1);
+    Inc(i);
+    if i > Length(BOM) then
+      begin
+        InputStream.Position := InputStream.Position - 1;
+        exit;
+      end;
+  until c <> BOM[i];
+  InputStream.Position := 0;
+end;
+
 procedure TPasDoc.HandleStream(
   const InputStream: TStream;
   const SourceFileName: string);
@@ -349,9 +372,10 @@ var
   LLoaded: boolean;
   LCacheFileName: string;
 begin
+  SkipBOM(InputStream);
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
-    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity, 
+    {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
     SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
   try
     p.ShowVisibilities := ShowVisibilities;
