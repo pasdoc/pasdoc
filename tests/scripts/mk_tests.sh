@@ -191,3 +191,4 @@ mk_special_test ok_back_comment_class ok_back_comment_class.pas
 mk_special_test ok_excluded_unit ok_excluded_unit.pas
 mk_special_test ok_comment_over_uses_clause ok_comment_over_uses_clause.pas warning_back_comment_over_uses_clause.pas
 mk_special_test ok_interface_implicit ok_interface_implicit.pas --implicit-visibility=implicit
+mk_special_test warning_dot_in_unitname warning_dot_in_unitname.pas --write-uses-list
