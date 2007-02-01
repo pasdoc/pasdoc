@@ -1,4 +1,4 @@
-unit warning_dot_in_unitname;
+unit ok.dot.unitname;
 
 interface
 
