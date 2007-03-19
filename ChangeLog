@@ -18,6 +18,7 @@
     (see [http://pasdoc.sipsolutions.net/TagsParametersMatching])
   * Various bugfixes.
   + pascal_pre_proc tool (using PasDoc scanner)
+  + simplexml output format (by MfG TAK2004 and Michalis)
 
 2005-11-26 v0.10.0
 

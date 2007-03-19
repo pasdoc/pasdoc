@@ -14,6 +14,7 @@ uses
   SysUtils,
   PasDoc_Utils,
   PasDoc_GenHtml,
+  PasDoc_GenSimpleXML,
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp,
   PasDoc_Gen,
@@ -149,7 +150,7 @@ begin
   AddOption(OptionTitle);
 
   OptionFormat := TStringOption.Create('O', 'format');
-  OptionFormat.Explanation := 'Output format: html, latex, latex2rtf or htmlhelp';
+  OptionFormat.Explanation := 'Output format: html, simplexml, latex, latex2rtf or htmlhelp';
   OptionFormat.Value := 'html';
   AddOption(OptionFormat);
 
@@ -331,6 +332,11 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
     Result := Generator;
   end;
 
+  function SetSimpleXMLOptions(Generator: TSimpleXMLDocGenerator): TDocGenerator;
+  begin
+    Result := Generator;
+  end;
+
   { Sets HTML-help specific options and returns its parameter as TDocGenerator }
   function SetHtmlHelpOptions(Generator: THTMLHelpDocGenerator): TDocGenerator;
   begin
@@ -384,6 +390,10 @@ begin
   OptionFormat.Value := LowerCase(OptionFormat.Value);
   if OptionFormat.Value = 'html' then begin
     PasDoc.Generator := SetHtmlOptions(THTMLDocGenerator.Create(PasDoc));
+  end else
+  if OptionFormat.Value = 'simplexml' then
+  begin
+    PasDoc.Generator := SetSimpleXMLOptions(TSimpleXMLDocGenerator.Create(PasDoc));
   end else
   if OptionFormat.Value = 'latex' then
   begin
