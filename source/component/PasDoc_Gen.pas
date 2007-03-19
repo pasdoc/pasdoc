@@ -5,7 +5,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Philippe Jean Dit Bailleul (jdb@abacom.com))
   @author(Rodrigo Urubatan Ferreira Jardim (rodrigo@netscape.net))
-  @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
+  @author(Grzegorz Skoczylas <gskoczylas@rekord.pl>)
   @author(Pierre Woestyn <pwoestyn@users.sourceforge.net>)
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)

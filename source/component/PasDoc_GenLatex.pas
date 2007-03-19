@@ -1031,7 +1031,8 @@ procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem;
 
   procedure WriteHintDirective(const S: string);
   begin
-    WriteConverted('Warning: ' + S + '.' + LineEnding + LineEnding);
+    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.'
+                     + LineEnding + LineEnding);
   end;
 
 var

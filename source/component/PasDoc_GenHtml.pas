@@ -8,7 +8,7 @@
   @author(Wim van der Vegt (wvd_vegt@knoware.nl))
   @author(Thomas Mueller (www.dummzeuch.de))
   @author(David Berg (HTML Layout) <david@sipsolutions.de>)
-  @author(Grzegorz Skoczylas <gskoczylas@program.z.pl>)
+  @author(Grzegorz Skoczylas <gskoczylas@rekord.pl>)
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
@@ -1085,7 +1085,7 @@ procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPa
   procedure WriteHintDirective(const S: string);
   begin
     WriteDirect('<p class="hint_directive">');
-    WriteConverted('Warning: ' + S + '.');
+    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.');
     WriteDirect('</p>');
   end;
 
