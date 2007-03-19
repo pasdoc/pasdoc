@@ -262,7 +262,8 @@ begin
   WriteDirectLine('</unit>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteExternalCore(const ExternalItem: TExternalItem;
+procedure TSimpleXMLDocGenerator.WriteExternalCore(
+  const ExternalItem: TExternalItem;
   const Id: TTranslationID);
 begin
   { TODO }
@@ -277,14 +278,31 @@ end;
 
 function TSimpleXMLDocGenerator.FormatAnchor(const Anchor: string): string;
 begin
-  Result := '';
-  { TODO }
+  { TODO: untested, as this is used only by introduction-conclusion stuff
+    and WriteExternalCore is not impl yet. }
+  Result := Format('<anchor target="%s" />', [Anchor]);
 end;
 
 function TSimpleXMLDocGenerator.FormatTable(Table: TTableData): string;
+const
+  RowElement: array [boolean] of string = ('row', 'rowhead');
+var
+  RowNum, ColNum: Integer;
+  Row: TRowData;
 begin
-  Result := '';
-  { TODO }
+  Result := LineEnding + LineEnding + '<table>' + LineEnding;
+
+  for RowNum := 0 to Table.Count - 1 do
+  begin
+    Row := Table.Items[RowNum] as TRowData;
+    Result := Result + '  <' + RowElement[Row.Head] + '>' + LineEnding;
+    for ColNum := 0 to Row.Cells.Count - 1 do
+      Result := Result +
+        Format('    <cell>%s</cell>', [Row.Cells[ColNum]]) + LineEnding;
+    Result := Result + '  </' + RowElement[Row.Head] + '>' + LineEnding;
+  end;
+
+  Result := Result + '</table>' + LineEnding + LineEnding;
 end;
 
 function TSimpleXMLDocGenerator.FormatList(ListData: TListData): string;
