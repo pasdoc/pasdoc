@@ -288,9 +288,27 @@ begin
 end;
 
 function TSimpleXMLDocGenerator.FormatList(ListData: TListData): string;
+const
+  ListTag: array[TListType]of string =
+  ( 'unorderedlist', 'orderedlist', 'definitionlist' );
+var
+  i: Integer;
+  ListItem: TListItemData;
 begin
-  Result := '';
-  { TODO }
+  Result := LineEnding + LineEnding +
+    Format('<%s>', [ListTag[ListData.ListType]]) + LineEnding;
+
+  for i := 0 to ListData.Count - 1 do
+  begin
+    ListItem := ListData.Items[i] as TListItemData;
+    Result := Result + '<item';
+    if ListData.ListType = ltDefinition then
+      Result := Result + ' label="' + ListItem.ItemLabel + '"';
+    Result := Result + '>' + ListItem.Text + '</item>' + LineEnding;
+  end;
+
+  Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) +
+    LineEnding + LineEnding;
 end;
 
 end.
