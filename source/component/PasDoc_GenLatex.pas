@@ -1729,13 +1729,27 @@ function TTexDocGenerator.FormatImage(FileNames: TStringList): string;
       CopyFile(ChosenFileName, DestinationDirectory + Result);
   end;
   
+var
+  SImagePdf, SImageDvi: string;
 begin
+  { I call FormatImageXxx funcs first, before calculating Result,
+    to make sure that FormatImageXxx are called in determined order.
+    
+    Otherwise e.g. FPC 2.0.4 calculated S := S1 + S2 by calling
+    S2 function first, while FPC 2.1.3 (fixes_2_2 branch) and 2.3.1
+    (trunk) call S1 first. The determined order is not needed for
+    pasdoc correctness (they actually *can* be called in any order),
+    but it's needed to make results determined --- e.g. for comparing
+    two test results, like with our ../../tests/. }
+  SImageDvi := FormatImageDvi;
+  SImagePdf := FormatImagePdf;
+
   Result := 
     '\begin{figure}' + LineEnding +
     '  \ifpdf' + LineEnding +
-    '    \includegraphics{' + EscapeURL(FormatImagePdf) + '}' + LineEnding +
+    '    \includegraphics{' + EscapeURL(SImagePdf) + '}' + LineEnding +
     '  \else' + LineEnding +
-    '    \includegraphics{' + EscapeURL(FormatImageDvi) + '}' + LineEnding +
+    '    \includegraphics{' + EscapeURL(SImageDvi) + '}' + LineEnding +
     '  \fi' + LineEnding +
     '\end{figure}' + LineEnding;
 end;
