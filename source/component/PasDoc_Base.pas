@@ -233,6 +233,9 @@ const
 {$IFDEF FREEBSD}
   COMPILER_OS = 'FreeBSD';
 {$ENDIF}
+{$IFDEF DARWIN}
+  COMPILER_OS = 'Darwin';
+{$ENDIF}
 
   { ---------------------------------------------------------------------------- }
   { PasDoc Version Constants }

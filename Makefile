@@ -86,6 +86,7 @@ FPC_AMIGA := $(FPC_DEFAULT)
 FPC_BEOS := $(FPC_DEFAULT)
 FPC_OS2 := $(FPC_DEFAULT)
 FPC_FREEBSD_X86 := $(FPC_DEFAULT)
+FPC_DARWIN_X86 := $(FPC_DEFAULT)
 
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
@@ -147,6 +148,7 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
   build-fpc-win32 build-fpc-go32 \
   build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
   build-fpc-os2 build-fpc-linux-ppc build-fpc-freebsd-x86 \
+  build-fpc-darwin-x86 \
   build-delphi-win32 build-delphi-linux-x86 \
   build-vpc-win32 build-vpc-os2 make-dirs
 
@@ -218,6 +220,9 @@ build-fpc-linux-ppc: make-dirs
 build-fpc-freebsd-x86: make-dirs
 	$(FPC_FREEBSD_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
+build-fpc-darwin-x86: make-dirs
+	$(FPC_DARWIN_X86) $(FPC_RELEASE_FLAGS) $(FILE)
+
 # Delphi/Kylix build targets
 
 # Implementation note: this $(subst...) is needed, otherwise under Windows
@@ -276,6 +281,7 @@ help:
 	@echo "      os2"
 	@echo "      linux-ppc"
 	@echo "      freebsd-x86"
+	@echo "      darwin-x86"
 	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
 	@echo "    are available..."
 	@echo
@@ -321,6 +327,7 @@ help:
 
 .PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
   dist-beos dist-linux-m68k dist-linux-x86 dist-amiga dist-freebsd-x86 \
+  dist-darwin-x86 \
   dist-src dist-all
 
 # This target creates and fills directory $(PACKAGEDIR)
@@ -395,6 +402,10 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86
 
+dist-darwin-x86: clean build-fpc-darwin-x86
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86
+
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
 dist-src:
@@ -405,4 +416,4 @@ dist-src:
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
-  dist-amiga dist-linux-ppc dist-freebsd-x86 dist-src
+  dist-amiga dist-linux-ppc dist-freebsd-x86 dist-darwin-x86 dist-src
