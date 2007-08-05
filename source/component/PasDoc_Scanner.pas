@@ -695,21 +695,34 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TScanner.OpenIncludeFile(n: string);
+var
+  NLowerCase: string;
+  UseLowerCase: boolean;
 
   { Check for availability of file N inside given Path
     (that must be like after IncludeTrailingPathDelimiter --- either 
     '' or ends with PathDelim).
     It yes, then returns @true and opens new tokenizer with
-    appropriate stream, else returns false. }
+    appropriate stream, else returns false.
+    
+    Check both N and NLowerCase
+    (on case-sensitive system, filename may be written in exact
+    case (like for Kylix) or lowercase (like for FPC 1.0.x),
+    FPC >= 2.x accepts both). }
   function TryOpen(const Path: string): boolean;
   var
     Name: string;
   begin
     Name := Path + N;
-    
     DoMessage(5, mtInformation, 'Trying to open include file "%s"...', [Name]);
-    
     Result := FileExists(Name);
+    
+    if (not Result) and UseLowerCase then
+    begin
+      Name := Path + NLowerCase;
+      DoMessage(5, mtInformation, 'Trying to open include file "%s" (lowercased)...', [Name]);
+      Result := FileExists(Name);    
+    end;
     
     if Result then
       { create new tokenizer with stream }
@@ -734,6 +747,11 @@ procedure TScanner.OpenIncludeFile(n: string);
 begin
   if (Length(N) > 2) and (N[1] = '''') and (N[Length(N)] = '''') then
     N := Copy(N, 2, Length(N) - 2);
+    
+  NLowerCase := LowerCase(N);
+  { If NLowerCase = N, avoid calling FileExists twice (as FileExists
+    may be costly when generating large docs from many files) }
+  UseLowerCase := NLowerCase <> N;
 
   if not TryOpen(FTokenizers[FCurrentTokenizer].StreamPath) then
     if not TryOpenIncludeFilePaths then
