@@ -32,6 +32,7 @@ type
     lgBrasilian,
     lgCatalan,
     lgChinese_950,
+    lgChinese_gb2312,
     lgDanish,
     lgDutch,
     lgEnglish,
@@ -163,6 +164,7 @@ type
     procedure SetLanguageCatalan;
     { Defines translations for Chinese (Codepage 950). }
     procedure SetLanguageChinese_950;
+    procedure SetLanguageChinese_gb2312;
     { Defines translations for Danish. }
     procedure SetLanguageDanish;
     { Defines translations for Dutch. }
@@ -219,6 +221,7 @@ const
     (Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
     (Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
     (Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
+    (Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
     (Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
     (Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
     (Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
@@ -622,6 +625,10 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+
+{ ---------------------------------------------------------------------------- }
+
+{$I PasDoc_Languages_Chinese_gb2312.inc}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1922,6 +1929,7 @@ begin
     lgBrasilian: SetLanguageBrasilian;
     lgCatalan: SetLanguageCatalan;
     lgChinese_950: SetLanguageChinese_950;
+    lgChinese_gb2312: SetLanguageChinese_gb2312;
     lgDanish: SetLanguageDanish;
     lgDutch: SetLanguageDutch;
     lgEnglish: SetLanguageEnglish;
@@ -1938,148 +1946,8 @@ begin
     lgSlovak: SetLanguageSlovak;
     lgSpanish: SetLanguageSpanish;
     lgSwedish: SetLanguageSwedish;
-    
     lgHungarian_1250: SetLanguageHungarian_1250;
-
   end;
 end;
 
-{
-  $Log$
-  Revision 1.43  2006/06/25 13:56:01  kambi
-  Patch from Richard B. Winston (the non-Lazarus part of the patch):
-  * Two new visibilities are introduced: "strict private," and "strict protected."  The command line keywords for these are "strictprivate," and "strictprotected."  (In other words, leave out the space between "strict" and the following word.)
-  * In addition to "unit" and "program" a source code file may start with "library".  "Library" is now supported.
-  * If a record has variant parts, the constants used to label each part may be an expression so long as the expression can be evaluated at compile time. Thus if A and B are both constants, you can use "A or B" to label one of the variant parts.  The presence of "and" or "or" in an expression for a constant no longer generates an error.
-  * Generating the output for TObject and IInterface caused an error because neither has an ancestor.  This is now fixed.
-  * The console program has been altered to accept "strictprivate" and "strictprotected" on the command line when specifying what properties should be visible.
-
-  Revision 1.42  2005/12/23 19:00:15  kambi
-  * From Jónás Gergõ: trProgram translation is just 'Program' in Hungarian
-
-  Revision 1.41  2005/12/23 15:10:58  kambi
-  * Hungarian translation updated by Jónás Gergõ
-
-  Revision 1.40  2005/12/19 23:20:46  kambi
-  * Fixed Spanish translation (last commit)
-
-  Revision 1.39  2005/12/19 23:15:18  kambi
-  * Updated Spanish translation from JBarbero Quiter
-
-  Revision 1.38  2005/12/15 21:50:27  kambi
-  * Updated Polish_ISO_8859_2 translation
-
-  Revision 1.37  2005/12/15 21:35:41  kambi
-  * Parsing of program files, based on patch from Mark de Wever, modified by Michalis, see pasdoc-main thread "Comments in program file" on 2005-12-15
-  + Test of the above added as tests/ok_program.pas
-
-  Revision 1.36  2005/10/17 01:37:52  kambi
-  * trNoCIOsForHierarchy. Otherwise units with some records and no classes, interfaces or objects would get under "Class Hierarchy" confusing and false statement that "no classes, interfaces, objects and records exist" (while there *are* some records).
-
-  Revision 1.35  2005/09/26 16:24:06  kambi
-  * Fixed autodoc
-
-  Revision 1.34  2005/09/25 21:01:38  kambi
-  * Better text on overview files when no variables or consts or funcs or cios or identifiers or types exist
-
-  Revision 1.33  2005/08/03 02:32:34  kambi
-  + @preformatted tag from Ascanio Pressato, and a testcase of it
-  * Updated Italian translation also by Ascanio
-
-  Revision 1.32  2005/07/19 22:55:44  kambi
-  + --implicit-visibility command-line option, new visibility kind "implicit"
-  + ok_implicit_visibility.pas testcase to test --implicit-visibility
-  * AllVisibilities, DefaultVisibilities, VisibilitiesToStr for cleaner code
-  * Start of ChangeLog entry for next pasdoc version
-
-  Revision 1.31  2005/07/17 15:36:25  kambi
-  + 'Values' heading written before writing TPasEnum.Members in description of enum value, this makes description of enum value more readable
-
-  Revision 1.30  2005/07/17 12:21:49  kambi
-  * trReturns, trParameters and trExceptions are *not* lowercased in HTML output -- because lowercase looks ugly, there was no good reason to make them lowercase, and it's inconsistent with LaTeX generator. (actually, in the beginning, they were hardcoded lowercased strings in GenHtml, and LaTeX generator didn't use raises/parameters/exceptions at all)
-  + trExceptionsRaised added, used in HTML generator instead of trExceptions (because trExceptionsRaised is more verbose and clearer, and actually initial implementation of Thomas had 'exceptions raised' instead of just 'exceptions'), comments in LaTeX generator why it has to still use trExceptions
-
-  Revision 1.29  2005/07/16 17:17:51  kambi
-  + 'See also' added
-  * Rearrangements and comments for consistent SetLanguageXxx implementations
-
-  Revision 1.28  2005/06/15 11:51:54  kambi
-  * Updated Polish translation for Marker and Visibility
-
-  Revision 1.27  2005/06/15 11:17:45  twm
-  * added localization for "Marker" and "Visibility"
-  * added and corrected translations to German and French
-
-  Revision 1.26  2005/06/15 10:15:58  kambi
-  * Polish translation for trSearch
-
-  Revision 1.25  2005/06/15 09:26:21  twm
-  * localized Tipue search button
-  * added German and French translations for introduction, conclusion and Search
-
-  Revision 1.24  2005/06/06 11:28:37  kambi
-  * Updated Hungarian translation from Gergõ Jónás
-
-  Revision 1.23  2005/05/27 02:09:07  kambi
-  * Polish translation for introduction/conclusion
-
-  Revision 1.22  2005/05/26 16:57:22  kambi
-  * Applied Richard B Winston patch to implement "Introduction" and "Conclusion"
-
-  Revision 1.21  2005/05/24 21:02:40  kambi
-  * Shamelessly inserted my own name in couple of units where @author was used
-
-  Revision 1.20  2005/05/10 07:28:27  kambi
-  * Updates to Brasilian translation from Alexandre da Silva
-
-  Revision 1.19  2005/05/07 19:03:41  kambi
-  * Displaying hint directives in html and latex output
-
-  Revision 1.18  2005/05/06 23:30:49  kambi
-  * Updates to Brasilian translation from Alexandre da Silva
-
-  Revision 1.17  2005/04/17 03:46:53  kambi
-  * typo fix: Frensh -> French
-
-  Revision 1.16  2005/04/14 10:21:51  kambi
-  * Specified default values for many properties. This means that code is better self-documenting,
-    and also component is better shown in object inspector and saved to dfm/xfm/lfm files.
-
-  Revision 1.15  2005/04/08 02:51:47  ccodere
-    + corrected french language
-
-  Revision 1.14  2005/04/06 13:34:36  kambi
-  * Added "and Records" to FTranslation[trCio], FTranslation[trHeadlineCio],
-    FTranslation[trSummaryCio] for English and two Polish versions
-  * trGvUses/Classes in Polish translation and minor fixes for Polish translation,
-    removed "//GSk" (this was a leftover from patch of Grzegorz Skoczylas,
-    but these comments belonged to cvs logs, not to clutter source code)
-
-  Revision 1.13  2005/03/30 10:18:59  johill
-  add charsets to languages
-
-  Revision 1.12  2004/08/10 20:43:26  twm
-  patches from Ricardo Pardini:
-  * Include graphics into htmlhelp
-  * Check whether --link-gv-* are actually given before creating the links
-  * Brazilian Portuguese translations
-
-  Revision 1.11  2004/08/08 14:56:33  twm
-  Bugfixes:
-  * In several places the return value of CreateStream wasn't checked leading a access violations if a file could not be created (e.g. if the output directory didn't exist)
-  * Missing field declarations for FLinkGraphVizUses and FLinkGraphVizClasses
-  * missing declaration and translations for trGvUses and trGvClasses
-  * Main program did not handle all exceptions (e.g. EAbort)
-
-  Revision 1.10  2004/07/16 16:34:16  johill
-  some code cleanup, fixes from Pierre Woestyn
-
-  Revision 1.9  2004/06/20 18:36:26  johill
-  Changes from Grzegorz Skoczylas: character set handling + updated Polish
-  translation
-
-  Revision 1.8  2004/06/13 17:58:07  ccodere
-    + added hungarian translation from Jonas (thanks!)
-
-}
 end.
