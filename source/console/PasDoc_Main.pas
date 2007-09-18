@@ -71,6 +71,7 @@ type
     OptionImplicitVisibility: TStringOption;
     OptionNoMacro: TBoolOption;
     OptionAutoLink: TBoolOption;
+    OptionAutoLinkExclude: TStringOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -282,6 +283,10 @@ begin
   OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
   OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
   AddOption(OptionAutoLink);
+  
+  OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
+  OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
+  AddOption(OptionAutoLinkExclude);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -526,6 +531,16 @@ begin
       
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
   PasDoc.AutoLink := OptionAutoLink.TurnedOn;
+  
+  if OptionAutoLinkExclude.Value <> '' then
+  begin
+    PasDoc.Generator.AutoLinkExclude.LoadFromFile(OptionAutoLinkExclude.Value);
+    { Sorted makes searching AutoLinkExclude.IndexOf (used heavily when
+      auto-linking to respect this option) obviously much faster.
+      The speed improvement can be literally felt when you specified
+      large file like /usr/share/dict/american-english for this option. }
+    PasDoc.Generator.AutoLinkExclude.Sorted := true;
+  end;
 end;
 
 { TPasdocMain }

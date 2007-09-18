@@ -19,6 +19,8 @@
   * Various bugfixes.
   + pascal_pre_proc tool (using PasDoc scanner)
   + simplexml output format (by MfG TAK2004 and Michalis)
+  + --auto-link-exclude option
+    (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
 
 2005-11-26 v0.10.0
 

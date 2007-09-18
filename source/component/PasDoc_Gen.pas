@@ -240,6 +240,7 @@ type
 
     FWriteUsesClause: boolean;
     FAutoLink: boolean;
+    FAutoLinkExclude: TStringList;
 
     { Name of the project to create. }
     FProjectName: string;
@@ -921,6 +922,8 @@ type
       [http://pasdoc.sipsolutions.net/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
+      
+    property AutoLinkExclude: TStringList read FAutoLinkExclude;
   end;
 
 implementation
@@ -1666,20 +1669,27 @@ var
   FoundItem: TBaseItem;
   QualifiedIdentifierGlued: string;
 begin
-  FoundItem := FCurrentItem.FindName(QualifiedIdentifier);
-  if FoundItem = nil then
-    FoundItem := FindGlobal(QualifiedIdentifier);
-
-  AutoLinked := (FoundItem <> nil) and FoundItem.AutoLinkHereAllowed;
+  QualifiedIdentifierGlued := GlueNameParts(QualifiedIdentifier);
+  
+  { first, check that we're not on AutoLinkExclude list }
+  AutoLinked := AutoLinkExclude.IndexOf(QualifiedIdentifierGlued) = -1;
+  
   if AutoLinked then
   begin
-    QualifiedIdentifierGlued := GlueNameParts(QualifiedIdentifier);
-    if FCurrentItem <> FoundItem then
-      QualifiedIdentifierReplacement := MakeItemLink(FoundItem,
-        QualifiedIdentifierGlued, lcNormal) else
-      QualifiedIdentifierReplacement := 
-        CodeString(ConvertString(QualifiedIdentifierGlued));
-  end;
+    FoundItem := FCurrentItem.FindName(QualifiedIdentifier);
+    if FoundItem = nil then
+      FoundItem := FindGlobal(QualifiedIdentifier);
+
+    AutoLinked := (FoundItem <> nil) and FoundItem.AutoLinkHereAllowed;
+    if AutoLinked then
+    begin
+      if FCurrentItem <> FoundItem then
+        QualifiedIdentifierReplacement := MakeItemLink(FoundItem,
+          QualifiedIdentifierGlued, lcNormal) else
+        QualifiedIdentifierReplacement := 
+          CodeString(ConvertString(QualifiedIdentifierGlued));
+    end;
+  end; 
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2438,10 +2448,15 @@ begin
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;
   FSpellCheckIgnoreWords := TStringList.Create;
+  
+  FAutoLinkExclude := TStringList.Create;
+  FAutoLinkExclude.CaseSensitive := false;
 end;
 
 destructor TDocGenerator.Destroy;
 begin
+  FreeAndNil(FAutoLinkExclude);
+  
   FSpellCheckIgnoreWords.Free;
   FLanguage.Free;
   FClassHierarchy.Free;
