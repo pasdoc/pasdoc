@@ -866,6 +866,7 @@ var
     begin
       NamePartBegin := FOffset;
       OffsetEnd := FOffset + 1;
+      SetLength(QualifiedIdentifier, 0);
 
       repeat
         { skip a sequence of NonFirstIdentChar characters }
