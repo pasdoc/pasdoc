@@ -247,7 +247,7 @@ begin
   AddOption(OptionAutoAbstract);
 
   OptionUseTipueSearch := TBoolOption.Create(#0, 'use-tipue-search');
-  OptionUseTipueSearch.Explanation := 'Ise tipue search engine in HTML output';
+  OptionUseTipueSearch.Explanation := 'Use tipue search engine in HTML output';
   AddOption(OptionUseTipueSearch);
 
   OptionSort := TSetOption.Create(#0, 'sort');
