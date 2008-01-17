@@ -3186,7 +3186,7 @@ begin
       Assert(False);
     end;
   end;
-  CharIndex := Length(Line);
+  CharIndex := Length(Line) + 1;
   case CodeType of
     ctWhiteSpace:
       begin
@@ -3212,17 +3212,17 @@ begin
     ctParenComment:
       begin
         result := result + FormatComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining + 1));
+          CharIndex - CommentBegining));
       end;
     ctBracketComment:
       begin
         result := result + FormatComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining + 1));
+          CharIndex - CommentBegining));
       end;
     ctCompilerComment:
       begin
         result := result + FormatCompilerComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining + 1));
+          CharIndex - CommentBegining));
       end;
     ctSlashComment:
       begin
@@ -3230,7 +3230,7 @@ begin
     ctEndComment:
       begin
         result := result + FormatComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining + 1));
+          CharIndex - CommentBegining));
       end;
     ctHex:
       begin
