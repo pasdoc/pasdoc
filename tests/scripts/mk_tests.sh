@@ -193,3 +193,4 @@ mk_special_test ok_comment_over_uses_clause ok_comment_over_uses_clause.pas warn
 mk_special_test ok_interface_implicit ok_interface_implicit.pas --implicit-visibility=implicit
 mk_special_test ok_dot_unitname ok_dot_unitname.pas --write-uses-list
 mk_special_test ok_longcode_end_semicolon ok_longcode_end_semicolon.pas
+mk_special_test warning_desc_end warning_desc_end.pas

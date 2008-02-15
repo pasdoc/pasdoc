@@ -709,7 +709,8 @@ var
         toParameterRequired is *not* in Tag.TagOptions }
       Inc(i);
       BracketCount := 1;
-      repeat
+      while not ((i > Length(Description)) or (BracketCount = 0)) do
+      begin
         case Description[i] of
           '@':
             { Inc(I) here means that we will skip to next character
@@ -724,7 +725,7 @@ var
           ')': Dec(BracketCount);
         end;
         Inc(i);
-      until (i > Length(Description)) or (BracketCount = 0);
+      end;
       if (BracketCount = 0) then begin
         Parameters := Copy(Description, OffsetEnd + 1, i - OffsetEnd - 2);
         OffsetEnd := i;
