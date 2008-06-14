@@ -143,6 +143,40 @@ function IsPrefix(const Prefix, S: string): boolean;
 function BoolToStr(Value: Boolean): string;
 {$endif DELPHI_5}
 
+{ SEnding returns S contents starting from position P.
+  Returns '' if P > length(S).
+  Yes, this is simply equivalent to Copy(S, P, MaxInt). }
+function SEnding(const s: string; P: integer): string;
+
+{ Check is the given Path absolute.
+
+  Path may point to directory or normal file,
+  it doesn't matter. Also it doesn't matter whether Path ends with PathDelim or not.
+
+  Note for Windows: while it's obvious that @code('c:\autoexec.bat') is an
+  absolute path, and @code('autoexec.bat') is not, there's a question
+  whether path like @code('\autoexec.bat') is absolute? It doesn't specify
+  drive letter, but it does specify full directory hierarchy on some drive.
+  This function treats this as @italic(not absolute), on the reasoning that
+  "not all information is contained in Path".
+
+  @seealso IsPathAbsoluteOnDrive }
+function IsPathAbsolute(const Path: string): boolean;
+
+{ Just like IsPathAbsolute, but on Windows accepts also paths that specify
+  full directory tree without drive letter.
+
+  @seealso IsPathAbsolute }
+function IsPathAbsoluteOnDrive(const Path: string): boolean;
+
+{ Combines BasePath with RelPath. BasePath MUST be an absolute path,
+  on Windows it must contain at least drive specifier (like 'c:'),
+  on Unix it must begin with "/". RelPath can be relative and can
+  be absolute. If RelPath is absolute, result is RelPath.
+  Else the result is an absolute path calculated by combining RelPath
+  with BasePath. }
+function CombinePaths(BasePath, RelPath: string): string;
+
 type
   { Raise this when some impossible situation (indicating bug in 
     pasdoc) occurs. }
@@ -365,6 +399,49 @@ begin
     Result := 'FALSE';
 end;
 {$endif}
+
+function SEnding(const S: string; P: integer): string;
+begin
+ result := Copy(S, P, MaxInt)
+end;
+
+function IsPathAbsolute(const Path: string): boolean;
+begin
+  Result := {$ifdef UNIX} SCharIs(Path, 1, PathDelim) {$endif}
+            {$ifdef MSWINDOWS} SCharIs(Path, 2, DriveDelim) {$endif};
+end;
+
+function IsPathAbsoluteOnDrive(const Path: string): boolean;
+begin
+  Result := IsPathAbsolute(Path)
+    {$ifdef MSWINDOWS} or SCharIs(Path, 1, PathDelim) {$endif}
+end;
+
+function CombinePaths(BasePath, RelPath: string): string;
+begin
+  if IsPathAbsolute(RelPath) then
+    result := RelPath else
+  {$ifdef MSWINDOWS}
+  if IsPathAbsoluteOnDrive(RelPath) then
+    result := BasePath[1] +DriveDelim +RelPath else
+  {$endif}
+  begin
+    repeat
+      if (Copy(RelPath, 1, 2) = './')
+        {$ifdef MSWINDOWS} or (Copy(RelPath, 1, 2) = '.\') {$endif} then
+        RelPath := SEnding(RelPath, 3) else
+      if (Copy(RelPath, 1, 3) = '../')
+        {$ifdef MSWINDOWS} or (Copy(RelPath, 1, 3) = '..\') {$endif} then
+      begin
+        BasePath := ExtractFileDir(ExcludeTrailingPathDelimiter(BasePath));
+        RelPath := SEnding(RelPath, 4);
+      end else
+        Break;
+    until false;
+
+    result := IncludeTrailingPathDelimiter(BasePath) + RelPath;
+  end;
+end;
 
 { EInternalError ------------------------------------------------------------- }
 

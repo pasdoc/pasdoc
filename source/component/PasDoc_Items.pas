@@ -282,6 +282,11 @@ type
       This may be set to @false by @@noAutoLinkHere tag in item's description. }
     property AutoLinkHereAllowed: boolean
       read FAutoLinkHereAllowed write FAutoLinkHereAllowed default true;
+
+    { The full (absolute) path used to resolve filenames in this item's descriptions.
+      Must always end with PathDelim.
+      In this class, this simply returns GetCurrentDir (with PathDelim added if needed). }
+    function BasePath: string; virtual;
   end;
 
   { This is a @link(TBaseItem) descendant that is always declared inside
@@ -418,7 +423,6 @@ type
     property IsLibrarySpecific: boolean 
       read FIsLibrarySpecific write FIsLibrarySpecific;   
       
-
     { This recursively sorts all items inside this item,
       and all items inside these items, etc.
       E.g. in case of TPasUnit, this method sorts all variables, 
@@ -476,6 +480,8 @@ type
       Name of each item is the 1st part of @@seealso parameter.
       Value is the 2nd part of @@seealso parameter. }
     property SeeAlso: TStringPairVector read FSeeAlso;
+    
+    function BasePath: string; override;
   end;
 
   { @abstract(Pascal constant.)
@@ -896,6 +902,8 @@ type
       contains valid information, but that's how current approach
       to cache works. }
     function FileNewerThanCache(const FileName: string): boolean;
+    
+    function BasePath: string; override;
   end;
   
   { Container class to store a list of @link(TBaseItem)s. }
@@ -1274,6 +1282,11 @@ begin
   FRawDescriptionInfo.Content := Value;
 end;
 
+function TBaseItem.BasePath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(GetCurrentDir);
+end;
+
 { TPasItem ------------------------------------------------------------------- }
 
 constructor TPasItem.Create;
@@ -1497,6 +1510,13 @@ begin
   ADestination.Write(FAbstractDescriptionWasAutomatic, 
     SizeOf(FAbstractDescriptionWasAutomatic)); 
   SeeAlso }
+end;
+
+function TPasItem.BasePath: string;
+begin
+  if MyUnit <> nil then
+    Result := MyUnit.BasePath else
+    Result := inherited;
 end;
 
 { TPasEnum ------------------------------------------------------------------- }
@@ -2097,6 +2117,11 @@ begin
   SaveStringToStream(FOutputFileName, ADestination); 
   SaveStringToStream(FSourceFilename, ADestination);
   SaveDoubleToStream(SourceFileDateTime, ADestination); }
+end;
+
+function TPasUnit.BasePath: string;
+begin
+  Result := ExtractFilePath(ExpandFileName(SourceFileName));
 end;
 
 { TPasUnits ------------------------------------------------------------------ }

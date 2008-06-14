@@ -194,3 +194,4 @@ mk_special_test ok_interface_implicit ok_interface_implicit.pas --implicit-visib
 mk_special_test ok_dot_unitname ok_dot_unitname.pas --write-uses-list
 mk_special_test ok_longcode_end_semicolon ok_longcode_end_semicolon.pas
 mk_special_test warning_desc_end warning_desc_end.pas
+mk_special_test ok_different_image_same_filename ok_different_image_same_filename_dir1/unit1.pas ok_different_image_same_filename_dir2/unit2.pas

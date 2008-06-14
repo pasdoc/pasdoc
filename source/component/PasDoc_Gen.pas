@@ -776,15 +776,17 @@ type
 
     { This should return markup upon including specified image in description.
       FileNames is a list of alternative filenames of an image,
-      it always contains at least one item (i.e. FileNames.Count >= 1)
-      and never contains empty lines (i.e. Trim(FileNames[I]) <> '').
+      it always contains at least one item (i.e. FileNames.Count >= 1),
+      never contains empty lines (i.e. Trim(FileNames[I]) <> ''),
+      and contains only absolute filenames (already expanded to take description's
+      unit's path into account).
       
       E.g. HTML generator will want to choose the best format for HTML,
       then somehow copy the image from FileNames[Chosen] and wrap 
       this in <img src="...">.
 
       Implementation of this method in this class simply returns
-      @code(Result := FileNames[0]). Output generators should override this. }
+      @code(Result := ExpandFileName(FileNames[0])). Output generators should override this. }
     function FormatImage(FileNames: TStringList): string; virtual;
 
     { Format a list from given ListData. }
@@ -1965,7 +1967,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
     for i := 0 to Units.Count - 1 do begin
       U := Units.UnitAt[i];
-
+      
       ExpandPasItem(PreExpand, U);
       ExpandCollection(PreExpand, U.Constants);
       ExpandCollection(PreExpand, U.Variables);
@@ -3683,19 +3685,19 @@ var
 begin
   FileNames := TStringList.Create;
   try
-    FileNames.Text := TagParameter;
+    FileNames.Text := TagParameter;      
     
-    { Trim every line in FileNames }
-    for I := 0 to FileNames.Count - 1 do
-      FileNames[I] := Trim(FileNames[I]);
-    
-    { Remove empty lines from FileNames }
+    { Trim, remove empty lines, and expand paths on FileNames }
     I := 0;
     while I < FileNames.Count do
     begin
-      if Trim(FileNames[I]) = '' then
+      FileNames[I] := Trim(FileNames[I]);
+      if FileNames[I] = '' then
         FileNames.Delete(I) else
+      begin
+        FileNames[I] := CombinePaths(FCurrentItem.BasePath, FileNames[I]);
         Inc(I);
+      end;
     end;
     
     if FileNames.Count = 0 then
@@ -3709,7 +3711,7 @@ end;
 
 function TDocGenerator.FormatImage(FileNames: TStringList): string;
 begin
-  Result := FileNames[0];
+  Result := ExpandFileName(FileNames[0]);
 end;
 
 procedure TDocGenerator.HandleIncludeTag(
