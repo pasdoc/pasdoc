@@ -1,4 +1,4 @@
-2008-06-14 v0.11.0
+2008-06-15 v0.11.0
 
   * Various fixes to parsing by Richard B. Winston,
     including fixes to Delphi 2006 syntax parsing and library files.
