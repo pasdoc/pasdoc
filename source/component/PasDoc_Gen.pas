@@ -3721,7 +3721,7 @@ procedure TDocGenerator.HandleIncludeTag(
 var
   IncludedText: string;
 begin
-  IncludedText := FileToString(Trim(TagParameter));
+  IncludedText := FileToString(CombinePaths(FCurrentItem.BasePath, Trim(TagParameter)));
   ReplaceStr := ThisTag.TagManager.Execute(IncludedText,
     { Note that this means that we reset auto-linking state
       inside the include file to what was chosen by --auto-link

@@ -788,6 +788,8 @@ type
     // sections within the @classname. The @link(TAnchorItem)s have no content
     // so, they should not be indexed separately.
     property Anchors: TBaseItems read FAnchors;
+    
+    function BasePath: string; override;
   end;
 
   TAnchorItem = class(TBaseItem)
@@ -2388,6 +2390,11 @@ end;
 procedure TExternalItem.SetOutputFileName(const Value: string);
 begin
   FOutputFileName := Value;
+end;
+
+function TExternalItem.BasePath: string;
+begin
+  Result := ExtractFilePath(ExpandFileName(SourceFileName));
 end;
 
 { global things ------------------------------------------------------------ }
