@@ -731,6 +731,11 @@ begin
   for i := 0 to AFileNames.Count - 1 do begin
     FileMask := AFileNames[i];
     Path := ExtractFilePath(FileMask);
+    
+    { Just ignore last empty line of AFileNames, this may often occur
+      when generating text files with filenames, and is harmless. }
+    if (FileMask = '') and (I = AFileNames.Count - 1) then
+      Continue;
 
     SearchResult := SysUtils.FindFirst(FileMask, 63, SR);
     if SearchResult <> 0 then begin
