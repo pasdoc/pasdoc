@@ -1,4 +1,4 @@
-[Next release -- release date and new version number unknown yet...]
+2008-06-14 v0.11.0
 
   * Various fixes to parsing by Richard B. Winston,
     including fixes to Delphi 2006 syntax parsing and library files.
@@ -16,11 +16,20 @@
     (by Mark de Wever)
   * @( and @) construct
     (see [http://pasdoc.sipsolutions.net/TagsParametersMatching])
-  * Various bugfixes.
   + pascal_pre_proc tool (using PasDoc scanner)
   + simplexml output format (by MfG TAK2004 and Michalis)
   + --auto-link-exclude option
     (see [http://pasdoc.sipsolutions.net/AutoLinkOption])
+  * Translations:
+    + Chinese gb2312 translation by Liu Chuanjun
+    * Polish translation updated by Grzegorz Skoczylas
+    * Hungarian translation updated by Gergo Jonas
+    * Updated Spanish translation from JBarbero Quiter
+  + Mac OS X (Darwin) port
+  * Many bugfixes.
+
+  Authors: features above not explicitly marked by author were
+  done by Michalis Kamburelis.
 
 2005-11-26 v0.10.0
 
