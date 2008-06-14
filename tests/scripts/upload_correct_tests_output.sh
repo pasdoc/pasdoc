@@ -85,16 +85,15 @@ upload_one_format ()
   SF_PATH=/home/groups/p/pa/pasdoc/htdocs/correct_tests_output/
   SF_CONNECT="$SF_USERNAME"@shell.sourceforge.net:"$SF_PATH"
 
-  scp "$ARCHIVE_FILENAME" "$SF_CONNECT"
-  scp "$TIMESTAMP_FILENAME" "$SF_CONNECT"
+  scp "$ARCHIVE_FILENAME" "$TIMESTAMP_FILENAME" "$SF_CONNECT"
 
   # I could do here simple
   #   scp -r ../"$FORMAT"/ "$SF_CONNECT"
   # but this requires uploading all files unpacked.
   # It's much quickier to just log to server and untar there uploaded archive.
   #
-  # After uploading, I change permission of uploaded and unpacked 
-  # files so that they are writeable by pasdoc group 
+  # After uploading, I change permission of uploaded and unpacked
+  # files so that they are writeable by pasdoc group
   # (which means pasdoc developers).
   # Note that I don't do here simple
   #   ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
@@ -103,7 +102,7 @@ upload_one_format ()
   ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
   cd "$SF_PATH"
   tar xzf "$ARCHIVE_FILENAME_NONDIR"
-  
+
   chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
   chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
 EOF
