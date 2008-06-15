@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <Flags>
         <SaveClosedFiles Value="False"/>
@@ -29,17 +29,17 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="pasdoc_package"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pasdoc_package"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SynEdit"/>
         <MinVersion Major="1" Valid="True"/>
       </Item4>
     </RequiredPackages>
@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="96"/>
+        <UsageCount Value="98"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,12 +58,12 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="16" Y="99"/>
-        <TopLine Value="98"/>
+        <CursorPos X="5" Y="1458"/>
+        <TopLine Value="1412"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="96"/>
+        <UsageCount Value="98"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="319" ID="1"/>
+          <Item0 X="1" Y="321" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit1>
@@ -75,7 +75,7 @@
         <UnitName Value="frmAboutUnit"/>
         <CursorPos X="3" Y="65"/>
         <TopLine Value="55"/>
-        <UsageCount Value="96"/>
+        <UsageCount Value="98"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
@@ -83,7 +83,7 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="34"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -93,7 +93,7 @@
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="5" Y="23"/>
         <TopLine Value="12"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="34"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -103,7 +103,7 @@
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="3" Y="9"/>
         <TopLine Value="1"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="33"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
@@ -111,7 +111,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="28"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="32"/>
       </Unit6>
     </Units>
   </ProjectOptions>

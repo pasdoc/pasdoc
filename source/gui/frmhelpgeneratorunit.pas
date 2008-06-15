@@ -95,13 +95,14 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label17: TLabel;
+    Label4: TLabel;
     LabelHeader: TLabel;
     LabelFooter: TLabel;
     LabelImplicitVisibility: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
-    Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
     Label2: TLabel;
@@ -151,6 +152,7 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
+    PanelLatexHyphenation: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
@@ -1393,12 +1395,21 @@ end;
 
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 
-  procedure SetColorFromEnabled(Edit: TEdit);
-  { With WinAPI interface, this is useful to give user indication of 
+  { With WinAPI interface, this is useful to give user indication of
     Edit.Enabled state. Other WinAPI programs also do this.
     With other widgetsets, like GTK, this is not needed, Lazarus + GTK
     already handle such things (e.g. edit boxes have automatically
     slightly dimmed background when they are disabled). }
+  procedure SetColorFromEnabled(Edit: TFileNameEdit); overload;
+  begin
+    {$ifdef WIN32}
+    if Edit.Enabled then
+      Edit.Color := clWindow else
+      Edit.Color := clBtnFace;
+    {$endif}
+  end;
+
+  procedure SetColorFromEnabled(Edit: TEdit); overload;
   begin
     {$ifdef WIN32}
     if Edit.Enabled then
