@@ -411,7 +411,7 @@ SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 dist-src:
 	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
 	cd $(PACKAGEBASEDIR); \
-	  svn co https://svn.sourceforge.net/svnroot/pasdoc/tags/$(VERSION) pasdoc
+	  svn co https://pasdoc.svn.sourceforge.net/svnroot/pasdoc/tags/$(VERSION) pasdoc
 	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz pasdoc/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
