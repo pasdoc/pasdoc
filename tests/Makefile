@@ -2,7 +2,7 @@
 
 # Making docs ----------------------------------------
 
-.PHONY: html pdf latex dvi htmlhelp
+.PHONY: html pdf latex dvi htmlhelp simplexml
 
 html:
 	scripts/mk_tests.sh html
@@ -17,6 +17,9 @@ latex2rtf: latex2rtf/docs.tex
 
 htmlhelp:
 	scripts/mk_tests.sh htmlhelp
+
+simplexml:
+	scripts/mk_tests.sh simplexml
 
 latex/docs.tex:
 	scripts/mk_tests.sh latex
@@ -40,8 +43,11 @@ latex2rtf/docs.tex:
 validate_html:
 	scripts/validate_html.sh
 
+validate_simplexml:
+	scripts/validate_simplexml.sh
+
 clean:
-	rm -Rf html/ latex/ htmlhelp/ latex2rtf/ \
+	rm -Rf html/ latex/ htmlhelp/ latex2rtf/ simplexml/ \
 	  scripts/check_cache_tmp/ \
 	  scripts/upload_correct_tests_output_tmp/
 
