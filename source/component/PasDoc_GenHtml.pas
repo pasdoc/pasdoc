@@ -95,15 +95,24 @@ type
       
     (*Writes the Item's AbstractDescription followed by DetailedDescription.
 
-      Code here will open and close paragraph for itself, so you shouldn't
+      If OpenCloseParagraph then code here will open and close paragraph
+      for itself. So you shouldn't
       surround it inside WriteStart/EndOfParagraph, like
       @longcode(#
         { BAD EXAMPLE }
         WriteStartOfParagraph;
-        WriteItemLongDescription(Item);
+        WriteItemLongDescription(Item, true);
         WriteEndOfParagraph;
-      #) *)
-    procedure WriteItemLongDescription(const AItem: TPasItem);
+      #)
+
+      While you can pass OpenCloseParagraph = @false, do it with caution,
+      and note that long description has often such large content that it
+      really should be separated by paragraph. Passing
+      OpenCloseParagraph = @false is sensible only if you will wrap this
+      anyway inside some paragraph or similar block level element.
+    *)
+    procedure WriteItemLongDescription(const AItem: TPasItem;
+      OpenCloseParagraph: boolean = true);
     procedure WriteOverviewFiles;
 
     procedure WriteStartOfDocument(AName: string);
@@ -998,7 +1007,8 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteItemLongDescription(const AItem: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
+  const AItem: TPasItem; OpenCloseParagraph: boolean);
 
   procedure WriteDescriptionSectionHeading(const Caption: TTranslationID);
   begin
@@ -1107,7 +1117,8 @@ begin
 
   if AItem.AbstractDescription <> '' then
   begin
-    WriteStartOfParagraph;
+    if OpenCloseParagraph then WriteStartOfParagraph;
+    
     WriteSpellChecked(AItem.AbstractDescription);
 
     if AItem.DetailedDescription <> '' then
@@ -1120,13 +1131,15 @@ begin
       WriteSpellChecked(AItem.DetailedDescription);
     end;
     
-    WriteEndOfParagraph;
+    if OpenCloseParagraph then WriteEndOfParagraph;
   end else begin
     if AItem.DetailedDescription <> '' then
     begin
-      WriteStartOfParagraph;
+      if OpenCloseParagraph then WriteStartOfParagraph;
+      
       WriteSpellChecked(AItem.DetailedDescription);
-      WriteEndOfParagraph;
+      
+      if OpenCloseParagraph then WriteEndOfParagraph;
     end else 
     begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
@@ -1167,7 +1180,7 @@ begin
       WriteDirectLine('<li>');
       WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       WriteConverted(': ');
-      WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
+      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
       WriteDirectLine('</li>');
     end;
     WriteDirectLine('</ul>');

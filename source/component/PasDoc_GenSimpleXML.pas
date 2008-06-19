@@ -30,7 +30,8 @@ type
   private
     space:string;
 
-    { Returns XML <description> element with Item's description.
+    { Returns XML <description> element with Item's AbstractDescription
+      and DetailedDescription.
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
@@ -96,7 +97,19 @@ end;
 function TSimpleXMLDocGenerator.ItemDescription(Item: TPasItem): string;
 begin
   if Item.HasDescription then
-    Result := '<description>' + Item.GetDescription + '</description>' else
+  begin
+    { Abstract and Detailed descriptions are somewhat siblings,
+      for most normal uses you want to glue them together.
+      That's why I (Michalis) decided it's most sensible to put them
+      as sibling XML elements, not make <abstract> child of <detailed>
+      of something like this. }
+    Result := '<description>';
+    if Item.AbstractDescription <> '' then
+      Result := Result + '<abstract>' + Item.AbstractDescription + '</abstract>';
+    if Item.DetailedDescription <> '' then
+      Result := Result + '<detailed>' + Item.DetailedDescription + '</detailed>';
+    Result := Result + '</description>';
+  end else
     Result := '';
 end;
 

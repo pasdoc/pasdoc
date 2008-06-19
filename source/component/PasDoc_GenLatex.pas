@@ -1114,7 +1114,7 @@ begin
       WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       { add the end characters for enums }
       WriteDirect('}] ');
-      WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
+      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');

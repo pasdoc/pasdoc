@@ -390,14 +390,10 @@ type
     property AbstractDescriptionWasAutomatic: boolean
       read FAbstractDescriptionWasAutomatic 
       write FAbstractDescriptionWasAutomatic;
-      
-    { Returns DetailedDescription if available, otherwise 
-      AbstractDescription, otherwise ''. }
-    function GetDescription: string;
-    
+          
     { Returns true if there is a DetailledDescription or AbstractDescription
-      available. In other words, it's equivalent to @code(GetDescription <> ''). }
-    function HasDescription: Boolean;  
+      available. }
+    function HasDescription: Boolean;
 
     function QualifiedName: String; override;    
 
@@ -1391,15 +1387,6 @@ begin
     if MyUnit <> nil then
       SearchUsedUnits(MyUnit.UsesUnits);
   end;    
-end;
-
-function TPasItem.GetDescription: string;
-begin
-  if DetailedDescription <> '' then begin
-    Result := DetailedDescription
-  end else begin
-    Result := AbstractDescription
-  end;
 end;
 
 procedure TPasItem.StoreAbstractTag(
