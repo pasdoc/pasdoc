@@ -114,30 +114,23 @@ begin
 end;
 
 procedure TSimpleXMLDocGenerator.writefunction(const item:TPasItem);
-
-  function writeWhat(w:TMethodType):string;
-  begin
-    result:='';
-    case w of
-      METHOD_CONSTRUCTOR:result:='constructor';
-      METHOD_DESTRUCTOR:result:='destructor';
-      METHOD_FUNCTION:result:='function';
-      METHOD_PROCEDURE:result:='procedure';
-      METHOD_OPERATOR:result:='operator';
-    end;
-  end;
-
-{var
-  i:cardinal;}
+var
+  I: Integer;
 begin
   if item is TPasMethod then
   begin
-    WriteDirectLine(space+'<function name="'+item.name+'" type="'+writeWhat(TPasMethod(item).What)+'" declaration="'+TPasMethod(item).FullDeclaration+'" result="'+TPasMethod(item).returns+'"/>');
-//    if TPasMethod(item).params.count>0 then
-//      for i:=0 to TPasMethod(item).params.count-1 do
-//        WriteDirectLine('<param name="'+TPasMethod(item).params[i].name+'" value="'+TPasMethod(item).params[i].value+'"');
-//    writeln(TPasMethod(item).FullDeclaration);
-//    WriteDirectLine('</function>');
+    WriteDirectLine(space + 
+      '<function name="' + ConvertString(item.name) + 
+              '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
+       '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
+      for I := 0 to TPasMethod(item).params.count - 1 do
+        WriteDirectLine(space + 
+          '  <param name="' + ConvertString(TPasMethod(item).params[i].name) + '">' + 
+            TPasMethod(item).params[i].value +'</param>');
+      if TPasMethod(item).returns <> '' then
+        WriteDirectLine(space + 
+          '  <result>' + TPasMethod(item).returns + '</result>');
+    WriteDirectLine(space + '</function>');
   end;
 end;
 
