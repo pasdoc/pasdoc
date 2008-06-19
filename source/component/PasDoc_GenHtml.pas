@@ -89,20 +89,21 @@ type
     procedure WriteEndOfTableRow;
     procedure WriteFooter;
 
-    procedure WriteItemDescription(const AItem: TPasItem);
-    (*Writes the Item's DetailedDescription. If the Item also has
-      AbstractDescription, this is also written in front of the
-      DetailedDescription.
+    { Writes the Item's AbstractDescription. Only if AbstractDescription
+      is not available, uses DetailedDescription. }
+    procedure WriteItemShortDescription(const AItem: TPasItem);
       
+    (*Writes the Item's AbstractDescription followed by DetailedDescription.
+
       Code here will open and close paragraph for itself, so you shouldn't
       surround it inside WriteStart/EndOfParagraph, like
       @longcode(#
         { BAD EXAMPLE }
         WriteStartOfParagraph;
-        WriteItemDetailedDescription(Item);
+        WriteItemLongDescription(Item);
         WriteEndOfParagraph;
       #) *)
-    procedure WriteItemDetailedDescription(const AItem: TPasItem);
+    procedure WriteItemLongDescription(const AItem: TPasItem);
     procedure WriteOverviewFiles;
 
     procedure WriteStartOfDocument(AName: string);
@@ -647,7 +648,7 @@ begin
 
   { Write Description }
   WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
-  WriteItemDetailedDescription(CIO);
+  WriteItemLongDescription(CIO);
 
   { Write Hierarchy }
   if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
@@ -746,7 +747,7 @@ begin
     { Description of class/interface/object }
     WriteStartOfTableCell('itemdesc');
     { Write only the AbstractDescription and do not opt for DetailedDescription,
-      like WriteItemDescription does. }
+      like WriteItemShortDescription does. }
     if p.AbstractDescription <> '' then
       WriteSpellChecked(p.AbstractDescription)
     else
@@ -948,7 +949,7 @@ begin
     { Using colspan="0" below would be easier, but Konqueror and IE
       can't handle it correctly. It seems that they treat it as colspan="1" ? }
     WriteDirectLine(Format('<tr><td colspan="%d">', [ColumnsCount]));
-    WriteItemDetailedDescription(Item);
+    WriteItemLongDescription(Item);
     WriteDirectLine('</td></tr>');
 
     WriteEndOfTable;
@@ -982,7 +983,7 @@ begin
   WriteDirect(FormatHeading(HL, CssClass, s, ''));
 end;
 
-procedure TGenericHTMLDocGenerator.WriteItemDescription(const AItem: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
 
@@ -997,7 +998,7 @@ begin
   end;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem);
+procedure TGenericHTMLDocGenerator.WriteItemLongDescription(const AItem: TPasItem);
 
   procedure WriteDescriptionSectionHeading(const Caption: TTranslationID);
   begin
@@ -1137,7 +1138,7 @@ begin
           WriteConverted(Format(
             'no description available, %s description follows', [AncestorName]));
           WriteDirect('</div>');
-          WriteItemDetailedDescription(TPasItem(Ancestor));
+          WriteItemLongDescription(TPasItem(Ancestor));
         end;
       end else begin
         WriteDirect('&nbsp;');
@@ -1223,7 +1224,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteEndOfTableCell;
 
         WriteStartOfTableCell('itemdesc');
-        WriteItemDescription(Item);
+        WriteItemShortDescription(Item);
         WriteEndOfTableCell;
         WriteEndOfTableRow;
       end;
@@ -1324,7 +1325,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteEndOfTableCell;
 
         WriteStartOfTableCell('itemdesc');
-        WriteItemDescription(Item);
+        WriteItemShortDescription(Item);
         WriteEndOfTableCell;
 
         WriteEndOfTableRow;
@@ -1566,7 +1567,7 @@ const
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
     WriteHeading(HL, 'description', FLanguage.Translation[trDescription]);
-    WriteItemDetailedDescription(U);
+    WriteItemLongDescription(U);
   end;
 
   procedure WriteUnitUses(const HL: integer; U: TPasUnit);
@@ -2084,7 +2085,7 @@ begin
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
     [http://sourceforge.net/mailarchive/message.php?msg_id=11388479].
-    In order to fix it, WriteItemDetailedDescription always wraps
+    In order to fix it, WriteItemLongDescription always wraps
     what it writes between <p> ... </p>
 
     This works perfectly except for the cases where @longcode

@@ -364,8 +364,8 @@ type
       
       This is a useful hint for generators: it tells them that when they
       are printing @italic(both) AbstractDescription and DetailedDescription of the item
-      in one place (e.g. TTexDocGenerator.WriteItemDetailedDescription
-      and TGenericHTMLDocGenerator.WriteItemDetailedDescription both do this)
+      in one place (e.g. TTexDocGenerator.WriteItemLongDescription
+      and TGenericHTMLDocGenerator.WriteItemLongDescription both do this)
       then they should @italic(not) put any additional space between
       AbstractDescription and DetailedDescription.
       
@@ -379,10 +379,10 @@ type
       and @--auto-abstract was on, then "First sentence." is the
       AbstractDescription, " Second sentence." is DetailedDescription,
       AbstractDescriptionWasAutomatic is true and
-      and TGenericHTMLDocGenerator.WriteItemDetailedDescription
+      and TGenericHTMLDocGenerator.WriteItemLongDescription
       can print them as "First sentence. Second sentence."
       
-      Without this property, TGenericHTMLDocGenerator.WriteItemDetailedDescription
+      Without this property, TGenericHTMLDocGenerator.WriteItemLongDescription
       would not be able to say that this abstract was deduced automatically
       and would print additional paragraph break that was not present
       in desscription, i.e. "First sentence.<p> Second sentence."
