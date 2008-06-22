@@ -1,6 +1,6 @@
 [Main]
 StoreRelativePaths=1
-Language=6
+Language=en
 GenerateFormat=0
 Verbosity=2
 ClassMembers_0=1
@@ -34,6 +34,8 @@ CheckSpelling=0
 LatexGraphicsPackage=0
 OutputDir=html_by_pasdoc_gui/
 IntroductionFileName=introduction.txt
+ClassMembers_6=1
+ClassMembers_7=1
 
 [Defines]
 Count=0

@@ -1120,6 +1120,8 @@ var
 var
   i: Integer;
   SettingsFileNamePath: string;
+  LanguageSyntax: string;
+  LanguageId: TLanguageID;
 begin
   if not SaveChanges then Exit;
 
@@ -1156,7 +1158,22 @@ begin
       CheckStoreRelativePaths.Checked :=
         Ini.ReadBool('Main', 'StoreRelativePaths', true);
 
-      comboLanguages.ItemIndex := Ini.ReadInteger('Main', 'Language', 0);
+      { Compatibility: in version < 0.11.0, we stored only the "id" (just an
+        index to LANGUAGE_ARRAY) of the language. This was very wrong, as the
+        id can change between pasdoc releases (items can get shifted and moved
+        in the LANGUAGE_ARRAY). So now we store language "syntax" code
+        (the same thing as is used for --language command-line option),
+        as this is guaranteed to stay "stable".
+        
+        To do something mildly sensible when opening pds files from older
+        versions, we set language to default (English) when language string
+        is not recognized. }
+        
+      LanguageSyntax := Ini.ReadString('Main', 'Language',
+        LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Syntax);
+      if not LanguageFromStr(LanguageSyntax, LanguageId) then
+        LanguageId := DEFAULT_LANGUAGE;
+      comboLanguages.ItemIndex := Ord(LanguageId);
       comboLanguagesChange(nil);
 
       edOutput.Directory := ExpandNotEmptyFileName(
@@ -1279,7 +1296,8 @@ begin
   try
     Ini.WriteBool('Main', 'StoreRelativePaths', CheckStoreRelativePaths.Checked);
 
-    Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
+    Ini.WriteString('Main', 'Language',
+      LANGUAGE_ARRAY[TLanguageID(comboLanguages.ItemIndex)].Syntax);
     Ini.WriteString('Main', 'OutputDir', CorrectFileName(edOutput.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
