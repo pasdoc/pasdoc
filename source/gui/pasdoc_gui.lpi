@@ -12,6 +12,7 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
+      <UseAppBundle Value="False"/>
       <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <PublishOptions>
@@ -29,17 +30,17 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SynEdit"/>
         <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pasdoc_package"/>
       </Item2>
       <Item3>
-        <PackageName Value="pasdoc_package"/>
+        <PackageName Value="LCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
       </Item4>
     </RequiredPackages>
