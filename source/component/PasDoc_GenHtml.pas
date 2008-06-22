@@ -2244,7 +2244,11 @@ begin
   if CopyNeeded then
     CopyFile(ChosenFileName, DestinationDirectory + OutputImageFileName);
 
-  Result := Format('<img src="%s" />', [OutputImageFileName]);
+  Result := Format('<img src="%s" alt="%s" />',
+    [ OutputImageFileName,
+      { Just use basename of chosen filename, that's the best
+        alt text for the image as we can get... }
+      DeleteFileExt(ExtractFileName(ChosenFileName))]);
 end;
 
 function TGenericHTMLDocGenerator.FormatList(ListData: TListData): string;
