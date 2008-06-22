@@ -420,7 +420,7 @@ begin
   PasDoc.IncludeDirectories.Assign(OptionIncludePaths.Values);
 
   if OptionLanguage.WasSpecified then
-    PasDoc.Generator.Language := LanguageFromStr(OptionLanguage.Value);
+    PasDoc.Generator.Language := GetLanguageFromStr(OptionLanguage.Value);
 
   PasDoc.ProjectName := OptionName.Value;
 
