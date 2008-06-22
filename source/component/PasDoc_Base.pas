@@ -284,7 +284,7 @@ const
       )
     )
   }
-  PASDOC_DATE = '2008-06-15';
+  PASDOC_DATE = '2008-06-22';
   { }
   PASDOC_VERSION = '0.11.0';
   { }
