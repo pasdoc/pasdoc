@@ -52,9 +52,7 @@ type
     procedure WriteEndOfTableRow;
 
     (*
-      Writes the Item's DetailedDescription. If the Item also has
-      AbstractDescription this is written in front of the
-      DetailedDescription. 
+      Writes the Item's AbstractDescription and DetailedDescription.
       
       TODO: this should be fixed to write 
       @longcode(#
@@ -67,7 +65,7 @@ type
       there is actually no description (only e.g. Params or Raises or Returns
       information).
     *)
-    procedure WriteItemDetailedDescription(const AItem: TPasItem;
+    procedure WriteItemLongDescription(const AItem: TPasItem;
        AlreadyWithinAList: boolean);
 
     { @name writes the preamble of a LaTeX document and the begining of the
@@ -458,7 +456,7 @@ begin
   if dsDescription in SectionsAvailable then
     begin
       WriteHeading(HL + 2, SectionHeads[dsDescription]);
-      WriteItemDetailedDescription(CIO, false);
+      WriteItemLongDescription(CIO, false);
     end
   else
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
@@ -753,7 +751,7 @@ begin
     begin
       WriteStartOfParagraph;
       WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
-      WriteItemDetailedDescription(Item, true);
+      WriteItemLongDescription(Item, true);
       WriteEndOfParagraph;
     end;
 
@@ -943,7 +941,7 @@ begin
   end;    
 end;
 
-procedure TTexDocGenerator.WriteItemDetailedDescription(const AItem: TPasItem;
+procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
   AlreadyWithinAList: boolean);
 
   { writes the parameters or exceptions list }
@@ -1077,7 +1075,7 @@ begin
         if Assigned(Ancestor) and (Ancestor is TPasItem) then
           begin
             WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteItemDetailedDescription(TPasItem(Ancestor), AlreadyWithinAList);
+            WriteItemLongDescription(TPasItem(Ancestor), AlreadyWithinAList);
           end;
       end else
       begin
@@ -1116,7 +1114,7 @@ begin
       WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       { add the end characters for enums }
       WriteDirect('}] ');
-      WriteSpellChecked(TPasEnum(AItem).Members.PasItemAt[i].GetDescription);
+      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');
@@ -1163,7 +1161,7 @@ begin
         
       WriteDirectLine('');
       WriteDirect('\par ');
-      WriteItemDetailedDescription(Item, true);
+      WriteItemLongDescription(Item, true);
     end;
 
     WriteEndList; 
@@ -1318,7 +1316,7 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
     WriteHeading(HL, FLanguage.Translation[trDescription]);
-    WriteItemDetailedDescription(U, false);
+    WriteItemLongDescription(U, false);
     WriteDirect('',true);
   end;
 

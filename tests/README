@@ -74,7 +74,7 @@ Possible tests to be done:
    with special command-line option : --marker=:).
 
    Now, to automatically test this output, see below,
-   for "correct tests output" and for "validate_html".
+   for "correct tests output", "validate_html", "validate_simplexml".
 
    But you can of course try to manually look at units'
    sources and comments there to know what generated documentation should
@@ -148,7 +148,7 @@ Possible tests to be done:
    In this case you can do something like `make clean latex' before
    uploading to be sure that you upload only "docs.tex" file.
 
-3. make html validate_html
+3.1. make html validate_html
 
    This is an automatic test that makes html docs for all test units
    and validates them using sgml validator.
@@ -156,6 +156,16 @@ Possible tests to be done:
 
    Links how to install onsgmls may be found here
    [http://pasdoc.sipsolutions.net/HtmlOutput].
+
+3.2. make simplexml validate_simplexml
+
+   This is an automatic test that makes simplexml docs for all test units
+   and validates them using xmllint.
+   xmllint must be installed for this to work.
+   
+   We do not have any DTD, so it doesn't check that our XML files
+   conform to anything. But at least it checks that they are well-formed
+   (all open elements are closed and such).
 
 4. cd scripts/
    ./check_cache.sh html

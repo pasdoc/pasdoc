@@ -6,9 +6,10 @@ object frmHelpGenerator: TfrmHelpGenerator
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
   HorzScrollBar.Page = 739
-  VertScrollBar.Page = 419
+  VertScrollBar.Page = 415
+  ActiveControl = memoMessages
   Caption = 'pasdoc gui'
-  ClientHeight = 420
+  ClientHeight = 416
   ClientWidth = 740
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
@@ -21,7 +22,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   Position = poScreenCenter
   ShowHint = True
   object lbNavigation: TListBox
-    Height = 420
+    Height = 416
     Width = 144
     Align = alLeft
     OnClick = lbNavigationClick
@@ -30,68 +31,64 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object NotebookMain: TNotebook
     Left = 144
-    Height = 420
+    Height = 416
     Width = 596
     Align = alClient
-    PageIndex = 3
+    PageIndex = 7
     ShowTabs = False
+    TabOrder = 1
     object pageOptions: TPage
       Caption = 'Options'
-      ClientWidth = 592
+      ClientWidth = 596
       ClientHeight = 416
       object Label1: TLabel
-        Left = 326
-        Height = 13
+        Left = 282
+        Height = 17
         Top = 14
-        Width = 149
+        Width = 193
         HelpType = htKeyword
         Anchors = [akTop, akRight]
         Caption = 'Items to sort alphabetically'
-        Color = clNone
         FocusControl = clbSorting
         ParentColor = False
       end
       object Label2: TLabel
         Left = 10
-        Height = 13
+        Height = 17
         Top = 14
-        Width = 31
+        Width = 40
         HelpType = htKeyword
         Caption = 'Title :'
-        Color = clNone
         FocusControl = edTitle
         ParentColor = False
       end
       object Label6: TLabel
         Left = 10
-        Height = 13
+        Height = 17
         Top = 130
-        Width = 77
+        Width = 101
         HelpType = htKeyword
         Caption = 'Output Type :'
-        Color = clNone
         FocusControl = comboGenerateFormat
         ParentColor = False
       end
       object Label11: TLabel
         Left = 10
-        Height = 13
+        Height = 17
         Top = 66
-        Width = 83
+        Width = 110
         HelpType = htKeyword
         Caption = 'Project Name :'
-        Color = clNone
         FocusControl = edProjectName
         ParentColor = False
       end
       object Label19: TLabel
         Left = 10
-        Height = 13
+        Height = 17
         Top = 190
-        Width = 254
+        Width = 329
         HelpType = htKeyword
         Caption = 'Language used in generated documentation :'
-        Color = clNone
         FocusControl = comboLanguages
         ParentColor = False
       end
@@ -125,10 +122,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckAutoAbstract: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
         Top = 294
-        Width = 472
+        Width = 605
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
@@ -137,10 +134,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckUseTipueSearch: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
         Top = 270
-        Width = 250
+        Width = 316
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
@@ -167,7 +164,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight]
         AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-        ItemHeight = 20
         Items.Strings = (
           'HTML'
           'HTML Help Workshop'
@@ -200,7 +196,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'OutputLanguage'
         Anchors = [akTop, akLeft, akRight]
         AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-        ItemHeight = 20
         MaxLength = 0
         OnChange = comboLanguagesChange
         Style = csDropDownList
@@ -208,9 +203,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckAutoLink: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Top = 318
-        Width = 408
+        Width = 520
         HelpType = htKeyword
         HelpKeyword = 'AutoLinkOption'
         Caption = 'Automatically turn identifiers into links, without the need for @link tag'
@@ -219,9 +214,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckHandleMacros: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Top = 342
-        Width = 275
+        Width = 349
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
         Caption = 'Recognize FPC macros syntax when parsing'
@@ -232,9 +227,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckStoreRelativePaths: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Top = 374
-        Width = 236
+        Width = 294
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
         Caption = 'Store only relative paths in project file'
@@ -245,9 +240,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object CheckWriteUsesList: TCheckBox
         Left = 10
-        Height = 20
+        Height = 24
         Top = 246
-        Width = 134
+        Width = 167
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
         Caption = 'Show units uses list'
@@ -257,35 +252,38 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object PageVisibleMembers: TPage
       Caption = 'Visible members'
-      ClientWidth = 592
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.VerticalSpacing = 10
+      ClientWidth = 596
       ClientHeight = 416
       object LabelVisibleMembers: TLabel
-        Left = 8
-        Height = 13
-        Top = 14
-        Width = 544
+        Left = 10
+        Height = 37
+        Top = 10
+        Width = 576
         HelpType = htKeyword
+        Align = alTop
         Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
-        Color = clNone
         FocusControl = CheckListVisibleMembers
         ParentColor = False
         WordWrap = True
       end
       object LabelImplicitVisibility: TLabel
         Left = 8
-        Height = 14
+        Height = 15
         Top = 211
-        Width = 164
-        Color = clNone
+        Width = 165
         ParentColor = False
       end
       object CheckListVisibleMembers: TCheckListBox
-        Left = 8
+        Left = 10
         Height = 130
-        Top = 46
-        Width = 223
+        Top = 57
+        Width = 576
         HelpType = htKeyword
         HelpKeyword = 'IncludeByVisibility'
+        Align = alTop
         Items.Strings = (
           'Published'
           'Public'
@@ -302,14 +300,15 @@ object frmHelpGenerator: TfrmHelpGenerator
         }
       end
       object RadioImplicitVisibility: TRadioGroup
-        Left = 8
-        Height = 88
-        Top = 198
-        Width = 561
+        Left = 10
+        Height = 105
+        Top = 197
+        Width = 576
         HelpType = htKeyword
         HelpKeyword = 'ImplicitVisibilityOption'
-        Anchors = [akTop, akLeft, akRight]
+        Align = alTop
         AutoFill = True
+        AutoSize = True
         Caption = 'Default visibility of members'
         ChildSizing.LeftRightSpacing = 6
         ChildSizing.TopBottomSpacing = 6
@@ -319,6 +318,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
+        ClientHeight = 105
+        ClientWidth = 576
         ItemIndex = 0
         Items.Strings = (
           '"Public", unless the class is declared within {$M+} state, then it''s "published"'
@@ -331,49 +332,49 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageLocations: TPage
       Caption = 'Locations'
-      ClientWidth = 592
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.HorizontalSpacing = 10
+      ClientWidth = 596
       ClientHeight = 416
       object Label3: TLabel
         Left = 8
-        Height = 13
+        Height = 17
         Top = 170
-        Width = 433
+        Width = 556
         HelpType = htKeyword
         Caption = 'Output directory (This is the directory where the web pages will be created.) :'
-        Color = clNone
         FocusControl = edOutput
         ParentColor = False
       end
       object Label14: TLabel
         Left = 8
-        Height = 13
-        Top = 58
-        Width = 91
+        Height = 17
+        Top = 64
+        Width = 114
         HelpType = htKeyword
         Caption = 'Conclusion file :'
-        Color = clNone
         FocusControl = EditConclusionFileName
         ParentColor = False
       end
       object Label15: TLabel
-        Left = 8
-        Height = 13
+        Left = 10
+        Height = 17
         Top = 10
-        Width = 93
+        Width = 576
         HelpType = htKeyword
+        Align = alTop
         Caption = 'Introduction file :'
-        Color = clNone
         FocusControl = EditIntroductionFileName
         ParentColor = False
       end
       object Label16: TLabel
         Left = 8
-        Height = 13
+        Height = 17
         Top = 114
-        Width = 449
+        Width = 589
         HelpType = htKeyword
         Caption = 'Use custom CSS file with HTML output (leave empty to use default pasdoc.css) :'
-        Color = clNone
         FocusControl = EditCssFileName
         ParentColor = False
       end
@@ -385,29 +386,29 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 489
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 0
         DialogTitle = 'Choose conclusion file'
         ButtonWidth = 23
         NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
         ParentColor = False
+        TabOrder = 0
+        OnChange = SomethingChanged
       end
       object EditIntroductionFileName: TFileNameEdit
         Left = 8
-        Height = 23
+        Height = 26
         Hint = 'Optional file used as an introduction to your project.'
         Top = 30
         Width = 489
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 1
         DialogTitle = 'Choose introduction file'
         ButtonWidth = 23
         NumGlyphs = 1
+        AutoSize = True
         ParentColor = False
+        TabOrder = 1
+        OnChange = SomethingChanged
       end
       object EditCssFileName: TFileNameEdit
         Left = 8
@@ -416,14 +417,14 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 489
         HelpType = htKeyword
         HelpKeyword = 'CssOption'
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 2
         DialogTitle = 'Choose custom CSS file'
         Filter = 'Cascading Style Sheets (*.css)|*.css'
         ButtonWidth = 23
         NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
         ParentColor = False
+        TabOrder = 2
+        OnChange = SomethingChanged
       end
       object edOutput: TDirectoryEdit
         Left = 8
@@ -432,58 +433,37 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 489
         HelpType = htKeyword
         HelpKeyword = 'OutputOption'
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = SomethingChanged
-        TabOrder = 3
         DialogTitle = 'Select output directory'
         ButtonWidth = 23
         NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
         ParentColor = False
+        TabOrder = 3
+        OnChange = SomethingChanged
       end
     end
     object pageLatexOptions: TPage
       Caption = 'LaTeX Options'
-      ClientWidth = 592
+      ClientWidth = 596
       ClientHeight = 416
-      object Label17: TLabel
-        Left = 190
-        Height = 43
-        Top = 14
-        Width = 386
-        HelpType = htKeyword
-        Anchors = [akTop, akLeft, akRight]
-        Caption = 'You can specify how you want words to be hyphenated here.'#10'Just enter the word (one per line) with hyphens in the correct places.'#10'Only English letters are allowed.'
-        Color = clNone
-        FocusControl = memoHyphenatedWords
-        ParentColor = False
-      end
       object Label24: TLabel
         Left = 12
-        Height = 13
+        Height = 17
         Top = 110
-        Width = 138
+        Width = 175
         Caption = 'LateX graphics package'
-        Color = clNone
         FocusControl = comboLatexGraphicsPackage
         ParentColor = False
       end
-      object memoHyphenatedWords: TMemo
-        Left = 190
-        Height = 329
-        Top = 70
-        Width = 386
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        OnChange = SomethingChanged
-        TabOrder = 0
-      end
       object rgLineBreakQuality: TRadioGroup
         Left = 12
-        Height = 63
+        Height = 81
         Top = 7
-        Width = 98
+        Width = 95
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/LatexLineBreaks'
         AutoFill = True
+        AutoSize = True
         Caption = 'Line Breaks'
         ChildSizing.LeftRightSpacing = 6
         ChildSizing.TopBottomSpacing = 6
@@ -493,13 +473,15 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
+        ClientHeight = 81
+        ClientWidth = 95
         ItemIndex = 0
         Items.Strings = (
           'strict'
           'sloppy'
         )
         OnClick = SomethingChanged
-        TabOrder = 2
+        TabOrder = 1
       end
       object comboLatexGraphicsPackage: TComboBox
         Left = 12
@@ -518,41 +500,73 @@ object frmHelpGenerator: TfrmHelpGenerator
         MaxLength = 0
         OnChange = SomethingChanged
         Style = csDropDownList
-        TabOrder = 1
+        TabOrder = 0
         Text = 'None'
+      end
+      object PanelLatexHyphenation: TPanel
+        Left = 194
+        Height = 416
+        Width = 402
+        Align = alRight
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 416
+        ClientWidth = 402
+        TabOrder = 2
+        object Label17: TLabel
+          Left = 10
+          Height = 77
+          Top = 10
+          Width = 382
+          HelpType = htKeyword
+          Align = alTop
+          Caption = 'You can specify how you want words to be hyphenated here. Just enter the word (one per line) with hyphens in the correct places. Only English letters are allowed.'
+          ParentColor = False
+          WordWrap = True
+        end
+        object memoHyphenatedWords: TMemo
+          Left = 10
+          Height = 319
+          Top = 87
+          Width = 382
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+        end
       end
     end
     object pageHeadFoot: TPage
       Caption = 'Header / Footer'
-      ClientWidth = 592
+      ClientWidth = 596
       ClientHeight = 416
       object PanelHeaderHidden: TPanel
-        Height = 226
-        Width = 592
+        Height = 179
+        Width = 596
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 226
-        ClientWidth = 592
+        BorderWidth = 10
+        ClientHeight = 179
+        ClientWidth = 596
         TabOrder = 0
         object LabelHeader: TLabel
-          Left = 8
-          Height = 13
-          Top = 8
-          Width = 324
+          Left = 10
+          Height = 17
+          Top = 10
+          Width = 576
           HelpType = htKeyword
+          Align = alTop
           Caption = '&Header (This text will appear at the top of the web page)'
-          Color = clNone
           FocusControl = memoHeader
           ParentColor = False
         end
         object memoHeader: TMemo
-          Left = 8
-          Height = 198
-          Top = 24
-          Width = 574
+          Left = 10
+          Height = 142
+          Top = 27
+          Width = 576
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
-          Anchors = [akTop, akLeft, akRight, akBottom]
+          Align = alClient
           OnChange = SomethingChanged
           TabOrder = 0
           WordWrap = False
@@ -560,40 +574,41 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object Splitter2: TSplitter
         Cursor = crVSplit
-        Height = 5
-        Top = 226
-        Width = 592
+        Height = 9
+        Top = 179
+        Width = 596
         Align = alTop
         ResizeAnchor = akTop
       end
       object PanelFooterHidden: TPanel
-        Height = 185
-        Top = 231
-        Width = 592
+        Height = 228
+        Top = 188
+        Width = 596
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 185
-        ClientWidth = 592
+        BorderWidth = 10
+        ClientHeight = 228
+        ClientWidth = 596
         TabOrder = 1
         object LabelFooter: TLabel
-          Left = 8
-          Height = 13
-          Top = 8
-          Width = 338
+          Left = 10
+          Height = 17
+          Top = 10
+          Width = 576
           HelpType = htKeyword
+          Align = alTop
           Caption = '&Footer (This text will appear at the bottom of the web page)'
-          Color = clNone
           FocusControl = memoFooter
           ParentColor = False
         end
         object memoFooter: TMemo
-          Left = 8
-          Height = 151
-          Top = 24
-          Width = 574
+          Left = 10
+          Height = 191
+          Top = 27
+          Width = 576
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
-          Anchors = [akTop, akLeft, akRight, akBottom]
+          Align = alClient
           OnChange = SomethingChanged
           TabOrder = 0
           WordWrap = False
@@ -602,22 +617,21 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageGraphViz: TPage
       Caption = 'GraphViz'
-      ClientWidth = 592
+      ClientWidth = 596
       ClientHeight = 416
       object Label22: TLabel
         Left = 14
-        Height = 12
+        Height = 17
         Top = 70
-        Width = 449
+        Width = 582
         Caption = 'You will have to generate graphs yourself using the dot program from GraphViz :'
-        Color = clNone
         ParentColor = False
       end
       object cbVizGraphUses: TCheckBox
         Left = 8
         Height = 24
         Top = 34
-        Width = 191
+        Width = 243
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Uses graph'
@@ -628,7 +642,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 8
         Height = 24
         Top = 10
-        Width = 208
+        Width = 263
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Classes graph'
@@ -637,9 +651,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object ButtonGraphVizURL: TButton
         Left = 14
-        Height = 26
-        Top = 86
-        Width = 144
+        Height = 38
+        Top = 96
+        Width = 188
         AutoSize = True
         BorderSpacing.InnerBorder = 4
         Caption = 'http://www.graphviz.org/'
@@ -649,42 +663,42 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageSpellChecking: TPage
       Caption = 'Spell Checking'
-      ClientWidth = 592
+      ClientWidth = 596
       ClientHeight = 416
       object PanelSpellCheckingTop1: TPanel
-        Height = 150
-        Width = 592
+        Height = 149
+        Width = 596
         Align = alTop
+        AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 150
-        ClientWidth = 592
+        BorderWidth = 10
+        ClientHeight = 149
+        ClientWidth = 596
         FullRepaint = False
         TabOrder = 1
         object Label20: TLabel
-          Left = 6
-          Height = 27
-          Top = 110
-          Width = 355
+          Left = 10
+          Height = 37
+          Top = 112
+          Width = 454
           HelpType = htKeyword
           Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
-          Color = clNone
           FocusControl = memoSpellCheckingIgnore
           ParentColor = False
         end
         object Label23: TLabel
-          Left = 6
-          Height = 12
-          Top = 46
-          Width = 414
+          Left = 10
+          Height = 17
+          Top = 40
+          Width = 531
           Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
-          Color = clNone
           ParentColor = False
         end
         object cbCheckSpelling: TCheckBox
-          Left = 6
-          Height = 23
-          Top = 6
-          Width = 132
+          Left = 10
+          Height = 24
+          Top = 10
+          Width = 131
           HelpType = htKeyword
           HelpKeyword = 'SpellChecking'
           Caption = 'Check Spelling'
@@ -692,10 +706,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           TabOrder = 0
         end
         object ButtonAspellURL: TButton
-          Left = 6
-          Height = 26
-          Top = 62
-          Width = 167
+          Left = 10
+          Height = 38
+          Top = 64
+          Width = 218
           AutoSize = True
           BorderSpacing.InnerBorder = 4
           Caption = 'http://aspell.sourceforge.net/'
@@ -704,12 +718,14 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
       end
       object memoSpellCheckingIgnore: TMemo
-        Height = 266
-        Top = 150
-        Width = 592
+        Left = 10
+        Height = 247
+        Top = 159
+        Width = 576
         HelpType = htKeyword
         HelpKeyword = 'SpellChecking'
         Align = alClient
+        BorderSpacing.Around = 10
         ScrollBars = ssAutoBoth
         TabOrder = 0
         WordWrap = False
@@ -718,44 +734,51 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageMarkers: TPage
       Caption = 'Markers'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object memoCommentMarkers: TMemo
-        Height = 304
-        Top = 112
-        Width = 592
+        Left = 10
+        Height = 241
+        Top = 161
+        Width = 572
         HelpType = htKeyword
         HelpKeyword = 'CommentMarker'
         Align = alClient
+        BorderSpacing.Around = 10
         OnChange = SomethingChanged
         TabOrder = 0
       end
       object PanelMarkers: TPanel
-        Height = 112
+        Height = 151
         Width = 592
         Align = alTop
-        ClientHeight = 112
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ChildSizing.VerticalSpacing = 10
+        ClientHeight = 151
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
         object Label18: TLabel
-          Left = 4
-          Height = 20
-          Top = 87
-          Width = 142
+          Left = 10
+          Height = 17
+          Top = 125
+          Width = 572
           HelpType = htKeyword
+          Align = alTop
           Caption = 'Special comment markers'
-          Color = clNone
           FocusControl = memoCommentMarkers
           ParentColor = False
         end
         object rgCommentMarkers: TRadioGroup
-          Left = 4
-          Height = 80
-          Width = 568
+          Left = 10
+          Height = 105
+          Top = 10
+          Width = 572
           HelpType = htKeyword
           HelpKeyword = 'CommentMarker'
-          Anchors = [akTop, akLeft, akRight]
+          Align = alTop
           AutoFill = True
+          AutoSize = True
           Caption = 'Comment marker treatment'
           ChildSizing.LeftRightSpacing = 6
           ChildSizing.TopBottomSpacing = 6
@@ -765,6 +788,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
+          ClientHeight = 84
+          ClientWidth = 568
           ItemIndex = 1
           Items.Strings = (
             'Ignore special comment markers'
@@ -779,34 +804,36 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageSourceFiles: TPage
       Caption = 'Source Files'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object PanelSourceFilesTop: TPanel
-        Height = 102
+        Height = 123
         Width = 592
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 102
+        BorderWidth = 10
+        ClientHeight = 123
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
         object Label8: TLabel
-          Left = 8
-          Height = 51
-          Top = 8
-          Width = 554
+          Left = 10
+          Height = 65
+          Top = 10
+          Width = 572
           HelpType = htKeyword
-          Anchors = [akTop, akLeft, akRight]
+          Align = alClient
           Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
-          Color = clNone
           FocusControl = memoFiles
           ParentColor = False
           WordWrap = True
         end
         object btnBrowseSourceFiles: TButton
-          Left = 6
-          Height = 25
-          Top = 62
-          Width = 75
+          Left = 10
+          Height = 38
+          Top = 75
+          Width = 572
+          Align = alBottom
+          AutoSize = True
           BorderSpacing.InnerBorder = 4
           Caption = 'Browse'
           OnClick = btnBrowseSourceFilesClick
@@ -814,11 +841,13 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
       end
       object memoFiles: TMemo
-        Height = 314
-        Top = 102
-        Width = 592
+        Left = 10
+        Height = 269
+        Top = 133
+        Width = 572
         HelpType = htKeyword
         Align = alClient
+        BorderSpacing.Around = 10
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
@@ -828,34 +857,37 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageIncludeDirectories: TPage
       Caption = 'Include Directories'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object PanelIncludeDirectoriesTop: TPanel
-        Height = 89
+        Height = 85
         Width = 592
         Align = alTop
+        AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 89
+        BorderWidth = 10
+        ClientHeight = 85
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
         object Label9: TLabel
-          Left = 8
-          Height = 36
-          Top = 8
-          Width = 552
+          Left = 10
+          Height = 37
+          Top = 10
+          Width = 572
           HelpType = htKeyword
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'If any of you source files have include files, you need to give the directory where those include files are located.  (See the Delphi help on $I if you don''t know what and include file is.)'
-          Color = clNone
+          Align = alTop
+          Caption = 'The directories where PasDoc can find include files.'#10'(If you use $I, $INCLUDE compiler directives.)'
           FocusControl = memoIncludeDirectories
           ParentColor = False
           WordWrap = True
         end
         object btnBrowseIncludeDirectory: TButton
-          Left = 6
-          Height = 25
-          Top = 54
-          Width = 75
+          Left = 10
+          Height = 38
+          Top = 47
+          Width = 572
+          Align = alTop
+          AutoSize = True
           BorderSpacing.InnerBorder = 4
           Caption = 'Browse'
           OnClick = btnBrowseIncludeDirectoryClick
@@ -863,12 +895,14 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
       end
       object memoIncludeDirectories: TMemo
-        Height = 327
-        Top = 89
-        Width = 592
+        Left = 10
+        Height = 307
+        Top = 95
+        Width = 572
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
         Align = alClient
+        BorderSpacing.Around = 10
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
@@ -878,37 +912,50 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageDefines: TPage
       Caption = 'Defines'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object memoDefines: TMemo
-        Height = 340
-        Top = 76
-        Width = 592
+        Left = 10
+        Height = 246
+        Top = 156
+        Width = 572
         HelpType = htKeyword
         HelpKeyword = 'ConditionalDefines'
         Align = alClient
+        BorderSpacing.Around = 10
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
       end
       object PanelDefinesTop: TPanel
-        Height = 76
+        Height = 146
         Width = 592
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 76
+        BorderWidth = 10
+        ChildSizing.VerticalSpacing = 10
+        ClientHeight = 146
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
         object Label12: TLabel
-          Left = 6
-          Height = 48
-          Top = 8
-          Width = 558
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'If any "conditonal defines" are used in your program, list them here.  Your compiler may have some "conditional defines" already defined.  For example "VER150" is predefined in Delphi 7.  See the help on "conditional compilation" in your compiler for more information.'
-          Color = clNone
+          Left = 10
+          Height = 37
+          Top = 10
+          Width = 572
+          Align = alTop
+          Caption = 'Put here any symbols that you want to have defined at the start, just as if they would be defined by $DEFINE at the beginning of each unit.'
           FocusControl = memoDefines
+          ParentColor = False
+          WordWrap = True
+        end
+        object Label4: TLabel
+          Left = 10
+          Height = 77
+          Top = 57
+          Width = 572
+          Align = alTop
+          Caption = 'Note that your compiler may define some symbols by default (for example, "FPC" by FreePascal, "VER150" by Delphi 7, target OS and architecture like "UNIX", "MSWINDOWS" etc.) --- you may want to define some of these for pasdoc too.'
           ParentColor = False
           WordWrap = True
         end
@@ -917,69 +964,72 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageGenerate: TPage
       Caption = 'Generate'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object PanelGenerateTop: TPanel
-        Height = 110
+        Height = 127
         Width = 592
         Align = alTop
+        Alignment = taLeftJustify
         BevelOuter = bvNone
-        ClientHeight = 110
+        BorderWidth = 10
+        ClientHeight = 127
         ClientWidth = 592
         FullRepaint = False
         TabOrder = 1
         object Label10: TLabel
-          Left = 8
-          Height = 28
-          Top = 8
-          Width = 554
+          Left = 10
+          Height = 37
+          Top = 10
+          Width = 572
           HelpType = htKeyword
-          Anchors = [akTop, akLeft, akRight]
+          Align = alTop
           Caption = 'While generating documentation, messages describing what is happening will appear in the area below.'
-          Color = clNone
           FocusControl = memoMessages
           ParentColor = False
           WordWrap = True
         end
         object Label7: TLabel
-          Left = 80
-          Height = 13
-          Top = 54
-          Width = 158
+          Left = 86
+          Height = 17
+          Top = 56
+          Width = 201
           HelpType = htKeyword
           Caption = 'Verbosity level (default is 2)'
-          Color = clNone
           ParentColor = False
         end
         object seVerbosity: TSpinEdit
-          Left = 8
-          Height = 20
+          Left = 10
+          Height = 26
           Hint = 'The higher the message level, the more messages will be shown.'
-          Top = 46
+          Top = 48
           Width = 64
           HelpType = htKeyword
+          AutoSize = True
           MaxValue = 6
           OnChange = SomethingChanged
           TabOrder = 0
           Value = 2
         end
         object ButtonGenerateDocs: TButton
-          Left = 8
-          Height = 26
-          Top = 78
-          Width = 150
+          Left = 10
+          Height = 30
+          Top = 87
+          Width = 572
+          Align = alBottom
           AutoSize = True
-          BorderSpacing.InnerBorder = 4
           Caption = 'Generate documentation'
           OnClick = ButtonGenerateDocsClick
           TabOrder = 1
         end
       end
       object memoMessages: TMemo
-        Height = 306
-        Top = 110
-        Width = 592
+        Left = 10
+        Height = 265
+        Top = 137
+        Width = 572
         HelpType = htKeyword
         Align = alClient
+        BorderSpacing.Around = 10
         ScrollBars = ssBoth
         TabOrder = 0
       end
@@ -987,27 +1037,25 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageEdit: TPage
       Caption = 'Display Comments'
       ClientWidth = 592
-      ClientHeight = 416
+      ClientHeight = 412
       object tvUnits: TTreeView
-        Height = 192
+        Height = 188
         Top = 28
         Width = 592
         Align = alClient
-        DefaultItemHeight = 14
+        DefaultItemHeight = 18
         TabOrder = 0
         OnClick = tvUnitsClick
       end
       object seComment: TSynEdit
         Height = 191
-        Top = 225
+        Top = 221
         Width = 592
         Align = alBottom
         Font.Height = -16
         Font.Name = 'courier'
         ParentColor = False
         TabOrder = 1
-        BookMarkOptions.OnChange = nil
-        Gutter.OnChange = nil
         Gutter.CodeFoldingWidth = 14
         Keystrokes = <        
           item
@@ -1330,12 +1378,11 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = 250
             ShortCut = 24642
           end>
-        SelectedColor.OnChange = nil
       end
       object Splitter1: TSplitter
         Cursor = crVSplit
         Height = 5
-        Top = 220
+        Top = 216
         Width = 592
         Align = alBottom
         ResizeAnchor = akBottom
@@ -1345,8 +1392,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 592
         Align = alTop
         Caption = 'Click on an item in the tree view to see its comment.'
-        ClientHeight = 28
-        ClientWidth = 592
         FullRepaint = False
         TabOrder = 2
       end

@@ -243,6 +243,10 @@ const
     
     );
 
+{ Find a language with Syntax = S (case ignored). 
+  Returns @true and sets LanguageId if found, otherwise returns @false. }
+function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
+
 implementation
 
 { Notes for editors of SetLanguageXxx methods, to keep their look consistent:
@@ -1949,6 +1953,24 @@ begin
     lgSwedish: SetLanguageSwedish;
     lgHungarian_1250: SetLanguageHungarian_1250;
   end;
+end;
+
+function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
+var
+  I: TLanguageID;
+begin
+  S := LowerCase(S);
+  for I := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
+  begin
+    if LowerCase(LANGUAGE_ARRAY[I].Syntax) = S then
+    begin
+      Result := true;
+      LanguageId := I;
+      Exit;
+    end;
+  end;
+  
+  Result := false;
 end;
 
 end.

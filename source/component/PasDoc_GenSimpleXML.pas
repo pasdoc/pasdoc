@@ -30,7 +30,8 @@ type
   private
     space:string;
 
-    { Returns XML <description> element with Item's description.
+    { Returns XML <description> element with Item's AbstractDescription
+      and DetailedDescription.
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
@@ -96,50 +97,61 @@ end;
 function TSimpleXMLDocGenerator.ItemDescription(Item: TPasItem): string;
 begin
   if Item.HasDescription then
-    Result := '<description>' + Item.GetDescription + '</description>' else
+  begin
+    { Abstract and Detailed descriptions are somewhat siblings,
+      for most normal uses you want to glue them together.
+      That's why I (Michalis) decided it's most sensible to put them
+      as sibling XML elements, not make <abstract> child of <detailed>
+      of something like this. }
+    Result := '<description>';
+    if Item.AbstractDescription <> '' then
+      Result := Result + '<abstract>' + Item.AbstractDescription + '</abstract>';
+    if Item.DetailedDescription <> '' then
+      Result := Result + '<detailed>' + Item.DetailedDescription + '</detailed>';
+    Result := Result + '</description>';
+  end else
     Result := '';
 end;
 
 procedure TSimpleXMLDocGenerator.writefunction(const item:TPasItem);
-
-  function writeWhat(w:TMethodType):string;
-  begin
-    result:='';
-    case w of
-      METHOD_CONSTRUCTOR:result:='constructor';
-      METHOD_DESTRUCTOR:result:='destructor';
-      METHOD_FUNCTION:result:='function';
-      METHOD_PROCEDURE:result:='procedure';
-      METHOD_OPERATOR:result:='operator';
-    end;
-  end;
-
-{var
-  i:cardinal;}
+var
+  I: Integer;
 begin
   if item is TPasMethod then
   begin
-    WriteDirectLine(space+'<function name="'+item.name+'" type="'+writeWhat(TPasMethod(item).What)+'" declaration="'+TPasMethod(item).FullDeclaration+'" result="'+TPasMethod(item).returns+'"/>');
-//    if TPasMethod(item).params.count>0 then
-//      for i:=0 to TPasMethod(item).params.count-1 do
-//        WriteDirectLine('<param name="'+TPasMethod(item).params[i].name+'" value="'+TPasMethod(item).params[i].value+'"');
-//    writeln(TPasMethod(item).FullDeclaration);
-//    WriteDirectLine('</function>');
+    WriteDirectLine(space + 
+      '<function name="' + ConvertString(item.name) + 
+              '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
+       '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
+      for I := 0 to TPasMethod(item).params.count - 1 do
+        WriteDirectLine(space + 
+          '  <param name="' + ConvertString(TPasMethod(item).params[i].name) + '">' + 
+            TPasMethod(item).params[i].value +'</param>');
+      if TPasMethod(item).returns <> '' then
+        WriteDirectLine(space + 
+          '  <result>' + TPasMethod(item).returns + '</result>');
+    WriteDirectLine(space + '</function>');
   end;
 end;
 
 procedure TSimpleXMLDocGenerator.writeproperty(const item:TPasItem);
 begin
-  WriteDirectLine(space+'<property name="'+item.name+'" indexdecl="'+TPasProperty(item).indexDecl+
-  '" type="'+TPasProperty(item).Proptype+'" reader="'+TPasProperty(item).reader+
-  '" writer="'+TPasProperty(item).writer+'" default="'+booltostr(TPasProperty(item).default)+
-  '" defaultid="'+TPasProperty(item).defaultid+'" nodefault="'+booltostr(TPasProperty(item).nodefault)+
-  '" storedid="'+TPasProperty(item).storedid+'"/>');
+  WriteDirectLine(space + 
+    '<property name="' + ConvertString(item.name) + 
+       '" indexdecl="' + ConvertString(TPasProperty(item).indexDecl) +
+            '" type="' + ConvertString(TPasProperty(item).Proptype) + 
+          '" reader="' + ConvertString(TPasProperty(item).reader) +
+          '" writer="' + ConvertString(TPasProperty(item).writer) +
+         '" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
+       '" defaultid="' + ConvertString(TPasProperty(item).defaultid) +
+       '" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
+        '" storedid="' + ConvertString(TPasProperty(item).storedid) +'"/>');
 end;
 
 procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
 begin
-  WriteDirectLine(space+'<constant name="'+item.FullDeclaration+'" />');
+  WriteDirectLine(space +
+    '<constant name="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -147,7 +159,8 @@ end;
 
 procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
 begin
-  WriteDirectLine(space+'<variable name="'+item.FullDeclaration+'" />');
+  WriteDirectLine(space +
+    '<variable name="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -155,7 +168,8 @@ end;
 
 procedure TSimpleXMLDocGenerator.writetypes(const item:TPasItem);
 begin
-  WriteDirectLine(space+'<type name="'+item.FullDeclaration+'" />');
+  WriteDirectLine(space + 
+    '<type name="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</type>');
@@ -179,7 +193,9 @@ end;
 var
   i:cardinal;
 begin
-  WriteDirectLine(space+'<structure name="'+item.name+'" type="'+writetype(item.MyType)+'">');
+  WriteDirectLine(space + 
+    '<structure name="' + ConvertString(item.name) +
+             '" type="' + ConvertString(writetype(item.MyType)) + '">');
   space:=space+'  ';
 
   if item.HasDescription then
@@ -187,7 +203,8 @@ begin
 
   if item.ancestors.count>0 then
     for i:=0 to item.ancestors.count-1 do
-      WriteDirectLine(space+'<ancestor name="'+item.ancestors[i]+'"/>');
+      WriteDirectLine(space +
+        '<ancestor name="' + ConvertString(item.ancestors[i]) + '"/>');
 
   if item.Methods.count>0 then
     for i:=0 to item.Methods.count-1 do
@@ -231,14 +248,15 @@ begin
   end;
 
   DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteDirectLine('<unit name="'+U.SourceFileName+'">');
+  WriteDirectLine('<unit name="' + ConvertString(U.SourceFileName) + '">');
   space:='  ';
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));
   //global uses
-  if u.UsesUnits.count>0 then
+  if u.UsesUnits.count > 0 then
     for i:=0 to u.UsesUnits.count-1 do
-      WriteDirectLine(space+'<uses name="'+u.UsesUnits[i]+'"/>');
+      WriteDirectLine(space + 
+        '<uses name="' + ConvertString(u.UsesUnits[i]) + '"/>');
   //global functions
   if u.FuncsProcs.count>0 then
     for i:=0 to u.FuncsProcs.count-1 do

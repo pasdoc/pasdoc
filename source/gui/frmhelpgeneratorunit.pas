@@ -95,13 +95,14 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label17: TLabel;
+    Label4: TLabel;
     LabelHeader: TLabel;
     LabelFooter: TLabel;
     LabelImplicitVisibility: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
-    Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
     Label2: TLabel;
@@ -151,6 +152,7 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
+    PanelLatexHyphenation: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
@@ -1118,6 +1120,8 @@ var
 var
   i: Integer;
   SettingsFileNamePath: string;
+  LanguageSyntax: string;
+  LanguageId: TLanguageID;
 begin
   if not SaveChanges then Exit;
 
@@ -1154,7 +1158,22 @@ begin
       CheckStoreRelativePaths.Checked :=
         Ini.ReadBool('Main', 'StoreRelativePaths', true);
 
-      comboLanguages.ItemIndex := Ini.ReadInteger('Main', 'Language', 0);
+      { Compatibility: in version < 0.11.0, we stored only the "id" (just an
+        index to LANGUAGE_ARRAY) of the language. This was very wrong, as the
+        id can change between pasdoc releases (items can get shifted and moved
+        in the LANGUAGE_ARRAY). So now we store language "syntax" code
+        (the same thing as is used for --language command-line option),
+        as this is guaranteed to stay "stable".
+        
+        To do something mildly sensible when opening pds files from older
+        versions, we set language to default (English) when language string
+        is not recognized. }
+        
+      LanguageSyntax := Ini.ReadString('Main', 'Language',
+        LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Syntax);
+      if not LanguageFromStr(LanguageSyntax, LanguageId) then
+        LanguageId := DEFAULT_LANGUAGE;
+      comboLanguages.ItemIndex := Ord(LanguageId);
       comboLanguagesChange(nil);
 
       edOutput.Directory := ExpandNotEmptyFileName(
@@ -1277,7 +1296,8 @@ begin
   try
     Ini.WriteBool('Main', 'StoreRelativePaths', CheckStoreRelativePaths.Checked);
 
-    Ini.WriteInteger('Main', 'Language', comboLanguages.ItemIndex);
+    Ini.WriteString('Main', 'Language',
+      LANGUAGE_ARRAY[TLanguageID(comboLanguages.ItemIndex)].Syntax);
     Ini.WriteString('Main', 'OutputDir', CorrectFileName(edOutput.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
@@ -1393,12 +1413,21 @@ end;
 
 procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 
-  procedure SetColorFromEnabled(Edit: TEdit);
-  { With WinAPI interface, this is useful to give user indication of 
+  { With WinAPI interface, this is useful to give user indication of
     Edit.Enabled state. Other WinAPI programs also do this.
     With other widgetsets, like GTK, this is not needed, Lazarus + GTK
     already handle such things (e.g. edit boxes have automatically
     slightly dimmed background when they are disabled). }
+  procedure SetColorFromEnabled(Edit: TFileNameEdit); overload;
+  begin
+    {$ifdef WIN32}
+    if Edit.Enabled then
+      Edit.Color := clWindow else
+      Edit.Color := clBtnFace;
+    {$endif}
+  end;
+
+  procedure SetColorFromEnabled(Edit: TEdit); overload;
   begin
     {$ifdef WIN32}
     if Edit.Enabled then

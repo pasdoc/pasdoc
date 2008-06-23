@@ -364,8 +364,8 @@ type
       
       This is a useful hint for generators: it tells them that when they
       are printing @italic(both) AbstractDescription and DetailedDescription of the item
-      in one place (e.g. TTexDocGenerator.WriteItemDetailedDescription
-      and TGenericHTMLDocGenerator.WriteItemDetailedDescription both do this)
+      in one place (e.g. TTexDocGenerator.WriteItemLongDescription
+      and TGenericHTMLDocGenerator.WriteItemLongDescription both do this)
       then they should @italic(not) put any additional space between
       AbstractDescription and DetailedDescription.
       
@@ -379,10 +379,10 @@ type
       and @--auto-abstract was on, then "First sentence." is the
       AbstractDescription, " Second sentence." is DetailedDescription,
       AbstractDescriptionWasAutomatic is true and
-      and TGenericHTMLDocGenerator.WriteItemDetailedDescription
+      and TGenericHTMLDocGenerator.WriteItemLongDescription
       can print them as "First sentence. Second sentence."
       
-      Without this property, TGenericHTMLDocGenerator.WriteItemDetailedDescription
+      Without this property, TGenericHTMLDocGenerator.WriteItemLongDescription
       would not be able to say that this abstract was deduced automatically
       and would print additional paragraph break that was not present
       in desscription, i.e. "First sentence.<p> Second sentence."
@@ -390,14 +390,10 @@ type
     property AbstractDescriptionWasAutomatic: boolean
       read FAbstractDescriptionWasAutomatic 
       write FAbstractDescriptionWasAutomatic;
-      
-    { Returns DetailedDescription if available, otherwise 
-      AbstractDescription, otherwise ''. }
-    function GetDescription: string;
-    
+          
     { Returns true if there is a DetailledDescription or AbstractDescription
-      available. In other words, it's equivalent to @code(GetDescription <> ''). }
-    function HasDescription: Boolean;  
+      available. }
+    function HasDescription: Boolean;
 
     function QualifiedName: String; override;    
 
@@ -1391,15 +1387,6 @@ begin
     if MyUnit <> nil then
       SearchUsedUnits(MyUnit.UsesUnits);
   end;    
-end;
-
-function TPasItem.GetDescription: string;
-begin
-  if DetailedDescription <> '' then begin
-    Result := DetailedDescription
-  end else begin
-    Result := AbstractDescription
-  end;
 end;
 
 procedure TPasItem.StoreAbstractTag(

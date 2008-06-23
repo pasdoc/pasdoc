@@ -177,6 +177,12 @@ function IsPathAbsoluteOnDrive(const Path: string): boolean;
   with BasePath. }
 function CombinePaths(BasePath, RelPath: string): string;
 
+{ Remove from the FileName the last extension (including the dot).
+  Note that if the FileName had a couple of extensions (e.g. @code(blah.x3d.gz))
+  this will remove only the last one.
+  Will remove nothing if filename has no extension. }
+function DeleteFileExt(const FileName: string): string;
+
 type
   { Raise this when some impossible situation (indicating bug in 
     pasdoc) occurs. }
@@ -441,6 +447,24 @@ begin
 
     result := IncludeTrailingPathDelimiter(BasePath) + RelPath;
   end;
+end;
+
+function DeleteFileExt(const FileName: string): string;
+var
+  I: Integer;
+begin
+  for I := Length(FileName) downto 1 do
+  begin
+    if FileName[I] = '.' then
+    begin
+      Result := Copy(FileName, 1, I - 1);
+      Exit;
+    end else
+    if FileName[I] = PathDelim then
+      Break;
+  end;
+
+  Result := FileName;
 end;
 
 { EInternalError ------------------------------------------------------------- }
