@@ -80,6 +80,7 @@ FPC_DEFAULT := fpc
 FPC_WIN32 := $(FPC_DEFAULT)
 FPC_GO32 := $(FPC_DEFAULT)
 FPC_LINUX_X86 := $(FPC_DEFAULT)
+FPC_LINUX_X86_64 := $(FPC_DEFAULT)
 FPC_LINUX_M68K := $(FPC_DEFAULT)
 FPC_LINUX_PPC := $(FPC_DEFAULT)
 FPC_AMIGA := $(FPC_DEFAULT)
@@ -146,7 +147,8 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
 
 .PHONY: default clean build-fpc-default-debug build-fpc-default \
   build-fpc-win32 build-fpc-go32 \
-  build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-amiga build-fpc-beos \
+  build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-linux-x86_64 \
+  build-fpc-amiga build-fpc-beos \
   build-fpc-os2 build-fpc-linux-ppc build-fpc-freebsd-x86 \
   build-fpc-darwin-x86 \
   build-delphi-win32 build-delphi-linux-x86 \
@@ -201,6 +203,9 @@ build-fpc-go32: make-dirs
 
 build-fpc-linux-x86: make-dirs
 	$(FPC_LINUX_X86) $(FPC_RELEASE_FLAGS) $(FILE)
+
+build-fpc-linux-x86_64: make-dirs
+	$(FPC_LINUX_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
 
 build-fpc-linux-m68k: make-dirs
 	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
@@ -275,6 +280,7 @@ help:
 	@echo "      win32"
 	@echo "      go32"
 	@echo "      linux-x86"
+	@echo "      linux-x86_64"
 	@echo "      linux-m68k"
 	@echo "      amiga"
 	@echo "      beos"
@@ -326,7 +332,8 @@ help:
 ############################################################################
 
 .PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
-  dist-beos dist-linux-m68k dist-linux-x86 dist-amiga dist-freebsd-x86 \
+  dist-beos dist-linux-m68k dist-linux-x86 dist-linux-x86_64 \
+  dist-amiga dist-freebsd-x86 \
   dist-darwin-x86 \
   dist-src dist-all
 
@@ -390,6 +397,10 @@ dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 ADD_PASDOC_GUI=t
 
+dist-linux-x86_64: clean build-fpc-linux-x86_64
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64
+
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
 	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k
@@ -416,4 +427,5 @@ dist-src:
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
+  dist-linux-x86_64 \
   dist-amiga dist-linux-ppc dist-freebsd-x86 dist-darwin-x86 dist-src

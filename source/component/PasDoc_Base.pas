@@ -204,7 +204,7 @@ type
 function COMPILER_NAME: string;
 
 const
-  COMPILER_BITS = '32';
+  COMPILER_BITS =  {$ifdef CPU64} '64' {$else} '32' {$endif};
 
 {$IFDEF LINUX}
   COMPILER_OS = 'Linux';
