@@ -1,0 +1,1 @@
+Pasdoc generates documentation for Pascal units. It takes descriptions from comments within the source code. Documentation output formats include HTML and LaTeX. Object Pascal, FreePascal and Delphi (up to Delphi 2006) specific features are supported.
