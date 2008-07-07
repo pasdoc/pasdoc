@@ -249,6 +249,12 @@ function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
 
 implementation
 
+{$IFDEF fpc}
+{$ELSE}
+//Delphi
+uses
+  SysUtils;
+{$ENDIF}
 { Notes for editors of SetLanguageXxx methods, to keep their look consistent:
 
   - Don't put any additional newlines between two

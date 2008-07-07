@@ -1504,8 +1504,9 @@ end;
 function TPasItem.BasePath: string;
 begin
   if MyUnit <> nil then
-    Result := MyUnit.BasePath else
-    Result := inherited;
+    Result := MyUnit.BasePath
+  else
+    Result := inherited BasePath; //required by D7
 end;
 
 { TPasEnum ------------------------------------------------------------------- }
