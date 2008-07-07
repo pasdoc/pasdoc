@@ -95,7 +95,7 @@ UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=..\component;..\component\tipue;..\component\images
-Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;dclOffice2k;DJcl;JVCL200_R70;qrpt
+Packages=vcl;rtl;vclx;DJcl;JVCL200_R70;qrpt
 Conditionals=
 DebugSourceDirs=..\component;..\Console;..\component\tipue
 UsePackages=0
@@ -105,10 +105,6 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -134,27 +130,52 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-[HistoryLists\hlDebugSourcePath]
-Count=2
-Item0=..\component;..\OptionParser;..\Console;..\component\tipue
-Item1=..\component;..\OptionParser;..\Console
+[Excluded Packages]
+c:\program files\borland\delphi7\Bin\dclsmpedit70.bpl=Borland Editor Script Enhancements
+c:\program files\borland\delphi7\Bin\dclemacsedit70.bpl=Borland Editor Emacs Enhancements
+c:\program files\borland\delphi7\Bin\dclmlwiz70.bpl=Borland Markup Language Wizards
+c:\program files\borland\delphi7\Bin\dclie70.bpl=Internet Explorer Components
+c:\program files\borland\delphi7\Bin\dclshlctrls70.bpl=Shell Control Property and Component Editors
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclBaseExpert70.bpl=JCL Package containing common units for JCL Experts
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclDebugExpert70.bpl=JCL Debug IDE extension
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclProjectAnalysisExpert70.bpl=JCL Project Analyzer
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclFavoriteFoldersExpert70.bpl=JCL Open and Save IDE dialogs with favorite folders
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclRepositoryExpert70.bpl=JCL Package containing repository wizards
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclUsesExpert70.bpl=JCL Uses Wizard
+C:\Program Files\Borland\Delphi7\Projects\Bpl\JclSIMDViewExpert70.bpl=JCL Debug Window of XMM registers
+c:\program files\borland\delphi7\Bin\dclact70.bpl=Borland ActionBar Components
+c:\program files\borland\delphi7\Bin\dclocx70.bpl=Borland Sample Imported ActiveX Controls
+c:\program files\borland\delphi7\Projects\Bpl\pasdoc11_D7.bpl=PasDoc components
+c:\program files\borland\delphi7\Bin\applet70.bpl=Borland Control Panel Applet Package
+c:\program files\borland\delphi7\Bin\dclIntraweb_50_70.bpl=Intraweb 5.0 Design Package for Delphi 7
+c:\program files\borland\delphi7\Bin\dcl31w70.bpl=Delphi 1.0 Compatibility Components
+C:\Program Files\Borland\Delphi7\Bin\dclclxstd70.bpl=Borland CLX Standard Components
+c:\program files\borland\delphi7\Bin\dclsmp70.bpl=Borland Sample Components
+c:\program files\borland\delphi7\Bin\dclnet70.bpl=Borland Internet Components
+c:\program files\borland\delphi7\Bin\dclite70.bpl=Borland Integrated Translation Environment
+c:\program files\borland\delphi7\Bin\dclindy70.bpl=Internet Direct (Indy) for D7 Property and Component Editors
+c:\program files\borland\delphi7\Bin\dclmcn70.bpl=Borland DataSnap Connection Components
+C:\Program Files\Borland\Delphi7\Bin\dclmid70.bpl=Borland MyBase DataAccess Components
+C:\Program Files\Borland\Delphi7\Bin\dcldb70.bpl=Borland Database Components
+c:\program files\borland\delphi7\Bin\dclsoap70.bpl=Borland SOAP Components
+c:\program files\borland\delphi7\Bin\dcldbx70.bpl=Borland dbExpress Components
+c:\program files\borland\delphi7\Bin\dcldbxcds70.bpl=Borland SimpleDataset Component (DBX)
+c:\program files\borland\delphi7\Bin\DBWEBXPRT.BPL=Borland Web Wizard Package
+C:\Program Files\Borland\Delphi7\Bin\dclbde70.bpl=Borland BDE DB Components
+C:\Program Files\Borland\Delphi7\Bin\dbx70.bpl=Borland SQL Explorer UI Package
+c:\program files\borland\delphi7\Bin\dclwbm70.bpl=Borland InternetExpress Components
+c:\program files\borland\delphi7\Bin\dclwebsnap70.bpl=Borland WebSnap Components
+c:\program files\borland\delphi7\Bin\dclado70.bpl=Borland ADO DB Components
+c:\program files\borland\delphi7\Bin\DCLIB70.bpl=InterBase Data Access Components
+c:\program files\borland\delphi7\Bin\dcltee70.bpl=TeeChart Components
+c:\program files\borland\delphi7\Bin\dcldss70.bpl=Borland Decision Cube Components
+c:\program files\borland\delphi7\Bin\dclclxdb70.bpl=Borland CLX Database Components
+C:\WINNT\system32\ibevnt70.bpl=Borland Interbase Event Alerter Component
+c:\program files\borland\delphi7\Bin\dcloffice2k70.bpl=Microsoft Office 2000 Sample Automation Server Wrapper Components
+c:\program files\borland\delphi7\Projects\Bpl\pasdocD7.bpl=PasDoc components
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
-Item0=..\component;..\OptionParser;..\component\tipue;..\component\images
-Item1=..\component;..\OptionParser;..\component\tipue
-Item2=..\component;..\OptionParser;Z:\
-[HistoryLists\hlUnitOutputDirectory]
 Count=1
-Item0=Z:\
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=Z:\
-[HistoryLists\hlBPLOutput]
-Count=1
-Item0=Z:\
-[HistoryLists\hlDCPOutput]
-Count=1
-Item0=Z:\
+Item0=D:\SourceForge\PasDoc2\source\component;D:\SourceForge\PasDoc2\source\component\images

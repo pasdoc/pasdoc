@@ -613,9 +613,8 @@ var
   BeginPosition: integer;
 begin
   Result := nil;
+  BeginPosition := StreamPosition; //used in finally
   try
-    BeginPosition := StreamPosition;
-
     if not GetChar(c) then
       DoError('Tokenizer: could not read character', [], 0);
     

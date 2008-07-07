@@ -487,6 +487,7 @@ begin
   DoMessage(1, mtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
+  InputStream := nil;
   Count := 0;
   for i := 0 to FSourceFileNames.Count - 1 do
   begin
@@ -595,7 +596,7 @@ begin
   end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
-  FIncludeDirectories.Iterate(@IncludeTrailingPathDelimiter);
+  FIncludeDirectories.Iterate( {$IFDEF FPC}@{$ENDIF} IncludeTrailingPathDelimiter);
 
   t1 := Now;
   ParseFiles;

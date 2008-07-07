@@ -1723,7 +1723,7 @@ end;
 
 procedure TPasItems.SortShallow;
 begin
-  Sort(@ComparePasItemsByName);
+  Sort( {$IFDEF FPC}@{$ENDIF} ComparePasItemsByName);
 end;
 
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -1869,7 +1869,7 @@ begin
   end;
 
   if (Methods <> nil) and (ssMethods in SortSettings) then
-    Methods.Sort(@ComparePasMethods);
+    Methods.Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
   
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
@@ -2250,7 +2250,7 @@ end;
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'raises', 
+  TTopLevelTag.Create(TagManager, 'raises',
     nil, {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside, toFirstWordVerbatim]);

@@ -302,7 +302,7 @@ procedure TPasItemNode.Sort;
 var
   i: Integer;
 begin
-  FChildren.Sort(@SortProc);
+  FChildren.Sort( {$IFDEF FPC}@{$ENDIF} SortProc);
   for i := FChildren.Count-1 downto 0 do begin
     TPasItemNode(FChildren[i]).Sort;
   end;
