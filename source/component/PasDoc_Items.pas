@@ -2392,16 +2392,18 @@ const
   { Maps @link(TMethodType) value to @link(TKeyWord) value.
     When given TMethodType value doesn't correspond to any keyword,
     it maps it to KEY_INVALIDKEYWORD. }
-  MethodTypeToKeyWord: array[TMethodType] of TKeyWord =
-  ( KEY_CONSTRUCTOR, 
+  MethodTypeToKeyWord: array[TMethodType] of TTokenType =
+  ( KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
-    KEY_FUNCTION, 
-    KEY_PROCEDURE, 
-    KEY_INVALIDKEYWORD );
+    KEY_FUNCTION,
+    KEY_PROCEDURE,
+    KEY_INVALIDKEYWORD
+  );
 begin
   if MethodType = METHOD_OPERATOR then
-    Result := StandardDirectiveArray[SD_OPERATOR] else
-    Result := KeyWordArray[MethodTypeToKeyWord[MethodType]];
+    Result := StandardDirectiveArray[SD_OPERATOR]
+  else
+    Result := TokenNames[MethodTypeToKeyWord[MethodType]];
   Result := LowerCase(Result);
 end;
 

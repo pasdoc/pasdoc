@@ -24,181 +24,11 @@ uses
   Classes;
 
 type
-  { enumeration type that provides all types of tokens; each token's name
-    starts with TOK_.
-    
-    TOK_DIRECTIVE is a compiler directive (like $ifdef, $define). 
-    
-    Note that tokenizer is not able to tell whether you used
-    standard directive (e.g. 'Register') as an identifier
-    (e.g. you're declaring procedure named 'Register')
-    or as a real standard directive (e.g. a calling specifier 'register').
-    So there is @italic(no) value like TOK_STANDARD_DIRECTIVE here,
-    standard directives are always reported as TOK_IDENTIFIER.
-    You can check TToken.Info.StandardDirective to know whether
-    this identifier is @italic(maybe) used as real standard directive. }
-  TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
-                TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
-                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD,
-                TOK_ATT_ASSEMBLER_REGISTER);
-
-type
-  TKeyword = (
-    KEY_INVALIDKEYWORD,
-    KEY_AND,
-    KEY_ARRAY,
-    KEY_AS,
-    KEY_ASM,
-    KEY_BEGIN,
-    KEY_CASE,
-    KEY_CLASS,
-    KEY_CONST,
-    KEY_CONSTRUCTOR,
-    KEY_DESTRUCTOR,
-    KEY_DISPINTERFACE,
-    KEY_DIV,
-    KEY_DO,
-    KEY_DOWNTO,
-    KEY_ELSE,
-    KEY_END,
-    KEY_EXCEPT,
-    KEY_EXPORTS,
-    KEY_FILE,
-    KEY_FINALIZATION,
-    KEY_FINALLY,
-    KEY_FOR,
-    KEY_FUNCTION,
-    KEY_GOTO,
-    KEY_IF,
-    KEY_IMPLEMENTATION,
-    KEY_IN,
-    KEY_INHERITED,
-    KEY_INITIALIZATION,
-    KEY_INLINE,
-    KEY_INTERFACE,
-    KEY_IS,
-    KEY_LABEL,
-    KEY_LIBRARY,
-    KEY_MOD,
-    KEY_NIL,
-    KEY_NOT,
-    KEY_OBJECT,
-    KEY_OF,
-    KEY_ON,
-    KEY_OR,
-    KEY_PACKED,
-    KEY_PROCEDURE,
-    KEY_PROGRAM,
-    KEY_PROPERTY,
-    KEY_RAISE,
-    KEY_RECORD,
-    KEY_REPEAT,
-    KEY_RESOURCESTRING,
-    KEY_SET,
-    KEY_SHL,
-    KEY_SHR,
-    KEY_STRING,
-    KEY_THEN,
-    KEY_THREADVAR,
-    KEY_TO,
-    KEY_TRY,
-    KEY_TYPE,
-    KEY_UNIT,
-    KEY_UNTIL,
-    KEY_USES,
-    KEY_VAR,
-    KEY_WHILE,
-    KEY_WITH,
-    KEY_XOR);
-
-  TStandardDirective = (
-    SD_INVALIDSTANDARDDIRECTIVE,
-    SD_ABSOLUTE,
-    SD_ABSTRACT,
-    SD_APIENTRY,
-    SD_ASSEMBLER,
-    SD_AUTOMATED,
-    SD_CDECL,
-    SD_CVAR,
-    SD_DEFAULT,
-    SD_DISPID,
-    SD_DYNAMIC,
-    SD_EXPORT,
-    SD_EXTERNAL,
-    SD_FAR,
-    SD_FORWARD,
-    SD_INDEX,
-    SD_INLINE,
-    SD_MESSAGE,
-    SD_NAME,
-    SD_NEAR,
-    SD_NODEFAULT,
-    SD_OPERATOR,
-    SD_OUT,
-    SD_OVERLOAD,
-    SD_OVERRIDE,
-    SD_PASCAL,
-    SD_PRIVATE,
-    SD_PROTECTED,
-    SD_PUBLIC,
-    SD_PUBLISHED,
-    SD_READ,
-    SD_REGISTER,
-    SD_REINTRODUCE,
-    SD_RESIDENT,
-    SD_SEALED,
-    SD_STATIC,
-    SD_STDCALL,
-    SD_STORED,
-    SD_STRICT,
-    SD_VIRTUAL,
-    SD_WRITE,
-    SD_DEPRECATED,
-    SD_SAFECALL,
-    SD_PLATFORM,
-    SD_VARARGS);
-
-const
-  { Names of the token types. All start with lower letter.
-    They should somehow describe (in a few short words) given 
-    TTokenType. }
-  TOKEN_TYPE_NAMES: array[TTokenType] of string =
-  ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)', 
-    'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
-    'directive', 'reserved word', 'AT&T assembler register name');
-
-  TokenCommentTypes: set of TTokenType = 
-  [ TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE ];
-
-type
-  { enumeration type that provides all types of symbols; each
-    symbol's name starts with SYM_ }
-  TSymbolType = (SYM_PLUS, SYM_MINUS, SYM_ASTERISK, SYM_SLASH, SYM_EQUAL,
-    SYM_LESS_THAN, SYM_LESS_THAN_EQUAL, SYM_GREATER_THAN,
-    SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
-    SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
-    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, 
-    SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER,
-    { SYM_BACKSLASH may occur when writing char constant "^\",
-      see ../../tests/ok_caret_character.pas }
-    SYM_BACKSLASH);
-
-const
-  { Symbols as strings. They can be useful to have some mapping
-    TSymbolType -> string, but remember that actually some symbols
-    in tokenizer have multiple possible representations,
-    e.g. "right bracket" is usually given as "]" but can also 
-    be written as ".)". }
-  SymbolNames: array[TSymbolType] of string = 
-  ( '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
-    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\' );
-
-type
   { Stores the exact type and additional information on one token. }
   TToken = class(TObject)
   private
-    FEndPosition: Int64;
-    FBeginPosition: Int64;
+    FEndPosition,
+    FBeginPosition: TTextStreamPos;
     FStreamName: string;
   public
     { the exact character representation of this token as it was found in the
@@ -208,17 +38,8 @@ type
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
     
-    { additional information on this token as a variant record depending 
-      on the token's MyType }
-    Info: record
-      case TTokenType of
-        TOK_SYMBOL: 
-          (SymbolType: TSymbolType);
-        TOK_KEYWORD: 
-          (KeyWord: TKeyWord);
-        TOK_IDENTIFIER: 
-          (StandardDirective: TStandardDirective);
-    end;
+    { standard directive, or TOK_SYMBOL if none }
+    Directive: TStandardDirective;
 
     { Contents of a comment token.
       This is defined only when MyType is in TokenCommentTypes
@@ -230,41 +51,44 @@ type
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
-    
+
+  {$IFnDEF old}
     { Does @link(MyType) is TOK_SYMBOL and Info.SymbolType is ASymbolType ? }
-    function IsSymbol(const ASymbolType: TSymbolType): Boolean;
-    
+    function IsSymbol(const ASymbolType: eSymbolType): Boolean;
+
     { Does @link(MyType) is TOK_KEYWORD and Info.KeyWord is AKeyWord ? }
-    function IsKeyWord(const AKeyWord: TKeyWord): Boolean;
-    
+    function IsKeyWord(const AKeyWord: eKeyWord): Boolean;
+  {$ELSE}
+  {$ENDIF}
+
     { Does @link(MyType) is TOK_IDENTIFIER and Info.StandardDirective is
       AStandardDirective ? }
     function IsStandardDirective(
       const AStandardDirective: TStandardDirective): Boolean;
-      
+
     { Few words long description of this token.
       Describes MyType and Data (for those tokens that tend to have short Data).
       Starts with lower letter. }
     function Description: string;
-    
+
     // @name is the name of the TStream from which this @classname was read.
     // It is currently used to set @link(TRawDescriptionInfo.StreamName).
     property StreamName: string read FStreamName;
     
     // @name is the position in the stream of the start of the token.
     // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
-    property BeginPosition: Int64 read FBeginPosition;
-    
+    property BeginPosition: TTextStreamPos read FBeginPosition;
+
     // @name is the position in the stream of the character immediately
     // after the end of the token.
     // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
-    property EndPosition: Int64 read FEndPosition;
+    property EndPosition: TTextStreamPos read FEndPosition;
   end;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
   private
-    function StreamPosition: Int64;
+    function StreamPosition: TTextStreamPos;
   protected
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
@@ -291,13 +115,10 @@ type
 
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
-    
-    function CreateSymbolToken(const st: TSymbolType; const s: string): 
-      TToken; overload;
-      
+
     { Uses default symbol representation, from SymbolNames[st] }
-    function CreateSymbolToken(const st: TSymbolType): TToken; overload;
-    
+    function CreateSymbolToken(st: TTokenType; const s: string = ''): TToken;
+
     function GetChar(out c: Char): Boolean;
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
@@ -343,56 +164,29 @@ type
     property StreamPath: string read FStreamPath;
   end;
 
-const
-  { all Object Pascal keywords }
-  KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
-  ('x', // lowercase never matches
-    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
-    'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
-    'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
-    'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
-    'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
-    'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
-    'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
-    'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
-    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
-
-  { Object Pascal directives }
-  StandardDirectiveArray:
-    array[Low(TStandardDirective)..High(TStandardDirective)] of PChar =
-  ('x', // lowercase letters never match
-    'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
-    'CDECL', 'CVAR', 'DEFAULT', 'DISPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
-    'FAR', 'FORWARD', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
-    'NODEFAULT', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
-    'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',
-    'REINTRODUCE', 'RESIDENT', 'SEALED', 'STATIC',
-    'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS');
-
 { Checks is Name (case ignored) some Pascal keyword.
   Returns SD_INVALIDSTANDARDDIRECTIVE if not. }
 function StandardDirectiveByName(const Name: string): TStandardDirective;
 
 { Checks is Name (case ignored) some Pascal standard directive.
   Returns KEY_INVALIDKEYWORD if not. }
-function KeyWordByName(const Name: string): TKeyword;
+function KeyWordByName(const Name: string): TTokenType;
 
 implementation
 
 uses
   SysUtils;
 
-function KeyWordByName(const Name: string): TKeyword;
+function KeyWordByName(const Name: string): TTokenType;
 var
   LName: string;
-  i: TKeyword;
+  i: TTokenType;
 begin
   LName := UpperCase(Name);
   Result := KEY_INVALIDKEYWORD;
-  for i := Low(TKeyword) to High(TKeyword) do begin
-    if LName = KeyWordArray[i] then begin
+  for i := Low(eKeyword) to High(eKeyword) do begin
+    //if LName = KeyWordArray[i] then begin
+    if LName = TokenNames[i] then begin
       Result := i;
       break;
     end;
@@ -405,13 +199,13 @@ var
   i: TStandardDirective;
 begin
   LName := UpperCase(Name);
-  Result := SD_INVALIDSTANDARDDIRECTIVE;
   for i := Low(TStandardDirective) to High(TStandardDirective) do begin
     if LName = StandardDirectiveArray[i] then begin
       Result := i;
-      break;
+      exit;
     end;
   end;
+  Result := SD_INVALIDSTANDARDDIRECTIVE;
 end;
 
 const
@@ -429,7 +223,7 @@ const
   SingleCharSymbols: array[0..NUM_SINGLE_CHAR_SYMBOLS - 1] of
   record
     c: Char;
-    s: TSymbolType;
+    s: TTokenType;
   end =
   ((c: ';'; s: SYM_SEMICOLON),
     (c: ','; s: SYM_COMMA),
@@ -456,32 +250,36 @@ end;
 
 function TToken.GetTypeName: string;
 begin
-  GetTypeName := TOKEN_TYPE_NAMES[MyType];
+  GetTypeName := TOKENNAMES[MyType];
 end;
 
 { ---------------------------------------------------------------------------- }
 
-function TToken.IsSymbol(const ASymbolType: TSymbolType): Boolean;
+{$IFnDEF old}
+function TToken.IsSymbol(const ASymbolType: eSymbolType): Boolean;
 begin
-  Result := (MyType = TOK_SYMBOL) and (Info.SymbolType = ASymbolType);
+  Result := MyType = ASymbolType;
 end;
 
-function TToken.IsKeyWord(const AKeyWord: TKeyWord): Boolean;
+function TToken.IsKeyWord(const AKeyWord: eKeyword): Boolean;
 begin
-  Result := (MyType = TOK_KEYWORD) and (Info.KeyWord = AKeyWord);
+  Result := MyType = AKeyWord;
 end;
+{$ELSE}
+  //use shared TTokenType
+{$ENDIF}
 
 function TToken.IsStandardDirective(
   const AStandardDirective: TStandardDirective): Boolean;
 begin
-  Result := (MyType = TOK_IDENTIFIER) and 
-    (Info.StandardDirective = AStandardDirective);
+  Result := Directive = AStandardDirective;
 end;
 
 function TToken.Description: string;
 begin
-  Result := TOKEN_TYPE_NAMES[MyType];
-  if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
+  Result := TOKENNAMES[MyType];
+  //if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
+  if MyType in sSymbolType + sKeyword + [TOK_IDENTIFIER] then
     Result := Result + ' "' + Data + '"';
 end;
 
@@ -529,19 +327,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.CreateSymbolToken(const st: TSymbolType; 
-  const s: string): TToken;
+function TTokenizer.CreateSymbolToken(st: TTokenType; const s: string = ''): TToken;
 begin
-  Result := TToken.Create(TOK_SYMBOL);
+  Result := TToken.Create(st);
   with Result do begin
-    Info.SymbolType := st;
-    Data := s;
+    Data := TokenNames[st];
   end;
-end;
-
-function TTokenizer.CreateSymbolToken(const st: TSymbolType): TToken;
-begin
-  Result := CreateSymbolToken(st, SymbolNames[st]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -595,7 +386,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.StreamPosition: Int64;
+function TTokenizer.StreamPosition: TTextStreamPos;
 begin
   if IsCharBuffered then
     Result := Stream.Position - 1 else
@@ -607,7 +398,7 @@ end;
 function TTokenizer.GetToken: TToken;
 var
   c: Char;
-  MaybeKeyword: TKeyword;
+  MaybeKeyword: eKeyword;
   s: string;
   J: Integer;
   BeginPosition: integer;
@@ -617,7 +408,7 @@ begin
   try
     if not GetChar(c) then
       DoError('Tokenizer: could not read character', [], 0);
-    
+
     if c in Whitespace then
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
@@ -628,22 +419,17 @@ begin
       else
         DoError('Tokenizer: could not read character', [], 0);
     end else
-    if c in IdentifierStart then 
+    if c in IdentifierStart then
     begin
-      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
+      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
       begin
         s := Result.Data;
         { check if identifier is a keyword }
-        MaybeKeyword := KeyWordByName(s);
-        if (MaybeKeyword <> KEY_INVALIDKEYWORD) then
-        begin
-          Result.MyType := TOK_KEYWORD;
-          Result.Info.KeyWord := MaybeKeyword;
-        end else
-        begin
-          { calculate Result.Info.StandardDirective }
-          Result.Info.StandardDirective := StandardDirectiveByName(s);
-        end;
+        Result.MyType := KeyWordByName(s);
+        if (Result.MyType = KEY_INVALIDKEYWORD) then
+          Result.Directive := StandardDirectiveByName(s)
+        else
+          Result.Directive := SD_INVALIDSTANDARDDIRECTIVE;
       end;
     end else
     if c in NumberStart then

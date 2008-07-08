@@ -136,7 +136,7 @@ type
     { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
       If given KeyWord has no corresponding @link(TMethodType) value,
       raises @link(EInternalError). }
-    function KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
+    function KeyWordToMethodType(KeyWord: eKeyWord): TMethodType;
 
     procedure DoError(const AMessage: string; 
       const AArguments: array of const);
@@ -145,15 +145,18 @@ type
 
     { Checks if T.MyType is ATokenType, if not calls DoError
       with appropriate error mesg. }
-    procedure CheckToken(T: TToken; ATokenType: TTokenType); overload;
-    
+    procedure CheckToken(T: TToken; ATokenType: TTokenType); //overload;
+
+  {$IFDEF old}
     { Checks if T.IsSymbol(ASymbolType), if not calls DoError
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; ASymbolType: TSymbolType); overload;
-    
+
     { Checks if T.IsKeyWord(AKeyWord), if not calls DoError
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
+  {$ELSE}
+  {$ENDIF}
 
     { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
       otherwise returns LastCommentInfo and sets IsLastComment to false. }
@@ -207,18 +210,21 @@ type
       @param AIsUnitName is a dummy parameter to allow overloading that is assumed to be true }
     function GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string; overload;
 
-    { This does @link(GetNextToken), then checks is it a symbol with 
-      ASymbolType (using @link(CheckToken)), then frees the token. 
+  {$IFDEF old}
+    { This does @link(GetNextToken), then checks is it a symbol with
+      ASymbolType (using @link(CheckToken)), then frees the token.
       Returns token Data.
       Just a comfortable routine. }
-    function GetAndCheckNextToken(ASymbolType: TSymbolType): string; overload;
-    
-    { This does @link(GetNextToken), then checks is it a keyword with 
-      AKeyWord (using @link(CheckToken)), then frees the token. 
+    function GetAndCheckNextToken(ASymbolType: eSymbolType): string; overload;
+
+    { This does @link(GetNextToken), then checks is it a keyword with
+      AKeyWord (using @link(CheckToken)), then frees the token.
       Returns token Data.
       Just a comfortable routine. }
     function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
-    
+  {$ELSE}
+  {$ENDIF}
+
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
       Resulting @link(TPasMethod) item will be returned in M.
@@ -283,7 +289,7 @@ type
       described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
-      FinalSymbol: TSymbolType; 
+      FinalSymbol: eSymbolType; 
       RawDescriptions: TRawDescriptionInfoList);
     
     procedure ParseVariables(const U: TPasUnit);
@@ -409,7 +415,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
+function TParser.KeyWordToMethodType(KeyWord: eKeyWord): TMethodType;
 begin
   case KeyWord of
     KEY_CONSTRUCTOR: Result := METHOD_CONSTRUCTOR;
@@ -447,23 +453,26 @@ procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
   if T.MyType <> ATokenType then
     DoError(SExpectedButFound, 
-      [TOKEN_TYPE_NAMES[ATokenType], T.Description]);
+      [TokenNames[ATokenType], T.Description]);
 end;
 
+{$IFDEF old}
 procedure TParser.CheckToken(T: TToken; ASymbolType: TSymbolType);
 begin
   if not T.IsSymbol(ASymbolType) then
-    DoError(SExpectedButFound, 
+    DoError(SExpectedButFound,
       [Format('symbol "%s"', [SymbolNames[ASymbolType]]), T.Description]);
 end;
 
 procedure TParser.CheckToken(T: TToken; AKeyWord: TKeyWord);
 begin
   if not T.IsKeyWord(AKeyWord) then
-    DoError(SExpectedButFound, 
-      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]), 
+    DoError(SExpectedButFound,
+      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]),
       T.Description]);
 end;
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -521,6 +530,7 @@ var
   T: TToken;
   s: string;
 begin
+//assumed: <ident> { "." <ident> }
   // note: the Value of AIsUnitName is ignored, assume it is true
   Result := '';
   while true do begin
@@ -541,6 +551,7 @@ begin
   end;
 end;
 
+{$IFDEF old}
 function TParser.GetAndCheckNextToken(ASymbolType: TSymbolType): string;
 var
   T: TToken;
@@ -549,7 +560,7 @@ begin
   try
     CheckToken(T, ASymbolType);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
@@ -562,10 +573,12 @@ begin
   try
     CheckToken(T, AKeyWord);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -634,14 +647,12 @@ begin
       M.Free;
       raise;
     end;
-    if (MethodType = METHOD_OPERATOR) then
-    begin
+    if (MethodType = METHOD_OPERATOR) then begin
       { Operators "or", "and", "xor" (expressed as keywords) can be overloaded,
         also symbolic operators like "+", "*" etc. }
-      InvalidType := (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
-    end
-    else
-    begin
+      //InvalidType := (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
+      InvalidType := t.MyType < low(eSymbolType);
+    end else begin
       InvalidType := (t.MyType <> TOK_IDENTIFIER);
     end;
 
@@ -659,7 +670,7 @@ begin
     M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
     FreeAndNil(t);
   end;
-  
+
   ReadTokensUntilSemicolon;
 
   { first get non-WC token - if it is not an identifier in SD_SET put it back
@@ -672,117 +683,105 @@ begin
       M.Free;
       raise;
     end;
-    
-    if t.MyType = TOK_IDENTIFIER then
-    begin
-      case t.Info.StandardDirective of
-        SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-        SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
-        SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
-        SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-        SD_VARARGS:
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            FreeAndNil(t);
 
+    case t.MyType of
+    KEY_INLINE:
+      begin
+        M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end;
+    KEY_LIBRARY:
+      begin
+        M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+        M.IsLibrarySpecific := True;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end;
+    TOK_IDENTIFIER:
+      case t.Directive of
+      SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+      SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
+      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+      SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+      SD_VARARGS:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          FreeAndNil(t);
+
+          try
+            t := GetNextToken;
+          except
+            M.Free;
+            raise
+          end;
+        end;
+
+      { * External declarations might be followed by a string constant.
+        * Messages are followed by an integer constant between 1 and 49151 which
+          specifies the message ID. }
+      SD_EXTERNAL, SD_MESSAGE, SD_NAME:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          FreeAndNil(t);
+
+          // Keep on reading up to the next semicolon or declaration
+          repeat
             try
               t := GetNextToken;
             except
               M.Free;
-              raise
+              raise;
             end;
-          end;
 
-        { * External declarations might be followed by a string constant.
-          * Messages are followed by an integer constant between 1 and 49151 which
-            specifies the message ID. }
-        SD_EXTERNAL, SD_MESSAGE, SD_NAME:
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            FreeAndNil(t);
-
-            // Keep on reading up to the next semicolon or declaration
-            repeat
-              try
-                t := GetNextToken;
-              except
-                M.Free;
-                raise;
-              end;
-
-              if t.IsSymbol(SYM_SEMICOLON) then begin
-                Break
-              end else begin
-                if t.MyType = TOK_IDENTIFIER then 
-                  case t.Info.StandardDirective of
-                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
-                      SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
-                      SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
-                      begin
-                        // FScanner.UnGetToken(t);
-                        Break;
-                      end;
+            if t.IsSymbol(SYM_SEMICOLON) then begin
+              Break
+            end else begin
+              if t.MyType = TOK_IDENTIFIER then
+                case t.Directive of
+                SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
+                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+                SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                  begin
+                    // FScanner.UnGetToken(t);
+                    Break;
                   end;
+                end;
 
-                M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-                FreeAndNil(t);
-              end;
-            until False;
-          end;
-        SD_DEPRECATED: 
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            M.IsDeprecated := True;
-            FreeAndNil(t);
-            t := GetNextToken;
-          end;
-        SD_PLATFORM: 
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            M.IsPlatformSpecific := True;
-            FreeAndNil(t);
-            t := GetNextToken;
-          end;
-        SD_DISPID: 
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            FreeAndNil(T);
-            
-            ReadTokensUntilSemicolon;
-            
-            t := GetNextToken;
-          end;
-      else
+              M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+              FreeAndNil(t);
+            end;
+          until False;
+        end;
+      SD_DEPRECATED:
         begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          M.IsDeprecated := True;
+          FreeAndNil(t);
+          t := GetNextToken;
+        end;
+      SD_PLATFORM:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          M.IsPlatformSpecific := True;
+          FreeAndNil(t);
+          t := GetNextToken;
+        end;
+      SD_DISPID:
+        begin
+          M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+          FreeAndNil(T);
+
+          ReadTokensUntilSemicolon;
+
+          t := GetNextToken;
+        end;
+      else  //case directive
           Scanner.UnGetToken(t);
           Break;
-        end;
-      end; // case
-    end else
-    if t.MyType = TOK_KEYWORD then 
-    begin
-      case t.Info.KeyWord of 
-        KEY_INLINE: begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            FreeAndNil(t);
-            t := GetNextToken;
-          end;
-        KEY_LIBRARY:
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            M.IsLibrarySpecific := True;
-            FreeAndNil(t);
-            t := GetNextToken;
-          end;
-        else 
-          begin
-            Scanner.UnGetToken(t);
-            Break;        
-          end;
       end;
-    end else
-    begin
+    else //case type
       Scanner.UnGetToken(t);
       Break;
     end;
@@ -864,15 +863,11 @@ begin
       i.MyType := CIOType;
 
       if (CIOType = CIO_CLASS) and (t.MyType = TOK_IDENTIFIER) and
-        (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
+        (t.Directive in [SD_ABSTRACT, SD_SEALED]) then
       begin
-        if t.Info.StandardDirective = SD_ABSTRACT then
-        begin
-          i.ClassDirective := CT_ABSTRACT;
-        end
-        else
-        begin
-          i.ClassDirective := CT_SEALED;
+        case t.Directive of
+        SD_ABSTRACT:  i.ClassDirective := CT_ABSTRACT;
+        else          i.ClassDirective := CT_SEALED;
         end;
         FreeAndNil(t);
         t := GetNextToken;
@@ -1014,161 +1009,125 @@ begin
           i.Free;
           raise;
         end;
-        if (t.IsSymbol(SYM_SEMICOLON)) then 
-        begin
+        if (t.IsSymbol(SYM_SEMICOLON)) then begin
           { A declaration of type "name = class(ancestor);" }
           Scanner.UnGetToken(T);
           Finished := True;
-        end
-        else
-          if (t.MyType = TOK_KEYWORD) then
+        end else if (t.MyType in sKEYWORD) then begin
+        if StrictVisibility then
+          DoError('"strict" found in an unexpected location', []);
+        case t.MyType of
+        KEY_VAR:    ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
+        KEY_CLASS:  ClassKeyWordString := t.Data;
+        KEY_CONSTRUCTOR,
+        KEY_DESTRUCTOR,
+        KEY_FUNCTION,
+        KEY_PROCEDURE:
+          begin
+            try
+              ParseCDFP(M, ClassKeyWordString,
+                t.Data, KeyWordToMethodType(t.MyType),
+                GetLastComment, true, true);
+            except
+              i.Free;
+              FreeAndNil(t);
+              raise;
+            end;
+            ClassKeyWordString := '';
+
+            if Visibility in ShowVisibilities then begin
+              M.Visibility := Visibility;
+              i.Methods.Add(M);
+            end else begin
+              ItemsForNextBackComment.Clear;
+              FreeAndNil(M);
+            end;
+          end;
+        KEY_END: Finished := True;
+        KEY_PROPERTY:
+          begin
+            ParseProperty(p);
+
+            if Visibility in ShowVisibilities then begin
+              p.Visibility := Visibility;
+              i.Properties.Add(p);
+            end else begin
+              ItemsForNextBackComment.Clear;
+              FreeAndNil(p);
+            end;
+          end;
+        KEY_CASE: begin
+            try
+              ParseRecordCase(i, false);
+            except
+              FreeAndNil(t);
+              i.Free;
+              raise;
+            end;
+          end;
+        else  //case
+            i.Free;
+            try
+              DoError('Unexpected %s', [T.Description]);
+            finally
+              FreeAndNil(t);
+            end;
+        end; //case
+      end else if (t.MyType = TOK_IDENTIFIER) then begin
+        case t.Directive of
+        SD_DEFAULT:
           begin
             if StrictVisibility then
-            begin
+              DoError('"strict" found in an unexpected location', []);
+            { Note: 2nd arg for SkipDeclaration is always "false",
+              not "IsInRecordCase". That's because even if declaration
+              of this CIO is within a record case, then we want to
+              see record's terminating "end" keyword anyway.
+              So it doesn't matter here whether our IsInRecordCase
+              parameter is true. }
+            SkipDeclaration(nil, false);
+            DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
+          end;
+        SD_PUBLIC:
+          begin
+            if StrictVisibility then begin
               DoError('"strict" found in an unexpected location', []);
             end;
-            case t.Info.KeyWord of
-              KEY_VAR:
-                begin
-                  ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
-                end;
-              KEY_CLASS: ClassKeyWordString := t.Data;
-              KEY_CONSTRUCTOR,
-              KEY_DESTRUCTOR,
-              KEY_FUNCTION,
-              KEY_PROCEDURE: 
-                begin
-                  try
-                    ParseCDFP(M, ClassKeyWordString, 
-                      t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                      GetLastComment, true, true);
-                  except
-                    i.Free;
-                    FreeAndNil(t);
-                    raise;
-                  end;
-                  ClassKeyWordString := '';
-                  
-                  if Visibility in ShowVisibilities then
-                  begin
-                    M.Visibility := Visibility;
-                    i.Methods.Add(M);
-                  end else
-                  begin
-                    ItemsForNextBackComment.Clear;
-                    FreeAndNil(M);
-                  end;
-                end;
-              KEY_END: Finished := True;
-              KEY_PROPERTY: 
-                begin
-                  ParseProperty(p);
-                  
-                  if Visibility in ShowVisibilities then 
-                  begin
-                    p.Visibility := Visibility;
-                    i.Properties.Add(p);
-                  end else
-                  begin
-                    ItemsForNextBackComment.Clear;
-                    FreeAndNil(p);
-                  end;
-                end;
-              KEY_CASE: begin
-                  try
-                    ParseRecordCase(i, false);
-                  except
-                    FreeAndNil(t);
-                    i.Free;
-                    raise;
-                  end;
-                end;
-            else begin
-                i.Free;
-                try
-                  DoError('Unexpected %s', [T.Description]);
-                finally
-                  FreeAndNil(t);
-                end;
-              end;
-            end
-          end
-          else
-            if (t.MyType = TOK_IDENTIFIER) then
-            begin
-
-              case t.Info.StandardDirective of
-                SD_DEFAULT: 
-                  begin
-                    if StrictVisibility then
-                    begin
-                      DoError('"strict" found in an unexpected location', []);
-                    end;
-                    { Note: 2nd arg for SkipDeclaration is always "false",
-                      not "IsInRecordCase". That's because even if declaration
-                      of this CIO is within a record case, then we want to
-                      see record's terminating "end" keyword anyway.
-                      So it doesn't matter here whether our IsInRecordCase
-                      parameter is true. }
-                    SkipDeclaration(nil, false);
-                    DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
-                  end;
-                SD_PUBLIC:
-                  begin
-                    if StrictVisibility then
-                    begin
-                      DoError('"strict" found in an unexpected location', []);
-                    end;
-                    Visibility := viPublic;
-                  end;
-                SD_PUBLISHED:
-                  begin
-                    if StrictVisibility then
-                    begin
-                      DoError('"strict" found in an unexpected location', []);
-                    end;
-                    Visibility := viPublished;
-                  end;
-                SD_PRIVATE:
-                  begin
-                    if StrictVisibility then
-                    begin
-                      StrictVisibility := False;
-                      Visibility := viStrictPrivate;
-                    end
-                    else
-                    begin
-                      Visibility := viPrivate;
-                    end;
-                  end;
-                SD_PROTECTED:
-                  begin
-                    if StrictVisibility then
-                    begin
-                      StrictVisibility := False;
-                      Visibility := viStrictProtected;
-                    end
-                    else
-                    begin
-                      Visibility := viProtected;
-                    end;
-                  end;
-                SD_AUTOMATED:
-                  begin
-                    Visibility := viAutomated;
-                  end;
-                SD_STRICT: StrictVisibility := True;
-                else
-                  begin
-                    Scanner.UnGetToken(T);
-                    ParseFields(i, Visibility in ShowVisibilities, Visibility,
-                      ClassKeyWordString);
-                    if not (Visibility in ShowVisibilities) then
-                      ItemsForNextBackComment.Clear;
-                    ClassKeyWordString := '';
-                  end;
-              end;
+            Visibility := viPublic;
+          end;
+        SD_PUBLISHED:
+          begin
+            if StrictVisibility then begin
+              DoError('"strict" found in an unexpected location', []);
             end;
+            Visibility := viPublished;
+          end;
+        SD_PRIVATE:
+            if StrictVisibility then begin
+              StrictVisibility := False;
+              Visibility := viStrictPrivate;
+            end else begin
+              Visibility := viPrivate;
+            end;
+        SD_PROTECTED:
+            if StrictVisibility then begin
+              StrictVisibility := False;
+              Visibility := viStrictProtected;
+            end else begin
+              Visibility := viProtected;
+            end;
+        SD_AUTOMATED:
+            Visibility := viAutomated;
+        SD_STRICT: StrictVisibility := True;
+        else //case
+            Scanner.UnGetToken(T);
+            ParseFields(i, Visibility in ShowVisibilities, Visibility,
+              ClassKeyWordString);
+            if not (Visibility in ShowVisibilities) then
+              ItemsForNextBackComment.Clear;
+            ClassKeyWordString := '';
+          end; //case
+        end;
         FreeAndNil(t);
       until Finished;
 
@@ -1180,8 +1139,8 @@ begin
         begin
           if IsInRecordCase then
           begin
-            if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then 
-              Scanner.UnGetToken(t) else 
+            if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+              Scanner.UnGetToken(t) else
             begin
               i.Free;
               DoError('Unexpected symbol at end of sub-record', []);
@@ -1270,20 +1229,18 @@ begin
         if (ParenLevel = 0) and
            (T.IsSymbol(SYM_COMMA) or T.IsSymbol(SYM_RIGHT_PARENTHESIS)) then
           Break;
-          
-        if T.MyType = TOK_SYMBOL then
-          case T.Info.SymbolType of
-            SYM_LEFT_PARENTHESIS, SYM_LEFT_BRACKET: Inc(ParenLevel);
-            SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET: Dec(ParenLevel);
-          end;
-            
+
+        case T.MyType of
+        SYM_LEFT_PARENTHESIS, SYM_LEFT_BRACKET: Inc(ParenLevel);
+        SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET: Dec(ParenLevel);
+        end;
+
         Item.FullDeclaration := Item.FullDeclaration + T.Data;
         FreeAndNil(T);
       until false;
     end;
-    
-    if T.IsSymbol(SYM_COMMA) then
-    begin
+
+    if T.IsSymbol(SYM_COMMA) then begin
       FreeAndNil(T);
       T := GetNextToken;
     end;
@@ -1315,67 +1272,60 @@ begin
 
     try
       case t.MyType of
-        TOK_IDENTIFIER: 
-          if T.Info.StandardDirective = SD_OPERATOR then
-          begin
-            ParseCDFP(M, '', t.Data, METHOD_OPERATOR, 
-              GetLastComment, true, true);
-            u.FuncsProcs.Add(M);
-            Mode := MODE_UNDEFINED;
-          end else
-          begin
-            case Mode of
-              MODE_CONST:
-                begin
-                  Scanner.UnGetToken(T);
-                  ParseConstant(U);
-                end;
-              MODE_TYPE:
-                begin
-                  Scanner.UnGetToken(T);
-                  ParseType(U);
-                end;
-              MODE_VAR:
-                begin
-                  Scanner.UnGetToken(T);
-                  ParseVariables(U);
-                end;
-            else
-              DoError('Unexpected %s', [T.Description]);
+      TOK_IDENTIFIER:
+        if T.Directive = SD_OPERATOR then begin
+          ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
+            GetLastComment, true, true);
+          u.FuncsProcs.Add(M);
+          Mode := MODE_UNDEFINED;
+        end else begin
+          case Mode of
+          MODE_CONST:
+            begin
+              Scanner.UnGetToken(T);
+              ParseConstant(U);
             end;
-          end;
-        TOK_KEYWORD: begin
-            case t.Info.KeyWord of
-              KEY_RESOURCESTRING,
-                KEY_CONST:
-                Mode := MODE_CONST;
-              KEY_FUNCTION, KEY_PROCEDURE: 
-                begin
-                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord), 
-                    GetLastComment, true, true);
-                  u.FuncsProcs.Add(M);
-                  Mode := MODE_UNDEFINED;
-                end;
-              KEY_IMPLEMENTATION:
-                Finished := True;
-              KEY_TYPE:
-                Mode := MODE_TYPE;
-              KEY_USES:
-                ParseUses(U);
-              KEY_THREADVAR,
-                KEY_VAR:
-                Mode := MODE_VAR;
-              KEY_PROPERTY:
-                begin
-                  ParseProperty(PropertyParsed);
-                  U.Variables.Add(PropertyParsed);
-                  Mode := MODE_UNDEFINED;
-                end;
-            else
-              DoError('Unexpected %s', [T.Description]);
+          MODE_TYPE:
+            begin
+              Scanner.UnGetToken(T);
+              ParseType(U);
             end;
-          end;
-      end;
+          MODE_VAR:
+            begin
+              Scanner.UnGetToken(T);
+              ParseVariables(U);
+            end;
+          else //case
+            DoError('Unexpected %s', [T.Description]);
+          end; //case
+        end;
+      KEY_RESOURCESTRING, KEY_CONST:
+        Mode := MODE_CONST;
+      KEY_FUNCTION, KEY_PROCEDURE:
+        begin
+          ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.MyType),
+            GetLastComment, true, true);
+          u.FuncsProcs.Add(M);
+          Mode := MODE_UNDEFINED;
+        end;
+      KEY_IMPLEMENTATION:
+        Finished := True;
+      KEY_TYPE:
+        Mode := MODE_TYPE;
+      KEY_USES:
+        ParseUses(U);
+      KEY_THREADVAR,
+        KEY_VAR:
+        Mode := MODE_VAR;
+      KEY_PROPERTY:
+        begin
+          ParseProperty(PropertyParsed);
+          U.Variables.Add(PropertyParsed);
+          Mode := MODE_UNDEFINED;
+        end;
+      else //case
+        DoError('Unexpected %s', [T.Description]);
+      end; //case
     finally
       FreeAndNil(t);
     end;
@@ -1436,7 +1386,7 @@ begin
     
     { get property type }
     t := GetNextToken;
-    if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD) then
+    if (t.MyType <> TOK_IDENTIFIER) and not (t.MyType in sKEYWORD) then
       DoError('Identifier or keyword expected but %s found', [T.Description]);
 
     p.Proptype := t.Data;
@@ -1464,13 +1414,13 @@ begin
   t1 := GetNextToken;
   try
     CheckToken(T1, TOK_IDENTIFIER);
-    
+
     if PeekNextToken.IsSymbol(SYM_COLON) then
     begin
       { Then we have "case FieldName: FieldType of" }
-      
+
       { consume and free the colon token }
-      GetNextToken.Free; 
+      GetNextToken.Free;
 
       P := TPasItem.Create;
       p.Name := T1.Data;
@@ -1479,74 +1429,69 @@ begin
       ItemsForNextBackComment.ClearAndAdd(P);
       R.Fields.Add(p);
     end;
-  finally 
+  finally
     FreeAndNil(t1);
   end;
-  
+
   GetAndCheckNextToken(KEY_OF);
-  
+
   t1 := GetNextToken;
   LNeedId := True;
   repeat
+{$IFDEF old}
     while true do begin
       case t1.MyType of
-        TOK_SYMBOL: begin
-            case t1.Info.SymbolType of
-              SYM_COLON: break;
-              SYM_COMMA: LNeedId := True;
-            end;
+      TOK_SYMBOL: begin
+          case t1.MyType of
+            SYM_COLON: break;
+            SYM_RANGE,
+            SYM_COMMA: LNeedId := True;
           end;
-        TOK_IDENTIFIER,
-        TOK_NUMBER: 
-          if not LNeedId then
-          try
-            DoError('Unexpected %s', [T1.Description]);
-          finally
-            FreeAndNil(t1);
-          end;
-        TOK_KEYWORD:
-        begin
-          if not (t1.Info.KeyWord in [KEY_OR, KEY_AND]) then
-          begin
-            try
-              DoError('Unexpected %s', [T1.Description]);
-            finally
-              FreeAndNil(t1);
-            end;
-          end;
-        end
-        else begin
-          try
-            DoError('Unexpected %s', [T1.Description]);
-          finally
-            FreeAndNil(t1);
-          end;
+        end;
+      TOK_IDENTIFIER,
+      TOK_NUMBER:
+        if not LNeedId then try
+          DoError('Unexpected %s', [T1.Description]);
+        finally
+          FreeAndNil(t1);
+        end;
+      KEY_OR, KEY_AND:
+        ;
+      else //case
+        try
+          DoError('Unexpected %s', [T1.Description]);
+        finally
+          FreeAndNil(t1);
         end;
       end;
       FreeAndNil(t1);
       t1 := GetNextToken;
-    end;
+    end; //while
     // read all identifiers before colon
+{$ELSE}
+  //why should we be stricter than the compiler???
+    while t1.MyType <> SYM_COLON do begin
+      FreeAndNil(t1);
+      t1 := GetNextToken;
+    end;
+{$ENDIF}
 
     FreeAndNil(t1);
-    
+
     GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
-    
-    while not PeekNextToken.IsSymbol(SYM_RIGHT_PARENTHESIS) do 
-    begin
-      if PeekNextToken.IsKeyWord(KEY_CASE) then
-      begin
+
+    while not PeekNextToken.IsSymbol(SYM_RIGHT_PARENTHESIS) do begin
+      if PeekNextToken.IsKeyWord(KEY_CASE) then begin
         GetNextToken.Free; { consume and free "case" token }
         ParseRecordCase(R, true);
       end else
         ParseFieldsVariables(R.Fields, true, viPublic, true);
     end;
-    
+
     GetNextToken.Free; // free ')' token
-    
+
     t1 := GetNextToken;
-    if t1.IsSymbol(SYM_SEMICOLON) then
-    begin
+    if t1.IsSymbol(SYM_SEMICOLON) then begin
       FreeAndNil(t1);
       t1 := GetNextToken;
     end;
@@ -1576,7 +1521,6 @@ begin
   if (not t.IsSymbol(SYM_EQUAL)) then begin
     if (t.IsSymbol(SYM_SEMICOLON)) then begin
       FreeAndNil(t);
-      t := nil;
       Exit;
     end;
     FreeAndNil(t);
@@ -1588,76 +1532,70 @@ begin
   t := GetNextToken(LTemp);
   LCollected := LCollected + LTemp + t.Data;
 
-  if (t.MyType = TOK_KEYWORD) then
-    case t.Info.KeyWord of
-      KEY_CLASS: begin
-          FreeAndNil(t);
-          t := GetNextToken(LTemp);
-          LCollected := LCollected + LTemp + t.Data;
-          if t.IsKeyWord(KEY_OF) then 
-          begin
-            { include "identifier = class of something;" as standard type }
-          end else begin
-            Scanner.UnGetToken(t);
-            t := nil;
-            ParseCIO(U, TypeName, CIO_CLASS, 
-              RawDescriptionInfo, False);
-            Exit;
-          end;
-        end;
-      KEY_DISPINTERFACE: begin
-          FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_SPINTERFACE, 
-            RawDescriptionInfo, False);
-          Exit;
-        end;
-      KEY_INTERFACE: begin
-          FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_INTERFACE, 
-            RawDescriptionInfo, False);
-          Exit;
-        end;
-      KEY_OBJECT: begin
-          FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_OBJECT, 
-            RawDescriptionInfo, False);
-          Exit;
-        end;
-      KEY_RECORD: begin
-          FreeAndNil(t);
-          ParseCIO(U, TypeName, CIO_RECORD, 
-            RawDescriptionInfo, False);
-          Exit;
-        end;
-      KEY_PACKED: begin
-          FreeAndNil(t);
-          t := GetNextToken(LTemp);
-          LCollected := LCollected + LTemp + t.Data;
-          if t.IsKeyWord(KEY_RECORD) then 
-          begin
-            FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_PACKEDRECORD, 
-              RawDescriptionInfo, False);
-            exit;
-          end;
-        end;
+  case t.MyType of
+  KEY_CLASS: begin
+      FreeAndNil(t);
+      t := GetNextToken(LTemp);
+      LCollected := LCollected + LTemp + t.Data;
+      if t.IsKeyWord(KEY_OF) then begin
+        { include "identifier = class of something;" as standard type }
+      end else begin
+        Scanner.UnGetToken(t);
+        t := nil;
+        ParseCIO(U, TypeName, CIO_CLASS,
+          RawDescriptionInfo, False);
+        Exit;
+      end;
     end;
-  if Assigned(t) then begin
-    if (t.MyType = TOK_KEYWORD) then begin
-      if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then 
+  KEY_DISPINTERFACE: begin
+      FreeAndNil(t);
+      ParseCIO(U, TypeName, CIO_SPINTERFACE,
+        RawDescriptionInfo, False);
+      Exit;
+    end;
+  KEY_INTERFACE: begin
+      FreeAndNil(t);
+      ParseCIO(U, TypeName, CIO_INTERFACE,
+        RawDescriptionInfo, False);
+      Exit;
+    end;
+  KEY_OBJECT: begin
+      FreeAndNil(t);
+      ParseCIO(U, TypeName, CIO_OBJECT,
+        RawDescriptionInfo, False);
+      Exit;
+    end;
+  KEY_RECORD: begin
+      FreeAndNil(t);
+      ParseCIO(U, TypeName, CIO_RECORD,
+        RawDescriptionInfo, False);
+      Exit;
+    end;
+  KEY_PACKED: begin
+      FreeAndNil(t);
+      t := GetNextToken(LTemp);
+      LCollected := LCollected + LTemp + t.Data;
+      if t.IsKeyWord(KEY_RECORD) then
       begin
-        ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord), 
-          RawDescriptionInfo, false, true);
-        MethodType.Name := TypeName;
-        MethodType.FullDeclaration := 
-          TypeName + ' = ' + MethodType.FullDeclaration;
-        U.AddType(MethodType);
         FreeAndNil(t);
+        ParseCIO(U, TypeName, CIO_PACKEDRECORD,
+          RawDescriptionInfo, False);
         exit;
       end;
     end;
-    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then 
-    begin
+  end;
+  if Assigned(t) then begin
+    if t.MyType in [KEY_FUNCTION, KEY_PROCEDURE] then begin
+      ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.MyType),
+        RawDescriptionInfo, false, true);
+      MethodType.Name := TypeName;
+      MethodType.FullDeclaration :=
+        TypeName + ' = ' + MethodType.FullDeclaration;
+      U.AddType(MethodType);
+      FreeAndNil(t);
+      exit;
+    end;
+    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
       ParseEnum(EnumType, TypeName, RawDescriptionInfo);
       U.AddType(EnumType);
       FreeAndNil(t);
@@ -1821,39 +1759,35 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCommaSeparatedIdentifiers(Names: TStrings;
-  FinalSymbol: TSymbolType; 
+  FinalSymbol: eSymbolType; 
   RawDescriptions: TRawDescriptionInfoList);
 var
   T: TToken;
   FirstIdentifier: boolean;
 begin
   FirstIdentifier := true;
-  
+
   repeat
     Names.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
-    
+
     { Now we modify FirstIdentifier and append item to RawDescriptions }
-    if FirstIdentifier then
-    begin
+    if FirstIdentifier then begin
       FirstIdentifier := false;
       if RawDescriptions <> nil then
         RawDescriptions.Append(GetLastComment);
-    end else
-    if RawDescriptions <> nil then
-    begin
+    end else if RawDescriptions <> nil then begin
       if IsLastComment then
-        RawDescriptions.Append(GetLastComment) else
+        RawDescriptions.Append(GetLastComment)
+      else
         RawDescriptions.Append(RawDescriptions[RawDescriptions.Count - 1]);
     end;
-    
+
     T := GetNextToken;
     try
-      if (T.MyType <> TOK_SYMBOL) or
-        ( (T.Info.SymbolType <> SYM_COMMA) and
-          (T.Info.SymbolType <> FinalSymbol) ) then
-        DoError('One of symbols "," or "%s" expected', [SymbolNames[FinalSymbol]]);
-      if T.Info.SymbolType = FinalSymbol then
-        break;
+      if T.MyType = FinalSymbol then
+        break
+      else if (T.MyType <> SYM_COMMA) then
+        DoError('One of symbols "," or "%s" expected', [TokenNames[FinalSymbol]]);
     finally
       FreeAndNil(T);
     end;
@@ -1894,29 +1828,20 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
         // This does not take into account the "absolute" modifier
         // (which is not preceeded by a semicolon).
         FirstCheck := False;
-        if (ttemp.MyType = TOK_IDENTIFIER) and 
-           (ttemp.Info.StandardDirective in 
-             [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then 
-        begin
+        if ttemp.Directive in [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC] then begin
           ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
           FreeAndNil(ttemp)
-        end
-        else
-        begin
+        end else begin
           Finished := True;
           Scanner.UnGetToken(ttemp);
         end;
-        while not Finished do
-        begin
+        while not Finished do begin
           ttemp := GetNextToken;
-          if ttemp.IsSymbol(SYM_SEMICOLON) then
-          begin
+          if ttemp.IsSymbol(SYM_SEMICOLON) then begin
             Finished := True;
             FirstCheck := False;
             ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ttemp.Data;
-          end
-          else
-          begin
+          end else begin
             ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
           end;
           FreeAndNil(ttemp)
@@ -1924,7 +1849,7 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
       end;
     until Finished and not FirstCheck;
   end;
-  
+
 var
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
@@ -1962,9 +1887,7 @@ begin
         ItemCollector.FullDeclaration := ItemCollector.FullDeclaration + t.Data;
       end;
       
-      if (t.MyType = TOK_KEYWORD) and 
-         (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
-      begin
+      if t.MyType in [KEY_FUNCTION, KEY_PROCEDURE] then begin
         { MethodTypeString for ParseCDFP below is '', because we already included
           t.Data inside ItemCollector.FullDeclaration. 
           If MethodTypeString would be t.Data, then we would incorrectly
@@ -1974,7 +1897,7 @@ begin
           Note that param InitItemsForNextBackComment for ParseCDFP 
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
-        ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), 
+        ParseCDFP(M, '', '', KeyWordToMethodType(t.MyType), 
           EmptyRawDescriptionInfo, false, false);
         ItemCollector.FullDeclaration := 
           ItemCollector.FullDeclaration + M.FullDeclaration;
@@ -2097,26 +2020,17 @@ begin
       Item.FullDeclaration := Item.FullDeclaration + WhitespaceCollector;
     end;
     case t.MyType of
-      TOK_SYMBOL:
-        case t.Info.SymbolType of
-          SYM_LEFT_PARENTHESIS: Inc(PLevel);
-          SYM_RIGHT_PARENTHESIS: Dec(PLevel);
-        end;
-      TOK_KEYWORD:
-        case t.Info.KeyWord of
-          KEY_END: Dec(EndLevel);
-          KEY_RECORD: Inc(EndLevel);
-          KEY_LIBRARY: 
-            if Assigned(Item) then Item.IsLibrarySpecific := true;
-        end;
-      TOK_IDENTIFIER:
-        case t.Info.StandardDirective of
-          SD_PLATFORM: 
-            if Assigned(Item) then Item.IsPlatformSpecific := true;
-          SD_DEPRECATED: 
-            if Assigned(Item) then Item.IsDeprecated := true;
-        end;
-    end;
+    SYM_LEFT_PARENTHESIS: Inc(PLevel);
+    SYM_RIGHT_PARENTHESIS: Dec(PLevel);
+    KEY_END: Dec(EndLevel);
+    KEY_RECORD: Inc(EndLevel);
+    KEY_LIBRARY: if Assigned(Item) then Item.IsLibrarySpecific := true;
+    TOK_IDENTIFIER:
+      case t.Directive of
+      SD_PLATFORM:    if Assigned(Item) then Item.IsPlatformSpecific := true;
+      SD_DEPRECATED:  if Assigned(Item) then Item.IsDeprecated := true;
+      end;
+    end; //case
     IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
     
     { Reason for "EndLevel < 0" condition:
