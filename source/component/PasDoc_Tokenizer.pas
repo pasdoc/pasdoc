@@ -277,10 +277,23 @@ end;
 
 function TToken.Description: string;
 begin
-  Result := TOKENNAMES[MyType];
-  //if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
+  if MyType >= KEY_AND then begin
+  //key
+    Result := 'reserved word "' + TokenNames[MyType] + '"';
+  end else if MyType >= SYM_PLUS then begin
+  //symbol
+    Result := 'symbol "' + TokenNames[MyType] + '"';
+  end else if MyType = TOK_IDENTIFIER then begin
+    Result := 'identifier "' + TokenNames[MyType] + '"';
+  end else
+    Result := TOKENNAMES[MyType];
+
+{$IFDEF old}
+  if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
   if MyType in sSymbolType + sKeyword + [TOK_IDENTIFIER] then
     Result := Result + ' "' + Data + '"';
+{$ELSE}
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
