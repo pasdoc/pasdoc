@@ -300,12 +300,12 @@ type
 
     { Call OnMessage (if assigned) with given params. }
     procedure DoMessage(const AVerbosity: Cardinal;
-      const MessageType: TMessageType; const AMessage: string;
+      const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
 
     { Call @link(DoMessage) only if @link(PreExecute) is @false. }
     procedure DoMessageNonPre(const AVerbosity: Cardinal;
-      const MessageType: TMessageType; const AMessage: string;
+      const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
 
     { This will be used to print messages from within @link(Execute).
@@ -612,7 +612,7 @@ begin
 end;
 
 procedure TTagManager.DoMessage(const AVerbosity: Cardinal; const
-  MessageType: TMessageType; const AMessage: string;
+  MessageType: TPasDocMessageType; const AMessage: string;
   const AArguments: array of const);
 begin
   if Assigned(FOnMessage) then
@@ -620,7 +620,7 @@ begin
 end;
 
 procedure TTagManager.DoMessageNonPre(const AVerbosity: Cardinal;
-  const MessageType: TMessageType; const AMessage: string;
+  const MessageType: TPasDocMessageType; const AMessage: string;
   const AArguments: array of const);
 begin
   if not PreExecute then
@@ -637,7 +637,7 @@ begin
       QualifiedIdentifierReplacement, Result);
   
   if Result then
-    DoMessage(3, mtInformation, 'Automatically linked identifier "%s"',
+    DoMessage(3, pmtInformation, 'Automatically linked identifier "%s"',
       [GlueNameParts(QualifiedIdentifier)]);
 end;
 
@@ -690,7 +690,7 @@ var
 
     if Tag = nil then
     begin
-      DoMessageNonPre(1, mtWarning, 'Unknown tag name "%s"', [TagName]);
+      DoMessageNonPre(1, pmtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
     end;
     
@@ -730,7 +730,7 @@ var
         Parameters := Copy(Description, OffsetEnd + 1, i - OffsetEnd - 2);
         OffsetEnd := i;
       end else
-        DoMessageNonPre(1, mtWarning,
+        DoMessageNonPre(1, pmtWarning,
           'No matching closing parenthesis for tag "%s"', [TagName]);
     end else
     if toParameterRequired in Tag.TagOptions then
@@ -915,7 +915,7 @@ var
   begin
     Result := IsNormalTextAllowed;
     if not Result then
-      DoMessageNonPre(1, mtWarning,
+      DoMessageNonPre(1, pmtWarning,
         'Such content, "%s", is not allowed '+
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
   end;
@@ -984,10 +984,10 @@ begin
       if not FoundTag.AllowedInside(EnclosingTag) then
       begin
         if EnclosingTag = nil then
-          DoMessageNonPre(1, mtWarning, 'The tag "@%s" cannot be used at the ' +
+          DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used at the ' +
             'top level of description, it must be used within some other @-tag', 
             [FoundTag.Name]) else
-          DoMessageNonPre(1, mtWarning, 'The tag "@%s" cannot be used inside ' +
+          DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used inside ' +
             'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
             
         { Assign dummy value for ReplaceStr.
@@ -1026,7 +1026,7 @@ begin
 
                 I didn't mark this as an mtError only because some sensible
                 output will be generated anyway. }
-              DoMessageNonPre(1, mtWarning,
+              DoMessageNonPre(1, pmtWarning,
                 'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
             end;
             ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');

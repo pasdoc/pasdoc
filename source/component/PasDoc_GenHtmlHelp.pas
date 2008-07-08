@@ -384,11 +384,11 @@ begin
     No need to test this again. }
 
   if CreateStream(ProjectName + '.hhc', True) = csError then begin
-    DoMessage(1, mtError, 'Could not create HtmlHelp Content file "%s.hhc' +
+    DoMessage(1, pmtError, 'Could not create HtmlHelp Content file "%s.hhc' +
       '".', [ProjectName]);
     Exit;
   end;
-  DoMessage(2, mtInformation, 'Writing HtmlHelp Content file "' + ProjectName
+  DoMessage(2, pmtInformation, 'Writing HtmlHelp Content file "' + ProjectName
     + '"...', []);
 
   // File Header
@@ -409,7 +409,7 @@ begin
       SL.LoadFromTextFileAdd(ContentsFile);
     except
       on e: Exception do
-        DoMessage(1, mtError, e.Message +
+        DoMessage(1, pmtError, e.Message +
           '. Writing default HtmlHelp contents.', []);
     end;
 
@@ -440,7 +440,7 @@ begin
           end
 
           else begin
-            DoMessage(1, mtError, 'Invalid level ' + IntToStr(Level) +
+            DoMessage(1, pmtError, 'Invalid level ' + IntToStr(Level) +
               'in Content file (line ' + IntToStr(j) + ').', []);
             Exit;
           end;
@@ -488,11 +488,11 @@ begin
   end;
 
   if CreateStream(ProjectName + '.hhk', True) = csError then begin
-    DoMessage(1, mtError, 'Could not create HtmlHelp Index file "%s.hhk' +
+    DoMessage(1, pmtError, 'Could not create HtmlHelp Index file "%s.hhk' +
       '".', [ProjectName]);
     Exit;
   end;
-  DoMessage(2, mtInformation, 'Writing HtmlHelp Index file "%s"...',
+  DoMessage(2, pmtInformation, 'Writing HtmlHelp Index file "%s"...',
     [ProjectName]);
 
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
@@ -565,11 +565,11 @@ begin
 
   // Create a HTML Help Project File
   if CreateStream(ProjectName + '.hhp', True) = csError then begin
-    DoMessage(1, mtError, 'Could not create HtmlHelp Project file "%s.hhp' +
+    DoMessage(1, pmtError, 'Could not create HtmlHelp Project file "%s.hhp' +
       '".', [ProjectName]);
     Exit;
   end;
-  DoMessage(3, mtInformation, 'Writing Html Help Project file "%s"...',
+  DoMessage(3, pmtInformation, 'Writing Html Help Project file "%s"...',
     [ProjectName]);
 
   WriteDirectLine('[OPTIONS]');

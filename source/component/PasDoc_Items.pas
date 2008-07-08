@@ -1395,7 +1395,7 @@ procedure TPasItem.StoreAbstractTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if AbstractDescription <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@abstract tag was already specified for this item. ' +
       'It was specified as "%s"', [AbstractDescription]);
   AbstractDescription := TagParameter;
@@ -1423,7 +1423,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@seealso tag doesn''t specify any name to link to, skipped', []);
   end else
   begin
@@ -1567,11 +1567,11 @@ begin
   begin
     if Value.RawDescription = '' then
       Value.RawDescription := ValueDesc else
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);
   end else
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
@@ -1913,11 +1913,11 @@ begin
       already }
     if Member.RawDescription = '' then
       Member.RawDescription := MemberDesc else
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
   end else
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
 end;
 
@@ -2175,7 +2175,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@raises tag doesn''t specify exception name, skipped', []);
   end else
   begin
@@ -2197,7 +2197,7 @@ begin
   if Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@param tag doesn''t specify parameter name, skipped', []);
   end else
   begin
@@ -2344,7 +2344,7 @@ procedure TExternalItem.HandleShortTitleTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if ShortTitle <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@shorttitle tag was already specified for this item. ' +
       'It was specified as "%s"', [ShortTitle]);
   ShortTitle := TagParameter;
@@ -2357,7 +2357,7 @@ procedure TExternalItem.HandleTitleTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if Title <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@title tag was already specified for this item. ' +
       'It was specified as "%s"', [Title]);
   Title := TagParameter;

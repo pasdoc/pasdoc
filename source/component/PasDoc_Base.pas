@@ -126,9 +126,9 @@ type
       const; const AExitCode: Word);
     { Forwards a message to the @link(OnMessage) event. }
     procedure DoMessage(const AVerbosity: Cardinal; const AMessageType:
-      TMessageType; const AMessage: string; const AArguments: array of const);
+      TPasDocMessageType; const AMessage: string; const AArguments: array of const);
     { for Generator messages }
-    procedure GenMessage(const MessageType: TMessageType; const
+    procedure GenMessage(const MessageType: TPasDocMessageType; const
       AMessage: string; const AVerbosity: Cardinal);
     { Starts creating the documentation. }
     procedure Execute;
@@ -390,12 +390,12 @@ begin
 
     if (CacheDir <> '') and FileExists(LCacheFileName) then
     begin
-      DoMessage(2, mtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
+      DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
       U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
       if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
       begin
-        DoMessage(2, mtInformation, 'Cache file for %s is outdated.', 
+        DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
           [SourceFileName]);
       end else begin
         LLoaded := True;
@@ -404,12 +404,12 @@ begin
 
     if not LLoaded then
     begin
-      DoMessage(2, mtInformation, 'Now parsing file %s...', [SourceFileName]);
+      DoMessage(2, pmtInformation, 'Now parsing file %s...', [SourceFileName]);
       p.ParseUnitOrProgram(U);
     end;
 
     if FUnits.ExistsUnit(U) then begin
-      DoMessage(2, mtWarning,
+      DoMessage(2, pmtWarning,
         'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
         TPasUnit(FUnits.FindName(U.Name)).SourceFileName, SourceFileName]);
       U.Free;
@@ -436,7 +436,7 @@ begin
     end;
   except
      on e: Exception do begin
-       DoMessage(2, mtWarning, 
+       DoMessage(2, pmtWarning, 
          'Error %s: %s while parsing unit %s, continuing...', 
          [e.ClassName, e.Message, ExtractFileName(SourceFileName)]); 
      end;
@@ -484,7 +484,7 @@ var
 begin
   FUnits.clear;
 
-  DoMessage(1, mtInformation, 'Starting Source File Parsing ...', []);
+  DoMessage(1, pmtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
   InputStream := nil;
@@ -497,7 +497,7 @@ begin
     except
       on E: Exception do
       begin
-        DoMessage(1, mtError, 'Cannot open file "%s", skipping', [p]);
+        DoMessage(1, pmtError, 'Cannot open file "%s", skipping', [p]);
         Continue;
       end;
     end;
@@ -514,7 +514,7 @@ begin
   FreeAndNil(FConclusion);
   ParseExternalFile(ConclusionFileName, FConclusion);
 
-  DoMessage(2, mtInformation, '... %d Source File(s) parsed', [Count]);
+  DoMessage(2, pmtInformation, '... %d Source File(s) parsed', [Count]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -537,7 +537,7 @@ begin
 
     if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then 
     begin
-      DoMessage(3, mtInformation, 'Excluding item %s', [p.Name]);
+      DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
     end
     else begin
@@ -635,10 +635,10 @@ begin
   Generator.WriteDocumentation;
 
   if Generator.NoGeneratorInfo then
-    DoMessage(1, mtInformation, 'Done', []) else
+    DoMessage(1, pmtInformation, 'Done', []) else
   begin
     t2 := Now;
-    DoMessage(1, mtInformation, 'Done, worked %s minutes(s)',
+    DoMessage(1, pmtInformation, 'Done, worked %s minutes(s)',
       [FormatDateTime('nn:ss', (t2 - t1))]);
   end;
 end;
@@ -654,7 +654,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDoc.DoMessage(const AVerbosity: Cardinal; const AMessageType:
-  TMessageType; const AMessage: string; const AArguments: array of const);
+  TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 begin
   if (AVerbosity <= FVerbosity) and Assigned(FOnMessage) then
     FOnMessage(AMessageType, Format(AMessage, AArguments), AVerbosity);
@@ -691,7 +691,7 @@ begin
   AddSourceFileNames(ASourceFileNames);
 end;
 
-procedure TPasDoc.GenMessage(const MessageType: TMessageType;
+procedure TPasDoc.GenMessage(const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 begin
   DoMessage(AVerbosity, MessageType, AMessage, []);
@@ -740,7 +740,7 @@ begin
 
     SearchResult := SysUtils.FindFirst(FileMask, 63, SR);
     if SearchResult <> 0 then begin
-      DoMessage(1, mtWarning, 'No files found for "%s", skipping', [FileMask]);
+      DoMessage(1, pmtWarning, 'No files found for "%s", skipping', [FileMask]);
     end else begin
       repeat
         if (SR.Attr and 24) = 0 then begin
@@ -783,7 +783,7 @@ procedure TPasDoc.HandleExternalFile(const FileName: string;
 begin
   ExternalItem := TExternalItem.Create;
   try
-    DoMessage(2, mtInformation, 'Now parsing file %s...', [FileName]);
+    DoMessage(2, pmtInformation, 'Now parsing file %s...', [FileName]);
 
     { This check tries to avoid the possibility of accidentaly
       overwriting user introduction/conclusion file

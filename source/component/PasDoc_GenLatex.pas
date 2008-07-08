@@ -608,7 +608,7 @@ begin
     OutputFileName := 'docs.tex';
   case CreateStream(OutputFileName, true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create doc file %s',[Outputfilename]);
+      DoMessage(1, pmtError, 'Could not create doc file %s',[Outputfilename]);
       Exit;
     end;
     csExisted: begin
@@ -813,7 +813,7 @@ function TTexDocGenerator.FormatHeading(HL: integer; const s: string): string;
 begin
   if (HL < 1) then HL := 1;
   if HL > 5 then begin
-    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+    DoMessage(2, pmtWarning, 'LaTeX generator cannot write headlines of '
       + 'level 5 or greater; will create a new paragraph instead.', []);
     HL := 5;
   end;
@@ -869,7 +869,7 @@ procedure TTexDocGenerator.WriteHeading(HL: integer; const s: string);
 begin
   if (HL < 1) then HL := 1;
   if HL > 5 then begin
-    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+    DoMessage(2, pmtWarning, 'LaTeX generator cannot write headlines of '
       + 'level 5 or greater; will a new paragraph instead.', []);
     HL := 5;
   end;
@@ -1383,7 +1383,7 @@ begin
   ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
   ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
 
-  DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
+  DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
   if U.IsUnit then
     WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name)

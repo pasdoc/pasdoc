@@ -710,7 +710,7 @@ begin
     if (p.MyUnit <> nil) and
        p.MyUnit.FileNewerThanCache(DestinationDirectory + p.OutputFileName) then
     begin
-      DoMessage(3, mtInformation, 'Data for "%s" was loaded from cache, '+
+      DoMessage(3, pmtInformation, 'Data for "%s" was loaded from cache, '+
         'and output file of this item exists and is newer than cache, '+
         'skipped.', [p.Name]);
       Continue;
@@ -718,11 +718,11 @@ begin
     
     case CreateStream(p.OutputFileName, true) of
       csError: begin
-          DoMessage(1, mtError, 'Could not create Class/Interface/Object documentation file.', []);
+          DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
           Continue;
         end;
       csCreated: begin
-          DoMessage(3, mtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
+          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
           WriteCIO(HL, p);
         end;
     end;
@@ -808,7 +808,7 @@ begin
   WriteFramesetFiles;
   if UseTipueSearch then
   begin
-    DoMessage(2, mtInformation, 
+    DoMessage(2, pmtInformation, 
       'Writing additional files for tipue search engine', []);
     TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
       DestinationDirectory);
@@ -973,7 +973,7 @@ var
 begin
   if (HL < 1) then HL := 1;
   if HL > 6 then begin
-    DoMessage(2, mtWarning, 'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.', []);
+    DoMessage(2, pmtWarning, 'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.', []);
     HL := 6;
   end;
   c := IntToStr(HL);
@@ -1200,12 +1200,12 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     
     if not Result then
     begin
-      DoMessage(1, mtError, 'Error: Could not create output file "' +
+      DoMessage(1, pmtError, 'Error: Could not create output file "' +
         BaseFileName + '".', []);
       Exit;
     end;
-    
-    DoMessage(3, mtInformation, 'Writing overview file "' +
+
+    DoMessage(3, pmtInformation, 'Writing overview file "' +
       BaseFileName + '" ...', []);
 
     Headline := FLanguage.Translation[
@@ -1664,14 +1664,14 @@ var
   AnyItemSummary, AnyItemDetailed: boolean;
 begin
   if not Assigned(U) then begin
-    DoMessage(1, mtError, 'TGenericHTMLDocGenerator.WriteUnit: ' +
+    DoMessage(1, pmtError, 'TGenericHTMLDocGenerator.WriteUnit: ' +
       'Unit variable has not been initialized.', []);
     Exit;
   end;
-  
+
   if U.FileNewerThanCache(DestinationDirectory + U.OutputFileName) then
   begin
-    DoMessage(3, mtInformation, 'Data for unit "%s" was loaded from cache, '+
+    DoMessage(3, pmtInformation, 'Data for unit "%s" was loaded from cache, '+
       'and output file of this unit exists and is newer than cache, '+
       'skipped.', [U.Name]);
     Exit;
@@ -1679,7 +1679,7 @@ begin
 
   case CreateStream(U.OutputFileName, true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
+      DoMessage(1, pmtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
       Exit;
     end;
   end;
@@ -1700,7 +1700,7 @@ begin
   ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
   ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
 
-  DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
+  DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
 
   if U.IsUnit then
@@ -1837,7 +1837,7 @@ const
 begin
   if CreateStream(Filename + GetFileextension, True) = csError then
     begin
-      DoMessage(1, mtError, 'Could not create output file "%s".',
+      DoMessage(1, pmtError, 'Could not create output file "%s".',
         [Filename + GetFileExtension]);
       Abort;
     end;
@@ -1924,7 +1924,7 @@ procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
   begin
     if CreateStream(Filename, True) = csError 
       then begin
-        DoMessage(1, mtError, 'Could not create output file "%s".', [Filename]);
+        DoMessage(1, pmtError, 'Could not create output file "%s".', [Filename]);
       Exit;
     end;
     CurrentStream.Write(img[0], High(img)+1);
@@ -2155,7 +2155,7 @@ var
 begin
   case CreateStream(ExternalItem.OutputFileName, true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create HTML unit doc file '
+      DoMessage(1, pmtError, 'Could not create HTML unit doc file '
         + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
       Exit;
     end;

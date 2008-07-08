@@ -275,7 +275,7 @@ type
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
     procedure DoMessageFromExpandDescription(
-      const MessageType: TMessageType; const AMessage: string; 
+      const MessageType: TPasDocMessageType; const AMessage: string; 
       const AVerbosity: Cardinal);
 
     procedure TryAutoLink(TagManager: TTagManager;
@@ -417,7 +417,7 @@ type
     procedure DoError(const AMessage: string; const AArguments: array of const;
       const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal;
-      const MessageType: TMessageType; const AMessage: string;
+      const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
 
     property CurrentStream: TStream read FCurrentStream;
@@ -1022,7 +1022,7 @@ var
   j: Integer;
   U: TPasUnit;
 begin
-  DoMessage(2, mtInformation, 'Creating links ...', []);
+  DoMessage(2, pmtInformation, 'Creating links ...', []);
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   if Introduction <> nil then
@@ -1069,7 +1069,7 @@ begin
       end;
     end;
   end;
-  DoMessage(2, mtInformation, '... ' + ' links created', []);
+  DoMessage(2, pmtInformation, '... ' + ' links created', []);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1095,7 +1095,7 @@ function TDocGenerator.CreateStream(const AName: string;
   const AOverwrite: boolean): TCreateStreamResult;
 begin
   CloseStream;
-  DoMessage(4, mtInformation, 'Creating output stream "' + AName + '".', []);
+  DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := csError;
   if FileExists(DestinationDirectory + AName) and not AOverwrite then begin
     Result := csExisted;
@@ -1168,7 +1168,7 @@ begin
   
   if ItemClassName <> '' then
     ReplaceStr := CodeString(ConvertString(ItemClassName)) else
-    ThisTag.TagManager.DoMessage(1, mtWarning, '@classname not available here', []);
+    ThisTag.TagManager.DoMessage(1, pmtWarning, '@classname not available here', []);
 end;
 
 // handles @true, @false, @nil (Who uses these tags anyway?)
@@ -1188,7 +1188,7 @@ procedure TDocGenerator.HandleInheritedClassTag(
 
   procedure InheritedClassCannotResolve(const Msg: string);
   begin
-    ThisTag.TagManager.DoMessage(2, mtWarning, 
+    ThisTag.TagManager.DoMessage(2, pmtWarning, 
       'Can''t resolve @inheritedClass: ' + Msg, []);
     ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
   end;
@@ -1222,7 +1222,7 @@ procedure TDocGenerator.HandleInheritedTag(
   
   procedure InheritedCannotResolve(const Msg: string);
   begin
-    ThisTag.TagManager.DoMessage(2, mtWarning, 
+    ThisTag.TagManager.DoMessage(2, pmtWarning, 
       'Can''t resolve @inherited: ' + Msg, []);
     ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
   end;
@@ -1294,7 +1294,7 @@ procedure TDocGenerator.HandleGroupTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := '';
-  ThisTag.TagManager.DoMessage(1, mtWarning, 
+  ThisTag.TagManager.DoMessage(1, pmtWarning, 
     'Tag "%s" is not implemented yet, ignoring', [ThisTag.Name]);
 end;
 
@@ -1439,7 +1439,7 @@ begin
     ListData.FItemSpacing := lisCompact else
   if LTagParameter = 'paragraph' then
     ListData.FItemSpacing := lisParagraph else
-    ThisTag.TagManager.DoMessage(1, mtWarning, 
+    ThisTag.TagManager.DoMessage(1, pmtWarning, 
       'Invalid parameter for @itemSpacing tag: "%s"', [TagParameter]);
       
   { @itemSpacing does not generate any output to ReplaceStr. 
@@ -1461,7 +1461,7 @@ begin
     (EnclosingTagData as TListData).NextItemIndex := NewNextItemIndex;
   except
     on E: EConvertError do 
-      ThisTag.TagManager.DoMessage(1, mtWarning, 
+      ThisTag.TagManager.DoMessage(1, pmtWarning, 
         'Cannot convert parameter of @itemSetNumber tag ("%s") to a number: %s', 
         [TagParameter, E.Message]);
   end;
@@ -1494,7 +1494,7 @@ procedure TDocGenerator.HandleTableTag(
   
   procedure Error(const S: string);
   begin
-    ThisTag.TagManager.DoMessage(1, mtWarning, S, []);
+    ThisTag.TagManager.DoMessage(1, pmtWarning, S, []);
     ReplaceStr := ConvertString(S);
   end;
   
@@ -1633,7 +1633,7 @@ begin
     MaxLevel := StrToInt(TagParameter);
   except on E: EConvertError do
     begin
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         'Invalid parameter of @tableOfContents tag: "%s". %s', 
         [TagParameter, E.Message]);
       Exit;
@@ -1655,7 +1655,7 @@ begin
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
-  const MessageType: TMessageType; const AMessage: string; 
+  const MessageType: TPasDocMessageType; const AMessage: string; 
   const AVerbosity: Cardinal);
 begin
   if Assigned(OnMessage) then
@@ -1986,11 +1986,11 @@ procedure TDocGenerator.ExpandDescriptions;
   end;
   
 begin
-  DoMessage(2, mtInformation, 'Expanding descriptions (pass 1) ...', []);
+  DoMessage(2, pmtInformation, 'Expanding descriptions (pass 1) ...', []);
   ExpandEverything(true);
-  DoMessage(2, mtInformation, 'Expanding descriptions (pass 2) ...', []);
+  DoMessage(2, pmtInformation, 'Expanding descriptions (pass 2) ...', []);
   ExpandEverything(false);
-  DoMessage(2, mtInformation, '... Descriptions expanded', []);
+  DoMessage(2, pmtInformation, '... Descriptions expanded', []);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2221,7 +2221,7 @@ begin
       end;
       
       if ItemName = '' then
-        DoMessage(2, mtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
+        DoMessage(2, pmtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
       else
         StoreDescription(ItemName, Description);
     finally
@@ -2239,7 +2239,7 @@ var
   i: Integer;
 begin
   if c <> nil then begin
-    DoMessage(3, mtInformation, 'Loading description files ...', []);
+    DoMessage(3, pmtInformation, 'Loading description files ...', []);
     for i := 0 to c.Count - 1 do
       LoadDescriptionFile(c[i]);
   end;
@@ -2255,7 +2255,7 @@ begin
   if not SplitNameParts(s, NameParts) then 
   begin
     if WarningIfNotSplittable then
-      DoMessage(2, mtWarning, 'The link "' + s + '" is invalid', []);
+      DoMessage(2, pmtWarning, 'The link "' + s + '" is invalid', []);
     Result := nil;
     Exit;
   end;
@@ -2282,7 +2282,7 @@ begin
   
   if (not SplitNameParts(s, NameParts)) then
   begin
-    DoMessage(2, mtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
+    DoMessage(2, pmtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
     Result := 'UNKNOWN';
     Exit;
   end;
@@ -2330,7 +2330,7 @@ begin
   end else
   if WarningIfLinkNotFound then
   begin
-    DoMessage(1, mtWarning, 'Could not resolve link "%s" (from description of "%s")', 
+    DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")', 
       [S, Item.QualifiedName]);
     Result := CodeString(ConvertString(S));
   end else
@@ -2355,7 +2355,7 @@ var
 begin
   if t = '' then Exit;
 
-  DoMessage(5, mtInformation, 'Storing description for ' + ItemName, []);
+  DoMessage(5, pmtInformation, 'Storing description for ' + ItemName, []);
   if SplitNameParts(ItemName, NameParts) then
   begin
     Item := FindGlobal(NameParts);
@@ -2367,9 +2367,9 @@ begin
         
       Item.RawDescription := Item.RawDescription + t;
     end else
-      DoMessage(2, mtWarning, 'Could not find item ' + ItemName, []);
+      DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);
   end else
-    DoMessage(2, mtWarning, 'Could not split item "' + ItemName + '"', []);
+    DoMessage(2, pmtWarning, 'Could not split item "' + ItemName + '"', []);
   
   t := '';
 end;
@@ -2433,7 +2433,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.DoMessage(const AVerbosity: Cardinal; const
-  MessageType: TMessageType; const AMessage: string; const AArguments: array of
+  MessageType: TPasDocMessageType; const AMessage: string; const AArguments: array of
   const);
 begin
   if Assigned(FOnMessage) then begin
@@ -2573,7 +2573,7 @@ begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
     if CreateStream(OverviewFileName, True) = csError then
     begin
-      DoMessage(1, mtError, 'Could not create output file "%s".', 
+      DoMessage(1, pmtError, 'Could not create output file "%s".', 
         [OverviewFileName]);
       Exit;
     end;
@@ -2611,7 +2611,7 @@ begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.dot';
     if CreateStream(OverviewFileName, True) = csError then 
     begin
-      DoMessage(1, mtError, 'Could not create output file "%s".', 
+      DoMessage(1, pmtError, 'Could not create output file "%s".', 
         [OverviewFileName]);
       Exit;
     end;
@@ -2680,7 +2680,7 @@ begin
   begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
-      DoMessage(2, mtWarning, 'Word misspelled "%s"', 
+      DoMessage(2, pmtWarning, 'Word misspelled "%s"', 
         [TSpellingError(AErrors[i]).Word]);
   end else
     AErrors.Clear;
@@ -2762,7 +2762,7 @@ begin
     except
       on E: Exception do
       begin
-        DoMessage(1, mtWarning, 'Executing aspell failed, ' +
+        DoMessage(1, pmtWarning, 'Executing aspell failed, ' +
           'disabling spell checking: "%s"', [E.Message]);
         Exit;
       end;
@@ -3486,7 +3486,7 @@ begin
     Exit;
   end;
 
-  DoMessage(2, mtInformation, 'Writing Docs for %s, "%s"',
+  DoMessage(2, pmtInformation, 'Writing Docs for %s, "%s"',
     [FLanguage.Translation[Id], ExternalItem.Name]);
 
   If ExternalItem.Title = '' then
@@ -3531,7 +3531,7 @@ begin
   
   if not IsValidIdent(AnchorName) then
   begin
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       'Invalid anchor name: "%s"', [AnchorName]);
     Exit;
   end;
@@ -3579,7 +3579,7 @@ begin
   except on E: EConvertError do
     begin
       if DoMessages then
-        ThisTag.TagManager.DoMessage(1, mtWarning,
+        ThisTag.TagManager.DoMessage(1, pmtWarning,
           'Invalid heading level in @section tag: "%s". %s', 
           [HeadingLevelString, E.Message]);
       Exit;
@@ -3589,7 +3589,7 @@ begin
   if HeadingLevel < 1 then
   begin
     if DoMessages then
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
         [HeadingLevel]);
     Exit;
@@ -3702,7 +3702,7 @@ begin
     
     if FileNames.Count = 0 then
     begin
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         'No parameters for @image tag', []);
     end else
       ReplaceStr := FormatImage(FileNames);

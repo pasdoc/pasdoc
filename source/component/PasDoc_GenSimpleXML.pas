@@ -227,14 +227,14 @@ var
 begin
   U.OutputFileName:=U.OutputFileName+'.xml';
   if not Assigned(U) then begin
-    DoMessage(1, mtError, 'TGenericXMLDocGenerator.WriteUnit: ' +
+    DoMessage(1, pmtError, 'TGenericXMLDocGenerator.WriteUnit: ' +
       'Unit variable has not been initialized.', []);
     Exit;
   end;
 
   if U.FileNewerThanCache(DestinationDirectory + U.OutputFileName) then
   begin
-    DoMessage(3, mtInformation, 'Data for unit "%s" was loaded from cache, '+
+    DoMessage(3, pmtInformation, 'Data for unit "%s" was loaded from cache, '+
       'and output file of this unit exists and is newer than cache, '+
       'skipped.', [U.Name]);
     Exit;
@@ -242,12 +242,12 @@ begin
 
   case CreateStream(U.OutputFileName, true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create XML unit doc file for unit %s.', [U.Name]);
+      DoMessage(1, pmtError, 'Could not create XML unit doc file for unit %s.', [U.Name]);
       Exit;
     end;
   end;
 
-  DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
+  DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteDirectLine('<unit name="' + ConvertString(U.SourceFileName) + '">');
   space:='  ';
   if u.HasDescription then
