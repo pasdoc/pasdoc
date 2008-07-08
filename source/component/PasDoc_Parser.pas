@@ -2139,24 +2139,23 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
+type
+  ePeekState = (psWait, psCollect, psGotRem, psDone);
+var
+  T: TToken;
+  TBackComment: boolean;
+  CommentInfo: TRawDescriptionInfo;
+  state: ePeekState;
 
-  { Extracts the documentation comment from T.CommentContent 
-    (and some other T properties needed for TRawDescriptionInfo)
-    to CommentInfo. Always T.MyType must be within TokenCommentTypes.
-
-    T must not be nil.
-
-    The comment is intended to be a "documentation comment",
+  { The comment is intended to be a "documentation comment",
     i.e. we intend to put it inside output documentation.
-    So comment markers, if present, 
-    are removed from the beginning and end of the data.
+    So comment markers, if present, are removed from the beginning of the data.
     Also, if comment markers were required but were not present,
     then CommentInfo.Content is an empty string.
 
     Also back-comment marker, the '<', is removed, if exists,
     and BackComment is set to @true. Otherwise BackComment is @false. }
   procedure ExtractDocComment(
-    const t: TToken; out CommentInfo: TRawDescriptionInfo; 
     out BackComment: boolean);
   const
     BackCommentMarker = '<';
@@ -2166,15 +2165,11 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     WasMarker: boolean;
   begin
     BackComment := false;
-    CommentInfo.Content := T.CommentContent;
-    CommentInfo.StreamName := T.StreamName;
-    CommentInfo.BeginPosition := T.BeginPosition;
-    CommentInfo.EndPosition := T.EndPosition;
 
     if CommentMarkers.Count <> 0 then
     begin
       WasMarker := false;
-      for i := 0 to CommentMarkers.Count - 1 do 
+      for i := 0 to CommentMarkers.Count - 1 do
       begin
         Marker := CommentMarkers[i];
         if IsPrefix(Marker, CommentInfo.Content) then
@@ -2197,85 +2192,110 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       BackComment := true;
       Delete(CommentInfo.Content, 1, Length(BackCommentMarker));
     end;
-  end;    
+  end;
+
+  { Extracts the documentation comment from T.CommentContent
+    (and some other T properties needed for TRawDescriptionInfo)
+    to CommentInfo.
+    Returns True if comment finished.
+  }
+  function Collect(fCstyle: boolean): boolean;
+  begin
+    if state = psWait then begin
+    //first comment
+    //ignore if empty?
+      CommentInfo.Content := T.CommentContent;
+      CommentInfo.StreamName := T.StreamName;
+      CommentInfo.BeginPosition := T.BeginPosition;
+      CommentInfo.EndPosition := T.EndPosition;
+      if fCstyle then
+        state := psCollect
+      else
+        state := psGotRem;
+    end else if fCstyle and (state = psCollect) then begin
+      CommentInfo.Content := CommentInfo.Content + LineEnding + T.CommentContent;
+      if t.StreamName = CommentInfo.StreamName then
+        CommentInfo.EndPosition := T.EndPosition
+      else // ' ' is used to indicate comment spanning streams
+        CommentInfo.StreamName := ' ';
+    end else begin
+    //error: mixed comment styles
+      state := psGotRem;
+    end;
+    Result := state = psGotRem;
+  end;
 
 var
-  T: TToken;
-  TBackComment, TIsCStyle: boolean;
-  TCommentInfo: TRawDescriptionInfo;
   i: Integer;
 begin
-  Result := nil;
-  t := nil;
+//peek next
   WhitespaceCollector := '';
+  CommentInfo.Content := '';
+  t := Scanner.PeekToken;
   repeat
-    t := Scanner.PeekToken;
-    if t.MyType in TokenCommentTypes then
-    begin
+    state := psWait;
+    while state < psGotRem do begin
+      case t.MyType of
+      TOK_COMMENT_PAS, TOK_COMMENT_EXT:
+        if Collect(False) then
+          break;
+      TOK_COMMENT_CSTYLE:
+        if Collect(True) then
+          break;
+      TOK_WHITESPACE:
+        if state <> psCollect then //ignore between comments?
+          WhitespaceCollector := WhitespaceCollector + t.Data;
+      else //case
+        state := psDone;
+        continue; //don't consume!
+      end;
       Scanner.ConsumeToken;
-
-      { Get info from T }
-      ExtractDocComment(T, TCommentInfo, TBackComment);
-      TIsCStyle := t.MyType = TOK_COMMENT_CSTYLE;
       FreeAndNil(T);
-      
+      t := Scanner.PeekToken;
+    end; //collect comments
+  //we got an finished comment (psGotRem), and/or a token (psDone)
+    if CommentInfo.Content <> '' then begin
+    //got comment
+      ExtractDocComment(TBackComment);
+
       if TBackComment then
       begin
         if ItemsForNextBackComment.Count = 0 then
-          DoMessage(1, mtWarning, 
+          DoMessage(1, mtWarning,
             '%s: This is a back-comment (comment starting with "<") ' +
-            'but there is no item declared right before it: "%s"', 
-            [Scanner.GetStreamInfo, TCommentInfo.Content]);
+            'but there is no item declared right before it: "%s"',
+            [Scanner.GetStreamInfo, CommentInfo.Content]);
 
         for i := 0 to ItemsForNextBackComment.Count - 1 do
         begin
           if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
-            DoMessage(1, mtWarning, 
+            DoMessage(1, mtWarning,
               '%s: Item %s already has one description, now it''s ' +
               'overriden by back-comment (comment starting with "<"): "%s"',
               [ Scanner.GetStreamInfo,
                 ItemsForNextBackComment.PasItemAt[i].QualifiedName,
-                TCommentInfo.Content]);
-              
-          ItemsForNextBackComment.PasItemAt[i].RawDescriptionInfo^ := TCommentInfo;
+                CommentInfo.Content]);
+
+          ItemsForNextBackComment.PasItemAt[i].RawDescriptionInfo^ := CommentInfo;
         end;
-        
+
         ItemsForNextBackComment.Clear;
-      end else
-      if IsLastComment and LastCommentWasCStyle and TIsCStyle then
-      begin
-        { If there are several //-style comments in a row, combine them }
-        LastCommentInfo.Content := LastCommentInfo.Content + 
-          LineEnding + TCommentInfo.Content;
-        if LastCommentInfo.StreamName = TCommentInfo.StreamName then
-          LastCommentInfo.EndPosition := TCommentInfo.EndPosition else
-          // ' ' is used to indicate that there is no
-          // single stream containing the entire comment.
-          LastCommentInfo.StreamName := ' ';
       end else
       begin
         { This is a normal comment, so fill [Is]LastCommentXxx properties }
         IsLastComment := true;
-        LastCommentWasCStyle := TIsCStyle;
-        LastCommentInfo := TCommentInfo;
-      end;
-    end else
-    begin
-      case t.MyType of
-        TOK_WHITESPACE: 
-          begin
-            Scanner.ConsumeToken;
-            WhitespaceCollector := WhitespaceCollector + t.Data;
-            FreeAndNil(t);
-          end;
-        else 
-          begin
-            Result := t;
-            break;
-          end;
+        //LastCommentWasCStyle := TIsCStyle;
+        LastCommentInfo := CommentInfo;
       end;
     end;
+  //got token?
+    if state = psDone then
+      Break;
+    Scanner.ConsumeToken;
+    FreeAndNil(t);
+    t := Scanner.PeekToken;
   until False;
+  Result := t;
 end;
 
 function TParser.PeekNextToken: TToken; 
