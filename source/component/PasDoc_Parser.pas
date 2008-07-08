@@ -115,12 +115,12 @@ type
       LastCommentContent is only the comment content, with comment braces
       and markers already stripped. }
     IsLastComment: boolean;
-    LastCommentWasCStyle: boolean;
+    //LastCommentWasCStyle: boolean;
     LastCommentInfo: TRawDescriptionInfo;
     
     { The underlying scanner object. }
     Scanner: TScanner;
-    
+
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
@@ -451,9 +451,29 @@ const
 
 procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
+{$IFDEF new}
+//short version, error messages differ from old version!
   if T.MyType <> ATokenType then
-    DoError(SExpectedButFound, 
+    DoError(SExpectedButFound,
       [TokenNames[ATokenType], T.Description]);
+{$ELSE}
+  if T.MyType <> ATokenType then begin
+    if t.MyType >= KEY_AND then begin
+    //key
+      DoError(SExpectedButFound,
+        [Format('reserved word "%s"', [LowerCase(tokennames[Atokentype])]),
+          T.Description]);
+    end else if t.MyType >= SYM_PLUS then begin
+    //symbol
+      DoError(SExpectedButFound,
+        [Format('symbol "%s"', [TokenNames[ATokenType]]),
+          T.Description]);
+    end else
+      DoError(SExpectedButFound,
+        [TokenNames[ATokenType],
+          T.Description]);
+  end;
+{$ENDIF}
 end;
 
 {$IFDEF old}
@@ -1408,7 +1428,7 @@ procedure TParser.ParseRecordCase(const R: TPasCio;
   const SubCase: boolean);
 var
   t1: TToken;
-  LNeedId: boolean;
+  //LNeedId: boolean;
   P: TPasItem;
 begin
   t1 := GetNextToken;
@@ -1436,7 +1456,7 @@ begin
   GetAndCheckNextToken(KEY_OF);
 
   t1 := GetNextToken;
-  LNeedId := True;
+  //LNeedId := True;
   repeat
 {$IFDEF old}
     while true do begin
