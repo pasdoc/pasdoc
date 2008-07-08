@@ -279,14 +279,14 @@ function TToken.Description: string;
 begin
   if MyType >= KEY_AND then begin
   //key
-    Result := 'reserved word "' + TokenNames[MyType] + '"';
+    Result := 'reserved word "' + Data + '"';
   end else if MyType >= SYM_PLUS then begin
   //symbol
-    Result := 'symbol "' + TokenNames[MyType] + '"';
+    Result := 'symbol "' + Data + '"';
   end else if MyType = TOK_IDENTIFIER then begin
-    Result := 'identifier "' + TokenNames[MyType] + '"';
+    Result := 'identifier "' + Data + '"';
   end else
-    Result := TOKENNAMES[MyType];
+    Result := TokenNames[MyType];
 
 {$IFDEF old}
   if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then

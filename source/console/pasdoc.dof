@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=..\component;..\Console;..\component\tipue
 UsePackages=0
 [Parameters]
-RunParams=
+RunParams=..\..\tests\error_expected_semicolon.pas
 HostApplication=
 Launcher=
 UseLauncher=0

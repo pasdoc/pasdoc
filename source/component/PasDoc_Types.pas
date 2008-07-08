@@ -230,6 +230,9 @@ const
     'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS'
   );
 
+//standardized token definition (for old style error reports)
+function  TokenDefinition(ATokenType: TTokenType): string;
+
 type
   { This represents parts of a qualified name of some item.
 
@@ -272,6 +275,16 @@ begin
 end;
 
 { global routines ------------------------------------------------------------ }
+
+function  TokenDefinition(ATokenType: TTokenType): string;
+begin
+  if ATokenType >= KEY_AND then
+    Result := 'reserved word "' + LowerCase(TokenNames[ATokenType]) + '"'
+  else if ATokenType >= SYM_PLUS then
+    Result := 'symbol "' + TokenNames[ATokenType] + '"'
+  else
+    Result := TokenNames[ATokenType];
+end;
 
 function SplitNameParts(S: string; 
   out NameParts: TNameParts): Boolean;

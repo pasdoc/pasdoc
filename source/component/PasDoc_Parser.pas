@@ -451,19 +451,18 @@ const
 
 procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
-{$IFDEF new}
+{$IFNDEF new}
 //short version, error messages differ from old version!
   if T.MyType <> ATokenType then
-    DoError(SExpectedButFound,
-      [TokenNames[ATokenType], T.Description]);
+    DoError(SExpectedButFound, [TokenDefinition(ATokenType), T.Description]);
 {$ELSE}
   if T.MyType <> ATokenType then begin
-    if t.MyType >= KEY_AND then begin
+    if ATokenType >= KEY_AND then begin
     //key
       DoError(SExpectedButFound,
-        [Format('reserved word "%s"', [LowerCase(tokennames[Atokentype])]),
+        [Format('reserved word "%s"', [LowerCase(TokenNames[ATokenType])]),
           T.Description]);
-    end else if t.MyType >= SYM_PLUS then begin
+    end else if ATokenType >= SYM_PLUS then begin
     //symbol
       DoError(SExpectedButFound,
         [Format('symbol "%s"', [TokenNames[ATokenType]]),
