@@ -277,22 +277,12 @@ end;
 
 function TToken.Description: string;
 begin
-  if MyType >= KEY_AND then begin
-  //key
-    Result := 'reserved word "' + Data + '"';
-  end else if MyType >= SYM_PLUS then begin
-  //symbol
-    Result := 'symbol "' + Data + '"';
-  end else if MyType = TOK_IDENTIFIER then begin
-    Result := 'identifier "' + Data + '"';
-  end else
-    Result := TokenNames[MyType];
-
 {$IFDEF old}
+  Result := TokenNames[MyType];
   if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
-  if MyType in sSymbolType + sKeyword + [TOK_IDENTIFIER] then
     Result := Result + ' "' + Data + '"';
 {$ELSE}
+  Result := TokenDefinition(MyType, data);
 {$ENDIF}
 end;
 
@@ -411,7 +401,7 @@ end;
 function TTokenizer.GetToken: TToken;
 var
   c: Char;
-  MaybeKeyword: eKeyword;
+  //MaybeKeyword: eKeyword;
   s: string;
   J: Integer;
   BeginPosition: integer;

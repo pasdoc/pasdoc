@@ -79,8 +79,8 @@ type
 
   TBaseItems = class;
   TPasItems = class;
-  TPasMethods = class;
-  TPasProperties = class;
+  //TPasMethods = class;
+  //TPasProperties = class;
 
   { Raw description, in other words: the contents of comment before
     given item. Besides the content, this also
@@ -93,7 +93,7 @@ type
     // Will be '' if no comment was found.  It will be ' ' if
     // the comment was somehow read from more than one stream.
     StreamName: string;
-    
+
     // @name is the position in the stream of the start of the comment.
     BeginPosition: Int64;
     
@@ -233,7 +233,7 @@ type
     { This stores unexpanded version (as specified
       in user's comment in source code of parsed units)
       of description of this item. 
-      
+
       Actually, this is just a shortcut to 
       @code(@link(RawDescriptionInfo).Content) }
     property RawDescription: string 
@@ -324,7 +324,7 @@ type
   protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    
+
     { This does the same thing as @link(FindName) but it @italic(doesn't)
       scan other units. If this item is a unit, it searches only
       inside this unit, else it searches only inside @link(MyUnit)
@@ -408,7 +408,7 @@ type
     
     { is this item deprecated? }
     property IsDeprecated: boolean read FIsDeprecated write FIsDeprecated;
-    
+
     { Is this item platform specific? 
       This is decided by "platform" hint directive after an item. }
     property IsPlatformSpecific: boolean 
@@ -451,7 +451,7 @@ type
          @item TPasProperty (includes read/write and storage specifiers, etc.) 
          @item(TPasEnum 
          
-           But in this special case, '...' is used instead of listing individual 
+           But in this special case, '...' is used instead of listing individual
            members, e.g. 'TEnumName = (...)'. You can get list of Members using
            TPasEnum.Members. Eventual specifics of each member should be also
            specified somewhere inside Members items, e.g.
@@ -480,6 +480,115 @@ type
     function BasePath: string; override;
   end;
 
+  { Container class to store a list of @link(TBaseItem)s. }
+  TBaseItems = class(TObjectVector)
+  private
+    FHash: TObjectHash;
+    procedure Serialize(const ADestination: TStream);
+    procedure Deserialize(const ASource: TStream);
+  public
+    constructor Create(const AOwnsObject: Boolean); override;
+    destructor Destroy; override;
+
+    { Compares each element's name field with Name and returns the item on
+      success, nil otherwise.
+      Name's case is not regarded. }
+    function FindName(const AName: string): TBaseItem;
+
+    { Inserts all items of C into this collection.
+      Disposes C and sets it to nil. }
+    procedure InsertItems(const c: TBaseItems);
+
+    { During Add, AObject is associated with AObject.Name using hash table,
+      so remember to set AObject.Name @italic(before) calling Add(AObject). }
+    procedure Add(const AObject: TBaseItem);
+
+    { This is a shortcut for doing @link(Clear) and then
+      @link(Add Add(AObject)). Useful when you want the list
+      to contain exactly the one given AObject. }
+    procedure ClearAndAdd(const AObject: TBaseItem);
+
+    procedure Delete(const AIndex: Integer);
+    procedure Clear; override;
+  end;
+
+  { Container class to store a list of @link(TPasItem)s. }
+  TPasItems = class(TBaseItems)
+  private
+    function GetPasItemAt(const AIndex: Integer): TPasItem;
+    procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
+  public
+    { This is a comfortable routine that just calls inherited and
+      casts result to TPasItem, since every item on this list must
+      be always TPasItem. }
+    function FindName(const AName: string): TPasItem;
+
+    { Copies all Items from c to this object, not changing c at all. }
+    procedure CopyItems(const c: TPasItems);
+    
+    { Counts classes, interfaces and objects within this collection. }
+    procedure CountCIO(var c, i, o: Integer);
+
+    { Checks each element's Visibility field and removes all elements with a value
+      of viPrivate. }
+    procedure RemovePrivateItems;
+
+    property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
+      write SetPasItemAt;
+
+    { This sorts all items on this list by their name,
+      and also calls @link(TPasItem.Sort Sort(SortSettings))
+      for each of these items.
+      This way it sorts recursively everything in this list. 
+      
+      This is equivalent to doing both 
+      @link(SortShallow) and @link(SortOnlyInsideItems). }
+    procedure SortDeep(const SortSettings: TSortSettings);
+    
+    { This calls @link(TPasItem.Sort Sort(SortSettings)) 
+      for each of items on the list.
+      It does @italic(not) sort the items on this list. }
+    procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
+
+    { This sorts all items on this list by their name.
+      Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort) 
+      for each of these items.
+      So "items inside items" (e.g. class methods, if this list contains
+      TPasCio objects) remain unsorted. }
+    procedure SortShallow;
+
+    { Set IsDeprecated property of all Items to given Value }
+    procedure SetIsDeprecated(Value: boolean);
+    
+    { Set IsPlatformSpecific property of all Items to given Value }
+    procedure SetIsPlatformSpecific(Value: boolean);
+    
+    { Set IsLibrarySpecific property of all Items to given Value }
+    procedure SetIsLibrarySpecific(Value: boolean);
+    
+    { Sets FullDeclaration of every item to 
+      @orderedList(
+        @item Name of this item (only if PrefixName)
+        @item + Suffix.
+      )
+      Very useful if you have a couple of items that share a common
+      declaration in source file, e.g. variables or fields declared like
+      @longcode(#
+        A, B: Integer;
+      #) }
+    procedure SetFullDeclaration(PrefixName: boolean; const Suffix: string);
+  end;
+
+  { @Name holds a collection of methods. It introduces no
+    new methods compared to @link(TPasItems), but this may be
+    implemented in a later stage. }
+  TPasMethods = TPasItems;  //class(TPasItems)  end;
+
+  { @Name holds a collection of properties. It introduces no
+    new methods compared to @link(TPasItems), but this may be
+    implemented in a later stage. }
+  TPasProperties = TPasItems; //class(TPasItems)  end;
+
   { @abstract(Pascal constant.)
     
     Precise definition of "constant" for pasdoc purposes is 
@@ -488,22 +597,19 @@ type
     Well, Pascal constant always has some type, but pasdoc is too weak
     to determine the implicit type of a constant, i.e. to unserstand that
     constand @code(const A = 1) is of type Integer. }
-  TPasConstant = class(TPasItem)
-  end;
+  TPasConstant = TPasItem;  // class(TPasItem) end;
 
   { @abstract(Pascal global variable or field of CIO.)
-  
+
     Precise definition is "a name with some type".
     And optionally with some initial value, for global variables.
-    
+
     In the future we may introduce here some property like Type: TPasType. }
-  TPasFieldVariable = class(TPasItem)
-  end;
-  
+  TPasFieldVariable = TPasItem; //class(TPasItem) end;
+
   { @abstract(Pascal type (but not a procedural type --- these are expressed
     as @link(TPasMethod).)) }
-  TPasType = class(TPasItem)
-  end;
+  TPasType = TPasItem;  //class(TPasItem)  end;
 
   { @abstract(Enumerated type.) }
   TPasEnum = class(TPasType)
@@ -530,7 +636,7 @@ type
     @orderedList(
       @item global function/procedure,
       @item method (function/procedure of a class/interface/object),
-      @item pointer type to one of the above (in this case Name is the type name). 
+      @item pointer type to one of the above (in this case Name is the type name).
     ) }
   TPasMethod = class(TPasItem)
   protected
@@ -552,15 +658,15 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    
+
     { In addition to inherited, this also registers @link(TTag)s
       that init @link(Params), @link(Returns) and @link(Raises)
       and remove according tags from description. }
     procedure RegisterTags(TagManager: TTagManager); override;
-    
+
     { }
     property What: TMethodType read FWhat write FWhat;
-    
+
     { Note that Params, Returns, Raises are already in the form processed by
       @link(TTagManager.Execute), i.e. with links resolved,
       html characters escaped etc. So @italic(don't) convert them (e.g. before
@@ -579,8 +685,8 @@ type
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
     property Raises: TStringPairVector read FRaises;
-    
-    { Are some optional properties (i.e. the ones that may be empty for 
+
+    { Are some optional properties (i.e. the ones that may be empty for
       TPasMethod after parsing unit and expanding tags --- currently this
       means @link(Params), @link(Returns) and @link(Raises)) specified ? }
     function HasMethodOptionalInfo: boolean;
@@ -618,12 +724,12 @@ type
   end;
 
   { enumeration type to determine type of @link(TPasCio) item }
-  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT, 
+  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT,
     CIO_RECORD, CIO_PACKEDRECORD);
 
   TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED);
 
-  { @abstract(Extends @link(TPasItem) to store all items in 
+  { @abstract(Extends @link(TPasItem) to store all items in
     a class / an object, e.g. fields.) }
   TPasCio = class(TPasType)
   protected
@@ -648,13 +754,13 @@ type
       property with the name of ItemName, the corresponding item pointer is
       returned. }
     function FindItem(const ItemName: string): TBaseItem; override;
-    
-    function FindItemMaybeInAncestors(const ItemName: string): 
+
+    function FindItemMaybeInAncestors(const ItemName: string):
       TBaseItem; override;
-    
+
     { This searches for item (field, method or property) defined
       in ancestor of this cio. I.e. searches within the FirstAncestor,
-      then within FirstAncestor.FirstAncestor, and so on. 
+      then within FirstAncestor.FirstAncestor, and so on.
       Returns nil if not found. }
     function FindItemInAncestors(const ItemName: string): TPasItem;
 
@@ -795,13 +901,13 @@ type
     FSectionCaption: string;
   public
     property ExternalItem: TExternalItem read FExternalItem write FExternalItem;
-    
+
     { If this is an anchor for a section, this tells section level
       (as was specified in the @@section tag).
       Otherwise this is 0. }
     property SectionLevel: Integer
       read FSectionLevel write FSectionLevel default 0;
-      
+
     { If this is an anchor for a section, this tells section caption
       (as was specified in the @@section tag). }
     property SectionCaption: string
@@ -810,8 +916,8 @@ type
 
   { extends @link(TPasItem) to store anything about a unit, its constants,
     types etc.; also provides methods for parsing a complete unit.
-    
-    Note: Remember to always set @link(CacheDateTime) after 
+
+    Note: Remember to always set @link(CacheDateTime) after
     deserializing this unit. }
   TPasUnit = class(TPasItem)
   protected
@@ -847,19 +953,19 @@ type
     property Constants: TPasItems read FConstants;
     { list of functions and procedures defined in this unit }
     property FuncsProcs: TPasMethods read FFuncsProcs;
-    
+
     { The names of all units mentioned in a uses clause in the interface
       section of this unit.
-      
+
       This is never nil.
 
       After @link(TDocGenerator.BuildLinks), for every i:
-      UsesUnits.Objects[i] will point to TPasUnit object with 
-      Name = UsesUnits[i] (or nil, if pasdoc's didn't parse such unit). 
-      In other words, you will be able to use UsesUnits.Objects[i] to 
+      UsesUnits.Objects[i] will point to TPasUnit object with
+      Name = UsesUnits[i] (or nil, if pasdoc's didn't parse such unit).
+      In other words, you will be able to use UsesUnits.Objects[i] to
       obtain given unit's instance, as parsed by pasdoc. }
     property UsesUnits: TStringVector read FUsesUnits;
-    
+
     { list of types defined in this unit }
     property Types: TPasItems read FTypes;
     { list of variables defined in this unit }
@@ -867,7 +973,7 @@ type
     { name of documentation output file
       THIS SHOULD NOT BE HERE! }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
-    
+
     property SourceFileName: string read FSourceFilename write FSourceFilename;
     property SourceFileDateTime: TDateTime
       read FSourceFileDateTime write FSourceFileDateTime;
@@ -875,11 +981,11 @@ type
     { If WasDeserialized then this specifies the datetime
       of a cache data of this unit, i.e. when cache data was generated.
       If cache was obtained from a file then this is just the cache file
-      modification date/time. 
-      
-      If not WasDeserialized then this property has undefined value -- 
+      modification date/time.
+
+      If not WasDeserialized then this property has undefined value --
       don't use it. }
-    property CacheDateTime: TDateTime 
+    property CacheDateTime: TDateTime
       read FCacheDateTime write FCacheDateTime;
 
     { If @false, then this is a program or library file, not a regular unit
@@ -887,132 +993,21 @@ type
       class for this). }
     property IsUnit: boolean read FIsUnit write FIsUnit;
     property IsProgram: boolean read FIsProgram write FIsProgram;
-      
-    { Returns if unit WasDeserialized, and file FileName exists, 
-      and file FileName is newer than CacheDateTime. 
-      
+
+    { Returns if unit WasDeserialized, and file FileName exists,
+      and file FileName is newer than CacheDateTime.
+
       So if FileName contains some info generated from information
       of this unit, then we can somehow assume that FileName still
-      contains valid information and we don't have to write 
-      it once again. 
-      
+      contains valid information and we don't have to write
+      it once again.
+
       Sure, we're not really 100% sure that FileName still
       contains valid information, but that's how current approach
       to cache works. }
     function FileNewerThanCache(const FileName: string): boolean;
-    
+
     function BasePath: string; override;
-  end;
-  
-  { Container class to store a list of @link(TBaseItem)s. }
-  TBaseItems = class(TObjectVector)
-  private
-    FHash: TObjectHash;
-    procedure Serialize(const ADestination: TStream);
-    procedure Deserialize(const ASource: TStream);
-  public
-    constructor Create(const AOwnsObject: Boolean); override;
-    destructor Destroy; override; 
-    
-    { Compares each element's name field with Name and returns the item on
-      success, nil otherwise.
-      Name's case is not regarded. }
-    function FindName(const AName: string): TBaseItem;
-    
-    { Inserts all items of C into this collection.
-      Disposes C and sets it to nil. }
-    procedure InsertItems(const c: TBaseItems);
-
-    { During Add, AObject is associated with AObject.Name using hash table,
-      so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem);
-    
-    { This is a shortcut for doing @link(Clear) and then 
-      @link(Add Add(AObject)). Useful when you want the list
-      to contain exactly the one given AObject. }
-    procedure ClearAndAdd(const AObject: TBaseItem);
-    
-    procedure Delete(const AIndex: Integer);
-    procedure Clear; override;
-  end;
-
-  { Container class to store a list of @link(TPasItem)s. }
-  TPasItems = class(TBaseItems)
-  private
-    function GetPasItemAt(const AIndex: Integer): TPasItem;
-    procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
-  public
-    { This is a comfortable routine that just calls inherited and 
-      casts result to TPasItem, since every item on this list must 
-      be always TPasItem. }
-    function FindName(const AName: string): TPasItem;
-    
-    { Copies all Items from c to this object, not changing c at all. }
-    procedure CopyItems(const c: TPasItems);
-    
-    { Counts classes, interfaces and objects within this collection. }
-    procedure CountCIO(var c, i, o: Integer);
-
-    { Checks each element's Visibility field and removes all elements with a value
-      of viPrivate. }
-    procedure RemovePrivateItems;
-
-    property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
-      write SetPasItemAt;
-
-    { This sorts all items on this list by their name,
-      and also calls @link(TPasItem.Sort Sort(SortSettings))
-      for each of these items.
-      This way it sorts recursively everything in this list. 
-      
-      This is equivalent to doing both 
-      @link(SortShallow) and @link(SortOnlyInsideItems). }
-    procedure SortDeep(const SortSettings: TSortSettings);
-    
-    { This calls @link(TPasItem.Sort Sort(SortSettings)) 
-      for each of items on the list.
-      It does @italic(not) sort the items on this list. }
-    procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
-
-    { This sorts all items on this list by their name.
-      Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort) 
-      for each of these items.
-      So "items inside items" (e.g. class methods, if this list contains
-      TPasCio objects) remain unsorted. }
-    procedure SortShallow;
-
-    { Set IsDeprecated property of all Items to given Value }
-    procedure SetIsDeprecated(Value: boolean);
-    
-    { Set IsPlatformSpecific property of all Items to given Value }
-    procedure SetIsPlatformSpecific(Value: boolean);
-    
-    { Set IsLibrarySpecific property of all Items to given Value }
-    procedure SetIsLibrarySpecific(Value: boolean);
-    
-    { Sets FullDeclaration of every item to 
-      @orderedList(
-        @item Name of this item (only if PrefixName)
-        @item + Suffix.
-      )
-      Very useful if you have a couple of items that share a common
-      declaration in source file, e.g. variables or fields declared like
-      @longcode(#
-        A, B: Integer;
-      #) }
-    procedure SetFullDeclaration(PrefixName: boolean; const Suffix: string);
-  end;
-
-  { @Name holds a collection of methods. It introduces no
-    new methods compared to @link(TPasItems), but this may be
-    implemented in a later stage. }
-  TPasMethods = class(TPasItems)
-  end;
-
-  { @Name holds a collection of properties. It introduces no
-    new methods compared to @link(TPasItems), but this may be
-    implemented in a later stage. }
-  TPasProperties = class(TPasItems)
   end;
 
   { @abstract(Holds a collection of units.) }
@@ -1031,7 +1026,7 @@ const
   CIORecordType = [CIO_RECORD, CIO_PACKEDRECORD];
   CIONonHierarchy = CIORecordType;
 
-  EmptyRawDescriptionInfo: TRawDescriptionInfo = 
+  EmptyRawDescriptionInfo: TRawDescriptionInfo =
   ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
 
 { Returns lowercased keyword associated with given method type. }

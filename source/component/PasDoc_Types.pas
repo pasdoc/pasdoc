@@ -231,7 +231,7 @@ const
   );
 
 //standardized token definition (for old style error reports)
-function  TokenDefinition(ATokenType: TTokenType): string;
+function  TokenDefinition(ATokenType: TTokenType; data: string = ''): string;
 
 type
   { This represents parts of a qualified name of some item.
@@ -276,12 +276,16 @@ end;
 
 { global routines ------------------------------------------------------------ }
 
-function  TokenDefinition(ATokenType: TTokenType): string;
+function  TokenDefinition(ATokenType: TTokenType; data: string = ''): string;
 begin
-  if ATokenType >= KEY_AND then
-    Result := 'reserved word "' + LowerCase(TokenNames[ATokenType]) + '"'
-  else if ATokenType >= SYM_PLUS then
+  if ATokenType >= KEY_AND then begin
+    if data = '' then
+      data := LowerCase(TokenNames[ATokenType]);
+    Result := 'reserved word "' + data + '"';
+  end else if ATokenType >= SYM_PLUS then begin
     Result := 'symbol "' + TokenNames[ATokenType] + '"'
+  end else if (data <> '') and (ATokenType = TOK_IDENTIFIER) then
+    Result := 'identifier "' + data + '"'
   else
     Result := TokenNames[ATokenType];
 end;

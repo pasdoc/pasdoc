@@ -110,14 +110,15 @@ type
       This only takes into account normal comments, i.e. not back-comments.
       Modified by @link(GetLastComment) and @link(PeekNextToken)
       (and consequently by all @link(PeekNextToken) and @link(GetNextToken)
-      versions). 
-      
+      versions).
+
       LastCommentContent is only the comment content, with comment braces
       and markers already stripped. }
     IsLastComment: boolean;
-    //LastCommentWasCStyle: boolean;
     LastCommentInfo: TRawDescriptionInfo;
-    
+  //Token + whitespace recorder
+    Recorded: string;
+
     { The underlying scanner object. }
     Scanner: TScanner;
 
@@ -126,19 +127,19 @@ type
     FCommentMarkers: TStringList;
     FMarkersOptional: boolean;
     FShowVisibilities: TVisibilities;
-    
+
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
       [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
-    
+
     { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
       If given KeyWord has no corresponding @link(TMethodType) value,
       raises @link(EInternalError). }
     function KeyWordToMethodType(KeyWord: eKeyWord): TMethodType;
 
-    procedure DoError(const AMessage: string; 
+    procedure DoError(const AMessage: string;
       const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TPasDocMessageType; const AMessage: string; const AArguments: array of const);
@@ -147,59 +148,48 @@ type
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; ATokenType: TTokenType); //overload;
 
-  {$IFDEF old}
-    { Checks if T.IsSymbol(ASymbolType), if not calls DoError
-      with appropriate error mesg. }
-    procedure CheckToken(T: TToken; ASymbolType: TSymbolType); overload;
-
-    { Checks if T.IsKeyWord(AKeyWord), if not calls DoError
-      with appropriate error mesg. }
-    procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
-  {$ELSE}
-  {$ENDIF}
-
     { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
       otherwise returns LastCommentInfo and sets IsLastComment to false. }
     function GetLastComment: TRawDescriptionInfo;
 
     { Reads tokens and throws them away as long as they are either whitespace
       or comments.
-      
+
       Sets WhitespaceCollector to all the whitespace that was skipped.
       (Does @italic(not) append them to WhitespaceCollector,
       it @italic(sets) WhitespaceCollector to them, deleting previous
       WhitespaceCollector value.)
-      
+
       Comments are collected to [Is]LastCommentXxx properties, so that you can
       use GetLastComment.
 
       Returns non-white token that was found.
       This token is equal to @code(Scanner.PeekToken).
       Note that this token was @italic(peeked)
-      from the stream, i.e. the caller is still responsible for doing 
+      from the stream, i.e. the caller is still responsible for doing
       @code(Scanner.ConsumeToken).
       Calling this method twice in a row will return the same thing.
-      
+
       Always returns something non-nil (will raise exception in case
       of problems, e.g. when stream ended). }
     function PeekNextToken(out WhitespaceCollector: string): TToken; overload;
-    
+
     { Same thing as PeekNextToken(Dummy) }
     function PeekNextToken: TToken; overload;
-        
+
     { Just like @link(PeekNextToken), but returned token is already consumed.
       Next call to @name will return next token. }
     function GetNextToken(out WhitespaceCollector: string): TToken; overload;
-    
+
     { Just like @link(PeekNextToken), but returned token is already consumed.
-      Moreover, whitespace collected is appended to 
+      Moreover, whitespace collected is appended to
       WhitespaceCollectorItem.FullDeclaration
       (does not delete previous WhitespaceCollectorItem.FullDeclaration value, 
       it only appends to it). }
     function GetNextToken(WhitespaceCollectorItem: TPasItem): TToken; overload;
     
     function GetNextToken: TToken; overload;
-    
+
     { This does @link(GetNextToken), then checks is it a ATokenType
       (using @link(CheckToken)), then frees the token.
       Returns token Data.
@@ -209,21 +199,6 @@ type
       more dots ('.')
       @param AIsUnitName is a dummy parameter to allow overloading that is assumed to be true }
     function GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string; overload;
-
-  {$IFDEF old}
-    { This does @link(GetNextToken), then checks is it a symbol with
-      ASymbolType (using @link(CheckToken)), then frees the token.
-      Returns token Data.
-      Just a comfortable routine. }
-    function GetAndCheckNextToken(ASymbolType: eSymbolType): string; overload;
-
-    { This does @link(GetNextToken), then checks is it a keyword with
-      AKeyWord (using @link(CheckToken)), then frees the token.
-      Returns token Data.
-      Just a comfortable routine. }
-    function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
-  {$ELSE}
-  {$ENDIF}
 
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
@@ -254,7 +229,7 @@ type
       N is the name of this item.
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
-    procedure ParseCIO(const U: TPasUnit; 
+    procedure ParseCIO(const U: TPasUnit;
       const CioName: string; CIOType: TCIOType; 
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
@@ -451,7 +426,7 @@ const
 
 procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
-{$IFNDEF new}
+{$IFNDEF old}
 //short version, error messages differ from old version!
   if T.MyType <> ATokenType then
     DoError(SExpectedButFound, [TokenDefinition(ATokenType), T.Description]);
@@ -475,24 +450,6 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF old}
-procedure TParser.CheckToken(T: TToken; ASymbolType: TSymbolType);
-begin
-  if not T.IsSymbol(ASymbolType) then
-    DoError(SExpectedButFound,
-      [Format('symbol "%s"', [SymbolNames[ASymbolType]]), T.Description]);
-end;
-
-procedure TParser.CheckToken(T: TToken; AKeyWord: TKeyWord);
-begin
-  if not T.IsKeyWord(AKeyWord) then
-    DoError(SExpectedButFound,
-      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]),
-      T.Description]);
-end;
-{$ELSE}
-{$ENDIF}
-
 { ---------------------------------------------------------------------------- }
 
 function TParser.GetLastComment: TRawDescriptionInfo;
@@ -510,6 +467,7 @@ end;
 function TParser.GetNextToken(out WhitespaceCollector: string): TToken;
 begin
   Result := PeekNextToken(WhitespaceCollector);
+  Recorded := Recorded + Result.Data;
   Scanner.ConsumeToken;
 end;
 
@@ -518,7 +476,7 @@ var
   WhitespaceCollector: string;
 begin
   Result := GetNextToken(WhitespaceCollector);
-  WhitespaceCollectorItem.FullDeclaration := 
+  WhitespaceCollectorItem.FullDeclaration :=
     WhitespaceCollectorItem.FullDeclaration + WhitespaceCollector;
 end;
 
@@ -531,7 +489,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string; 
+function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string;
 var
   T: TToken;
 begin
@@ -539,7 +497,7 @@ begin
   try
     CheckToken(T, ATokenType);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
@@ -551,64 +509,37 @@ var
 begin
 //assumed: <ident> { "." <ident> }
   // note: the Value of AIsUnitName is ignored, assume it is true
-  Result := '';
+  //Result := '';
+  Recorded := '';
   while true do begin
     T := GetNextToken;
     try
       CheckToken(T, ATokenType);
-      Result := Result + T.Data;
+      //Result := Result + T.Data;
     finally
       T.Free;
     end;
-    t := PeekNextToken(s);
-    if (s = '') and t.IsSymbol(SYM_PERIOD) then begin
-      Result := Result + '.';
-      Scanner.ConsumeToken;
+    t := PeekNextToken; //(s);
+    if {(s = '') and} t.IsSymbol(SYM_PERIOD) then begin
+      //Result := Result + '.';
+      GetNextToken;  //Scanner.ConsumeToken;
       t.Free;
     end else
-      exit;
+      Break;
   end;
+  Result := Recorded;
 end;
-
-{$IFDEF old}
-function TParser.GetAndCheckNextToken(ASymbolType: TSymbolType): string;
-var
-  T: TToken;
-begin
-  T := GetNextToken;
-  try
-    CheckToken(T, ASymbolType);
-    Result := T.Data;
-  finally
-    T.Free;
-  end;
-end;
-
-function TParser.GetAndCheckNextToken(AKeyWord: TKeyWord): string;
-var
-  T: TToken;
-begin
-  T := GetNextToken;
-  try
-    CheckToken(T, AKeyWord);
-    Result := T.Data;
-  finally
-    T.Free;
-  end;
-end;
-{$ELSE}
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCDFP(out M: TPasMethod; 
+procedure TParser.ParseCDFP(out M: TPasMethod;
   const ClassKeywordString: string;
   const MethodTypeString: string; MethodType: TMethodType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean);
-  
+
   { Reads tokens (adding them to M.FullDeclaration) until a semicolon
-    (on parenthesis level zero) is found (this final semicolon 
+    (on parenthesis level zero) is found (this final semicolon
     is also read and appended to M.FullDeclaration). }
   procedure ReadTokensUntilSemicolon;
   var
@@ -617,19 +548,17 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
     IsSemicolon: Boolean;
   begin
     Level := 0;
+  {$IFDEF old}
     repeat
       T := Scanner.GetToken;
       try
-        if T.MyType = TOK_WHITESPACE then
-        begin
+        if T.MyType = TOK_WHITESPACE then begin
           { add exactly *one space* at the end of M.FullDeclaration }
-          if Length(M.FullDeclaration) > 0 then 
-          begin
+          if Length(M.FullDeclaration) > 0 then begin
             if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
               M.FullDeclaration := M.FullDeclaration + ' ';
           end;
-        end else
-        if not (T.MyType in TokenCommentTypes) then
+        end else if not (T.MyType in TokenCommentTypes) then
           M.FullDeclaration := M.FullDeclaration + T.Data;
 
         if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);
@@ -639,20 +568,34 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
         FreeAndNil(T);
       end;
     until IsSemicolon and (Level = 0);
+  {$ELSE}
+    Recorded := '';
+    repeat
+      t := GetNextToken;
+      case t.MyType of
+      SYM_LEFT_PARENTHESIS: Inc(level);
+      SYM_RIGHT_PARENTHESIS: dec(level);
+      SYM_SEMICOLON: if level = 0 then level := -1; // dec(level);
+      end;
+      FreeAndNil(t);
+    until level < 0;
+    M.FullDeclaration := M.FullDeclaration + Recorded;  Recorded := '';
+  {$ENDIF}
   end;
-  
+
 var
   t: TToken;
   InvalidType: boolean;
 begin
+{ TODO : pass method IN, not OUT }
   M := TPasMethod.Create;
   M.RawDescriptionInfo^ := RawDescriptionInfo;
   if InitItemsForNextBackComment then
     ItemsForNextBackComment.ClearAndAdd(M);
-    
+
   t := nil;
   M.What := MethodType;
-  
+
   if ClassKeyWordString <> '' then
     M.FullDeclaration :=  ClassKeyWordString + ' ';
   M.FullDeclaration := M.FullDeclaration + MethodTypeString;
@@ -843,7 +786,7 @@ procedure TParser.ParseCIO(const U: TPasUnit;
       not "IsInRecordCase". That's because even if declaration
       of this CIO is within a record case, then we want to
       see record's terminating "end" keyword anyway.
-      So it doesn't matter here whether our IsInRecordCase 
+      So it doesn't matter here whether our IsInRecordCase
       parameter is true. }
     ParseFieldsVariables(Items, true, Visibility, false, ClassKeyWordString);
   end;
@@ -891,7 +834,7 @@ begin
         FreeAndNil(t);
         t := GetNextToken;
       end;
-      
+
       { This allows to write back-comment for class declarations like
           TMyClass = class(TMyAncestor) //< back comment
       }
@@ -902,7 +845,7 @@ begin
         All class ancestors are supposed to be included in the docs!
       }
       { TODO -otwm :
-        That's not quite true since multiple inheritance is not supported by 
+        That's not quite true since multiple inheritance is not supported by
          Delphi/Kylix or FPC. Every entry but the first must be an interface. }
       if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
           { optional ancestor introduced by ( }
@@ -918,7 +861,7 @@ begin
                 { inner repeat loop: one part of the ancestor per name }
             repeat
               FreeAndNil(t);
-              t := Scanner.GetToken;
+              t := PeekNextToken; Scanner.GetToken;
               if not t.IsSymbol(SYM_PERIOD) then begin
                 Scanner.UnGetToken(t);
                 t := nil;
@@ -938,7 +881,7 @@ begin
             if (t.IsSymbol(SYM_COMMA)) then
                 { comma, separating two ancestors } begin
               FreeAndNil(t);
-            end else 
+            end else
             begin
               try
                 CheckToken(T, SYM_RIGHT_PARENTHESIS);
@@ -1457,43 +1400,11 @@ begin
   t1 := GetNextToken;
   //LNeedId := True;
   repeat
-{$IFDEF old}
-    while true do begin
-      case t1.MyType of
-      TOK_SYMBOL: begin
-          case t1.MyType of
-            SYM_COLON: break;
-            SYM_RANGE,
-            SYM_COMMA: LNeedId := True;
-          end;
-        end;
-      TOK_IDENTIFIER,
-      TOK_NUMBER:
-        if not LNeedId then try
-          DoError('Unexpected %s', [T1.Description]);
-        finally
-          FreeAndNil(t1);
-        end;
-      KEY_OR, KEY_AND:
-        ;
-      else //case
-        try
-          DoError('Unexpected %s', [T1.Description]);
-        finally
-          FreeAndNil(t1);
-        end;
-      end;
-      FreeAndNil(t1);
-      t1 := GetNextToken;
-    end; //while
-    // read all identifiers before colon
-{$ELSE}
   //why should we be stricter than the compiler???
     while t1.MyType <> SYM_COLON do begin
       FreeAndNil(t1);
       t1 := GetNextToken;
     end;
-{$ENDIF}
 
     FreeAndNil(t1);
 
@@ -2176,11 +2087,14 @@ begin
         if Collect(True) then
           break;
       TOK_WHITESPACE:
-        if state <> psCollect then //ignore between comments?
+        if state <> psCollect then begin //ignore between comments?
           WhitespaceCollector := WhitespaceCollector + t.Data;
+          Recorded := Recorded + ' '; //t.Data; - compress FullDeclaration
+        end;
       else //case
+        //Recorded := Recorded + t.Data; - only when the token becomes current?
         state := psDone;
-        continue; //don't consume!
+        break;  //don't consume!
       end;
       Scanner.ConsumeToken;
       FreeAndNil(T);
@@ -2191,30 +2105,32 @@ begin
     //got comment
       ExtractDocComment(TBackComment);
 
-      if TBackComment then
-      begin
+      if TBackComment then begin
         if ItemsForNextBackComment.Count = 0 then
           DoMessage(1, pmtWarning,
             '%s: This is a back-comment (comment starting with "<") ' +
             'but there is no item declared right before it: "%s"',
             [Scanner.GetStreamInfo, CommentInfo.Content]);
 
-        for i := 0 to ItemsForNextBackComment.Count - 1 do
-        begin
+        //for i := 0 to ItemsForNextBackComment.Count - 1 do begin
+        for i := ItemsForNextBackComment.Count - 1 downto 0 do begin
           if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
+          {$IFDEF old}
             DoMessage(1, pmtWarning,
               '%s: Item %s already has one description, now it''s ' +
               'overriden by back-comment (comment starting with "<"): "%s"',
               [ Scanner.GetStreamInfo,
                 ItemsForNextBackComment.PasItemAt[i].QualifiedName,
                 CommentInfo.Content]);
+          {$ELSE}
+            break;  //or append comment?
+          {$ENDIF}
 
           ItemsForNextBackComment.PasItemAt[i].RawDescriptionInfo^ := CommentInfo;
         end;
 
         ItemsForNextBackComment.Clear;
-      end else
-      begin
+      end else begin
         { This is a normal comment, so fill [Is]LastCommentXxx properties }
         IsLastComment := true;
         //LastCommentWasCStyle := TIsCStyle;
@@ -2231,8 +2147,8 @@ begin
   Result := t;
 end;
 
-function TParser.PeekNextToken: TToken; 
-var 
+function TParser.PeekNextToken: TToken;
+var
   Dummy: string;
 begin
   Result := PeekNextToken(Dummy);
@@ -2246,7 +2162,7 @@ var
 begin
   repeat
     t := PeekNextToken;
-    
+
     if t.IsStandardDirective(SD_PLATFORM) then
     begin
       Scanner.ConsumeToken;
