@@ -80,7 +80,7 @@ type
 type
   TPasdocMain = class
   private
-    procedure WriteWarning(const MessageType: TMessageType;
+    procedure WriteWarning(const MessageType: TPasDocMessageType;
       const AMessage: AnsiString; const AVerbosity: Cardinal);
     procedure PrintHeader;
     procedure PrintUsage(OptionParser: TOptionParser);
@@ -541,13 +541,13 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasdocMain.WriteWarning(const MessageType: TMessageType;
+procedure TPasdocMain.WriteWarning(const MessageType: TPasDocMessageType;
   const AMessage: AnsiString; const AVerbosity: Cardinal);
 begin
   case MessageType of
-    mtInformation: WriteLn('Info[', AVerbosity, ']:    ', AMessage);
-    mtWarning: WriteLn('Warning[', AVerbosity, ']: ', AMessage);
-    mtError: WriteLn('Error[', AVerbosity, ']:   ', AMessage);
+    pmtInformation: WriteLn('Info[', AVerbosity, ']:    ', AMessage);
+    pmtWarning: WriteLn('Warning[', AVerbosity, ']: ', AMessage);
+    pmtError: WriteLn('Error[', AVerbosity, ']:   ', AMessage);
   else
     WriteLn(AMessage);
   end;

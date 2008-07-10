@@ -22,11 +22,14 @@ type
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
   private
+  {$IFDEF unused}
     FOddTableRow: Integer;
     { number of cells (= columns) per table row }
     NumCells: Integer;
     { number of cells we've already written in current table row }
     CellCounter: LongInt;
+  {$ELSE}
+  {$ENDIF}
     FLatex2Rtf: Boolean;
     FLatexHead: TStrings;
 
@@ -44,12 +47,15 @@ type
     procedure WriteEndOfDocument;
     { Finishes a LaTeX paragraph by writing a blank line. }
     procedure WriteEndOfParagraph;
+  {$IFDEF unused}
     { Finishes an Latex table cell by writing ' & '. }
     procedure WriteEndOfTableCell;
     { Finishes an HTML table by writing a closing TABLE tag. }
     procedure WriteEndOfTable;
     { Finishes a LaTeX table row by writing '\\'. }
     procedure WriteEndOfTableRow;
+  {$ELSE}
+  {$ENDIF}
 
     (*
       Writes the Item's AbstractDescription and DetailedDescription.
@@ -75,10 +81,13 @@ type
     { Starts an LaTeX paragraph element by writing '\par'. }
     procedure WriteStartOfParagraph;
 
+  {$IFDEF unused}
     procedure WriteStartOfTable1Column(t: string);
     procedure WriteStartOfTable2Columns(t1, t2: string);
     procedure WriteStartOfTable3Columns(t1, t2, T3: string);
     procedure WriteStartOfTableRow;
+  {$ELSE}
+  {$ENDIF}
 
     procedure WriteItemsSummary(const Items: TPasItems);
 
@@ -599,7 +608,7 @@ begin
     OutputFileName := 'docs.tex';
   case CreateStream(OutputFileName, true) of
     csError: begin
-      DoMessage(1, mtError, 'Could not create doc file %s',[Outputfilename]);
+      DoMessage(1, pmtError, 'Could not create doc file %s',[Outputfilename]);
       Exit;
     end;
     csExisted: begin
@@ -633,6 +642,7 @@ begin
   WriteDirect('',true);
 end;
 
+{$IFDEF unused}
 procedure TTexDocGenerator.WriteEndOfTableCell;
 begin
   Inc(CellCounter);
@@ -649,6 +659,8 @@ procedure TTexDocGenerator.WriteEndOfTableRow;
 begin
    WriteDirect('\\',true);
 end;
+{$ELSE}
+{$ENDIF}
 { ---------------------------------------------------------------------------- }
 procedure TTexDocGenerator.WriteStartList(s: string);
 begin
@@ -801,7 +813,7 @@ function TTexDocGenerator.FormatHeading(HL: integer; const s: string): string;
 begin
   if (HL < 1) then HL := 1;
   if HL > 5 then begin
-    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+    DoMessage(2, pmtWarning, 'LaTeX generator cannot write headlines of '
       + 'level 5 or greater; will create a new paragraph instead.', []);
     HL := 5;
   end;
@@ -857,7 +869,7 @@ procedure TTexDocGenerator.WriteHeading(HL: integer; const s: string);
 begin
   if (HL < 1) then HL := 1;
   if HL > 5 then begin
-    DoMessage(2, mtWarning, 'LaTeX generator cannot write headlines of '
+    DoMessage(2, pmtWarning, 'LaTeX generator cannot write headlines of '
       + 'level 5 or greater; will a new paragraph instead.', []);
     HL := 5;
   end;
@@ -1250,7 +1262,7 @@ begin
     WriteDirect('\tableofcontents',true);
     WriteDirect('\newpage',true);
   end;
-  
+
   WriteDirect('% special variable used for calculating some widths.',true);
   WriteDirect('\newlength{\tmplength}',true);
 end;
@@ -1261,6 +1273,7 @@ begin
   WriteDirect('\par',true);
 end;
 
+{$IFDEF unused}
 procedure TTexDocGenerator.WriteStartOfTable1Column(T: String);
 begin
   FOddTableRow := 0;
@@ -1308,6 +1321,8 @@ procedure TTexDocGenerator.WriteStartOfTableRow;
 begin
   CellCounter := 0;
 end;
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1368,7 +1383,7 @@ begin
   ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
   ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
 
-  DoMessage(2, mtInformation, 'Writing Docs for unit "%s"', [U.Name]);
+  DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
   if U.IsUnit then
     WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name)

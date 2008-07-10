@@ -1395,7 +1395,7 @@ procedure TPasItem.StoreAbstractTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if AbstractDescription <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@abstract tag was already specified for this item. ' +
       'It was specified as "%s"', [AbstractDescription]);
   AbstractDescription := TagParameter;
@@ -1423,7 +1423,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@seealso tag doesn''t specify any name to link to, skipped', []);
   end else
   begin
@@ -1504,8 +1504,9 @@ end;
 function TPasItem.BasePath: string;
 begin
   if MyUnit <> nil then
-    Result := MyUnit.BasePath else
-    Result := inherited;
+    Result := MyUnit.BasePath
+  else
+    Result := inherited BasePath; //required by D7
 end;
 
 { TPasEnum ------------------------------------------------------------------- }
@@ -1566,11 +1567,11 @@ begin
   begin
     if Value.RawDescription = '' then
       Value.RawDescription := ValueDesc else
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);
   end else
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
@@ -1722,7 +1723,7 @@ end;
 
 procedure TPasItems.SortShallow;
 begin
-  Sort(@ComparePasItemsByName);
+  Sort( {$IFDEF FPC}@{$ENDIF} ComparePasItemsByName);
 end;
 
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -1868,7 +1869,7 @@ begin
   end;
 
   if (Methods <> nil) and (ssMethods in SortSettings) then
-    Methods.Sort(@ComparePasMethods);
+    Methods.Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
   
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
@@ -1912,11 +1913,11 @@ begin
       already }
     if Member.RawDescription = '' then
       Member.RawDescription := MemberDesc else
-      ThisTag.TagManager.DoMessage(1, mtWarning,
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
   end else
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
 end;
 
@@ -2174,7 +2175,7 @@ begin
   if Pair.Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@raises tag doesn''t specify exception name, skipped', []);
   end else
   begin
@@ -2196,7 +2197,7 @@ begin
   if Name = '' then 
   begin
     FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, mtWarning,
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@param tag doesn''t specify parameter name, skipped', []);
   end else
   begin
@@ -2249,7 +2250,7 @@ end;
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'raises', 
+  TTopLevelTag.Create(TagManager, 'raises',
     nil, {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
      toAllowNormalTextInside, toFirstWordVerbatim]);
@@ -2343,7 +2344,7 @@ procedure TExternalItem.HandleShortTitleTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if ShortTitle <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@shorttitle tag was already specified for this item. ' +
       'It was specified as "%s"', [ShortTitle]);
   ShortTitle := TagParameter;
@@ -2356,7 +2357,7 @@ procedure TExternalItem.HandleTitleTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if Title <> '' then
-    ThisTag.TagManager.DoMessage(1, mtWarning,
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@title tag was already specified for this item. ' +
       'It was specified as "%s"', [Title]);
   Title := TagParameter;

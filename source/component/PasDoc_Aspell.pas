@@ -26,7 +26,7 @@ type
     FOnMessage: TPasDocMessageEvent;
     
     procedure DoMessage(const AVerbosity: Cardinal;
-      const MessageType: TMessageType; const AMessage: string);
+      const MessageType: TPasDocMessageType; const AMessage: string);
   public
     { Values for AspellMode and AspellLanguage are the same as for
       aspell @--mode and @--lang command-line options.
@@ -155,13 +155,13 @@ begin
           messages start with "Error:". So we can possibly accidentaly
           skip some error messages from aspell. }
         if IsPrefix('Error:', S) then
-          DoMessage(2, mtWarning, 'Aspell error: ' + S);
+          DoMessage(2, pmtWarning, 'Aspell error: ' + S);
     end;
   until false;
 end;
 
 procedure TAspellProcess.DoMessage(const AVerbosity: Cardinal; 
-  const MessageType: TMessageType;  const AMessage: string);
+  const MessageType: TPasDocMessageType;  const AMessage: string);
 begin
   if Assigned(FOnMessage) then
     FOnMessage(MessageType, AMessage, AVerbosity);

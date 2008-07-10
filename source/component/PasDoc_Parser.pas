@@ -141,7 +141,7 @@ type
     procedure DoError(const AMessage: string; 
       const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
-      TMessageType; const AMessage: string; const AArguments: array of const);
+      TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 
     { Checks if T.MyType is ATokenType, if not calls DoError
       with appropriate error mesg. }
@@ -432,7 +432,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.DoMessage(const AVerbosity: Cardinal; const MessageType:
-  TMessageType; const AMessage: string; const AArguments: array of const);
+  TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 begin
   if (AVerbosity <= FVerbosity) and Assigned(FOnMessage) then
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
@@ -654,7 +654,7 @@ begin
       end;
     end;
     M.Name := t.Data;
-    DoMessage(5, mtInformation, 'Parsing %s "%s"',
+    DoMessage(5, pmtInformation, 'Parsing %s "%s"',
       [MethodTypeToString(MethodType), M.Name]);
     M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
     FreeAndNil(t);
@@ -843,7 +843,7 @@ var
 begin
   StrictVisibility := False;
   t := nil;
-  DoMessage(5, mtInformation, 'Parsing class/interface/object "%s"', [CioName]);
+  DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioName]);
   i := nil;
   try
     t := GetNextToken;
@@ -1111,7 +1111,7 @@ begin
                       So it doesn't matter here whether our IsInRecordCase
                       parameter is true. }
                     SkipDeclaration(nil, false);
-                    DoMessage(5, mtInformation, 'Skipped default property keyword.', []);
+                    DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
                   end;
                 SD_PUBLIC:
                   begin
@@ -1220,7 +1220,7 @@ var
 begin
   i := TPasConstant.Create;
   i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
-  DoMessage(5, mtInformation, 'Parsing constant %s', [i.Name]);
+  DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
   i.RawDescriptionInfo^ := GetLastComment;
   i.FullDeclaration := i.Name;
   SkipDeclaration(i, false);
@@ -1306,7 +1306,7 @@ var
   t: TToken;
   PropertyParsed: TPasProperty;
 begin
-  DoMessage(4, mtInformation, 'Entering interface section of unit %s',[U.Name]);
+  DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
   Finished := False;
   Mode := MODE_UNDEFINED;
 
@@ -1391,7 +1391,7 @@ var
 begin
   p := TPasProperty.Create;
   p.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
-  DoMessage(5, mtInformation, 'Parsing property %s', [p.Name]);
+  DoMessage(5, pmtInformation, 'Parsing property %s', [p.Name]);
   p.IndexDecl := '';
   p.Proptype := '';
   p.FullDeclaration := 'property ' + p.Name;
@@ -1568,7 +1568,7 @@ var
   T: TToken;
 begin
   TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
-  DoMessage(5, mtInformation, 'Parsing type "%s"', [TypeName]);
+  DoMessage(5, pmtInformation, 'Parsing type "%s"', [TypeName]);
   
   RawDescriptionInfo := GetLastComment;
   t := GetNextToken(LCollected);
@@ -2222,7 +2222,7 @@ begin
       if TBackComment then
       begin
         if ItemsForNextBackComment.Count = 0 then
-          DoMessage(1, mtWarning, 
+          DoMessage(1, pmtWarning,
             '%s: This is a back-comment (comment starting with "<") ' +
             'but there is no item declared right before it: "%s"', 
             [Scanner.GetStreamInfo, TCommentInfo.Content]);
@@ -2230,7 +2230,7 @@ begin
         for i := 0 to ItemsForNextBackComment.Count - 1 do
         begin
           if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
-            DoMessage(1, mtWarning, 
+            DoMessage(1, pmtWarning,
               '%s: Item %s already has one description, now it''s ' +
               'overriden by back-comment (comment starting with "<"): "%s"',
               [ Scanner.GetStreamInfo,

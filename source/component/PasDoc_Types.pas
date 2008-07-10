@@ -10,9 +10,9 @@ uses
   
 type
   { }
-  TMessageType = (mtPlainText, mtInformation, mtWarning, mtError);
+  TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
   { }
-  TPasDocMessageEvent = procedure(const MessageType: TMessageType; const
+  TPasDocMessageEvent = procedure(const MessageType: TPasDocMessageType; const
     AMessage: string; const AVerbosity: Cardinal) of object;
 
   TCharSet = set of Char;

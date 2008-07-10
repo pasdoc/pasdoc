@@ -287,7 +287,7 @@ type
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
-      TMessageType; const AMessage: string; const AArguments: array of const);
+      TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
@@ -556,7 +556,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TTokenizer.DoMessage(const AVerbosity: Cardinal; const MessageType:
-  TMessageType; const AMessage: string; const AArguments: array of const);
+  TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 begin
   if (AVerbosity < FVerbosity) and Assigned(FOnMessage) then
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
@@ -613,9 +613,8 @@ var
   BeginPosition: integer;
 begin
   Result := nil;
+  BeginPosition := StreamPosition; //used in finally
   try
-    BeginPosition := StreamPosition;
-
     if not GetChar(c) then
       DoError('Tokenizer: could not read character', [], 0);
     
