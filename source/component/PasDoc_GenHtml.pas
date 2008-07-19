@@ -412,33 +412,43 @@ function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
     end;
   end;
 
+var
+  PasItem: TPasItem absolute Item;
 begin
   Result := '';
-  
+
   if (not Assigned(Item)) then Exit;
-  
-  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then
-  begin
-    if Assigned(TPasItem(Item).MyObject) then 
-    begin
+
+  //if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then begin
+  if (Item is TPasItem) and not (Item is TPasUnit) then begin
+{$IFDEF old}
+    if Assigned(PasItem.MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
-      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
-    end else begin
-      if Item is TPasCio then 
-      begin
-        { it's an object / a class }
-        Result := NewLink(TPasItem(Item).MyUnit.Name + '.' + Item.Name);
+      Result := PasItem.MyObject.FullLink + '#' + Item.Name;
+    end else if PasItem.MyUnit <> nil then begin
+      if Item is TPasCio then begin
+        { it's an object / a class, with it's own file }
+        Result := NewLink(PasItem.MyUnit.Name + '.' + Item.Name);
       end else begin
-        { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
+        { it's a constant, a variable, a type or a function / procedure
+          with a tag in the owner file.
+        }
+        Result := PasItem.MyUnit.FullLink + '#' + Item.Name;
       end;
+    end else begin
+      DoMessage(1, pmtWarning, 'item without unit: %s', [item.Name]);
     end;
-  end else if Item is TAnchorItem then
-  begin
+{$ELSE}
+    Result := PasItem.MyOwner.FullLink;
+    if Item is TPasCio then begin
+    //read: Item has it's own doc file
+      Result := ChangeFileExt(Result, '.' + Item.Name);
+    end else
+      Result := Result + '#' + Item.Name;
+{$ENDIF}
+  end else if Item is TAnchorItem then begin
     Result := TAnchorItem(Item).ExternalItem.FullLink + '#' + Item.Name;
-  end
-  else
-  begin
+  end else begin
     Result := NewLink(Item.Name);
   end;
 end;
@@ -624,7 +634,11 @@ begin
   WriteAnchor(SectionAnchors[dsDescription]);
 
   { write unit link }
+{$IFDEF old}
   if Assigned(CIO.MyUnit) then begin
+{$ELSE}
+  if True then begin
+{$ENDIF}
     WriteHeading(HL + 1, 'unit', FLanguage.Translation[trUnit]);
     WriteStartOfParagraph('unitlink');
     WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
@@ -1162,10 +1176,14 @@ begin
   if AItem is TPasMethod then
   begin
     AItemMethod := TPasMethod(AItem);
-    WriteParamsOrRaises(AItemMethod, trParameters, 
+  {$IFDEF old}
+    WriteParamsOrRaises(AItemMethod, trParameters,
       AItemMethod.Params, false, 'parameters');
+  {$ELSE}
+    { TODO : WriteParamsOrRaises with Params:PasItems }
+  {$ENDIF}
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    WriteParamsOrRaises(AItemMethod, trExceptionsRaised, 
+    WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
       AItemMethod.Raises, true, 'exceptions_raised');
   end;
   
@@ -1776,8 +1794,9 @@ begin
 end;
 
 const
-  VisibilityImageName: array[TVisibility] of string =
-  ( 'published.gif',
+  VisibilityImageName: array[TVisibility] of string = (
+    '',
+    'published.gif',
     'public.gif',
     'protected.gif',
     'protected.gif',
@@ -1787,8 +1806,9 @@ const
     { Implicit visibility uses published visibility image, for now }
     'published.gif'
   );
-  VisibilityTranslation: array[TVisibility] of TTranslationID =
-  ( trPublished,
+  VisibilityTranslation: array[TVisibility] of TTranslationID = (
+    trNone,
+    trPublished,
     trPublic,
     trProtected,
     trStrictProtected,

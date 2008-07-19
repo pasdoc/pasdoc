@@ -122,7 +122,9 @@ type
     KEY_VAR,
     KEY_WHILE,
     KEY_WITH,
-    KEY_XOR
+    KEY_XOR,
+  //synthetic
+    Key_Operator
   );
   eSymbolType = SYM_PLUS..SYM_BACKSLASH;
   eKeyword = KEY_AND..KEY_XOR;
@@ -134,30 +136,38 @@ const
   sKeyword = [KEY_AND..KEY_XOR];
   KEY_INVALIDKEYWORD = tok_identifier;
 
+  CioTypes = [KEY_CLASS, KEY_DISPINTERFACE, KEY_INTERFACE, KEY_RECORD];
+  UnitTypes = [KEY_PROGRAM, KEY_LIBRARY, KEY_UNIT]; //<package?
+
 type
-  TStandardDirective = (
+  //TStandardDirective = (
+  //TPasItemAttribute = (
+  TDirectives = (
+  //OPL directives
     SD_INVALIDSTANDARDDIRECTIVE,
-    SD_ABSOLUTE,
+    SD_ABSOLUTE,  //<has argument
+  //directives as attributes
     SD_ABSTRACT,
     SD_APIENTRY,
     SD_ASSEMBLER,
     SD_AUTOMATED,
     SD_CDECL,
     SD_CVAR,
-    SD_DEFAULT,
-    SD_DISPID,
+    SD_DEFAULT,  //<has argument?
+    SD_DISPID,  //<has argument
     SD_DYNAMIC,
     SD_EXPORT,
-    SD_EXTERNAL,
+    SD_EXTERNAL,  //<has argument
     SD_FAR,
     SD_FORWARD,
-    SD_INDEX,
+    SD_INDEX,  //<has argument
     SD_INLINE,
-    SD_MESSAGE,
-    SD_NAME,
+    SD_LIBRARY, //<dummy
+    SD_MESSAGE,  //<has argument
+    SD_NAME,  //<has argument
     SD_NEAR,
     SD_NODEFAULT,
-    SD_OPERATOR,
+    SD_OPERATOR, //<extends KEY_FUNCTION...
     SD_OUT,
     SD_OVERLOAD,
     SD_OVERRIDE,
@@ -166,7 +176,7 @@ type
     SD_PROTECTED,
     SD_PUBLIC,
     SD_PUBLISHED,
-    SD_READ,
+    SD_READ,  //<has argument
     SD_REGISTER,
     SD_REINTRODUCE,
     SD_RESIDENT,
@@ -174,13 +184,20 @@ type
     SD_STATIC,
     SD_STDCALL,
     SD_STORED,
-    SD_STRICT,
+    SD_STRICT,  //<to be combined with "private" or "protected"
     SD_VIRTUAL,
-    SD_WRITE,
+    SD_WRITE,  //<has argument
     SD_DEPRECATED,
     SD_SAFECALL,
     SD_PLATFORM,
-    SD_VARARGS);
+    SD_VARARGS,
+  //added
+    SD_Packed
+  );
+
+  TStandardDirective = SD_INVALIDSTANDARDDIRECTIVE..SD_VARARGS;
+  TPasItemAttribute = SD_ABSTRACT..SD_VARARGS;
+  TPasItemAttributes = set of TPasItemAttribute;
 
 const
   { Names of the token types. All start with lower letter.
@@ -204,7 +221,8 @@ const
     '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\',
     //'reserved word',
   { all Object Pascal keywords }
-  //KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string = ('x', // lowercase never matches
+  //KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string = (
+    //'x', // lowercase never matches
     'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
     'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
@@ -214,20 +232,24 @@ const
     'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
     'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
     'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
-    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR'
+    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR',
+    'operator'
   );
 
   { Object Pascal directives }
-  StandardDirectiveArray: array[TStandardDirective] of string = (
-    'x', // lowercase letters never match
+  //StandardDirectiveArray: array[TStandardDirective] of string = (
+  DirectiveNames: array[TDirectives] of string = (
+    'none', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
     'CDECL', 'CVAR', 'DEFAULT', 'DISPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
-    'FAR', 'FORWARD', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
+    'FAR', 'FORWARD', 'INDEX', 'INLINE', 'library',
+    'MESSAGE', 'NAME', 'NEAR',
     'NODEFAULT', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS'
+    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS',
+    'packed'
   );
 
 //standardized token definition (for old style error reports)
@@ -244,6 +266,7 @@ type
   TNameParts = array of string;
 
 const
+  QualIdSeparator = '.';
   MaxNameParts = 3;
 
 { Splits S, which can be made of up to three parts, separated by dots.
@@ -305,7 +328,7 @@ const
   var
     i: Integer;
   begin
-    i := Pos('.', s);
+    i := Pos(QualIdSeparator, s);
     if (i = 0) then begin
       S1 := s;
       S2 := '';
@@ -321,12 +344,12 @@ var
   t: string;
 begin
   Result := False;
-  
+
   SetLength(NameParts, 3);
 
   S := Trim(S);
-  
-  { Check that S starts with IdentifierStart and 
+
+  { Check that S starts with IdentifierStart and
     then only IdentifierOther chars follow }
   if S = '' then Exit;
   if (not (s[1] in IdentifierStart)) then Exit;
@@ -335,12 +358,12 @@ begin
     if (not (s[i] in IdentifierOther)) then Exit;
     Inc(i);
   end;
-  
+
   SplitInTwo(S, NameParts[0], NameParts[1]);
-  if NameParts[1] = '' then 
+  if NameParts[1] = '' then
   begin
     SetLength(NameParts, 1);
-  end else 
+  end else
   begin
     t := NameParts[1];
     SplitInTwo(t, NameParts[1], NameParts[2]);
@@ -363,8 +386,8 @@ var
 begin
   Result := NameParts[0];
   for i := 1 to Length(NameParts) - 1 do
-    Result := Result + '.' + NameParts[i];
+    Result := Result + QualIdSeparator + NameParts[i];
 end;
 
 end.
- 
+

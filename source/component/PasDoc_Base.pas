@@ -67,7 +67,7 @@ type
     FCommentMarkers: TStringList;
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
-    FMarkerOptional: boolean;
+    FMarkerOptional, FSingleCharMarkers: boolean;
     FCacheDir: string;
     FSortSettings: TSortSettings;
     FConclusionFileName: string;
@@ -105,7 +105,7 @@ type
       If the collection is empty after removal of all items, it is disposed
       of and the variable is set to nil. }
     procedure RemoveExcludedItems(const c: TPasItems);
-    
+
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
@@ -114,7 +114,7 @@ type
     destructor Destroy; override;
 
     { Adds source filenames from a stringlist }
-    procedure AddSourceFileNames(const AFileNames: TStringList);
+    procedure AddSourceFileNames(const AFileNames: TStrings);
     { Loads names of Pascal unit source code files from a text file.
       Adds all file names to @link(SourceFileNames). 
       If DashMeansStdin and AFileName = '-' then it will load filenames
@@ -131,7 +131,7 @@ type
     procedure GenMessage(const MessageType: TPasDocMessageType; const
       AMessage: string; const AVerbosity: Cardinal);
     { Starts creating the documentation. }
-    procedure Execute;
+    procedure Execute(fGenerate: boolean = True);
     // After @link(Execute) has been called, @name holds the units that have
     // been parsed.
     property Units: TPasUnits read FUnits;
@@ -163,6 +163,7 @@ type
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
       default false;
+    property SingleCharMarkers: boolean read FSingleCharMarkers write FSingleCharMarkers;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
@@ -381,10 +382,12 @@ begin
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
     SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
   try
-    p.ShowVisibilities := ShowVisibilities;
+    //p.ShowVisibilities := ShowVisibilities;
+    PasDoc_items.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;
+    p.SingleCharMarkers := SingleCharMarkers;
 
     LLoaded := false;
 
@@ -395,7 +398,7 @@ begin
       U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
       if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
       begin
-        DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
+        DoMessage(2, pmtInformation, 'Cache file for %s is outdated.',
           [SourceFileName]);
       end else begin
         LLoaded := True;
@@ -563,7 +566,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDoc.Execute;
+procedure TPasDoc.Execute(fGenerate: boolean);
 var
   t1, t2: TDateTime;
   CacheDirNoDelim: string;
@@ -576,7 +579,7 @@ begin
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
   end;
-  if (CacheDir <> '') then 
+  if (CacheDir <> '') then
   begin
     {$ifdef WIN32}
     { This is needed to make DirectoryExists and CreateDir work
@@ -585,7 +588,7 @@ begin
       it too) }
     CacheDir := SCharsReplace(CacheDir, ['/'], PathDelim);
     {$endif}
-    
+
     CacheDirNoDelim := ExcludeTrailingPathDelimiter(CacheDir);
     CacheDir := IncludeTrailingPathDelimiter(CacheDir);
     if not DirectoryExists(CacheDirNoDelim) then begin
@@ -600,7 +603,7 @@ begin
 
   t1 := Now;
   ParseFiles;
-  
+
   UnitsCountBeforeExcluding := FUnits.Count;
   RemoveExcludedItems(TPasItems(FUnits));
 
@@ -608,32 +611,34 @@ begin
   if ObjectVectorIsNilOrEmpty(FUnits) then
   begin
     if UnitsCountBeforeExcluding <> 0 then
-      DoError('%d units were successfully parsed, but they are all ' + 
+      DoError('%d units were successfully parsed, but they are all ' +
         'marked with @exclude', [UnitsCountBeforeExcluding], 1) else
       DoError('At least one unit must have been successfully parsed ' +
         'to write docs', [], 1);
   end;
 
-  if FProjectName <> '' then begin
-    Generator.ProjectName := FProjectName
-  end else begin
-    Generator.ProjectName := 'docs';
+  if fGenerate then begin
+    if FProjectName <> '' then begin
+      Generator.ProjectName := FProjectName
+    end else begin
+      Generator.ProjectName := 'docs';
+    end;
+
+    Generator.Title := Title;
+    Generator.Units := FUnits;
+    Generator.Introduction := FIntroduction;
+    Generator.Conclusion := FConclusion;
+    Generator.AutoLink := AutoLink;
+    Generator.BuildLinks;
+
+    FUnits.SortDeep(SortSettings);
+
+    Generator.LoadDescriptionFiles(FDescriptionFileNames);
+    Generator.ExpandDescriptions;
+
+    Generator.WriteDocumentation;
   end;
-
-  Generator.Title := Title;
-  Generator.Units := FUnits;
-  Generator.Introduction := FIntroduction;
-  Generator.Conclusion := FConclusion;
-  Generator.AutoLink := AutoLink;
-  Generator.BuildLinks;
-
-  FUnits.SortDeep(SortSettings);
-
-  Generator.LoadDescriptionFiles(FDescriptionFileNames);
-  Generator.ExpandDescriptions;  
-
-  Generator.WriteDocumentation;
-
+  
   if Generator.NoGeneratorInfo then
     DoMessage(1, pmtInformation, 'Done', []) else
   begin
@@ -722,7 +727,7 @@ begin
   end;
 end;
 
-procedure TPasDoc.AddSourceFileNames(const AFileNames: TStringList);
+procedure TPasDoc.AddSourceFileNames(const AFileNames: TStrings);
 var
   SR: TSearchRec;
   FileMask, Path, s: string;

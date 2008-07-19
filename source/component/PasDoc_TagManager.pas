@@ -510,6 +510,7 @@ procedure TTag.Execute(var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
+assert(self <> nil, 'bad call');
   if Assigned(OnExecute) then
     OnExecute(Self, ThisTagData, EnclosingTag, EnclosingTagData,
       TagParameter, ReplaceStr);
@@ -1034,11 +1035,16 @@ begin
             ReplaceStr := DoConvertString('@' + FoundTag.Name);
 
           { execute tag handler }
-          if PreExecute then
-            FoundTag.PreExecute(FoundTagData, EnclosingTag, EnclosingTagData,
-              Params, ReplaceStr) else
-            FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
-              Params, ReplaceStr);
+          try
+            if PreExecute then
+              FoundTag.PreExecute(FoundTagData, EnclosingTag, EnclosingTagData,
+                Params, ReplaceStr)
+            else
+              FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
+                Params, ReplaceStr);
+          except
+            //todo: log for debugging
+          end;
 
         finally 
           FoundTag.DestroyOccurenceData(FoundTagData) 

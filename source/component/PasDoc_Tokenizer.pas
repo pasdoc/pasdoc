@@ -12,6 +12,14 @@ The @link(PasDoc_Scanner) unit does the same (it actually uses this unit's
 tokenizer), with the exception that it evaluates compiler directives,
 which are comments that start with a dollar sign. }
 
+
+(* Define this only when separate Token.Data and .CommentContent are required.
+  CommentContent is only used in comment tokens, otherwise empty.
+  For such tokens, the .Data part can be reconstructed easily, if ever required.
+*)
+{-$Define Content}
+
+
 unit PasDoc_Tokenizer;
 
 {$I pasdoc_defines.inc}
@@ -26,7 +34,7 @@ uses
 type
   { Stores the exact type and additional information on one token. }
   TToken = class(TObject)
-  private
+  protected
     FEndPosition,
     FBeginPosition: TTextStreamPos;
     FStreamName: string;
@@ -34,20 +42,30 @@ type
     { the exact character representation of this token as it was found in the
       input file }
     Data: string;
-    
+
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
-    
+
     { standard directive, or TOK_SYMBOL if none }
     Directive: TStandardDirective;
+
+  //Comment type marker, for use in RawDescription construction.
+    Mark: char;
+
+  // Allow for chain of tokens. For use by parser only.
+    Next: TToken;
 
     { Contents of a comment token.
       This is defined only when MyType is in TokenCommentTypes
       or is TOK_DIRECTIVE.
-      This is the text within the comment @italic(without) comment delimiters. 
+      This is the text within the comment @italic(without) comment delimiters.
       For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
+  {$IFDEF Content}
     CommentContent: string;
-    
+  {$ELSE}
+    property CommentContent: string read Data write Data;
+  {$ENDIF}
+
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
@@ -200,7 +218,7 @@ var
 begin
   LName := UpperCase(Name);
   for i := Low(TStandardDirective) to High(TStandardDirective) do begin
-    if LName = StandardDirectiveArray[i] then begin
+    if LName = DirectiveNames[i] then begin
       Result := i;
       exit;
     end;
@@ -412,8 +430,7 @@ begin
     if not GetChar(c) then
       DoError('Tokenizer: could not read character', [], 0);
 
-    if c in Whitespace then
-    begin
+    if c in Whitespace then begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
             internal row counter to be able to state current row on errors;
@@ -421,11 +438,8 @@ begin
         Inc(Row, StrCountCharA(Result.Data, #10))
       else
         DoError('Tokenizer: could not read character', [], 0);
-    end else
-    if c in IdentifierStart then
-    begin
-      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
-      begin
+    end else if c in IdentifierStart then begin
+      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then begin
         s := Result.Data;
         { check if identifier is a keyword }
         Result.MyType := KeyWordByName(s);
@@ -434,8 +448,7 @@ begin
         else
           Result.Directive := SD_INVALIDSTANDARDDIRECTIVE;
       end;
-    end else
-    if c in NumberStart then
+    end else if c in NumberStart then
       ReadToken(c, NumberOther, TOK_NUMBER, Result)
     else
       case c of
@@ -604,10 +617,16 @@ begin
       if c = #10 then Inc(Row);
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
-    
+
+  {$IFDEF Content}
     Data := '{' + CommentContent;
     (* Remove last '}' from CommentContent *)
     SetLength(CommentContent, Length(CommentContent) - 1);
+  {$ELSE}
+    //data is identical with CommentContent
+    (* Remove last '}' from CommentContent *)
+    SetLength(Data, Length(Data) - 1);
+  {$ENDIF}
   end;
 end;
 
@@ -631,9 +650,14 @@ begin
       if c = ')' then
         begin
           ConsumeChar;
+        {$IFDEF Content}
           Result.Data := '(*' + Result.CommentContent + ')';
           { Remove last '*' from Result.CommentContent }
           SetLength(Result.CommentContent, Length(Result.CommentContent) - 1);
+        {$ELSE}
+          { Remove last '*' from Result.CommentContent }
+          SetLength(Result.Data, Length(Result.Data) - 1);
+        {$ENDIF}
           Break;
         end;
     end;
@@ -647,10 +671,10 @@ var
   c: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_CSTYLE);
-  with Result do 
+  with Result do
   begin
     CommentContent := '';
-    
+
     while HasData and GetChar(c) do
     begin
       case c of
@@ -660,7 +684,10 @@ begin
       end;
     end;
 
+  {$IFDEF Content}
     Data := '//' + CommentContent;
+  {$ELSE}
+  {$ENDIF}
   end;
 end;
 
@@ -671,7 +698,7 @@ var
   C: char;
 begin
   Result := TToken.Create(TOK_ATT_ASSEMBLER_REGISTER);
-  
+
   Result.Data := '%';
   repeat
     if (not HasData) or (not PeekChar(C)) then Exit;

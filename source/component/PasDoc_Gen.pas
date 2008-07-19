@@ -533,7 +533,7 @@ type
       DoMessage with appropriate warning and returns something like 'UNKNOWN' 
       (no matter what is the value of WarningIfLinkNotFound).
       FoundItem will be set to nil in this case.
-           
+
       When item will not be found then:
       @unorderedList(
         @item(
@@ -563,12 +563,12 @@ type
 
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then optionally writes LineEnding. }
-    procedure WriteConverted(const s: string; Newline: boolean); overload; 
+    procedure WriteConverted(const s: string; Newline: boolean); overload;
 
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       No LineEnding at the end. }
-    procedure WriteConverted(const s: string); overload; 
-    
+    procedure WriteConverted(const s: string); overload;
+
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then writes LineEnding. }
     procedure WriteConvertedLine(const s: string);
@@ -578,7 +578,7 @@ type
 
     { Simply writes T to CurrentStream. }
     procedure WriteDirect(const t: string); overload;
-    
+
     { Simply writes T followed by LineEnding to CurrentStream. }
     procedure WriteDirectLine(const t: string);
 
@@ -656,7 +656,7 @@ type
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; virtual;
-    
+
     { This is paragraph marker in output documentation.
     
       Default implementation in this class simply returns ' ' 
@@ -695,7 +695,7 @@ type
       LaTeX markup can override this with simple "Result := S". }
     function LatexString(const S: string): string; virtual;
     
-    { @abstract(This returns markup that forces line break in given 
+    { @abstract(This returns markup that forces line break in given
       output format (e.g. '<br>' in html or '\\' in LaTeX).)
       
       It is used on @br tag (but may also be used on other 
@@ -816,7 +816,7 @@ type
   public
 
     { Creates anchors and links for all items in all units. }
-    procedure BuildLinks; virtual;
+    procedure BuildLinks; //virtual;
     
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
@@ -991,6 +991,9 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TDocGenerator.BuildLinks;
+(* Most of this is already done by parser.
+  Only after deserialization some actions may be required.
+*)
 
   { Assign Cio.Ancestors.Objects[i] for every i }
   procedure AssignCioAncestorLinks(Cio: TPasCio);
@@ -1001,8 +1004,7 @@ procedure TDocGenerator.BuildLinks;
       Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio, true);
   end;
 
-  procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
-    c: TPasItems);
+  procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio; c: TPasItems);
   var
     i: Integer;
     p: TPasItem;
@@ -1041,7 +1043,7 @@ begin
     U := Units.UnitAt[i];
     U.FullLink := CreateLink(U);
     U.OutputFileName := U.FullLink;
-    
+
     for j := 0 to U.UsesUnits.Count - 1 do
     begin
       { Yes, this will also set U.UsesUnits.Objects[i] to nil
@@ -1049,10 +1051,15 @@ begin
       U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
     end;
 
+  {$IFDEF old}
     AssignLinks(U, nil, U.Constants);
     AssignLinks(U, nil, U.Variables);
     AssignLinks(U, nil, U.Types);
     AssignLinks(U, nil, U.FuncsProcs);
+  {$ELSE}
+    AssignLinks(U, nil, U.Members);
+  //actions required after deserialization
+  {$ENDIF}
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
@@ -1060,12 +1067,16 @@ begin
         CO.MyUnit := U;
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := CO.FullLink;
-        
+
         AssignCioAncestorLinks(CO);
 
+      {$IFDEF old}
         AssignLinks(U, CO, CO.Fields);
         AssignLinks(U, CO, CO.Methods);
         AssignLinks(U, CO, CO.Properties);
+      {$ELSE}
+        AssignLinks(U, CO, CO.Members);
+      {$ENDIF}
       end;
     end;
   end;
@@ -2076,13 +2087,11 @@ begin
   Result := nil;
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
-  
+
   case Length(NameParts) of
     1: begin
-        if (Introduction <> nil) then
-        begin
-          if  SameText(Introduction.Name, NameParts[0]) then
-          begin
+        if (Introduction <> nil) then begin
+          if  SameText(Introduction.Name, NameParts[0]) then begin
             Result := Introduction;
             Exit;
           end;
@@ -2090,10 +2099,8 @@ begin
           if Result <> nil then Exit;
         end;
 
-        if (Conclusion <> nil) then
-        begin
-          if  SameText(Conclusion.Name, NameParts[0]) then
-          begin
+        if (Conclusion <> nil) then begin
+          if  SameText(Conclusion.Name, NameParts[0]) then begin
             Result := Conclusion;
             Exit;
           end;
@@ -2101,12 +2108,10 @@ begin
           if Result <> nil then Exit;
         end;
 
-        for i := 0 to Units.Count - 1 do
-         begin
+        for i := 0 to Units.Count - 1 do begin
            U := Units.UnitAt[i];
 
-           if SameText(U.Name, NameParts[0]) then
-           begin
+           if SameText(U.Name, NameParts[0]) then begin
              Result := U;
              Exit;
            end;
@@ -2124,19 +2129,16 @@ begin
 
          { unit.cio_var_const_type }
          U := TPasUnit(Units.FindName(NameParts[0]));
-         if Assigned(U) then 
+         if Assigned(U) then
            Result := U.FindItem(NameParts[1]);
        end;
     3: begin
-         { unit.objectorclassorinterface.fieldormethodorproperty } 
+         { unit.objectorclassorinterface.fieldormethodorproperty }
          U := TPasUnit(Units.FindName(NameParts[0]));
          if (not Assigned(U)) then Exit;
          Item := U.FindItem(NameParts[1]);
          if (not Assigned(Item)) then Exit;
-         Item := Item.FindItem(NameParts[2]);
-         if (not Assigned(Item)) then Exit;
-         Result := Item;
-         Exit;
+         Result := Item.FindItem(NameParts[2]);
        end;
   end;
 end;
@@ -2279,7 +2281,7 @@ var
   NameParts: TNameParts;
 begin
   FoundItem := nil;
-  
+
   if (not SplitNameParts(s, NameParts)) then
   begin
     DoMessage(2, pmtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
@@ -2303,12 +2305,12 @@ begin
     case LinkLook of
       llDefault:
         Result := MakeItemLink(FoundItem, S, lcNormal);
-      llStripped: 
+      llStripped:
         Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
       llFull:
         begin
           Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
-          
+
           if Length(NameParts) = 3 then
           begin
             SetLength(NameParts, 2);
@@ -2321,16 +2323,16 @@ begin
           begin
             SetLength(NameParts, 1);
             FoundItem := FindGlobal(NameParts);
-            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) + 
+            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
               '.' + Result;
-          end;          
+          end;
         end;
       else Assert(false, 'LinkLook = ??');
     end;
   end else
   if WarningIfLinkNotFound then
   begin
-    DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")', 
+    DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
       [S, Item.QualifiedName]);
     Result := CodeString(ConvertString(S));
   end else
@@ -2339,8 +2341,8 @@ end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string;
-  const WarningIfLinkNotFound: boolean): string; 
-var 
+  const WarningIfLinkNotFound: boolean): string;
+var
   Dummy: TBaseItem;
 begin
   Result := SearchLink(S, Item, LinkDisplay, WarningIfLinkNotFound, Dummy);
@@ -3357,7 +3359,7 @@ begin
   Result := ConvertString(LinkCaption);
 end;
 
-procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem; 
+procedure TDocGenerator.WriteCodeWithLinksCommon(const Item: TPasItem;
   const Code: string; WriteItemLink: boolean;
   const NameLinkBegin, NameLinkEnd: string);
 var

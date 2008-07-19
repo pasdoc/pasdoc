@@ -288,21 +288,21 @@ begin
   Result := '';
   
   if (not Assigned(Item)) then Exit;
-  
-  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then 
-  begin
+
+{$IFDEF old}
+  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then begin
+{$ELSE}
+  if (Item is TPasItem) then begin
+{$ENDIF}
     if Assigned(TPasItem(Item).MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
       Result := TPasItem(Item).MyObject.FullLink + '-' + Item.Name;
+    end else if Item is TPasCio then begin
+      { it's an object / a class }
+      Result := TPasItem(Item).MyUnit.Name + '.' + Item.Name;
     end else begin
-      if Item is TPasCio then 
-      begin
-        { it's an object / a class }
-        Result := TPasItem(Item).MyUnit.Name + '.' + Item.Name;
-      end else begin
-        { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '-' + Item.Name;
-      end;
+      { it's a constant, a variable, a type or a function / procedure }
+      Result := TPasItem(Item).MyUnit.FullLink + '-' + Item.Name;
     end;
   end else begin
     Result := Item.Name;
@@ -754,7 +754,8 @@ begin
     WriteStartList(s);
 
     if ShowVisibility then
-      Visibility := VisibilityStr[Item.Visibility] + ' ' else
+      Visibility := VisibilityStr[Item.Visibility] + ' '
+    else
       Visibility := '';
     WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
       Visibility + Item.FullDeclaration);
@@ -1099,11 +1100,15 @@ begin
   if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then
   begin
     WriteStartOfParagraph;
-    AItemMethod := TPasMethod(AItem); 
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters], 
+    AItemMethod := TPasMethod(AItem);
+  {$IFDEF old}
+    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters],
       AItemMethod.Params, false);
+  {$ELSE}
+    { TODO : WriteParamsOrRaises with Params:PasItems }
+  {$ENDIF}
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    
+
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
       because trExceptionsRaised is just too long and so everything 
       would look too ugly. However it's preferred to use

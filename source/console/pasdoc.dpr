@@ -34,9 +34,13 @@ program pasdoc;
 {$ENDIF}
 
 uses
-  {$ifdef USE_FASTMM} FastMM4, {$endif}
-  PasDoc_Main;
+{$IFDEF USEFASTMM4}
+  FastMM4,
+{$ENDIF}
+  PasDoc_Main,
+  test1 in 'test1.pas';
 
 begin
   Main;
+  ReadLn;
 end.
