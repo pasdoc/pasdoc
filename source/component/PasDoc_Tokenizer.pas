@@ -70,14 +70,11 @@ type
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
 
-  {$IFnDEF old}
     { Does @link(MyType) is TOK_SYMBOL and Info.SymbolType is ASymbolType ? }
     function IsSymbol(const ASymbolType: eSymbolType): Boolean;
 
     { Does @link(MyType) is TOK_KEYWORD and Info.KeyWord is AKeyWord ? }
     function IsKeyWord(const AKeyWord: eKeyWord): Boolean;
-  {$ELSE}
-  {$ENDIF}
 
     { Does @link(MyType) is TOK_IDENTIFIER and Info.StandardDirective is
       AStandardDirective ? }
@@ -273,7 +270,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-{$IFnDEF old}
 function TToken.IsSymbol(const ASymbolType: eSymbolType): Boolean;
 begin
   Result := MyType = ASymbolType;
@@ -283,9 +279,6 @@ function TToken.IsKeyWord(const AKeyWord: eKeyword): Boolean;
 begin
   Result := MyType = AKeyWord;
 end;
-{$ELSE}
-  //use shared TTokenType
-{$ENDIF}
 
 function TToken.IsStandardDirective(
   const AStandardDirective: TStandardDirective): Boolean;
@@ -295,13 +288,7 @@ end;
 
 function TToken.Description: string;
 begin
-{$IFDEF old}
-  Result := TokenNames[MyType];
-  if MyType in [TOK_SYMBOL, TOK_KEYWORD, TOK_IDENTIFIER] then
-    Result := Result + ' "' + Data + '"';
-{$ELSE}
   Result := TokenDefinition(MyType, data);
-{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -99,52 +99,6 @@ type
 { Returns lowercased keyword associated with given method type. }
 function MethodTypeToString(const MethodType: TMethodType): string;
 
-{$IFDEF RemClass}
-(* Raw description node, chainable.
-  Contains FullDeclaration(?) or RawDescription(s) of an item.
-  The FullDeclaration can be the list head for RawDescriptions.
-
-  The StreamName is present only in the item or list head.
-
-  Kind: could become something like:
-    rdDeclaration - FullDeclaration
-    rdAbstract - @@abstract
-    rdShared - applied to multiple items
-    rdOverview - @@overview
-    rdForward, rdBack - comment position
-    rdLinked - from external source
-    rdImplementation - from implementation section
-*)
-  TDescription = class
-  public
-    //Link to the next description part
-    NextDescription: TDescription;
-
-    { This is the description text. }
-    Content: string;
-
-    // @name is the position in the stream of the start of the comment.
-    BeginPosition,
-
-    // @name is the position in the stream of the character immediately
-    // after the end of the comment describing the item.
-    EndPosition: TTextStreamPos; //Int64;
-  public
-  //Destructor also destroys following descriptions
-    destructor Destroy; override;
-  //append another description part
-    procedure Append(info: TDescription);
-  (* get full description (all parts).
-    Could get an argument, telling an description level:
-      rdAbstract,
-      rdOverview,
-      rdInterface,
-      rdImplementation,
-      rdAll
-  *)
-  function GetText: string;
-  end;
-{$ELSE}
 type
   PRawDescriptionInfo = ^TRawDescriptionInfo;
   { Raw description, in other words: the contents of comment before
@@ -164,12 +118,8 @@ type
 
     // @name is the position in the stream of the character immediately
     // after the end of the comment describing the item.
-    EndPosition: TTextStreamPos; //Int64;
+    EndPosition: TTextStreamPos;
   end;
-const
-  EmptyRawDescriptionInfo: TRawDescriptionInfo =
-  ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
-{$ENDIF}
 
 type
   TPasItem = class;
@@ -311,15 +261,6 @@ type
       into the ancestors as well. }
     function FindItem(const ItemName: string): TBaseItem; virtual;
 
-  {$IFDEF old}
-    { This is just like @link(FindItem), but in case of classes
-      or such it should also search within ancestors.
-      In this class, the default implementation just calls FindItem. }
-    function FindItemMaybeInAncestors(const ItemName: string):
-      TBaseItem; //virtual;
-  {$ELSE}
-  {$ENDIF}
-
     { This does all it can to resolve link specified by NameParts.
 
       While searching this tries to mimic ObjectPascal identifier scope
@@ -415,14 +356,6 @@ type
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
     FVisibility: TVisibility;
-  {$IFDEF old}
-    FMyObject: TPasCio;
-    FMyUnit: TPasUnit;
-    FIsDeprecated: boolean;
-    FIsPlatformSpecific: boolean;
-    FIsLibrarySpecific: boolean;
-  {$ELSE}
-  {$ENDIF}
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
 
@@ -439,32 +372,16 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
 
-  {$IFDEF old}
-    { This does the same thing as @link(FindName) but it @italic(doesn't)
-      scan other units. If this item is a unit, it searches only
-      inside this unit, else it searches only inside @link(MyUnit)
-      unit.
-
-      Actually @link(FindName) uses this function. }
-    function FindNameWithinUnit(const NameParts: TNameParts): TBaseItem; virtual;
-  {$ELSE}
     function  GetAttribute(attr: TPasItemAttribute): boolean;
     procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
     function  GetMyObject: TPasCio;
     procedure SetMyObject(o: TPasCio);
     function  GetMyUnit: TPasUnit;
     procedure SetMyUnit(U: TPasUnit);
-    //function  GetMyOwner: TPasScope;
-  {$ENDIF}
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); reintroduce; virtual;
     destructor Destroy; override;
-
-  {$IFDEF old}
-    function FindName(const NameParts: TNameParts): TBaseItem; override;
-  {$ELSE}
-  {$ENDIF}
 
     procedure RegisterTags(TagManager: TTagManager); override;
 
@@ -523,29 +440,6 @@ type
       available. }
     function HasDescription: Boolean;
 
-  {$IFDEF old}
-    function QualifiedName: String; override;
-
-    { pointer to unit this item belongs to }
-    property MyUnit: TPasUnit read FMyUnit write FMyUnit;
-
-    { if this item is part of an object or class, the corresponding
-      info object is stored here, nil otherwise }
-    property MyObject: TPasCio read FMyObject write FMyObject;
-
-    { is this item deprecated? }
-    property IsDeprecated: boolean read FIsDeprecated write FIsDeprecated;
-
-    { Is this item platform specific?
-      This is decided by "platform" hint directive after an item. }
-    property IsPlatformSpecific: boolean
-      read FIsPlatformSpecific write FIsPlatformSpecific;
-
-    { Is this item specific to a library ?
-      This is decided by "library" hint directive after an item. }
-    property IsLibrarySpecific: boolean
-      read FIsLibrarySpecific write FIsLibrarySpecific;
-  {$ELSE}
     { pointer to unit this item belongs to }
     property MyUnit: TPasUnit read GetMyUnit write SetMyUnit;
 
@@ -572,8 +466,6 @@ type
     property IsLibrarySpecific: boolean index SD_LIBRARY
       read GetAttribute write SetAttribute;
   {$ELSE}
-  {$ENDIF}
-
   {$ENDIF}
 
     property Visibility: TVisibility read FVisibility write FVisibility;
@@ -694,14 +586,8 @@ type
     { Counts classes, interfaces and objects within this collection. }
     procedure CountCIO(var c, i, o: Integer);
 
-  {$IFDEF old}
-    { Checks each element's Visibility field and removes all elements with a value
-      of viPrivate. }
-    procedure RemovePrivateItems;
-  {$ELSE}
     // Get last added item
     function LastItem: TPasItem;
-  {$ENDIF}
 
     property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
       write SetPasItemAt;
@@ -709,13 +595,13 @@ type
     { This sorts all items on this list by their name,
       and also calls @link(TPasItem.Sort Sort(SortSettings))
       for each of these items.
-      This way it sorts recursively everything in this list. 
-      
-      This is equivalent to doing both 
+      This way it sorts recursively everything in this list.
+
+      This is equivalent to doing both
       @link(SortShallow) and @link(SortOnlyInsideItems). }
     procedure SortDeep(const SortSettings: TSortSettings);
-    
-    { This calls @link(TPasItem.Sort Sort(SortSettings)) 
+
+    { This calls @link(TPasItem.Sort Sort(SortSettings))
       for each of items on the list.
       It does @italic(not) sort the items on this list. }
     procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -727,37 +613,7 @@ type
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
-  {$IFDEF old}
-    { Set IsDeprecated property of all Items to given Value }
-    procedure SetIsDeprecated(Value: boolean);
-
-    { Set IsPlatformSpecific property of all Items to given Value }
-    procedure SetIsPlatformSpecific(Value: boolean);
-
-    { Set IsLibrarySpecific property of all Items to given Value }
-    procedure SetIsLibrarySpecific(Value: boolean);
-  {$ELSE}
-  {$ENDIF}
-
-  {$IFDEF old}
-  (* Don't handle all items identically.
-    At best the last items, without FullDeclaration.
-    Also propagate attributes (requires template item)
-  *)
-    { Sets FullDeclaration of every item to
-      @orderedList(
-        @item Name of this item (only if PrefixName)
-        @item + Suffix.
-      )
-      Very useful if you have a couple of items that share a common
-      declaration in source file, e.g. variables or fields declared like
-      @longcode(#
-        A, B: Integer;
-      #) }
-    procedure SetFullDeclaration(const fmt: string);
-  {$ELSE}
     function Text(const NameValueSepapator, ItemSeparator: string): string;
-  {$ENDIF}
   end;
 
 (* Item with members.
@@ -844,7 +700,6 @@ type
     ) }
   TPasMethod = class(TPasScope)
   protected
-    //FParams: TStringPairVector;
     FReturns: string;
     FRaises: TStringPairVector;
     FWhat: TMethodType;
@@ -882,7 +737,6 @@ type
     { Name of each item is the name of parameter (without any surrounding
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
-    //property Params: TStringPairVector read FParams;
     property Params: TPasItems read FItems;
 
     //Result could be added as a parameter
@@ -901,8 +755,6 @@ type
 
   TPasProperty = class(TPasItem)
   protected
-    //FDefault: Boolean;
-    //FNoDefault: Boolean;
     FIndexDecl: string;
     FStoredID: string;
     FDefaultID: string;
@@ -948,12 +800,6 @@ type
     FMethods: TPasMethods;
     FProperties: TPasProperties;
     FOutputFileName: string;
-  {$IFDEF old}
-    FMyType: TCIOType;
-    procedure Serialize(const ADestination: TStream); override;
-    procedure Deserialize(const ASource: TStream); override;
-  {$ELSE}
-  {$ENDIF}
     function  GetCioType: TCIOType;
     function  GetClassDirective: TClassDirective;
   protected
@@ -964,23 +810,6 @@ type
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); override;
     destructor Destroy; override;
-
-  {$IFDEF old}
-    { If this class (or interface or object) contains a field, method or
-      property with the name of ItemName, the corresponding item pointer is
-      returned.
-
-      If none is found, and the item has ancestors, the search continues
-      in the ancestors.
-      }
-    function FindItem(const ItemName: string): TBaseItem; override;
-
-    { This is just like @link(FindItem), but we may have ancestors,
-      so try FindInAncestors before giving up. }
-    function FindItemMaybeInAncestors(const ItemName: string):
-      TBaseItem; override;
-  {$ELSE}
-  {$ENDIF}
 
   //add item to members and to appropriate list
     procedure AddMember(item: TPasItem); override;
@@ -1159,32 +988,19 @@ type
     FOutputFileName: string;
     FCacheDateTime: TDateTime;
     FSourceFileDateTime: TDateTime;
-  {$IFDEF old}
-    FIsUnit: boolean;
-    FIsProgram: boolean;
-    procedure Serialize(const ADestination: TStream); override;
-    procedure Deserialize(const ASource: TStream); override;
-  {$ELSE}
+
     { This searches for item (field, method or property) defined
       in ancestor of this cio. I.e. searches within the FirstAncestor,
       then within FirstAncestor.FirstAncestor, and so on.
       Returns nil if not found. }
     function FindItemInAncestors(const ItemName: string): TPasItem; override;
-  {$ENDIF}
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); override;
     destructor Destroy; override;
-  {$IFDEF old}
-    procedure AddCIO(const i: TPasCio);
-    procedure AddConstant(const i: TPasItem);
-    procedure AddType(const i: TPasItem);
-    procedure AddVariable(const i: TPasItem);
-    function FindItem(const ItemName: string): TBaseItem; override;
-  {$ELSE}
   //add item to members and to appropriate list
     procedure AddMember(item: TPasItem); override;
-  {$ENDIF}
+
     function FindFieldMethodProperty(const S1, S2: string): TPasItem;
 
     procedure Sort(const SortSettings: TSortSettings); override;
@@ -1234,13 +1050,8 @@ type
     { If @false, then this is a program or library file, not a regular unit
       (though it's treated by pasdoc almost like a unit, so we use TPasUnit
       class for this). }
-  {$IFDEF old}
-    property IsUnit: boolean read FIsUnit write FIsUnit;
-    property IsProgram: boolean read FIsProgram write FIsProgram;
-  {$ELSE}
     property IsUnit: boolean index KEY_UNIT read IsKey;
     property IsProgram: boolean index KEY_PROGRAM read IsKey;
-  {$ENDIF}
 
     { Returns if unit WasDeserialized, and file FileName exists,
       and file FileName is newer than CacheDateTime.
@@ -1284,22 +1095,8 @@ var
   Item2: TPasItem absolute PItem2;
 begin
   Result := CompareText(TPasItem(PItem1).Name, TPasItem(PItem2).Name);
-{$IFDEF old}
-  // Sort duplicate class names by unit name if available.
-  if (Result = 0) and
-    (TObject(PItem1).ClassType = TPasCio) and
-    (TObject(PItem2).ClassType = TPasCio) then
-    if TPasCio(PItem1).MyUnit = nil then begin
-      Result := -1
-    end else if TPasCio(PItem2).MyUnit = nil then begin
-      Result := 1
-    end else begin
-      Result := CompareText(TPasCio(PItem1).MyUnit.Name, TPasCio(PItem2).MyUnit.Name);
-    end;
-{$ELSE}
   if Result = 0 then
     Result := CompareText(Item1.QualifiedName, Item2.QualifiedName);
-{$ENDIF}
 end;
 
 function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
@@ -1310,29 +1107,12 @@ begin
   { compare 'method type', order is
     constructor > destructor > function > procedure > operator
     then by visibility }
-{$IFDEF old}
-  if P1.What = P2.What then begin
-    { if 'method type' is equal, compare names }
-    if P1.Visibility = P2.Visibility then begin
-      Result := CompareText(P1.Name, P2.Name)
-    end else if P1.Visibility < P2.Visibility then begin
-      Result := -1
-    end else begin
-      Result := 1;
-    end;
-  end else if P1.What < P2.What then begin
-    Result := -1
-  end else begin
-    Result := 1;
-  end;
-{$ELSE}
   Result := ord(P1.What) - ord(P2.What);
   if Result <> 0 then
     exit;
   Result := ord(P1.Visibility) - ord(P2.Visibility);
   if Result = 0 then
     Result := 1;
-{$ENDIF}
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -1375,16 +1155,6 @@ begin
   else
     Result := nil;
 end;
-
-{$IFDEF old}
-function TBaseItem.FindItemMaybeInAncestors(const ItemName: string):
-  TBaseItem;
-begin
-//find immediate member, possibly in ancestors of this class
-  Result := FindItem(ItemName);
-end;
-{$ELSE}
-{$ENDIF}
 
 function TBaseItem.FindName(const NameParts: TNameParts; index: integer = -1): TBaseItem;
 begin
@@ -1614,13 +1384,6 @@ end;
 
 { TPasItem ------------------------------------------------------------------- }
 
-{$IFDEF old}
-constructor TPasItem.Create;
-begin
-  inherited;
-  FSeeAlso := TStringPairVector.Create(true);
-end;
-{$ELSE}
 constructor TPasItem.Create(AOwner: TPasScope; AKind: TTokenType;
   const AName: string);
 begin
@@ -1629,14 +1392,11 @@ begin
   FName := AName;
   FSeeAlso := TStringPairVector.Create(true);
   inherited Create();
-  //if assigned(pInfo) then FRawDescriptionInfo := pInfo^;
-  //FSeeAlso := TStringPairVector.Create(true); //?
   if assigned(AOwner) then
     AOwner.AddMember(self)
   else
     assert(AKind = KEY_UNIT, 'non-unit without owner');
 end;
-{$ENDIF}
 
 destructor TPasItem.Destroy;
 begin
@@ -1644,106 +1404,6 @@ begin
   inherited;
 end;
 
-{$IFDEF old}
-function TPasItem.FindNameWithinUnit(const NameParts: TNameParts): TBaseItem;
-var
-  p: TBaseItem;
-  LNameParts0: string;
-begin
-{ If this item is a unit, it searches only inside this unit,
-  else it searches only inside MyUnit unit.
-
-  Actually FindName uses this function.
-}
-{ TODO : what for more than 2 name parts???
-  The idea of NameParts deserves concreter rules.
-}
-  Result := nil;
-  LNameParts0 := LowerCase(NameParts[0]);
-  case Length(NameParts) of
-    1: begin  //only name
-         Result := FindItemMaybeInAncestors(NameParts[0]);
-         if Result <> nil then Exit;
-
-         if Assigned(MyObject) then begin { this item is a method or field }
-           p := MyObject.FindItemMaybeInAncestors(NameParts[0]);
-           if Assigned(p) then begin
-             Result := p;
-             Exit;
-           end;
-         end;
-
-         if Assigned(MyUnit) then begin
-           p := MyUnit.FindItem(NameParts[0]);
-           if Assigned(p) then begin
-             Result := p;
-             Exit;
-           end;
-         end;
-
-         if Assigned(MyUnit) and (LNameParts0 = LowerCase(MyUnit.Name)) then begin
-           Result := MyUnit;
-           Exit;
-         end;
-       end;
-
-    2: begin  //unit+name, class+name?
-        if Assigned(MyObject) then begin
-          if LowerCase(MyObject.Name) = LNameParts0 then begin
-            p := MyObject.FindItem(NameParts[1]);
-            if Assigned(p) then begin
-              Result := p;
-              Exit;
-            end;
-          end;
-        end;
-
-        // RJ: To find links in Unit's objects!
-        if Assigned(MyUnit) then begin
-          p := MyUnit.FindFieldMethodProperty(NameParts[0], NameParts[1]);
-          if Assigned(p) then begin
-            Result := p;
-            Exit;
-          end;
-        end;
-      end;
-  end;
-end;
-
-function TPasItem.FindName(const NameParts: TNameParts): TBaseItem;
-
-  procedure SearchUsedUnits(UsesUnits: TStringVector);
-  var
-    U: TPasUnit;
-    i: Integer;
-  begin
-  { TODO : eventually the search order should be reversed, as in the compiler. }
-    for i := 0 to UsesUnits.Count - 1 do
-    begin
-      U := TPasUnit(UsesUnits.Objects[i]);
-      if U <> nil then
-      begin
-        Result := U.FindNameWithinUnit(NameParts);
-        if Result <> nil then Exit;
-      end;
-    end;
-    Result := nil;
-  end;
-
-begin
-  Result := FindNameWithinUnit(NameParts);
-
-  if Result = nil then begin
-    { Dirty code: checking for "Self is some class".
-      This could be organized better by virtual methods. }
-    if Self is TPasUnit then
-      SearchUsedUnits(TPasUnit(Self).UsesUnits)
-    else if MyUnit <> nil then
-      SearchUsedUnits(MyUnit.UsesUnits);
-  end;
-end;
-{$ELSE}
-{$ENDIF}
 
 procedure TPasItem.StoreAbstractTag(
   ThisTag: TTag; var ThisTagData: TObject;
@@ -1763,11 +1423,7 @@ procedure TPasItem.HandleDeprecatedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-{$IFDEF old}
-  IsDeprecated := true;
-{$ELSE}
   Include(FAttributes, SD_LIBRARY);
-{$ENDIF}
   ReplaceStr := '';
 end;
 
@@ -1817,20 +1473,6 @@ begin
   { Nothing to sort in TPasItem }
 end;
 
-{$IFDEF old}
-function TPasItem.QualifiedName: String;
-begin
-  Result := '';
-  if MyUnit <> nil then begin
-    Result := Result + MyUnit.Name + '.';
-  end;
-  if MyObject <> nil then begin
-    Result := Result + MyObject.Name + '.';
-  end;
-  Result := Result + Name;
-end;
-{$ELSE}
-
 function TPasItem.GetMyUnit: TPasUnit;
 begin
   if assigned(FMyOwner) then
@@ -1867,19 +1509,10 @@ begin
     assert(o = FMyOwner, 'bad owner');
 end;
 
-{$ENDIF}
-
 procedure TPasItem.Deserialize(const ASource: TStream);
 begin
   inherited;
   ASource.Read(FVisibility, SizeOf(FVisibility));
-{$IFDEF old}
-  ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
-  ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
-  ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
-{$ELSE}
-  //in FAttributes
-{$ENDIF}
   FullDeclaration := LoadStringFromStream(ASource);
 
   { No need to serialize, because it's not generated by parser:
@@ -1893,12 +1526,6 @@ procedure TPasItem.Serialize(const ADestination: TStream);
 begin
   inherited;
   ADestination.Write(FVisibility, SizeOf(Visibility));
-{$IFDEF old}
-  ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
-  ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
-  ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
-{$ELSE}
-{$ENDIF}
   SaveStringToStream(FullDeclaration, ADestination);
 
   { No need to serialize, because it's not generated by parser:
@@ -1910,14 +1537,7 @@ end;
 
 function TPasItem.BasePath: string;
 begin
-{$IFDEF old}
-  if MyUnit <> nil then
-    Result := MyUnit.BasePath
-  else
-    Result := inherited BasePath; //required by D7
-{$ELSE}
   Result := MyUnit.BasePath;
-{$ENDIF}
 end;
 
 function TPasItem.GetAttribute(attr: TPasItemAttribute): boolean;
@@ -2155,29 +1775,6 @@ begin
   Result := TPasItem(Items[AIndex]);
 end;
 
-{$IFDEF old}
-procedure TPasItems.RemovePrivateItems;
-var
-  i: Integer;
-  Item: TPasItem;
-begin
-  i := 0;
-  while (i < Count) do begin
-    Item := PasItemAt[i];
-    if Assigned(Item) and (Item.Visibility = viPrivate) then
-      Delete(i)
-    else
-      Inc(i);
-  end;
-end;
-
-procedure TPasItems.SetFullDeclaration(const fmt: string);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].FullDeclaration := Format(fmt, [PasItemAt[i].Name]);
-end;
-{$ELSE}
 function TPasItems.LastItem: TPasItem;
 begin
   TObject(Result) := Last;
@@ -2196,8 +1793,6 @@ begin
         PasItemAt[i].FullDeclaration;
   end;
 end;
-
-{$ENDIF}
 
 procedure TPasItems.SetPasItemAt(const AIndex: Integer; const Value:
   TPasItem);
@@ -2224,29 +1819,6 @@ begin
   SortOnlyInsideItems(SortSettings);
 end;
 
-{$IFDEF old}
-procedure TPasItems.SetIsDeprecated(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsDeprecated := Value;
-end;
-
-procedure TPasItems.SetIsPlatformSpecific(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsPlatformSpecific := Value;
-end;
-
-procedure TPasItems.SetIsLibrarySpecific(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsLibrarySpecific := Value;
-end;
-{$ELSE}
-{$ENDIF}
 
 { TPasCio -------------------------------------------------------------------- }
 
@@ -2256,12 +1828,6 @@ const
   owns = False;
 begin
   inherited;
-{$IFDEF old}
-  FClassDirective := CT_NONE;
-  FAncestors := TStringVector.Create;
-{$ELSE}
-  //FMyType :=  ...(AKind);
-{$ENDIF}
   FFields := TPasItems.Create(owns);
   FMethods := TPasMethods.Create(owns);
   FProperties := TPasProperties.Create(owns);
@@ -2275,43 +1841,6 @@ begin
   Properties.Free;
   inherited;
 end;
-
-{$IFDEF old}
-procedure TPasCio.Deserialize(const ASource: TStream);
-begin
-  inherited;
-{$IFDEF old}
-  Ancestors.LoadFromBinaryStream(ASource);
-  FFields.Deserialize(ASource);
-  FMethods.Deserialize(ASource);
-  FProperties.Deserialize(ASource);
-  ASource.Read(FMyType, SizeOf(FMyType));
-  ASource.Read(FClassDirective, SizeOf(FClassDirective));
-{$ELSE}
-{$ENDIF}
-
-  { No need to serialize, because it's not generated by parser:
-  FOutputFileName := LoadStringFromStream(ASource); }
-end;
-
-procedure TPasCio.Serialize(const ADestination: TStream);
-begin
-  inherited;
-{$IFDEF old}
-  Ancestors.SaveToBinaryStream(ADestination);
-  FFields.Serialize(ADestination);
-  FMethods.Serialize(ADestination);
-  FProperties.Serialize(ADestination);
-  ADestination.Write(FMyType, SizeOf(FMyType));
-  ADestination.Write(FClassDirective, SizeOf(FClassDirective));
-{$ELSE}
-{$ENDIF}
-
-  { No need to serialize, because it's not generated by parser:
-  SaveStringToStream(FOutputFileName, ADestination); }
-end;
-{$ELSE}
-{$ENDIF}
 
 function  TPasCio.GetCioType: TCIOType;
 begin
@@ -2336,56 +1865,6 @@ begin
   else
     Result := CT_NONE;
 end;
-
-{$IFDEF old}
-function TPasCio.FindItem(const ItemName: string): TBaseItem;
-begin
-  if Fields <> nil then begin
-    Result := Fields.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Methods <> nil then begin
-    Result := Methods.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Properties <> nil then begin
-    Result := Properties.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  Result := inherited FindItem(ItemName);
-end;
-
-function TPasCio.FindItemMaybeInAncestors(const ItemName: string):
-  TBaseItem;
-begin
-//this in fact is a dummy routine, never called!
-  Result := inherited FindItemMaybeInAncestors(ItemName);
-    //usually does only a FindItem - in Self: okay for first try.
-  if Result = nil then
-    Result := FindItemInAncestors(ItemName);
-end;
-
-{$ELSE}
-
-{$IFDEF old}
-function TPasCio.FindItem(const ItemName: string): TBaseItem;
-begin
-(* FindItem should search in members, if such exist.
-  If nothing was found, the ancestors are searched, if any exist.
-*)
-  Result := inherited FindItem(ItemName);
-    //search only in members
-  if Result = nil then
-    Result := FindItemInAncestors(ItemName);
-end;
-{$ELSE}
-  //in TPasScope
-{$ENDIF}
-
-{$ENDIF}
 
 procedure TPasCio.AddMember(item: TPasItem);
 begin
@@ -2500,23 +1979,11 @@ begin
 end;
 
 function TPasCio.FindItemInAncestors(const ItemName: string): TPasItem;
-//var Ancestor: TBaseItem;
 begin
-{$IFDEF old}
-  Ancestor := FirstAncestor;
-  Result := nil;
-  while (Result = nil) and (Ancestor <> nil) and (Ancestor is TPasCio) do begin
-    { TPasCio.FindItem always returns some TPasItem, so the cast below
-      of Ancestor.FindItem to TPasItem should always be OK. }
-    Result := Ancestor.FindItem(ItemName) as TPasItem;
-    Ancestor := TPasCio(Ancestor).FirstAncestor; //for eventual next try
-  end;
-{$ELSE}
 //ancestor also searches in it's ancestor(s) (auto recursion)
   Result := FirstAncestor;
   if Result <> nil then
     Result := Result.FindItem(ItemName) as TPasItem;
-{$ENDIF}
 end;
 
 { TPasUnit ------------------------------------------------------------------- }
@@ -2545,59 +2012,6 @@ begin
   FVariables.Free;
   inherited;
 end;
-
-{$IFDEF old}
-procedure TPasUnit.AddCIO(const i: TPasCio);
-begin
-  CIOs.Add(i);
-end;
-
-procedure TPasUnit.AddConstant(const i: TPasItem);
-begin
-  Constants.Add(i);
-end;
-
-procedure TPasUnit.AddType(const i: TPasItem);
-begin
-  Types.Add(i);
-end;
-
-procedure TPasUnit.AddVariable(const i: TPasItem);
-begin
-  Variables.Add(i);
-end;
-
-function TPasUnit.FindItem(const ItemName: string): TBaseItem;
-begin
-  if Constants <> nil then begin
-    Result := Constants.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Types <> nil then begin
-    Result := Types.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Variables <> nil then begin
-    Result := Variables.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if FuncsProcs <> nil then begin
-    Result := FuncsProcs.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if CIOs <> nil then begin
-    Result := CIOs.FindName(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  Result := inherited FindItem(ItemName);
-end;
-
-{$ELSE}
 
 function TPasUnit.FindItemInAncestors(const ItemName: string): TPasItem;
 var
@@ -2631,7 +2045,6 @@ begin
       FFuncsProcs.Add(item);
   end;
 end;
-{$ENDIF}
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
 var
@@ -2677,51 +2090,6 @@ begin
   if (UsesUnits <> nil) and (ssUsesClauses in SortSettings) then
     UsesUnits.Sort;
 end;
-
-{$IFDEF old}
-procedure TPasUnit.Deserialize(const ASource: TStream);
-begin
-  inherited;
-{$IFDEF old}
-  FUsesUnits.LoadFromBinaryStream(ASource);
-  FTypes.Deserialize(ASource);
-  FVariables.Deserialize(ASource);
-  FCIOs.Deserialize(ASource);
-  FConstants.Deserialize(ASource);
-  FFuncsProcs.Deserialize(ASource);
-  ASource.Read(FIsUnit, SizeOf(FIsUnit));
-  ASource.Read(FIsProgram, SizeOf(FIsProgram));
-{$ELSE}
-{$ENDIF}
-
-  { No need to serialize, because it's not generated by parser:
-  FOutputFileName := LoadStringFromStream(ASource);
-  FSourceFilename := LoadStringFromStream(ASource);
-  SourceFileDateTime := LoadDoubleFromStream(ASource);}
-end;
-
-procedure TPasUnit.Serialize(const ADestination: TStream);
-begin
-  inherited;
-{$IFDEF old}
-  FUsesUnits.SaveToBinaryStream(ADestination);
-  FTypes.Serialize(ADestination);
-  FVariables.Serialize(ADestination);
-  FCIOs.Serialize(ADestination);
-  FConstants.Serialize(ADestination);
-  FFuncsProcs.Serialize(ADestination);
-  ADestination.Write(FIsUnit, SizeOf(FIsUnit));
-  ADestination.Write(FIsProgram, SizeOf(FIsProgram));
-{$ELSE}
-{$ENDIF}
-
-  { No need to serialize, because it's not generated by parser:
-  SaveStringToStream(FOutputFileName, ADestination);
-  SaveStringToStream(FSourceFilename, ADestination);
-  SaveDoubleToStream(SourceFileDateTime, ADestination); }
-end;
-{$ELSE}
-{$ENDIF}
 
 function TPasUnit.BasePath: string;
 begin
@@ -2823,14 +2191,10 @@ begin
     ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@param tag doesn''t specify parameter name, skipped', []);
   end else begin
-  {$IFDEF old}
-    FParams.Add(Pair);
-  {$ELSE}
     TBaseItem(param) := FindItem(Pair.Name);
     if param = nil then
       param := TPasItem.Create(self, KEY_VAR, Pair.Name);
     param.DetailedDescription := Pair.Value;
-  {$ENDIF}
   end;
 
   ReplaceStr := '';
@@ -2902,11 +2266,6 @@ end;
 procedure TPasProperty.Deserialize(const ASource: TStream);
 begin
   inherited;
-{$IFDEF old}
-  ASource.Read(FDefault, SizeOf(FDefault));
-  ASource.Read(FNoDefault, SizeOf(FNoDefault));
-{$ELSE}
-{$ENDIF}
   FIndexDecl := LoadStringFromStream(ASource);
   FStoredID := LoadStringFromStream(ASource);
   FDefaultID := LoadStringFromStream(ASource);
@@ -2918,11 +2277,6 @@ end;
 procedure TPasProperty.Serialize(const ADestination: TStream);
 begin
   inherited;
-{$IFDEF old}
-  ADestination.Write(FDefault, SizeOf(FDefault));
-  ADestination.Write(FNoDefault, SizeOf(FNoDefault));
-{$ELSE}
-{$ENDIF}
   SaveStringToStream(FIndexDecl, ADestination);
   SaveStringToStream(FStoredID, ADestination);
   SaveStringToStream(FDefaultID, ADestination);

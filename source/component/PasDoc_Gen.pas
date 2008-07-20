@@ -1051,15 +1051,8 @@ begin
       U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
     end;
 
-  {$IFDEF old}
-    AssignLinks(U, nil, U.Constants);
-    AssignLinks(U, nil, U.Variables);
-    AssignLinks(U, nil, U.Types);
-    AssignLinks(U, nil, U.FuncsProcs);
-  {$ELSE}
     AssignLinks(U, nil, U.Members);
   //actions required after deserialization
-  {$ENDIF}
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
@@ -1070,13 +1063,7 @@ begin
 
         AssignCioAncestorLinks(CO);
 
-      {$IFDEF old}
-        AssignLinks(U, CO, CO.Fields);
-        AssignLinks(U, CO, CO.Methods);
-        AssignLinks(U, CO, CO.Properties);
-      {$ELSE}
         AssignLinks(U, CO, CO.Members);
-      {$ENDIF}
       end;
     end;
   end;

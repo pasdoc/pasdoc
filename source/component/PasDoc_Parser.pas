@@ -38,35 +38,6 @@ const
   cmMarkers = [cmIgnore, cmFwd, cmBack, cmBlock, cmEnd];
 
 type
-{$IFDEF old}
-  // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).
-  // It is modelled after TStringList but has only the minimum number
-  // of methods required for use in PasDoc.
-  TRawDescriptionInfoList = class(TObject)
-  private
-    // @name holds the @link(TRawDescriptionInfo TRawDescriptionInfos) in @classname
-    FItems: array of TRawDescriptionInfo;
-    // @name holds the number of items currently stored in @classname.
-    // @seealso(Count).
-    FCount: integer;
-    // @name is the read specifier for @link(Items)
-    function GetItems(Index: integer): TRawDescriptionInfo;
-    // @name expands the capacity of @link(FItems).
-    procedure Grow;
-  public
-    // @name adds a new @link(TRawDescriptionInfo) to @classname.
-    function Append(Comment: TRawDescriptionInfo): integer;
-    // @name is the number of @link(TRawDescriptionInfo TRawDescriptionInfos) in
-    // @classname.
-    property Count: integer read FCount;
-    Constructor Create;
-    // @name provides read access to the
-    // @link(TRawDescriptionInfo TRawDescriptionInfos) in @classname.
-    property Items[Index: integer]: TRawDescriptionInfo read GetItems; default;
-  end;
-{$ELSE}
-{$ENDIF}
-
 //dummy class, for writeable TToken.EndPosition
   TCToken = class(TToken)
   protected
@@ -326,12 +297,7 @@ type
       appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
       Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
       if appropriate hint directive will occur in source file. }
-  {$IFDEF old}
-    procedure SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
-  {$ELSE}
-  //changed signature!
     procedure SkipDeclaration(fSkipNext: boolean; CurItem: TPasItem);
-  {$ENDIF}
 
     procedure SetCommentMarkers(const Value: TStringList);
 
@@ -389,14 +355,8 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
-  {$IFDEF old}
-  //ShowVisibilities should be global, reachable from the items!
-    property ShowVisibilities: TVisibilities
-      read FShowVisibilities write FShowVisibilities;
-  {$ELSE}
   //if this is ever needed... (ShowVisibilities was moved into PasDoc_items)
     class function ShowVisibilities: TVisibilities;
-  {$ENDIF}
 
     { See command-line option @--implicit-visibility documentation at
       [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
@@ -409,48 +369,6 @@ implementation
 uses
   SysUtils,
   PasDoc_Utils;
-
-{$IFDEF old}
-
-{ TRawDescriptionInfoList --------------------------------------------------------------- }
-
-function TRawDescriptionInfoList.GetItems(Index: integer): TRawDescriptionInfo;
-begin
-  { FItems is a dynarray, so compiler will automatically
-    add appropriate range checks here in $R+ mode.
-    So no need to explicitly check Index for validity here. }
-  Result := FItems[Index];
-end;
-
-procedure TRawDescriptionInfoList.Grow;
-var
-  Delta: integer;
-begin
-  if Length(FItems) < 16 then begin
-    Delta := 4;
-  end
-  else begin
-    Delta := Length(FItems) div 4;
-  end;
-  SetLength(FItems, Length(FItems) + Delta);
-end;
-
-function TRawDescriptionInfoList.Append(Comment: TRawDescriptionInfo): integer;
-begin
-  if Length(FItems) = Count then Grow;
-  FItems[Count] := Comment;
-  result := Count;
-  Inc(FCount);
-end;
-
-constructor TRawDescriptionInfoList.Create;
-begin
-  inherited;
-  SetLength(FItems, 4);
-  FCount := 0;
-end;
-{$ELSE}
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -512,7 +430,6 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TParser.PeekNextToken: TTokenType;
-//type  ePeekState = (psWait, psCollect, psGotRem, psDone);
 var
   T: TToken;
   C: TToken;
@@ -593,25 +510,17 @@ var
     end;
     if C = nil then begin
     //first comment
-    //ignore if empty? clear pending comments?
+    //clear pending comments if empty?
       if t.CommentContent <= ' ' then begin
         CancelComments;
         FreeAndNil(t);
         exit;
       end;
-    {$IFDEF old}
-      NextCommentInfo.Content := T.CommentContent;
-      NextCommentInfo.StreamName := T.StreamName;
-      NextCommentInfo.BeginPosition := T.BeginPosition;
-      NextCommentInfo.EndPosition := T.EndPosition;
-    {$ELSE}
       TToken(C) := T;
       T := nil;
-    {$ENDIF}
       if not fCstyle then
         ExtractDocComment; //finish comment
   //else a C-style comment is waiting for continuation
-    //end else if fCstyle and (t.StreamName = c.StreamName) then begin
     end else begin  //all conditions checked above!
     //append to preceding comment
       C.CommentContent := C.CommentContent + LineEnding + T.CommentContent;
@@ -638,13 +547,13 @@ begin
     TOK_WHITESPACE:
       begin
         if C = nil then //ignore between comments?
-          Recorder := Recorder + ' '; //t.Data; - compress FullDeclaration
+          Recorder := Recorder + ' '; //compress FullDeclaration
         FreeAndNil(T);
       end;
     else //case
       break;  //don't consume!
     end;
-  until assigned(T); //collect comments
+  until assigned(T);
 //did we get an comment?
   if assigned(C) then
     ExtractDocComment;
@@ -740,28 +649,9 @@ const
 
 procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
-{$IFNDEF old}
 //short version, error messages differ from old version! - really?
   if T.MyType <> ATokenType then
     DoError(SExpectedButFound, [TokenDefinition(ATokenType), T.Description]);
-{$ELSE}
-  if T.MyType <> ATokenType then begin
-    if ATokenType >= KEY_AND then begin
-    //key
-      DoError(SExpectedButFound,
-        [Format('reserved word "%s"', [LowerCase(TokenNames[ATokenType])]),
-          T.Description]);
-    end else if ATokenType >= SYM_PLUS then begin
-    //symbol
-      DoError(SExpectedButFound,
-        [Format('symbol "%s"', [TokenNames[ATokenType]]),
-          T.Description]);
-    end else
-      DoError(SExpectedButFound,
-        [TokenNames[ATokenType],
-          T.Description]);
-  end;
-{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -869,7 +759,6 @@ begin
 end;
 
 function  TParser.QualID(fGet: boolean; fOperator: boolean): TToken;
-//var lst: TNameParts; not stored, only by interpretation of given string!
 begin
 (* get an fully qualified name, remember first token.
 *)
@@ -940,10 +829,8 @@ function  TParser.ParseCDFP(fClass: boolean;
       Recorder := Recorder + ';';
   end;
 
-//var  InvalidType: boolean;
 var
   M: TPasMethod absolute Result;
-//const MClause: array[boolean] of TTokenType = (KEY_OBJECT, KEY_CLASS);
 begin //ParseCDFP
 { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
@@ -966,7 +853,6 @@ The arguments can be identifiers, so that we should assume that
   M := CreateItem(TPasMethod, MethodType, Ident) as TPasMethod;
 
   DoMessage(5, pmtInformation, 'Parsing %s "%s"',
-    //[MethodTypeToString(MethodType), M.Name]);
     [LowerCase(TokenNames[MethodType]), M.Name]);
 
   ReadTokensUntilSemicolon;
@@ -977,7 +863,7 @@ The arguments can be identifiers, so that we should assume that
     //case GetNextToken of
     case PeekNextToken of
     KEY_INLINE:   ;
-    KEY_LIBRARY:  M.HasAttribute[SD_LIBRARY] := True; // .IsLibrarySpecific := True;
+    KEY_LIBRARY:  M.HasAttribute[SD_LIBRARY] := True;
     TOK_IDENTIFIER:
       case Peeked.Directive of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
@@ -985,8 +871,8 @@ The arguments can be identifiers, so that we should assume that
       SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
       SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
       SD_VARARGS,
-      SD_DEPRECATED,  //M.IsDeprecated := True;
-      SD_PLATFORM:    //M.IsPlatformSpecific := True;
+      SD_DEPRECATED,
+      SD_PLATFORM:
         M.HasAttribute[Peeked.Directive] := True;
       { * External declarations might be followed by a string constant.
         * Messages are followed by an integer constant between 1 and 49151 which
@@ -998,11 +884,9 @@ The arguments can be identifiers, so that we should assume that
         end;
       SD_DISPID:  PeekSemicolon;
       else  //case directive
-        //UnGetToken;
         Break;
       end;
     else //case type
-      //UnGetToken;
       Break;
     end;
   (* We come here with either:
@@ -1054,23 +938,15 @@ var
   end;
 
 var
-  //Finished: Boolean;
-  //M: TPasMethod;
-  //p: TPasProperty;
   Visibility: TVisibility;
-  //s: string;
-  //t: TToken;
-  //StrictVisibility: boolean;
 begin //ParseCIO
 (* ident "=" ( class | interface | record | object ) <| body ";" |>
 class = CLASS [ ABSTRACT | SEALED ] [ancestors] [guid]
 or
   ident = CLASS <| ";" |>
 *)
-  //StrictVisibility := False;
   DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"',
     [Ident.Data]);  //[CioName]);
-  //i := nil;
   { Test for forward class definition here:
       class MyClass = class;
     with no ancestor or class members listed after the word class. }
@@ -1091,13 +967,7 @@ or
     repeat //parse ancestor (ident) list
     //start recording ancestor
       i.FullDeclaration := i.FullDeclaration + Recorded;
-    {$IFDEF old}
-      Expect(TOK_IDENTIFIER);
-      while Skip(SYM_PERIOD) do
-        Expect(TOK_IDENTIFIER);
-    {$ELSE}
       QualId(True);
-    {$ENDIF}
       i.Ancestors.Add(Recorder);
     until not Skip(SYM_COMMA);
     Expect(SYM_RIGHT_PARENTHESIS);
@@ -1148,7 +1018,7 @@ or
 
     { This is needed to include ClassKeyWordString in
       class methods declarations. }
-    fClass := False;  // ClassKeyWordString := '';
+    fClass := False;
 
     //Finished := False;
     while GetNextToken <> KEY_END do begin  //repeat
@@ -1179,14 +1049,12 @@ or
       end;
     //everything else should be a member declaration
       case Token.MyType of
-      //KEY_VAR:    ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
       KEY_CLASS:    fClass := True; // ClassKeyWordString := Token.Data;
       KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
       KEY_FUNCTION, KEY_PROCEDURE:
         {M :=} ParseCDFP(fClass, Token.MyType, nil);
-      //KEY_END: Finished := True;
       KEY_PROPERTY:
-        {p :=} ParseProperty; //(i);  //, Visibility);
+        {p :=} ParseProperty;
       KEY_CASE:
         ParseRecordCase(false);
       TOK_IDENTIFIER:
@@ -1212,7 +1080,6 @@ or
     end;
   end;
 //consumed either ")" or ";"
-  //Recorder := ''; //drop eventual directives?
   i.FullDeclaration := i.FullDeclaration + Recorded;
 end;
 
@@ -1224,7 +1091,6 @@ var
 begin
 (* const ident <| [":" type] "=" value ";" |>
 *)
-  //Recorder := ''; - required?
   i := CreateItem(TPasConstant, KEY_CONST, QualId(False));
   DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
   SkipDeclaration(True, i);
@@ -1270,7 +1136,6 @@ begin
   until Token.MyType <> SYM_COMMA;
 
   Expect(SYM_SEMICOLON);
-  //Recorder := '';
   CloseScope;
 end;
 
@@ -1283,8 +1148,6 @@ const
 var
   Finished: Boolean;
   Mode: Integer;
-  //M: TPasMethod;
-  //PropertyParsed: TPasProperty;
 begin
 (* INTERFACE |> { clauses } IMPLEMENTATION |>
 clauses:
@@ -1536,7 +1399,6 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUnitOrProgram(var U: TPasUnit);
-//function  TParser.ParseUnitOrProgram: TPasUnit;
 (* required by PasDoc_base!
 *)
 var
@@ -1641,19 +1503,10 @@ procedure TParser.ParseVariables(inUnit: boolean);
 var
   FirstItem, NewItem: TPasItem;
   I: Integer;
-{
-  NewItem: TPasFieldVariable;
-  ItemCollector: TPasFieldVariable;
-  m: TPasMethod;
-  NewItemNames: TStringList;
-  RawDescriptions: TRawDescriptionInfoList;
-  NewItems: TPasItems;
-}
 begin //ParseFieldsVariables
 (* ident <| { "," ident } ":" type [absolute] ";" modifiers |>
 *)
 //parse ident list
-  //QualID(False);
   FirstItem := ParseVarList;
 //record type
   Recorder := '';
@@ -1684,75 +1537,6 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
-{$IFDEF old}
-procedure TParser.SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
-var
-  EndLevel: Integer;
-  IsSemicolon: Boolean;
-  PLevel: Integer;
-  //WhitespaceCollector: string;
-begin
-(* intended use: skip all type specifiers after ":" (ref) or "=" (decl).
-Take into account (nesting level) embedded:
-  pairs of "()"
-  structured type definitions (RECORD, CLASS? ..END)
-    (best all CIO types)
-  pairs of "[]" (property index specifier
-
-  Terminate on nesting level 0, when either token is found:
-  ";" ordinary declaration --> include following modifiers!?
-  ")" end of argument or record case list
-  "]" end of property index specifier
-  END of record (case)
-*)
-{ Read all tokens until you find a semicolon at brace-level 0 and
-  end-level (between "record" and "end" keywords) also 0.
-
-  Alternatively, also stops before reading "end" without beginning
-  "record" (so it can handle some cases where declaration doesn't end
-  with semicolon).
-
-  Alternatively, only if IsInRecordCase, also stops before reading
-  ')' without matching '('. That's because fields' declarations
-  inside record case may be terminated by just ')' indicating
-  that this case clause terminates, without a semicolon.
-
-  If you pass Item <> nil then all read data will be
-  appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
-  Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
-  if appropriate hint directive will occur in source file.
-}
-  EndLevel := 0;
-  PLevel := 0;
-  repeat
-    case GetNextToken of
-    SYM_LEFT_PARENTHESIS: Inc(PLevel);
-    SYM_RIGHT_PARENTHESIS: Dec(PLevel);
-    KEY_END: Dec(EndLevel);
-    KEY_RECORD: Inc(EndLevel);
-    KEY_LIBRARY: if Assigned(Item) then Item.IsLibrarySpecific := true;
-    TOK_IDENTIFIER:
-      case Token.Directive of
-      SD_PLATFORM:    if Assigned(Item) then Item.IsPlatformSpecific := true;
-      SD_DEPRECATED:  if Assigned(Item) then Item.IsDeprecated := true;
-      end;
-    end; //case
-    IsSemicolon := Token.IsSymbol(SYM_SEMICOLON);
-
-    { Reason for "EndLevel < 0" condition:
-        Within records et al. the last declaration need not be terminated by ;
-      Reason for "(PLevel < 0) and IsInRecordCase" condition:
-        See autodoc of SkipDeclaration in TParser interface. }
-    if (EndLevel < 0) or
-       ( (PLevel < 0) and IsInRecordCase ) then
-    begin
-      //Scanner.UnGetToken(t);
-      Exit;
-    end;
-    //if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
-  until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
-end;
-{$ELSE}
 procedure TParser.SkipDeclaration(fSkipNext: boolean; CurItem: TPasItem);
 var
   Level: Integer;
@@ -1798,7 +1582,6 @@ Take into account (nesting level) embedded:
 *)
   Recorder := Recorded(True) + ';';
 end;
-{$ENDIF}
 
 { ------------------------------------------------------------ }
 

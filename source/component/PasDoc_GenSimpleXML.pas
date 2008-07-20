@@ -125,13 +125,8 @@ begin
        '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
       for I := 0 to TPasMethod(item).params.count - 1 do
         WriteDirectLine(space +
-        {$IFDEF old}
-          '  <param name="' + ConvertString(TPasMethod(item).params[i].name) + '">' +
-            TPasMethod(item).params.[i].value +'</param>');
-        {$ELSE}
           '  <param name="' + ConvertString(TPasMethod(item).Params.PasItemAt[i].name) + '">' +
             TPasMethod(item).params.PasItemAt[i].FullDeclaration +'</param>');
-        {$ENDIF}
       if TPasMethod(item).returns <> '' then
         WriteDirectLine(space + 
           '  <result>' + TPasMethod(item).returns + '</result>');

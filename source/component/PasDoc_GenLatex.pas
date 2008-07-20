@@ -289,11 +289,7 @@ begin
   
   if (not Assigned(Item)) then Exit;
 
-{$IFDEF old}
-  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then begin
-{$ELSE}
   if (Item is TPasItem) then begin
-{$ENDIF}
     if Assigned(TPasItem(Item).MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
       Result := TPasItem(Item).MyObject.FullLink + '-' + Item.Name;

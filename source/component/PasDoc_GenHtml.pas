@@ -421,31 +421,12 @@ begin
 
   //if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then begin
   if (Item is TPasItem) and not (Item is TPasUnit) then begin
-{$IFDEF old}
-    if Assigned(PasItem.MyObject) then begin
-      { it's a method, a field or a property - only those have MyObject initialized }
-      Result := PasItem.MyObject.FullLink + '#' + Item.Name;
-    end else if PasItem.MyUnit <> nil then begin
-      if Item is TPasCio then begin
-        { it's an object / a class, with it's own file }
-        Result := NewLink(PasItem.MyUnit.Name + '.' + Item.Name);
-      end else begin
-        { it's a constant, a variable, a type or a function / procedure
-          with a tag in the owner file.
-        }
-        Result := PasItem.MyUnit.FullLink + '#' + Item.Name;
-      end;
-    end else begin
-      DoMessage(1, pmtWarning, 'item without unit: %s', [item.Name]);
-    end;
-{$ELSE}
     Result := PasItem.MyOwner.FullLink;
     if Item is TPasCio then begin
     //read: Item has it's own doc file
       Result := ChangeFileExt(Result, '.' + Item.Name);
     end else
       Result := Result + '#' + Item.Name;
-{$ENDIF}
   end else if Item is TAnchorItem then begin
     Result := TAnchorItem(Item).ExternalItem.FullLink + '#' + Item.Name;
   end else begin
@@ -634,11 +615,7 @@ begin
   WriteAnchor(SectionAnchors[dsDescription]);
 
   { write unit link }
-{$IFDEF old}
-  if Assigned(CIO.MyUnit) then begin
-{$ELSE}
   if True then begin
-{$ENDIF}
     WriteHeading(HL + 1, 'unit', FLanguage.Translation[trUnit]);
     WriteStartOfParagraph('unitlink');
     WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
@@ -1189,7 +1166,7 @@ begin
     WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
       AItemMethod.Raises, true, 'exceptions_raised');
   end;
-  
+
   WriteSeeAlso(AItem.SeeAlso);
  
   if AItem is TPasEnum then 
