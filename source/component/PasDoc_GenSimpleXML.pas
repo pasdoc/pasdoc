@@ -147,9 +147,11 @@ begin
             '" type="' + ConvertString(TPasProperty(item).Proptype) + 
           '" reader="' + ConvertString(TPasProperty(item).reader) +
           '" writer="' + ConvertString(TPasProperty(item).writer) +
-         '" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
+         //'" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
+         '" default="' + ConvertString(booltostr(item.HasAttribute[SD_DEFAULT])) +
        '" defaultid="' + ConvertString(TPasProperty(item).defaultid) +
-       '" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
+       //'" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
+       '" nodefault="' + ConvertString(booltostr(item.HasAttribute[SD_NODEFAULT])) +
         '" storedid="' + ConvertString(TPasProperty(item).storedid) +'"/>');
 end;
 
