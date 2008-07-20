@@ -361,10 +361,9 @@ type
 
     Unmarked comments are ignored, unless markers are optional. In this case
     the direction of the comment is determined by the comment style:
-    Pascal "(*" and "{" comments become forward comments,
-    C-style "//" comments become back-comments.
-    The "*" and "/" markers invert that direction, i.e.
-    "(**" becomes a back-comment, "///" a forward comment.
+    Pascal comments become forward comments,
+    C-style comments become back-comments.
+    The "*" and "/" markers invert that direction.
     This is only a compatibility hack, better use ">" and "<" markers instead.
   *)
     SingleCharMarkers: boolean;
@@ -544,9 +543,9 @@ var
         if WasMarker then
           Delete(C.Data, 1, 1);
         if (C.MyType = TOK_COMMENT_CSTYLE) = WasMarker then
-        // (* or ///
+        // ( * or / / /
           cm := cmFwd
-        else  // (** or //
+        else  // ( ** or / /
           cm := cmBack;
       end;
     end else begin
