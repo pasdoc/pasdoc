@@ -34,11 +34,8 @@ program pasdoc;
 {$ENDIF}
 
 uses
-{$IFDEF USEFASTMM4}
   FastMM4,
-{$ENDIF}
-  PasDoc_Main,
-  test1 in 'test1.pas';
+  PasDoc_Main;
 
 begin
   Main;
