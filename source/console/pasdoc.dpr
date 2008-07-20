@@ -42,5 +42,9 @@ uses
 
 begin
   Main;
+{$IFDEF FPC}
+{$ELSE}
+//Delphi, debug
   ReadLn;
+{$ENDIF}
 end.

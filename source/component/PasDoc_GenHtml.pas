@@ -424,7 +424,7 @@ begin
     Result := PasItem.MyOwner.FullLink;
     if Item is TPasCio then begin
     //read: Item has it's own doc file
-      Result := ChangeFileExt(Result, '.' + Item.Name);
+      Result := ChangeFileExt(Result, '.' + Item.Name + GetFileExtension);
     end else
       Result := Result + '#' + Item.Name;
   end else if Item is TAnchorItem then begin
@@ -553,19 +553,12 @@ const
       WriteDirectLine('<li class="ancestor">' + 
         MakeItemLink(CIO, CIO.Name, lcNormal) + '</li>')
     end;
-    { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
+    { todo --check: Is it possible that the item is assigned but is not a TPasCio ?
+      Answer: type A = B; will result in an ordinary type A, even if B is a CIO.
+      Type inheritance should be handled in the parser.
+    }
   end;
 
-type
-  TCIONames = array[TCIOType] of string;
-const
-  CIO_NAMES: TCIONames = (
-    'class',
-    'dispinterface',
-    'interface',
-    'object',
-    'record',
-    'packed record');
 var
   i: Integer;
   s: string;

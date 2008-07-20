@@ -77,7 +77,9 @@ object DirList: TDirList
     end
   end
   object dlgAdd: TOpenDialog
-    Filter = 'Include Files (*.inc)|*.inc|All Files|*.*'
+    Filter = 
+      'Include Files (*.inc)|*.inc|Source Files|*.pas;*.pp|All Files|*.' +
+      '*'
     Options = [ofHideReadOnly, ofNoValidate, ofNoTestFileCreate, ofEnableSizing]
     Title = 'Collect directories containing files like pattern'
     Left = 144

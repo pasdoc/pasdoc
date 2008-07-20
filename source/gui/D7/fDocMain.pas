@@ -559,6 +559,7 @@ const
     mainLatexGraphicsPackage = 'LatexGraphicsPackage';
     mainLineBreakQuality = 'LineBreakQuality';
     mainOutputDir = 'OutputDir';
+    mainRootDir = 'RootDir';
     mainProjectName = 'ProjectName';
     mainSorting_ = 'Sorting_';
     mainSpecialMarkerTreatment = 'SpecialMarkerTreatment';
@@ -613,6 +614,7 @@ begin
     //if i < 0 then i := 0; //default
     Ini.WriteString(secMain, mainLanguageName, LanguageFromIndex(i));
   {$ENDIF}
+    Ini.WriteString(secMain, mainRootDir, edRoot.Text);
     Ini.WriteString(secMain, mainOutputDir, edOutput.Text);
     Ini.WriteInteger(secMain, mainGenerateFormat, lbOutType.ItemIndex);
     Ini.WriteString(secMain, mainProjectName, edProjectName.Text);
@@ -717,6 +719,9 @@ begin
     lbOutLang.ItemIndex := i;
     //comboLanguagesChange(nil);
 
+    edRoot.Text := Ini.ReadString(secMain, mainRootDir, '');
+    if edRoot.Text <> '' then
+      lbFiles.dlgAdd.InitialDir := edRoot.Text;
     edOutput.Text := Ini.ReadString(secMain, mainOutputDir, '');
 
     lbOutType.ItemIndex := Ini.ReadInteger(secMain, mainGenerateFormat, 0);

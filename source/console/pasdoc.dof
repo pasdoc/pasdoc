@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=..\component;..\Console;..\component\tipue
 UsePackages=0
 [Parameters]
-RunParams=D:\PasDoc2\PasDoc2\source\console\test1.pas
+RunParams=
 HostApplication=
 Launcher=
 UseLauncher=0

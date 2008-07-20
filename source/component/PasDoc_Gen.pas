@@ -1154,18 +1154,18 @@ begin
   { TODO: this should be moved to TPasItem handler, so that @classname
     is registered only for TPasItem (or, even better, for TPasCio
     and TPasItem with MyObject <> nil). }
-    
+
   ItemClassName := '';
-  if FCurrentItem is TPasItem then
-  begin
+  if not (FCurrentItem is TPasItem) then begin
     if Assigned(TPasItem(fCurrentItem).MyObject) then
-      ItemClassName := TPasItem(fCurrentItem).MyObject.Name else
-    if fCurrentItem is TPasCio then
+      ItemClassName := TPasItem(fCurrentItem).MyObject.Name
+    else if fCurrentItem is TPasCio then
       ItemClassName := fCurrentItem.Name;
   end;
-  
+
   if ItemClassName <> '' then
-    ReplaceStr := CodeString(ConvertString(ItemClassName)) else
+    ReplaceStr := CodeString(ConvertString(ItemClassName))
+  else
     ThisTag.TagManager.DoMessage(1, pmtWarning, '@classname not available here', []);
 end;
 
@@ -1233,25 +1233,23 @@ begin
     is registered only for TPasItem (or, even better, for TPasCio
     and TPasItem with MyObject <> nil). }
 
-  if FCurrentItem is TPasCio then
-  begin
+  if FCurrentItem is TPasCio then begin
     TheObject := TPasCio(FCurrentItem);
     if TheObject.FirstAncestorName = '' then
-      InheritedCannotResolve('No ancestor class') else
-    if TheObject.FirstAncestor = nil then
-      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName)) else
-      ReplaceStr := MakeItemLink(TheObject.FirstAncestor, 
+      InheritedCannotResolve('No ancestor class')
+    else if TheObject.FirstAncestor = nil then
+      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName))
+    else
+      ReplaceStr := MakeItemLink(TheObject.FirstAncestor,
         TheObject.FirstAncestorName, lcNormal);
-  end else
-  if FCurrentItem is TPasItem then
-  begin
-    if Assigned(TPasItem(FCurrentItem).MyObject) then
-    begin
+  end else if FCurrentItem is TPasItem then begin
+    if Assigned(TPasItem(FCurrentItem).MyObject) then begin
       InheritedItem := TPasItem(FCurrentItem).MyObject.FindItemInAncestors(
         FCurrentItem.Name);
       if InheritedItem = nil then
-        InheritedCannotResolve(Format('Member "%s" not found in ancestors', 
-          [FCurrentItem.Name])) else
+        InheritedCannotResolve(Format('Member "%s" not found in ancestors',
+          [FCurrentItem.Name]))
+      else
         ReplaceStr := MakeItemLink(InheritedItem,
           InheritedItem.MyObject.Name + '.' + InheritedItem.Name, lcNormal);
     end else

@@ -137,6 +137,8 @@ const
   KEY_INVALIDKEYWORD = tok_identifier;
 
   CioTypes = [KEY_CLASS, KEY_DISPINTERFACE, KEY_INTERFACE, KEY_RECORD];
+//ClassTypes have ancestors, reside in their own HTML file.
+  ClassTypes = [KEY_CLASS, KEY_DISPINTERFACE, KEY_INTERFACE];
   UnitTypes = [KEY_PROGRAM, KEY_LIBRARY, KEY_UNIT]; //<package?
 
 type

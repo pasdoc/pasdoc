@@ -94,13 +94,13 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=D:\PasDoc2\PasDoc2\source\component;D:\PasDoc2\PasDoc2\source\component\tipue;D:\PasDoc2\PasDoc2\source\component\images
+SearchPath=..\..\component;..\..\component\tipue;..\..\component\images
 Packages=vcl;rtl;vclx;vclie;vclactnband;vclshlctrls
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=D:\PasDoc2\PasDoc2\source\console\test1,pds
+RunParams=D:\SourceForge\PasDoc2\source\gui\D7\empty.pds
 HostApplication=
 Launcher=
 UseLauncher=0

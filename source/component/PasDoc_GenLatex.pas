@@ -370,16 +370,13 @@ function TTexDocGenerator.HasDescriptions(c: TPasItems):boolean;
 var j :integer;
     Item: TPasItem;
 begin
+  HasDescriptions := True; //assume
+  for j := 0 to c.Count - 1 do begin
+    Item := TPasItem(c.PasItemAt[j]);
+    if HasDescription(Item) then
+      exit;
+  end;
   HasDescriptions := false;
-  for j := 0 to c.Count - 1 do 
-    begin
-      Item := TPasItem(c.PasItemAt[j]);
-      if HasDescription(Item) then
-        begin
-          HasDescriptions:=true;
-          exit;
-        end;
-    end;
 end;
 
 
@@ -394,7 +391,7 @@ var
   SectionHeads: array[TSections] of string;
 begin
   if not Assigned(CIO) then Exit;
-  
+
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
   SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
@@ -925,7 +922,7 @@ var
 begin
   Result := false;
   if not Assigned(AItem) then Exit;
-  
+
   Result := AItem.HasDescription or
     { TPasEnum always has some description: list of it's members }
     (AItem is TPasEnum) or
@@ -941,7 +938,13 @@ begin
 
   if Result then Exit;
 
-  if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
+{ TODO : 
+Searching for descriptions in ancestors can be implemented in TPasItem.
+This search will recurse into all ancestors.
+Alternatively TPasItem.HasDescription can do that search already,
+but then a parameter seems to be useful, to distinguish between
+RawDescription and FullDescription. (contact DoDi) }  
+  if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then
   begin
     Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) and (Ancestor is TPasItem) then
@@ -949,7 +952,7 @@ begin
       HasDescription := HasDescription(TPasItem(Ancestor));
       exit;
     end;
-  end;    
+  end;
 end;
 
 procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;

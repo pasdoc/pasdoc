@@ -181,7 +181,7 @@ procedure TSimpleXMLDocGenerator.writeclass(const item:TPasCIO);
 
 function writetype(t:TCIOType):string;
 begin
-  result:='unknown';
+{$IFDEF old}
   case t of
     CIO_CLASS:result:='class';
     CIO_SPINTERFACE:result:='dispinterface';
@@ -189,7 +189,12 @@ begin
     CIO_OBJECT:result:='object';
     CIO_RECORD:result:='record';
     CIO_PACKEDRECORD:result:='packed record';
+  else
+    result:='unknown';
   end;
+{$ELSE}
+  Result := CIO_NAMES[t];
+{$ENDIF}
 end;
 
 var

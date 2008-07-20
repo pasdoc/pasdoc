@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabOpts
+    ActivePage = tabFiles
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -305,9 +305,11 @@ object DocMain: TDocMain
           end
         end
         inherited dlgAdd: TOpenDialog
+          FilterIndex = 2
           Options = [ofNoValidate, ofAllowMultiSelect, ofExtensionDifferent, ofPathMustExist, ofNoTestFileCreate, ofEnableSizing]
           Title = 'Add source files'
-          Top = 152
+          Left = 140
+          Top = 24
         end
       end
       inline edRoot: TDirBox
@@ -355,6 +357,9 @@ object DocMain: TDocMain
             Width = 595
             Height = 287
           end
+        end
+        inherited dlgAdd: TOpenDialog
+          FilterIndex = 2
         end
       end
       inline edIntro: TDirBox
@@ -925,6 +930,7 @@ object DocMain: TDocMain
     OnWarning = PasDocWarning
     OnMessage = PasDocWarning
     StarStyleOnly = False
+    SingleCharMarkers = False
     ShowVisibilities = []
     Left = 492
     Top = 360

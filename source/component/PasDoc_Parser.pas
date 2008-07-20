@@ -370,6 +370,11 @@ uses
   SysUtils,
   PasDoc_Utils;
 
+procedure DebugBreak;
+begin
+  //dummy for debugging
+end;
+
 { ---------------------------------------------------------------------------- }
 { TParser }
 { ---------------------------------------------------------------------------- }
@@ -492,6 +497,8 @@ var
       c.Mark := cm;
       PushComment(C);
     end;
+    if assigned(C) then
+      DebugBreak;
   end;
 
   { Collect multiple C-style comments.
@@ -600,8 +607,13 @@ begin
     begin
       BlockComment.Free;
       BlockComment := c;
+      c := nil;
     end;
-  cmEnd:  FreeAndNil(BlockComment);
+  cmEnd:
+    begin
+      FreeAndNil(BlockComment);
+      FreeAndNil(C);
+    end;
   cmBack: //try apply immediately
     if not AddDescription(C) then
       AppendIt;
@@ -617,9 +629,12 @@ begin
   Result := False; //in case of any errors
 //check item
   if item = nil then begin
-    if CurScope.Members.Count <= 0 then
-      exit; //not item for comment
-    item := CurScope.Members.LastItem
+    if CurScope.Members.Count <= 0 then begin
+    //back-comment to the scope item itself!
+      item := CurScope;
+      //exit; //not item for comment
+    end else
+      item := CurScope.Members.LastItem
   end;
 //check for tentative item?
   if assigned(Identifier)
@@ -755,6 +770,7 @@ begin
   Result := AClass.Create(CurScope, tt, Ident.Data);
   Result.NameStream := Ident.StreamName;
   Result.NamePosition := Ident.BeginPosition;
+  FreeAndNil(Identifier);
   ApplyComments(Result);
 end;
 
@@ -955,11 +971,12 @@ or
 
   i := CreateItem(TPasCio, CIOType, Ident) as TPasCio;
 
-  if (Token.Directive in [SD_ABSTRACT, SD_SEALED]) then begin
-    i.HasAttribute[Token.Directive] := True;
-    GetNextToken;
+  if PeekNextToken = TOK_IDENTIFIER then begin
+    if (Peeked.Directive in [SD_ABSTRACT, SD_SEALED]) then begin
+      i.HasAttribute[Peeked.Directive] := True;
+      GetNextToken;
+    end;
   end;
-
   { get ancestor and all interfaces; remember, this could look like
     TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
     Every entry but the first must be an interface. }
@@ -967,7 +984,7 @@ or
     repeat //parse ancestor (ident) list
     //start recording ancestor
       i.FullDeclaration := i.FullDeclaration + Recorded;
-      QualId(True);
+      QualId(True); FreeAndNil(Identifier);
       i.Ancestors.Add(Recorder);
     until not Skip(SYM_COMMA);
     Expect(SYM_RIGHT_PARENTHESIS);
@@ -1045,7 +1062,9 @@ or
     //peek sections
       if Token.MyType in sSections then begin
       //to be implemented
-        DoError('unhandled section in CIO: %s', [Token.Description]);
+        //DoError('unhandled section in CIO: %s', [Token.Description]);
+        DoMessage(1, pmtWarning, 'unhandled section in CIO: %s', [Token.Description]);
+        GetNextToken;
       end;
     //everything else should be a member declaration
       case Token.MyType of
@@ -1110,7 +1129,7 @@ begin
 (* <| "(" ident ["=" value] { "," ident ["=" value] } ");"
 *)
   TPasItem(p) := CreateItem(TPasEnum, KEY_TYPE, Identifier);
-  p.FullDeclaration := Identifier.Data + ' = (...);';
+  p.FullDeclaration := p.Name + ' = (...);';
 
   OpenScope(p);
   repeat  //while not Skip(SYM_RIGHT_PARENTHESIS) do begin
