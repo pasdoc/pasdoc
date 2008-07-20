@@ -1122,12 +1122,15 @@ var
 begin
   if not Assigned(AItem) then Exit;
   
-  if AItem.IsDeprecated then
+  //if AItem.IsDeprecated then
+  if AItem.HasAttribute[SD_DEPRECATED] then
     WriteHintDirective(FLanguage.Translation[trDeprecated]);
-  if AItem.IsPlatformSpecific then
+  //if AItem.IsPlatformSpecific then
+  if AItem.HasAttribute[SD_PLATFORM] then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
-  if AItem.IsLibrarySpecific then
-    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);  
+  //if AItem.IsLibrarySpecific then
+  if AItem.HasAttribute[SD_LIBRARY] then
+    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.AbstractDescription <> '' then
   begin

@@ -165,12 +165,3 @@ c:\program files\borland\delphi7\Bin\dcldss70.bpl=Borland Decision Cube Componen
 c:\program files\borland\delphi7\Bin\dclclxdb70.bpl=Borland CLX Database Components
 C:\WINNT\system32\ibevnt70.bpl=Borland Interbase Event Alerter Component
 c:\program files\borland\delphi7\Bin\dcloffice2k70.bpl=Microsoft Office 2000 Sample Automation Server Wrapper Components
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=4
-Item0=D:\PasDoc2\PasDoc2\source\component;D:\PasDoc2\PasDoc2\source\component\tipue;D:\PasDoc2\PasDoc2\source\component\images
-Item1=$(DELPHI)\Lib\Debug;D:\SOURCE~1\JCL\jcl\lib\d7\debug;D:\PasDoc2\PasDoc2\source\component;D:\PasDoc2\PasDoc2\source\component\tipue;D:\PasDoc2\PasDoc2\source\component\images
-Item2=D:\PasDoc2\PasDoc2\source\component;D:\PasDoc2\PasDoc2\source\component\tipue
-Item3=D:\PasDoc2\PasDoc2\source\component

@@ -978,15 +978,17 @@ The arguments can be identifiers, so that we should assume that
     //case GetNextToken of
     case PeekNextToken of
     KEY_INLINE:   ;
-    KEY_LIBRARY:  M.IsLibrarySpecific := True;
+    KEY_LIBRARY:  M.HasAttribute[SD_LIBRARY] := True; // .IsLibrarySpecific := True;
     TOK_IDENTIFIER:
       case Peeked.Directive of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
       SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
       SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
       SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-      SD_VARARGS:
-        ;
+      SD_VARARGS,
+      SD_DEPRECATED,  //M.IsDeprecated := True;
+      SD_PLATFORM:    //M.IsPlatformSpecific := True;
+        M.HasAttribute[Peeked.Directive] := True;
       { * External declarations might be followed by a string constant.
         * Messages are followed by an integer constant between 1 and 49151 which
           specifies the message ID. }
@@ -995,8 +997,6 @@ The arguments can be identifiers, so that we should assume that
         // Keep on reading up to the next semicolon or declaration
           PeekSemicolon;
         end;
-      SD_DEPRECATED:  M.IsDeprecated := True;
-      SD_PLATFORM:    M.IsPlatformSpecific := True;
       SD_DISPID:  PeekSemicolon;
       else  //case directive
         //UnGetToken;
@@ -1785,7 +1785,8 @@ Take into account (nesting level) embedded:
     KEY_END: Dec(Level);
     KEY_CLASS, KEY_INTERFACE, KEY_DISPINTERFACE, KEY_OBJECT,
     KEY_RECORD: Inc(Level);
-    KEY_LIBRARY: if Assigned(CurItem) then CurItem.IsLibrarySpecific := true;
+    KEY_LIBRARY: if Assigned(CurItem) then //CurItem.IsLibrarySpecific := true;
+      CurItem.HasAttribute[SD_LIBRARY] := True;
     TOK_IDENTIFIER:
       case Token.Directive of
       SD_PLATFORM,
@@ -1807,9 +1808,11 @@ begin
 (* <| { LIBRARY | PLATFORM | DEPRECATED } |>
 *)
   while True do begin
-    if Skip(KEY_LIBRARY)        then Item.IsLibrarySpecific := true
-    else if Skip(SD_PLATFORM)   then Item.IsPlatformSpecific := true
-    else if Skip(SD_DEPRECATED) then Item.IsDeprecated := true
+    if Skip(KEY_LIBRARY)        then //Item.IsLibrarySpecific := true
+      Item.HasAttribute[SD_LIBRARY] := True
+    else if Skip(SD_PLATFORM)   //then Item.IsPlatformSpecific := true
+          or Skip(SD_DEPRECATED) then //Item.IsDeprecated := true
+            item.HasAttribute[Token.Directive] := True
     else
       break;
   end;  //until false;

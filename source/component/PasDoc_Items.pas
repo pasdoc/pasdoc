@@ -556,6 +556,8 @@ type
     property HasAttribute[attr: TPasItemAttribute]: boolean
       read GetAttribute write SetAttribute;
 
+  {$IFDEF new}
+  //Delphi only, FPC doesn't compile these index directives :-(
     { is this item deprecated? }
     property IsDeprecated: boolean index SD_DEPRECATED
       read GetAttribute write SetAttribute;
@@ -569,6 +571,9 @@ type
       This is decided by "library" hint directive after an item. }
     property IsLibrarySpecific: boolean index SD_LIBRARY
       read GetAttribute write SetAttribute;
+  {$ELSE}
+  {$ENDIF}
+
   {$ENDIF}
 
     property Visibility: TVisibility read FVisibility write FVisibility;
@@ -716,12 +721,13 @@ type
     procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
 
     { This sorts all items on this list by their name.
-      Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort) 
+      Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort)
       for each of these items.
       So "items inside items" (e.g. class methods, if this list contains
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
+  {$IFDEF old}
     { Set IsDeprecated property of all Items to given Value }
     procedure SetIsDeprecated(Value: boolean);
 
@@ -730,6 +736,8 @@ type
 
     { Set IsLibrarySpecific property of all Items to given Value }
     procedure SetIsLibrarySpecific(Value: boolean);
+  {$ELSE}
+  {$ENDIF}
 
   {$IFDEF old}
   (* Don't handle all items identically.
@@ -912,14 +920,18 @@ type
     property Reader: string read FReader write FReader;
     { write specifier }
     property Writer: string read FWriter write FWriter;
-    { true if the property is the default property }
-    property Default: Boolean //read FDefault write FDefault;
-      index SD_DEFAULT read GetAttribute write SetAttribute;
     { keeps default value specifier }
     property DefaultID: string read FDefaultID write FDefaultID;
     { true if Nodefault property }
+  {$IFDEF new}
+  //Delphi only, FPC doesn't compile these index directives :-(
+    { true if the property is the default property }
+    property Default: Boolean //read FDefault write FDefault;
+      index SD_DEFAULT read GetAttribute write SetAttribute;
     property NoDefault: Boolean //read FNoDefault write FNoDefault;
       index SD_NODEFAULT read GetAttribute write SetAttribute;
+  {$ELSE}
+  {$ENDIF}
     { keeps Stored specifier }
     property StoredId: string read FStoredID write FStoredID;
   end;
@@ -1356,8 +1368,6 @@ begin
 end;
 
 function TBaseItem.FindItem(const ItemName: string): TBaseItem;
-var
-  i: integer;
 begin
 //find immediate member
   if assigned(Members) then
@@ -2214,6 +2224,7 @@ begin
   SortOnlyInsideItems(SortSettings);
 end;
 
+{$IFDEF old}
 procedure TPasItems.SetIsDeprecated(Value: boolean);
 var i: Integer;
 begin
@@ -2234,6 +2245,8 @@ begin
   for i := 0 to Count - 1 do
     PasItemAt[i].IsLibrarySpecific := Value;
 end;
+{$ELSE}
+{$ENDIF}
 
 { TPasCio -------------------------------------------------------------------- }
 
