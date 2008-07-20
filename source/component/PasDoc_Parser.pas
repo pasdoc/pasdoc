@@ -719,17 +719,17 @@ begin
     exit; //applies to token not yet created
 //first description?
   p := item.RawDescriptionInfo;
-  if p.Content = '' then begin
+  if p^.Content = '' then begin
   //first description
-    p.Content := T.CommentContent;
-    p.StreamName := T.StreamName;
-    p.BeginPosition := T.BeginPosition;
+    p^.Content := T.CommentContent;
+    p^.StreamName := T.StreamName;
+    p^.BeginPosition := T.BeginPosition;
   end else begin
-    p.Content := p.Content + LineEnding + t.CommentContent;
-    if p.StreamName <> t.StreamName then
-      p.StreamName := ' ';  //should never occur here!
+    p^.Content := p^.Content + LineEnding + t.CommentContent;
+    if p^.StreamName <> t.StreamName then
+      p^.StreamName := ' ';  //should never occur here!
   end;
-  p.EndPosition := T.EndPosition;
+  p^.EndPosition := T.EndPosition;
   if fDestroy then
     FreeAndNil(t);
   Result := True;
