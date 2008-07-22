@@ -868,7 +868,7 @@ type
     { This returns Ancestors.Objects[0], i.e. instance of the first
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
-    function FirstAncestor: TPasItem;
+    function FirstAncestor: TPasCio;
 
     { This returns the name of first ancestor of this Cio.
 
@@ -1974,10 +1974,10 @@ begin
   Result := MyType in CIOClassTypes;
 end;
 
-function TPasCio.FirstAncestor: TPasItem;
+function TPasCio.FirstAncestor: TPasCio;
 begin
   if Ancestors.Count <> 0 then
-    Result := Ancestors.Objects[0] as TPasItem
+    Result := Ancestors.Objects[0] as TPasCio
   else
     Result := nil;
 end;

@@ -918,7 +918,7 @@ end;
 
 function TTexDocGenerator.HasDescription(const AItem: TPasItem): boolean;
 var
-  Ancestor: TBaseItem;
+  Ancestor: TPasCio; // TBaseItem;
 begin
   Result := false;
   if not Assigned(AItem) then Exit;
@@ -938,19 +938,20 @@ begin
 
   if Result then Exit;
 
-{ TODO : 
+{ TODO :
 Searching for descriptions in ancestors can be implemented in TPasItem.
 This search will recurse into all ancestors.
 Alternatively TPasItem.HasDescription can do that search already,
 but then a parameter seems to be useful, to distinguish between
-RawDescription and FullDescription. (contact DoDi) }  
-  if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then
-  begin
+RawDescription and FullDescription. (contact DoDi) }
+  if (AItem is TPasCio) then begin
+  // and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then
     Ancestor := TPasCio(AItem).FirstAncestor;
-    if Assigned(Ancestor) and (Ancestor is TPasItem) then
-    begin
-      HasDescription := HasDescription(TPasItem(Ancestor));
-      exit;
+    while Assigned(Ancestor) {and (Ancestor is TPasItem)} do begin
+      HasDescription := HasDescription(Ancestor);
+      if Result then
+        exit;
+      Ancestor := Ancestor.FirstAncestor;
     end;
   end;
 end;
