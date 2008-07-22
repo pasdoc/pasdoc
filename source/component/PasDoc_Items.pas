@@ -1435,7 +1435,7 @@ procedure TPasItem.HandleDeprecatedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  Include(FAttributes, SD_LIBRARY);
+  Include(FAttributes, SD_Library_);
   ReplaceStr := '';
 end;
 
@@ -1889,10 +1889,10 @@ begin
 //add to specialized list
   case item.FKind of
   KEY_PROPERTY: Properties.Add(item);
-  Key_Operator,
+  Key_Operator_,  //converted where?
   KEY_CONSTRUCTOR, KEY_DESTRUCTOR, KEY_PROCEDURE, KEY_FUNCTION:
     Methods.Add(item);
-{ ancestors do not become members?
+{ ancestors do not become members
   KEY_CLASS, KEY_DISPINTERFACE, KEY_INTERFACE:
     Ancestors.AddObject(item.Name, item);
 }

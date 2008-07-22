@@ -224,12 +224,15 @@ const
   that expands to ``bar xyz'', so in this case you will need to use
   DirectiveParamWhite.
 *)
-function SplitDirective(const CommentContent: string; 
+function SplitDirective(const CommentContent: string;
   out DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string): Boolean;
 var
-  i: Integer;
+  i, i0: Integer;
   l: Integer;
 begin
+(* "$" ^ name ^ <white> ^ black ^ <white> more EOS
+white = black...EOS
+*)
   Result := False;
   DirectiveName := '';
   DirectiveParamBlack := '';
@@ -237,58 +240,68 @@ begin
 
   l := Length(CommentContent);
 
-  { skip dollar sign from CommentContent }
+{ skip dollar sign from CommentContent }
   i := 2;
   if i > l then Exit;
 
-  { get directive name }
+{ get directive name }
+  i0 := i;
   while (i <= l) and (CommentContent[i] <> ' ') do
   begin
-    DirectiveName := DirectiveName + UpCase(CommentContent[i]);
+    //DirectiveName := DirectiveName + UpCase(CommentContent[i]);
     Inc(i);
   end;
+  //i now at first white char
+  DirectiveName := UpperCase(Copy(CommentContent, i0, i - i0));
   Result := True;
 
-  { skip spaces }
-  while (i <= l) and (CommentContent[i] = ' ') do
+{ skip spaces }
+  while (i <= l) and (CommentContent[i] <= ' ') do
     Inc(i);
   if i > l then Exit;
 
-  { get parameters - no conversion to uppercase here, it could be an include
-    file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
-  while (i <= l) and (CommentContent[i] <> ' ') do
+{ get parameters - no conversion to uppercase here, it could be an include
+  file name whose name need not be changed (platform.inc <> PLATFORM.INC) }
+//DirectiveParamWhite is remaining text
+  DirectiveParamWhite := Copy(CommentContent, i, l);
+
+//DirectiveParamBlack is remaining text up to the next white char.
+  i0 := i;
+  while (i <= l) and (CommentContent[i] > ' ') do
   begin
-    DirectiveParamBlack := DirectiveParamBlack + CommentContent[i];
+    //DirectiveParamBlack := DirectiveParamBlack + CommentContent[i];
     Inc(i);
   end;
-  
+  //i now at next white char
+  DirectiveParamBlack := Copy(CommentContent, i0, i - i0);
+
+(* this already done before
   DirectiveParamWhite := DirectiveParamBlack;
   while (i <= l) do
   begin
     DirectiveParamWhite := DirectiveParamWhite + CommentContent[i];
     Inc(i);
   end;
+*)
 end;
 
 { First, splits CommentContent like SplitDirective.
-  
+
   Then returns true and sets Dt to appropriate directive type,
   if DirectiveName was something known (see array DirectiveNames).
   Else returns false. }
-function IdentifyDirective(const CommentContent: string;  
-  out dt: TDirectiveType; 
+function IdentifyDirective(const CommentContent: string;
+  out dt: TDirectiveType;
   out DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string): Boolean;
 var
   i: TDirectiveType;
 begin
   Result := false;
   if SplitDirective(CommentContent,
-    DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then 
-  begin
-    for i := DT_DEFINE to High(TDirectiveType) do 
-    begin
-      if UpperCase(DirectiveName) = DirectiveNames[i] then 
-      begin
+    DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then begin
+    for i := DT_DEFINE to High(TDirectiveType) do begin
+      //if UpperCase(DirectiveName) = DirectiveNames[i] then
+      if DirectiveName = DirectiveNames[i] then begin
         dt := i;
         Result := True;
         break;
@@ -441,32 +454,36 @@ function TScanner.GetToken: TToken;
   procedure HandleDefineDirective(
     const DirectiveParamBlack, DirectiveParamWhite: string);
   var 
-    i: Integer;
+    i, iw: Integer;
     SymbolName: string;
   begin
     if not HandleMacros then
-      AddSymbol(DirectiveParamBlack) else
-    begin
+      AddSymbol(DirectiveParamBlack)
+    else begin
       i := 1;
-      while SCharIs(DirectiveParamWhite, i, ['a'..'z', 'A'..'Z', '1'..'9', '_']) do
+      SymbolName := DirectiveParamWhite + #0;
+      while SymbolName[i] in ['a'..'z', 'A'..'Z', '1'..'9', '_'] do
         Inc(i);
-        
-      SymbolName := Copy(DirectiveParamWhite, 1, i - 1);
-        
-      while SCharIs(DirectiveParamWhite, i, WhiteSpace) do
+      iw := i; //first char past SymbolName
+      //SymbolName := Copy(DirectiveParamWhite, 1, i - 1);
+
+      while SymbolName[i] in WhiteSpace do
         Inc(i);
-        
+      //inw := i;
+      SetLength(SymbolName, iw-1);
+
       if Copy(DirectiveParamWhite, i, 2) = ':=' then
-        AddMacro(SymbolName, Copy(DirectiveParamWhite, i + 2, MaxInt)) else
+        AddMacro(SymbolName, Copy(DirectiveParamWhite, i + 2, MaxInt))
+      else
         AddSymbol(SymbolName);
     end;
   end;
 
   { If T is an identifier that expands to a macro, then it handles it
-    (i.e. opens a new tokenizer that expands a macro) and returns true. 
+    (i.e. opens a new tokenizer that expands a macro) and returns true.
     Else returns false. }
   function ExpandMacro(T: TToken): boolean;
-  var 
+  var
     SymbolIndex: Integer;
   begin
     Result := T.MyType = TOK_IDENTIFIER;
@@ -618,7 +635,7 @@ begin
         
         FreeAndNil(Result);
       end else
-      if ExpandMacro(Result) then
+      if (Result.MyType = TOK_IDENTIFIER) and ExpandMacro(Result) then
       begin
         FreeAndNil(Result);
       end else

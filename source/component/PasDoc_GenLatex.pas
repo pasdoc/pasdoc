@@ -928,7 +928,7 @@ begin
     (AItem is TPasEnum) or
     { Some hint directive ? }
     //AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
-    ((AItem.Attributes * [SD_DEPRECATED, SD_PLATFORM, SD_LIBRARY]) <> [])
+    ((AItem.Attributes * [SD_DEPRECATED, SD_PLATFORM, SD_LIBRARY_]) <> [])
     or
     { Some TPasMethod optional info ? }
     ( (AItem is TPasMethod) and
@@ -1062,7 +1062,7 @@ begin
   if AItem.HasAttribute[SD_PLATFORM] then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   //if AItem.IsLibrarySpecific then
-  if AItem.HasAttribute[SD_LIBRARY] then
+  if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.AbstractDescription <> '' then 

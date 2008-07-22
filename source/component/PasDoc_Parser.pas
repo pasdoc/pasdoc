@@ -159,7 +159,15 @@ type
     FMarkersOptional: boolean;
   //Token chain
     Pending, BlockComment: TToken;
+  //Tentative item, initialized by QualID.
     Identifier: TToken;
+  (* Identifier list, initialized by ParseVarList.
+    The items in one declaration should share attributes, comments etc.
+    According to the PasDoc rules, a forward comment before the first identifier
+    or a back-comment on/after the last identifier is applied to all items,
+    that have no comment of their own.
+  *)
+    DeclFirst, DeclLast: TPasItem;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
@@ -193,6 +201,48 @@ type
 
   (* parse qualified identifier, get first ident if fGet.  *)
     function  QualID(fGet: boolean; fOperator: boolean = False): TToken;
+
+  (* Create an item in CurScope, using the current Token information.
+    Make the new item the target for back-comments.
+  *)
+    function CreateItem(AClass: TPasItemClass; tt: TTokenType; Ident: TToken): TPasItem;
+
+  (* Parse an identifier list, create an item for every identifier.
+    [Return the first of these items.]
+    DeclFirst and DeclLast are set, to limit the update of the shared
+      FullDeclaration.
+    Uses: in var declarations, argument lists, CIO fields
+      Typically AClass is TPasFieldVariable, tt is KEY_VAR.
+  *)
+    function ParseVarList: TPasItem;
+    //function ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
+
+    { Parse variables or fields clause
+      ("one clause" is something like
+        NAME1, NAME2, ... : TYPE;
+      i.e. a list of variables/fields sharing one type declaration.)
+
+      @param(inUnit: also parse FPC modifiers?)
+    }
+    procedure ParseVariables(inUnit: boolean);
+
+    { Read all tokens until you find a semicolon at brace-level 0 and
+      end-level (between "record" and "end" keywords) also 0.
+
+      Alternatively, also stops before reading "end" without beginning
+      "record" (so it can handle some cases where declaration doesn't end
+      with semicolon).
+
+      Alternatively, only if IsInRecordCase, also stops before reading
+      ')' without matching '('. That's because fields' declarations
+      inside record case may be terminated by just ')' indicating
+      that this case clause terminates, without a semicolon.
+
+      If you pass Item <> nil then all read data will be
+      appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
+      Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
+      if appropriate hint directive will occur in source file. }
+    procedure SkipDeclaration(fSkipNext: boolean; CurItem: TPasItem);
 
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
@@ -258,46 +308,6 @@ type
       The strategy how comments are assigned to item in this case is
       described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
-
-  (* Create an item in CurScope, using the current Token information.
-    Make the new item the target for back-comments.
-  *)
-    function CreateItem(AClass: TPasItemClass; tt: TTokenType; Ident: TToken): TPasItem;
-  (* Parse an identifier list, create an item for every identifier.
-    Return the first of these items, to e.g. limit the update of the shared
-      FullDeclaration.
-    Uses: in var declarations, argument lists, CIO fields
-      Typically AClass is TPasFieldVariable, tt is KEY_VAR.
-  *)
-    function ParseVarList: TPasItem;
-    //function ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
-
-    { Parse variables or fields clause
-      ("one clause" is something like
-        NAME1, NAME2, ... : TYPE;
-      i.e. a list of variables/fields sharing one type declaration.)
-
-      @param(inUnit: also parse FPC modifiers?)
-    }
-    procedure ParseVariables(inUnit: boolean);
-
-    { Read all tokens until you find a semicolon at brace-level 0 and
-      end-level (between "record" and "end" keywords) also 0.
-
-      Alternatively, also stops before reading "end" without beginning
-      "record" (so it can handle some cases where declaration doesn't end
-      with semicolon).
-
-      Alternatively, only if IsInRecordCase, also stops before reading
-      ')' without matching '('. That's because fields' declarations
-      inside record case may be terminated by just ')' indicating
-      that this case clause terminates, without a semicolon.
-
-      If you pass Item <> nil then all read data will be
-      appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
-      Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
-      if appropriate hint directive will occur in source file. }
-    procedure SkipDeclaration(fSkipNext: boolean; CurItem: TPasItem);
 
     procedure SetCommentMarkers(const Value: TStringList);
 
@@ -729,6 +739,8 @@ var
 
 begin
 (* After an item has been created, add all pending comments to it.
+  Propagate comment inside varlist. (Check first!)
+    Use DeclFirst for this purpose, otherwise DeclLast.
 *)
   assert(item <> nil, 'cannot add comments to Nil');
   if assigned(BlockComment) and (BlockComment.BeginPosition < item.NamePosition) then
@@ -741,7 +753,7 @@ begin
     if t.StreamName <> item.NameStream then begin
       //DiscardT()
       DoMessage(1, pmtWarning,
-        '%s: Different file: "%s"',
+        '%s: Comment in different file: "%s"',
         [Scanner.GetStreamInfo, t.CommentContent]);
       FreeAndNil(t);
     end else if (t.Mark = cmFwd) then begin
@@ -770,8 +782,11 @@ begin
   Result := AClass.Create(CurScope, tt, Ident.Data);
   Result.NameStream := Ident.StreamName;
   Result.NamePosition := Ident.BeginPosition;
-  FreeAndNil(Identifier);
-  ApplyComments(Result);
+  FreeAndNil(Identifier); //???
+//init varlist processing
+  DeclLast := Result;
+  ApplyComments(Result); //allow for DeclFirst..DeclLast
+  DeclFirst := nil; //default, will be restored immediately in ParseVarList.
 end;
 
 function  TParser.QualID(fGet: boolean; fOperator: boolean): TToken;
@@ -878,12 +893,13 @@ The arguments can be identifiers, so that we should assume that
   repeat
     //case GetNextToken of
     case PeekNextToken of
-    KEY_INLINE:   ;
-    KEY_LIBRARY:  M.HasAttribute[SD_LIBRARY] := True;
+    KEY_INLINE:   M.HasAttribute[SD_INLINE_] := True;
+    KEY_LIBRARY:  M.HasAttribute[SD_LIBRARY_] := True;
     TOK_IDENTIFIER:
       case Peeked.Directive of
       SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-      SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
+      SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+      //SD_INLINE, is KEY_INLINE!
       SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
       SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
       SD_VARARGS,
@@ -893,12 +909,13 @@ The arguments can be identifiers, so that we should assume that
       { * External declarations might be followed by a string constant.
         * Messages are followed by an integer constant between 1 and 49151 which
           specifies the message ID. }
-      SD_EXTERNAL, SD_MESSAGE, SD_NAME:
+      SD_EXTERNAL, SD_MESSAGE, SD_NAME,
+      SD_DISPID:
         begin
+          M.HasAttribute[Peeked.Directive] := True;
         // Keep on reading up to the next semicolon or declaration
           PeekSemicolon;
         end;
-      SD_DISPID:  PeekSemicolon;
       else  //case directive
         Break;
       end;
@@ -1189,7 +1206,7 @@ All possible modifiers should be peeked!
     KEY_THREADVAR, KEY_VAR:         Mode := MODE_VAR;
     TOK_IDENTIFIER: //or "operator"
       if Token.Directive = SD_OPERATOR then begin
-        {M :=} ParseCDFP(false, Key_Operator, nil);
+        {M :=} ParseCDFP(false, Key_Operator_, nil);
         Mode := MODE_UNDEFINED;
       end else begin
         case Mode of
@@ -1490,10 +1507,16 @@ const
 begin
 (* ident <| { "," ident } |>
 *)
+(* The first and last item in the list should be tracked, for propagation of
+  - declaration (as template)
+  - attributes
+  - comments (back-comments!)
+*)
   Result := CreateItem(AClass, tt, QualID(False));
   while Skip(SYM_COMMA) do begin
     //Expect(TOK_IDENTIFIER);
-    CreateItem(AClass, tt, nil);
+    CreateItem(AClass, tt, nil); //sets DeclLast, clears DeclFirst
+    DeclFirst := Result;
   end;
 //next token peeked, but not consumed (typically: ":")
 end;
@@ -1583,12 +1606,37 @@ Take into account (nesting level) embedded:
     SYM_LEFT_PARENTHESIS: Inc(Level);
     SYM_RIGHT_BRACKET,
     SYM_RIGHT_PARENTHESIS: Dec(Level);
-    SYM_SEMICOLON: if level = 0 then break; // Dec(Level);
+    SYM_SEMICOLON:
+      if level = 0 then begin
+      (* Include type modifiers, else break.
+        Don't add the modifiers to CurItem, they apply to the type.
+        See also: ParseCDFP
+
+        Unit variable modifiers are checked by the caller,
+          at least we assume that these must occur after type modifiers.
+      *)
+        case PeekNextToken of
+        KEY_INLINE: ; //handle in next iteration
+        TOK_IDENTIFIER:
+          case Peeked.Directive of
+          //general modifiers?
+          SD_NEAR, SD_FAR: ;
+          //procedure modifiers
+          SD_CDECL, //SD_INLINE,
+          SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STDCALL, SD_VARARGS:
+            GetNextToken; //directive, wait for next ";"
+          else //case directive
+            break; // Dec(Level);
+          end;
+        else //case MyType
+          break;
+        end;
+      end;
     KEY_END: Dec(Level);
     KEY_CLASS, KEY_INTERFACE, KEY_DISPINTERFACE, KEY_OBJECT,
     KEY_RECORD: Inc(Level);
     KEY_LIBRARY: if Assigned(CurItem) then //CurItem.IsLibrarySpecific := true;
-      CurItem.HasAttribute[SD_LIBRARY] := True;
+      CurItem.HasAttribute[SD_LIBRARY_] := True;
     TOK_IDENTIFIER:
       case Token.Directive of
       SD_PLATFORM,
@@ -1597,9 +1645,12 @@ Take into account (nesting level) embedded:
     end; //case
   until Level < 0;
 (* /regular description should always end with a ";",
-  even if a ")" or "END" was reached
+  even if a ")" or "END" was reached.
+  Whitespace may have been added, after a ";"!
 *)
-  Recorder := Recorded(True) + ';';
+  Recorder := Recorded(True);
+  if Recorder[Length(Recorder)] <> ';' then
+    Recorder := Recorder + ';';
 end;
 
 { ------------------------------------------------------------ }
@@ -1609,8 +1660,8 @@ begin
 (* <| { LIBRARY | PLATFORM | DEPRECATED } |>
 *)
   while True do begin
-    if Skip(KEY_LIBRARY)        then //Item.IsLibrarySpecific := true
-      Item.HasAttribute[SD_LIBRARY] := True
+    if Skip(KEY_LIBRARY) then //Item.IsLibrarySpecific := true
+      Item.HasAttribute[SD_LIBRARY_] := True
     else if Skip(SD_PLATFORM)   //then Item.IsPlatformSpecific := true
           or Skip(SD_DEPRECATED) then //Item.IsDeprecated := true
             item.HasAttribute[Token.Directive] := True

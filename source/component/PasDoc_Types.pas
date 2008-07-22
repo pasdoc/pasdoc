@@ -43,7 +43,8 @@ type
     TOK_WHITESPACE,
     TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE,
     TOK_ATT_ASSEMBLER_REGISTER,
-    TOK_IDENTIFIER, TOK_DIRECTIVE,
+    TOK_IDENTIFIER, //maybe directive
+    TOK_DIRECTIVE,  //evaluated inside scanner
     TOK_NUMBER, TOK_STRING,
     //TOK_SYMBOL,
   { enumeration type that provides all types of symbols; each
@@ -124,7 +125,7 @@ type
     KEY_WITH,
     KEY_XOR,
   //synthetic
-    Key_Operator
+    Key_Operator_  //<from SD_OPERATOR
   );
   eSymbolType = SYM_PLUS..SYM_BACKSLASH;
   eKeyword = KEY_AND..KEY_XOR;
@@ -147,26 +148,24 @@ type
   TDirectives = (
   //OPL directives
     SD_INVALIDSTANDARDDIRECTIVE,
-    SD_ABSOLUTE,  //<has argument
   //directives as attributes
+    SD_ABSOLUTE,  //<has argument
     SD_ABSTRACT,
     SD_APIENTRY,
     SD_ASSEMBLER,
     SD_AUTOMATED,
     SD_CDECL,
     SD_CVAR,
-    SD_DEFAULT,  //<has argument?
+    SD_DEFAULT, //<has argument?
     SD_DISPID,  //<has argument
     SD_DYNAMIC,
     SD_EXPORT,
-    SD_EXTERNAL,  //<has argument
+    SD_EXTERNAL,//<has argument
     SD_FAR,
     SD_FORWARD,
-    SD_INDEX,  //<has argument
-    SD_INLINE,
-    SD_LIBRARY, //<dummy
-    SD_MESSAGE,  //<has argument
-    SD_NAME,  //<has argument
+    SD_INDEX,   //<has argument
+    SD_MESSAGE, //<has argument
+    SD_NAME,    //<has argument
     SD_NEAR,
     SD_NODEFAULT,
     SD_OPERATOR, //<extends KEY_FUNCTION...
@@ -178,7 +177,7 @@ type
     SD_PROTECTED,
     SD_PUBLIC,
     SD_PUBLISHED,
-    SD_READ,  //<has argument
+    SD_READ,    //<has argument
     SD_REGISTER,
     SD_REINTRODUCE,
     SD_RESIDENT,
@@ -188,17 +187,21 @@ type
     SD_STORED,
     SD_STRICT,  //<to be combined with "private" or "protected"
     SD_VIRTUAL,
-    SD_WRITE,  //<has argument
+    SD_WRITE,   //<has argument
     SD_DEPRECATED,
     SD_SAFECALL,
     SD_PLATFORM,
     SD_VARARGS,
   //added
-    SD_Packed
+    SD_Inline_,   //<from KEY_INLINE
+    SD_Library_,  //<from KEY_LIBRARY
+    SD_Packed_    //<from KEY_PACKED
   );
 
+// exclude synthesized from KEY_...
   TStandardDirective = SD_INVALIDSTANDARDDIRECTIVE..SD_VARARGS;
-  TPasItemAttribute = SD_ABSTRACT..SD_VARARGS;
+// exclude SD_INVALIDSTANDARDDIRECTIVE
+  TPasItemAttribute = succ(SD_INVALIDSTANDARDDIRECTIVE)..high(TDirectives);
   TPasItemAttributes = set of TPasItemAttribute;
 
 const
@@ -244,13 +247,16 @@ const
     'none', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
     'CDECL', 'CVAR', 'DEFAULT', 'DISPID', 'DYNAMIC', 'EXPORT', 'EXTERNAL',
-    'FAR', 'FORWARD', 'INDEX', 'INLINE', 'library',
+    'FAR', 'FORWARD', 'INDEX',
     'MESSAGE', 'NAME', 'NEAR',
     'NODEFAULT', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
     'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS',
+  //synthesized from KEY_...
+    'inline',
+    'library',
     'packed'
   );
 

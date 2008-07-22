@@ -1099,13 +1099,13 @@ begin
   if AItem.HasAttribute[SD_PLATFORM] then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   //if AItem.IsLibrarySpecific then
-  if AItem.HasAttribute[SD_LIBRARY] then
+  if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.AbstractDescription <> '' then
   begin
     if OpenCloseParagraph then WriteStartOfParagraph;
-    
+
     WriteSpellChecked(AItem.AbstractDescription);
 
     if AItem.DetailedDescription <> '' then
@@ -1117,17 +1117,17 @@ begin
       end;
       WriteSpellChecked(AItem.DetailedDescription);
     end;
-    
+
     if OpenCloseParagraph then WriteEndOfParagraph;
   end else begin
     if AItem.DetailedDescription <> '' then
     begin
       if OpenCloseParagraph then WriteStartOfParagraph;
-      
+
       WriteSpellChecked(AItem.DetailedDescription);
-      
+
       if OpenCloseParagraph then WriteEndOfParagraph;
-    end else 
+    end else
     begin
       if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
