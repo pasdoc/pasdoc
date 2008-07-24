@@ -15,6 +15,8 @@
 
 unit PasDoc_Items;
 
+{$DEFINE PRaw} //raw descriptions as chain?
+
 interface
 
 uses
@@ -109,6 +111,10 @@ type
 function MethodTypeToString(const MethodType: TMethodType): string;
 
 type
+{$IFDEF PRaw}
+  TRawDescriptionInfo = TStrings;
+  PRawDescriptionInfo = TRawDescriptionInfo;
+{$ELSE}
   PRawDescriptionInfo = ^TRawDescriptionInfo;
   { Raw description, in other words: the contents of comment before
     given item. Besides the content, this also
@@ -129,6 +135,7 @@ type
     // after the end of the comment describing the item.
     EndPosition: TTextStreamPos;
   end;
+{$ENDIF}
 
 type
   TPasItem = class;
@@ -157,10 +164,11 @@ type
     FAutoLinkHereAllowed: boolean;
     FRawDescriptionInfo: TRawDescriptionInfo;
 
-    procedure SetFullLink(const Value: string);
-    procedure SetAuthors(const Value: TStringVector);
     function GetRawDescription: string;
     procedure WriteRawDescription(const Value: string);
+
+    procedure SetFullLink(const Value: string);
+    procedure SetAuthors(const Value: TStringVector);
 
     procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -310,7 +318,12 @@ type
       properties of this record
       (otherwise @longCode(# Item.RawDescriptionInfo.StreamName := 'foo'; #)
       would not work as expected) . }
+  {$IFDEF pRaw}
+    procedure AddRawDescription(t: TToken);
+    property Descriptions: TStrings read FRawDescriptionInfo; // write FRawDescriptionInfo;
+  {$ELSE}
     function RawDescriptionInfo: PRawDescriptionInfo;
+  {$ENDIF}
 
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write SetFullLink;
@@ -1133,6 +1146,7 @@ begin
   inherited Create;
   FAuthors := TStringVector.Create;
   AutoLinkHereAllowed := true;
+  FRawDescriptionInfo := TStringList.Create;
   if ord(Kind) > 0 then begin
     if self.FMyOwner = nil then
       assert(self.Kind = KEY_UNIT);
@@ -1140,9 +1154,18 @@ begin
 end;
 
 destructor TBaseItem.Destroy;
+var
+  i: integer;
+  o: TObject;
+  p: TPasItem absolute o;
 begin
   Authors.Free;
   FreeAndNil(FItems);
+  for i := 0 to FRawDescriptionInfo.Count - 1 do begin
+    o := FRawDescriptionInfo.Objects[i];
+    p.Free;
+  end;
+  FreeAndNil(FRawDescriptionInfo);
   inherited;
 end;
 
@@ -1327,7 +1350,6 @@ begin
   inherited;
   Name := LoadStringFromStream(ASource);
   RawDescription := LoadStringFromStream(ASource);
-
   FNameStream := LoadStringFromStream(ASource);
   FNamePosition := LoadIntegerFromStream(ASource);
   ASource.Read(FKind, sizeof(FKind));
@@ -1374,9 +1396,33 @@ begin
   AutoLinkHereAllowed }
 end;
 
+{$IFDEF pRaw}
+
+function TBaseItem.GetRawDescription: string;
+begin
+//for legacy code: concatenate all description sections
+  Result := FRawDescriptionInfo.Text;
+end;
+
+procedure TBaseItem.AddRawDescription(t: TToken);
+begin
+  FRawDescriptionInfo.AddObject(t.CommentContent, t);
+end;
+
+procedure TBaseItem.WriteRawDescription(const Value: string);
+begin
+  FRawDescriptionInfo.Text := Value;  //.Add(Value);
+end;
+
+{$ELSE} //old
+
 function TBaseItem.RawDescriptionInfo: PRawDescriptionInfo;
 begin
+{$IFDEF pRaw}
+  Result := FRawDescriptionInfo;
+{$ELSE}
   Result := @FRawDescriptionInfo;
+{$ENDIF}
 end;
 
 function TBaseItem.GetRawDescription: string;
@@ -1388,6 +1434,7 @@ procedure TBaseItem.WriteRawDescription(const Value: string);
 begin
   FRawDescriptionInfo.Content := Value;
 end;
+{$ENDIF}
 
 function TBaseItem.BasePath: string;
 begin

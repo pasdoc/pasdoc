@@ -424,7 +424,7 @@ begin
   Peeked.Free;
   Token.Free;
   Identifier.Free;
-  BlockComment.Free;
+  //BlockComment.Free;
   CancelComments;
   inherited;
 end;
@@ -662,13 +662,6 @@ begin
       item := CurScope.Members.LastItem
   end;
 {$IFDEF old}
-//check for tentative item?
-  if assigned(Identifier)
-  and (Identifier.BeginPosition > item.NamePosition)
-  and (Identifier.BeginPosition < t.BeginPosition) then
-    exit; //applies to token not yet created
-{$ELSE}
-{$ENDIF}
 //first description?
   p := item.RawDescriptionInfo;
   if p^.Content = '' then begin
@@ -682,8 +675,11 @@ begin
       p^.StreamName := ' ';  //should never occur here!
   end;
   p^.EndPosition := T.EndPosition;
-  if fDestroy then
-    FreeAndNil(t);
+  if fDestroy then FreeAndNil(t);
+{$ELSE}
+  item.AddRawDescription(t);
+  t := nil;
+{$ENDIF}
   Result := True;
 end;
 
@@ -1012,7 +1008,8 @@ begin //ParseFieldsVariables
   end;
   Recorder := '';
 //also: propagate comments, i at FirstItem
-  FlushBackRems(DeclLast, Token);
+  FlushBackRems(DeclLast, nil); // Token);
+{$IFDEF old}
   pRaw := FirstItem.RawDescriptionInfo;
   for i := i+1 to CurScope.Members.Count - 1 do begin
     NewItem := CurScope.Members.PasItemAt[i];
@@ -1021,6 +1018,16 @@ begin //ParseFieldsVariables
     else
       pRaw := NewItem.RawDescriptionInfo;
   end;
+{$ELSE}
+  for i := i+1 to CurScope.Members.Count - 1 do begin
+    NewItem := CurScope.Members.PasItemAt[i];
+    if NewItem.Descriptions.Count > 0 then
+      FirstItem := NewItem  //propagate this
+    else //do NOT copy objects!!! (or prevent destruction)
+      //NewItem.Descriptions.Assign(FirstItem.Descriptions);
+      NewItem.Descriptions.Text := FirstItem.Descriptions.Text;
+  end;
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }

@@ -101,15 +101,6 @@ procedure ExtractFirstWord(const S: string;
 
 const
   AllChars = [Low(Char)..High(Char)];
-  
-  { Whitespace that is some part of newline. }
-  WhiteSpaceNL = [#10, #13];
-  { Any whitespace (that may indicate newline or not) }
-  //WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
-  WhiteSpace = [#1..' '];
-  { Whitespace that is not any part of newline. }
-  //WhiteSpaceNotNL = [' ', #9];
-  WhiteSpaceNotNL = WhiteSpace - WhiteSpaceNL;
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);

@@ -5,9 +5,10 @@
 unit PasDoc_Types;
 
 interface
+
 uses
   SysUtils;
-  
+
 type
   TTextStreamPos = LongInt; //<int64?
   { }
@@ -260,6 +261,77 @@ const
     'packed'
   );
 
+type
+  { Stores the exact type and additional information on one token. }
+  TToken = class(TObject)
+  protected
+    FEndPosition,
+    FBeginPosition: TTextStreamPos;
+    FStreamName: string;
+  public
+    { the exact character representation of this token as it was found in the
+      input file }
+    Data: string;
+
+    { the type of this token as @link(TTokenType) }
+    MyType: TTokenType;
+
+    { standard directive, or TOK_SYMBOL if none }
+    Directive: TStandardDirective;
+
+  //Comment type marker, for use in RawDescription construction.
+    Mark: char;
+
+  // Allow for chain of tokens. For use by parser only.
+    Next: TToken;
+
+    { Contents of a comment token.
+      This is defined only when MyType is in TokenCommentTypes
+      or is TOK_DIRECTIVE.
+      This is the text within the comment @italic(without) comment delimiters.
+      For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
+  {$IFDEF Content}
+    CommentContent: string;
+  {$ELSE}
+    property CommentContent: string read Data write Data;
+    property Content: string read Data;
+  {$ENDIF}
+
+    { Create a token of and assign the argument token type to @link(MyType) }
+    constructor Create(const TT: TTokenType);
+    function GetTypeName: string;
+
+    { Does @link(MyType) is TOK_SYMBOL and Info.SymbolType is ASymbolType ? }
+    function IsSymbol(const ASymbolType: eSymbolType): Boolean;
+
+    { Does @link(MyType) is TOK_KEYWORD and Info.KeyWord is AKeyWord ? }
+    function IsKeyWord(const AKeyWord: eKeyWord): Boolean;
+
+    { Does @link(MyType) is TOK_IDENTIFIER and Info.StandardDirective is
+      AStandardDirective ? }
+    function IsStandardDirective(
+      const AStandardDirective: TStandardDirective): Boolean;
+
+    { Few words long description of this token.
+      Describes MyType and Data (for those tokens that tend to have short Data).
+      Starts with lower letter. }
+    function Description: string;
+
+    // @name is the name of the TStream from which this @classname was read.
+    // It is currently used to set @link(TRawDescriptionInfo.StreamName).
+    property StreamName: string read FStreamName write FStreamName;
+
+    // @name is the position in the stream of the start of the token.
+    // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
+    property BeginPosition: TTextStreamPos read FBeginPosition write FBeginPosition;
+
+    // @name is the position in the stream of the character immediately
+    // after the end of the token.
+    // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
+    property EndPosition: TTextStreamPos read FEndPosition write FEndPosition;
+  end;
+
+
 //standardized token definition (for old style error reports)
 function  TokenDefinition(ATokenType: TTokenType; data: string = ''): string;
 
@@ -274,6 +346,13 @@ type
   TNameParts = array of string;
 
 const
+  { Whitespace that is some part of newline. }
+  WhiteSpaceNL = [#10, #13];
+  { Any whitespace (that may indicate newline or not) }
+  WhiteSpace = [#1..' '];
+  { Whitespace that is not any part of newline. }
+  WhiteSpaceNotNL = WhiteSpace - WhiteSpaceNL;
+  
   QualIdSeparator = '.';
   MaxNameParts = 3;
 
@@ -395,6 +474,46 @@ begin
   Result := NameParts[0];
   for i := 1 to Length(NameParts) - 1 do
     Result := Result + QualIdSeparator + NameParts[i];
+end;
+
+{---------------------------------------------------------------------------- }
+{ TToken }
+{---------------------------------------------------------------------------- }
+
+constructor TToken.Create(const TT: TTokenType);
+begin
+  inherited Create;
+  MyType := TT;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+function TToken.GetTypeName: string;
+begin
+  GetTypeName := TOKENNAMES[MyType];
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+function TToken.IsSymbol(const ASymbolType: eSymbolType): Boolean;
+begin
+  Result := MyType = ASymbolType;
+end;
+
+function TToken.IsKeyWord(const AKeyWord: eKeyword): Boolean;
+begin
+  Result := MyType = AKeyWord;
+end;
+
+function TToken.IsStandardDirective(
+  const AStandardDirective: TStandardDirective): Boolean;
+begin
+  Result := Directive = AStandardDirective;
+end;
+
+function TToken.Description: string;
+begin
+  Result := TokenDefinition(MyType, data);
 end;
 
 end.
