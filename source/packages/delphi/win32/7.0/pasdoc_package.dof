@@ -164,9 +164,3 @@ c:\program files\borland\delphi7\Bin\dcldss70.bpl=Borland Decision Cube Componen
 c:\program files\borland\delphi7\Bin\dclclxdb70.bpl=Borland CLX Database Components
 C:\WINNT\system32\ibevnt70.bpl=Borland Interbase Event Alerter Component
 c:\program files\borland\delphi7\Bin\dcloffice2k70.bpl=Microsoft Office 2000 Sample Automation Server Wrapper Components
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\component;..\..\component\tipue;..\..\component\images

@@ -14,6 +14,16 @@
 
 unit PasDoc_Parser;
 
+(* ToDo:
+- use format string for construction of FullDeclaration.
+- chain comments on items.
+- handle block comment (unchained).
+- handle nested declarations (also: generators!)
+- parse implementation section
+  (using declaration+definition positions, for methods)
+- define description sections.
+*)
+
 {$I pasdoc_defines.inc}
 
 interface
@@ -161,35 +171,32 @@ type
     Pending, BlockComment: TToken;
   //Tentative item, initialized by QualID.
     Identifier: TToken;
-  (* Identifier list, initialized by ParseVarList.
-    The items in one declaration should share attributes, comments etc.
-    According to the PasDoc rules, a forward comment before the first identifier
-    or a back-comment on/after the last identifier is applied to all items,
-    that have no comment of their own.
-  *)
-    DeclFirst, DeclLast: TPasItem;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
       [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
+    DeclLast: TPasItem;
     CurScope: TPasScope;
     ScopeStack: TList;
     procedure OpenScope(AScope: TPasScope);
     function  CloseScope: TPasScope;
 
   (* New comment model:
-    Comments and Name tokens are kept in a token chain.
+    Comments are kept in a token chain.
     C-style comments are collected into one (the first) token,
       as long as all comments come from the same stream.
-    New comments are chained by PeekNextToken,
-      unless they are back-comments to the current item (empty token list).
-    CreateItem will remove (add or discard) all pending comments,
-      and the chained Name token.
+    New comments are chained by PeekNextToken.
+    CreateItem will remove (add or discard) all comments, preceding the new item.
       Pending comments from different streams are discarded.
   *)
   //apply comment to the (just created) item.
+  {$IFDEF old}
     procedure ApplyComments(item: TPasItem);
+  {$ELSE}
+    procedure FlushBackRems(item: TPasItem; tlim: TToken);
+    procedure FlushFwdRems(item: TPasItem);
+  {$ENDIF}
   //try append description, return succ/fail
     function  AddDescription(var t: TToken; item: TPasItem = nil;
       fDestroy: boolean = True): boolean;
@@ -202,20 +209,15 @@ type
   (* parse qualified identifier, get first ident if fGet.  *)
     function  QualID(fGet: boolean; fOperator: boolean = False): TToken;
 
-  (* Create an item in CurScope, using the current Token information.
-    Make the new item the target for back-comments.
+  (* Create an item in CurScope, using the given identifier token.
+    Make the new item the target for back-comments, i.e. store in DeclLast.
   *)
     function CreateItem(AClass: TPasItemClass; tt: TTokenType; Ident: TToken): TPasItem;
 
   (* Parse an identifier list, create an item for every identifier.
-    [Return the first of these items.]
-    DeclFirst and DeclLast are set, to limit the update of the shared
-      FullDeclaration.
-    Uses: in var declarations, argument lists, CIO fields
-      Typically AClass is TPasFieldVariable, tt is KEY_VAR.
+    Return the first of these items, the last is stored in DeclLast.
   *)
     function ParseVarList: TPasItem;
-    //function ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
 
     { Parse variables or fields clause
       ("one clause" is something like
@@ -552,7 +554,7 @@ begin
     exit;
   end;
 //peek next
-  C := nil; //NextCommentInfo.BeginPosition := -1;  //mark no rem
+  C := nil; //mark no rem found
   PrevRecordSize := Length(Recorder); //allow to strip last token added
   repeat  //while state < psGotRem do begin
     t := Scanner.GetToken;
@@ -576,6 +578,14 @@ begin
     ExtractDocComment;
   Peeked := t;
   Result := t.MyType;
+end;
+
+function TParser.Recorded(fStripLast: boolean): string;
+begin
+  Result := Recorder;
+  if fStripLast then
+    SetLength(Result, PrevRecordSize);
+  Recorder := '';
 end;
 
 procedure TParser.CancelComments;
@@ -608,7 +618,8 @@ procedure TParser.PushComment(var C: TToken);
     c := nil;
   end;
 
-begin
+begin //PushComment
+//called from PeekNextToken
   assert(assigned(c), 'cannot push Nil comment');
   case c.Mark of
   cmNoRem,  //???
@@ -624,9 +635,12 @@ begin
       FreeAndNil(BlockComment);
       FreeAndNil(C);
     end;
+{$IFDEF old}
   cmBack: //try apply immediately
     if not AddDescription(C) then
       AppendIt;
+{$ELSE}
+{$ENDIF}
   else  //any (forward) comment
     AppendIt;
   end;
@@ -636,7 +650,8 @@ function TParser.AddDescription(var t: TToken; item: TPasItem; fDestroy: boolean
 var
   p: PRawDescriptionInfo;
 begin
-  Result := False; //in case of any errors
+//currently the result is always True (remove?)
+  //Result := False; //in case of any errors
 //check item
   if item = nil then begin
     if CurScope.Members.Count <= 0 then begin
@@ -646,11 +661,14 @@ begin
     end else
       item := CurScope.Members.LastItem
   end;
+{$IFDEF old}
 //check for tentative item?
   if assigned(Identifier)
   and (Identifier.BeginPosition > item.NamePosition)
   and (Identifier.BeginPosition < t.BeginPosition) then
     exit; //applies to token not yet created
+{$ELSE}
+{$ENDIF}
 //first description?
   p := item.RawDescriptionInfo;
   if p^.Content = '' then begin
@@ -669,6 +687,159 @@ begin
   Result := True;
 end;
 
+{$IFDEF old}
+procedure TParser.ApplyComments(item: TPasItem);
+var
+  t: TToken;
+
+  procedure DiscardT;
+  begin
+    DoMessage(2, pmtWarning, 'Comment discarded: "%s"', [t.CommentContent]);
+    FreeAndNil(t);
+  end;
+
+begin
+(* Called just after creation of item, or before CloseScope.
+  DeclLast contains the previous item, item is the new one.
+  Apply all pending comments (before item) to these two:
+  [- pending fwd to DeclLast (? should have been done already!)]
+  - pending back, before item, to DeclLast
+    (all if DeclLast = nil, on CloseScope)?
+  - pending fwd on item
+
+  When a scope is closed, following back-comments must go into the scope item!
+  (different procedure!)
+*)
+(* When the implementation is parsed, the target item may have different
+  declaration and definition addresses! This can occur only with procedures,
+  which must have both their declaration and definition position stored.
+  Both positions are initialized to the same values, on item creation, the
+  definition position can be updated later, and is used to determine the
+  applicable comments.
+*)
+(* Block comments shall go into a special location (scope!?).
+  Other comments shall be chained to the item.
+  Allow for comments from external file?!
+*)
+  assert(item <> nil, 'cannot add comments to Nil');
+  if assigned(BlockComment) and (BlockComment.BeginPosition < item.NamePosition) then
+    AddDescription(BlockComment, item, False); //don't destroy!!!
+  //else applies to following items only
+//inspect all pending comments
+  while Pending <> nil do begin
+    t := Pending;
+    Pending := t.Next;
+    if t.StreamName <> item.NameStream then begin
+      //DiscardT()
+      DoMessage(1, pmtWarning,
+        '%s: Comment in different file: "%s"',
+        [Scanner.GetStreamInfo, t.CommentContent]);
+      FreeAndNil(t);
+    end else if (t.Mark = cmFwd) then begin
+      if t.EndPosition > item.NamePosition then
+        break;  //applies to following item
+      AddDescription(t, item);
+    end else if t.BeginPosition < item.NamePosition then begin //back comment
+      //DiscardT()
+      DoMessage(1, pmtWarning,
+        '%s: No target for back-comment: "%s"',
+        [Scanner.GetStreamInfo, t.CommentContent]);
+        FreeAndNil(t);
+    end else
+      AddDescription(t, item);
+    assert(t=nil, 'comment not destroyed');
+  end;
+//all remaining comments apply to following items
+end;
+{$ELSE}
+{$ENDIF}
+
+procedure TParser.FlushBackRems(item: TPasItem; tlim: TToken);
+var
+  t: TToken;
+
+  procedure DropRem;
+  begin
+    DoMessage(2, pmtWarning, 'Stream mismatch comment: "%s"', [t.CommentContent]);
+    Pending := t.Next;
+    FreeAndNil(t);
+  end;
+
+begin
+(* add back comments to item, residing before tlim.
+  Break on position > limit, fwd rem.
+  Stream mismatch? (may apply to following token?)
+  Discard position < item (no target)
+*)
+  if not Assigned(Pending) then
+    exit;
+//allow for Nil token - use peeked token
+  if not Assigned(tlim) then begin
+    PeekNextToken;
+    tlim := Peeked;
+  end;
+  while assigned(Pending) do begin
+    t := Pending;
+    if t.StreamName <> item.NameStream then
+      DropRem
+    else if t.BeginPosition >= tlim.BeginPosition then
+        break
+    else if t.Mark <> cmBack then
+        break
+    else begin
+      Pending := t.Next;
+      AddDescription(t, item);
+    end;
+  end;
+end;
+
+procedure TParser.FlushFwdRems(item: TPasItem);
+var
+  t: TToken;
+begin
+(* Add fwd comments to item, until position > item position.
+  Discard on stream mismatch.
+  Warn on back comment befor item position (no target)
+*)
+  while assigned(Pending) do begin
+    t := Pending;
+    if t.StreamName <> item.NameStream then begin
+      DoMessage(2, pmtWarning, 'Stream mismatch comment: "%s"', [t.CommentContent]);
+      Pending := t.Next;
+      FreeAndNil(t);
+    end else if t.BeginPosition > item.NamePosition then
+      break //may be back rem, handled later
+    else if t.Mark <> cmFwd then begin
+      DoMessage(2, pmtWarning, 'No target for back comment: "%s"', [t.CommentContent]);
+      Pending := t.Next;
+      FreeAndNil(t);
+    end else begin
+      Pending := t.Next;
+      AddDescription(t, item);
+    end;
+  end;
+end;
+
+function TParser.CloseScope: TPasScope;
+begin
+(* Flush pending comments on last item - but only *before* closing token!
+*)
+  if Assigned(Pending) and Assigned(DeclLast) then
+    FlushBackRems(DeclLast, Token);
+  Result := CurScope; //old scope, to be closed
+  DeclLast := Result; //for eventual further back-comments
+  pointer(CurScope) := ScopeStack.Last;
+  ScopeStack.Delete(ScopeStack.Count - 1);
+end;
+
+procedure TParser.OpenScope(AScope: TPasScope);
+begin
+  ScopeStack.Add(CurScope);
+  CurScope := AScope;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 const
   SExpectedButFound = '%s expected but %s found';
 
@@ -677,16 +848,6 @@ begin
 //short version, error messages differ from old version! - really?
   if T.MyType <> ATokenType then
     DoError(SExpectedButFound, [TokenDefinition(ATokenType), T.Description]);
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function TParser.Recorded(fStripLast: boolean): string;
-begin
-  Result := Recorder;
-  if fStripLast then
-    SetLength(Result, PrevRecordSize);
-  Recorder := '';
 end;
 
 procedure TParser.ConsumeToken;
@@ -727,68 +888,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ApplyComments(item: TPasItem);
-var
-  t: TToken;
-
-  procedure DiscardT;
-  begin
-    DoMessage(2, pmtWarning, 'Comment discarded: "%s"', [t.CommentContent]);
-    FreeAndNil(t);
-  end;
-
-begin
-(* After an item has been created, add all pending comments to it.
-  Propagate comment inside varlist. (Check first!)
-    Use DeclFirst for this purpose, otherwise DeclLast.
-*)
-  assert(item <> nil, 'cannot add comments to Nil');
-  if assigned(BlockComment) and (BlockComment.BeginPosition < item.NamePosition) then
-    AddDescription(BlockComment, item, False); //don't destroy!!!
-  //else applies to following items only
-//inspect all pending comments
-  while Pending <> nil do begin
-    t := Pending;
-    Pending := t.Next;
-    if t.StreamName <> item.NameStream then begin
-      //DiscardT()
-      DoMessage(1, pmtWarning,
-        '%s: Comment in different file: "%s"',
-        [Scanner.GetStreamInfo, t.CommentContent]);
-      FreeAndNil(t);
-    end else if (t.Mark = cmFwd) then begin
-      if t.EndPosition > item.NamePosition then
-        break;  //applies to following item
-      AddDescription(t, item);
-    end else if t.BeginPosition < item.NamePosition then begin //back comment
-      //DiscardT()
-      DoMessage(1, pmtWarning,
-        '%s: No target for back-comment: "%s"',
-        [Scanner.GetStreamInfo, t.CommentContent]);
-        FreeAndNil(t);
-    end else
-      AddDescription(t, item);
-    assert(t=nil, 'comment not destroyed');
-  end;
-//all remaining comments apply to following items
-end;
-
-function TParser.CreateItem(AClass: TPasItemClass; tt: TTokenType;
-  Ident: TToken): TPasItem;
-begin
-//get identifier
-  if Ident = nil then
-    Ident := QualID(True); //assume: must read the name
-  Result := AClass.Create(CurScope, tt, Ident.Data);
-  Result.NameStream := Ident.StreamName;
-  Result.NamePosition := Ident.BeginPosition;
-  FreeAndNil(Identifier); //???
-//init varlist processing
-  DeclLast := Result;
-  ApplyComments(Result); //allow for DeclFirst..DeclLast
-  DeclFirst := nil; //default, will be restored immediately in ParseVarList.
-end;
-
 function  TParser.QualID(fGet: boolean; fOperator: boolean): TToken;
 begin
 (* get an fully qualified name, remember first token.
@@ -813,6 +912,115 @@ begin
   end;
 //result, for convenience only
   Result := Identifier;
+end;
+
+function TParser.CreateItem(AClass: TPasItemClass; tt: TTokenType;
+  Ident: TToken): TPasItem;
+begin
+//get identifier
+  if Ident = nil then
+    Ident := QualID(True); //assume: must read the name
+//flush pending back comments
+  if Assigned(DeclLast) then
+    FlushBackRems(DeclLast, Ident);
+  Result := AClass.Create(CurScope, tt, Ident.Data);
+  Result.NameStream := Ident.StreamName;
+  Result.NamePosition := Ident.BeginPosition;
+  FreeAndNil(Identifier); //???
+//init varlist processing
+(* actually DeclLast is the previously created item (if any).
+  Pending back-comments can be applied to it safely, up to the new item.
+*)
+  //ApplyComments(Result); //allow for DeclFirst..DeclLast
+  FlushFwdRems(Result);
+  DeclLast := Result;
+  //DeclFirst := nil; //default, will be restored immediately in ParseVarList.
+end;
+
+//function TParser.ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
+function TParser.ParseVarList(): TPasItem;
+const
+  AClass: TPasItemClass = TPasFieldVariable;
+  tt = KEY_VAR;
+begin
+(* ident <| { "," ident } |>
+*)
+(* The first and last item in the list should be tracked, for propagation of
+  - declaration (as template)
+  - attributes
+  - comments (back-comments!)
+*)
+  Result := CreateItem(AClass, tt, QualID(False));
+  while Skip(SYM_COMMA) do begin
+    CreateItem(AClass, tt, nil); //sets DeclLast, clears DeclFirst
+    //DeclFirst := Result; //restore declaration mark
+  end;
+//next token peeked, but not consumed (typically: ":")
+end;
+
+procedure TParser.ParseVariables(inUnit: boolean);
+
+  // The section allows PasDoc to parse variable modifiers in FPC.
+  // See: http://www.freepascal.org/docs-html/ref/refse19.html
+  // This consumes some tokens and appends to ItemCollector.FullDeclaration.
+  procedure ParseVariableModifiers(ItemCollector: TPasItem);
+  begin
+  (* <| { CVAR | EXPORT | PUBLIC | EXTERNAL ... ";" } |>
+  *)
+    while True do begin
+      PeekNextToken;
+      if not (Peeked.Directive in [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then
+        break;  //not an expected directive
+      ItemCollector.HasAttribute[Peeked.Directive] := True;
+        //!Public here is NOT visibility! (Unit vars have no visibility, so far)
+    //skip including ";"
+      while GetNextToken <> SYM_SEMICOLON do
+        ;
+    end;
+  end;
+
+var
+  FirstItem, NewItem: TPasItem;
+  I: Integer;
+  pRaw: PRawDescriptionInfo;
+begin //ParseFieldsVariables
+(* ident <| { "," ident } ":" type [absolute] ";" modifiers |>
+*)
+//parse ident list
+  FirstItem := ParseVarList;
+//record type
+  Recorder := '';
+  Expect(SYM_COLON);
+  SkipDeclaration(False, FirstItem);
+//past ";" or ")" or END
+  if inUnit then  //modifiers apply only to unit variables
+    ParseVariableModifiers(FirstItem);
+
+(* Propagate into all new items:
+  - recorded declaration
+  - recorded attributes
+  What about comments?
+*)
+  I := CurScope.Members.Count - 1;
+  while i >= 0 do begin
+    NewItem := CurScope.Members.PasItemAt[i];
+    NewItem.FullDeclaration := NewItem.Name + Recorder;
+    if NewItem = FirstItem then
+      break;  //this one already finished
+    NewItem.Attributes := FirstItem.Attributes;
+    dec(i);
+  end;
+  Recorder := '';
+//also: propagate comments, i at FirstItem
+  FlushBackRems(DeclLast, Token);
+  pRaw := FirstItem.RawDescriptionInfo;
+  for i := i+1 to CurScope.Members.Count - 1 do begin
+    NewItem := CurScope.Members.PasItemAt[i];
+    if NewItem.RawDescription = '' then
+      NewItem.RawDescriptionInfo^ := pRaw^
+    else
+      pRaw := NewItem.RawDescriptionInfo;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1100,7 +1308,7 @@ or
       end;  //case
     end;  //member loop, skipped END
   //else peeked ";"
-    CloseScope;
+    CloseScope; //(Token)
   end;  //parse item with members
 
   ParseHintDirectives(i);
@@ -1171,8 +1379,8 @@ begin
     Item.FullDeclaration := Recorded(True);
   until Token.MyType <> SYM_COMMA;
 
+  CloseScope; //(Token)
   Expect(SYM_SEMICOLON);
-  CloseScope;
 end;
 
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
@@ -1499,79 +1707,6 @@ qualid (here)
   Expect(SYM_SEMICOLON);
 end;
 
-//function TParser.ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
-function TParser.ParseVarList(): TPasItem;
-const
-  AClass: TPasItemClass = TPasFieldVariable;
-  tt = KEY_VAR;
-begin
-(* ident <| { "," ident } |>
-*)
-(* The first and last item in the list should be tracked, for propagation of
-  - declaration (as template)
-  - attributes
-  - comments (back-comments!)
-*)
-  Result := CreateItem(AClass, tt, QualID(False));
-  while Skip(SYM_COMMA) do begin
-    //Expect(TOK_IDENTIFIER);
-    CreateItem(AClass, tt, nil); //sets DeclLast, clears DeclFirst
-    DeclFirst := Result;
-  end;
-//next token peeked, but not consumed (typically: ":")
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TParser.ParseVariables(inUnit: boolean);
-
-  // The section allows PasDoc to parse variable modifiers in FPC.
-  // See: http://www.freepascal.org/docs-html/ref/refse19.html
-  // This consumes some tokens and appends to ItemCollector.FullDeclaration.
-  procedure ParseVariableModifiers(ItemCollector: TPasItem);
-  begin
-  (* <| { CVAR | EXPORT | PUBLIC | EXTERNAL ... ";" } |>
-  *)
-    while True do begin
-      PeekNextToken;
-      if not (Peeked.Directive in [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then
-        break;  //not an expected directive
-    //skip including ";"
-      while GetNextToken <> SYM_SEMICOLON do
-        ;
-    end;
-  end;
-
-var
-  FirstItem, NewItem: TPasItem;
-  I: Integer;
-begin //ParseFieldsVariables
-(* ident <| { "," ident } ":" type [absolute] ";" modifiers |>
-*)
-//parse ident list
-  FirstItem := ParseVarList;
-//record type
-  Recorder := '';
-  Expect(SYM_COLON);
-  SkipDeclaration(False, FirstItem);
-//past ";" or ")" or END
-  if inUnit then  //modifiers apply only to unit variables
-    ParseVariableModifiers(FirstItem);
-
-(* Propagate into all new items:
-  - recorded declaration
-  - recorded attributes
-*)
-  for I := CurScope.Members.Count - 1 downto 0 do begin
-    NewItem := CurScope.Members.PasItemAt[i];
-    NewItem.FullDeclaration := NewItem.Name + Recorder;
-    if NewItem = FirstItem then
-      break;  //this one already finished
-    NewItem.Attributes := FirstItem.Attributes;
-  end;
-  Recorder := '';
-end;
-
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.SetCommentMarkers(const Value: TStringList);
@@ -1668,19 +1803,6 @@ begin
     else
       break;
   end;  //until false;
-end;
-
-function TParser.CloseScope: TPasScope;
-begin
-  Result := CurScope; //old scope, to be closed
-  pointer(CurScope) := ScopeStack.Last;
-  ScopeStack.Delete(ScopeStack.Count - 1);
-end;
-
-procedure TParser.OpenScope(AScope: TPasScope);
-begin
-  ScopeStack.Add(CurScope);
-  CurScope := AScope;
 end;
 
 class function TParser.ShowVisibilities: TVisibilities;
