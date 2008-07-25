@@ -743,7 +743,7 @@ var
     
     if Result then
       { create new tokenizer with stream }
-      OpenNewTokenizer(TFileStream.Create(Name, fmOpenRead),
+      OpenNewTokenizer(TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite),
         Name, ExtractFilePath(Name));
   end;
 

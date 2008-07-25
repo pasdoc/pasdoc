@@ -473,7 +473,7 @@ var
   Count, i: Integer;
   p: string;
   InputStream: TStream;
-  
+
   procedure ParseExternalFile(const FileName: string;
     var ExternalItem: TExternalItem);
   begin
@@ -483,7 +483,7 @@ var
       Inc(Count);
     end;
   end;
-  
+
 begin
   FUnits.clear;
 
@@ -505,10 +505,12 @@ begin
       end;
     end;
 
-    { Note that HandleStream frees InputStream.
-      Note that Delphi 7 reports here warning ("Variable "InputStream"
-      might not have been initialized") that should be ignored. }
+    { Note that HandleStream frees InputStream. }
     HandleStream(InputStream, p);
+  //try auto-include *.txt
+    p := ChangeFileExt(p, '.txt');
+    if FileExists(p) then
+      Self.DescriptionFileNames.AddNotExisting(p);
     Inc(Count);
   end;
 
@@ -612,28 +614,32 @@ begin
   begin
     if UnitsCountBeforeExcluding <> 0 then
       DoError('%d units were successfully parsed, but they are all ' +
-        'marked with @exclude', [UnitsCountBeforeExcluding], 1) else
+        'marked with @exclude', [UnitsCountBeforeExcluding], 1)
+    else
       DoError('At least one unit must have been successfully parsed ' +
         'to write docs', [], 1);
   end;
 
+  if FProjectName <> '' then begin
+    Generator.ProjectName := FProjectName
+  end else begin
+    Generator.ProjectName := 'docs';
+  end;
+
+  Generator.Title := Title;
+  Generator.Units := FUnits;
+  Generator.Introduction := FIntroduction;
+  Generator.Conclusion := FConclusion;
+  Generator.AutoLink := AutoLink;
+  Generator.BuildLinks;
+
+  FUnits.SortDeep(SortSettings);
+
+//read external descriptions, found while parsing the units.
+//required for the editor, even if no docs are created.
+  Generator.LoadDescriptionFiles(FDescriptionFileNames);
+
   if fGenerate then begin
-    if FProjectName <> '' then begin
-      Generator.ProjectName := FProjectName
-    end else begin
-      Generator.ProjectName := 'docs';
-    end;
-
-    Generator.Title := Title;
-    Generator.Units := FUnits;
-    Generator.Introduction := FIntroduction;
-    Generator.Conclusion := FConclusion;
-    Generator.AutoLink := AutoLink;
-    Generator.BuildLinks;
-
-    FUnits.SortDeep(SortSettings);
-
-    Generator.LoadDescriptionFiles(FDescriptionFileNames);
     Generator.ExpandDescriptions;
 
     Generator.WriteDocumentation;

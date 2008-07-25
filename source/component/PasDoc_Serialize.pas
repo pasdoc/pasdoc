@@ -60,7 +60,7 @@ class function TSerializable.DeserializeFromFile(
 var
   LF: TFileStream;
 begin
-  LF := TFileStream.Create(AFileName, fmOpenRead);
+  LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
   try
     Result := DeserializeObject(LF);
   finally

@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabFiles
+    ActivePage = tabDoc
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -571,7 +571,7 @@ object DocMain: TDocMain
         Left = 0
         Top = 0
         Width = 273
-        Height = 376
+        Height = 397
         Align = alLeft
         Caption = 'Ignored Words'
         TabOrder = 0
@@ -579,7 +579,7 @@ object DocMain: TDocMain
           Left = 2
           Top = 15
           Width = 269
-          Height = 359
+          Height = 380
           Align = alClient
           TabOrder = 0
           OnChange = AnyChange
@@ -588,16 +588,16 @@ object DocMain: TDocMain
       object GroupBox9: TGroupBox
         Left = 273
         Top = 0
-        Width = 323
-        Height = 376
+        Width = 326
+        Height = 397
         Align = alClient
         Caption = 'Misspelled Words'
         TabOrder = 1
         object edMisspelledWords: TMemo
           Left = 2
           Top = 15
-          Width = 319
-          Height = 359
+          Width = 322
+          Height = 380
           Align = alClient
           TabOrder = 0
         end
@@ -874,6 +874,68 @@ object DocMain: TDocMain
         end
       end
     end
+    object tabDoc: TTabSheet
+      Caption = 'Docs'
+      ImageIndex = 10
+      object Splitter1: TSplitter
+        Left = 189
+        Top = 0
+        Height = 397
+      end
+      object tvUnits: TTreeView
+        Left = 0
+        Top = 0
+        Width = 189
+        Height = 397
+        Align = alLeft
+        Indent = 19
+        TabOrder = 0
+        OnClick = tvUnitsClick
+      end
+      object Panel1: TPanel
+        Left = 192
+        Top = 0
+        Width = 407
+        Height = 397
+        Align = alClient
+        TabOrder = 1
+        object edRem: TMemo
+          Left = 1
+          Top = 106
+          Width = 405
+          Height = 290
+          Align = alClient
+          Lines.Strings = (
+            'edRem')
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+        end
+        object GroupBox10: TGroupBox
+          Left = 1
+          Top = 1
+          Width = 405
+          Height = 105
+          Align = alTop
+          Caption = 'Source'
+          TabOrder = 1
+          DesignSize = (
+            405
+            105)
+          object cbRem: TComboBox
+            Left = 12
+            Top = 16
+            Width = 381
+            Height = 81
+            Style = csSimple
+            Anchors = [akLeft, akTop, akRight, akBottom]
+            ItemHeight = 13
+            TabOrder = 0
+            OnClick = cbRemClick
+          end
+        end
+      end
+    end
   end
   object MainMenu1: TMainMenu
     Left = 568
@@ -904,6 +966,7 @@ object DocMain: TDocMain
       end
       object Exit1: TMenuItem
         Caption = 'E&xit'
+        OnClick = Exit1Click
       end
     end
     object Edit1: TMenuItem

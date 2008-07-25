@@ -559,7 +559,10 @@ type
       const LinkDisplay: string;
       const WarningIfLinkNotFound: boolean): string; overload;
 
-    procedure StoreDescription(ItemName: string; var t: string);
+    (* Add linked description.
+      Create an description item (TToken), and add it to the item's RawDescriptions.
+    *)
+    procedure StoreDescription(ItemName: string; var t, f: string; start: TTextStreamPos);
 
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then optionally writes LineEnding. }
@@ -2173,44 +2176,57 @@ var
   Description : string;
   i           : Integer;
   s           : string;
+  LineStart, DescStart: TTextStreamPos;
+
+  procedure Store;  //Description
+  begin
+    StoreDescription(ItemName, Description, n, DescStart);
+  end;
+
 const
   IdentChars  = ['A'..'Z', 'a'..'z', '_', '.', '0'..'9'];
 begin
   ItemName := '';
   if n = '' then Exit;
   try
-    f := TFileStream.Create(n, fmOpenRead);
-  
+    f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
+
     Assert(Assigned(f));
-  
+
     try
       while f.Position < f.Size do begin
+        LineStart := f.Position;
         s := StreamReadLine(f);
         if s[1] = '#' then begin
+        //found new enty?
           i := 2;
-          while s[i] in [' ', #9] do Inc(i);
-          { Make sure we read a valid name - the user might have used # in his
+          while s[i] in WhiteSpaceNotNL do Inc(i);
+        { Make sure we read a valid name - the user might have used # in his
             description. }
           if s[i] in IdentChars then begin
-            if ItemName <> '' then StoreDescription(ItemName, Description);
-            { Read item name and beginning of the description }
+            if ItemName <> '' then begin
+            //save preceding description
+              Store;  //Description(ItemName, Description);
+            end;
+          { Read item name and beginning of the description }
             ItemName := '';
             repeat
               ItemName := ItemName + s[i];
               Inc(i);
             until not (s[i] in IdentChars);
-            while s[i] in [' ', #9] do Inc(i);
+            while s[i] in WhiteSpaceNotNL do Inc(i);
+            DescStart := LineStart + i - 1; //begin of text
             Description := Copy(s, i, MaxInt);
             Continue;
           end;
         end;
         Description := Description + s;
       end;
-      
+
       if ItemName = '' then
         DoMessage(2, pmtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
       else
-        StoreDescription(ItemName, Description);
+        Store;  //Description(ItemName, Description);
     finally
       f.Free;
     end;
@@ -2335,10 +2351,13 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.StoreDescription(ItemName: string; var t: string);
+//procedure TDocGenerator.StoreDescription(ItemName: string; var t: string);
+procedure TDocGenerator.StoreDescription(ItemName: string; var t, f: string;
+  start: TTextStreamPos);
 var
   Item: TBaseItem;
   NameParts: TNameParts;
+  c: TToken;
 begin
   if t = '' then Exit;
 
@@ -2346,13 +2365,21 @@ begin
   if SplitNameParts(ItemName, NameParts) then
   begin
     Item := FindGlobal(NameParts);
-    if Assigned(Item) then 
-    begin
+    if Assigned(Item) then begin
+    {$IFDEF old}
       if Item.RawDescription <> '' then
         { Delimit previous contents of Item.RawDescription with a paragraph }
         Item.RawDescription := Item.RawDescription + LineEnding + LineEnding;
-        
+
       Item.RawDescription := Item.RawDescription + t;
+    {$ELSE}
+      c := TToken.Create(TOK_COMMENT_EXT);
+      c.CommentContent := t;
+      c.Mark := '#';  //mark external (linked) comment
+      c.StreamName := f;
+      c.BeginPosition := start;
+      item.Descriptions.AddObject(t, c);
+    {$ENDIF}
     end else
       DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);
   end else

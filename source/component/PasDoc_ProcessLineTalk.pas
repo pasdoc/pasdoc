@@ -114,7 +114,7 @@ uses PasDoc_StreamUtils;
 
 constructor TTextReader.CreateFromFileStream(const FileName: string);
 begin
- Create(TFileStream.Create(FileName, fmOpenRead), true);
+ Create(TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite), true);
 end;
 
 constructor TTextReader.Create(AStream: TStream; AOwnsStream: boolean);

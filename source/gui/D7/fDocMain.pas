@@ -11,7 +11,7 @@ uses
   PasDoc_Languages, PasDoc_GenLatex, PasDoc_Serialize, PasDoc_GenHtmlHelp,
   PasDoc_Base, PasDoc_Items, PasDoc_Gen, PasDoc_GenHtml, PasDoc_SortSettings,
   PasDoc_Types,
-  frDirs, frDir;
+  frDirs, frDir, ExtCtrls;
 
 type
   TDocMain = class(TForm)
@@ -117,6 +117,13 @@ type
     SaveAs1: TMenuItem;
     buCmdFile: TButton;
     mnCleardiagnostics: TMenuItem;
+    tabDoc: TTabSheet;
+    tvUnits: TTreeView;
+    Splitter1: TSplitter;
+    Panel1: TPanel;
+    edRem: TMemo;
+    GroupBox10: TGroupBox;
+    cbRem: TComboBox;
   {$IFDEF fpc}
     //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
   {$ELSE}
@@ -151,9 +158,14 @@ type
       const AMessage: String; const AVerbosity: Cardinal);
   {$ENDIF}
     procedure mnCleardiagnosticsClick(Sender: TObject);
+    procedure Exit1Click(Sender: TObject);
+    procedure tvUnitsClick(Sender: TObject);
+    procedure cbRemClick(Sender: TObject);
   private
     FHasChanged: boolean;
     MisspelledWords: TStringList;
+    SelItem: TBaseItem;
+    SelToken: TToken;
     function  _AddDirs(const dir, fn: string;
       const fd: TWIN32FindData; isDir: boolean): eFileEnum;
     function  _AddFiles(const dir, fn: string;
@@ -187,6 +199,10 @@ type
     function LanguageIdToString(const LanguageID: TLanguageID): string;
   {$ELSE}
   {$ENDIF}
+    // @name fills @link(tvUnits) with a heirarchical representation of the
+    // TPasItems in PasDoc1.
+    procedure FillTreeView;
+
   //generator: .Generator:
   //HTML header: .Generator.Header: string;
   //HTML footer: .Generator.Footer: string;
@@ -1259,6 +1275,8 @@ try
     lbLog.Items.AddStrings(MisspelledWords);
   end;
 
+  FillTreeView;
+
   if fGenerate then begin
     if swUsesDiagram.Checked or swClassDiagram.Checked then begin
       // To do: actually start dot here.
@@ -1320,6 +1338,199 @@ begin
     s := l[i];
     if Pos('):', s) < 1 then
       l.Delete(i);
+  end;
+end;
+
+procedure TDocMain.Exit1Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TDocMain.FillTreeView;
+var
+  UnitItem: TPasUnit;
+  AllUnitsNode: TTreeNode;
+  UnitIndex: integer;
+  UnitNode: TTreeNode;
+  AllTypesNode: TTreeNode;
+  AllVariablesNode: TTreeNode;
+  AllCIOs_Node: TTreeNode;
+  AllConstantsNode: TTreeNode;
+  AllProceduresNode: TTreeNode;
+  UsesNode: TTreeNode;
+  PasItemIndex: integer;
+  PasItem: TPasItem;
+  UsesIndex: integer;
+  ClassIndex: integer;
+  ClassInterfaceObjectOrRecord: TPasCio;
+  ClassNode: TTreeNode;
+  FieldsNode: TTreeNode;
+  MethodNode: TTreeNode;
+  PropertiesNode: TTreeNode;
+  Lang: TPasDocLanguages;
+begin
+  tvUnits.Items.Clear;
+  Lang := TPasDocLanguages.Create;
+  try
+    Lang.Language := TLanguageID(lbOutLang.ItemIndex);
+    if PasDoc1.IntroductionFileName <> '' then begin
+      tvUnits.Items.AddObject(nil, PasDoc1.IntroductionFileName, PasDoc1.Introduction);
+    end;
+    AllUnitsNode := tvUnits.Items.AddObject(nil,
+      Lang.Translation[trUnits], PasDoc1.Units);
+    for UnitIndex := 0 to PasDoc1.Units.Count -1 do begin
+      UnitItem := PasDoc1.Units.UnitAt[UnitIndex];
+      UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
+        UnitItem.SourceFileName, UnitItem);
+      if UnitItem.Types.Count > 0 then begin
+        AllTypesNode := tvUnits.Items.AddChildObject(UnitNode,
+          Lang.Translation[trTypes], UnitItem.Types);
+        for PasItemIndex := 0 to UnitItem.Types.Count -1 do begin
+          PasItem := UnitItem.Types.PasItemAt[PasItemIndex];
+          tvUnits.Items.AddChildObject(AllTypesNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if UnitItem.Variables.Count > 0 then begin
+        AllVariablesNode := tvUnits.Items.AddChildObject(UnitNode,
+          Lang.Translation[trVariables], UnitItem.Variables);
+        for PasItemIndex := 0 to UnitItem.Variables.Count -1 do begin
+          PasItem := UnitItem.Variables.PasItemAt[PasItemIndex];
+          tvUnits.Items.AddChildObject(AllVariablesNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if UnitItem.CIOs.Count > 0 then begin
+        AllCIOs_Node := tvUnits.Items.AddChildObject(UnitNode,
+          Lang.Translation[trCio], UnitItem.CIOs);
+        for ClassIndex := 0 to UnitItem.CIOs.Count-1 do begin
+          ClassInterfaceObjectOrRecord := UnitItem.CIOs.PasItemAt[ClassIndex] as TPasCio;
+          ClassNode := tvUnits.Items.AddChildObject(AllCIOs_Node,
+            ClassInterfaceObjectOrRecord.Name, ClassInterfaceObjectOrRecord);
+          if ClassInterfaceObjectOrRecord.Fields.Count > 0 then begin
+            FieldsNode := tvUnits.Items.AddChildObject(ClassNode,
+              Lang.Translation[trFields], ClassInterfaceObjectOrRecord.Fields);
+            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Fields.Count -1 do begin
+              PasItem := ClassInterfaceObjectOrRecord.Fields.PasItemAt[PasItemIndex];
+              tvUnits.Items.AddChildObject(FieldsNode, PasItem.Name, PasItem);
+            end;
+          end;
+          if ClassInterfaceObjectOrRecord.Methods.Count > 0 then begin
+            MethodNode := tvUnits.Items.AddChildObject(ClassNode,
+              Lang.Translation[trMethods], ClassInterfaceObjectOrRecord.Methods);
+            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Methods.Count -1 do begin
+              PasItem := ClassInterfaceObjectOrRecord.Methods.PasItemAt[PasItemIndex];
+              tvUnits.Items.AddChildObject(MethodNode, PasItem.Name, PasItem);
+            end;
+          end;
+          if ClassInterfaceObjectOrRecord.Properties.Count > 0 then begin
+            PropertiesNode := tvUnits.Items.AddChildObject(ClassNode,
+              Lang.Translation[trProperties], ClassInterfaceObjectOrRecord.Properties);
+            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Properties.Count -1 do begin
+              PasItem := ClassInterfaceObjectOrRecord.Properties.PasItemAt[PasItemIndex];
+              tvUnits.Items.AddChildObject(PropertiesNode, PasItem.Name, PasItem);
+            end;
+          end;
+        end;
+      end;
+      if UnitItem.Constants.Count > 0 then begin
+        AllConstantsNode := tvUnits.Items.AddChildObject(UnitNode,
+          Lang.Translation[trConstants], UnitItem.Constants);
+        for PasItemIndex := 0 to UnitItem.Constants.Count -1 do begin
+          PasItem := UnitItem.Constants.PasItemAt[PasItemIndex];
+          tvUnits.Items.AddChildObject(AllConstantsNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if UnitItem.FuncsProcs.Count > 0 then begin
+        AllProceduresNode := tvUnits.Items.AddChildObject(UnitNode,
+          Lang.Translation[trFunctionsAndProcedures], UnitItem.FuncsProcs);
+        for PasItemIndex := 0 to UnitItem.FuncsProcs.Count -1 do begin
+          PasItem := UnitItem.FuncsProcs.PasItemAt[PasItemIndex];
+          tvUnits.Items.AddChildObject(AllProceduresNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if UnitItem.UsesUnits.Count > 0 then begin
+        UsesNode := tvUnits.Items.AddChildObject(UnitNode,
+          'Uses', UnitItem.UsesUnits);
+        for UsesIndex := 0 to UnitItem.UsesUnits.Count -1 do begin
+          tvUnits.Items.AddChild(UsesNode, UnitItem.UsesUnits[UsesIndex]);
+        end;
+      end;
+    end;
+    if PasDoc1.ConclusionFileName <> '' then begin
+      tvUnits.Items.AddObject(nil, PasDoc1.ConclusionFileName,
+        PasDoc1.Conclusion);
+    end;
+  finally
+    Lang.Free;
+  end;
+end;
+
+procedure TDocMain.tvUnitsClick(Sender: TObject);
+var
+  Item: TBaseItem;
+  o: TObject;
+  c: TToken absolute o;
+  lst: TStrings;
+  i: integer;
+  s: string;
+begin
+  edRem.Clear;
+  edRem.Hint := '';
+  cbRem.Clear;
+  if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then begin
+    if TObject(tvUnits.Selected.Data) is TBaseItem then begin
+      Item := TBaseItem(tvUnits.Selected.Data);
+      SelItem := Item;
+      SelToken := nil;
+      edRem.Text := Item.RawDescription;
+      lst := item.Descriptions;
+    {$IFDEF old}
+      if assigned(lst) and (lst.Count > 0) then begin
+        o := item.Descriptions.Objects[0];
+        if o <> nil then begin
+          edRem.Hint := Format(
+            'Comment in stream "%s", on position %d - %d',
+            [ c.StreamName,
+              c.BeginPosition,
+              c.EndPosition ]);
+        end;
+      end;
+    {$ELSE}
+      cbRem.AddItem('<all>', nil);
+      if assigned(lst) then begin
+        for i := 0 to lst.Count-1 do begin
+          o := lst.Objects[i];
+          if assigned(o) then begin
+            s := Format(
+              '%s[%d - %d]',
+              [ c.StreamName,
+                c.BeginPosition,
+                c.EndPosition ]);
+          end else
+            s := '<unknown/inherited>';
+          cbRem.AddItem(s, o);
+        end;
+      end;
+    {$ENDIF}
+    end;
+  end;
+end;
+
+procedure TDocMain.cbRemClick(Sender: TObject);
+var
+  i: integer;
+  o: TObject;
+  c: TToken absolute o;
+begin
+  i := cbRem.ItemIndex;
+  if i < 1 then
+    edRem.Text := SelItem.RawDescription
+  else begin
+    o := cbRem.Items.Objects[i];
+    SelToken := c;
+    if assigned(o) then begin
+      edRem.Text := c.CommentContent;
+    end else
+      edRem.Text := SelItem.Descriptions.Strings[i-1];
   end;
 end;
 
