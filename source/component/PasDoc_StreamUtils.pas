@@ -22,7 +22,9 @@ procedure StreamWriteString(const AStream: TStream; const AString: string);
 
 implementation
 
-uses PasDoc_Utils; // for LineEnding in Kylix/Delphi
+uses
+  PasDoc_Types, // for whitespace sets - move to Utils?
+  PasDoc_Utils; // for LineEnding in Kylix/Delphi
 
 function StreamReadLine(const AStream: TStream): string;
 // totally junky implementation!!
@@ -33,13 +35,15 @@ begin
   l := 0;
   SetLength(Result, 100);
   c := #0;
-  while (AStream.Position < AStream.Size) and (c <> #13) and (c <> #10) do
-    begin
+  //read up to and including the whole line ending (until #10)
+  //while (AStream.Position < AStream.Size) and (c <> #13) and (c <> #10) do begin
+  while (AStream.Position < AStream.Size) and (c <> #10) do begin
     AStream.Read(c, 1);
     Inc(l);
     if l > Length(Result) then SetLength(Result, Length(Result) + 100);
     Result[l] := c;
   end;
+{$IFDEF old}
   if (c = #13) then begin
     AStream.Read(c, 1);
     if c <> #10 then begin
@@ -47,6 +51,19 @@ begin
     end;
   end;
   SetLength(Result, l);
+{$ELSE}
+  SetLength(Result, l);
+  //replace the last char by the proper line ending?
+  if c in WhiteSpaceNL then begin
+  //last char at [l]
+    if (l > 1) and (Result[l-1] = #13) then
+      dec(l, 2) //cr+lf
+    else  //lf only
+      dec(l, 1);
+    SetLength(Result, l);
+    Result := Result + LineEnding;
+  end;
+{$ENDIF}
 end;
 
 procedure StreamWriteLine(const AStream: TStream; const AString: string);
