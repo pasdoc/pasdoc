@@ -20,11 +20,6 @@
   contains no code except for a call to a main routine in another unit or
   the instantiation of an object / class that does all the work
   (usually TApplication).
-
-  Pasdoc is restricted to work on unit files only, that's why the program file
-  should contain no actual program-specific code - it would not become part of
-  the documentation.
-
 ------------------------------------------------------------------------------ }
 
 program pasdoc;
@@ -34,11 +29,8 @@ program pasdoc;
 {$ENDIF}
 
 uses
-{$IFDEF FPC}
-{$ELSE}
-  FastMM4,
-{$ENDIF}
-  PasDoc_Main;
+  PasDoc_Main,
+  PasDoc_Items in '..\component\PasDoc_Items.pas';
 
 begin
   Main;

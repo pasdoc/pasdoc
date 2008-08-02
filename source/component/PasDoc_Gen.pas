@@ -2357,7 +2357,7 @@ procedure TDocGenerator.StoreDescription(ItemName: string; var t, f: string;
 var
   Item: TBaseItem;
   NameParts: TNameParts;
-  c: TToken;
+  //c: TToken;
 begin
   if t = '' then Exit;
 
@@ -2373,12 +2373,16 @@ begin
 
       Item.RawDescription := Item.RawDescription + t;
     {$ELSE}
-      c := TToken.Create(TOK_COMMENT_EXT);
-      c.CommentContent := t;
-      c.Mark := '#';  //mark external (linked) comment
-      c.StreamName := f;
-      c.BeginPosition := start;
-      item.Descriptions.AddObject(t, c);
+      {$IFDEF new}
+        c := TToken.Create(TOK_COMMENT_EXT);
+        c.CommentContent := t;
+        c.Mark := '#';  //mark external (linked) comment
+        c.StreamName := f;
+        c.BeginPosition := start;
+        item.Descriptions.AddObject(t, c);
+      {$ELSE}
+        item.AddRawDescription(t, f, start);
+      {$ENDIF}
     {$ENDIF}
     end else
       DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);

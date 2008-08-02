@@ -15,8 +15,6 @@
 
 unit PasDoc_Items;
 
-{$DEFINE PRaw} //raw descriptions as chain?
-
 interface
 
 uses
@@ -111,33 +109,9 @@ type
 function MethodTypeToString(const MethodType: TMethodType): string;
 
 type
-{$IFDEF PRaw}
   TRawDescriptionInfo = TStrings;
   PRawDescriptionInfo = TRawDescriptionInfo;
-{$ELSE}
-  PRawDescriptionInfo = ^TRawDescriptionInfo;
-  { Raw description, in other words: the contents of comment before
-    given item. Besides the content, this also
-    specifies filename, begin and end positions of given comment. }
-  TRawDescriptionInfo = record
-    { This is the actual content of the comment. }
-    Content: string;
 
-    // @name is the name of the TStream from which this comment was read.
-    // Will be '' if no comment was found.  It will be ' ' if
-    // the comment was somehow read from more than one stream.
-    StreamName: string;
-
-    // @name is the position in the stream of the start of the comment.
-    BeginPosition,
-
-    // @name is the position in the stream of the character immediately
-    // after the end of the comment describing the item.
-    EndPosition: TTextStreamPos;
-  end;
-{$ENDIF}
-
-type
   TPasItem = class;
   TPasScope = class;
   TPasCio = class;
@@ -148,8 +122,6 @@ type
 
   TBaseItems = class;
   TPasItems = class;
-  //TPasMethods = class;
-  //TPasProperties = class;
 
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
@@ -162,9 +134,11 @@ type
     FAuthors: TStringVector;
     FCreated: string;
     FAutoLinkHereAllowed: boolean;
-    FRawDescriptionInfo: TRawDescriptionInfo;
 
+    FRawDescriptionInfo: TRawDescriptionInfo;
+    FRawDescription: string;
     function GetRawDescription: string;
+  //allow doc generator to add more descriptions
     procedure WriteRawDescription(const Value: string);
 
     procedure SetFullLink(const Value: string);
@@ -302,28 +276,22 @@ type
     { This stores unexpanded version (as specified
       in user's comment in source code of parsed units)
       of description of this item.
-
-      Actually, this is just a shortcut to
-      @code(@link(RawDescriptionInfo).Content) }
+    }
     property RawDescription: string
       read GetRawDescription write WriteRawDescription;
+    //for use by parser, only!
+    property Descriptions: TRawDescriptionInfo read FRawDescriptionInfo;
 
     { Full info about @link(RawDescription) of this item,
       including it's filename and position.
 
-      This is intended to be initialized by parser.
-
-      This returns @link(PRawDescriptionInfo) instead of just
-      @link(TRawDescriptionInfo) to allow natural setting of
-      properties of this record
-      (otherwise @longCode(# Item.RawDescriptionInfo.StreamName := 'foo'; #)
-      would not work as expected) . }
-  {$IFDEF pRaw}
-    procedure AddRawDescription(t: TToken);
-    property Descriptions: TStrings read FRawDescriptionInfo; // write FRawDescriptionInfo;
-  {$ELSE}
-    function RawDescriptionInfo: PRawDescriptionInfo;
-  {$ENDIF}
+      This is intended to be initialized by parser, and used by an editor.
+      Detailed information is not preserved during serialization.
+    }
+    procedure AddRawDescription(const Value: string; const AStream: string;
+      APos: TTextStreamPos); overload;
+    //for use by parser
+    procedure AddRawDescription(t: TToken); overload;
 
     { a full link that should be enough to link this item from anywhere else }
     property FullLink: string read FFullLink write SetFullLink;
@@ -1045,7 +1013,10 @@ type
       UsesUnits.Objects[i] will point to TPasUnit object with
       Name = UsesUnits[i] (or nil, if pasdoc's didn't parse such unit).
       In other words, you will be able to use UsesUnits.Objects[i] to
-      obtain given unit's instance, as parsed by pasdoc. }
+      obtain given unit's instance, as parsed by pasdoc.
+
+      Members should become TStringPairs, which can hold a description?
+    }
     property UsesUnits: TStringVector read FHeritage;
     //property UsesUnits: TStringVector read FUsesUnits;
 
@@ -1349,7 +1320,9 @@ var
 begin
   inherited;
   Name := LoadStringFromStream(ASource);
-  RawDescription := LoadStringFromStream(ASource);
+//throw away token list
+  FreeAndNil(FRawDescriptionInfo);
+  FRawDescription := LoadStringFromStream(ASource);
   FNameStream := LoadStringFromStream(ASource);
   FNamePosition := LoadIntegerFromStream(ASource);
   ASource.Read(FKind, sizeof(FKind));
@@ -1396,12 +1369,14 @@ begin
   AutoLinkHereAllowed }
 end;
 
-{$IFDEF pRaw}
-
 function TBaseItem.GetRawDescription: string;
 begin
-//for legacy code: concatenate all description sections
-  Result := FRawDescriptionInfo.Text;
+//concatenate all description sections.
+//but only if a token list has been created by the parser!
+  if assigned(FRawDescriptionInfo) then
+    Result := FRawDescriptionInfo.Text
+  else
+    Result := FRawDescription;
 end;
 
 procedure TBaseItem.AddRawDescription(t: TToken);
@@ -1409,32 +1384,37 @@ begin
   FRawDescriptionInfo.AddObject(t.CommentContent, t);
 end;
 
+procedure TBaseItem.AddRawDescription(const Value, AStream: string;
+  APos: TTextStreamPos);
+var
+  c: TToken;
+begin
+//add qualified description
+  if Assigned(FRawDescriptionInfo) then begin
+    c := TToken.Create(TOK_COMMENT_EXT);
+    c.CommentContent := Value;
+    c.Mark := '#';  //mark external (linked) comment
+    c.StreamName := AStream;
+    c.BeginPosition := APos;
+    FRawDescriptionInfo.AddObject(Value, c);
+  end else
+    WriteRawDescription(Value);
+end;
+
 procedure TBaseItem.WriteRawDescription(const Value: string);
 begin
+//append (more) descriptive text
+{$IFDEF old}
   FRawDescriptionInfo.Text := Value;  //.Add(Value);
-end;
-
-{$ELSE} //old
-
-function TBaseItem.RawDescriptionInfo: PRawDescriptionInfo;
-begin
-{$IFDEF pRaw}
-  Result := FRawDescriptionInfo;
 {$ELSE}
-  Result := @FRawDescriptionInfo;
+  if Assigned(FRawDescriptionInfo) then //add new entry, without token
+    FRawDescriptionInfo.Add(Value)
+  else if FRawDescription <> '' then  //append as new paragraph
+    FRawDescription  := FRawDescription + LineEnding + LineEnding + Value
+  else
+    FRawDescription := Value;
 {$ENDIF}
 end;
-
-function TBaseItem.GetRawDescription: string;
-begin
-  Result := FRawDescriptionInfo.Content;
-end;
-
-procedure TBaseItem.WriteRawDescription(const Value: string);
-begin
-  FRawDescriptionInfo.Content := Value;
-end;
-{$ENDIF}
 
 function TBaseItem.BasePath: string;
 begin
@@ -1689,6 +1669,8 @@ var
   ValueDesc: String;
   Value: TPasItem;
 begin
+(* Special case: prefix enum member description with value specification.
+*)
   ReplaceStr := '';
   ValueDesc := TagParameter;
   ValueName := ExtractFirstWord(ValueDesc);
@@ -1696,11 +1678,18 @@ begin
   Value := Members.FindName(ValueName);
   if Assigned(Value) then begin
     if Value.RawDescription = '' then
-      Value.RawDescription := ValueDesc
-    else
+      Value.FRawDescription := ValueDesc
+    else begin
+    {$IFDEF old}
       ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@value tag specifies description for a value "%s" that already' +
         ' has one description.', [ValueName]);
+    {$ELSE}
+    //concatenate value and description, but only for the first time!
+      Value.FRawDescription := ValueDesc + Value.RawDescription;
+      FreeAndNil(Value.FRawdescriptionInfo);
+    {$ENDIF}
+    end;
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
@@ -2000,15 +1989,18 @@ begin
   MemberName := ExtractFirstWord(MemberDesc);
 
   Member := FindItem(MemberName);
-  if Assigned(Member) then
-  begin
-    { Only replace the description if one wasn't specified for it
-      already }
+  if Assigned(Member) then begin
+  {$IFDEF old}
+  { Only replace the description if one wasn't specified for it already }
     if Member.RawDescription = '' then
-      Member.RawDescription := MemberDesc else
+      Member.FRawDescription := MemberDesc
+    else //concatenate instead?
       ThisTag.TagManager.DoMessage(1, pmtWarning,
         '@member tag specifies description for member "%s" that already' +
         ' has one description.', [MemberName]);
+  {$ELSE}
+    Member.WriteRawDescription(MemberDesc);
+  {$ENDIF}
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
@@ -2016,8 +2008,6 @@ end;
 
 function TPasCio.ShowVisibility: boolean;
 begin
-  //Result := not (MyType in CIORecordType);
-  //Result := MyType < CIORecordType;
   Result := MyType in CIOClassTypes;
 end;
 
