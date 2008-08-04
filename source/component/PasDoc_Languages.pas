@@ -139,7 +139,8 @@ type
     trNoFunctions,
     trNoIdentifiers,
     trProgram,
-    trLibrary);
+    trLibrary,
+    trUses);
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
