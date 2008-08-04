@@ -1380,8 +1380,13 @@ begin
 end;
 
 procedure TBaseItem.AddRawDescription(t: TToken);
+var
+  i: integer;
 begin
-  FRawDescriptionInfo.AddObject(t.CommentContent, t);
+//some debugging stuff
+assert(t.CommentContent > ' ', 'add empty description?');
+  i := FRawDescriptionInfo.AddObject(t.CommentContent, t);
+assert(FRawDescriptionInfo.Strings[i] = t.CommentContent, 'description text not stored?');
 end;
 
 procedure TBaseItem.AddRawDescription(const Value, AStream: string;
