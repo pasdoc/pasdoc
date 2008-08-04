@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="2">
+  <Package Version="3">
     <Name Value="pasdoc_package"/>
     <Author Value="PasDoc developers"/>
     <CompilerOptions>
@@ -8,7 +8,7 @@
       <SearchPaths>
         <IncludeFiles Value="../../component/;../../component/tipue/;../../component/images/"/>
         <OtherUnitFiles Value="../../component/;../../component/tipue/"/>
-        <UnitOutputDirectory Value="lib/"/>
+        <UnitOutputDirectory Value="lib"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -36,40 +36,40 @@
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
     <Version Minor="11"/>
-    <Files Count="25">
+    <Files Count="27">
       <Item1>
-        <Filename Value="../../component/PasDoc_Hashes.pas"/>
-        <UnitName Value="PasDoc_Hashes"/>
-      </Item1>
-      <Item2>
-        <Filename Value="../../component/PasDoc_ObjectVector.pas"/>
-        <UnitName Value="PasDoc_ObjectVector"/>
-      </Item2>
-      <Item3>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="PasDoc_Aspell"/>
-      </Item3>
-      <Item4>
+      </Item1>
+      <Item2>
         <Filename Value="../../component/PasDoc_Base.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="PasDoc_Base"/>
-      </Item4>
-      <Item5>
+      </Item2>
+      <Item3>
         <Filename Value="../../component/PasDoc_Gen.pas"/>
         <UnitName Value="PasDoc_Gen"/>
-      </Item5>
-      <Item6>
+      </Item3>
+      <Item4>
         <Filename Value="../../component/PasDoc_GenHtml.pas"/>
         <UnitName Value="PasDoc_GenHtml"/>
-      </Item6>
-      <Item7>
+      </Item4>
+      <Item5>
         <Filename Value="../../component/PasDoc_GenHtmlHelp.pas"/>
         <UnitName Value="PasDoc_GenHtmlHelp"/>
-      </Item7>
-      <Item8>
+      </Item5>
+      <Item6>
         <Filename Value="../../component/PasDoc_GenLatex.pas"/>
         <UnitName Value="PasDoc_GenLatex"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../component/PasDoc_GenSimpleXML.pas"/>
+        <UnitName Value="PasDoc_GenSimpleXML"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../../component/PasDoc_Hashes.pas"/>
+        <UnitName Value="PasDoc_Hashes"/>
       </Item8>
       <Item9>
         <Filename Value="../../component/PasDoc_HierarchyTree.pas"/>
@@ -84,64 +84,72 @@
         <UnitName Value="PasDoc_Languages"/>
       </Item11>
       <Item12>
-        <Filename Value="../../component/PasDoc_Parser.pas"/>
-        <UnitName Value="PasDoc_Parser"/>
+        <Filename Value="../../component/PasDoc_ObjectVector.pas"/>
+        <UnitName Value="PasDoc_ObjectVector"/>
       </Item12>
       <Item13>
+        <Filename Value="../../component/PasDoc_OptionParser.pas"/>
+        <UnitName Value="PasDoc_OptionParser"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../../component/PasDoc_Parser.pas"/>
+        <UnitName Value="PasDoc_Parser"/>
+      </Item14>
+      <Item15>
         <Filename Value="../../component/PasDoc_ProcessLineTalk.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="PasDoc_ProcessLineTalk"/>
-      </Item13>
-      <Item14>
+      </Item15>
+      <Item16>
         <Filename Value="../../component/PasDoc_Reg.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="PasDoc_Reg"/>
-      </Item14>
-      <Item15>
-        <Filename Value="../../component/PasDoc_Scanner.pas"/>
-        <UnitName Value="PasDoc_Scanner"/>
-      </Item15>
-      <Item16>
-        <Filename Value="../../component/PasDoc_Serialize.pas"/>
-        <UnitName Value="PasDoc_Serialize"/>
       </Item16>
       <Item17>
-        <Filename Value="../../component/PasDoc_SortSettings.pas"/>
-        <UnitName Value="PasDoc_SortSettings"/>
+        <Filename Value="../../component/PasDoc_Scanner.pas"/>
+        <UnitName Value="PasDoc_Scanner"/>
       </Item17>
       <Item18>
+        <Filename Value="../../component/PasDoc_Serialize.pas"/>
+        <UnitName Value="PasDoc_Serialize"/>
+      </Item18>
+      <Item19>
+        <Filename Value="../../component/PasDoc_SortSettings.pas"/>
+        <UnitName Value="PasDoc_SortSettings"/>
+      </Item19>
+      <Item20>
+        <Filename Value="../../component/PasDoc_StreamUtils.pas"/>
+        <UnitName Value="PasDoc_StreamUtils"/>
+      </Item20>
+      <Item21>
         <Filename Value="../../component/PasDoc_StringPairVector.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="PasDoc_StringPairVector"/>
-      </Item18>
-      <Item19>
-        <Filename Value="../../component/PasDoc_TagManager.pas"/>
-        <UnitName Value="PasDoc_TagManager"/>
-      </Item19>
-      <Item20>
-        <Filename Value="../../component/PasDoc_Tokenizer.pas"/>
-        <UnitName Value="PasDoc_Tokenizer"/>
-      </Item20>
-      <Item21>
-        <Filename Value="../../component/PasDoc_Types.pas"/>
-        <UnitName Value="PasDoc_Types"/>
       </Item21>
       <Item22>
-        <Filename Value="../../component/PasDoc_StreamUtils.pas"/>
-        <UnitName Value="PasDoc_StreamUtils"/>
-      </Item22>
-      <Item23>
         <Filename Value="../../component/PasDoc_StringVector.pas"/>
         <UnitName Value="PasDoc_StringVector"/>
+      </Item22>
+      <Item23>
+        <Filename Value="../../component/PasDoc_TagManager.pas"/>
+        <UnitName Value="PasDoc_TagManager"/>
       </Item23>
       <Item24>
-        <Filename Value="../../component/PasDoc_Utils.pas"/>
-        <UnitName Value="PasDoc_Utils"/>
+        <Filename Value="../../component/PasDoc_Tokenizer.pas"/>
+        <UnitName Value="PasDoc_Tokenizer"/>
       </Item24>
       <Item25>
+        <Filename Value="../../component/PasDoc_Types.pas"/>
+        <UnitName Value="PasDoc_Types"/>
+      </Item25>
+      <Item26>
+        <Filename Value="../../component/PasDoc_Utils.pas"/>
+        <UnitName Value="PasDoc_Utils"/>
+      </Item26>
+      <Item27>
         <Filename Value="../../component/tipue/PasDoc_Tipue.pas"/>
         <UnitName Value="PasDoc_Tipue"/>
-      </Item25>
+      </Item27>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
