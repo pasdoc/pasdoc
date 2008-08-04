@@ -197,7 +197,7 @@ type
     procedure MenuSaveClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
-    procedure PasDoc1Warning(const MessageType: TMessageType;
+    procedure PasDoc1Warning(const MessageType: TPasDocMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
     procedure cbCheckSpellingChange(Sender: TObject);
@@ -296,7 +296,7 @@ implementation
 uses PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
   WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
 
-procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
+procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 const
   MisText = 'Word misspelled "';

@@ -21,7 +21,7 @@ uses SysUtils, Classes, PasDoc_OptionParser, PasDoc_StringVector, PasDoc_Base,
 type
   TPascalPreProcessor = class
   private
-    procedure MessageEvent(const MessageType: TMessageType;
+    procedure MessageEvent(const MessageType: TPasDocMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
   public
     Verbosity: Cardinal;
@@ -48,14 +48,14 @@ begin
 end;
 
 procedure TPascalPreProcessor.MessageEvent(
-  const MessageType: TMessageType;
+  const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 begin
   if (AVerbosity <= Verbosity) then
     case MessageType of
-      mtInformation: WriteLn(ErrOutput, 'Info[', AVerbosity, ']:    ', AMessage);
-      mtWarning: WriteLn(ErrOutput, 'Warning[', AVerbosity, ']: ', AMessage);
-      mtError: WriteLn(ErrOutput, 'Error[', AVerbosity, ']:   ', AMessage);
+      pmtInformation: WriteLn(ErrOutput, 'Info[', AVerbosity, ']:    ', AMessage);
+      pmtWarning: WriteLn(ErrOutput, 'Warning[', AVerbosity, ']: ', AMessage);
+      pmtError: WriteLn(ErrOutput, 'Error[', AVerbosity, ']:   ', AMessage);
     else
       WriteLn(ErrOutput, AMessage);
     end;
@@ -213,7 +213,7 @@ begin
     except
       on E: Exception do
       begin
-        PreProcessor.MessageEvent(mtError, E.Message, 1);
+        PreProcessor.MessageEvent(pmtError, E.Message, 1);
         ExitCode := 1;
         Exit;
       end;
