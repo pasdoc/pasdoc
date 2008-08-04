@@ -806,7 +806,7 @@ begin
       if UnitItem.UsesUnits.Count > 0 then
       begin
         UsesNode := tvUnits.Items.AddChildObject(UnitNode,
-          'Uses', UnitItem.UsesUnits);
+          Lang.Translation[trUses], UnitItem.UsesUnits);
         for UsesIndex := 0 to UnitItem.UsesUnits.Count -1 do
         begin
           tvUnits.Items.AddChild(UsesNode, UnitItem.UsesUnits[UsesIndex]);
