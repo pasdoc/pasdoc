@@ -1351,7 +1351,7 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
     ULink: TPasItem;
   begin
     if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-      WriteHeading(HL, 'uses');
+      WriteHeading(HL, FLanguage.Translation[trUses]);
       WriteDirect('\begin{itemize}',true);
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('\item ');
