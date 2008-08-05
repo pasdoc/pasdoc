@@ -29,14 +29,9 @@ program pasdoc;
 {$ENDIF}
 
 uses
-  PasDoc_Main,
-  PasDoc_Items in '..\component\PasDoc_Items.pas';
+  {$ifdef USE_FASTMM} FastMM4, {$endif}
+  PasDoc_Main;
 
 begin
   Main;
-{$IFDEF FPC}
-{$ELSE}
-//Delphi, debug
-  ReadLn;
-{$ENDIF}
 end.

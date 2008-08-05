@@ -483,21 +483,24 @@ var
           cm := cmBack;
       end;
     end else begin
-      WasMarker := false;
       cm := cmFwd;  //default
 
-      for i := 0 to CommentMarkers.Count - 1 do begin
-        Marker := CommentMarkers[i];
-        if IsPrefix(Marker, c.Data) then begin
-          Delete(C.Data, 1, Length(Marker));
-          WasMarker := true;
-          Break;
+      if CommentMarkers.Count > 0 then begin
+      //markers are essential at all
+        WasMarker := false;
+        for i := 0 to CommentMarkers.Count - 1 do begin
+          Marker := CommentMarkers[i];
+          if IsPrefix(Marker, c.Data) then begin
+            Delete(C.Data, 1, Length(Marker));
+            WasMarker := true;
+            Break;
+          end;
         end;
-      end;
 
-      if (not MarkersOptional) and (not WasMarker) then
-        cm := cmIgnore
-      else if SCharIs(c.Data, 1, BackCommentMarker) then begin
+        if (not MarkersOptional) and (not WasMarker) then
+          cm := cmIgnore;
+      end;
+      if (cm = cmFwd) and SCharIs(c.Data, 1, BackCommentMarker) then begin
         cm := cmBack;
         Delete(C.Data, 1, Length(BackCommentMarker));
       end;
