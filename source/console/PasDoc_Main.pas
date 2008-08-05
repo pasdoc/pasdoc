@@ -165,9 +165,9 @@ begin
 
   OptionLanguage := TStringOption.Create('L', 'language');
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
-  for l := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
+  for l := Low(l) to High(l) do
     OptionLanguage.Explanation := OptionLanguage.Explanation + '  ' +
-      LANGUAGE_ARRAY[l].Syntax + ': ' + LANGUAGE_ARRAY[l].Name + LineEnding;
+      LanguageDescriptor(l)^.Syntax + ': ' + LanguageDescriptor(l)^.Name + LineEnding;
   AddOption(OptionLanguage);
 
   OptionStarOnly := TBoolOption.Create(#0, 'staronly');
