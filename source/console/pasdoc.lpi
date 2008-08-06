@@ -26,7 +26,9 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="-L de ..\ok_back_comment.pas"/>
         <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
+        <WorkingDirectory Value="D:\SourceForge\pasdocOld\branches\PasDoc2\tests\html"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -34,16 +36,52 @@
         <PackageName Value="pasdoc_package"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="5">
       <Unit0>
         <Filename Value="pasdoc.dpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="14" Y="41"/>
-        <TopLine Value="7"/>
+        <CursorPos X="1" Y="37"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="PasDoc_Main.pas"/>
+        <UnitName Value="PasDoc_Main"/>
+        <CursorPos X="32" Y="13"/>
+        <TopLine Value="4"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\component\PasDoc_GenHtml.pas"/>
+        <UnitName Value="PasDoc_GenHtml"/>
+        <CursorPos X="23" Y="26"/>
+        <TopLine Value="4"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\component\PasDoc_GenHtmlHelp.pas"/>
+        <UnitName Value="PasDoc_GenHtmlHelp"/>
+        <CursorPos X="23" Y="26"/>
+        <TopLine Value="4"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\component\PasDoc_Base.pas"/>
+        <UnitName Value="PasDoc_Base"/>
+        <CursorPos X="1" Y="662"/>
+        <TopLine Value="640"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
@@ -77,11 +115,15 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="2">
       <Item1>
         <Source Value="pasdoc.dpr"/>
         <Line Value="41"/>
       </Item1>
+      <Item2>
+        <Source Value="pasdoc.dpr"/>
+        <Line Value="37"/>
+      </Item2>
     </BreakPoints>
     <Watches Count="1">
       <Item1>

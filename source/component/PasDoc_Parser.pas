@@ -650,8 +650,7 @@ begin //PushComment
 end;
 
 function TParser.AddDescription(var t: TToken; item: TPasItem; fDestroy: boolean): boolean;
-var
-  p: PRawDescriptionInfo;
+//var  p: PRawDescriptionInfo;
 begin
 //currently the result is always True (remove?)
   //Result := False; //in case of any errors
@@ -981,7 +980,7 @@ procedure TParser.ParseVariables(inUnit: boolean);
 var
   FirstItem, NewItem: TPasItem;
   I: Integer;
-  pRaw: PRawDescriptionInfo;
+  //pRaw: PRawDescriptionInfo;
 begin //ParseFieldsVariables
 (* ident <| { "," ident } ":" type [absolute] ";" modifiers |>
 *)

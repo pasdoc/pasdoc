@@ -109,7 +109,10 @@ type
 function MethodTypeToString(const MethodType: TMethodType): string;
 
 type
-  TRawDescriptionInfo = TStrings;
+  TRawDescriptionInfo = class(TStringList)
+  public
+    destructor Destroy; override;
+  end;
   PRawDescriptionInfo = TRawDescriptionInfo;
 
   TPasItem = class;
@@ -1106,8 +1109,9 @@ begin
   if Result <> 0 then
     exit;
   Result := ord(P1.Visibility) - ord(P2.Visibility);
-  if Result = 0 then
-    Result := 1;
+
+//What's this? Can result in endless comparison loop!
+  //if Result = 0 then Result := 1;
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -1117,25 +1121,21 @@ begin
   inherited Create;
   FAuthors := TStringVector.Create;
   AutoLinkHereAllowed := true;
-  FRawDescriptionInfo := TStringList.Create;
+  FRawDescriptionInfo := TRawDescriptionInfo.Create;
+{$IFDEF old}
   if ord(Kind) > 0 then begin
     if self.FMyOwner = nil then
-      assert(self.Kind = KEY_UNIT);
+      assert(self.Kind = KEY_UNIT, 'Non-Unit without owner: ' + TokenNames[kind]);
   end;
+{$ELSE}
+  //only PasItems must have an owner
+{$ENDIF}
 end;
 
 destructor TBaseItem.Destroy;
-var
-  i: integer;
-  o: TObject;
-  p: TPasItem absolute o;
 begin
-  Authors.Free;
+  FreeAndNil(FAuthors);
   FreeAndNil(FItems);
-  for i := 0 to FRawDescriptionInfo.Count - 1 do begin
-    o := FRawDescriptionInfo.Objects[i];
-    p.Free;
-  end;
   FreeAndNil(FRawDescriptionInfo);
   inherited;
 end;
@@ -1147,6 +1147,7 @@ end;
 
 procedure TBaseItem.AddMember(item: TPasItem);
 begin
+{ TODO : Only PasItems can have Members }
   //if FItems = nil then FItems := TPasItems.Create(True);
   Members.Add(item);
   item.FMyOwner := self as TPasScope;
@@ -1380,13 +1381,8 @@ begin
 end;
 
 procedure TBaseItem.AddRawDescription(t: TToken);
-var
-  i: integer;
 begin
-//some debugging stuff
-assert(t.CommentContent > ' ', 'add empty description?');
-  i := FRawDescriptionInfo.AddObject(t.CommentContent, t);
-assert(FRawDescriptionInfo.Strings[i] = t.CommentContent, 'description text not stored?');
+  FRawDescriptionInfo.AddObject(t.CommentContent, t);
 end;
 
 procedure TBaseItem.AddRawDescription(const Value, AStream: string;
@@ -1416,7 +1412,7 @@ begin
     FRawDescriptionInfo.Add(Value)
   else if FRawDescription <> '' then  //append as new paragraph
     FRawDescription  := FRawDescription + LineEnding + LineEnding + Value
-  else
+  else //add first description
     FRawDescription := Value;
 {$ENDIF}
 end;
@@ -1438,8 +1434,9 @@ begin
   inherited Create();
   if assigned(AOwner) then
     AOwner.AddMember(self)
-  else
-    assert(AKind = KEY_UNIT, 'non-unit without owner');
+  else if ord(Kind) > 0 then begin
+    assert(self is TPasUnit, 'Non-Unit without owner: ' + TokenNames[kind]);
+  end;
 end;
 
 destructor TPasItem.Destroy;
@@ -1480,7 +1477,7 @@ var
 begin
   Pair := TStringPair.CreateExtractFirstWord(TagParameter);
 
-  if Pair.Name = '' then 
+  if Pair.Name = '' then
   begin
     FreeAndNil(Pair);
     ThisTag.TagManager.DoMessage(2, pmtWarning,
@@ -2467,11 +2464,28 @@ begin
     end;
 end;
 
+{ TRawDescriptionInfo }
+
+destructor TRawDescriptionInfo.Destroy;
+var
+  i: integer;
+begin
+//destroy owned tokens
+  for i := 0 to Count - 1 do begin
+    Objects[i].Free;
+  end;
+  inherited;
+end;
+
 initialization
   TSerializable.Register(TPasItem);
+{$IFDEF old}
   TSerializable.Register(TPasConstant);
   TSerializable.Register(TPasFieldVariable);
   TSerializable.Register(TPasType);
+{$ELSE}
+  TSerializable.Register(TPasScope);
+{$ENDIF}
   TSerializable.Register(TPasEnum);
   TSerializable.Register(TPasMethod);
   TSerializable.Register(TPasProperty);
