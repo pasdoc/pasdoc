@@ -607,6 +607,7 @@ begin
   ParseFiles;
 
   UnitsCountBeforeExcluding := FUnits.Count;
+  { TODO : Filter items by visibility }
   RemoveExcludedItems(TPasItems(FUnits));
 
   { check if we have any units successfully parsed and not @excluded }

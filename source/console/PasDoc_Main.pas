@@ -165,9 +165,9 @@ begin
 
   OptionLanguage := TStringOption.Create('L', 'language');
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
-  for l := Low(LANGUAGE_ARRAY) to High(LANGUAGE_ARRAY) do
+  for l := Low(l) to High(l) do
     OptionLanguage.Explanation := OptionLanguage.Explanation + '  ' +
-      LANGUAGE_ARRAY[l].Syntax + ': ' + LANGUAGE_ARRAY[l].Name + LineEnding;
+      LanguageDescriptor(l)^.Syntax + ': ' + LanguageDescriptor(l)^.Name + LineEnding;
   AddOption(OptionLanguage);
 
   OptionStarOnly := TBoolOption.Create(#0, 'staronly');
@@ -229,8 +229,7 @@ begin
   AddOption(OptionCacheDir);
 
   OptionLinkLook := TStringOption.Create(#0, 'link-look');
-  OptionLinkLook.Explanation := 'How links are displayed in documentation: "default" (show the complete link name, as specified by @link),'
-  +' "full" (show the complete link name, and try to make each part of it a link), or "stripped" (show only last part of the link)';
+  OptionLinkLook.Explanation := 'How links are displayed in documentation: "default" (show the complete link name, as specified by @link), "full" (show the complete link name, and try to make each part of it a link), or "stripped" (show only last part of the link)';
   OptionLinkLook.Value := 'default'; { default value is 'default' }
   AddOption(OptionLinkLook);
 
@@ -276,18 +275,17 @@ begin
   OptionImplicitVisibility.Explanation := 'How pasdoc should handle class members within default class visibility';
   OptionImplicitVisibility.Value := 'public';
   AddOption(OptionImplicitVisibility);
-
+  
   OptionNoMacro := TBoolOption.Create(#0, 'no-macro');
   OptionNoMacro.Explanation := 'Turn FPC macro support off';
   AddOption(OptionNoMacro);
-
+  
   OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
   OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
   AddOption(OptionAutoLink);
-
+  
   OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
-  OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. '
-  +'The file should contain one identifier on every line';
+  OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
   AddOption(OptionAutoLinkExclude);
 end;
 

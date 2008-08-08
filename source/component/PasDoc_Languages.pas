@@ -24,8 +24,6 @@
 
 The whole unit has been redesigned by DoDi.
 The interface should not be affected, but many internals have changed.
-
-Define "old" to get the old version.
 }
 
 {-$DEFINE old}
@@ -61,96 +59,6 @@ type
     lgHungarian_1250
    );
 
-{$IFDEF old}
-  { An enumeration type of all static output texts. }
-  TTranslationID = (
-    trAuthor,
-    trAuthors,
-    trAutomated,
-    trCio,
-    trClass,
-    trClasses,
-    trClassHierarchy,
-    trConstants,
-    trCreated,
-    trDeclaration,
-    trDescription,
-    trParameters,
-    trReturns,
-    trExceptions,
-    trExceptionsRaised,
-    trEnum,
-    trDispInterface,
-    trFields,
-    trFunctionsAndProcedures,
-    trHelp,
-    trHierarchy,
-    trIdentifiers,
-    trInterface,
-    trLegend,
-    trMarker,
-    trVisibility,
-    trMethods,
-    trLastModified,
-    trName,
-    trNone,
-    trObject,
-    trObjects,
-    trOverview,
-    trPrivate,
-    trStrictPrivate,
-    trProperties,
-    trProtected,
-    trStrictProtected,
-    trPublic,
-    trPublished,
-    trImplicit,
-    trType,
-    trTypes,
-    trUnit,
-    trUnits,
-    trVariables,
-    trGvUses,
-    trGvClasses,
-
-    trHeadlineCio,
-    trHeadlineConstants,
-    trHeadlineFunctionsAndProcedures,
-    trHeadlineIdentifiers,
-    trHeadlineTypes,
-    trHeadlineUnits,
-    trHeadlineVariables,
-
-    trSummaryCio,
-
-    trWarningOverwrite,
-    trWarning,
-
-    trGeneratedBy,
-    trOnDateTime,
-
-    trDeprecated,
-    trPlatformSpecific,
-    trLibrarySpecific,
-
-    trIntroduction,
-    trConclusion,
-
-    trSearch,
-    trSeeAlso,
-    trValues,
-
-    trNoCIOs,
-    trNoCIOsForHierarchy,
-    trNoTypes,
-    trNoVariables,
-    trNoConstants,
-    trNoFunctions,
-    trNoIdentifiers,
-    trProgram,
-    trLibrary,
-    trUses);
-{$ELSE}
   { An enumeration type of all static output texts.
     Warning: count and order changed!
   }
@@ -264,8 +172,6 @@ type
   RTransTable = array[TTranslationID] of string;
   PTransTable = ^RTransTable;
 
-{$ENDIF}
-
 //language descriptor
   PLanguageRecord = ^TLanguageRecord;
   TLanguageRecord = record
@@ -286,60 +192,15 @@ type
     FLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
   protected
-  {$IFDEF old}
-    FTranslation: array[TTranslationID] of string;
-  {$ELSE}
   //the table of the selected language
     pTable: PTransTable;
-  {$ENDIF}
     FCharSet: string;
     { @abstract(gets a translation token) }
     function GetTranslation(ATranslationID: TTranslationID): string;
-  {$IFDEF old}
-    { Defines translations for English (the default). }
-    procedure SetLanguageEnglish;
-    { Defines translations for Bosnian. }
-    procedure SetLanguageBosnian;
-    { Defines translations for Brasilian. }
-    procedure SetLanguageBrasilian;
-    { Defines translations for Catalan. }
-    procedure SetLanguageCatalan;
-    { Defines translations for Chinese (Codepage 950). }
-    procedure SetLanguageChinese_950;
-    { Defines translations for Danish. }
-    procedure SetLanguageDanish;
-    { Defines translations for Dutch. }
-    procedure SetLanguageDutch;
-    { Defines translations for French. }
-    procedure SetLanguageFrench;
-    { Defines translations for German }
-    procedure SetLanguageGerman;
-    { Defines translations for Indonesian. }
-    procedure SetLanguageIndonesian;
-    { Defines translations for Italian. }
-    procedure SetLanguageItalian;
-    { Defines translations for Javanese. }
-    procedure SetLanguageJavanese;
-    { Defines translations for Polish (Codepage 1250). }
-    procedure SetLanguagePolish_CP1250;
-    { Defines translations for Polish (Codepage ISO 8859-2). }
-    procedure SetLanguagePolish_ISO_8859_2;
-    { Defines translations for Russian (Codepage 1251). }
-    procedure SetLanguageRussian_1251;
-    { Defines translations for Slovak. }
-    procedure SetLanguageSlovak;
-    { Defines translations for Spanish. }
-    procedure SetLanguageSpanish;
-    { Defines translations for Swedish. }
-    procedure SetLanguageSwedish;
-    { Defines translations for Hungarian (Codepage 1250). }
-    procedure SetLanguageHungarian_1250;
-  {$ELSE}
     procedure SetTranslation(id: TTranslationID; const into: string);
     property FTranslation[id: TTranslationID]: string
       read GetTranslation write SetTranslation;
-    //following languages/codepages need transformation into tables
-  {$ENDIF}
+  //following languages/codepages need transformation into tables
     procedure SetLanguageChinese_gb2312;
     { Defines translations for Russian (Codepage 866). }
     procedure SetLanguageRussian_866;
@@ -508,91 +369,6 @@ var //writeable, for old (explicit) setup
     ''  //dummy
   );
 
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageEnglish;
-begin
-  FTranslation[trAuthor] := 'Author';
-  FTranslation[trAuthors] := 'Authors';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Classes, Interfaces, Objects and Records';
-  FTranslation[trClass] := 'Class';
-  FTranslation[trClasses] := 'Classes';
-  FTranslation[trClassHierarchy] := 'Class Hierarchy';
-  FTranslation[trConstants] := 'Constants';
-  FTranslation[trCreated] := 'Created';
-  FTranslation[trDeclaration] := 'Declaration';
-  FTranslation[trDescription] := 'Description';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions';
-  FTranslation[trExceptionsRaised] := 'Exceptions raised';
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Fields';
-  FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
-  FTranslation[trHelp] := 'Help';
-  FTranslation[trHierarchy] := 'Hierarchy';
-  FTranslation[trIdentifiers] := 'Identifiers';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Legend';
-  FTranslation[trMarker] := 'Marker';
-  FTranslation[trVisibility] := 'Visibility';
-  FTranslation[trMethods] := 'Methods';
-  FTranslation[trLastModified] := 'Last Modified';
-  FTranslation[trName] := 'Name';
-  FTranslation[trNone] := 'None';
-  FTranslation[trObject] := 'Object';
-  FTranslation[trObjects] := 'Objects';
-  FTranslation[trOverview] := 'Overview';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trStrictPrivate] := 'Strict Private';
-  FTranslation[trProperties] := 'Properties';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trStrictProtected] := 'Strict Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Type';
-  FTranslation[trTypes] := 'Types';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variables';
-  FTranslation[trGvUses] := 'Unit dependency graph';
-  FTranslation[trGvClasses] := 'Classes hierarchy graph';
-  FTranslation[trHeadlineCio] := 'All Classes, Interfaces, Objects and Records';
-  FTranslation[trHeadlineConstants] := 'All Constants';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'All Functions and Procedures';
-  FTranslation[trHeadlineIdentifiers] := 'All Identifiers';
-  FTranslation[trHeadlineTypes] := 'All Types';
-  FTranslation[trHeadlineUnits] := 'All Units';
-  FTranslation[trHeadlineVariables] := 'All Variables';
-  FTranslation[trSummaryCio] := 'Summary of Classes, Interfaces, Objects and Records';
-  FTranslation[trWarningOverwrite] :=
-    'Warning: Do not edit - this file has been created automatically and is likely be overwritten';
-  FTranslation[trWarning] := 'Warning';
-  FTranslation[trGeneratedBy] := 'Generated by';
-  FTranslation[trOnDateTime] := 'on';
-  FTranslation[trDeprecated] := 'this symbol is deprecated';
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform';
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library';
-  FTranslation[trIntroduction] := 'Introduction';
-  FTranslation[trConclusion] := 'Conclusion';
-  FTranslation[trSearch] := 'Search';
-  FTranslation[trSeeAlso] := 'See also';
-  FTranslation[trValues] := 'Values';
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.';
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.';
-  FTranslation[trNoTypes] := 'The units do not contain any types.';
-  FTranslation[trNoVariables] := 'The units do not contain any variables.';
-  FTranslation[trNoConstants] := 'The units do not contain any constants.';
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.';
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.';
-  FTranslation[trProgram] := 'Program';
-  FTranslation[trLibrary] := 'Library';
-  FTranslation[trUses] := 'Uses';
-end;
-{$ELSE}
-
 const
   aEnglish: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
@@ -689,91 +465,7 @@ const
     {trSeeAlso} 'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageBosnian;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autori';
-  FTranslation[trCio] := 'Klase, Interfejsi i Objekti';
-  FTranslation[trClass] := 'Klasa';
-  FTranslation[trClasses] := 'Klase';
-  FTranslation[trClassHierarchy] := 'Klasna hijerarhija';
-  FTranslation[trConstants] := 'Konstante';
-  FTranslation[trCreated] := 'Kreirano';
-  FTranslation[trDeclaration] := 'Deklaracija';
-  FTranslation[trDescription] := 'Opis';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Polja';
-  FTranslation[trFunctionsAndProcedures] := 'Funkcije i Procedure';
-  FTranslation[trHelp] := 'Pomoæ';
-  FTranslation[trHierarchy] := 'Hijerarhija';
-  FTranslation[trIdentifiers] := 'Identifikatori';
-  FTranslation[trInterface] := 'Interfejs';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Metode';
-  FTranslation[trLastModified] := 'Zadnja promjena';
-  FTranslation[trName] := 'Ime';
-  FTranslation[trNone] := 'Ništa';
-  FTranslation[trObject] := 'Objekt';
-  FTranslation[trObjects] := 'Objekti';
-  FTranslation[trOverview] := 'Pregled';
-  FTranslation[trPrivate] := 'Privatni';
-  FTranslation[trProperties] := 'Osibine';
-  FTranslation[trProtected] := 'Zaštiæen';
-  FTranslation[trPublic] := 'Publikovan';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Javan';
-  FTranslation[trType] := 'Tip';
-  FTranslation[trTypes] := 'Tipovi';
-  FTranslation[trUnit] := 'Fajl';
-  FTranslation[trUnits] := 'Fajlovi';
-  FTranslation[trVariables] := 'Promjenjive';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trHeadlineCio] := 'Sve Klase, Interfejsi i Objekti';
-  FTranslation[trHeadlineConstants] := 'Sve Konstante';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Sve Funkcije i Procedure';
-  FTranslation[trHeadlineIdentifiers] := 'Svi Identifikatoti';
-  FTranslation[trHeadlineTypes] := 'Svi Tipovi';
-  FTranslation[trHeadlineUnits] := 'Svi Fajlovi';
-  FTranslation[trHeadlineVariables] := 'Sve Varijable';
-  FTranslation[trSummaryCio] := 'Zbirno od Klasa, Interfejsa i Objekata';
-  FTranslation[trWarningOverwrite] :=
-    'Upozorenje: Ne mjenjajte fajl - ovaj fajl je kreiran automatski i velika je vjerovatnoæa da æe biti prepisan';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aBosnian: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Bosnian',
@@ -869,92 +561,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageBrasilian;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autores';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Classes, Interfaces, Objetos e Registros';
-  FTranslation[trClass] := 'Classe';
-  FTranslation[trClasses] := 'Classes';
-  FTranslation[trClassHierarchy] := 'Hierarquia de Classes';
-  FTranslation[trConstants] := 'Constantes';
-  FTranslation[trCreated] := 'Criada';
-  FTranslation[trDeclaration] := 'Declaração';
-  FTranslation[trDescription] := 'Descrição';
-  FTranslation[trParameters] := 'Parâmetros';
-  FTranslation[trReturns] := 'Retornos';
-  FTranslation[trExceptions] := 'Exceções';
-  FTranslation[trExceptionsRaised] := 'Exceções'; // TODO: translate as "Exceptions raised" instead of just "Exceptions"
-  FTranslation[trEnum] := 'Enumerações';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Campos';
-  FTranslation[trFunctionsAndProcedures] := 'Funções e Procedimentos';
-  FTranslation[trHelp] := 'Ajuda';
-  FTranslation[trHierarchy] := 'Hierarquia';
-  FTranslation[trIdentifiers] := 'Identificadores';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Métodos';
-  FTranslation[trLastModified] := 'Última modificação';
-  FTranslation[trName] := 'Nome';
-  FTranslation[trNone] := 'Nenhum';
-  FTranslation[trObject] := 'Objeto';
-  FTranslation[trObjects] := 'Objetos';
-  FTranslation[trOverview] := 'Visão Geral';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Properties';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Tipo';
-  FTranslation[trTypes] := 'Tipos';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variáveis';
-  FTranslation[trGvUses] := 'Diagrama de dependências de units';
-  FTranslation[trGvClasses] := 'Diagrama de hierarquia de Classes';
-  FTranslation[trHeadlineCio] := 'Todas as Classes, Interfaces, Objetos e Registros';
-  FTranslation[trHeadlineConstants] := 'Todas as Constantes';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Todas as funções e procedimentos';
-  FTranslation[trHeadlineIdentifiers] := 'Todos os Identificadores';
-  FTranslation[trHeadlineTypes] := 'Todos os Tipos';
-  FTranslation[trHeadlineUnits] := 'Todas as Units';
-  FTranslation[trHeadlineVariables] := 'Todas as Variáveis';
-  FTranslation[trSummaryCio] :=
-    'Lista das Classes, Interfaces, Objetos e Registros';
-  FTranslation[trWarningOverwrite] :=
-    'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Gerado por';
-  FTranslation[trOnDateTime] := 'as';
-  FTranslation[trDeprecated] := 'este símbolo está depreciado';
-  FTranslation[trPlatformSpecific] := 'este símbolo é específico para alguma plataforma';
-  FTranslation[trLibrarySpecific] := 'este símbolo é específico para alguma biblioteca';
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aBrasilian: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Brasilian',
@@ -1050,90 +657,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageCatalan;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autors';
-  FTranslation[trCio] := 'Clases, interfaces i objectes';
-  FTranslation[trClass] := 'Clase';
-  FTranslation[trClasses] := 'Clases';
-  FTranslation[trConstants] := 'Constants';
-  FTranslation[trCreated] := 'Creat';
-  FTranslation[trDeclaration] := 'Declaraci¢';
-  FTranslation[trDescription] := 'Descripci¢';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Camps';
-  FTranslation[trFunctionsAndProcedures] := 'Funcions i procediments';
-  FTranslation[trHelp] := 'Help';
-  FTranslation[trHierarchy] := 'Hierarchy';
-  FTranslation[trIdentifiers] := 'Identificadors';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLastModified] := 'Éltima modificaci¢';
-  FTranslation[trLegend] := 'Legend';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'MŠtodes';
-  FTranslation[trName] := 'Nom';
-  FTranslation[trNone] := 'Ningu';
-  FTranslation[trObject] := 'Objecte';
-  FTranslation[trObjects] := 'Objectes';
-  FTranslation[trOverview] := 'Resum';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Propietats';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Tipus';
-  FTranslation[trTypes] := 'Tipus';
-  FTranslation[trUnit] := 'Unitat';
-  FTranslation[trUnits] := 'Unitats';
-  FTranslation[trVariables] := 'Variables';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trWarningOverwrite] :=
-    'Atenci¢, no editar - aquest fitxer ha estat creat automaticament i ser… sobrescrit';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trHeadlineCio] := 'Totes les clases, interfaces i objectes';
-  FTranslation[trHeadlineConstants] := 'Totes les constants';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Totes les funcions i procediments';
-  FTranslation[trHeadlineIdentifiers] := 'Tot els indentificadors';
-  FTranslation[trHeadlineTypes] := 'Tots els tipus';
-  FTranslation[trHeadlineUnits] := 'Totes les unitats';
-  FTranslation[trHeadlineVariables] := 'Totes les variables';
-  FTranslation[trSummaryCio] := 'Llista de clases, interfaces i objectes';
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aCatalan: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Catalan',
@@ -1229,36 +753,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageChinese_950;
-begin
-  FTranslation[trAuthor] := '§@ªÌ';
-  FTranslation[trAuthors] := '§@ªÌ¸s';
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aChinese_950: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Chinese',
@@ -1354,7 +849,6 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1362,86 +856,6 @@ const
 
 { ---------------------------------------------------------------------------- }
 
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageDanish;
-begin
-  FTranslation[trAuthor] := 'Forfatter';
-  FTranslation[trAuthors] := 'Forfatre';
-  FTranslation[trCio] := 'Klasser, interfaces og objekter';
-  FTranslation[trClass] := 'Klasse';
-  FTranslation[trClasses] := 'Klasser';
-  FTranslation[trConstants] := 'Konstanter';
-  FTranslation[trCreated] := 'Udført';
-  FTranslation[trDeclaration] := 'Declaration';
-  FTranslation[trDescription] := 'Beskrivelse';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Felter';
-  FTranslation[trFunctionsAndProcedures] := 'Funktioner og prosedurer';
-  FTranslation[trHelp] := 'Hjælp';
-  FTranslation[trHierarchy] := 'Herarki';
-  FTranslation[trIdentifiers] := 'Identifiers';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Legende';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trLastModified] := 'Sidst Modificieret';
-  FTranslation[trMethods] := 'Metoder';
-  FTranslation[trName] := 'Navn';
-  FTranslation[trNone] := 'Ingen';
-  FTranslation[trObject] := 'Objekt';
-  FTranslation[trObjects] := 'Objekter';
-  FTranslation[trOverview] := 'Sammendrag';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Egenskaber';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Type';
-  FTranslation[trTypes] := 'Typer';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variable';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trWarningOverwrite] :=
-    'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trHeadlineCio] := 'Alle Klasesr, Interfaces og Objekter';
-  FTranslation[trHeadlineConstants] := 'Alle Konstanter';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Alle Functioner and Procedurer';
-  FTranslation[trHeadlineIdentifiers] := 'Alle Identifiers';
-  FTranslation[trHeadlineTypes] := 'Alle Typer';
-  FTranslation[trHeadlineUnits] := 'Alle Units';
-  FTranslation[trHeadlineVariables] := 'Alle Variable';
-  FTranslation[trSummaryCio] :=
-    'Oversigt over klasser, interfaces & objekter';
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
 const
   aDanish: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
@@ -1538,91 +952,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageDutch;
-begin
-  FTranslation[trAuthor] := 'Auteur';
-  FTranslation[trAuthors] := 'Auteurs';
-  FTranslation[trCio] := 'Classes, interfaces and objecten';
-  FTranslation[trClass] := 'Class';
-  FTranslation[trClasses] := 'Classes';
-  FTranslation[trConstants] := 'Constanten';
-  FTranslation[trCreated] := 'Gemaakt';
-  FTranslation[trDeclaration] := 'Declaratie';
-  FTranslation[trDescription] := 'Omschrijving';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Velden';
-  FTranslation[trFunctionsAndProcedures] := 'Functies en procedures';
-  FTranslation[trHelp] := 'Help';
-  FTranslation[trHierarchy] := 'Hierarchie';
-  FTranslation[trIdentifiers] := 'Identifiers';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLastModified] := 'Laatste wijziging';
-  FTranslation[trLegend] := 'Legend';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Methods';
-  FTranslation[trName] := 'Naam';
-  FTranslation[trNone] := 'Geen';
-  FTranslation[trObject] := 'Object';
-  FTranslation[trObjects] := 'Objecten';
-  FTranslation[trOverview] := 'Overzicht';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Eigenschappen';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Type';
-  FTranslation[trTypes] := 'Typen';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variabelen';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trWarningOverwrite] :=
-    'Waarschuwing, wijzig niets - dit bestand is automatisch gegenereerd en zal worden overschreven';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trHeadlineCio] := 'Alle classes, interfaces en objecten';
-  FTranslation[trHeadlineConstants] := 'Alle constanten';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Alle functies en procedures';
-  FTranslation[trHeadlineIdentifiers] := 'Alle identifiers';
-  FTranslation[trHeadlineTypes] := 'Alle typen';
-  FTranslation[trHeadlineUnits] := 'Alle units';
-  FTranslation[trHeadlineVariables] := 'Alle variabelen';
-  FTranslation[trSummaryCio] :=
-    'Overzicht van classes, interfaces & objecten';
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Programma';
-end;
-{$ELSE}
-const
   aDutch: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Dutch',
@@ -1718,91 +1048,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageFrench;
-begin
-  FTranslation[trAuthor] := 'Auteur';
-  FTranslation[trAuthors] := 'Auteurs';
-  FTranslation[trAutomated] := 'Automatisé';
-  FTranslation[trCio] := 'Classes, interfaces, structures et objets';
-  FTranslation[trClass] := 'Classe';
-  FTranslation[trClasses] := 'Classes';
-  FTranslation[trClassHierarchy] := 'Hiérarchie des classes';
-  FTranslation[trConstants] := 'Constantes';
-  FTranslation[trCreated] := 'Crée';
-  FTranslation[trDeclaration] := 'Déclaration';
-  FTranslation[trDescription] := 'Description';
-  FTranslation[trParameters] := 'Paramètres';
-  FTranslation[trReturns] := 'Retourne';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Champs';
-  FTranslation[trFunctionsAndProcedures] := 'Fonctions et procédures';
-  FTranslation[trHelp] := 'Aide';
-  FTranslation[trHierarchy] := 'Hiérarchie';
-  FTranslation[trIdentifiers] := 'Identificateurs';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Légende';
-  FTranslation[trMarker] := 'Marquage';
-  FTranslation[trVisibility] := 'Visibilité';
-  FTranslation[trMethods] := 'Méthodes';
-  FTranslation[trLastModified] := 'Dernière modification';
-  FTranslation[trName] := 'Nom';
-  FTranslation[trNone] := 'Aucun(e)(s)';
-  FTranslation[trObject] := 'Objet';
-  FTranslation[trObjects] := 'Objets';
-  FTranslation[trOverview] := 'Aperçu';
-  FTranslation[trPrivate] := 'Privé';
-  FTranslation[trProperties] := 'Propriétés';
-  FTranslation[trProtected] := 'Protégé';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Publiés';
-  FTranslation[trType] := 'Type';
-  FTranslation[trTypes] := 'Types';
-  FTranslation[trUnit] := 'Unité';
-  FTranslation[trUnits] := 'Unités';
-  FTranslation[trVariables] := 'Variables';
-  FTranslation[trGvUses] := 'Graphique de dépendance d''unités';
-  FTranslation[trGvClasses] := 'Graphique de hiérarchie des classes';
-  FTranslation[trHeadlineCio] := 'Toutes les classes, interfaces, objets et enregistrements';
-  FTranslation[trHeadlineConstants] := 'Toutes les constants';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Toutes les fonctions et procédures';
-  FTranslation[trHeadlineIdentifiers] := 'Tous les identificateurs';
-  FTranslation[trHeadlineTypes] := 'Tous les types';
-  FTranslation[trHeadlineUnits] := 'Toutes les unités';
-  FTranslation[trHeadlineVariables] := 'Toutes les variables';
-  FTranslation[trSummaryCio] := 'Classes, interfaces, objets et enregistrements';
-  FTranslation[trWarningOverwrite] :=
-    'Attention, ne pas édtier - ce fichier est créé automatiquement et va être écrasé';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Produit par';
-  FTranslation[trOnDateTime] := 'le';
-  FTranslation[trDeprecated] := 'ce symbole est désapprouvé';
-  FTranslation[trPlatformSpecific] := 'ce symbole est spécifique à une plateforme d''exécution';
-  FTranslation[trLibrarySpecific] := 'ce symbole est spécifique à une certaine bibliothèque';
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Recherce';
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aFrench: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'French',
@@ -1898,91 +1144,7 @@ const
     {trSeeAlso} 'Voir aussi', //?
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageGerman;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autoren';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Klassen, Schnittstellen und Objekte';
-  FTranslation[trClass] := 'Klasse';
-  FTranslation[trClasses] := 'Klassen';
-  FTranslation[trClassHierarchy] := 'Klassenhierarchie';
-  FTranslation[trConstants] := 'Konstanten';
-  FTranslation[trCreated] := 'Erstellt';
-  FTranslation[trDeclaration] := 'Deklaration';
-  FTranslation[trDescription] := 'Beschreibung';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Felder';
-  FTranslation[trFunctionsAndProcedures] := 'Funktionen und Prozeduren';
-  FTranslation[trHelp] := 'Hilfe';
-  FTranslation[trHierarchy] := 'Hierarchie';
-  FTranslation[trIdentifiers] := 'Bezeichner';
-  FTranslation[trInterface] := 'Schnittstelle';
-  FTranslation[trLegend] := 'Legende';
-  FTranslation[trMarker] := 'Markierung';
-  FTranslation[trVisibility] := 'Sichtbarkeit';
-  FTranslation[trMethods] := 'Methoden';
-  FTranslation[trLastModified] := 'Letzte Änderung';
-  FTranslation[trName] := 'Name';
-  FTranslation[trNone] := 'Keine';
-  FTranslation[trObject] := 'Objekt';
-  FTranslation[trObjects] := 'Objekte';
-  FTranslation[trOverview] := 'Übersicht';
-  FTranslation[trPrivate] := 'Privat';
-  FTranslation[trProperties] := 'Eigenschaften';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Type';
-  FTranslation[trTypes] := 'Typen';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variablen';
-  FTranslation[trGvUses] := 'Unit Abhängigkeitsgraph';
-  FTranslation[trGvClasses] := 'Klassenhierarchie Graph';
-  FTranslation[trHeadlineCio] := 'Alle Klassen, Schnittstellen, Objekte und Records';
-  FTranslation[trHeadlineConstants] := 'Alle Konstanten';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=  'Alle Funktionen und Prozeduren';
-  FTranslation[trHeadlineIdentifiers] := 'Alle Bezeichner';
-  FTranslation[trHeadlineTypes] := 'Alle Typen';
-  FTranslation[trHeadlineUnits] := 'Alle Units';
-  FTranslation[trHeadlineVariables] := 'Alle Variablen';
-  FTranslation[trSummaryCio] := 'Zusammenfassung aller Klassen, Schnittstellen, Objekte und Records';
-  FTranslation[trWarningOverwrite] :=
-    'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Erstellt mit';
-  FTranslation[trOnDateTime] := 'am';
-  FTranslation[trDeprecated] := 'Dieses Symbol sollte nicht (mehr) verwendet werden.';
-  FTranslation[trPlatformSpecific] := 'Dieses Symbol ist plattformspezifisch.';
-  FTranslation[trLibrarySpecific] := 'Dieses Symbol ist spezifisch für eine bestimmte Bibliothek.';
-  FTranslation[trIntroduction] := 'Einführung';
-  FTranslation[trConclusion] := 'Fazit';
-  FTranslation[trSearch] := 'Suchen';
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Programm';
-end;
-{$ELSE}
-const
   aGerman: RTransTable = (
     {trNoTrans} '<häh?>', //no ID assigned, so far
     {trLanguage} 'German',
@@ -2078,90 +1240,7 @@ const
     {trSeeAlso} 'Siehe auch',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageIndonesian;
-begin
-  FTranslation[trAuthor] := 'Pembuat';
-  FTranslation[trAuthors] := 'Pembuat';
-  FTranslation[trCio] := 'Kelas, Interface, dan Objek';
-  FTranslation[trClass] := 'Kelas';
-  FTranslation[trClasses] := 'Kelas';
-  FTranslation[trConstants] := 'Konstanta';
-  FTranslation[trCreated] := 'Dibuat';
-  FTranslation[trDeclaration] := 'Deklarasi';
-  FTranslation[trDescription] := 'Definisi';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Field';
-  FTranslation[trFunctionsAndProcedures] := 'Fungsi dan Prosedur';
-  FTranslation[trHelp] := 'Bantuan';
-  FTranslation[trHierarchy] := 'Hirarki';
-  FTranslation[trIdentifiers] := 'Identifier';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Method';
-  FTranslation[trLastModified] := 'Terakhir Dimodifikasi';
-  FTranslation[trName] := 'Nama';
-  FTranslation[trNone] := 'Tidak Ada';
-  FTranslation[trObject] := 'Objek';
-  FTranslation[trObjects] := 'Objek';
-  FTranslation[trOverview] := 'Sekilas';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Property';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Tipe Bentukan';
-  FTranslation[trTypes] := 'Tipe Bentukan';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Unit';
-  FTranslation[trVariables] := 'Variabel';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trHeadlineCio] := 'Semua Kelas, Interface, dan Objek';
-  FTranslation[trHeadlineConstants] := 'Semua Konstanta';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Semua Fungsi dan Prosedur';
-  FTranslation[trHeadlineIdentifiers] := 'Semua Identifier';
-  FTranslation[trHeadlineTypes] := 'Semua Tipe Bentukan';
-  FTranslation[trHeadlineUnits] := 'Semua Unit';
-  FTranslation[trHeadlineVariables] := 'Semua Variabel';
-  FTranslation[trSummaryCio] := 'Ringkasan Kelas, Interface, dan Objek';
-  FTranslation[trWarningOverwrite] := 'Perhatian: Jangan dimodifikasi - '
-    + 'file ini dihasilkan secara otomatis dan mungkin saja ditimpa ulang';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Dihasilkan oleh';
-  FTranslation[trOnDateTime] := 'pada';
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library';  // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aIndonesian: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Indonesian',
@@ -2258,90 +1337,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageItalian;
-begin
-  FTranslation[trAuthor] := 'Autore';
-  FTranslation[trAuthors] := 'Autori';
-  FTranslation[trCio] := 'Classi, Interfacce ed Oggetti';
-  FTranslation[trClass] := 'Classe';
-  FTranslation[trClasses] := 'Classi';
-  FTranslation[trConstants] := 'Costanti';
-  FTranslation[trCreated] := 'Creato';
-  FTranslation[trDeclaration] := 'Dichiarazione';
-  FTranslation[trDescription] := 'Descrizione';
-  FTranslation[trParameters] := 'Parametri';
-  FTranslation[trReturns] := 'Ritorni';
-  FTranslation[trExceptions] := 'Eccezione';
-  FTranslation[trExceptionsRaised] := 'Eccezioni sollevate';
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Campi';
-  FTranslation[trFunctionsAndProcedures] := 'Funzioni e Procedure';
-  FTranslation[trHelp] := 'Help';
-  FTranslation[trHierarchy] := 'Gerarchia';
-  FTranslation[trIdentifiers] := 'Identificatori';
-  FTranslation[trInterface] := 'Interfacce';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Metodi';
-  FTranslation[trLastModified] := 'Ultima Variazione';
-  FTranslation[trName] := 'Nome';
-  FTranslation[trNone] := 'Nessuno';
-  FTranslation[trObject] := 'Oggetto';
-  FTranslation[trObjects] := 'Oggetti';
-  FTranslation[trOverview] := 'Sommario';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Proprietà';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Tipo';
-  FTranslation[trTypes] := 'Tipi';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Units';
-  FTranslation[trVariables] := 'Variabili';
-  FTranslation[trGvUses] := 'Grafico dipendenze Unit';
-  FTranslation[trGvClasses] := 'Grafico gerarchia Classi';
-  FTranslation[trHeadlineCio] := 'Tutte le Classi, Interfacce ed Oggetti';
-  FTranslation[trHeadlineConstants] := 'Tutte le Costanti';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Tutte le Funzioni e Procedure';
-  FTranslation[trHeadlineIdentifiers] := 'Tutti gli Identificatori';
-  FTranslation[trHeadlineTypes] := 'Tutti i Tipi';
-  FTranslation[trHeadlineUnits] := 'Tutte le Units';
-  FTranslation[trHeadlineVariables] := 'Tutte le Variabili';
-  FTranslation[trSummaryCio] := 'Sommario di Classi, Interfacce ed Oggetti';
-  FTranslation[trWarningOverwrite] :=
-    'Attenzione: Non modificare - questo file è stato generato automaticamente e verrà probabilmente sovrascritto';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduczione';
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Cerca';
-  FTranslation[trSeeAlso] := 'Vedere Anche';
-  FTranslation[trValues] := 'Valori';
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aItalian: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Italian',
@@ -2437,90 +1433,7 @@ const
     {trSeeAlso} 'Vedere Anche',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageJavanese;
-begin
-  FTranslation[trAuthor] := 'Sing Nggawe';
-  FTranslation[trAuthors] := 'Sing Nggawe';
-  FTranslation[trCio] := 'Kelas, Interface, lan Objek';
-  FTranslation[trClass] := 'Kelas';
-  FTranslation[trClasses] := 'Kelas';
-  FTranslation[trConstants] := 'Konstanta';
-  FTranslation[trCreated] := 'Digawe';
-  FTranslation[trDeclaration] := 'Deklarasi';
-  FTranslation[trDescription] := 'Katrangan';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Field';
-  FTranslation[trFunctionsAndProcedures] := 'Fungsi lan Prosedur';
-  FTranslation[trHelp] := 'Tulung';
-  FTranslation[trHierarchy] := 'Hirarki';
-  FTranslation[trIdentifiers] := 'Identifier';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Katrangan';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Method';
-  FTranslation[trLastModified] := 'Terakhir Diowahi';
-  FTranslation[trName] := 'Jeneng';
-  FTranslation[trNone] := 'Mboten Wonten';
-  FTranslation[trObject] := 'Objek';
-  FTranslation[trObjects] := 'Objek';
-  FTranslation[trOverview] := 'Pambuka';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Property';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Macem Gawean';
-  FTranslation[trTypes] := 'Macem Gawean';
-  FTranslation[trUnit] := 'Unit';
-  FTranslation[trUnits] := 'Unit';
-  FTranslation[trVariables] := 'Variabel';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trHeadlineCio] := 'Kabeh Kelas, Interface, lan Objek';
-  FTranslation[trHeadlineConstants] := 'Kabeh Konstanta';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Kabeh Fungsi lan Prosedur';
-  FTranslation[trHeadlineIdentifiers] := 'Kabeh Identifier';
-  FTranslation[trHeadlineTypes] := 'Kabeh Macem Gawean';
-  FTranslation[trHeadlineUnits] := 'Kabeh Unit';
-  FTranslation[trHeadlineVariables] := 'Kabeh Variabel';
-  FTranslation[trSummaryCio] := 'Ringkesan Kelas, Interface, lan Objek';
-  FTranslation[trWarningOverwrite] := 'Ati-ati: Ojo diowahi - '
-    + 'file iki digawe otomatis dadi iso ilang owahanmu';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Dihasilne karo';
-  FTranslation[trOnDateTime] := 'ing';
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aJavanese: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Javanese',
@@ -2617,92 +1530,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguagePolish_CP1250;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autorzy';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Klasy, interfejsy, obiekty i rekordy';
-  FTranslation[trClass] := 'Klasa';
-  FTranslation[trClasses] := 'Klasy';
-  FTranslation[trClassHierarchy] := 'Hierarchia klas';
-  FTranslation[trConstants] := 'Sta³e';
-  FTranslation[trCreated] := 'Utworzony';
-  FTranslation[trDeclaration] := 'Deklaracja';
-  FTranslation[trDescription] := 'Opis';
-  FTranslation[trParameters] := 'Parametry';
-  FTranslation[trReturns] := 'Wynik';
-  FTranslation[trExceptions] := 'Wyj¹tki';
-  FTranslation[trExceptionsRaised] := 'Generowane wyj¹tki';
-  FTranslation[trEnum] := 'Wyliczenie';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Pola';
-  FTranslation[trFunctionsAndProcedures] := 'Podprogramy';
-  FTranslation[trHelp] := 'Pomoc';
-  FTranslation[trHierarchy] := 'Hierarchia';
-  FTranslation[trIdentifiers] := 'Identyfikatory';
-  FTranslation[trInterface] := 'Interfejs';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Kolor';
-  FTranslation[trVisibility] := 'Widocznoœæ';
-  FTranslation[trMethods] := 'Metody';
-  FTranslation[trLastModified] := 'Ostatnia modyfikacja';
-  FTranslation[trName] := 'Nazwa';
-  FTranslation[trNone] := 'Brak';
-  FTranslation[trObject] := 'Obiekt';
-  FTranslation[trObjects] := 'Obiekty';
-  FTranslation[trOverview] := 'Przegl¹d';
-  FTranslation[trPrivate] := 'Prywatne';
-  FTranslation[trProperties] := 'W³aœciwoœci';
-  FTranslation[trProtected] := 'Chronione';
-  FTranslation[trPublic] := 'Publiczne';
-  FTranslation[trImplicit] := 'Domyœlne';
-  FTranslation[trPublished] := 'Publikowane';
-  FTranslation[trType] := 'Typ';
-  FTranslation[trTypes] := 'Typy';
-  FTranslation[trUnit] := 'Modu³';
-  FTranslation[trUnits] := 'Modu³y';
-  FTranslation[trVariables] := 'Zmienne';
-  FTranslation[trGvUses] := 'Graf zale¿noœci modu³ów';
-  FTranslation[trGvClasses] := 'Graf dziedziczenia klas';
-  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy, obiekty i rekordy';
-  FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Wszystkie podprogramy';
-  FTranslation[trHeadlineIdentifiers] := 'Wszystkie identyfikatory';
-  FTranslation[trHeadlineTypes] := 'Wszystkie typy';
-  FTranslation[trHeadlineUnits] := 'Wszystkie modu³y';
-  FTranslation[trHeadlineVariables] := 'Wszystkie zmienne';
-  FTranslation[trSummaryCio] := 
-    'Podsumowanie klas, interfejsów, obiektów i rekordów';
-  FTranslation[trWarningOverwrite] :=
-    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany';
-  FTranslation[trWarning] := 'Uwaga';
-  FTranslation[trGeneratedBy] := 'Wygenerowane przez';
-  FTranslation[trOnDateTime] := ' - ';
-  FTranslation[trDeprecated] := 'odradza siê u¿ywania tego identyfikatora';
-  FTranslation[trPlatformSpecific] := 'ten identyfikator jest zale¿ny od platformy';
-  FTranslation[trLibrarySpecific] := 'ten identyfikator jest zale¿ny od biblioteki';
-  FTranslation[trIntroduction] := 'Wstêp';
-  FTranslation[trConclusion] := 'Podsumowanie';
-  FTranslation[trSearch] := 'Szukaj';
-  FTranslation[trSeeAlso] := 'Zobacz tak¿e';
-  FTranslation[trValues] := 'Wartoœci';
-  FTranslation[trNoCIOs] := 'Modu³ nie zawiera ¿adnych klas, interfejsów, obiektów ani rekordów.';
-  FTranslation[trNoCIOsForHierarchy] := 'Modu³ nie zawiera ¿adnych klas, interfejsów ani obiektów.';
-  FTranslation[trNoTypes] := 'Modu³ nie zawiera ¿adnych typów.';
-  FTranslation[trNoVariables] := 'Modu³ nie zawiera ¿adnych zmiennych.';
-  FTranslation[trNoConstants] := 'Modu³ nie zawiera ¿adnych sta³ych.';
-  FTranslation[trNoFunctions] := 'Modu³ nie zawiera ¿adnych funkcji ani podprogramów.';
-  FTranslation[trNoIdentifiers] := 'Modu³ nie zawiera ¿adnych identyfikatorów.';
-  FTranslation[trProgram] := 'Program';
-end;
-{$ELSE}
-const
   aPolish1250: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Polish',
@@ -2798,90 +1626,7 @@ const
     {trSeeAlso} 'Zobacz tak¿e',
     ''  //dummy
   );
-{$ENDIF}
 
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autorzy';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Klasy, interfejsy, obiekty i rekordy';
-  FTranslation[trClass] := 'Klasa';
-  FTranslation[trClasses] := 'Klasy';
-  FTranslation[trClassHierarchy] := 'Hierarchia klas';
-  FTranslation[trConstants] := 'Sta³e';
-  FTranslation[trCreated] := 'Utworzony';
-  FTranslation[trDeclaration] := 'Deklaracja';
-  FTranslation[trDescription] := 'Opis';
-  FTranslation[trParameters] := 'Parametry';
-  FTranslation[trReturns] := 'Wynik';
-  FTranslation[trExceptions] := 'Wyj±tki';
-  FTranslation[trExceptionsRaised] := 'Generowane wyj±tki';
-  FTranslation[trEnum] := 'Wyliczenie';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Pola';
-  FTranslation[trFunctionsAndProcedures] := 'Podprogramy';
-  FTranslation[trHelp] := 'Pomoc';
-  FTranslation[trHierarchy] := 'Hierarchia';
-  FTranslation[trIdentifiers] := 'Identyfikatory';
-  FTranslation[trInterface] := 'Interfejs';
-  FTranslation[trLegend] := 'Legenda';
-  FTranslation[trMarker] := 'Kolor';
-  FTranslation[trVisibility] := 'Widoczno¶æ';
-  FTranslation[trMethods] := 'Metody';
-  FTranslation[trLastModified] := 'Ostatnia modyfikacja';
-  FTranslation[trName] := 'Nazwa';
-  FTranslation[trNone] := 'Brak';
-  FTranslation[trObject] := 'Obiekt';
-  FTranslation[trObjects] := 'Obiekty';
-  FTranslation[trOverview] := 'Przegl±d';
-  FTranslation[trPrivate] := 'Prywatne';
-  FTranslation[trProperties] := 'W³a¶ciwo¶ci';
-  FTranslation[trProtected] := 'Chronione';
-  FTranslation[trPublic] := 'Publiczne';
-  FTranslation[trImplicit] := 'Domy¶lne';
-  FTranslation[trPublished] := 'Publikowane';
-  FTranslation[trType] := 'Typ';
-  FTranslation[trTypes] := 'Typy';
-  FTranslation[trUnit] := 'Modu³';
-  FTranslation[trUnits] := 'Modu³y';
-  FTranslation[trVariables] := 'Zmienne';
-  FTranslation[trGvUses] := 'Graf zale¿no¶ci modu³ów';
-  FTranslation[trGvClasses] := 'Graf dziedziczenia klas';
-  FTranslation[trHeadlineCio] := 'Wszystkie klasy, interfejsy, obiekty i rekordy';
-  FTranslation[trHeadlineConstants] := 'Wszystkie sta³e';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Wszystkie podprogramy';
-  FTranslation[trHeadlineIdentifiers] := 'Wszystkie identyfikatory';
-  FTranslation[trHeadlineTypes] := 'Wszystkie typy';
-  FTranslation[trHeadlineUnits] := 'Wszystkie modu³y';
-  FTranslation[trHeadlineVariables] := 'Wszystkie zmienne';
-  FTranslation[trSummaryCio] :=
-    'Podsumowanie klas, interfejsów, obiektów i rekordów';
-  FTranslation[trWarningOverwrite] :=
-    'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany';
-  FTranslation[trWarning] := 'Uwaga';
-  FTranslation[trGeneratedBy] := 'Wygenerowane przez';
-  FTranslation[trOnDateTime] := ' - ';
-  FTranslation[trDeprecated] := 'odradza siê u¿ywania tego identyfikatora';
-  FTranslation[trPlatformSpecific] := 'ten identyfikator jest zale¿ny od platformy';
-  FTranslation[trLibrarySpecific] := 'ten identyfikator jest zale¿ny od biblioteki';
-  FTranslation[trIntroduction] := 'Wstêp';
-  FTranslation[trConclusion] := 'Podsumowanie';
-  FTranslation[trSearch] := 'Szukaj';
-  FTranslation[trSeeAlso] := 'Zobacz tak¿e';
-  FTranslation[trValues] := 'Warto¶ci';
-  FTranslation[trNoCIOs] := 'Modu³ nie zawiera ¿adnych klas, interfejsów, obiektów ani rekordów.';
-  FTranslation[trNoCIOsForHierarchy] := 'Modu³ nie zawiera ¿adnych klas, interfejsów ani obiektów.';
-  FTranslation[trNoTypes] := 'Modu³ nie zawiera ¿adnych typów.';
-  FTranslation[trNoVariables] := 'Modu³ nie zawiera ¿adnych zmiennych.';
-  FTranslation[trNoConstants] := 'Modu³ nie zawiera ¿adnych sta³ych.';
-  FTranslation[trNoFunctions] := 'Modu³ nie zawiera ¿adnych funkcji ani podprogramów.';
-  FTranslation[trNoIdentifiers] := 'Modu³ nie zawiera ¿adnych identyfikatorów.';
-  FTranslation[trProgram] := 'Program';
-end;
-{$ELSE}
-const
   aPolish_ISO_8859_2: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Polish',
@@ -2977,92 +1722,7 @@ const
     {trSeeAlso} 'Zobacz tak¿e',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageRussian_1251;
-begin
-  FTranslation[trAuthor] := 'Àâòîğ';
-  FTranslation[trAuthors] := 'Àâòîğû';
-  FTranslation[trCio] := 'Êëàññû, èíòåğôåéñû è îáúåêòû';
-  FTranslation[trClass] := 'Êëàññ';
-  FTranslation[trClasses] := 'Êëàññû';
-  FTranslation[trClassHierarchy] := 'Èåğàğõèÿ êëàññîâ';
-  FTranslation[trConstants] := 'Êîíñòàíòû';
-  FTranslation[trCreated] := 'Ñîçäàíî';
-  FTranslation[trDeclaration] := 'Îáúÿâëåíèÿ';
-  FTranslation[trParameters] := 'Ïàğàìåòğû'; // DONE: translate
-  FTranslation[trReturns] := 'Âîçâğàùàåìûå çíà÷åíèÿ'; // DONE: translate
-  FTranslation[trExceptions] := 'Èñêëş÷åíèÿ'; // DONE: translate
-  FTranslation[trExceptionsRaised] := 'Âûçûâàåò èñêëş÷åíèÿ'; // DONE: translate
-  FTranslation[trEnum] := 'Ïåğå÷èñëåíèå';
-  FTranslation[trDescription] := 'Îïèñàíèå';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Ïîëÿ';
-  FTranslation[trFunctionsAndProcedures] := 'Ïğîöåäóğû è ôóíêöèè';
-  FTranslation[trHelp] := 'Help';
-    // Untranslated to avoid Russian file name for css
-  FTranslation[trHierarchy] := 'Èåğàğõèÿ';
-  FTranslation[trIdentifiers] := 'Èäåíòèôèêàòîğû';
-  FTranslation[trInterface] := 'Èíòåğôåéñ';
-  FTranslation[trLegend] := 'Îáîçíà÷åíèÿ';
-  FTranslation[trMarker] := 'Ìàğêåğ'; // DONE: translate
-  FTranslation[trVisibility] := 'Çîíà âèäèìîñòè'; // DONE: translate
-  FTranslation[trLastModified] := 'Ïîñëåäíåå èçìåíåíèå';
-  FTranslation[trMethods] := 'Ìåòîäû';
-  FTranslation[trName] := 'Èìÿ';
-  FTranslation[trNone] := 'Íåò';
-  FTranslation[trObject] := 'Îáúåêò';
-  FTranslation[trObjects] := 'Îáúåêòû';
-  FTranslation[trOverview] := 'Îáçîğ';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Ñâîéñòâà';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Òèï';
-  FTranslation[trTypes] := 'Òèïû';
-  FTranslation[trUnit] := 'Ìîäóëü';
-  FTranslation[trUnits] := 'Ìîäóëè';
-  FTranslation[trVariables] := 'Ïåğåìåííûå';
-  FTranslation[trGvUses] := 'Ãğàôèê çàâèñèìîñòè ìîäóëåé'; // DONE: translate
-  FTranslation[trGvClasses] := 'Ãğàôèê èåğàğõèè êëàññîâ'; // DONE: translate
-  FTranslation[trWarningOverwrite] :=
-    'Ïğåäóïğåæäåíèå: íå ğåäàêòèğîâàòü - ıòîò ôàéë ñîçäàí àâòîìàòè÷åñêè è ìîæåò áûòü èçìåí¸í áåç ïğåäóïğåæäåíèÿ';
-  FTranslation[trWarning] := 'Ïğåäóïğåæäåíèå';  // DONE: translate
-  FTranslation[trHeadlineCio] := 'Âñå êëàññû, èíòåğôåéñû è îáúåêòû';
-  FTranslation[trHeadlineConstants] := 'Âñå êîíñòàíòû';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Âñå ïğîöåäóğû è ôóíêöèè';
-  FTranslation[trHeadlineIdentifiers] := 'Âñå èäåíòèôèêàòîğû';
-  FTranslation[trHeadlineTypes] := 'Âñå òèïû';
-  FTranslation[trHeadlineUnits] := 'Âñå ìîäóëè';
-  FTranslation[trHeadlineVariables] := 'Âñå ïåğåìåííûå';
-  FTranslation[trSummaryCio] := 'Ñïèñîê êëàññîâ, èíòåğôåéñîâ è îáúåêòîâ';
-  FTranslation[trGeneratedBy] := 'Ñãåíåğèğîâàë '; // DONE: translate
-  FTranslation[trOnDateTime] := 'äàòà/âğåìÿ'; // DONE: translate
-  FTranslation[trDeprecated] := 'ıòîò ñèìâîë áîëüøå íå èñïîëüçóåòñÿ'; // DONE: translate
-  FTranslation[trPlatformSpecific] := 'ıòîò ñèìâîë çàâèñèò îò ïëàòôîğìû'; // DONE: translate
-  FTranslation[trLibrarySpecific] := 'ıòîò ñèìâîë çàâèñèò îò áèáëèîòåêè'; // DONE: translate
-  FTranslation[trIntroduction] := 'Ââåäåíèå'; // DONE: translate
-  FTranslation[trConclusion] := 'Çàêëş÷åíèå'; // DONE: translate
-  FTranslation[trSearch] := 'Íàéòè'; // DONE: translate
-  FTranslation[trSeeAlso] := 'Ìàòåğèàëû ïî òåìå'; // DONE: translate
-  FTranslation[trValues] := 'Çíà÷åíèå'; // DONE: translate
-  FTranslation[trNoCIOs] := 'Ìîäóëè íå ñîäåğæàò êëàññîâ, èíòåğôåéñîâ, îáúåêòîâ è çàïèñåé.'; // DONE: translate
-  FTranslation[trNoCIOsForHierarchy] := 'Ìîäóëè íå ñîäåğæàò êëàññîâ, èíòåğôåéñîâ è îáúåêòîâ.'; // DONE: translate
-  FTranslation[trNoTypes] := 'Ìîäóëè íå ñîäåğæàò òèïîâ.'; // DONE: translate
-  FTranslation[trNoVariables] := 'Ìîäóëè íå ñîäåğæàò ïåğåìåííûõ.'; // DONE: translate
-  FTranslation[trNoConstants] := 'Ìîäóëè íå ñîäåğæàò êîíñòàíò.'; // DONE: translate
-  FTranslation[trNoFunctions] := 'Ìîäóëè íå ñîäåğæàò ôóíêöèè è ïğîöåäóğû.'; // DONE: translate
-  FTranslation[trNoIdentifiers] := 'Ìîäóëè íå ñîäåğæàò íè îäíîãî èäåíòèôèêàòîğà.'; // DONE: translate
-  FTranslation[trProgram] := 'Ïğîãğàììà'; // DONE: translate
-  FTranslation[trUses] := 'Èñïîëüçóåìûå ìîäóëè';
-end;
-{$ELSE}
-const
   aRussian_1251: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Russian',
@@ -3159,7 +1819,6 @@ const
     {trSeeAlso} 'Ìàòåğèàëû ïî òåìå',
     ''  //dummy
   );
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -3174,10 +1833,10 @@ begin
   FTranslation[trConstants] := 'Š®­áâ ­âë';
   FTranslation[trCreated] := '‘®§¤ ­®';
   FTranslation[trDeclaration] := '¡êï¢«¥­¨ï';
-  FTranslation[trParameters] := ' à ¬¥âàë'; // DONE: translate
-  FTranslation[trReturns] := '‚®§¢à é ¥¬ë¥ §­ ç¥­¨ï'; // DONE: translate
-  FTranslation[trExceptions] := 'ˆáª«îç¥­¨ï'; // DONE: translate
-  FTranslation[trExceptionsRaised] := '‚ë§ë¢ ¥â ¨áª«îç¥­¨ï'; // DONE: translate
+  FTranslation[trParameters] := ' à ¬¥âàë';
+  FTranslation[trReturns] := '‚®§¢à é ¥¬ë¥ §­ ç¥­¨ï';
+  FTranslation[trExceptions] := 'ˆáª«îç¥­¨ï';
+  FTranslation[trExceptionsRaised] := '‚ë§ë¢ ¥â ¨áª«îç¥­¨ï';
   FTranslation[trEnum] := '¥à¥ç¨á«¥­¨¥';
   FTranslation[trDescription] := '¯¨á ­¨¥';
   FTranslation[trDispInterface] := 'DispInterface';
@@ -3189,8 +1848,8 @@ begin
   FTranslation[trIdentifiers] := 'ˆ¤¥­â¨ä¨ª â®àë';
   FTranslation[trInterface] := 'ˆ­â¥àä¥©á';
   FTranslation[trLegend] := '¡®§­ ç¥­¨ï';
-  FTranslation[trMarker] := 'Œ àª¥à'; // DONE: translate
-  FTranslation[trVisibility] := '‡®­  ¢¨¤¨¬®áâ¨'; // DONE: translate
+  FTranslation[trMarker] := 'Œ àª¥à';
+  FTranslation[trVisibility] := '‡®­  ¢¨¤¨¬®áâ¨';
   FTranslation[trLastModified] := '®á«¥¤­¥¥ ¨§¬¥­¥­¨¥';
   FTranslation[trMethods] := 'Œ¥â®¤ë';
   FTranslation[trName] := 'ˆ¬ï';
@@ -3209,11 +1868,11 @@ begin
   FTranslation[trUnit] := 'Œ®¤ã«ì';
   FTranslation[trUnits] := 'Œ®¤ã«¨';
   FTranslation[trVariables] := '¥à¥¬¥­­ë¥';
-  FTranslation[trGvUses] := 'ƒà ä¨ª § ¢¨á¨¬®áâ¨ ¬®¤ã«¥©'; // DONE: translate
-  FTranslation[trGvClasses] := 'ƒà ä¨ª ¨¥à àå¨¨ ª« áá®¢'; // DONE: translate
+  FTranslation[trGvUses] := 'ƒà ä¨ª § ¢¨á¨¬®áâ¨ ¬®¤ã«¥©';
+  FTranslation[trGvClasses] := 'ƒà ä¨ª ¨¥à àå¨¨ ª« áá®¢';
   FTranslation[trWarningOverwrite] :=
     'à¥¤ã¯à¥¦¤¥­¨¥: ­¥ à¥¤ ªâ¨à®¢ âì - íâ®â ä ©« á®§¤ ­  ¢â®¬ â¨ç¥áª¨ ¨ ¬®¦¥â ¡ëâì ¨§¬¥­ñ­ ¡¥§ ¯à¥¤ã¯à¥¦¤¥­¨ï';
-  FTranslation[trWarning] := 'à¥¤ã¯à¥¦¤¥­¨¥';  // DONE: translate
+  FTranslation[trWarning] := 'à¥¤ã¯à¥¦¤¥­¨¥';
   FTranslation[trHeadlineCio] := '‚á¥ ª« ááë, ¨­â¥àä¥©áë ¨ ®¡ê¥ªâë';
   FTranslation[trHeadlineConstants] := '‚á¥ ª®­áâ ­âë';
   FTranslation[trHeadlineFunctionsAndProcedures] := '‚á¥ ¯à®æ¥¤ãàë ¨ äã­ªæ¨¨';
@@ -3222,24 +1881,24 @@ begin
   FTranslation[trHeadlineUnits] := '‚á¥ ¬®¤ã«¨';
   FTranslation[trHeadlineVariables] := '‚á¥ ¯¥à¥¬¥­­ë¥';
   FTranslation[trSummaryCio] := '‘¯¨á®ª ª« áá®¢, ¨­â¥àä¥©á®¢ ¨ ®¡ê¥ªâ®¢';
-  FTranslation[trGeneratedBy] := '‘£¥­¥à¨à®¢ « '; // DONE: translate
-  FTranslation[trOnDateTime] := '¤ â /¢à¥¬ï'; // DONE: translate
-  FTranslation[trDeprecated] := 'íâ®â á¨¬¢®« ¡®«ìè¥ ­¥ ¨á¯®«ì§ã¥âáï'; // DONE: translate
-  FTranslation[trPlatformSpecific] := 'íâ®â á¨¬¢®« § ¢¨á¨â ®â ¯« âä®à¬ë'; // DONE: translate
-  FTranslation[trLibrarySpecific] := 'íâ®â á¨¬¢®« § ¢¨á¨â ®â ¡¨¡«¨®â¥ª¨'; // DONE: translate
-  FTranslation[trIntroduction] := '‚¢¥¤¥­¨¥'; // DONE: translate
-  FTranslation[trConclusion] := '‡ ª«îç¥­¨¥'; // DONE: translate
-  FTranslation[trSearch] := ' ©â¨'; // DONE: translate
-  FTranslation[trSeeAlso] := 'Œ â¥à¨ «ë ¯® â¥¬¥'; // DONE: translate
-  FTranslation[trValues] := '‡­ ç¥­¨¥'; // DONE: translate
-  FTranslation[trNoCIOs] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª« áá®¢, ¨­â¥àä¥©á®¢, ®¡ê¥ªâ®¢ ¨ § ¯¨á¥©.'; // DONE: translate
-  FTranslation[trNoCIOsForHierarchy] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª« áá®¢, ¨­â¥àä¥©á®¢ ¨ ®¡ê¥ªâ®¢.'; // DONE: translate
-  FTranslation[trNoTypes] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â â¨¯®¢.'; // DONE: translate
-  FTranslation[trNoVariables] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ¯¥à¥¬¥­­ëå.'; // DONE: translate
-  FTranslation[trNoConstants] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª®­áâ ­â.'; // DONE: translate
-  FTranslation[trNoFunctions] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â äã­ªæ¨¨ ¨ ¯à®æ¥¤ãàë.'; // DONE: translate
-  FTranslation[trNoIdentifiers] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ­¨ ®¤­®£® ¨¤¥­â¨ä¨ª â®à .'; // DONE: translate
-  FTranslation[trProgram] := 'à®£à ¬¬ '; // DONE: translate
+  FTranslation[trGeneratedBy] := '‘£¥­¥à¨à®¢ « ';
+  FTranslation[trOnDateTime] := '¤ â /¢à¥¬ï';
+  FTranslation[trDeprecated] := 'íâ®â á¨¬¢®« ¡®«ìè¥ ­¥ ¨á¯®«ì§ã¥âáï';
+  FTranslation[trPlatformSpecific] := 'íâ®â á¨¬¢®« § ¢¨á¨â ®â ¯« âä®à¬ë';
+  FTranslation[trLibrarySpecific] := 'íâ®â á¨¬¢®« § ¢¨á¨â ®â ¡¨¡«¨®â¥ª¨';
+  FTranslation[trIntroduction] := '‚¢¥¤¥­¨¥';
+  FTranslation[trConclusion] := '‡ ª«îç¥­¨¥';
+  FTranslation[trSearch] := ' ©â¨';
+  FTranslation[trSeeAlso] := 'Œ â¥à¨ «ë ¯® â¥¬¥';
+  FTranslation[trValues] := '‡­ ç¥­¨¥';
+  FTranslation[trNoCIOs] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª« áá®¢, ¨­â¥àä¥©á®¢, ®¡ê¥ªâ®¢ ¨ § ¯¨á¥©.';
+  FTranslation[trNoCIOsForHierarchy] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª« áá®¢, ¨­â¥àä¥©á®¢ ¨ ®¡ê¥ªâ®¢.';
+  FTranslation[trNoTypes] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â â¨¯®¢.';
+  FTranslation[trNoVariables] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ¯¥à¥¬¥­­ëå.';
+  FTranslation[trNoConstants] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ª®­áâ ­â.';
+  FTranslation[trNoFunctions] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â äã­ªæ¨¨ ¨ ¯à®æ¥¤ãàë.';
+  FTranslation[trNoIdentifiers] := 'Œ®¤ã«¨ ­¥ á®¤¥à¦ â ­¨ ®¤­®£® ¨¤¥­â¨ä¨ª â®à .';
+  FTranslation[trProgram] := 'à®£à ¬¬ ';
   FTranslation[trUses] := 'L¸ÿşû¹÷ºõüvõ üşôºûø';
 end;
 
@@ -3256,10 +1915,10 @@ begin
   FTranslation[trConstants] := 'ëÏÎÓÔÁÎÔÙ';
   FTranslation[trCreated] := 'óÏÚÄÁÎÏ';
   FTranslation[trDeclaration] := 'ïÂßÑ×ÌÅÎÉÑ';
-  FTranslation[trParameters] := 'ğÁÒÁÍÅÔÒÙ'; // DONE: translate
-  FTranslation[trReturns] := '÷ÏÚ×ÒÁİÁÅÍÙÅ ÚÎÁŞÅÎÉÑ'; // DONE: translate
-  FTranslation[trExceptions] := 'éÓËÌÀŞÅÎÉÑ'; // DONE: translate
-  FTranslation[trExceptionsRaised] := '÷ÙÚÙ×ÁÅÔ ÉÓËÌÀŞÅÎÉÑ'; // DONE: translate
+  FTranslation[trParameters] := 'ğÁÒÁÍÅÔÒÙ';
+  FTranslation[trReturns] := '÷ÏÚ×ÒÁİÁÅÍÙÅ ÚÎÁŞÅÎÉÑ';
+  FTranslation[trExceptions] := 'éÓËÌÀŞÅÎÉÑ';
+  FTranslation[trExceptionsRaised] := '÷ÙÚÙ×ÁÅÔ ÉÓËÌÀŞÅÎÉÑ';
   FTranslation[trEnum] := 'ğÅÒÅŞÉÓÌÅÎÉÅ';
   FTranslation[trDescription] := 'ïĞÉÓÁÎÉÅ';
   FTranslation[trDispInterface] := 'DispInterface';
@@ -3271,8 +1930,8 @@ begin
   FTranslation[trIdentifiers] := 'éÄÅÎÔÉÆÉËÁÔÏÒÙ';
   FTranslation[trInterface] := 'éÎÔÅÒÆÅÊÓ';
   FTranslation[trLegend] := 'ïÂÏÚÎÁŞÅÎÉÑ';
-  FTranslation[trMarker] := 'íÁÒËÅÒ'; // DONE: translate
-  FTranslation[trVisibility] := 'úÏÎÁ ×ÉÄÉÍÏÓÔÉ'; // DONE: translate
+  FTranslation[trMarker] := 'íÁÒËÅÒ';
+  FTranslation[trVisibility] := 'úÏÎÁ ×ÉÄÉÍÏÓÔÉ';
   FTranslation[trLastModified] := 'ğÏÓÌÅÄÎÅÅ ÉÚÍÅÎÅÎÉÅ';
   FTranslation[trMethods] := 'íÅÔÏÄÙ';
   FTranslation[trName] := 'éÍÑ';
@@ -3291,11 +1950,11 @@ begin
   FTranslation[trUnit] := 'íÏÄÕÌØ';
   FTranslation[trUnits] := 'íÏÄÕÌÉ';
   FTranslation[trVariables] := 'ğÅÒÅÍÅÎÎÙÅ';
-  FTranslation[trGvUses] := 'çÒÁÆÉË ÚÁ×ÉÓÉÍÏÓÔÉ ÍÏÄÕÌÅÊ'; // DONE: translate
-  FTranslation[trGvClasses] := 'çÒÁÆÉË ÉÅÒÁÒÈÉÉ ËÌÁÓÓÏ×'; // DONE: translate
+  FTranslation[trGvUses] := 'çÒÁÆÉË ÚÁ×ÉÓÉÍÏÓÔÉ ÍÏÄÕÌÅÊ';
+  FTranslation[trGvClasses] := 'çÒÁÆÉË ÉÅÒÁÒÈÉÉ ËÌÁÓÓÏ×';
   FTranslation[trWarningOverwrite] :=
     'ğÒÅÄÕĞÒÅÖÄÅÎÉÅ: ÎÅ ÒÅÄÁËÔÉÒÏ×ÁÔØ - ÜÔÏÔ ÆÁÊÌ ÓÏÚÄÁÎ Á×ÔÏÍÁÔÉŞÅÓËÉ É ÍÏÖÅÔ ÂÙÔØ ÉÚÍÅÎ£Î ÂÅÚ ĞÒÅÄÕĞÒÅÖÄÅÎÉÑ';
-  FTranslation[trWarning] := 'ğÒÅÄÕĞÒÅÖÄÅÎÉÅ';  // DONE: translate
+  FTranslation[trWarning] := 'ğÒÅÄÕĞÒÅÖÄÅÎÉÅ';
   FTranslation[trHeadlineCio] := '÷ÓÅ ËÌÁÓÓÙ, ÉÎÔÅÒÆÅÊÓÙ É ÏÂßÅËÔÙ';
   FTranslation[trHeadlineConstants] := '÷ÓÅ ËÏÎÓÔÁÎÔÙ';
   FTranslation[trHeadlineFunctionsAndProcedures] := '÷ÓÅ ĞÒÏÃÅÄÕÒÙ É ÆÕÎËÃÉÉ';
@@ -3304,98 +1963,29 @@ begin
   FTranslation[trHeadlineUnits] := '÷ÓÅ ÍÏÄÕÌÉ';
   FTranslation[trHeadlineVariables] := '÷ÓÅ ĞÅÒÅÍÅÎÎÙÅ';
   FTranslation[trSummaryCio] := 'óĞÉÓÏË ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ× É ÏÂßÅËÔÏ×';
-  FTranslation[trGeneratedBy] := 'óÇÅÎÅÒÉÒÏ×ÁÌ '; // DONE: translate
-  FTranslation[trOnDateTime] := 'ÄÁÔÁ/×ÒÅÍÑ'; // DONE: translate
-  FTranslation[trDeprecated] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÂÏÌØÛÅ ÎÅ ÉÓĞÏÌØÚÕÅÔÓÑ'; // DONE: translate
-  FTranslation[trPlatformSpecific] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÚÁ×ÉÓÉÔ ÏÔ ĞÌÁÔÆÏÒÍÙ'; // DONE: translate
-  FTranslation[trLibrarySpecific] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÚÁ×ÉÓÉÔ ÏÔ ÂÉÂÌÉÏÔÅËÉ'; // DONE: translate
-  FTranslation[trIntroduction] := '÷×ÅÄÅÎÉÅ'; // DONE: translate
-  FTranslation[trConclusion] := 'úÁËÌÀŞÅÎÉÅ'; // DONE: translate
-  FTranslation[trSearch] := 'îÁÊÔÉ'; // DONE: translate
-  FTranslation[trSeeAlso] := 'íÁÔÅÒÉÁÌÙ ĞÏ ÔÅÍÅ'; // DONE: translate
-  FTranslation[trValues] := 'úÎÁŞÅÎÉÅ'; // DONE: translate
-  FTranslation[trNoCIOs] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ×, ÏÂßÅËÔÏ× É ÚÁĞÉÓÅÊ.'; // DONE: translate
-  FTranslation[trNoCIOsForHierarchy] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ× É ÏÂßÅËÔÏ×.'; // DONE: translate
-  FTranslation[trNoTypes] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÔÉĞÏ×.'; // DONE: translate
-  FTranslation[trNoVariables] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ĞÅÒÅÍÅÎÎÙÈ.'; // DONE: translate
-  FTranslation[trNoConstants] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÏÎÓÔÁÎÔ.'; // DONE: translate
-  FTranslation[trNoFunctions] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÆÕÎËÃÉÉ É ĞÒÏÃÅÄÕÒÙ.'; // DONE: translate
-  FTranslation[trNoIdentifiers] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÎÉ ÏÄÎÏÇÏ ÉÄÅÎÔÉÆÉËÁÔÏÒÁ.'; // DONE: translate
-  FTranslation[trProgram] := 'ğÒÏÇÒÁÍÍÁ'; // DONE: translate
+  FTranslation[trGeneratedBy] := 'óÇÅÎÅÒÉÒÏ×ÁÌ ';
+  FTranslation[trOnDateTime] := 'ÄÁÔÁ/×ÒÅÍÑ';
+  FTranslation[trDeprecated] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÂÏÌØÛÅ ÎÅ ÉÓĞÏÌØÚÕÅÔÓÑ';
+  FTranslation[trPlatformSpecific] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÚÁ×ÉÓÉÔ ÏÔ ĞÌÁÔÆÏÒÍÙ';
+  FTranslation[trLibrarySpecific] := 'ÜÔÏÔ ÓÉÍ×ÏÌ ÚÁ×ÉÓÉÔ ÏÔ ÂÉÂÌÉÏÔÅËÉ';
+  FTranslation[trIntroduction] := '÷×ÅÄÅÎÉÅ';
+  FTranslation[trConclusion] := 'úÁËÌÀŞÅÎÉÅ';
+  FTranslation[trSearch] := 'îÁÊÔÉ';
+  FTranslation[trSeeAlso] := 'íÁÔÅÒÉÁÌÙ ĞÏ ÔÅÍÅ';
+  FTranslation[trValues] := 'úÎÁŞÅÎÉÅ';
+  FTranslation[trNoCIOs] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ×, ÏÂßÅËÔÏ× É ÚÁĞÉÓÅÊ.';
+  FTranslation[trNoCIOsForHierarchy] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÌÁÓÓÏ×, ÉÎÔÅÒÆÅÊÓÏ× É ÏÂßÅËÔÏ×.';
+  FTranslation[trNoTypes] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÔÉĞÏ×.';
+  FTranslation[trNoVariables] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ĞÅÒÅÍÅÎÎÙÈ.';
+  FTranslation[trNoConstants] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ËÏÎÓÔÁÎÔ.';
+  FTranslation[trNoFunctions] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÆÕÎËÃÉÉ É ĞÒÏÃÅÄÕÒÙ.';
+  FTranslation[trNoIdentifiers] := 'íÏÄÕÌÉ ÎÅ ÓÏÄÅÒÖÁÔ ÎÉ ÏÄÎÏÇÏ ÉÄÅÎÔÉÆÉËÁÔÏÒÁ.';
+  FTranslation[trProgram] := 'ğÒÏÇÒÁÍÍÁ'; 
   FTranslation[trUses] := 'õßÎÍÊİÃÑÅËØÅ ËÍÄÑÊÕ';
 end;
 
 { ---------------------------------------------------------------------------- }
 
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageSlovak;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autori';
-  FTranslation[trCio] := 'Triedy, interfejsy a objekty';
-  FTranslation[trClass] := 'Trieda';
-  FTranslation[trClasses] := 'Triedy';
-  FTranslation[trConstants] := 'Konštanty';
-  FTranslation[trCreated] := 'Vytvorené';
-  FTranslation[trDeclaration] := 'Deklarácie';
-  FTranslation[trDescription] := 'Popis';
-  FTranslation[trParameters] := 'Parameters';
-  FTranslation[trReturns] := 'Returns';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trFields] := 'Poloky';
-  FTranslation[trFunctionsAndProcedures] := 'Funkcie a procedúry';
-  FTranslation[trHierarchy] := 'Hierarchia';
-  FTranslation[trIdentifiers] := 'Identifikátory';
-  FTranslation[trInterface] := 'Interfejs';
-  FTranslation[trLastModified] := 'Posledná zmena';
-  FTranslation[trMethods] := 'Metódy';
-  FTranslation[trName] := 'Meno';
-  FTranslation[trNone] := 'Niè';
-  FTranslation[trObject] := 'Objekt';
-  FTranslation[trObjects] := 'Objekty';
-  FTranslation[trOverview] := 'Overview';
-  FTranslation[trProperties] := 'Monosti';
-  FTranslation[trType] := 'Typ';
-  FTranslation[trTypes] := 'Typy';
-  FTranslation[trUnit] := 'Jednotka';
-  FTranslation[trUnits] := 'Jednotky';
-  FTranslation[trVariables] := 'Premenné';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trWarningOverwrite] :=
-    'Upozornenie: Needitujte - tento súbor bol vytvorenı automaticky a je pravdepodobné, e bude prepísanı';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trHeadlineCio] := 'Všetky triedy, interfejsy a objekty';
-  FTranslation[trHeadlineConstants] := 'Všetky konštanty';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Všetky funkcie a procedúry';
-  FTranslation[trHeadlineIdentifiers] := 'Všetky identifikátory';
-  FTranslation[trHeadlineTypes] := 'Všetky typy';
-  FTranslation[trHeadlineUnits] := 'Všetky jednotky';
-  FTranslation[trHeadlineVariables] := 'Všetky premenné';
-  FTranslation[trSummaryCio] := 'Zoznam tried, interfejsov a objektov';
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated';
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform';
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library';
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
 const
   aSlovak: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
@@ -3492,90 +2082,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageSpanish;
-begin
-  FTranslation[trAuthor] := 'Autor';
-  FTranslation[trAuthors] := 'Autores';
-  FTranslation[trAutomated] := 'Automated';
-  FTranslation[trCio] := 'Clases, interfaces y objetos';
-  FTranslation[trClass] := 'Clase';
-  FTranslation[trClasses] := 'Clases';
-  FTranslation[trClassHierarchy] := 'Jerarquía de clases';
-  FTranslation[trConstants] := 'Constantes';
-  FTranslation[trCreated] := 'Creado';
-  FTranslation[trDeclaration] := 'Declaración';
-  FTranslation[trDescription] := 'Descripción';
-  FTranslation[trParameters] := 'Parámetros';
-  FTranslation[trReturns] := 'Retornos';
-  FTranslation[trExceptions] := 'Excepciones';
-  FTranslation[trExceptionsRaised] := 'Excepciones lanzadas';
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Campos';
-  FTranslation[trFunctionsAndProcedures] := 'Funciones y procedimientos';
-  FTranslation[trHelp] := 'Ayuda';
-  FTranslation[trHierarchy] := 'Jerarquía';
-  FTranslation[trIdentifiers] := 'Identificadores';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Leyenda';
-  FTranslation[trMarker] := 'Marcador';
-  FTranslation[trVisibility] := 'Visibilidad';
-  FTranslation[trMethods] := 'Métodos';
-  FTranslation[trLastModified] := 'Última modificación';
-  FTranslation[trName] := 'Nombre';
-  FTranslation[trNone] := 'Ninguno';
-  FTranslation[trObject] := 'Objeto';
-  FTranslation[trObjects] := 'Objetos';
-  FTranslation[trOverview] := 'Resumen';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Propiedades';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Tipo';
-  FTranslation[trTypes] := 'Tipos';
-  FTranslation[trUnit] := 'Unidad';
-  FTranslation[trUnits] := 'Unidades';
-  FTranslation[trVariables] := 'Variables';
-  FTranslation[trGvUses] := 'Gráfico de las dependencias de unidades';
-  FTranslation[trGvClasses] := 'Gráfico de la jerarquía de clases';
-  FTranslation[trHeadlineCio] := 'Todas las clases, interfaces y objetos';
-  FTranslation[trHeadlineConstants] := 'Todas las constantes';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=    'Todos las funciones y procedimientos';
-  FTranslation[trHeadlineIdentifiers] := 'Todos los indentificadores';
-  FTranslation[trHeadlineTypes] := 'Todos los tipos';
-  FTranslation[trHeadlineUnits] := 'Todas las unidades';
-  FTranslation[trHeadlineVariables] := 'Todas las variables';
-  FTranslation[trSummaryCio] := 'Lista de clases, interfaces y objetos';
-  FTranslation[trWarningOverwrite] :=  'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Generador por';
-  FTranslation[trOnDateTime] := 'a';
-  FTranslation[trDeprecated] := 'Este símbolo está obsoleto';
-  FTranslation[trPlatformSpecific] := 'Este símbolo es específico para alguna plataforma';
-  FTranslation[trLibrarySpecific] := 'Este símbolo es específico para alguna librería';
-  FTranslation[trIntroduction] := 'Introducción';
-  FTranslation[trConclusion] := 'Conclusión';
-  FTranslation[trSearch] := 'Buscar';
-  FTranslation[trSeeAlso] := 'Ver';
-  FTranslation[trValues] := 'Valores';
-  FTranslation[trNoCIOs] := 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.';
-  FTranslation[trNoCIOsForHierarchy] := 'Las unidades no contienen ni clases ni interfaces ni objetos.';
-  FTranslation[trNoTypes] := 'Las unidades no contienen ningún tipo.';
-  FTranslation[trNoVariables] := 'Las unidades no contienen ningunas variables.';
-  FTranslation[trNoConstants] := 'Las unidades no contienen ningunas constantes.';
-  FTranslation[trNoFunctions] := 'Las unidades no contienen ni variables ni procedimientos.';
-  FTranslation[trNoIdentifiers] := 'Las unidades no contienen ningún Identificador.';
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aSpanish: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Spanish',
@@ -3672,92 +2179,7 @@ const
     {trSeeAlso} 'Ver',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageSwedish;
-begin
-  FTranslation[trAuthor] := 'Författare';
-  FTranslation[trAuthors] := 'Författare';
-  FTranslation[trCio] := 'Klasser, interface och objekt';
-  FTranslation[trClass] := 'Klass';
-  FTranslation[trClasses] := 'Klasser';
-  FTranslation[trConstants] := 'Constants';
-  FTranslation[trCreated] := 'Skapad';
-  FTranslation[trDeclaration] := 'Deklarationer';
-  FTranslation[trDescription] := 'Beskrivning';
-  FTranslation[trParameters] := 'Se parameter';
-  FTranslation[trReturns] := 'Retur';
-  FTranslation[trExceptions] := 'Exceptions'; // TODO: translate
-  FTranslation[trExceptionsRaised] := 'Exceptions raised'; // TODO: translate
-  FTranslation[trEnum] := 'Enumeration';
-  FTranslation[trDispInterface] := 'DispInterface';
-  FTranslation[trFields] := 'Fält';
-  FTranslation[trFunctionsAndProcedures] := 'Functions and Procedures';
-  FTranslation[trHelp] := 'Help';
-    // Untranslated to avoid Swedish file name for css
-  FTranslation[trHierarchy] := 'Hierarki';
-  FTranslation[trIdentifiers] := 'Identifiers';
-  FTranslation[trInterface] := 'Interface';
-  FTranslation[trLegend] := 'Förklaring';
-  FTranslation[trMarker] := 'Marker'; // TODO: translate
-  FTranslation[trVisibility] := 'Visibility'; // TODO: translate
-  FTranslation[trMethods] := 'Metoder';
-  FTranslation[trLastModified] := 'Senast ändrad';
-  FTranslation[trName] := 'Namn';
-  FTranslation[trNone] := 'Ingen/inget.';
-  FTranslation[trObject] := 'Objekt';
-  FTranslation[trObjects] := 'Objekt';
-  FTranslation[trOverview] := 'Översikt';
-  FTranslation[trPrivate] := 'Private';
-  FTranslation[trProperties] := 'Properties';
-  FTranslation[trProtected] := 'Protected';
-  FTranslation[trPublic] := 'Public';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Published';
-  FTranslation[trType] := 'Typer';
-  FTranslation[trTypes] := 'Typer';
-  FTranslation[trUnit] := 'Enhet';
-  FTranslation[trUnits] := 'Enheter';
-  FTranslation[trVariables] := 'Variabler';
-  FTranslation[trGvUses] := 'Unit dependency graph'; // TODO: translate
-  FTranslation[trGvClasses] := 'Classes hierarchy graph'; // TODO: translate
-  FTranslation[trHeadlineCio] := 'Alla klasser, interface och objekt';
-  FTranslation[trHeadlineConstants] := 'All Constants';
-  FTranslation[trHeadlineFunctionsAndProcedures] :=
-    'Alla funktioner och procedurer';
-  FTranslation[trHeadlineIdentifiers] := 'Alla identifierare';
-  FTranslation[trHeadlineTypes] := 'Alla typer';
-  FTranslation[trHeadlineUnits] := 'Alla enheter';
-  FTranslation[trHeadlineVariables] := 'Alla variabler';
-  FTranslation[trSummaryCio] :=
-    'Sammanfattning av Klasser, Interface, Objekt';
-  FTranslation[trWarningOverwrite] :=
-    'Varning: ändra inte denna fil manuellt - filen har skapats automatiskt och kommer troligen att skrivas över vid ett senare tilfälle';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Generated by'; // TODO: translate
-  FTranslation[trOnDateTime] := 'on'; // TODO: translate
-  FTranslation[trDeprecated] := 'this symbol is deprecated'; // TODO: translate
-  FTranslation[trPlatformSpecific] := 'this symbol is specific to some platform'; // TODO: translate
-  FTranslation[trLibrarySpecific] := 'this symbol is specific to some library'; // TODO: translate
-  FTranslation[trIntroduction] := 'Introduction'; // TODO: translate
-  FTranslation[trConclusion] := 'Conclusion'; // TODO: translate
-  FTranslation[trSearch] := 'Search'; // TODO: translate
-  FTranslation[trSeeAlso] := 'See also'; // TODO: translate
-  FTranslation[trValues] := 'Values'; // TODO: translate
-  FTranslation[trNoCIOs] := 'The units do not contain any classes, interfaces, objects or records.'; // TODO: translate
-  FTranslation[trNoCIOsForHierarchy] := 'The units do not contain any classes, interfaces or objects.'; // TODO: translate
-  FTranslation[trNoTypes] := 'The units do not contain any types.'; // TODO: translate
-  FTranslation[trNoVariables] := 'The units do not contain any variables.'; // TODO: translate
-  FTranslation[trNoConstants] := 'The units do not contain any constants.'; // TODO: translate
-  FTranslation[trNoFunctions] := 'The units do not contain any functions or procedures.'; // TODO: translate
-  FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
-  FTranslation[trProgram] := 'Program'; // TODO: translate
-end;
-{$ELSE}
-const
   aSwedish: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Swedish',
@@ -3853,90 +2275,7 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-{$ENDIF}
 
-{ ---------------------------------------------------------------------------- }
-
-{$IFDEF old}
-procedure TPasDocLanguages.SetLanguageHungarian_1250;
-begin
-  FTranslation[trAuthor] := 'Szerzõ';
-  FTranslation[trAuthors] := 'Szerzõk';
-  FTranslation[trAutomated] := 'Automatikus';
-  FTranslation[trCio] := 'Osztályok, Kapcsolódási felületek és Objektumok';
-  FTranslation[trClass] := 'Osztály';
-  FTranslation[trClasses] := 'Osztályok';
-  FTranslation[trClassHierarchy] := 'Osztály hierarchia';
-  FTranslation[trConstants] := 'Konstansok';
-  FTranslation[trCreated] := 'Készült';
-  FTranslation[trDeclaration] := 'Deklaráció';
-  FTranslation[trDescription] := 'Megjegyzés';
-  FTranslation[trParameters] := 'Paraméterek';
-  FTranslation[trReturns] := 'Visszatérési értékek';
-  FTranslation[trExceptions] := 'Kivételek';
-  FTranslation[trExceptionsRaised] := 'Kivételek kiemelése';
-  FTranslation[trEnum] := 'Felsorolások';
-  FTranslation[trDispInterface] := 'Képernyõ felületek';
-  FTranslation[trFields] := 'Mezõk';
-  FTranslation[trFunctionsAndProcedures] := 'Függvények és Eljárások';
-  FTranslation[trHelp] := 'Súgó';
-  FTranslation[trHierarchy] := 'Hierarchia';
-  FTranslation[trIdentifiers] := 'Azonosítók';
-  FTranslation[trInterface] := 'Kapcsolódási felület';
-  FTranslation[trLegend] := 'Történet';
-  FTranslation[trMarker] := 'Jelzõ';
-  FTranslation[trVisibility] := 'Láthatóság';
-  FTranslation[trMethods] := 'Metódusok';
-  FTranslation[trLastModified] := 'Utolsó módosítás';
-  FTranslation[trName] := 'Név';
-  FTranslation[trNone] := 'Nincs';
-  FTranslation[trObject] := 'Objektum';
-  FTranslation[trObjects] := 'Objektumok';
-  FTranslation[trOverview] := 'Áttekintés';
-  FTranslation[trPrivate] := 'Privát';
-  FTranslation[trProperties] := 'Tulajdonságok';
-  FTranslation[trProtected] := 'Védett';
-  FTranslation[trPublic] := 'Publikus';
-  FTranslation[trImplicit] := 'Implicit';
-  FTranslation[trPublished] := 'Publikált';
-  FTranslation[trType] := 'Típus';
-  FTranslation[trTypes] := 'Típusok';
-  FTranslation[trUnit] := 'Egység';
-  FTranslation[trUnits] := 'Egységek';
-  FTranslation[trVariables] := 'Változók';
-  FTranslation[trGvUses] := 'Egység függõségi gráf';
-  FTranslation[trGvClasses] := 'Osztály hierarchia gráf';
-  FTranslation[trHeadlineCio] := 'Összes Osztály, Kapcsolódási felület és Objektumok';
-  FTranslation[trHeadlineConstants] := 'Összes Kontans';
-  FTranslation[trHeadlineFunctionsAndProcedures] := 'Összes Függvény és Eljárás';
-  FTranslation[trHeadlineIdentifiers] := 'Összes Azonosító';
-  FTranslation[trHeadlineTypes] := 'Összes Típus';
-  FTranslation[trHeadlineUnits] := 'Összes Egység';
-  FTranslation[trHeadlineVariables] := 'Összes Változó';
-  FTranslation[trSummaryCio] := 'Öszefoglaló az Osztályokról, Kapcsoldási felületekrõl és Objektumokról';
-  FTranslation[trWarningOverwrite] := 'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne';
-  FTranslation[trWarning] := 'Warning';  // TODO: translate
-  FTranslation[trGeneratedBy] := 'Készítette';
-  FTranslation[trOnDateTime] := ''; //none in Hungarian language
-  FTranslation[trDeprecated] := 'ez az azonosító érték nélküli';
-  FTranslation[trPlatformSpecific] := 'ez az azonosító szükséges némely platform számára';
-  FTranslation[trLibrarySpecific] := 'ez az azonosító szükséges némely library számára';
-  FTranslation[trIntroduction] := 'Bevezetõ';
-  FTranslation[trConclusion] := 'Összefoglaló';
-  FTranslation[trSearch] := 'Keresés';
-  FTranslation[trSeeAlso] := 'Lásd még';
-  FTranslation[trValues] := 'Értékek';
-  FTranslation[trNoCIOs] := 'Az egység nem tartalmaz osztályt, interfészt, objektumot, vagy rekordot.';
-  FTranslation[trNoCIOsForHierarchy] := 'Az egység nem tartalmaz osztályt, interfészt vagy objektumot.';
-  FTranslation[trNoTypes] := 'Az egység nem tartalmaz típusokat';
-  FTranslation[trNoVariables] := 'Az egység nem tartalmaz változókat.';
-  FTranslation[trNoConstants] := 'Az egység nem tartalmaz konstansokat.';
-  FTranslation[trNoFunctions] := 'Az egység nem tartalmaz függvényeket vagy eljárásokat.';
-  FTranslation[trNoIdentifiers] := 'Az egység nem tartalmaz azonosítókat.';
-  FTranslation[trProgram] := 'Program';
-end;
-{$ELSE}
-const
   aHungarian_1250: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Hungarian',
@@ -4032,7 +2371,6 @@ const
     {trSeeAlso} 'Lásd még',
     ''  //dummy
   );
-{$ENDIF}
 
 const
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
@@ -4063,13 +2401,9 @@ const
 function TPasDocLanguages.GetTranslation(
   ATranslationID: TTranslationID): string;
 begin
-{$IFDEF old}
-  Result := FTranslation[ATranslationID];
-{$ELSE}
   Result := pTable^[ATranslationID];
   if Result <= strKeep then
     Result := aEnglish[ATranslationID];
-{$ENDIF}
 end;
 
 procedure TPasDocLanguages.SetTranslation(id: TTranslationID;
@@ -4088,8 +2422,6 @@ procedure TPasDocLanguages.SetLanguage(const Value: TLanguageID);
 begin
   FLanguage := Value;
   FCharSet := LANGUAGE_ARRAY[Value].Charset;
-{$IFDEF old}
-{$ELSE}
 //get table
   pTable := LANGUAGE_ARRAY[Value].Table;
   if assigned(pTable) then
@@ -4097,40 +2429,13 @@ begin
 
 //use writeable table
   pTable := addr(aNewLanguage);
-{$ENDIF}
   case Value of
-  {$IFDEF old}
-    lgBosnian: SetLanguageBosnian;
-    lgBrasilian: SetLanguageBrasilian;
-    lgCatalan: SetLanguageCatalan;
-    lgChinese_950: SetLanguageChinese_950;
-    lgDanish: SetLanguageDanish;
-    lgDutch: SetLanguageDutch;
-    lgEnglish: SetLanguageEnglish;
-    lgFrench: SetLanguageFrench;
-    lgGerman: SetLanguageGerman;
-    lgIndonesian: SetLanguageIndonesian;
-    lgItalian: SetLanguageItalian;
-    lgJavanese: SetLanguageJavanese;
-    lgPolish_CP1250: SetLanguagePolish_CP1250;
-    lgPolish_ISO_8859_2: SetLanguagePolish_ISO_8859_2;
-    lgRussian_1251: SetLanguageRussian_1251;
-    lgSlovak: SetLanguageSlovak;
-    lgSpanish: SetLanguageSpanish;
-    lgSwedish: SetLanguageSwedish;
-    lgHungarian_1250: SetLanguageHungarian_1250;
-  {$ELSE}
   //no array yet
     lgChinese_gb2312: SetLanguageChinese_gb2312;
     lgRussian_866: SetLanguageRussian_866;
     lgRussian_koi8: SetLanguageRussian_koi8;
-  {$ENDIF}
   else  //this should never be reached
-  {$IFDEF old}
-    SetLanguageEnglish;
-  {$ELSE}
     pTable := addr(aEnglish);
-  {$ENDIF}
   end;
 end;
 
