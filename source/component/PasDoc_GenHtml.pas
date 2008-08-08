@@ -1580,7 +1580,7 @@ const
     ULink: TPasItem;
   begin
     if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
-      WriteHeading(HL, 'uses', 'uses');
+      WriteHeading(HL, 'uses', FLanguage.Translation[trUses]);
       WriteDirect('<ul class="useslist">');
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('<li>');
@@ -1676,7 +1676,7 @@ begin
   end;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
-  SectionHeads[dsUses] := 'uses';
+  SectionHeads[dsUses] := FLanguage.Translation[trUses];
   SectionHeads[dsClasses] := FLanguage.Translation[trCio];
   SectionHeads[dsFuncsProcs]:= FLanguage.Translation[trFunctionsAndProcedures];
   SectionHeads[dsTypes]:= FLanguage.Translation[trTypes];

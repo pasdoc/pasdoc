@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabDefines
+    ActivePage = tabDoc
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -901,9 +901,9 @@ object DocMain: TDocMain
         TabOrder = 1
         object edRem: TMemo
           Left = 1
-          Top = 106
+          Top = 137
           Width = 405
-          Height = 290
+          Height = 259
           Align = alClient
           Lines.Strings = (
             'edRem')
@@ -915,23 +915,32 @@ object DocMain: TDocMain
           Left = 1
           Top = 1
           Width = 405
-          Height = 105
+          Height = 136
           Align = alTop
           Caption = 'Source'
           TabOrder = 1
           DesignSize = (
             405
-            105)
+            136)
           object cbRem: TComboBox
             Left = 12
-            Top = 16
+            Top = 48
             Width = 381
-            Height = 81
+            Height = 80
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 0
+            ItemHeight = 13
             TabOrder = 0
             OnClick = cbRemClick
+          end
+          object edDecl: TEdit
+            Left = 8
+            Top = 16
+            Width = 385
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            TabOrder = 1
+            Text = 'declaration'
           end
         end
       end

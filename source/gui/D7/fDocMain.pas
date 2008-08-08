@@ -124,6 +124,7 @@ type
     edRem: TMemo;
     GroupBox10: TGroupBox;
     cbRem: TComboBox;
+    edDecl: TEdit;
   {$IFDEF fpc}
     //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
   {$ELSE}
@@ -1452,7 +1453,7 @@ begin
       end;
       if UnitItem.UsesUnits.Count > 0 then begin
         UsesNode := tvUnits.Items.AddChildObject(UnitNode,
-          'Uses', UnitItem.UsesUnits);
+          Lang.Translation[trUses], UnitItem.UsesUnits);
         for UsesIndex := 0 to UnitItem.UsesUnits.Count -1 do begin
           tvUnits.Items.AddChild(UsesNode, UnitItem.UsesUnits[UsesIndex]);
         end;
@@ -1470,6 +1471,7 @@ end;
 procedure TDocMain.tvUnitsClick(Sender: TObject);
 var
   Item: TBaseItem;
+  PasItem: TPasItem absolute Item;
   o: TObject;
   c: TToken absolute o;
   lst: TStrings;
@@ -1477,6 +1479,7 @@ var
   s: string;
 begin
   edRem.Clear;
+  edDecl.Text := '';
   edRem.Hint := '';
   cbRem.Clear;
   if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then begin
@@ -1484,20 +1487,12 @@ begin
       Item := TBaseItem(tvUnits.Selected.Data);
       SelItem := Item;
       SelToken := nil;
+      if item is TPasItem then
+        edDecl.Text := PasItem.FullDeclaration
+      else
+        edDecl.Text := '<no declaration>';
       edRem.Text := Item.RawDescription;
       lst := item.Descriptions;
-    {$IFDEF old}
-      if assigned(lst) and (lst.Count > 0) then begin
-        o := item.Descriptions.Objects[0];
-        if o <> nil then begin
-          edRem.Hint := Format(
-            'Comment in stream "%s", on position %d - %d',
-            [ c.StreamName,
-              c.BeginPosition,
-              c.EndPosition ]);
-        end;
-      end;
-    {$ELSE}
       cbRem.AddItem('<all>', nil);
       if assigned(lst) then begin
         for i := 0 to lst.Count-1 do begin
@@ -1513,7 +1508,6 @@ begin
           cbRem.AddItem(s, o);
         end;
       end;
-    {$ENDIF}
     end;
   end;
 end;

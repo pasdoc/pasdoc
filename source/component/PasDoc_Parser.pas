@@ -1339,7 +1339,8 @@ or
     end;
   end;
 //consumed either ")" or ";"
-  i.FullDeclaration := i.FullDeclaration + Recorded;
+//append "... end;"
+  i.FullDeclaration := i.FullDeclaration + '... ' + Recorded;
 end;
 
 { ---------------------------------------------------------------------------- }
