@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabDoc
+    ActivePage = tabDefines
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -726,8 +726,8 @@ object DocMain: TDocMain
         object memoDefines: TMemo
           Left = 2
           Top = 15
-          Width = 375
-          Height = 359
+          Width = 378
+          Height = 380
           Align = alClient
           TabOrder = 0
           OnChange = AnyChange
@@ -929,7 +929,7 @@ object DocMain: TDocMain
             Height = 81
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnClick = cbRemClick
           end

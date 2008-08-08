@@ -781,9 +781,9 @@ begin
     if t.StreamName <> item.NameStream then
       DropRem
     else if t.BeginPosition >= tlim.BeginPosition then
-        break
+      break
     else if t.Mark <> cmBack then
-        break
+      break
     else begin
       Pending := t.Next;
       AddDescription(t, item);
@@ -929,13 +929,10 @@ begin
 (* actually DeclLast is the previously created item (if any).
   Pending back-comments can be applied to it safely, up to the new item.
 *)
-  //ApplyComments(Result); //allow for DeclFirst..DeclLast
   FlushFwdRems(Result);
   DeclLast := Result;
-  //DeclFirst := nil; //default, will be restored immediately in ParseVarList.
 end;
 
-//function TParser.ParseIdentList(AClass: TPasItemClass; tt: TTokenType): TPasItem;
 function TParser.ParseVarList(): TPasItem;
 const
   AClass: TPasItemClass = TPasFieldVariable;
@@ -950,8 +947,7 @@ begin
 *)
   Result := CreateItem(AClass, tt, QualID(False));
   while Skip(SYM_COMMA) do begin
-    CreateItem(AClass, tt, nil); //sets DeclLast, clears DeclFirst
-    //DeclFirst := Result; //restore declaration mark
+    CreateItem(AClass, tt, nil); //sets DeclLast
   end;
 //next token peeked, but not consumed (typically: ":")
 end;
@@ -978,11 +974,12 @@ procedure TParser.ParseVariables(inUnit: boolean);
   end;
 
 var
-  FirstItem, NewItem: TPasItem;
-  I: Integer;
-  //pRaw: PRawDescriptionInfo;
+  FirstItem, NewItem, RemItem: TPasItem;
+  t: TToken;
+  I, fi, j, n: Integer;
+  m: array of char; //all comment markers - could be useful in scope!?
 begin //ParseFieldsVariables
-(* ident <| { "," ident } ":" type [absolute] ";" modifiers |>
+(* ident <| { "," ident } ":" type [absolute] ";" [ modifiers ";" ] |>
 *)
 //parse ident list
   FirstItem := ParseVarList;
@@ -993,15 +990,22 @@ begin //ParseFieldsVariables
 //past ";" or ")" or END
   if inUnit then  //modifiers apply only to unit variables
     ParseVariableModifiers(FirstItem);
+  FlushBackRems(DeclLast, nil);
 
 (* Propagate into all new items:
   - recorded declaration
   - recorded attributes
-  What about comments?
+We assume that at most one rem is assigned to an item!
 *)
-  I := CurScope.Members.Count - 1;
+  n := CurScope.Members.Count;
+  SetLength(m, n);
+  FillChar(m[0], n, cmNoRem);
+  I := n - 1;
   while i >= 0 do begin
     NewItem := CurScope.Members.PasItemAt[i];
+    t := NewItem.FirstDescription;
+    if t <> nil then
+      m[i] := t.Mark;
     NewItem.FullDeclaration := NewItem.Name + Recorder;
     if NewItem = FirstItem then
       break;  //this one already finished
@@ -1009,27 +1013,30 @@ begin //ParseFieldsVariables
     dec(i);
   end;
   Recorder := '';
-//also: propagate comments, i at FirstItem
-  FlushBackRems(DeclLast, nil); // Token);
-{$IFDEF old}
-  pRaw := FirstItem.RawDescriptionInfo;
-  for i := i+1 to CurScope.Members.Count - 1 do begin
+// i at FirstItem
+  fi := i;
+  //if fi > 0 then m[fi-1] := cmBack;  //stopper
+//propagate rems. Forward first, back last.
+  RemItem := nil;
+  for i := fi to n - 1 do begin
     NewItem := CurScope.Members.PasItemAt[i];
-    if NewItem.RawDescription = '' then
-      NewItem.RawDescriptionInfo^ := pRaw^
-    else
-      pRaw := NewItem.RawDescriptionInfo;
+    if m[i] = cmBack then begin
+    //propagate back rems
+      RemItem := NewItem;
+      for j := i-1 downto fi do begin
+        if m[j] <> cmNoRem then
+          break; //already has a description
+        NewItem := CurScope.Members.PasItemAt[j];
+        NewItem.Descriptions.Text := RemItem.Descriptions.Text;
+      end;
+      RemItem := nil; //was back rem
+    end else if m[i] = cmFwd then begin
+    //propagate rem fwd
+      RemItem := NewItem;
+    end else if assigned(RemItem) then
+    //copy rem
+      NewItem.Descriptions.Text := RemItem.Descriptions.Text;
   end;
-{$ELSE}
-  for i := i+1 to CurScope.Members.Count - 1 do begin
-    NewItem := CurScope.Members.PasItemAt[i];
-    if NewItem.Descriptions.Count > 0 then
-      FirstItem := NewItem  //propagate this
-    else //do NOT copy objects!!! (or prevent destruction)
-      //NewItem.Descriptions.Assign(FirstItem.Descriptions);
-      NewItem.Descriptions.Text := FirstItem.Descriptions.Text;
-  end;
-{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1151,7 +1158,6 @@ The arguments can be identifiers, so that we should assume that
   until False;
 
 //we come here with an unrecognized peeked token
-  //if not Skip(SYM_SEMICOLON) then Recorder := Recorder + ';';
   M.FullDeclaration := Recorded;
 end;
 

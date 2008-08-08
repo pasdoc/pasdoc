@@ -241,6 +241,7 @@ uses
 
 //------------- language helpers -----------------
 
+{$IFDEF old}
 function  LanguageFromIndex(i: integer): string;
 begin
   Result := PasDoc_Languages.language_array[TLanguageID(i)].Name;
@@ -266,6 +267,8 @@ begin
   end;
   Result := lgEnglish;
 end;
+{$ELSE}
+{$ENDIF}
 
 
 { TDocMain }
@@ -285,9 +288,9 @@ begin
   lbOutLang.Items.Capacity :=
     Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
   for LanguageIndex := Low(TLanguageID) to High(TLanguageID) do begin
-    lbOutLang.Items.Add(LANGUAGE_ARRAY[LanguageIndex].Name);
+    lbOutLang.Items.Add(LanguageDescriptor(LanguageIndex)^.Name);
   end;
-  lbOutLang.ItemIndex := ord(lgEnglish);
+  lbOutLang.ItemIndex := ord(DEFAULT_LANGUAGE);
 
 {$IFDEF fpc}
   Constraints.MinWidth := Width;

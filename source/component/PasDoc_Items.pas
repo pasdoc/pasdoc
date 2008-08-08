@@ -84,7 +84,8 @@ function VisToStr(const Vis: TVisibility): string;
 type
   { enumeration type to determine type of @link(TPasCio) item }
   TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT,
-    CIO_RECORD, CIO_PACKEDRECORD);
+    CIO_RECORD  //, CIO_PACKEDRECORD
+  );
 
   TCIONames = array[TCIOType] of string;
 const
@@ -93,11 +94,12 @@ const
     'dispinterface',
     'interface',
     'object',
-    'record',
-    'packed record');
+    'record'  //, 'packed record'
+  );
 //for ShowVisisbility
   CioClassTypes = [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT];
-  CIORecordTypes = [CIO_RECORD, CIO_PACKEDRECORD];
+  CIORecordTypes = [CIO_RECORD //, CIO_PACKEDRECORD
+  ];
   CIONonHierarchy = CIORecordTypes;
 
 type
@@ -140,7 +142,8 @@ type
 
     FRawDescriptionInfo: TRawDescriptionInfo;
     FRawDescription: string;
-    function GetRawDescription: string;
+    function  GetRawDescription: string;
+    function  GetFirstDescription: TToken;
   //allow doc generator to add more descriptions
     procedure WriteRawDescription(const Value: string);
 
@@ -284,6 +287,8 @@ type
       read GetRawDescription write WriteRawDescription;
     //for use by parser, only!
     property Descriptions: TRawDescriptionInfo read FRawDescriptionInfo;
+    //get first description token. Nil if no description found.
+    property FirstDescription: TToken read GetFirstDescription;
 
     { Full info about @link(RawDescription) of this item,
       including it's filename and position.
@@ -1380,6 +1385,14 @@ begin
     Result := FRawDescription;
 end;
 
+function TBaseItem.GetFirstDescription: TToken;
+begin
+  if assigned(FRawDescriptionInfo) and (FRawDescriptionInfo.Count > 0) then
+    Result := FRawDescriptionInfo.Objects[0] as TToken
+  else
+    Result := nil;
+end;
+
 procedure TBaseItem.AddRawDescription(t: TToken);
 begin
   FRawDescriptionInfo.AddObject(t.CommentContent, t);
@@ -1899,10 +1912,9 @@ begin
   KEY_DISPINTERFACE: Result := CIO_SPINTERFACE;
   KEY_INTERFACE: Result := CIO_INTERFACE;
   KEY_OBJECT: Result := CIO_OBJECT;
-  KEY_RECORD: Result := CIO_RECORD; //could check for "packed"
+  //KEY_RECORD: Result := CIO_RECORD; //could check for "packed"
   else
-    Result := CIO_PACKEDRECORD;
-    assert(False, 'unexpected CIO type');
+    Result := CIO_RECORD;
   end;
 end;
 

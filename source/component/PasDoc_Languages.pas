@@ -20,7 +20,15 @@
   @author(Ascanio Pressato (Some Italian translation))
   @author(JBarbero Quiter (updated Spanish translation))
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
+
+
+The whole unit has been redesigned by DoDi.
+The interface should not be affected, but many internals have changed.
+
+Define "old" to get the old version.
 }
+
+{-$DEFINE old}
 
 unit PasDoc_Languages;
 
@@ -42,8 +50,8 @@ type
     lgIndonesian,
     lgItalian,
     lgJavanese,
-    lgPolish_CP1250,       
-    lgPolish_ISO_8859_2,   
+    lgPolish_CP1250,
+    lgPolish_ISO_8859_2,
     lgRussian_1251,
     lgRussian_866,
     lgRussian_koi8,
@@ -53,6 +61,7 @@ type
     lgHungarian_1250
    );
 
+{$IFDEF old}
   { An enumeration type of all static output texts. }
   TTranslationID = (
     trAuthor,
@@ -141,9 +150,134 @@ type
     trProgram,
     trLibrary,
     trUses);
+{$ELSE}
+  { An enumeration type of all static output texts.
+    Warning: count and order changed!
+  }
+  TTranslationID = (
+  //no translation ID assigned, so far
+    trNoTrans,
+  //the language name (English, ASCII), e.g. for file names.
+    trLanguage,
+  //map
+    trUnits,
+    trClassHierarchy,
+    trCio,
+    trIdentifiers,
+    trGvUses,
+    trGvClasses,
+  //tables and members
+    trClasses,
+      trClass,
+      trDispInterface,
+      trInterface,
+    trObjects,
+      trObject,
+      trRecord,
+        trHierarchy,
+        trFields,
+        trMethods,
+        trProperties,
+    trLibrary,
+    trPackage,
+    trProgram,
+    trUnit,
+      trUses,
+      trConstants,
+      trFunctionsAndProcedures,
+      trTypes,
+        trType,
+      trVariables,
+      trAuthors,
+        trAuthor,
+      trCreated,
+      trLastModified,
+    trSubroutine,
+      trParameters,
+      trReturns,
+      trExceptionsRaised,
+    trExceptions,
+      trException,
+    trEnum,
+
+  //visibilities
+    trVisibility,
+      trPrivate,
+      trStrictPrivate,
+      trProtected,
+      trStrictProtected,
+      trPublic,
+      trPublished,
+      trAutomated,
+      trImplicit,
+  //hints
+    trDeprecated,
+    trPlatformSpecific,
+    trLibrarySpecific,
+
+  //headings
+    trOverview,
+    trIntroduction,
+    trConclusion,
+    trHeadlineCio,
+    trHeadlineConstants,
+    trHeadlineFunctionsAndProcedures,
+    trHeadlineIdentifiers,
+    trHeadlineTypes,
+    trHeadlineUnits,
+    trHeadlineVariables,
+    trSummaryCio,
+  //column headings
+    trDeclaration,
+    trDescription,
+    trName,
+    trValues,
+
+  //empty tables
+    trNone,
+    trNoCIOs,
+    trNoCIOsForHierarchy,
+    trNoTypes,
+    trNoVariables,
+    trNoConstants,
+    trNoFunctions,
+    trNoIdentifiers,
+
+  //misc
+    trHelp,
+    trLegend,
+    trMarker,
+
+    trWarningOverwrite,
+    trWarning,
+
+    trGeneratedBy,
+    trOnDateTime,
+
+    trSearch,
+    trSeeAlso,
+  //add more here
+    trDummy
+  );
+
+//array holding the translated strings, or empty for default (English) text.
+  RTransTable = array[TTranslationID] of string;
+  PTransTable = ^RTransTable;
+
+{$ENDIF}
+
+//language descriptor
+  PLanguageRecord = ^TLanguageRecord;
+  TLanguageRecord = record
+    Table: PTransTable;
+    Name: string;
+    Syntax: string;
+    CharSet: string;
+  end;
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
+  lgDefault = lgEnglish;
 
 type
   { Language class to hold all translated strings }
@@ -152,10 +286,16 @@ type
     FLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
   protected
+  {$IFDEF old}
     FTranslation: array[TTranslationID] of string;
+  {$ELSE}
+  //the table of the selected language
+    pTable: PTransTable;
+  {$ENDIF}
     FCharSet: string;
     { @abstract(gets a translation token) }
-    function GetTranslation(const ATranslationID: TTranslationID): string;
+    function GetTranslation(ATranslationID: TTranslationID): string;
+  {$IFDEF old}
     { Defines translations for English (the default). }
     procedure SetLanguageEnglish;
     { Defines translations for Bosnian. }
@@ -166,7 +306,6 @@ type
     procedure SetLanguageCatalan;
     { Defines translations for Chinese (Codepage 950). }
     procedure SetLanguageChinese_950;
-    procedure SetLanguageChinese_gb2312;
     { Defines translations for Danish. }
     procedure SetLanguageDanish;
     { Defines translations for Dutch. }
@@ -187,10 +326,6 @@ type
     procedure SetLanguagePolish_ISO_8859_2;
     { Defines translations for Russian (Codepage 1251). }
     procedure SetLanguageRussian_1251;
-    { Defines translations for Russian (Codepage 866). }
-    procedure SetLanguageRussian_866;
-    { Defines translations for Russian (KOI-8). }
-    procedure SetLanguageRussian_koi8;
     { Defines translations for Slovak. }
     procedure SetLanguageSlovak;
     { Defines translations for Spanish. }
@@ -199,54 +334,49 @@ type
     procedure SetLanguageSwedish;
     { Defines translations for Hungarian (Codepage 1250). }
     procedure SetLanguageHungarian_1250;
+  {$ELSE}
+    procedure SetTranslation(id: TTranslationID; const into: string);
+    property FTranslation[id: TTranslationID]: string
+      read GetTranslation write SetTranslation;
+    //following languages/codepages need transformation into tables
+  {$ENDIF}
+    procedure SetLanguageChinese_gb2312;
+    { Defines translations for Russian (Codepage 866). }
+    procedure SetLanguageRussian_866;
+    { Defines translations for Russian (KOI-8). }
+    procedure SetLanguageRussian_koi8;
 
 
   public
     { Charset for current language }
     property CharSet: string read FCharSet;
-    property Translation[const ATranslationID: TTranslationID]: string read GetTranslation;
+    property Translation[ATranslationID: TTranslationID]: string read GetTranslation;
     constructor Create;
     property Language: TLanguageID read FLanguage write SetLanguage
       default DEFAULT_LANGUAGE;
   end;
 
-type
-  TLanguageRecord = record
-    Name: string;
-    Syntax: string;
-    CharSet: string;
-  end;
+//Some GUI helpers
+{}
 
-const
-  LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
-    (Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
-    (Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
-    (Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
-    (Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
-    (Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
-    (Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
-    (Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
-    (Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
-    (Name: 'French'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
-    (Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'),
-    (Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
-    (Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
-    (Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
-    (Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),       
-    (Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'), 
-    (Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
-    (Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
-    (Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
-    (Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
-    (Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'),
-    (Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'),
-    (Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250')
-    
-    );
+//Full language name
+function LanguageFromIndex(i: integer): string;
 
-{ Find a language with Syntax = S (case ignored). 
+//Language abbreviation
+function SyntaxFromIndex(i: integer): string;
+
+//Search for language by short or long name
+function IDfromLanguage(const s: string): TLanguageID;
+
+//Manual translation of id into lang
+function Translation(id: TTranslationID; lang: TLanguageID): string;
+
+{ Find a language with Syntax = S (case ignored).
   Returns @true and sets LanguageId if found, otherwise returns @false. }
 function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
+
+//access LANGUAGE_ARRAY
+function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
 
 implementation
 
@@ -256,37 +386,129 @@ implementation
 uses
   SysUtils;
 {$ENDIF}
-{ Notes for editors of SetLanguageXxx methods, to keep their look consistent:
 
-  - Don't put any additional newlines between two
-      FTranslation[xxx] := 
-    lines. 
-    
-    E.g. once there was a newline before line
-      FTranslation[trIntroduction] := ...
-    and additional newline after line
-      FTranslation[trConclusion] := ...
-    to indicate that trIntroduction and trConclusion are somewhat close to 
-    each other. But this was bad, because the meaning of such newlines
-    fades with time. Moreover, translators that send us patches often
-    screw these newlines (because they possibly don't understand
-    (as they don't have to) the meaning of such newlines).
-  
-  - When some string needs translation, write it as
-      FTranslation[trXxx] := '<english translation of this item>'; // TODO: translate
-    This makes things clear and consistent.
-    
-    Don't write something like '(PLEASE TRANSLATE ME)' inside the string.
-    (I know, I (kambi) did this error myself at some time, but now I admit
-    that it was bad). 
-    Most people who will use pasdoc and will request some non-English language
-    and then will see some English string will realize that more things need 
-    to be translated and they are welcome to contribute...
-    If we don't have the good translation, we should use
-    English version, and not abuse user by displaying '(PLEASE TRANSLATE ME)'
-    or something like that.
-}
+const
+(* Translation markers
+  For ease of finding missing translations, special markers can be used:
+  strToDo should be obvious ;-)
+  strKeep means to keep the English (default language) wording.
+*)
+{$IFDEF debug}
+  strKeep = '='; //keep English wording
+  strToDo = '?'; //to be translated
+{$ELSE}
+  strKeep = ''; //'='? keep English wording
+  strToDo = ''; //'?'? to be translated
+{$ENDIF}
 
+(* New language template. To add a new language or encoding:
+
+1)  Copy aNewLanguage into a const section and rename it to the new language name.
+
+2)  Put a reference to the new const array into LANGUAGE_ARRAY[...].Table.
+
+3)  Then replace all occurences of strToDo by your translation of the text in the comment,
+  or rename them into strKeep for all strings that need no translation,
+  or leave the strToDo in place, it will be replaced by the default (English) text.
+*)
+var //writeable, for old (explicit) setup
+  aNewLanguage: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} strToDo, //<<<<<< replace with the name of the new language
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} strToDo, //'Classes, Interfaces, Objects and Records',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} strToDo, //'Classes',
+      {trClass} strToDo, //'Class',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} strToDo, //'Objects',
+      {trObject} strToDo, //'Object',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} strToDo, //'Hierarchy',
+        {trFields} strToDo, //'Fields',
+        {trMethods} strToDo, //'Methods',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} strToDo, //'Constants',
+      {trFunctionsAndProcedures} strToDo, //'Functions and Procedures',
+      {trTypes} strToDo, //'Types',
+        {trType} strToDo, //'Type',
+      {trVariables} strToDo, //'Variables',
+      {trAuthors} strToDo, //'Authors',
+        {trAuthor} strToDo, //'Author',
+      {trCreated} strToDo, //'Created',
+      {trLastModified} strToDo, //'Last Modified',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} strToDo, //'Overview',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} strToDo, //'All Classes, Interfaces, Objects and Records',
+    {trHeadlineConstants} strToDo, //'All Constants',
+    {trHeadlineFunctionsAndProcedures} strToDo, //'All Functions and Procedures',
+    {trHeadlineIdentifiers} strToDo, //'All Identifiers',
+    {trHeadlineTypes} strToDo, //'All Types',
+    {trHeadlineUnits} strToDo, //'All Units',
+    {trHeadlineVariables} strToDo, //'All Variables',
+    {trSummaryCio} strToDo, //'Summary of Classes, Interfaces, Objects and Records',
+  //column headings
+    {trDeclaration} strToDo, //'Declaration',
+    {trDescription} strToDo, //'Description',
+    {trName} strToDo, //'Name',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} strToDo, //'None',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} strToDo, //'Legend',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} strToDo, //'Warning: Do not edit - this file has been created automatically and is likely be overwritten',
+    {trWarning} strToDo, //'Warning',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageEnglish;
 begin
   FTranslation[trAuthor] := 'Author';
@@ -369,9 +591,109 @@ begin
   FTranslation[trLibrary] := 'Library';
   FTranslation[trUses] := 'Uses';
 end;
+{$ELSE}
+
+const
+  aEnglish: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'English',
+  //map
+    {trUnits} 'Units',
+    {trClassHierarchy} 'Class Hierarchy',
+    {trCio} 'Classes, Interfaces, Objects and Records',
+    {trIdentifiers} 'Identifiers',
+    {trGvUses} 'Unit dependency graph',
+    {trGvClasses} 'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Classes',
+      {trClass} 'Class',
+      {trDispInterface} 'DispInterface',
+      {trInterface} 'Interface',
+    {trObjects} 'Objects',
+      {trObject} 'Object',
+      {trRecord} 'Record',
+        {trHierarchy} 'Hierarchy',
+        {trFields} 'Fields',
+        {trMethods} 'Methods',
+        {trProperties} 'Properties',
+    {trLibrary} 'Library',
+    {trPackage} 'Package',
+    {trProgram} 'Program',
+    {trUnit} 'Unit',
+      {trUses} 'Uses',
+      {trConstants} 'Constants',
+      {trFunctionsAndProcedures} 'Functions and Procedures',
+      {trTypes} 'Types',
+        {trType} 'Type',
+      {trVariables} 'Variables',
+      {trAuthors} 'Authors',
+        {trAuthor} 'Author',
+      {trCreated} 'Created',
+      {trLastModified} 'Last Modified',
+    {trSubroutine} 'Subroutine',
+      {trParameters} 'Parameters',
+      {trReturns} 'Returns',
+      {trExceptionsRaised} 'Exceptions raised',
+    {trExceptions} 'Exceptions',
+      {trException} 'Exception',
+    {trEnum} 'Enumeration',
+  //visibilities
+    {trVisibility} 'Visibility',
+      {trPrivate} 'Private',
+      {trStrictPrivate} 'Strict Private',
+      {trProtected} 'Protected',
+      {trStrictProtected} 'Strict Protected',
+      {trPublic} 'Public',
+      {trPublished} 'Published',
+      {trAutomated} 'Automated',
+      {trImplicit} 'Implicit',
+  //hints
+    {trDeprecated} 'this symbol is deprecated',
+    {trPlatformSpecific} 'this symbol is specific to some platform',
+    {trLibrarySpecific} 'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Overview',
+    {trIntroduction} 'Introduction',
+    {trConclusion} 'Conclusion',
+    {trHeadlineCio} 'All Classes, Interfaces, Objects and Records',
+    {trHeadlineConstants} 'All Constants',
+    {trHeadlineFunctionsAndProcedures} 'All Functions and Procedures',
+    {trHeadlineIdentifiers} 'All Identifiers',
+    {trHeadlineTypes} 'All Types',
+    {trHeadlineUnits} 'All Units',
+    {trHeadlineVariables} 'All Variables',
+    {trSummaryCio} 'Summary of Classes, Interfaces, Objects and Records',
+  //column headings
+    {trDeclaration} 'Declaration',
+    {trDescription} 'Description',
+    {trName} 'Name',
+    {trValues} 'Values',
+  //empty
+    {trNone} 'None',
+    {trNoCIOs} 'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} 'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} 'The units do not contain any types.',
+    {trNoVariables} 'The units do not contain any variables.',
+    {trNoConstants} 'The units do not contain any constants.',
+    {trNoFunctions} 'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} 'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Help',
+    {trLegend} 'Legend',
+    {trMarker} 'Marker',
+    {trWarningOverwrite} 'Warning: Do not edit - this file has been created automatically and is likely be overwritten',
+    {trWarning} 'Warning',
+    {trGeneratedBy} 'Generated by',
+    {trOnDateTime} 'on',
+    {trSearch} 'Search',
+    {trSeeAlso} 'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageBosnian;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -450,9 +772,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aBosnian: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Bosnian',
+  //map
+    {trUnits} 'Fajlovi',
+    {trClassHierarchy} 'Klasna hijerarhija',
+    {trCio} 'Klase, Interfejsi i Objekti',
+    {trIdentifiers} 'Identifikatori',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Klase',
+      {trClass} 'Klasa',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Interfejs',
+    {trObjects} 'Objekti',
+      {trObject} 'Objekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hijerarhija',
+        {trFields} 'Polja',
+        {trMethods} 'Metode',
+        {trProperties} 'Osibine',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Fajl',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konstante',
+      {trFunctionsAndProcedures} 'Funkcije i Procedure',
+      {trTypes} 'Tipovi',
+        {trType} 'Tip',
+      {trVariables} 'Promjenjive',
+      {trAuthors} 'Autori',
+        {trAuthor} 'Autor',
+      {trCreated} 'Kreirano',
+      {trLastModified} 'Zadnja promjena',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} 'Privatni',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} 'Zaštiæen',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} 'Publikovan',
+      {trPublished} 'Javan',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Pregled',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Sve Klase, Interfejsi i Objekti',
+    {trHeadlineConstants} 'Sve Konstante',
+    {trHeadlineFunctionsAndProcedures} 'Sve Funkcije i Procedure',
+    {trHeadlineIdentifiers} 'Svi Identifikatoti',
+    {trHeadlineTypes} 'Svi Tipovi',
+    {trHeadlineUnits} 'Svi Fajlovi',
+    {trHeadlineVariables} 'Sve Varijable',
+    {trSummaryCio} 'Zbirno od Klasa, Interfejsa i Objekata',
+  //column headings
+    {trDeclaration} 'Deklaracija',
+    {trDescription} 'Opis',
+    {trName} 'Ime',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Ništa',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Pomoæ',
+    {trLegend} 'Legenda',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Upozorenje: Ne mjenjajte fajl - ovaj fajl je kreiran automatski i velika je vjerovatnoæa da æe biti prepisan',
+    {trWarning} strToDo, //'Warning',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageBrasilian;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -532,9 +953,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aBrasilian: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Brasilian',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} 'Hierarquia de Classes',
+    {trCio} 'Classes, Interfaces, Objetos e Registros',
+    {trIdentifiers} 'Identificadores',
+    {trGvUses} 'Diagrama de dependências de units',
+    {trGvClasses} 'Diagrama de hierarquia de Classes',
+  //tables and members
+    {trClasses} strKeep, //'Classes',
+      {trClass} 'Classe',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strKeep, //'Interface',
+    {trObjects} 'Objetos',
+      {trObject} 'Objeto',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarquia',
+        {trFields} 'Campos',
+        {trMethods} 'Métodos',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Constantes',
+      {trFunctionsAndProcedures} 'Funções e Procedimentos',
+      {trTypes} 'Tipos',
+        {trType} 'Tipo',
+      {trVariables} 'Variáveis',
+      {trAuthors} 'Autores',
+        {trAuthor} 'Autor',
+      {trCreated} 'Criada',
+      {trLastModified} 'Última modificação',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Parâmetros',
+      {trReturns} 'Retornos', //???
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} 'Exceções',
+      {trException} strToDo, //'Exception',
+    {trEnum} 'Enumerações', //???
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} 'este símbolo está depreciado',
+    {trPlatformSpecific} 'este símbolo é específico para alguma plataforma',
+    {trLibrarySpecific} 'este símbolo é específico para alguma biblioteca',
+  //headings
+    {trOverview} 'Visão Geral',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Todas as Classes, Interfaces, Objetos e Registros',
+    {trHeadlineConstants} 'Todas as Constantes',
+    {trHeadlineFunctionsAndProcedures} 'Todas as funções e procedimentos',
+    {trHeadlineIdentifiers} 'Todos os Identificadores',
+    {trHeadlineTypes} 'Todos os Tipos',
+    {trHeadlineUnits} 'Todas as Units',
+    {trHeadlineVariables} 'Todas as Variáveis',
+    {trSummaryCio} 'Lista das Classes, Interfaces, Objetos e Registros',
+  //column headings
+    {trDeclaration} 'Declaração',
+    {trDescription} 'Descrição',
+    {trName} 'Nome',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Nenhum',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Ajuda',
+    {trLegend} 'Legenda',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito',
+    {trWarning} strToDo, //'Warning',
+    {trGeneratedBy} 'Gerado por',
+    {trOnDateTime} 'as',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageCatalan;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -612,9 +1132,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aCatalan: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Catalan',
+  //map
+    {trUnits} 'Unitats',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Clases, interfaces i objectes',
+    {trIdentifiers} 'Identificadors',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Clases',
+      {trClass} 'Clase',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objectes',
+      {trObject} 'Objecte',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} strToDo, //'Hierarchy',
+        {trFields} 'Camps',
+        {trMethods} 'MŠtodes',
+        {trProperties} 'Propietats',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Unitat',
+      {trUses} strToDo, //'Uses',
+      {trConstants} strToDo, //'Constants',
+      {trFunctionsAndProcedures} 'Funcions i procediments',
+      {trTypes} 'Tipus',
+        {trType} 'Tipus',
+      {trVariables} strToDo, //'Variables',
+      {trAuthors} 'Autors',
+        {trAuthor} 'Autor',
+      {trCreated} 'Creat',
+      {trLastModified} 'Éltima modificaci¢',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Resum',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Totes les clases, interfaces i objectes',
+    {trHeadlineConstants} 'Totes les constants',
+    {trHeadlineFunctionsAndProcedures} 'Totes les funcions i procediments',
+    {trHeadlineIdentifiers} 'Tot els indentificadors',
+    {trHeadlineTypes} 'Tots els tipus',
+    {trHeadlineUnits} 'Totes les unitats',
+    {trHeadlineVariables} 'Totes les variables',
+    {trSummaryCio} 'Llista de clases, interfaces i objectes',
+  //column headings
+    {trDeclaration} 'Declaraci¢',
+    {trDescription} 'Descripci¢',
+    {trName} strToDo, //'Nom',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Ningu',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} strToDo, //'Legend',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Atenci¢, no editar - aquest fitxer ha estat creat automaticament i ser… sobrescrit',
+    {trWarning} 'Atenci¢',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageChinese_950;
 begin
   FTranslation[trAuthor] := '§@ªÌ';
@@ -638,6 +1257,104 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aChinese_950: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Chinese',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} strToDo, //'Classes, Interfaces, Objects and Records',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} strToDo, //'Classes',
+      {trClass} strToDo, //'Class',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} strToDo, //'Objects',
+      {trObject} strToDo, //'Object',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} strToDo, //'Hierarchy',
+        {trFields} strToDo, //'Fields',
+        {trMethods} strToDo, //'Methods',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} strToDo, //'Constants',
+      {trFunctionsAndProcedures} strToDo, //'Functions and Procedures',
+      {trTypes} strToDo, //'Types',
+        {trType} strToDo, //'Type',
+      {trVariables} strToDo, //'Variables',
+      {trAuthors} '§@ªÌ¸s',
+        {trAuthor} '§@ªÌ',
+      {trCreated} strToDo, //'Created',
+      {trLastModified} strToDo, //'Last Modified',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} strToDo, //'Overview',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} strToDo, //'All Classes, Interfaces, Objects and Records',
+    {trHeadlineConstants} strToDo, //'All Constants',
+    {trHeadlineFunctionsAndProcedures} strToDo, //'All Functions and Procedures',
+    {trHeadlineIdentifiers} strToDo, //'All Identifiers',
+    {trHeadlineTypes} strToDo, //'All Types',
+    {trHeadlineUnits} strToDo, //'All Units',
+    {trHeadlineVariables} strToDo, //'All Variables',
+    {trSummaryCio} strToDo, //'Summary of Classes, Interfaces, Objects and Records',
+  //column headings
+    {trDeclaration} strToDo, //'Declaration',
+    {trDescription} strToDo, //'Description',
+    {trName} strToDo, //'Name',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} strToDo, //'None',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} strToDo, //'Legend',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} strToDo, //'Warning: Do not edit - this file has been created automatically and is likely be overwritten',
+    {trWarning} strToDo, //'Warning',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -645,6 +1362,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageDanish;
 begin
   FTranslation[trAuthor] := 'Forfatter';
@@ -723,9 +1441,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aDanish: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Danish',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Klasser, interfaces og objekter',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Klasser',
+      {trClass} 'Klasse',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objekter',
+      {trObject} 'Objekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Herarki',
+        {trFields} 'Felter',
+        {trMethods} 'Metoder',
+        {trProperties} 'Egenskaber',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konstanter',
+      {trFunctionsAndProcedures} 'Funktioner og prosedurer',
+      {trTypes} 'Typer',
+        {trType} strToDo, //'Type',
+      {trVariables} 'Variable',
+      {trAuthors} 'Forfatre',
+        {trAuthor} 'Forfatter',
+      {trCreated} 'Udført',
+      {trLastModified} 'Sidst Modificieret',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Sammendrag',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Alle Klasesr, Interfaces og Objekter',
+    {trHeadlineConstants} 'Alle Konstanter',
+    {trHeadlineFunctionsAndProcedures} 'Alle Functioner and Procedurer',
+    {trHeadlineIdentifiers} 'Alle Identifiers',
+    {trHeadlineTypes} 'Alle Typer',
+    {trHeadlineUnits} 'Alle Units',
+    {trHeadlineVariables} 'Alle Variable',
+    {trSummaryCio} 'Oversigt over klasser, interfaces & objekter',
+  //column headings
+    {trDeclaration} strToDo, //'Declaration',
+    {trDescription} 'Beskrivelse',
+    {trName} 'Navn',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Ingen',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Hjælp',
+    {trLegend} 'Legende',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret',
+    {trWarning} strToDo, //'Warning',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageDutch;
 begin
   FTranslation[trAuthor] := 'Auteur';
@@ -804,9 +1621,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Programma';
 end;
+{$ELSE}
+const
+  aDutch: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Dutch',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Classes, interfaces and objecten',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} strToDo, //'Classes',
+      {trClass} strToDo, //'Class',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objecten',
+      {trObject} strToDo, //'Object',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarchie',
+        {trFields} 'Velden',
+        {trMethods} strToDo, //'Methods',
+        {trProperties} 'Eigenschappen',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} 'Programma',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Constanten',
+      {trFunctionsAndProcedures} 'Functies en procedures',
+      {trTypes} 'Typen',
+        {trType} strToDo, //'Type',
+      {trVariables} 'Variabelen',
+      {trAuthors} 'Auteurs',
+        {trAuthor} 'Auteur',
+      {trCreated} 'Gemaakt',
+      {trLastModified} 'Laatste wijziging',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Overzicht',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Alle classes, interfaces en objecten',
+    {trHeadlineConstants} 'Alle constanten',
+    {trHeadlineFunctionsAndProcedures} 'Alle functies en procedures',
+    {trHeadlineIdentifiers} 'Alle identifiers',
+    {trHeadlineTypes} 'Alle typen',
+    {trHeadlineUnits} 'Alle units',
+    {trHeadlineVariables} 'Alle variabelen',
+    {trSummaryCio} 'Overzicht van classes, interfaces & objecten',
+  //column headings
+    {trDeclaration} 'Declaratie',
+    {trDescription} 'Omschrijving',
+    {trName} 'Naam',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Geen',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} strToDo, //'Legend',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Waarschuwing, wijzig niets - dit bestand is automatisch gegenereerd en zal worden overschreven',
+    {trWarning} 'Waarschuwing',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageFrench;
 begin
   FTranslation[trAuthor] := 'Auteur';
@@ -885,9 +1801,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aFrench: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'French',
+  //map
+    {trUnits} 'Unités',
+    {trClassHierarchy} 'Hiérarchie des classes',
+    {trCio} 'Classes, interfaces, structures et objets',
+    {trIdentifiers} 'Identificateurs',
+    {trGvUses} 'Graphique de dépendance d''unités',
+    {trGvClasses} 'Graphique de hiérarchie des classes',
+  //tables and members
+    {trClasses} strKeep, //'Classes',
+      {trClass} 'Classe',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objets',
+      {trObject} 'Objet',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hiérarchie',
+        {trFields} 'Champs',
+        {trMethods} 'Méthodes',
+        {trProperties} 'Propriétés',
+    {trLibrary} 'Bibliothèque', //?
+    {trPackage} strToDo,  //'Package',
+    {trProgram} 'Logiciel', //? 'Program',
+    {trUnit} 'Unité',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Constantes',
+      {trFunctionsAndProcedures} 'Fonctions et procédures',
+      {trTypes} strKeep, //'Types',
+        {trType} strKeep, //'Type',
+      {trVariables} strKeep, //'Variables',
+      {trAuthors} 'Auteurs',
+        {trAuthor} 'Auteur',
+      {trCreated} 'Crée',
+      {trLastModified} 'Dernière modification',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Paramètres',
+      {trReturns} 'Retourne',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} 'Visibilité',
+      {trPrivate} 'Privé',
+      {trStrictPrivate} 'Strictement Privé', //?
+      {trProtected} 'Protégé',
+      {trStrictProtected} 'Strictement Protégé', //?
+      {trPublic} strKeep, //'Public',
+      {trPublished} 'Publiés',
+      {trAutomated} 'Automatisé',
+      {trImplicit} strKeep, //'Implicit',
+  //hints
+    {trDeprecated} 'ce symbole est désapprouvé',
+    {trPlatformSpecific} 'ce symbole est spécifique à une plateforme d''exécution',
+    {trLibrarySpecific} 'ce symbole est spécifique à une certaine bibliothèque',
+  //headings
+    {trOverview} 'Aperçu',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Toutes les classes, interfaces, objets et enregistrements',
+    {trHeadlineConstants} 'Toutes les constants',
+    {trHeadlineFunctionsAndProcedures} 'Toutes les fonctions et procédures',
+    {trHeadlineIdentifiers} 'Tous les identificateurs',
+    {trHeadlineTypes} 'Tous les types',
+    {trHeadlineUnits} 'Toutes les unités',
+    {trHeadlineVariables} 'Toutes les variables',
+    {trSummaryCio} 'Classes, interfaces, objets et enregistrements',
+  //column headings
+    {trDeclaration} 'Déclaration',
+    {trDescription} strKeep, //'Description',
+    {trName} 'Nom',
+    {trValues} 'Valeurs', //?
+  //empty
+    {trNone} 'Aucun(e)(s)', //'Rien'?
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Aide',
+    {trLegend} 'Légende',
+    {trMarker} 'Marquage',
+    {trWarningOverwrite} 'Attention, ne pas édtier - ce fichier est créé automatiquement et va être écrasé',
+    {trWarning} 'Attention',
+    {trGeneratedBy} 'Produit par',
+    {trOnDateTime} 'le',
+    {trSearch} 'Cherche', //? 'Recherche'
+    {trSeeAlso} 'Voir aussi', //?
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageGerman;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -966,9 +1981,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Programm';
 end;
+{$ELSE}
+const
+  aGerman: RTransTable = (
+    {trNoTrans} '<häh?>', //no ID assigned, so far
+    {trLanguage} 'German',
+  //map
+    {trUnits} strKeep, //'Units',
+    {trClassHierarchy} 'Klassenhierarchie',
+    {trCio} 'Klassen, Interfaces und Objects',
+    {trIdentifiers} 'Bezeichner',
+    {trGvUses} 'Graph der Unit-Abhängigkeiten',
+    {trGvClasses} 'Graph der Klassenhierarchie',
+  //tables and members
+    {trClasses} 'Klassen',
+      {trClass} 'Klasse',
+      {trDispInterface} strKeep, //'DispInterface',
+      {trInterface} strKeep, //'Interface', 'Schnittstelle'?
+    {trObjects} strKeep, //'Objects',
+      {trObject} strKeep, //'Object',
+      {trRecord} strKeep, //'Record',
+        {trHierarchy} 'Hierarchie',
+        {trFields} 'Felder',
+        {trMethods} 'Methoden',
+        {trProperties} 'Eigenschaften',
+    {trLibrary} 'Bibliothek',
+    {trPackage} strKeep, //'Package',
+    {trProgram} 'Programm',
+    {trUnit} strKeep, //'Unit',
+      {trUses} strKeep, //'Uses',
+      {trConstants} 'Konstanten',
+      {trFunctionsAndProcedures} 'Funktionen und Prozeduren',
+      {trTypes} 'Datentypen',
+        {trType} strKeep, //'Type', 'Typ'?
+      {trVariables} 'Variablen',
+      {trAuthors} 'Autoren',
+        {trAuthor} 'Autor',
+      {trCreated} 'Erstellt',
+      {trLastModified} 'Letzte Änderung',
+    {trSubroutine} 'Unterprogramm',
+      {trParameters} 'Parameter',
+      {trReturns} 'Result',
+      {trExceptionsRaised} 'Wirft Ausnahmen', //'Exceptions raised',
+    {trExceptions} 'Ausnahmen',
+      {trException} strKeep, //'Exception',
+    {trEnum} strKeep, //'Enumeration',
+  //visibilities
+    {trVisibility} 'Sichtbarkeit',
+      {trPrivate} strKeep, //'Private',
+      {trStrictPrivate} strKeep, //'Strict Private',
+      {trProtected} strKeep, //'Protected',
+      {trStrictProtected} strKeep, //'Strict Protected',
+      {trPublic} strKeep, //'Public',
+      {trPublished} strKeep, //'Published',
+      {trAutomated} strKeep, //'Automated',
+      {trImplicit} strKeep, //'Implicit',
+  //hints
+    {trDeprecated} 'Dieses Symbol sollte nicht (mehr) verwendet werden.',
+    {trPlatformSpecific} 'Dieses Symbol ist plattformspezifisch.',
+    {trLibrarySpecific} 'Dieses Symbol ist spezifisch für eine bestimmte Bibliothek.',
+  //headings
+    {trOverview} 'Übersicht',
+    {trIntroduction} 'Einführung',
+    {trConclusion} 'Fazit',
+    {trHeadlineCio} 'Alle Klassen, Schnittstellen, Objekte und Records',
+    {trHeadlineConstants} 'Alle Konstanten',
+    {trHeadlineFunctionsAndProcedures} 'Alle Funktionen und Prozeduren',
+    {trHeadlineIdentifiers} 'Alle Bezeichner',
+    {trHeadlineTypes} 'Alle Typen',
+    {trHeadlineUnits} 'Alle Units',
+    {trHeadlineVariables} 'Alle Variablen',
+    {trSummaryCio} 'Zusammenfassung aller Klassen, Schnittstellen, Objekte und Records',
+  //column headings
+    {trDeclaration} 'Deklaration',
+    {trDescription} 'Beschreibung',
+    {trName} strKeep, //'Name',
+    {trValues} 'Werte',
+  //empty
+    {trNone} 'Keine',
+    {trNoCIOs} 'Die Units enthalten keine Klassen, Interfaces, Objects oder Records.',
+    {trNoCIOsForHierarchy} 'Die Units enthalten keine Klassen, Interfaces oder Objects.',
+    {trNoTypes} 'Die Units enthalten keine Typen.',
+    {trNoVariables} 'Die Units enthalten keine Variablen.',
+    {trNoConstants} 'Die Units enthalten keine Konstanten.',
+    {trNoFunctions} 'Die Units enthalten keine Funktionen oder Prozeduren.',
+    {trNoIdentifiers} 'Die Units enthalten keine Bezeichner.',
+  //misc
+    {trHelp} 'Hilfe',
+    {trLegend} 'Legende',
+    {trMarker} 'Markierung',
+    {trWarningOverwrite} 'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben',
+    {trWarning} 'Warnung',
+    {trGeneratedBy} 'Erstellt mit',
+    {trOnDateTime} 'am',
+    {trSearch} 'Suchen',
+    {trSeeAlso} 'Siehe auch',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageIndonesian;
 begin
   FTranslation[trAuthor] := 'Pembuat';
@@ -1046,9 +2160,109 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aIndonesian: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Indonesian',
+  //map
+    {trUnits} 'Unit',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Kelas, Interface, dan Objek',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Kelas',
+      {trClass} 'Kelas',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objek',
+      {trObject} 'Objek',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hirarki',
+        {trFields} strToDo, //'Fields',
+        {trMethods} strToDo, //'Methods',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strKeep, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konstanta',
+      {trFunctionsAndProcedures} 'Fungsi dan Prosedur',
+      {trTypes} 'Tipe Bentukan',
+        {trType} 'Tipe Bentukan',
+      {trVariables} 'Variabel',
+      {trAuthors} 'Pembuat',
+        {trAuthor} 'Pembuat',
+      {trCreated} 'Dibuat',
+      {trLastModified} 'Terakhir Dimodifikasi',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Sekilas',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Semua Kelas, Interface, dan Objek',
+    {trHeadlineConstants} 'Semua Konstanta',
+    {trHeadlineFunctionsAndProcedures} 'Semua Fungsi dan Prosedur',
+    {trHeadlineIdentifiers} 'Semua Identifier',
+    {trHeadlineTypes} 'Semua Tipe Bentukan',
+    {trHeadlineUnits} 'Semua Unit',
+    {trHeadlineVariables} 'Semua Variabel',
+    {trSummaryCio} 'Ringkasan Kelas, Interface, dan Objek',
+  //column headings
+    {trDeclaration} 'Deklarasi',
+    {trDescription} 'Definisi',
+    {trName} 'Nama',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Tidak Ada',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Bantuan',
+    {trLegend} 'Legenda',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Perhatian: Jangan dimodifikasi - '
+      + 'file ini dihasilkan secara otomatis dan mungkin saja ditimpa ulang',
+    {trWarning} 'Perhatian', //?
+    {trGeneratedBy} 'Dihasilkan oleh',
+    {trOnDateTime} 'pada',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageItalian;
 begin
   FTranslation[trAuthor] := 'Autore';
@@ -1126,9 +2340,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aItalian: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Italian',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Classi, Interfacce ed Oggetti',
+    {trIdentifiers} 'Identificatori',
+    {trGvUses} 'Grafico dipendenze Unit',
+    {trGvClasses} 'Grafico gerarchia Classi',
+  //tables and members
+    {trClasses} 'Classi',
+      {trClass} 'Classe',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Interfacce',
+    {trObjects} 'Oggetti',
+      {trObject} 'Oggetto',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Gerarchia',
+        {trFields} 'Campi',
+        {trMethods} 'Metodi',
+        {trProperties} 'Proprietà',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Costanti',
+      {trFunctionsAndProcedures} 'Funzioni e Procedure',
+      {trTypes} 'Tipi',
+        {trType} 'Tipo',
+      {trVariables} 'Variabili',
+      {trAuthors} 'Autori',
+        {trAuthor} 'Autore',
+      {trCreated} 'Creato',
+      {trLastModified} 'Ultima Variazione',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Parametri',
+      {trReturns} 'Ritorni',
+      {trExceptionsRaised} 'Eccezioni sollevate',
+    {trExceptions} 'Eccezione',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Sommario',
+    {trIntroduction} 'Introduczione',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Tutte le Classi, Interfacce ed Oggetti',
+    {trHeadlineConstants} 'Tutte le Costanti',
+    {trHeadlineFunctionsAndProcedures} 'Tutte le Funzioni e Procedure',
+    {trHeadlineIdentifiers} 'Tutti gli Identificatori',
+    {trHeadlineTypes} 'Tutti i Tipi',
+    {trHeadlineUnits} 'Tutte le Units',
+    {trHeadlineVariables} 'Tutte le Variabili',
+    {trSummaryCio} 'Sommario di Classi, Interfacce ed Oggetti',
+  //column headings
+    {trDeclaration} 'Dichiarazione',
+    {trDescription} 'Descrizione',
+    {trName} 'Nome',
+    {trValues} 'Valori',
+  //empty
+    {trNone} 'Nessuno',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} 'Legenda',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Attenzione: Non modificare - questo file è stato generato automaticamente e verrà probabilmente sovrascritto',
+    {trWarning} 'Attenzione',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} 'Cerca',
+    {trSeeAlso} 'Vedere Anche',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageJavanese;
 begin
   FTranslation[trAuthor] := 'Sing Nggawe';
@@ -1206,9 +2519,109 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aJavanese: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Javanese',
+  //map
+    {trUnits} strToDo, //'Units',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Kelas, Interface, lan Objek',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Kelas',
+      {trClass} 'Kelas',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objek',
+      {trObject} 'Objek',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hirarki',
+        {trFields} strToDo, //'Fields',
+        {trMethods} strToDo, //'Methods',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} strToDo, //'Unit',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konstanta',
+      {trFunctionsAndProcedures} 'Fungsi lan Prosedur',
+      {trTypes} 'Macem Gawean',
+        {trType} 'Macem Gawean',
+      {trVariables} 'Variabel',
+      {trAuthors} 'Sing Nggawe',
+        {trAuthor} 'Sing Nggawe',
+      {trCreated} 'Digawe',
+      {trLastModified} 'Terakhir Diowahi',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} strToDo, //'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Pambuka',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Kabeh Kelas, Interface, lan Objek',
+    {trHeadlineConstants} 'Kabeh Konstanta',
+    {trHeadlineFunctionsAndProcedures} 'Kabeh Fungsi lan Prosedur',
+    {trHeadlineIdentifiers} 'Kabeh Identifier',
+    {trHeadlineTypes} 'Kabeh Macem Gawean',
+    {trHeadlineUnits} 'Kabeh Unit',
+    {trHeadlineVariables} 'Kabeh Variabel',
+    {trSummaryCio} 'Ringkesan Kelas, Interface, lan Objek',
+  //column headings
+    {trDeclaration} 'Deklarasi',
+    {trDescription} 'Katrangan',
+    {trName} 'Jeneng',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Mboten Wonten',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} 'Tulung',
+    {trLegend} 'Katrangan',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Ati-ati: Ojo diowahi - '
+      + 'file iki digawe otomatis dadi iso ilang owahanmu',
+    {trWarning} 'Ati-ati', //?
+    {trGeneratedBy} 'Dihasilne karo',
+    {trOnDateTime} 'ing',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguagePolish_CP1250;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -1288,7 +2701,106 @@ begin
   FTranslation[trNoIdentifiers] := 'Modu³ nie zawiera ¿adnych identyfikatorów.';
   FTranslation[trProgram] := 'Program';
 end;
+{$ELSE}
+const
+  aPolish1250: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Polish',
+  //map
+    {trUnits} 'Modu³y',
+    {trClassHierarchy} 'Hierarchia klas',
+    {trCio} 'Klasy, interfejsy, obiekty i rekordy',
+    {trIdentifiers} 'Identyfikatory',
+    {trGvUses} 'Graf zale¿noœci modu³ów',
+    {trGvClasses} 'Graf dziedziczenia klas',
+  //tables and members
+    {trClasses} 'Klasy',
+      {trClass} 'Klasa',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Interfejs',
+    {trObjects} 'Obiekty',
+      {trObject} 'Obiekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarchia',
+        {trFields} 'Pola',
+        {trMethods} 'Metody',
+        {trProperties} 'W³aœciwoœci',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Modu³',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Sta³e',
+      {trFunctionsAndProcedures} 'Podprogramy',
+      {trTypes} 'Typy',
+        {trType} 'Typ',
+      {trVariables} 'Zmienne',
+      {trAuthors} 'Autorzy',
+        {trAuthor} 'Autor',
+      {trCreated} 'Utworzony',
+      {trLastModified} 'Ostatnia modyfikacja',
+    {trSubroutine} 'Podprograma', //?
+      {trParameters} 'Parametry',
+      {trReturns} 'Wynik',
+      {trExceptionsRaised} 'Generowane wyj¹tki',
+    {trExceptions} 'Wyj¹tki',
+      {trException} strToDo, //'Exception',
+    {trEnum} 'Wyliczenie',
+  //visibilities
+    {trVisibility} 'Kabeh Unit',
+      {trPrivate} 'Prywatne',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} 'Chronione',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} 'Publiczne',
+      {trPublished} 'Publikowane',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} 'Domyœlne',
+  //hints
+    {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
+    {trPlatformSpecific} 'ten identyfikator jest zale¿ny od platformy',
+    {trLibrarySpecific} 'ten identyfikator jest zale¿ny od biblioteki',
+  //headings
+    {trOverview} 'Przegl¹d',
+    {trIntroduction} 'Wstêp',
+    {trConclusion} 'Podsumowanie',
+    {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
+    {trHeadlineConstants} 'Wszystkie sta³e',
+    {trHeadlineFunctionsAndProcedures} 'Wszystkie podprogramy',
+    {trHeadlineIdentifiers} 'Wszystkie identyfikatory',
+    {trHeadlineTypes} 'Wszystkie typy',
+    {trHeadlineUnits} 'Wszystkie modu³y',
+    {trHeadlineVariables} 'Wszystkie zmienne',
+    {trSummaryCio} 'Podsumowanie klas, interfejsów, obiektów i rekordów',
+  //column headings
+    {trDeclaration} 'Deklaracja',
+    {trDescription} 'Opis',
+    {trName} 'Nazwa',
+    {trValues} 'Wartoœci',
+  //empty
+    {trNone} 'Brak',
+    {trNoCIOs} 'Modu³ nie zawiera ¿adnych klas, interfejsów, obiektów ani rekordów.',
+    {trNoCIOsForHierarchy} 'Modu³ nie zawiera ¿adnych klas, interfejsów ani obiektów.',
+    {trNoTypes} 'Modu³ nie zawiera ¿adnych typów.',
+    {trNoVariables} 'Modu³ nie zawiera ¿adnych zmiennych.',
+    {trNoConstants} 'Modu³ nie zawiera ¿adnych sta³ych.',
+    {trNoFunctions} 'Modu³ nie zawiera ¿adnych funkcji ani podprogramów.',
+    {trNoIdentifiers} 'Modu³ nie zawiera ¿adnych identyfikatorów.',
+  //misc
+    {trHelp} 'Pomoc',
+    {trLegend} 'Legenda',
+    {trMarker} 'Kolor',
+    {trWarningOverwrite} 'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany',
+    {trWarning} 'Uwaga',
+    {trGeneratedBy} 'Wygenerowane przez',
+    {trOnDateTime} ' - ',
+    {trSearch} 'Szukaj',
+    {trSeeAlso} 'Zobacz tak¿e',
+    ''  //dummy
+  );
+{$ENDIF}
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguagePolish_ISO_8859_2;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -1368,9 +2880,108 @@ begin
   FTranslation[trNoIdentifiers] := 'Modu³ nie zawiera ¿adnych identyfikatorów.';
   FTranslation[trProgram] := 'Program';
 end;
+{$ELSE}
+const
+  aPolish_ISO_8859_2: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Polish',
+  //map
+    {trUnits} 'Modu³y',
+    {trClassHierarchy} 'Hierarchia klas',
+    {trCio} 'Klasy, interfejsy, obiekty i rekordy',
+    {trIdentifiers} 'Identyfikatory',
+    {trGvUses} 'Graf zale¿no¶ci modu³ów',
+    {trGvClasses} 'Graf dziedziczenia klas',
+  //tables and members
+    {trClasses} 'Klasy',
+      {trClass} 'Klasa',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Interfejs',
+    {trObjects} 'Obiekty',
+      {trObject} 'Obiekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarchia',
+        {trFields} 'Pola',
+        {trMethods} 'Metody',
+        {trProperties} 'W³a¶ciwo¶ci',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Modu³',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Sta³e',
+      {trFunctionsAndProcedures} 'Podprogramy',
+      {trTypes} 'Typy',
+        {trType} 'Typ',
+      {trVariables} 'Zmienne',
+      {trAuthors} 'Autorzy',
+        {trAuthor} 'Autor',
+      {trCreated} 'Utworzony',
+      {trLastModified} 'Ostatnia modyfikacja',
+    {trSubroutine} 'Podprograma', //???
+      {trParameters} 'Parametry',
+      {trReturns} 'Wynik',
+      {trExceptionsRaised} 'Generowane wyj±tki',
+    {trExceptions} 'Wyj±tki',
+      {trException} strToDo, //'Exception',
+    {trEnum} 'Wyliczenie',
+  //visibilities
+    {trVisibility} 'Widoczno¶æ',
+      {trPrivate} 'Prywatne',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} 'Chronione',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} 'Publiczne',
+      {trPublished} 'Publikowane',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} 'Domy¶lne',
+  //hints
+    {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
+    {trPlatformSpecific} 'ten identyfikator jest zale¿ny od platformy',
+    {trLibrarySpecific} 'ten identyfikator jest zale¿ny od biblioteki',
+  //headings
+    {trOverview} 'Przegl±d',
+    {trIntroduction} 'Wstêp',
+    {trConclusion} 'Podsumowanie',
+    {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
+    {trHeadlineConstants} 'Wszystkie sta³e',
+    {trHeadlineFunctionsAndProcedures} 'Wszystkie podprogramy',
+    {trHeadlineIdentifiers} 'Wszystkie identyfikatory',
+    {trHeadlineTypes} 'Wszystkie typy',
+    {trHeadlineUnits} 'Wszystkie modu³y',
+    {trHeadlineVariables} 'Wszystkie zmienne',
+    {trSummaryCio} 'Podsumowanie klas, interfejsów, obiektów i rekordów',
+  //column headings
+    {trDeclaration} 'Deklaracja',
+    {trDescription} 'Opis',
+    {trName} 'Nazwa',
+    {trValues} 'Warto¶ci',
+  //empty
+    {trNone} 'Brak',
+    {trNoCIOs} 'Modu³ nie zawiera ¿adnych klas, interfejsów, obiektów ani rekordów.',
+    {trNoCIOsForHierarchy} 'Modu³ nie zawiera ¿adnych klas, interfejsów ani obiektów.',
+    {trNoTypes} 'Modu³ nie zawiera ¿adnych typów.',
+    {trNoVariables} 'Modu³ nie zawiera ¿adnych zmiennych.',
+    {trNoConstants} 'Modu³ nie zawiera ¿adnych sta³ych.',
+    {trNoFunctions} 'Modu³ nie zawiera ¿adnych funkcji ani podprogramów.',
+    {trNoIdentifiers} 'Modu³ nie zawiera ¿adnych identyfikatorów.',
+  //misc
+    {trHelp} 'Pomoc',
+    {trLegend} 'Legenda',
+    {trMarker} 'Kolor',
+    {trWarningOverwrite} 'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany',
+    {trWarning} 'Uwaga',
+    {trGeneratedBy} 'Wygenerowane przez',
+    {trOnDateTime} ' - ',
+    {trSearch} 'Szukaj',
+    {trSeeAlso} 'Zobacz tak¿e',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageRussian_1251;
 begin
   FTranslation[trAuthor] := 'Àâòîð';
@@ -1450,6 +3061,105 @@ begin
   FTranslation[trProgram] := 'Ïðîãðàììà'; // DONE: translate
   FTranslation[trUses] := 'Èñïîëüçóåìûå ìîäóëè';
 end;
+{$ELSE}
+const
+  aRussian_1251: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Russian',
+  //map
+    {trUnits} 'Ìîäóëè',
+    {trClassHierarchy} 'Èåðàðõèÿ êëàññîâ',
+    {trCio} 'Êëàññû, èíòåðôåéñû è îáúåêòû',
+    {trIdentifiers} 'Èäåíòèôèêàòîðû',
+    {trGvUses} 'Ãðàôèê çàâèñèìîñòè ìîäóëåé',
+    {trGvClasses} 'Ãðàôèê èåðàðõèè êëàññîâ',
+  //tables and members
+    {trClasses} 'Êëàññû',
+      {trClass} 'Êëàññ',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Èíòåðôåéñ',
+    {trObjects} 'Îáúåêòû',
+      {trObject} 'Îáúåêò',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Èåðàðõèÿ',
+        {trFields} 'Ïîëÿ',
+        {trMethods} 'Ìåòîäû',
+        {trProperties} 'Ñâîéñòâà',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} 'Ïðîãðàììà',
+    {trUnit} 'Ìîäóëü',
+      {trUses} 'Èñïîëüçóåìûå ìîäóëè',
+      {trConstants} 'Êîíñòàíòû',
+      {trFunctionsAndProcedures} 'Ïðîöåäóðû è ôóíêöèè',
+      {trTypes} 'Òèïû',
+        {trType} 'Òèï',
+      {trVariables} 'Ïåðåìåííûå',
+      {trAuthors} 'Àâòîðû',
+        {trAuthor} 'Àâòîð',
+      {trCreated} 'Ñîçäàíî',
+      {trLastModified} 'Ïîñëåäíåå èçìåíåíèå',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Ïàðàìåòðû',
+      {trReturns} 'Âîçâðàùàåìûå çíà÷åíèÿ',
+      {trExceptionsRaised} 'Âûçûâàåò èñêëþ÷åíèÿ',
+    {trExceptions} 'Èñêëþ÷åíèÿ',
+      {trException} strToDo, //'Exception',
+    {trEnum} 'Ïåðå÷èñëåíèå',
+  //visibilities
+    {trVisibility} 'Çîíà âèäèìîñòè',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} 'ýòîò ñèìâîë áîëüøå íå èñïîëüçóåòñÿ',
+    {trPlatformSpecific} 'ýòîò ñèìâîë çàâèñèò îò ïëàòôîðìû',
+    {trLibrarySpecific} 'ýòîò ñèìâîë çàâèñèò îò áèáëèîòåêè',
+  //headings
+    {trOverview} 'Îáçîð',
+    {trIntroduction} 'Ââåäåíèå',
+    {trConclusion} 'Çàêëþ÷åíèå',
+    {trHeadlineCio} 'Âñå êëàññû, èíòåðôåéñû è îáúåêòû',
+    {trHeadlineConstants} 'Âñå êîíñòàíòû',
+    {trHeadlineFunctionsAndProcedures} 'Âñå ïðîöåäóðû è ôóíêöèè',
+    {trHeadlineIdentifiers} 'Âñå èäåíòèôèêàòîðû',
+    {trHeadlineTypes} 'Âñå òèïû',
+    {trHeadlineUnits} 'Âñå ìîäóëè',
+    {trHeadlineVariables} 'Âñå ïåðåìåííûå',
+    {trSummaryCio} 'Ñïèñîê êëàññîâ, èíòåðôåéñîâ è îáúåêòîâ',
+  //column headings
+    {trDeclaration} 'Îáúÿâëåíèÿ',
+    {trDescription} 'Îïèñàíèå',
+    {trName} 'Èìÿ',
+    {trValues} 'Çíà÷åíèå',
+  //empty
+    {trNone} 'Íåò',
+    {trNoCIOs} 'Ìîäóëè íå ñîäåðæàò êëàññîâ, èíòåðôåéñîâ, îáúåêòîâ è çàïèñåé.',
+    {trNoCIOsForHierarchy} 'Ìîäóëè íå ñîäåðæàò êëàññîâ, èíòåðôåéñîâ è îáúåêòîâ.',
+    {trNoTypes} 'Ìîäóëè íå ñîäåðæàò òèïîâ.',
+    {trNoVariables} 'Ìîäóëè íå ñîäåðæàò ïåðåìåííûõ.',
+    {trNoConstants} 'Ìîäóëè íå ñîäåðæàò êîíñòàíò.',
+    {trNoFunctions} 'Ìîäóëè íå ñîäåðæàò ôóíêöèè è ïðîöåäóðû.',
+    {trNoIdentifiers} 'Ìîäóëè íå ñîäåðæàò íè îäíîãî èäåíòèôèêàòîðà.',
+  //misc
+    {trHelp} strKeep, //'Help', // Untranslated to avoid Russian file name for css
+      { TODO : how does "Help" interfere with file names? }
+    {trLegend} 'Îáîçíà÷åíèÿ',
+    {trMarker} 'Ìàðêåð',
+    {trWarningOverwrite} 'Ïðåäóïðåæäåíèå: íå ðåäàêòèðîâàòü - ýòîò ôàéë ñîçäàí àâòîìàòè÷åñêè è ìîæåò áûòü èçìåí¸í áåç ïðåäóïðåæäåíèÿ',
+    {trWarning} 'Ïðåäóïðåæäåíèå',
+    {trGeneratedBy} 'Ñãåíåðèðîâàë', // + ' '?
+    {trOnDateTime} 'äàòà/âðåìÿ', //really???
+    {trSearch} 'Íàéòè',
+    {trSeeAlso} 'Ìàòåðèàëû ïî òåìå',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1617,6 +3327,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageSlovak;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -1684,9 +3395,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aSlovak: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Slovak',
+  //map
+    {trUnits} 'Jednotky',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Triedy, interfejsy a objekty',
+    {trIdentifiers} 'Identifikátory',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Triedy',
+      {trClass} 'Trieda',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} 'Interfejs',
+    {trObjects} 'Objekty',
+      {trObject} 'Objekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarchia',
+        {trFields} 'Položky',
+        {trMethods} 'Metódy',
+        {trProperties} 'Možnosti',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Jednotka',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konštanty',
+      {trFunctionsAndProcedures} 'Funkcie a procedúry',
+      {trTypes} 'Typy',
+        {trType} 'Typ',
+      {trVariables} 'Premenné',
+      {trAuthors} 'Autori',
+        {trAuthor} 'Autor',
+      {trCreated} 'Vytvorené',
+      {trLastModified} 'Posledná zmena',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Parameters',
+      {trReturns} strToDo, //'Returns',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} strToDo, //'Overview',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Všetky triedy, interfejsy a objekty',
+    {trHeadlineConstants} 'Všetky konštanty',
+    {trHeadlineFunctionsAndProcedures} 'Všetky funkcie a procedúry',
+    {trHeadlineIdentifiers} 'Všetky identifikátory',
+    {trHeadlineTypes} 'Všetky typy',
+    {trHeadlineUnits} 'Všetky jednotky',
+    {trHeadlineVariables} 'Všetky premenné',
+    {trSummaryCio} 'Zoznam tried, interfejsov a objektov',
+  //column headings
+    {trDeclaration} 'Deklarácie',
+    {trDescription} 'Popis',
+    {trName} 'Meno',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Niè',
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help',
+    {trLegend} strToDo, //'Legend',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Upozornenie: Needitujte - tento súbor bol vytvorený automaticky a je pravdepodobné, že bude prepísaný',
+    {trWarning} 'Upozornenie',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageSpanish;
 begin
   FTranslation[trAuthor] := 'Autor';
@@ -1764,9 +3574,109 @@ begin
   FTranslation[trNoIdentifiers] := 'Las unidades no contienen ningún Identificador.';
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aSpanish: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Spanish',
+  //map
+    {trUnits} 'Unidades',
+    {trClassHierarchy} 'Jerarquía de clases',
+    {trCio} 'Clases, interfaces y objetos',
+    {trIdentifiers} 'Identificadores',
+    {trGvUses} 'Gráfico de las dependencias de unidades',
+    {trGvClasses} 'Gráfico de la jerarquía de clases',
+  //tables and members
+    {trClasses} 'Clases',
+      {trClass} 'Clase',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objetos',
+      {trObject} 'Objeto',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Jerarquía',
+        {trFields} 'Campos',
+        {trMethods} 'Métodos',
+        {trProperties} 'Propiedades',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Unidad',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Constantes',
+      {trFunctionsAndProcedures} 'Funciones y procedimientos',
+      {trTypes} 'Tipos',
+        {trType} 'Tipo',
+      {trVariables} strKeep, //'Variables', //???
+      {trAuthors} 'Autores',
+        {trAuthor} 'Autor',
+      {trCreated} 'Creado',
+      {trLastModified} 'Última modificación',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Parámetros',
+      {trReturns} 'Retorno', //strToDo??? solo uno!
+      {trExceptionsRaised} 'Excepciones lanzadas',
+    {trExceptions} 'Excepciones',
+      {trException} 'Excepcion', //?
+    {trEnum} strKeep, //'Enumeration',
+  //visibilities
+    {trVisibility} 'Visibilidad',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} 'Este símbolo está obsoleto',
+    {trPlatformSpecific} 'Este símbolo es específico para alguna plataforma',
+    {trLibrarySpecific} 'Este símbolo es específico para alguna librería',
+  //headings
+    {trOverview} 'Resumen',
+    {trIntroduction} 'Introducción',
+    {trConclusion} 'Conclusión',
+    {trHeadlineCio} 'Todas las clases, interfaces y objetos',
+    {trHeadlineConstants} 'Todas las constantes',
+    {trHeadlineFunctionsAndProcedures} 'Todos las funciones y procedimientos',
+    {trHeadlineIdentifiers} 'Todos los indentificadores',
+    {trHeadlineTypes} 'Todos los tipos',
+    {trHeadlineUnits} 'Todas las unidades',
+    {trHeadlineVariables} 'Todas las variables',
+    {trSummaryCio} 'Lista de clases, interfaces y objetos',
+  //column headings
+    {trDeclaration} 'Declaración',
+    {trDescription} 'Descripción',
+    {trName} 'Nombre',
+    {trValues} 'Valores',
+  //empty
+    {trNone} 'Ninguno',
+    {trNoCIOs} 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.',
+    {trNoCIOsForHierarchy} 'Las unidades no contienen ni clases ni interfaces ni objetos.',
+    {trNoTypes} 'Las unidades no contienen ningún tipo.',
+    {trNoVariables} 'Las unidades no contienen ningunas variables.',
+    {trNoConstants} 'Las unidades no contienen ningunas constantes.',
+    {trNoFunctions} 'Las unidades no contienen ni funciones ni procedimientos',
+      //??? strToDo, //'Las unidades no contienen ni variables ni procedimientos',
+    {trNoIdentifiers} 'Las unidades no contienen ningún Identificador.',
+  //misc
+    {trHelp} 'Ayuda',
+    {trLegend} 'Leyenda',
+    {trMarker} 'Marcador',
+    {trWarningOverwrite} 'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito',
+    {trWarning} 'Atención',
+    {trGeneratedBy} 'Generado por', //??? strToDo, //'Generador por',
+    {trOnDateTime} 'a',
+    {trSearch} 'Buscar',
+    {trSeeAlso} 'Ver',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageSwedish;
 begin
   FTranslation[trAuthor] := 'Författare';
@@ -1846,9 +3756,108 @@ begin
   FTranslation[trNoIdentifiers] := 'The units do not contain any identifiers.'; // TODO: translate
   FTranslation[trProgram] := 'Program'; // TODO: translate
 end;
+{$ELSE}
+const
+  aSwedish: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Swedish',
+  //map
+    {trUnits} 'Enheter',
+    {trClassHierarchy} strToDo, //'Class Hierarchy',
+    {trCio} 'Klasser, interface och objekt',
+    {trIdentifiers} strToDo, //'Identifiers',
+    {trGvUses} strToDo, //'Unit dependency graph',
+    {trGvClasses} strToDo, //'Classes hierarchy graph',
+  //tables and members
+    {trClasses} 'Klasser',
+      {trClass} 'Klass',
+      {trDispInterface} strToDo, //'DispInterface',
+      {trInterface} strToDo, //'Interface',
+    {trObjects} 'Objekt', //-er ???
+      {trObject} 'Objekt',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarki',
+        {trFields} 'Fält', //-er ???
+        {trMethods} 'Metoder',
+        {trProperties} strToDo, //'Properties',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Enhet',
+      {trUses} strToDo, //'Uses',
+      {trConstants} strToDo, //'Constants',
+      {trFunctionsAndProcedures} strToDo, //'Functions and Procedures',
+      {trTypes} 'Typer',
+        {trType} 'Typer',
+      {trVariables} 'Variabler',
+      {trAuthors} 'Författare',
+        {trAuthor} 'Författare',
+      {trCreated} 'Skapad',
+      {trLastModified} 'Senast ändrad',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Se parameter',
+      {trReturns} 'Retur',
+      {trExceptionsRaised} strToDo, //'Exceptions raised',
+    {trExceptions} strToDo, //'Exceptions',
+      {trException} strToDo, //'Exception',
+    {trEnum} strToDo, //'Enumeration',
+  //visibilities
+    {trVisibility} strToDo, //'Visibility',
+      {trPrivate} strToDo, //'Private',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} strToDo, //'Protected',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} strToDo, //'Public',
+      {trPublished} strToDo, //'Published',
+      {trAutomated} strToDo, //'Automated',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} strToDo, //'this symbol is deprecated',
+    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
+    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+  //headings
+    {trOverview} 'Översikt',
+    {trIntroduction} strToDo, //'Introduction',
+    {trConclusion} strToDo, //'Conclusion',
+    {trHeadlineCio} 'Alla klasser, interface och objekt',
+    {trHeadlineConstants} strToDo, //'All Constants',
+    {trHeadlineFunctionsAndProcedures} 'Alla funktioner och procedurer',
+    {trHeadlineIdentifiers} 'Alla identifierare',
+    {trHeadlineTypes} 'Alla typer',
+    {trHeadlineUnits} 'Alla enheter',
+    {trHeadlineVariables} 'Alla variabler',
+    {trSummaryCio} 'Sammanfattning av Klasser, Interface, Objekt',
+  //column headings
+    {trDeclaration} 'Deklarationer',
+    {trDescription} 'Beskrivning',
+    {trName} 'Namn',
+    {trValues} strToDo, //'Values',
+  //empty
+    {trNone} 'Ingen/inget.', //???
+    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
+    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
+    {trNoTypes} strToDo, //'The units do not contain any types.',
+    {trNoVariables} strToDo, //'The units do not contain any variables.',
+    {trNoConstants} strToDo, //'The units do not contain any constants.',
+    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
+    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
+  //misc
+    {trHelp} strToDo, //'Help', // Untranslated to avoid Swedish file name for css
+    {trLegend} 'Förklaring',
+    {trMarker} strToDo, //'Marker',
+    {trWarningOverwrite} 'Varning: ändra inte denna fil manuellt - filen har skapats automatiskt och kommer troligen att skrivas över vid ett senare tilfälle',
+    {trWarning} 'Varning',
+    {trGeneratedBy} strToDo, //'Generated by',
+    {trOnDateTime} strToDo, //'on',
+    {trSearch} strToDo, //'Search',
+    {trSeeAlso} strToDo, //'See also',
+    ''  //dummy
+  );
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDocLanguages.SetLanguageHungarian_1250;
 begin
   FTranslation[trAuthor] := 'Szerzõ';
@@ -1926,11 +3935,147 @@ begin
   FTranslation[trNoIdentifiers] := 'Az egység nem tartalmaz azonosítókat.';
   FTranslation[trProgram] := 'Program';
 end;
+{$ELSE}
+const
+  aHungarian_1250: RTransTable = (
+    {trNoTrans} '<what?>', //no ID assigned, so far
+    {trLanguage} 'Hungarian',
+  //map
+    {trUnits} 'Egységek',
+    {trClassHierarchy} 'Osztály hierarchia',
+    {trCio} 'Osztályok, Kapcsolódási felületek és Objektumok',
+    {trIdentifiers} 'Azonosítók',
+    {trGvUses} 'Egység függõségi gráf',
+    {trGvClasses} 'Osztály hierarchia gráf',
+  //tables and members
+    {trClasses} 'Osztályok',
+      {trClass} 'Osztály',
+      {trDispInterface} 'Képernyõ felületek',
+      {trInterface} 'Kapcsolódási felület',
+    {trObjects} 'Objektumok',
+      {trObject} 'Objektum',
+      {trRecord} strToDo, //'Record',
+        {trHierarchy} 'Hierarchia',
+        {trFields} 'Mezõk',
+        {trMethods} 'Metódusok',
+        {trProperties} 'Tulajdonságok',
+    {trLibrary} strToDo,  //'Library',
+    {trPackage} strToDo,  //'Package',
+    {trProgram} strToDo,  //'Program',
+    {trUnit} 'Egység',
+      {trUses} strToDo, //'Uses',
+      {trConstants} 'Konstansok',
+      {trFunctionsAndProcedures} 'Függvények és Eljárások',
+      {trTypes} 'Típusok',
+        {trType} 'Típus',
+      {trVariables} 'Változók',
+      {trAuthors} 'Szerzõk',
+        {trAuthor} 'Szerzõ',
+      {trCreated} 'Készült',
+      {trLastModified} 'Utolsó módosítás',
+    {trSubroutine} strToDo, //'Subroutine',
+      {trParameters} 'Paraméterek',
+      {trReturns} 'Visszatérési értékek',
+      {trExceptionsRaised} 'Kivételek kiemelése',
+    {trExceptions} 'Kivételek',
+      {trException} strToDo, //'Exception',
+    {trEnum} 'Felsorolások',
+  //visibilities
+    {trVisibility} 'Láthatóság',
+      {trPrivate} 'Privát',
+      {trStrictPrivate} strToDo, //'Strict Private',
+      {trProtected} 'Védett',
+      {trStrictProtected} strToDo, //'Strict Protected',
+      {trPublic} 'Publikus',
+      {trPublished} 'Publikált',
+      {trAutomated} 'Automatikus',
+      {trImplicit} strToDo, //'Implicit',
+  //hints
+    {trDeprecated} 'ez az azonosító érték nélküli',
+    {trPlatformSpecific} 'ez az azonosító szükséges némely platform számára',
+    {trLibrarySpecific} 'ez az azonosító szükséges némely library számára',
+  //headings
+    {trOverview} 'Áttekintés',
+    {trIntroduction} 'Bevezetõ',
+    {trConclusion} 'Összefoglaló',
+    {trHeadlineCio} 'Összes Osztály, Kapcsolódási felület és Objektumok',
+    {trHeadlineConstants} 'Összes Kontans',
+    {trHeadlineFunctionsAndProcedures} 'Összes Függvény és Eljárás',
+    {trHeadlineIdentifiers} 'Összes Azonosító',
+    {trHeadlineTypes} 'Összes Típus',
+    {trHeadlineUnits} 'Összes Egység',
+    {trHeadlineVariables} 'Összes Változó',
+    {trSummaryCio} 'Öszefoglaló az Osztályokról, Kapcsoldási felületekrõl és Objektumokról',
+  //column headings
+    {trDeclaration} 'Deklaráció',
+    {trDescription} 'Megjegyzés',
+    {trName} 'Név',
+    {trValues} 'Értékek',
+  //empty
+    {trNone} 'Nincs',
+    {trNoCIOs} 'Az egység nem tartalmaz osztályt, interfészt, objektumot, vagy rekordot.',
+    {trNoCIOsForHierarchy} 'Az egység nem tartalmaz osztályt, interfészt vagy objektumot.',
+    {trNoTypes} 'Az egység nem tartalmaz típusokat',
+    {trNoVariables} 'Az egység nem tartalmaz változókat.',
+    {trNoConstants} 'Az egység nem tartalmaz konstansokat.',
+    {trNoFunctions} 'Az egység nem tartalmaz függvényeket vagy eljárásokat.',
+    {trNoIdentifiers} 'Az egység nem tartalmaz azonosítókat.',
+  //misc
+    {trHelp} 'Súgó',
+    {trLegend} 'Történet',
+    {trMarker} 'Jelzõ',
+    {trWarningOverwrite} 'Vigyázat: Nem szerkesztendõ file - ez a file automatikusan készült, valószínûleg felülírásra kerülne',
+    {trWarning} 'Vigyázat',
+    {trGeneratedBy} 'Készítette',
+    {trOnDateTime} ' ', //none in Hungarian language
+    {trSearch} 'Keresés',
+    {trSeeAlso} 'Lásd még',
+    ''  //dummy
+  );
+{$ENDIF}
+
+const
+  LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
+    (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
+    (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
+    (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
+    (Table: @aChinese_950; Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
+    (Table: nil;  Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
+    (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
+    (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
+    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
+    (Table: @aFrench; Name: 'French'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
+    (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'),
+    (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
+    (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
+    (Table: @aJavanese; Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
+    (Table: @aPolish1250; Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),
+    (Table: @aPolish_ISO_8859_2; Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'),
+    (Table: @aRussian_1251; Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
+    (Table: nil;  Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
+    (Table: nil;  Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
+    (Table: @aSlovak; Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
+    (Table: @aSpanish; Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'),
+    (Table: @aSwedish; Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'),
+    (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250')
+  );
 
 function TPasDocLanguages.GetTranslation(
-  const ATranslationID: TTranslationID): string;
+  ATranslationID: TTranslationID): string;
 begin
+{$IFDEF old}
   Result := FTranslation[ATranslationID];
+{$ELSE}
+  Result := pTable^[ATranslationID];
+  if Result <= strKeep then
+    Result := aEnglish[ATranslationID];
+{$ENDIF}
+end;
+
+procedure TPasDocLanguages.SetTranslation(id: TTranslationID;
+  const into: string);
+begin
+  pTable^[id] := into;
 end;
 
 constructor TPasDocLanguages.Create;
@@ -1943,12 +4088,22 @@ procedure TPasDocLanguages.SetLanguage(const Value: TLanguageID);
 begin
   FLanguage := Value;
   FCharSet := LANGUAGE_ARRAY[Value].Charset;
+{$IFDEF old}
+{$ELSE}
+//get table
+  pTable := LANGUAGE_ARRAY[Value].Table;
+  if assigned(pTable) then
+    exit; //array already exists
+
+//use writeable table
+  pTable := addr(aNewLanguage);
+{$ENDIF}
   case Value of
+  {$IFDEF old}
     lgBosnian: SetLanguageBosnian;
     lgBrasilian: SetLanguageBrasilian;
     lgCatalan: SetLanguageCatalan;
     lgChinese_950: SetLanguageChinese_950;
-    lgChinese_gb2312: SetLanguageChinese_gb2312;
     lgDanish: SetLanguageDanish;
     lgDutch: SetLanguageDutch;
     lgEnglish: SetLanguageEnglish;
@@ -1957,15 +4112,25 @@ begin
     lgIndonesian: SetLanguageIndonesian;
     lgItalian: SetLanguageItalian;
     lgJavanese: SetLanguageJavanese;
-    lgPolish_CP1250: SetLanguagePolish_CP1250;         
-    lgPolish_ISO_8859_2: SetLanguagePolish_ISO_8859_2; 
+    lgPolish_CP1250: SetLanguagePolish_CP1250;
+    lgPolish_ISO_8859_2: SetLanguagePolish_ISO_8859_2;
     lgRussian_1251: SetLanguageRussian_1251;
-    lgRussian_866: SetLanguageRussian_866;
-    lgRussian_koi8: SetLanguageRussian_koi8;
     lgSlovak: SetLanguageSlovak;
     lgSpanish: SetLanguageSpanish;
     lgSwedish: SetLanguageSwedish;
     lgHungarian_1250: SetLanguageHungarian_1250;
+  {$ELSE}
+  //no array yet
+    lgChinese_gb2312: SetLanguageChinese_gb2312;
+    lgRussian_866: SetLanguageRussian_866;
+    lgRussian_koi8: SetLanguageRussian_koi8;
+  {$ENDIF}
+  else  //this should never be reached
+  {$IFDEF old}
+    SetLanguageEnglish;
+  {$ELSE}
+    pTable := addr(aEnglish);
+  {$ENDIF}
   end;
 end;
 
@@ -1983,8 +4148,51 @@ begin
       Exit;
     end;
   end;
-  
+
   Result := false;
+end;
+
+//------------- language helpers, for PasDoc_gui -----------------
+
+function LanguageFromIndex(i: integer): string;
+begin
+  Result := language_array[TLanguageID(i)].Name;
+end;
+
+function SyntaxFromIndex(i: integer): string;
+var
+  l: TLanguageID absolute i;
+begin
+  Result := Language_array[l].Syntax;
+end;
+
+function IDfromLanguage(const s: string): TLanguageID;
+var
+  i: TLanguageID;
+begin
+  for i := low(i) to high(i) do begin
+    if (LANGUAGE_ARRAY[i].Name = s)
+    or (LANGUAGE_ARRAY[i].Syntax = s) then begin
+      Result := i;
+      exit;
+    end;
+  end;
+  Result := DEFAULT_LANGUAGE;
+end;
+
+function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
+begin
+  Result := @Language_array[id];
+end;
+
+function  Translation(id: TTranslationID; lang: TLanguageID): string;
+var
+  tbl: PTransTable;
+begin
+  tbl := LANGUAGE_ARRAY[lang].Table;
+  if not assigned(tbl) then
+    tbl := @aEnglish;
+  Result := tbl^[id];
 end;
 
 end.
