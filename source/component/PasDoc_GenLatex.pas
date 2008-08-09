@@ -242,7 +242,7 @@ uses
   PasDoc_Base,
   PasDoc_ObjectVector,
   PasDoc_Utils, 
-  PasDoc_StringPairVector,
+  //PasDoc_StringPairVector,
   StrUtils;
 
 function TTexDocGenerator.LatexString(const S: string): string;
@@ -976,7 +976,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     i: integer;
     ParamName: string;
   begin
-    if objectVectorIsNilOrEmpty(List) then
+    if IsEmpty(List) then
       Exit;
 
     WriteDirect('\item[\textbf{'+Caption+'}]',true);
@@ -1004,7 +1004,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if IsEmpty(SeeAlso) then
       Exit;
 
     if not AlreadyWithinAList then
@@ -1033,12 +1033,13 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       WriteEndList;
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  //procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
   begin
-    if ReturnDesc = '' then
+    if (ReturnDesc = nil) or (ReturnDesc.Description = '') then
       exit;
     WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
-    WriteSpellChecked(ReturnDesc);
+    WriteSpellChecked(ReturnDesc.Description);
     WriteDirect('',true);
   end;
 
@@ -1066,11 +1067,11 @@ begin
   if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
-  if AItem.AbstractDescription <> '' then 
+  if AItem.AbstractDescription <> '' then
   begin
     WriteSpellChecked(AItem.AbstractDescription);
-    
-    if AItem.DetailedDescription <> '' then 
+
+    if AItem.DetailedDescription <> '' then
       begin
         if not AItem.AbstractDescriptionWasAutomatic then
         begin
@@ -1111,16 +1112,18 @@ begin
       AItemMethod.Params, false);
   {$ELSE}
     { TODO : WriteParamsOrRaises with Params:PasItems }
+    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters],
+      AItemMethod.Params, false);
   {$ENDIF}
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
 
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
-      because trExceptionsRaised is just too long and so everything 
+      because trExceptionsRaised is just too long and so everything
       would look too ugly. However it's preferred to use
       trExceptionsRaised in the future (then trExceptions can be simply
       removed from PasDoc_Languages), because trExceptionsRaised
       is just more understandable to the reader of documentation. }
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
+    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions],
       AItemMethod.Raises, true);
   end;
 

@@ -107,7 +107,7 @@ procedure TipueAddFiles(Units: TPasUnits;
       if Item is TPasMethod then
         LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text(' ', ' ')) +
-          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns) +
+          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns.Value) +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text(' ', ' '));
       if Item is TPasEnum then
       begin

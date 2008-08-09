@@ -27,6 +27,7 @@ uses
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
+  PasDoc_Languages,
   PasDoc_StringPairVector;
 
 type
@@ -128,6 +129,69 @@ type
   TBaseItems = class;
   TPasItems = class;
 
+(* Organization (=intended layout?) of descriptive elements.
+  Should match the expectations of the generators!
+*)
+  eDescriptionKind = (
+  //simple entries, without any objects in Data
+    dkText, //< simple text, in Value(?)
+    dkBool, //< somewhere needed in TStringPair, Data is boolean! (or integer: level?)
+    dkNameDesc, //< Name and Value=Description
+    dkStrings, //< StringList, without objects
+  //Delegate for TPasItem(=Data), which can have further descriptive elements.
+    dkPasItem,
+  //lists, tables(?) Data is description list
+    dkItemList
+  );
+
+//become new class? Keep ancestor for now, for compatibility.
+  TDescriptionItem = class(TStringPair)
+  public
+  //possible section title, if unnamed
+    ID: TTranslationID;
+  //entry has an name, different from ID
+    HasName: boolean;
+  //case kind of???
+    kind: eDescriptionKind;
+  //get list count
+    function  GetCount: integer;
+  //make sure that all fields are initialized
+    constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
+      const AName: string = ''; const AValue: string = '');
+    destructor Destroy; override;
+  //add an item
+    function Add(AItem: TDescriptionItem): integer;
+  //add an descriptor
+    function  AddNew(tid: TTranslationID; AKind: eDescriptionKind;
+      const AName: string = ''; const AValue: string = ''): TDescriptionItem;
+  //create a pair of first word and remainder
+    function AddExtractFirstWord(tid: TTranslationID; const s: string): TDescriptionItem;
+  //create a string list
+    function AddStrings(tid: TTranslationID; lst: TStrings): TDescriptionItem;
+  //get description item from list, or Nil
+    function  ItemAt(index: integer): TDescriptionItem;
+  //get descriptive element by ID, or Nil
+    function  FindID(id: TTranslationID): TDescriptionItem;
+  //get PasItem from list - really?
+    function  PasItemAt(index: integer): TPasItem;
+  //find item by name
+    function  Find(const AName: string): TDescriptionItem;
+  //get Data as TPasItem, or Nil.
+    function  PasItem: TPasItem;
+
+    { Returns all items Names and Values glued together.
+      For every item, string Name + NameValueSeparator + Value is
+      constructed. Then all such strings for every items all
+      concatenated with ItemSeparator. }
+    function Text(const NameValueSeparator, ItemSeparator: string): string;
+
+    property Count: integer read GetCount;
+    property Items[index: integer]: TDescriptionItem read ItemAt; default;
+    property Description: string read Value;
+  end;
+  TStringPair = TDescriptionItem;
+  TStringPairVector = TDescriptionItem;
+
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
@@ -196,11 +260,21 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
-  { Owner shall be the item, of which this item is a member.
-    Usage: construct the fully qualified name...
-  }
-    FMyOwner: TPasScope;
-    FItems: TPasItems; //<FMembers?
+  //all descriptive items
+    FItems: TDescriptionItem;
+
+{$IFDEF old}
+  protected  //morph piecemeal...
+    function  GetMyObject: TPasCio;
+    procedure SetMyObject(o: TPasCio);
+    function  GetMyUnit: TPasUnit;
+    procedure SetMyUnit(U: TPasUnit);
+  public
+    function  GetAttribute(attr: TPasItemAttribute): boolean;
+    procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
+    property Attributes: TPasItemAttributes read FAttributes write FAttributes;
+{$ELSE}
+  protected
   // The declarative token, "unit", "class", "type" etc.
     FKind: TTokenType;
   // All attributes, modifiers etc.
@@ -208,14 +282,22 @@ type
   // position of identifier in the declaration.
     FNamePosition: TTextStreamPos;
     FNameStream: string;
+  { Owner shall be the item, of which this item is a member.
+    Usage: construct the fully qualified name...
+  }
+    FMyOwner: TPasScope;
   public
     function  IsKey(AKey: TTokenType): boolean;
     property Kind: TTokenType read FKind;
-    property Attributes: TPasItemAttributes read FAttributes write FAttributes;
     property NamePosition: TTextStreamPos read FNamePosition write FNamePosition;
     property NameStream: string read FNameStream write FNameStream;
-    property Members: TPasItems read FItems;
     property MyOwner: TPasScope read FMyOwner;  // write FMyOwner;
+{$ENDIF}
+  public
+    function GetItem(id: TTranslationID): TDescriptionItem;
+    //property Members: TPasItems read FItems;
+    property Items: TDescriptionItem read FItems;
+    property SeeAlso: TDescriptionItem index trSeeAlso read GetItem;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -225,8 +307,11 @@ type
       You can override it to add more handlers. }
     procedure RegisterTags(TagManager: TTagManager); virtual;
 
+  {$IFDEF old}
   //add member, override for specialized lists
     procedure AddMember(item: TPasItem); virtual;
+  {$ELSE}
+  {$ENDIF}
 
     { This searches for item with ItemName @italic(inside this item).
       This means that e.g. for units it checks whether
@@ -353,11 +438,15 @@ type
     @@seealso tag, used to sorting items inside (@link(Sort)) and some more. }
   TPasItem = class(TBaseItem)
   private
+  { TODO : convert into items }
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
     FVisibility: TVisibility;
     FFullDeclaration: string;
+  {$IFDEF old}
     FSeeAlso: TStringPairVector;
+  {$ELSE}
+  {$ENDIF}
 
     procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -372,12 +461,40 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
 
-    function  GetAttribute(attr: TPasItemAttribute): boolean;
-    procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
+{$IFDEF new}
+  protected
+  // position of identifier in the declaration.
+    FNamePosition: TTextStreamPos;
+    FNameStream: string;
+  { Owner shall be the item, of which this item is a member.
+    Usage: construct the fully qualified name...
+  }
+    FMyOwner: TPasScope;
+  public
+
+{$ELSE}
+  protected //morph piecemeal...
+  // The declarative token, "unit", "class", "type" etc.
+    FKind: TTokenType;
+  // All attributes, modifiers etc.
+    FAttributes: TPasItemAttributes;
+  //obsolete?
     function  GetMyObject: TPasCio;
     procedure SetMyObject(o: TPasCio);
     function  GetMyUnit: TPasUnit;
     procedure SetMyUnit(U: TPasUnit);
+  public
+    function  IsKey(AKey: TTokenType): boolean;
+    function  GetAttribute(attr: TPasItemAttribute): boolean;
+    procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
+    
+    property Kind: TTokenType read FKind;
+    property Attributes: TPasItemAttributes read FAttributes write FAttributes;
+    property NamePosition: TTextStreamPos read FNamePosition write FNamePosition;
+    property NameStream: string read FNameStream write FNameStream;
+    property MyOwner: TPasScope read FMyOwner;  // write FMyOwner;
+
+{$ENDIF}
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); reintroduce; virtual;
@@ -525,11 +642,14 @@ type
        }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
 
+  {$IFDEF old}
     { Items here are collected from @@seealso tags.
 
       Name of each item is the 1st part of @@seealso parameter.
       Value is the 2nd part of @@seealso parameter. }
     property SeeAlso: TStringPairVector read FSeeAlso;
+  {$ELSE}
+  {$ENDIF}
 
     function BasePath: string; override;
   end;
@@ -620,6 +740,7 @@ type
 *)
   TPasScope = class(TPasItem)
   protected
+    FMembers: TPasItems;
   //renamed from TPasCio.FAncestors, TPasUnit.FUsesUnits
     FHeritage: TStringVector;
     procedure Serialize(const ADestination: TStream); override;
@@ -638,6 +759,22 @@ type
       const AName: string); override;
     destructor Destroy; override;
 
+  {$IFDEF old}
+  {$ELSE}
+  //add member, override for specialized lists
+    procedure AddMember(item: TPasItem); virtual;
+
+    { This does all it can to resolve link specified by NameParts.
+
+      While searching this tries to mimic ObjectPascal identifier scope
+      as much as it can. It seaches within this item,
+      but also within class enclosing this item,
+      within ancestors of this class,
+      within unit enclosing this item, then within units used by unit
+      of this item. }
+    function FindName(const NameParts: TNameParts; index: integer = -1): TBaseItem; override;
+  {$ENDIF}
+
     { If this class (or interface or object) contains a field, method or
       property with the name of ItemName, the corresponding item pointer is
       returned.
@@ -646,6 +783,8 @@ type
       in the ancestors.
       }
     function FindItem(const ItemName: string): TBaseItem; override;
+
+    property Members: TPasItems read FMembers;
   end;
 
 //-------------- unused classes ------------------
@@ -700,8 +839,9 @@ type
     ) }
   TPasMethod = class(TPasScope)
   protected
-    FReturns: string;
-    FRaises: TStringPairVector;
+    FReturns, //string;
+    FRaises,  //: TStringPairVector;
+    FParams: TDescriptionItem;
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -737,15 +877,18 @@ type
     { Name of each item is the name of parameter (without any surrounding
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
-    property Params: TPasItems read FItems;
+    //property Params: TPasItems read FItems;
+    property Params: TDescriptionItem read FParams;
 
     //Result could be added as a parameter
-    property Returns: string read FReturns;
+    //property Returns: string read FReturns;
+    property Returns: TDescriptionItem read FReturns;
 
     { Name of each item is the name of exception class (without any surrounding
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
-    property Raises: TStringPairVector read FRaises;
+    //property Raises: TStringPairVector read FRaises;
+    property Raises: TDescriptionItem read FRaises;
 
     { Are some optional properties (i.e. the ones that may be empty for
       TPasMethod after parsing unit and expanding tags --- currently this
@@ -775,7 +918,7 @@ type
     { keeps default value specifier }
     property DefaultID: string read FDefaultID write FDefaultID;
     { true if Nodefault property }
-  {$IFDEF new}
+  {$IFnDEF new}
   //Delphi only, FPC doesn't compile these index directives :-(
     { true if the property is the default property }
     property Default: Boolean //read FDefault write FDefault;
@@ -1084,6 +1227,8 @@ type
     function ExistsUnit(const AUnit: TPasUnit): Boolean;
   end;
 
+function IsEmpty(item: TDescriptionItem): boolean; overload;
+
 implementation
 
 uses PasDoc_Utils;
@@ -1150,6 +1295,14 @@ begin
   Result := FKind = AKey;
 end;
 
+function TBaseItem.GetItem(id: TTranslationID): TDescriptionItem;
+begin
+  Result := FItems;
+  if Result <> nil then
+    Result := Result.FindID(id);
+end;
+
+{$IFDEF old}
 procedure TBaseItem.AddMember(item: TPasItem);
 begin
 { TODO : Only PasItems can have Members }
@@ -1157,18 +1310,25 @@ begin
   Members.Add(item);
   item.FMyOwner := self as TPasScope;
 end;
+{$ELSE}
+{$ENDIF}
 
 function TBaseItem.FindItem(const ItemName: string): TBaseItem;
 begin
+{$IFDEF old}
 //find immediate member
   if assigned(Members) then
     Result := Members.FindName(ItemName)
   else
     Result := nil;
+{$ELSE}
+  Result := nil;
+{$ENDIF}
 end;
 
 function TBaseItem.FindName(const NameParts: TNameParts; index: integer = -1): TBaseItem;
 begin
+{$IFDEF old}
 (* Find immediate member in members, parents and class ancestors.
   Index=-1 means FindName[0], continue search upwards.
   Index>0 means match name[i] in immediate members,
@@ -1197,6 +1357,9 @@ FindItem should be used for specific parts of the NameParts.
   if (Result = nil) and (index < 0) and assigned(FMyOwner) then
   //unbounded search up in containers
     Result := FMyOwner.FindName(NameParts, -1);
+{$ELSE}
+  Result := nil;
+{$ENDIF}
 end;
 
 procedure TBaseItem.StoreAuthorTag(
@@ -1321,8 +1484,7 @@ begin
 end;
 
 procedure TBaseItem.Deserialize(const ASource: TStream);
-var
-  HaveItems: boolean;
+//var HaveItems: boolean;
 begin
   inherited;
   Name := LoadStringFromStream(ASource);
@@ -1332,6 +1494,7 @@ begin
   FNameStream := LoadStringFromStream(ASource);
   FNamePosition := LoadIntegerFromStream(ASource);
   ASource.Read(FKind, sizeof(FKind));
+{$IFDEF old}
   ASource.Read(FAttributes, sizeof(FAttributes));
 //allow for missing item list
   ASource.Read(HaveItems, 1);
@@ -1339,8 +1502,11 @@ begin
     FItems := TPasItems.Create(True); //owns items!
     FItems.Deserialize(ASource);
   end;
+{$ELSE}
+{$ENDIF}
 
   { No need to serialize, because it's not generated by parser:
+  FItems
   DetailedDescription := LoadStringFromStream(ASource);
   FullLink := LoadStringFromStream(ASource);
   LastMod := LoadStringFromStream(ASource);
@@ -1350,8 +1516,7 @@ begin
 end;
 
 procedure TBaseItem.Serialize(const ADestination: TStream);
-var
-  HaveItems: boolean;
+//var HaveItems: boolean;
 begin
   inherited;
   SaveStringToStream(Name, ADestination);
@@ -1360,13 +1525,17 @@ begin
   SaveStringToStream(FNameStream, ADestination);
   SaveIntegerToStream(FNamePosition, ADestination);
   ADestination.Write(FKind, sizeof(FKind));
+{$IFDEF old}
   ADestination.Write(FAttributes, sizeof(FAttributes));
   HaveItems := assigned(FItems);
   ADestination.Write(HaveItems, 1);
   if HaveItems then
     FItems.Serialize(ADestination);
+{$ELSE}
+{$ENDIF}
 
   { No need to serialize, because it's not generated by parser:
+  FItems
   SaveStringToStream(DetailedDescription, ADestination);
   SaveStringToStream(FullLink, ADestination);
   SaveStringToStream(LastMod, ADestination);
@@ -1443,7 +1612,10 @@ begin
   FMyOwner := AOwner;
   FKind := AKind;
   FName := AName;
+{$IFDEF old}
   FSeeAlso := TStringPairVector.Create(true);
+{$ELSE}
+{$ENDIF}
   inherited Create();
   if assigned(AOwner) then
     AOwner.AddMember(self)
@@ -1454,8 +1626,13 @@ end;
 
 destructor TPasItem.Destroy;
 begin
-  FreeAndNil(FSeeAlso);
+  //FreeAndNil(FSeeAlso);
   inherited;
+end;
+
+function TPasItem.IsKey(AKey: TTokenType): boolean;
+begin
+  Result := FKind = AKey;
 end;
 
 
@@ -1485,34 +1662,37 @@ procedure TPasItem.HandleSeeAlsoTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-var
-  Pair: TStringPair;
+//var Pair: TStringPair;
 begin
+{$IFDEF old}
   Pair := TStringPair.CreateExtractFirstWord(TagParameter);
 
-  if Pair.Name = '' then
-  begin
+  if Pair.Name = '' then begin
     FreeAndNil(Pair);
     ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@seealso tag doesn''t specify any name to link to, skipped', []);
-  end else
-  begin
+  end else begin
     SeeAlso.Add(Pair);
   end;
-  
+{$ELSE}
+  if Items.AddExtractFirstWord(trSeeAlso, TagParameter) = nil then
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
+      '@seealso tag doesn''t specify any name to link to, skipped', []);
+{$ENDIF}
+
   ReplaceStr := '';
 end;
 
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'abstract', 
+  TTopLevelTag.Create(TagManager, 'abstract',
     nil, {$IFDEF FPC}@{$ENDIF} StoreAbstractTag,
-    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, 
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
      toAllowNormalTextInside]);
-  TTag.Create(TagManager, 'deprecated', 
+  TTag.Create(TagManager, 'deprecated',
     nil, {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
-  TTopLevelTag.Create(TagManager, 'seealso', 
+  TTopLevelTag.Create(TagManager, 'seealso',
     nil, {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
     [toParameterRequired, toFirstWordVerbatim]);
 end;
@@ -1614,14 +1794,15 @@ constructor TPasScope.Create(AOwner: TPasScope; AKind: TTokenType;
 begin
   inherited;
 //always create member list
-  if FItems = nil then
-    FItems := TPasItems.Create(True);
+  if FMembers = nil then
+    FMembers := TPasItems.Create(True);
     //destruction occurs in inherited destructor
   FHeritage := TStringVector.Create;
 end;
 
 destructor TPasScope.Destroy;
 begin
+  FreeAndNil(FMembers);
   FreeAndNil(FHeritage);
   inherited;
 end;
@@ -1640,6 +1821,48 @@ begin
   FHeritage.SaveToBinaryStream(ADestination);
 end;
 
+{$IFDEF old}
+{$ELSE}
+procedure TPasScope.AddMember(item: TPasItem);
+begin
+  Members.Add(item);
+  item.FMyOwner := self as TPasScope;
+end;
+
+function TPasScope.FindName(const NameParts: TNameParts; index: integer = -1): TBaseItem;
+begin
+(* Find immediate member in members, parents and class ancestors.
+  Index=-1 means FindName[0], continue search upwards.
+  Index>0 means match name[i] in immediate members,
+    recurse until all names matched.
+
+FindItem should be used for specific parts of the NameParts.
+*)
+  if assigned(Members) and (Members.Count > 0) then begin
+    if index < 0 then begin
+    //unbounded search, try find first part in immediate members
+      Result := FindName(NameParts, 0);
+    end else begin
+      //Result := Members.FindName(NameParts[index]);
+      Result := Members.FindName(NameParts[index]);
+        //this effectively is a FindItem! (rename?)
+      if assigned(Result) then begin
+      //anchored search for the remaining parts of the name
+        if (index+1 < Length(NameParts)) then
+          Result := Result.FindName(NameParts, index+1);
+        exit; //no retry, after a part has been matched
+      end;
+    end;
+  end else
+    Result := nil;
+//recover?
+  if (Result = nil) and (index < 0) and assigned(FMyOwner) then
+  //unbounded search up in containers
+    Result := FMyOwner.FindName(NameParts, -1);
+end;
+
+{$ENDIF}
+
 function TPasScope.FindItem(const ItemName: string): TBaseItem;
 begin
 (* FindItem should search in members first.
@@ -1647,8 +1870,15 @@ begin
 
   Note: Ancestor search differs for units (sequential) and CIOs (recursive).
 *)
+{$IFDEF old}
   Result := inherited FindItem(ItemName);
     //search only in members
+{$ELSE}
+  if assigned(Members) then
+    Result := Members.FindName(ItemName)
+  else
+    Result := nil;
+{$ENDIF}
   if Result = nil then
     Result := FindItemInAncestors(ItemName);
 end;
@@ -2182,8 +2412,13 @@ constructor TPasMethod.Create(AOwner: TPasScope; AKind: TTokenType;
   const AName: string);
 begin
   inherited;
+{$IFDEF old}
   //FParams := TStringPairVector.Create(true);
   FRaises := TStringPairVector.Create(true);
+{$ELSE}
+  //FParams := TDescriptionItem.Create(trParameters, dkItemList);
+  //FRaises := TDescriptionItem.Create(trExceptionsRaised, dkStrings);
+{$ENDIF}
 //init what
   case AKind of
   KEY_CONSTRUCTOR: FWhat := METHOD_CONSTRUCTOR;
@@ -2221,8 +2456,10 @@ procedure TPasMethod.StoreRaisesTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  Pair: TStringPair;
+  //Pair: TStringPair;
+  item: TDescriptionItem;
 begin
+{$IFDEF old}
   Pair := TStringPair.CreateExtractFirstWord(TagParameter);
 
   if Pair.Name = '' then
@@ -2234,6 +2471,12 @@ begin
   begin
     FRaises.Add(Pair);
   end;
+{$ELSE}
+  item := FItems.AddExtractFirstWord(trExceptionsRaised, TagParameter);
+  if not item.HasName then
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
+      '@raises tag doesn''t specify exception name', []);
+{$ENDIF}
 
   ReplaceStr := '';
 end;
@@ -2244,9 +2487,12 @@ procedure TPasMethod.StoreParamTag(
   const TagParameter: string; var ReplaceStr: string);
 var
   //name: string;
-  Pair: TStringPair;
-  param: TPasItem;
+  //Pair: TStringPair;
+  //param: TPasItem;
+  //params,
+  param: TDescriptionItem;
 begin
+{$IFDEF old}
   Pair := TStringPair.CreateExtractFirstWord(TagParameter);
 
   if Pair.Name = '' then begin
@@ -2259,6 +2505,13 @@ begin
       param := TPasItem.Create(self, KEY_VAR, Pair.Name);
     param.DetailedDescription := Pair.Value;
   end;
+{$ELSE}
+  FParams := Items.AddNew(trParameters, dkItemList);
+  param := FParams.AddExtractFirstWord(trParameters, TagParameter);
+  if param = nil then
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
+      '@param tag doesn''t specify parameter name, skipped', []);
+{$ENDIF}
 
   ReplaceStr := '';
 end;
@@ -2269,16 +2522,25 @@ procedure TPasMethod.StoreReturnsTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
+{$IFDEF old}
   FReturns := TagParameter;
+{$ELSE}
+//we assume "<type> <description>"?
+//Name could hold the function type!
+  FReturns := Items.AddNew(trReturns, dkText, '', TagParameter);
+{$ENDIF}
   ReplaceStr := '';
 end;
 
 function TPasMethod.HasMethodOptionalInfo: boolean;
 begin
-  Result :=
-    (Returns <> '')
+  Result := Items <> nil;
+    //(Returns <> '')
     //or (not ObjectVectorIsNilOrEmpty(Params))
-    or (not ObjectVectorIsNilOrEmpty(Raises));
+    //or (not ObjectVectorIsNilOrEmpty(Raises));
+
+    //or (Items.FindID(trParameters) <> nil)
+    //or (Items.FindID(trExceptionsRaised) <> nil);
 end;
 
 procedure TPasMethod.Deserialize(const ASource: TStream);
@@ -2488,6 +2750,215 @@ begin
   end;
   inherited;
 end;
+
+{ TDescriptionItem }
+
+constructor TDescriptionItem.Create(tid: TTranslationID;
+  AKind: eDescriptionKind; const AName, AValue: string); //virtual?
+begin
+  inherited Create(AName, AValue);
+  ID := tid;
+  kind := AKind;
+//create object?
+  case kind of
+  dkStrings:  Data := TStringVector.Create;
+  dkItemList: Data := TObjectVector.Create(True);
+  end;
+end;
+
+destructor TDescriptionItem.Destroy;
+var
+  obj: TObject;
+begin
+  obj := TObject(Data);
+  if obj is TPasItem then
+    //never destroy
+  else if obj is TObject then
+    FreeAndNil(TObject(Data));
+  inherited;
+end;
+
+function TDescriptionItem.AddExtractFirstWord(tid: TTranslationID;
+  const s: string): TDescriptionItem;
+var
+  n, desc: string;
+begin
+  desc := s;
+  n := ExtractFirstWord(desc);
+  if n = '' then begin
+    Result := nil;
+    exit;
+  end;
+  Result := AddNew(tid, dkNameDesc, n, desc);
+end;
+
+function TDescriptionItem.GetCount: integer;
+begin
+  if TObject(Data) is TObjectVector then
+    Result := TObjectVector(Data).Count
+  else
+    Result := 0;  //or -1, to signal NoList?
+end;
+
+function TDescriptionItem.ItemAt(index: integer): TDescriptionItem;
+begin
+  if index < GetCount then
+    Result := TObjectVector(Data).Items[index] as TDescriptionItem
+  else
+    Result := nil;
+end;
+
+function TDescriptionItem.FindID(id: TTranslationID): TDescriptionItem;
+var
+  i: integer;
+begin
+  for i := 0 to GetCount - 1 do begin
+    //Result := ItemAt(i);
+    Result := TObjectVector(Data).Items[i] as TDescriptionItem;
+    if assigned(Result) and (Result.ID = id) then
+      exit;
+  end;
+  Result := nil;
+end;
+
+function TDescriptionItem.PasItem: TPasItem;
+begin
+  if TObject(Data) is TPasItem then
+    Pointer(Result) := Data
+  else
+    Result := nil;
+end;
+
+function TDescriptionItem.PasItemAt(index: integer): TPasItem;
+begin
+  TObject(Result) := ItemAt(index);
+  if not (Result is TPasItem) then
+    Result := nil;
+end;
+
+function TDescriptionItem.Add(AItem: TDescriptionItem): integer;
+var
+  lst: TObjectVector;
+begin
+  lst := TObject(Data) as TObjectVector;
+  Result := lst.Add(AItem);
+end;
+
+function TDescriptionItem.AddNew(tid: TTranslationID; AKind: eDescriptionKind;
+  const AName, AValue: string): TDescriptionItem;
+var
+  lst: TObjectVector;
+begin
+(* Prevent dupes!
+  Find either by id or by name?
+*)
+  if Data = nil then
+    Data := TObjectVector.Create(True);
+  if TObject(Data) is TObjectVector then begin
+    lst := TObjectVector(Data);
+    case AKind of
+    dkNameDesc: //prevent duplicate ID
+      if tid = trNoTrans then
+        Result := nil //allow any number of dupes
+      else
+        Result := FindID(tid);
+    dkPasItem:  //prevent duplicate name
+      Result := Find(AName);
+    else
+      Result := nil;
+    end;
+    if Result = nil then begin
+      Result := TDescriptionItem.Create(tid, AKind, AName, AValue);
+      lst.Add(Result);
+    end else begin
+      if (Result.Name = '') and (AName <> '') then
+        Result.Name := AName;
+      if (Result.Value = '') and (AValue <> '') then
+        Result.Value := AValue;
+    end;
+  end else
+    Result := nil;  //not a object list???
+end;
+
+function TDescriptionItem.AddStrings(tid: TTranslationID;
+  lst: TStrings): TDescriptionItem;
+var
+  item: TDescriptionItem;
+  sv: TStrings;
+begin
+  item := FindID(tid);
+  if item = nil then
+    item := TDescriptionItem.Create(tid, dkStrings);
+  sv := TObject(item.Data) as TStrings;
+  sv.AddStrings(lst);
+  Result := item;
+end;
+
+function TDescriptionItem.Find(const AName: string): TDescriptionItem;
+var
+  i: integer;
+begin
+  if AName <> '' then begin
+    for i := 0 to Count - 1 do begin
+      Result := ItemAt(i);
+      if CompareText(Result.Name, AName) = 0 then
+        exit; //found
+    end;
+  end;
+//not found
+  Result := nil
+end;
+
+function TDescriptionItem.Text(const NameValueSeparator,
+  ItemSeparator: string): string;
+var
+  i: Integer;
+begin
+  if Count > 0 then begin
+    Result := Items[0].Name + NameValueSeparator + Items[0].Value;
+    for i := 1 to Count - 1 do
+      Result := Result + ItemSeparator +
+        Items[i].Name + NameValueSeparator + Items[i].Value;
+  end;
+end;
+
+function IsEmpty(item: TDescriptionItem): boolean;
+begin
+  Result := (item = nil) or (item.Count <= 0);
+end;
+
+{$IFDEF old}
+function TBaseItem.GetAttribute(attr: TPasItemAttribute): boolean;
+begin
+
+end;
+
+function TBaseItem.GetMyObject: TPasCio;
+begin
+
+end;
+
+function TBaseItem.GetMyUnit: TPasUnit;
+begin
+
+end;
+
+procedure TBaseItem.SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
+begin
+
+end;
+
+procedure TBaseItem.SetMyObject(o: TPasCio);
+begin
+
+end;
+
+procedure TBaseItem.SetMyUnit(U: TPasUnit);
+begin
+...
+end;
+{$ELSE}
+{$ENDIF}
 
 initialization
   TSerializable.Register(TPasItem);

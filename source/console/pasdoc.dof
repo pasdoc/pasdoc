@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=..\component;..\Console;..\component\tipue
 UsePackages=0
 [Parameters]
-RunParams=..\..\..\tests\error_line_number_2.pas
+RunParams=..\..\..\tests\ok_back_comment.pas
 HostApplication=
 Launcher=
 UseLauncher=0

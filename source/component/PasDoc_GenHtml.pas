@@ -22,14 +22,14 @@ unit PasDoc_GenHtml;
 interface
 
 uses
+  Classes,
   PasDoc_Utils,
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
-  PasDoc_Types,
-  Classes,
-  PasDoc_StringPairVector;
+  //PasDoc_StringPairVector;
+  PasDoc_Types;
 
 type
   { @abstract(generates HTML documentation)
@@ -1021,7 +1021,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     i: integer;
     ParamName: string;
   begin
-    if ObjectVectorIsNilOrEmpty(List) then
+    if IsEmpty(List) then
       Exit;
 
     WriteDescriptionSectionHeading(Caption);
@@ -1029,10 +1029,10 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     for i := 0 to List.Count - 1 do 
     begin
       ParamName := List[i].Name;
-      
+
       if LinkToParamNames then
        ParamName := SearchLink(ParamName, Func, '', true);
-      
+
       WriteParameter(ParamName, List[i].Value);
     end;
     WriteDirectLine('</dl>');
@@ -1044,21 +1044,21 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if IsEmpty(SeeAlso) then
       Exit;
 
     WriteDescriptionSectionHeading(trSeeAlso);
     WriteDirectLine('<dl class="see_also">');
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
+      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
         SeeAlso[i].Value, true, SeeAlsoItem);
       WriteDirect('  <dt>');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
         WriteConverted(SeeAlso[i].Name);
       WriteDirectLine('</dt>');
-      
+
       WriteDirect('  <dd>');
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
         WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
@@ -1067,13 +1067,14 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  //procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
   begin
-    if ReturnDesc = '' then
+    if (ReturnDesc = nil) or (ReturnDesc.Description = '') then
       exit;
     WriteDescriptionSectionHeading(trReturns);
     WriteDirect('<p class="return">');
-    WriteSpellChecked(ReturnDesc);
+    WriteSpellChecked(ReturnDesc.Description);
     WriteDirect('</p>');
   end;
 

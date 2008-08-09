@@ -25,16 +25,16 @@ unit PasDoc_Gen;
 interface
 
 uses
+  Classes,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
+  //PasDoc_StringPairVector,
   PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
-  Classes,
   PasDoc_TagManager,
-  PasDoc_Aspell,
-  PasDoc_StringPairVector;
+  PasDoc_Aspell;
 
 type
   { Overview files that pasdoc generates for multiple-document-formats
@@ -1568,42 +1568,42 @@ var
     Anchor: TAnchorItem;
     SectionEntry: TStringPair;
   begin
-    Result := TStringPairVector.Create(true);
-    
+    //Result := TStringPairVector.Create(true);
+    Result := TStringPairVector.Create(trNoTrans, dkItemList);
+
     repeat
       if AnchorIndex = ItemAnchors.Count then
         Exit;
       Anchor := ItemAnchors[AnchorIndex] as TAnchorItem;
-      if Anchor.SectionLevel = 0 then
-      begin
+      if Anchor.SectionLevel = 0 then begin
         Inc(AnchorIndex);
-      end else
-      if Anchor.SectionLevel = MinLevel then
-      begin
+      end else if Anchor.SectionLevel = MinLevel then begin
         Inc(AnchorIndex);
-        SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
+        //SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
+        SectionEntry := TStringPair.Create(trNoTrans, dkNameDesc, Anchor.Name, Anchor.SectionCaption);
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
-          Result.Add(SectionEntry) else
-        begin
-          TStringPairVector(SectionEntry.Data).Free;
+          Result.Add(SectionEntry)
+        else begin
+        //obsolete, is also destroyed with SectionEntry
+          FreeAndNil(TStringPairVector(SectionEntry.Data));
           SectionEntry.Free;
         end;
-      end else
-      if Anchor.SectionLevel > MinLevel then
-      begin
+      end else if Anchor.SectionLevel > MinLevel then begin
         { This is for the case of malformed sections,
           i.e. user suddenly specified section with level
           greater than the "last section level + 1".
           In the future we may just give a warning to the user
           and refuse to work in such case ?
           For now, we just try to go on and produce something sensible. }
-        SectionEntry := TStringPair.Create('', '');
+        //SectionEntry := TStringPair.Create('', '');
+        SectionEntry := TStringPair.Create(trNoTrans, dkNameDesc);  //('', '');
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
-          Result.Add(SectionEntry) else
-        begin
-          TStringPairVector(SectionEntry.Data).Free;
+          Result.Add(SectionEntry)
+        else begin
+        //obsolete, is also destroyed with SectionEntry
+          FreeAndNil(TStringPairVector(SectionEntry.Data));
           SectionEntry.Free;
         end;
       end else
@@ -1612,8 +1612,9 @@ var
         Exit;
     until false;
   end;
-  
+
   procedure FreeSectionsList(List: TStringPairVector);
+  {$IFDEF old}
   var
     i: Integer;
   begin
@@ -1621,7 +1622,12 @@ var
       FreeSectionsList(TStringPairVector(List[i].Data));
     List.Free;
   end;
-  
+  {$ELSE}
+  begin
+    List.Free;
+  end;
+  {$ENDIF}
+
 var
   TopLevelSections: TStringPairVector;
 begin
@@ -1633,12 +1639,12 @@ begin
   except on E: EConvertError do
     begin
       ThisTag.TagManager.DoMessage(1, pmtWarning,
-        'Invalid parameter of @tableOfContents tag: "%s". %s', 
+        'Invalid parameter of @tableOfContents tag: "%s". %s',
         [TagParameter, E.Message]);
       Exit;
     end;
   end;
-  
+
   { calculate ItemAnchors }
   ItemAnchors := (FCurrentItem as TExternalItem).Anchors;
 
