@@ -124,12 +124,13 @@ begin
               '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
        '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
       for I := 0 to TPasMethod(item).params.count - 1 do
-        WriteDirectLine(space +
-          '  <param name="' + ConvertString(TPasMethod(item).Params.PasItemAt[i].name) + '">' +
-            TPasMethod(item).params.PasItemAt[i].FullDeclaration +'</param>');
-      if TPasMethod(item).returns <> '' then
         WriteDirectLine(space + 
-          '  <result>' + TPasMethod(item).returns + '</result>');
+          '  <param name="' + ConvertString(TPasMethod(item).params[i].name) + '">' + 
+            TPasMethod(item).params[i].value +'</param>');
+      //if TPasMethod(item).returns <> '' then
+      if TPasMethod(item).returns <> nil then
+        WriteDirectLine(space +
+          '  <result>' + TPasMethod(item).returns.Description + '</result>');
     WriteDirectLine(space + '</function>');
   end;
 end;
@@ -142,11 +143,9 @@ begin
             '" type="' + ConvertString(TPasProperty(item).Proptype) + 
           '" reader="' + ConvertString(TPasProperty(item).reader) +
           '" writer="' + ConvertString(TPasProperty(item).writer) +
-         //'" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
-         '" default="' + ConvertString(booltostr(item.HasAttribute[SD_DEFAULT])) +
+         '" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
        '" defaultid="' + ConvertString(TPasProperty(item).defaultid) +
-       //'" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
-       '" nodefault="' + ConvertString(booltostr(item.HasAttribute[SD_NODEFAULT])) +
+       '" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
         '" storedid="' + ConvertString(TPasProperty(item).storedid) +'"/>');
 end;
 
@@ -179,30 +178,29 @@ end;
 
 procedure TSimpleXMLDocGenerator.writeclass(const item:TPasCIO);
 
-function writetype(t:TCIOType):string;
-begin
 {$IFDEF old}
-  case t of
-    CIO_CLASS:result:='class';
-    CIO_SPINTERFACE:result:='dispinterface';
-    CIO_INTERFACE:result:='interface';
-    CIO_OBJECT:result:='object';
-    CIO_RECORD:result:='record';
-    CIO_PACKEDRECORD:result:='packed record';
-  else
+  function writetype(t:TCIOType):string;
+  begin
     result:='unknown';
+    case t of
+      CIO_CLASS:result:='class';
+      CIO_SPINTERFACE:result:='dispinterface';
+      CIO_INTERFACE:result:='interface';
+      CIO_OBJECT:result:='object';
+      CIO_RECORD:result:='record';
+      CIO_PACKEDRECORD:result:='packed record';
+    end;
   end;
 {$ELSE}
-  Result := CIO_NAMES[t];
 {$ENDIF}
-end;
 
 var
   i:cardinal;
 begin
-  WriteDirectLine(space + 
+  WriteDirectLine(space +
     '<structure name="' + ConvertString(item.name) +
-             '" type="' + ConvertString(writetype(item.MyType)) + '">');
+             //'" type="' + ConvertString(writetype(item.MyType)) + '">');
+             '" type="' + ConvertString(TokenNames[item.Kind]) + '">');
   space:=space+'  ';
 
   if item.HasDescription then
