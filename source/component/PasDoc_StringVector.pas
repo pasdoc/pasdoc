@@ -27,23 +27,27 @@ type
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
     procedure Iterate(const AItFunc: TIterateFunc);
+  {$IFDEF old}
     procedure AddNotExisting(const AString: string);
-    
+  {$ELSE}
+    function  AddNotExisting(const AString: string): integer;
+  {$ENDIF}
+
     { This loads our contents (i.e. Count and Items[] values)
       from a stream using the binary format
       - SizeOf(Count) bytes for Count
-      - then each string is loaded using 
-        @link(TSerializable.LoadStringFromStream). 
+      - then each string is loaded using
+        @link(TSerializable.LoadStringFromStream).
 
       This is better than simply loading/saving our Text value,
       by @code(Text := TSerializable.LoadStringFromStream(Stream)),
       because when such loading splits multiline strings,
-      e.g. if Items[0] = 'foo' + LineEnding + 'bar', 
+      e.g. if Items[0] = 'foo' + LineEnding + 'bar',
       then after you do Text := 'foo' + LineEnding + 'bar'
       you get two items: Items[0] = 'foo' and Items[1] = 'bar'. }
     procedure LoadFromBinaryStream(Stream: TStream);
-    
-    { This saves our contents in a format readable by 
+
+    { This saves our contents in a format readable by
       @link(LoadFromBinaryStream). }
     procedure SaveToBinaryStream(Stream: TStream);
   end;
@@ -71,10 +75,15 @@ end;
 
 { TStringVector }
 
+{$IFDEF old}
 procedure TStringVector.AddNotExisting(const AString: string);
+{$ELSE}
+function TStringVector.AddNotExisting(const AString: string): integer;
+{$ENDIF}
 begin
-  if IndexOf(AString) < 0 then begin
-    Add(AString);
+  Result := IndexOf(AString);
+  if Result < 0 then begin
+    Result := Add(AString);
   end;
 end;
 

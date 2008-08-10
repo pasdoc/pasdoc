@@ -40,8 +40,12 @@ type
     procedure WriteAppInfo;
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
+  {$IFDEF old}
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; 
+  {$ELSE}
+    procedure WriteAuthors(HL: integer; Authors: TDescriptionItem);
+  {$ENDIF}
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
 
     procedure WriteEndOfDocument;
@@ -136,7 +140,8 @@ type
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; const Created, LastMod: string);
+    //procedure WriteDates(const HL: integer; const Created, LastMod: string);
+    procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
     procedure SetLatexHead(const Value: TStrings);
     function FormatHeading(HL: integer; const s: string): string;
   protected
@@ -333,13 +338,17 @@ begin
   WriteDirectLine('');
 end;
 
-procedure TTexDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
+//procedure TTexDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
+procedure TTexDocGenerator.WriteAuthors(HL: integer; Authors: TDescriptionItem);
 var
   i: Integer;
   s, S1, S2: string;
-  EmailAddress: string;
+  Address, EmailAddress: string;
 begin
-  if StringVectorIsNilOrEmpty(Authors) then Exit;
+(* Added handling of WebAddress, as found in GenHTML.
+  What's the purpose of handling addresses at all, here?
+*)
+  if IsEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
     WriteHeading(HL, FLanguage.Translation[trAuthor])
@@ -347,12 +356,18 @@ begin
     WriteHeading(HL, FLanguage.Translation[trAuthors]);
 
   for i := 0 to Authors.Count - 1 do begin
-    s := Authors[i];
+    s := Authors[i].Description;
     WriteStartOfParagraph;
 
+{ TODO : Why handle addresses here? Seems to make no difference! }
     if ExtractEmailAddress(s, S1, S2, EmailAddress) then begin
       WriteConverted(S1);
       WriteConverted(EmailAddress);
+      WriteConverted(S2);
+    end else if ExtractWebAddress(s, S1, S2, Address) then begin
+      WriteConverted(S1);
+      //WriteLink('http://' + Address, ConvertString(Address), '');
+      WriteConverted(Address);
       WriteConverted(S2);
     end else begin
       WriteConverted(s);
@@ -470,7 +485,8 @@ begin
   WriteItemsDetailed(HL + 2, CIO.Methods, CIO.ShowVisibility, trMethods);
 
   WriteAuthors(HL + 2, CIO.Authors);
-  WriteDates(HL + 2, CIO.Created, CIO.LastMod);
+  //WriteDates(HL + 2, CIO.Created, CIO.LastMod);
+  WriteDates(HL + 2, CIO.Description[trCreated], CIO.Description[trLastModified]);
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
@@ -569,19 +585,20 @@ procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string);
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteDates(const HL: integer; const Created,
-  LastMod: string);
+procedure TTexDocGenerator.WriteDates(const HL: integer;
+  //const Created, LastMod: string);
+  Created, LastMod: TDescriptionItem);
 begin
-  if Created <> '' then begin
+  if not IsEmpty(Created) then begin
     WriteHeading(HL, FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteDirectLine(Created);
+    WriteDirectLine(Created.Description);
     WriteEndOfParagraph;
   end;
-  if LastMod <> '' then begin
+  if not IsEmpty(LastMod) then begin
     WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteDirectLine(LastMod);
+    WriteDirectLine(LastMod.Description);
     WriteEndOfParagraph;
   end;
 end;

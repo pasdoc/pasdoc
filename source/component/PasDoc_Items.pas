@@ -166,8 +166,14 @@ type
       const AName: string = ''; const AValue: string = ''): TDescriptionItem;
   //create a pair of first word and remainder
     function AddExtractFirstWord(tid: TTranslationID; const s: string): TDescriptionItem;
+  //add an string (as Description)
+    function AddString(tid: TTranslationID; const s: string): TDescriptionItem;
+  //add string to list
+    function AddToStrings(tid: TTranslationID; const s: string): integer;
+
   //create a string list
-    function AddStrings(tid: TTranslationID; lst: TStrings): TDescriptionItem;
+    function AddStrings(tid: TTranslationID; lst: TStrings = nil): TDescriptionItem;
+
   //get description item from list, or Nil
     function  ItemAt(index: integer): TDescriptionItem;
   //get descriptive element by ID, or Nil
@@ -178,12 +184,15 @@ type
     function  Find(const AName: string): TDescriptionItem;
   //get Data as TPasItem, or Nil.
     function  PasItem: TPasItem;
+  //get Data as object, or Nil
+    function  GetObject: TObject;
 
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSeparator + Value is
       constructed. Then all such strings for every items all
       concatenated with ItemSeparator. }
-    function Text(const NameValueSeparator, ItemSeparator: string): string;
+    //function Text(const NameValueSeparator, ItemSeparator: string): string;
+    function Text(const NameValueSeparator: string = ' '; const ItemSeparator: string = ' '): string;
 
     property Count: integer read GetCount;
     property Items[index: integer]: TDescriptionItem read ItemAt; default;
@@ -196,12 +205,9 @@ type
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
   private
+    FName: string;
     FDetailedDescription: string;
     FFullLink: string;
-    FLastMod: string;
-    FName: string;
-    FAuthors: TStringVector;
-    FCreated: string;
     FAutoLinkHereAllowed: boolean;
 
     FRawDescriptionInfo: TRawDescriptionInfo;
@@ -212,7 +218,12 @@ type
     procedure WriteRawDescription(const Value: string);
 
     procedure SetFullLink(const Value: string);
-    procedure SetAuthors(const Value: TStringVector);
+  {$IFDEF old}
+    procedure SetAuthors(const Value: TStrings);
+  {$ELSE}
+  {$ENDIF}
+  //FPC requires INTEGER for indexed properties, where Delphi also allows for enums.
+    function GetItemFPC(intID: integer): TDescriptionItem;
 
     procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -265,6 +276,9 @@ type
 
 {$IFDEF old}
   protected  //morph piecemeal...
+    FLastMod: string;
+    //FAuthors: TStrings; // TStringVector;
+    FCreated: string;
   // All attributes, modifiers etc.
     FAttributes: TPasItemAttributes;
   // The declarative token, "unit", "class", "type" etc.
@@ -297,7 +311,7 @@ type
     function GetItem(id: TTranslationID): TDescriptionItem;
     //property Members: TPasItems read FItems;
     property Items: TDescriptionItem read FItems;
-    property SeeAlso: TDescriptionItem index trSeeAlso read GetItem;
+    property SeeAlso: TDescriptionItem index ord(trSeeAlso) read GetItemFPC;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -390,11 +404,6 @@ type
     property FullLink: string read FFullLink write SetFullLink;
     //property FullLink: string read FFullLink write FFullLink;
 
-    { Contains '' or string with date of last modification.
-      This string is already in the form suitable for final output
-      format (i.e. already processed by TDocGenerator.ConvertString). }
-    property LastMod: string read FLastMod write FLastMod;
-
     { name of the item }
     property Name: string read FName write FName;
 
@@ -406,14 +415,6 @@ type
       In this class this simply returns Name. }
     function QualifiedName: String; virtual;
 
-    { list of strings, each representing one author of this item }
-    property Authors: TStringVector read FAuthors write SetAuthors;
-
-    { Contains '' or string with date of creation.
-      This string is already in the form suitable for final output
-      format (i.e. already processed by TDocGenerator.ConvertString). }
-    property Created: string read FCreated;
-
     { Is auto-link mechanism allowed to create link to this item ?
       This may be set to @false by @@noAutoLinkHere tag in item's description. }
     property AutoLinkHereAllowed: boolean
@@ -423,6 +424,26 @@ type
       Must always end with PathDelim.
       In this class, this simply returns GetCurrentDir (with PathDelim added if needed). }
     function BasePath: string; virtual;
+
+    { Get any description. Nil if not existing
+    }
+    property Description[tid: TTranslationID]: TDescriptionItem read GetItem;
+
+    { list of strings, each representing one author of this item }
+    //property Authors: TStringVector read FAuthors write SetAuthors;
+    property Authors: TDescriptionItem index ord(trAuthors) read GetItemFPC;
+
+    { Contains '' or string with date of creation.
+      This string is already in the form suitable for final output
+      format (i.e. already processed by TDocGenerator.ConvertString). }
+    //property Created: string read FCreated;
+    property Created: TDescriptionItem index ord(trCreated) read GetItemFPC;
+
+    { Contains '' or string with date of last modification.
+      This string is already in the form suitable for final output
+      format (i.e. already processed by TDocGenerator.ConvertString). }
+    //property LastMod: string read FLastMod write FLastMod;
+    property LastMod: TDescriptionItem index ord(trLastModified) read GetItemFPC;
   end;
 
 
@@ -604,7 +625,7 @@ type
 
     { Is this item specific to a library ?
       This is decided by "library" hint directive after an item. }
-    property IsLibrarySpecific: boolean index SD_LIBRARY
+    property IsLibrarySpecific: boolean index SD_LIBRARY_
       read GetAttribute write SetAttribute;
   {$ENDIF}
 
@@ -1297,10 +1318,10 @@ end;
 constructor TBaseItem.Create;
 begin
   inherited Create;
-  FAuthors := TStringVector.Create;
   AutoLinkHereAllowed := true;
   FRawDescriptionInfo := TRawDescriptionInfo.Create;
 {$IFDEF old}
+  FAuthors := TStringVector.Create;
   if ord(Kind) > 0 then begin
     if self.FMyOwner = nil then
       assert(self.Kind = KEY_UNIT, 'Non-Unit without owner: ' + TokenNames[kind]);
@@ -1312,10 +1333,22 @@ end;
 
 destructor TBaseItem.Destroy;
 begin
+{$IFDEF old}
   FreeAndNil(FAuthors);
+{$ELSE}
   FreeAndNil(FItems);
+{$ENDIF}
   FreeAndNil(FRawDescriptionInfo);
   inherited;
+end;
+
+function TBaseItem.GetItemFPC(intID: integer): TDescriptionItem;
+var
+  id: TTranslationID absolute intID;
+begin
+  Result := FItems;
+  if Result <> nil then
+    Result := Result.FindID(id);
 end;
 
 function TBaseItem.GetItem(id: TTranslationID): TDescriptionItem;
@@ -1397,9 +1430,13 @@ procedure TBaseItem.StoreAuthorTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
+{$IFDEF old}
   if Authors = nil then
     FAuthors := NewStringVector;
   Authors.Add(TagParameter);
+{$ELSE}
+  Items.AddToStrings(trAuthors, TagParameter);
+{$ENDIF}
   ReplaceStr := '';
 end;
 
@@ -1409,7 +1446,11 @@ procedure TBaseItem.StoreCreatedTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
+{$IFDEF old}
   FCreated := TagParameter;
+{$ELSE}
+  Items.AddNew(trCreated, dkText, '', TagParameter);
+{$ENDIF}
   ReplaceStr := '';
 end;
 
@@ -1419,7 +1460,11 @@ procedure TBaseItem.StoreLastModTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
+{$IFDEF old}
   FLastMod := TagParameter;
+{$ELSE}
+  Items.AddString(trLastModified, TagParameter);
+{$ENDIF}
   ReplaceStr := '';
 end;
 
@@ -1432,25 +1477,30 @@ var
 begin
   if Length(TagParameter)>1 then begin
     case TagParameter[2] of
-      'D': begin
-             if Copy(TagParameter,1,7) = '$Date: ' then begin
-               LastMod := Trim(Copy(TagParameter, 7, Length(TagParameter)-7-1)) + ' UTC';
-               ReplaceStr := '';
-             end;
-           end;
-      'A': begin
-             if Copy(TagParameter,1,9) = '$Author: ' then begin
-               s := Trim(Copy(TagParameter, 9, Length(TagParameter)-9-1));
-               if Length(s) > 0 then begin
-                 if not Assigned(Authors) then
-                   FAuthors := NewStringVector;
-                 Authors.AddNotExisting(s);
-                 ReplaceStr := '';
-               end;
-             end;
-           end;
-      else begin
+    'D':
+      if Copy(TagParameter,1,7) = '$Date: ' then begin
+      {$IFDEF old}
+        LastMod := Trim(Copy(TagParameter, 7, Length(TagParameter)-7-1)) + ' UTC';
+      {$ELSE}
+        Items.AddString(trLastModified, Trim(Copy(TagParameter, 7, Length(TagParameter)-7-1)) + ' UTC');
+      {$ENDIF}
+        ReplaceStr := '';
       end;
+    'A':
+      if Copy(TagParameter,1,9) = '$Author: ' then begin
+        s := Trim(Copy(TagParameter, 9, Length(TagParameter)-9-1));
+        if s <> '' then begin
+        {$IFDEF old}
+          if not Assigned(Authors) then
+            FAuthors := NewStringVector;
+          Authors.AddNotExisting(s);
+       {$ELSE}
+          Items.AddToStrings(trAuthors, s);
+       {$ENDIF}
+          ReplaceStr := '';
+        end;
+      end;
+    //else //ignore
     end;
   end;
 end;
@@ -1473,6 +1523,7 @@ procedure TBaseItem.HandleNoAutoLinkTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
+//handled in PreHandle...
   ReplaceStr := '';
 end;
 
@@ -1492,10 +1543,14 @@ begin
     {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag, []);
 end;
 
-procedure TBaseItem.SetAuthors(const Value: TStringVector);
+{$IFDEF old}
+//procedure TBaseItem.SetAuthors(const Value: TStringVector);
+procedure TBaseItem.SetAuthors(const Value: TStrings);
 begin
   FAuthors.Assign(Value);
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TBaseItem.SetFullLink(const Value: string);
 begin
@@ -2837,6 +2892,14 @@ begin
   Result := AddNew(tid, dkNameDesc, n, desc);
 end;
 
+function TDescriptionItem.GetObject: TObject;
+begin
+  if TObject(Data) is TObject then
+    Result := TObject(Data)
+  else
+    Result := nil;
+end;
+
 function TDescriptionItem.GetCount: integer;
 begin
   if TObject(Data) is TObjectVector then
@@ -2909,13 +2972,15 @@ begin
         Result := FindID(tid);
     dkPasItem:  //prevent duplicate name
       Result := Find(AName);
-    else
+    else //add whatsoever
       Result := nil;
     end;
     if Result = nil then begin
+    //create item
       Result := TDescriptionItem.Create(tid, AKind, AName, AValue);
       lst.Add(Result);
     end else begin
+    //update item(???)
       if (Result.Name = '') and (AName <> '') then
         Result.Name := AName;
       if (Result.Value = '') and (AValue <> '') then
@@ -2925,17 +2990,41 @@ begin
     Result := nil;  //not a object list???
 end;
 
+function TDescriptionItem.AddString(tid: TTranslationID;
+  const s: string): TDescriptionItem;
+begin
+  Result := AddNew(tid, dkText, '', s);
+end;
+
+function TDescriptionItem.AddToStrings(tid: TTranslationID;
+  const s: string): integer;
+var
+  item: TDescriptionItem;
+  sv: TStringVector;
+begin
+//add s to a string list(!)
+  item := AddNew(tid, dkStrings);
+  sv := TObject(item.Data) as TStringVector;
+  Result := sv.AddNotExisting(s);
+end;
+
 function TDescriptionItem.AddStrings(tid: TTranslationID;
   lst: TStrings): TDescriptionItem;
 var
   item: TDescriptionItem;
   sv: TStrings;
 begin
+{$IFDEF old}
   item := FindID(tid);
   if item = nil then
     item := TDescriptionItem.Create(tid, dkStrings);
-  sv := TObject(item.Data) as TStrings;
-  sv.AddStrings(lst);
+{$ELSE}
+  item := AddNew(tid, dkStrings);
+{$ENDIF}
+  if lst <> nil then begin
+    sv := TObject(item.Data) as TStrings;
+    sv.AddStrings(lst);
+  end;
   Result := item;
 end;
 
@@ -2964,6 +3053,13 @@ begin
     for i := 1 to Count - 1 do
       Result := Result + ItemSeparator +
         Items[i].Name + NameValueSeparator + Items[i].Value;
+  end else begin //simple item
+    if Name = '' then
+      Result := Value
+    else if Value = '' then
+      Result := Name
+    else
+      Result := Name + NameValueSeparator + Value;
   end;
 end;
 
@@ -2971,39 +3067,6 @@ function IsEmpty(item: TDescriptionItem): boolean;
 begin
   Result := (item = nil) or (item.Count <= 0);
 end;
-
-{$IFDEF old}
-function TBaseItem.GetAttribute(attr: TPasItemAttribute): boolean;
-begin
-
-end;
-
-function TBaseItem.GetMyObject: TPasCio;
-begin
-
-end;
-
-function TBaseItem.GetMyUnit: TPasUnit;
-begin
-
-end;
-
-procedure TBaseItem.SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
-begin
-
-end;
-
-procedure TBaseItem.SetMyObject(o: TPasCio);
-begin
-
-end;
-
-procedure TBaseItem.SetMyUnit(U: TPasUnit);
-begin
-...
-end;
-{$ELSE}
-{$ENDIF}
 
 initialization
   TSerializable.Register(TPasItem);

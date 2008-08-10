@@ -103,7 +103,7 @@ procedure TipueAddFiles(Units: TPasUnits;
         (it will only be searched by tipue), so we don't care how 
         things look here. We just glue some properties of Item together. }
       LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
-        ' ' + EscapeIndexEntry(Item.Authors.Text);
+        ' ' + EscapeIndexEntry(Item.Authors.Text('', ''));
       if Item is TPasMethod then
         LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text(' ', ' ')) +

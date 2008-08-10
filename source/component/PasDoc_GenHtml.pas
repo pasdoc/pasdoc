@@ -75,7 +75,8 @@ type
     procedure WriteAppInfo;
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
-    procedure WriteAuthors(HL: integer; Authors: TStringVector);
+    //procedure WriteAuthors(HL: integer; Authors: TStringVector);
+    procedure WriteAuthors(HL: integer; Authors: TDescriptionItem);
     procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
     procedure WriteEndOfDocument;
@@ -182,8 +183,12 @@ type
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
+  {$IFDEF old}
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
-    
+  {$ELSE}
+    procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
+  {$ENDIF}
+
     function FormatAnAnchor(const AName, Caption: string): string; 
 
   protected
@@ -456,13 +461,14 @@ begin
   WriteDirectLine('</span>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
+//procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
+procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TDescriptionItem);
 var
   i: Integer;
   s, S1, S2: string;
   Address: string;
 begin
-  if StringVectorIsNilOrEmpty(Authors) then Exit;
+  if IsEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
     WriteHeading(HL, 'authors', FLanguage.Translation[trAuthor])
@@ -471,7 +477,11 @@ begin
 
   WriteDirectLine('<ul class="authors">');
   for i := 0 to Authors.Count - 1 do begin
+  {$IFDEF old}
     s := Authors[i];
+  {$ELSE}
+    s := Authors[i].Description;
+  {$ENDIF}
     WriteDirect('<li>');
 
     if ExtractEmailAddress(s, S1, S2, Address) then begin
@@ -760,19 +770,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer; const Created,
-  LastMod: string);
+procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer;
+  //const Created, LastMod: string);
+  Created, LastMod: TDescriptionItem);
 begin
-  if Created <> '' then begin
+  if not IsEmpty(Created) then begin
     WriteHeading(HL, 'created', FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteDirectLine(Created);
+    WriteDirectLine(Created.Description);
     WriteEndOfParagraph;
   end;
-  if LastMod <> '' then begin
+  if not IsEmpty(LastMod) then begin
     WriteHeading(HL, 'modified', FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteDirectLine(LastMod);
+    WriteDirectLine(LastMod.Description);
     WriteEndOfParagraph;
   end;
 end;
