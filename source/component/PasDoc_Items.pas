@@ -171,7 +171,7 @@ type
   //get description item from list, or Nil
     function  ItemAt(index: integer): TDescriptionItem;
   //get descriptive element by ID, or Nil
-    function  FindID(id: TTranslationID): TDescriptionItem;
+    function  FindID(tid: TTranslationID): TDescriptionItem;
   //get PasItem from list - really?
     function  PasItemAt(index: integer): TPasItem;
   //find item by name
@@ -265,6 +265,11 @@ type
 
 {$IFDEF old}
   protected  //morph piecemeal...
+  // All attributes, modifiers etc.
+    FAttributes: TPasItemAttributes;
+  // The declarative token, "unit", "class", "type" etc.
+    FKind: TTokenType;
+    function  IsKey(AKey: TTokenType): boolean;
     function  GetMyObject: TPasCio;
     procedure SetMyObject(o: TPasCio);
     function  GetMyUnit: TPasUnit;
@@ -273,12 +278,9 @@ type
     function  GetAttribute(attr: TPasItemAttribute): boolean;
     procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
     property Attributes: TPasItemAttributes read FAttributes write FAttributes;
+    property Kind: TTokenType read FKind;
 {$ELSE}
   protected
-  // The declarative token, "unit", "class", "type" etc.
-    FKind: TTokenType;
-  // All attributes, modifiers etc.
-    FAttributes: TPasItemAttributes;
   // position of identifier in the declaration.
     FNamePosition: TTextStreamPos;
     FNameStream: string;
@@ -287,8 +289,6 @@ type
   }
     FMyOwner: TPasScope;
   public
-    function  IsKey(AKey: TTokenType): boolean;
-    property Kind: TTokenType read FKind;
     property NamePosition: TTextStreamPos read FNamePosition write FNamePosition;
     property NameStream: string read FNameStream write FNameStream;
     property MyOwner: TPasScope read FMyOwner;  // write FMyOwner;
@@ -436,14 +436,21 @@ type
     (@link(MyObject)). Also many other things not needed at @link(TBaseItem)
     level are introduced here: things related to handling @@abstract tag,
     @@seealso tag, used to sorting items inside (@link(Sort)) and some more. }
+
+  { TPasItem }
+
   TPasItem = class(TBaseItem)
   private
   { TODO : convert into items }
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
-    FVisibility: TVisibility;
     FFullDeclaration: string;
+    FVisibility: TVisibility;
   {$IFDEF old}
+    FMyOwner: TPasScope;
+    FNamePosition: TTextStreamPos;
+    FNameStream: string;
+    FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
   {$ELSE}
   {$ENDIF}
@@ -485,6 +492,8 @@ type
     procedure SetMyUnit(U: TPasUnit);
   public
     function  IsKey(AKey: TTokenType): boolean;
+    function  GetAttributeFP(attr: integer): boolean;
+    procedure SetAttributeFP(attr: integer; OnOff: boolean);
     function  GetAttribute(attr: TPasItemAttribute): boolean;
     procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
     
@@ -567,7 +576,22 @@ type
     property HasAttribute[attr: TPasItemAttribute]: boolean
       read GetAttribute write SetAttribute;
 
-  {$IFDEF new}
+  {$IFDEF FPC}
+  //Delphi only, FPC doesn't compile these index directives :-(
+    { is this item deprecated? }
+    property IsDeprecated: boolean index ord(SD_DEPRECATED)
+      read GetAttributeFP write SetAttributeFP;
+
+    { Is this item platform specific?
+      This is decided by "platform" hint directive after an item. }
+    property IsPlatformSpecific: boolean index ord(SD_PLATFORM)
+      read GetAttributeFP write SetAttributeFP;
+
+    { Is this item specific to a library ?
+      This is decided by "library" hint directive after an item. }
+    property IsLibrarySpecific: boolean index ord(SD_Library_)
+      read GetAttributeFP write SetAttributeFP;
+  {$ELSE}
   //Delphi only, FPC doesn't compile these index directives :-(
     { is this item deprecated? }
     property IsDeprecated: boolean index SD_DEPRECATED
@@ -582,7 +606,6 @@ type
       This is decided by "library" hint directive after an item. }
     property IsLibrarySpecific: boolean index SD_LIBRARY
       read GetAttribute write SetAttribute;
-  {$ELSE}
   {$ENDIF}
 
     property Visibility: TVisibility read FVisibility write FVisibility;
@@ -918,14 +941,19 @@ type
     { keeps default value specifier }
     property DefaultID: string read FDefaultID write FDefaultID;
     { true if Nodefault property }
-  {$IFnDEF new}
+  {$IFDEF FPC}
+    { true if the property is the default property }
+    property Default: Boolean //read FDefault write FDefault;
+      index ord(SD_DEFAULT) read GetAttributeFP write SetAttributeFP;
+    property NoDefault: Boolean //read FNoDefault write FNoDefault;
+      index ord(SD_NODEFAULT) read GetAttributeFP write SetAttributeFP;
+  {$ELSE}
   //Delphi only, FPC doesn't compile these index directives :-(
     { true if the property is the default property }
     property Default: Boolean //read FDefault write FDefault;
       index SD_DEFAULT read GetAttribute write SetAttribute;
     property NoDefault: Boolean //read FNoDefault write FNoDefault;
       index SD_NODEFAULT read GetAttribute write SetAttribute;
-  {$ELSE}
   {$ENDIF}
     { keeps Stored specifier }
     property StoredId: string read FStoredID write FStoredID;
@@ -1290,11 +1318,6 @@ begin
   inherited;
 end;
 
-function  TBaseItem.IsKey(AKey: TTokenType): boolean;
-begin
-  Result := FKind = AKey;
-end;
-
 function TBaseItem.GetItem(id: TTranslationID): TDescriptionItem;
 begin
   Result := FItems;
@@ -1303,6 +1326,12 @@ begin
 end;
 
 {$IFDEF old}
+
+function  TBaseItem.IsKey(AKey: TTokenType): boolean;
+begin
+  Result := FKind = AKey;
+end;
+
 procedure TBaseItem.AddMember(item: TPasItem);
 begin
 { TODO : Only PasItems can have Members }
@@ -1493,8 +1522,8 @@ begin
   FRawDescription := LoadStringFromStream(ASource);
   FNameStream := LoadStringFromStream(ASource);
   FNamePosition := LoadIntegerFromStream(ASource);
-  ASource.Read(FKind, sizeof(FKind));
 {$IFDEF old}
+  ASource.Read(FKind, sizeof(FKind));
   ASource.Read(FAttributes, sizeof(FAttributes));
 //allow for missing item list
   ASource.Read(HaveItems, 1);
@@ -1524,8 +1553,8 @@ begin
 
   SaveStringToStream(FNameStream, ADestination);
   SaveIntegerToStream(FNamePosition, ADestination);
-  ADestination.Write(FKind, sizeof(FKind));
 {$IFDEF old}
+  ADestination.Write(FKind, sizeof(FKind));
   ADestination.Write(FAttributes, sizeof(FAttributes));
   HaveItems := assigned(FItems);
   ADestination.Write(HaveItems, 1);
@@ -1634,7 +1663,6 @@ function TPasItem.IsKey(AKey: TTokenType): boolean;
 begin
   Result := FKind = AKey;
 end;
-
 
 procedure TPasItem.StoreAbstractTag(
   ThisTag: TTag; var ThisTagData: TObject;
@@ -1777,6 +1805,23 @@ end;
 function TPasItem.GetAttribute(attr: TPasItemAttribute): boolean;
 begin
   Result := attr in FAttributes;
+end;
+
+function TPasItem.GetAttributeFP(attr: integer): boolean;
+var
+  id: TPasItemAttribute absolute attr;
+begin
+  Result := id in FAttributes;
+end;
+
+procedure TPasItem.SetAttributeFP(attr: integer; OnOff: boolean);
+var
+  id: TPasItemAttribute absolute attr;
+begin
+  if OnOff then
+    Include(FAttributes, id)
+  else
+    Exclude(FAttributes, id);
 end;
 
 procedure TPasItem.SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
@@ -2808,14 +2853,14 @@ begin
     Result := nil;
 end;
 
-function TDescriptionItem.FindID(id: TTranslationID): TDescriptionItem;
+function TDescriptionItem.FindID(tid: TTranslationID): TDescriptionItem;
 var
   i: integer;
 begin
   for i := 0 to GetCount - 1 do begin
     //Result := ItemAt(i);
     Result := TObjectVector(Data).Items[i] as TDescriptionItem;
-    if assigned(Result) and (Result.ID = id) then
+    if assigned(Result) and (Result.ID = tid) then
       exit;
   end;
   Result := nil;

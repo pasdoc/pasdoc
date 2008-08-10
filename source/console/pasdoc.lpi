@@ -14,7 +14,7 @@
       <IconPath Value=".\"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="5"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -36,20 +36,20 @@
         <PackageName Value="pasdoc_package"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="7">
       <Unit0>
         <Filename Value="pasdoc.dpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="1" Y="37"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="PasDoc_Main.pas"/>
         <UnitName Value="PasDoc_Main"/>
-        <CursorPos X="32" Y="13"/>
+        <CursorPos X="22" Y="26"/>
         <TopLine Value="4"/>
         <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
@@ -82,8 +82,147 @@
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <UnitName Value="PasDoc_Items"/>
+        <CursorPos X="28" Y="1824"/>
+        <TopLine Value="1800"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\component\PasDoc_Types.pas"/>
+        <UnitName Value="PasDoc_Types"/>
+        <CursorPos X="5" Y="194"/>
+        <TopLine Value="159"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="270" Column="1" TopLine="253"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="174" Column="23" TopLine="152"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="2818" Column="1" TopLine="2811"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="478" Column="5" TopLine="456"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="272" Column="1" TopLine="257"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="273" Column="1" TopLine="262"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="925" Column="32" TopLine="898"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="442" Column="3" TopLine="439"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="581" Column="30" TopLine="564"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="445" Column="1" TopLine="425"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="523" Column="32" TopLine="501"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="448" Column="1" TopLine="424"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="591" Column="35" TopLine="564"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="590" Column="62" TopLine="564"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="585" Column="57" TopLine="568"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="590" Column="62" TopLine="568"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="591" Column="16" TopLine="575"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="451" Column="30" TopLine="446"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1821" Column="1" TopLine="1800"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="446" Column="1" TopLine="426"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="611" Column="43" TopLine="589"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="449" Column="1" TopLine="430"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="949" Column="30" TopLine="927"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1321" Column="1" TopLine="1299"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="384" Column="15" TopLine="378"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1583" Column="1" TopLine="1583"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1359" Column="1" TopLine="1316"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1558" Column="1" TopLine="1531"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\component\PasDoc_Items.pas"/>
+        <Caret Line="1814" Column="1" TopLine="1790"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
