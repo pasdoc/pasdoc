@@ -382,8 +382,7 @@ begin
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
     SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
   try
-    //p.ShowVisibilities := ShowVisibilities;
-    PasDoc_items.ShowVisibilities := ShowVisibilities;
+    PasDoc_items.ShowVisibilities := ShowVisibilities; //must be known to all CIOs
     p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;

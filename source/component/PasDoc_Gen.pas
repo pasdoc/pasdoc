@@ -1015,8 +1015,12 @@ procedure TDocGenerator.BuildLinks;
     if (not Assigned(c)) or (c.Count < 1) then Exit;
     for i := 0 to c.Count - 1 do begin
       p := c.PasItemAt[i];
+    {$IFDEF old}
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
+    {$ELSE}
+      //already done by member list
+    {$ENDIF}
       p.FullLink := CreateLink(p);
     end;
   end;
@@ -1060,7 +1064,11 @@ begin
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
       for j := 0 to U.CIOs.Count - 1 do begin
         CO := TPasCio(U.CIOs.PasItemAt[j]);
+      {$IFDEF old}
         CO.MyUnit := U;
+      {$ELSE}
+        //already done by member list
+      {$ENDIF}
         CO.FullLink := CreateLink(CO);
         CO.OutputFileName := CO.FullLink;
 

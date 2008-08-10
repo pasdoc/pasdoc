@@ -101,36 +101,7 @@
         <Loaded Value="True"/>
       </Unit6>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
-      <Position1>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1824" Column="28" TopLine="1800"/>
-      </Position1>
-      <Position2>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="316" Column="60" TopLine="294"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="310" Column="1" TopLine="298"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1358" Column="1" TopLine="1339"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="433" Column="73" TopLine="411"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="291" Column="1" TopLine="248"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="440" Column="1" TopLine="418"/>
-      </Position7>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
