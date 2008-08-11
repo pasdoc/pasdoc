@@ -130,7 +130,6 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 [Excluded Packages]
-c:\program files\borland\delphi7\Projects\Bpl\pasdoc_package.bpl=PasDoc components
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclBaseExpert70.bpl=JCL Package containing common units for JCL Experts
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclDebugExpert70.bpl=JCL Debug IDE extension
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclProjectAnalysisExpert70.bpl=JCL Project Analyzer

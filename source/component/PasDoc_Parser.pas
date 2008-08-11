@@ -879,8 +879,8 @@ end;
 
 function TParser.Skip(dir: TStandardDirective): boolean;
 begin
-  Result := PeekNextToken = TOK_IDENTIFIER;
-  if Result and (Peeked.Directive = dir) then
+  Result := (PeekNextToken = TOK_IDENTIFIER) and (Peeked.Directive = dir);
+  if Result then
     ConsumeToken;
 end;
 

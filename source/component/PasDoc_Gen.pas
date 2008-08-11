@@ -1166,13 +1166,13 @@ begin
     is registered only for TPasItem (or, even better, for TPasCio
     and TPasItem with MyObject <> nil). }
 
-  ItemClassName := '';
-  if not (FCurrentItem is TPasItem) then begin
-    if Assigned(TPasItem(fCurrentItem).MyObject) then
-      ItemClassName := TPasItem(fCurrentItem).MyObject.Name
-    else if fCurrentItem is TPasCio then
-      ItemClassName := fCurrentItem.Name;
-  end;
+  if fCurrentItem is TPasCio then
+    ItemClassName := fCurrentItem.Name
+  else if (FCurrentItem is TPasItem) //then begin
+      and Assigned(TPasItem(fCurrentItem).MyObject) then
+        ItemClassName := TPasItem(fCurrentItem).MyObject.Name
+  else
+    ItemClassName := '';
 
   if ItemClassName <> '' then
     ReplaceStr := CodeString(ConvertString(ItemClassName))
@@ -1205,20 +1205,21 @@ procedure TDocGenerator.HandleInheritedClassTag(
   procedure HandleFromClass(TheObject: TPasCio);
   begin
     if TheObject.FirstAncestorName = '' then
-      InheritedClassCannotResolve('No ancestor class') else
-    if TheObject.FirstAncestor = nil then
-      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName)) else
-      ReplaceStr := MakeItemLink(TheObject.FirstAncestor, 
+      InheritedClassCannotResolve('No ancestor class')
+    else if TheObject.FirstAncestor = nil then
+      ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName))
+    else
+      ReplaceStr := MakeItemLink(TheObject.FirstAncestor,
         TheObject.FirstAncestorName, lcNormal);
   end;
-  
+
 begin
   if FCurrentItem is TPasCio then
-    HandleFromClass(TPasCio(FCurrentItem)) else
-  if FCurrentItem is TPasItem then
-  begin
+    HandleFromClass(TPasCio(FCurrentItem))
+  else if FCurrentItem is TPasItem then begin
     if Assigned(TPasItem(FCurrentItem).MyObject) then
-      HandleFromClass(TPasItem(FCurrentItem).MyObject) else
+      HandleFromClass(TPasItem(FCurrentItem).MyObject)
+    else
       InheritedClassCannotResolve('This item is not a member of a class/interface/etc.');
   end else
     InheritedClassCannotResolve('You can''t use @inheritedClass here');
@@ -1228,14 +1229,14 @@ procedure TDocGenerator.HandleInheritedTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-  
+
   procedure InheritedCannotResolve(const Msg: string);
   begin
-    ThisTag.TagManager.DoMessage(2, pmtWarning, 
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
       'Can''t resolve @inherited: ' + Msg, []);
     ReplaceStr := CodeString(ConvertString(FCurrentItem.Name));
   end;
-  
+
 var
   TheObject: TPasCio;
   InheritedItem: TPasItem;

@@ -13,14 +13,14 @@ unit PasDoc_StringVector;
 interface
 uses
   Classes;
-   
+
 type
   TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
     { This is the same thing as Items[0] }
     function FirstName: string;
-    
+
     procedure LoadFromTextFileAdd(const AFilename: string); overload;
     procedure LoadFromTextFileAdd(var ATextFile: TextFile); overload;
     procedure RemoveAllNamesCI(const AName: string);
@@ -162,10 +162,13 @@ begin
 end;
 
 procedure TStringVector.LoadFromBinaryStream(Stream: TStream);
-var i: Integer;
+var
+  i, n: Integer;
 begin
   Clear;
-  for i := 0 to TSerializable.LoadIntegerFromStream(Stream) - 1 do
+  n := TSerializable.LoadIntegerFromStream(Stream);
+  Capacity := n;
+  for i := 0 to n - 1 do
     Append(TSerializable.LoadStringFromStream(Stream));
 end;
 
