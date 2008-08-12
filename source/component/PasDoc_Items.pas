@@ -139,16 +139,34 @@ type
   eDescriptionKind = (
   //simple entries, without any objects in Data
     dkText, //< simple text, in Value(?)
-    //dkBool, //< somewhere needed in TStringPair, Data is boolean! (or integer: level?)
     dkNameDesc, //< Name and Value=Description
-    dkStrings, //< StringList, without objects
-  //Delegate for TPasItem(=Data), which can have further descriptive elements.
-    dkPasItem,
+  // StringList, without objects (Authors)
+    dkStrings,
+  //list of TPasItem's (=TPasItems), which are NOT description items!
+  //the list is owned, but not the members - which are owned by Members[]!
+    dkPasItems,
   //lists, tables(?) Data is description list
     dkItemList
   );
 
-//become new class? Keep ancestor for now, for compatibility.
+(* Become new class? Keep TStringPair ancestor for now, for compatibility.
+  Considerations for lists:
+
+  The lists themselves must be unique, either by ID or name.
+
+  Lists of TPasItems can be created by the parser (unit.Variables)
+  or by the generator (unit.UsedUnits).
+
+  Parser generated lists (TPasItems) must be serialized, and consequently
+  must be deserialized into their proper place. This may change, when
+  sub-lists of Members are created on demand (Events...).
+  A descriptive entry can hold that list, but can not retrieve items
+  by ID. No dupecheck is required, the lists may be sorted,
+  access is assumed sequential (by index).
+
+  Delegates for TPasItems are required for e.g. UsedUnits, where the
+  TPasUnit objects are added later, based on the item.Name.
+*)
   TDescriptionItem = class(TStringPair)
 {$IFDEF delegates}
   protected
@@ -2549,7 +2567,8 @@ var
   param: TDescriptionItem;
 begin
   FParams := NeedItems.AddNew(trParameters, dkItemList);
-  param := FParams.AddExtractFirstWord(trParameters, TagParameter);
+//add as NoTrans, to force unique Name
+  param := FParams.AddExtractFirstWord(trNoTrans, TagParameter);
   if param = nil then
     ThisTag.TagManager.DoMessage(2, pmtWarning,
       '@param tag doesn''t specify parameter name, skipped', [])
@@ -2792,6 +2811,8 @@ end;
 constructor TDescriptionItem.Create(tid: TTranslationID;
   AKind: eDescriptionKind; const AName, AValue: string); //virtual?
 begin
+(* This can become a class method, that creates e.g. specialized lists?
+*)
   inherited Create(AName, AValue);
   ID := tid;
   kind := AKind;
@@ -2799,6 +2820,7 @@ begin
   case kind of
   dkStrings:  Data := TStringVector.Create;
   dkItemList: Data := TObjectVector.Create(True);
+  dkPasItems: Data := TPasItems.Create(False);
   end;
 end;
 
@@ -2957,17 +2979,29 @@ begin
     Data := TObjectVector.Create(True);
   if TObject(Data) is TObjectVector then begin
     lst := TObjectVector(Data);
+  //find entry in list, in detail when a contained list is requested!
+  {$IFDEF old}
     case AKind of
-    dkNameDesc: //prevent duplicate ID
+    dkStrings,  //Authors...
+      //split Author into name and description (URL...)?
+    dkItemList,
+    dkNameDesc: //prevent duplicate ID, for all lists
       if tid = trNoTrans then
-        Result := nil //allow any number of dupes
+        Result := nil //allow any number of dupes (where???)
+        //does this mean: dupecheck for names is not required???
       else
         Result := FindID(tid);
-    dkPasItem:  //prevent duplicate name
+    dkPasItems:  //prevent duplicate name
       Result := Find(AName);
     else //add whatsoever
       Result := nil;
     end;
+  {$ELSE}
+    if tid = trNoTrans then
+      Result := Find(AName)
+    else
+      Result := FindID(tid);
+  {$ENDIF}
     if Result = nil then begin
     //create item
       Result := TDescriptionItem.Create(tid, AKind, AName, AValue);

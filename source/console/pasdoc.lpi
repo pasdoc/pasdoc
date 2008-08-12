@@ -14,7 +14,7 @@
       <IconPath Value=".\"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc"/>
-      <ActiveEditorIndexAtStart Value="7"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -26,7 +26,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-L de ..\ok_expanding_descriptions.pas"/>
+        <CommandLineParams Value="..\ok_complicated_record.pas"/>
         <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
         <WorkingDirectory Value="D:\SourceForge\pasdocOld\branches\PasDoc2\tests\html"/>
       </local>
@@ -77,7 +77,7 @@
         <Filename Value="..\component\PasDoc_Base.pas"/>
         <UnitName Value="PasDoc_Base"/>
         <CursorPos X="1" Y="340"/>
-        <TopLine Value="318"/>
+        <TopLine Value="313"/>
         <EditorIndex Value="3"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
@@ -85,8 +85,8 @@
       <Unit5>
         <Filename Value="..\component\PasDoc_Items.pas"/>
         <UnitName Value="PasDoc_Items"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1785"/>
+        <TopLine Value="1763"/>
         <EditorIndex Value="6"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
@@ -143,127 +143,27 @@
         <Loaded Value="True"/>
       </Unit11>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1785" Column="1" TopLine="1763"/>
+        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\inc\objpas.inc"/>
+        <Caret Line="152" Column="1" TopLine="130"/>
       </Position1>
       <Position2>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1788" Column="1" TopLine="1766"/>
+        <Filename Value="..\component\PasDoc_GenHtml.pas"/>
+        <Caret Line="797" Column="1" TopLine="775"/>
       </Position2>
       <Position3>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1790" Column="1" TopLine="1768"/>
+        <Filename Value="PasDoc_Main.pas"/>
+        <Caret Line="580" Column="1" TopLine="558"/>
       </Position3>
       <Position4>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1791" Column="1" TopLine="1769"/>
+        <Filename Value="..\component\PasDoc_Base.pas"/>
+        <Caret Line="340" Column="1" TopLine="313"/>
       </Position4>
       <Position5>
         <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="2509" Column="1" TopLine="2487"/>
+        <Caret Line="1785" Column="1" TopLine="1763"/>
       </Position5>
-      <Position6>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\inc\objpas.inc"/>
-        <Caret Line="153" Column="1" TopLine="131"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="701" Column="13" TopLine="682"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="705" Column="1" TopLine="683"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\objpas\classes\lists.inc"/>
-        <Caret Line="418" Column="1" TopLine="396"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1785" Column="1" TopLine="1763"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1788" Column="1" TopLine="1766"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1790" Column="1" TopLine="1768"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1791" Column="1" TopLine="1769"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="2127" Column="1" TopLine="2105"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\inc\objpas.inc"/>
-        <Caret Line="153" Column="1" TopLine="131"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="704" Column="1" TopLine="682"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="705" Column="1" TopLine="683"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\objpas\classes\lists.inc"/>
-        <Caret Line="418" Column="1" TopLine="396"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1785" Column="1" TopLine="1763"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1788" Column="1" TopLine="1766"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1790" Column="1" TopLine="1768"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1791" Column="1" TopLine="1769"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="2127" Column="1" TopLine="2105"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\inc\objpas.inc"/>
-        <Caret Line="153" Column="1" TopLine="131"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="704" Column="1" TopLine="682"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\packages\fcl-base\src\inc\contnrs.pp"/>
-        <Caret Line="705" Column="1" TopLine="683"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\..\..\..\..\lazarus\fpc\2.2.0\source\rtl\objpas\classes\lists.inc"/>
-        <Caret Line="418" Column="1" TopLine="396"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1785" Column="1" TopLine="1763"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1788" Column="1" TopLine="1766"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\component\PasDoc_Items.pas"/>
-        <Caret Line="1790" Column="1" TopLine="1768"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -296,7 +196,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="7">
+    <BreakPoints Count="2">
       <Item1>
         <Source Value="pasdoc.dpr"/>
         <Line Value="41"/>
@@ -305,26 +205,6 @@
         <Source Value="pasdoc.dpr"/>
         <Line Value="37"/>
       </Item2>
-      <Item3>
-        <Source Value="..\component\PasDoc_GenHtml.pas"/>
-        <Line Value="797"/>
-      </Item3>
-      <Item4>
-        <Source Value="PasDoc_Main.pas"/>
-        <Line Value="580"/>
-      </Item4>
-      <Item5>
-        <Source Value="..\component\PasDoc_Base.pas"/>
-        <Line Value="335"/>
-      </Item5>
-      <Item6>
-        <Source Value="..\component\PasDoc_Base.pas"/>
-        <Line Value="340"/>
-      </Item6>
-      <Item7>
-        <Source Value="..\component\PasDoc_Items.pas"/>
-        <Line Value="1785"/>
-      </Item7>
     </BreakPoints>
     <Watches Count="1">
       <Item1>

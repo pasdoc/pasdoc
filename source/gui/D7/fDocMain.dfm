@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabDoc
+    ActivePage = tabOpts
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -173,7 +173,7 @@ object DocMain: TDocMain
       end
       object swBackRef: TCheckBox
         Left = 8
-        Top = 316
+        Top = 276
         Width = 161
         Height = 17
         Caption = 'Default BackReferences'
@@ -275,6 +275,15 @@ object DocMain: TDocMain
           'public'
           'published'
           'implicit')
+      end
+      object swShowUses: TCheckBox
+        Left = 4
+        Top = 316
+        Width = 97
+        Height = 17
+        Caption = 'Show Uses list'
+        TabOrder = 13
+        OnClick = AnyChange
       end
     end
     object tabFiles: TTabSheet

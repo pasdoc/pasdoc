@@ -1158,15 +1158,10 @@ begin
     end;
   end;
   
-  if AItem is TPasMethod then
-  begin
+  if AItem is TPasMethod then begin
     AItemMethod := TPasMethod(AItem);
-  {$IFDEF old}
     WriteParamsOrRaises(AItemMethod, trParameters,
       AItemMethod.Params, false, 'parameters');
-  {$ELSE}
-    { TODO : WriteParamsOrRaises with Params:PasItems }
-  {$ENDIF}
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
     WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
       AItemMethod.Raises, true, 'exceptions_raised');

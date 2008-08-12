@@ -3459,11 +3459,13 @@ begin
               else
                 begin
                   if SearchForLink then
-                    FoundItem := SearchItem(S, Item, false) else
+                    FoundItem := SearchItem(S, Item, false)
+                  else
                     FoundItem := nil;
 
                   if Assigned(FoundItem) then
-                    WriteDirect(MakeItemLink(FoundItem, s, lcCode)) else
+                    WriteDirect(MakeItemLink(FoundItem, s, lcCode))
+                  else
                     WriteConverted(s);
                 end;
             end;
@@ -3709,7 +3711,7 @@ begin
   FileNames := TStringList.Create;
   try
     FileNames.Text := TagParameter;      
-    
+
     { Trim, remove empty lines, and expand paths on FileNames }
     I := 0;
     while I < FileNames.Count do

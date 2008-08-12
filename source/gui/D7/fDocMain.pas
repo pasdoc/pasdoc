@@ -125,6 +125,7 @@ type
     GroupBox10: TGroupBox;
     cbRem: TComboBox;
     edDecl: TEdit;
+    swShowUses: TCheckBox;
   {$IFDEF fpc}
     //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
   {$ELSE}
@@ -581,6 +582,7 @@ const
     mainOutputDir = 'OutputDir';
     mainRootDir = 'RootDir';
     mainProjectName = 'ProjectName';
+    mainShowUses = 'ShowUses';
     mainSorting_ = 'Sorting_';
     mainSpecialMarkerTreatment = 'SpecialMarkerTreatment';
     mainTitle = 'Title';
@@ -661,6 +663,8 @@ begin
     Ini.WriteString(secMain, mainIntroductionFileName, edIntro.Text);
     Ini.WriteString(secMain, mainConclusionFileName, edConclusion.Text);
     Ini.WriteBool(secMain, mainAutoAbstract, swAutoAbstract.Checked);
+    Ini.WriteBool(secMain, mainShowUses, swShowUses.Checked);
+
     Ini.WriteBool(secMain, mainUseTipueSearch, swTipue.Checked);
     Ini.WriteInteger(secMain, mainLatexGraphicsPackage, lbGraphPackage.ItemIndex);
     Ini.WriteInteger(secMain, mainLineBreakQuality, lbLineBreaks.ItemIndex);
@@ -772,6 +776,7 @@ begin
     edIntro.Text := Ini.ReadString(secMain, mainIntroductionFileName, '');
     edConclusion.Text := Ini.ReadString(secMain, mainConclusionFileName, '');
     swAutoAbstract.Checked := Ini.ReadBool(secMain, mainAutoAbstract, false);
+    swShowUses.Checked := Ini.ReadBool(secMain, mainShowUses, False);
     swTipue.Checked := Ini.ReadBool(secMain, mainUseTipueSearch, false);
     lbLineBreaks.ItemIndex := Ini.ReadInteger(secMain, mainLineBreakQuality, 0);
     lbGraphPackage.ItemIndex := Ini.ReadInteger(secMain, mainLatexGraphicsPackage, 0);
@@ -1203,6 +1208,7 @@ try
   Generator.DestinationDirectory := dir;
 
   Generator.AutoAbstract := swAutoAbstract.Checked;
+  generator.WriteUsesClause := swShowUses.Checked;
 
   PasDoc1.ProjectName := edProjectName.Text;
   PasDoc1.IntroductionFileName := edIntro.Text;
