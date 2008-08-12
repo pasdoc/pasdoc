@@ -2504,7 +2504,7 @@ end;
 
 destructor TPasMethod.Destroy;
 begin
-  FRaises.Free;
+  //FRaises.Free;
   inherited Destroy;
 end;
 
@@ -2529,9 +2529,7 @@ procedure TPasMethod.StoreRaisesTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  //Pair: TStringPair;
   item: TDescriptionItem;
-  Fraises: TDescriptionItem;
 begin
   Fraises := NeedItems.AddNew(trExceptionsRaised, dkItemList);
   item := Fraises.AddExtractFirstWord(trNoTrans, TagParameter);
