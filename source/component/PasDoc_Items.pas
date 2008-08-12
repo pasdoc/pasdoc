@@ -167,6 +167,7 @@ type
   Delegates for TPasItems are required for e.g. UsedUnits, where the
   TPasUnit objects are added later, based on the item.Name.
 *)
+{ TODO 1 -oDoDi : Derive specialized list classes }
   TDescriptionItem = class(TStringPair)
 {$IFDEF delegates}
   protected
@@ -220,6 +221,8 @@ type
     function  PasItem: TPasItem;
   //get Data as object, or Nil
     function  GetObject: TObject;
+  //get string, from any kind of list
+    function  GetString(index: integer): string;
 
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSeparator + Value is
@@ -228,8 +231,9 @@ type
     function Text(const NameValueSeparator: string = ' '; const ItemSeparator: string = ' '): string;
 
     property Count: integer read GetCount;
-    property Items[index: integer]: TDescriptionItem read ItemAt; default;
+    property Items[index: integer]: TDescriptionItem read ItemAt; //default;
     property Description: string read Value;
+    property Strings[index: integer]: string read GetString;
   end;
   TStringPair = TDescriptionItem;
   TStringPairVector = TDescriptionItem;
@@ -2392,7 +2396,7 @@ end;
 function TPasUnit.FindItemInAncestors(const ItemName: string): TPasItem;
 var
   i: integer;
-  uitem: TPasUnit;
+  //uitem: TPasUnit;
 begin
   for i := 0 to UsesUnits.Count - 1 do begin
   {$IFnDEF delegates}
@@ -2919,15 +2923,62 @@ function TDescriptionItem.GetCount: integer;
 begin
   if TObject(Data) is TObjectVector then
     Result := TObjectVector(Data).Count
+  else if TObject(Data) is TStrings then
+    Result := TStrings(Data).Count
   else
     Result := 0;  //or -1, to signal NoList?
 end;
 
+function TDescriptionItem.GetString(index: integer): string;
+var
+  sl: TStrings;
+  pl: TPasItems;
+  il: TObjectVector;
+  desc: TDescriptionItem;
+begin
+  Result := '';
+  case kind of
+  dkStrings:
+    begin
+      sl := TObject(Data) as TStrings;
+      if index < sl.Count then
+        Result := sl[index];
+    end;
+  dkPasItems:
+    begin
+      pl := TObject(Data) as TPasItems;
+      if index < pl.Count then begin
+        //Result := pl.PasItemAt[index].DetailedDescription; //???
+        desc := pl.PasItemAt[index].Description[trDescription];
+        if assigned(desc) then
+          Result := desc.Value;
+      end;
+    end;
+  dkItemList:
+    begin
+      il := TObject(Data) as TObjectVector;
+      if index < il.Count then begin
+        //Result := il.Items[index]
+        desc := ItemAt(index);
+        if assigned(desc) then
+          Result := desc.Value;
+      end;
+    end;
+  //else //case: Result := '';
+  end;
+end;
+
 function TDescriptionItem.ItemAt(index: integer): TDescriptionItem;
 begin
-  if index < GetCount then
-    Result := TObjectVector(Data).Items[index] as TDescriptionItem
-  else
+  if index < GetCount then begin
+    case kind of
+    //dkStrings: Result := TStrings(Data)[index]; - no items!!!
+    dkPasItems: Result := TPasItems(Data).PasItemAt[index].Items;
+    dkItemList: Result := TObjectVector(Data).Items[index] as TDescriptionItem;
+    else
+      Result := nil;
+    end;
+  end else
     Result := nil;
 end;
 
@@ -2953,9 +3004,23 @@ begin
 end;
 
 function TDescriptionItem.PasItemAt(index: integer): TPasItem;
+var
+  obj: TObject;
 begin
-  TObject(Result) := ItemAt(index);
-  if not (Result is TPasItem) then
+  //TObject(Result) := ItemAt(index);
+  case kind of
+  dkStrings:  //try TStrings.Objects[]
+    obj := TStrings(Data).Objects[index]; //hopefully within bounds!
+  dkPasItems:
+    obj := TPasItems(Data).GetPasItemAt(index);
+  dkItemList:
+    obj := TObjectVector(Data).Items[index];
+  else
+    obj := TObject(Data);
+  end;
+  if obj is TPasItem then
+    Result := TPasItem(obj)
+  else
     Result := nil;
 end;
 

@@ -356,7 +356,7 @@ begin
     WriteHeading(HL, FLanguage.Translation[trAuthors]);
 
   for i := 0 to Authors.Count - 1 do begin
-    s := Authors[i].Description;
+    s := Authors.GetString(i);
     WriteStartOfParagraph;
 
 { TODO : Why handle addresses here? Seems to make no difference! }
@@ -1005,12 +1005,12 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 {    WriteDirect('\item',true);}
     for i := 0 to List.Count - 1 do
     begin
-      ParamName := List[i].Name;
+      ParamName := List.Items[i].Name;
 
       if LinkToParamNames then
        ParamName := SearchLink(ParamName, Func, '', true);
 
-      WriteParameter(ParamName, List[i].Value);
+      WriteParameter(ParamName, List.Items[i].Value);
     end;
     WriteDirect('\end{description}',true);
   end;
@@ -1032,12 +1032,12 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
-        SeeAlso[i].Value, true, SeeAlsoItem);
+      SeeAlsoLink := SearchLink(SeeAlso.Items[i].Name, AItem, 
+        SeeAlso.Items[i].Value, true, SeeAlsoItem);
       WriteDirect('\item[');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
-        WriteConverted(SeeAlso[i].Name);
+        WriteConverted(SeeAlso.Items[i].Name);
       WriteDirectLine('] ');
       
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then

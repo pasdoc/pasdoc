@@ -533,7 +533,10 @@ var
     if C = nil then begin
     //first comment
     //clear pending comments if empty?
-      if t.CommentContent <= ' ' then begin
+    (* Problem: comments starting with newline!
+    *)
+      //if t.CommentContent <= ' ' then begin
+      if (t.CommentContent = '') or (t.CommentContent = ' ') then begin
         CancelComments;
         FreeAndNil(t);
         exit;

@@ -175,10 +175,10 @@ type
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
     procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
-    
-    { Returns HTML heading tag. You can also make the anchor 
+
+    { Returns HTML heading tag. You can also make the anchor
       at this heading by passing AnchorName <> ''. }
-    function FormatHeading(HL: integer; const CssClass: string; 
+    function FormatHeading(HL: integer; const CssClass: string;
       const s: string; const AnchorName: string): string;
 
     { Writes dates Created and LastMod at heading level HL to output
@@ -477,11 +477,7 @@ begin
 
   WriteDirectLine('<ul class="authors">');
   for i := 0 to Authors.Count - 1 do begin
-  {$IFDEF old}
-    s := Authors[i];
-  {$ELSE}
-    s := Authors[i].Description;
-  {$ENDIF}
+    s := Authors.GetString(i);
     WriteDirect('<li>');
 
     if ExtractEmailAddress(s, S1, S2, Address) then begin
@@ -774,13 +770,13 @@ procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer;
   //const Created, LastMod: string);
   Created, LastMod: TDescriptionItem);
 begin
-  if not IsEmpty(Created) then begin
+  if assigned(Created) and (Created.Description <> '') then begin
     WriteHeading(HL, 'created', FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
     WriteDirectLine(Created.Description);
     WriteEndOfParagraph;
   end;
-  if not IsEmpty(LastMod) then begin
+  if assigned(LastMod) and (LastMod.Description <> '') then begin
     WriteHeading(HL, 'modified', FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
     WriteDirectLine(LastMod.Description);
@@ -1039,12 +1035,12 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('<dl class="' + CssListClass + '">');
     for i := 0 to List.Count - 1 do 
     begin
-      ParamName := List[i].Name;
+      ParamName := List.Items[i].Name;
 
       if LinkToParamNames then
        ParamName := SearchLink(ParamName, Func, '', true);
 
-      WriteParameter(ParamName, List[i].Value);
+      WriteParameter(ParamName, List.Items[i].Value);
     end;
     WriteDirectLine('</dl>');
   end;
@@ -1062,12 +1058,12 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('<dl class="see_also">');
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
-        SeeAlso[i].Value, true, SeeAlsoItem);
+      SeeAlsoLink := SearchLink(SeeAlso.Items[i].Name, AItem,
+        SeeAlso.Items[i].Value, true, SeeAlsoItem);
       WriteDirect('  <dt>');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
-        WriteConverted(SeeAlso[i].Name);
+        WriteConverted(SeeAlso.Items[i].Name);
       WriteDirectLine('</dt>');
 
       WriteDirect('  <dd>');
@@ -2382,9 +2378,9 @@ begin
   for i := 0 to Sections.Count - 1 do
   begin
     Result := Result + 
-      '<li><a href="#' + Sections[i].Name + '">' + Sections[i].Value + '</a>' +
+      '<li><a href="#' + Sections.Items[i].Name + '">' + Sections.Items[i].Value + '</a>' +
       LineEnding +
-      FormatTableOfContents(TStringPairVector(Sections[i].Data)) + '</li>' +
+      FormatTableOfContents(TStringPairVector(Sections.Items[i].Data)) + '</li>' +
       LineEnding;
   end;
   Result := Result + '</ol>' + LineEnding;

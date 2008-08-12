@@ -137,7 +137,8 @@ type
     trSummaryCio,
   //column headings
     trDeclaration,
-    trDescription,
+    trDescription, //<as column OR section heading!
+    trDescriptions, //<section heading for detailed descriptions
     trName,
     trValues,
 
@@ -345,6 +346,7 @@ var //writeable, for old (explicit) setup
   //column headings
     {trDeclaration} strToDo, //'Declaration',
     {trDescription} strToDo, //'Description',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} strToDo, //'Name',
     {trValues} strToDo, //'Values',
   //empty
@@ -442,6 +444,7 @@ const
   //column headings
     {trDeclaration} 'Declaration',
     {trDescription} 'Description',
+    {trDescriptions} 'Detailed Descriptions',
     {trName} 'Name',
     {trValues} 'Values',
   //empty
@@ -538,6 +541,7 @@ const
   //column headings
     {trDeclaration} 'Deklaracija',
     {trDescription} 'Opis',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Ime',
     {trValues} strToDo, //'Values',
   //empty
@@ -634,6 +638,7 @@ const
   //column headings
     {trDeclaration} 'Declaração',
     {trDescription} 'Descrição',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nome',
     {trValues} strToDo, //'Values',
   //empty
@@ -730,6 +735,7 @@ const
   //column headings
     {trDeclaration} 'Declaraci¢',
     {trDescription} 'Descripci¢',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} strToDo, //'Nom',
     {trValues} strToDo, //'Values',
   //empty
@@ -826,6 +832,7 @@ const
   //column headings
     {trDeclaration} strToDo, //'Declaration',
     {trDescription} strToDo, //'Description',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} strToDo, //'Name',
     {trValues} strToDo, //'Values',
   //empty
@@ -929,6 +936,7 @@ const
   //column headings
     {trDeclaration} strToDo, //'Declaration',
     {trDescription} 'Beskrivelse',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Navn',
     {trValues} strToDo, //'Values',
   //empty
@@ -1025,6 +1033,7 @@ const
   //column headings
     {trDeclaration} 'Declaratie',
     {trDescription} 'Omschrijving',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Naam',
     {trValues} strToDo, //'Values',
   //empty
@@ -1121,6 +1130,7 @@ const
   //column headings
     {trDeclaration} 'Déclaration',
     {trDescription} strKeep, //'Description',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nom',
     {trValues} 'Valeurs', //?
   //empty
@@ -1217,6 +1227,7 @@ const
   //column headings
     {trDeclaration} 'Deklaration',
     {trDescription} 'Beschreibung',
+    {trDescriptions} 'Ausführliche Beschreibungen',
     {trName} strKeep, //'Name',
     {trValues} 'Werte',
   //empty
@@ -1313,6 +1324,7 @@ const
   //column headings
     {trDeclaration} 'Deklarasi',
     {trDescription} 'Definisi',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nama',
     {trValues} strToDo, //'Values',
   //empty
@@ -1410,6 +1422,7 @@ const
   //column headings
     {trDeclaration} 'Dichiarazione',
     {trDescription} 'Descrizione',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nome',
     {trValues} 'Valori',
   //empty
@@ -1506,6 +1519,7 @@ const
   //column headings
     {trDeclaration} 'Deklarasi',
     {trDescription} 'Katrangan',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Jeneng',
     {trValues} strToDo, //'Values',
   //empty
@@ -1603,6 +1617,7 @@ const
   //column headings
     {trDeclaration} 'Deklaracja',
     {trDescription} 'Opis',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Wartoœci',
   //empty
@@ -1699,6 +1714,7 @@ const
   //column headings
     {trDeclaration} 'Deklaracja',
     {trDescription} 'Opis',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Warto¶ci',
   //empty
@@ -1795,6 +1811,7 @@ const
   //column headings
     {trDeclaration} 'Îáúÿâëåíèÿ',
     {trDescription} 'Îïèñàíèå',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Èìÿ',
     {trValues} 'Çíà÷åíèå',
   //empty
@@ -2059,6 +2076,7 @@ const
   //column headings
     {trDeclaration} 'Deklarácie',
     {trDescription} 'Popis',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Meno',
     {trValues} strToDo, //'Values',
   //empty
@@ -2155,6 +2173,7 @@ const
   //column headings
     {trDeclaration} 'Declaración',
     {trDescription} 'Descripción',
+    {trDescriptions} 'Descripciónes', //? 'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nombre',
     {trValues} 'Valores',
   //empty
@@ -2252,6 +2271,7 @@ const
   //column headings
     {trDeclaration} 'Deklarationer',
     {trDescription} 'Beskrivning',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Namn',
     {trValues} strToDo, //'Values',
   //empty
@@ -2348,6 +2368,7 @@ const
   //column headings
     {trDeclaration} 'Deklaráció',
     {trDescription} 'Megjegyzés',
+    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Név',
     {trValues} 'Értékek',
   //empty

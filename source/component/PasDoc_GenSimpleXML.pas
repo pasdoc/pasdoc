@@ -125,8 +125,8 @@ begin
        '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
       for I := 0 to TPasMethod(item).params.count - 1 do
         WriteDirectLine(space + 
-          '  <param name="' + ConvertString(TPasMethod(item).params[i].name) + '">' + 
-            TPasMethod(item).params[i].value +'</param>');
+          '  <param name="' + ConvertString(TPasMethod(item).params.Items[i].name) + '">' +
+            TPasMethod(item).params.Items[i].value +'</param>');
       //if TPasMethod(item).returns <> '' then
       if TPasMethod(item).returns <> nil then
         WriteDirectLine(space +
