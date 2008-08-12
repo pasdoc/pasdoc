@@ -1,6 +1,6 @@
 object DocMain: TDocMain
   Left = 532
-  Top = 117
+  Top = 118
   Width = 615
   Height = 471
   Caption = 'PasDoc GUI'

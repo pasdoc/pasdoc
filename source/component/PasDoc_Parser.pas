@@ -896,20 +896,19 @@ begin
 //assumed: <ident> { "." <ident> }
   if fGet then
     GetNextToken;
-  if fOperator and (Token.MyType in
-    [SYM_ASSIGN, SYM_PLUS, SYM_MINUS, SYM_ASTERISK, SYM_SLASH, SYM_POWER,
-    SYM_EQUAL, SYM_LESS_THAN, SYM_LESS_THAN_EQUAL, SYM_GREATER_THAN, SYM_GREATER_THAN_EQUAL])
-  then
+  if fOperator and (Token.MyType in sOperator) then
     //okay
   else
     CheckToken(Token, TOK_IDENTIFIER);
 //remember token
   Identifier := Token;
   Token := nil; //dangerous!!!
-//collect qualifiers - the last token is the real identifier!
-  while Skip(SYM_PERIOD) do begin
-    Expect(TOK_IDENTIFIER);
-    Identifier.Data := Identifier.Data + '.' + Token.Data;
+  if not fOperator then begin
+  //collect qualifiers - the last token is the real identifier!
+    while Skip(SYM_PERIOD) do begin
+      Expect(TOK_IDENTIFIER);
+      Identifier.Data := Identifier.Data + '.' + Token.Data;
+    end;
   end;
 //result, for convenience only
   Result := Identifier;
@@ -1380,7 +1379,7 @@ begin
     Recorder := '';
     Item := CreateItem(TPasConstant, KEY_CONST, QualId(True));
 
-    if Skip(SYM_EQUAL) then begin
+    if Skip(SYM_EQUAL) or Skip(SYM_ASSIGN) then begin
     //value might be an expression?
       { Now read tokens until comma or right paren (but only on ParenLevel = 0). }
       ParenLevel := 0;
@@ -1389,8 +1388,8 @@ begin
         SYM_LEFT_PARENTHESIS, SYM_LEFT_BRACKET: Inc(ParenLevel);
         SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET: Dec(ParenLevel);
         end;
-      until (Token.MyType in [SYM_COMMA, SYM_RIGHT_PARENTHESIS])
-        and (ParenLevel <= 0);
+      until ((Token.MyType = SYM_COMMA) and (ParenLevel = 0))
+      or (ParenLevel < 0)
     //end with "," or ")"
     end else
       GetNextToken; //"," or ")"
@@ -1526,7 +1525,7 @@ var
   P: TPasItem;
 begin
 (* CASE <| [ident ":"] type OF
-  { ...":" "(" decl { ";" decl } ")" [";"] }
+  { ...":" "(" decl { ";" [decl] } ")" [";"] }
   |> END [ ";" ]
 
 decl can be:
@@ -1559,6 +1558,8 @@ decl can be:
         ParseVariables(False); //... ";" <| ")" <| ";"
         //CheckToken(Token, SYM_RIGHT_PARENTHESIS);
       end;
+      if Token.MyType = SYM_SEMICOLON then
+        Skip(SYM_RIGHT_PARENTHESIS);  //";" optional before ")"
     until Token.MyType = SYM_RIGHT_PARENTHESIS; //else ";" before ")"
     Skip(SYM_SEMICOLON);
   //until Skip(KEY_END)or (SubCase and Skip(SYM_RIGHT_PARENTHESIS));
