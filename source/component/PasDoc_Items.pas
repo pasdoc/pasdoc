@@ -1634,7 +1634,7 @@ procedure TPasItem.HandleDeprecatedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  Include(FAttributes, SD_Library_);
+  Include(FAttributes, SD_DEPRECATED);
   ReplaceStr := '';
 end;
 

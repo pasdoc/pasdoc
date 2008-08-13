@@ -1761,6 +1761,10 @@ Take into account (nesting level) embedded:
     SYM_LEFT_PARENTHESIS: Inc(Level);
     SYM_RIGHT_BRACKET,
     SYM_RIGHT_PARENTHESIS: Dec(Level);
+    SYM_ROOF: //in const expr (value): ctrl-char. in type decl: ptr-to.
+      begin
+        GetNextToken; //prevent interpretation of "[" etc.!
+      end;
     SYM_SEMICOLON:
       if level = 0 then begin
       (* Include type modifiers, else break.
