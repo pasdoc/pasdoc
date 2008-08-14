@@ -2140,6 +2140,7 @@ begin
     FMethods := TPasMethods.Create(owns);
     FProperties := TPasProperties.Create(owns);
   end;
+  ...
 {$ELSE}
 //simple: create all
   FFields := TPasItems.Create(owns);
@@ -2340,7 +2341,9 @@ begin
   else
     Result := item.PasItem.FindItem(ItemName) as TPasItem;
 end;
+
 {$ELSE}
+
 function TPasCio.FirstAncestor: TPasCio;
 begin
   Result := FHeritage.Objects[0] as TPasCio; //may be nil
@@ -2824,8 +2827,6 @@ end;
 
 // ------------- specialized TDescriptionItem ---------------------
 
-{$DEFINE pdl} //polymorphic description items?
-
 type
 //list of TDescriptionItem
   TDescriptionList = class(TDescriptionItem)
@@ -2940,32 +2941,14 @@ begin
   inherited Create(AName, AValue);
   ID := tid;
   kind := AKind;
-{$IFDEF pdl}
-  //polymorphic lists have their own constructor
-{$ELSE}
-//create object?
-  case kind of
-  dkStrings:  Data := TStringVector.Create;
-  dkItemList: Data := TObjectVector.Create(True);
-  dkPasItems: Data := TPasItems.Create(False);
-  end;
-{$ENDIF}
 end;
 
 destructor TDescriptionItem.Destroy;
 var
   obj: TObject;
 begin
-{$IFDEF pdl}
-  obj := GetList;
+  obj := GetList; //NOT PasItem!
   obj.Free;
-{$ELSE}
-  obj := TObject(Data);
-  if obj is TPasItem then
-    //never destroy
-  else if obj is TObject then
-    FreeAndNil(TObject(Data));
-{$ENDIF}
   inherited;
 end;
 
@@ -3050,95 +3033,28 @@ end;
 
 function TDescriptionItem.GetCount: integer;
 begin
-{$IFDEF pdl}
-{$ELSE}
-  if TObject(Data) is TObjectVector then
-    Result := TObjectVector(Data).Count
-  else if TObject(Data) is TStrings then
-    Result := TStrings(Data).Count
-  else
-{$ENDIF}
-    Result := 0;  //or -1, to signal NoList?
+  Result := 0;  //or -1, to signal NoList?
 end;
 
 function TDescriptionItem.GetString(index: integer): string;
-var
-  sl: TStrings;
-  pl: TPasItems;
-  il: TObjectVector;
-  desc: TDescriptionItem;
 begin
   Result := '';
-{$IFDEF pdl}
-{$ELSE}
-  case kind of
-  dkStrings:
-    begin
-      sl := TObject(Data) as TStrings;
-      if index < sl.Count then
-        Result := sl[index];
-    end;
-  dkPasItems:
-    begin
-      pl := TObject(Data) as TPasItems;
-      if index < pl.Count then begin
-        //Result := pl.PasItemAt[index].DetailedDescription; //???
-        desc := pl.PasItemAt[index].Description[trDescription];
-        if assigned(desc) then
-          Result := desc.Value;
-      end;
-    end;
-  dkItemList:
-    begin
-      il := TObject(Data) as TObjectVector;
-      if index < il.Count then begin
-        //Result := il.Items[index]
-        desc := ItemAt(index);
-        if assigned(desc) then
-          Result := desc.Value;
-      end;
-    end;
-  //else //case: Result := '';
-  end;
-{$ENDIF}
 end;
 
 function TDescriptionItem.ItemAt(index: integer): TDescriptionItem;
 begin
-{$IFDEF pdl}
 //override in lists
   Result := nil;
-{$ELSE}
-  if index < Count then begin
-    case kind of
-    //dkStrings: Result := TStrings(Data)[index]; - no items!!! - normally!
-    dkPasItems: Result := TPasItems(Data).PasItemAt[index].Items;
-    dkItemList: Result := TObjectVector(Data).Items[index] as TDescriptionItem;
-    else
-      Result := nil;
-    end;
-  end else
-    Result := nil;
-{$ENDIF}
 end;
 
 function TDescriptionItem.FindID(tid: TTranslationID): TDescriptionItem;
 var
   i: integer;
 begin
-{$IFDEF old}
-  for i := 0 to Count - 1 do begin
-    Result := ItemAt(i); //optimize?
-    //Result := TObjectVector(Data).Items[i] as TDescriptionItem;
-    if assigned(Result) and (Result.ID = tid) then
-      exit;
-  end;
-{$ELSE}
   i := IndexOfID(tid);
   if i >= 0 then
     Result := ItemAt(i)
   else
-{$ENDIF}
     Result := nil;
 end;
 
@@ -3172,29 +3088,17 @@ begin
 end;
 
 function TDescriptionItem.Add(AItem: TDescriptionItem): integer;
-{$IFDEF pdl}
 begin
-//raise exception: "no list"?
+//raise exception: "no list"? Only in DescriptionList
   Result := -1;
 end;
-{$ELSE}
-var
-  lst: TObjectVector;
-begin
-  lst := TObject(Data) as TObjectVector;
-  Result := lst.Add(AItem);
-end;
-{$ENDIF}
 
 function TDescriptionItem.AddNew(tid: TTranslationID; AKind: eDescriptionKind;
   const AName, AValue: string): TDescriptionItem;
-var
-  lst: TObjectVector;
 begin
 (* Prevent dupes!
   Find either by id or by name?
 *)
-{$IFDEF pdl}
 //find entry in list, in detail when a contained list is requested!
   if tid = trNoTrans then
     Result := Find(AName)
@@ -3220,30 +3124,6 @@ begin
     if (Result.Value = '') and (AValue <> '') then
       Result.Value := AValue;
   end;
-{$ELSE}
-  if Data = nil then
-    Data := TObjectVector.Create(True);
-  if TObject(Data) is TObjectVector then begin
-    lst := TObjectVector(Data);
-  //find entry in list, in detail when a contained list is requested!
-    if tid = trNoTrans then
-      Result := Find(AName)
-    else
-      Result := FindID(tid);
-    if Result = nil then begin
-    //create item
-      Result := TDescriptionItem.Create(tid, AKind, AName, AValue);
-      lst.Add(Result);
-    end else begin
-    //update item(???)
-      if (Result.Name = '') and (AName <> '') then
-        Result.Name := AName;
-      if (Result.Value = '') and (AValue <> '') then
-        Result.Value := AValue;
-    end;
-  end else
-    Result := nil;  //not a object list???
-{$ENDIF}
 end;
 
 function TDescriptionItem.AddString(tid: TTranslationID;
@@ -3257,20 +3137,11 @@ function TDescriptionItem.AddToStrings(tid: TTranslationID;
   const s: string): integer;
 var
   lst: TDescriptionStrings;
-  item: TDescriptionItem;
-  sv: TStringVector;
 begin
 //usage: Authors (only?) SeeAlso?
-{$IFDEF pdl}
 //default: assume description list
   lst := AddNew(tid, dkStrings) as TDescriptionStrings;
   Result := lst.AddStringI(s);
-{$ELSE}
-//add s to a string list(!)
-  item := AddNew(tid, dkStrings);
-  sv := TObject(item.Data) as TStringVector; //precise type required for AddNotExisting!
-  Result := sv.AddNotExisting(s);
-{$ENDIF}
 end;
 
 {$IFDEF new}
