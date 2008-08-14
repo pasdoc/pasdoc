@@ -167,68 +167,79 @@ type
   Delegates for TPasItems are required for e.g. UsedUnits, where the
   TPasUnit objects are added later, based on the item.Name.
 *)
-{ TODO 1 -oDoDi : Derive specialized list classes }
   TDescriptionItem = class(TStringPair)
-{$IFDEF delegates}
   protected
+  //get list count
+    function  GetCount: integer; virtual;
+  //get polymorphic list. Nil if none exists. Used in destructor...
+    function  GetList: TObject; virtual;
+{$IFDEF delegates}
   //Load all text from stream.
-    procedure LoadFromBinaryStream(Stream: TStream);
+    procedure LoadFromBinaryStream(Stream: TStream); virtual;
     { This saves our contents in a format readable by
       @link(LoadFromBinaryStream). }
-    procedure SaveToBinaryStream(Stream: TStream);
+    procedure SaveToBinaryStream(Stream: TStream); virtual;
 {$ELSE}
 {$ENDIF}
   public
   //possible section title, if unnamed
     ID: TTranslationID;
-  {$IFDEF old}
-  //entry has an name, different from ID
-    HasName: boolean;
-  {$ELSE}
-  {$ENDIF}
   //case kind of???
     kind: eDescriptionKind;
-  //get list count
-    function  GetCount: integer;
   //make sure that all fields are initialized
     constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
-      const AName: string = ''; const AValue: string = '');
+      const AName: string = ''; const AValue: string = ''); virtual;
     destructor Destroy; override;
-  //add an item
-    function Add(AItem: TDescriptionItem): integer;
-  //add an descriptor
+
+//item methods
+  //get Data as TPasItem, or Nil.
+    function  PasItem: TPasItem;
+  //get Data as object, or Nil
+    function  GetObject: TObject;
+  //get string, from any kind of list (default: .Description)
+    function  GetString(index: integer): string; virtual;
+
+  //find item by name
+    function  IndexOf(const AName: string): integer; virtual;
+  //find item by ID
+    function  IndexOfID(tid: TTranslationID): integer; virtual;
+
+//list methods
+  //add an item - to item list only
+    function Add(AItem: TDescriptionItem): integer; virtual;
+  //add an descriptor - general --> get/create item list and add new item to it.
     function  AddNew(tid: TTranslationID; AKind: eDescriptionKind;
       const AName: string = ''; const AValue: string = ''): TDescriptionItem;
   //create a pair of first word and remainder. Returns Nil if no first word is found.
     function AddExtractFirstWord(tid: TTranslationID; const s: string): TDescriptionItem;
   //add an string (as Description)
-    function AddString(tid: TTranslationID; const s: string): TDescriptionItem;
-  //add string to list
-    function AddToStrings(tid: TTranslationID; const s: string): integer;
-
+    function AddString(tid: TTranslationID; const s: string): TDescriptionItem; virtual;
+  {$IFDEF new}
   //create a string list
-    function AddStrings(tid: TTranslationID; lst: TStrings = nil): TDescriptionItem;
+    function AddStrings(tid: TTranslationID; lst: TStrings = nil): TDescriptionItem; virtual;
+  {$ELSE}
+  {$ENDIF}
+  //add string to list
+    function AddToStrings(tid: TTranslationID; const s: string): integer; //virtual;
 
-  //get description item from list, or Nil
-    function  ItemAt(index: integer): TDescriptionItem;
-  //get descriptive element by ID, or Nil
-    function  FindID(tid: TTranslationID): TDescriptionItem;
   //get PasItem from list - really?
-    function  PasItemAt(index: integer): TPasItem;
-  //find item by name
-    function  Find(const AName: string): TDescriptionItem;
-  //get Data as TPasItem, or Nil.
-    function  PasItem: TPasItem;
-  //get Data as object, or Nil
-    function  GetObject: TObject;
-  //get string, from any kind of list
-    function  GetString(index: integer): string;
+    function  PasItemAt(index: integer): TPasItem; virtual;
+  //get description item from list, or Nil
+    function  ItemAt(index: integer): TDescriptionItem; virtual;
+  //get descriptive element by ID, or Nil (using IndexOfID)
+    function  FindID(tid: TTranslationID): TDescriptionItem;
+  //find item by name (using IndexOf)
+    function  Find(const AName: string): TDescriptionItem; 
 
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSeparator + Value is
       constructed. Then all such strings for every item are
-      concatenated with ItemSeparator. }
-    function Text(const NameValueSeparator: string = ' '; const ItemSeparator: string = ' '): string;
+      concatenated with ItemSeparator.
+
+      Non-list items return Name+Value.
+    }
+    function Text(const NameValueSeparator: string = ' ';
+      const ItemSeparator: string = ' '): string; //virtual;
 
     property Count: integer read GetCount;
     property Items[index: integer]: TDescriptionItem read ItemAt; //default;
@@ -238,6 +249,7 @@ type
   TStringPair = TDescriptionItem;
   TStringPairVector = TDescriptionItem;
 
+  
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
@@ -2810,33 +2822,150 @@ begin
   inherited;
 end;
 
+// ------------- specialized TDescriptionItem ---------------------
+
+{$DEFINE pdl} //polymorphic description items?
+
+type
+//list of TDescriptionItem
+  TDescriptionList = class(TDescriptionItem)
+  protected
+    FList: TObjectVector;
+  //get list count
+    function  GetCount: integer; override;
+  //get polymorphic list. Nil if none exists. Used in destructor...
+    function  GetList: TObject; override;
+  public
+  //make sure that all fields are initialized
+    constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
+      const AName: string = ''; const AValue: string = ''); override;
+
+  //find item by name
+    function  IndexOf(const AName: string): integer; override;
+  //find item by ID
+    function  IndexOfID(tid: TTranslationID): integer; override;
+
+  //add an item
+    function Add(AItem: TDescriptionItem): integer; override;
+  //add an string (as Description)
+    //function AddString(tid: TTranslationID; const s: string): TDescriptionItem; override;
+  //add string to list
+    //function AddToStrings(tid: TTranslationID; const s: string): integer; override;
+
+  {$IFDEF new}
+  //create a string list
+    function AddStrings(tid: TTranslationID; lst: TStrings = nil): TDescriptionItem; override;
+  {$ELSE}
+  {$ENDIF}
+
+  //get description item from list, or Nil
+    function  ItemAt(index: integer): TDescriptionItem; override;
+  //get descriptive element by ID, or Nil
+    //function  FindID(tid: TTranslationID): TDescriptionItem; override;
+  //get PasItem from list - really?
+    function  PasItemAt(index: integer): TPasItem; override;
+  //get string, from any kind of list
+    function  GetString(index: integer): string; override;
+  end;
+
+  TDescriptionStrings = class(TDescriptionItem)
+  protected
+    FList: TStringVector;
+  //get list count
+    function  GetCount: integer; override;
+  //get polymorphic list. Nil if none exists. Used in destructor...
+    function  GetList: TObject; override;
+  //add string, return string index
+    function  AddStringI(const s: string): integer;
+  public
+  //make sure that all fields are initialized
+    constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
+      const AName: string = ''; const AValue: string = ''); override;
+  //find item by name
+    function  IndexOf(const AName: string): integer; override;
+  //get string, from any kind of list (default: .Description)
+    function  GetString(index: integer): string; override;
+  end;
+
+//list of TPasItems
+  TMemberList = class(TDescriptionItem)
+  protected
+    FList: TPasItems; // TObjectVector;
+  //get list count
+    function  GetCount: integer; override;
+  //get polymorphic list. Nil if none exists. Used in destructor...
+    function  GetList: TObject; override;
+  public
+  //make sure that all fields are initialized
+    constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
+      const AName: string = ''; const AValue: string = ''); override;
+
+  //find item by name
+    function  IndexOf(const AName: string): integer; override;
+  //find item by ID
+    //function  IndexOfID(tid: TTranslationID): integer; override;
+
+  //add an item
+    //function Add(AItem: TDescriptionItem): integer; override;
+  //add an string (as Description)
+    //function AddString(tid: TTranslationID; const s: string): TDescriptionItem; override;
+  //add string to list
+    //function AddToStrings(tid: TTranslationID; const s: string): integer; override;
+
+  //create a string list
+    //function AddStrings(tid: TTranslationID; lst: TStrings = nil): TDescriptionItem; override;
+
+  //get description item from list, or Nil
+    function  ItemAt(index: integer): TDescriptionItem; override;
+  //get descriptive element by ID, or Nil
+    //function  FindID(tid: TTranslationID): TDescriptionItem; override;
+  //get PasItem from list - really?
+    function  PasItemAt(index: integer): TPasItem; override;
+  //get string, from any kind of list
+    function  GetString(index: integer): string; override;
+  end;
+
 { TDescriptionItem }
 
+function IsEmpty(item: TDescriptionItem): boolean;
+begin
+  Result := (item = nil) or (item.Count <= 0);
+end;
+
 constructor TDescriptionItem.Create(tid: TTranslationID;
-  AKind: eDescriptionKind; const AName, AValue: string); //virtual?
+  AKind: eDescriptionKind; const AName, AValue: string);
 begin
 (* This can become a class method, that creates e.g. specialized lists?
 *)
   inherited Create(AName, AValue);
   ID := tid;
   kind := AKind;
+{$IFDEF pdl}
+  //polymorphic lists have their own constructor
+{$ELSE}
 //create object?
   case kind of
   dkStrings:  Data := TStringVector.Create;
   dkItemList: Data := TObjectVector.Create(True);
   dkPasItems: Data := TPasItems.Create(False);
   end;
+{$ENDIF}
 end;
 
 destructor TDescriptionItem.Destroy;
 var
   obj: TObject;
 begin
+{$IFDEF pdl}
+  obj := GetList;
+  obj.Free;
+{$ELSE}
   obj := TObject(Data);
   if obj is TPasItem then
     //never destroy
   else if obj is TObject then
     FreeAndNil(TObject(Data));
+{$ENDIF}
   inherited;
 end;
 
@@ -2921,11 +3050,14 @@ end;
 
 function TDescriptionItem.GetCount: integer;
 begin
+{$IFDEF pdl}
+{$ELSE}
   if TObject(Data) is TObjectVector then
     Result := TObjectVector(Data).Count
   else if TObject(Data) is TStrings then
     Result := TStrings(Data).Count
   else
+{$ENDIF}
     Result := 0;  //or -1, to signal NoList?
 end;
 
@@ -2937,6 +3069,8 @@ var
   desc: TDescriptionItem;
 begin
   Result := '';
+{$IFDEF pdl}
+{$ELSE}
   case kind of
   dkStrings:
     begin
@@ -2966,13 +3100,18 @@ begin
     end;
   //else //case: Result := '';
   end;
+{$ENDIF}
 end;
 
 function TDescriptionItem.ItemAt(index: integer): TDescriptionItem;
 begin
-  if index < GetCount then begin
+{$IFDEF pdl}
+//override in lists
+  Result := nil;
+{$ELSE}
+  if index < Count then begin
     case kind of
-    //dkStrings: Result := TStrings(Data)[index]; - no items!!!
+    //dkStrings: Result := TStrings(Data)[index]; - no items!!! - normally!
     dkPasItems: Result := TPasItems(Data).PasItemAt[index].Items;
     dkItemList: Result := TObjectVector(Data).Items[index] as TDescriptionItem;
     else
@@ -2980,19 +3119,27 @@ begin
     end;
   end else
     Result := nil;
+{$ENDIF}
 end;
 
 function TDescriptionItem.FindID(tid: TTranslationID): TDescriptionItem;
 var
   i: integer;
 begin
-  for i := 0 to GetCount - 1 do begin
-    //Result := ItemAt(i);
-    Result := TObjectVector(Data).Items[i] as TDescriptionItem;
+{$IFDEF old}
+  for i := 0 to Count - 1 do begin
+    Result := ItemAt(i); //optimize?
+    //Result := TObjectVector(Data).Items[i] as TDescriptionItem;
     if assigned(Result) and (Result.ID = tid) then
       exit;
   end;
-  Result := nil;
+{$ELSE}
+  i := IndexOfID(tid);
+  if i >= 0 then
+    Result := ItemAt(i)
+  else
+{$ENDIF}
+    Result := nil;
 end;
 
 function TDescriptionItem.PasItem: TPasItem;
@@ -3025,12 +3172,19 @@ begin
 end;
 
 function TDescriptionItem.Add(AItem: TDescriptionItem): integer;
+{$IFDEF pdl}
+begin
+//raise exception: "no list"?
+  Result := -1;
+end;
+{$ELSE}
 var
   lst: TObjectVector;
 begin
   lst := TObject(Data) as TObjectVector;
   Result := lst.Add(AItem);
 end;
+{$ENDIF}
 
 function TDescriptionItem.AddNew(tid: TTranslationID; AKind: eDescriptionKind;
   const AName, AValue: string): TDescriptionItem;
@@ -3040,33 +3194,42 @@ begin
 (* Prevent dupes!
   Find either by id or by name?
 *)
+{$IFDEF pdl}
+//find entry in list, in detail when a contained list is requested!
+  if tid = trNoTrans then
+    Result := Find(AName)
+  else
+    Result := FindID(tid);
+  if Result = nil then begin
+  //create item, polymorphic!
+    if kind = dkItemList then begin
+    //only for description lists!!!
+      case AKind of
+      dkStrings:  Result := TDescriptionStrings.Create(tid, AKind, AName, AValue);
+      dkPasItems: Result := TMemberList.Create(tid, AKind, AName, AValue);
+      dkItemList: Result := TDescriptionList.Create(tid, AKind, AName, AValue);
+      else        Result := TDescriptionItem.Create(tid, AKind, AName, AValue);
+      end;
+      Add(Result);
+    end else
+      Result := nil; //nothing added to other kind of list
+  end else begin
+  //update item(???)
+    if (Result.Name = '') and (AName <> '') then
+      Result.Name := AName;
+    if (Result.Value = '') and (AValue <> '') then
+      Result.Value := AValue;
+  end;
+{$ELSE}
   if Data = nil then
     Data := TObjectVector.Create(True);
   if TObject(Data) is TObjectVector then begin
     lst := TObjectVector(Data);
   //find entry in list, in detail when a contained list is requested!
-  {$IFDEF old}
-    case AKind of
-    dkStrings,  //Authors...
-      //split Author into name and description (URL...)?
-    dkItemList,
-    dkNameDesc: //prevent duplicate ID, for all lists
-      if tid = trNoTrans then
-        Result := nil //allow any number of dupes (where???)
-        //does this mean: dupecheck for names is not required???
-      else
-        Result := FindID(tid);
-    dkPasItems:  //prevent duplicate name
-      Result := Find(AName);
-    else //add whatsoever
-      Result := nil;
-    end;
-  {$ELSE}
     if tid = trNoTrans then
       Result := Find(AName)
     else
       Result := FindID(tid);
-  {$ENDIF}
     if Result = nil then begin
     //create item
       Result := TDescriptionItem.Create(tid, AKind, AName, AValue);
@@ -3080,48 +3243,72 @@ begin
     end;
   end else
     Result := nil;  //not a object list???
+{$ENDIF}
 end;
 
 function TDescriptionItem.AddString(tid: TTranslationID;
   const s: string): TDescriptionItem;
 begin
+//override in stringlist
   Result := AddNew(tid, dkText, '', s);
 end;
 
 function TDescriptionItem.AddToStrings(tid: TTranslationID;
   const s: string): integer;
 var
+  lst: TDescriptionStrings;
   item: TDescriptionItem;
   sv: TStringVector;
 begin
+//usage: Authors (only?) SeeAlso?
+{$IFDEF pdl}
+//default: assume description list
+  lst := AddNew(tid, dkStrings) as TDescriptionStrings;
+  Result := lst.AddStringI(s);
+{$ELSE}
 //add s to a string list(!)
   item := AddNew(tid, dkStrings);
-  sv := TObject(item.Data) as TStringVector;
+  sv := TObject(item.Data) as TStringVector; //precise type required for AddNotExisting!
   Result := sv.AddNotExisting(s);
+{$ENDIF}
 end;
 
+{$IFDEF new}
 function TDescriptionItem.AddStrings(tid: TTranslationID;
   lst: TStrings): TDescriptionItem;
 var
+  i: integer;
   item: TDescriptionItem;
   sv: TStrings;
 begin
   item := AddNew(tid, dkStrings);
   if lst <> nil then begin
+  {$IFDEF old}
     sv := TObject(item.Data) as TStrings;
     sv.AddStrings(lst);
+  {$ELSE}
+    for i := 0 to lst.Count - 1 do
+      item.AddString(trNoTrans, lst[i]);
+  {$ENDIF}
   end;
   Result := item;
 end;
+{$ELSE}
+{$ENDIF}
 
 function TDescriptionItem.Find(const AName: string): TDescriptionItem;
 var
   i: integer;
 begin
+//polymorphic for search in string list?
+//usage: prevent dupes in AddItem, of anonymous (trNoTrans) items
+//rename: FindItem, to clarify that this method only applies to item lists?
+//better: return index, insensitive of list type?
   if AName <> '' then begin
     for i := 0 to Count - 1 do begin
       Result := ItemAt(i);
-      if CompareText(Result.Name, AName) = 0 then
+      if (Result <> nil) and (Result.ID = trNoTrans) //optimize comparisons
+      and (CompareText(Result.Name, AName) = 0) then
         exit; //found
     end;
   end;
@@ -3135,10 +3322,10 @@ var
   i: Integer;
 begin
   if Count > 0 then begin
-    Result := Items[0].Name + NameValueSeparator + Items[0].Value;
+  //list version, ignore Self.Name and .Value
+    Result := Items[0].Text(NameValueSeparator, ItemSeparator);
     for i := 1 to Count - 1 do
-      Result := Result + ItemSeparator +
-        Items[i].Name + NameValueSeparator + Items[i].Value;
+      Result := Result + ItemSeparator + Items[i].Text(NameValueSeparator, ItemSeparator);
   end else begin //simple item
     if Name = '' then
       Result := Value
@@ -3149,9 +3336,204 @@ begin
   end;
 end;
 
-function IsEmpty(item: TDescriptionItem): boolean;
+function TDescriptionItem.GetList: TObject;
 begin
-  Result := (item = nil) or (item.Count <= 0);
+  Result := nil;
+end;
+
+function TDescriptionItem.IndexOf(const AName: string): integer;
+begin
+//basic version, implement for all lists
+  Result := -1;
+end;
+
+function TDescriptionItem.IndexOfID(tid: TTranslationID): integer;
+begin
+//basic version, implement for all lists
+  Result := -1;
+end;
+
+{ TDescriptionList }
+
+constructor TDescriptionList.Create(tid: TTranslationID;
+  AKind: eDescriptionKind; const AName, AValue: string);
+begin
+  inherited;
+  FList := TObjectVector.Create(True); //owns descriptions
+    //destroyed in base class
+end;
+
+function TDescriptionList.GetList: TObject;
+begin
+//return our private list, to destructor
+  Result := FList;
+end;
+
+function TDescriptionList.Add(AItem: TDescriptionItem): integer;
+begin
+  Result := FList.Add(AItem);
+end;
+
+{$IFDEF new}
+function TDescriptionList.AddStrings(tid: TTranslationID;
+  lst: TStrings): TDescriptionItem;
+begin
+//reject, or create a bunch of undestinguishable items???
+  Result := nil;
+end;
+{$ELSE}
+{$ENDIF}
+
+function TDescriptionList.GetCount: integer;
+begin
+  Result := FList.Count;
+end;
+
+function TDescriptionList.GetString(index: integer): string;
+begin
+  Result := Items[Index].Description; //or Name+Description
+end;
+
+function TDescriptionList.ItemAt(index: integer): TDescriptionItem;
+begin
+  Result := TObjectVector(FList).Items[index] as TDescriptionItem;
+end;
+
+function TDescriptionList.PasItemAt(index: integer): TPasItem;
+var
+  item: TDescriptionItem;
+  obj: TObject;
+begin
+//emulate PasItems, with items in item[i].Object
+  item := ItemAt(index);
+  obj := item.GetObject;
+  if obj is TPasItem then
+    Result := TPasItem(obj)
+  else
+    Result := nil;
+end;
+
+function TDescriptionList.IndexOf(const AName: string): integer;
+var
+  i: integer;
+  item: TDescriptionItem;
+begin
+  for i := 0 to Count - 1 do begin
+    //Result := ItemAt(i); //optimize?
+    item := TObjectVector(FList).Items[i] as TDescriptionItem;
+    if CompareText(AName, item.Name) = 0 then begin
+      Result := i;
+      exit;
+    end;
+  end;
+//not found
+  Result := -1;
+end;
+
+function TDescriptionList.IndexOfID(tid: TTranslationID): integer;
+var
+  i: integer;
+  item: TDescriptionItem;
+begin
+  for i := 0 to Count - 1 do begin
+    //Result := ItemAt(i); //optimize?
+    item := TObjectVector(FList).Items[i] as TDescriptionItem;
+    if item.ID = tid then begin
+      Result := i;
+      exit;
+    end;
+  end;
+//not found
+  Result := -1;
+end;
+
+{ TDescriptionStrings }
+
+constructor TDescriptionStrings.Create(tid: TTranslationID;
+  AKind: eDescriptionKind; const AName, AValue: string);
+begin
+  inherited;
+  FList := TStringVector.Create;
+end;
+
+function TDescriptionStrings.AddStringI(const s: string): integer;
+begin
+  //Result := FList.AddNotExisting(s);
+  Result := FList.IndexOf(s); //generalize? StringList can use sorted (unlikely)
+  if Result < 0 then begin
+    Result := FList.Add(s);
+  end;
+end;
+
+function TDescriptionStrings.GetCount: integer;
+begin
+  Result := FList.Count;
+end;
+
+function TDescriptionStrings.GetList: TObject;
+begin
+  Result := FList;
+end;
+
+function TDescriptionStrings.GetString(index: integer): string;
+begin
+  Result := FList[index];
+end;
+
+function TDescriptionStrings.IndexOf(const AName: string): integer;
+begin
+  Result := FList.IndexOf(AName);
+end;
+
+{ TMemberList }
+
+constructor TMemberList.Create(tid: TTranslationID;
+  AKind: eDescriptionKind; const AName, AValue: string);
+begin
+  inherited;
+  FList := TPasItems.Create(False);
+end;
+
+function TMemberList.GetCount: integer;
+begin
+  Result := FList.Count;
+end;
+
+function TMemberList.GetList: TObject;
+begin
+  Result := FList;
+end;
+
+function TMemberList.GetString(index: integer): string;
+begin
+  Result := FList.GetPasItemAt(index).RawDescription; //???
+end;
+
+function TMemberList.IndexOf(const AName: string): integer;
+var
+  i: integer;
+  item: TPasItem;
+begin
+  for i := 0 to FList.Count - 1 do begin
+    item := FList.GetPasItemAt(i);
+    if CompareText(item.Name, AName) = 0 then begin
+      Result := i;
+      exit;
+    end;
+  end;
+//not found
+  Result := -1;
+end;
+
+function TMemberList.ItemAt(index: integer): TDescriptionItem;
+begin
+//questionable: delegate to PasItem???
+  Result := FList.PasItemAt[index].Items;
+end;
+
+function TMemberList.PasItemAt(index: integer): TPasItem;
+begin
+  Result := FList.PasItemAt[index];
 end;
 
 initialization
