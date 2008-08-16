@@ -15,7 +15,7 @@
 
 unit PasDoc_Items;
 
-{-$DEFINE delegates} //not yet
+{$DEFINE delegates} //not yet
 {-$DEFINE RawBase}  //all items have a non-nil RawDescriptionInfo?
 {-$DEFINE item}
 
@@ -132,6 +132,7 @@ type
 
   TBaseItems = class;
   TPasItems = class;
+  TPasUnits = class;
 
 (* Organization (=intended layout?) of descriptive elements.
   Should match the expectations of the generators!
@@ -176,6 +177,9 @@ type
 {$IFDEF delegates}
   //Load all text from stream.
     procedure LoadFromBinaryStream(Stream: TStream); virtual;
+    //class function CreateFromStream(Stream: TStream): TDescriptionItem;
+    function AddFromStream(Stream: TStream): TDescriptionItem; //virtual;
+
     { This saves our contents in a format readable by
       @link(LoadFromBinaryStream). }
     procedure SaveToBinaryStream(Stream: TStream); virtual;
@@ -206,7 +210,8 @@ type
 
 //list methods
   //add an item - to item list only
-    function Add(AItem: TDescriptionItem): integer; virtual;
+    function Add(AItem: TDescriptionItem): integer; overload; virtual;
+    function Add(AItem: TPasItem): integer; overload; virtual;
   //add an descriptor - general --> get/create item list and add new item to it.
     function  AddNew(tid: TTranslationID; AKind: eDescriptionKind;
       const AName: string = ''; const AValue: string = ''): TDescriptionItem;
@@ -224,12 +229,15 @@ type
 
   //get PasItem from list - really?
     function  PasItemAt(index: integer): TPasItem; virtual;
+    procedure SetObject(index: integer; AItem: TPasItem); //virtual;
+  //get PasItems list
+    function  PasItems: TPasItems; virtual;
   //get description item from list, or Nil
     function  ItemAt(index: integer): TDescriptionItem; virtual;
   //get descriptive element by ID, or Nil (using IndexOfID)
     function  FindID(tid: TTranslationID): TDescriptionItem;
   //find item by name (using IndexOf)
-    function  Find(const AName: string): TDescriptionItem; 
+    function  Find(const AName: string): TDescriptionItem;
 
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSeparator + Value is
@@ -240,16 +248,21 @@ type
     }
     function Text(const NameValueSeparator: string = ' ';
       const ItemSeparator: string = ' '): string; //virtual;
+  {$IFDEF oldsort}
+    procedure Sort(const SortSettings: TSortSettings); virtual;
+  {$ELSE}
+  {$ENDIF}
 
     property Count: integer read GetCount;
     property Items[index: integer]: TDescriptionItem read ItemAt; //default;
     property Description: string read Value;
     property Strings[index: integer]: string read GetString;
+    property Objects[index: integer]: TPasItem read PasItemAt write SetObject;
   end;
   TStringPair = TDescriptionItem;
   TStringPairVector = TDescriptionItem;
 
-  
+
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
@@ -685,6 +698,7 @@ type
   end;
 
   TPasItemClass = class of TPasItem;
+  TLinkGenerator = function(AItem: TBaseItem): string of object;
 
   { Container class to store a list of @link(TBaseItem)s. }
   TBaseItems = class(TObjectVector)
@@ -722,6 +736,8 @@ type
   private
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
+  protected
+    SortKind: TCollectionSortKind;
   public
     { Do a FindItem, even if the name suggests something different!
       This is a comfortable routine that just calls inherited
@@ -762,7 +778,19 @@ type
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
-    function Text(const NameValueSepapator, ItemSeparator: string): string;
+  (* Resolve references to external units and ancestors.
+    Create link (anchor) names for all members.
+
+    To come: build member lists, based on further arguments. This should allow to:
+      build subsections in enumerated types,
+      group members by tags
+      collect all property-related items into a section,
+      collect event handlers into a section,
+      collect CIOs as ordinary types...
+  *)
+    procedure BuildLinks(AllUnits: TPasUnits; TheGenerator: TLinkGenerator); virtual;
+
+    function Text(const NameValueSeparator, ItemSeparator: string): string;
   end;
 
 (* Item with members.
@@ -770,10 +798,12 @@ type
   TPasScope = class(TPasItem)
   protected
     FMembers: TPasItems;
-  {$IFnDEF delegates}
+    FMemberLists: TDescriptionItem; //TDescriptionList;
+  {$IFDEF delegates}
   //renamed from TPasCio.FAncestors, TPasUnit.FUsesUnits
-    FHeritage: TStringVector;
+    //FHeritage: TDescriptionItem;
   {$ELSE}
+    FHeritage: TStringVector;
   {$ENDIF}
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -784,6 +814,11 @@ type
       Returns nil if not found. }
     function FindItemInAncestors(const ItemName: string): TPasItem; virtual;
 
+  (* Resolve links to used units, inherited classes and interfaces.
+    Implemented in TPasUnit and TPasCio
+  *)
+    procedure ResolveLinks(AllUnits: TPasUnits); virtual; abstract; 
+
   public
   //remember visibility while parsing
     CurVisibility: TVisibility;
@@ -793,6 +828,9 @@ type
 
   //add member, override for specialized lists
     procedure AddMember(item: TPasItem); virtual;
+
+  //sort member lists
+    procedure Sort(const SortSettings: TSortSettings); override;
 
     { This does all it can to resolve link specified by NameParts.
 
@@ -963,17 +1001,24 @@ type
   TPasCio = class(TPasType)
   protected
     //FClassDirective: TClassDirective;
-  {$IFDEF old}
-    //FAncestors: TStringVector;
+  {$IFDEF delegates}
+    FAncestors,
+    FFields,
+    FMethods,
+    FProperties: TDescriptionItem;
   {$ELSE}
-    FAncestors: TDescriptionItem;
-  {$ENDIF}
+    //FAncestors: TStringVector;
     FFields: TPasItems;
     FMethods: TPasMethods;
     FProperties: TPasProperties;
+  {$ENDIF}
     FOutputFileName: string;
     function  GetCioType: TCIOType;
     function  GetClassDirective: TClassDirective;
+  (* Resolve links to used units, inherited classes and interfaces.
+  *)
+    procedure ResolveLinks(AllUnits: TPasUnits); override;
+
   protected
   {$IFDEF new}
     procedure HandleClassnameTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -989,6 +1034,10 @@ type
       const AName: string); override;
     destructor Destroy; override;
 
+    {@name is used to indicate whether a class is sealed or abstract.}
+    property ClassDirective: TClassDirective //read FClassDirective write FClassDirective;
+      read GetClassDirective;
+
   //add item to members and to appropriate list
     procedure AddMember(item: TPasItem); override;
 
@@ -998,7 +1047,10 @@ type
       Returns nil if not found. }
     function FindItemInAncestors(const ItemName: string): TPasItem; override;
 
+  {$IFDEF oldsort}
     procedure Sort(const SortSettings: TSortSettings); override;
+  {$ELSE}
+  {$ENDIF}
 
     procedure RegisterTags(TagManager: TTagManager); override;
   public
@@ -1032,18 +1084,13 @@ type
     property Ancestors: TStringVector read FHeritage;
   {$ENDIF}
 
-    {@name is used to indicate whether a class is sealed or abstract.}
-    property ClassDirective: TClassDirective //read FClassDirective write FClassDirective;
-      read GetClassDirective;
-
-    { This returns Ancestors.Objects[0], i.e. instance of the first
-      ancestor of this Cio (or nil if it couldn't be found),
-      or nil if Ancestors.Count = 0. }
+    { This returns Ancestors.Objects[0], i.e. instance of the first ancestor of this Cio,
+      or nil if it couldn't be found or Ancestors.Count = 0. }
   {$IFDEF delegates}
-    function FirstAncestor: TDescriptionItem;
+    function FirstAncestorItem: TDescriptionItem;
   {$ELSE}
-    function FirstAncestor: TPasCio;
   {$ENDIF}
+    function FirstAncestor: TPasCio;
 
     { This returns the name of first ancestor of this Cio.
 
@@ -1072,6 +1119,16 @@ type
       <> ''. }
     function FirstAncestorName: string;
 
+  {$IFDEF delegates}
+    { list of all fields }
+    property Fields: TDescriptionItem read FFields;
+
+    { list of all methods }
+    property Methods: TDescriptionItem read FMethods;
+
+    { list of properties }
+    property Properties: TDescriptionItem read FProperties;
+  {$ELSE}
     { list of all fields }
     property Fields: TPasItems read FFields;
 
@@ -1080,6 +1137,7 @@ type
 
     { list of properties }
     property Properties: TPasProperties read FProperties;
+  {$ENDIF}
 
     { determines if this is a class, an interface or an object }
     property MyType: TCIOType read GetCioType;  // FMyType write FMyType;
@@ -1128,7 +1186,7 @@ type
       exception EAnchorAlreadyExists. Otherwise it adds TAnchorItem
       with given name to Anchors. It also returns created TAnchorItem. }
     function AddAnchor(const AnchorName: string): TAnchorItem; overload;
-    
+
     // @name holds a list of @link(TAnchorItem)s that represent anchors and
     // sections within the @classname. The @link(TAnchorItem)s have no content
     // so, they should not be indexed separately.
@@ -1187,6 +1245,13 @@ type
     { This searches for item in all used units.
       Returns nil if not found. }
     function FindItemInAncestors(const ItemName: string): TPasItem; override;
+
+  (* Resolve links to used units, inherited classes and interfaces.
+  *)
+    procedure ResolveLinks(AllUnits: TPasUnits); override;
+
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); override;
@@ -1284,6 +1349,7 @@ type
 
     function BasePath: string; override;
   end;
+
 
   { @abstract(Holds a collection of units.) }
   TPasUnits = class(TPasItems)
@@ -1808,7 +1874,9 @@ begin
   if FMembers = nil then
     FMembers := TPasItems.Create(True);
     //destruction occurs in inherited destructor
+  FMemberLists := TDescriptionItem.Create(trDummy, dkItemList);
 {$IFDEF delegates}
+  //only in dedicated classes
 {$ELSE}
   FHeritage := TStringVector.Create;
 {$ENDIF}
@@ -1817,6 +1885,7 @@ end;
 destructor TPasScope.Destroy;
 begin
   FreeAndNil(FMembers);
+  FreeAndNil(FMemberLists);
 {$IFDEF delegates}
 {$ELSE}
   FreeAndNil(FHeritage);
@@ -1829,7 +1898,7 @@ begin
   inherited;
   Members.Deserialize(ASource);
 {$IFDEF delegates}
-  ...
+  //FHeritage.LoadFromBinaryStream(ASource);
 {$ELSE}
   FHeritage.LoadFromBinaryStream(ASource);
 {$ENDIF}
@@ -1840,7 +1909,7 @@ begin
   inherited;
   Members.Serialize(ADestination);
 {$IFDEF delegates}
-  ...
+  //FHeritage.SaveToBinaryStream(ADestination);
 {$ELSE}
   FHeritage.SaveToBinaryStream(ADestination);
 {$ENDIF}
@@ -2082,15 +2151,15 @@ begin
 end;
 
 //function TStringPairVector.Text(
-function TPasItems.Text(const NameValueSepapator, ItemSeparator: string): string;
+function TPasItems.Text(const NameValueSeparator, ItemSeparator: string): string;
 var
   i: Integer;
 begin
   if Count > 0 then begin
-    Result := PasItemAt[0].FullDeclaration;  //.Name + NameValueSepapator + PasItemAt[0].Value;
+    Result := PasItemAt[0].FullDeclaration;  //.Name + NameValueSeparator + PasItemAt[0].Value;
     for i := 1 to Count - 1 do
       Result := Result + ItemSeparator +
-        //Items[i].Name + NameValueSepapator + Items[i].Value;
+        //Items[i].Name + NameValueSeparator + Items[i].Value;
         PasItemAt[i].FullDeclaration;
   end;
 end;
@@ -2116,8 +2185,35 @@ end;
 
 procedure TPasItems.SortDeep(const SortSettings: TSortSettings);
 begin
-  SortShallow;
-  SortOnlyInsideItems(SortSettings);
+(* This is the general sort.
+  Check SortSettings for sorting Self and Items.
+  Only CIOs may deserve sorting of their members.
+*)
+  if SortKind in SortSettings then
+    SortShallow;
+  if SortKind = ssCIOs then //We are Borg^w CIOs ;-)
+    SortOnlyInsideItems(SortSettings);
+end;
+
+procedure TPasItems.BuildLinks(AllUnits: TPasUnits;
+  TheGenerator: TLinkGenerator);
+var
+  i: integer;
+  item: TPasItem;
+begin
+(* First step: resolve external references, using AllUnits.
+  Where: Unit.UsedUnits, CIO.Ancestors
+
+  Second step: assign FullLinks to all items
+
+  Here only the second step is implemented.
+*)
+  for i := 0 to Count - 1 do begin
+    item := PasItemAt[i];
+    if item is TPasScope then
+      TPasScope(item).ResolveLinks(AllUnits);
+    item.FullLink := TheGenerator(item);
+  end;
 end;
 
 
@@ -2130,17 +2226,16 @@ const
 begin
   inherited;
 {$IFDEF delegates}
-  FFields := TPasItems.Create(owns); //interfaces have no fields!
+  FFields := NeedItems.AddNew(trFields, dkItemList);
   case AKind of
-  KEY_RECORD: //has no ancestors
+  KEY_RECORD: //has no ancestors, but possibly methods?
     begin
     end;
   else
-    FAncestors := NeedItems.AddNew(trHierarchy, dkItemList, AName);
-    FMethods := TPasMethods.Create(owns);
-    FProperties := TPasProperties.Create(owns);
+    FAncestors := NeedItems.AddNew(trHierarchy, dkItemList);
+    FMethods := NeedItems.AddNew(trMethods, dkItemList);
+    FProperties := NeedItems.AddNew(trProperties, dkItemList);
   end;
-  ...
 {$ELSE}
 //simple: create all
   FFields := TPasItems.Create(owns);
@@ -2152,7 +2247,7 @@ end;
 destructor TPasCio.Destroy;
 begin
 {$IFDEF delegates}
-  FAncestors.Free;
+  //FAncestors.Free;
 {$ELSE}
   Fields.Free;
   Methods.Free;
@@ -2207,25 +2302,47 @@ begin
   end;
 end;
 
-
+{$IFDEF oldsort}
 procedure TPasCio.Sort(const SortSettings: TSortSettings);
 begin
   inherited;
 
   if Fields <> nil then begin
     if MyType in CIORecordTypes then begin
-      if ssRecordFields in SortSettings then
+      if ssRecordFields in SortSettings then begin
+      {$IFDEF delegates}
+        (Fields.GetList as TPasItems).SortShallow;
+      {$ELSE}
         Fields.SortShallow;
-    end else if ssNonRecordFields in SortSettings then
+      {$ENDIF}
+      end;
+    end else if ssNonRecordFields in SortSettings then begin
+      {$IFDEF delegates}
+        (Fields.GetList as TPasItems).SortShallow;
+      {$ELSE}
         Fields.SortShallow;
+      {$ENDIF}
+    end;
   end;
 
-  if (Methods <> nil) and (ssMethods in SortSettings) then
+  if (Methods <> nil) and (ssMethods in SortSettings) then begin
+  {$IFDEF delegates}
+    (Methods.GetList as TPasItems).Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
+  {$ELSE}
     Methods.Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
+  {$ENDIF}
+  end;
 
-  if (Properties <> nil) and (ssProperties in SortSettings) then
+  if (Properties <> nil) and (ssProperties in SortSettings) then begin
+  {$IFDEF delegates}
+    (Properties.GetList as TPasItems).SortShallow;
+  {$ELSE}
     Properties.SortShallow;
+  {$ENDIF}
+  end;
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TPasCio.RegisterTags(TagManager: TTagManager);
 begin
@@ -2311,7 +2428,18 @@ begin
 end;
 
 {$IFDEF delegates}
-function TPasCio.FirstAncestor: TDescriptionItem;
+function TPasCio.FirstAncestor: TPasCio;
+var
+  item: TDescriptionItem;
+begin
+  item := FirstAncestorItem;
+  if item = nil then
+    Result := nil
+  else
+    Result := item.PasItem as TPasCio;
+end;
+
+function TPasCio.FirstAncestorItem: TDescriptionItem;
 begin
   if IsEmpty(FAncestors) then
     Result := nil
@@ -2323,11 +2451,11 @@ function TPasCio.FirstAncestorName: string;
 var
   item: TDescriptionItem;
 begin
-  item := FirstAncestor;
-  if item = nil then
-    Result := ''
+  item := FirstAncestorItem;
+  if item <> nil then
+    Result := item.Name
   else
-    Result := item.Name;
+    Result := '';
 end;
 
 function TPasCio.FindItemInAncestors(const ItemName: string): TPasItem;
@@ -2335,11 +2463,38 @@ var
   item: TDescriptionItem;
 begin
 //ancestor also searches in it's ancestor(s) (auto recursion)
-  item := FirstAncestor;
+  item := FirstAncestorItem;
   if item = nil then
     Result := nil
   else
     Result := item.PasItem.FindItem(ItemName) as TPasItem;
+end;
+
+procedure TPasCio.ResolveLinks(AllUnits: TPasUnits);
+var
+  i: integer;
+  item: TDescriptionItem;
+
+  procedure SearchAncestor;
+  var
+    iu: integer;
+    found: TDescriptionItem;
+  begin
+    for iu := 0 to AllUnits.Count - 1 do begin
+      found := AllUnits.UnitAt[iu].CIOs.Find(item.Name);
+      if found <> nil then begin
+        item.Data := found.PasItem;
+        break;
+      end;
+    end;
+  end;
+
+begin
+  for i := 0 to Ancestors.Count - 1 do begin
+    item := Ancestors.ItemAt(i);
+    if item.PasItem = nil then
+      SearchAncestor;
+  end;
 end;
 
 {$ELSE}
@@ -2408,10 +2563,24 @@ begin
   inherited;
 end;
 
+procedure TPasUnit.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  FUsesUnits.LoadFromBinaryStream(ASource);
+end;
+
+procedure TPasUnit.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  FUsesUnits.SaveToBinaryStream(ADestination);
+//if lists are created by parser, also save all other items!
+//means: create lists when deserialized! (need all fields)
+end;
+
 function TPasUnit.FindItemInAncestors(const ItemName: string): TPasItem;
 var
   i: integer;
-  //uitem: TPasUnit;
+  uitem: TPasUnit;
 begin
   for i := 0 to UsesUnits.Count - 1 do begin
   {$IFnDEF delegates}
@@ -2435,6 +2604,9 @@ begin
 end;
 
 procedure TPasUnit.AddMember(item: TPasItem);
+var
+  lst: TDescriptionItem;
+  iid: TTranslationID;
 begin
   inherited;  //add to Members
 {$IFnDEF delegates}
@@ -2451,21 +2623,41 @@ begin
   end;
 {$ELSE}
   case item.Kind of
-  KEY_CONST: NeedItems.AddNew(trConstants, ...)
+  KEY_CONST:  iid := trConstants;
+  KEY_TYPE:   iid := trTypes;
+  KEY_VAR:    iid := trVariables;
+  KEY_UNIT:   iid := trUses;
+  else
+    if item.Kind in CioTypes then
+      iid := trCio
+    else
+      iid := trFunctionsAndProcedures;
   end;
+  lst := NeedItems.AddNew(iid, dkItemList);
+  lst.Add(item);
 {$ENDIF}
 end;
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
 var
   po: TPasItem;
+  item: TDescriptionItem;
+  i: integer;
 begin
   Result := nil;
   if CIOs = nil then Exit;
-
+{$IFDEF delegates}
+  item := CIOs.Find(S1);
+  if assigned(item) then begin
+    i := item.IndexOf(S2);
+    if i >= 0 then
+      Result := item.PasItemAt(i);
+  end;
+{$ELSE}
   po := CIOs.FindName(S1);
   if Assigned(po) then
     Result := po.FindItem(S2) as TPasItem;
+{$ENDIF}
 end;
 
 function TPasUnit.FileNewerThanCache(const FileName: string): boolean;
@@ -2476,29 +2668,30 @@ end;
 
 procedure TPasUnit.Sort(const SortSettings: TSortSettings);
 begin
-  inherited;
-
-  if CIOs <> nil then
-  begin
+  inherited; //sort standard member lists
+{$IFDEF old}
+  if CIOs <> nil then begin
     if ssCIOs in SortSettings then
-      CIOs.SortShallow;
-    CIOs.SortOnlyInsideItems(SortSettings);
+      CIOs.Sort(smShallow);
+    CIOs.Sort(smOnlyInsideItems, SortSettings);
   end;
 
   if (Constants <> nil) and (ssConstants in SortSettings) then
-    Constants.SortShallow;
+    Constants.Sort(smShallow);
 
   if (FuncsProcs <> nil) and (ssFuncsProcs in SortSettings) then
-    FuncsProcs.SortShallow;
+    FuncsProcs.Sort(smShallow);
 
   if (Types <> nil) and (ssTypes in SortSettings) then
-    Types.SortShallow;
+    Types.Sort(smShallow);
 
   if (Variables <> nil) and (ssVariables in SortSettings) then
-    Variables.SortShallow;
-
+    Variables.Sort(smShallow);
+{$ELSE}
+{$ENDIF}
+//special case, of non-PasItems
   if (UsesUnits <> nil) and (ssUsesClauses in SortSettings) then
-    UsesUnits.Sort;
+    UsesUnits.Sort; //(SortSettings); //string vector - mode???
 end;
 
 function TPasUnit.BasePath: string;
@@ -2812,6 +3005,25 @@ begin
     end;
 end;
 
+procedure TPasScope.Sort(const SortSettings: TSortSettings);
+var
+  i: integer;
+  lists: TDescriptionItem;
+  lst: TPasItems;
+begin
+(* We have a list of member lists, which may deserve sorting.
+  Deep sorting can be required for CIO lists.
+*)
+  lists := FMemberLists; //Items.FindID(trDummy); //member lists?
+  if lists = nil then
+    exit; //should never happen
+  for i := 0 to lists.Count - 1 do begin
+    lst := lists.Items[i].PasItems;
+    if (lst <> nil) then //and (lst.SortKind in SortSettings) then
+      lst.SortDeep(SortSettings);
+  end;
+end;
+
 { TRawDescriptionInfo }
 
 destructor TRawDescriptionInfo.Destroy;
@@ -2832,6 +3044,15 @@ type
   TDescriptionList = class(TDescriptionItem)
   protected
     FList: TObjectVector;
+  {$IFDEF delegates}
+  //Load all text from stream.
+    procedure LoadFromBinaryStream(Stream: TStream); override;
+    //function AddFromStream(Stream: TStream): TDescriptionItem; override;
+    { This saves our contents in a format readable by
+      @link(LoadFromBinaryStream). }
+    procedure SaveToBinaryStream(Stream: TStream); override;
+  {$ELSE}
+  {$ENDIF}
   //get list count
     function  GetCount: integer; override;
   //get polymorphic list. Nil if none exists. Used in destructor...
@@ -2865,6 +3086,10 @@ type
     //function  FindID(tid: TTranslationID): TDescriptionItem; override;
   //get PasItem from list - really?
     function  PasItemAt(index: integer): TPasItem; override;
+  {$IFDEF new}
+    procedure SetObject(index: integer; AItem: TPasItem); override;
+  {$ELSE}
+  {$ENDIF}
   //get string, from any kind of list
     function  GetString(index: integer): string; override;
   end;
@@ -2901,6 +3126,8 @@ type
     constructor Create(tid: TTranslationID; AKind: eDescriptionKind;
       const AName: string = ''; const AValue: string = ''); override;
 
+    function Add(AItem: TPasItem): integer; overload; override;
+
   //find item by name
     function  IndexOf(const AName: string): integer; override;
   //find item by ID
@@ -2918,8 +3145,11 @@ type
 
   //get description item from list, or Nil
     function  ItemAt(index: integer): TDescriptionItem; override;
+    //procedure SetObject(index: integer; AItem: TPasItem); override;
   //get descriptive element by ID, or Nil
     //function  FindID(tid: TTranslationID): TDescriptionItem; override;
+  //get PasItems list
+    function  PasItems: TPasItems; override;
   //get PasItem from list - really?
     function  PasItemAt(index: integer): TPasItem; override;
   //get string, from any kind of list
@@ -2955,16 +3185,44 @@ end;
 {$IFDEF delegates}
 procedure TDescriptionItem.LoadFromBinaryStream(Stream: TStream);
 var
-  i, n: Integer;
+  i: Integer;
+  //aid: TTranslationID absolute i;
+  akind: eDescriptionKind absolute i;
 begin
-  ID := TTr TSerializable.LoadIntegerFromStream(Stream);
-  TSerializable.SaveIntegerToStream(ord(kind), Stream);
-  Clear;
-  n := TSerializable.LoadIntegerFromStream(Stream);
-  Capacity := n;
-  for i := 0 to n - 1 do
-    Append(TSerializable.LoadStringFromStream(Stream));
-  ...
+  ID := TTranslationID(TSerializable.LoadIntegerFromStream(Stream));
+  i := TSerializable.LoadIntegerFromStream(Stream);
+  assert(kind = akind, 'clobbered stream');
+  Name := TSerializable.LoadStringFromStream(Stream);
+  Value := TSerializable.LoadStringFromStream(Stream);
+//more in derived (lists)
+end;
+
+function TDescriptionItem.AddFromStream(Stream: TStream): TDescriptionItem;
+var
+  i, k: integer;
+  aid: TTranslationID absolute i;
+  akind: eDescriptionKind absolute k;
+  aname, avalue: string;
+begin
+  assert(kind = dkItemList, 'can only deserialize item lists');
+//see: SaveToBinaryStream
+  i := TSerializable.LoadIntegerFromStream(Stream);
+  k := TSerializable.LoadIntegerFromStream(Stream);
+  aname := TSerializable.LoadStringFromStream(Stream);
+  avalue := TSerializable.LoadStringFromStream(Stream);
+  Result := AddNew(aid, akind, aname, avalue);
+{$IFDEF recursive}
+  if akind = dkItemList then begin
+    //list part
+    k := TSerializable.LoadIntegerFromStream(Stream);
+    //set capacity - how?
+    for i := 0 to k-1 do begin
+      Result.AddFromStream(Stream);
+    end;
+  end;
+{$ELSE}
+  //we assume flat lists???
+{$ENDIF}
 end;
 
 procedure TDescriptionItem.SaveToBinaryStream(Stream: TStream);
@@ -2974,18 +3232,21 @@ var
   //il: TObjectVector;
   item: TDescriptionItem;
 begin
-(* Needed for ancestors.
+(* Needed for ancestors, uses.
   Do not save objects, i.e. no TPasItems in dkPasItems.
 *)
   TSerializable.SaveIntegerToStream(ord(ID), Stream);
   TSerializable.SaveIntegerToStream(ord(kind), Stream);
+  TSerializable.SaveStringToStream(Name, Stream);
+  TSerializable.SaveStringToStream(Value, Stream);
+{$IFDEF old}
   case self.kind of
   dkText:
     TSerializable.SaveStringToStream(Description, Stream);
   dkNameDesc:
     begin
-      TSerializable.SaveStringToStream(item.Name, Stream);
-      TSerializable.SaveStringToStream(item.Value, Stream);
+      TSerializable.SaveStringToStream(Name, Stream);
+      TSerializable.SaveStringToStream(Value, Stream);
     end;
   dkStrings:
     begin
@@ -3005,6 +3266,8 @@ begin
       end;
     end;
   end;
+{$ELSE}
+{$ENDIF}
 end;
 {$ELSE}
 {$ENDIF}
@@ -3066,21 +3329,24 @@ begin
     Result := nil;
 end;
 
+procedure TDescriptionItem.SetObject(index: integer; AItem: TPasItem);
+var
+  item: TDescriptionItem;
+begin
+(* only set Object for true description items.
+*)
+  item := ItemAt(index);
+  if item = nil then
+    assert(False, 'bad SetObject target')
+  else
+    item.Data := AItem;
+end;
+
 function TDescriptionItem.PasItemAt(index: integer): TPasItem;
 var
   obj: TObject;
 begin
-  //TObject(Result) := ItemAt(index);
-  case kind of
-  dkStrings:  //try TStrings.Objects[]
-    obj := TStrings(Data).Objects[index]; //hopefully within bounds!
-  dkPasItems:
-    obj := TPasItems(Data).GetPasItemAt(index);
-  dkItemList:
-    obj := TObjectVector(Data).Items[index];
-  else
-    obj := TObject(Data);
-  end;
+  obj := TObject(Data);
   if obj is TPasItem then
     Result := TPasItem(obj)
   else
@@ -3224,6 +3490,24 @@ begin
   Result := -1;
 end;
 
+function TDescriptionItem.Add(AItem: TPasItem): integer;
+begin
+  assert(False, 'cannot add PasItem');
+end;
+
+function TDescriptionItem.PasItems: TPasItems;
+begin
+  Result := nil;
+end;
+
+{$IFDEF oldsort}
+procedure TDescriptionItem.Sort(sm: eSortMode; settings: TSortSettings);
+begin
+...
+end;
+{$ELSE}
+{$ENDIF}
+
 { TDescriptionList }
 
 constructor TDescriptionList.Create(tid: TTranslationID;
@@ -3318,6 +3602,55 @@ begin
   Result := -1;
 end;
 
+procedure TDescriptionList.LoadFromBinaryStream(Stream: TStream);
+var
+  i, n: Integer;
+  item: TDescriptionItem;
+begin
+//in lists only!
+  inherited;  //assume list created!?
+(*
+  ID := TTranslationID(TSerializable.LoadIntegerFromStream(Stream));
+  i := TSerializable.LoadIntegerFromStream(Stream);
+  assert(ord(kind) = i, 'clobbered stream');
+*)
+  n := TSerializable.LoadIntegerFromStream(Stream);
+  FList.Capacity := n;
+  for i := 0 to n - 1 do begin
+    //Append(TSerializable.LoadStringFromStream(Stream));
+    //prevent recursion???
+    item := AddFromStream(Stream);
+  end;
+end;
+
+procedure TDescriptionList.SaveToBinaryStream(Stream: TStream);
+var
+  i: integer;
+  item: TDescriptionItem;
+begin
+  inherited;
+{
+  TSerializable.SaveIntegerToStream(ord(ID), Stream);
+  TSerializable.SaveIntegerToStream(ord(kind), Stream);
+}
+  TSerializable.SaveIntegerToStream(Count, Stream);
+  for i := 0 to Count - 1 do begin
+    item := ItemAt(i);
+    item.SaveToBinaryStream(Stream);
+  end;
+end;
+
+{$IFDEF new}
+procedure TDescriptionList.SetObject(index: integer; AItem: TPasItem);
+var
+  item: TDescriptionItem;
+begin
+  item := ItemAt(index);
+  item.SetObject(-1, AItem);
+end;
+{$ELSE}
+{$ENDIF}
+
 { TDescriptionStrings }
 
 constructor TDescriptionStrings.Create(tid: TTranslationID;
@@ -3357,6 +3690,11 @@ begin
 end;
 
 { TMemberList }
+
+function TMemberList.Add(AItem: TPasItem): integer;
+begin
+  FList.Add(AItem);
+end;
 
 constructor TMemberList.Create(tid: TTranslationID;
   AKind: eDescriptionKind; const AName, AValue: string);
@@ -3405,6 +3743,11 @@ end;
 function TMemberList.PasItemAt(index: integer): TPasItem;
 begin
   Result := FList.PasItemAt[index];
+end;
+
+function TMemberList.PasItems: TPasItems;
+begin
+  Result := FList;
 end;
 
 initialization
