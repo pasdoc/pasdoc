@@ -23,7 +23,10 @@ type
     class function LoadIntegerFromStream(const ASource: TStream): Longint;
     class procedure SaveIntegerToStream(const AValue: Longint; const ADestination: TStream);
 
+  {$IFDEF old}
     constructor Create; virtual;
+  {$ELSE}
+  {$ENDIF}
     class procedure SerializeObject(const AObject: TSerializable; const ADestination: TStream);
     class function DeserializeObject(const ASource: TStream): TSerializable;
     class procedure Register(const AClass: TSerializableClass);
@@ -41,10 +44,13 @@ var
 
 { TSerializable }
 
+{$IFDEF old}
 constructor TSerializable.Create;
 begin
   inherited;
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TSerializable.Serialize(const ADestination: TStream); 
 begin

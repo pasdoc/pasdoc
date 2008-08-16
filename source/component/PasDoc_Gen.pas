@@ -998,6 +998,7 @@ procedure TDocGenerator.BuildLinks;
   Only after deserialization some actions may be required.
 *)
 
+{$IFDEF old}
   { Assign Cio.Ancestors.Objects[i] for every i }
   procedure AssignCioAncestorLinks(Cio: TPasCio);
   var
@@ -1024,6 +1025,8 @@ procedure TDocGenerator.BuildLinks;
       p.FullLink := CreateLink(p);
     end;
   end;
+{$ELSE}
+{$ENDIF}
 
 var
   CO: TPasCio;
@@ -1051,6 +1054,7 @@ begin
     U.FullLink := CreateLink(U);
     U.OutputFileName := U.FullLink;
 
+  {$IFDEF old}
     for j := 0 to U.UsesUnits.Count - 1 do
     begin
       { Yes, this will also set U.UsesUnits.Objects[i] to nil
@@ -1077,6 +1081,10 @@ begin
         AssignLinks(U, CO, CO.Members);
       end;
     end;
+  {$ELSE}
+    u.Members.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
+    u.ResolveLinks(Units);
+  {$ENDIF}
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
 end;
@@ -1577,8 +1585,8 @@ var
     Anchor: TAnchorItem;
     SectionEntry: TStringPair;
   begin
-    //Result := TStringPairVector.Create(true);
-    Result := TStringPairVector.Create(trNoTrans, dkItemList);
+    Result := TStringPairVector.Create(true);
+    //Result := TStringPairVector.Create(trNoTrans, dkItemList);
 
     repeat
       if AnchorIndex = ItemAnchors.Count then
