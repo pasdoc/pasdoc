@@ -128,7 +128,7 @@ type
     procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
     {** Returns @true if this item or its ancestor has a description, otherwise
         returns @false.
-    }    
+    }
     function HasDescription(const AItem: TPasItem): boolean;
 
     { Writes heading S to output, at heading level I.
@@ -431,53 +431,33 @@ begin
     + ConvertString(GetClassDirectiveName(CIO.ClassDirective)));
   WriteAnchor(CIO.Name,CIO.FullLink);
 
-  if dsHierarchy in SectionsAvailable then
-    begin
-      { Write Hierarchy }
-      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then 
-        begin
-          WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
+  if dsHierarchy in SectionsAvailable then begin
+  { Write Hierarchy }
+    s := CIO.FirstAncestorName;
+    if s <> '' then begin
+      WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
 
-          WriteConverted(CIO.Name);
-          WriteConverted(' > ');
-          s := CIO.Ancestors.FirstName;
-          Item := CIO.FirstAncestor;
-          if Assigned(Item) and (Item is TPasCio) then 
-            begin
-              repeat
-                s := MakeItemLink(Item, Item.Name, lcNormal);
-                WriteDirect(s);
+      WriteConverted(CIO.Name);
+      item := CIO;
+      while s <> '' do begin
+        WriteConverted(' > ');
+        Item := TPasCio(Item).FirstAncestor;
+        if not assigned(Item) then
+          break; //write last ancestor name
+        s := MakeItemLink(Item, Item.Name, lcNormal);
+        WriteDirect(s);
+        s := TPasCio(Item).FirstAncestorName; //always valid, '' if no more ancestors
+      end; //until s=''
+      WriteDirect(s,true);
+    end;
+  end;
 
-                if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
-                  begin
-                    s := TPasCio(Item).Ancestors.FirstName;
-                    Item := TPasCio(Item).FirstAncestor;
+  if dsDescription in SectionsAvailable then begin
+    WriteHeading(HL + 2, SectionHeads[dsDescription]);
+    WriteItemLongDescription(CIO, false);
+  end else
+    WriteDirect('%%%%' + SectionHeads[dsDescription],true);
 
-                    WriteConverted(' > ');
-                    if (Item <> nil) and (Item is TPasCio) then 
-                      begin
-                        Continue;
-                      end;
-                   end;
-                 WriteDirect('',true);
-                 Break;
-                until False;
-             end;
-             if Item = nil then 
-              begin
-                WriteDirect(s,true);
-              end;
-          end;
-      end;
-
-  if dsDescription in SectionsAvailable then
-    begin
-      WriteHeading(HL + 2, SectionHeads[dsDescription]);
-      WriteItemLongDescription(CIO, false);
-    end
-  else
-      WriteDirect('%%%%' + SectionHeads[dsDescription],true);
-       
   WriteFieldsProperties(HL + 2, CIO.Properties, CIO.ShowVisibility, trProperties);
 
   WriteFieldsProperties(HL + 2, CIO.Fields, CIO.ShowVisibility, trFields);
@@ -486,7 +466,7 @@ begin
 
   WriteAuthors(HL + 2, CIO.Authors);
   //WriteDates(HL + 2, CIO.Created, CIO.LastMod);
-  WriteDates(HL + 2, CIO.Description[trCreated], CIO.Description[trLastModified]);
+  WriteDates(HL + 2, CIO.FindID(trCreated), CIO.FindID(trLastModified));
 end;
 
 procedure TTexDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
@@ -499,7 +479,7 @@ begin
 
   WriteHeading(HL, FLanguage.Translation[trCio]);
 
-  for j := 0 to c.Count - 1 do 
+  for j := 0 to c.Count - 1 do
     begin
       CIO := TPasCio(c.PasItemAt[j]);
       WriteCIO(HL,CIO);
@@ -977,9 +957,14 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
   AlreadyWithinAList: boolean);
 
   { writes the parameters or exceptions list }
+{$IFDEF old}
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
     List: TStringPairVector; LinkToParamNames: boolean);
-    
+{$ELSE}
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+    List: TDescriptionItem; LinkToParamNames: boolean);
+{$ENDIF}
+
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
       WriteDirect('\item[');
@@ -987,8 +972,8 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       WriteDirect('] ');
       WriteSpellChecked(Desc);
       WriteDirect('',true);
-    end;    
-    
+    end;
+
   var
     i: integer;
     ParamName: string;
@@ -1015,7 +1000,11 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     WriteDirect('\end{description}',true);
   end;
 
+{$IFDEF old}
   procedure WriteSeeAlso(SeeAlso: TStringPairVector);
+{$ELSE}
+  procedure WriteSeeAlso(SeeAlso: TDescriptionItem);
+{$ENDIF}
   var
     i: integer;
     SeeAlsoItem: TBaseItem;
@@ -1032,20 +1021,20 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso.Items[i].Name, AItem, 
+      SeeAlsoLink := SearchLink(SeeAlso.Items[i].Name, AItem,
         SeeAlso.Items[i].Value, true, SeeAlsoItem);
       WriteDirect('\item[');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
         WriteConverted(SeeAlso.Items[i].Name);
       WriteDirectLine('] ');
-      
+
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
         WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
       WriteDirectLine('');
     end;
     WriteDirect('\end{description}',true);
-    
+
     if not AlreadyWithinAList then
       WriteEndList;
   end;
@@ -1067,7 +1056,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
   end;
 
 var
-  Ancestor: TBaseItem;
+  Ancestor: TPasCio;  // TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
   i: Integer;
@@ -1084,44 +1073,31 @@ begin
   if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
-  if AItem.AbstractDescription <> '' then
-  begin
+  if AItem.AbstractDescription <> '' then begin
     WriteSpellChecked(AItem.AbstractDescription);
 
-    if AItem.DetailedDescription <> '' then
-      begin
-        if not AItem.AbstractDescriptionWasAutomatic then
-        begin
-          WriteDirect('\hfill\vspace*{1ex}',true);
-          WriteDirect('',true);
-        end;
-        WriteSpellChecked(AItem.DetailedDescription);
+    if AItem.DetailedDescription <> '' then begin
+      if not AItem.AbstractDescriptionWasAutomatic then begin
+        WriteDirect('\hfill\vspace*{1ex}',true);
+        WriteDirect('',true);
       end;
-  end else 
-  begin
-    if AItem.DetailedDescription <> '' then 
-    begin
       WriteSpellChecked(AItem.DetailedDescription);
-    end else 
-    begin
-      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
-      begin
-        AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := TPasCio(AItem).FirstAncestor;
-        if Assigned(Ancestor) and (Ancestor is TPasItem) then
-          begin
-            WriteConverted(Format('no description available, %s description follows', [AncestorName]));
-            WriteItemLongDescription(TPasItem(Ancestor), AlreadyWithinAList);
-          end;
-      end else
-      begin
-        WriteDirect(' ');
-      end;
     end;
+  end else if AItem.DetailedDescription <> '' then begin
+    WriteSpellChecked(AItem.DetailedDescription);
+  //end else if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
+  end else if (AItem is TPasCio) then begin
+    AncestorName := TPasCio(AItem).FirstAncestorName;
+    Ancestor := TPasCio(AItem).FirstAncestor;
+    if Assigned(Ancestor) {and (Ancestor is TPasItem)} then begin
+      WriteConverted(Format('no description available, %s description follows', [AncestorName]));
+      WriteItemLongDescription(Ancestor, AlreadyWithinAList);
+    end;
+  end else begin
+    WriteDirect(' ');
   end;
 
-  if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then
-  begin
+  if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then begin
     WriteStartOfParagraph;
     AItemMethod := TPasMethod(AItem);
   {$IFDEF old}
@@ -1146,8 +1122,7 @@ begin
 
   WriteSeeAlso(AItem.SeeAlso);
 
-  if AItem is TPasEnum then
-  begin
+  if AItem is TPasEnum then begin
     WriteDirect('\item[\textbf{' + FLanguage.Translation[trValues] + '}]',true);
     WriteDirectLine('\begin{description}');
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
@@ -1163,7 +1138,7 @@ begin
   end;
 end;
 
-procedure TTexDocGenerator.WriteFieldsProperties(HL: integer; 
+procedure TTexDocGenerator.WriteFieldsProperties(HL: integer;
   const Items: TPasItems; ShowVisibility: boolean; SectionName: TTranslationId);
 var
   j: Integer;
@@ -1370,21 +1345,24 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
     i: Integer;
     ULink: TPasItem;
   begin
-    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then begin
       WriteHeading(HL, FLanguage.Translation[trUses]);
       WriteDirect('\begin{itemize}',true);
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('\item ');
+      {$IFDEF old}
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
-        if ULink <> nil then
-        begin
-          WriteDirect(MakeItemLink(ULink, U.UsesUnits[i], lcNormal));
-        end else 
-        begin
-          { MakeItemLink writes link names in tt font, so we follow 
+      {$ELSE}
+        ULink := U.UsesUnits.PasItemAt(i);
+      {$ENDIF}
+        if ULink <> nil then begin
+          //WriteDirect(MakeItemLink(ULink, U.UsesUnits[i], lcNormal));
+          WriteDirect(MakeItemLink(ULink, ULink.Name, lcNormal));
+        end else begin
+          { MakeItemLink writes link names in tt font, so we follow
             the convention here and also use tt font. }
-          WriteDirect('\begin{ttfamily}' + 
-            ConvertString(U.UsesUnits[i]) + '\end{ttfamily}');
+          WriteDirect('\begin{ttfamily}' +
+            ConvertString(U.UsesUnits.Items[i].Name) + '\end{ttfamily}');
         end;
       end;
       WriteDirect('\end{itemize}',true);
@@ -1406,21 +1384,25 @@ var
 
 begin
   SectionsAvailable := [dsDescription];
-  ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
-  ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));
-  ConditionallyAddSection(dsFuncsProcs, not ObjectVectorIsNilOrEmpty(U.FuncsProcs));
-  ConditionallyAddSection(dsTypes, not ObjectVectorIsNilOrEmpty(U.Types));
-  ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
-  ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
+  ConditionallyAddSection(dsUses, WriteUsesClause and not IsEmpty(U.UsesUnits));
+  ConditionallyAddSection(dsClasses, not IsEmpty(U.CIOs));
+  ConditionallyAddSection(dsFuncsProcs, not IsEmpty(U.FuncsProcs));
+  ConditionallyAddSection(dsTypes, not IsEmpty(U.Types));
+  ConditionallyAddSection(dsConstants, not IsEmpty(U.Constants));
+  ConditionallyAddSection(dsVariables, not IsEmpty(U.Variables));
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
+{$IFDEF old}
   if U.IsUnit then
     WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name)
   else if U.IsProgram then
     WriteHeading(HL, FLanguage.Translation[trProgram] + ' ' + U.Name)
   else
     WriteHeading(HL, FLanguage.Translation[trLibrary] + ' ' + U.Name);
+{$ELSE}
+  WriteHeading(HL, FLanguage.Translation[U.id] + ' ' + U.Name);
+{$ENDIF}
 
   WriteAnchor(U.Name, U.FullLink);
 
@@ -1428,13 +1410,13 @@ begin
     WriteUnitDescription(HL + 1, U);
 
   WriteUnitUses(HL + 1, U);
-  
+
   if (U.CIOs.count <> 0) or (U.FuncsProcs.count <> 0) then
     WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-    
+
   WriteItemsSummary(U.CIOs);
   WriteItemsSummary(U.FuncsProcs);
-  
+
   WriteCIOs(HL + 1, U.CIOs);
 
   WriteItemsDetailed(HL + 1, U.FuncsProcs, false, trFunctionsAndProcedures);

@@ -190,6 +190,7 @@ type
   //item sort
     function  SortGet: TSortSettings;
     procedure SortPut(Options: TSortSettings);
+    function  SSI(so: TSortSetting): integer;
     property SortedItems: TSortSettings read SortGet write SortPut;
   //output language: .Generator.Language: TLanguageID;
     function  LanguageGet: TLanguageID;
@@ -533,8 +534,10 @@ end;
 
 procedure TDocMain.SetDefaults;
 var
-  SortIndex: TSortSetting;
+  SortIndex: integer; // TSortSetting;
 //const DefVisible: TVisibilities = [viPublished, viPublic];
+const
+  soff = ord(low(SortIndex));
 begin
   Visibility := DefaultVisibilities;
 
@@ -557,8 +560,9 @@ begin
   swBackRef.Checked := True;  //DoDi!
 
 //Sorting
-  for SortIndex := Low(TSortSetting) to High(TSortSetting) do
-    swSort.Checked[Ord(SortIndex)] := false;
+  //for SortIndex := Low(TSortSetting) to High(TSortSetting) do
+  for SortIndex := 0 to swSort.Count - 1 do
+    swSort.Checked[SortIndex] := false;
 
   HasChanged := False;
 end;
@@ -648,7 +652,7 @@ begin
         swVisible.Checked[i]);
       //only checked ones?
 
-    for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
+    for i := SSI(Low(TSortSetting)) to SSI(High(TSortSetting)) do
       Ini.WriteBool(secMain, mainSorting_ + IntToStr(i),
         swSort.Checked[i]);
       //only checked ones?
@@ -761,8 +765,9 @@ begin
         'Main', 'ClassMembers_' + IntToStr(i), true);
     //clbMethodVisibilityClick(nil);
 
-    Assert(Ord(High(TSortSetting)) = swSort.Items.Count -1);
-    for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do begin
+    Assert(SSI(High(TSortSetting)) = swSort.Count -1);
+    //for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do begin
+    for i := 0 to swSort.Count - 1 do begin
       swSort.Checked[i] := Ini.ReadBool(secMain, mainSorting_ + IntToStr(i), True);
     end;
 
@@ -993,13 +998,20 @@ end;
 
 // ------------ member sorting -------------
 
+function TDocMain.SSI(so: TSortSetting): integer;
+const
+  offset = ord(low(so));
+begin
+  Result := ord(so) - offset;
+end;
+
 function TDocMain.SortGet: TSortSettings;
 var
   f: TSortSetting;
 begin
   Result := [];
   for f := low(f) to high(f) do begin
-    if swSort.Checked[ord(f)] then
+    if swSort.Checked[SSI(f)] then
       include(Result, f);
   end;
 end;
@@ -1009,7 +1021,7 @@ var
   f: TSortSetting;
 begin
   for f := low(f) to high(f) do
-    swSort.Checked[ord(f)] := (f in Options);
+    swSort.Checked[SSI(f)] := (f in Options);
 end;
 
 // --------------- language ----------------
@@ -1392,7 +1404,7 @@ begin
       UnitItem := PasDoc1.Units.UnitAt[UnitIndex];
       UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
         UnitItem.SourceFileName, UnitItem);
-      if UnitItem.Types.Count > 0 then begin
+      if not IsEmpty(UnitItem.Types) then begin
         AllTypesNode := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trTypes], UnitItem.Types);
         for PasItemIndex := 0 to UnitItem.Types.Count -1 do begin
@@ -1400,7 +1412,7 @@ begin
           tvUnits.Items.AddChildObject(AllTypesNode, PasItem.Name, PasItem);
         end;
       end;
-      if UnitItem.Variables.Count > 0 then begin
+      if not IsEmpty(UnitItem.Variables) then begin
         AllVariablesNode := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trVariables], UnitItem.Variables);
         for PasItemIndex := 0 to UnitItem.Variables.Count -1 do begin
@@ -1408,14 +1420,14 @@ begin
           tvUnits.Items.AddChildObject(AllVariablesNode, PasItem.Name, PasItem);
         end;
       end;
-      if UnitItem.CIOs.Count > 0 then begin
+      if not IsEmpty(UnitItem.CIOs) then begin
         AllCIOs_Node := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trCio], UnitItem.CIOs);
         for ClassIndex := 0 to UnitItem.CIOs.Count-1 do begin
           ClassInterfaceObjectOrRecord := UnitItem.CIOs.PasItemAt[ClassIndex] as TPasCio;
           ClassNode := tvUnits.Items.AddChildObject(AllCIOs_Node,
             ClassInterfaceObjectOrRecord.Name, ClassInterfaceObjectOrRecord);
-          if ClassInterfaceObjectOrRecord.Fields.Count > 0 then begin
+          if not IsEmpty(ClassInterfaceObjectOrRecord.Fields) then begin
             FieldsNode := tvUnits.Items.AddChildObject(ClassNode,
               Lang.Translation[trFields], ClassInterfaceObjectOrRecord.Fields);
             for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Fields.Count -1 do begin
@@ -1423,7 +1435,7 @@ begin
               tvUnits.Items.AddChildObject(FieldsNode, PasItem.Name, PasItem);
             end;
           end;
-          if ClassInterfaceObjectOrRecord.Methods.Count > 0 then begin
+          if not IsEmpty(ClassInterfaceObjectOrRecord.Methods) then begin
             MethodNode := tvUnits.Items.AddChildObject(ClassNode,
               Lang.Translation[trMethods], ClassInterfaceObjectOrRecord.Methods);
             for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Methods.Count -1 do begin
@@ -1431,7 +1443,7 @@ begin
               tvUnits.Items.AddChildObject(MethodNode, PasItem.Name, PasItem);
             end;
           end;
-          if ClassInterfaceObjectOrRecord.Properties.Count > 0 then begin
+          if not IsEmpty(ClassInterfaceObjectOrRecord.Properties) then begin
             PropertiesNode := tvUnits.Items.AddChildObject(ClassNode,
               Lang.Translation[trProperties], ClassInterfaceObjectOrRecord.Properties);
             for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Properties.Count -1 do begin
@@ -1441,7 +1453,7 @@ begin
           end;
         end;
       end;
-      if UnitItem.Constants.Count > 0 then begin
+      if not IsEmpty(UnitItem.Constants) then begin
         AllConstantsNode := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trConstants], UnitItem.Constants);
         for PasItemIndex := 0 to UnitItem.Constants.Count -1 do begin
@@ -1449,7 +1461,7 @@ begin
           tvUnits.Items.AddChildObject(AllConstantsNode, PasItem.Name, PasItem);
         end;
       end;
-      if UnitItem.FuncsProcs.Count > 0 then begin
+      if not IsEmpty(UnitItem.FuncsProcs) then begin
         AllProceduresNode := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trFunctionsAndProcedures], UnitItem.FuncsProcs);
         for PasItemIndex := 0 to UnitItem.FuncsProcs.Count -1 do begin
@@ -1457,11 +1469,11 @@ begin
           tvUnits.Items.AddChildObject(AllProceduresNode, PasItem.Name, PasItem);
         end;
       end;
-      if UnitItem.UsesUnits.Count > 0 then begin
+      if not IsEmpty(UnitItem.UsesUnits) then begin
         UsesNode := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trUses], UnitItem.UsesUnits);
         for UsesIndex := 0 to UnitItem.UsesUnits.Count -1 do begin
-          tvUnits.Items.AddChild(UsesNode, UnitItem.UsesUnits[UsesIndex]);
+          tvUnits.Items.AddChild(UsesNode, UnitItem.UsesUnits.Strings[UsesIndex]);
         end;
       end;
     end;

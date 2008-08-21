@@ -411,9 +411,13 @@ type
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
-    
+
+  {$IFDEF old}
     FClassHierarchy: TStringCardinalTree;
-  
+  {$ELSE}
+    FClassHierarchy: TDescriptionItem;
+  {$ENDIF}
+
     procedure DoError(const AMessage: string; const AArguments: array of const;
       const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal;
@@ -815,7 +819,11 @@ type
       
       Default implementation of this method in this class just returns
       empty string. }
+  {$IFDEF old}
     function FormatTableOfContents(Sections: TStringPairVector): string; virtual;
+  {$ELSE}
+    function FormatTableOfContents(Sections: TDescriptionItem): string; virtual;
+  {$ENDIF}
   public
 
     { Creates anchors and links for all items in all units. }
@@ -998,14 +1006,17 @@ procedure TDocGenerator.BuildLinks;
   Only after deserialization some actions may be required.
 *)
 
-{$IFDEF old}
   { Assign Cio.Ancestors.Objects[i] for every i }
   procedure AssignCioAncestorLinks(Cio: TPasCio);
   var
     i: Integer;
   begin
     for i := 0 to Cio.Ancestors.Count - 1 do
+    {$IFDEF old}
       Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio, true);
+    {$ELSE}
+      Cio.Ancestors.Items[i].PasItem := SearchItem(Cio.Ancestors.Strings[i], Cio, true).PasItem;
+    {$ENDIF}
   end;
 
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio; c: TPasItems);
@@ -1025,17 +1036,15 @@ procedure TDocGenerator.BuildLinks;
       p.FullLink := CreateLink(p);
     end;
   end;
-{$ELSE}
-{$ENDIF}
 
 var
-  CO: TPasCio;
+  //CO: TPasCio;
   i: Integer;
-  j: Integer;
+  //j: Integer;
   U: TPasUnit;
-begin
+begin //BuildLinks
+  if IsEmpty(Units) then Exit;
   DoMessage(2, pmtInformation, 'Creating links ...', []);
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   if Introduction <> nil then
   begin
@@ -1051,17 +1060,16 @@ begin
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
-    U.FullLink := CreateLink(U);
-    U.OutputFileName := U.FullLink;
-
   {$IFDEF old}
+    U.FullLink := CreateLink(U);
+    U.OutputFileName := U.FullLink; //HTML only!?
+
     for j := 0 to U.UsesUnits.Count - 1 do
     begin
       { Yes, this will also set U.UsesUnits.Objects[i] to nil
         if no such unit exists in Units table. }
       U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
     end;
-
     AssignLinks(U, nil, U.Members);
   //actions required after deserialization
 
@@ -1081,9 +1089,9 @@ begin
         AssignLinks(U, CO, CO.Members);
       end;
     end;
+    ...
   {$ELSE}
-    u.Members.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
-    u.ResolveLinks(Units);
+    u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
   {$ENDIF}
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
@@ -1579,15 +1587,22 @@ var
   MaxLevel: Integer;
   AnchorIndex: Integer;
   ItemAnchors: TBaseItems;
-  
+
+{$IFDEF old}
   function CollectSections(MinLevel: Integer): TStringPairVector;
+{$ELSE}
+  procedure CollectSections(MinLevel: Integer; lst: TDescriptionItem);
+{$ENDIF}
   var
     Anchor: TAnchorItem;
     SectionEntry: TStringPair;
   begin
+  {$IFDEF old}
     Result := TStringPairVector.Create(true);
-    //Result := TStringPairVector.Create(trNoTrans, dkItemList);
+  {$ELSE}
+  {$ENDIF}
 
+    SectionEntry := nil;
     repeat
       if AnchorIndex = ItemAnchors.Count then
         Exit;
@@ -1596,8 +1611,8 @@ var
         Inc(AnchorIndex);
       end else if Anchor.SectionLevel = MinLevel then begin
         Inc(AnchorIndex);
-        //SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
-        SectionEntry := TStringPair.Create(trNoTrans, dkNameDesc, Anchor.Name, Anchor.SectionCaption);
+      {$IFDEF old}
+        SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
           Result.Add(SectionEntry)
@@ -1606,6 +1621,10 @@ var
           FreeAndNil(TStringPairVector(SectionEntry.Data));
           SectionEntry.Free;
         end;
+      {$ELSE}
+        SectionEntry := TDescriptionItem.Create(Anchor.Name, Anchor.SectionCaption, trNoTrans, dkItemList);
+        CollectSections(MinLevel + 1, SectionEntry);
+      {$ENDIF}
       end else if Anchor.SectionLevel > MinLevel then begin
         { This is for the case of malformed sections,
           i.e. user suddenly specified section with level
@@ -1613,8 +1632,8 @@ var
           In the future we may just give a warning to the user
           and refuse to work in such case ?
           For now, we just try to go on and produce something sensible. }
-        //SectionEntry := TStringPair.Create('', '');
-        SectionEntry := TStringPair.Create(trNoTrans, dkNameDesc);  //('', '');
+      {$IFDEF old}
+        SectionEntry := TStringPair.Create('', '');
         SectionEntry.Data := CollectSections(MinLevel + 1);
         if MinLevel <= MaxLevel then
           Result.Add(SectionEntry)
@@ -1623,10 +1642,22 @@ var
           FreeAndNil(TStringPairVector(SectionEntry.Data));
           SectionEntry.Free;
         end;
-      end else
+      {$ELSE}
+        SectionEntry := TDescriptionItem.Create('', '', trDummy, dkItemList);
+        CollectSections(MinLevel + 1, SectionEntry);
+      {$ENDIF}
+      end else begin
         { So Anchor.SectionLevel < MinLevel,
           so we have to return from recursive call. }
         Exit;
+      end;
+      if SectionEntry <> nil then begin
+        if MinLevel <= MaxLevel then
+          lst.Add(SectionEntry)
+        else
+          SectionEntry.Free;
+        SectionEntry := nil;
+      end;
     until false;
   end;
 
@@ -1646,7 +1677,11 @@ var
   {$ENDIF}
 
 var
+{$IFDEF old}
   TopLevelSections: TStringPairVector;
+{$ELSE}
+  TopLevelSections: TDescriptionItem;
+{$ENDIF}
 begin
   { calculate MaxLevel }
   if Trim(TagParameter) = '' then
@@ -1667,13 +1702,22 @@ begin
 
   { calculate TopLevelSections }
   AnchorIndex := 0;
+{$IFDEF old}
   TopLevelSections := CollectSections(1);
-  
+{$ELSE}
+  TopLevelSections := TDescriptionItem.Create('', '', trDummy, dkItemList);
+  CollectSections(1, TopLevelSections);
+{$ENDIF}
+
   { now make use of TopLevelSections -- call FormatTableOfContents }
   ReplaceStr := FormatTableOfContents(TopLevelSections);
   
   { free TopLevelSections }
+{$IFDEF old}
   FreeSectionsList(TopLevelSections);
+{$ELSE}
+  TopLevelSections.Free;
+{$ENDIF}
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
@@ -2244,7 +2288,11 @@ begin
       f.Free;
     end;
   except
+  {$IFDEF old}
     DoError('Could not open description file "%s".', [n], 0);
+  {$ELSE}
+    DoMessage(1, pmtWarning, 'Could not open description file "%s".', [n]);
+  {$ENDIF}
   end;
 end; {TDocGenerator.LoadDescriptionFile}
 
@@ -2489,7 +2537,7 @@ end;
 destructor TDocGenerator.Destroy;
 begin
   FreeAndNil(FAutoLinkExclude);
-  
+
   FSpellCheckIgnoreWords.Free;
   FLanguage.Free;
   FClassHierarchy.Free;
@@ -2498,6 +2546,7 @@ begin
   inherited;
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.CreateClassHierarchy;
 
   function FindGlobalPasItem(const NameParts: TNameParts): TPasItem;
@@ -2516,7 +2565,7 @@ var
   ACIO: TPasCio;
   ParentItem: TPasItem;
   Parent, Child: TPasItemNode;
-begin
+begin //CreateClassHierarchy
   FClassHierarchy.Free;
   FClassHierarchy := TStringCardinalTree.Create;
   for unitLoop := 0 to Units.Count - 1 do begin
@@ -2556,6 +2605,41 @@ begin
   end;
   FClassHierarchy.Sort;
 end;
+{$ELSE}
+procedure TDocGenerator.CreateClassHierarchy;
+
+  function AddBranch(c: TPasCio): TDescriptionItem;
+  var
+    a: TPasCio;
+    parent: TDescriptionItem;
+  begin
+    a := c.FirstAncestor; //the base class
+    if a = nil then begin //top level class
+      parent := FClassHierarchy;
+    end else begin
+      parent := AddBranch(a);
+    end;
+    Result := parent.AddNew(c.ID, dkDelegate, c.Name);
+    Result.PasItem := c;
+  end;
+
+var
+  iu, ic: integer;
+  u: TPasUnit;
+  c: TPasCio;
+begin
+  FClassHierarchy.Free;
+  FClassHierarchy := TDescriptionItem.Create('', '', trClassHierarchy, dkItemList);
+  for iu := 0 to Units.Count - 1 do begin
+    u := Units.UnitAt[iu];
+    for ic := 0 to u.CIOs.Count - 1 do begin
+      c := u.CIOs.PasItemAt[ic] as TPasCio;
+      AddBranch(c); //ignore result
+    end;
+  end;
+end;
+
+{$ENDIF}
 
 procedure TDocGenerator.WriteEndOfCode;
 begin
@@ -2592,34 +2676,36 @@ begin
   Result := FLanguage.Language;
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.WriteGVClasses;
 var
   LNode: TPasItemNode;
   OverviewFileName: string;
 begin
   CreateClassHierarchy;
+//traverse tree
   LNode := FClassHierarchy.FirstItem;
   if Assigned(LNode) then
   begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
     if CreateStream(OverviewFileName, True) = csError then
     begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".', 
+      DoMessage(1, pmtError, 'Could not create output file "%s".',
         [OverviewFileName]);
       Exit;
     end;
-    
+
     WriteDirect('DiGraph Classes {', true);
-    while Assigned(LNode) do 
+    while Assigned(LNode) do
     begin
-      if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then 
+      if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then
       begin
         WriteDirectLine('  ' + LNode.Name + ' -> '+LNode.Parent.Name);
       end;
-      
+
       if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
       begin
-        WriteDirectLine('  ' + LNode.Name + 
+        WriteDirectLine('  ' + LNode.Name +
           ' [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
       end;
 
@@ -2630,7 +2716,52 @@ begin
     CloseStream;
   end;
 end;
+{$ELSE}
+procedure TDocGenerator.WriteGVClasses;
+var
+  OverviewFileName: string;
 
+  procedure WriteBranch(lst: TDescriptionItem);
+  var
+    ic: integer;
+    LNode: TDescriptionItem;
+    //item: TPasCio;
+    pname: string;
+  begin
+    pname := lst.Name;
+    for ic := 0 to lst.Count - 1 do begin
+      LNode := lst.ItemAt(ic);
+      //if Assigned(parent) then
+      if pname <> '' then
+        WriteDirectLine('  ' + LNode.Name + ' -> ' + pname);
+      if LNode.PasItem is TPasCio then
+        WriteDirectLine('  ' + LNode.Name +
+          ' [href="' + TPasCio(LNode.PasItem).OutputFileName + '"]');
+    end;
+  end;
+
+begin
+  CreateClassHierarchy;
+//traverse tree
+  if not IsEmpty(FClassHierarchy) then begin
+    OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
+    if CreateStream(OverviewFileName, True) = csError then begin
+      DoMessage(1, pmtError, 'Could not create output file "%s".',
+        [OverviewFileName]);
+      Exit;
+    end;
+
+    WriteDirect('DiGraph Classes {', true);
+    WriteBranch(FClassHierarchy);
+
+  //finally
+    WriteDirect('}', true);
+    CloseStream;
+  end;
+end;
+{$ENDIF}
+
+{$IFDEF old}
 procedure TDocGenerator.WriteGVUses;
 var
   i, j: Integer;
@@ -2668,6 +2799,12 @@ begin
     CloseStream;
   end;
 end;
+{$ELSE}
+procedure TDocGenerator.WriteGVUses;
+begin
+{ TODO -oDoDi : Uses graph }
+end;
+{$ENDIF}
 
 procedure TDocGenerator.SetAbbreviations(const Value: TStringList);
 begin
@@ -3376,10 +3513,17 @@ begin
   Result := ConvertString(Text);
 end;
 
+{$IFDEF old}
 function TDocGenerator.FormatTableOfContents(Sections: TStringPairVector): string;
 begin
   Result := '';
 end;
+{$ELSE}
+function TDocGenerator.FormatTableOfContents(Sections: TDescriptionItem): string;
+begin
+  Result := '';
+end;
+{$ENDIF}
 
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;
   const LinkCaption: string;

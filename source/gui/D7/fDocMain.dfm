@@ -1,6 +1,6 @@
 object DocMain: TDocMain
-  Left = 532
-  Top = 118
+  Left = 341
+  Top = 111
   Width = 615
   Height = 471
   Caption = 'PasDoc GUI'
@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabOpts
+    ActivePage = tabGenerate
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -120,7 +120,8 @@ object DocMain: TDocMain
           'record fields'
           'non-record fields'
           'methods'
-          'properties')
+          'properties'
+          'events')
         TabOrder = 2
         OnClick = AnyChange
       end
@@ -277,7 +278,7 @@ object DocMain: TDocMain
           'implicit')
       end
       object swShowUses: TCheckBox
-        Left = 4
+        Left = 8
         Top = 316
         Width = 97
         Height = 17
@@ -938,7 +939,7 @@ object DocMain: TDocMain
             Height = 80
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnClick = cbRemClick
           end

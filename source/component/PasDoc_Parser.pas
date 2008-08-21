@@ -31,11 +31,11 @@ interface
 uses
   Classes,
   PasDoc_Types,
+  PasDoc_Languages,
   PasDoc_Items,
   PasDoc_Scanner,
   PasDoc_Tokenizer,
   PasDoc_StringVector;
-
 
 const
 //Descriptive comment markers
@@ -1182,8 +1182,10 @@ var
 
     procedure CheckFor(const s: string);
     begin
-      if not SameText(i.Name, s) then
-        i.Ancestors.Add(s);
+      if not SameText(i.Name, s) then begin
+
+        i.Ancestors.AddNew(trNoTrans, dkDelegate, s);
+      end;
     end;
 
   begin
@@ -1227,7 +1229,7 @@ or
     //start recording ancestor
       i.FullDeclaration := i.FullDeclaration + Recorded;
       QualId(True); FreeAndNil(Identifier);
-      i.Ancestors.Add(Recorder);
+      i.Ancestors.AddNew(trNoTrans, dkDelegate, Recorder);
     until not Skip(SYM_COMMA);
     Expect(SYM_RIGHT_PARENTHESIS);
   end else
@@ -1706,7 +1708,9 @@ qualid (here)
 
   repeat
     //U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
-    U.UsesUnits.Append(QualId(True).Data);
+    //U.UsesUnits.Append(QualId(True).Data);
+    U.UsesUnits.AddNew(trNoTrans, dkDelegate, QualId(True).Data);
+      //trUnit?
 
     if Skip(KEY_IN) then begin
     { Below we just ignore the value of next string token.

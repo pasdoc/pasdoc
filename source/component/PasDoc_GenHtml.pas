@@ -284,8 +284,12 @@ type
     function FormatList(ListData: TListData): string; override;
 
     function FormatTable(Table: TTableData): string; override;
-    
+
+  {$IFDEF old}
     function FormatTableOfContents(Sections: TStringPairVector): string; override;
+  {$ELSE}
+    function FormatTableOfContents(Sections: TDescriptionItem): string; override;
+  {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -554,7 +558,7 @@ const
     end else if Item is TPasCio then begin
       CIO := TPasCio(Item);
       { first, write the ancestors }
-      WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
+      WriteHierarchy(CIO.FirstAncestorName, CIO.FirstAncestor);
       { then write itself }
       WriteDirectLine('<li class="ancestor">' + 
         MakeItemLink(CIO, CIO.Name, lcNormal) + '</li>')
@@ -572,6 +576,7 @@ var
   SectionHeads: array[TSections] of string;
   Section: TSections;
   AnyItem: boolean;
+  ancestor: TDescriptionItem;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -629,14 +634,15 @@ begin
   WriteConverted(CIO_NAMES[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
-  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
+  if not IsEmpty(CIO.Ancestors) then begin
     WriteConverted('(');
-    for i := 0 to CIO.Ancestors.Count - 1 do
-    begin
-      if CIO.Ancestors.Objects[i] <> nil then
-        WriteDirect(MakeItemLink(CIO.Ancestors.Objects[i] as TPasItem, 
-          CIO.Ancestors[i], lcNormal)) else
-        WriteConverted(CIO.Ancestors[i]);
+    for i := 0 to CIO.Ancestors.Count - 1 do begin
+      ancestor := CIO.Ancestors.ItemAt(i);
+      if ancestor.PasItem <> nil then
+        WriteDirect(MakeItemLink(ancestor.PasItem,
+          ancestor.Name, lcNormal))
+      else
+        WriteConverted(ancestor.Name);
       if (i <> CIO.Ancestors.Count - 1) then
         WriteConverted(', ');
     end;
@@ -650,19 +656,19 @@ begin
   WriteItemLongDescription(CIO);
 
   { Write Hierarchy }
-  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
+  if not IsEmpty(CIO.Ancestors) then begin
     WriteAnchor(SectionAnchors[dsHierarchy]);
     WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
-    WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
+    WriteHierarchy(CIO.FirstAncestorName, CIO.FirstAncestor);
     WriteDirect('<li class="thisitem">' + CIO.Name + '</li>');
     WriteDirect('</ul>');
   end;
 
   AnyItem :=
-    (not ObjectVectorIsNilOrEmpty(CIO.Fields)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Methods)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Properties));
+    (not IsEmpty(CIO.Fields)) or
+    (not IsEmpty(CIO.Methods)) or
+    (not IsEmpty(CIO.Properties));
 
   { AnyItem is used here to avoid writing headers "Overview"
     and "Description" when there are no items. }
@@ -836,7 +842,7 @@ begin
     CssClass := 'normal' else
     CssClass := '';
 
-  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption), 
+  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption),
     CssClass, '');
 end;
 
@@ -1007,10 +1013,16 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   end;
 
   { writes the parameters or exceptions list }
+{$IFDEF old}
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
-    List: TStringPairVector; LinkToParamNames: boolean; 
+    List: TdddStringPairVector; LinkToParamNames: boolean;
     const CssListClass: string);
-    
+{$ELSE}
+  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
+    List: TDescriptionItem; LinkToParamNames: boolean;
+    const CssListClass: string);
+{$ENDIF}
+
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
       { Note that <dt> and <dd> below don't need any CSS class,
@@ -1045,7 +1057,11 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
+{$IFDEF old}
   procedure WriteSeeAlso(SeeAlso: TStringPairVector);
+{$ELSE}
+  procedure WriteSeeAlso(SeeAlso: TDescriptionItem);
+{$ENDIF}
   var
     i: integer;
     SeeAlsoItem: TBaseItem;
@@ -1099,7 +1115,7 @@ var
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
-  
+
   //if AItem.IsDeprecated then
   if AItem.HasAttribute[SD_DEPRECATED] then
     WriteHintDirective(FLanguage.Translation[trDeprecated]);
@@ -1110,16 +1126,13 @@ begin
   if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
-  if AItem.AbstractDescription <> '' then
-  begin
+  if AItem.AbstractDescription <> '' then begin
     if OpenCloseParagraph then WriteStartOfParagraph;
 
     WriteSpellChecked(AItem.AbstractDescription);
 
-    if AItem.DetailedDescription <> '' then
-    begin
-      if not AItem.AbstractDescriptionWasAutomatic then
-      begin
+    if AItem.DetailedDescription <> '' then begin
+      if not AItem.AbstractDescriptionWasAutomatic then begin
         WriteEndOfParagraph; { always try to write closing </p>, to be clean }
         WriteStartOfParagraph;
       end;
@@ -1127,33 +1140,26 @@ begin
     end;
 
     if OpenCloseParagraph then WriteEndOfParagraph;
-  end else begin
-    if AItem.DetailedDescription <> '' then
-    begin
-      if OpenCloseParagraph then WriteStartOfParagraph;
+  end else if AItem.DetailedDescription <> '' then begin
+    if OpenCloseParagraph then WriteStartOfParagraph;
 
-      WriteSpellChecked(AItem.DetailedDescription);
+    WriteSpellChecked(AItem.DetailedDescription);
 
-      if OpenCloseParagraph then WriteEndOfParagraph;
-    end else
-    begin
-      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
-        AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := TPasCio(AItem).FirstAncestor;
-        if Assigned(Ancestor) and (Ancestor is TPasItem) then
-        begin
-          WriteDirect('<div class="nodescription">');
-          WriteConverted(Format(
-            'no description available, %s description follows', [AncestorName]));
-          WriteDirect('</div>');
-          WriteItemLongDescription(TPasItem(Ancestor));
-        end;
-      end else begin
-        WriteDirect('&nbsp;');
-      end;
+    if OpenCloseParagraph then WriteEndOfParagraph;
+  end else if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then begin
+    Ancestor := TPasCio(AItem).FirstAncestor;
+    if Assigned(Ancestor) then begin
+      AncestorName := TPasCio(AItem).FirstAncestorName;
+      WriteDirect('<div class="nodescription">');
+      WriteConverted(Format(
+        'no description available, %s description follows', [AncestorName]));
+      WriteDirect('</div>');
+      WriteItemLongDescription(TPasItem(Ancestor));
     end;
+  end else begin
+    WriteDirect('&nbsp;'); //oops?
   end;
-  
+
   if AItem is TPasMethod then begin
     AItemMethod := TPasMethod(AItem);
     WriteParamsOrRaises(AItemMethod, trParameters,
@@ -1164,13 +1170,11 @@ begin
   end;
 
   WriteSeeAlso(AItem.SeeAlso);
- 
-  if AItem is TPasEnum then 
-  begin
+
+  if AItem is TPasEnum then begin
     WriteDescriptionSectionHeading(trValues);
     WriteDirectLine('<ul>');
-    for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
-    begin
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
       WriteDirectLine('<li>');
       WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       WriteConverted(': ');
@@ -1246,20 +1250,46 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
   { Writes a Hierarchy list - this is more useful than the simple class list }
   procedure WriteHierarchy;
   { todo -o twm: Make this recursive to handle closing </li> easily }
+
+    procedure WriteLevel(lst: TDescriptionItem);
+    var
+      i: integer;
+      item: TDescriptionItem;
+    begin
+      if IsEmpty(lst) then
+        exit;
+      WriteDirectLine('<ul class="hierarchylevel">');
+      for i := 0 to lst.Count - 1 do begin
+        WriteDirect('<li>');
+        item := lst.ItemAt(i);
+        if Item.PasItem = nil then
+          WriteConverted(item.Name)
+        else
+          WriteLink(Item.PasItem.FullLink, ConvertString(item.Name), 'bold');
+        WriteLevel(item);
+        WriteDirectLine('</li>');
+      end;
+      WriteDirectLine('</ul>');
+    end;
+
+{$IFDEF old}
   var
     Level, OldLevel: Integer;
     Node: TPasItemNode;
+{$ELSE}
+{$ENDIF}
   begin
     CreateClassHierarchy;
 
     if not CreateOverviewStream(ofClassHierarchy) then
       Exit;
 
-    if FClassHierarchy.IsEmpty then begin
+    if IsEmpty(FClassHierarchy) then begin
       WriteStartOfParagraph;
       WriteConverted(FLanguage.Translation[trNoCIOsForHierarchy]);
       WriteEndOfParagraph;
     end else begin
+    {$IFDEF old}
       OldLevel := -1;
       Node := FClassHierarchy.FirstItem;
       while Node <> nil do begin
@@ -1277,7 +1307,8 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
         WriteDirect('<li>');
         if Node.Item = nil then
-          WriteConverted(Node.Name) else
+          WriteConverted(Node.Name)
+        else
           WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
         { We can't simply write here an explicit '</li>' because current
           list item may be not finished yet (in case next Nodes
@@ -1292,6 +1323,9 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
           WriteDirectLine('</li>');
         Dec(OldLevel);
       end;
+    {$ELSE}
+      WriteLevel(FClassHierarchy);
+    {$ENDIF}
     end;
 
     WriteFooter;
@@ -1300,8 +1334,8 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
     CloseStream;
   end;
-  
-  procedure WriteItemsOverviewFile(Overview: TCreatedOverviewFile; 
+
+  procedure WriteItemsOverviewFile(Overview: TCreatedOverviewFile;
     Items: TPasItems);
   var
     Item: TPasItem;
@@ -1359,20 +1393,18 @@ var
   PU: TPasUnit;
   Overview: TCreatedOverviewFile;
   j: Integer;
-begin
+begin //WriteOverviewFiles
   WriteUnitOverviewFile;
   WriteHierarchy;
 
   // Make sure we don't free the Items when we free the container.
   TotalItems := TPasItems.Create(False);
   try
-    for Overview := ofCios to HighCreatedOverviewFile do
-    begin
+    for Overview := ofCios to HighCreatedOverviewFile do begin
       // Make sure we don't free the Items when we free the container.
       PartialItems := TPasItems.Create(False);
       try
-        for j := 0 to Units.Count - 1 do
-        begin
+        for j := 0 to Units.Count - 1 do begin
           PU := Units.UnitAt[j];
           case Overview of
             ofCIos                  : ItemsToCopy := PU.CIOs;
@@ -1582,19 +1614,28 @@ const
     i: Integer;
     ULink: TPasItem;
   begin
-    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then begin
       WriteHeading(HL, 'uses', FLanguage.Translation[trUses]);
       WriteDirect('<ul class="useslist">');
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('<li>');
+      {$IFDEF old}
         ULink := TPasUnit(U.UsesUnits.Objects[i]);
         if ULink <> nil then begin
           WriteLink(ULink.FullLink, U.UsesUnits[i], '');
         end else begin
           WriteConverted(U.UsesUnits[i]);
         end;
+      {$ELSE}
+        ULink := u.UsesUnits.PasItemAt(i);
+        if ULink <> nil then begin
+          WriteLink(ULink.FullLink, U.UsesUnits.Items[i].Name, '');
+        end else begin
+          WriteConverted(U.UsesUnits.Items[i].Name);
+        end;
+      {$ENDIF}
         WriteDirect('</li>');
-      end;   
+      end;
       WriteDirect('</ul>');
     end;
   end;
@@ -1687,12 +1728,12 @@ begin
   SectionHeads[dsVariables]:= FLanguage.Translation[trVariables];
 
   SectionsAvailable := [dsDescription];
-  ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
-  ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));
-  ConditionallyAddSection(dsFuncsProcs, not ObjectVectorIsNilOrEmpty(U.FuncsProcs));
-  ConditionallyAddSection(dsTypes, not ObjectVectorIsNilOrEmpty(U.Types));
-  ConditionallyAddSection(dsConstants, not ObjectVectorIsNilOrEmpty(U.Constants));
-  ConditionallyAddSection(dsVariables, not ObjectVectorIsNilOrEmpty(U.Variables));
+  ConditionallyAddSection(dsUses, WriteUsesClause and not IsEmpty(U.UsesUnits));
+  ConditionallyAddSection(dsClasses, not IsEmpty(U.CIOs));
+  ConditionallyAddSection(dsFuncsProcs, not IsEmpty(U.FuncsProcs));
+  ConditionallyAddSection(dsTypes, not IsEmpty(U.Types));
+  ConditionallyAddSection(dsConstants, not IsEmpty(U.Constants));
+  ConditionallyAddSection(dsVariables, not IsEmpty(U.Variables));
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteStartOfDocument(U.Name);
@@ -1771,7 +1812,6 @@ end;
 
 const
   VisibilityImageName: array[TVisibility] of string = (
-    '',
     'published.gif',
     'public.gif',
     'protected.gif',
@@ -1783,7 +1823,6 @@ const
     'published.gif'
   );
   VisibilityTranslation: array[TVisibility] of TTranslationID = (
-    trNone,
     trPublished,
     trPublic,
     trProtected,
@@ -2364,23 +2403,31 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatTableOfContents(
-  Sections: TStringPairVector): string; 
+{$IFDEF old}
+  Sections: TStringPairVector): string;
+{$ELSE}
+  Sections: TDescriptionItem): string;
+{$ENDIF}
 var
   i: Integer;
+  item: TDescriptionItem;
 begin
-  if Sections.Count = 0 then
-  begin
+  if Sections.Count = 0 then begin
     Result := '';
     Exit;
   end;
-  
+
   Result := '<ol>' + LineEnding;
-  for i := 0 to Sections.Count - 1 do
-  begin
-    Result := Result + 
-      '<li><a href="#' + Sections.Items[i].Name + '">' + Sections.Items[i].Value + '</a>' +
+  for i := 0 to Sections.Count - 1 do begin
+    item := Sections.Items[i];
+    Result := Result +
+      '<li><a href="#' + item.Name + '">' + item.Value + '</a>' +
       LineEnding +
+    {$IFDEF old}
       FormatTableOfContents(TStringPairVector(Sections.Items[i].Data)) + '</li>' +
+    {$ELSE}
+      FormatTableOfContents(item) + '</li>' +
+    {$ENDIF}
       LineEnding;
   end;
   Result := Result + '</ol>' + LineEnding;
