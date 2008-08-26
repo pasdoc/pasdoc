@@ -287,7 +287,23 @@ type
     function Text(const NameValueSeparator: string = ' ';
       const ItemSeparator: string = ' '): string; //virtual;
 
-  //To be overridden in unit and CIO classes.
+    { This recursively sorts all items inside this item,
+      and all items inside these items, etc.
+      E.g. in case of TPasUnit, this method sorts all variables,
+      consts, CIOs etc. inside (honouring SortSettings),
+      and also recursively calls Sort(SortSettings) for every CIO.
+
+      Note that this does not guarantee that absolutely everything
+      inside will be really sorted. Some items may be deliberately
+      left unsorted, e.g. Members of TPasEnum are never sorted
+      (their declared order always matters,
+      so we shouldn't sort them when displaying their documentation
+      --- reader of such documentation would be seriously misleaded).
+      Sorting of other things depends on SortSettings ---
+      e.g. without ssMethods, CIOs methods will not be sorted.
+
+      So actually this method @italic(makes sure that all things that should
+      be sorted are really sorted). }
     procedure Sort(const SortSettings: TSortSettings); virtual;
 
     property Count: integer read GetCount;
@@ -307,11 +323,6 @@ type
   public
     MyItem: TPasItem;
   //get TPasItem, or Nil.
-  {$IFDEF old}
-    function  AsPasItem: TPasItem; override;
-  {$ELSE}
-    //cannot protect virtual methods against self=nil :-(
-  {$ENDIF}
     procedure SetPasItem(AItem: TPasItem); override;
   end;
 
@@ -374,15 +385,6 @@ type
     function  GetFirstDescription: TToken;
   //allow doc generator to add more descriptions.
     procedure WriteRawDescription(const AValue: string);
-
-{$IFDEF old}
-  (* Set FullLink property.
-    Override in special scopes, to set the output filename as well.
-    Questionable hack: make sure that ".html" is contained in the link!?
-  *)
-    procedure SetFullLink(const Value: string);
-{$ELSE}
-{$ENDIF}
 
     procedure StoreAuthorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -519,12 +521,7 @@ type
     procedure AddRawDescription(t: TToken); overload;
 
     { a full link that should be enough to link this item from anywhere else }
-    property FullLink: string read FFullLink
-  {$IFDEF old}
-      write SetFullLink;
-  {$ELSE}
-      write FFullLink;
-  {$ENDIF}
+    property FullLink: string read FFullLink write FFullLink;
 
     { Returns the qualified name of the item.
       This is intended to return a concise and not ambigous name.
@@ -612,11 +609,6 @@ type
   //obsolete?
     function  GetMyObject: TPasCio;
     function  GetMyUnit: TPasUnit;
-  {$IFDEF old}
-    procedure SetMyObject(o: TPasCio);
-    procedure SetMyUnit(U: TPasUnit);
-  {$ELSE}
-  {$ENDIF}
   public
     function  IsKey(AKey: TTokenType): boolean;
     function  GetAttributeFP(attr: integer): boolean;
@@ -722,29 +714,6 @@ type
 
     property Visibility: TItemVisibility read FVisibility write FVisibility;
 
-  {$IFDEF old}
-    { This recursively sorts all items inside this item,
-      and all items inside these items, etc.
-      E.g. in case of TPasUnit, this method sorts all variables,
-      consts, CIOs etc. inside (honouring SortSettings),
-      and also recursively calls Sort(SortSettings) for every CIO.
-
-      Note that this does not guarantee that absolutely everything
-      inside will be really sorted. Some items may be deliberately
-      left unsorted, e.g. Members of TPasEnum are never sorted
-      (their declared order always matters,
-      so we shouldn't sort them when displaying their documentation
-      --- reader of such documentation would be seriously misleaded).
-      Sorting of other things depends on SortSettings ---
-      e.g. without ssMethods, CIOs methods will not be sorted.
-
-      So actually this method @italic(makes sure that all things that should
-      be sorted are really sorted). }
-    procedure Sort(const SortSettings: TSortSettings); virtual;
-  {$ELSE}
-    //introduced in TDescriptionItem
-  {$ENDIF}
-
      { Full declaration of the item.
        This is (full) parsed declaration of the given item.
 
@@ -825,21 +794,9 @@ type
     }
     function FindName(const AName: string): TBaseItem;
 
-  {$IFDEF old}  //obsolete?
-    { Inserts all items of C into this collection.
-      [Disposes C and sets it to nil.]
-      Cannot dispose a const object, and does not clear it. }
-    procedure InsertItems(const c: TBaseItems);
-  {$ELSE}
-  {$ENDIF}
-
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-  {$IFDEF old}
-    procedure Add(const AObject: TBaseItem);
-  {$ELSE}
     function  Add(const AObject: TDescriptionItem): integer; override;
-  {$ENDIF}
 
     procedure Delete(const AIndex: Integer);
     procedure Clear; override;
@@ -892,21 +849,6 @@ type
       So "items inside items" (e.g. class methods, if this list contains
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
-
-  {$IFDEF old}
-  (* Resolve references to external units and ancestors.
-    Create link (anchor) names for all members.
-
-    To come: build member lists, based on further arguments. This should allow to:
-      build subsections in enumerated types,
-      group members by tags
-      collect all property-related items into a section,
-      collect event handlers into a section,
-      collect CIOs as ordinary types...
-  *)
-    procedure BuildLinks(AllUnits: TPasUnits; TheGenerator: TLinkGenerator); virtual;
-  {$ELSE}
-  {$ENDIF}
 
     function Text(const NameValueSeparator, ItemSeparator: string): string;
   end;
@@ -1320,6 +1262,7 @@ type
       const TagParameter: string; var ReplaceStr: string);
   public
   {$IFDEF old}
+  //why should FAnchors not be created and destroyed?
     Constructor Create; override;
     destructor Destroy; override;
   {$ELSE}
@@ -1673,16 +1616,6 @@ begin
   //nop, here
 end;
 
-{$IFDEF old}
-procedure TBaseItem.SetFullLink(const Value: string);
-begin
-  FFullLink := Value;
-  if Pos('.html', Value) < 1 then
-    FFullLink := Value + '.html';
-end;
-{$ELSE}
-{$ENDIF}
-
 function TBaseItem.QualifiedName: String;
 begin
   Result := Name;
@@ -1872,15 +1805,6 @@ begin
   HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
 end;
 
-{$IFDEF old}
-procedure TPasItem.Sort(const SortSettings: TSortSettings);
-begin
-  { Nothing to sort in TPasItem }
-end;
-{$ELSE}
-  //introduced in TDescriptionItem
-{$ENDIF}
-
 function TPasItem.GetMyUnit: TPasUnit;
 begin
   if assigned(FMyOwner) then
@@ -1900,25 +1824,6 @@ begin
   else
     Result := nil;
 end;
-
-{$IFDEF old} //obsolete
-procedure TPasItem.SetMyUnit(U: TPasUnit);
-begin
-  if FMyOwner = nil then
-    FMyOwner := U
-  else
-    assert(U = MyUnit, 'bad unit');
-end;
-
-procedure TPasItem.SetMyObject(o: TPasCio);
-begin
-  if FMyOwner = nil then
-    FMyOwner := o
-  else if o <> nil then
-    assert(o = FMyOwner, 'bad owner');
-end;
-{$ELSE}
-{$ENDIF}
 
 procedure TPasItem.Deserialize(const ASource: TStream);
 begin
@@ -2198,31 +2103,11 @@ begin
   end;
 end;
 
-{$IFDEF old}
-procedure TBaseItems.Add(const AObject: TBaseItem);
-begin
-  inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Name)] := AObject;
-end;
-{$ELSE}
 function TBaseItems.Add(const AObject: TDescriptionItem): integer;
 begin
   Result := inherited Add(AObject);
   FHash.Items[LowerCase(AObject.Name)] := AObject;
 end;
-{$ENDIF}
-
-{$IFDEF old}
-procedure TBaseItems.InsertItems(const c: TBaseItems);
-var
-  i: Integer;
-begin
-  if ObjectVectorIsNilOrEmpty(c) then Exit;
-  for i := 0 to c.Count - 1 do
-    Add(TBaseItem(c.Items[i]));
-end;
-{$ELSE}
-{$ENDIF}
 
 procedure TBaseItems.Clear;
 begin
@@ -2350,31 +2235,6 @@ begin
   //if SortKind = ssCIOs then //We are Borg^w CIOs ;-)
   SortOnlyInsideItems(SortSettings);
 end;
-
-{$IFDEF old}
-procedure TPasItems.BuildLinks(AllUnits: TPasUnits;
-  TheGenerator: TLinkGenerator);
-var
-  i: integer;
-  item: TPasItem;
-begin
-(* First step: resolve external references, using AllUnits.
-  Where: in Unit.UsedUnits, CIO.Ancestors
-
-  Second step: assign FullLinks to all items
-    Any assumptions about WHICH items have linkable members?
-
-  Here only the second step is implemented.
-*)
-  for i := 0 to Count - 1 do begin
-    item := PasItemAt[i];
-    if item is TPasScope then
-      TPasScope(item).Members.BuildLinks(AllUnits, TheGenerator);
-    item.FullLink := TheGenerator(item);
-  end;
-end;
-{$ELSE}
-{$ENDIF}
 
 
 { TPasCio -------------------------------------------------------------------- }
@@ -2579,17 +2439,7 @@ begin
   //Member := FindItem(MemberName); //should only search immediate members?
   Member := Members.FindName(MemberName);
   if Assigned(Member) then begin
-  {$IFDEF old}
-  { Only replace the description if one wasn't specified for it already }
-    if Member.RawDescription = '' then
-      Member.FRawDescription := MemberDesc
-    else //concatenate instead?
-      ThisTag.TagManager.DoMessage(1, pmtWarning,
-        '@member tag specifies description for member "%s" that already' +
-        ' has one description.', [MemberName]);
-  {$ELSE}
     Member.WriteRawDescription(MemberDesc);
-  {$ENDIF}
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
@@ -2869,11 +2719,7 @@ begin
   KEY_CONST:  FConstants.Add(item);
   KEY_TYPE:   FTypes.Add(item);
   KEY_VAR:    FVariables.Add(item);
-{$IFDEF old}
-  KEY_UNIT:   UsesUnits.AddObject(item.Name, item);
-{$ELSE}
   KEY_UNIT:   UsesUnits.AddNew(trUses, dkDelegate, item.Name).PasItem := item;
-{$ENDIF}
   else
     if item.Kind in CioTypes then
       FCIOs.Add(item)
@@ -2924,21 +2770,6 @@ procedure TPasUnits.SetUnitAt(const AIndex: Integer; const Value: TPasUnit);
 begin
   SetItem(AIndex, Value);
 end;
-
-{$IFDEF old}
-procedure TPasUnits.SortDeep(const SortSettings: TSortSettings);
-begin
-(* This is the general sort, called as FUnits.SortDeep.
-  We delegate sorting to the units in the list.
-  What about the unit list itself?
-*)
-  if IsEmpty(self) then
-    exit;
-  SortShallow; //assume units are always sorted
-  SortOnlyInsideItems(SortSettings);
-end;
-{$ELSE}
-{$ENDIF}
 
 { TPasMethod ----------------------------------------------------------------- }
 
@@ -3618,30 +3449,6 @@ begin
   Result := lst.Add(item);
 end;
 
-{$IFDEF new}
-//unused?
-function TDescriptionItem.AddStrings(tid: TTranslationID;
-  lst: TStrings): TDescriptionItem;
-var
-  i: integer;
-  item: TDescriptionItem;
-  sv: TStrings;
-begin
-  item := AddNew(tid, dkStrings);
-  if lst <> nil then begin
-  {$IFDEF old}
-    sv := TObject(item.Data) as TStrings;
-    sv.AddStrings(lst);
-  {$ELSE}
-    for i := 0 to lst.Count - 1 do
-      item.AddString(trNoTrans, lst[i]);
-  {$ENDIF}
-  end;
-  Result := item;
-end;
-{$ELSE}
-{$ENDIF}
-
 function TDescriptionItem.Find(const AName: string): TDescriptionItem;
 begin
   if FList <> nil then
@@ -3821,18 +3628,6 @@ end;
 {$ENDIF}
 
 { TPasDelegate }
-
-{$IFDEF old}
-function TPasDelegate.AsPasItem: TPasItem;
-begin
-//protect against Nil!
-  if Self = nil then
-    Result := nil
-  else
-    Result := MyItem; //maybe nil
-end;
-{$ELSE}
-{$ENDIF}
 
 procedure TPasDelegate.SetPasItem(AItem: TPasItem);
 begin

@@ -2638,7 +2638,9 @@ begin
     u := Units.UnitAt[iu];
     for ic := 0 to u.CIOs.Count - 1 do begin
       c := u.CIOs.PasItemAt[ic] as TPasCio;
-      AddBranch(c); //ignore result
+
+      if c.MyType in CioClassTypes then //exclude records from class hierarchy
+        AddBranch(c); //ignore result
     end;
   end;
 end;
