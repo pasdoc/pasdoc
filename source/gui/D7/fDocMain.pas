@@ -1060,7 +1060,7 @@ begin
     Result := False;  //really not available
   end;
 {$ELSE}
-  Result := Language <> lgChinese_950;  //wild guess
+  //Result := Language <> lgChinese_950;  //wild guess - removed!
 {$ENDIF}
 end;
 

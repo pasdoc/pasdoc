@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabGenerate
+    ActivePage = tabOpts
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -939,7 +939,7 @@ object DocMain: TDocMain
             Height = 80
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 0
+            ItemHeight = 13
             TabOrder = 0
             OnClick = cbRemClick
           end

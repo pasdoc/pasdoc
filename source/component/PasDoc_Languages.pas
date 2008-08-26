@@ -20,6 +20,7 @@
   @author(Ascanio Pressato (Some Italian translation))
   @author(JBarbero Quiter (updated Spanish translation))
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
+  @author(Liu Da <xmacmail AT gmail.com> (Chinese gb2312 translation))
 
 
 The whole unit has been redesigned by DoDi.
@@ -38,8 +39,12 @@ type
     lgBosnian,
     lgBrasilian,
     lgCatalan,
-    lgChinese_950,
     lgChinese_gb2312,
+  {$IFDEF new}
+  //this translation is almost useless (2 strings translated)
+    lgChinese_950,
+  {$ELSE}
+  {$ENDIF}
     lgDanish,
     lgDutch,
     lgEnglish,
@@ -202,7 +207,6 @@ type
     property FTranslation[id: TTranslationID]: string
       read GetTranslation write SetTranslation;
   //following languages/codepages need transformation into tables
-    procedure SetLanguageChinese_gb2312;
     { Defines translations for Russian (Codepage 866). }
     procedure SetLanguageRussian_866;
     { Defines translations for Russian (KOI-8). }
@@ -760,9 +764,12 @@ const
     ''  //dummy
   );
 
+{$IFDEF new}
+(* This table is ignored, because it contains too few (2) translated strings.
+*)
   aChinese_950: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
-    {trLanguage} 'Chinese',
+    {trLanguage} 'Chinese_950',
   //map
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
@@ -856,6 +863,8 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -2398,8 +2407,11 @@ const
     (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
     (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
+    (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
+  {$IFDEF new}
     (Table: @aChinese_950; Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
-    (Table: nil;  Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
+  {$ELSE}
+  {$ENDIF}
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
@@ -2452,7 +2464,6 @@ begin
   pTable := addr(aNewLanguage);
   case Value of
   //no array yet
-    lgChinese_gb2312: SetLanguageChinese_gb2312;
     lgRussian_866: SetLanguageRussian_866;
     lgRussian_koi8: SetLanguageRussian_koi8;
   else  //this should never be reached
