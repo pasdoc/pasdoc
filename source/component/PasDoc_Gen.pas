@@ -2614,9 +2614,12 @@ procedure TDocGenerator.CreateClassHierarchy;
     a: TPasCio;
     parent: TDescriptionItem;
   begin
+    parent := c.FirstAncestorItem;
     a := c.FirstAncestor; //the base class
-    if a = nil then begin //top level class
+    if parent = nil then begin //top level class
       parent := FClassHierarchy;
+    end else if a = nil then begin //ends in non-CIO
+      parent := FClassHierarchy.AddNew(c.ID, dkUniqueString, parent.Name);
     end else begin
       parent := AddBranch(a);
     end;
