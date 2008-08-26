@@ -2040,7 +2040,7 @@ procedure TDocGenerator.ExpandDescriptions;
       ExpandCollection(PreExpand, U.Types);
       ExpandCollection(PreExpand, U.FuncsProcs);
 
-      if not ObjectVectorIsNilOrEmpty(U.CIOs) then
+      if not IsEmpty(U.CIOs) then
         for j := 0 to U.CIOs.Count - 1 do begin
           CO := TPasCio(U.CIOs.PasItemAt[j]);
           ExpandPasItem(PreExpand, CO);
@@ -2325,11 +2325,12 @@ begin
   end;
 
   { first try to find link starting at Item }
-  if Assigned(Item) then 
-    Result := Item.FindName(NameParts) else
+  if Assigned(Item) then
+    Result := Item.FindName(NameParts)
+  else
     Result := nil;
 
-  if not Assigned(Result) then 
+  if not Assigned(Result) then
     Result := FindGlobal(NameParts);
 end;
 

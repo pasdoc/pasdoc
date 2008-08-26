@@ -2114,9 +2114,10 @@ begin
       ConvertString.) }
       
     if AString[i] = '&' then
-      Result := Result + '&amp;' else
-    if AString[i] in [Chr($21)..Chr($7E)] then
-      Result := Result + AString[i] else
+      Result := Result + '&amp;'
+    else if AString[i] in [Chr($21)..Chr($7E)] then
+      Result := Result + AString[i]
+    else
       Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
   end;
 end;
@@ -2125,10 +2126,10 @@ function TGenericHTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
   { Why these </p> and <p> are needed ?
     Well, basic idea is that pasdoc should always try to make closing
-    and opening tags explicit, even though they can be omitted for paragraphs 
+    and opening tags explicit, even though they can be omitted for paragraphs
     in html. And paragraph must end before <pre> and if there is any text after
     </pre> than new paragraph must be opened.
-    
+
     Besides the feeling of being "clean", specifying explicit paragraph
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
@@ -2137,7 +2138,7 @@ begin
     what it writes between <p> ... </p>
 
     This works perfectly except for the cases where @longcode
-    is at the end of description, then we have 
+    is at the end of description, then we have
       <p>Some text <pre>Some Pascal code</pre></p>
     Because there is no text between "</pre>" and "</p>" this means
     that paragraph is not implicitly opened there. This, in turn,

@@ -10,16 +10,18 @@ type
 (* Collection markers, to match with actual sort settings.
   Also can be used to indicate the member lists to be created.
   (E.g. when a Events list should be created)
+  Missing: ssUnits, ssIdentifiers...
+    Such lists seem to be always sorted?
 *)
   TCollectionSortKind = (
-  //collection indicator: not sortable (default)
-    ssNone,
+  //collection indicator: not(?) sortable (default?)
+    ssAlways,
     { At unit (TPasUnit) level : } { }
     ssCIOs, ssConstants, ssFuncsProcs, ssTypes, ssVariables, ssUsesClauses,
     { At CIO (TPasCio) level : } { }
     ssRecordFields, ssNonRecordFields, ssMethods, ssProperties, ssEvents
   );
-  TSortSetting = succ(ssNone) .. High(TCollectionSortKind);
+  TSortSetting = succ(ssAlways) .. High(TCollectionSortKind);
   TSortSettings = set of TSortSetting;
 
 const

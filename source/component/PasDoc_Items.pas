@@ -325,6 +325,9 @@ type
     procedure SaveToBinaryStream(Stream: TStream);
   {$ELSE}
   {$ENDIF}
+  protected
+  //how to sort this list.
+    SortKind: TCollectionSortKind;
   public
   //add item, possibly into hash list.
     function  Add(const AObject: TDescriptionItem): integer; virtual;
@@ -633,6 +636,9 @@ type
 
     procedure RegisterTags(TagManager: TTagManager); override;
 
+  //search enclosing scopes.
+    function FindName(const NameParts: TNameParts; index: integer = -1): TPasItem; override;
+
     { Abstract description of this item.
       This is intended to be short (e.g. one sentence) description of
       this object.
@@ -844,8 +850,6 @@ type
   private
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
-  protected
-    SortKind: TCollectionSortKind;
   public
     { Do a FindItem, even if the name suggests something different!
       This is a comfortable routine that just calls inherited
@@ -871,8 +875,11 @@ type
       This way it sorts recursively everything in this list.
 
       This is equivalent to doing both
-      @link(SortShallow) and @link(SortOnlyInsideItems). }
-    procedure SortDeep(const SortSettings: TSortSettings);
+      @link(SortShallow) and @link(SortOnlyInsideItems).
+
+      Override for Cios, which deserve even deeper sorting.
+    }
+    procedure SortDeep(const SortSettings: TSortSettings); //virtual;
 
     { This calls @link(TPasItem.Sort Sort(SortSettings))
       for each of items on the list.
@@ -1479,7 +1486,6 @@ type
     function BasePath: string; override;
   end;
 
-
   { @abstract(Holds a collection of units.) }
   TPasUnits = class(TPasItems)
   private
@@ -1503,6 +1509,15 @@ type
 //serialization of count fields, fixed to 4 bytes
   TCountField = LongInt;
 
+function CompareDescriptionItemsByName(PItem1, PItem2: Pointer): Integer;
+var
+  Item1: TDescriptionItem absolute PItem1;
+  Item2: TDescriptionItem absolute PItem2;
+begin
+  Result := CompareText(Item1.Name, Item2.Name);
+  //if Result = 0 then Result := CompareText(Item1.QualifiedName, Item2.QualifiedName);
+end;
+
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 var
   Item1: TPasItem absolute PItem1;
@@ -1520,14 +1535,16 @@ var
 begin
   { compare 'method type', order is
     constructor > destructor > function > procedure > operator
-    then by visibility }
+    then by visibility,
+    finally by name, I assume?
+  }
   Result := ord(P1.What) - ord(P2.What);
   if Result <> 0 then
     exit;
   Result := ord(P1.Visibility) - ord(P2.Visibility);
-
-//What's this? Can result in endless comparison loop!
-  //if Result = 0 then Result := 1;
+  if Result <> 0 then
+    exit;
+  Result := ComparePasItemsByName(PItem1, PItem2);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -1551,7 +1568,7 @@ end;
 
 function TBaseItem.FindName(const NameParts: TNameParts; index: integer = -1): TPasItem;
 begin
-//override in TPasScope.
+//override in TPasItem, to search the whole scope.
   Result := nil;
 end;
 
@@ -1837,6 +1854,17 @@ begin
   TTopLevelTag.Create(TagManager, 'seealso',
     nil, {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
     [toParameterRequired, toFirstWordVerbatim]);
+end;
+
+function TPasItem.FindName(const NameParts: TNameParts;
+  index: integer): TPasItem;
+begin
+(* Find in all enclosing scopes.
+*)
+  if MyOwner <> nil then
+    Result := MyOwner.FindName(NameParts, index)
+  else
+    Result := nil;
 end;
 
 function TPasItem.HasDescription: Boolean;
@@ -2312,14 +2340,15 @@ end;
 
 procedure TPasItems.SortDeep(const SortSettings: TSortSettings);
 begin
-(* This is the general sort.
+(* This is the general sort, called as FUnits.SortDeep.
+  We delegate sorting to the items in the list.
   Check SortSettings for sorting Self and Items.
   Only CIOs may deserve sorting of their members.
 *)
-  if SortKind in SortSettings then
+  if (SortKind = ssAlways) or (SortKind in SortSettings) then
     SortShallow;
-  if SortKind = ssCIOs then //We are Borg^w CIOs ;-)
-    SortOnlyInsideItems(SortSettings);
+  //if SortKind = ssCIOs then //We are Borg^w CIOs ;-)
+  SortOnlyInsideItems(SortSettings);
 end;
 
 {$IFDEF old}
@@ -2367,7 +2396,9 @@ begin
   FFields := NewList(trFields);
   case AKind of
   KEY_RECORD: //has no ancestors, but possibly methods?
-    begin
+    begin //fix sort for record fields
+      //Overview.FindID(trFields).SortKind := ssRecordFields;
+      FFields.SortKind := ssRecordFields;
     end;
   else
     //FAncestors := FMemberLists.AddNew(trHierarchy, dkItemList);
@@ -2616,6 +2647,7 @@ procedure TPasCio.BuildLinks(AllUnits: TPasUnits; TheGenerator: TLinkGenerator);
 var
   i: integer;
   item: TDescriptionItem;
+  pi: TPasItem;
 
   procedure SearchAncestor;
   var
@@ -2659,7 +2691,11 @@ begin
     end;
   end;
 {$ELSE}
-  //already done while adding members!
+//link members
+  for i := 0 to Members.Count - 1 do begin
+    pi := Members.PasItemAt[i];
+    pi.FFullLink := TheGenerator(pi);
+  end;
 {$ENDIF}
 //add non-empty member lists to descriptions
   inherited;
@@ -2713,6 +2749,7 @@ begin
   FFuncsProcs := FMemberLists.AddNew(trFunctionsAndProcedures, dkPasItems).PasItems;
   //FUsesUnits := FMemberLists.AddNew(trUses, dkItemList);
   FHeritage.FTID := trUses;
+  FHeritage.FList.SortKind := ssUsesClauses;
     //only add to descriptions if ShowUses!
 {$ELSE}
   FTypes := TPasItems.Create(owns);
@@ -2757,6 +2794,14 @@ begin
 {$ENDIF}
 //if lists are created by parser, also save all other items!
 //means: create lists when deserialized! (need all fields)
+end;
+
+procedure TPasUnit.Sort(const SortSettings: TSortSettings);
+begin
+  inherited; //sort standard member lists
+//special case, of non-PasItems
+  if (UsesUnits <> nil) and (ssUsesClauses in SortSettings) then
+    UsesUnits.Sort(SortSettings);
 end;
 
 function TPasUnit.FindItemInAncestors(const ItemName: string): TPasItem;
@@ -2858,34 +2903,6 @@ begin
     (CacheDateTime < FileDateToDateTime(FileAge(FileName)));
 end;
 
-procedure TPasUnit.Sort(const SortSettings: TSortSettings);
-begin
-  inherited; //sort standard member lists
-{$IFDEF old}
-  if CIOs <> nil then begin
-    if ssCIOs in SortSettings then
-      CIOs.Sort(smShallow);
-    CIOs.Sort(smOnlyInsideItems, SortSettings);
-  end;
-
-  if (Constants <> nil) and (ssConstants in SortSettings) then
-    Constants.Sort(smShallow);
-
-  if (FuncsProcs <> nil) and (ssFuncsProcs in SortSettings) then
-    FuncsProcs.Sort(smShallow);
-
-  if (Types <> nil) and (ssTypes in SortSettings) then
-    Types.Sort(smShallow);
-
-  if (Variables <> nil) and (ssVariables in SortSettings) then
-    Variables.Sort(smShallow);
-{$ELSE}
-{$ENDIF}
-//special case, of non-PasItems
-  if (UsesUnits <> nil) and (ssUsesClauses in SortSettings) then
-    UsesUnits.Sort(SortSettings); //string vector - mode???
-end;
-
 function TPasUnit.BasePath: string;
 begin
   Result := ExtractFilePath(ExpandFileName(SourceFileName));
@@ -2907,6 +2924,21 @@ procedure TPasUnits.SetUnitAt(const AIndex: Integer; const Value: TPasUnit);
 begin
   SetItem(AIndex, Value);
 end;
+
+{$IFDEF old}
+procedure TPasUnits.SortDeep(const SortSettings: TSortSettings);
+begin
+(* This is the general sort, called as FUnits.SortDeep.
+  We delegate sorting to the units in the list.
+  What about the unit list itself?
+*)
+  if IsEmpty(self) then
+    exit;
+  SortShallow; //assume units are always sorted
+  SortOnlyInsideItems(SortSettings);
+end;
+{$ELSE}
+{$ENDIF}
 
 { TPasMethod ----------------------------------------------------------------- }
 
@@ -3200,15 +3232,19 @@ var
   lists: TDescriptionItem;
   lst: TPasItems;
 begin
-(* We have a list of member lists, which may deserve sorting.
-  Deep sorting can be required for CIO lists.
+(* Can be: Unit, Cio, but also Type, Method...
+  We have a list of member lists, which may deserve sorting.
+  MemberLists: TDescriptionItem .List: TDescriptionList - never/special sort
+    MemberList: TDescriptionItem .List: TPasItems - conditional sort
+      Member: TPasCio - deep sort!
 *)
-  lists := FMemberLists; //Items.FindID(trDummy); //member lists?
+  lists := FMemberLists;
   if lists = nil then
     exit; //should never happen
   for i := 0 to lists.Count - 1 do begin
-    lst := lists.Items[i].PasItems;
-    if (lst <> nil) then //and (lst.SortKind in SortSettings) then
+    lst := lists.Items[i].PasItems; //can be TPasCios - recurse
+  //even if a list is not sorted, it's members may deserve sorting!
+    if (lst <> nil) then
       lst.SortDeep(SortSettings);
   end;
 end;
@@ -3224,7 +3260,7 @@ begin
   for i := 0 to Overview.Count - 1 do begin
     ml := Overview.ItemAt(i);
     if not IsEmpty(ml) then
-      AddListDelegate(ml.ID, ml.FList);
+      o.AddListDelegate(ml.ID, ml.FList);
   //could sort member list here!
   end;
   if o.Count > 0 then
@@ -3271,6 +3307,30 @@ begin
   //dkDelegates: FList := TDescriptionList.Create(True);
   dkListDelegate: fExternalList := True;
   dkItemList: FList := TDescriptionList.Create(True);
+  end;
+//set list sort kind
+  if FList <> nil then begin
+    case tid of
+    trCio:
+      FList.SortKind := ssCIOs;
+    trConstants: 
+      FList.SortKind := ssConstants;
+    trFunctionsAndProcedures: 
+      FList.SortKind := ssFuncsProcs;
+    trTypes: 
+      FList.SortKind := ssTypes;
+    trVariables: 
+      FList.SortKind := ssVariables;
+    trUses: 
+      FList.SortKind := ssUsesClauses;
+    trFields: //distinguish non/record fields in TPasCio constructor
+      FList.SortKind := ssNonRecordFields; // ssRecordFields;
+    trMethods:
+      FList.SortKind := ssMethods;
+    trProperties:
+      FList.SortKind := ssProperties;
+    //trEvents: SortKind := ssEvents; //trEvents not yet declared!
+    end;
   end;
 end;
 
@@ -3479,9 +3539,9 @@ begin
     dkDelegate: //check for unique string=AValue
     { Unique strings must reside in Name, for dupe search! }
       Result := Find(AName);
-    //dkPasItems,
     //dkDelegates,
-    dkListDelegate:
+    dkListDelegate,
+    dkPasItems:
       Result := FindID(tid);
     dkItemList: //check for unique ID
       if tid = trNoTrans then
@@ -3515,8 +3575,9 @@ begin
     Result := nil;  //unhandled!
   end;
 //if created, add new item
-  if Result <> nil then
+  if Result <> nil then begin
     FList.Add(Result);
+  end;
 end;
 
 function TDescriptionItem.AddListDelegate(tid: TTranslationID;
@@ -3635,7 +3696,17 @@ end;
 
 procedure TDescriptionItem.Sort(const SortSettings: TSortSettings);
 begin
-  //here: nop, override in PasItem classes
+(* process MemberLists. sort: Fields-Methods-Properties?
+[All...: class(TPasItems): always sort.]
+[Units: TPasUnits -> Unit: always sort]
+  Unit: TPasUnit -> MemberLists: never/special sort, UsedUnits!
+  Cio: TPasCio -> MemberLists, Ancestors(never sort)
+    MemberLists: TDescriptionItem -> SpcItems:class(TPasItems) -> Member
+      Member can be Cio:TPasCio=class(TPasScope)
+*)
+  //here: nop, override in PasItem classes?
+  if (FList <> nil) and (FList.SortKind in SortSettings) then
+    FList.Sort({$IFDEF fpc}@{$ENDIF} CompareDescriptionItemsByName);
 end;
 
 { TDescriptionList }
