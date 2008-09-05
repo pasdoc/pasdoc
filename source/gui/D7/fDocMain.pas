@@ -166,7 +166,7 @@ type
   private
     FHasChanged: boolean;
     MisspelledWords: TStringList;
-    SelItem: TBaseItem;
+    SelItem: TDescriptionItem;  // TBaseItem;
     SelToken: TToken;
     function  _AddDirs(const dir, fn: string;
       const fd: TWIN32FindData; isDir: boolean): eFileEnum;
@@ -202,7 +202,7 @@ type
     function LanguageIdToString(const LanguageID: TLanguageID): string;
   {$ELSE}
   {$ENDIF}
-    // @name fills @link(tvUnits) with a heirarchical representation of the
+    // @name fills @link(tvUnits) with a hierarchical representation of the
     // TPasItems in PasDoc1.
     procedure FillTreeView;
 
@@ -1368,6 +1368,7 @@ begin
   Close;
 end;
 
+{$IFDEF old}
 procedure TDocMain.FillTreeView;
 var
   UnitItem: TPasUnit;
@@ -1485,10 +1486,60 @@ begin
     Lang.Free;
   end;
 end;
+{$ELSE}
+procedure TDocMain.FillTreeView;
+var
+  Lang: TPasDocLanguages;
+  UnitItem: TPasUnit;
+  AllUnitsNode: TTreeNode;
+  UnitIndex: integer;
+  UnitNode: TTreeNode;
+
+  procedure populate(root: TTreeNode; rootitem: TDescriptionItem);
+  var
+    i: integer;
+    n: TTreeNode;
+    item: TDescriptionItem;
+    s: string;
+  begin
+    for i := 0 to rootitem.Count - 1 do begin
+      item := rootitem.ItemAt(i);
+      if item.ID = trNoTrans then
+        s := item.Name
+      else
+        s := Lang.Translation[item.ID];
+      n := tvUnits.Items.AddChildObject(root, s, item);
+      if item.Count > 0 then
+        populate(n, item);
+    end;
+  end;
+
+begin
+  tvUnits.Items.Clear;
+  Lang := TPasDocLanguages.Create;
+  try
+    Lang.Language := TLanguageID(lbOutLang.ItemIndex);
+    if PasDoc1.IntroductionFileName <> '' then begin
+      tvUnits.Items.AddObject(nil, PasDoc1.IntroductionFileName, PasDoc1.Introduction);
+    end;
+    AllUnitsNode := tvUnits.Items.AddObject(nil,
+      Lang.Translation[trUnits], PasDoc1.Units);
+    for UnitIndex := 0 to PasDoc1.Units.Count -1 do begin
+      UnitItem := PasDoc1.Units.UnitAt[UnitIndex];
+      UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
+        UnitItem.SourceFileName, UnitItem);
+      populate(UnitNode, UnitItem);
+    end;
+  finally
+    Lang.Free;
+  end;
+end;
+{$ENDIF}
 
 procedure TDocMain.tvUnitsClick(Sender: TObject);
 var
-  Item: TBaseItem;
+  Item: TDescriptionItem;
+  bi: TBaseItem absolute item;
   PasItem: TPasItem absolute Item;
   o: TObject;
   c: TToken absolute o;
@@ -1501,29 +1552,36 @@ begin
   edRem.Hint := '';
   cbRem.Clear;
   if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then begin
-    if TObject(tvUnits.Selected.Data) is TBaseItem then begin
-      Item := TBaseItem(tvUnits.Selected.Data);
+    if TObject(tvUnits.Selected.Data) is TDescriptionItem then begin
+      Item := TDescriptionItem(tvUnits.Selected.Data);
       SelItem := Item;
       SelToken := nil;
       if item is TPasItem then
         edDecl.Text := PasItem.FullDeclaration
-      else
-        edDecl.Text := '<no declaration>';
-      edRem.Text := Item.RawDescription;
-      lst := item.Descriptions;
-      cbRem.AddItem('<all>', nil);
-      if assigned(lst) then begin
-        for i := 0 to lst.Count-1 do begin
-          o := lst.Objects[i];
-          if assigned(o) then begin
-            s := Format(
-              '%s[%d - %d]',
-              [ c.StreamName,
-                c.BeginPosition,
-                c.EndPosition ]);
-          end else
-            s := '<unknown/inherited>';
-          cbRem.AddItem(s, o);
+      else begin
+        //edDecl.Text := '<no declaration>';
+        s := Item.Name + ' ' + Item.Value; //Item.Text();
+        if Item.ID <> trNoTrans then
+          s := Translation(Item.ID, Language) + ': ' + s;
+        edDecl.Text := s;
+      end;
+      edRem.Text := Item.Description; //Item.RawDescription;
+      if item is TBaseItem then begin
+        lst := bi.Descriptions;
+        cbRem.AddItem('<all>', nil);
+        if assigned(lst) then begin
+          for i := 0 to lst.Count-1 do begin
+            o := lst.Objects[i];
+            if assigned(o) then begin
+              s := Format(
+                '%s[%d - %d]',
+                [ c.StreamName,
+                  c.BeginPosition,
+                  c.EndPosition ]);
+            end else
+              s := '<unknown/inherited>';
+            cbRem.AddItem(s, o);
+          end;
         end;
       end;
     end;
@@ -1538,14 +1596,16 @@ var
 begin
   i := cbRem.ItemIndex;
   if i < 1 then
-    edRem.Text := SelItem.RawDescription
+    edRem.Text := SelItem.Description //SelItem.RawDescription
   else begin
     o := cbRem.Items.Objects[i];
     SelToken := c;
     if assigned(o) then begin
       edRem.Text := c.CommentContent;
-    end else
-      edRem.Text := SelItem.Descriptions.Strings[i-1];
+    end else if SelItem is TBaseItem then
+      edRem.Text := TBaseItem(SelItem).Descriptions.Strings[i-1]
+    else
+      edRem.Text := SelItem.Description;
   end;
 end;
 

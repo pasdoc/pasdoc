@@ -183,11 +183,7 @@ type
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
-  {$IFDEF old}
-    procedure WriteDates(const HL: integer; const Created, LastMod: string);
-  {$ELSE}
     procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
-  {$ENDIF}
 
     function FormatAnAnchor(const AName, Caption: string): string; 
 
@@ -516,7 +512,7 @@ const
 
   procedure WriteMethodsSummary;
   begin
-    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsMethods], trMethods);
   end;
 
@@ -527,7 +523,7 @@ const
 
   procedure WritePropertiesSummary;
   begin
-    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsProperties], trProperties);
   end;
 
@@ -538,7 +534,7 @@ const
 
   procedure WriteFieldsSummary;
   begin
-    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsFields], trFields);
   end;
 
@@ -577,7 +573,7 @@ var
   Section: TSections;
   AnyItem: boolean;
   ancestor: TDescriptionItem;
-begin
+begin //WriteCIO
   if not Assigned(CIO) then Exit;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
@@ -702,7 +698,7 @@ begin
   for i := 0 to c.Count - 1 do
   begin
     p := TPasCio(c.PasItemAt[i]);
-    
+
     if (p.MyUnit <> nil) and
        p.MyUnit.FileNewerThanCache(DestinationDirectory + p.OutputFileName) then
     begin
@@ -711,7 +707,7 @@ begin
         'skipped.', [p.Name]);
       Continue;
     end;
-    
+
     case CreateStream(p.OutputFileName, true) of
       csError: begin
           DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
@@ -764,7 +760,7 @@ begin
   WriteEndOfTable;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem;
   const Code: string; WriteItemLink: boolean);
 begin
   WriteCodeWithLinksCommon(p, Code, WriteItemLink, '<b>', '</b>');
@@ -773,19 +769,18 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteDates(const HL: integer;
-  //const Created, LastMod: string);
   Created, LastMod: TDescriptionItem);
 begin
-  if assigned(Created) and (Created.Description <> '') then begin
+  if assigned(Created) and (Created.Name <> '') then begin
     WriteHeading(HL, 'created', FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteDirectLine(Created.Description);
+    WriteDirectLine(Created.Name);
     WriteEndOfParagraph;
   end;
-  if assigned(LastMod) and (LastMod.Description <> '') then begin
+  if assigned(LastMod) and (LastMod.Name <> '') then begin
     WriteHeading(HL, 'modified', FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteDirectLine(LastMod.Description);
+    WriteDirectLine(LastMod.Name);
     WriteEndOfParagraph;
   end;
 end;
@@ -805,7 +800,7 @@ begin
   WriteFramesetFiles;
   if UseTipueSearch then
   begin
-    DoMessage(2, pmtInformation, 
+    DoMessage(2, pmtInformation,
       'Writing additional files for tipue search engine', []);
     TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
       DestinationDirectory);
@@ -1093,11 +1088,11 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   //procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
   begin
-    if (ReturnDesc = nil) or (ReturnDesc.Description = '') then
+    if (ReturnDesc = nil) or (ReturnDesc.Text = '') then
       exit;
     WriteDescriptionSectionHeading(trReturns);
     WriteDirect('<p class="return">');
-    WriteSpellChecked(ReturnDesc.Description);
+    WriteSpellChecked(ReturnDesc.Text);
     WriteDirect('</p>');
   end;
 
@@ -1113,7 +1108,7 @@ var
   AncestorName: string;
   AItemMethod: TPasMethod;
   i: Integer;
-begin
+begin //WriteItemLongDescription
   if not Assigned(AItem) then Exit;
 
   //if AItem.IsDeprecated then
@@ -1777,17 +1772,17 @@ begin
     "Overview" and "Description" when there are no items. }
   if AnyItemSummary then
   begin
-    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);  
+    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
     WriteCIOSummary(HL + 2, U.CIOs);
     WriteFuncsProcsSummary;
     WriteTypesSummary;
     WriteConstantsSummary;
     WriteVariablesSummary;
   end;
-  
+
   if AnyItemDetailed then
   begin
-    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);  
+    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
     WriteFuncsProcsDetailed;
     WriteTypesDetailed;
     WriteConstantsDetailed;

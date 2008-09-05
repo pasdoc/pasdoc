@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabOpts
+    ActivePage = tabDoc
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet

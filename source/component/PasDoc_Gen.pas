@@ -819,11 +819,7 @@ type
       
       Default implementation of this method in this class just returns
       empty string. }
-  {$IFDEF old}
-    function FormatTableOfContents(Sections: TStringPairVector): string; virtual;
-  {$ELSE}
     function FormatTableOfContents(Sections: TDescriptionItem): string; virtual;
-  {$ENDIF}
   public
 
     { Creates anchors and links for all items in all units. }
@@ -1092,6 +1088,7 @@ begin //BuildLinks
     ...
   {$ELSE}
     u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
+    //u.BuildSections; //optional!
   {$ENDIF}
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
@@ -2547,66 +2544,6 @@ begin
   inherited;
 end;
 
-{$IFDEF old}
-procedure TDocGenerator.CreateClassHierarchy;
-
-  function FindGlobalPasItem(const NameParts: TNameParts): TPasItem;
-  var BaseResult: TBaseItem;
-  begin
-    BaseResult := FindGlobal(NameParts);
-    if (BaseResult <> nil) and (BaseResult is TPasItem) then
-      Result := TPasItem(BaseResult) else
-      Result := nil;
-  end;
-
-var
-  unitLoop: Integer;
-  classLoop: Integer;
-  PU: TPasUnit;
-  ACIO: TPasCio;
-  ParentItem: TPasItem;
-  Parent, Child: TPasItemNode;
-begin //CreateClassHierarchy
-  FClassHierarchy.Free;
-  FClassHierarchy := TStringCardinalTree.Create;
-  for unitLoop := 0 to Units.Count - 1 do begin
-    PU := Units.UnitAt[unitLoop];
-    if PU.CIOs = nil then Continue;
-    for classLoop := 0 to PU.CIOs.Count - 1 do begin
-      ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
-      if ACIO.MyType in CIONonHierarchy then continue;
-
-      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
-        ParentItem := FindGlobalPasItem(OneNamePart(ACIO.Ancestors.FirstName));
-        if Assigned(ParentItem) then begin
-          Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
-          // Add parent if not already there.
-          if Parent = nil then begin
-            Parent := FClassHierarchy.InsertItem(ParentItem);
-          end;
-        end else begin
-          Parent := FClassHierarchy.ItemOfName(ACIO.Ancestors.FirstName);
-          if Parent = nil then begin
-            Parent := FClassHierarchy.InsertName(ACIO.Ancestors.FirstName);
-          end;
-        end;
-      end else begin
-        Parent := nil;
-      end;
-
-      Child := FClassHierarchy.ItemOfName(ACIO.Name);
-      if Child = nil then begin
-        FClassHierarchy.InsertItemParented(Parent, ACIO)
-      end else begin
-        if Parent <> nil then begin
-          FClassHierarchy.MoveChildLast(Child, Parent);
-        end;
-      end;
-    end;
-  end;
-  FClassHierarchy.Sort;
-end;
-{$ELSE}
 procedure TDocGenerator.CreateClassHierarchy;
 
   function AddBranch(c: TPasCio): TDescriptionItem;
@@ -2644,8 +2581,6 @@ begin
     end;
   end;
 end;
-
-{$ENDIF}
 
 procedure TDocGenerator.WriteEndOfCode;
 begin
@@ -2854,7 +2789,7 @@ begin
   begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
-      DoMessage(2, pmtWarning, 'Word misspelled "%s"', 
+      DoMessage(2, pmtWarning, 'Word misspelled "%s"',
         [TSpellingError(AErrors[i]).Word]);
   end else
     AErrors.Clear;
@@ -2878,58 +2813,50 @@ var
     AName: string;
     NewName: string;
   begin
-    for Index := 0 to Items.Count -1 do
-    begin
+    for Index := 0 to Items.Count -1 do begin
       SubItem := Items[Index] as TBaseItem;
       AName := Trim(SCharsReplace(SubItem.Name, ['0'..'9', '_'], ' '));
-      if AName = SubItem.Name then
-      begin
-        if (SubItem.Name <> '') then
-        begin
+      if AName = SubItem.Name then begin
+        if (SubItem.Name <> '') then begin
           WordsToIgnore.Add(SubItem.Name);
         end;
-      end
-      else
-      begin
-        While AName <> '' do
-        begin
+      end else begin
+        While AName <> '' do begin
           NewName := ExtractFirstWord(AName);
           WordsToIgnore.Add(NewName);
         end;
       end;
-      if SubItem is TExternalItem then
-      begin
+      if SubItem is TExternalItem then begin
         AddSubItems(TExternalItem(SubItem).Anchors);
-      end
-      else if SubItem is TPasEnum then
-      begin
+    {$IFDEF old}
+      end else if SubItem is TPasEnum then begin
         AddSubItems(TPasEnum(SubItem).Members);
-      end
-      else if SubItem is TPasCio then
-      begin
+      end else if SubItem is TPasCio then begin
         AddSubItems(TPasCio(SubItem).Fields);
         AddSubItems(TPasCio(SubItem).Methods);
         AddSubItems(TPasCio(SubItem).Properties);
-        AddSubItems(TPasCio(SubItem).Fields);
-      end
-      else if SubItem is TPasUnit then
-      begin
+        //AddSubItems(TPasCio(SubItem).Fields); ???
+      end else if SubItem is TPasUnit then begin
         AddSubItems(TPasUnit(SubItem).CIOs);
         AddSubItems(TPasUnit(SubItem).Constants);
         AddSubItems(TPasUnit(SubItem).FuncsProcs);
         AddSubItems(TPasUnit(SubItem).Types);
         AddSubItems(TPasUnit(SubItem).Variables);
-        AddSubItems(TPasUnit(SubItem).Types);
-        AddSubItems(TPasUnit(SubItem).Types);
+        //AddSubItems(TPasUnit(SubItem).Types); ???
+        //AddSubItems(TPasUnit(SubItem).Types); ???
+    {$ELSE}
+      end else if SubItem is TPasScope then begin
+        AddSubItems(TPasScope(SubItem).Members);
+    {$ENDIF}
       end;
     end;
   end;
-  
+
 begin
   { Make sure that previous aspell process is closed }
   FreeAndNil(FAspellProcess);
 
-  if CheckSpelling then 
+  if CheckSpelling then
   begin
     try
       FAspellProcess := TAspellProcess.Create(AMode, FAspellLanguage);
@@ -2941,9 +2868,9 @@ begin
         Exit;
       end;
     end;
-    
+
     FAspellProcess.OnMessage := OnMessage;
-    
+
     WordsToIgnore := TStringList.Create;
     try
       WordsToIgnore.Sorted := True;
@@ -2987,7 +2914,7 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
 
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
-    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
+    ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment,
     ctEndComment, ctHex, ctEndHex, ctNumeric, ctEndNumeric);
 var
   CharIndex: integer;
@@ -3008,57 +2935,45 @@ const
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
   Numeric = ['0'..'9','.'];
   Hexadec = ['0'..'9', 'a'..'f', 'A'..'F', '$'];
-  
+
   function TestCommentStart: boolean;
   begin
     result := False;
-    if Line[CharIndex] = '(' then
-    begin
-      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '*') then
-      begin
+    if Line[CharIndex] = '(' then begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '*') then begin
         CodeType := ctParenComment;
         result := True;
       end
-    end
-    else if Line[CharIndex] = '{' then
-    begin
-      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '$') then
-      begin
+    end else if Line[CharIndex] = '{' then begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '$') then begin
         CodeType := ctCompilerComment;
-      end
-      else
-      begin
+      end else begin
         CodeType := ctBracketComment;
       end;
       result := True;
-    end
-    else if Line[CharIndex] = '/' then
-    begin
-      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '/') then
-      begin
+    end else if Line[CharIndex] = '/' then begin
+      if (CharIndex < Length(Line)) and (Line[CharIndex + 1] = '/') then begin
         CodeType := ctSlashComment;
         result := True;
       end
     end;
-    if result then
-    begin
+    if result then begin
       CommentBegining := CharIndex;
     end;
   end;
+
   function TestStringBeginning: boolean;
   begin
     result := False;
-    if Line[CharIndex] = '''' then
-    begin
-      if CodeType <> ctChar then
-      begin
+    if Line[CharIndex] = '''' then begin
+      if CodeType <> ctChar then begin
         StringBeginning := CharIndex;
       end;
       CodeType := ctString;
       result := True;
     end
   end;
-  
+
 begin
   CommentBegining := 1;
   StringBeginning := 1;
@@ -3074,50 +2989,36 @@ begin
       ctWhiteSpace:
         begin
           EndOfCode := False;
-          if TestStringBeginning then
-          begin
+          if TestStringBeginning then begin
             EndOfCode := True;
-          end else 
-          if Line[CharIndex] = '#' then
-          begin
+          end else if Line[CharIndex] = '#' then begin
             StringBeginning := CharIndex;
             CodeType := ctChar;
             EndOfCode := True;
-          end else 
-          if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             EndOfCode := True;
-          end else 
-          if Line[CharIndex] = '$' Then
-          begin
+          end else if Line[CharIndex] = '$' Then begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
             EndOfCode := True;
-          end else 
-          if Line[CharIndex] in Numeric then
-          begin
+          end else if Line[CharIndex] in Numeric then begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
             EndOfCode := True;
-          end else
-          if Line[CharIndex] in AlphaNumeric then
-          begin
+          end else if Line[CharIndex] in AlphaNumeric then begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
             EndOfCode := True;
           end;
-          if EndOfCode then
-          begin
-            result := result + ConvertString(Copy(Line, WhiteSpaceBeginning, 
+          if EndOfCode then begin
+            result := result + ConvertString(Copy(Line, WhiteSpaceBeginning,
               CharIndex - WhiteSpaceBeginning));
           end;
         end;
       ctString:
         begin
-          if Line[CharIndex] = '''' then
-          begin
-            if (CharIndex = Length(Line)) or (Line[CharIndex + 1] <> '''') then
-            begin
+          if Line[CharIndex] = '''' then begin
+            if (CharIndex = Length(Line)) or (Line[CharIndex + 1] <> '''') then begin
               CodeType := ctEndString;
               result := result + FormatString(Copy(Line, StringBeginning,
                 CharIndex - StringBeginning + 1));
@@ -3127,75 +3028,51 @@ begin
       ctCode:
         begin
           EndOfCode := False;
-          if TestStringBeginning then
-          begin
+          if TestStringBeginning then begin
             EndOfCode := True;
-          end
-          else if Line[CharIndex] = '#' then
-          begin
+          end else if Line[CharIndex] = '#' then begin
             EndOfCode := True;
             CodeType := ctChar;
             StringBeginning := CharIndex;
-          end
-          else if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             EndOfCode := True;
-          end
-          else if not (Line[CharIndex] in AlphaNumeric) then
-          begin
+          end else if not (Line[CharIndex] in AlphaNumeric) then begin
             EndOfCode := True;
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
           end;
-          if EndOfCode then
-          begin
+          if EndOfCode then begin
             result := result + FormatCode(Copy(Line, CodeBeginning, CharIndex -
               CodeBeginning));
           end;
         end;
       ctEndString:
         begin
-          if Line[CharIndex] = '#' then
-          begin
+          if Line[CharIndex] = '#' then begin
             CodeType := ctChar;
-          end
-          else if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             // do nothing
-          end
-          else if Line[CharIndex] = '$' Then
-          Begin
+          end else if Line[CharIndex] = '$' Then Begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
-          End
-          else if Line[CharIndex] in Numeric then
-          begin
+          end else if Line[CharIndex] in Numeric then begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
-          end
-          else if Line[CharIndex] in AlphaNumeric then
-          begin
+          end else if Line[CharIndex] in AlphaNumeric then begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
-          end
-          else
-          begin
+          end else begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
           end;
         end;
       ctChar:
         begin
-          if Line[CharIndex] = '''' then
-          begin
+          if Line[CharIndex] = '''' then begin
             CodeType := ctString;
-          end
-          else if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             // do nothing
-          end
-          else if Line[CharIndex] in Separators then
-          begin
+          end else if Line[CharIndex] in Separators then begin
             result := result + FormatString(Copy(Line, StringBeginning,
               CharIndex - StringBeginning));
             CodeType := ctWhiteSpace;
@@ -3204,10 +3081,8 @@ begin
         end;
       ctParenComment:
         begin
-          if Line[CharIndex] = ')' then
-          begin
-            if (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
-            begin
+          if Line[CharIndex] = ')' then begin
+            if (CharIndex > 1) and (Line[CharIndex - 1] = '*') then begin
               CodeType := ctEndComment;
               result := result + FormatComment(Copy(Line, CommentBegining,
                 CharIndex - CommentBegining + 1));
@@ -3216,8 +3091,7 @@ begin
         end;
       ctBracketComment:
         begin
-          if Line[CharIndex] = '}' then
-          begin
+          if Line[CharIndex] = '}' then begin
             CodeType := ctEndComment;
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
@@ -3225,8 +3099,7 @@ begin
         end;
       ctCompilerComment:
         begin
-          if Line[CharIndex] = '}' then
-          begin
+          if Line[CharIndex] = '}' then begin
             CodeType := ctEndComment;
             result := result + FormatCompilerComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
@@ -3234,8 +3107,7 @@ begin
         end;
       ctSlashComment:
         begin
-          if Line[CharIndex] in LineEnd then
-          begin
+          if Line[CharIndex] in LineEnd then begin
             CodeType := ctWhiteSpace;
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining));
@@ -3244,63 +3116,46 @@ begin
         end;
       ctEndComment:
         begin
-          if TestCommentStart then
-          begin
+          if TestCommentStart then begin
             // do nothing
-          end
-          else if Line[CharIndex] in Separators then
-          begin
+          end else if Line[CharIndex] in Separators then begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
-          end
-          else if Line[CharIndex] = '$' Then
-          Begin
+          end else if Line[CharIndex] = '$' then begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
-          End
-          else if Line[CharIndex] in Numeric then
-          begin
+          end else if Line[CharIndex] in Numeric then begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
-          end
-          else if Line[CharIndex] in AlphaNumeric then
-          begin
+          end else if Line[CharIndex] in AlphaNumeric then begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
           end;
         end;
       ctHex:
-        Begin
-          If (Line[CharIndex] in (Separators)) Or
-              Not(Line[CharIndex] in Hexadec) then
-          begin
+        begin
+          If (Line[CharIndex] in (Separators)) Or Not(Line[CharIndex] in Hexadec) then begin
             CodeType := ctEndHex;
             result := result + FormatHex(Copy(Line, HexBeginning,
                       CharIndex - HexBeginning));
             result := result + FormatCode(Copy(Line, CharIndex, 1));
           end;
-        End;
+        end;
       ctNumeric:
-        Begin
-          If (Line[CharIndex] in (Separators - ['.'])) Or
-              Not(Line[CharIndex] in Numeric) then
-          begin
+        begin
+          If (Line[CharIndex] in (Separators - ['.'])) Or Not(Line[CharIndex] in Numeric) then begin
             CodeType := ctEndNumeric;
-            If Pos('.', Copy(Line, NumBeginning, CharIndex - NumBeginning)) > 0 Then
-            Begin
+            If Pos('.', Copy(Line, NumBeginning, CharIndex - NumBeginning)) > 0 Then Begin
               NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
               NumberRange := Pos('..', NumberSubBlock);
-              If NumberRange > 0 Then
-              Begin
+              If NumberRange > 0 Then Begin
                 result := result + FormatNumeric(
                           Copy(NumberSubBlock, 1, NumberRange - 1));
                 result := result + FormatCode(
                           Copy(NumberSubBlock, NumberRange, Length(NumberSubBlock)));
-              End
-              Else
+              End Else
                 result := result + FormatFloat(NumberSubBlock);
-            End
-            Else
+            End Else
               result := result + FormatNumeric(Copy(Line, NumBeginning,
                         CharIndex - NumBeginning));
             result := result + FormatCode(Copy(Line, CharIndex, 1));
@@ -3308,52 +3163,34 @@ begin
         End;
       ctEndHex:
         begin
-          if Line[CharIndex] = '#' then
-          begin
+          if Line[CharIndex] = '#' then begin
             CodeType := ctChar;
-          end
-          else if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             // do nothing
-          end
-          else if Line[CharIndex] in Numeric then
-          begin
+          end else if Line[CharIndex] in Numeric then begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
-          end
-          else if Line[CharIndex] in AlphaNumeric then
-          begin
+          end else if Line[CharIndex] in AlphaNumeric then begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
-          end
-          else
-          begin
+          end else begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
           end;
         end;
       ctEndNumeric:
         begin
-          if Line[CharIndex] = '#' then
-          begin
+          if Line[CharIndex] = '#' then begin
             CodeType := ctChar;
-          end
-          else if TestCommentStart then
-          begin
+          end else if TestCommentStart then begin
             // do nothing
-          end
-          else if Line[CharIndex] = '$' Then
-          Begin
+          end else if Line[CharIndex] = '$' Then Begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
-          End
-          else if Line[CharIndex] in AlphaNumeric then
-          begin
+          End else if Line[CharIndex] in AlphaNumeric then begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
-          end
-          else
-          begin
+          end else begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
           end;
@@ -3519,21 +3356,14 @@ begin
   Result := ConvertString(Text);
 end;
 
-{$IFDEF old}
-function TDocGenerator.FormatTableOfContents(Sections: TStringPairVector): string;
-begin
-  Result := '';
-end;
-{$ELSE}
 function TDocGenerator.FormatTableOfContents(Sections: TDescriptionItem): string;
 begin
   Result := '';
 end;
-{$ENDIF}
 
 function TDocGenerator.MakeItemLink(const Item: TBaseItem;
   const LinkCaption: string;
-  const LinkContext: TLinkContext): string; 
+  const LinkContext: TLinkContext): string;
 begin
   Result := ConvertString(LinkCaption);
 end;
@@ -3546,7 +3376,7 @@ var
   FoundItem: TBaseItem;
   i, j, l: Integer;
   s: string;
-  pl: TStandardDirective;  
+  pl: TStandardDirective;
   { ncstart marks what part of Code was already written:
     Code[1..ncstart - 1] is already written to output stream. }
   ncstart: Integer;
@@ -3570,18 +3400,16 @@ begin
             (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
-          if not NameFound and (s = Item.Name) then 
-          begin
+          if not NameFound and (s = Item.Name) then begin
             WriteDirect(NameLinkBegin);
             if WriteItemLink then
               WriteDirect(MakeItemLink(Item, s, lcCode)) else
               WriteConverted(s);
             WriteDirect(NameLinkEnd);
             NameFound := True;
-          end else
-          begin
+          end else begin
             { Special processing for standard directives.
-            
+
               Note that we check whether S is standard directive *after*
               we checked whether S matches P.Name, otherwise we would
               mistakenly think that 'register' is a standard directive
@@ -3592,13 +3420,13 @@ begin
                 'procedure Foo; register'
               or even
                 'procedure Register; register;'
-              ) because we safeguard against it using NameFound and 
+              ) because we safeguard against it using NameFound and
               SearchForLink state variables.
-              
-              That said, WriteCodeWithLinksCommon still remains a hackish 
+
+              That said, WriteCodeWithLinksCommon still remains a hackish
               excuse to not cooperate better with PasDoc_Parser when
               generating FullDeclaration of every item. }
-              
+
             pl := StandardDirectiveByName(s);
             case pl of
               SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
@@ -3614,7 +3442,7 @@ begin
                   WriteConverted(s);
                   SearchForLink := true;
                 end;
-              else
+              else //case
                 begin
                   if SearchForLink then
                     FoundItem := SearchItem(S, Item, false)
@@ -3628,10 +3456,10 @@ begin
                 end;
             end;
           end;
-          
-          ncstart := i;          
+
+          ncstart := i;
         end;
-      ':', '=': 
+      ':', '=':
         begin
           SearchForLink := True;
           Inc(i);
@@ -3672,13 +3500,11 @@ begin
   DoMessage(2, pmtInformation, 'Writing Docs for %s, "%s"',
     [FLanguage.Translation[Id], ExternalItem.Name]);
 
-  If ExternalItem.Title = '' then
-  begin
+  If ExternalItem.Title = '' then begin
     ExternalItem.Title := FLanguage.Translation[Id];
   end;
 
-  If ExternalItem.ShortTitle = '' then
-  begin
+  If ExternalItem.ShortTitle = '' then begin
     ExternalItem.ShortTitle := ExternalItem.Title;
   end;
 
@@ -3707,18 +3533,17 @@ begin
     descriptions (i.e. in PreHandleAnchorTag instead of HandleAnchorTag),
     this way creating @links in the 2nd pass of expanding
     descriptions works good. }
-  
+
   ReplaceStr := '';
-  
+
   AnchorName := Trim(TagParameter);
-  
-  if not IsValidIdent(AnchorName) then
-  begin
+
+  if not IsValidIdent(AnchorName) then begin
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       'Invalid anchor name: "%s"', [AnchorName]);
     Exit;
   end;
-  
+
   AnchorItem := (FCurrentItem as TExternalItem).AddAnchor(AnchorName);
   AnchorItem.FullLink := CreateLink(AnchorItem);
 end;
@@ -3733,9 +3558,9 @@ begin
   { AnchorName is already added to FCurrentItem.Anchors,
     thanks to PreHandleAnchorTag.
     All we do here is to generate correct ReplaceStr. }
-  
+
   AnchorName := Trim(TagParameter);
-  
+
   if not IsValidIdent(AnchorName) then
     { Warning for this case was already printed by PreHandleAnchorTag.
       That's why here we do only Exit. }
@@ -3763,21 +3588,20 @@ begin
     begin
       if DoMessages then
         ThisTag.TagManager.DoMessage(1, pmtWarning,
-          'Invalid heading level in @section tag: "%s". %s', 
+          'Invalid heading level in @section tag: "%s". %s',
           [HeadingLevelString, E.Message]);
       Exit;
     end;
   end;
-  
-  if HeadingLevel < 1 then
-  begin
+
+  if HeadingLevel < 1 then begin
     if DoMessages then
       ThisTag.TagManager.DoMessage(1, pmtWarning,
-        'Invalid heading level in @section tag: %d. Heading level must be >= 1', 
+        'Invalid heading level in @section tag: %d. Heading level must be >= 1',
         [HeadingLevel]);
     Exit;
   end;
-  
+
   Result := true;
 end;
 
@@ -3824,7 +3648,7 @@ begin
   begin
     ReplaceStr := FormatSection(HeadingLevel, AnchorName, Caption);
   end;
-  
+
   { Section is already added to FCurrentItem.Anchors,
     thanks to PreHandleSectionTag. }
 end;
@@ -3832,8 +3656,8 @@ end;
 procedure TDocGenerator.TagAllowedInsideLists(
   ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 begin
-  Allowed := 
-    (EnclosingTag = OrderedListTag) or 
+  Allowed :=
+    (EnclosingTag = OrderedListTag) or
     (EnclosingTag = UnorderedListTag) or
     (EnclosingTag = DefinitionListTag);
 end;
@@ -3868,28 +3692,28 @@ var
 begin
   FileNames := TStringList.Create;
   try
-    FileNames.Text := TagParameter;      
+    FileNames.Text := TagParameter;
 
     { Trim, remove empty lines, and expand paths on FileNames }
     I := 0;
-    while I < FileNames.Count do
-    begin
+    while I < FileNames.Count do begin
       FileNames[I] := Trim(FileNames[I]);
       if FileNames[I] = '' then
-        FileNames.Delete(I) else
-      begin
+        FileNames.Delete(I)
+      else begin
         FileNames[I] := CombinePaths(FCurrentItem.BasePath, FileNames[I]);
         Inc(I);
       end;
     end;
-    
-    if FileNames.Count = 0 then
-    begin
+
+    if FileNames.Count = 0 then begin
       ThisTag.TagManager.DoMessage(1, pmtWarning,
         'No parameters for @image tag', []);
     end else
       ReplaceStr := FormatImage(FileNames);
-  finally FileNames.Free end;
+  finally
+    FileNames.Free
+  end;
 end;
 
 function TDocGenerator.FormatImage(FileNames: TStringList): string;
@@ -3908,7 +3732,7 @@ begin
   ReplaceStr := ThisTag.TagManager.Execute(IncludedText,
     { Note that this means that we reset auto-linking state
       inside the include file to what was chosen by --auto-link
-      command-line option. I.e., 
+      command-line option. I.e.,
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);

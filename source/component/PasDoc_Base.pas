@@ -287,7 +287,7 @@ const
   }
   PASDOC_DATE = '2008-06-22';
   { }
-  PASDOC_VERSION = '0.11.4';
+  PASDOC_VERSION = '0.11.5';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
@@ -525,41 +525,49 @@ end;
 
 procedure TPasDoc.RemoveExcludedItems(const c: TPasItems);
 var
-  i: Integer;
+  i, il: Integer;
   p: TPasItem;
+  o: TDescriptionItem;
 begin
   if c = nil then Exit;
   i := 0;
   while (i < c.Count) do begin
     p := c.PasItemAt[i];
-    
+
     { TODO -- code below checks for @exclude tag too trivially,
       it accidentally excludes items with comments like '@@exclude'
       or '@html(@exclude)'. Checking for exclude should be
       incorporated into doing TTagManager.Execute
       in ExpandDescription. }
 
-    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then 
-    begin
+    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then begin
       DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
-    end
-    else begin
+    end else begin
           { P has no excluded tag; but if it is a class, interface, object or
             unit, one of its parts may be excluded }
+    {$IFDEF old}
       if p.ClassType = TPasCio then begin
         RemoveExcludedItems(TPasCio(p).Fields);
         RemoveExcludedItems(TPasItems(TPasCio(p).Properties));
         RemoveExcludedItems(TPasItems(TPasCio(p).Methods));
-      end
-      else
-        if p.ClassType = TPasUnit then begin
-          RemoveExcludedItems(TPasUnit(p).CIOs);
-          RemoveExcludedItems(TPasUnit(p).Constants);
-          RemoveExcludedItems(TPasItems(TPasUnit(p).FuncsProcs));
-          RemoveExcludedItems(TPasUnit(p).Types);
-          RemoveExcludedItems(TPasUnit(p).Variables);
+      end else if p.ClassType = TPasUnit then begin
+        RemoveExcludedItems(TPasUnit(p).CIOs);
+        RemoveExcludedItems(TPasUnit(p).Constants);
+        RemoveExcludedItems(TPasItems(TPasUnit(p).FuncsProcs));
+        RemoveExcludedItems(TPasUnit(p).Types);
+        RemoveExcludedItems(TPasUnit(p).Variables);
+      end;
+    {$ELSE}
+      if p is TPasScope then begin
+        o := TPasScope(p).Overview;
+        if o <> nil then begin
+          for il := 0 to o.Count - 1 do begin
+            RemoveExcludedItems(o.Items[il].PasItems);
+          end;
         end;
+      end;
+    {$ENDIF}
       Inc(i);
     end;
   end;
@@ -620,11 +628,10 @@ begin
         'to write docs', [], 1);
   end;
 
-  if FProjectName <> '' then begin
+  if FProjectName <> '' then
     Generator.ProjectName := FProjectName
-  end else begin
+  else
     Generator.ProjectName := 'docs';
-  end;
 
   Generator.Title := Title;
   Generator.Units := FUnits;
@@ -642,12 +649,15 @@ begin
   if fGenerate then begin
     Generator.ExpandDescriptions;
 
+    FUnits.BuildSections; //optional!
+
     Generator.WriteDocumentation;
-  end;
-  
+  end else
+    FUnits.BuildSections; //optional, for editor, debugger...
+
   if Generator.NoGeneratorInfo then
-    DoMessage(1, pmtInformation, 'Done', []) else
-  begin
+    DoMessage(1, pmtInformation, 'Done', [])
+  else begin
     t2 := Now;
     DoMessage(1, pmtInformation, 'Done, worked %s minutes(s)',
       [FormatDateTime('nn:ss', (t2 - t1))]);
@@ -716,11 +726,7 @@ begin
   FGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
-{$IFDEF FPC}
-    FGenerator.OnMessage := @GenMessage;
-{$ELSE}
-    FGenerator.OnMessage := GenMessage;
-{$ENDIF}
+    FGenerator.OnMessage := {$IFDEF FPC}@{$ENDIF} GenMessage;
   end;
 end;
 
@@ -743,7 +749,7 @@ begin
   for i := 0 to AFileNames.Count - 1 do begin
     FileMask := AFileNames[i];
     Path := ExtractFilePath(FileMask);
-    
+
     { Just ignore last empty line of AFileNames, this may often occur
       when generating text files with filenames, and is harmless. }
     if (FileMask = '') and (I = AFileNames.Count - 1) then
@@ -798,9 +804,9 @@ begin
 
     { This check tries to avoid the possibility of accidentaly
       overwriting user introduction/conclusion file
-      (in case some user would incorrectly think that 
+      (in case some user would incorrectly think that
       introduction/conclusion is in raw html, and would create file like
-      my_introduction.html -- without this check, pasdoc could 
+      my_introduction.html -- without this check, pasdoc could
       overwrite this file too easily). }
     if SameText(ExtractFileExt(FileName), Generator.GetFileExtension) then
       raise Exception.CreateFmt('Introduction/conclusion file extension' +
@@ -811,7 +817,7 @@ begin
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
     ExternalItem.RawDescription := FileToString(FileName);
-  except 
+  except
     FreeAndNil(ExternalItem);
     raise;
   end;
@@ -821,7 +827,7 @@ end;
 
 function COMPILER_NAME: string;
 begin
-  COMPILER_NAME := 
+  COMPILER_NAME :=
     {$IFDEF FPC}
     'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
     {$ENDIF}
