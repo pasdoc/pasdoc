@@ -6,7 +6,8 @@ uses
   uShell in 'uShell.pas',
   frDirs in 'frDirs.pas' {DirList: TFrame},
   frDir in 'frDir.pas' {DirBox: TFrame},
-  fDocMain in 'fDocMain.pas' {DocMain};
+  fDocMain in 'fDocMain.pas' {DocMain},
+  test_tags in 'test_tags.pas';
 
 { $R pasdoc_gui.res}
 

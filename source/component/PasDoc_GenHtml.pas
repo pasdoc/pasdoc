@@ -1105,7 +1105,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
 var
   Ancestor: TBaseItem;
-  AncestorName: string;
+  //AncestorName: string;
   AItemMethod: TPasMethod;
   i: Integer;
 begin //WriteItemLongDescription
@@ -1121,6 +1121,12 @@ begin //WriteItemLongDescription
   if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
+(* Write Abstract and Description, if not empty.
+  If neither exists, give inherited description (CIOs only)
+  The same for overloaded methods???
+  Every description item should be inheritable!
+*)
+{$IFDEF old}
   if AItem.AbstractDescription <> '' then begin
     if OpenCloseParagraph then WriteStartOfParagraph;
 
@@ -1141,19 +1147,52 @@ begin //WriteItemLongDescription
     WriteSpellChecked(AItem.DetailedDescription);
 
     if OpenCloseParagraph then WriteEndOfParagraph;
+
   end else if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then begin
     Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) then begin
-      AncestorName := TPasCio(AItem).FirstAncestorName;
+      //AncestorName := TPasCio(AItem).FirstAncestorName;
+      //AncestorName := Ancestor.Name;
       WriteDirect('<div class="nodescription">');
       WriteConverted(Format(
-        'no description available, %s description follows', [AncestorName]));
+        'no description available, %s description follows', [Ancestor.Name]));
       WriteDirect('</div>');
       WriteItemLongDescription(TPasItem(Ancestor));
     end;
-  end else begin
-    WriteDirect('&nbsp;'); //oops?
+{$ELSE}
+//search for non-empty description
+  Ancestor := AItem;
+  while assigned(Ancestor)
+  and (Ancestor.AbstractDescription = '') and (Ancestor.DetailedDescription = '') do begin
+    if Ancestor is TPasCio then
+      Ancestor := TPasCio(Ancestor).FirstAncestor
+    else
+      Ancestor := nil;
   end;
+
+  if (Ancestor <> nil) then begin
+    if AItem <> Ancestor then begin
+      WriteDirect('<div class="nodescription">');
+      WriteConverted(Format(
+        'no description available, %s description follows', [Ancestor.Name]));
+      WriteDirect('</div>');
+    end;
+
+    if Ancestor.AbstractDescription <> '' then begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+      WriteSpellChecked(Ancestor.AbstractDescription);
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end;
+
+    if Ancestor.DetailedDescription <> '' then begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+      WriteSpellChecked(Ancestor.DetailedDescription);
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end;
+  end else begin
+    //WriteDirect('&nbsp;'); //oops?
+  end;
+{$ENDIF}
 
   if AItem is TPasMethod then begin
     AItemMethod := TPasMethod(AItem);
@@ -1783,6 +1822,7 @@ begin
   if AnyItemDetailed then
   begin
     WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
+    //CIOs reside in their own files!
     WriteFuncsProcsDetailed;
     WriteTypesDetailed;
     WriteConstantsDetailed;

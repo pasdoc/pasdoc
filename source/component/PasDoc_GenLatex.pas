@@ -572,13 +572,13 @@ begin
   if not IsEmpty(Created) then begin
     WriteHeading(HL, FLanguage.Translation[trCreated]);
     WriteStartOfParagraph;
-    WriteDirectLine(Created.Description);
+    WriteDirectLine(Created.Caption);
     WriteEndOfParagraph;
   end;
   if not IsEmpty(LastMod) then begin
     WriteHeading(HL, FLanguage.Translation[trLastModified]);
     WriteStartOfParagraph;
-    WriteDirectLine(LastMod.Description);
+    WriteDirectLine(LastMod.Caption);
     WriteEndOfParagraph;
   end;
 end;
@@ -1039,13 +1039,12 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       WriteEndList;
   end;
 
-  //procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
   begin
-    if (ReturnDesc = nil) or (ReturnDesc.Description = '') then
+    if (ReturnDesc = nil) or (ReturnDesc.Text = '') then
       exit;
     WriteDirect('\item[\textbf{'+FLanguage.Translation[trReturns]+'}]');
-    WriteSpellChecked(ReturnDesc.Description);
+    WriteSpellChecked(ReturnDesc.Text);
     WriteDirect('',true);
   end;
 
@@ -1057,22 +1056,20 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 
 var
   Ancestor: TPasCio;  // TBaseItem;
-  AncestorName: string;
+  //AncestorName: string;
   AItemMethod: TPasMethod;
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
 
-  //if AItem.IsDeprecated then
   if AItem.HasAttribute[SD_DEPRECATED] then
     WriteHintDirective(FLanguage.Translation[trDeprecated]);
-  //if AItem.IsPlatformSpecific then
   if AItem.HasAttribute[SD_PLATFORM] then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
-  //if AItem.IsLibrarySpecific then
   if AItem.HasAttribute[SD_LIBRARY_] then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
+{$IFDEF old}
   if AItem.AbstractDescription <> '' then begin
     WriteSpellChecked(AItem.AbstractDescription);
 
@@ -1085,12 +1082,24 @@ begin
     end;
   end else if AItem.DetailedDescription <> '' then begin
     WriteSpellChecked(AItem.DetailedDescription);
-  //end else if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
+{$ELSE}
+  if (AItem.AbstractDescription <> '') or (AItem.DetailedDescription <> '') then begin
+    if AItem.AbstractDescription <> '' then
+      WriteSpellChecked(AItem.AbstractDescription);
+
+    if AItem.DetailedDescription <> '' then begin
+      if AItem.AbstractDescription <> '' then begin
+        WriteDirect('\hfill\vspace*{1ex}',true);
+        WriteDirect('',true);
+      end;
+      WriteSpellChecked(AItem.DetailedDescription);
+    end;
+{$ENDIF}
   end else if (AItem is TPasCio) then begin
-    AncestorName := TPasCio(AItem).FirstAncestorName;
     Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) {and (Ancestor is TPasItem)} then begin
-      WriteConverted(Format('no description available, %s description follows', [AncestorName]));
+      //AncestorName := TPasCio(AItem).FirstAncestorName;
+      WriteConverted(Format('no description available, %s description follows', [Ancestor.Name]));
       WriteItemLongDescription(Ancestor, AlreadyWithinAList);
     end;
   end else begin
@@ -1100,14 +1109,8 @@ begin
   if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then begin
     WriteStartOfParagraph;
     AItemMethod := TPasMethod(AItem);
-  {$IFDEF old}
     WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters],
       AItemMethod.Params, false);
-  {$ELSE}
-    { TODO : WriteParamsOrRaises with Params:PasItems }
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters],
-      AItemMethod.Params, false);
-  {$ENDIF}
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
 
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
@@ -1126,8 +1129,8 @@ begin
     WriteDirect('\item[\textbf{' + FLanguage.Translation[trValues] + '}]',true);
     WriteDirectLine('\begin{description}');
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
-      WriteDirect('\item[\texttt{');
       { add the first character for enums }
+      WriteDirect('\item[\texttt{');
       WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
       { add the end characters for enums }
       WriteDirect('}] ');

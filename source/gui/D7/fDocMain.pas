@@ -1505,7 +1505,8 @@ var
     for i := 0 to rootitem.Count - 1 do begin
       item := rootitem.ItemAt(i);
       if item.ID = trNoTrans then
-        s := item.Name
+        //s := item.Name
+        s := item.Text(' ', '')
       else
         s := Lang.Translation[item.ID];
       n := tvUnits.Items.AddChildObject(root, s, item);
@@ -1565,9 +1566,9 @@ begin
           s := Translation(Item.ID, Language) + ': ' + s;
         edDecl.Text := s;
       end;
-      edRem.Text := Item.Description; //Item.RawDescription;
+      edRem.Text := Item.RawDescription;
       if item is TBaseItem then begin
-        lst := bi.Descriptions;
+        lst := bi.RawDescriptions;
         cbRem.AddItem('<all>', nil);
         if assigned(lst) then begin
           for i := 0 to lst.Count-1 do begin
@@ -1596,16 +1597,16 @@ var
 begin
   i := cbRem.ItemIndex;
   if i < 1 then
-    edRem.Text := SelItem.Description //SelItem.RawDescription
+    edRem.Text := SelItem.RawDescription
   else begin
     o := cbRem.Items.Objects[i];
     SelToken := c;
     if assigned(o) then begin
       edRem.Text := c.CommentContent;
     end else if SelItem is TBaseItem then
-      edRem.Text := TBaseItem(SelItem).Descriptions.Strings[i-1]
+      edRem.Text := TBaseItem(SelItem).RawDescriptions.Strings[i-1]
     else
-      edRem.Text := SelItem.Description;
+      edRem.Text := SelItem.RawDescription;
   end;
 end;
 

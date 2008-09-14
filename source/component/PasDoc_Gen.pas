@@ -1963,36 +1963,51 @@ procedure TDocGenerator.ExpandDescriptions;
   var
     FirstSentenceEnd: Integer;
     Expanded: string;
+    scoped: TPasScope absolute Item; //has overview
+    ovr: TDescriptionItem;
+    i: integer;
   begin
     if Item = nil then Exit;
 
-    { Note: don't just Trim or TrimCompress here resulting 
+    { Note: don't just Trim or TrimCompress here resulting
       Item.DetailedDescription (because whitespaces,
       including leading and trailing, may be important for final doc format;
       moreover, you would break the value of FirstSentenceEnd by such thing). }
     Expanded := ExpandDescription(PreExpand,
       Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
 
-    if not PreExpand then
-    begin
+    if not PreExpand then begin
       Item.DetailedDescription := Expanded;
-
-      Item.AbstractDescriptionWasAutomatic := 
+    {$IFDEF old}
+      Item.AbstractDescriptionWasAutomatic :=
         AutoAbstract and (Trim(Item.AbstractDescription) = '');
 
-      if Item.AbstractDescriptionWasAutomatic then
-      begin
-        Item.AbstractDescription := 
+      if Item.AbstractDescriptionWasAutomatic then begin
+        Item.AbstractDescription :=
           Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
-        Item.DetailedDescription := 
+        Item.DetailedDescription :=
           Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
       end;
+    {$ELSE}
+      //get short description on demand
+    {$ENDIF}
     end;
 
+  {$IFDEF old}
     if Item is TPasEnum then
       ExpandCollection(PreExpand, TPasEnum(Item).Members);
+  {$ELSE}
+    if item is TPasScope then begin
+    //expand member lists - overview not yet created!
+      ovr := scoped.MemberLists;
+      if not IsEmpty(ovr) then begin
+        for i := 0 to ovr.Count - 1 do
+          ExpandCollection(PreExpand, ovr.Items[i].PasItems);
+      end;
+    end;
+  {$ENDIF}
   end;
-  
+
   procedure ExpandExternalItem(PreExpand: boolean; Item: TExternalItem);
   var
     Expanded: string;
@@ -2008,15 +2023,15 @@ procedure TDocGenerator.ExpandDescriptions;
     i: Integer;
   begin
     if c = nil then Exit;
-    for i := 0 to c.Count - 1 do 
+    for i := 0 to c.Count - 1 do
       ExpandPasItem(PreExpand, c.PasItemAt[i]);
   end;
 
   procedure ExpandEverything(PreExpand: boolean);
   var
-    CO: TPasCio;
+    //CO: TPasCio;
     i: Integer;
-    j: Integer;
+    //j: Integer;
     U: TPasUnit;
   begin
     if Introduction <> nil then
@@ -2030,8 +2045,9 @@ procedure TDocGenerator.ExpandDescriptions;
 
     for i := 0 to Units.Count - 1 do begin
       U := Units.UnitAt[i];
-      
+
       ExpandPasItem(PreExpand, U);
+    {$IFDEF old}
       ExpandCollection(PreExpand, U.Constants);
       ExpandCollection(PreExpand, U.Variables);
       ExpandCollection(PreExpand, U.Types);
@@ -2045,10 +2061,13 @@ procedure TDocGenerator.ExpandDescriptions;
           ExpandCollection(PreExpand, CO.Methods);
           ExpandCollection(PreExpand, CO.Properties);
         end;
+    {$ELSE}
+      //recursive expand in ExpandPasItem
+    {$ENDIF}
     end;
   end;
-  
-begin
+
+begin //ExpandDescriptions
   DoMessage(2, pmtInformation, 'Expanding descriptions (pass 1) ...', []);
   ExpandEverything(true);
   DoMessage(2, pmtInformation, 'Expanding descriptions (pass 2) ...', []);

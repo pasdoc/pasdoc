@@ -48,12 +48,6 @@ const
   cmMarkers = [cmIgnore, cmFwd, cmBack, cmBlock, cmEnd];
 
 type
-//dummy class, for writeable TToken.EndPosition
-  TCToken = class(TToken)
-  protected
-    property EndPos: TTextStreamPos read FEndPosition write FEndPosition;
-  end;
-
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
     When creating this object constructor @link(Create) takes as an argument
@@ -549,7 +543,7 @@ var
     end else begin  //all conditions checked above!
     //append to preceding comment
       C.CommentContent := C.CommentContent + LineEnding + T.CommentContent;
-      TCToken(c).EndPos := t.EndPosition;
+      c.EndPosition := t.EndPosition;
       FreeAndNil(T);
     end;
   end;
@@ -1029,7 +1023,7 @@ We assume that at most one rem is assigned to an item!
         if m[j] <> cmNoRem then
           break; //already has a description
         NewItem := CurScope.Members.PasItemAt[j];
-        NewItem.Descriptions.Text := RemItem.Descriptions.Text;
+        NewItem.RawDescriptions.Text := RemItem.RawDescriptions.Text;
       end;
       RemItem := nil; //was back rem
     end else if m[i] = cmFwd then begin
@@ -1037,7 +1031,7 @@ We assume that at most one rem is assigned to an item!
       RemItem := NewItem;
     end else if assigned(RemItem) then
     //copy rem
-      NewItem.Descriptions.Text := RemItem.Descriptions.Text;
+      NewItem.RawDescriptions.Text := RemItem.RawDescriptions.Text;
   end;
 end;
 
@@ -1631,6 +1625,7 @@ begin
 *)
   ParseHintDirectives(U);
   Expect(SYM_SEMICOLON);
+  U.FullDeclaration := Recorded;
   Expect(KEY_INTERFACE);
 
   { now parse the interface section of that unit }
@@ -1638,10 +1633,11 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-procedure TParser.ParseProgramOrLibraryUses(U: TPasUnit); //; fWithHeader: boolean);
+procedure TParser.ParseProgramOrLibraryUses(U: TPasUnit);
 begin
   ParseHintDirectives(U);
   Expect(SYM_SEMICOLON);
+  U.FullDeclaration := Recorded;
 
   if Skip(KEY_USES) then
     ParseUses(U);
@@ -1654,6 +1650,7 @@ begin
     while GetNextToken <> SYM_RIGHT_PARENTHESIS do
       ;
   end;
+  U.FullDeclaration := Recorded;
   ParseProgramOrLibraryUses(U);
 end;
 

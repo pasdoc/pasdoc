@@ -130,7 +130,7 @@ begin
       //if TPasMethod(item).returns <> '' then
       if TPasMethod(item).returns <> nil then
         WriteDirectLine(space +
-          '  <result>' + TPasMethod(item).returns.Description + '</result>');
+          '  <result>' + TPasMethod(item).returns.Text + '</result>');
     WriteDirectLine(space + '</function>');
   end;
 end;
