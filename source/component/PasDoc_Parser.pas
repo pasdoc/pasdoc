@@ -258,34 +258,27 @@ type
       This should correspond to MethodTypeString.
 
       D may contain a description or nil. }
-    function  ParseCDFP(
-      fClass: boolean;  //<???
-      MethodType: TTokenType;
-      Ident: TToken): TPasMethod;
+    function  ParseCDFP(MethodType: TTokenType; Ident: TToken): TPasMethod;
 
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
       N is the name of this item.
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
-      function ParseCIO(Ident: TToken; //const CioName: string;
-        CIOType: TTokenType;
+      function ParseCIO(Ident: TToken; CIOType: TTokenType;
         const IsInRecordCase: boolean): TPasCio;
 
-    //procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
     procedure ParseRecordCase(const SubCase: boolean);
-    procedure ParseConstant;  //(const U: TPasUnit);
+    procedure ParseConstant;
     procedure ParseInterfaceSection(const U: TPasUnit);
   //properties for units or CIOs - deserves a common base class?
-    //function  ParseProperty(U: TPasScope; Visibility: TVisibility): TPasProperty;
     function  ParseProperty: TPasProperty;
-    procedure ParseType;  //(const U: TPasUnit);
+    procedure ParseType;
 
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning it. }
     function  ParseEnum: TPasEnum;
-    //function  ParseEnum(const Name: string): TPasEnum;
 
     procedure ParseUses(const U: TPasUnit);
 
@@ -592,6 +585,11 @@ procedure TParser.CancelComments;
 var
   c: TToken;
 begin
+{$IFDEF old}
+//flush back rems?
+  FlushBackRems(DeclLast, nil);
+{$ELSE}
+{$ENDIF}
 //kill all comments
   while Pending <> nil do begin
     c := Pending;
@@ -986,6 +984,7 @@ begin //ParseFieldsVariables
 //past ";" or ")" or END
   if inUnit then  //modifiers apply only to unit variables
     ParseVariableModifiers(FirstItem);
+  //FirstItem.FullDeclaration := Recorded; //???
   FlushBackRems(DeclLast, nil);
 
 (* Propagate into all new items:
@@ -1037,9 +1036,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function  TParser.ParseCDFP(fClass: boolean;
-  MethodType: TTokenType;
-  Ident: TToken): TPasMethod;
+function  TParser.ParseCDFP(MethodType: TTokenType; Ident: TToken): TPasMethod;
 
   { Reads tokens (adding them to M.FullDeclaration) until a semicolon
     (on parenthesis level zero) is found (this final semicolon
@@ -1048,7 +1045,6 @@ function  TParser.ParseCDFP(fClass: boolean;
   var
     level: integer;
   begin
-    //Recorder := '';
     level := 0;
     repeat
       case GetNextToken of
@@ -1057,7 +1053,6 @@ function  TParser.ParseCDFP(fClass: boolean;
       SYM_SEMICOLON: if level = 0 then break;
       end;
     until False;
-    //M.FullDeclaration := M.FullDeclaration + Recorded;
   end;
 
   procedure PeekSemicolon;
@@ -1159,8 +1154,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.ParseCIO(Ident: TToken;  //const CioName: string;
-  CIOType: TTokenType;  const IsInRecordCase: boolean): TPasCio;
+function TParser.ParseCIO(Ident: TToken; CIOType: TTokenType;
+  const IsInRecordCase: boolean): TPasCio;
 
 const
 //recognized visibilities
@@ -1169,17 +1164,14 @@ const
 //recognized sections
   sSections = [KEY_VAR, KEY_CONST, KEY_TYPE]; { TODO : handle sections in class declarations }
 var
-  fClass: boolean;  //ClassKeyWordString: string;
   i: TPasCio absolute Result;
 
   procedure AddDefaultAncestor;
 
     procedure CheckFor(const s: string);
     begin
-      if not SameText(i.Name, s) then begin
-
+      if not SameText(i.Name, s) then
         i.Ancestors.AddNew(trNoTrans, dkDelegate, s);
-      end;
     end;
 
   begin
@@ -1249,7 +1241,8 @@ or
       case ImplicitVisibility of
         ivPublic:
           if Scanner.SwitchOptions['M'] then
-            Visibility := viPublished else
+            Visibility := viPublished
+          else
             Visibility := viPublic;
         ivPublished:
           Visibility := viPublished;
@@ -1273,9 +1266,7 @@ or
 
     { This is needed to include ClassKeyWordString in
       class methods declarations. }
-    fClass := False;
 
-    //Finished := False;
     while GetNextToken <> KEY_END do begin  //repeat
       if Token.Directive in sAllVisibilities then begin
       //visibility
@@ -1300,16 +1291,15 @@ or
     //peek sections
       if Token.MyType in sSections then begin
       //to be implemented
-        //DoError('unhandled section in CIO: %s', [Token.Description]);
         DoMessage(1, pmtWarning, 'unhandled section in CIO: %s', [Token.Description]);
         GetNextToken;
       end;
     //everything else should be a member declaration
       case Token.MyType of
-      KEY_CLASS:    fClass := True; // ClassKeyWordString := Token.Data;
+      KEY_CLASS:    ;
       KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
       KEY_FUNCTION, KEY_PROCEDURE:
-        {M :=} ParseCDFP(fClass, Token.MyType, nil);
+        {M :=} ParseCDFP(Token.MyType, nil);
       KEY_PROPERTY:
         {p :=} ParseProperty;
       KEY_CASE:
@@ -1343,7 +1333,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseConstant;  //(const U: TPasUnit);
+procedure TParser.ParseConstant;
 var
   i: TPasConstant;
 begin
@@ -1358,7 +1348,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-//function  TParser.ParseEnum(const Name: string): TPasEnum;
 function  TParser.ParseEnum: TPasEnum;
 var
   Item: TPasItem;
@@ -1428,7 +1417,7 @@ All possible modifiers should be peeked!
     KEY_THREADVAR, KEY_VAR:         Mode := MODE_VAR;
     TOK_IDENTIFIER: //or "operator"
       if Token.Directive = SD_OPERATOR then begin
-        {M :=} ParseCDFP(false, Key_Operator_, nil);
+        {M :=} ParseCDFP(Key_Operator_, nil);
         Mode := MODE_UNDEFINED;
       end else begin
         case Mode of
@@ -1441,7 +1430,7 @@ All possible modifiers should be peeked!
       end;
     KEY_FUNCTION, KEY_PROCEDURE:
       begin
-        {M :=} ParseCDFP(False, Token.MyType, nil);
+        {M :=} ParseCDFP(Token.MyType, nil);
         Mode := MODE_UNDEFINED;
       end;
     KEY_PROPERTY:
@@ -1459,9 +1448,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-//function  TParser.ParseProperty(U: TPasScope; Visibility: TVisibility): TPasProperty;
 function  TParser.ParseProperty: TPasProperty;
-//var  Finished: Boolean;
 var
   p: TPasProperty absolute Result;
 begin
@@ -1563,7 +1550,7 @@ decl can be:
   or (SubCase and Skip(SYM_RIGHT_PARENTHESIS));
 end;
 
-procedure TParser.ParseType;  //(const U: TPasUnit);
+procedure TParser.ParseType;
 var
   NormalType: TPasItem; //TPasType;
   TypeName: string;
@@ -1603,7 +1590,7 @@ decl can be
   end;
 
   if Token.MyType in [KEY_FUNCTION, KEY_PROCEDURE] then begin
-    {MethodType :=} ParseCDFP(False, Token.MyType, Identifier);
+    {MethodType :=} ParseCDFP(Token.MyType, Identifier);
   end else if Token.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
     {EnumType :=} ParseEnum;  //(TypeName);
   end else begin
@@ -1624,6 +1611,7 @@ begin
   IMPLEMENTATION |>
 *)
   ParseHintDirectives(U);
+  u.ID := trUnit;
   Expect(SYM_SEMICOLON);
   U.FullDeclaration := Recorded;
   Expect(KEY_INTERFACE);
@@ -1645,6 +1633,7 @@ end;
 
 procedure TParser.ParseProgram(U: TPasUnit);
 begin
+  u.ID := trProgram;
 //skip parameters
   if Skip(SYM_LEFT_PARENTHESIS) then begin
     while GetNextToken <> SYM_RIGHT_PARENTHESIS do
@@ -1656,6 +1645,7 @@ end;
 
 procedure TParser.ParseLibrary(U: TPasUnit);
 begin
+  u.ID := trLibrary;
   ParseProgramOrLibraryUses(U);
 end;
 
@@ -1698,14 +1688,16 @@ qualid (here)
       (see ok_comment_over_uses_clause.pas testcase).
     - analogously, back comments after "uses" clause would be assigned to the unit
       description (see ok_comment_over_uses_clause_2.pas testcase).
+
+    Unfortunately used units are NOT PasItems, cannot have comments :-(
   }
+//flush back rems?
+  FlushBackRems(DeclLast, Token);
   CancelComments;
   //LastCommentMark := cmNoRem; //IsLastComment := false;
   //ItemsForNextBackComment.Clear;
 
   repeat
-    //U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
-    //U.UsesUnits.Append(QualId(True).Data);
     U.UsesUnits.AddNew(trNoTrans, dkDelegate, QualId(True).Data);
       //trUnit?
 

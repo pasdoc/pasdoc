@@ -90,11 +90,13 @@ type
     procedure WriteEndOfTableRow;
     procedure WriteFooter;
 
-    { Writes the Item's AbstractDescription. Only if AbstractDescription
-      is not available, uses DetailedDescription. }
+    { Writes the Item's short description.
+      This is either the explicit AbstractDescription (@@abstract)
+      or the (abbreviated) DetailedDescription. }
     procedure WriteItemShortDescription(const AItem: TPasItem);
-      
+
     (*Writes the Item's AbstractDescription followed by DetailedDescription.
+      Include further descriptions, depening on item kind (parameters...).
 
       If OpenCloseParagraph then code here will open and close paragraph
       for itself. So you shouldn't
@@ -747,12 +749,16 @@ begin
 
     { Description of class/interface/object }
     WriteStartOfTableCell('itemdesc');
+  {$IFDEF old}
     { Write only the AbstractDescription and do not opt for DetailedDescription,
       like WriteItemShortDescription does. }
     if p.AbstractDescription <> '' then
       WriteSpellChecked(p.AbstractDescription)
     else
       WriteDirect('&nbsp;');
+  {$ELSE}
+    WriteItemShortDescription(p);
+  {$ENDIF}
 
     WriteEndOfTableCell;
     WriteEndOfTableRow;
@@ -988,6 +994,7 @@ procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasIt
 begin
   if AItem = nil then Exit;
 
+{$IFDEF old}
   if AItem.AbstractDescription <> '' then begin
     WriteSpellChecked(AItem.AbstractDescription);
   end else begin
@@ -997,6 +1004,9 @@ begin
       WriteDirect('&nbsp;');
     end;
   end;
+{$ELSE}
+  WriteSpellChecked(AItem.ShortDescription);
+{$ENDIF}
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
@@ -1079,7 +1089,13 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
       WriteDirect('  <dd>');
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
+      {$IFDEF old}
+      //direct write???
         WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
+      {$ELSE}
+        //WriteConverted(TPasItem(SeeAlsoItem).AbstractDescription, False);
+        WriteConverted(TPasItem(SeeAlsoItem).ShortDescription, False);
+      {$ENDIF}
       WriteDirectLine('</dd>');
     end;
     WriteDirectLine('</dl>');

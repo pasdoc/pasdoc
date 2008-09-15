@@ -405,7 +405,10 @@ type
   {$ENDIF}
   protected
     FFullLink: string;
+  {$IFDEF old}
     FAbstractDescriptionWasAutomatic: boolean;
+  {$ELSE}
+  {$ENDIF}
     FDisallowAutoLink: boolean;
     function AutoLinkAllowed: boolean;
   private
@@ -746,6 +749,11 @@ type
 
     procedure RegisterTags(TagManager: TTagManager); override;
 
+  //Build description, standard + hints.
+    function  BuildDescription: TDescriptionItem; override;
+  // Build sections in the right order. Here: Overview.
+    procedure BuildSections; override;
+
   //search enclosing scopes.
     function FindName(const NameParts: TNameParts; index: integer = -1): TPasItem; override;
 
@@ -772,8 +780,6 @@ type
       This is decided by "library" hint directive after an item. }
     property IsLibrarySpecific: boolean index ord(SD_Library_)
       read GetAttributeFP write SetAttributeFP;
-  //Build description, standard + hints.
-    function  BuildDescription: TDescriptionItem; override;
 
     property Visibility: TItemVisibility read FVisibility write FVisibility;
 
@@ -1191,6 +1197,9 @@ type
     procedure RegisterTags(TagManager: TTagManager); override;
 
     procedure BuildMemberLists; override;
+  (* Build section list. Sort!
+  *)
+    procedure BuildSections; override;
 
     { obsolete }
     property What: TMethodType read FWhat write FWhat;
@@ -1556,6 +1565,8 @@ type
       class for this). }
     property IsUnit: boolean index KEY_UNIT read IsKey;
     property IsProgram: boolean index KEY_PROGRAM read IsKey;
+  //allow to modify ID
+    property ID: TTranslationID read FTID write FTID;
 
     { Returns if unit WasDeserialized, and file FileName exists,
       and file FileName is newer than CacheDateTime.
@@ -1733,11 +1744,13 @@ procedure TBaseItem.StoreAbstractTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  if AbstractDescription <> '' then
-    ThisTag.TagManager.DoMessage(1, pmtWarning,
-      '@abstract tag was already specified for this item. ' +
-      'It was specified as "%s"', [AbstractDescription]);
-  AbstractDescription := TagParameter;
+  if TagParameter <> '' then begin
+    if AbstractDescription <> '' then
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
+        '@abstract tag was already specified for this item. ' +
+        'It was specified as "%s"', [AbstractDescription]);
+    AbstractDescription := TagParameter;
+  end;
   ReplaceStr := '';
 end;
 
@@ -1805,29 +1818,16 @@ begin
 end;
 
 function TBaseItem.BuildDescription: TDescriptionItem;
-//var desc: TDescriptionItem absolute Result;
 begin
-(* Build full description, from Abstract and DetailedDescription.
-  AbstractDescriptionWasAutomatic is used to distinguish between
-    explicit abstract (separate paragraph) or
-    implied abstract (first sentence of first paragraph)
-  Used in BuildSections. Return general description item.
+(* Create and return an general description item.
+  If an Abstract and DetailedDescription was added by the generator,
+  such an item already exists; otherwise create a new one.
+  Used in BuildSections, where the descriptor is either destroyed
+  or stored in the FDescription shortcut.
 *)
-{$IFDEF old}
-  desc := TDescriptionItem.Create('', '', trDescription, dkItemList);
-  //BuildHints(desc); only in PasItems
-  if (AbstractDescription <> '') or (DetailedDescription <> '') then begin
-    if AbstractDescriptionWasAutomatic then
-      desc.AddNew(trNoTrans, dkNoList, AbstractDescription + ' ' + DetailedDescription)
-    else
-      desc.AddNew(trNoTrans, dkNoList, AbstractDescription, DetailedDescription);
-  end;
-{$ELSE}
-//description is built by generator, or tag managers (@@abstract)
   Result := FDescription;
   if Result = nil then
     Result := AddNew(trDescription, dkItemList);
-{$ENDIF}
 end;
 
 {$IFDEF old}
@@ -1904,7 +1904,8 @@ end;
 
 procedure TBaseItem.SetDetailedDescription(const s: string);
 begin
-  NeedDescription.Value := s;
+  if s > ' ' then
+    NeedDescription.Value := s;
 end;
 
 function TBaseItem.HasDescription: Boolean;
@@ -1919,6 +1920,7 @@ end;
 procedure TBaseItem.BuildSections;
 var
   desc: TDescriptionItem;
+  i: integer;
 begin
 (* FDescription holds all descriptions.
   It's created for FFullDescription, by the TagManager, or in BuildDescription.
@@ -1926,10 +1928,18 @@ begin
   to keep or to delete FDescription.
 *)
   desc := BuildDescription;
-  if IsEmpty(desc) then
-    FreeAndNil(FDescription)
-  else
+  if IsEmpty(desc) then begin
+  //remove description item, clear shortcut
+    i := FList.IndexOf(desc);
+    if i >= 0 then
+      FList.Delete(i) //destroy owned item
+    else
+      desc.Free;
+    FDescription := nil;
+  end else begin
     FDescription := desc;
+    FDescription.SortByID([trDeprecated, trPlatformSpecific, trLibrarySpecific]);
+  end;
 end;
 
 function TBaseItem.QualifiedName: String;
@@ -1938,7 +1948,6 @@ begin
 end;
 
 procedure TBaseItem.Deserialize(const ASource: TStream);
-//var HaveItems: boolean;
 begin
   inherited;
   Name := LoadStringFromStream(ASource);
@@ -2191,6 +2200,26 @@ begin
     Result.AddNew(trPlatformSpecific, dkNoList);
   if HasAttribute[SD_LIBRARY_] then
     Result.AddNew(trLibrarySpecific, dkNoList);
+end;
+
+const
+  DefaultSectionSortOrder: array[0..10] of TTranslationID = (
+    trUnit, trDeclaration,
+    trDescription,
+    trUses, //unit only
+    trHierarchy,  //classes only
+    trSeeAlso, //???
+    trOverview, trDescriptions,
+    trAuthors, trCreated, trLastModified
+  );
+
+procedure TPasItem.BuildSections;
+begin
+//add declaration - can not be empty
+  AddNew(trDeclaration, dkNoList, FFullDeclaration);
+  inherited BuildSections;
+//sort!
+  SortByID(DefaultSectionSortOrder);
 end;
 
 { TPasScope }
@@ -2813,11 +2842,6 @@ var
   desc, anc: TDescriptionItem;
 begin
   AddNew(trUnit, dkNoList, MyUnit.Name); //description???
-{$IFDEF old}
-  AddNew(trDeclaration, dkNoList, FullDeclaration);
-{$ELSE}
-  //for every PasItem
-{$ENDIF}
 //hierarchy
   if not IsEmpty(Ancestors) then begin
     desc := AddNew(trHierarchy, dkItemList);
@@ -2835,11 +2859,14 @@ begin
   //add self as last item
     desc.AddNew(ID, dkNoList, Name, Value);
   end;
-  inherited; //build overview
+  inherited BuildSections; //build overview
+{$IFDEF old}
 //sort
   SortByID([trUnit, trDeclaration, trDescription, trHierarchy,
     trSeeAlso, //???
     trOverview, trDescriptions, trAuthors, trCreated, trLastModified]);
+{$ELSE}
+{$ENDIF}
 end;
 
 { TPasUnit ------------------------------------------------------------------- }
@@ -2948,29 +2975,26 @@ begin
 Uses
 *)
 //build overview?
-  inherited;
+  inherited BuildLinks(AllUnits, TheGenerator);
 end;
 
 procedure TPasUnit.BuildSections;
-//var item: TDescriptionItem;
 begin
+(* Entry point, called from PasUnits.
+  Build all sections, recursive for all scopes.
+*)
+//add Unit special sections
   AddListDelegate(UsesUnits);
-  inherited;
+//build general sections and recurse.
+  inherited BuildSections;
+{$IFDEF old}
 //sort all lists
   SortByID([trDeclaration, trDescription, trSeeAlso, trUses,
     trOverview, trDescriptions,
     trAuthors, trCreated, trLastModified]);
-
-{$IFDEF old}
-  item := FindID(trDescription);
-  if IsEmpty(item) then
-    //remove?
-  else
-    item.SortByID([trDeprecated, trPlatformSpecific, trLibrarySpecific,
-      trDescription]);
 {$ELSE}
 {$ENDIF}
-
+//special sort of Unit member list.
   FMemberLists.SortByID([trClasses, trFunctionsAndProcedures, trTypes,
     trConstants, trVariables]);
 end;
@@ -3057,6 +3081,16 @@ procedure TPasMethod.BuildMemberLists;
 begin
   inherited;
   FMemberLists.SortByID([trParameters, trReturns, trExceptionsRaised]);
+end;
+
+procedure TPasMethod.BuildSections;
+begin
+  inherited BuildSections;
+{$IFDEF old}
+//sort
+  SortByID([trDeclaration, trDescription, trOverview, trSeeAlso]);
+{$ELSE}
+{$ENDIF}
 end;
 
 { TODO for StoreRaisesTag and StoreParamTag:
@@ -3366,45 +3400,38 @@ end;
 procedure TPasScope.BuildSections;
 begin
   BuildMemberLists;
-  inherited;
+  inherited BuildSections;
 end;
 
 procedure TPasScope.BuildMemberLists;
 var
   i, j: integer;
-  o, ml, ps: TDescriptionItem;
+  o, ml: TDescriptionItem;
+  ps: TPasItem;
 begin
-(* build overview from member lists.
+(* Build overview from member lists.
   This procedure filters empty lists, must be overridden for
-  special items with non-list items in Overview.
+  special items with non-list items in Overview (see: ???).
+  Sorting must occur elsewhere, depending on the item kind (unit...).
 *)
   o := NeedOverview;
 //for now, we add all non-empty member lists
   for i := 0 to FMemberLists.Count - 1 do begin
     ml := FMemberLists.ItemAt(i);
-    //if not IsEmpty(ml) or (Name<>'') or (Value<>'') then begin
     if not IsEmpty(ml) then begin
       o.AddListDelegate(ml.ID, ml.FList);
       for j := 0 to ml.Count - 1 do begin
-        ps := ml.ItemAt(j);
-        if ps is TPasScope then
-          TPasScope(ps).BuildSections;
+        ps := ml.PasItemAt(j);
+        //if ps is TPasScope then
+          ps.BuildSections;
       end;
     end;
-  //could sort member list here!
   end;
-  if o.Count > 0 then begin
-  {$IFDEF old}
-    self.Add(o);
-    FOverview := o;
-  //we copy the Overview list, for now
-    AddListDelegate(trDescriptions, o.FList);
-  {$ELSE}
-  {$ENDIF}
-  end else begin
+  if o.Count <= 0 then begin
+  //remove overview item
     i := FList.IndexOf(o);
     if i >= 0 then begin
-      FList.Delete(i);
+      FList.Delete(i); //deletes owned overview
       //FreeAndNil(FOverview);
       FOverview := nil;
     end;
@@ -3415,7 +3442,6 @@ function TPasScope.NeedOverview: TDescriptionItem;
 begin
 //create Overview, if not already done
   if FOverview = nil then begin
-    //FOverview := TDescriptionItem.Create('', '', trOverview, dkItemList);
     FOverview := AddNew(trOverview, dkItemList);
   end;
   Result := FOverview;
