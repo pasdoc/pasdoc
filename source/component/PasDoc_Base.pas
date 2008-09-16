@@ -68,6 +68,7 @@ type
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
     FMarkerOptional: boolean;
+    FIgnoreLeading: string;
     FCacheDir: string;
     FSortSettings: TSortSettings;
     FConclusionFileName: string;
@@ -163,6 +164,7 @@ type
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
       default false;
+    property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
@@ -385,6 +387,7 @@ begin
     p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;
+    p.IgnoreLeading := IgnoreLeading;
 
     LLoaded := false;
 

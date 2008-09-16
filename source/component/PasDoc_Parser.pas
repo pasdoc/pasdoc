@@ -125,6 +125,7 @@ type
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
     FMarkersOptional: boolean;
+    FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
     
     { These are the items that the next "back-comment"
@@ -357,6 +358,7 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
+    property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
     property ShowVisibilities: TVisibilities 
       read FShowVisibilities write FShowVisibilities;
       
@@ -2140,7 +2142,38 @@ end;
 
 function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 
-  { Extracts the documentation comment from T.CommentContent 
+  { Returns the offset of the next line in string S after position Index }
+  function FindNextLine(const S: string; Index: integer): integer;
+  begin
+    while SCharIs(S, Index, AllChars - WhiteSpaceNL) do Inc(Index);
+    while SCharIs(S, Index, WhiteSpaceNL) do Inc(Index);
+    if (Index > Length(S)) then
+      Result := 0
+    else
+      Result := Index;
+  end;
+
+  { Checks whether string S starts with sub-string SubS at Index.
+    Returns true is S starts with SubS, false otherwise. }
+  function SStartsWith(const S: string; Index: integer; const SubS: string): boolean;
+  var
+    I: integer;
+  begin
+    Result := false;
+
+    if Length(S) < Length(SubS) + Index - 1 then
+      Exit;
+
+    for I := 0 to Length(SubS)-1 do
+    begin
+      if S[Index + I] <> SubS[I+1] then
+        Exit;
+    end;
+      
+    Result := true;
+  end;
+  
+  { Extracts the documentation comment from T.CommentContent
     (and some other T properties needed for TRawDescriptionInfo)
     to CommentInfo. Always T.MyType must be within TokenCommentTypes.
 
@@ -2164,6 +2197,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     i: integer;
     Marker: string;
     WasMarker: boolean;
+    CurPos: integer;
   begin
     BackComment := false;
     CommentInfo.Content := T.CommentContent;
@@ -2197,7 +2231,20 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       BackComment := true;
       Delete(CommentInfo.Content, 1, Length(BackCommentMarker));
     end;
-  end;    
+
+    { Replace leading characters (Nothing to do for single-line (//) comments) }
+    if (IgnoreLeading <> '') and
+       (T.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT]) then
+    begin
+      CurPos := 1;
+      repeat
+        while SCharIs(CommentInfo.Content, CurPos, WhiteSpace) do Inc(CurPos);
+        while SStartsWith(CommentInfo.Content, CurPos, IgnoreLeading) do
+          Delete(CommentInfo.Content, CurPos, Length(IgnoreLeading));
+        CurPos := FindNextLine(CommentInfo.Content, CurPos);
+      until CurPos = 0;
+    end;
+  end;
 
 var
   T: TToken;
