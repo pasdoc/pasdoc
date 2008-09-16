@@ -161,6 +161,7 @@ type
   protected
     FCommentMarkers: TStringList;
     FMarkersOptional: boolean;
+    FIgnoreLeading: string;
   //Token chain
     Pending, BlockComment: TToken;
   //Tentative item, initialized by QualID.
@@ -354,6 +355,7 @@ type
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
+    property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
   //if this is ever needed... (ShowVisibilities was moved into PasDoc_items)
     class function ShowVisibilities: TVisibilities;
 

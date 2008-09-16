@@ -1,5 +1,7 @@
 [Next release -- release date and new version number unknown yet...]
 
+  + --ignore-leading= option by tobigun at users.sourceforge.net
+    (see [http://pasdoc.sipsolutions.net/IgnoreLeadingOption])
   * Translations:
     * Russian localization updated, "uses" localization by
       werewolf_ at users.sourceforge.net

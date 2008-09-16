@@ -58,6 +58,7 @@ type
     OptionVisibleMembers: TSetOption;
     OptionCommentMarker: TStringOptionList;
     OptionMarkerOptional: TBoolOption;
+    OptionIgnoreLeading: TStringOption;
     OptionCacheDir: TStringOption;
     OptionFullLink: TBoolOption;
     OptionCSS: TStringOption; { Using external CSS file for HTML output }
@@ -181,6 +182,10 @@ begin
   OptionMarkerOptional := TBoolOption.Create(#0, 'marker-optional');
   OptionMarkerOptional.Explanation := 'Do not require the markers given in --marker but remove them from the comment if they exist.';
   AddOption(OptionMarkerOptional);
+
+  OptionIgnoreLeading := TStringOption.Create(#0, 'ignore-leading');
+  OptionIgnoreLeading.Explanation := 'Ignore leading <ignore-leading> characters in comments.';
+  AddOption(OptionIgnoreLeading);
 
   OptionNumericFilenames := TBoolOption.Create(#0, 'numericfilenames');
   OptionNumericFilenames.Explanation := 'Causes the html generator to create numeric filenames';
@@ -457,6 +462,8 @@ begin
   if OptionStarOnly.TurnedOn then
     PasDoc.StarStyleOnly := true;
   PasDoc.MarkerOptional := OptionMarkerOptional.TurnedOn;
+
+  PasDoc.IgnoreLeading := OptionIgnoreLeading.Value;
 
   PasDoc.AddSourceFileNames(LeftList);
 

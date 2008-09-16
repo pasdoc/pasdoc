@@ -68,6 +68,7 @@ type
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
     FMarkerOptional, FSingleCharMarkers: boolean;
+    FIgnoreLeading: string;
     FCacheDir: string;
     FSortSettings: TSortSettings;
     FConclusionFileName: string;
@@ -164,6 +165,7 @@ type
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
       default false;
     property SingleCharMarkers: boolean read FSingleCharMarkers write FSingleCharMarkers;
+    property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
@@ -387,6 +389,7 @@ begin
     p.CommentMarkers := CommentMarkers;
     p.MarkersOptional := MarkerOptional;
     p.SingleCharMarkers := SingleCharMarkers;
+    p.IgnoreLeading := IgnoreLeading;
 
     LLoaded := false;
 

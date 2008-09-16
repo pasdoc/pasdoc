@@ -196,3 +196,8 @@ mk_special_test ok_longcode_end_semicolon ok_longcode_end_semicolon.pas
 mk_special_test warning_desc_end warning_desc_end.pas
 mk_special_test ok_different_image_same_filename ok_different_image_same_filename_dir1/unit1.pas ok_different_image_same_filename_dir2/unit2.pas
 mk_special_test ok_enumeration_auto_abstract ok_enumeration_auto_abstract.pas --auto-abstract
+mk_special_test ok_ignore_leading ok_ignore_leading.pas --ignore-leading=*
+mk_special_test ok_ignore_leading_star ok_ignore_leading_star.pas --ignore-leading=* --staronly
+mk_special_test ok_ignore_leading_hash ok_ignore_leading_hash.pas --ignore-leading=#
+mk_special_test ok_ignore_leading_length2 ok_ignore_leading_length2.pas --ignore-leading=#?
+
