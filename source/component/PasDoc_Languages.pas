@@ -21,13 +21,8 @@
   @author(JBarbero Quiter (updated Spanish translation))
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
   @author(Liu Da <xmacmail AT gmail.com> (Chinese gb2312 translation))
-
-
-The whole unit has been redesigned by DoDi.
-The interface should not be affected, but many internals have changed.
+  @author(DoDi)
 }
-
-{-$DEFINE old}
 
 unit PasDoc_Languages;
 
@@ -40,11 +35,6 @@ type
     lgBrasilian,
     lgCatalan,
     lgChinese_gb2312,
-  {$IFDEF new}
-  //this translation is almost useless (2 strings translated)
-    lgChinese_950,
-  {$ELSE}
-  {$ENDIF}
     lgDanish,
     lgDutch,
     lgEnglish,
@@ -763,108 +753,6 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
-
-{$IFDEF new}
-(* This table is ignored, because it contains too few (2) translated strings.
-*)
-  aChinese_950: RTransTable = (
-    {trNoTrans} '<what?>', //no ID assigned, so far
-    {trLanguage} 'Chinese_950',
-  //map
-    {trUnits} strToDo, //'Units',
-    {trClassHierarchy} strToDo, //'Class Hierarchy',
-    {trCio} strToDo, //'Classes, Interfaces, Objects and Records',
-    {trIdentifiers} strToDo, //'Identifiers',
-    {trGvUses} strToDo, //'Unit dependency graph',
-    {trGvClasses} strToDo, //'Classes hierarchy graph',
-  //tables and members
-    {trClasses} strToDo, //'Classes',
-      {trClass} strToDo, //'Class',
-      {trDispInterface} strToDo, //'DispInterface',
-      {trInterface} strToDo, //'Interface',
-    {trObjects} strToDo, //'Objects',
-      {trObject} strToDo, //'Object',
-      {trRecord} strToDo, //'Record',
-        {trHierarchy} strToDo, //'Hierarchy',
-        {trFields} strToDo, //'Fields',
-        {trMethods} strToDo, //'Methods',
-        {trProperties} strToDo, //'Properties',
-    {trLibrary} strToDo,  //'Library',
-    {trPackage} strToDo,  //'Package',
-    {trProgram} strToDo,  //'Program',
-    {trUnit} strToDo, //'Unit',
-      {trUses} strToDo, //'Uses',
-      {trConstants} strToDo, //'Constants',
-      {trFunctionsAndProcedures} strToDo, //'Functions and Procedures',
-      {trTypes} strToDo, //'Types',
-        {trType} strToDo, //'Type',
-      {trVariables} strToDo, //'Variables',
-      {trAuthors} '作者群',
-        {trAuthor} '作者',
-      {trCreated} strToDo, //'Created',
-      {trLastModified} strToDo, //'Last Modified',
-    {trSubroutine} strToDo, //'Subroutine',
-      {trParameters} strToDo, //'Parameters',
-      {trReturns} strToDo, //'Returns',
-      {trExceptionsRaised} strToDo, //'Exceptions raised',
-    {trExceptions} strToDo, //'Exceptions',
-      {trException} strToDo, //'Exception',
-    {trEnum} strToDo, //'Enumeration',
-  //visibilities
-    {trVisibility} strToDo, //'Visibility',
-      {trPrivate} strToDo, //'Private',
-      {trStrictPrivate} strToDo, //'Strict Private',
-      {trProtected} strToDo, //'Protected',
-      {trStrictProtected} strToDo, //'Strict Protected',
-      {trPublic} strToDo, //'Public',
-      {trPublished} strToDo, //'Published',
-      {trAutomated} strToDo, //'Automated',
-      {trImplicit} strToDo, //'Implicit',
-  //hints
-    {trDeprecated} strToDo, //'this symbol is deprecated',
-    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
-    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
-  //headings
-    {trOverview} strToDo, //'Overview',
-    {trIntroduction} strToDo, //'Introduction',
-    {trConclusion} strToDo, //'Conclusion',
-    {trHeadlineCio} strToDo, //'All Classes, Interfaces, Objects and Records',
-    {trHeadlineConstants} strToDo, //'All Constants',
-    {trHeadlineFunctionsAndProcedures} strToDo, //'All Functions and Procedures',
-    {trHeadlineIdentifiers} strToDo, //'All Identifiers',
-    {trHeadlineTypes} strToDo, //'All Types',
-    {trHeadlineUnits} strToDo, //'All Units',
-    {trHeadlineVariables} strToDo, //'All Variables',
-    {trSummaryCio} strToDo, //'Summary of Classes, Interfaces, Objects and Records',
-  //column headings
-    {trDeclaration} strToDo, //'Declaration',
-    {trDescription} strToDo, //'Description',
-    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
-    {trName} strToDo, //'Name',
-    {trValues} strToDo, //'Values',
-  //empty
-    {trNone} strToDo, //'None',
-    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
-    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
-    {trNoTypes} strToDo, //'The units do not contain any types.',
-    {trNoVariables} strToDo, //'The units do not contain any variables.',
-    {trNoConstants} strToDo, //'The units do not contain any constants.',
-    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
-    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
-  //misc
-    {trHelp} strToDo, //'Help',
-    {trLegend} strToDo, //'Legend',
-    {trMarker} strToDo, //'Marker',
-    {trWarningOverwrite} strToDo, //'Warning: Do not edit - this file has been created automatically and is likely be overwritten',
-    {trWarning} strToDo, //'Warning',
-    {trGeneratedBy} strToDo, //'Generated by',
-    {trOnDateTime} strToDo, //'on',
-    {trSearch} strToDo, //'Search',
-    {trSeeAlso} strToDo, //'See also',
-    ''  //dummy
-  );
-{$ELSE}
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -2408,10 +2296,6 @@ const
     (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
-  {$IFDEF new}
-    (Table: @aChinese_950; Name: 'Chinese (Codepage 950)'; Syntax: 'big5'; CharSet: 'big5'),
-  {$ELSE}
-  {$ENDIF}
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
