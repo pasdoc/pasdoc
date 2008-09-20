@@ -121,6 +121,8 @@ unit PasDoc_Hashes;
 {$Q-} // no integer overflow checks (I need overflow in THash.Hash)
 {$R-} // no range checks (because free bounds of TFakeArray[0..0])
 
+{$DEFINE solid} //use array of record
+
 interface
 
 uses
@@ -130,8 +132,12 @@ type
   { }
   PPHashEntry=^PHashEntry;
   PHashEntry=^THashEntry;
-  THashEntry=record
+  THashEntry=record //object?
+  {$IFDEF solid}
+    first, next: integer;
+  {$ELSE}
     next: PHashEntry;
+  {$ENDIF}
     hash: Integer;
     key: String;
     value: String;
@@ -141,58 +147,120 @@ type
   { in FPC, I can simply use PPHashEntry as an array of PHashEntry -
     Delphi doesn't allow that. I need this stupid array[0..0] definition!
     From Delphi4, I could use a dynamic array. }
+{$IFDEF solid}
+  TFakeArray = array of THashEntry;
+  PFakeArray = TFakeArray;
+{$ELSE}
   TFakeArray=array[0..0] of PHashEntry;
   PFakeArray=^TFakeArray;
+{$ENDIF}
 
-  THash=class
+{$IFDEF new}
+  THash = class(TStrings)
+{$ELSE}
+  THash = class
+{$ENDIF}
   private
     Feld: PFakeArray;
     FeldMaxValue: Integer;
     FeldBelegt: Integer;
     FMaxCapacity: Integer;
-    function Hash(key: String): Integer;
+    function  Hash(key: String): Integer;
+    function  Entry(_key: string): PHashEntry;
+    function  GetItem(index: integer): PHashEntry;
     procedure MakeHashLarger(power2: Integer);
     procedure SetCapacity(new_size: Integer);
-    function GetCapacity: Integer;
+    function  GetCapacity: Integer;
     procedure SetMaxCapacity(newmc: Integer);
-    procedure _SetStringObject(_key: String; s: String; set_s: Boolean;
+  {$IFDEF solid}
+    procedure _SetValueData(const _key, s: String; set_s: Boolean;
                                              p: Pointer; set_p: Boolean);
+  {$ELSE}
+    procedure _SetStringObject(const _key, s: String; set_s: Boolean;
+                                             p: Pointer; set_p: Boolean);
+  {$ENDIF}
+
+{$IFDEF new}
+  protected //override abstracts
+    function  GetCount: integer; override;
+    function  Get(index: integer): string; override;
+  public
+    procedure Delete(Index: Integer); override;
+    procedure Insert(index: integer; s: string); override;
+{$ELSE}
+{$ENDIF}
 
   public
     property Count: Integer read FeldBelegt;
     property Capacity: Integer read GetCapacity write SetCapacity;
     property MaxCapacity: Integer read FMaxCapacity write SetMaxCapacity;
     constructor Create;
+  {$IFDEF solid}
+    function  GetValue(const _key: String): String;
+    procedure SetValue(const _key, data: String);
+    function  GetData(const _key: String): Pointer;
+    procedure SetData(const _key: String; data: Pointer);
+    function  GetValueData(const _key: String; var s: String; var p: Pointer): integer;
+    procedure SetValueData(const _key, s: String; p: Pointer);
+    property Values[const _key: string]: string read GetValue write SetValue;
+    property Data[const _key: string]: pointer read GetData write SetData;
+    property Items[index: integer]: PHashEntry read GetItem;
+  {$ELSE}
     destructor Destroy; override;
-    procedure SetObject(_key: String; data: Pointer);
-    procedure SetString(_key: String; data: String);
-    procedure SetStringObject(_key: String; s: String; p: Pointer);
-    function GetObject(_key: String): Pointer;
-    function GetString(_key: String): String;
-    procedure GetStringObject(_key: String; var s: String; var p: Pointer);
-    function KeyExists(_key: String): Boolean;
-    procedure DeleteKey(_key: String);
-    function Keys: TStringList; overload;
-    function Keys(beginning: String): TStringList; overload;
+    function  GetString(const _key: String): String;
+    procedure SetString(const _key, data: String);
+    function  GetObject(const _key: String): Pointer;
+    procedure SetObject(const _key: String; data: Pointer);
+    function  GetStringObject(const _key: String; var s: String; var p: Pointer): boolean;
+    procedure SetStringObject(const _key, s: String; p: Pointer);
+  {$ENDIF}
+    function  KeyExists(const _key: String): Boolean;
+  {$IFDEF solid}
+  //return index of _key, or -1 if not found
+    function  IndexOf(const _key: string): integer;
+    procedure DeleteKey(const _key: String);
+    //If Keys() is needed, make TStrings the base class!
+  {$ELSE}
+    procedure DeleteKey(const _key: String);
+    function  Keys: TStringList; overload;
+    function  Keys(const beginning: String): TStringList; overload;
+  {$ENDIF}
   end;
 
   TObjectHash = class(THash)
   public
-    procedure Delete(_key: String);
-    property Items[_key: string]: Pointer read GetObject write SetObject;
+  {$IFDEF solid}
+    function  GetObject(const _key: String): TObject;
+    procedure SetObject(const _key: String; data: TObject);
+    property Objects[const _key: string]: TObject read GetObject write SetObject;
+  {$ELSE}
+    procedure Delete(const _key: String);
+    property Items[const _key: string]: Pointer read GetObject write SetObject;
+  {$ENDIF}
   end;
 
 implementation
 
 constructor THash.Create;
+var
+  i: integer;
 begin
   FeldMaxValue:=7; //irgendein kleiner Wert der Eigenschaft 2**n-1 (English: any small value of the property 2**n-1)
   FeldBelegt:=0;
   FMaxCapacity:=-1;
+{$IFDEF solid}
+  SetLength(Feld, succ(FeldMaxValue));
+  for i := 0 to FeldMaxValue do begin
+    Feld[i].first := -1;
+  end;
+{$ELSE}
   GetMem(Feld,sizeof(PHashEntry)*Succ(FeldMaxValue));
   FillChar(Feld^,sizeof(PHashEntry)*Succ(FeldMaxValue),0);
+{$ENDIF}
 end;
 
+{$IFDEF solid}
+{$ELSE}
 destructor THash.Destroy;
 var
   i: Integer;
@@ -205,10 +273,10 @@ begin
       dispose(del);
     end;
   end;
-  FreeMem(Feld,sizeof(PHashEntry)*(Succ(FeldMaxValue)));
   Feld := nil;
   inherited Destroy;
 end;
+{$ENDIF}
 
 function THash.Hash(key: String): Integer;
 var
@@ -220,7 +288,45 @@ begin
   Result:=Result+Result shr 5;
 end;
 
-function THash.KeyExists(_key: String): Boolean;
+{$IFDEF solid}
+
+function THash.Entry(_key: string): PHashEntry;
+var
+  i: Integer;
+begin
+  i := IndexOf(_key);
+  if i < 0 then
+    Result := nil
+  else
+    Result := @Feld[i];
+end;
+
+function THash.GetItem(index: integer): PHashEntry;
+begin
+  Result := @Feld[index];
+end;
+
+function THash.IndexOf(const _key: string): integer;
+var
+  h: Integer;
+begin
+  h := Hash(_key);
+  Result := Feld[h and FeldMaxValue].first; //starting index
+  while Result >= 0 do begin
+    if (Feld[Result].key = _key) then
+      exit;
+    Result := Feld[Result].next;
+  end;
+//not found
+  //Result := -1;
+end;
+
+function THash.KeyExists(const _key: String): Boolean;
+begin
+  Result := IndexOf(_key) >= 0;
+end;
+{$ELSE}
+function THash.KeyExists(const _key: String): Boolean;
 var
   h: Integer;
   he: PHashEntry;
@@ -237,6 +343,7 @@ begin
   end;
   Result:=False;
 end;
+{$ENDIF}
 
 function THash.GetCapacity: Integer;
 begin
@@ -257,16 +364,37 @@ end;
 
 procedure THash.MakeHashLarger(power2: Integer);
 var
-  i, oldsize, newsize, newpos: Integer;
+  i, oldsize, newsize: Integer;
+{$IFDEF solid}
+  h, inext: integer;
+{$ELSE}
+  newpos: Integer;
   he: PHashEntry;
   oe: PPHashEntry;
+{$ENDIF}
 begin
-  //zun„chst Speicher reservieren (Enlish?: reserve additional memory)
+  //zunächst Speicher reservieren (English: reserve additional memory)
   oldsize:=Succ(FeldMaxValue);
   newsize:=oldsize shl power2;
   if (newsize>MaxCapacity) and (MaxCapacity<>-1) then Exit;
+  if newsize <= MaxCapacity then
+    exit; //don't shrink?
   FeldMaxValue:=Pred(newsize);
-
+{$IFDEF solid}
+  SetLength(Feld, newsize);
+//clear indices
+  for i := 0 to FeldMaxValue do begin
+    Feld[i].first := -1; //full range
+    Feld[i].next := -1; //to Count would be sufficient
+  end;
+//link entries
+  for i := 0 to oldsize-1 do begin
+    h := Feld[i].hash and FeldMaxValue;
+    iNext := Feld[h].first; //in case an entry was already assigned
+    Feld[h].first := i;
+    Feld[i].next := iNext;
+  end;
+{$ELSE}
   {$ifdef FPC}
     Feld:=ReAllocMem(Feld,newsize*sizeof(PHashEntry));
   {$else}
@@ -291,6 +419,7 @@ begin
       he:=oe^;
     end;
   end;
+{$ENDIF}
 end;
 
 procedure THash.SetMaxCapacity(newmc: Integer);
@@ -300,14 +429,88 @@ begin
   else FMaxCapacity:=newmc;
 end;
 
-procedure THash._SetStringObject(_key: String; s: String; set_s: Boolean;
+{$IFDEF solid}
+procedure THash._SetValueData(const _key, s: String; set_s: Boolean;
+                                        p: Pointer; set_p: Boolean);
+var
+  h, i: Integer;
+  pFirst: ^integer;
+begin
+  h:=Hash(_key);
+  pFirst := addr(Feld[h and FeldMaxValue].first);
+  i := pFirst^;  // Feld[h and FeldMaxValue].first;
+  while (i >= 0) and (Feld[i].key <> _key) do
+    i := Feld[i].next;
+  if i < 0 then begin
+  //new entry
+    if FeldBelegt > FeldMaxValue then begin
+      MakeHashLarger(1); //invalidates the index
+      pFirst := addr(Feld[h and FeldMaxValue].first);
+    end;
+    i := FeldBelegt;
+    inc(FeldBelegt);
+  //init internal fields
+    Feld[i].hash := h;
+    Feld[i].next := pFirst^;  // Feld[h and FeldMaxValue].first;
+    Feld[i].key := _key;
+    pFirst^ := i; //Feld[h and FeldMaxValue].first := i;
+  end;
+//put values
+  if set_s then Feld[i].value := s;
+  if set_p then Feld[i].data := p;
+end;
+
+procedure THash.SetData(const _key: String; data: Pointer);
+begin
+  _SetValueData(_key, '', false, data, true);
+end;
+
+procedure THash.SetValue(const _key, data: String);
+begin
+  _SetValueData(_key, data, true, nil, false);
+end;
+
+procedure THash.SetValueData(const _key, s: String; p: Pointer);
+begin
+  _SetValueData(_key, s, true, p, true);
+end;
+
+procedure THash.DeleteKey(const _key: String);
+var
+  h, i: Integer;
+  pFirst: ^integer;
+begin
+  h := Hash(_key);
+  pFirst := addr(Feld[h and FeldMaxValue].first);
+  i := pFirst^;
+  if i < 0 then
+    exit; //no such entry
+  if Feld[i].key = _key then
+    pFirst^ := Feld[i].next
+  else begin
+    repeat
+      pFirst := addr(Feld[i].next);
+      i := pFirst^;
+      if i < 0 then
+        exit; //no such entry
+    until Feld[i].key = _key;
+  end;
+//reset data fields
+  Feld[i].key := '';
+  Feld[i].value := '';
+  Feld[i].data := nil;
+end;
+
+{$ELSE}
+
+procedure THash._SetStringObject(const _key, s: String; set_s: Boolean;
                                         p: Pointer; set_p: Boolean);
 var
   h: Integer;
   he, anker: PHashEntry;
 begin
-  if FeldBelegt>FeldMaxValue then MakeHashLarger(1);
   h:=Hash(_key);
+  if FeldBelegt>FeldMaxValue then MakeHashLarger(1);
   he:=Feld^[h and FeldMaxValue];
   anker:=he;
   while Assigned(he) do begin
@@ -320,7 +523,7 @@ begin
     he:=he^.next;
   end;
 
-  //nichts gefunden, key muá neu angelegt werden (English?: not found; a new key must be created.)
+  //nichts gefunden, key muß neu angelegt werden (English: not found; a new key must be created.)
   New(he); Inc(FeldBelegt);
   with he^ do begin
     next:=anker;
@@ -332,28 +535,29 @@ begin
   Feld^[h and FeldMaxValue]:=he;
 end;
 
-procedure THash.SetStringObject(_key: String; s: String; p: Pointer);
+procedure THash.SetObject(const _key: String; data: Pointer);
 begin
-  _SetStringObject(_key,s,true,p,true);
+  _SetStringObject(_key, '', false, data, true);
 end;
 
-procedure THash.SetObject(_key: String; data: Pointer);
+procedure THash.SetString(const _key, data: String);
 begin
-  _SetStringObject(_key,'',false,data,true);
+  _SetStringObject(_key, data, true, nil, false);
 end;
 
-procedure THash.SetString(_key: String; data: String);
+procedure THash.SetStringObject(const _key, s: String; p: Pointer);
 begin
-  _SetStringObject(_key,data,true,nil,false);
+  _SetStringObject(_key, s, true, p, true);
 end;
 
-procedure THash.DeleteKey(_key: String);
+procedure THash.DeleteKey(const _key: String);
 var
   he: PHashEntry;
   oe: PPHashEntry;
-  h: Integer;
+  h, i: Integer;
+  pFirst: ^integer;
 begin
-  h:=Hash(_key);
+  h := Hash(_key);
   oe:=@Feld^[h and FeldMaxValue];
   he:=oe^;
   while Assigned(he) do begin
@@ -368,8 +572,70 @@ begin
     he:=oe^;
   end;
 end;
+{$ENDIF}
 
-procedure THash.GetStringObject(_key: String; var s: String; var p: Pointer);
+{$IFDEF solid}
+function THash.GetValueData(const _key: String; var s: String; var p: Pointer): integer;
+begin
+  Result := IndexOf(_key);
+  if Result >= 0 then begin
+    s := Feld[Result].value;
+    p := Feld[Result].data;
+  end else begin
+    s := '';
+    p := nil;
+  end;
+end;
+
+function THash.GetData(const _key: String): Pointer;
+var
+  i: integer;
+begin
+  i := IndexOf(_key);
+  if i >= 0 then
+    Result := Feld[i].data
+  else
+    Result := nil;
+end;
+
+function THash.GetValue(const _key: String): String;
+var
+  i: integer;
+begin
+  i := IndexOf(_key);
+  if i >= 0 then
+    Result := Feld[i].value
+  else
+    Result := '';
+end;
+
+{$IFDEF new}
+procedure THash.Delete(Index: Integer);
+begin
+  inherited;
+
+end;
+
+function THash.Get(index: integer): string;
+begin
+
+end;
+
+function THash.GetCount: integer;
+begin
+
+end;
+
+procedure THash.Insert(index: integer; s: string);
+begin
+  inherited;
+
+end;
+{$ELSE}
+{$ENDIF}
+
+{$ELSE}
+procedure THash.GetStringObject(const _key: String; var s: String; var p: Pointer);
 var
   h: Integer;
   he: PHashEntry;
@@ -387,7 +653,7 @@ begin
   end;
 end;
 
-function THash.GetObject(_key: String): Pointer;
+function THash.GetObject(const _key: String): Pointer;
 var
   h: Integer;
   he: PHashEntry;
@@ -404,7 +670,7 @@ begin
   end;
 end;
 
-function THash.GetString(_key: String): String;
+function THash.GetString(const _key: String): String;
 var
   h: Integer;
   he: PHashEntry;
@@ -436,7 +702,7 @@ begin
   end;
 end;
 
-function THash.Keys(beginning: String): TStringList;
+function THash.Keys(const beginning: String): TStringList;
 var
   i: Integer;
   he: PHashEntry;
@@ -451,6 +717,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 { $log:
 2001-06-19  wolf: created this unit
@@ -464,9 +731,28 @@ end;
 
 { TObjectHash }
 
-procedure TObjectHash.Delete(_key: String);
+{$IFDEF solid}
+
+function TObjectHash.GetObject(const _key: String): TObject;
+var
+  i: integer;
+begin
+  i := IndexOf(_key);
+  if i < 0 then
+    Result := nil
+  else
+    pointer(Result) := Feld[i].data;
+end;
+
+procedure TObjectHash.SetObject(const _key: String; data: TObject);
+begin
+  _SetValueData(_key, '', false, data, true);
+end;
+{$ELSE}
+procedure TObjectHash.Delete(const _key: String);
 begin
   DeleteKey(_key);
 end;
+{$ENDIF}
 
 end.

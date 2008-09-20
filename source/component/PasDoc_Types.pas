@@ -59,77 +59,120 @@ type
     { SYM_BACKSLASH may occur when writing char constant "^\",
       see ../../tests/ok_caret_character.pas }
     SYM_BACKSLASH,
-    //TOK_KEYWORD,
-    KEY_AND,
-    KEY_ARRAY,
-    KEY_AS,
+  //TOK_KEYWORD,
+  //binary operators
+    KEY_AND, KEY_AS,
+    KEY_DIV,
+    KEY_IN, KEY_IS,
+    KEY_MOD,
+    KEY_OR,
+    KEY_SHL, KEY_SHR,
+    KEY_XOR,
+  //unary operators
+    KEY_INHERITED,
+    KEY_NOT,
+  //non-body
+    KEY_FORWARD,
+  //body
     KEY_ASM,
     KEY_BEGIN,
-    KEY_CASE,
-    KEY_CLASS,
-    KEY_CONST,
-    KEY_CONSTRUCTOR,
-    KEY_DESTRUCTOR,
-    KEY_DISPINTERFACE,
-    KEY_DIV,
-    KEY_DO,
-    KEY_DOWNTO,
-    KEY_ELSE,
-    KEY_END,
-    KEY_EXCEPT,
-    KEY_EXPORTS,
-    KEY_FILE,
-    KEY_FINALIZATION,
-    KEY_FINALLY,
-    KEY_FOR,
-    KEY_FUNCTION,
+  //statements
     KEY_GOTO,
     KEY_IF,
-    KEY_IMPLEMENTATION,
-    KEY_IN,
-    KEY_INHERITED,
-    KEY_INITIALIZATION,
-    KEY_INLINE,
-    KEY_INTERFACE,
-    KEY_IS,
-    KEY_LABEL,
-    KEY_LIBRARY,
-    KEY_MOD,
-    KEY_NIL,
-    KEY_NOT,
-    KEY_OBJECT,
-    KEY_OF,
-    KEY_ON,
-    KEY_OR,
-    KEY_PACKED,
-    KEY_PROCEDURE,
-    KEY_PROGRAM,
-    KEY_PROPERTY,
     KEY_RAISE,
-    KEY_RECORD,
-    KEY_REPEAT,
-    KEY_RESOURCESTRING,
-    KEY_SET,
-    KEY_SHL,
-    KEY_SHR,
-    KEY_STRING,
-    KEY_THEN,
-    KEY_THREADVAR,
-    KEY_TO,
     KEY_TRY,
-    KEY_TYPE,
-    KEY_UNIT,
-    KEY_UNTIL,
-    KEY_USES,
-    KEY_VAR,
-    KEY_WHILE,
     KEY_WITH,
-    KEY_XOR,
-  //synthetic
-    Key_Operator_  //<from SD_OPERATOR
+    KEY_WHILE,
+  //compound statements
+    KEY_CASE,
+    KEY_FOR,
+    KEY_REPEAT,
+  //end compound
+    KEY_END,
+    KEY_UNTIL,
+  //types
+    KEY_ARRAY,
+    KEY_FILE,
+    KEY_SET,
+    KEY_STRING,
+  //structured types
+    KEY_RECORD,
+  //class types
+    KEY_CLASS,
+    KEY_DISPINTERFACE,
+    KEY_OBJECT,
+  //object or section
+    KEY_INTERFACE,
+  //section
+    KEY_IMPLEMENTATION,
+  //implementation clauses
+    KEY_INITIALIZATION,
+    KEY_FINALIZATION,
+  //local implementation clauses
+    KEY_LABEL,
+  //clauses
+    KEY_CONST,
+    KEY_RESOURCESTRING,
+    KEY_THREADVAR,
+    KEY_TYPE,
+    KEY_VAR,
+  //interface clauses
+    KEY_USES,
+
+  //units
+    KEY_LIBRARY,
+    KEY_PROGRAM,
+    KEY_UNIT,
+
+  //method types
+    KEY_PROPERTY,
+    KEY_CONSTRUCTOR,
+    KEY_DESTRUCTOR,
+  //procedure/method types
+    KEY_FUNCTION,
+    KEY_PROCEDURE,
+    Key_Operator_,  //<from SD_OPERATOR
+  //misc
+    KEY_DO, KEY_DOWNTO,
+    KEY_ELSE, KEY_EXCEPT, KEY_EXPORTS,
+    KEY_FINALLY,
+    KEY_INLINE,
+    KEY_NIL,
+    KEY_OF, KEY_ON,
+    KEY_PACKED,
+    KEY_THEN, KEY_TO
   );
   eSymbolType = SYM_PLUS..SYM_BACKSLASH;
-  eKeyword = KEY_AND..KEY_XOR;
+  eKeyword = KEY_AND..KEY_TO;
+  { Methodtype for @link(TPasMethod) }
+  TMethodType = KEY_CONSTRUCTOR..Key_Operator_;
+
+  { enumeration type to determine type of @link(TPasCio) item }
+{$IFDEF old}
+  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT,
+    CIO_RECORD  //, CIO_PACKEDRECORD
+  );
+  TCIONames = array[TCIOType] of string;
+const
+  CIO_NAMES: TCIONames = (
+    'class',
+    'dispinterface',
+    'interface',
+    'object',
+    'record'  //, 'packed record'
+  );
+//for ShowVisisbility
+  CioClassTypes = [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT];
+  CIORecordTypes = [CIO_RECORD //, CIO_PACKEDRECORD
+  ];
+  CIONonHierarchy = CIORecordTypes;
+{$ELSE}
+  TCIOType = KEY_RECORD..KEY_INTERFACE;
+const
+  CioClassTypes = [KEY_CLASS..KEY_DISPINTERFACE];
+  CIORecordTypes = [KEY_RECORD];
+  CIONonHierarchy = CIORecordTypes;
+{$ENDIF}
 
 const
   TokenCommentTypes = //: set of TTokenType =
@@ -147,6 +190,12 @@ const
 //ClassTypes have ancestors, reside in their own HTML file.
   ClassTypes = [KEY_CLASS, KEY_DISPINTERFACE, KEY_INTERFACE];
   UnitTypes = [KEY_PROGRAM, KEY_LIBRARY, KEY_UNIT]; //<package?
+
+{$IFDEF old}
+{ Returns lowercased keyword associated with given method type. }
+function MethodTypeToString(const MethodType: TMethodType): string;
+{$ELSE}
+{$ENDIF}
 
 type
   //TStandardDirective = (
@@ -234,17 +283,67 @@ const
   { all Object Pascal keywords }
   //KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string = (
     //'x', // lowercase never matches
-    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
-    'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
-    'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
-    'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
-    'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
-    'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
-    'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
-    'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
-    'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
-    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR',
-    'operator'
+    'AND', 'AS',
+    'DIV',
+    'IN', 'IS',
+    'MOD',
+    'OR',
+    'SHL', 'SHR',
+    'XOR',
+
+    'INHERITED',
+    'NOT',
+
+    'FORWARD', 'ASM', 'BEGIN',
+    'GOTO', 'IF',
+    'RAISE',
+    'TRY',
+    'WHILE', 'WITH',
+
+    'CASE',
+    'FOR',
+    'REPEAT',
+    'END',
+    'UNTIL',
+
+    'ARRAY',
+    'FILE',
+    'SET', 'STRING',
+
+    'RECORD',
+    'CLASS',
+    'DISPINTERFACE',
+    'OBJECT',
+    'INTERFACE',
+    'IMPLEMENTATION',
+    'INITIALIZATION',
+    'FINALIZATION',
+    'LABEL',
+    'CONST',
+    'RESOURCESTRING',
+    'THREADVAR',
+    'TYPE',
+    'VAR',
+    'USES',
+
+    'LIBRARY',
+    'PROGRAM',
+    'UNIT',
+
+    'PROPERTY',
+    'CONSTRUCTOR', 'DESTRUCTOR',
+    'FUNCTION',
+    'PROCEDURE',
+    'operator',
+
+    'DO', 'DOWNTO',
+    'ELSE', 'EXCEPT', 'EXPORTS',
+    'FINALLY',
+    'INLINE',
+    'NIL',
+    'OF', 'ON',
+    'PACKED',
+    'THEN', 'TO'
   );
 
   { Object Pascal directives }
@@ -336,9 +435,15 @@ type
     property EndPosition: TTextStreamPos read FEndPosition write FEndPosition;
   end;
 
+  { See command-line option @--implicit-visibility documentation at
+    [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
+  TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
+
 
 //standardized token definition (for old style error reports)
 function  TokenDefinition(ATokenType: TTokenType; data: string = ''): string;
+//lower case token name.
+function  TokenName(ATokenType: TTokenType): string;
 
 type
   { This represents parts of a qualified name of some item.
@@ -373,23 +478,113 @@ function OneNamePart(S: string): TNameParts;
 { Simply concatenates all NameParts with dot. }
 function GlueNameParts(const NameParts: TNameParts): string;
 
-type
-  { See command-line option @--implicit-visibility documentation at
-    [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
-  TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
+{ Checks is Name (case ignored) some Pascal keyword.
+  Returns TOK_IDENTIFIER if not. }
+function KeyWordByName(const Name: string): TTokenType;
+
+{ Checks is Name (case ignored) some Pascal standard directive.
+  Returns SD_INVALIDSTANDARDDIRECTIVE if not. }
+function StandardDirectiveByName(const Name: string): TStandardDirective;
 
 implementation
 
-{ EPasDoc -------------------------------------------------------------------- }
+uses
+  //SysUtils,
+  PasDoc_Hashes;
 
-constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Word);
+var
+//key is uppercase, value lowercase of the key.
+  KeyTable, DirTable: THash;
+
+procedure BuildKeyTable;
+var
+  i: eKeyword;
 begin
-  ExitCode := AExitCode;
-  CreateFmt(AMessage, AArguments);
+  KeyTable := THash.Create;
+  KeyTable.Capacity := ord(high(i)) - ord(low(i)) + 1;
+  for i := low(i) to high(i) do begin
+    //KeyTable.SetObject(TokenNames[i], pointer(i));
+    KeyTable.SetValueData(TokenNames[i], LowerCase(TokenNames[i]), pointer(i));
+  end;
+end;
+
+procedure BuildDirTable;
+var
+  i: TDirectives;
+begin
+  DirTable := THash.Create;
+  DirTable.Capacity := ord(high(i)) - ord(low(i));
+  for i := succ(low(i)) to high(i) do begin
+    //DirTable.SetObject(DirectiveNames[i], pointer(i));
+    DirTable.SetValueData(DirectiveNames[i], LowerCase(DirectiveNames[i]), pointer(i));
+  end;
+end;
+
+function KeyWordByName(const Name: string): TTokenType;
+var
+  LName: string;
+  //i: TTokenType;
+  p: pointer;
+begin
+  LName := UpperCase(Name);
+{$IFDEF old}
+  Result := KEY_INVALIDKEYWORD;
+  for i := Low(eKeyword) to High(eKeyword) do begin
+    //if LName = KeyWordArray[i] then begin
+    if LName = TokenNames[i] then begin
+      Result := i;
+      break;
+    end;
+  end;
+{$ELSE}
+  //p := KeyTable.GetObject(LName);
+  p := KeyTable.GetData(LName);
+  if p = nil then
+    Result := TOK_IDENTIFIER
+  else
+    Result := TTokenType(p);
+{$ENDIF}
+end;
+
+function StandardDirectiveByName(const Name: string): TStandardDirective;
+var
+  LName: string;
+  //i: TStandardDirective;
+  p: pointer;
+begin
+  LName := UpperCase(Name);
+{$IFDEF old}
+  for i := Low(TStandardDirective) to High(TStandardDirective) do begin
+    if LName = DirectiveNames[i] then begin
+      Result := i;
+      exit;
+    end;
+  end;
+  Result := SD_INVALIDSTANDARDDIRECTIVE;
+{$ELSE}
+  //p := DirTable.GetObject(LName);
+  p := DirTable.GetData(LName);
+  if p = nil then
+    Result := SD_INVALIDSTANDARDDIRECTIVE
+  else
+    Result := TStandardDirective(p);
+{$ENDIF}
 end;
 
 { global routines ------------------------------------------------------------ }
+
+{$IFDEF old}
+function MethodTypeToString(const MethodType: TMethodType): string;
+begin
+  Result := LowerCase(TokenNames[MethodType]);
+end;
+{$ELSE}
+{$ENDIF}
+
+function  TokenName(ATokenType: TTokenType): string;
+begin
+  Result := LowerCase(TokenNames[ATokenType]);
+end;
 
 function  TokenDefinition(ATokenType: TTokenType; data: string = ''): string;
 begin
@@ -405,7 +600,7 @@ begin
     Result := TokenNames[ATokenType];
 end;
 
-function SplitNameParts(S: string; 
+function SplitNameParts(S: string;
   out NameParts: TNameParts): Boolean;
 
 const
@@ -481,9 +676,16 @@ begin
     Result := Result + QualIdSeparator + NameParts[i];
 end;
 
-{---------------------------------------------------------------------------- }
+{ EPasDoc }
+
+constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
+  const; const AExitCode: Word);
+begin
+  ExitCode := AExitCode;
+  CreateFmt(AMessage, AArguments);
+end;
+
 { TToken }
-{---------------------------------------------------------------------------- }
 
 constructor TToken.Create(const TT: TTokenType);
 begin
@@ -491,14 +693,10 @@ begin
   MyType := TT;
 end;
 
-{ ---------------------------------------------------------------------------- }
-
 function TToken.GetTypeName: string;
 begin
   GetTypeName := TOKENNAMES[MyType];
 end;
-
-{ ---------------------------------------------------------------------------- }
 
 function TToken.IsSymbol(const ASymbolType: eSymbolType): Boolean;
 begin
@@ -521,5 +719,11 @@ begin
   Result := TokenDefinition(MyType, data);
 end;
 
+initialization
+  BuildKeyTable;
+  BuildDirTable;
+finalization
+  KeyTable.Free;
+  DirTable.Free;
 end.
 

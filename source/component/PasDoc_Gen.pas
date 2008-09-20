@@ -31,7 +31,7 @@ uses
   PasDoc_StringVector,
   //PasDoc_StringPairVector,
   PasDoc_ObjectVector,
-  PasDoc_HierarchyTree,
+  //PasDoc_HierarchyTree,
   PasDoc_Types,
   PasDoc_TagManager,
   PasDoc_Aspell;
@@ -2229,14 +2229,12 @@ end;
 function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
   case MyType of
-    CIO_CLASS: Result := FLanguage.Translation[trClass];
-    CIO_SPINTERFACE: Result := FLanguage.Translation[trDispInterface];
-    CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
-    CIO_OBJECT: Result := FLanguage.Translation[trObject];
-    CIO_RECORD: Result := FLanguage.Translation[trRecord];
-    //CIO_PACKEDRECORD: Result := 'packed record'; // TODO
-  else
-    Result := '';
+  KEY_RECORD: Result := FLanguage.Translation[trRecord];
+  KEY_CLASS: Result := FLanguage.Translation[trClass];
+  KEY_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
+  KEY_INTERFACE: Result := FLanguage.Translation[trInterface];
+  KEY_OBJECT: Result := FLanguage.Translation[trObject];
+  else      Result := '';
   end;
 end;
 

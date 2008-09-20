@@ -9,8 +9,8 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes,
-  PasDoc_StringPairVector;
+  Classes;
+  //PasDoc_StringPairVector;
 
 type
   TSimpleXMLDocGenerator = class(TDocGenerator)
@@ -116,37 +116,49 @@ end;
 procedure TSimpleXMLDocGenerator.writefunction(const item:TPasItem);
 var
   I: Integer;
+  meth: TPasMethod absolute item;
 begin
   if item is TPasMethod then
   begin
     WriteDirectLine(space +
       '<function name="' + ConvertString(item.name) +
-              '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
-       '" declaration="' + ConvertString(TPasMethod(item).FullDeclaration) + '">');
-      for I := 0 to TPasMethod(item).params.count - 1 do
+              //'" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
+              '" type="' + ConvertString(TokenName(item.Kind)) +
+       '" declaration="' + ConvertString(item.FullDeclaration)
+       + '">');
+      for I := 0 to meth.params.count - 1 do
         WriteDirectLine(space +
-          '  <param name="' + ConvertString(TPasMethod(item).params.Items[i].name) + '">' +
-            TPasMethod(item).params.Items[i].value +'</param>');
+          '  <param name="' + ConvertString(meth.params.Items[i].name) + '">' +
+            meth.params.Items[i].value +'</param>');
       //if TPasMethod(item).returns <> '' then
-      if TPasMethod(item).returns <> nil then
+      if meth.returns <> nil then
         WriteDirectLine(space +
-          '  <result>' + TPasMethod(item).returns.Text + '</result>');
+          '  <result>' + meth.returns.Text + '</result>');
     WriteDirectLine(space + '</function>');
   end;
 end;
 
 procedure TSimpleXMLDocGenerator.writeproperty(const item:TPasItem);
+var
+  prop: TPasProperty absolute item;
 begin
+  assert(item is TPasProperty, 'bad call');
   WriteDirectLine(space +
     '<property name="' + ConvertString(item.name) +
-       '" indexdecl="' + ConvertString(TPasProperty(item).indexDecl) +
-            '" type="' + ConvertString(TPasProperty(item).Proptype) +
-          '" reader="' + ConvertString(TPasProperty(item).reader) +
-          '" writer="' + ConvertString(TPasProperty(item).writer) +
-         '" default="' + ConvertString(booltostr(TPasProperty(item).default)) +
-       '" defaultid="' + ConvertString(TPasProperty(item).defaultid) +
-       '" nodefault="' + ConvertString(booltostr(TPasProperty(item).nodefault)) +
-        '" storedid="' + ConvertString(TPasProperty(item).storedid) +'"/>');
+    {$IFDEF DetailedProps}
+       '" indexdecl="' + ConvertString(prop.indexDecl) +
+            '" type="' + ConvertString(prop.Proptype) +
+          '" reader="' + ConvertString(prop.reader) +
+          '" writer="' + ConvertString(prop.writer) +
+         '" default="' + ConvertString(booltostr(prop.default)) +
+       '" defaultid="' + ConvertString(prop.defaultid) +
+       '" nodefault="' + ConvertString(booltostr(prop.nodefault)) +
+        '" storedid="' + ConvertString(prop.storedid)
+    {$ELSE}
+          '" reader="' + ConvertString(prop.reader) +
+          '" writer="' + ConvertString(prop.writer) 
+    {$ENDIF}
+        +'"/>');
 end;
 
 procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);

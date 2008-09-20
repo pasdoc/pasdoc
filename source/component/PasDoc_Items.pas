@@ -16,6 +16,7 @@
 unit PasDoc_Items;
 
 {-$DEFINE item}
+{-$DEFINE DetailedProps}
 
 interface
 
@@ -29,8 +30,8 @@ uses
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
-  PasDoc_Languages,
-  PasDoc_StringPairVector;
+  PasDoc_Languages;
+  //PasDoc_StringPairVector;
 
 type
   { Visibility of a field/method. }
@@ -95,35 +96,6 @@ function VisibilitiesToStr(const Visibilities: TVisibilities): string;
 function VisToStr(const Vis: TVisibility): string;
 
 type
-  { enumeration type to determine type of @link(TPasCio) item }
-  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT,
-    CIO_RECORD  //, CIO_PACKEDRECORD
-  );
-
-  TCIONames = array[TCIOType] of string;
-const
-  CIO_NAMES: TCIONames = (
-    'class',
-    'dispinterface',
-    'interface',
-    'object',
-    'record'  //, 'packed record'
-  );
-//for ShowVisisbility
-  CioClassTypes = [CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT];
-  CIORecordTypes = [CIO_RECORD //, CIO_PACKEDRECORD
-  ];
-  CIONonHierarchy = CIORecordTypes;
-
-type
-  { Methodtype for @link(TPasMethod) }
-  TMethodType = (METHOD_CONSTRUCTOR, METHOD_DESTRUCTOR,
-    METHOD_FUNCTION, METHOD_PROCEDURE, METHOD_OPERATOR);
-
-{ Returns lowercased keyword associated with given method type. }
-function MethodTypeToString(const MethodType: TMethodType): string;
-
-type
   TRawDescriptionInfo = class(TStringList)
   public
     destructor Destroy; override;
@@ -169,8 +141,6 @@ type
   //this is the default for all items with lists
     dkItemList
   );
-
-  //TWeightList: array of TTranslationID;
 
 (* Replacement of TStringPair. This is the base class of all items.
   Since base items are derived from TSerializable, this is our base class as well.
@@ -712,7 +682,7 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
 
-  private
+  protected
   // The declarative token, "unit", "class", "type" etc.
     FKind: TTokenType;
   // All attributes, modifiers etc.
@@ -1175,9 +1145,12 @@ type
     FReturns, //string;
     FRaises,  //: TStringPairVector;
     FParams: TDescriptionItem;
+  {$IFDEF old}
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
+  {$ELSE}
+  {$ENDIF}
     procedure StoreRaisesTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -1188,8 +1161,11 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
+  {$IFDEF old}
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); override;
+  {$ELSE}
+  {$ENDIF}
 
     { In addition to inherited, this also registers @link(TTag)s
       that init @link(Params), @link(Returns) and @link(Raises)
@@ -1202,7 +1178,11 @@ type
     procedure BuildSections; override;
 
     { obsolete }
+  {$IFDEF old}
     property What: TMethodType read FWhat write FWhat;
+  {$ELSE}
+    property What: TTokenType read FKind;  // write FWhat;
+  {$ENDIF}
 
     { Note that Params, Returns, Raises are already in the form processed by
       @link(TTagManager.Execute), i.e. with links resolved,
@@ -1243,30 +1223,37 @@ type
     or as members, removed from the (fields/methods) lists?
 *)
   TPasProperty = class(TPasItem)
-  protected
+  {$IFDEF DetailedProps}
   //these are unused
+  protected
     FIndexDecl: string;
     FStoredID: string;
     FDefaultID: string;
     FPropType: string;
+  {$ELSE}
+  {$ENDIF}
+  protected
   //these deserve special handling, lookup (also in ancestors!)
     FWriter: string;
     FReader: string;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
+  {$IFDEF DetailedProps}
     { contains the optional index declaration, including brackets }
     property IndexDecl: string read FIndexDecl write FIndexDecl;
     { contains the type of the property }
     property Proptype: string read FPropType write FPropType;
-    { read specifier - link? }
-    property Reader: string read FReader write FReader;
-    { write specifier - link? }
-    property Writer: string read FWriter write FWriter;
     { keeps default value specifier }
     property DefaultID: string read FDefaultID write FDefaultID;
     { keeps Stored specifier - link? }
     property StoredId: string read FStoredID write FStoredID;
+  {$ELSE}
+  {$ENDIF}
+    { read specifier - link? }
+    property Reader: string read FReader write FReader;
+    { write specifier - link? }
+    property Writer: string read FWriter write FWriter;
     { true if the property is the default property }
     property Default: Boolean //read FDefault write FDefault;
       index ord(SD_DEFAULT) read GetAttributeFP write SetAttributeFP;
@@ -1286,7 +1273,10 @@ type
     FMethods,
     FProperties: TPasItems;
     property FAncestors: TDescriptionItem read FHeritage write FHeritage;
+  {$IFDEF old}
     function  GetCioType: TCIOType;
+  {$ELSE}
+  {$ENDIF}
     function  GetClassDirective: TClassDirective;
 
   protected
@@ -1398,7 +1388,11 @@ type
     property Properties: TPasItems read FProperties;
 
     { determines if this is a class, an interface or an object }
+  {$IFDEF old}
     property MyType: TCIOType read GetCioType;  // FMyType write FMyType;
+  {$ELSE}
+    property MyType: TTokenType read FKind;
+  {$ENDIF}
 
     { Is Visibility of items (Fields, Methods, Properties) important ? }
     function ShowVisibility: boolean;
@@ -2413,7 +2407,7 @@ var
   LObj: TBaseItem;
 begin
   LObj := TBaseItem(Items[AIndex]);
-  FHash.Delete(LowerCase(LObj.Name));
+  FHash.DeleteKey(LowerCase(LObj.Name));
   inherited Delete(AIndex);
 end;
 
@@ -2421,14 +2415,16 @@ function TBaseItems.FindName(const AName: string): TBaseItem;
 begin
   Result := nil;
   if Length(AName) > 0 then begin
-    result := TObject(FHash.Items[LowerCase(AName)]) as TBaseItem;
+    //result := TObject(FHash.Items[LowerCase(AName)]) as TBaseItem;
+    result := TObject(FHash.Objects[LowerCase(AName)]) as TBaseItem;
   end;
 end;
 
 function TBaseItems.Add(const AObject: TDescriptionItem): integer;
 begin
   Result := inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Name)] := AObject;
+  //FHash.Items[LowerCase(AObject.Name)] := AObject;
+  FHash.Objects[LowerCase(AObject.Name)] := AObject;
 end;
 
 procedure TBaseItems.Clear;
@@ -2493,12 +2489,12 @@ begin
 
   for j := 0 to Count - 1 do
     case TPasCio(GetPasItemAt(j)).MyType of
-      CIO_CLASS:
-        Inc(c);
-      CIO_INTERFACE, CIO_SPINTERFACE:
-        Inc(i);
-      CIO_OBJECT:
-        Inc(o);
+    KEY_CLASS:
+      Inc(c);
+    KEY_INTERFACE, KEY_DISPINTERFACE:
+      Inc(i);
+    KEY_OBJECT:
+      Inc(o);
     end;
 end;
 
@@ -2589,6 +2585,7 @@ begin
   end;
 end;
 
+{$IFDEF old}
 function  TPasCio.GetCioType: TCIOType;
 begin
   case FKind of
@@ -2601,6 +2598,8 @@ begin
     Result := CIO_RECORD;
   end;
 end;
+{$ELSE}
+{$ENDIF}
 
 function  TPasCio.GetClassDirective: TClassDirective;
 begin
@@ -3063,6 +3062,7 @@ end;
 
 { TPasMethod ----------------------------------------------------------------- }
 
+{$IFDEF old}
 constructor TPasMethod.Create(AOwner: TPasScope; AKind: TTokenType;
   const AName: string);
 begin
@@ -3076,6 +3076,8 @@ begin
   else            FWhat := METHOD_OPERATOR;
   end;
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TPasMethod.BuildMemberLists;
 begin
@@ -3176,6 +3178,7 @@ begin
   Result := not IsEmpty(FList);
 end;
 
+{$IFDEF old}
 procedure TPasMethod.Deserialize(const ASource: TStream);
 begin
   inherited;
@@ -3197,6 +3200,8 @@ begin
   SaveStringToStream(FReturns, ADestination);
   FRaises.SaveToBinaryStream(ADestination); }
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
@@ -3224,23 +3229,29 @@ end;
 procedure TPasProperty.Deserialize(const ASource: TStream);
 begin
   inherited;
+{$IFDEF DetailedProps}
   FIndexDecl := LoadStringFromStream(ASource);
   FStoredID := LoadStringFromStream(ASource);
   FDefaultID := LoadStringFromStream(ASource);
-  FWriter := LoadStringFromStream(ASource);
   FPropType := LoadStringFromStream(ASource);
+{$ELSE}
+{$ENDIF}
   FReader := LoadStringFromStream(ASource);
+  FWriter := LoadStringFromStream(ASource);
 end;
 
 procedure TPasProperty.Serialize(const ADestination: TStream);
 begin
   inherited;
+{$IFDEF DetailedProps}
   SaveStringToStream(FIndexDecl, ADestination);
   SaveStringToStream(FStoredID, ADestination);
   SaveStringToStream(FDefaultID, ADestination);
-  SaveStringToStream(FWriter, ADestination);
   SaveStringToStream(FPropType, ADestination);
+{$ELSE}
+{$ENDIF}
   SaveStringToStream(FReader, ADestination);
+  SaveStringToStream(FWriter, ADestination);
 end;
 
 { TExternalItem ---------------------------------------------------------- }
@@ -3317,10 +3328,10 @@ end;
 procedure TExternalItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'title', 
+  TTopLevelTag.Create(TagManager, 'title',
     nil, {$IFDEF FPC}@{$ENDIF} HandleTitleTag,
     [toParameterRequired]);
-  TTopLevelTag.Create(TagManager, 'shorttitle', 
+  TTopLevelTag.Create(TagManager, 'shorttitle',
     nil, {$IFDEF FPC}@{$ENDIF} HandleShortTitleTag,
     [toParameterRequired]);
 end;
@@ -3336,26 +3347,6 @@ begin
 end;
 
 { global things ------------------------------------------------------------ }
-
-function MethodTypeToString(const MethodType: TMethodType): string;
-const
-  { Maps @link(TMethodType) value to @link(TKeyWord) value.
-    When given TMethodType value doesn't correspond to any keyword,
-    it maps it to KEY_INVALIDKEYWORD. }
-  MethodTypeToKeyWord: array[TMethodType] of TTokenType =
-  ( KEY_CONSTRUCTOR,
-    KEY_DESTRUCTOR,
-    KEY_FUNCTION,
-    KEY_PROCEDURE,
-    KEY_INVALIDKEYWORD
-  );
-begin
-  if MethodType = METHOD_OPERATOR then
-    Result := DirectiveNames[SD_OPERATOR]
-  else
-    Result := TokenNames[MethodTypeToKeyWord[MethodType]];
-  Result := LowerCase(Result);
-end;
 
 function VisToStr(const Vis: TVisibility): string;
 begin

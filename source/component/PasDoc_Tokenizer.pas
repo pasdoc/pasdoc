@@ -104,56 +104,17 @@ type
       when writing Pascal source filenames to parse.
     
       In particular, this may be '' to indicate current dir.
-      
+
       It's always specified like it was processed by
       IncludeTrailingPathDelimiter, so it has trailing PathDelim
       included (unless it was '', in which case it remains empty). }
     property StreamPath: string read FStreamPath;
   end;
 
-{ Checks is Name (case ignored) some Pascal keyword.
-  Returns SD_INVALIDSTANDARDDIRECTIVE if not. }
-function StandardDirectiveByName(const Name: string): TStandardDirective;
-
-{ Checks is Name (case ignored) some Pascal standard directive.
-  Returns KEY_INVALIDKEYWORD if not. }
-function KeyWordByName(const Name: string): TTokenType;
-
 implementation
 
 uses
   SysUtils;
-
-function KeyWordByName(const Name: string): TTokenType;
-var
-  LName: string;
-  i: TTokenType;
-begin
-  LName := UpperCase(Name);
-  Result := KEY_INVALIDKEYWORD;
-  for i := Low(eKeyword) to High(eKeyword) do begin
-    //if LName = KeyWordArray[i] then begin
-    if LName = TokenNames[i] then begin
-      Result := i;
-      break;
-    end;
-  end;
-end;
-
-function StandardDirectiveByName(const Name: string): TStandardDirective;
-var
-  LName: string;
-  i: TStandardDirective;
-begin
-  LName := UpperCase(Name);
-  for i := Low(TStandardDirective) to High(TStandardDirective) do begin
-    if LName = DirectiveNames[i] then begin
-      Result := i;
-      exit;
-    end;
-  end;
-  Result := SD_INVALIDSTANDARDDIRECTIVE;
-end;
 
 const
   //Whitespace = [#9, #10, #13, ' '];

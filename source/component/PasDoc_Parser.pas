@@ -1179,9 +1179,9 @@ var
   begin
   //add default ancestor, depending on CIO type
     case i.MyType of
-      CIO_CLASS:  CheckFor('TObject');
-      CIO_SPINTERFACE: CheckFor('IDispInterface');
-      CIO_INTERFACE:  CheckFor('IInterface');
+    KEY_CLASS:  CheckFor('TObject');
+    KEY_DISPINTERFACE: CheckFor('IDispInterface');
+    KEY_INTERFACE:  CheckFor('IInterface');
     end;
   end;
 
@@ -1236,7 +1236,7 @@ or
     { Else A declaration of type "name = class(ancestor);" }
 
   //default visibility
-    if I.MyType = CIO_CLASS then begin
+    if I.MyType = KEY_CLASS then begin
       { Visibility of members at the beginning of a class declaration
         that don't have a specified visibility is controlled
         by ImplicitVisibility value. }
@@ -1460,8 +1460,11 @@ decl: [ params ] ":" type [index] [reader] [writer] [";"] [default *] [stored *]
 *)
   TPasItem(p) := CreateItem(TPasProperty, KEY_PROPERTY, nil);
   DoMessage(5, pmtInformation, 'Parsing property %s', [p.Name]);
+{$IFDEF DetailedProps}
   p.IndexDecl := '';
   p.Proptype := '';
+{$ELSE}
+{$ENDIF}
 
 { Is this only a redeclaration of property from ancestor
     (to e.g. change it's visibility) }
@@ -1475,7 +1478,10 @@ decl: [ params ] ":" type [index] [reader] [writer] [";"] [default *] [stored *]
   if Skip(SYM_LEFT_BRACKET) then begin
     while GetNextToken <> SYM_RIGHT_BRACKET do
       ;
+  {$IFDEF DetailedProps}
     p.IndexDecl := Recorder;
+  {$ELSE}
+  {$ENDIF}
     p.FullDeclaration := p.FullDeclaration + Recorded;
   end;
 
@@ -1488,7 +1494,10 @@ decl: [ params ] ":" type [index] [reader] [writer] [";"] [default *] [stored *]
     while (PeekNextToken <> SYM_SEMICOLON)
     and (Peeked.Directive = SD_INVALIDSTANDARDDIRECTIVE) do
       GetNextToken;
+  {$IFDEF DetailedProps}
     p.Proptype := Recorder; //keep, added to FullDeclaration
+  {$ELSE}
+  {$ENDIF}
   end;
 
 { read the rest of declaration }

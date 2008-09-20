@@ -329,7 +329,7 @@ uses
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc_Base,
   PasDoc_ObjectVector,
-  PasDoc_HierarchyTree,
+  //PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_Aspell;
 
@@ -568,13 +568,13 @@ const
   end;
 
 var
-  i: Integer;
+  //i: Integer;
   s: string;
   SectionsAvailable: TSectionSet;
   SectionHeads: array[TSections] of string;
   Section: TSections;
   AnyItem: boolean;
-  ancestor: TDescriptionItem;
+  //ancestor: TDescriptionItem;
 begin //WriteCIO
   if not Assigned(CIO) then Exit;
 
@@ -628,8 +628,9 @@ begin //WriteCIO
   WriteHeading(HL + 1, 'declaration', FLanguage.Translation[trDeclaration]);
   WriteStartOfParagraph('declaration');
   WriteStartOfCode;
+{$IFDEF old}
   WriteConverted('type ' + CIO.Name + ' = ');
-  WriteConverted(CIO_NAMES[CIO.MyType]);
+  WriteConverted(TokenNames[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
   if not IsEmpty(CIO.Ancestors) then begin
@@ -646,6 +647,9 @@ begin //WriteCIO
     end;
     WriteConverted(')');
   end;
+{$ELSE}
+  WriteConverted(CIO.FullDeclaration);
+{$ENDIF}
   WriteEndOfCode;
   WriteEndOfParagraph;
 
@@ -1018,15 +1022,9 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   end;
 
   { writes the parameters or exceptions list }
-{$IFDEF old}
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
-    List: TdddStringPairVector; LinkToParamNames: boolean;
-    const CssListClass: string);
-{$ELSE}
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
     List: TDescriptionItem; LinkToParamNames: boolean;
     const CssListClass: string);
-{$ENDIF}
 
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
@@ -1040,7 +1038,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       WriteSpellChecked(Desc);
       WriteDirectLine('</dd>');
     end;
-    
+
   var
     i: integer;
     ParamName: string;
@@ -1050,7 +1048,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
     WriteDescriptionSectionHeading(Caption);
     WriteDirectLine('<dl class="' + CssListClass + '">');
-    for i := 0 to List.Count - 1 do 
+    for i := 0 to List.Count - 1 do
     begin
       ParamName := List.Items[i].Name;
 
@@ -1062,11 +1060,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
-{$IFDEF old}
-  procedure WriteSeeAlso(SeeAlso: TStringPairVector);
-{$ELSE}
   procedure WriteSeeAlso(SeeAlso: TDescriptionItem);
-{$ENDIF}
   var
     i: integer;
     SeeAlsoItem: TBaseItem;
@@ -1101,7 +1095,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
-  //procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
   begin
     if (ReturnDesc = nil) or (ReturnDesc.Text = '') then
@@ -1121,7 +1114,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
 var
   Ancestor: TBaseItem;
-  //AncestorName: string;
   AItemMethod: TPasMethod;
   i: Integer;
 begin //WriteItemLongDescription

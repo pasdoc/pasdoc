@@ -16,6 +16,7 @@
 unit PasDoc_Scanner;
 
 {$I pasdoc_defines.inc}
+{$DEFINE SymHash} //use hashtable for symbols?
 
 interface
 
@@ -24,8 +25,12 @@ uses
   Classes,
   PasDoc_Types,
   PasDoc_Tokenizer,
-  PasDoc_StringVector,
-  PasDoc_StringPairVector;
+{$IFDEF SymHash}
+  PasDoc_Hashes,
+{$ELSE}
+  PasDoc_StringPairVector,
+{$ENDIF}
+  PasDoc_StringVector;
 
 const
   { maximum number of streams we can recurse into; first one is the unit
@@ -60,8 +65,12 @@ type
       Note the important fact: we can't use Value <> '' to decide
       if symbol is a macro. A non-macro symbol is something
       different than a macro that expands to nothing. }
+  {$IFDEF SymHash}
+    FSymbols: THash;
+  {$ELSE}
     FSymbols: TStringPairVector;
-    
+  {$ENDIF}
+
     FIncludeFilePaths: TStringVector;
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
@@ -344,13 +353,17 @@ begin
   FSwitchOptions['V'] := True;
   FSwitchOptions['X'] := True;
 
+{$IFDEF SymHash}
+  FSymbols := THash.Create;
+{$ELSE}
   FSymbols := TStringPairVector.Create(true);
+{$ENDIF}
 
-  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel, 
+  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
     AStreamName, AStreamPath);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;
-  
+
   FIncludeFilePaths := TStringVector.Create;
 end;
 
@@ -360,16 +373,15 @@ destructor TScanner.Destroy;
 var
   i: Integer;
 begin
-  FSymbols.Free;
+  FSymbols.Free; //no objects to delete
 
   for i := 0 to FCurrentTokenizer do begin
     FTokenizers[i].Free;
   end;
 
   FBufferedToken.Free;
-  
   FIncludeFilePaths.Free;
-  
+
   inherited;
 end;
 
@@ -387,7 +399,11 @@ begin
   if not IsSymbolDefined(Name) then 
   begin
     DoMessage(6, pmtInformation, 'Symbol "%s" defined', [Name]);
+  {$IFDEF SymHash}
+    FSymbols.SetValueData(Name, '', SymbolIsNotMacro);
+  {$ELSE}
     FSymbols.Add(TStringPair.Create(Name, '', SymbolIsNotMacro));
+  {$ENDIF}
   end;
 end;
 
@@ -408,17 +424,27 @@ procedure TScanner.AddMacro(const Name, Value: string);
 var 
   i: Integer;
 begin
+{$IFDEF SymHash}
+  i := FSymbols.IndexOf(Name);
+  if i < 0 then begin
+    DoMessage(6, pmtInformation, 'Macro "%s" defined as "%s"', [Name, Value]);
+    FSymbols.SetValueData(Name, Value, SymbolIsMacro);
+  end else begin
+    DoMessage(6, pmtInformation, 'Macro "%s" RE-defined as "%s"', [Name, Value]);
+    { Redefine macro in this case. }
+    FSymbols.Items[i]^.Value := Value;
+  end;
+{$ELSE}
   i := FSymbols.FindName(Name);
-  if i = -1 then
-  begin
+  if i = -1 then begin
     DoMessage(6, pmtInformation, 'Macro "%s" defined as "%s"', [Name, Value]);
     FSymbols.Add(TStringPair.Create(Name, Value, SymbolIsMacro));
-  end else
-  begin
+  end else begin
     DoMessage(6, pmtInformation, 'Macro "%s" RE-defined as "%s"', [Name, Value]);
     { Redefine macro in this case. }
     FSymbols.Items[i].Value := Value;
   end;
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -432,7 +458,11 @@ end;
 
 procedure TScanner.DeleteSymbol(const Name: string);
 begin
+{$IFDEF SymHash}
+  FSymbols.DeleteKey(Name);
+{$ELSE}
   FSymbols.DeleteName(Name);
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -485,30 +515,41 @@ function TScanner.GetToken: TToken;
   function ExpandMacro(T: TToken): boolean;
   var
     SymbolIndex: Integer;
+    v: string;
+    p: pointer;
   begin
     Result := T.MyType = TOK_IDENTIFIER;
-    if Result then
-    begin
+    if Result then begin
+    {$IFDEF SymHash}
+      SymbolIndex := FSymbols.GetValueData(T.Data, v, p);
+      Result := p = SymbolIsMacro;
+      if Result then
+        OpenNewTokenizer(TStringStream.Create(v),
+          '<' + T.Data + ' macro>',
+          { Expanded macro text inherits current StreamPath }
+          FTokenizers[FCurrentTokenizer].StreamPath);
+    {$ELSE}
       SymbolIndex := FSymbols.FindName(T.Data);
-      Result := (SymbolIndex <> -1) and 
+      Result := (SymbolIndex >= 0) and
          (FSymbols[SymbolIndex].Data = SymbolIsMacro);
       if Result then
         OpenNewTokenizer(TStringStream.Create(
-          FSymbols[SymbolIndex].Value), 
+          FSymbols[SymbolIndex].Value),
           '<' + FSymbols[SymbolIndex].Name + ' macro>',
           { Expanded macro text inherits current StreamPath }
           FTokenizers[FCurrentTokenizer].StreamPath);
+    {$ENDIF}
     end;
   end;
 
-            
+
   { Call this on $ifdef, $ifndef, $ifopt, $if directives.
     @param(IsTrue says if condition is true (so we should
-      parse the section up to $else or $elseif, and then skip to 
+      parse the section up to $else or $elseif, and then skip to
       $endif or $ifend.))
     @param(DirectiveName is used for debug messages.)
     @param(DirectiveParam is also used for debug messages.) }
-  procedure HandleIfDirective(IsTrue: boolean; 
+  procedure HandleIfDirective(IsTrue: boolean;
     const DirectiveName, DirectiveParam: string);
   begin
     DoMessage(6, pmtInformation, 
@@ -659,7 +700,11 @@ end;
 
 function TScanner.IsSymbolDefined(const Name: string): Boolean;
 begin
+{$IFDEF SymHash}
+  Result := FSymbols.KeyExists(Name);
+{$ELSE}
   Result := FSymbols.FindName(Name) <> -1;
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -668,17 +713,15 @@ function TScanner.IsSwitchDefined(N: string): Boolean;
 begin
   { We expect a length 2 AnsiString like 'I+' or 'A-', first character a letter,
     second character plus or minus }
-  if Length(N) >= 2 then
-    begin;
-      if (N[1] >= 'a') and (N[1] <= 'z') then
-        N[1] := AnsiChar(Ord(N[1]) - 32);
-      if (N[1] >= 'A') and (N[1] <= 'Z') and ((N[2] = '-') or (N[2] = '+')) then
-        begin
-          Result := FSwitchOptions[N[1]] = (N[2] = '+');
-          Exit;
-        end;
+  if Length(N) >= 2 then begin;
+    if (N[1] >= 'a') and (N[1] <= 'z') then
+      N[1] := AnsiChar(Ord(N[1]) - 32);
+    if (N[1] >= 'A') and (N[1] <= 'Z') and ((N[2] = '-') or (N[2] = '+')) then begin
+      Result := FSwitchOptions[N[1]] = (N[2] = '+');
+      Exit;
     end;
- 
+  end;
+
   DoMessage(2, pmtInformation, GetStreamInfo + ': Invalid $IFOPT parameter (%s).', [N]);
   Result := False;
 end;
