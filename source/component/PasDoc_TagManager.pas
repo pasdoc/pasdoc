@@ -987,7 +987,8 @@ begin
         if EnclosingTag = nil then
           DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used at the ' +
             'top level of description, it must be used within some other @-tag', 
-            [FoundTag.Name]) else
+            [FoundTag.Name])
+        else
           DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used inside ' +
             'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
             

@@ -227,21 +227,21 @@ type
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; override;
-    
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that reserved words are formatted in Delphi.
     function FormatKeyWord(AString: string): string; override;
-    
+
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; override;
-    
+
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
 
-    { Returns a link to an anchor within a document. HTML simply concatenates
-      the strings with a "#" character between them. }
+    { Returns a link to an anchor within a document.
+      HTML simply concatenates the strings with a "#" character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
 
     procedure WriteStartOfCode; override;
@@ -283,11 +283,7 @@ type
 
     function FormatTable(Table: TTableData): string; override;
 
-  {$IFDEF old}
-    function FormatTableOfContents(Sections: TStringPairVector): string; override;
-  {$ELSE}
     function FormatTableOfContents(Sections: TDescriptionItem): string; override;
-  {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -329,11 +325,10 @@ uses
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc_Base,
   PasDoc_ObjectVector,
-  //PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_Aspell;
 
-const 
+const
   img_automated : {$I automated.gif.inc};
   img_private   : {$I private.gif.inc};
   img_public    : {$I public.gif.inc};
@@ -628,28 +623,7 @@ begin //WriteCIO
   WriteHeading(HL + 1, 'declaration', FLanguage.Translation[trDeclaration]);
   WriteStartOfParagraph('declaration');
   WriteStartOfCode;
-{$IFDEF old}
-  WriteConverted('type ' + CIO.Name + ' = ');
-  WriteConverted(TokenNames[CIO.MyType]);
-  WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
-
-  if not IsEmpty(CIO.Ancestors) then begin
-    WriteConverted('(');
-    for i := 0 to CIO.Ancestors.Count - 1 do begin
-      ancestor := CIO.Ancestors.ItemAt(i);
-      if ancestor.PasItem <> nil then
-        WriteDirect(MakeItemLink(ancestor.PasItem,
-          ancestor.Name, lcNormal))
-      else
-        WriteConverted(ancestor.Name);
-      if (i <> CIO.Ancestors.Count - 1) then
-        WriteConverted(', ');
-    end;
-    WriteConverted(')');
-  end;
-{$ELSE}
   WriteConverted(CIO.FullDeclaration);
-{$ENDIF}
   WriteEndOfCode;
   WriteEndOfParagraph;
 
@@ -753,16 +727,7 @@ begin
 
     { Description of class/interface/object }
     WriteStartOfTableCell('itemdesc');
-  {$IFDEF old}
-    { Write only the AbstractDescription and do not opt for DetailedDescription,
-      like WriteItemShortDescription does. }
-    if p.AbstractDescription <> '' then
-      WriteSpellChecked(p.AbstractDescription)
-    else
-      WriteDirect('&nbsp;');
-  {$ELSE}
     WriteItemShortDescription(p);
-  {$ENDIF}
 
     WriteEndOfTableCell;
     WriteEndOfTableRow;
@@ -808,8 +773,7 @@ begin
   WriteIntroduction;
   WriteConclusion;
   WriteFramesetFiles;
-  if UseTipueSearch then
-  begin
+  if UseTipueSearch then begin
     DoMessage(2, pmtInformation,
       'Writing additional files for tipue search engine', []);
     TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
@@ -997,20 +961,7 @@ end;
 procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
 begin
   if AItem = nil then Exit;
-
-{$IFDEF old}
-  if AItem.AbstractDescription <> '' then begin
-    WriteSpellChecked(AItem.AbstractDescription);
-  end else begin
-    if AItem.DetailedDescription <> '' then begin
-      WriteSpellChecked(AItem.DetailedDescription)
-    end else begin
-      WriteDirect('&nbsp;');
-    end;
-  end;
-{$ELSE}
   WriteSpellChecked(AItem.ShortDescription);
-{$ENDIF}
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
@@ -1314,12 +1265,6 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
       WriteDirectLine('</ul>');
     end;
 
-{$IFDEF old}
-  var
-    Level, OldLevel: Integer;
-    Node: TPasItemNode;
-{$ELSE}
-{$ENDIF}
   begin
     CreateClassHierarchy;
 
@@ -1331,43 +1276,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
       WriteConverted(FLanguage.Translation[trNoCIOsForHierarchy]);
       WriteEndOfParagraph;
     end else begin
-    {$IFDEF old}
-      OldLevel := -1;
-      Node := FClassHierarchy.FirstItem;
-      while Node <> nil do begin
-        Level := Node.Level;
-        if Level > OldLevel then
-          WriteDirectLine('<ul class="hierarchylevel">')
-        else
-          while Level < OldLevel do begin
-            WriteDirectLine('</ul>');
-            if OldLevel > 1 then
-              WriteDirectLine('</li>');
-            Dec(OldLevel);
-          end;
-        OldLevel := Level;
-
-        WriteDirect('<li>');
-        if Node.Item = nil then
-          WriteConverted(Node.Name)
-        else
-          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
-        { We can't simply write here an explicit '</li>' because current
-          list item may be not finished yet (in case next Nodes
-          (with larger Level) will follow in the FClassHierarchy). }
-
-        Node := FClassHierarchy.NextItem(Node);
-      end;
-
-      while OldLevel > 0 do begin
-        WriteDirectLine('</ul>');
-        if OldLevel > 1 then
-          WriteDirectLine('</li>');
-        Dec(OldLevel);
-      end;
-    {$ELSE}
       WriteLevel(FClassHierarchy);
-    {$ENDIF}
     end;
 
     WriteFooter;
@@ -1661,21 +1570,12 @@ const
       WriteDirect('<ul class="useslist">');
       for i := 0 to U.UsesUnits.Count-1 do begin
         WriteDirect('<li>');
-      {$IFDEF old}
-        ULink := TPasUnit(U.UsesUnits.Objects[i]);
-        if ULink <> nil then begin
-          WriteLink(ULink.FullLink, U.UsesUnits[i], '');
-        end else begin
-          WriteConverted(U.UsesUnits[i]);
-        end;
-      {$ELSE}
         ULink := u.UsesUnits.PasItemAt(i);
         if ULink <> nil then begin
           WriteLink(ULink.FullLink, U.UsesUnits.Items[i].Name, '');
         end else begin
           WriteConverted(U.UsesUnits.Items[i].Name);
         end;
-      {$ENDIF}
         WriteDirect('</li>');
       end;
       WriteDirect('</ul>');
@@ -2040,20 +1940,18 @@ var
   Overview: TCreatedOverviewFile;
 begin
   CreateStream('index.html', True);
+  MasterFile := FCurrentFileName;
   WriteDirectLine(DoctypeFrameset);
   WriteDirectLine('<html><head>');
   WriteDirect(MetaContentType);
   WriteDirectLine('<title>'+Title+'</title>');
   WriteDirectLine('</head><frameset cols="200,*">');
   WriteDirectLine('<frame src="navigation.html" frameborder="0">');
-  if Introduction <> nil then
-  begin
+  if Introduction <> nil then begin
     WriteDirectLine('<frame src="' +
       Introduction.OutputFileName +
       '" frameborder="0" name="content">');
-  end
-  else
-  begin
+  end else begin
     WriteDirectLine('<frame src="AllUnits.html" frameborder="0" name="content">');
   end;
   WriteDirectLine('</frameset></html>');
@@ -2075,22 +1973,19 @@ begin
 
   WriteStartOfTable('navigation');
 
-  if Introduction <> nil then
-  begin
-    if Introduction.ShortTitle = '' then
-    begin
+  if Introduction <> nil then begin
+    if Introduction.ShortTitle = '' then begin
       LocalWriteLink(Introduction.OutputFileName, trIntroduction);
-    end else
-    begin
+    end else begin
       LocalWriteLink(Introduction.OutputFileName, Introduction.ShortTitle)
     end;
   end;
-    
+
   for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     LocalWriteLink(
       OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
       OverviewFilesInfo[Overview].TranslationId);
-      
+
   if LinkGraphVizUses <> '' then
     LocalWriteLink(
       OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
@@ -2099,22 +1994,19 @@ begin
   if LinkGraphVizClasses <> '' then
     LocalWriteLink(
       OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
-      OverviewFilesInfo[ofGraphVizClasses].TranslationId);  
+      OverviewFilesInfo[ofGraphVizClasses].TranslationId);
 
-  if Conclusion <> nil then
-  begin
-    if Conclusion.ShortTitle = '' then
-    begin
+  if Conclusion <> nil then begin
+    if Conclusion.ShortTitle = '' then begin
       LocalWriteLink(Conclusion.OutputFileName, trConclusion);
-    end else
-    begin
+    end else begin
       LocalWriteLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
     end;
   end;
-    
+
   if UseTipueSearch then
     WriteDirect('<tr><td>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</td></tr>');
-    
+
   WriteDirectLine('</table>');
   WriteDirectLine('</body></html>');
   CloseStream;
@@ -2447,11 +2339,7 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatTableOfContents(
-{$IFDEF old}
-  Sections: TStringPairVector): string;
-{$ELSE}
   Sections: TDescriptionItem): string;
-{$ENDIF}
 var
   i: Integer;
   item: TDescriptionItem;
@@ -2467,11 +2355,7 @@ begin
     Result := Result +
       '<li><a href="#' + item.Name + '">' + item.Value + '</a>' +
       LineEnding +
-    {$IFDEF old}
-      FormatTableOfContents(TStringPairVector(Sections.Items[i].Data)) + '</li>' +
-    {$ELSE}
       FormatTableOfContents(item) + '</li>' +
-    {$ENDIF}
       LineEnding;
   end;
   Result := Result + '</ol>' + LineEnding;

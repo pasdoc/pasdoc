@@ -212,16 +212,14 @@ var
 
   { ---------- }
 
-  procedure ContentWriteClassHierarchy(const Text: string);
+  procedure ContentWriteClassHierarchy();
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName + 
+    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName +
       GetFileExtension;
-    
-    if Text <> '' then
-      WriteLiObject(Text, FileName) else
-      WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
+
+    WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
   end;
 
   { ---------- }
@@ -300,29 +298,20 @@ var
     if CompareText('@Classes', Link) = 0 then begin
       DefaultContentsWritten := True;
       ContentWriteClasses(Text);
-    end
-    else
-      if CompareText('@ClassHierarchy', Link) = 0 then begin
-        DefaultContentsWritten := True;
-        ContentWriteClassHierarchy(Text);
-      end
-      else
-        if CompareText('@Units', Link) = 0 then begin
-          DefaultContentsWritten := True;
-          ContentWriteUnits(Text);
-        end
-        else
-          if CompareText('@Overview', Link) = 0 then begin
-            DefaultContentsWritten := True;
-            ContentWriteOverview(Text);
-          end
-          else
-            if CompareText('@Legend', Link) = 0 then begin
-              DefaultContentsWritten := True;
-              ContentWriteLegend(Text);
-            end
-            else
-              WriteLiObject(Text, Link);
+    end else if CompareText('@ClassHierarchy', Link) = 0 then begin
+      DefaultContentsWritten := True;
+      ContentWriteClassHierarchy({Text});
+    end else if CompareText('@Units', Link) = 0 then begin
+      DefaultContentsWritten := True;
+      ContentWriteUnits(Text);
+    end else if CompareText('@Overview', Link) = 0 then begin
+      DefaultContentsWritten := True;
+      ContentWriteOverview(Text);
+    end else if CompareText('@Legend', Link) = 0 then begin
+      DefaultContentsWritten := True;
+      ContentWriteLegend(Text);
+    end else
+      WriteLiObject(Text, Link);
   end;
 
   { ---------- }
@@ -348,18 +337,30 @@ var
   procedure IndexWriteItem(const Item, PreviousItem, NextItem: TPasItem);
     { Item is guaranteed to be assigned, i.e. not to be nil. }
   begin
+  (* All items have the same name. Could be:
+    - overloaded proc/method
+    - same identifier in different unit or CIO
+  *)
+  { TODO : this output doesn't look meaningful :-( }
     if Assigned(Item.MyObject) then begin
-      if (Assigned(NextItem) and Assigned(NextItem.MyObject) and
-        (CompareText(Item.MyObject.Name, NextItem.MyObject.Name) = 0)) or
-        (Assigned(PreviousItem) and Assigned(PreviousItem.MyObject) and
+    //CIO member - check for equal CIO with prev or next item
+    {$IFDEF old}
+      if (Assigned(NextItem) and Assigned(NextItem.MyObject)
+        and (CompareText(Item.MyObject.Name, NextItem.MyObject.Name) = 0))
+      or (Assigned(PreviousItem) and Assigned(PreviousItem.MyObject) and
           (CompareText(Item.MyObject.Name, PreviousItem.MyObject.Name) = 0))
-          then
+    {$ELSE}
+      if (Assigned(NextItem) and (NextItem.MyObject = Item.MyObject))
+      or (Assigned(PreviousItem) and (PreviousItem.MyObject = Item.MyObject))
+    {$ENDIF}
+    //looks as if the branches should be reversed?
+      then //assume overloaded method
         WriteLiObject(Item.MyObject.Name + ' - ' + Item.MyUnit.Name + #32 +
           FLanguage.Translation[trUnit], Item.FullLink)
       else
         WriteLiObject(Item.MyObject.Name, Item.FullLink);
-    end
-    else begin
+    end else begin
+    //not a CIO member
       WriteLiObject(Item.MyUnit.Name + #32 + FLanguage.Translation[trUnit],
         Item.FullLink);
     end;
@@ -422,28 +423,23 @@ begin
 
       if Level = CurrentLevel then
         ContentWriteCustom(Text, Link)
-      else
-        if CurrentLevel = (Level - 1) then begin
-          WriteDirectLine('<ul>');
-          Inc(CurrentLevel);
-          ContentWriteCustom(Text, Link)
-        end
-        else
-          if CurrentLevel > Level then begin
-            WriteDirectLine('</ul>');
-            Dec(CurrentLevel);
-            while CurrentLevel > Level do begin
-              WriteDirectLine('</ul>');
-              Dec(CurrentLevel);
-            end;
-            ContentWriteCustom(Text, Link)
-          end
-
-          else begin
-            DoMessage(1, pmtError, 'Invalid level ' + IntToStr(Level) +
-              'in Content file (line ' + IntToStr(j) + ').', []);
-            Exit;
-          end;
+      else if CurrentLevel = (Level - 1) then begin
+        WriteDirectLine('<ul>');
+        Inc(CurrentLevel);
+        ContentWriteCustom(Text, Link)
+      end else if CurrentLevel > Level then begin
+        WriteDirectLine('</ul>');
+        Dec(CurrentLevel);
+        while CurrentLevel > Level do begin
+          WriteDirectLine('</ul>');
+          Dec(CurrentLevel);
+        end;
+        ContentWriteCustom(Text, Link)
+      end else begin
+        DoMessage(1, pmtError, 'Invalid level ' + IntToStr(Level) +
+          'in Content file (line ' + IntToStr(j) + ').', []);
+        Exit;
+      end;
     end;
     SL.Free;
   end;
@@ -451,7 +447,7 @@ begin
   if not DefaultContentsWritten then begin
     ContentWriteIntroduction;
     ContentWriteUnits('');
-    ContentWriteClassHierarchy(FLanguage.Translation[trClassHierarchy]);
+    ContentWriteClassHierarchy();
     ContentWriteClasses('');
     ContentWriteOverview('');
     ContentWriteLegend('');
@@ -515,7 +511,8 @@ begin
     while j < c.Count do begin
       NextItem := c.PasItemAt[j];
 
-          // Does the next Item have a different name?
+      // Does the next Item have a different name?
+      //(check for overloaded procedures, or same identifiers in different units)
       if CompareText(Item.Name, NextItem.Name) <> 0 then begin
         WriteLiObject(Item.Name, Item.FullLink);
         Item := NextItem;

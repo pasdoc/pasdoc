@@ -100,11 +100,7 @@ type
   protected
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
-      If one is found, the item is removed from the collection.
-      If not, the fields, methods and properties collections are called
-      with RemoveExcludedItems
-      If the collection is empty after removal of all items, it is disposed
-      of and the variable is set to nil. }
+      If one is found, the item is removed from the collection. }
     procedure RemoveExcludedItems(const c: TPasItems);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -528,51 +524,17 @@ end;
 
 procedure TPasDoc.RemoveExcludedItems(const c: TPasItems);
 var
-  i, il: Integer;
+  i: Integer;
   p: TPasItem;
-  o: TDescriptionItem;
 begin
+(* Exclude units from FUnits.
+  Other items are excluded by TPasScope.
+*)
   if c = nil then Exit;
-  i := 0;
-  while (i < c.Count) do begin
+  for i := c.Count - 1 downto 0 do begin
     p := c.PasItemAt[i];
-
-    { TODO -- code below checks for @exclude tag too trivially,
-      it accidentally excludes items with comments like '@@exclude'
-      or '@html(@exclude)'. Checking for exclude should be
-      incorporated into doing TTagManager.Execute
-      in ExpandDescription. }
-
-    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then begin
-      DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
+    if p.toBeExcluded then
       c.Delete(i);
-    end else begin
-          { P has no excluded tag; but if it is a class, interface, object or
-            unit, one of its parts may be excluded }
-    {$IFDEF old}
-      if p.ClassType = TPasCio then begin
-        RemoveExcludedItems(TPasCio(p).Fields);
-        RemoveExcludedItems(TPasItems(TPasCio(p).Properties));
-        RemoveExcludedItems(TPasItems(TPasCio(p).Methods));
-      end else if p.ClassType = TPasUnit then begin
-        RemoveExcludedItems(TPasUnit(p).CIOs);
-        RemoveExcludedItems(TPasUnit(p).Constants);
-        RemoveExcludedItems(TPasItems(TPasUnit(p).FuncsProcs));
-        RemoveExcludedItems(TPasUnit(p).Types);
-        RemoveExcludedItems(TPasUnit(p).Variables);
-      end;
-    {$ELSE}
-      if p is TPasScope then begin
-        o := TPasScope(p).Overview;
-        if o <> nil then begin
-          for il := 0 to o.Count - 1 do begin
-            RemoveExcludedItems(o.Items[il].PasItems);
-          end;
-        end;
-      end;
-    {$ENDIF}
-      Inc(i);
-    end;
   end;
 end;
 
@@ -582,7 +544,6 @@ procedure TPasDoc.Execute(fGenerate: boolean);
 var
   t1, t2: TDateTime;
   CacheDirNoDelim: string;
-  UnitsCountBeforeExcluding: Cardinal;
 begin
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
@@ -616,20 +577,9 @@ begin
   t1 := Now;
   ParseFiles;
 
-  UnitsCountBeforeExcluding := FUnits.Count;
-  { TODO : Filter items by visibility }
-  RemoveExcludedItems(TPasItems(FUnits));
-
-  { check if we have any units successfully parsed and not @excluded }
   if ObjectVectorIsNilOrEmpty(FUnits) then
-  begin
-    if UnitsCountBeforeExcluding <> 0 then
-      DoError('%d units were successfully parsed, but they are all ' +
-        'marked with @exclude', [UnitsCountBeforeExcluding], 1)
-    else
-      DoError('At least one unit must have been successfully parsed ' +
+    DoError('At least one unit must have been successfully parsed ' +
         'to write docs', [], 1);
-  end;
 
   if FProjectName <> '' then
     Generator.ProjectName := FProjectName
@@ -642,6 +592,7 @@ begin
   Generator.Conclusion := FConclusion;
   Generator.AutoLink := AutoLink;
   Generator.BuildLinks;
+  Generator.MasterFile := ''; //must be initialized by the specific generators.
 
   FUnits.SortDeep(SortSettings);
 
@@ -651,6 +602,7 @@ begin
 
   if fGenerate then begin
     Generator.ExpandDescriptions;
+    RemoveExcludedItems(TPasItems(FUnits)); //only after expanding descriptions!
 
     FUnits.BuildSections; //optional!
 

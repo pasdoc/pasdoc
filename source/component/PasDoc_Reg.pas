@@ -19,15 +19,20 @@ implementation
 
 uses
   Classes,
-  PasDoc_Base,
   PasDoc_GenHtml,
   PasDoc_GenLatex,
-  PasDoc_GenHtmlHelp;
+  PasDoc_GenHtmlHelp,
+  PasDoc_GenSimpleXML,
+  PasDoc_GenFullXML,
+  PasDoc_Base;
 
 procedure Register;
 begin
-  RegisterComponents('PasDoc', [TPasDoc, THTMLDocGenerator, TTexDocGenerator,
-    THTMLHelpDocGenerator]);
+  RegisterComponents('PasDoc', [TPasDoc,
+    THTMLDocGenerator, THTMLHelpDocGenerator,
+    TTexDocGenerator,
+    TSimpleXMLDocGenerator, TXMLDocGenerator
+  ]);
 end;
 
 end.

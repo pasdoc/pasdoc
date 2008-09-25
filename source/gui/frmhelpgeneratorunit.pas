@@ -197,7 +197,7 @@ type
     procedure MenuSaveClick(Sender: TObject);
     procedure SomethingChanged(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
-    procedure PasDoc1Warning(const MessageType: TMessageType;
+    procedure PasDoc1Warning(const MessageType: TPasDocMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
     procedure cbCheckSpellingChange(Sender: TObject);
@@ -296,7 +296,7 @@ implementation
 uses PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
   WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
 
-procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TMessageType;
+procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 const
   MisText = 'Word misspelled "';
@@ -526,6 +526,7 @@ end;
 function TfrmHelpGenerator.LanguageIdToString(const LanguageID: TLanguageID
   ): string;
 begin
+{$ifdef old}
   try
     result := 'en';
     case LanguageID of
@@ -560,6 +561,9 @@ begin
       raise;
     end;
   end;
+{$ELSE}
+  Result := LanguageDescriptor(LanguageID)^.Syntax;
+{$ENDIF}
 end;
 
 procedure TfrmHelpGenerator.SetChanged(const AValue: boolean);
@@ -589,7 +593,7 @@ begin
     Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
   for LanguageIndex := Low(TLanguageID) to High(TLanguageID) do
   begin
-    comboLanguages.Items.Add(LANGUAGE_ARRAY[LanguageIndex].Name);
+    comboLanguages.Items.Add(LanguageDescriptor(LanguageIndex)^.Name);
   end;
 
   Constraints.MinWidth := Width;

@@ -514,14 +514,14 @@ function TScanner.GetToken: TToken;
     Else returns false. }
   function ExpandMacro(T: TToken): boolean;
   var
-    SymbolIndex: Integer;
+    //SymbolIndex: Integer; //debug only
     v: string;
     p: pointer;
   begin
     Result := T.MyType = TOK_IDENTIFIER;
     if Result then begin
     {$IFDEF SymHash}
-      SymbolIndex := FSymbols.GetValueData(T.Data, v, p);
+      {SymbolIndex :=} FSymbols.GetValueData(T.Data, v, p);
       Result := p = SymbolIsMacro;
       if Result then
         OpenNewTokenizer(TStringStream.Create(v),

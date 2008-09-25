@@ -412,11 +412,7 @@ type
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
 
-  {$IFDEF old}
-    FClassHierarchy: TStringCardinalTree;
-  {$ELSE}
     FClassHierarchy: TDescriptionItem;
-  {$ENDIF}
 
     procedure DoError(const AMessage: string; const AArguments: array of const;
       const AExitCode: Word);
@@ -427,16 +423,16 @@ type
     property CurrentStream: TStream read FCurrentStream;
 
     procedure CreateClassHierarchy;
-    
+
     { Return a link to item Item which will be displayed as LinkCaption.
-      Returned string may be directly inserted inside output documentation. 
+      Returned string may be directly inserted inside output documentation.
       LinkCaption will be always converted using ConvertString before writing,
-      so don't worry about doing this yourself when calling this method. 
-      
+      so don't worry about doing this yourself when calling this method.
+
       LinkContext may be used in some descendants to present
       the link differently, see @link(TLinkContext) for it's meaning.
-      
-      If some output format doesn't support this feature, 
+
+      If some output format doesn't support this feature,
       it can return simply ConvertString(LinkCaption).
       This is the default implementation of this method in this class. }
     function MakeItemLink(const Item: TBaseItem;
@@ -453,11 +449,12 @@ type
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
+    FCurrentFileName: string;
 
     { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
-    { @abstract(Makes a String look like a coded String, 
+    { @abstract(Makes a String look like a coded String,
       i.e. <CODE>TheString</CODE> in Html.)
       @param(s is the string to format)
       @returns(the formatted string) }
@@ -478,7 +475,9 @@ type
 
     { This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
-      HTML or a page number in Tex. }
+      HTML or a page number in Tex.
+      The XML generator also must provide appropriate names!
+    }
     function CreateLink(const Item: TBaseItem): string; virtual;
 
     { If @link(CurrentStream) still exists (<> nil), it is closed.
@@ -821,9 +820,13 @@ type
       empty string. }
     function FormatTableOfContents(Sections: TDescriptionItem): string; virtual;
   public
+  //File usable for "open" command, to display the created documentation.
+    MasterFile: string;
 
-    { Creates anchors and links for all items in all units. }
-    procedure BuildLinks; //virtual;
+    { Creates anchors and links for all items in all units.
+      Eventually assign output filenames to items (virtual).
+    }
+    procedure BuildLinks; virtual;
     
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
@@ -880,7 +883,7 @@ type
       Setting this to true is useful for automatically comparing two
       versions of pasdoc's output (e.g. when trying to automate pasdoc's 
       tests). }
-    property NoGeneratorInfo: Boolean 
+    property NoGeneratorInfo: Boolean
       read FNoGeneratorInfo write FNoGeneratorInfo default False;
     
     { the output stream that is currently written to; depending on the
@@ -1002,19 +1005,6 @@ procedure TDocGenerator.BuildLinks;
   Only after deserialization some actions may be required.
 *)
 
-  { Assign Cio.Ancestors.Objects[i] for every i }
-  procedure AssignCioAncestorLinks(Cio: TPasCio);
-  var
-    i: Integer;
-  begin
-    for i := 0 to Cio.Ancestors.Count - 1 do
-    {$IFDEF old}
-      Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio, true);
-    {$ELSE}
-      Cio.Ancestors.Items[i].PasItem := SearchItem(Cio.Ancestors.Strings[i], Cio, true).PasItem;
-    {$ENDIF}
-  end;
-
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio; c: TPasItems);
   var
     i: Integer;
@@ -1023,73 +1013,35 @@ procedure TDocGenerator.BuildLinks;
     if (not Assigned(c)) or (c.Count < 1) then Exit;
     for i := 0 to c.Count - 1 do begin
       p := c.PasItemAt[i];
-    {$IFDEF old}
-      p.MyObject := MyObject;
-      p.MyUnit := MyUnit;
-    {$ELSE}
-      //already done by member list
-    {$ENDIF}
       p.FullLink := CreateLink(p);
     end;
   end;
 
 var
-  //CO: TPasCio;
   i: Integer;
-  //j: Integer;
   U: TPasUnit;
 begin //BuildLinks
   if IsEmpty(Units) then Exit;
   DoMessage(2, pmtInformation, 'Creating links ...', []);
 
-  if Introduction <> nil then
-  begin
+//assuming that FullLink equals the filename???
+  if Introduction <> nil then begin
     Introduction.FullLink := CreateLink(Introduction);
     Introduction.OutputFileName := Introduction.FullLink;
   end;
 
-  if Conclusion <> nil then
-  begin
+  if Conclusion <> nil then begin
     Conclusion.FullLink := CreateLink(Conclusion);
     Conclusion.OutputFileName := Conclusion.FullLink;
   end;
 
   for i := 0 to Units.Count - 1 do begin
     U := Units.UnitAt[i];
-  {$IFDEF old}
+  (*
     U.FullLink := CreateLink(U);
-    U.OutputFileName := U.FullLink; //HTML only!?
-
-    for j := 0 to U.UsesUnits.Count - 1 do
-    begin
-      { Yes, this will also set U.UsesUnits.Objects[i] to nil
-        if no such unit exists in Units table. }
-      U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
-    end;
-    AssignLinks(U, nil, U.Members);
-  //actions required after deserialization
-
-    if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
-      for j := 0 to U.CIOs.Count - 1 do begin
-        CO := TPasCio(U.CIOs.PasItemAt[j]);
-      {$IFDEF old}
-        CO.MyUnit := U;
-      {$ELSE}
-        //already done by member list
-      {$ENDIF}
-        CO.FullLink := CreateLink(CO);
-        CO.OutputFileName := CO.FullLink;
-
-        AssignCioAncestorLinks(CO);
-
-        AssignLinks(U, CO, CO.Members);
-      end;
-    end;
-    ...
-  {$ELSE}
+    U.OutputFileName := U.FullLink;
+  *)
     u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
-    //u.BuildSections; //optional!
-  {$ENDIF}
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
 end;
@@ -1119,11 +1071,12 @@ begin
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := csError;
-  if FileExists(DestinationDirectory + AName) and not AOverwrite then begin
+  FCurrentFileName := DestinationDirectory + AName;
+  if FileExists(FCurrentFileName) and not AOverwrite then begin
     Result := csExisted;
   end else begin
     try
-      FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
+      FCurrentStream := TFileStream.Create(FCurrentFileName, fmCreate);
       Result := csCreated;
     except
     end;
@@ -1585,11 +1538,7 @@ var
   AnchorIndex: Integer;
   ItemAnchors: TBaseItems;
 
-{$IFDEF old}
-  function CollectSections(MinLevel: Integer): TStringPairVector;
-{$ELSE}
   procedure CollectSections(MinLevel: Integer; lst: TDescriptionItem);
-{$ENDIF}
   var
     Anchor: TAnchorItem;
     SectionEntry: TStringPair;
@@ -1966,6 +1915,7 @@ procedure TDocGenerator.ExpandDescriptions;
     scoped: TPasScope absolute Item; //has overview
     ovr: TDescriptionItem;
     i: integer;
+    //dst: TDescriptionItem;
   begin
     if Item = nil then Exit;
 
@@ -1973,30 +1923,28 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.DetailedDescription (because whitespaces,
       including leading and trailing, may be important for final doc format;
       moreover, you would break the value of FirstSentenceEnd by such thing). }
+  {$IFDEF old}
     Expanded := ExpandDescription(PreExpand,
       Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
-
-    if not PreExpand then begin
+    if not PreExpand then
       Item.DetailedDescription := Expanded;
-    {$IFDEF old}
-      Item.AbstractDescriptionWasAutomatic :=
-        AutoAbstract and (Trim(Item.AbstractDescription) = '');
-
-      if Item.AbstractDescriptionWasAutomatic then begin
-        Item.AbstractDescription :=
-          Copy(Item.DetailedDescription, 1, FirstSentenceEnd);
-        Item.DetailedDescription :=
-          Copy(Item.DetailedDescription, FirstSentenceEnd + 1, MaxInt);
-      end;
-    {$ELSE}
-      //get short description on demand
-    {$ENDIF}
-    end;
-
-  {$IFDEF old}
-    if Item is TPasEnum then
-      ExpandCollection(PreExpand, TPasEnum(Item).Members);
   {$ELSE}
+  //try: expand all raw descriptions (token strings)
+    if item.RawDescriptions = nil then begin
+      Expanded := ExpandDescription(PreExpand,
+        Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
+      if not PreExpand then
+        Item.AddDescription(Expanded);
+    end else begin
+      for i := 0 to item.RawDescriptions.Count - 1 do begin
+        Expanded := ExpandDescription(PreExpand,
+          Item, Trim(Item.RawDescriptions[i]), true, FirstSentenceEnd);
+        if not PreExpand then
+          item.AddDescription(Expanded);
+      end;
+    end;
+  {$ENDIF}
+
     if item is TPasScope then begin
     //expand member lists - overview not yet created!
       ovr := scoped.MemberLists;
@@ -2005,7 +1953,6 @@ procedure TDocGenerator.ExpandDescriptions;
           ExpandCollection(PreExpand, ovr.Items[i].PasItems);
       end;
     end;
-  {$ENDIF}
   end;
 
   procedure ExpandExternalItem(PreExpand: boolean; Item: TExternalItem);
@@ -2045,25 +1992,7 @@ procedure TDocGenerator.ExpandDescriptions;
 
     for i := 0 to Units.Count - 1 do begin
       U := Units.UnitAt[i];
-
       ExpandPasItem(PreExpand, U);
-    {$IFDEF old}
-      ExpandCollection(PreExpand, U.Constants);
-      ExpandCollection(PreExpand, U.Variables);
-      ExpandCollection(PreExpand, U.Types);
-      ExpandCollection(PreExpand, U.FuncsProcs);
-
-      if not IsEmpty(U.CIOs) then
-        for j := 0 to U.CIOs.Count - 1 do begin
-          CO := TPasCio(U.CIOs.PasItemAt[j]);
-          ExpandPasItem(PreExpand, CO);
-          ExpandCollection(PreExpand, CO.Fields);
-          ExpandCollection(PreExpand, CO.Methods);
-          ExpandCollection(PreExpand, CO.Properties);
-        end;
-    {$ELSE}
-      //recursive expand in ExpandPasItem
-    {$ENDIF}
     end;
   end;
 
@@ -2442,24 +2371,7 @@ begin
   begin
     Item := FindGlobal(NameParts);
     if Assigned(Item) then begin
-    {$IFDEF old}
-      if Item.RawDescription <> '' then
-        { Delimit previous contents of Item.RawDescription with a paragraph }
-        Item.RawDescription := Item.RawDescription + LineEnding + LineEnding;
-
-      Item.RawDescription := Item.RawDescription + t;
-    {$ELSE}
-      {$IFDEF new}
-        c := TToken.Create(TOK_COMMENT_EXT);
-        c.CommentContent := t;
-        c.Mark := '#';  //mark external (linked) comment
-        c.StreamName := f;
-        c.BeginPosition := start;
-        item.Descriptions.AddObject(t, c);
-      {$ELSE}
-        item.AddRawDescription(t, f, start);
-      {$ENDIF}
-    {$ENDIF}
+      item.AddRawDescription(t, f, start);
     end else
       DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);
   end else
@@ -2490,7 +2402,8 @@ end;
 procedure TDocGenerator.WriteDirect(const t: string; Newline: boolean);
 begin
   if NewLine then
-    WriteDirectLine(T) else
+    WriteDirectLine(T)
+  else
     WriteDirect(T);
 end;
 
@@ -2719,50 +2632,35 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF old}
 procedure TDocGenerator.WriteGVUses;
 var
   i, j: Integer;
   U: TPasUnit;
   OverviewFileName: string;
 begin
-  if not ObjectVectorIsNilOrEmpty(FUnits) then
-  begin
+  if not IsEmpty(FUnits) then begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.dot';
-    if CreateStream(OverviewFileName, True) = csError then 
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".', 
+    if CreateStream(OverviewFileName, True) = csError then begin
+      DoMessage(1, pmtError, 'Could not create output file "%s".',
         [OverviewFileName]);
       Exit;
     end;
-    
-    WriteDirect('DiGraph Uses {', true);
-    for i := 0 to FUnits.Count-1 do 
-    begin
-      if FUnits.PasItemAt[i] is TPasUnit then 
-      begin
-        U := TPasUnit(FUnits.PasItemAt[i]);
-        if not StringVectorIsNilOrEmpty(U.UsesUnits) then 
-        begin
-          for j := 0 to U.UsesUnits.Count-1 do 
-          begin
-            WriteDirectLine('  "' + U.Name + '" -> "' + U.UsesUnits[j] + '"');
-          end;
-        end;
 
-        WriteDirectLine('  "' + U.Name + '" [href="' + U.OutputFileName + '"]');
+    WriteDirect('DiGraph Uses {', true);
+    for i := 0 to FUnits.Count-1 do begin
+      U := TPasUnit(FUnits.PasItemAt[i]);
+      if not IsEmpty(U.UsesUnits) then begin
+        for j := 0 to U.UsesUnits.Count-1 do begin
+          WriteDirectLine('  "' + U.Name + '" -> "' + U.UsesUnits.Items[j].Name + '"');
+        end;
       end;
+
+      WriteDirectLine('  "' + U.Name + '" [href="' + U.OutputFileName + '"]');
     end;
     WriteDirect('}', true);
     CloseStream;
   end;
 end;
-{$ELSE}
-procedure TDocGenerator.WriteGVUses;
-begin
-{ TODO -oDoDi : Uses graph }
-end;
-{$ENDIF}
 
 procedure TDocGenerator.SetAbbreviations(const Value: TStringList);
 begin
@@ -2845,26 +2743,8 @@ var
       end;
       if SubItem is TExternalItem then begin
         AddSubItems(TExternalItem(SubItem).Anchors);
-    {$IFDEF old}
-      end else if SubItem is TPasEnum then begin
-        AddSubItems(TPasEnum(SubItem).Members);
-      end else if SubItem is TPasCio then begin
-        AddSubItems(TPasCio(SubItem).Fields);
-        AddSubItems(TPasCio(SubItem).Methods);
-        AddSubItems(TPasCio(SubItem).Properties);
-        //AddSubItems(TPasCio(SubItem).Fields); ???
-      end else if SubItem is TPasUnit then begin
-        AddSubItems(TPasUnit(SubItem).CIOs);
-        AddSubItems(TPasUnit(SubItem).Constants);
-        AddSubItems(TPasUnit(SubItem).FuncsProcs);
-        AddSubItems(TPasUnit(SubItem).Types);
-        AddSubItems(TPasUnit(SubItem).Variables);
-        //AddSubItems(TPasUnit(SubItem).Types); ???
-        //AddSubItems(TPasUnit(SubItem).Types); ???
-    {$ELSE}
       end else if SubItem is TPasScope then begin
         AddSubItems(TPasScope(SubItem).Members);
-    {$ENDIF}
       end;
     end;
   end;

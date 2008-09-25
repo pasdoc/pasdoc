@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabDoc
+    ActivePage = tabGenerate
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -94,15 +94,15 @@ object DocMain: TDocMain
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        ItemIndex = 0
         TabOrder = 1
-        Text = 'HTML'
         OnChange = lbOutTypeChange
         Items.Strings = (
           'HTML'
           'HTML Help Workshop'
           'LaTeX'
-          'LaTeX for latex2rtf')
+          'LaTeX for latex2rtf'
+          'XML (simple)'
+          'XML (full)')
       end
       object swSort: TCheckListBox
         Left = 272
@@ -939,7 +939,7 @@ object DocMain: TDocMain
             Height = 80
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnClick = cbRemClick
           end
@@ -1199,7 +1199,7 @@ object DocMain: TDocMain
       '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
       '}'#13#10
     Left = 380
-    Top = 324
+    Top = 360
   end
   object OpenDialog2: TOpenDialog
     Left = 340
@@ -1220,5 +1220,17 @@ object DocMain: TDocMain
       Caption = 'Save &As...'
       OnClick = SaveLog
     end
+  end
+  object SimpleXMLDocGenerator: TSimpleXMLDocGenerator
+    AutoAbstract = False
+    LinkLook = llDefault
+    Left = 540
+    Top = 360
+  end
+  object XMLDocGenerator: TXMLDocGenerator
+    AutoAbstract = False
+    LinkLook = llDefault
+    Left = 544
+    Top = 312
   end
 end

@@ -11,7 +11,7 @@ uses
   PasDoc_Languages, PasDoc_GenLatex, PasDoc_Serialize, PasDoc_GenHtmlHelp,
   PasDoc_Base, PasDoc_Items, PasDoc_Gen, PasDoc_GenHtml, PasDoc_SortSettings,
   PasDoc_Types,
-  frDirs, frDir, ExtCtrls;
+  frDirs, frDir, ExtCtrls, PasDoc_GenSimpleXML, PasDoc_GenFullXML;
 
 type
   TDocMain = class(TForm)
@@ -126,6 +126,8 @@ type
     cbRem: TComboBox;
     edDecl: TEdit;
     swShowUses: TCheckBox;
+    SimpleXMLDocGenerator: TSimpleXMLDocGenerator;
+    XMLDocGenerator: TXMLDocGenerator;
   {$IFDEF fpc}
     //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
   {$ELSE}
@@ -1176,6 +1178,11 @@ const
     end;
   end;
 
+  procedure SetXMLoptions(gen: TDocGenerator);
+  begin
+    generator := gen;
+  end;
+
 var
   i: integer;
   fGenerate: boolean;
@@ -1205,6 +1212,10 @@ try
     SetGenericHTMLoptions(HtmlHelpDocGenerator);
   2, 3:
     SetTEXoptions(TexDocGenerator);
+  4:  //simple XML
+    SetXMLoptions(SimpleXMLDocGenerator);
+  5:
+    SetXMLoptions(XMLDocGenerator);
   else
     Assert(False, 'unknown output type');
   end;
@@ -1214,9 +1225,8 @@ try
 
 // Create the output directory if it does not exist.
   dir := edOutput.Text;
-  if not DirectoryExists(dir) then begin
-    CreateDir(dir)
-  end;
+  if not DirectoryExists(dir) then
+    CreateDir(dir);
   Generator.DestinationDirectory := dir;
 
   Generator.AutoAbstract := swAutoAbstract.Checked;
@@ -1312,10 +1322,22 @@ try
       WWWBrowserRunner.RunBrowser(
         HtmlDocGenerator.DestinationDirectory + 'index.html');
   {$ELSE}
-    if PasDoc1.Generator is TGenericHTMLDocGenerator then
+  {$IFDEF old}
+    if PasDoc1.Generator is TGenericHTMLDocGenerator then begin
       ShellExecute(Self.Handle, 'open',
         PChar(HtmlDocGenerator.DestinationDirectory + 'index.html'), nil, nil,
         SW_SHOWNORMAL);
+    end else if PasDoc1.Generator is TSimpleXMLDocGenerator then begin
+      ShellExecute(Self.Handle, 'open',
+        PChar(SimpleXMLDocGenerator.MasterFile), nil, nil,
+        SW_SHOWNORMAL);
+    end;
+  {$ELSE}
+    if generator.MasterFile <> '' then
+      ShellExecute(Self.Handle, 'open',
+        PChar(generator.MasterFile), nil, nil,
+        SW_SHOWNORMAL);
+  {$ENDIF}
   {$ENDIF}
   end;
 

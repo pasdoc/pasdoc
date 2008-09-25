@@ -166,7 +166,10 @@ type
     FeldBelegt: Integer;
     FMaxCapacity: Integer;
     function  Hash(key: String): Integer;
+  {$IFDEF unused}
     function  Entry(_key: string): PHashEntry;
+  {$ELSE}
+  {$ENDIF}
     function  GetItem(index: integer): PHashEntry;
     procedure MakeHashLarger(power2: Integer);
     procedure SetCapacity(new_size: Integer);
@@ -194,7 +197,7 @@ type
     property Count: Integer read FeldBelegt;
     property Capacity: Integer read GetCapacity write SetCapacity;
     property MaxCapacity: Integer read FMaxCapacity write SetMaxCapacity;
-    constructor Create;
+    constructor Create; virtual;
   {$IFDEF solid}
     function  GetValue(const _key: String): String;
     procedure SetValue(const _key, data: String);
@@ -231,7 +234,7 @@ type
   public
   {$IFDEF solid}
     function  GetObject(const _key: String): TObject;
-    procedure SetObject(const _key: String; data: TObject);
+    procedure SetObject(const _key: String; _data: TObject);
     property Objects[const _key: string]: TObject read GetObject write SetObject;
   {$ELSE}
     procedure Delete(const _key: String);
@@ -290,6 +293,7 @@ end;
 
 {$IFDEF solid}
 
+{$IFDEF unused}
 function THash.Entry(_key: string): PHashEntry;
 var
   i: Integer;
@@ -300,6 +304,8 @@ begin
   else
     Result := @Feld[i];
 end;
+{$ELSE}
+{$ENDIF}
 
 function THash.GetItem(index: integer): PHashEntry;
 begin
@@ -744,9 +750,9 @@ begin
     pointer(Result) := Feld[i].data;
 end;
 
-procedure TObjectHash.SetObject(const _key: String; data: TObject);
+procedure TObjectHash.SetObject(const _key: String; _data: TObject);
 begin
-  _SetValueData(_key, '', false, data, true);
+  _SetValueData(_key, '', false, _data, true);
 end;
 {$ELSE}
 procedure TObjectHash.Delete(const _key: String);

@@ -65,7 +65,13 @@ type
 
 //would like to add viUses, to implement ShowUses
   TVisibilities = set of TItemVisibility;
-
+const
+  VisibilityAttributes: array[TVisibility] of TStandardDirective = (
+    SD_PUBLISHED, SD_PUBLIC,
+    SD_PROTECTED, SD_PROTECTED,
+    SD_PRIVATE, SD_PRIVATE,
+    SD_AUTOMATED, SD_INVALIDSTANDARDDIRECTIVE
+  );
 var
   ShowVisibilities: TVisibilities;
 
@@ -237,7 +243,7 @@ type
   {$ENDIF}
   //add unique string to one of our lists. tid is list ID, not string ID.
   //Mimic string vector behaviour.
-    function AddToStrings(tid: TTranslationID; const s: string): integer; //virtual;
+    function AddToStrings(tblTid, itemTid: TTranslationID; const s: string): integer; //virtual;
 
   //get PasItem from list - really?
     function  PasItemAt(index: integer): TPasItem; //virtual;
@@ -353,6 +359,7 @@ type
     FAbstractDescription: string; //<trAbstract? trIntroduction?
     FDetailedDescription: string; //<to become Item[trDescription]?
   {$ELSE}
+  {$IFDEF old}
   (* Full description, consisting of Name (abstract) and Value (description).
     More items (hints...) may be added.
     This is a shortcut to the description item, in the description list.
@@ -363,12 +370,17 @@ type
       DetailedDescription (as defined)
   *)
     FFullDescription: TDescriptionItem;
-    FDescription: TDescriptionItem;
+  {$ELSE}
+    //the descriptions have become a list
+  {$ENDIF}
+  //the description list
+    FDescriptionList: TDescriptionItem;
   //create both the description item and description list, if not already done.
     function  NeedDescription: TDescriptionItem;
     function  GetAbstract: string;
     procedure SetAbstract(const s: string);
     function  GetDetailedDescription: string;
+  //currently needed for external items
     procedure SetDetailedDescription(const s: string);
   //first sentence of description
     function  GetShortDescription: string;
@@ -531,6 +543,7 @@ type
       read GetAbstract write SetAbstract;
   {$ENDIF}
 
+  {$IFDEF old}
     (*
       TDocGenerator.ExpandDescriptions sets this property to
       true if AutoAbstract was used and AbstractDescription of this
@@ -565,12 +578,13 @@ type
       and would print additional paragraph break that was not present
       in desscription, i.e. "First sentence.<p> Second sentence."
     *)
-  {$IFDEF old}
     property AbstractDescriptionWasAutomatic: boolean
       read FAbstractDescriptionWasAutomatic
       write FAbstractDescriptionWasAutomatic;
   {$ELSE}
     property ShortDescription: string read GetShortDescription;
+    property Descriptions: TDescriptionItem read FDescriptionList;
+    procedure AddDescription(const s: string);
   {$ENDIF}
 
     { Returns true if there is a DetailedDescription or AbstractDescription
@@ -585,13 +599,17 @@ type
       than @link(TPasItem.AbstractDescription).
 
       This is already in the form suitable for final output,
-      ready to be put inside final documentation. }
+      ready to be put inside final documentation.
+
+      The description should be separated into paragraphs,
+      in the Description list.
+    }
   {$IFDEF old}
     property DetailedDescription: string
       read FDetailedDescription write FDetailedDescription;
   {$ELSE}
     property DetailedDescription: string
-      read GetDetailedDescription write SetDetailedDescription;
+      read GetDetailedDescription;  // write SetDetailedDescription;
   {$ENDIF}
 
     { This stores unexpanded version (as specified
@@ -672,10 +690,13 @@ type
 
   TPasItem = class(TBaseItem)
   private
-    FFullDeclaration: string; //trDeclaration?
+    //FFullDeclaration: string; //trDeclaration?
     FVisibility: TItemVisibility;
 
     procedure HandleDeprecatedTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleExcludeTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
@@ -683,6 +704,8 @@ type
     procedure Deserialize(const ASource: TStream); override;
 
   protected
+  //exclude flag - experimental!
+    FExclude: boolean;
   // The declarative token, "unit", "class", "type" etc.
     FKind: TTokenType;
   // All attributes, modifiers etc.
@@ -706,6 +729,7 @@ type
     procedure SetAttributeFP(attr: integer; OnOff: boolean);
     function  GetAttribute(attr: TPasItemAttribute): boolean;
     procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
+    procedure SetVisibility(attr: TItemVisibility);
 
     property Kind: TTokenType read FKind;
     property Attributes: TPasItemAttributes read FAttributes write FAttributes;
@@ -751,7 +775,7 @@ type
     property IsLibrarySpecific: boolean index ord(SD_Library_)
       read GetAttributeFP write SetAttributeFP;
 
-    property Visibility: TItemVisibility read FVisibility write FVisibility;
+    property Visibility: TItemVisibility read FVisibility write SetVisibility;
 
      { Full declaration of the item.
        This is (full) parsed declaration of the given item.
@@ -793,7 +817,12 @@ type
 
        Spaces could be trimmed.
        }
+  {$IFDEF old}
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
+  {$ELSE}
+  //experimental
+    property FullDeclaration: string read Value write Value;
+  {$ENDIF}
 
     { Returns the qualified name of the item.
       This is intended to return a concise and not ambigous name.
@@ -807,6 +836,8 @@ type
       Must always end with PathDelim.
       In this class returns MyUnit.BasePath. }
     function BasePath: string; override;
+
+    property ToBeExcluded: boolean read FExclude;
   end;
 
   TPasItemClass = class of TPasItem;
@@ -1070,7 +1101,7 @@ type
 
     { name of documentation output file (if each class / object gets
       its own file, that's the case for HTML, but not for TeX) }
-    property OutputFileName: string read FOutputFileName; // write FOutputFileName;
+    property OutputFileName: string read FOutputFileName write FOutputFileName;
 
   //All members
     property Members: TPasItems read FMembers;
@@ -1444,6 +1475,9 @@ type
     // so, they should not be indexed separately.
     property Anchors: TBaseItems read FAnchors;
 
+    property DetailedDescription: string
+      read GetDetailedDescription write SetDetailedDescription;
+
     function BasePath: string; override;
   end;
 
@@ -1596,7 +1630,7 @@ function IsEmpty(item: TDescriptionList): boolean; overload;
 
 implementation
 
-uses PasDoc_Utils, Contnrs;
+uses PasDoc_Utils, Contnrs, StrUtils;
 
 type
 //serialization of count fields, fixed to 4 bytes
@@ -1682,7 +1716,7 @@ procedure TBaseItem.StoreAuthorTag(
   const TagParameter: string; var ReplaceStr: string);
 begin
   if TagParameter = '' then exit;
-  AddToStrings(trAuthors, TagParameter);
+  AddToStrings(trAuthors, trAuthor, TagParameter);
   ReplaceStr := '';
 end;
 
@@ -1724,7 +1758,7 @@ begin
       if Copy(TagParameter,1,9) = '$Author: ' then begin
         s := Trim(Copy(TagParameter, 9, Length(TagParameter)-9-1));
         if s <> '' then begin
-          AddToStrings(trAuthors, s);
+          AddToStrings(trAuthors, trAuthor, s);
           ReplaceStr := '';
         end;
       end;
@@ -1752,12 +1786,15 @@ procedure TBaseItem.HandleSeeAlsoTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
+var
+  lst: TDescriptionItem;
 begin
-  if AddExtractFirstWord(trSeeAlso, TagParameter) = nil then
+  lst := AddNew(trSeeAlso, dkItemList);
+  if lst.AddExtractFirstWord(trSeeAlso, TagParameter) = nil then
     ThisTag.TagManager.DoMessage(2, pmtWarning,
-      '@seealso tag doesn''t specify any name to link to, skipped', []);
-
-  ReplaceStr := '';
+      '@seealso tag doesn''t specify any name to link to, skipped', [])
+  else
+    ReplaceStr := '';
 end;
 
 procedure TBaseItem.PreHandleNoAutoLinkTag(
@@ -1819,7 +1856,7 @@ begin
   Used in BuildSections, where the descriptor is either destroyed
   or stored in the FDescription shortcut.
 *)
-  Result := FDescription;
+  Result := FDescriptionList;
   if Result = nil then
     Result := AddNew(trDescription, dkItemList);
 end;
@@ -1829,15 +1866,96 @@ function TBaseItem.HasDescription: Boolean;
 begin
   HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
 end;
-{$ELSE}
 
 function TBaseItem.NeedDescription: TDescriptionItem;
 begin
   if FFullDescription = nil then begin
-    FDescription := AddNew(trDescription, dkItemList);
-    FFullDescription := FDescription.AddNew(trDescription, dkNoList);
+    FDescriptionList := AddNew(trDescription, dkItemList);
+    FFullDescription := FDescriptionList.AddNew(trDescription, dkNoList);
   end;
   Result := FFullDescription;
+end;
+
+function TBaseItem.GetAbstract: string;
+begin
+  if assigned(FFullDescription) then
+    Result := FFullDescription.Name
+  else
+    Result := '';
+end;
+
+procedure TBaseItem.SetAbstract(const s: string);
+begin
+  NeedDescription.Name := s;
+end;
+
+function TBaseItem.GetDetailedDescription: string;
+begin
+  if assigned(FFullDescription) then
+    Result := FFullDescription.Value
+  else
+    Result := '';
+end;
+
+procedure TBaseItem.SetDetailedDescription(const s: string);
+begin
+  if s > ' ' then
+    NeedDescription.Value := s;
+end;
+{$ELSE}
+
+function TBaseItem.NeedDescription: TDescriptionItem;
+begin
+  if FDescriptionList = nil then
+    FDescriptionList := AddNew(trDescription, dkItemList);
+  Result := FDescriptionList;
+end;
+
+procedure TBaseItem.AddDescription(const s: string);
+var
+  i: integer;
+  par, rem: string;
+const
+  Paragraph = '  ';
+
+  function  FindParagaph(const rem: string): integer;
+  begin
+    Result := 1;
+    while (Result < Length(rem)) and (rem[Result] = ' ') do
+      inc(Result);
+    Result := PosEx(Paragraph, rem, Result);
+  end;
+
+begin
+(* Add description paragraph, if not empty.
+  Check for paragraphs - assume '  ' as markers?
+  Don't strip whitespace after an Paragraph marker?
+  What about embedded @code tags?
+*)
+  //if s < ' ' then - can start with NL!?
+  if s = '' then
+    exit;
+{$IFDEF old}
+  NeedDescription.AddString(trDescription, s);
+{$ELSE}
+  NeedDescription;
+{$ENDIF}
+//skip leading whitespace
+  i := FindParagaph(s);
+  if i > 0 then begin
+    rem := s;
+    while i > 0 do begin
+      if i > 1 then begin
+        par := Copy(rem, 1, i - 1);
+        FDescriptionList.AddString(trDescription, par);
+      end;
+      rem := Copy(rem, i + Length(Paragraph), Length(rem));
+      i := FindParagaph(rem);
+    end;
+    if rem > ' ' then
+      FDescriptionList.AddString(trDescription, rem);
+  end else
+    FDescriptionList.AddString(trDescription, s);
 end;
 
 function TBaseItem.GetShortDescription: string;
@@ -1851,42 +1969,31 @@ begin
 *)
 { ToDo: collect words, until end of sentence or limit reached. }
 
-  if FFullDescription <> nil then begin
-  //try abstract, if found
-    Result := FFullDescription.Name;
-    if Result <> '' then
-      exit;
-  //try first sentence of full description
-    Result := FFullDescription.Value;
-  //extract first sentence - retry after '.'<non-white>?
-    i := Pos('.', Result);
-    if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
-      Result := Copy(Result, 1, i+1);
-      exit;
-    end;
-  //fit as short description?
-    if Length(Result) > MaxShortDescription then begin
-    //trim description - could process words
-      SetLength(Result, MaxShortDescription);
-      Result := Result + '...';
-    end; //else fits already
-    //exit; //suitable as short description
-  end else
-    Result := '';
+//try abstract, if found
+  Result := AbstractDescription;
+  if Result <> '' then
+    exit;
+//try first sentence of full description
+  //Result := FullDescription.Value;
+  Result := DetailedDescription;
+//extract first sentence - retry after '.'<non-white>?
+  i := Pos('.', Result);
+  if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
+    Result := Copy(Result, 1, i+1);
+    exit;
+  end;
+//fit as short description?
+  if Length(Result) > MaxShortDescription then begin
+  //trim description - could process words
+    SetLength(Result, MaxShortDescription);
+    Result := Result + '...';
+  end; //else fits already
 end;
 
 function TBaseItem.GetAbstract: string;
 begin
-  if assigned(FFullDescription) then
-    Result := FFullDescription.Name
-  else
-    Result := '';
-end;
-
-function TBaseItem.GetDetailedDescription: string;
-begin
-  if assigned(FFullDescription) then
-    Result := FFullDescription.Value
+  if Assigned(FDescriptionList) then
+    Result := FDescriptionList.Name
   else
     Result := '';
 end;
@@ -1896,10 +2003,23 @@ begin
   NeedDescription.Name := s;
 end;
 
+function TBaseItem.GetDetailedDescription: string;
+const
+  Paragraph = '  ';
+begin
+(* string of description paragraphs.
+  If no details were specified, don't return abstract!
+*)
+  if assigned(FDescriptionList) and (FDescriptionList.Count > 0) then
+  //details have been specified (else Text() would return the abstract!)
+    Result := FDescriptionList.Text('', Paragraph)
+  else
+    Result := '';
+end;
+
 procedure TBaseItem.SetDetailedDescription(const s: string);
 begin
-  if s > ' ' then
-    NeedDescription.Value := s;
+  AddDescription(s);
 end;
 
 function TBaseItem.HasDescription: Boolean;
@@ -1907,7 +2027,7 @@ begin
 (* Take into account all available descriptions, also hints!
 *)
   //HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
-  Result := FFullDescription <> nil;
+  Result := FDescriptionList <> nil;
 end;
 {$ENDIF}
 
@@ -1922,17 +2042,20 @@ begin
   to keep or to delete FDescription.
 *)
   desc := BuildDescription;
-  if IsEmpty(desc) then begin
+  if (FDescriptionList = nil) and IsEmpty(desc) and (AbstractDescription = '') then begin
   //remove description item, clear shortcut
     i := FList.IndexOf(desc);
     if i >= 0 then
       FList.Delete(i) //destroy owned item
     else
       desc.Free;
-    FDescription := nil;
+    //FDescriptionList := nil;
   end else begin
-    FDescription := desc;
-    FDescription.SortByID([trDeprecated, trPlatformSpecific, trLibrarySpecific]);
+    FDescriptionList := desc;
+{$IFDEF old}
+    FDescriptionList.SortByID([trDeprecated, trPlatformSpecific, trLibrarySpecific]);
+{$ELSE}
+{$ENDIF}
   end;
 end;
 
@@ -2069,11 +2192,26 @@ begin
   ReplaceStr := '';
 end;
 
+procedure TPasItem.HandleExcludeTag(ThisTag: TTag;
+  var ThisTagData: TObject; EnclosingTag: TTag;
+  var EnclosingTagData: TObject; const TagParameter: string;
+  var ReplaceStr: string);
+begin
+(* Mark item for exclude from the memberlists.
+  Units deserve handling in the generator, FUnits list.
+*)
+  ThisTag.TagManager.DoMessage(1, pmtInformation, 'Excluded: %s', [self.Name]);
+  FExclude := True;
+  ReplaceStr := '';
+end;
+
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTag.Create(TagManager, 'deprecated',
     nil, {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
+  TTag.Create(TagManager, 'exclude',
+    nil, {$ifdef FPC}@{$endif} HandleExcludeTag, []);
 end;
 
 function TPasItem.FindName(const NameParts: TNameParts;
@@ -2183,17 +2321,31 @@ begin
     Exclude(FAttributes, attr);
 end;
 
+procedure TPasItem.SetVisibility(attr: TItemVisibility);
+begin
+  FVisibility := attr;
+  case attr of
+  viShow, viImplicit, viUses, viHide: exit;
+  viStrictProtected, viStrictPrivate:
+    Include(FAttributes, SD_STRICT);
+  end;
+  Include(FAttributes, VisibilityAttributes[attr]);
+end;
+
 function TPasItem.BuildDescription: TDescriptionItem;
 //var desc: TDescriptionItem absolute Result;
 //const Hints: TPasItemAttributes = [SD_DEPRECATED, SD_PLATFORM, SD_LIBRARY_];
 begin
   Result := inherited BuildDescription;
+{$IFDEF old}
   if HasAttribute[SD_DEPRECATED] then
     Result.AddNew(trDeprecated, dkNoList);
   if HasAttribute[SD_PLATFORM] then
     Result.AddNew(trPlatformSpecific, dkNoList);
   if HasAttribute[SD_LIBRARY_] then
     Result.AddNew(trLibrarySpecific, dkNoList);
+{$ELSE}
+{$ENDIF}
 end;
 
 const
@@ -2209,8 +2361,11 @@ const
 
 procedure TPasItem.BuildSections;
 begin
+{$IFDEF old}
 //add declaration - can not be empty
   AddNew(trDeclaration, dkNoList, FFullDeclaration);
+{$ELSE}
+{$ENDIF}
   inherited BuildSections;
 //sort!
   SortByID(DefaultSectionSortOrder);
@@ -2323,14 +2478,20 @@ begin
 end;
 
 procedure TPasEnum.BuildMemberLists;
+var
+  i: integer;
 begin
 //build overview from Members=Values
   case FMemberLists.Count of
-  0: ;  //no members - should never happen
+  0: exit;  //no members - should never happen
   1:  //simple list of Values
-    AddListDelegate(trValues, Members);
+    FOverview := AddListDelegate(trValues, Members);
   else
-    AddListDelegate(FMemberLists);  //multiple lists
+    FOverview := AddListDelegate(FMemberLists);  //multiple lists
+  end;
+  //inherited BuildMemberLists;
+  for i := 0 to Members.Count - 1 do begin
+    Members.PasItemAt[i].BuildSections;
   end;
 end;
 
@@ -2476,7 +2637,7 @@ var
 begin
   if IsEmpty(c) then Exit;
   for i := 0 to c.Count - 1 do
-    Add(TPasItem(c.GetPasItemAt(i)));
+    Add(c.GetPasItemAt(i));
 end;
 
 procedure TPasItems.CountCIO(var c, i, o: Integer);
@@ -3005,7 +3166,7 @@ begin
   KEY_CONST:  FConstants.Add(item);
   KEY_TYPE:   FTypes.Add(item);
   KEY_VAR:    FVariables.Add(item);
-  KEY_UNIT:   UsesUnits.AddNew(trUses, dkDelegate, item.Name).PasItem := item;
+  KEY_UNIT:   UsesUnits.AddNew(trUnit, dkDelegate, item.Name).PasItem := item;
   else
     if item.Kind in CioTypes then
       FCIOs.Add(item)
@@ -3404,18 +3565,24 @@ begin
   This procedure filters empty lists, must be overridden for
   special items with non-list items in Overview (see: ???).
   Sorting must occur elsewhere, depending on the item kind (unit...).
+
+  Also remove excluded items (FExclude)
 *)
   o := NeedOverview;
 //for now, we add all non-empty member lists
   for i := 0 to FMemberLists.Count - 1 do begin
     ml := FMemberLists.ItemAt(i);
     if not IsEmpty(ml) then begin
-      o.AddListDelegate(ml.ID, ml.FList);
-      for j := 0 to ml.Count - 1 do begin
+      //o.AddListDelegate(ml.ID, ml.FList);
+      for j := ml.Count - 1 downto 0 do begin
         ps := ml.PasItemAt(j);
-        //if ps is TPasScope then
+        if ps.FExclude then
+          ml.FList.Delete(j)
+        else
           ps.BuildSections;
       end;
+      if not IsEmpty(ml) then
+        o.AddListDelegate(ml.ID, ml.FList);
     end;
   end;
   if o.Count <= 0 then begin
@@ -3793,7 +3960,7 @@ begin
   Result := AddNew(tid, dkUniqueString, s);
 end;
 
-function TDescriptionItem.AddToStrings(tid: TTranslationID;
+function TDescriptionItem.AddToStrings(tblTid, itemTid: TTranslationID;
   const s: string): integer;
 var
   lst: TDescriptionItem;
@@ -3801,12 +3968,12 @@ var
 begin
 //Add unique string to one of our lists.
 //usage: Authors (only?) SeeAlso?
-  lst := AddNew(tid, dkItemList); //create if required
+  lst := AddNew(tblTid, dkItemList); //create if required
   Result := lst.IndexOf(s);
   if Result >= 0 then
     exit; //string already exists
-//add new
-  item := TDescriptionItem.Create(s);
+//add new, always!
+  item := TDescriptionItem.Create(s, '', itemTid);
   Result := lst.Add(item);
 end;
 
