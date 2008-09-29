@@ -17,6 +17,7 @@ unit PasDoc_Items;
 
 {-$DEFINE item}
 {-$DEFINE DetailedProps}
+{-$DEFINE paragraphs}
 
 interface
 
@@ -358,8 +359,9 @@ type
   { TODO : convert into items }
     FAbstractDescription: string; //<trAbstract? trIntroduction?
     FDetailedDescription: string; //<to become Item[trDescription]?
+    FAbstractDescriptionWasAutomatic: boolean;
   {$ELSE}
-  {$IFDEF old}
+  {$IFnDEF paragraphs}
   (* Full description, consisting of Name (abstract) and Value (description).
     More items (hints...) may be added.
     This is a shortcut to the description item, in the description list.
@@ -368,29 +370,29 @@ type
       ShortDescription (was: abstract, maybe automatic)
       Abstract (only if explicitly defined!)
       DetailedDescription (as defined)
+
+    We could use Name=abstract, Value=detailed
   *)
     FFullDescription: TDescriptionItem;
+  //create the description item, if not already done.
+    function  NeedDescription: TDescriptionItem;
   {$ELSE}
     //the descriptions have become a list
-  {$ENDIF}
   //the description list
     FDescriptionList: TDescriptionItem;
   //create both the description item and description list, if not already done.
     function  NeedDescription: TDescriptionItem;
+  {$ENDIF}
     function  GetAbstract: string;
     procedure SetAbstract(const s: string);
+  {$ENDIF}
+  //first sentence of description
+    function  GetShortDescription: string;
     function  GetDetailedDescription: string;
   //currently needed for external items
     procedure SetDetailedDescription(const s: string);
-  //first sentence of description
-    function  GetShortDescription: string;
-  {$ENDIF}
   protected
     FFullLink: string;
-  {$IFDEF old}
-    FAbstractDescriptionWasAutomatic: boolean;
-  {$ELSE}
-  {$ENDIF}
     FDisallowAutoLink: boolean;
     function AutoLinkAllowed: boolean;
   private
@@ -535,63 +537,8 @@ type
 
       Note that this is already in the form suitable for final output,
       with tags expanded, chars converted etc. }
-  {$IFDEF old}
-    property AbstractDescription: string
-      read FAbstractDescription write FAbstractDescription;
-  {$ELSE}
     property AbstractDescription: string
       read GetAbstract write SetAbstract;
-  {$ENDIF}
-
-  {$IFDEF old}
-    (*
-      TDocGenerator.ExpandDescriptions sets this property to
-      true if AutoAbstract was used and AbstractDescription of this
-      item was automatically deduced from the 1st sentence of
-      RawDescription.
-
-      Otherwise (if @@abstract was specified explicitly, or there
-      was no @@abstract and AutoAbstract was false) this is set to false.
-
-      This is a useful hint for generators: it tells them that when they
-      are printing @italic(both) AbstractDescription and DetailedDescription of the item
-      in one place (e.g. TTexDocGenerator.WriteItemLongDescription
-      and TGenericHTMLDocGenerator.WriteItemLongDescription both do this)
-      then they should @italic(not) put any additional space between
-      AbstractDescription and DetailedDescription.
-
-      This way when user will specify description like
-
-      @longcode(#
-        { First sentence. Second sentence. }
-        procedure Foo;
-      #)
-
-      and @--auto-abstract was on, then "First sentence." is the
-      AbstractDescription, " Second sentence." is DetailedDescription,
-      AbstractDescriptionWasAutomatic is true and
-      and TGenericHTMLDocGenerator.WriteItemLongDescription
-      can print them as "First sentence. Second sentence."
-
-      Without this property, TGenericHTMLDocGenerator.WriteItemLongDescription
-      would not be able to say that this abstract was deduced automatically
-      and would print additional paragraph break that was not present
-      in desscription, i.e. "First sentence.<p> Second sentence."
-    *)
-    property AbstractDescriptionWasAutomatic: boolean
-      read FAbstractDescriptionWasAutomatic
-      write FAbstractDescriptionWasAutomatic;
-  {$ELSE}
-    property ShortDescription: string read GetShortDescription;
-    property Descriptions: TDescriptionItem read FDescriptionList;
-    procedure AddDescription(const s: string);
-  {$ENDIF}
-
-    { Returns true if there is a DetailedDescription or AbstractDescription
-      available.
-      Combine into trDescription as Name and Value?
-    }
-    function HasDescription: Boolean;
 
     { Detailed description of this item.
 
@@ -609,8 +556,19 @@ type
       read FDetailedDescription write FDetailedDescription;
   {$ELSE}
     property DetailedDescription: string
-      read GetDetailedDescription;  // write SetDetailedDescription;
+      read GetDetailedDescription  write SetDetailedDescription;
   {$ENDIF}
+
+    property ShortDescription: string read GetShortDescription;
+  {$IFDEF paragraphs}
+    property Descriptions: TDescriptionItem read FDescriptionList;
+    procedure AddDescription(const s: string);
+  {$ELSE}
+  {$ENDIF}
+
+    { Returns true if there is a DetailedDescription or AbstractDescription
+      available. }
+    function HasDescription: Boolean;
 
     { This stores unexpanded version (as specified
       in user's comment in source code of parsed units)
@@ -851,7 +809,7 @@ type
     procedure Serialize(const ADestination: TStream);
     procedure Deserialize(const ASource: TStream);
   public
-    constructor Create(const AOwnsObject: Boolean); override;
+    constructor Create(AOwnsObject: Boolean); override;
     destructor Destroy; override;
 
     { Compares each element's name field with Name and returns the item on
@@ -1848,31 +1806,17 @@ begin
   //nop, here
 end;
 
-function TBaseItem.BuildDescription: TDescriptionItem;
-begin
-(* Create and return an general description item.
-  If an Abstract and DetailedDescription was added by the generator,
-  such an item already exists; otherwise create a new one.
-  Used in BuildSections, where the descriptor is either destroyed
-  or stored in the FDescription shortcut.
-*)
-  Result := FDescriptionList;
-  if Result = nil then
-    Result := AddNew(trDescription, dkItemList);
-end;
-
-{$IFDEF old}
+{$IFnDEF paragraphs}
 function TBaseItem.HasDescription: Boolean;
 begin
-  HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
+  //HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
+  Result := FFullDescription <> nil;
 end;
 
 function TBaseItem.NeedDescription: TDescriptionItem;
 begin
-  if FFullDescription = nil then begin
-    FDescriptionList := AddNew(trDescription, dkItemList);
-    FFullDescription := FDescriptionList.AddNew(trDescription, dkNoList);
-  end;
+  if FFullDescription = nil then
+    FFullDescription := AddNew(trDescription, dkNoList);
   Result := FFullDescription;
 end;
 
@@ -1899,10 +1843,29 @@ end;
 
 procedure TBaseItem.SetDetailedDescription(const s: string);
 begin
-  if s > ' ' then
+//description can start with NL!
+  if s <> '' then
     NeedDescription.Value := s;
 end;
-{$ELSE}
+
+function TBaseItem.BuildDescription: TDescriptionItem;
+begin
+(* Return the general description item, if created by generator or tag manager.
+*)
+  Result := FFullDescription;
+  //if Result = nil then  Result := AddNew(trDescription, dkNoList);
+end;
+
+procedure TBaseItem.BuildSections;
+//var  desc: TDescriptionItem;
+begin
+(* FFullDescription holds abstract and detailed description.
+  It's created by the TagManager, or in BuildDescription?
+*)
+  {desc :=} BuildDescription;
+end;
+
+{$ELSE} // ------------- paragraphs -------------------
 
 function TBaseItem.NeedDescription: TDescriptionItem;
 begin
@@ -1958,38 +1921,6 @@ begin
     FDescriptionList.AddString(trDescription, s);
 end;
 
-function TBaseItem.GetShortDescription: string;
-var
-  i: integer;
-const
-  MaxShortDescription = 60; //limit description length - become parameter???
-begin
-(* Get abstract, or first sentence, or first part of description.
-  Handling of line breaks???
-*)
-{ ToDo: collect words, until end of sentence or limit reached. }
-
-//try abstract, if found
-  Result := AbstractDescription;
-  if Result <> '' then
-    exit;
-//try first sentence of full description
-  //Result := FullDescription.Value;
-  Result := DetailedDescription;
-//extract first sentence - retry after '.'<non-white>?
-  i := Pos('.', Result);
-  if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
-    Result := Copy(Result, 1, i+1);
-    exit;
-  end;
-//fit as short description?
-  if Length(Result) > MaxShortDescription then begin
-  //trim description - could process words
-    SetLength(Result, MaxShortDescription);
-    Result := Result + '...';
-  end; //else fits already
-end;
-
 function TBaseItem.GetAbstract: string;
 begin
   if Assigned(FDescriptionList) then
@@ -2029,7 +1960,19 @@ begin
   //HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
   Result := FDescriptionList <> nil;
 end;
-{$ENDIF}
+
+function TBaseItem.BuildDescription: TDescriptionItem;
+begin
+(* Create and return a general description item.
+  If an Abstract and DetailedDescription was added by the generator,
+  such an item already exists; otherwise create a new one.
+  Used in BuildSections, where the descriptor is either destroyed
+  or stored in the FDescription shortcut.
+*)
+  Result := FDescriptionList;
+  if Result = nil then
+    Result := AddNew(trDescription, dkItemList);
+end;
 
 procedure TBaseItem.BuildSections;
 var
@@ -2038,8 +1981,8 @@ var
 begin
 (* FDescription holds all descriptions.
   It's created for FFullDescription, by the TagManager, or in BuildDescription.
-  Here we add further descriptions (hints...), and finally decide whether
-  to keep or to delete FDescription.
+  [No more: Here we add further descriptions (hints...)]
+  Finally we decide whether to keep or to delete FDescription.
 *)
   desc := BuildDescription;
   if (FDescriptionList = nil) and IsEmpty(desc) and (AbstractDescription = '') then begin
@@ -2057,6 +2000,38 @@ begin
 {$ELSE}
 {$ENDIF}
   end;
+end;
+{$ENDIF}
+
+function TBaseItem.GetShortDescription: string;
+var
+  i: integer;
+const
+  MaxShortDescription = 60; //limit description length - become parameter???
+begin
+(* Get abstract, or first sentence, or first part of description.
+  Handling of line breaks???
+*)
+{ ToDo: collect words, until end of sentence or limit reached. }
+
+//try abstract, if found
+  Result := AbstractDescription;
+  if Result <> '' then
+    exit;
+//try first sentence of full description
+  Result := DetailedDescription;
+//extract first sentence - retry after '.'<non-white>?
+  i := Pos('.', Result);
+  if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
+    Result := Copy(Result, 1, i+1);
+    exit;
+  end;
+//fit as short description?
+  if Length(Result) > MaxShortDescription then begin
+  //trim description - could process words
+    SetLength(Result, MaxShortDescription);
+    Result := Result + '...';
+  end; //else fits already
 end;
 
 function TBaseItem.QualifiedName: String;
@@ -2550,7 +2525,7 @@ end;
 
 { TBaseItems ----------------------------------------------------------------- }
 
-constructor TBaseItems.Create(const AOwnsObject: Boolean);
+constructor TBaseItems.Create(AOwnsObject: Boolean);
 begin
   inherited;
   FHash := TObjectHash.Create;

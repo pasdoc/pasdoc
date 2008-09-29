@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabGenerate
+    ActivePage = tabDoc
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -888,14 +888,14 @@ object DocMain: TDocMain
       Caption = 'Docs'
       ImageIndex = 10
       object Splitter1: TSplitter
-        Left = 189
+        Left = 241
         Top = 0
         Height = 397
       end
       object tvUnits: TTreeView
         Left = 0
         Top = 0
-        Width = 189
+        Width = 241
         Height = 397
         Align = alLeft
         Indent = 19
@@ -903,54 +903,65 @@ object DocMain: TDocMain
         OnClick = tvUnitsClick
       end
       object Panel1: TPanel
-        Left = 192
+        Left = 244
         Top = 0
-        Width = 407
+        Width = 355
         Height = 397
         Align = alClient
         TabOrder = 1
         object edRem: TMemo
           Left = 1
-          Top = 137
-          Width = 405
-          Height = 259
+          Top = 185
+          Width = 353
+          Height = 211
           Align = alClient
           Lines.Strings = (
             'edRem')
           ParentShowHint = False
+          ReadOnly = True
+          ScrollBars = ssVertical
           ShowHint = True
           TabOrder = 0
         end
         object GroupBox10: TGroupBox
           Left = 1
           Top = 1
-          Width = 405
-          Height = 136
+          Width = 353
+          Height = 184
           Align = alTop
           Caption = 'Source'
           TabOrder = 1
           DesignSize = (
-            405
-            136)
+            353
+            184)
           object cbRem: TComboBox
             Left = 12
-            Top = 48
-            Width = 381
-            Height = 80
+            Top = 72
+            Width = 329
+            Height = 104
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 0
+            ItemHeight = 13
             TabOrder = 0
             OnClick = cbRemClick
           end
-          object edDecl: TEdit
+          object edName: TEdit
             Left = 8
             Top = 16
-            Width = 385
+            Width = 333
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 1
-            Text = 'declaration'
+            Text = 'Name'
+          end
+          object edValue: TEdit
+            Left = 8
+            Top = 40
+            Width = 333
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            TabOrder = 2
+            Text = 'Value'
           end
         end
       end

@@ -2063,7 +2063,7 @@ begin
     Well, basic idea is that pasdoc should always try to make closing
     and opening tags explicit, even though they can be omitted for paragraphs
     in html. And paragraph must end before <pre> and if there is any text after
-    </pre> than new paragraph must be opened.
+    </pre> then a new paragraph must be opened.
 
     Besides the feeling of being "clean", specifying explicit paragraph
     endings is also important because IE sometimes reacts stupidly
@@ -2078,8 +2078,8 @@ begin
     Because there is no text between "</pre>" and "</p>" this means
     that paragraph is not implicitly opened there. This, in turn,
     means that html validator complains that we have </p> without
-    opening a paragraph. 
-    
+    opening a paragraph.
+
     So the clean solution must be to mark explicitly that paragraph
     always ends before <pre> and always begins after </pre>. }
 
@@ -2089,8 +2089,8 @@ begin
      LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.Paragraph: string; 
-begin 
+function TGenericHTMLDocGenerator.Paragraph: string;
+begin
   { LineEndings are inserted here only to make HTML sources look
     more readable (this makes life easier when looking for pasdoc's bugs,
     comparing generating two tests results etc.).
@@ -2098,7 +2098,7 @@ begin
   Result := LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.EnDash: string; 
+function TGenericHTMLDocGenerator.EnDash: string;
 begin
   Result := '&ndash;';
 end;

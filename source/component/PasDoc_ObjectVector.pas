@@ -16,7 +16,7 @@ type
   public
     { This is only to make constructor virtual, while original
       TObjectList has a static constructor. }
-    constructor Create(const AOwnsObject: boolean); virtual;
+    constructor Create(AOwnsObject: boolean); virtual;
 {$IFDEF fpc}
 {$ELSE}
   //fix bug in D7 TList.Sort
@@ -38,7 +38,7 @@ end;
 
 { TObjectVector }
 
-constructor TObjectVector.Create(const AOwnsObject: boolean);
+constructor TObjectVector.Create(AOwnsObject: boolean);
 begin
   inherited Create(AOwnsObject);
 end;

@@ -124,10 +124,11 @@ type
     edRem: TMemo;
     GroupBox10: TGroupBox;
     cbRem: TComboBox;
-    edDecl: TEdit;
+    edName: TEdit;
     swShowUses: TCheckBox;
     SimpleXMLDocGenerator: TSimpleXMLDocGenerator;
     XMLDocGenerator: TXMLDocGenerator;
+    edValue: TEdit;
   {$IFDEF fpc}
     //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
   {$ELSE}
@@ -228,6 +229,7 @@ var
 implementation
 
 uses
+  PasDoc_Utils,
 {$IFDEF fpc}
   frmAboutUnit,
   WWWBrowserRunnerDM,
@@ -1571,7 +1573,8 @@ var
   s: string;
 begin
   edRem.Clear;
-  edDecl.Text := '';
+  edName.Text := '';
+  edValue.Text := '';
   edRem.Hint := '';
   cbRem.Clear;
   if (tvUnits.Selected <> nil) and (tvUnits.Selected.Data <> nil) then begin
@@ -1579,9 +1582,10 @@ begin
       Item := TDescriptionItem(tvUnits.Selected.Data);
       SelItem := Item;
       SelToken := nil;
-      if item is TPasItem then
+    {$IFDEF old}
+      if item is TPasItem then begin
         edDecl.Text := PasItem.FullDeclaration
-      else begin
+      end else begin
         //edDecl.Text := '<no declaration>';
         s := Item.Name + ' ' + Item.Value; //Item.Text();
         if Item.ID <> trNoTrans then
@@ -1589,6 +1593,20 @@ begin
         edDecl.Text := s;
       end;
       edRem.Text := Item.RawDescription;
+    {$ELSE}
+      if item.ID = trDescription then begin
+        edName.Text := item.Name;
+        edValue.Text := item.Value;
+        if item.Count > 0 then
+          edRem.Text := item.Text(' - ', lineending + lineending)
+        else
+          edRem.Text := ' ' + item.Value;
+      end else begin
+        edName.Text := item.Name;
+        edValue.Text := item.Value;
+        edRem.Text := Item.RawDescription;
+      end;
+    {$ENDIF}
       if item is TBaseItem then begin
         lst := bi.RawDescriptions;
         cbRem.AddItem('<all>', nil);

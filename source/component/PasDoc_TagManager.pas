@@ -106,6 +106,7 @@ type
     FTagManager: TTagManager;
     FOnAllowedInside: TTagAllowedInsideEvent;
   public
+    Cached: boolean;
     { Note that AName will be converted to lowercase before assigning 
       to Name. }
     constructor Create(ATagManager: TTagManager;
@@ -253,31 +254,34 @@ type
       Which means that (assuming that @link(OnAllowedInside) 
       is not assigned) this tag is allowed at top level of
       description and inside parameter of any tag
-      @italic(but not within itself and not within tags 
+      @italic(but not within itself and not within tags
       without toAllowOtherTagsInsideByDefault).
-      
+
       This is currently not used by any tag. }
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
   { All Items of this list must be non-nil TTag objects. }
   TTagVector = class(TObjectVector)
-    { Case of Name does @italic(not) matter (so don't bother converting it to 
-      lowercase or something like that before using this method). 
-      Returns nil if not found. 
-      
+    { Case of Name does @italic(not) matter (so don't bother converting it to
+      lowercase or something like that before using this method).
+      Returns nil if not found.
+
       Maybe in the future it will use hashlist, for now it's not needed. }
     function FindByName(const Name: string): TTag;
   end;
-  
+
   TTryAutoLinkEvent = procedure(TagManager: TTagManager;
     const QualifiedIdentifier: TNameParts;
     out QualifiedIdentifierReplacement: string;
     var AutoLinked: boolean) of object;
 
-  TTagManager = class
+  TTagManager = class(TTagVector)
   private
+  {$IFDEF old}
     FTags: TTagVector;
+  {$ELSE}
+  {$ENDIF}
     FConvertString: TStringConverter;
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
@@ -295,8 +299,10 @@ type
     function TryAutoLink(const QualifiedIdentifier: TNameParts;
       out QualifiedIdentifierReplacement: string): boolean;
   public
-    constructor Create;
+    constructor Create(AOwnsObject: boolean = False); override;
     destructor Destroy; override;
+    //exclued cached tags
+    procedure Clear; override;
 
     { Call OnMessage (if assigned) with given params. }
     procedure DoMessage(const AVerbosity: Cardinal;
@@ -325,30 +331,37 @@ type
       This should specify how paragraphs are marked in particular
       output format, e.g. html generator may set this to '<p>'.
       
-      Default value is ' ' (one space). }
+      Default value is ' ' (one space).
+
+      DoDi: Paragraphs should be handled by the description item(s).
+        Every comment should become one or more paragraphs.
+        Output formatting then can take place around or between paragraphs,
+          what is impossible with a single paragraph end mark.
+        Introduction/conclusion should be formatted accordingly.
+    }
     property Paragraph: string read FParagraph write FParagraph;
 
-    { This will be inserted on each whitespace sequence (but not on 
-      paragraph break). This is consistent with 
+    { This will be inserted on each whitespace sequence (but not on
+      paragraph break). This is consistent with
       [http://pasdoc.sipsolutions.net/WritingDocumentation]
       that clearly says that "amount of whitespace does not matter".
-      
+
       Although in some pasdoc output formats amount of whitespace also
       does not matter (e.g. HTML and LaTeX) but in other (e.g. plain text)
       it matters, so such space compression is needed.
       In other output formats (no examples yet) it may need to be expressed
       by something else than simple space, that's why this property
-      is exposed. 
-      
+      is exposed.
+
       Default value is ' ' (one space). }
     property Space: string read FSpace write FSpace;
-    
+
     { This will be inserted on @code(@@@-) in description,
       and on a normal single dash in description that is not a part
       of en-dash or em-dash.
       This should produce just a short dash.
-      
-      Default value is '-'. 
+
+      Default value is '-'.
       
       You will never get any '-' character to be converted by ConvertString. 
       Convertion of '-' is controlled solely by XxxDash properties of 
@@ -394,9 +407,9 @@ type
       paragraph markers, recognizing URLs in Description and
       correctly translating it, and translating rest of the "normal" text
       via ConvertString.
-      
-      If WantFirstSentenceEnd then we will look for '.' char 
-      followed by any whitespace in Description. 
+
+      If WantFirstSentenceEnd then we will look for '.' char
+      followed by any whitespace in Description.
       Moreover, this '.' must be outside of any @@-tags
       parameter. Under FirstSentenceEnd we will return the number
       of beginning characters @italic(in the output string) that will
@@ -406,27 +419,27 @@ type
       If no such character exists in Description, FirstSentenceEnd will
       be set to Length(Result), so the whole Description will be treated
       as it's first sentence.
-      
+
       If WantFirstSentenceEnd, FirstSentenceEnd will not be set. }
     function Execute(const Description: string;
       AutoLink: boolean;
       WantFirstSentenceEnd: boolean;
       out FirstSentenceEnd: Integer): string; overload;
-      
+
     { This is equivalent to Execute(Description, AutoLink, false, Dummy) }
     function Execute(const Description: string;
       AutoLink: boolean): string; overload;
 
     { This is the underlying version of Execute. Use with caution!
 
-      If EnclosingTag = nil then this is understood to be 
+      If EnclosingTag = nil then this is understood to be
       toplevel of description, which means that all tags are allowed inside.
-      
-      If EnclosingTag <> nil then this is not toplevel. 
-      
+
+      If EnclosingTag <> nil then this is not toplevel.
+
       EnclosingTagData returns collected data for given EnclosingTag.
       You should init it to EnclosingTag.CreateOccurenceData.
-      It will be passed as EnclosingTagData to each of @@-tags 
+      It will be passed as EnclosingTagData to each of @@-tags
       found inside Description. }
     function CoreExecute(const Description: string;
       AutoLink: boolean;
@@ -438,21 +451,21 @@ type
       AutoLink: boolean;
       EnclosingTag: TTag; var EnclosingTagData: TObject): string; overload;
 
-    property ConvertString: TStringConverter 
+    property ConvertString: TStringConverter
       read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
-    
+
     { When @name is @true, tag manager will work a little differently than usual:
-    
+
       @unorderedList(
         @item(Instead of @link(TTag.Execute),
           @link(TTag.PreExecute) will be called.)
-          
+
         @item(Various warnings will @italic(not) be reported.
-        
+
           Assumption is that you will later process the same text
           with @name set to @false to get all the warnings.)
-          
+
         @item(AutoLink will not be used (like it was always false).
           Also the result of @link(Execute) will be pretty much
           random and meaningless (so you should ignore it).
@@ -469,6 +482,8 @@ type
           
           The goal is to make execution with PreExecute set to @true
           as fast as possible.)
+
+        @item(The converted string is discarded. (Really???))
       ) }
     property PreExecute: boolean
       read FPreExecute write FPreExecute;
@@ -476,12 +491,12 @@ type
 
 implementation
 
-uses PasDoc_Utils;
+uses PasDoc_Utils, Contnrs;
 
 { TTag ------------------------------------------------------------  }
 
 constructor TTag.Create(ATagManager: TTagManager;
-  const AName: string; 
+  const AName: string;
   AOnPreExecute: TTagExecuteEvent;
   AOnExecute: TTagExecuteEvent;
   const ATagOptions: TTagOptions);
@@ -494,7 +509,7 @@ begin
   
   FTagManager := ATagManager;
   if TagManager <> nil then
-    TagManager.FTags.Add(Self);
+    TagManager.{FTags.}Add(Self);
 end;
 
 procedure TTag.PreExecute(var ThisTagData: TObject;
@@ -569,9 +584,13 @@ end;
 
 constructor TTagManager.Create;
 begin
+{$IFDEF old}
   inherited Create;
   FTags := TTagVector.Create(true);
-  FParagraph := ' ';
+{$ELSE}
+  inherited Create(False);
+{$ENDIF}
+  FParagraph := ' ';  // #$0B; //=VT //' ';
   FSpace := ' ';
   FShortDash := '-';
   FEnDash := '--';
@@ -580,7 +599,29 @@ end;
 
 destructor TTagManager.Destroy;
 begin
+{$IFDEF old}
   FreeAndNil(FTags);
+{$ELSE}
+  assert(OwnsObjects = False);
+  Clear;
+{$ENDIF}
+  inherited;
+end;
+
+procedure TTagManager.Clear;
+var
+  i: integer;
+  o: TObject;
+  t: TTag absolute o;
+begin
+//free only uncached tags
+  for i := 0 to Count - 1 do begin
+    o := Items[i];
+    if not t.Cached then begin
+      t.Free;
+      //Items[i] := nil;
+    end;
+  end;
   inherited;
 end;
 
@@ -632,11 +673,11 @@ function TTagManager.TryAutoLink(const QualifiedIdentifier: TNameParts;
   out QualifiedIdentifierReplacement: string): boolean;
 begin
   Result := false;
-  
+
   if Assigned(OnTryAutoLink) then
-    OnTryAutoLink(Self, QualifiedIdentifier, 
+    OnTryAutoLink(Self, QualifiedIdentifier,
       QualifiedIdentifierReplacement, Result);
-  
+
   if Result then
     DoMessage(3, pmtInformation, 'Automatically linked identifier "%s"',
       [GlueNameParts(QualifiedIdentifier)]);
@@ -686,22 +727,20 @@ var
     if i = FOffset + 1 then Exit; { exit with false }
 
     TagName := Copy(Description, FOffset + 1, i - FOffset - 1);
-    Tag := FTags.FindByName(TagName);
+    Tag := {FTags.}FindByName(TagName);
     OffsetEnd := i;
 
-    if Tag = nil then
-    begin
+    if Tag = nil then begin
       DoMessageNonPre(1, pmtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
     end;
-    
+
     Result := true;
 
     { OK, we found the correct tag, Tag variable is already set.
       Now lets get the parameters, setting Parameters and OffsetEnd. }
 
-    if (i <= Length(Description)) and (Description[i] = '(') then
-    begin
+    if (i <= Length(Description)) and (Description[i] = '(') then begin
       { Read Parameters to a matching parenthesis.
         Note that we didn't check here whether
         toParameterRequired in Tag.TagOptions.
@@ -710,8 +749,7 @@ var
         toParameterRequired is *not* in Tag.TagOptions }
       Inc(i);
       BracketCount := 1;
-      while not ((i > Length(Description)) or (BracketCount = 0)) do
-      begin
+      while not ((i > Length(Description)) or (BracketCount = 0)) do begin
         case Description[i] of
           '@':
             { Inc(I) here means that we will skip to next character
@@ -733,9 +771,7 @@ var
       end else
         DoMessageNonPre(1, pmtWarning,
           'No matching closing parenthesis for tag "%s"', [TagName]);
-    end else
-    if toParameterRequired in Tag.TagOptions then
-    begin
+    end else if toParameterRequired in Tag.TagOptions then begin
       { Read Parameters to the end of Description or newline. }
       while (i <= Length(Description)) and
             (not (Description[i] in [#10, #13])) do
@@ -745,11 +781,11 @@ var
     end;
   end;
 
-  { This checks whether we are looking (i.e. Description[FOffset] 
+  { This checks whether we are looking (i.e. Description[FOffset]
     starts with) at a pargraph marker
-    (i.e. newline + 
-          optional whitespace + 
-          newline + 
+    (i.e. newline +
+          optional whitespace +
+          newline +
           some more optional whitespaces and newlines)
     and if it is so, returns true and sets OffsetEnd to the next
     index in Description after this paragraph marker. }
@@ -757,7 +793,7 @@ var
   var i: Integer;
   begin
     Result := false;
-    
+
     i := FOffset;
     while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
     if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
@@ -771,7 +807,7 @@ var
       Inc(i);
     while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
     if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
-    
+
     { OK, so we found 2nd newline. So we got paragraph marker.
       Now read it to the end. }
     Result := true;
@@ -779,7 +815,7 @@ var
     OffsetEnd := i;
   end;
 
-  { This checks whether we are looking (i.e. Description[FOffset] 
+  { This checks whether we are looking (i.e. Description[FOffset]
     starts with) at some whitespace.
     If true, then it also sets OffsetEnd to next index after whitespace. }
   function FindWhitespace(out OffsetEnd: Integer): boolean;
@@ -847,10 +883,10 @@ var
     If yes, returns true and sets OffsetEnd to the next
     index in Description after this qualified ident.
     
-    For your comfort, returns also QualifiedIdentifier 
+    For your comfort, returns also QualifiedIdentifier
     (this is *always* equal to SplitNameParts(
     Copy(Description, FOffset, OffsetEnd - FOffset))). }
-  function FindQualifiedIdentifier(out OffsetEnd: Integer; 
+  function FindQualifiedIdentifier(out OffsetEnd: Integer;
     out QualifiedIdentifier: TNameParts): boolean;
   const
     FirstIdentChar = ['a'..'z', 'A'..'Z', '_'];
@@ -887,63 +923,104 @@ var
         SetLength(QualifiedIdentifier, Length(QualifiedIdentifier) + 1);
         QualifiedIdentifier[Length(QualifiedIdentifier) - 1] :=
           Copy(Description, NamePartBegin, OffsetEnd - NamePartBegin);
-          
+
         if SCharIs(Description, OffsetEnd, '.') and
            SCharIs(Description, OffsetEnd + 1, FirstIdentChar) then
         begin
           NamePartBegin := OffsetEnd + 1;
           { skip the dot and skip FirstIdentChar character }
-          Inc(OffsetEnd, 2); 
+          Inc(OffsetEnd, 2);
         end else
           break;
       until false;
     end;
   end;
-  
+
   function FindFirstSentenceEnd: boolean;
   begin
-    Result := (Description[FOffset] = '.') and 
+    Result := (Description[FOffset] = '.') and
       SCharIs(Description, FOffset + 1, WhiteSpace);
   end;
-  
+
+{$IFDEF old}
   function IsNormalTextAllowed: boolean;
   begin
     Result := (EnclosingTag = nil) or
       (toAllowNormalTextInside in EnclosingTag.TagOptions);
   end;
-  
+{$ELSE}
+var
+//shortcut
+  IsNormalTextAllowed: boolean;
+
+  procedure CheckIsNormalTextAllowed;
+  begin
+    IsNormalTextAllowed := (EnclosingTag = nil) or
+      (toAllowNormalTextInside in EnclosingTag.TagOptions);
+  end;
+{$ENDIF}
+
   function CheckNormalTextAllowed(const NormalText: string): boolean;
   begin
     Result := IsNormalTextAllowed;
-    if not Result then
+    if Result then
+      Result := not PreExecute
+    else
       DoMessageNonPre(1, pmtWarning,
         'Such content, "%s", is not allowed '+
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
   end;
 
 var
-  { Always ConvertBeginOffset <= FOffset. 
-    Description[ConvertBeginOffset ... FOffset - 1] 
+  { Always ConvertBeginOffset <= FOffset.
+    Description[ConvertBeginOffset ... FOffset - 1]
     is the string that should be filtered by DoConvertString. }
   ConvertBeginOffset: Integer;
+  ToAppend: string;
 
   { This function increases ConvertBeginOffset to FOffset,
     appending converted version of
     Description[ConvertBeginOffset ... FOffset - 1]
     to Result. }
   procedure DoConvert;
-  var
-    ToAppend: string;
   begin
-    ToAppend := Copy(Description, ConvertBeginOffset, 
+  {$IFDEF old}
+    ToAppend := Copy(Description, ConvertBeginOffset,
       FOffset - ConvertBeginOffset);
-    if ToAppend <> '' then
-    begin
-      if (not PreExecute) and
-         CheckNormalTextAllowed(ToAppend) then
+    if ToAppend <> '' then begin
+      if (not PreExecute) and CheckNormalTextAllowed(ToAppend) then
         Result := Result + DoConvertString(ToAppend);
       ConvertBeginOffset := FOffset;
     end;
+  {$ELSE}
+  //skip empty parts
+    if FOffset > ConvertBeginOffset then begin
+    //skip PreExecute
+      if not PreExecute then begin
+        ToAppend := Copy(Description, ConvertBeginOffset, FOffset - ConvertBeginOffset);
+        if CheckNormalTextAllowed(ToAppend) then
+          Result := Result + DoConvertString(ToAppend);
+      end;
+      ConvertBeginOffset := FOffset;
+    end;
+  {$ENDIF}
+  end;
+
+(* Do string replacement.
+  Skip in PreExecute.
+*)
+  procedure HandleNormalText(const raw, prep: string);
+  begin
+    if not PreExecute then begin
+    //do replacement
+      DoConvert; //text before raw
+    { convert raw into prep }
+      if CheckNormalTextAllowed(raw) then
+        Result := Result + prep;
+    end;
+  //adjust pointers
+    Inc(FOffset, Length(raw));
+    ConvertBeginOffset := FOffset;
   end;
 
 var
@@ -959,253 +1036,285 @@ begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
-  
-  if (EnclosingTag <> nil) and
-     (toFirstWordVerbatim in EnclosingTag.TagOptions) then
-  begin
+  CheckIsNormalTextAllowed;
+  if PreExecute then begin
+  //turn off useless processing - output is discarded!?
+    WantFirstSentenceEnd := False;
+  end;
+
+  if (EnclosingTag <> nil) and (toFirstWordVerbatim in EnclosingTag.TagOptions) then begin
     { Skip the first word in Description }
     while SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
-    while SCharIs(Description, FOffset, AllChars - WhiteSpace) do Inc(FOffset);
+    while not SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
   end;
-  
+
   if WantFirstSentenceEnd then
     FirstSentenceEnd := 0;
-  
+
   { Description[FOffset] is the next char that must be processed
     (we're "looking at it" right now). }
 
-  while FOffset <= Length(Description) do
-  begin
-    if (Description[FOffset] = '@') and
-       FindTag(FoundTag, Params, OffsetEnd) then
-    begin
-      DoConvert;
-      
-      { Check is it allowed for this tag to be here }
-      if not FoundTag.AllowedInside(EnclosingTag) then
-      begin
-        if EnclosingTag = nil then
-          DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used at the ' +
-            'top level of description, it must be used within some other @-tag', 
-            [FoundTag.Name])
-        else
-          DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used inside ' +
-            'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
-            
-        { Assign dummy value for ReplaceStr.
-        
-          We can't proceed with normal recursive expanding and
-          calling FoundTag.[Pre]Execute, because tag methods
-          (and callbacks, like TTag.On[Pre]Execute) may assume that the tag
-          is always enclosed only within allowed tags
-          (so e.g. EnclosingTag and EnclosingTagData values for
-          On[Pre]Execute are of appropriate classes etc.) }
-        ReplaceStr := '';
-      end else
-      begin
-        FoundTagData := FoundTag.CreateOccurenceData;
-        try
-          { Process Params }
-          if Params <> '' then
-          begin
-            if toParameterRequired in FoundTag.TagOptions then
-            begin
-              Unabbreviate(Params);
-              if toRecursiveTags in FoundTag.TagOptions then
-                { recursively expand Params }
-                Params := CoreExecute(Params, AutoLink, FoundTag, FoundTagData);
-            end else
-            begin
-              { Note that in this case we ignore whether
-                toRecursiveTags is in Tag.TagOptions,
-                we always behave like toRecursiveTags was not included.
+{$IFDEF CheckLastChar}
+  while FOffset <= Length(Description) do begin
+{$ELSE}
+  while FOffset < Length(Description) do begin //ignore last char?
+{$ENDIF}
+    if Description[FOffset] = '@' then begin
+      if FOffset < Length(Description) then
+      case Description[FOffset+1] of
+      //end else if Copy(Description, FOffset, 2) = '@(' then begin
+      '(': begin
+        {$IFDEF old}
+          DoConvert;
+          { convert '@(' to '(' }
+          if CheckNormalTextAllowed('@(') then
+            Result := Result + '(';
+          FOffset := FOffset + 2;
+          ConvertBeginOffset := FOffset;
+        {$ELSE}
+          HandleNormalText('@(', '(');
+        {$ENDIF}
+        end;  // else if Copy(Description, FOffset, 2) = '@)' then begin
+      ')': begin
+        {$IFDEF old}
+          DoConvert;
+          { convert '@)' to '(' }
+          if CheckNormalTextAllowed('@)') then
+            Result := Result + ')';
+          FOffset := FOffset + 2;
+          ConvertBeginOffset := FOffset;
+        {$ELSE}
+          HandleNormalText('@)', ')');
+        {$ENDIF}
+        end; //else if Copy(Description, FOffset, 2) = '@@' then begin
+      '@': begin
+        {$IFDEF old}
+          DoConvert;
+          { convert '@@' to '@' }
+          if CheckNormalTextAllowed('@@') then
+            Result := Result + '@';
+          FOffset := FOffset + 2;
+          ConvertBeginOffset := FOffset;
+        {$ELSE}
+          HandleNormalText('@@', '@');
+        {$ENDIF}
+        end; //else if Copy(Description, FOffset, 2) = '@-' then begin
+      '-': begin
+        {$IFDEF old}
+          DoConvert;
+          { convert '@-' to ShortDash }
+          if CheckNormalTextAllowed('@-') then
+            Result := Result + ShortDash;
+          FOffset := FOffset + 2;
+          ConvertBeginOffset := FOffset;
+        {$ELSE}
+          HandleNormalText('@-', ShortDash);
+        {$ENDIF}
+        end;
+      else //case
+        if FindTag(FoundTag, Params, OffsetEnd) then begin
+          DoConvert;
 
-                This is reported as a serious warning,
-                because tag handler procedure will probably ignore
-                passed value of Params and will set ReplaceStr to something
-                unrelated to Params. This means that user input is completely
-                discarded. So user should really correct it.
-
-                I didn't mark this as an mtError only because some sensible
-                output will be generated anyway. }
-              DoMessageNonPre(1, pmtWarning,
-                'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
-            end;
-            ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
-          end else
-            ReplaceStr := DoConvertString('@' + FoundTag.Name);
-
-          { execute tag handler }
-          try
-            if PreExecute then
-              FoundTag.PreExecute(FoundTagData, EnclosingTag, EnclosingTagData,
-                Params, ReplaceStr)
+          { Check is it allowed for this tag to be here }
+          if not FoundTag.AllowedInside(EnclosingTag) then begin
+            if EnclosingTag = nil then
+              DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used at the ' +
+                'top level of description, it must be used within some other @-tag',
+                [FoundTag.Name])
             else
-              FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
-                Params, ReplaceStr);
-          except
-            //todo: log for debugging
+              DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used inside ' +
+                'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
+
+            { Assign dummy value for ReplaceStr.
+
+              We can't proceed with normal recursive expanding and
+              calling FoundTag.[Pre]Execute, because tag methods
+              (and callbacks, like TTag.On[Pre]Execute) may assume that the tag
+              is always enclosed only within allowed tags
+              (so e.g. EnclosingTag and EnclosingTagData values for
+              On[Pre]Execute are of appropriate classes etc.) }
+            ReplaceStr := '';
+          end else begin
+            FoundTagData := FoundTag.CreateOccurenceData;
+            try
+              { Process Params }
+              if Params = '' then
+                ReplaceStr := DoConvertString('@' + FoundTag.Name)
+              else begin
+                if toParameterRequired in FoundTag.TagOptions then begin
+                  Unabbreviate(Params);
+                  if toRecursiveTags in FoundTag.TagOptions then
+                    { recursively expand Params }
+                    Params := CoreExecute(Params, AutoLink, FoundTag, FoundTagData);
+                end else begin
+                  { Note that in this case we ignore whether
+                    toRecursiveTags is in Tag.TagOptions,
+                    we always behave like toRecursiveTags was not included.
+
+                    This is reported as a serious warning,
+                    because tag handler procedure will probably ignore
+                    passed value of Params and will set ReplaceStr to something
+                    unrelated to Params. This means that user input is completely
+                    discarded. So user should really correct it.
+
+                    I didn't mark this as an mtError only because some sensible
+                    output will be generated anyway. }
+                  DoMessageNonPre(1, pmtWarning,
+                    'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
+                end;
+                ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
+              end;
+
+              { execute tag handler }
+              try
+                if PreExecute then
+                  FoundTag.PreExecute(FoundTagData, EnclosingTag, EnclosingTagData,
+                    Params, ReplaceStr)
+                else
+                  FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
+                    Params, ReplaceStr);
+              except
+                //todo: log for debugging
+              end;
+
+            finally
+              FoundTag.DestroyOccurenceData(FoundTagData)
+            end;
           end;
 
-        finally 
-          FoundTag.DestroyOccurenceData(FoundTagData) 
-        end;
+          if not PreExecute then //???
+            Result := Result + ReplaceStr;
+
+          FOffset := OffsetEnd;
+          ConvertBeginOffset := FOffset;
+        end else //default handling of "@"
+          Inc(FOffset);
+      end; //case
+    end else if Description[FOffset] = '-' then begin
+    {$IFDEF ProcessLastChar}
+      if not SCharIs(Description, FOffset + 1, '-') then begin //'-'
+    {$ELSE}
+      if Description[FOffset + 1] <> '-' then begin //'-'
+    {$ENDIF}
+      {$IFDEF old}
+        DoConvert;
+        { So '-' is just a normal ShortDash }
+        if CheckNormalTextAllowed('-') then
+          Result := Result + ShortDash;
+        FOffset := FOffset + 1;
+        ConvertBeginOffset := FOffset;
+      {$ELSE}
+        HandleNormalText('-', ShortDash);
+      {$ENDIF}
+      //end else if Copy(Description, FOffset, 2) = '--' then begin
+      end else if not SCharIs(Description, FOffset + 2, '-') then begin
+      {$IFDEF old}
+        DoConvert;
+        { convert '--' to EnDash }
+        if CheckNormalTextAllowed('--') then
+          Result := Result + EnDash;
+        FOffset := FOffset + 2;
+        ConvertBeginOffset := FOffset;
+      {$ELSE}
+        HandleNormalText('--', EnDash);
+      {$ENDIF}
+      //end else if Copy(Description, FOffset, 3) = '---' then begin
+      end else begin
+      {$IFDEF old}
+        DoConvert;
+        { convert '---' to EmDash }
+        if CheckNormalTextAllowed('---') then
+          Result := Result + EmDash;
+        FOffset := FOffset + 3;
+        ConvertBeginOffset := FOffset;
+      {$ELSE}
+        HandleNormalText('---', EmDash);
+      {$ENDIF}
       end;
-
-      Result := Result + ReplaceStr;
-      
-      FOffset := OffsetEnd;
-      ConvertBeginOffset := FOffset;
-    end else
-    if Copy(Description, FOffset, 2) = '@(' then
-    begin
+    end else if FindParagraph(OffsetEnd) then begin
+    {$IFnDEF old}
       DoConvert;
-      
-      { convert '@(' to '(' }
-      if CheckNormalTextAllowed('@(') then
-        Result := Result + '(';
-        
-      FOffset := FOffset + 2;
-      ConvertBeginOffset := FOffset;
-    end else
-    if Copy(Description, FOffset, 2) = '@)' then
-    begin
-      DoConvert;
-      
-      { convert '@)' to '(' }
-      if CheckNormalTextAllowed('@)') then
-        Result := Result + ')';
-        
-      FOffset := FOffset + 2;
-      ConvertBeginOffset := FOffset;
-    end else
-    if Copy(Description, FOffset, 2) = '@@' then
-    begin
-      DoConvert;
-      
-      { convert '@@' to '@' }
-      if CheckNormalTextAllowed('@@') then
-        Result := Result + '@';
-        
-      FOffset := FOffset + 2;
-      ConvertBeginOffset := FOffset;
-    end else
-    if Copy(Description, FOffset, 2) = '@-' then
-    begin
-      DoConvert;
-      
-      { convert '@-' to ShortDash }
-      if CheckNormalTextAllowed('@-') then
-        Result := Result + ShortDash;
-      
-      FOffset := FOffset + 2;
-      ConvertBeginOffset := FOffset;
-    end else
-    { Note that we must scan for '---' in Description before scanning for '--'. }
-    if Copy(Description, FOffset, 3) = '---' then
-    begin
-      DoConvert;
-      
-      { convert '---' to EmDash }
-      if CheckNormalTextAllowed('---') then
-        Result := Result + EmDash;
-      
-      FOffset := FOffset + 3;      
-      ConvertBeginOffset := FOffset;
-    end else
-    if Copy(Description, FOffset, 2) = '--' then
-    begin
-      DoConvert;
-      
-      { convert '--' to EnDash }
-      if CheckNormalTextAllowed('--') then
-        Result := Result + EnDash;
-      
-      FOffset := FOffset + 2;      
-      ConvertBeginOffset := FOffset;
-    end else
-    if Description[FOffset] = '-' then
-    begin
-      DoConvert;
-      
-      { So '-' is just a normal ShortDash }
-      if CheckNormalTextAllowed('-') then
-        Result := Result + ShortDash;
-        
-      FOffset := FOffset + 1;            
-      ConvertBeginOffset := FOffset;
-    end else
-    if FindParagraph(OffsetEnd) then
-    begin
-      DoConvert;
-
       { If normal text is allowed then append Paragraph to Result.
         Otherwise just ignore any whitespace in Description. }
-      if IsNormalTextAllowed then
+      //if IsNormalTextAllowed then begin
+      if IsNormalTextAllowed and (Result <> '') then begin
+      //no paragraphs at the begin of the document
         Result := Result + Paragraph;
-        
+      end;
+    {$ELSE} //incorrect?
+      FOffset := OffsetEnd;
+      if not PreExecute and (Result <> '') then
+        HandleNormalText('', Paragraph);
+    {$ENDIF}
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
-    end else
+    end else if FindWhitespace(OffsetEnd) then begin
     { FindWhitespace must be checked after FindParagraph,
       otherwise we would take paragraph as just some whitespace. }
-    if FindWhitespace(OffsetEnd) then
-    begin
+    {$IFDEF old}
       DoConvert;
-      
       { If normal text is allowed then append Space to Result.
         Otherwise just ignore any whitespace in Description. }
       if IsNormalTextAllowed then
         Result := Result + Space;
-        
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
-    end else
-    if (not PreExecute) and 
-       AutoLink and
-       FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier) and
-       TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then
-    begin
+    {$ELSE}
+      FOffset := OffsetEnd;
+      HandleNormalText('', Space);
+    {$ENDIF}
+    end else if (not PreExecute) and AutoLink
+    and FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier)
+    and TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then begin
+    {$IFDEF old}
       DoConvert;
-
       if CheckNormalTextAllowed(GlueNameParts(QualifiedIdentifier)) then
         Result := Result + QualifiedIdentifierReplacement;
-        
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
-    end else
-    if FindURL(OffsetEnd, URL) then
-    begin
+    {$ELSE}
+      HandleNormalText('', QualifiedIdentifierReplacement);
+    {$ENDIF}
+    end else if FindURL(OffsetEnd, URL) then begin
+    {$IFDEF old}
       DoConvert;
-
       if CheckNormalTextAllowed(URL) then
         Result := Result + DoURLLink(URL);
-        
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
-    end else
-    if WantFirstSentenceEnd and
-       (FirstSentenceEnd = 0) and
-       FindFirstSentenceEnd then
-    begin
+    {$ELSE}
+      HandleNormalText('', DoURLLink(URL));
+    {$ENDIF}
+    end else if WantFirstSentenceEnd and (FirstSentenceEnd = 0) and FindFirstSentenceEnd then begin
+    {$IFDEF old}
       DoConvert;
-      
-      if CheckNormalTextAllowed('.') then
-      begin
+      if CheckNormalTextAllowed('.') then begin
         Result := Result + ConvertString('.');
         FirstSentenceEnd := Length(Result);
       end;
-      
       Inc(FOffset);
       ConvertBeginOffset := FOffset;
+    {$ELSE}
+      HandleNormalText('', ConvertString('.'));
+      FirstSentenceEnd := Length(Result);
+    {$ENDIF}
     end else
       Inc(FOffset);
   end;
 
-  DoConvert;
+  if not PreExecute then begin
+  {$IFDEF ProcessLastChar}
+  //all done, so far
+  {$ELSE}
+  //handle last char
+    inc(FOffset);
+  {$ENDIF}
 
-  if WantFirstSentenceEnd and (FirstSentenceEnd = 0) then
-    FirstSentenceEnd := Length(Result);
+    DoConvert; //remaining text
+
+    if WantFirstSentenceEnd and (FirstSentenceEnd = 0) then
+      FirstSentenceEnd := Length(Result);
+  end;
 
   { Only for testing:
   Writeln('----');
@@ -1228,7 +1337,7 @@ function TTagManager.Execute(const Description: string;
   AutoLink: boolean;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
-var 
+var
   EnclosingTagData: TObject;
 begin
   EnclosingTagData := nil;
@@ -1239,8 +1348,8 @@ begin
 end;
 
 function TTagManager.Execute(const Description: string;
-  AutoLink: boolean): string; 
-var 
+  AutoLink: boolean): string;
+var
   Dummy: Integer;
 begin
   Result := Execute(Description, AutoLink, false, Dummy);

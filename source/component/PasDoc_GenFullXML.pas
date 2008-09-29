@@ -27,11 +27,18 @@ type
     function FormatList(ListData: TListData): string; override;
   //create link (= output filename?)
     function CreateLink(const Item: TBaseItem): string; override;
+  //paragraph ending in processed descriptions
+    function  Paragraph: string; override;
   private
   //indentation
     indent: string;
   //open tags
+  {$IFDEF old}
     tags: TStrings;
+  {$ELSE}
+    TagList: array of string;
+    TagLevel: integer;
+  {$ENDIF}
 
     function ArgString(const Aname, arg: string): string;
   //write tagged string
@@ -65,12 +72,18 @@ uses
 constructor TXMLDocGenerator.Create(AOwner: TComponent);
 begin
   inherited create(AOwner);
+{$IFDEF old}
   tags := TStringList.Create;
+{$ELSE}
+{$ENDIF}
 end;
 
 destructor TXMLDocGenerator.Destroy;
 begin
+{$IFDEF old}
   FreeAndNil(tags);
+{$ELSE}
+{$ENDIF}
   inherited;
 end;
 
@@ -172,7 +185,8 @@ begin
     Result := Result + '  <' + RowElement[Row.Head] + '>' + LineEnding;
     for ColNum := 0 to Row.Cells.Count - 1 do
       Result := Result +
-        Format('    <cell>%s</cell>', [Row.Cells[ColNum]]) + LineEnding;
+        //Format('    <cell>%s</cell>', [Row.Cells[ColNum]]) + LineEnding;
+        '    <cell>' + Row.Cells[ColNum] + '</cell>' + LineEnding;
     Result := Result + '  </' + RowElement[Row.Head] + '>' + LineEnding;
   end;
 
@@ -188,7 +202,8 @@ var
   ListItem: TListItemData;
 begin
   Result := LineEnding + LineEnding +
-    Format('<%s>', [ListTag[ListData.ListType]]) + LineEnding;
+    //Format('<%s>', [ListTag[ListData.ListType]]) + LineEnding;
+    '<' + ListTag[ListData.ListType] + '>' + LineEnding;
 
   for i := 0 to ListData.Count - 1 do
   begin
@@ -199,16 +214,23 @@ begin
     Result := Result + '>' + ListItem.Text + '</item>' + LineEnding;
   end;
 
-  Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) +
+  Result := Result +
+    //Format('</%s>', [ListTag[ListData.ListType]]) +
+    '</' + ListTag[ListData.ListType] + '>' +
     LineEnding + LineEnding;
 end;
 
 function TXMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 begin
-(* XML has no linking/reference specification.
+(* AFAIK XML has no linking/reference specification.
 *)
 { TODO : CreateLink for XML }
   Result := Item.Name;
+end;
+
+function TXMLDocGenerator.Paragraph: string;
+begin
+  Result := LineEnding; // + LineEnding;
 end;
 
 //-------------------- new tags ----------------------
@@ -216,16 +238,27 @@ end;
 procedure TXMLDocGenerator.CloseTag;
 begin
   SetLength(indent, Length(indent) - 2);
+{$IFDEF old}
   if tags.Count > 0 then begin
     WriteDirect(indent + '</' + tags[tags.count - 1] + '>', True);
   end;
   tags.Delete(tags.Count - 1);
+{$ELSE}
+  dec(TagLevel);
+  //assert(TagLevel >= 0); //debug only
+  WriteDirect(indent + '</' + TagList[TagLevel] + '>', True);
+{$ENDIF}
 end;
 
 procedure TXMLDocGenerator.CloseTags;
 begin
+{$IFDEF old}
   while tags.Count > 0 do
     CloseTag;
+{$ELSE}
+  while TagLevel > 0 do
+    CloseTag;
+{$ENDIF}
 end;
 
 procedure TXMLDocGenerator.StartTag(const Aname, args: string;
@@ -243,7 +276,14 @@ begin
     WriteDirect(args);
   if fPush then begin
   //keep tag open
+  {$IFDEF old}
     tags.Add(t);
+  {$ELSE}
+    if TagLevel >= Length(TagList) then
+      SetLength(TagList, TagLevel + 8);
+    TagList[TagLevel] := t;
+    inc(TagLevel);
+  {$ENDIF}
     indent := indent + '  ';
     WriteDirect('>', NewLine);
   end else //close tag
@@ -387,6 +427,7 @@ begin
   //trDeclaration: //as text? value of item?
   trDescription: //todo: retain paragraphs
     begin
+    {$IFDEF paragraphs}
       OpenTag('Description', ArgString('abstract', item.Name), True);
       for i := 0 to item.Count - 1 do begin
         d := item.ItemAt(i);
@@ -396,6 +437,9 @@ begin
           WriteItem(d, trDescription);
       end; //else top level list, no name/value expected
       CloseTag;
+    {$ELSE}
+      WriteTag('Description', ArgString('abstract', item.Name), ConvertString(item.Value));
+    {$ENDIF}
       exit;
     end;
   else //case
