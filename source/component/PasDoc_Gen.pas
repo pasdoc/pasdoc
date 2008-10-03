@@ -857,8 +857,13 @@ type
 
     { Must be overwritten, writes all documentation.
       Will create either a single file or one file for each unit and each
-      class, interface or object, depending on output format. }
+      class, interface or object, depending on output format.
+
+      This implementation only creates the GraphViz files, using WriteDocumentationGen.
+    }
     procedure WriteDocumentation; virtual;
+  //the non-virtual version
+    procedure WriteDocumentationGen;
 
     property Units: TPasUnits read FUnits write FUnits;
 
@@ -947,6 +952,9 @@ type
     property AutoLinkExclude: TStringList read FAutoLinkExclude;
   end;
 
+var
+  TheGenerator: TDocGenerator;
+  
 implementation
 
 uses
@@ -1057,18 +1065,22 @@ var
   i: Integer;
   U: TPasUnit;
 begin //BuildLinks
+(* The created files are specific to the generator.
+  Assigning file names here is somewhat HTML specific.
+  Filenames should be assigned by the CreateLink method of the actual generator.
+*)
   if IsEmpty(Units) then Exit;
   DoMessage(2, pmtInformation, 'Creating links ...', []);
 
 //assuming that FullLink equals the filename???
   if Introduction <> nil then begin
     Introduction.FullLink := CreateLink(Introduction);
-    Introduction.OutputFileName := Introduction.FullLink;
+    //Introduction.OutputFileName := Introduction.FullLink;
   end;
 
   if Conclusion <> nil then begin
     Conclusion.FullLink := CreateLink(Conclusion);
-    Conclusion.OutputFileName := Conclusion.FullLink;
+    //Conclusion.OutputFileName := Conclusion.FullLink;
   end;
 
   for i := 0 to Units.Count - 1 do begin
@@ -2725,6 +2737,11 @@ begin
 end;
 
 procedure TDocGenerator.WriteDocumentation;
+begin
+  WriteDocumentationGen;
+end;
+
+procedure TDocGenerator.WriteDocumentationGen;
 begin
   if OutputGraphVizUses then WriteGVUses;
   if OutputGraphVizClassHierarchy then WriteGVClasses;

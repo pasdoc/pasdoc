@@ -54,6 +54,7 @@ contains
   PasDoc_Aspell in '..\..\..\..\component\PasDoc_Aspell.pas',
   PasDoc_ProcessLineTalk in '..\..\..\..\component\PasDoc_ProcessLineTalk.pas',
   PasDoc_GenSimpleXML in '..\..\..\..\component\PasDoc_GenSimpleXML.pas',
-  PasDoc_GenFullXML in '..\..\..\..\component\PasDoc_GenFullXML.pas';
+  PasDoc_GenFullXML in '..\..\..\..\component\PasDoc_GenFullXML.pas',
+  PasDoc_GenFullHtml in '..\..\..\..\component\PasDoc_GenFullHtml.pas';
 
 end.

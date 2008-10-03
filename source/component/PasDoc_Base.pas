@@ -130,7 +130,7 @@ type
     { Starts creating the documentation. }
     procedure Execute(fGenerate: boolean = True);
     // After @link(Execute) has been called, @name holds the units that have
-    // been parsed.
+    // been parsed. Copied into the generator.
     property Units: TPasUnits read FUnits;
     // After @link(Execute) has been called, @name holds the conclusion.
     property Conclusion: TExternalItem read FConclusion;
@@ -678,7 +678,8 @@ begin
   if Assigned(FGenerator) then begin
     FGenerator.OnMessage := nil;
   end;
-  FGenerator := Value;
+  FGenerator := Value; //obsolete(?)
+  TheGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
     FGenerator.OnMessage := {$IFDEF FPC}@{$ENDIF} GenMessage;

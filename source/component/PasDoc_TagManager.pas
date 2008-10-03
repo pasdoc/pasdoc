@@ -278,10 +278,6 @@ type
 
   TTagManager = class(TTagVector)
   private
-  {$IFDEF old}
-    FTags: TTagVector;
-  {$ELSE}
-  {$ENDIF}
     FConvertString: TStringConverter;
     FAbbreviations: TStringList;
     FOnMessage: TPasDocMessageEvent;
@@ -584,12 +580,7 @@ end;
 
 constructor TTagManager.Create;
 begin
-{$IFDEF old}
-  inherited Create;
-  FTags := TTagVector.Create(true);
-{$ELSE}
   inherited Create(False);
-{$ENDIF}
   FParagraph := ' ';  // #$0B; //=VT //' ';
   FSpace := ' ';
   FShortDash := '-';
@@ -599,12 +590,7 @@ end;
 
 destructor TTagManager.Destroy;
 begin
-{$IFDEF old}
-  FreeAndNil(FTags);
-{$ELSE}
-  assert(OwnsObjects = False);
   Clear;
-{$ENDIF}
   inherited;
 end;
 
@@ -617,10 +603,8 @@ begin
 //free only uncached tags
   for i := 0 to Count - 1 do begin
     o := Items[i];
-    if not t.Cached then begin
+    if not t.Cached then
       t.Free;
-      //Items[i] := nil;
-    end;
   end;
   inherited;
 end;
@@ -942,13 +926,6 @@ var
       SCharIs(Description, FOffset + 1, WhiteSpace);
   end;
 
-{$IFDEF old}
-  function IsNormalTextAllowed: boolean;
-  begin
-    Result := (EnclosingTag = nil) or
-      (toAllowNormalTextInside in EnclosingTag.TagOptions);
-  end;
-{$ELSE}
 var
 //shortcut
   IsNormalTextAllowed: boolean;
@@ -958,7 +935,6 @@ var
     IsNormalTextAllowed := (EnclosingTag = nil) or
       (toAllowNormalTextInside in EnclosingTag.TagOptions);
   end;
-{$ENDIF}
 
   function CheckNormalTextAllowed(const NormalText: string): boolean;
   begin
@@ -1062,55 +1038,10 @@ begin
     if Description[FOffset] = '@' then begin
       if FOffset < Length(Description) then
       case Description[FOffset+1] of
-      //end else if Copy(Description, FOffset, 2) = '@(' then begin
-      '(': begin
-        {$IFDEF old}
-          DoConvert;
-          { convert '@(' to '(' }
-          if CheckNormalTextAllowed('@(') then
-            Result := Result + '(';
-          FOffset := FOffset + 2;
-          ConvertBeginOffset := FOffset;
-        {$ELSE}
-          HandleNormalText('@(', '(');
-        {$ENDIF}
-        end;  // else if Copy(Description, FOffset, 2) = '@)' then begin
-      ')': begin
-        {$IFDEF old}
-          DoConvert;
-          { convert '@)' to '(' }
-          if CheckNormalTextAllowed('@)') then
-            Result := Result + ')';
-          FOffset := FOffset + 2;
-          ConvertBeginOffset := FOffset;
-        {$ELSE}
-          HandleNormalText('@)', ')');
-        {$ENDIF}
-        end; //else if Copy(Description, FOffset, 2) = '@@' then begin
-      '@': begin
-        {$IFDEF old}
-          DoConvert;
-          { convert '@@' to '@' }
-          if CheckNormalTextAllowed('@@') then
-            Result := Result + '@';
-          FOffset := FOffset + 2;
-          ConvertBeginOffset := FOffset;
-        {$ELSE}
-          HandleNormalText('@@', '@');
-        {$ENDIF}
-        end; //else if Copy(Description, FOffset, 2) = '@-' then begin
-      '-': begin
-        {$IFDEF old}
-          DoConvert;
-          { convert '@-' to ShortDash }
-          if CheckNormalTextAllowed('@-') then
-            Result := Result + ShortDash;
-          FOffset := FOffset + 2;
-          ConvertBeginOffset := FOffset;
-        {$ELSE}
-          HandleNormalText('@-', ShortDash);
-        {$ENDIF}
-        end;
+      '(': HandleNormalText('@(', '(');
+      ')': HandleNormalText('@)', ')');
+      '@': HandleNormalText('@@', '@');
+      '-': HandleNormalText('@-', ShortDash);
       else //case
         if FindTag(FoundTag, Params, OffsetEnd) then begin
           DoConvert;
@@ -1196,40 +1127,11 @@ begin
     {$ELSE}
       if Description[FOffset + 1] <> '-' then begin //'-'
     {$ENDIF}
-      {$IFDEF old}
-        DoConvert;
-        { So '-' is just a normal ShortDash }
-        if CheckNormalTextAllowed('-') then
-          Result := Result + ShortDash;
-        FOffset := FOffset + 1;
-        ConvertBeginOffset := FOffset;
-      {$ELSE}
         HandleNormalText('-', ShortDash);
-      {$ENDIF}
-      //end else if Copy(Description, FOffset, 2) = '--' then begin
       end else if not SCharIs(Description, FOffset + 2, '-') then begin
-      {$IFDEF old}
-        DoConvert;
-        { convert '--' to EnDash }
-        if CheckNormalTextAllowed('--') then
-          Result := Result + EnDash;
-        FOffset := FOffset + 2;
-        ConvertBeginOffset := FOffset;
-      {$ELSE}
         HandleNormalText('--', EnDash);
-      {$ENDIF}
-      //end else if Copy(Description, FOffset, 3) = '---' then begin
       end else begin
-      {$IFDEF old}
-        DoConvert;
-        { convert '---' to EmDash }
-        if CheckNormalTextAllowed('---') then
-          Result := Result + EmDash;
-        FOffset := FOffset + 3;
-        ConvertBeginOffset := FOffset;
-      {$ELSE}
         HandleNormalText('---', EmDash);
-      {$ENDIF}
       end;
     end else if FindParagraph(OffsetEnd) then begin
     {$IFnDEF old}
@@ -1266,38 +1168,12 @@ begin
     end else if (not PreExecute) and AutoLink
     and FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier)
     and TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then begin
-    {$IFDEF old}
-      DoConvert;
-      if CheckNormalTextAllowed(GlueNameParts(QualifiedIdentifier)) then
-        Result := Result + QualifiedIdentifierReplacement;
-      FOffset := OffsetEnd;
-      ConvertBeginOffset := FOffset;
-    {$ELSE}
       HandleNormalText('', QualifiedIdentifierReplacement);
-    {$ENDIF}
     end else if FindURL(OffsetEnd, URL) then begin
-    {$IFDEF old}
-      DoConvert;
-      if CheckNormalTextAllowed(URL) then
-        Result := Result + DoURLLink(URL);
-      FOffset := OffsetEnd;
-      ConvertBeginOffset := FOffset;
-    {$ELSE}
       HandleNormalText('', DoURLLink(URL));
-    {$ENDIF}
     end else if WantFirstSentenceEnd and (FirstSentenceEnd = 0) and FindFirstSentenceEnd then begin
-    {$IFDEF old}
-      DoConvert;
-      if CheckNormalTextAllowed('.') then begin
-        Result := Result + ConvertString('.');
-        FirstSentenceEnd := Length(Result);
-      end;
-      Inc(FOffset);
-      ConvertBeginOffset := FOffset;
-    {$ELSE}
       HandleNormalText('', ConvertString('.'));
       FirstSentenceEnd := Length(Result);
-    {$ENDIF}
     end else
       Inc(FOffset);
   end;

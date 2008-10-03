@@ -138,7 +138,7 @@ type
     KEY_FINALLY,
     KEY_INLINE,
     KEY_NIL,
-    KEY_OF, KEY_ON,
+    KEY_OF, KEY_ON, KEY_OUT,
     KEY_PACKED,
     KEY_THEN, KEY_TO
   );
@@ -341,7 +341,7 @@ const
     'FINALLY',
     'INLINE',
     'NIL',
-    'OF', 'ON',
+    'OF', 'ON', 'OUT',
     'PACKED',
     'THEN', 'TO'
   );

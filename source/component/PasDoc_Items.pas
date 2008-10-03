@@ -1390,13 +1390,20 @@ type
   EAnchorAlreadyExists = class(Exception);
 
   { @name extends @link(TBaseItem) to store extra information about a project.
-    @name is used to hold an introduction and conclusion to the project. }
+    @name is used to hold an introduction and conclusion to the project.
+
+    Anchors contains a flat list of all sections and anchors, where anchors
+    eventually must be copied from the section items.
+  }
   TExternalItem = class(TBaseItem)
   private
     FSourceFilename: string;
-    FTitle: string;
-    FShortTitle: string;
     FOutputFileName: string;
+  {$IFDEF old}
+    FTitle: string;
+  {$ELSE}
+  {$ENDIF}
+    FShortTitle: string;
     // See @link(Anchors).
     FAnchors: TBaseItems;
     procedure SetOutputFileName(const AValue: string);
@@ -1417,9 +1424,15 @@ type
     procedure RegisterTags(TagManager: TTagManager); override;
     { name of documentation output file }
     property OutputFileName: string read FOutputFileName write SetOutputFileName;
-    property ShortTitle: string read FShortTitle write FShortTitle;
     property SourceFileName: string read FSourceFilename write FSourceFilename;
+    property ShortTitle: string read FShortTitle write FShortTitle;
+  {$IFDEF old}
     property Title: string read FTitle write FTitle;
+  {$ELSE}
+  //CreateLink retrieves the anchor names from here.
+    property Anchor: string read Name write Name;
+    property Title: string read Value write Value;
+  {$ENDIF}
     function FindItem(const ItemName: string): TBaseItem; override;
     procedure AddAnchor(const AnchorItem: TAnchorItem); overload;
 
@@ -1441,8 +1454,11 @@ type
 
   TAnchorItem = class(TBaseItem)
   private
+  //the introduction/conclusion item
     FExternalItem: TExternalItem;
+  //0 for anchors, 1..6 for sections
     FSectionLevel: Integer;
+  //sections only?
     FSectionCaption: string;
   public
     property ExternalItem: TExternalItem read FExternalItem write FExternalItem;

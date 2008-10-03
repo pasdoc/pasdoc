@@ -36,7 +36,7 @@ type
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
     output in HTML (HyperText Markup Language) format. }
   TGenericHTMLDocGenerator = class(TDocGenerator)
-  private
+  protected
     FUseTipueSearch: boolean;
     FNumericFilenames: boolean;
     FLinkCount: Integer;
@@ -48,9 +48,26 @@ type
 
     FImages: TStringList;
 
-    { Returns line with <meta http-equiv="Content-Type" ...>
-      describing current charset (from FLanguage). }
-    function MetaContentType: string;
+  //-basic formatting
+    procedure WriteSpellChecked(const AString: string);
+
+    function  FormatAnAnchor(const AName, Caption: string): string;
+    procedure WriteAnchor(const AName: string); overload;
+    procedure WriteAnchor(const AName, Caption: string); overload;
+
+    function MakeImage(const src, alt, CssClass: string): string;
+    { writes a link
+      @param href is the link's reference
+      @param caption is the link's caption (must already been converted)
+      @param CssClass is the link's CSS class }
+    procedure WriteLink(const href, caption, CssClass: string);
+    { writes a link with a target frame
+      @param href is the link's reference
+      @param caption is the link's caption (must already been converted)
+      @param CssClass is the link's CSS class
+      @param TargetFrame is the link's target frame (or empty) }
+    procedure WriteTargettedLink(const href, caption, CssClass, TargetFrame: string);
+
     { makes a link with a target frame
       @param href is the link's reference
       @param caption is the link's text
@@ -58,27 +75,43 @@ type
       @param TargetFrame is the link's target frame (or empty) }
     function MakeTargettedLink(
       const href, caption, CssClass, TargetFrame: string): string;
-      
-    { Used by WriteItemsSummary and WriteItemsDetailed. }
-    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
-      WriteItemLink: boolean; MakeAnchor: boolean);
-      
-    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean; 
-      HeadingLevel: Integer;
-      const SectionAnchor: string; SectionName: TTranslationId);
-      
-    procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
-      HeadingLevel: Integer; SectionName: TTranslationId);
 
-    { Writes information on doc generator to current output stream,
-      including link to pasdoc homepage. }
-    procedure WriteAppInfo;
-    { Writes authors to output, at heading level HL. Will not write anything
-      if collection of authors is not assigned or empty. }
-    //procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteAuthors(HL: integer; Authors: TDescriptionItem);
     procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
+    { Writes a cell into a table row with the Item's visibility image. }
+    procedure WriteVisibilityCell(const Item: TPasItem);
+
+    { Writes heading S to output, at heading level I.
+      Write optional section anchor.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(HL: integer; const CssClass: string; const s: string;
+      const anchor: string = '');
+
+    { Returns HTML heading tag. You can also make the anchor
+      at this heading by passing AnchorName <> ''. }
+    function FormatHeading(HL: integer; const CssClass: string;
+      const s: string; const AnchorName: string): string;
+
+    { Writes dates Created and LastMod at heading level HL to output
+      (if at least one the two has a value assigned). }
+    procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
+
+    procedure WriteStartOfDocument(AName: string);
+    { Starts an HTML paragraph element by writing an opening P tag. }
+    procedure WriteStartOfParagraph; overload;
+    procedure WriteStartOfParagraph(const CssClass: string); overload;
+    { Starts an HTML table with a css class }
+    procedure WriteStartOfTable(const CssClass: string);
+    procedure WriteStartOfTableCell; overload;
+    procedure WriteStartOfTableCell(const CssClass: string); overload;
+    procedure WriteStartOfTable1Column(const CssClass: string);
+    procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
+    procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
+    procedure WriteStartOfTableRow(const CssClass: string);
+
     procedure WriteEndOfDocument;
     { Finishes an HTML paragraph element by writing a closing P tag. }
     procedure WriteEndOfParagraph;
@@ -89,6 +122,30 @@ type
     { Finishes an HTML table row by writing a closing TR tag. }
     procedure WriteEndOfTableRow;
     procedure WriteFooter;
+
+  //-standard (sub)sections
+    { Returns line with <meta http-equiv="Content-Type" ...>
+      describing current charset (from FLanguage). }
+    function MetaContentType: string;
+    { Writes information on doc generator to current output stream,
+      including link to pasdoc homepage. }
+    procedure WriteAppInfo;
+
+    { Writes authors to output, at heading level HL. Will not write anything
+      if collection of authors is not assigned or empty. }
+    procedure WriteAuthors(HL: integer; Authors: TDescriptionItem);
+
+  //-item tables
+    { Used by WriteItemsSummary and WriteItemsDetailed. }
+    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
+      WriteItemLink: boolean; MakeAnchor: boolean);
+
+    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean;
+      HeadingLevel: Integer;
+      const SectionAnchor: string; SectionName: TTranslationId);
+
+    procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
+      HeadingLevel: Integer; SectionName: TTranslationId);
 
     { Writes the Item's short description.
       This is either the explicit AbstractDescription (@@abstract)
@@ -116,80 +173,29 @@ type
     *)
     procedure WriteItemLongDescription(const AItem: TPasItem;
       OpenCloseParagraph: boolean = true);
-    procedure WriteOverviewFiles;
-
-    procedure WriteStartOfDocument(AName: string);
-
-    { Starts an HTML paragraph element by writing an opening P tag. }
-    procedure WriteStartOfParagraph; overload;
-    procedure WriteStartOfParagraph(const CssClass: string); overload;
-
-    { Starts an HTML table with a css class }
-    procedure WriteStartOfTable(const CssClass: string);
-
-    procedure WriteStartOfTableCell; overload;
-    procedure WriteStartOfTableCell(const CssClass: string); overload;
-
-    procedure WriteStartOfTable1Column(const CssClass: string);
-    procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
-    procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
-    procedure WriteStartOfTableRow(const CssClass: string);
-
-    { Writes a cell into a table row with the Item's visibility image. }
-    procedure WriteVisibilityCell(const Item: TPasItem);
-    
-    { output all the necessary images }
-    procedure WriteBinaryFiles;
-
-    { output the index.html and navigation.html files }
-    procedure WriteFramesetFiles;
-
-    { write the legend file for visibility markers }
-    procedure WriteVisibilityLegendFile;
-    function MakeImage(const src, alt, CssClass: string): string;
-    { writes a link
-      @param href is the link's reference
-      @param caption is the link's caption (must already been converted)
-      @param CssClass is the link's CSS class }
-    procedure WriteLink(const href, caption, CssClass: string);
-    { writes a link with a target frame
-      @param href is the link's reference
-      @param caption is the link's caption (must already been converted)
-      @param CssClass is the link's CSS class
-      @param TargetFrame is the link's target frame (or empty) }
-    procedure WriteTargettedLink(const href, caption, CssClass, TargetFrame: string);
-
-    procedure WriteSpellChecked(const AString: string);
 
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
     procedure WriteCIO(HL: integer; const CIO: TPasCio);
 
+    procedure WriteCIOSummary(HL: integer; c: TPasItems);
+
+  //-write files
+    procedure WriteOverviewFiles;
+    { output all the necessary images }
+    procedure WriteBinaryFiles;
+    { output the index.html and navigation.html files }
+    procedure WriteFramesetFiles;
+    { write the legend file for visibility markers }
+    procedure WriteVisibilityLegendFile;
     { Calls @link(WriteCIO) with each element in the argument collection C,
       using heading level HL. }
     procedure WriteCIOs(HL: integer; c: TPasItems);
-
-    procedure WriteCIOSummary(HL: integer; c: TPasItems);
-
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
-
-    { Returns HTML heading tag. You can also make the anchor
-      at this heading by passing AnchorName <> ''. }
-    function FormatHeading(HL: integer; const CssClass: string;
-      const s: string; const AnchorName: string): string;
-
-    { Writes dates Created and LastMod at heading level HL to output
-      (if at least one the two has a value assigned). }
-    procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
-
-    function FormatAnAnchor(const AName, Caption: string): string; 
+    //override inherited global entry point
+    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
 
   protected
+  //-override inherited
     function ConvertString(const s: string): string; override;
 
     { Called by @link(ConvertString) to convert a character.
@@ -197,12 +203,10 @@ type
       -> test }
     function ConvertChar(c: char): string; override;
 
-    procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-
-    { overrides @inherited.HtmlString to return the string verbatim 
+    { overrides @inherited.HtmlString to return the string verbatim
       (@inherited discards those strings) }
     function HtmlString(const S: string): string; override;
-    
+
     // FormatPascalCode will cause Line to be formatted in
     // the way that Pascal code is formatted in Delphi.
     function FormatPascalCode(const Line: string): string; override;
@@ -247,9 +251,6 @@ type
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
 
-    procedure WriteAnchor(const AName: string); overload;
-    procedure WriteAnchor(const AName, Caption: string); overload;
-
     function Paragraph: string; override;
 
     function EnDash: string; override;
@@ -265,18 +266,18 @@ type
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string;
       const LinkContext: TLinkContext): string; override;
-      
+
     function EscapeURL(const AString: string): string; virtual;
-    
+
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; override;
     function FormatAnchor(const Anchor: string): string; override;
-    
+
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
 
     function FormatPreformatted(const Text: string): string; override;
-    
+
     function FormatImage(FileNames: TStringList): string; override;
 
     function FormatList(ListData: TListData): string; override;
@@ -287,13 +288,14 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    
-    { Returns HTML file extension ".htm". }
+
+    { Returns HTML file extension ".html". }
     function GetFileExtension: string; override;
-    
+
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
+
   published
     { some HTML code to be written as header for every page }
     property Header: string read FHeader write FHeader;
@@ -416,23 +418,44 @@ function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 
 var
   PasItem: TPasItem absolute Item;
+  PasScope: TPasScope absolute Item;
+  Extern: TExternalItem absolute item;
+  Anchor: TAnchorItem absolute item;
+const
+  AnchorSeparator = '.'; //is '.' allowed in anchor names?
 begin
+(* Called from BuildLinks.
+  Assign file names to the item itself?
+*)
   Result := '';
 
   if (not Assigned(Item)) then Exit;
 
-  //if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then begin
-  if (Item is TPasItem) and not (Item is TPasUnit) then begin
+  if item is TPasUnit then begin
+    Result := NewLink(Item.Name);
+    PasScope.OutputFileName := Result;
+  end else if Item is TPasCio then begin
+  //read: Item has it's own doc file: unit.class.html
+    Result := PasItem.MyOwner.OutputFileName;
+    Result := ChangeFileExt(Result, '.' + Item.Name + GetFileExtension);
+    PasScope.OutputFileName := Result;
+  end else if Item is TPasItem then begin
+  //the owner already has an valid file name.
+  //nested members can NOT have anchors (unit.html#owner#item)
     Result := PasItem.MyOwner.FullLink;
-    if Item is TPasCio then begin
-    //read: Item has it's own doc file
-      Result := ChangeFileExt(Result, '.' + Item.Name + GetFileExtension);
-    end else
+    if Pos('#', Result) > 0 then
+    //nested items shall have qualified link names
+      Result := Result + AnchorSeparator + Item.Name
+    else //create top level (unqualified) anchor
       Result := Result + '#' + Item.Name;
   end else if Item is TAnchorItem then begin
-    Result := TAnchorItem(Item).ExternalItem.FullLink + '#' + Item.Name;
-  end else begin
+    Result := Anchor.ExternalItem.OutputFileName + '#' + Item.Name;
+  end else if item is TExternalItem then begin
+  //create file name
     Result := NewLink(Item.Name);
+    Extern.OutputFileName := Result;
+  end else begin
+    DoError('Unhandled link item: %s.%s', [item.ClassName, item.Name], 3);
   end;
 end;
 
@@ -765,7 +788,7 @@ end;
 procedure TGenericHTMLDocGenerator.WriteDocumentation;
 begin
   StartSpellChecking('sgml');
-  inherited;
+  inherited WriteDocumentation;
   WriteUnits(1);
   WriteBinaryFiles;
   WriteOverviewFiles;
@@ -884,40 +907,39 @@ procedure TGenericHTMLDocGenerator.WriteItemsSummary(
 var 
   i: Integer;
 begin
-  if ObjectVectorIsNilOrEmpty(Items) then Exit;
-  
+  if IsEmpty(Items) then Exit;
+
   WriteAnchor(SectionAnchor);
 
   WriteHeading(HeadingLevel + 1, 'summary', FLanguage.Translation[SectionName]);
-  
+
   WriteStartOfTable1Column('summary');
 
   for i := 0 to Items.Count - 1 do
     WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false);
 
-  WriteEndOfTable;  
+  WriteEndOfTable;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
   Items: TPasItems; ShowVisibility: boolean;
   HeadingLevel: Integer; SectionName: TTranslationId);
-var 
+var
   Item: TPasItem;
   i: Integer;
   ColumnsCount: Cardinal;
 begin
-  if ObjectVectorIsNilOrEmpty(Items) then Exit;
+  if IsEmpty(Items) then Exit;
 
   WriteHeading(HeadingLevel + 1, 'detail', FLanguage.Translation[SectionName]);
-  
-  for i := 0 to Items.Count - 1 do
-  begin
+
+  for i := 0 to Items.Count - 1 do begin
     Item := Items.PasItemAt[i];
 
     { calculate ColumnsCount }
     ColumnsCount := 1;
     if ShowVisibility then Inc(ColumnsCount);
-    
+
     WriteStartOfTable('detail');
     WriteItemTableRow(Item, ShowVisibility, false, true);
 
@@ -937,13 +959,14 @@ function TGenericHTMLDocGenerator.FormatHeading(HL: integer;
 var
   c: string;
 begin
-  if (HL < 1) then HL := 1;
-  if HL > 6 then begin
+  if (HL < 1) then
+    c := '1'
+  else if HL > 6 then begin
     DoMessage(2, pmtWarning, 'HTML generator cannot write headlines of level 7 or greater; will use 6 instead.', []);
-    HL := 6;
-  end;
-  c := IntToStr(HL);
-  
+    c := '6';
+  end else
+    c := IntToStr(HL);
+
   Result := ConvertString(S);
   if AnchorName <> '' then
     Result := '<a name="' + AnchorName + '"></a>' + Result;
@@ -953,9 +976,9 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; 
-  const CssClass: string; const s: string);
+  const CssClass: string; const s: string; const anchor: string);
 begin
-  WriteDirect(FormatHeading(HL, CssClass, s, ''));
+  WriteDirect(FormatHeading(HL, CssClass, s, anchor));
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
@@ -1508,10 +1531,10 @@ var
   s: string;
 begin
   if CssClass <> '' then
-    s := Format('<td class="%s"',[CssClass])
+    s := '<td class="' + CssClass + '">'
   else
-    s := '<td';
-  WriteDirect(s+'>');
+    s := '<td>';
+  WriteDirect(s);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTableCell;
@@ -1524,16 +1547,15 @@ var
   s: string;
 begin
   if CssClass <> '' then begin
-    s := Format('<tr class="%s"', [CssClass])
+    s := '<tr class="' + CssClass;
   end else begin
     s := '<tr class="list';
     if FOddTableRow then begin
       s := s + '2';
     end;
     FOddTableRow := not FOddTableRow;
-    s := s + '"';
   end;
-  WriteDirectLine(s + '>');
+  WriteDirectLine(s + '">');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1640,6 +1662,7 @@ var
 var
   AnyItemSummary, AnyItemDetailed: boolean;
 begin
+{$IFDEF old}
   if not Assigned(U) then begin
     DoMessage(1, pmtError, 'TGenericHTMLDocGenerator.WriteUnit: ' +
       'Unit variable has not been initialized.', []);
@@ -1653,6 +1676,9 @@ begin
       'skipped.', [U.Name]);
     Exit;
   end;
+{$ELSE}
+  //already checked
+{$ENDIF}
 
   case CreateStream(U.OutputFileName, true) of
     csError: begin
@@ -2189,17 +2215,18 @@ var
   ChosenFileName, OutputImageFileName: string;
   ImageId, I: Integer;
   CopyNeeded: boolean;
+  ext: string;
 begin
   { Calculate ChosenFileName, i.e. choose right image format for html.
     Anything other than eps or pdf is good. }
   ChosenFileName := '';
-  for I := 0 to FileNames.Count - 1 do
-    if (LowerCase(ExtractFileExt(FileNames[I])) <> '.eps') and
-       (LowerCase(ExtractFileExt(FileNames[I])) <> '.pdf') then
-    begin
+  for I := 0 to FileNames.Count - 1 do begin
+    ext := LowerCase(ExtractFileExt(FileNames[I]));
+    if (ext <> '.eps') and (ext <> '.pdf') then begin
       ChosenFileName := FileNames[I];
       Break;
     end;
+  end;
   if ChosenFileName = '' then
     ChosenFileName := FileNames[0];
 
@@ -2209,7 +2236,7 @@ begin
   if CopyNeeded then
     ImageId := FImages.Add(ChosenFileName);
 
-  OutputImageFileName := 
+  OutputImageFileName :=
     'image_' + IntToStr(ImageId) + ExtractFileExt(ChosenFileName);
 
   if CopyNeeded then
@@ -2240,27 +2267,24 @@ begin
   Result := '</p>' + LineEnding + LineEnding;
   
   { HTML requires that <ol> / <ul> contains at least one <li>. }
-  if ListData.Count <> 0 then
-  begin
-    Result := Result + Format('<%s class="%s">', 
+  if ListData.Count <> 0 then begin
+    Result := Result + Format('<%s class="%s">',
       [ListTag[ListData.ListType], ListClass[ListData.ItemSpacing]]) + LineEnding;
-      
-    for i := 0 to ListData.Count - 1 do
-    begin
+
+    for i := 0 to ListData.Count - 1 do begin
       ListItem := ListData.Items[i] as TListItemData;
 
-      if ListData.ListType = ltDefinition then
-      begin
+      if ListData.ListType = ltDefinition then begin
         { Note: We're not writing <p> .. </p> inside <dt>, because
           officially <dt> can't contain any paragraphs.
 
           Yes, this means that if user will use paragraphs inside
           @itemLabel then our output HTML will not be validated
-          as correct HTML. I don't see any easy way to fix this ?
+          as correct HTML. I don't see any easy way to fix this?
           After all we don't want to "fake" <dl>, <dt> and <dd>
-          using some other tags and complex css. 
+          using some other tags and complex css.
 
-          So I guess that this should be blamed as an "unavoidable 
+          So I guess that this should be blamed as an "unavoidable
           limitation of HTML output", if someone will ask :)
 
           -- Michalis }
@@ -2268,21 +2292,21 @@ begin
         Result := Result +
           '  <dt>' + ListItem.ItemLabel + '</dt>' + LineEnding +
           '  <dd><p>' + ListItem.Text + '</p></dd>' + LineEnding;
-      end else
-      begin
+      end else begin
         if ListData.ListType = ltOrdered then
-          Attributes := Format(' value="%d"', [ListItem.Index]) else
+          Attributes := Format(' value="%d"', [ListItem.Index])
+        else
           Attributes := '';
 
         Result := Result + Format('  <li%s><p>%s</p></li>',
           [Attributes, ListItem.Text])  + LineEnding;
       end;
     end;
-      
-    Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) + 
+
+    Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) +
       LineEnding + LineEnding;
   end;
-    
+
   Result := Result + '<p>';
 end;
 

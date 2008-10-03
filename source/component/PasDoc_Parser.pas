@@ -24,6 +24,8 @@ unit PasDoc_Parser;
 - define description sections.
 *)
 
+{.$DEFINE ParseParams} //-parse parameter lists? (todo)
+
 {$I pasdoc_defines.inc}
 
 interface
@@ -1012,7 +1014,6 @@ We assume that at most one rem is assigned to an item!
   Recorder := '';
 // i at FirstItem
   fi := i;
-  //if fi > 0 then m[fi-1] := cmBack;  //stopper
 //propagate rems. Forward first, back last.
   RemItem := nil;
   for i := fi to n - 1 do begin
@@ -1103,7 +1104,22 @@ The arguments can be identifiers, so that we should assume that
   DoMessage(5, pmtInformation, 'Parsing %s "%s"',
     [LowerCase(TokenNames[MethodType]), M.Name]);
 
-  ReadTokensUntilSemicolon;
+{$IFDEF ParseParams}
+  if Skip(SYM_LEFT_PARENTHESIS) then begin
+    OpenScope(M);
+    while GetNextToken in [KEY_VAR, KEY_CONST, KEY_IN, key_out] do //"out"? continue
+      ;
+    while Skip(TOK_IDENTIFIER) do begin
+      ParseVariables(False);
+      if not Skip(SYM_SEMICOLON) then
+        break;
+    end;
+    CloseScope;
+    Expect(SYM_RIGHT_PARENTHESIS);
+  end;
+{$ELSE}
+{$ENDIF}
+  ReadTokensUntilSemicolon; //function type!?
 
   { first get non-WC token - if it is not an identifier in SD_SET put it back
     into stream and leave; otherwise copy tokens until semicolon }

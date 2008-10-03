@@ -1396,17 +1396,7 @@ begin
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
 
-{$IFDEF old}
-  if U.IsUnit then
-    WriteHeading(HL, FLanguage.Translation[trUnit] + ' ' + U.Name)
-  else if U.IsProgram then
-    WriteHeading(HL, FLanguage.Translation[trProgram] + ' ' + U.Name)
-  else
-    WriteHeading(HL, FLanguage.Translation[trLibrary] + ' ' + U.Name);
-{$ELSE}
   WriteHeading(HL, FLanguage.Translation[U.id] + ' ' + U.Name);
-{$ENDIF}
-
   WriteAnchor(U.Name, U.FullLink);
 
   if HasDescription(U) then

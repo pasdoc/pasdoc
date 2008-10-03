@@ -24,12 +24,13 @@ uses
   PasDoc_GenHtmlHelp,
   PasDoc_GenSimpleXML,
   PasDoc_GenFullXML,
+  PasDoc_GenFullHtml,
   PasDoc_Base;
 
 procedure Register;
 begin
   RegisterComponents('PasDoc', [TPasDoc,
-    THTMLDocGenerator, THTMLHelpDocGenerator,
+    THTMLDocGenerator, THTMLHelpDocGenerator, TFullHTMLDocGenerator,
     TTexDocGenerator,
     TSimpleXMLDocGenerator, TXMLDocGenerator
   ]);

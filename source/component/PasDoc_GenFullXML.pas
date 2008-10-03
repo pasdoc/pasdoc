@@ -238,27 +238,14 @@ end;
 procedure TXMLDocGenerator.CloseTag;
 begin
   SetLength(indent, Length(indent) - 2);
-{$IFDEF old}
-  if tags.Count > 0 then begin
-    WriteDirect(indent + '</' + tags[tags.count - 1] + '>', True);
-  end;
-  tags.Delete(tags.Count - 1);
-{$ELSE}
   dec(TagLevel);
-  //assert(TagLevel >= 0); //debug only
   WriteDirect(indent + '</' + TagList[TagLevel] + '>', True);
-{$ENDIF}
 end;
 
 procedure TXMLDocGenerator.CloseTags;
 begin
-{$IFDEF old}
-  while tags.Count > 0 do
-    CloseTag;
-{$ELSE}
   while TagLevel > 0 do
     CloseTag;
-{$ENDIF}
 end;
 
 procedure TXMLDocGenerator.StartTag(const Aname, args: string;
@@ -276,14 +263,10 @@ begin
     WriteDirect(args);
   if fPush then begin
   //keep tag open
-  {$IFDEF old}
-    tags.Add(t);
-  {$ELSE}
     if TagLevel >= Length(TagList) then
       SetLength(TagList, TagLevel + 8);
     TagList[TagLevel] := t;
     inc(TagLevel);
-  {$ENDIF}
     indent := indent + '  ';
     WriteDirect('>', NewLine);
   end else //close tag
