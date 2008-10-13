@@ -7,7 +7,8 @@ uses
   frDirs in 'frDirs.pas' {DirList: TFrame},
   frDir in 'frDir.pas' {DirBox: TFrame},
   fDocMain in 'fDocMain.pas' {DocMain},
-  test_tags in 'test_tags.pas';
+  test_tags in 'test_tags.pas',
+  test_groups in 'test_groups.pas';
 
 { $R pasdoc_gui.res}
 

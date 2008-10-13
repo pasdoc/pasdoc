@@ -99,9 +99,6 @@ function ExtractFirstWord(var s: string): string; overload;
 procedure ExtractFirstWord(const S: string;
   out FirstWord, Rest: string); overload;
 
-const
-  AllChars = [Low(Char)..High(Char)];
-
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);

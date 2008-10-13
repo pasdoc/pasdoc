@@ -268,7 +268,8 @@ type
       TableTag, RowTag, RowHeadTag: TTag;
   {$IFDEF old}
   {$ELSE}
-    TagManager: TTagManager;
+  //reusable object
+    FTagManager: TTagManager;
     TagCache: TObjectVector;
   {$ENDIF}
     procedure InitTagMgr;
@@ -459,6 +460,8 @@ type
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
     FCurrentFileName: string;
+
+    procedure SetUnits(U: TPasUnits);
 
     { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
@@ -812,12 +815,12 @@ type
       at least one row and in each row there will be at least
       one cell, so you don't have to check it within descendants. }
     function FormatTable(Table: TTableData): string; virtual; abstract;
-    
-    { Override this if you want to insert something on @@tableOfContents tag. 
+
+    { Override this if you want to insert something on @@tableOfContents tag.
       As a parameter you get already prepared tree of sections that your
       table of contents should show. Each item of Sections is a section
-      on the level 1. Item's Name is section name, item's Value 
-      is section caption, item's Data is a TStringPairVector instance 
+      on the level 1. Item's Name is section name, item's Value
+      is section caption, item's Data is a TStringPairVector instance
       that describes subsections (on level 2) below this section.
       And so on, recursively.
 
@@ -839,6 +842,8 @@ type
       Eventually assign output filenames to items (virtual).
     }
     procedure BuildLinks; virtual;
+  //Remove excluded units from the output list.
+    procedure BuildUnitSections;
 
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
@@ -865,7 +870,7 @@ type
   //the non-virtual version
     procedure WriteDocumentationGen;
 
-    property Units: TPasUnits read FUnits write FUnits;
+    property Units: TPasUnits read FUnits write SetUnits; //FUnits;
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
@@ -1041,8 +1046,17 @@ begin
   FClassHierarchy.Free;
   FAbbreviations.Free;
   FCurrentStream.Free;
+  FUnits.Free;
   inherited;
 end;
+
+procedure TDocGenerator.SetUnits(U: TPasUnits);
+begin
+//clone the list, allow for later deletion of excluded units.
+  FUnits := TPasUnits.Create(False);
+  FUnits.Assign(U);
+end;
+
 
 procedure TDocGenerator.BuildLinks;
 (* Most of this is already done by parser.
@@ -1083,16 +1097,35 @@ begin //BuildLinks
     //Conclusion.OutputFileName := Conclusion.FullLink;
   end;
 
-  for i := 0 to Units.Count - 1 do begin
+  for i := Units.Count - 1 downto 0 do begin
     U := Units.UnitAt[i];
-  (*
-    U.FullLink := CreateLink(U);
-    U.OutputFileName := U.FullLink;
-  *)
+  {$IFDEF old}
+    if U.ToBeExcluded then
+      Units.Delete(i) //only remove the entry from our list
+    else
+  {$ELSE}
+    //@exclude has not yet executed
+  {$ENDIF}
     u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
 end;
+
+procedure TDocGenerator.BuildUnitSections;
+var
+  i: Integer;
+  U: TPasUnit;
+begin
+//remove @exclude'd units from our list.
+  for i := Units.Count - 1 downto 0 do begin
+    U := Units.UnitAt[i];
+    if u.ToBeExcluded then
+      Units.Delete(i)
+    else
+      U.BuildSections;
+  end;
+end;
+
 
 { ---------------------------------------------------------------------------- }
 
@@ -1758,42 +1791,42 @@ end;
 
 procedure TDocGenerator.ClearTags;
 begin
-  FreeAndNil(TagManager);
+  FreeAndNil(FTagManager);
   //delete cache last!
   FreeAndNil(TagCache);
 end;
 
 procedure TDocGenerator.InitTagMgr;
 begin
-  if TagManager = nil then
-    TagManager := TTagManager.Create;
+  if FTagManager = nil then
+    FTagManager := TTagManager.Create;
 //called before expanding all descriptions
-  TagManager.Abbreviations := Abbreviations;
-  TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
-  TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
-  TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
-  TagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
-  TagManager.Paragraph := Paragraph;
-  TagManager.ShortDash := ShortDash;
-  TagManager.EnDash := EnDash;
-  TagManager.EmDash := EmDash;
+  FTagManager.Abbreviations := Abbreviations;
+  FTagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
+  FTagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
+  FTagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
+  FTagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
+  FTagManager.Paragraph := Paragraph;
+  FTagManager.ShortDash := ShortDash;
+  FTagManager.EnDash := EnDash;
+  FTagManager.EmDash := EmDash;
 end;
 
 procedure TDocGenerator.InitTags(Item: TBaseItem);
 begin
-  TagManager.Clear;
+  FTagManager.Clear;
   AddTags;
-  Item.RegisterTags(TagManager);
+  Item.RegisterTags(FTagManager);
 
 //not yet cached
   if FCurrentItem is TExternalItem then begin
-    TTopLevelTag.Create(TagManager, 'section',
+    TTopLevelTag.Create(FTagManager, 'section',
       {$IFDEF FPC}@{$ENDIF} PreHandleSectionTag,
       {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
-    TTopLevelTag.Create(TagManager, 'anchor',
+    TTopLevelTag.Create(FTagManager, 'anchor',
       {$IFDEF FPC}@{$ENDIF} PreHandleAnchorTag,
       {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
-    TTopLevelTag.Create(TagManager, 'tableofcontents',
+    TTopLevelTag.Create(FTagManager, 'tableofcontents',
       nil, {$IFDEF FPC}@{$ENDIF} HandleTableOfContentsTag,
       [toParameterRequired]);
   end;
@@ -1806,62 +1839,62 @@ var
 begin
   if TagCache = nil then begin
     { Tags without params }
-    TTag.Create(TagManager, 'classname',
+    TTag.Create(FTagManager, 'classname',
       nil, {$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
-    TTag.Create(TagManager, 'true',
+    TTag.Create(FTagManager, 'true',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'false',
+    TTag.Create(FTagManager, 'false',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'nil',
+    TTag.Create(FTagManager, 'nil',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-    TTag.Create(TagManager, 'inheritedclass',
+    TTag.Create(FTagManager, 'inheritedclass',
       nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedClassTag, []);
-    TTag.Create(TagManager, 'inherited',
+    TTag.Create(FTagManager, 'inherited',
       nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
-    TTag.Create(TagManager, 'name',
+    TTag.Create(FTagManager, 'name',
       nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
-    TTag.Create(TagManager, 'br',
+    TTag.Create(FTagManager, 'br',
       nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
-    TTag.Create(TagManager, 'groupbegin',
+    TTag.Create(FTagManager, 'groupbegin',
       nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
-    TTag.Create(TagManager, 'groupend',
+    TTag.Create(FTagManager, 'groupend',
       nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
 
     { Tags with non-recursive params }
-    TTag.Create(TagManager, 'longcode',
+    TTag.Create(FTagManager, 'longcode',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'html',
+    TTag.Create(FTagManager, 'html',
       nil, {$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'latex',
+    TTag.Create(FTagManager, 'latex',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLatexTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'link',
+    TTag.Create(FTagManager, 'link',
       nil, {$IFDEF FPC}@{$ENDIF} HandleLinkTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'preformatted',
+    TTag.Create(FTagManager, 'preformatted',
       nil, {$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'image',
+    TTag.Create(FTagManager, 'image',
       nil, {$IFDEF FPC}@{$ENDIF} HandleImageTag,
       [toParameterRequired]);
-    TTag.Create(TagManager, 'include',
+    TTag.Create(FTagManager, 'include',
       { @include tag works the same way in both expanding passes. }
       {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
       {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
       [toParameterRequired]);
 
     { Tags with recursive params }
-    TTag.Create(TagManager, 'code',
+    TTag.Create(FTagManager, 'code',
       nil, {$IFDEF FPC}@{$ENDIF} HandleCodeTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
-    TTag.Create(TagManager, 'bold',
+    TTag.Create(FTagManager, 'bold',
       nil, {$IFDEF FPC}@{$ENDIF} HandleBoldTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
-    TTag.Create(TagManager, 'italic',
+    TTag.Create(FTagManager, 'italic',
       nil, {$IFDEF FPC}@{$ENDIF} HandleItalicTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
@@ -1869,71 +1902,71 @@ begin
     { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
       But it *does* recursively expand it's parameters -- it's handled
       by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
-    TTag.Create(TagManager, 'noautolink',
+    TTag.Create(FTagManager, 'noautolink',
       nil, {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
       [toParameterRequired, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]);
 
-    OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
+    OrderedListTag := TListTag.Create(FTagManager, 'orderedlist',
       nil, {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
       [toParameterRequired, toRecursiveTags]);
-    UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
+    UnorderedListTag := TListTag.Create(FTagManager, 'unorderedlist',
       nil, {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
       [toParameterRequired, toRecursiveTags]);
-    DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
+    DefinitionListTag := TListTag.Create(FTagManager, 'definitionlist',
       nil, {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
       [toParameterRequired, toRecursiveTags]);
 
-    {ItemTag :=} TTag.Create(TagManager, 'item',
+    {ItemTag :=} TTag.Create(FTagManager, 'item',
       nil, {$IFDEF FPC}@{$ENDIF} HandleItemTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]).OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
-    {ItemLabelTag :=} TTag.Create(TagManager, 'itemlabel',
+    {ItemLabelTag :=} TTag.Create(FTagManager, 'itemlabel',
       nil, {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]).OnAllowedInside :=
       {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
 
-    {ItemSpacingTag :=} TTag.Create(TagManager, 'itemspacing',
+    {ItemSpacingTag :=} TTag.Create(FTagManager, 'itemspacing',
       nil, {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
       [toParameterRequired]).OnAllowedInside :=
       {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
-    {ItemSetNumberTag :=} TTag.Create(TagManager, 'itemsetnumber',
+    {ItemSetNumberTag :=} TTag.Create(FTagManager, 'itemsetnumber',
       nil, {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
       [toParameterRequired, toAllowNormalTextInside]).OnAllowedInside :=
       {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
 
-    TableTag := TTableTag.Create(TagManager, 'table',
+    TableTag := TTableTag.Create(FTagManager, 'table',
       nil, {$IFDEF FPC}@{$ENDIF} HandleTableTag,
       [toParameterRequired, toRecursiveTags]);
 
-    RowTag := TRowTag.Create(TagManager, 'row',
+    RowTag := TRowTag.Create(FTagManager, 'row',
       nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
       [toParameterRequired, toRecursiveTags]);
     RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
 
-    RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
+    RowHeadTag := TRowTag.Create(FTagManager, 'rowhead',
       nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
       [toParameterRequired, toRecursiveTags]);
     RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
 
-    {CellTag :=} TTag.Create(TagManager, 'cell',
+    {CellTag :=} TTag.Create(FTagManager, 'cell',
       nil, {$IFDEF FPC}@{$ENDIF} HandleCellTag,
       [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
        toAllowNormalTextInside]).OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
 
   //now cache all tags
     TagCache := TObjectVector.Create(True);
-    for i := 0 to TagManager.Count - 1 do begin
-      TTag(TagManager.Items[i]).Cached := True;
-      TagCache.Add(TagManager.Items[i]);
+    for i := 0 to FTagManager.Count - 1 do begin
+      TTag(FTagManager.Items[i]).Cached := True;
+      TagCache.Add(FTagManager.Items[i]);
     end;
   end else begin
     //TagManager.Clear; - item tags already added!
     for i := 0 to TagCache.Count - 1 do
-      TagManager.Add(TagCache.Items[i]);
+      FTagManager.Add(TagCache.Items[i]);
   end;
 end;
 
@@ -2124,19 +2157,17 @@ procedure TDocGenerator.ExpandDescriptions;
       end;
 
     {$ELSE}
-      TagManager.PreExecute := PreExpand;
-      //AddTags;  //(TagManager);
-      //Item.RegisterTags(TagManager);
+      FTagManager.PreExecute := PreExpand;
     {$ENDIF}
 
-      Result := TagManager.Execute(Description, AutoLink,
+      Result := FTagManager.Execute(Description, AutoLink,
         WantFirstSentenceEnd, FirstSentenceEnd);
   {$IFDEF old}
     finally
       TagManager.Free;
     end;
   {$ELSE}
-    TagManager.Clear;
+    FTagManager.Clear;
   {$ENDIF}
   end;
 
@@ -2156,9 +2187,12 @@ procedure TDocGenerator.ExpandDescriptions;
     FirstSentenceEnd: Integer;
     Expanded: string;
     scoped: TPasScope absolute Item; //has overview
+  {$IFDEF old}
     ovr: TDescriptionItem;
+  {$ELSE}
     i: integer;
-    //dst: TDescriptionItem;
+    mbrs: TPasItems;
+  {$ENDIF}
   begin
     if Item = nil then Exit;
 
@@ -2166,7 +2200,7 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.DetailedDescription (because whitespaces,
       including leading and trailing, may be important for final doc format;
       moreover, you would break the value of FirstSentenceEnd by such thing). }
-  {$IFnDEF new}
+  {$IFnDEF paragraphs}
     InitTags(Item);
     Expanded := ExpandDescription(PreExpand,
       Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
@@ -2191,12 +2225,18 @@ procedure TDocGenerator.ExpandDescriptions;
   {$ENDIF}
 
     if item is TPasScope then begin
+    {$IFDEF old}
     //expand member lists - overview not yet created!
       ovr := scoped.MemberLists;
       if not IsEmpty(ovr) then begin
         for i := 0 to ovr.Count - 1 do
           ExpandCollection(PreExpand, ovr.Items[i].PasItems);
       end;
+    {$ELSE}
+      //expand the Members list. No groups or excluded items yet!
+      mbrs := scoped.Members;
+      ExpandCollection(PreExpand, mbrs);
+    {$ENDIF}
     end;
   end;
 
@@ -2397,6 +2437,7 @@ end;
 
 function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
+{ TODO : split into token->tid, tid->name }
   case MyType of
   KEY_RECORD: Result := FLanguage.Translation[trRecord];
   KEY_CLASS: Result := FLanguage.Translation[trClass];
@@ -2528,8 +2569,7 @@ var
 begin
   FoundItem := nil;
 
-  if (not SplitNameParts(s, NameParts)) then
-  begin
+  if (not SplitNameParts(s, NameParts)) then begin
     DoMessage(2, pmtWarning, 'Invalid Link "' + s + '" (' + Item.QualifiedName + ')', []);
     Result := 'UNKNOWN';
     Exit;
@@ -2544,11 +2584,11 @@ begin
   if FoundItem = nil then
     FoundItem := FindGlobal(NameParts);
 
-  if Assigned(FoundItem) then
-  begin
+  if Assigned(FoundItem) then begin
     if LinkDisplay <> '' then
-      Result := MakeItemLink(FoundItem, LinkDisplay, lcNormal) else
-    case LinkLook of
+      Result := MakeItemLink(FoundItem, LinkDisplay, lcNormal)
+    else begin
+      case LinkLook of
       llDefault:
         Result := MakeItemLink(FoundItem, S, lcNormal);
       llStripped:
@@ -2557,27 +2597,24 @@ begin
         begin
           Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
 
-          if Length(NameParts) = 3 then
-          begin
+          if Length(NameParts) = 3 then begin
             SetLength(NameParts, 2);
             FoundItem := FindGlobal(NameParts);
             Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
               '.' + Result;
           end;
 
-          if Length(NameParts) = 2 then
-          begin
+          if Length(NameParts) = 2 then begin
             SetLength(NameParts, 1);
             FoundItem := FindGlobal(NameParts);
             Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
               '.' + Result;
           end;
         end;
-      else Assert(false, 'LinkLook = ??');
+        // else Assert(false, 'LinkLook = ??');
+      end;
     end;
-  end else
-  if WarningIfLinkNotFound then
-  begin
+  end else if WarningIfLinkNotFound then begin
     DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
       [S, Item.QualifiedName]);
     Result := CodeString(ConvertString(S));

@@ -886,6 +886,9 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean; 
   WriteItemLink: boolean; MakeAnchor: boolean);
 begin
+  if item = nil then
+    exit;
+
   WriteStartOfTableRow('');
 
   if ShowVisibility then
@@ -1438,7 +1441,8 @@ function TGenericHTMLDocGenerator.MetaContentType: string;
 begin
   if FLanguage.CharSet <> '' then
     Result := '<meta http-equiv="content-type" content="text/html; charset='
-      + FLanguage.CharSet + '">' + LineEnding else
+      + FLanguage.CharSet + '">' + LineEnding
+  else
     Result := '';
 end;
 
@@ -1679,6 +1683,9 @@ begin
 {$ELSE}
   //already checked
 {$ENDIF}
+
+  if u.ToBeExcluded then
+    exit; //skip excluded units
 
   case CreateStream(U.OutputFileName, true) of
     csError: begin

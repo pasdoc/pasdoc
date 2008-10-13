@@ -578,7 +578,7 @@ end;
 
 { TTagManager ------------------------------------------------------------ }
 
-constructor TTagManager.Create;
+constructor TTagManager.Create(AOwnsObject: boolean);
 begin
   inherited Create(False);
   FParagraph := ' ';  // #$0B; //=VT //' ';
@@ -1020,8 +1020,9 @@ begin
 
   if (EnclosingTag <> nil) and (toFirstWordVerbatim in EnclosingTag.TagOptions) then begin
     { Skip the first word in Description }
+  //SCharIs is inappropriate here :-(
     while SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
-    while not SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
+    while SCharIs(Description, FOffset, NonWhite) do Inc(FOffset);
   end;
 
   if WantFirstSentenceEnd then

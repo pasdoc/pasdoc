@@ -94,13 +94,13 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\component;..\..\component\tipue;..\..\component\images
+SearchPath=$(DELPHI)\Lib\Debug;D:\SOURCE~1\JCL\jcl\lib\d7\debug;..\..\component;..\..\component\tipue;..\..\component\images
 Packages=vcl;rtl;vclx;vclie;vclactnband;vclshlctrls;pasdoc_package
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=D:\SourceForge\pasdocOld\branches\PasDoc2\source\gui\D7\test_tags.pds
+RunParams=D:\SourceForge\pasdocOld\branches\PasDoc2\source\gui\D7\test_groups.pds
 HostApplication=
 Launcher=
 UseLauncher=0
@@ -131,7 +131,6 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [Excluded Packages]
-c:\program files\borland\delphi7\Bin\dclnet70.bpl=Borland Internet Components
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclBaseExpert70.bpl=JCL Package containing common units for JCL Experts
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclDebugExpert70.bpl=JCL Debug IDE extension
 C:\Program Files\Borland\Delphi7\Projects\Bpl\JclProjectAnalysisExpert70.bpl=JCL Project Analyzer

@@ -462,7 +462,10 @@ const
   WhiteSpace = [#1..' '];
   { Whitespace that is not any part of newline. }
   WhiteSpaceNotNL = WhiteSpace - WhiteSpaceNL;
-  
+
+  AllChars = [Low(Char)..High(Char)];
+  NonWhite = AllChars - WhiteSpace;
+
   QualIdSeparator = '.';
   MaxNameParts = 3;
 

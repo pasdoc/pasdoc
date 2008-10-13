@@ -38,7 +38,7 @@
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
     <Version Minor="11"/>
-    <Files Count="25">
+    <Files Count="27">
       <Item1>
         <Filename Value="..\..\component\PasDoc_Hashes.pas"/>
         <UnitName Value="PasDoc_Hashes"/>
@@ -143,6 +143,12 @@
         <Filename Value="..\..\component\PasDoc_OptionParser.pas"/>
         <UnitName Value="PasDoc_OptionParser"/>
       </Item25>
+      <Item26>
+        <Filename Value="..\..\component\PasDoc_GenFullHtml.pas"/>
+      </Item26>
+      <Item27>
+        <Filename Value="..\..\component\PasDoc_GenFullXML.pas"/>
+      </Item27>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

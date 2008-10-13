@@ -98,10 +98,14 @@ type
     procedure ParseFiles;
     procedure SkipBOM(InputStream: TStream);
   protected
+  {$IFDEF old}
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
       If one is found, the item is removed from the collection. }
     procedure RemoveExcludedItems(const c: TPasItems);
+  {$ELSE}
+    //- Units should never be bestroyed after BuildLinks.
+  {$ENDIF}
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -522,6 +526,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TPasDoc.RemoveExcludedItems(const c: TPasItems);
 var
   i: Integer;
@@ -529,6 +534,8 @@ var
 begin
 (* Exclude units from FUnits.
   Other items are excluded by TPasScope.
+  The units should be excluded only from the generator list!
+  Here we construct the list!
 *)
   if c = nil then Exit;
   for i := c.Count - 1 downto 0 do begin
@@ -537,6 +544,8 @@ begin
       c.Delete(i);
   end;
 end;
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -587,11 +596,11 @@ begin
     Generator.ProjectName := 'docs';
 
   Generator.Title := Title;
-  Generator.Units := FUnits;
+  Generator.Units := FUnits; //should be a separately shrinkable list
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
   Generator.AutoLink := AutoLink;
-  Generator.BuildLinks;
+  Generator.BuildLinks; //may become invalid by destruction of excluded units!
   Generator.MasterFile := ''; //must be initialized by the specific generators.
 
   FUnits.SortDeep(SortSettings);
@@ -601,10 +610,12 @@ begin
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
 
   if fGenerate then begin
-    Generator.ExpandDescriptions;
-    RemoveExcludedItems(TPasItems(FUnits)); //only after expanding descriptions!
-
-    FUnits.BuildSections; //optional!
+    Generator.ExpandDescriptions; //here items are marked for removal
+  //combine the following actions?
+    //RemoveExcludedItems(TPasItems(FUnits)); //only after expanding descriptions!
+    Generator.BuildUnitSections;
+    //Generator.Units.BuildSections; <-- included in RemoveExcludedUnits
+    //FUnits.BuildSections; //optional!
 
     Generator.WriteDocumentation;
   end else
