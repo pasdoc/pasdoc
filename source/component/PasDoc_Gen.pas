@@ -331,9 +331,12 @@ type
     procedure HandleBrTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+  {$IFDEF old}
     procedure HandleGroupTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+  {$ELSE}
+  {$ENDIF}
 
     procedure PreHandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -870,7 +873,7 @@ type
   //the non-virtual version
     procedure WriteDocumentationGen;
 
-    property Units: TPasUnits read FUnits write SetUnits; //FUnits;
+    property Units: TPasUnits read FUnits write SetUnits; 
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
@@ -1099,13 +1102,7 @@ begin //BuildLinks
 
   for i := Units.Count - 1 downto 0 do begin
     U := Units.UnitAt[i];
-  {$IFDEF old}
-    if U.ToBeExcluded then
-      Units.Delete(i) //only remove the entry from our list
-    else
-  {$ELSE}
-    //@exclude has not yet executed
-  {$ENDIF}
+  //@exclude has not yet executed - should PreExpand execute earlier?
     u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
@@ -1343,15 +1340,18 @@ begin
   ReplaceStr := LineBreak;
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.HandleGroupTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   ReplaceStr := '';
-  ThisTag.TagManager.DoMessage(1, pmtWarning, 
+  ThisTag.TagManager.DoMessage(1, pmtWarning,
     'Tag "%s" is not implemented yet, ignoring', [ThisTag.Name]);
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TDocGenerator.HandleBoldTag(
   ThisTag: TTag; var ThisTagData: TObject;
@@ -1855,10 +1855,13 @@ begin
       nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
     TTag.Create(FTagManager, 'br',
       nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
+  {$IFDEF old}
     TTag.Create(FTagManager, 'groupbegin',
       nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
     TTag.Create(FTagManager, 'groupend',
       nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
+  {$ELSE}
+  {$ENDIF}
 
     { Tags with non-recursive params }
     TTag.Create(FTagManager, 'longcode',
@@ -2190,11 +2193,12 @@ procedure TDocGenerator.ExpandDescriptions;
   {$IFDEF old}
     ovr: TDescriptionItem;
   {$ELSE}
-    i: integer;
+    //i: integer;
     mbrs: TPasItems;
   {$ENDIF}
   begin
-    if Item = nil then Exit;
+    if (Item = nil) or Item.ToBeExcluded then
+      Exit; //exclude items marked for exclusion in PreExpand
 
     { Note: don't just Trim or TrimCompress here resulting
       Item.DetailedDescription (because whitespaces,

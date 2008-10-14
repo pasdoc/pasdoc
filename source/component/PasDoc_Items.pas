@@ -179,6 +179,8 @@ type
     FTID: TTranslationID;
   //prevent destruction of the list
     fExternalList: boolean;
+  //exclude flag
+    FExclude: boolean;
   //description related kind (rename? remove!?)
     //kind: eDescriptionKind;
     FList: TDescriptionList;
@@ -299,6 +301,8 @@ type
     property RawDescription: string read GetRawDescription;
     property Caption: string read Name;
   {$ENDIF}
+  //Set by @@exclude, to exclude this item from the generated documentation.
+    property ToBeExcluded: boolean read FExclude;
   end;
 
 (* Placeholder for external references.
@@ -421,6 +425,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+
+    procedure HandleExcludeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
     procedure PreHandleNoAutoLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -648,10 +656,20 @@ type
     procedure HandleDeprecatedTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+  {$IFDEF old}
     procedure HandleExcludeTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+  {$ELSE}
+    //moved into TDescriptionItem
+  {$ENDIF}
     procedure GroupTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure GroupStart(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure GroupEnd(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
@@ -659,8 +677,6 @@ type
     procedure Deserialize(const ASource: TStream); override;
 
   protected
-  //exclude flag - experimental!
-    FExclude: boolean;
   // The declarative token, "unit", "class", "type" etc.
     FKind: TTokenType;
   // All attributes, modifiers etc.
@@ -800,8 +816,6 @@ type
       Must always end with PathDelim.
       In this class returns MyUnit.BasePath. }
     function BasePath: string; override;
-
-    property ToBeExcluded: boolean read FExclude;
   end;
 
   TPasItemClass = class of TPasItem;
@@ -895,113 +909,18 @@ type
   and in MemberLists, the owner of all member lists.
   Sorting assumes that ALL member lists are in MemberLists.
 
-  HasDescription or "available memberlists" should include non-empty member lists only.
-  This requires that member lists are kind of "private" by default,
-  and become public when members are added. A specialized member list placeholder
-  is then added to the Items, which does not own the member list.
-  This can be done in a post-parse method, like BuildLinks.
+  For use by the generators, an Overview list is created from the non-empty
+  member lists. This list can have different IDs, e.g.
+    trOverview in units, or
+    trValues in enums.
+  Any number of such lists can occur, less with omitted empty lists, more by grouping.
 *)
-(*
-  Section order
-//map
-  trUnits,
-    trHeadlineUnits,
-  trClassHierarchy,
-      trNoCIOsForHierarchy,
-  trCio,
-    trHeadlineCio,  trNoCIOs,
-  trTypes,
-    trHeadlineTypes,  trNoTypes,
-  trConstants,
-    trHeadlineConstants,  trNoConstants,
-  trVariables,
-    trHeadlineVariables,  trNoVariables,
-  trFunctionsAndProcedures,
-    trHeadlineFunctionsAndProcedures,  trNoFunctions,
-  trIdentifiers,
-    trHeadlineIdentifiers,  trNoIdentifiers,
-  trGvUses,
-  trGvClasses,
-  trSearch,
 
-//unit specials
-  trLibrary, trPackage, trProgram, trUnit,
-  trUses,
-  trDescription,
-  //hints
-    trDeprecated, trPlatformSpecific, trLibrarySpecific,
-    trDescription,
-  trOverview,
-    trClasses,
-      [trClass, trDispInterface, trInterface, trObject, trRecord,] no sort?
-        trUnit,
-        trDeclaration,
-        trHierarchy,
-        trOverview,
-          trFields,
-          trMethods,
-            <as procedures>
-          trProperties,
-    trFunctionsAndProcedures,
-      trSubroutine,
-        trDeclaration,
-        trDescription,
-        trParameters,
-        trReturns,
-        trExceptionsRaised,
+  eGroupAs = (
+    gaSingle, //goup this item
+    gaStart, gaEnd //start/end grouping of items
+  );
 
-    trConstants,
-    trVariables,
-    trTypes,
-  trDescriptions,
-    <is sorted as trOverview>
-
-//tables and members
-  trAuthors,
-    trAuthor,
-  trCreated,
-  trLastModified,
-
-  trExceptions,
-    trException,
-  trEnum,
-
-//visibilities
-  trVisibility,
-    trPrivate,
-    trStrictPrivate,
-    trProtected,
-    trStrictProtected,
-    trPublic,
-    trPublished,
-    trAutomated,
-    trImplicit,
-
-//headings
-  trIntroduction,
-  trConclusion,
-  trSummaryCio,
-//column headings
-  trDeclaration,
-  trName,
-  trValues,
-
-//empty tables
-  trNone,
-
-//misc
-  trHelp,
-  trLegend,
-  trMarker,
-
-  trWarningOverwrite,
-  trWarning,
-
-  trGeneratedBy,
-  trOnDateTime,
-
-  trSeeAlso,
-*)
   TPasScope = class(TPasItem)
   protected
   {$IFDEF old}
@@ -1027,8 +946,15 @@ type
   //Special in enum (=Members), procs...
     FOverview: TDescriptionItem;
     function  NeedOverview: TDescriptionItem;
-  //group member(s). AParam is the full group spec (tag parameter).
-    function DoGroup(AItem: TDescriptionItem; const AParam: string): boolean; virtual;
+  {$IFDEF groups}
+  protected
+    FGroup: TDescriptionItem;
+    gFirst, gLast: TDescriptionItem;
+  //Group member(s). AParam is the full group spec (tag parameter).
+    function DoGroup(how: eGroupAs; AItem: TPasItem;
+      const AParam: string; lst: TDescriptionItem = nil): boolean; virtual;
+  {$ELSE}
+  {$ENDIF}
 
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -1130,16 +1056,17 @@ type
 //--------------------------------------------------
 
   { @abstract(Enumerated type.) }
-  TPasEnum = class(TPasScope) //(TPasType)
+  TPasEnum = class(TPasScope) //-(TPasType)
   protected
+  {$IFDEF groups}
+  //group member(s) from the first (default) Values list.
+    function DoGroup(how: eGroupAs; AItem: TPasItem;
+      const AParam: string; lst: TDescriptionItem = nil): boolean; override;
+  {$ELSE}
+  {$ENDIF}
     procedure StoreValueTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-  {$IFDEF groups}
-  //group member(s). AParam is the full group spec (tag parameter).
-    function DoGroup(AItem: TDescriptionItem; const AParam: string): boolean; override;
-  {$ELSE}
-  {$ENDIF}
   public
     procedure BuildLinks(AllUnits: TPasUnits; TheGenerator: TLinkGenerator); override;
   {$IFDEF old}
@@ -1517,6 +1444,12 @@ type
     FConstants,
     FFuncsProcs: TMemberListItem; //TPasItems;?
     property FUsesUnits: TDescriptionItem read FHeritage write FHeritage;
+  {$IFDEF groups}
+  //group member(s) from the first (default) Values list.
+    function DoGroup(how: eGroupAs; AItem: TPasItem;
+      const AParam: string; lst: TDescriptionItem = nil): boolean; override;
+  {$ELSE}
+  {$ENDIF}
 
     { This searches for item in all used units.
       Returns nil if not found. }
@@ -1816,9 +1749,23 @@ begin
   ReplaceStr := '';
 end;
 
+procedure TBaseItem.HandleExcludeTag(ThisTag: TTag;
+  var ThisTagData: TObject; EnclosingTag: TTag;
+  var EnclosingTagData: TObject; const TagParameter: string;
+  var ReplaceStr: string);
+begin
+(* Mark item for exclude from the memberlists.
+  Units deserve handling in the generator, FUnits list.
+*)
+  ThisTag.TagManager.DoMessage(1, pmtInformation, 'Excluded: %s', [self.Name]);
+  FExclude := True;
+  ReplaceStr := '';
+end;
+
 procedure TBaseItem.RegisterTags(TagManager: TTagManager);
 begin
-  //inherited; nonsense - method has just been introduced!
+  TTag.Create(TagManager, 'exclude',
+    {$ifdef FPC}@{$endif} HandleExcludeTag, nil, []);
   TTag.Create(TagManager, 'author', nil, {$IFDEF FPC}@{$ENDIF} StoreAuthorTag,
     [toParameterRequired]);
   TTag.Create(TagManager, 'created', nil, {$IFDEF FPC}@{$ENDIF} StoreCreatedTag,
@@ -2067,37 +2014,49 @@ begin
   ReplaceStr := '';
 end;
 
-procedure TPasItem.HandleExcludeTag(ThisTag: TTag;
-  var ThisTagData: TObject; EnclosingTag: TTag;
-  var EnclosingTagData: TObject; const TagParameter: string;
-  var ReplaceStr: string);
-begin
-(* Mark item for exclude from the memberlists.
-  Units deserve handling in the generator, FUnits list.
-*)
-  ThisTag.TagManager.DoMessage(1, pmtInformation, 'Excluded: %s', [self.Name]);
-  FExclude := True;
-  ReplaceStr := '';
-end;
-
 procedure TPasItem.GroupTag(ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  if MyOwner.DoGroup(self, TagParameter) then
+  if MyOwner.DoGroup(gaSingle, self, TagParameter) then
+    ReplaceStr := '';
+end;
+
+procedure TPasItem.GroupStart(ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  if MyOwner.DoGroup(gaStart, self, TagParameter) then
+    ReplaceStr := '';
+end;
+
+procedure TPasItem.GroupEnd(ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  if MyOwner.DoGroup(gaEnd, self, TagParameter) then
     ReplaceStr := '';
 end;
 
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
-  inherited;
+  inherited RegisterTags(TagManager);
   TTag.Create(TagManager, 'deprecated',
     nil, {$ifdef FPC}@{$endif} HandleDeprecatedTag, []);
+{$IFDEF old}
   TTag.Create(TagManager, 'exclude',
     nil, {$ifdef FPC}@{$endif} HandleExcludeTag, []);
+{$ELSE}
+{$ENDIF}
   TTag.Create(TagManager, 'group',
     nil, {$IFDEF FPC}@{$ENDIF} GroupTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, toAllowNormalTextInside, toFirstWordVerbatim]);
+  TTag.Create(TagManager, 'groupstart',
+    nil, {$IFDEF FPC}@{$ENDIF} GroupStart,
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, toAllowNormalTextInside, toFirstWordVerbatim]);
+  TTag.Create(TagManager, 'groupend',
+    nil, {$IFDEF FPC}@{$ENDIF} GroupEnd,
+    []);
 end;
 
 function TPasItem.FindName(const NameParts: TNameParts;
@@ -2481,46 +2440,14 @@ begin
 end;
 
 {$IFDEF groups}
-function TPasEnum.DoGroup(AItem: TDescriptionItem; const AParam: string): boolean;
-var
-  m: integer;
-  lst, grp: TDescriptionItem;
-  n, d: string;
+
+function TPasEnum.DoGroup(how: eGroupAs; AItem: TPasItem;
+  const AParam: string; lst: TDescriptionItem): boolean;
 begin
-//we have already built a Values list, at Overview?
-//split group name from description
-{$IFDEF old}
-  d := TagParameter + ' '; //force whitespace found!
-  n := ExtractFirstWord(d); //both strings will be trimmed
-{$ELSE}
-  ExtractFirstWord(AParam, n, d);
-{$ENDIF}
-//find value in default members list
-  //v := Members.FindName(n); //using hash
-  lst := MemberLists.Items[0];
-  //m := lst.IndexOf(AItem.Name);
-  m := lst.FList.IndexOf(AItem);
-  Result := m >= 0;
-  if not Result then begin
-  {$IFDEF new}
-  //error...
-    ThisTag.TagManager.DoMessage(1, pmtWarning,
-      '@group tag for unknown or already grouped member "%s"', [n]);
-  {$ELSE}
-  {$ENDIF}
-  end else begin
-  //find group in Overview
-    grp := MemberLists.Find(n);
-    if grp = nil then
-      grp := MemberLists.AddNew(trValues, dkPasItems, n, d)
-    else if grp.Value = '' then
-      grp.Value := d //put description
-    else if d <> '' then //append description - deprecated!
-      grp.Value := grp.Value + LineEnding + LineEnding + d;
-  //move value
-    lst.FList.Delete(m);
-    grp.Add(AItem);
-  end;
+(* Find value in default members list. Other scopes have to find the appropriate
+  list from the item kind.
+*)
+  Result := inherited DoGroup(how, AItem, AParam, MemberLists.Items[0]);
 end;
 {$ELSE}
 {$ENDIF}
@@ -3160,8 +3087,8 @@ begin
   if Self.ToBeExcluded then
     exit; //should be skipped earlier in the call chain!
 
-//add Unit special sections
-  AddListDelegate(UsesUnits);
+//add Unit special sections - already done!?
+  //if not IsEmpty(UsesUnits) then AddListDelegate(UsesUnits);
 //build general sections and recurse.
   inherited BuildSections;
 {$IFDEF old}
@@ -3190,6 +3117,43 @@ begin
     else
       FFuncsProcs.Add(item);
   end;
+end;
+
+function TPasUnit.DoGroup(how: eGroupAs; AItem: TPasItem;
+  const AParam: string; lst: TDescriptionItem): boolean;
+var
+  //tid: TTranslationID;
+  i: integer;
+  //lst: TDescriptionItem;
+  //l: TDescriptionList;
+begin
+(* Group item(s) from the appropriate item group.
+*)
+{$IFDEF old}
+  case AItem.Kind of
+  KEY_CONST:  l := FConstants;
+  KEY_TYPE:   l := FTypes;
+  KEY_VAR:    l := FVariables;
+  KEY_UNIT:   l := UsesUnits;
+  else
+    if item.Kind in CioTypes then
+      l := FCIOs
+    else
+      l := FFuncsProcs;
+  end;
+  Result := inherited DoGroup(how, AItem, AParam, l);
+{$ELSE}
+//safe way: find containing list
+  for i := 0 to MemberLists.Count - 1 do begin
+    lst := MemberLists.ItemAt(i);
+    if (lst.FList <> nil) and (lst.FList.IndexOf(AItem) >= 0) then begin
+      Result := inherited DoGroup(how, AItem, AParam, lst);
+      exit;
+    end;
+  end;
+//item not found in any memmberlist
+  Result := False;
+{$ENDIF}
 end;
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
@@ -3611,7 +3575,7 @@ var
   ps: TPasItem;
 begin
 (* Build overview from member lists.
-  The MemberLists can be built in the overwritten methods,
+  If not already done, the MemberLists can be built in the overwritten methods,
     prior to calling inherited.
   MemberList must contain PasItem lists or list delegates (two levels).
   This procedure
@@ -3627,7 +3591,7 @@ begin
   for i := 0 to FMemberLists.Count - 1 do begin
     ml := FMemberLists.ItemAt(i);
     if not IsEmpty(ml) then begin
-      //o.AddListDelegate(ml.ID, ml.FList);
+    //top-down, because items can be excluded!
       for j := ml.Count - 1 downto 0 do begin
         ps := ml.PasItemAt(j);
         //assert(ps <> nil, 'invalid member');
@@ -3637,7 +3601,7 @@ begin
           ps.BuildSections;
       end;
       if not IsEmpty(ml) then
-        o.AddListDelegate(ml);  
+        o.AddListDelegate(ml);
     end;
   end;
   if o.Count <= 0 then begin
@@ -3661,9 +3625,110 @@ begin
   Result := FOverview;
 end;
 
-function TPasScope.DoGroup(AItem: TDescriptionItem; const AParam: string): boolean;
+function TPasScope.DoGroup(how: eGroupAs; AItem: TPasItem;
+  const AParam: string; lst: TDescriptionItem): boolean;
+var
+  m: integer;
+  //lst, item,
+  grp: TDescriptionItem;
+  n, d: string;
+  iFirst, iLast: integer;
 begin
-  Result := False; //unhandled
+(* Since the tags can be expanded in any (fwd/back) order, we'll have to track
+  the groupstart/groupend item. When both are assigned, the range is moved.
+
+  We have already built the default lists in MemberLists, while Overview still is nil.
+
+  lst has to be determined by the overridden methods.
+*)
+  //lst := MemberLists.Items[0];
+  if lst = nil then begin
+    Result := False;
+    exit;
+  end;
+
+  m := lst.FList.IndexOf(AItem);
+  Result := m >= 0;
+  if not Result then begin
+  {$IFDEF new}
+  //error...
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
+      '@group tag for unknown or already grouped member "%s"', [n]);
+  {$ELSE}
+  {$ENDIF}
+  end else begin //make general method?
+    if how = gaEnd then
+      grp := nil  //must be specified with gaStart
+    else begin
+    //determine the group - optional (ignored) for gaEnd
+    //split group name from description
+      ExtractFirstWord(AParam, n, d);
+      grp := MemberLists.Find(n);
+      (* Finding the group by name allows for mixed-item lists,
+        e.g. for a property with getters and setters.
+        Consequently group names must be unique throughout a scope!
+        The group ID of a new group should be taken from where???
+        Best: do NOT use the group ID in the section header!
+      *)
+    //find group in Overview
+      if grp = nil then
+        grp := MemberLists.AddNew(lst.FTID, dkPasItems, n, d)
+      else if grp.Value = '' then
+        grp.Value := d //put description
+      else if d <> '' then //append description - deprecated!
+        grp.Value := grp.Value + LineEnding + LineEnding + d;
+    end;
+  //move immediately?
+    case how of
+    gaSingle:
+      begin //move value
+        lst.FList.Delete(m);
+        grp.Add(AItem);
+        exit;
+      end;
+    gaStart:
+      begin
+        FGroup := grp;
+        gFirst := AItem;
+        if gLast = nil then
+          exit; //move at gaEnd
+        iFirst := m;
+        iLast := lst.FList.IndexOf(gLast);
+      end;
+    gaEnd:
+      begin
+        gLast := AItem;
+        if gFirst = nil then
+          exit; //move at gaStart
+        grp := FGroup;
+        iFirst := lst.FList.IndexOf(gFirst);
+        iLast := m;
+      end;
+    else //keep compiler happy
+      iFirst := -1;
+      iLast := -1;
+      Result := False;
+    end; //case
+  //move range of items
+    if (grp = nil) or (iFirst > iLast) then
+      Result := False //no group assigned, or invalid range
+    else begin //move range of items
+      while iLast >= iFirst do begin
+        AItem := lst.PasItemAt(iFirst);
+        if AItem <> nil then begin
+        //prevent moving non-PasItems
+          lst.FList.Delete(iFirst);
+          grp.Add(AItem);
+          dec(iLast);
+        end else
+          inc(iFirst); //skip this item
+      end;
+    end;
+  //always clear range, even in case of an error
+    FGroup := nil;
+    gFirst := nil;
+    gLast := nil;
+  end;
 end;
 
 { TRawDescriptionInfo }
@@ -3713,11 +3778,11 @@ begin
       FList.SortKind := ssConstants;
     trFunctionsAndProcedures: 
       FList.SortKind := ssFuncsProcs;
-    trTypes: 
+    trTypes:
       FList.SortKind := ssTypes;
-    trVariables: 
+    trVariables:
       FList.SortKind := ssVariables;
-    trUses: 
+    trUses:
       FList.SortKind := ssUsesClauses;
     trFields: //distinguish non/record fields in TPasCio constructor
       FList.SortKind := ssNonRecordFields; // ssRecordFields;
@@ -3994,6 +4059,8 @@ end;
 function TDescriptionItem.AddListDelegate(
   lst: TDescriptionItem): TDescriptionItem;
 begin
+(* We exclude NIL items, but not empty lists.
+*)
   if lst = nil then
     Result := nil
   else begin

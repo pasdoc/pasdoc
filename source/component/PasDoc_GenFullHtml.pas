@@ -51,7 +51,12 @@ type
   //get menu entries, based on item
     function  GetSectionsInMenu(item: TBaseItem): TSectionsInMenu; virtual;
   //Return anchor string, based on a translation ID.
-    function  GetSectionAnchor(tid: TTranslationID): string;
+    function  GetSectionAnchorID(tid: TTranslationID): string;
+  //Return anchor string, based on a translation ID and section name.
+    function  GetSectionAnchor(items: TDescriptionItem): string;
+  //Get (possibly qualified) section heading.
+    function GetMemberSectionHeading(items: TDescriptionItem): string;
+
     procedure WriteDescriptionSectionHeading(const Caption: TTranslationID);
     { Writes heading S to output, at heading level I.
       Write optional section anchor.
@@ -199,8 +204,8 @@ begin
     WriteDirect('<td>');
       s := FLanguage.Translation[tid];
       if tid in SectionsAvailable then
-        //WriteLink('#'+SectionAnchors[Section], s, 'section')
-        WriteLink(GetSectionAnchor(tid), s, 'section')
+      //WriteLink cannot add a '#' - might be a fully qualified link!
+        WriteLink('#' + GetSectionAnchorID(tid), s, 'section')
       else
         WriteConverted(s);
     WriteDirect('</td>');
@@ -208,15 +213,24 @@ begin
   WriteDirectLine('</tr></table>');
 end;
 
-function  TFullHTMLDocGenerator.GetSectionAnchor(tid: TTranslationID): string;
+function  TFullHTMLDocGenerator.GetSectionAnchorID(tid: TTranslationID): string;
 begin
-  Result := '#%40' + IntToStr(ord(tid));
+  Result := '%40' + Translation(tid, lgDefault); // IntToStr(ord(tid));
+end;
+
+function  TFullHTMLDocGenerator.GetSectionAnchor(items: TDescriptionItem): string;
+begin
+  if items.Name <> '' then
+    Result := '%40' + items.Name //group names must be unique within scope
+  else
+    //Result := '#%40' + IntToStr(ord(items.ID));
+    Result := GetSectionAnchorID(items.ID);
 end;
 
 procedure TFullHTMLDocGenerator.WriteSectionHeading(HL: integer; const CssClass: string;
       tid: TTranslationID);
 begin
-  WriteHeading(HL, CssClass, FLanguage.Translation[tid], GetSectionAnchor(tid));
+  WriteHeading(HL, CssClass, FLanguage.Translation[tid], GetSectionAnchorID(tid));
 end;
 
 procedure TFullHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TDescriptionItem);
@@ -255,157 +269,9 @@ begin
 end;
 
 procedure TFullHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
-type
-  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
-const
-//ordered menu entries
-  //SectionsInMenu: array[TSections] of TTranslationID = (
-  SectionsInMenu: TSectionsInMenu = (
-    trDescription, trHierarchy, trFields, trMethods, trProperties,
-    trNoTrans, trNoTrans
-  );
-
-  { writes an ancestor }
-  procedure WriteAncestor(Item: TDescriptionItem);
-  var
-    CIO: TPasItem;
-  begin
-    CIO := Item.PasItem;
-    if not Assigned(CIO) then begin
-      WriteDirectLine('<li class="ancestor">' + Item.Name + '</li>');
-      { recursion ends here, when the item is an external class }
-    end else begin
-      WriteDirectLine('<li class="ancestor">' +
-        MakeItemLink(CIO, CIO.Name, lcNormal) + '</li>')
-    end;
-  end;
-
-{$IFDEF old}
-var
-  s: string;
-  SectionsAvailable: TSectionSet;
-  i, j: integer;
-  d: TDescriptionItem;
-{$ELSE}
-{$ENDIF}
 begin //WriteCIO
   if not Assigned(CIO) then Exit;
-
-{$IFDEF old}
-
-(* When the description is written to an distinct file, provide:
-  - a section menu
-  - a unit reference
-*)
-  if CIO.OutputFileName <> '' then begin
-    SectionsAvailable := FindSections(CIO);
-
-    s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
-
-    WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
-
-    WriteAnchor(CIO.Name);
-    WriteHeading(HL, 'cio', s);
-
-  {$IFDEF old}
-    WriteSectionMenu(SectionsInMenu, SectionsAvailable);
-  {$ELSE}
-    WriteSectionMenu(CIO);
-  {$ENDIF}
-
-  //these exceptions should be removed. Create description items in CIOs.
-
-  (* Every item knows about its unit, but doesn't know whether it has to provide
-    the unit as a description item.
-    A unit reference has to be shown for all those items,
-    which are displayed in their own description file.
-  *)
-  //write unit link
-    //if not (CIO is TPasUnit) then begin
-    if True then begin
-      WriteSectionHeading(HL+1, 'unit', trUnit);
-      WriteStartOfParagraph('unitlink');
-        WriteLink(CIO.MyUnit.FullLink, ConvertString(CIO.MyUnit.Name), '');
-      WriteEndOfParagraph;
-    end;
-  end;
-
-{$IFDEF old}
-//write declaration link
-  if not (trDeclaration in SectionsAvailable) then begin
-    WriteSectionHeading(HL + 1, 'declaration', trDeclaration);
-    WriteStartOfParagraph('declaration');
-      WriteStartOfCode;
-        WriteConverted(CIO.FullDeclaration);
-      WriteEndOfCode;
-    WriteEndOfParagraph;
-  end;
-{$ELSE}
-  //description item created
-{$ENDIF}
-
-  for i := 0 to CIO.Count - 1 do begin
-    d := CIO.ItemAt(i);
-    case d.ID of
-    trUnit:
-      begin
-        WriteSectionHeading(HL+1, 'unit', trUnit);
-        WriteStartOfParagraph('unitlink');
-          WriteLink(d.PasItem.FullLink, ConvertString(d.Name), '');
-        WriteEndOfParagraph;
-      end;
-    trDeclaration: //IS declaration item
-      begin
-        WriteSectionHeading(HL + 1, 'declaration', trDeclaration);
-        WriteStartOfParagraph('declaration');
-          WriteStartOfCode;
-            WriteConverted(d.Caption);  //(CIO.FullDeclaration);
-          WriteEndOfCode;
-        WriteEndOfParagraph;
-      end;
-    trDescription:  //IS description
-      begin
-        WriteSectionHeading(HL + 1, 'description', trDescription);
-        //WriteItemLongDescription(CIO);
-        WriteItemLongDescription(d.PasItem);
-      end;
-    trHierarchy:
-      begin
-        WriteSectionHeading(HL + 1, 'hierarchy', trHierarchy);
-        WriteDirect('<ul class="hierarchy">');
-          for j := 0 to d.Count - 1 do begin
-            WriteAncestor(d.Items[j]);
-          end;
-        WriteDirect('</ul>');
-      end;
-    trOverview:
-      begin
-        WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
-        for j := 0 to d.Count - 1 do begin
-          WriteMemberSummary(d.ItemAt(j), CIO.ShowVisibility, HL+1);
-        end;
-
-        WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
-        for j := 0 to d.Count - 1 do begin
-          WriteMembersDetailed(d.ItemAt(j), CIO.ShowVisibility, HL+1);
-        end;
-      end;
-    trAuthors:
-      WriteAuthors(HL + 1, d);  // CIO.Authors);
-    trCreated, trLastModified:
-      WriteDate(HL + 1, d);  //CIO.Created, CIO.LastMod);
-    trSeeAlso:
-      WriteSeeAlso(d, CIO);
-    else
-    end;
-  end;
-
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
-{$ELSE}
   WriteItem(HL, CIO);
-{$ENDIF}
 end;
 
 procedure TFullHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
@@ -426,24 +292,8 @@ begin
         'skipped.', [p.Name]);
       Continue;
     end;
-
-  {$IFDEF old}
-    case CreateStream(p.OutputFileName, true) of
-      csError: begin
-          DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
-          Continue;
-        end;
-      csCreated: begin
-          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
-          WriteCIO(HL, p);
-        end;
-    end;
-  //CloseStream; - in WriteCIO
-  {$ELSE}
     WriteItem(HL, p);
-  {$ENDIF}
   end;
-  //CloseStream;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -495,10 +345,14 @@ procedure TFullHTMLDocGenerator.WriteMemberSummary(Items: TDescriptionItem; Show
 var
   i: Integer;
 begin
+(* Prepare for named member lists:
+  - have no anchors (?)
+  - have special section heading
+*)
   if IsEmpty(Items) then Exit; //should never happen
 
-  WriteAnchor(GetSectionAnchor(Items.ID));
-  WriteHeading(HL + 1, 'summary', FLanguage.Translation[Items.id]);
+  WriteAnchor(GetSectionAnchor(Items));
+  WriteHeading(HL + 1, 'summary', GetMemberSectionHeading(Items));
   WriteStartOfTable1Column('summary');
 
   for i := 0 to Items.Count - 1 do
@@ -514,7 +368,7 @@ var
   PasItem: TPasItem;
   i: Integer;
   ColumnsCount: Cardinal;
-  grouped: boolean;
+  //grouped: boolean;
 begin
 (* Expect a list of items (PasItems).
   Lists of other than PasItems (params...) need appropriate handling!
@@ -524,6 +378,7 @@ begin
 *)
   if IsEmpty(Items) then Exit;
 
+{$IFDEF old}
   Item := Items.ItemAt(0);
   grouped := Item.ID = trDescriptions; //or: all member lists with explicit name?
   if not grouped then begin
@@ -537,12 +392,15 @@ begin
 
   if HL = 1 then
     WriteHeading(HL + 1, 'detail', FLanguage.Translation[Items.id]);
+{$ELSE}
+//skip items residing in their own files
+  Item := Items.ItemAt(0);
+  PasItem := Item.PasItem;
+  if (PasItem <> nil) and (PasItem.OutputFileName <> '') then
+    exit; //items reside in different file
 
-  if Items.PasItemAt(0) = nil then begin
-  //sublist of non-PasItems
-  end else begin
-  //immediate list of PasItems
-  end;
+  WriteHeading(HL + 1, 'detail', GetMemberSectionHeading(Items));
+{$ENDIF}
 //calculate ColumnsCount
   ColumnsCount := 1;
   if ShowVisibility then Inc(ColumnsCount);
@@ -583,97 +441,6 @@ begin
     WriteDirect(AItem.ShortDescription);
 end;
 
-{$IFDEF old}
-
-procedure TFullHTMLDocGenerator.WriteItemLongDescription(HL: integer;
-  AItem: TPasItem; OpenCloseParagraph: boolean);
-(* Used to write sub-items (of a scope)!!!
-*)
-
-  { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
-    List: TDescriptionItem; LinkToParamNames: boolean;
-    const CssListClass: string);
-
-    procedure WriteParameter(const ParamName: string; const Desc: string);
-    begin
-      { Note that <dt> and <dd> below don't need any CSS class,
-        they can be accessed via "dl.parameters dt" or "dl.parameters dd"
-        (assuming that CssListClass = 'parameters'). }
-      WriteDirect('<dt>');
-      WriteDirect(ParamName);
-      WriteDirectLine('</dt>');
-      WriteDirect('<dd>');
-      WriteSpellChecked(Desc);
-      WriteDirectLine('</dd>');
-    end;
-
-  var
-    i: integer;
-    ParamName: string;
-  begin
-    if IsEmpty(List) then
-      Exit;
-
-    WriteDescriptionSectionHeading(Caption);
-    WriteDirectLine('<dl class="' + CssListClass + '">');
-    for i := 0 to List.Count - 1 do begin
-      ParamName := List.Items[i].Name;
-
-      if LinkToParamNames then
-       ParamName := SearchLink(ParamName, Func, '', true);
-
-      WriteParameter(ParamName, List.Items[i].Value);
-    end;
-    WriteDirectLine('</dl>');
-  end;
-
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: TDescriptionItem);
-  begin
-    if (ReturnDesc = nil) or (ReturnDesc.Text = '') then
-      exit;
-    WriteDescriptionSectionHeading(trReturns);
-    WriteDirect('<p class="return">');
-    WriteSpellChecked(ReturnDesc.Text);
-    WriteDirect('</p>');
-  end;
-
-var
-  AItemMethod: TPasMethod absolute AItem;
-  PasEnum:  TPasEnum absolute AItem;
-begin
-  if AItem = nil then
-    exit;
-
-  WriteDescription(HL, AItem);
-
-(* Write additional descriptions, of items residing in the same file.
-*)
-  if AItem is TPasMethod then begin
-    WriteParamsOrRaises(AItemMethod, trParameters,
-      AItemMethod.Params, false, 'parameters');
-    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
-      AItemMethod.Raises, true, 'exceptions_raised');
-  end;
-
-  //WriteSeeAlso(AItem.SeeAlso, AItem.MyOwner);
-
-  if AItem is TPasEnum then begin
-    WriteDescriptionSectionHeading(trValues);
-    WriteDirectLine('<ul>');
-    for i := 0 to PasEnum.Members.Count - 1 do begin
-      WriteDirectLine('<li>');
-      WriteConverted(PasEnum.Members.PasItemAt[i].FullDeclaration);
-      WriteConverted(': ');
-      WriteItemLongDescription(HL+1, PasEnum.Members.PasItemAt[i], false);
-      WriteDirectLine('</li>');
-    end;
-    WriteDirectLine('</ul>');
-  end;
-end;
-{$ELSE}
-
 procedure TFullHTMLDocGenerator.WriteAllSections(HL: integer;
   Items: TDescriptionItem; PasItem: TPasItem);
 var
@@ -688,7 +455,6 @@ begin
     WriteDescriptionItem(HL, d, PasItem);
   end;
 end;
-{$ENDIF}
 
 procedure TFullHTMLDocGenerator.WriteDescription(HL: integer; AItem: TPasItem);
 var
@@ -704,11 +470,6 @@ var
     OpenCloseParagraph := True;
   end;
 
-{$IFDEF old}
-var
-  i: Integer;
-{$ELSE}
-{$ENDIF}
 {$IFDEF new}
 var
   ia: TPasItemAttribute;
@@ -716,14 +477,15 @@ var
 {$ENDIF}
 begin //WriteItemLongDescription
 (* Write whole item description.
-
   Could write declaration?
+
+  We use paragraphs as enhanced breaks, with no gap before the first one.
 *)
   if not Assigned(AItem) then Exit;
 
   attrs := AItem.Attributes;
 
-  OpenCloseParagraph := (HL < 2) or (AItem.AbstractDescription <> '') and (AItem.DetailedDescription <> '');
+  OpenCloseParagraph := False;  // (HL < 2) or (AItem.AbstractDescription <> '') and (AItem.DetailedDescription <> '');
 
   if AItem.HasAttribute[SD_DEPRECATED] then
     WriteHintDirective(FLanguage.Translation[trDeprecated], SD_DEPRECATED);
@@ -752,20 +514,17 @@ begin //WriteItemLongDescription
   Abstract and Detailed have been introduced in TBaseItem.
   Use of description item? External items?
 *)
-  OpenCloseParagraph := (HL < 2) or (AItem.AbstractDescription <> '') and (AItem.DetailedDescription <> '');
   if AItem.AbstractDescription <> '' then begin
     if OpenCloseParagraph then
       WriteStartOfParagraph;
     WriteSpellChecked(AItem.AbstractDescription);
-    if OpenCloseParagraph then
-      WriteEndOfParagraph;
+    //if OpenCloseParagraph then WriteEndOfParagraph;
   end;
   if AItem.DetailedDescription <> '' then begin
     if OpenCloseParagraph then
       WriteStartOfParagraph;
     WriteSpellChecked(AItem.DetailedDescription);
-    if OpenCloseParagraph then
-      WriteEndOfParagraph;
+    //if OpenCloseParagraph then WriteEndOfParagraph;
   end;
 end;
 
@@ -923,7 +682,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     j: Integer;
   begin
     if not CreateOverviewStream(Overview) then Exit;
-    
+
     if not ObjectVectorIsNilOrEmpty(Items) then 
     begin
       WriteStartOfTable3Columns('itemstable',
@@ -1034,136 +793,6 @@ begin
   EndSpellChecking;
 end;
 
-{$IFDEF old}
-procedure TFullHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
-type
-(* Menu bar entries.
-*)
-  TSections = (dsDescription, dsUses, dsClasses, dsFuncsProcs,
-    dsTypes, dsConstants, dsVariables);
-  TSectionAnchors = array[TSections] of string;
-const
-//ordered menu entries
-  //SectionIDs: array[TSections] of TTranslationID = (
-  SectionIDs: TSectionsInMenu = (
-    trDescription, trUses, trClasses, trFunctionsAndProcedures,
-    trTypes, trConstants, trVariables
-  );
-
-  procedure WriteUnitDescription(HL: integer; U: TPasUnit);
-  begin
-    WriteHeading(HL, 'description', FLanguage.Translation[trDescription]);
-    WriteItemLongDescription(1, U);
-  end;
-
-  procedure WriteUnitUses(const HL: integer; U: TPasUnit);
-  var
-    i: Integer;
-    ULink: TPasItem;
-  begin
-  (* Write section (anchor+caption), and list of links (merge with WriteSeeAlso?)
-    Added: write section anchor.
-  *)
-    if WriteUsesClause and not IsEmpty(U.UsesUnits) then begin
-      //WriteHeading(HL, 'uses', FLanguage.Translation[trUses], SectionAnchors[dsUses]);
-      WriteSectionHeading(HL, 'uses', trUses);
-      WriteDirect('<ul class="useslist">');
-      for i := 0 to U.UsesUnits.Count-1 do begin
-        WriteDirect('<li>');
-        ULink := u.UsesUnits.PasItemAt(i);
-        if ULink <> nil then begin
-          WriteLink(ULink.FullLink, U.UsesUnits.Items[i].Name, '');
-        end else begin
-          WriteConverted(U.UsesUnits.Items[i].Name);
-        end;
-        WriteDirect('</li>');
-      end;
-      WriteDirect('</ul>');
-    end;
-  end;
-
-{$IFDEF old}
-var
-  i, j: integer;
-  SectionsAvailable: TSectionSet;
-  d: TDescriptionItem;
-{$ELSE}
-{$ENDIF}
-begin
-{$IFDEF old}
-  case CreateStream(U.OutputFileName, true) of
-    csError: begin //DoError?
-      DoMessage(1, pmtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-  end;
-
-  DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteStartOfDocument(U.Name);
-  WriteHeading(HL, 'unit', FLanguage.Translation[U.id] + ' ' + U.Name);
-
-{$IFDEF old}
-  SectionsAvailable := FindSections(U);
-  if not WriteUsesClause then
-    Exclude(SectionsAvailable, trUses);
-  WriteSectionMenu(SectionIDs, SectionsAvailable);
-{$ELSE}
-  WriteSectionMenu(U);
-{$ENDIF}
-
-  for i := 0 to U.Count - 1 do begin
-    d := U.ItemAt(i);
-    case d.ID of
-    trDescription:
-      begin
-      {$IFDEF old}
-        WriteAnchor(SectionAnchors[dsDescription]);
-        WriteUnitDescription(HL + 1, U);
-      {$ELSE}
-      //= WriteUnitDescription
-        WriteSectionHeading(HL, 'description', trDescription);
-        WriteItemLongDescription(U);  //d.PasItem); - description item!
-      {$ENDIF}
-      end;
-    trOverview:
-      begin
-        WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
-        for j := 0 to d.Count - 1 do begin
-          WriteMemberSummary(d.ItemAt(j), False, HL+1); //+2?
-        end;
-
-        WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
-        for j := 0 to d.Count - 1 do begin
-        //exclude CIOs from details!
-          if d.Items[j].ID <> trClasses then
-            WriteMembersDetailed(d.ItemAt(j), False, HL+2);
-        end;
-      end;
-    trUses:
-      begin
-        //WriteAnchor(SectionAnchors[dsUses]);
-        WriteUnitUses(HL + 1, U);
-      end;
-    trAuthors:
-      WriteAuthors(HL + 1, d);  // CIO.Authors);
-    trCreated, trLastModified:
-      WriteDate(HL + 1, d);  //CIO.Created, CIO.LastMod);
-    trSeeAlso:
-      WriteSeeAlso(d, U);
-    else
-    end;
-  end;
-
-  WriteFooter;
-  WriteAppInfo;
-  WriteEndOfDocument;
-  CloseStream;
-{$ELSE}
-  WriteItem(1, U);
-{$ENDIF}
-  WriteCIOs(HL, U.CIOs);
-end;
-{$ELSE}
 procedure TFullHTMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 {$IFDEF new}
 var
@@ -1172,8 +801,6 @@ var
 {$ELSE}
 {$ENDIF}
 begin
-//called from?
-  //if u.ToBeExcluded then exit;
   WriteItem(1, U);
 { TODO : Write all members with an distinct output filename }
 {$IFnDEF new}
@@ -1186,7 +813,6 @@ begin
   end;
 {$ENDIF}
 end;
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -1218,6 +844,21 @@ begin
   WriteAppInfo;
   WriteEndOfDocument;
   CloseStream;
+end;
+
+//heading for (possibly named) member lists.
+function  TFullHTMLDocGenerator.GetMemberSectionHeading(items: TDescriptionItem): string;
+var
+  s, t: string;
+begin
+  s := FLanguage.Translation[Items.id];
+  if items.Value <> '' then
+    t := Items.Value
+  else
+    t := Items.Name;
+  if t <> '' then
+    s := s + ' - ' + t;
+  Result := s;
 end;
 
 procedure TFullHTMLDocGenerator.WriteDescriptionItem(HL: integer;
@@ -1325,14 +966,25 @@ var
   procedure WriteValueList(HL: integer; Items: TDescriptionItem);
   var
     i: integer;
-    s: string;
+    //s, t: string;
   begin //enum
-  //grouped!?
+  (* All but the anonymous (default) group have
+    Name = group name
+    Value = group description
+  *)
+  {$IFDEF old}
+  //show both Name and Value
     s := FLanguage.Translation[Items.id];
     if items.Name <> '' then
       s := s + ' - ' + Items.Name;
     //WriteDescriptionSectionHeading(Items.ID);
     WriteHeading(HL+1, 'description_section', s);
+    if items.Value <> '' then
+      WriteDirect(items.Value);
+  {$ELSE}
+  //show Value, or Name if Value is empty. Text attributes are lost!
+    WriteHeading(HL+1, 'description_section', GetMemberSectionHeading(items));
+  {$ENDIF}
     WriteDirectLine('<ul>');
     for i := 0 to Items.Count - 1 do begin
       WriteDirectLine('<li>');
@@ -1403,7 +1055,7 @@ begin //WriteDescriptionItem
         WriteMemberSummary(AItem.ItemAt(i), PasItem.Kind in CIOClassTypes, HL+1);
       end;
 
-      WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
+      WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescriptions]);
       for i := 0 to AItem.Count - 1 do begin
         item := AItem.ItemAt(i); //expect: Classes, Variables...
         WriteMembersDetailed(item, PasItem.Kind in CIOClassTypes, HL+1);
@@ -1423,18 +1075,12 @@ begin //WriteDescriptionItem
     WriteReturnDesc(AItem);
   trValues:
     begin
-    {$IFDEF old}
-     //assume immediate member list. todo: segmented list
-      //WriteMembersDetailed(AItem, False, HL);
-      WriteValueList(HL, AItem);
-    {$ELSE}
     //ignore top level list, containing member groups.
       for i := 0 to AItem.Count - 1 do begin
         item := AItem.ItemAt(i); //expect: trValues, anonymous or named
         //WriteMembersDetailed(item, PasItem.Kind in CIOClassTypes, HL+1);
         WriteValueList(HL, item);
       end;
-    {$ENDIF}
     end;
   trAuthors:
     WriteAuthors(HL + 1, AItem);  // AItem.Authors);
@@ -1464,13 +1110,12 @@ end;
 
 procedure TFullHTMLDocGenerator.WriteItem(HL: integer; AItem: TPasItem);
 var
-  //InFile: boolean;
-  //SectionsAvailable: TSectionSet;
   s, t: string;
   i: integer;
   d: TDescriptionItem;
 begin //from WriteCIO
-  if not Assigned(AItem) then Exit;
+  if not Assigned(AItem) or AItem.ToBeExcluded then
+    Exit;
 
 (* When the description is written to an distinct file, provide:
   - a section menu
@@ -1488,27 +1133,6 @@ begin //from WriteCIO
     CurFile := AItem.OutputFileName;
     DoMessage(2, pmtInformation, 'Writing Docs for "%s"', [AItem.Name]);
   //write file header
-  {$IFDEF old}
-    s := GetCIOTypeName(AItem.Kind) + ' ' + AItem.Name;
-    WriteStartOfDocument(AItem.MyUnit.Name + ': ' + s);
-    WriteHeading(HL, 'AItem', s);
-    WriteAnchor(AItem.Name);
-    SectionsAvailable := FindSections(AItem);
-    WriteSectionMenu(GetSectionsInMenu(AItem), SectionsAvailable);
-
-  (* Every item knows about its unit, but doesn't know whether it has to provide
-    the unit as a description item.
-    A unit reference has to be shown for all those items,
-    which are displayed in their own description file.
-  *)
-  //write unit link
-    if not (AItem is TPasUnit) then begin
-      WriteSectionHeading(HL+1, 'unit', trUnit);
-      WriteStartOfParagraph('unitlink');
-        WriteLink(AItem.MyUnit.FullLink, ConvertString(AItem.MyUnit.Name), '');
-      WriteEndOfParagraph;
-    end;
-  {$ELSE}
     HL := 1;  //top level of file
     //if not (AItem is TPasUnit) then
     s := FLanguage.Translation[AItem.id] + ' ' + AItem.Name;
@@ -1519,9 +1143,7 @@ begin //from WriteCIO
     WriteStartOfDocument(t);
   //anchor for best compatibility?
     WriteHeading(HL, 'AItem', s, AItem.Name);
-    //WriteAnchor(AItem.Name);
     WriteSectionMenu(AItem);
-  {$ENDIF}
   end;
 
   for i := 0 to AItem.Count - 1 do begin

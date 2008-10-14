@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=D:\SourceForge\pasdocOld\branches\PasDoc2\source\gui\D7\test_groups.pds
+RunParams=D:\SourceForge\pasdocOld\branches\PasDoc2\source\gui\D7\test_tags.pds
 HostApplication=
 Launcher=
 UseLauncher=0

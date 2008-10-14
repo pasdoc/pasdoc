@@ -1436,9 +1436,11 @@ begin
       Lang.Translation[trUnits], PasDoc1.Units);
     for UnitIndex := 0 to PasDoc1.Units.Count -1 do begin
       UnitItem := PasDoc1.Units.UnitAt[UnitIndex];
-      UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
-        UnitItem.SourceFileName, UnitItem);
-      populate(UnitNode, UnitItem);
+      if not UnitItem.ToBeExcluded then begin
+        UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
+          UnitItem.SourceFileName, UnitItem);
+        populate(UnitNode, UnitItem);
+      end;
     end;
   finally
     Lang.Free;
