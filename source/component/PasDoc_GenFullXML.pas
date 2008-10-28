@@ -18,6 +18,7 @@ type
     function ConvertChar(c: char): string; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
+
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
     function FormatSection(HL: integer; const Anchor: string;
@@ -33,12 +34,8 @@ type
   //indentation
     indent: string;
   //open tags
-  {$IFDEF old}
-    tags: TStrings;
-  {$ELSE}
     TagList: array of string;
     TagLevel: integer;
-  {$ENDIF}
 
     function ArgString(const Aname, arg: string): string;
   //write tagged string
@@ -61,7 +58,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteDocumentation; override;
-    function GetFileExtension: string; override;
+    function  GetFileExtension: string; override;
   end;
 
 implementation
@@ -93,30 +90,22 @@ begin
 end;
 
 procedure TXMLDocGenerator.WriteDocumentation;
-var
-  i: integer;
-  U: TPasUnit;
 begin
   StartSpellChecking('sgml');
 {$IFDEF old}
   inherited;
   WriteUnits(1);
-  WriteIntroduction;
-  WriteConclusion;
 {$ELSE}
   CreateStream(self.ProjectName + GetFileExtension, True);
   MasterFile := FCurrentFileName;
   OpenTag('project', ArgString('name', ProjectName));
-  for i := 0 to Units.Count - 1 do begin
-  //excluded units???
-    //Units.ExistsUnit() - not usable?
-    U := Units.UnitAt[i];
-    WriteItem(U, trUnit);
-  end;
+    WriteIntroduction;
+    WriteUnits(1);
+    WriteConclusion;
   CloseTags;
 {$ENDIF}
-  EndSpellChecking;
   CloseStream;
+  EndSpellChecking;
 end;
 
 function TXMLDocGenerator.CodeString(const s: string): string;
@@ -139,11 +128,6 @@ end;
 function TXMLDocGenerator.ConvertChar(c: char): String;
 begin
   ConvertChar := ConvertString(c);
-end;
-
-procedure TXMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
-begin
-  WriteItem(U, trUnit);
 end;
 
 procedure TXMLDocGenerator.WriteExternalCore(
@@ -442,6 +426,11 @@ begin
   end;
 //done this item tag
   CloseTag;
+end;
+
+procedure TXMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
+begin
+  WriteItem(U, trUnit);
 end;
 
 end.

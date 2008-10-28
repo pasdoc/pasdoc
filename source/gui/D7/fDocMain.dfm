@@ -942,7 +942,7 @@ object DocMain: TDocMain
             Height = 104
             Style = csSimple
             Anchors = [akLeft, akTop, akRight, akBottom]
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnClick = cbRemClick
           end

@@ -86,7 +86,7 @@ type
     procedure SetStarStyle(const Value: boolean);
     function GetStarStyle: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
-      
+
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(FUnits). }
     procedure HandleStream(
@@ -97,16 +97,10 @@ type
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
     procedure SkipBOM(InputStream: TStream);
-  protected
-  {$IFDEF old}
-    { Searches the description of each TPasUnit item in the collection for an
-      excluded tag.
-      If one is found, the item is removed from the collection. }
-    procedure RemoveExcludedItems(const c: TPasItems);
-  {$ELSE}
-    //- Units should never be bestroyed after BuildLinks.
-  {$ENDIF}
 
+    { Calls @link(LoadDescriptionFile) with each file name. }
+    procedure LoadDescriptionFiles(const c: TStringVector);
+  protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
@@ -117,7 +111,7 @@ type
     { Adds source filenames from a stringlist }
     procedure AddSourceFileNames(const AFileNames: TStrings);
     { Loads names of Pascal unit source code files from a text file.
-      Adds all file names to @link(SourceFileNames). 
+      Adds all file names to @link(SourceFileNames).
       If DashMeansStdin and AFileName = '-' then it will load filenames
       from stdin. }
     procedure AddSourceFileNamesFromFile(const FileName: string;
@@ -307,6 +301,7 @@ implementation
 uses
   PasDoc_Parser,
   PasDoc_ObjectVector,
+  PasDoc_StreamUtils,
   PasDoc_Utils,
   PasDoc_Serialize;
 
@@ -526,26 +521,115 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-{$IFDEF old}
-procedure TPasDoc.RemoveExcludedItems(const c: TPasItems);
+procedure TPasDoc.LoadDescriptionFiles(const c: TStringVector);
+
+(* Add linked description.
+  Create an description item (TToken), and add it to the item's RawDescriptions.
+*)
+  procedure StoreDescription(ItemName: string; const t, f: string; start: TTextStreamPos);
+  var
+    Item: TBaseItem;
+    NameParts: TNameParts;
+  begin
+    if t = '' then Exit;
+
+    DoMessage(5, pmtInformation, 'Storing description for ' + ItemName, []);
+    if SplitNameParts(ItemName, NameParts) then begin
+      Item := Generator.FindGlobal(NameParts);
+      if Assigned(Item) then begin
+        item.AddRawDescription(t, f, start);
+      end else
+        DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);
+    end else
+      DoMessage(2, pmtWarning, 'Could not split item "' + ItemName + '"', []);
+  end;
+
+  procedure LoadDescriptionFile(n: string);
+  var
+    f           : TStream;
+    i, IdentStart: Integer;
+    s           : string;
+    ItemName    : string;
+    Description : string;
+    LineStart, DescStart: TTextStreamPos;
+  const
+    IdentChars  = ['A'..'Z', 'a'..'z', '_', '.', '0'..'9'];
+
+    procedure Store;  //Description
+    begin
+      StoreDescription(ItemName, Description, n, DescStart);
+      Description := '';
+    end;
+
+  begin
+    if n = '' then
+      Exit;
+    ItemName := '';
+    Description := '';
+    try
+      f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
+      try
+        while f.Position < f.Size do begin
+          LineStart := f.Position;
+          s := StreamReadLine(f);
+          if s[1] = '#' then begin
+          //found new entry?
+            i := 2;
+            while s[i] in WhiteSpaceNotNL do Inc(i);
+          { Make sure we read a valid name - the user might have used # in his
+              description. }
+            if s[i] in IdentChars then begin
+              if ItemName <> '' then begin
+              //save preceding description
+                Store;
+              end;
+            { Read item name and beginning of the description }
+            {$IFDEF old}
+              ItemName := '';
+              repeat
+                ItemName := ItemName + s[i];
+                Inc(i);
+              until not (s[i] in IdentChars);
+            {$ELSE}
+              IdentStart := i;
+              while s[i] in identChars do
+                inc(i);
+              ItemName := Copy(s, IdentStart, i - IdentStart);
+            {$ENDIF}
+              while s[i] in WhiteSpaceNotNL do Inc(i);
+              DescStart := LineStart + i - 1; //begin of text
+              Description := Copy(s, i, MaxInt);
+              Continue; //bypass append s
+            end;
+          end;
+          Description := Description + s;
+        end;
+
+        if ItemName = '' then
+          DoMessage(2, pmtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
+        else
+          Store;
+      finally
+        f.Free;
+      end;
+    except
+    {$IFDEF old}
+      DoError('Could not open description file "%s".', [n], 0);
+    {$ELSE}
+      DoMessage(1, pmtWarning, 'Could not open description file "%s".', [n]);
+    {$ENDIF}
+    end;
+  end;
+
 var
   i: Integer;
-  p: TPasItem;
 begin
-(* Exclude units from FUnits.
-  Other items are excluded by TPasScope.
-  The units should be excluded only from the generator list!
-  Here we construct the list!
-*)
-  if c = nil then Exit;
-  for i := c.Count - 1 downto 0 do begin
-    p := c.PasItemAt[i];
-    if p.toBeExcluded then
-      c.Delete(i);
+  if (c <> nil) and (c.Count > 0) then begin
+    DoMessage(3, pmtInformation, 'Loading description files ...', []);
+    for i := 0 to c.Count - 1 do
+      LoadDescriptionFile(c[i]);
   end;
 end;
-{$ELSE}
-{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
@@ -595,28 +679,25 @@ begin
   else
     Generator.ProjectName := 'docs';
 
+  Generator.MasterFile := ''; //must be initialized by the specific generators.
   Generator.Title := Title;
-  Generator.Units := FUnits; //should be a separately shrinkable list
+  Generator.Units := FUnits; //becomes a separate shrinkable list
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
   Generator.AutoLink := AutoLink;
   Generator.BuildLinks; //may become invalid by destruction of excluded units!
-  Generator.MasterFile := ''; //must be initialized by the specific generators.
 
   FUnits.SortDeep(SortSettings);
 
-//read external descriptions, found while parsing the units.
-//required for the editor, even if no docs are created.
-  Generator.LoadDescriptionFiles(FDescriptionFileNames);
+(* Read external descriptions, found while parsing the units.
+  Required for the editor, even if no docs are created.
+  Should reside in TPasDoc, but stream handling is implemented in TDocGenerator.
+*)
+  LoadDescriptionFiles(FDescriptionFileNames);
 
   if fGenerate then begin
     Generator.ExpandDescriptions; //here items are marked for removal
-  //combine the following actions?
-    //RemoveExcludedItems(TPasItems(FUnits)); //only after expanding descriptions!
-    Generator.BuildUnitSections;
-    //Generator.Units.BuildSections; <-- included in RemoveExcludedUnits
-    //FUnits.BuildSections; //optional!
-
+    Generator.BuildUnitSections; //based on it's private unit list
     Generator.WriteDocumentation;
   end else
     FUnits.BuildSections; //optional, for editor, debugger...

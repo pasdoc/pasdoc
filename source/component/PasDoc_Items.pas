@@ -656,17 +656,10 @@ type
     procedure HandleDeprecatedTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-  {$IFDEF old}
-    procedure HandleExcludeTag(ThisTag: TTag; var ThisTagData: TObject;
-      EnclosingTag: TTag; var EnclosingTagData: TObject;
-      const TagParameter: string; var ReplaceStr: string);
-  {$ELSE}
-    //moved into TDescriptionItem
-  {$ENDIF}
     procedure GroupTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    procedure GroupStart(ThisTag: TTag; var ThisTagData: TObject;
+    procedure GroupBegin(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
     procedure GroupEnd(ThisTag: TTag; var ThisTagData: TObject;
@@ -709,6 +702,7 @@ type
     procedure SetAttribute(attr: TPasItemAttribute; OnOff: boolean);
     procedure SetVisibility(attr: TItemVisibility);
 
+    function  PasScope: TPasScope; virtual;
     property Kind: TTokenType read FKind;
     property Attributes: TPasItemAttributes read FAttributes write FAttributes;
     property NamePosition: TTextStreamPos read FNamePosition write FNamePosition;
@@ -854,7 +848,6 @@ type
   TPasItems = class(TBaseItems)
   private
     function GetPasItemAt(const AIndex: Integer): TPasItem;
-    procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
   public
     { Do a FindItem, even if the name suggests something different!
       This is a comfortable routine that just calls inherited
@@ -871,8 +864,7 @@ type
     // Get last added item
     function LastItem: TPasItem;
 
-    property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
-      write SetPasItemAt;
+    property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt;
 
     { This sorts all items on this list by their name,
       and also calls @link(TPasItem.Sort Sort(SortSettings))
@@ -946,15 +938,10 @@ type
   //Special in enum (=Members), procs...
     FOverview: TDescriptionItem;
     function  NeedOverview: TDescriptionItem;
-  {$IFDEF groups}
   protected
-    FGroup: TDescriptionItem;
-    gFirst, gLast: TDescriptionItem;
   //Group member(s). AParam is the full group spec (tag parameter).
     function DoGroup(how: eGroupAs; AItem: TPasItem;
       const AParam: string; lst: TDescriptionItem = nil): boolean; virtual;
-  {$ELSE}
-  {$ENDIF}
 
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -976,9 +963,13 @@ type
     procedure BuildSections; override;
   //build member lists, default: for Units, Cios.
     procedure BuildMemberLists; virtual;
+    function  PasScope: TPasScope; override;
 
   //add member, override for specialized lists
     procedure AddMember(item: TPasItem); virtual;
+
+    { Is Visibility of items (Fields, Methods, Properties) important ? }
+    function ShowVisibility: boolean;
 
   //sort member lists
     procedure Sort(const SortSettings: TSortSettings); override;
@@ -1001,13 +992,6 @@ type
       in the ancestors.
       }
     function FindItem(const ItemName: string): TBaseItem; override;
-
-  {$IFDEF old}
-    { name of documentation output file (if each class / object gets
-      its own file, that's the case for HTML, but not for TeX) }
-    property OutputFileName: string read FOutputFileName write FOutputFileName;
-  {$ELSE}
-  {$ENDIF}
 
   //All members
     property Members: TPasItems read FMembers;
@@ -1226,6 +1210,9 @@ type
     FProperties: TPasItems;
     property FAncestors: TDescriptionItem read FHeritage write FHeritage;
     function  GetClassDirective: TClassDirective;
+  //group member(s) from the appropriate list.
+    function DoGroup(how: eGroupAs; AItem: TPasItem;
+      const AParam: string; lst: TDescriptionItem = nil): boolean; override;
 
   protected
   {$IFDEF new}
@@ -1337,9 +1324,6 @@ type
 
     { determines if this is a class, an interface or an object }
     property MyType: TTokenType read FKind;
-
-    { Is Visibility of items (Fields, Methods, Properties) important ? }
-    function ShowVisibility: boolean;
   end;
 
   EAnchorAlreadyExists = class(Exception);
@@ -1444,12 +1428,9 @@ type
     FConstants,
     FFuncsProcs: TMemberListItem; //TPasItems;?
     property FUsesUnits: TDescriptionItem read FHeritage write FHeritage;
-  {$IFDEF groups}
-  //group member(s) from the first (default) Values list.
+  //group member(s) from the appropriate list.
     function DoGroup(how: eGroupAs; AItem: TPasItem;
       const AParam: string; lst: TDescriptionItem = nil): boolean; override;
-  {$ELSE}
-  {$ENDIF}
 
     { This searches for item in all used units.
       Returns nil if not found. }
@@ -1568,6 +1549,9 @@ type
 
 var
   ItemWeights: array[TTranslationID] of integer; //byte would be sufficient
+//grouping
+  FGroup: TDescriptionItem;
+  gFirst, gLast, gScope: TDescriptionItem;
 
 function CompareWeight(PItem1, PItem2: pointer): integer;
 var
@@ -2005,6 +1989,11 @@ begin
   Result := FKind = AKey;
 end;
 
+function TPasItem.PasScope: TPasScope;
+begin
+  Result := nil;
+end;
+
 procedure TPasItem.HandleDeprecatedTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -2019,15 +2008,21 @@ procedure TPasItem.GroupTag(ThisTag: TTag; var ThisTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if MyOwner.DoGroup(gaSingle, self, TagParameter) then
-    ReplaceStr := '';
+    ReplaceStr := ''
+  else //error...
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
+      'Invalid tag: "%s"', [TagParameter]);
 end;
 
-procedure TPasItem.GroupStart(ThisTag: TTag; var ThisTagData: TObject;
+procedure TPasItem.GroupBegin(ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if MyOwner.DoGroup(gaStart, self, TagParameter) then
-    ReplaceStr := '';
+    ReplaceStr := ''
+  else //error...
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
+      'Invalid tag: "%s"', [TagParameter]);
 end;
 
 procedure TPasItem.GroupEnd(ThisTag: TTag; var ThisTagData: TObject;
@@ -2035,7 +2030,10 @@ procedure TPasItem.GroupEnd(ThisTag: TTag; var ThisTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
   if MyOwner.DoGroup(gaEnd, self, TagParameter) then
-    ReplaceStr := '';
+    ReplaceStr := ''
+  else //error...
+    ThisTag.TagManager.DoMessage(1, pmtWarning,
+      'Invalid tag: "%s"', [TagParameter]);
 end;
 
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
@@ -2051,8 +2049,8 @@ begin
   TTag.Create(TagManager, 'group',
     nil, {$IFDEF FPC}@{$ENDIF} GroupTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, toAllowNormalTextInside, toFirstWordVerbatim]);
-  TTag.Create(TagManager, 'groupstart',
-    nil, {$IFDEF FPC}@{$ENDIF} GroupStart,
+  TTag.Create(TagManager, 'groupbegin',
+    nil, {$IFDEF FPC}@{$ENDIF} GroupBegin,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault, toAllowNormalTextInside, toFirstWordVerbatim]);
   TTag.Create(TagManager, 'groupend',
     nil, {$IFDEF FPC}@{$ENDIF} GroupEnd,
@@ -2585,7 +2583,7 @@ end;
 
 function TPasItems.GetPasItemAt(const AIndex: Integer): TPasItem;
 begin
-  Result := TPasItem(Items[AIndex]);
+  Result := Items[AIndex].PasItem;
 end;
 
 function TPasItems.LastItem: TPasItem;
@@ -2606,12 +2604,6 @@ begin
         PasItemAt[i].FullDeclaration;
   end else
     Result := '';
-end;
-
-procedure TPasItems.SetPasItemAt(const AIndex: Integer; const Value:
-  TPasItem);
-begin
-  SetItem(AIndex, Value);
 end;
 
 procedure TPasItems.SortShallow;
@@ -2684,22 +2676,6 @@ begin
   end;
 end;
 
-{$IFDEF old}
-function  TPasCio.GetCioType: TCIOType;
-begin
-  case FKind of
-  KEY_CLASS: Result := CIO_CLASS;
-  KEY_DISPINTERFACE: Result := CIO_SPINTERFACE;
-  KEY_INTERFACE: Result := CIO_INTERFACE;
-  KEY_OBJECT: Result := CIO_OBJECT;
-  //KEY_RECORD: Result := CIO_RECORD; //could check for "packed"
-  else
-    Result := CIO_RECORD;
-  end;
-end;
-{$ELSE}
-{$ENDIF}
-
 function  TPasCio.GetClassDirective: TClassDirective;
 begin
   if SD_ABSTRACT in FAttributes then
@@ -2731,6 +2707,25 @@ begin
   else //case
     Fields.Add(item);
   end;
+end;
+
+function TPasCio.DoGroup(how: eGroupAs; AItem: TPasItem;
+  const AParam: string; lst: TDescriptionItem): boolean;
+var
+  i: integer;
+begin
+(* Group item(s) from the appropriate item group.
+*)
+//safe way: find containing list
+  for i := 0 to MemberLists.Count - 1 do begin
+    lst := MemberLists.ItemAt(i);
+    if (lst.FList <> nil) and (lst.FList.IndexOf(AItem) >= 0) then begin
+      Result := inherited DoGroup(how, AItem, AParam, lst);
+      exit;
+    end;
+  end;
+//item not found in any memberlist
+  Result := False;
 end;
 
 {$IFDEF oldsort}
@@ -2828,11 +2823,6 @@ begin
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@member tag specifies unknown member "%s".', [MemberName]);
-end;
-
-function TPasCio.ShowVisibility: boolean;
-begin
-  Result := MyType in CIOClassTypes;
 end;
 
 function TPasCio.FirstAncestor: TPasCio;
@@ -3122,27 +3112,10 @@ end;
 function TPasUnit.DoGroup(how: eGroupAs; AItem: TPasItem;
   const AParam: string; lst: TDescriptionItem): boolean;
 var
-  //tid: TTranslationID;
   i: integer;
-  //lst: TDescriptionItem;
-  //l: TDescriptionList;
 begin
 (* Group item(s) from the appropriate item group.
 *)
-{$IFDEF old}
-  case AItem.Kind of
-  KEY_CONST:  l := FConstants;
-  KEY_TYPE:   l := FTypes;
-  KEY_VAR:    l := FVariables;
-  KEY_UNIT:   l := UsesUnits;
-  else
-    if item.Kind in CioTypes then
-      l := FCIOs
-    else
-      l := FFuncsProcs;
-  end;
-  Result := inherited DoGroup(how, AItem, AParam, l);
-{$ELSE}
 //safe way: find containing list
   for i := 0 to MemberLists.Count - 1 do begin
     lst := MemberLists.ItemAt(i);
@@ -3151,9 +3124,8 @@ begin
       exit;
     end;
   end;
-//item not found in any memmberlist
+//item not found in any memberlist
   Result := False;
-{$ENDIF}
 end;
 
 function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
@@ -3690,16 +3662,20 @@ begin
       begin
         FGroup := grp;
         gFirst := AItem;
-        if gLast = nil then
+        if gLast = nil then begin
+          gScope := self;
           exit; //move at gaEnd
+        end;
         iFirst := m;
         iLast := lst.FList.IndexOf(gLast);
       end;
     gaEnd:
       begin
         gLast := AItem;
-        if gFirst = nil then
+        if gFirst = nil then begin
+          gScope := self;
           exit; //move at gaStart
+        end;
         grp := FGroup;
         iFirst := lst.FList.IndexOf(gFirst);
         iLast := m;
@@ -3710,7 +3686,7 @@ begin
       Result := False;
     end; //case
   //move range of items
-    if (grp = nil) or (iFirst > iLast) then
+    if (gScope <> self) or (grp = nil) or (iFirst > iLast) then
       Result := False //no group assigned, or invalid range
     else begin //move range of items
       while iLast >= iFirst do begin
@@ -3728,7 +3704,18 @@ begin
     FGroup := nil;
     gFirst := nil;
     gLast := nil;
+    gScope := nil;
   end;
+end;
+
+function TPasScope.PasScope: TPasScope;
+begin
+  Result := Self;
+end;
+
+function TPasScope.ShowVisibility: boolean;
+begin
+  Result := FKind in CIOClassTypes;
 end;
 
 { TRawDescriptionInfo }

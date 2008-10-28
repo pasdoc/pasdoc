@@ -37,6 +37,11 @@ uses
   PasDoc_Aspell;
 
 type
+//available sections for an item
+  TSectionSet = set of TTranslationID;
+//ordered list of sections in an (HTML) file menu.
+  TSectionsInMenu = array[0..6] of TTranslationID;
+
   { Overview files that pasdoc generates for multiple-document-formats
     like HTML (see @link(TGenericHTMLDocGenerator)).
 
@@ -278,7 +283,7 @@ type
     procedure ClearTags;
 
     procedure SetAbbreviations(const Value: TStringList);
-    function GetLanguage: TLanguageID;
+    function  GetLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
     procedure SetDestDir(const Value: string);
 
@@ -298,6 +303,7 @@ type
       out HeadingLevel: integer; out AnchorName: string; out Caption: string):
       boolean;
 
+  //@groupbegin(tags Tag Handlers)
     procedure HandleLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -350,7 +356,7 @@ type
     procedure HandleAnchorTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-      
+
     procedure HandleBoldTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -409,9 +415,10 @@ type
     procedure HandleTableOfContentsTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+  //<@groupend
 
     procedure SetSpellCheckIgnoreWords(Value: TStringList);
-    
+
     procedure TagAllowedInsideLists(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure ItemLabelTagAllowedInside(
@@ -449,7 +456,7 @@ type
       it can return simply ConvertString(LinkCaption).
       This is the default implementation of this method in this class. }
     function MakeItemLink(const Item: TBaseItem;
-      const LinkCaption: string; 
+      const LinkCaption: string;
       const LinkContext: TLinkContext): string; virtual;
 
     { This writes Code as a Pascal code.
@@ -502,7 +509,7 @@ type
       No path or extension should therefore be in Name.
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
-    function CreateStream(const AName: string; const AOverwrite: boolean): 
+    function CreateStream(const AName: string; const AOverwrite: boolean):
       TCreateStreamResult;
 
     { Searches for an email address in String S. Searches for first appearance
@@ -513,10 +520,14 @@ type
       start with www. }
     function ExtractWebAddress(s: string; out S1, S2, WebAddress: string): Boolean;
 
-    { Searches all items in all units (given by field @link(Units)) for item
-      with NameParts.
-      Returns a pointer to the item on success, nil otherwise. }
-    function FindGlobal(const NameParts: TNameParts): TBaseItem;
+  (* Collect all available sections for an item.
+    Could become a item method?
+  *)
+    function  FindSections(item: TDescriptionItem): TSectionSet;
+    {** Does the item have any description items?}
+    function HasDescription(const AItem: TPasItem): boolean;
+    //Does the item have any members with description items?
+    function HasDescriptions(c: TPasItems): boolean;
 
     {@name returns ' abstract', or ' sealed' for classes that abstract
      or sealed respectively.  @name is used by @link(TTexDocGenerator) and
@@ -526,10 +537,6 @@ type
     {@name writes a translation of MyType based on the current language.
      However, 'record' and 'packed record' are not translated.}
     function GetCIOTypeName(MyType: TCIOType): string;
-
-    { Loads descriptions from file N and replaces or fills the corresponding
-      comment sections of items. }
-    procedure LoadDescriptionFile(n: string);
 
     { Searches for item with name S.
 
@@ -577,11 +584,6 @@ type
       const LinkDisplay: string;
       const WarningIfLinkNotFound: boolean): string; overload;
 
-    (* Add linked description.
-      Create an description item (TToken), and add it to the item's RawDescriptions.
-    *)
-    procedure StoreDescription(ItemName: string; var t, f: string; start: TTextStreamPos);
-
     { Writes S to CurrentStream, converting it using @link(ConvertString).
       Then optionally writes LineEnding. }
     procedure WriteConverted(const s: string; Newline: boolean); overload;
@@ -603,12 +605,71 @@ type
     { Simply writes T followed by LineEnding to CurrentStream. }
     procedure WriteDirectLine(const t: string);
 
-    { Abstract method that writes all documentation for a single unit U to
-      output, starting at heading level HL.
-      Implementation must be provided by descendant objects and is dependent
-      on output format. }
+  {$IFnDEF detailed}
+    { Writes all documentation for a single unit U to
+      output, starting at heading level HL. }
     procedure WriteUnit(const HL: integer; const U: TPasUnit); virtual;
       abstract;
+  {$ELSE}
+  {@groupbegin(wrnolist Write simple item properties)}
+    procedure WriteDate(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+  //Write the declaration of a PasItem.
+    procedure WriteDeclaration(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem); virtual; //abstract;
+  //Write a function Result description.
+    procedure WriteReturnDesc(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+  //Write a link to the containing unit, if possible.
+  //Automatism for items residing in the unit file itself?
+    procedure WriteUnitRef(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+  {@groupend}
+  {@groupbegin(wrlists Write lists of item properties)}
+  //Write a list of authors, with their addresses if given.
+    procedure WriteAuthors(HL: integer; Items: TDescriptionItem); virtual; //abstract;
+  //Write the ancestor list, with links if possible.
+    procedure WriteHierarchy(HL: integer; Items: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+  //Write a list of non-PasItem members.
+    procedure WriteParams(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+  //Write a list of links to PasItems (exception classes).
+    procedure WriteRaises(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+  //Write a list of links to other items.
+    procedure WriteSeeAlso(HL: integer; AItem: TDescriptionItem;
+      AScope: TPasScope); virtual; abstract;
+  //Write a list of used units, with links if possible.
+    procedure WriteUnitUses(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+  //Write a list of (enum) members.
+    procedure WriteValueList(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+  {@groupend}
+  {@groupbegin(wrcomplex Write complex item properties)}
+  //Write the abstract+detailed description, optionally more attributes/directives.
+  //@param(AItem maybe @nil, when in a short description no item is available.)
+  //@param(PasItem should be used in the first place, unless it's @nil.)
+    procedure WriteDescription(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem); virtual; //abstract;
+    procedure WriteOverview(HL: integer; AList: TDescriptionItem;
+      AScope: TPasScope); virtual; //abstract;
+  //Write unknown description item (show message)
+    procedure WriteOther(HL: integer; AItem: TDescriptionItem;
+      PasItem: TPasItem); virtual; //abstract;
+  {@groupend}
+
+  //Write all description items of an item. A simple loop over all items.
+    procedure WriteAllSections(HL: integer; Items: TDescriptionItem; PasItem: TPasItem);
+
+  //Write all item description sections.
+  //Omit AItem? Currently only used for PasItems!
+    procedure WriteItem(HL: integer; AItem: TDescriptionItem;
+      PasItem: TPasScope); virtual;
+
+    //Write file header, if required
+    procedure WriteItemHeader(HL: integer; AItem: TPasItem); virtual;
+    procedure WriteDescriptionItem(HL: integer; AItem: TDescriptionItem;
+      PasItem: TPasItem); virtual;
+
+    {Write file footer, if required.
+      Also write output files for all items in different files. }
+    procedure WriteItemFooter(HL: integer; AItem: TPasItem); virtual;
+  {$ENDIF}
+
+  //Get (possibly qualified) section heading.
+    function GetMemberSectionHeading(items: TDescriptionItem): string;
 
     { Writes documentation for all units, calling @link(WriteUnit) for each
       unit. }
@@ -637,6 +698,7 @@ type
     { closes the spellchecker }
     procedure EndSpellChecking;
 
+    //@groupbegin(tagfmt Tag Formatters)
     { FormatPascalCode will cause Line to be formatted in
       the way that Pascal code is formatted in Delphi.
       Note that given Line is taken directly from what user put
@@ -669,48 +731,48 @@ type
     // FormatString will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; virtual;
-    
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that reserved words are formatted in Delphi.
     function FormatKeyWord(AString: string): string; virtual;
-    
+
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; virtual;
 
     { This is paragraph marker in output documentation.
-    
-      Default implementation in this class simply returns ' ' 
+
+      Default implementation in this class simply returns ' '
       (one space). }
     function Paragraph: string; virtual;
 
     { See @link(TTagManager.ShortDash). Default implementation in this
       class returns '-'. }
     function ShortDash: string; virtual;
-    
+
     { See @link(TTagManager.EnDash). Default implementation in this
       class returns '@--'. }
     function EnDash: string; virtual;
-    
+
     { See @link(TTagManager.EmDash). Default implementation in this
       class returns '@-@--'. }
     function EmDash: string; virtual;
-    
+
     { S is guaranteed (guaranteed by the user) to be correct html content,
       this is taken directly from parameters of @html tag.
       Override this function to decide what to put in output on such thing.
 
       Note that S is not processed in any way, even with ConvertString.
-      So you're able to copy user's input inside @@html() 
+      So you're able to copy user's input inside @@html()
       verbatim to the output.
 
       The default implementation is this class simply discards it,
       i.e. returns always ''. Generators that know what to do with
       HTML can override this with simple "Result := S". }
     function HtmlString(const S: string): string; virtual;
-    
+
     { This is equivalent of @link(HtmlString) for @@latex tag.
-      
+
       The default implementation is this class simply discards it,
       i.e. returns always ''. Generators that know what to do with raw
       LaTeX markup can override this with simple "Result := S". }
@@ -718,34 +780,35 @@ type
 
     { @abstract(This returns markup that forces line break in given
       output format (e.g. '<br>' in html or '\\' in LaTeX).)
-      
-      It is used on @br tag (but may also be used on other 
+
+      It is used on @br tag (but may also be used on other
       occasions in the future).
-      
+
       In this class it returns '', because it's valid for
       an output generator to simply ignore @br tags if linebreaks
       can't be expressed in given output format. }
     function LineBreak: string; virtual;
-    
+  //<@groupend
+
     { This should return markup upon finding URL in description.
-      E.g. HTML generator will want to wrap this in 
+      E.g. HTML generator will want to wrap this in
       <a href="...">...</a>.
-      
+
       Note that passed here URL is @italic(not) processed by @link(ConvertString)
       (because sometimes it could be undesirable).
       If you want you can process URL with ConvertString when
       overriding this method.
-      
+
       Default implementation in this class simply returns ConvertString(URL).
       This is good if your documentation format does not support
       anything like URL links. }
     function URLLink(const URL: string): string; virtual;
-    
+
     {@name is used to write the introduction and conclusion
      of the project.}
     procedure WriteExternal(const ExternalItem: TExternalItem;
       const Id: TTranslationID);
-      
+
     { This is called from @link(WriteExternal) when
       ExternalItem.Title and ShortTitle are already set,
       message about generating appropriate item is printed etc.
@@ -754,13 +817,13 @@ type
       ExternalItem.Authors,
       ExternalItem.Created,
       ExternalItem.LastMod. }
-    procedure WriteExternalCore(const ExternalItem: TExternalItem; 
+    procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); virtual; abstract;
 
     {@name writes a conclusion for the project.
      See @link(WriteExternal).}
     procedure WriteConclusion;
-    
+
     {@name writes an introduction for the project.
      See @link(WriteExternal).}
     procedure WriteIntroduction;
@@ -768,20 +831,20 @@ type
     // @name writes a section heading and a link-anchor;
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; virtual; abstract;
-      
+
     // @name writes a link-anchor;
     function FormatAnchor(const Anchor: string): string; virtual; abstract;
-    
+
     { This returns Text formatted using bold font.
-    
+
       Given Text is already in the final output format
       (with characters converted using @link(ConvertString), @@-tags
       expanded etc.).
-      
+
       Implementation of this method in this class simply returns
       @code(Result := Text). Output generators that can somehow express bold
-      formatting (or at least emphasis of some text) should override this. 
-      
+      formatting (or at least emphasis of some text) should override this.
+
       @seealso(FormatItalic) }
     function FormatBold(const Text: string): string; virtual;
 
@@ -801,9 +864,9 @@ type
       never contains empty lines (i.e. Trim(FileNames[I]) <> ''),
       and contains only absolute filenames (already expanded to take description's
       unit's path into account).
-      
+
       E.g. HTML generator will want to choose the best format for HTML,
-      then somehow copy the image from FileNames[Chosen] and wrap 
+      then somehow copy the image from FileNames[Chosen] and wrap
       this in <img src="...">.
 
       Implementation of this method in this class simply returns
@@ -842,38 +905,37 @@ type
     destructor Destroy; override;
 
     { Creates anchors and links for all items in all units.
-      Eventually assign output filenames to items (virtual).
-    }
+      Assign OutputFile names to specific items. }
     procedure BuildLinks; virtual;
-  //Remove excluded units from the output list.
+  { Build the description item (members...) structure for all items.
+    Remove excluded units from the output list. }
     procedure BuildUnitSections;
 
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
-      and item's DetailedDescription, AbstractDescription,
-      AbstractDescriptionWasAutomatic (and many others, set by @@-tags
-      handlers) properties are calculated. }
+      and item's RawDescription is transformed into DetailedDescription,
+      interpreting @@-tags as appropriate for the selected document type. }
     procedure ExpandDescriptions;
+
+    { Searches all items in all units (given by field @link(Units)) for item
+      with NameParts.
+      Returns a pointer to the item on success, nil otherwise. }
+    function FindGlobal(const NameParts: TNameParts): TBaseItem;
 
     { Abstract function that provides file extension for documentation format.
       Must be overwritten by descendants. }
     function GetFileExtension: string; virtual; abstract;
 
-    { Assumes C contains file names as PString variables.
-      Calls @link(LoadDescriptionFile) with each file name. }
-    procedure LoadDescriptionFiles(const c: TStringVector);
-
-    { Must be overwritten, writes all documentation.
-      Will create either a single file or one file for each unit and each
-      class, interface or object, depending on output format.
+    { Write all documentation.
 
       This implementation only creates the GraphViz files, using WriteDocumentationGen.
+      Must be overwritten for single or multiple output files, depending on the document type.
     }
     procedure WriteDocumentation; virtual;
-  //the non-virtual version
+  //Write generator independent GraphViz files.
     procedure WriteDocumentationGen;
 
-    property Units: TPasUnits read FUnits write SetUnits; 
+    property Units: TPasUnits read FUnits write SetUnits;
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
@@ -886,15 +948,15 @@ type
       default DEFAULT_LANGUAGE;
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;
-    
-    { "generator info" are 
+
+    { "generator info" are
       things that can change with each invocation of pasdoc,
       with different pasdoc binary etc.
-      
+
       This includes
       @unorderedList(
         @item(time of generating docs)
-        @item(compiler name and version used to compile pasdoc, 
+        @item(compiler name and version used to compile pasdoc,
           time of compilation and such)
         @item(pasdoc's version)
       )
@@ -1123,6 +1185,46 @@ begin
   end;
 end;
 
+
+function  TDocGenerator.FindSections(item: TDescriptionItem): TSectionSet;
+var
+  i, j: integer;
+  d: TDescriptionItem;
+  SectionsAvailable: TSectionSet;
+begin
+  SectionsAvailable := [];
+  for i := 0 to item.Count - 1 do begin
+    d := item.ItemAt(i);
+    Include(SectionsAvailable, d.ID);
+    if d.id = trOverview then begin
+      for j := 0 to d.Count - 1 do begin
+        Include(SectionsAvailable, d.Items[j].ID);
+      end;
+    end;
+  end;
+  Result := SectionsAvailable;
+end;
+
+function TDocGenerator.HasDescription(const AItem: TPasItem): boolean;
+begin
+  Result := AItem.Count > 0;
+end;
+
+{ Returns TRUE if one of the subentries has a description
+  otherwise returns FALSE
+}
+function TDocGenerator.HasDescriptions(c: TPasItems): boolean;
+var j :integer;
+    Item: TPasItem;
+begin
+  HasDescriptions := True; //assume
+  for j := 0 to c.Count - 1 do begin
+    Item := TPasItem(c.PasItemAt[j]);
+    if HasDescription(Item) then
+      exit;
+  end;
+  HasDescriptions := false;
+end;
 
 { ---------------------------------------------------------------------------- }
 
@@ -1704,12 +1806,8 @@ var
   {$ENDIF}
 
 var
-{$IFDEF old}
-  TopLevelSections: TStringPairVector;
-{$ELSE}
   TopLevelSections: TDescriptionItem;
-{$ENDIF}
-begin
+begin //HandleTableOfContentsTag
   { calculate MaxLevel }
   if Trim(TagParameter) = '' then
     MaxLevel := MaxInt else
@@ -1738,7 +1836,7 @@ begin
 
   { now make use of TopLevelSections -- call FormatTableOfContents }
   ReplaceStr := FormatTableOfContents(TopLevelSections);
-  
+
   { free TopLevelSections }
 {$IFDEF old}
   FreeSectionsList(TopLevelSections);
@@ -1748,11 +1846,11 @@ begin
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
-  const MessageType: TPasDocMessageType; const AMessage: string; 
+  const MessageType: TPasDocMessageType; const AMessage: string;
   const AVerbosity: Cardinal);
 begin
   if Assigned(OnMessage) then
-    OnMessage(MessageType, AMessage + 
+    OnMessage(MessageType, AMessage +
       ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
 end;
 
@@ -2454,97 +2552,12 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TDocGenerator.LoadDescriptionFile(n: string);
-var
-  f           : TStream;
-  ItemName    : string;
-  Description : string;
-  i           : Integer;
-  s           : string;
-  LineStart, DescStart: TTextStreamPos;
-
-  procedure Store;  //Description
-  begin
-    StoreDescription(ItemName, Description, n, DescStart);
-  end;
-
-const
-  IdentChars  = ['A'..'Z', 'a'..'z', '_', '.', '0'..'9'];
-begin
-  ItemName := '';
-  if n = '' then Exit;
-  try
-    f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
-
-    Assert(Assigned(f));
-
-    try
-      while f.Position < f.Size do begin
-        LineStart := f.Position;
-        s := StreamReadLine(f);
-        if s[1] = '#' then begin
-        //found new enty?
-          i := 2;
-          while s[i] in WhiteSpaceNotNL do Inc(i);
-        { Make sure we read a valid name - the user might have used # in his
-            description. }
-          if s[i] in IdentChars then begin
-            if ItemName <> '' then begin
-            //save preceding description
-              Store;  //Description(ItemName, Description);
-            end;
-          { Read item name and beginning of the description }
-            ItemName := '';
-            repeat
-              ItemName := ItemName + s[i];
-              Inc(i);
-            until not (s[i] in IdentChars);
-            while s[i] in WhiteSpaceNotNL do Inc(i);
-            DescStart := LineStart + i - 1; //begin of text
-            Description := Copy(s, i, MaxInt);
-            Continue;
-          end;
-        end;
-        Description := Description + s;
-      end;
-
-      if ItemName = '' then
-        DoMessage(2, pmtWarning, 'No descriptions read from "%s" -- invalid or empty file', [n])
-      else
-        Store;  //Description(ItemName, Description);
-    finally
-      f.Free;
-    end;
-  except
-  {$IFDEF old}
-    DoError('Could not open description file "%s".', [n], 0);
-  {$ELSE}
-    DoMessage(1, pmtWarning, 'Could not open description file "%s".', [n]);
-  {$ENDIF}
-  end;
-end; {TDocGenerator.LoadDescriptionFile}
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TDocGenerator.LoadDescriptionFiles(const c: TStringVector);
-var
-  i: Integer;
-begin
-  if c <> nil then begin
-    DoMessage(3, pmtInformation, 'Loading description files ...', []);
-    for i := 0 to c.Count - 1 do
-      LoadDescriptionFile(c[i]);
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 function TDocGenerator.SearchItem(s: string; const Item: TBaseItem;
   WarningIfNotSplittable: boolean): TBaseItem;
 var
   NameParts: TNameParts;
 begin
-  if not SplitNameParts(s, NameParts) then 
+  if not SplitNameParts(s, NameParts) then
   begin
     if WarningIfNotSplittable then
       DoMessage(2, pmtWarning, 'The link "' + s + '" is invalid', []);
@@ -2565,7 +2578,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
-  const LinkDisplay: string; 
+  const LinkDisplay: string;
   const WarningIfLinkNotFound: boolean;
   out FoundItem: TBaseItem): string;
 var
@@ -2637,35 +2650,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-//procedure TDocGenerator.StoreDescription(ItemName: string; var t: string);
-procedure TDocGenerator.StoreDescription(ItemName: string; var t, f: string;
-  start: TTextStreamPos);
-var
-  Item: TBaseItem;
-  NameParts: TNameParts;
-  //c: TToken;
-begin
-  if t = '' then Exit;
-
-  DoMessage(5, pmtInformation, 'Storing description for ' + ItemName, []);
-  if SplitNameParts(ItemName, NameParts) then
-  begin
-    Item := FindGlobal(NameParts);
-    if Assigned(Item) then begin
-      item.AddRawDescription(t, f, start);
-    end else
-      DoMessage(2, pmtWarning, 'Could not find item ' + ItemName, []);
-  end else
-    DoMessage(2, pmtWarning, 'Could not split item "' + ItemName + '"', []);
-  
-  t := '';
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 procedure TDocGenerator.WriteConverted(const s: string; Newline: boolean);
 begin
-  WriteDirect(ConvertString(s), Newline);  
+  WriteDirect(ConvertString(s), Newline);
 end;
 
 procedure TDocGenerator.WriteConverted(const s: string);
@@ -2700,14 +2687,212 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF detailed}
+procedure TDocGenerator.WriteAllSections(HL: integer;
+  Items: TDescriptionItem; PasItem: TPasItem);
+var
+  d: TDescriptionItem;
+  i: integer;
+begin
+  if IsEmpty(Items) then exit;
+
+  for i := 0 to Items.Count - 1 do begin
+    d := Items.ItemAt(i);
+    WriteDescriptionItem(HL, d, PasItem);
+  end;
+end;
+
+procedure TDocGenerator.WriteDescriptionItem(HL: integer;
+  AItem: TDescriptionItem; PasItem: TPasItem);
+var
+  i: integer;
+  item: TDescriptionItem;
+begin
+(* Fork into appropriate methods, depending on item kind (TTranslationID).
+*)
+  inc(HL);
+  case AItem.ID of
+  trUnit: //when item and unit reside in different files
+    WriteUnitRef(HL, AItem);
+  trUses: //units only
+    if WriteUsesClause then
+      WriteUnitUses(HL, AItem, PasItem);
+  trDeclaration:  //item declaration
+    WriteDeclaration(HL, AItem, PasItem);
+  trDescription:  //abstract+detailed
+    WriteDescription(HL, AItem, PasItem); //?
+    //IS description, but only containing abstract+detailed description
+  trHierarchy:  //classes only
+    WriteHierarchy(HL, AItem, PasItem);
+  trOverview: //Overview and Details tables
+    WriteOverview(HL, AItem, PasItem.PasScope);
+  trExceptionsRaised:
+    WriteRaises(HL, AItem, PasItem);
+  trParameters:
+    WriteParams(HL, AItem, PasItem);
+  trReturns:
+    WriteReturnDesc(HL, AItem);
+  trValues:  //ignore top level list, containing member groups.
+    for i := 0 to AItem.Count - 1 do begin
+      item := AItem.ItemAt(i); //expect: trValues, anonymous or named
+      WriteValueList(HL, item);
+    end;
+  trAuthors:
+    WriteAuthors(HL, AItem);
+  trCreated, trLastModified:
+    WriteDate(HL, AItem);
+  trSeeAlso:
+    WriteSeeAlso(HL, AItem, PasItem.PasScope);
+  else  //case, should never be reached!
+    WriteOther(HL, AItem, PasItem);
+  end;
+end;
+
+procedure TDocGenerator.WriteAuthors(HL: integer; Items: TDescriptionItem);
+begin
+  WriteOther(HL, Items, nil);
+end;
+
+procedure TDocGenerator.WriteDate(HL: integer; AItem: TDescriptionItem);
+begin
+  WriteOther(HL, AItem, nil);
+end;
+
+procedure TDocGenerator.WriteDeclaration(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem);
+begin
+  WriteOther(HL, AItem, PasItem);
+end;
+
+procedure TDocGenerator.WriteDescription(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem);
+begin
+  WriteOther(HL, AItem, PasItem);
+end;
+
+procedure TDocGenerator.WriteHierarchy(HL: integer;
+  Items: TDescriptionItem; AScope: TPasItem);
+begin
+  WriteOther(HL, Items, AScope);
+end;
+
+procedure TDocGenerator.WriteOverview(HL: integer; AList: TDescriptionItem;
+  AScope: TPasScope);
+begin
+  WriteOther(HL, AList, AScope);
+end;
+
+procedure TDocGenerator.WriteParams(HL: integer; AItem: TDescriptionItem;
+  AScope: TPasItem);
+begin
+  WriteOther(HL, AItem, AScope);
+end;
+
+procedure TDocGenerator.WriteRaises(HL: integer; AItem: TDescriptionItem;
+  AScope: TPasItem);
+begin
+  WriteOther(HL, AItem, AScope);
+end;
+
+procedure TDocGenerator.WriteReturnDesc(HL: integer;
+  AItem: TDescriptionItem);
+begin
+  WriteOther(HL, AItem, nil);
+end;
+
+procedure TDocGenerator.WriteUnitRef(HL: integer; AItem: TDescriptionItem);
+begin
+  WriteOther(HL, AItem, nil);
+end;
+
+procedure TDocGenerator.WriteUnitUses(HL: integer; AItem: TDescriptionItem;
+  AScope: TPasItem);
+begin
+  WriteOther(HL, AItem, AScope);
+end;
+
+procedure TDocGenerator.WriteValueList(HL: integer;
+  AItem: TDescriptionItem);
+begin
+  WriteOther(HL, AItem, nil);
+end;
+
+procedure TDocGenerator.WriteOther(HL: integer; AItem: TDescriptionItem;
+  PasItem: TPasItem);
+begin
+//default output: must be overridden!
+  DoMessage(1, pmtWarning, 'Unhandled description: %s: %s',
+    [Translation(AItem.ID, lgDefault), AItem.Name]);
+end;
+
+//--------------------------------------------------------------------
+
+procedure TDocGenerator.WriteItemFooter(HL: integer; AItem: TPasItem);
+begin
+  //nop, here
+end;
+
+procedure TDocGenerator.WriteItemHeader(HL: integer; AItem: TPasItem);
+begin
+  //nop, here
+end;
+
+procedure TDocGenerator.WriteItem(HL: integer; AItem: TDescriptionItem;
+      PasItem: TPasScope);
+var
+  i: integer;
+  d: TDescriptionItem;
+begin
+  WriteItemHeader(HL, PasItem);
+
+  for i := 0 to AItem.Count - 1 do begin
+    d := AItem.ItemAt(i);
+    WriteDescriptionItem(HL, d, PasItem);
+  end;
+
+  WriteItemFooter(HL, PasItem);
+end;
+
 procedure TDocGenerator.WriteUnits(const HL: integer);
 var
   i: Integer;
+  U: TPasUnit;
 begin
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
+  if IsEmpty(Units) then Exit;
   for i := 0 to Units.Count - 1 do begin
-    WriteUnit(HL, Units.UnitAt[i]);
+    U := Units.UnitAt[i];
+    WriteItem(HL, U, U);
   end;
+end;
+{$ELSE}
+
+procedure TDocGenerator.WriteUnits(const HL: integer);
+var
+  i: Integer;
+  U: TPasUnit;
+begin
+  if IsEmpty(Units) then Exit;
+  for i := 0 to Units.Count - 1 do begin
+    U := Units.UnitAt[i];
+    WriteUnit(HL, U);
+  end;
+end;
+{$ENDIF}
+
+procedure TDocGenerator.WriteDocumentation;
+begin
+(* All generators must iterate over the units, and pick the information
+  to present in the desired order.
+
+  This method is not really inheritable, call WriteDocumentationGen instead.
+  More general methods for frequent tasks should be added.
+*)
+  WriteDocumentationGen;
+end;
+
+procedure TDocGenerator.WriteDocumentationGen;
+begin
+//Write generator independent GraphViz files.
+  if OutputGraphVizUses then WriteGVUses;
+  if OutputGraphVizClassHierarchy then WriteGVClasses;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2728,6 +2913,7 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
   end;
 end;
+
 
 procedure TDocGenerator.CreateClassHierarchy;
 
@@ -2775,17 +2961,6 @@ end;
 procedure TDocGenerator.WriteStartOfCode;
 begin
 // nothing - for some output this is irrelevant
-end;
-
-procedure TDocGenerator.WriteDocumentation;
-begin
-  WriteDocumentationGen;
-end;
-
-procedure TDocGenerator.WriteDocumentationGen;
-begin
-  if OutputGraphVizUses then WriteGVUses;
-  if OutputGraphVizClassHierarchy then WriteGVClasses;
 end;
 
 procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
@@ -3893,6 +4068,21 @@ begin
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);
+end;
+
+//heading for (possibly named) member lists.
+function  TDocGenerator.GetMemberSectionHeading(items: TDescriptionItem): string;
+var
+  s, t: string;
+begin
+  s := FLanguage.Translation[Items.id];
+  if items.Value <> '' then
+    t := Items.Value //preferred: group description
+  else
+    t := Items.Name; //last resort: group name
+  if t <> '' then
+    s := s + ' - ' + t; //combine group type and description
+  Result := s;
 end;
 
 end.

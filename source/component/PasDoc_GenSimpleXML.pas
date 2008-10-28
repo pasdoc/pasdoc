@@ -18,7 +18,10 @@ type
     function CodeString(const s: string): string; override;
     function ConvertString(const s: string): string; override;
     function ConvertChar(c: char): string; override;
+  {$IFDEF old}
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
+  {$ELSE}
+  {$ENDIF}
 
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
@@ -221,6 +224,7 @@ begin
   WriteDirectLine(space+'</structure>');
 end;
 
+{$IFDEF old}
 procedure TSimpleXMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 var
   i:cardinal;
@@ -284,6 +288,8 @@ begin
       writeclass(TPasCIO(u.CIOs.PasItemAt[i]));
   WriteDirectLine('</unit>');
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TSimpleXMLDocGenerator.WriteExternalCore(
   const ExternalItem: TExternalItem;
