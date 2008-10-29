@@ -263,7 +263,7 @@ const
   { Names of the token types. All start with lower letter.
     They should somehow describe (in a few short words) given
     TTokenType. }
-  //TOKEN_TYPE_NAMES: array[TTokenType] of string =
+  //- TOKEN_TYPE_NAMES: array[TTokenType] of string =
   TokenNames: array[TTokenType] of string = (
     'whitespace',
     'comment ((**)-style)', 'comment ({}-style)', 'comment (//-style)',
@@ -271,7 +271,7 @@ const
     'identifier', 'directive',
     'number', 'string',
     //'symbol',
-  { Symbols as strings. They can be useful to have some mapping
+  {- Symbols as strings. They can be useful to have some mapping
     TSymbolType -> string, but remember that actually some symbols
     in tokenizer have multiple possible representations,
     e.g. "right bracket" is usually given as "]" but can also
@@ -280,9 +280,9 @@ const
     '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
     '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\',
     //'reserved word',
-  { all Object Pascal keywords }
-  //KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string = (
-    //'x', // lowercase never matches
+  {- all Object Pascal keywords }
+  //- KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string = (
+    //- 'x', // lowercase never matches
     'AND', 'AS',
     'DIV',
     'IN', 'IS',
@@ -347,7 +347,7 @@ const
   );
 
   { Object Pascal directives }
-  //StandardDirectiveArray: array[TStandardDirective] of string = (
+  //- StandardDirectiveArray: array[TStandardDirective] of string = (
   DirectiveNames: array[TDirectives] of string = (
     'none', // lowercase letters never match
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
@@ -422,16 +422,13 @@ type
     function Description: string;
 
     // @name is the name of the TStream from which this @classname was read.
-    // It is currently used to set @link(TRawDescriptionInfo.StreamName).
     property StreamName: string read FStreamName write FStreamName;
 
     // @name is the position in the stream of the start of the token.
-    // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
     property BeginPosition: TTextStreamPos read FBeginPosition write FBeginPosition;
 
     // @name is the position in the stream of the character immediately
     // after the end of the token.
-    // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
     property EndPosition: TTextStreamPos read FEndPosition write FEndPosition;
   end;
 

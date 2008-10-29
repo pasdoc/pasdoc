@@ -644,9 +644,7 @@ type
     (e.g. never some basic @link(TBaseItem) instance).
     This class introduces properties and methods pointing
     to parent unit (@link(MyUnit)) and parent class/interface/object/record
-    (@link(MyObject)). Also many other things not needed at @link(TBaseItem)
-    level are introduced here: things related to handling @@abstract tag,
-    @@seealso tag, used to sorting items inside (@link(Sort)) and some more. }
+    (@link(MyObject)). }
 
   TPasItem = class(TBaseItem)
   private
@@ -851,7 +849,7 @@ type
   public
     { Do a FindItem, even if the name suggests something different!
       This is a comfortable routine that just calls inherited
-      (ending up in @link(THash.GetObject)), and casts result to TPasItem,
+      (ending up in THash.GetObject), and casts result to TPasItem,
       since every item on this list must be always TPasItem. }
     function FindName(const AName: string): TPasItem;
 
@@ -1128,7 +1126,6 @@ type
     { Name of each item is the name of parameter (without any surrounding
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
-    //property Params: TPasItems read FItems;
     property Params: TDescriptionItem read FParams;
 
     //Result could be added as a parameter
@@ -1138,7 +1135,6 @@ type
     { Name of each item is the name of exception class (without any surrounding
       whitespace), Value of each item is users description for this item
       (in already-expanded form). }
-    //property Raises: TStringPairVector read FRaises;
     property Raises: TDescriptionItem read FRaises;
 
     { Are some optional properties (i.e. the ones that may be empty for
@@ -1202,7 +1198,7 @@ type
 
   { @abstract(Extends @link(TPasScope) to store all items in
     a class / an object, e.g. fields.) }
-  //TPasCio = class(TPasType)
+  //-TPasCio = class(TPasType)
   TPasCio = class(TPasPrimaryScope)
   protected
     FFields,
@@ -3686,7 +3682,8 @@ begin
       Result := False;
     end; //case
   //move range of items
-    if (gScope <> self) or (grp = nil) or (iFirst > iLast) then
+  //prevent iFirst=-1 (not found)
+    if (gScope <> self) or (grp = nil) or (cardinal(iFirst) > cardinal(iLast)) then
       Result := False //no group assigned, or invalid range
     else begin //move range of items
       while iLast >= iFirst do begin

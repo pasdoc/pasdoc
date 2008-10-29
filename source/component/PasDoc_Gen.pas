@@ -10,6 +10,7 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
+  @author(Hans-Peter Diettrich <DrDiettrich1@aol.com>)
   @created(30 Aug 1998)
   @cvs($Date$)
 
@@ -29,9 +30,7 @@ uses
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
-  //PasDoc_StringPairVector,
   PasDoc_ObjectVector,
-  //PasDoc_HierarchyTree,
   PasDoc_Types,
   PasDoc_TagManager,
   PasDoc_Aspell;
@@ -271,12 +270,9 @@ type
     FCurrentItem: TBaseItem;
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
-  {$IFDEF old}
-  {$ELSE}
   //reusable object
     FTagManager: TTagManager;
     TagCache: TObjectVector;
-  {$ENDIF}
     procedure InitTagMgr;
     procedure InitTags(Item: TBaseItem);
     procedure AddTags;  //(TagManager: TTagManager);
@@ -337,12 +333,6 @@ type
     procedure HandleBrTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-  {$IFDEF old}
-    procedure HandleGroupTag(ThisTag: TTag; var ThisTagData: TObject;
-      EnclosingTag: TTag; var EnclosingTagData: TObject;
-      const TagParameter: string; var ReplaceStr: string);
-  {$ELSE}
-  {$ENDIF}
 
     procedure PreHandleSectionTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -440,8 +430,6 @@ type
       const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
 
-    property CurrentStream: TStream read FCurrentStream;
-
     procedure CreateClassHierarchy;
 
     { Return a link to item Item which will be displayed as LinkCaption.
@@ -471,11 +459,28 @@ type
     FUnits: TPasUnits;
     FCurrentFileName: string;
 
+  //Create private (shrinkable) unit list.
     procedure SetUnits(U: TPasUnits);
 
+    { If @link(CurrentStream) still exists (<> nil), it is closed.
+      Then, a new output stream in the destination directory with given
+      name and file extension typical for this document format is created and
+      assigned to @link(CurrentStream).
+      No path or extension should therefore be in Name.
+      Typical values for Name would be 'Objects' or 'AllUnits'.
+      Returns true if creation was successful, false otherwise. }
+    function CreateStream(const AName: string; const AOverwrite: boolean):
+      TCreateStreamResult;
     { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
+    { the output stream that is currently written to; depending on the
+      output format, more than one output stream will be necessary to
+      store all documentation }
+    property CurrentStream: TStream read FCurrentStream;
+
+  protected
+  //@groupbegin(abstracts Abstract Tag Formatters)
     { @abstract(Makes a String look like a coded String,
       i.e. <CODE>TheString</CODE> in Html.)
       @param(s is the string to format)
@@ -495,22 +500,30 @@ type
     }
     function ConvertChar(c: char): string; virtual; abstract;
 
+    // @name writes a section heading and a link-anchor;
+    function FormatSection(HL: integer; const Anchor: string;
+      const Caption: string): string; virtual; abstract;
+
+    // @name writes a link-anchor;
+    function FormatAnchor(const Anchor: string): string; virtual; abstract;
+
+    { Format a list from given ListData. }
+    function FormatList(ListData: TListData): string; virtual; abstract;
+
+    { This should return appropriate content for given Table.
+      It's guaranteed that the Table passed here will have
+      at least one row and in each row there will be at least
+      one cell, so you don't have to check it within descendants. }
+    function FormatTable(Table: TTableData): string; virtual; abstract;
+
+  //<@groupend
+
     { This function is supposed to return a reference to an item, that is the
       name combined with some linking information like a hyperlink element in
       HTML or a page number in Tex.
       The XML generator also must provide appropriate names!
     }
     function CreateLink(const Item: TBaseItem): string; virtual;
-
-    { If @link(CurrentStream) still exists (<> nil), it is closed.
-      Then, a new output stream in the destination directory with given
-      name and file extension typical for this document format is created and
-      assigned to @link(CurrentStream).
-      No path or extension should therefore be in Name.
-      Typical values for Name would be 'Objects' or 'AllUnits'.
-      Returns true if creation was successful, false otherwise. }
-    function CreateStream(const AName: string; const AOverwrite: boolean):
-      TCreateStreamResult;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
@@ -612,31 +625,31 @@ type
       abstract;
   {$ELSE}
   {@groupbegin(wrnolist Write simple item properties)}
-    procedure WriteDate(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+    procedure WriteDate(HL: integer; AItem: TDescriptionItem); virtual;
   //Write the declaration of a PasItem.
-    procedure WriteDeclaration(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem); virtual; //abstract;
+    procedure WriteDeclaration(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem); virtual;
   //Write a function Result description.
-    procedure WriteReturnDesc(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+    procedure WriteReturnDesc(HL: integer; AItem: TDescriptionItem); virtual;
   //Write a link to the containing unit, if possible.
   //Automatism for items residing in the unit file itself?
-    procedure WriteUnitRef(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+    procedure WriteUnitRef(HL: integer; AItem: TDescriptionItem); virtual;
   {@groupend}
   {@groupbegin(wrlists Write lists of item properties)}
   //Write a list of authors, with their addresses if given.
-    procedure WriteAuthors(HL: integer; Items: TDescriptionItem); virtual; //abstract;
+    procedure WriteAuthors(HL: integer; Items: TDescriptionItem); virtual;
   //Write the ancestor list, with links if possible.
-    procedure WriteHierarchy(HL: integer; Items: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+    procedure WriteHierarchy(HL: integer; Items: TDescriptionItem; AScope: TPasItem); virtual;
   //Write a list of non-PasItem members.
-    procedure WriteParams(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+    procedure WriteParams(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual;
   //Write a list of links to PasItems (exception classes).
-    procedure WriteRaises(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+    procedure WriteRaises(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual;
   //Write a list of links to other items.
     procedure WriteSeeAlso(HL: integer; AItem: TDescriptionItem;
-      AScope: TPasScope); virtual; abstract;
+      AScope: TPasScope); virtual;
   //Write a list of used units, with links if possible.
-    procedure WriteUnitUses(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual; //abstract;
+    procedure WriteUnitUses(HL: integer; AItem: TDescriptionItem; AScope: TPasItem); virtual;
   //Write a list of (enum) members.
-    procedure WriteValueList(HL: integer; AItem: TDescriptionItem); virtual; //abstract;
+    procedure WriteValueList(HL: integer; AItem: TDescriptionItem); virtual;
   {@groupend}
   {@groupbegin(wrcomplex Write complex item properties)}
   //Write the abstract+detailed description, optionally more attributes/directives.
@@ -644,10 +657,10 @@ type
   //@param(PasItem should be used in the first place, unless it's @nil.)
     procedure WriteDescription(HL: integer; AItem: TDescriptionItem; PasItem: TPasItem); virtual; //abstract;
     procedure WriteOverview(HL: integer; AList: TDescriptionItem;
-      AScope: TPasScope); virtual; //abstract;
+      AScope: TPasScope); virtual;
   //Write unknown description item (show message)
     procedure WriteOther(HL: integer; AItem: TDescriptionItem;
-      PasItem: TPasItem); virtual; //abstract;
+      PasItem: TPasItem); virtual;
   {@groupend}
 
   //Write all description items of an item. A simple loop over all items.
@@ -675,15 +688,12 @@ type
       unit. }
     procedure WriteUnits(const HL: integer);
 
-    procedure WriteStartOfCode; virtual;
-
-    procedure WriteEndOfCode; virtual;
-
     { output graphviz uses tree }
     procedure WriteGVUses;
     { output graphviz class tree }
     procedure WriteGVClasses;
 
+  //@groupbegin(spelling Spell Checking)
     { starts the spell checker }
     procedure StartSpellChecking(const AMode: string);
 
@@ -697,8 +707,62 @@ type
 
     { closes the spellchecker }
     procedure EndSpellChecking;
+  //<@groupend
 
-    //@groupbegin(tagfmt Tag Formatters)
+  {@groupbegin(tagfmt Virtual Tag Formatters)}
+    { This returns Text formatted using bold font.
+
+      Given Text is already in the final output format
+      (with characters converted using @link(ConvertString), @@-tags
+      expanded etc.).
+
+      Implementation of this method in this class simply returns
+      @code(Result := Text). Output generators that can somehow express bold
+      formatting (or at least emphasis of some text) should override this.
+
+      @seealso(FormatItalic) }
+    function FormatBold(const Text: string): string; virtual;
+
+    { This returns Text formatted using italic font.
+      Analogous to @link(FormatBold). }
+    function FormatItalic(const Text: string): string; virtual;
+
+    { This returns Text preserving spaces and line breaks.
+      Note that Text passed here is not yet converted with ConvertString.
+      The implementation of this method in this class just returns
+      ConvertString(Text). }
+    function FormatPreformatted(const Text: string): string; virtual;
+
+    { This should return markup upon including specified image in description.
+      FileNames is a list of alternative filenames of an image,
+      it always contains at least one item (i.e. FileNames.Count >= 1),
+      never contains empty lines (i.e. Trim(FileNames[I]) <> ''),
+      and contains only absolute filenames (already expanded to take description's
+      unit's path into account).
+
+      E.g. HTML generator will want to choose the best format for HTML,
+      then somehow copy the image from FileNames[Chosen] and wrap
+      this in <img src="...">.
+
+      Implementation of this method in this class simply returns
+      @code(Result := ExpandFileName(FileNames[0])). Output generators should override this. }
+    function FormatImage(FileNames: TStringList): string; virtual;
+
+    { Override this if you want to insert something on @@tableOfContents tag.
+      As a parameter you get already prepared tree of sections that your
+      table of contents should show. Each item of Sections is a section
+      on the level 1. Item's Name is section name, item's Value
+      is section caption, item's Data is a TStringPairVector instance
+      that describes subsections (on level 2) below this section.
+      And so on, recursively.
+
+      Sections given here are never nil, and item's Data is never nil.
+      But of course they may contain 0 items, and this should be a signal
+      to you that given section doesn't have any subsections.
+
+      Default implementation of this method in this class just returns
+      empty string. }
+    function FormatTableOfContents(Sections: TDescriptionItem): string; virtual;
     { FormatPascalCode will cause Line to be formatted in
       the way that Pascal code is formatted in Delphi.
       Note that given Line is taken directly from what user put
@@ -788,6 +852,10 @@ type
       an output generator to simply ignore @br tags if linebreaks
       can't be expressed in given output format. }
     function LineBreak: string; virtual;
+
+    procedure WriteStartOfCode; virtual;
+
+    procedure WriteEndOfCode; virtual;
   //<@groupend
 
     { This should return markup upon finding URL in description.
@@ -828,75 +896,6 @@ type
      See @link(WriteExternal).}
     procedure WriteIntroduction;
 
-    // @name writes a section heading and a link-anchor;
-    function FormatSection(HL: integer; const Anchor: string;
-      const Caption: string): string; virtual; abstract;
-
-    // @name writes a link-anchor;
-    function FormatAnchor(const Anchor: string): string; virtual; abstract;
-
-    { This returns Text formatted using bold font.
-
-      Given Text is already in the final output format
-      (with characters converted using @link(ConvertString), @@-tags
-      expanded etc.).
-
-      Implementation of this method in this class simply returns
-      @code(Result := Text). Output generators that can somehow express bold
-      formatting (or at least emphasis of some text) should override this.
-
-      @seealso(FormatItalic) }
-    function FormatBold(const Text: string): string; virtual;
-
-    { This returns Text formatted using italic font.
-      Analogous to @link(FormatBold). }
-    function FormatItalic(const Text: string): string; virtual;
-
-    { This returns Text preserving spaces and line breaks.
-      Note that Text passed here is not yet converted with ConvertString.
-      The implementation of this method in this class just returns
-      ConvertString(Text). }
-    function FormatPreformatted(const Text: string): string; virtual;
-
-    { This should return markup upon including specified image in description.
-      FileNames is a list of alternative filenames of an image,
-      it always contains at least one item (i.e. FileNames.Count >= 1),
-      never contains empty lines (i.e. Trim(FileNames[I]) <> ''),
-      and contains only absolute filenames (already expanded to take description's
-      unit's path into account).
-
-      E.g. HTML generator will want to choose the best format for HTML,
-      then somehow copy the image from FileNames[Chosen] and wrap
-      this in <img src="...">.
-
-      Implementation of this method in this class simply returns
-      @code(Result := ExpandFileName(FileNames[0])). Output generators should override this. }
-    function FormatImage(FileNames: TStringList): string; virtual;
-
-    { Format a list from given ListData. }
-    function FormatList(ListData: TListData): string; virtual; abstract;
-
-    { This should return appropriate content for given Table.
-      It's guaranteed that the Table passed here will have
-      at least one row and in each row there will be at least
-      one cell, so you don't have to check it within descendants. }
-    function FormatTable(Table: TTableData): string; virtual; abstract;
-
-    { Override this if you want to insert something on @@tableOfContents tag.
-      As a parameter you get already prepared tree of sections that your
-      table of contents should show. Each item of Sections is a section
-      on the level 1. Item's Name is section name, item's Value
-      is section caption, item's Data is a TStringPairVector instance
-      that describes subsections (on level 2) below this section.
-      And so on, recursively.
-
-      Sections given here are never nil, and item's Data is never nil.
-      But of course they may contain 0 items, and this should be a signal
-      to you that given section doesn't have any subsections.
-
-      Default implementation of this method in this class just returns
-      empty string. }
-    function FormatTableOfContents(Sections: TDescriptionItem): string; virtual;
   public
   //File usable for "open" command, to display the created documentation.
     MasterFile: string;
@@ -939,8 +938,7 @@ type
 
     procedure ParseAbbreviationsFile(const AFileName: string);
 
-    property Introduction: TExternalItem read FIntroduction
-      write FIntroduction;
+    property Introduction: TExternalItem read FIntroduction write FIntroduction;
     property Conclusion: TExternalItem read FConclusion write FConclusion;
   published
     { the (human) output language of the documentation file(s) }
@@ -963,16 +961,14 @@ type
       See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
       Default value is false (i.e. show them),
       as this information is generally considered useful.
-      
+
       Setting this to true is useful for automatically comparing two
-      versions of pasdoc's output (e.g. when trying to automate pasdoc's 
+      versions of pasdoc's output (e.g. when trying to automate pasdoc's
       tests). }
     property NoGeneratorInfo: Boolean
       read FNoGeneratorInfo write FNoGeneratorInfo default False;
-    
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
+
+    // Documentation title
     property Title: string read FTitle write FTitle;
 
     { destination directory for documentation; must include terminating
@@ -1442,19 +1438,6 @@ begin
   ReplaceStr := LineBreak;
 end;
 
-{$IFDEF old}
-procedure TDocGenerator.HandleGroupTag(
-  ThisTag: TTag; var ThisTagData: TObject;
-  EnclosingTag: TTag; var EnclosingTagData: TObject;
-  const TagParameter: string; var ReplaceStr: string);
-begin
-  ReplaceStr := '';
-  ThisTag.TagManager.DoMessage(1, pmtWarning,
-    'Tag "%s" is not implemented yet, ignoring', [ThisTag.Name]);
-end;
-{$ELSE}
-{$ENDIF}
-
 procedure TDocGenerator.HandleBoldTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -1726,11 +1709,6 @@ var
     Anchor: TAnchorItem;
     SectionEntry: TStringPair;
   begin
-  {$IFDEF old}
-    Result := TStringPairVector.Create(true);
-  {$ELSE}
-  {$ENDIF}
-
     SectionEntry := nil;
     repeat
       if AnchorIndex = ItemAnchors.Count then
@@ -1740,20 +1718,8 @@ var
         Inc(AnchorIndex);
       end else if Anchor.SectionLevel = MinLevel then begin
         Inc(AnchorIndex);
-      {$IFDEF old}
-        SectionEntry := TStringPair.Create(Anchor.Name, Anchor.SectionCaption);
-        SectionEntry.Data := CollectSections(MinLevel + 1);
-        if MinLevel <= MaxLevel then
-          Result.Add(SectionEntry)
-        else begin
-        //obsolete, is also destroyed with SectionEntry
-          FreeAndNil(TStringPairVector(SectionEntry.Data));
-          SectionEntry.Free;
-        end;
-      {$ELSE}
         SectionEntry := TDescriptionItem.Create(Anchor.Name, Anchor.SectionCaption, trNoTrans, dkItemList);
         CollectSections(MinLevel + 1, SectionEntry);
-      {$ENDIF}
       end else if Anchor.SectionLevel > MinLevel then begin
         { This is for the case of malformed sections,
           i.e. user suddenly specified section with level
@@ -1761,20 +1727,8 @@ var
           In the future we may just give a warning to the user
           and refuse to work in such case ?
           For now, we just try to go on and produce something sensible. }
-      {$IFDEF old}
-        SectionEntry := TStringPair.Create('', '');
-        SectionEntry.Data := CollectSections(MinLevel + 1);
-        if MinLevel <= MaxLevel then
-          Result.Add(SectionEntry)
-        else begin
-        //obsolete, is also destroyed with SectionEntry
-          FreeAndNil(TStringPairVector(SectionEntry.Data));
-          SectionEntry.Free;
-        end;
-      {$ELSE}
         SectionEntry := TDescriptionItem.Create('', '', trDummy, dkItemList);
         CollectSections(MinLevel + 1, SectionEntry);
-      {$ENDIF}
       end else begin
         { So Anchor.SectionLevel < MinLevel,
           so we have to return from recursive call. }
@@ -1791,19 +1745,9 @@ var
   end;
 
   procedure FreeSectionsList(List: TStringPairVector);
-  {$IFDEF old}
-  var
-    i: Integer;
-  begin
-    for i := 0 to List.Count - 1 do
-      FreeSectionsList(TStringPairVector(List[i].Data));
-    List.Free;
-  end;
-  {$ELSE}
   begin
     List.Free;
   end;
-  {$ENDIF}
 
 var
   TopLevelSections: TDescriptionItem;
@@ -1827,22 +1771,14 @@ begin //HandleTableOfContentsTag
 
   { calculate TopLevelSections }
   AnchorIndex := 0;
-{$IFDEF old}
-  TopLevelSections := CollectSections(1);
-{$ELSE}
   TopLevelSections := TDescriptionItem.Create('', '', trDummy, dkItemList);
   CollectSections(1, TopLevelSections);
-{$ENDIF}
 
   { now make use of TopLevelSections -- call FormatTableOfContents }
   ReplaceStr := FormatTableOfContents(TopLevelSections);
 
   { free TopLevelSections }
-{$IFDEF old}
-  FreeSectionsList(TopLevelSections);
-{$ELSE}
   TopLevelSections.Free;
-{$ENDIF}
 end;
 
 procedure TDocGenerator.DoMessageFromExpandDescription(
@@ -1851,7 +1787,7 @@ procedure TDocGenerator.DoMessageFromExpandDescription(
 begin
   if Assigned(OnMessage) then
     OnMessage(MessageType, AMessage +
-      ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);    
+      ' (in description of "' + FCurrentItem.QualifiedName + '")', AVerbosity);
 end;
 
 procedure TDocGenerator.TryAutoLink(TagManager: TTagManager;
@@ -1953,13 +1889,6 @@ begin
       nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
     TTag.Create(FTagManager, 'br',
       nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
-  {$IFDEF old}
-    TTag.Create(FTagManager, 'groupbegin',
-      nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
-    TTag.Create(FTagManager, 'groupend',
-      nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
-  {$ELSE}
-  {$ENDIF}
 
     { Tags with non-recursive params }
     TTag.Create(FTagManager, 'longcode',
@@ -2094,182 +2023,15 @@ procedure TDocGenerator.ExpandDescriptions;
     const Description: string;
     WantFirstSentenceEnd: boolean;
     out FirstSentenceEnd: Integer): string; overload;
-  {$IFDEF old}
-  var
-    TagManager: TTagManager;
-    ItemTag, ItemLabelTag, ItemSpacingTag, ItemSetNumberTag, CellTag: TTag;
-  {$ELSE}
-  {$ENDIF}
   begin
     // make it available to the handlers
     FCurrentItem := Item;
 
-  {$IFDEF old}
-    TagManager := TTagManager.Create;
-    try
-      TagManager.PreExecute := PreExpand;
-      TagManager.Abbreviations := Abbreviations;
-      TagManager.ConvertString := {$IFDEF FPC}@{$ENDIF} ConvertString;
-      TagManager.URLLink := {$IFDEF FPC}@{$ENDIF} URLLink;
-      TagManager.OnMessage := {$IFDEF FPC}@{$ENDIF} DoMessageFromExpandDescription;
-      TagManager.OnTryAutoLink := {$IFDEF FPC}@{$ENDIF} TryAutoLink;
-      TagManager.Paragraph := Paragraph;
-      TagManager.ShortDash := ShortDash;
-      TagManager.EnDash := EnDash;
-      TagManager.EmDash := EmDash;
+    FTagManager.PreExecute := PreExpand;
 
-      Item.RegisterTags(TagManager);
-
-      { Tags without params }
-      TTag.Create(TagManager, 'classname',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleClassnameTag, []);
-      TTag.Create(TagManager, 'true',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'false',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'nil',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLiteralTag, []);
-      TTag.Create(TagManager, 'inheritedclass',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedClassTag, []);
-      TTag.Create(TagManager, 'inherited',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleInheritedTag, []);
-      TTag.Create(TagManager, 'name',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleNameTag, []);
-      TTag.Create(TagManager, 'br',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleBrTag, []);
-      TTag.Create(TagManager, 'groupbegin',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
-      TTag.Create(TagManager, 'groupend',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleGroupTag, []);
-
-      { Tags with non-recursive params }
-      TTag.Create(TagManager, 'longcode',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLongCodeTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'html',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleHtmlTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'latex',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLatexTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'link',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleLinkTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'preformatted',
-        nil, {$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'image',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleImageTag,
-        [toParameterRequired]);
-      TTag.Create(TagManager, 'include',
-        { @include tag works the same way in both expanding passes. }
-        {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
-        {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
-        [toParameterRequired]);
-
-      { Tags with recursive params }
-      TTag.Create(TagManager, 'code',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleCodeTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-      TTag.Create(TagManager, 'bold',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleBoldTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-      TTag.Create(TagManager, 'italic',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleItalicTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-
-      { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
-        But it *does* recursively expand it's parameters -- it's handled
-        by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
-      TTag.Create(TagManager, 'noautolink',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
-        [toParameterRequired, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-
-      OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
-        [toParameterRequired, toRecursiveTags]);
-      UnorderedListTag := TListTag.Create(TagManager, 'unorderedlist',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleUnorderedListTag,
-        [toParameterRequired, toRecursiveTags]);
-      DefinitionListTag := TListTag.Create(TagManager, 'definitionlist',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleDefinitionListTag,
-        [toParameterRequired, toRecursiveTags]);
-
-      ItemTag := TTag.Create(TagManager, 'item',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleItemTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-      ItemTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-
-      ItemLabelTag := TTag.Create(TagManager, 'itemlabel',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleItemLabelTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-      ItemLabelTag.OnAllowedInside :=
-        {$IFDEF FPC}@{$ENDIF} ItemLabelTagAllowedInside;
-
-      ItemSpacingTag := TTag.Create(TagManager, 'itemspacing',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleItemSpacingTag,
-        [toParameterRequired]);
-      ItemSpacingTag.OnAllowedInside :=
-        {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-
-      ItemSetNumberTag := TTag.Create(TagManager, 'itemsetnumber',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleItemSetNumberTag,
-        [toParameterRequired, toAllowNormalTextInside]);
-      ItemSetNumberTag.OnAllowedInside :=
-        {$IFDEF FPC}@{$ENDIF} TagAllowedInsideLists;
-
-      TableTag := TTableTag.Create(TagManager, 'table',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleTableTag,
-        [toParameterRequired, toRecursiveTags]);
-
-      RowTag := TRowTag.Create(TagManager, 'row',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
-        [toParameterRequired, toRecursiveTags]);
-      RowTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
-
-      RowHeadTag := TRowTag.Create(TagManager, 'rowhead',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleSomeRowTag,
-        [toParameterRequired, toRecursiveTags]);
-      RowHeadTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideTable;
-
-      CellTag := TTag.Create(TagManager, 'cell',
-        nil, {$IFDEF FPC}@{$ENDIF} HandleCellTag,
-        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
-      CellTag.OnAllowedInside := {$IFDEF FPC}@{$ENDIF} TagAllowedInsideRows;
-
-      if FCurrentItem is TExternalItem then
-      begin
-        TTopLevelTag.Create(TagManager, 'section',
-          {$IFDEF FPC}@{$ENDIF} PreHandleSectionTag,
-          {$IFDEF FPC}@{$ENDIF} HandleSectionTag, [toParameterRequired]);
-        TTopLevelTag.Create(TagManager, 'anchor',
-          {$IFDEF FPC}@{$ENDIF} PreHandleAnchorTag,
-          {$IFDEF FPC}@{$ENDIF} HandleAnchorTag, [toParameterRequired]);
-        TTopLevelTag.Create(TagManager, 'tableofcontents',
-          nil, {$IFDEF FPC}@{$ENDIF} HandleTableOfContentsTag,
-          [toParameterRequired]);
-      end;
-
-    {$ELSE}
-      FTagManager.PreExecute := PreExpand;
-    {$ENDIF}
-
-      Result := FTagManager.Execute(Description, AutoLink,
-        WantFirstSentenceEnd, FirstSentenceEnd);
-  {$IFDEF old}
-    finally
-      TagManager.Free;
-    end;
-  {$ELSE}
+    Result := FTagManager.Execute(Description, AutoLink,
+      WantFirstSentenceEnd, FirstSentenceEnd);
     FTagManager.Clear;
-  {$ENDIF}
   end;
 
   { Same thing as ExpandDescription(PreExpand, Item, Description, false, Dummy) }
@@ -2288,12 +2050,7 @@ procedure TDocGenerator.ExpandDescriptions;
     FirstSentenceEnd: Integer;
     Expanded: string;
     scoped: TPasScope absolute Item; //has overview
-  {$IFDEF old}
-    ovr: TDescriptionItem;
-  {$ELSE}
-    //i: integer;
     mbrs: TPasItems;
-  {$ENDIF}
   begin
     if (Item = nil) or Item.ToBeExcluded then
       Exit; //exclude items marked for exclusion in PreExpand
@@ -2302,43 +2059,16 @@ procedure TDocGenerator.ExpandDescriptions;
       Item.DetailedDescription (because whitespaces,
       including leading and trailing, may be important for final doc format;
       moreover, you would break the value of FirstSentenceEnd by such thing). }
-  {$IFnDEF paragraphs}
     InitTags(Item);
     Expanded := ExpandDescription(PreExpand,
       Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
     if not PreExpand then
       Item.DetailedDescription := Expanded;
-  {$ELSE}
-  //try: expand all raw descriptions (token strings)
-  //requires paragraphs $defined in items
-    if item.RawDescriptions = nil then begin
-      Expanded := ExpandDescription(PreExpand,
-        Item, Trim(Item.RawDescription), true, FirstSentenceEnd);
-      if not PreExpand then
-        Item.AddDescription(Expanded);
-    end else begin
-      for i := 0 to item.RawDescriptions.Count - 1 do begin
-        Expanded := ExpandDescription(PreExpand,
-          Item, Trim(Item.RawDescriptions[i]), true, FirstSentenceEnd);
-        if not PreExpand then
-          item.AddDescription(Expanded);
-      end;
-    end;
-  {$ENDIF}
 
     if item is TPasScope then begin
-    {$IFDEF old}
-    //expand member lists - overview not yet created!
-      ovr := scoped.MemberLists;
-      if not IsEmpty(ovr) then begin
-        for i := 0 to ovr.Count - 1 do
-          ExpandCollection(PreExpand, ovr.Items[i].PasItems);
-      end;
-    {$ELSE}
-      //expand the Members list. No groups or excluded items yet!
+    //expand the Members list. No groups or excluded items yet!
       mbrs := scoped.Members;
       ExpandCollection(PreExpand, mbrs);
-    {$ENDIF}
     end;
   end;
 
@@ -2982,47 +2712,6 @@ begin
   Result := FLanguage.Language;
 end;
 
-{$IFDEF old}
-procedure TDocGenerator.WriteGVClasses;
-var
-  LNode: TPasItemNode;
-  OverviewFileName: string;
-begin
-  CreateClassHierarchy;
-//traverse tree
-  LNode := FClassHierarchy.FirstItem;
-  if Assigned(LNode) then
-  begin
-    OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
-    if CreateStream(OverviewFileName, True) = csError then
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".',
-        [OverviewFileName]);
-      Exit;
-    end;
-
-    WriteDirect('DiGraph Classes {', true);
-    while Assigned(LNode) do
-    begin
-      if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then
-      begin
-        WriteDirectLine('  ' + LNode.Name + ' -> '+LNode.Parent.Name);
-      end;
-
-      if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
-      begin
-        WriteDirectLine('  ' + LNode.Name +
-          ' [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
-      end;
-
-      LNode := FClassHierarchy.NextItem(LNode);
-    end;
-
-    WriteDirect('}', true);
-    CloseStream;
-  end;
-end;
-{$ELSE}
 procedure TDocGenerator.WriteGVClasses;
 var
   OverviewFileName: string;
@@ -3065,7 +2754,6 @@ begin
     CloseStream;
   end;
 end;
-{$ENDIF}
 
 procedure TDocGenerator.WriteGVUses;
 var

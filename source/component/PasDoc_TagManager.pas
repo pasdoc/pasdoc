@@ -837,17 +837,17 @@ var
   const
     AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
     FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
-    HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];  
+    HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];
     URLMiddle = '://';
   var
     i: Integer;
   begin
     Result := False;
-    
-    i := FOffset;    
+
+    i := FOffset;
     while SCharIs(Description, i, AlphaNum) do Inc(i);
     if not (Copy(Description, i, Length(URLMiddle)) = URLMiddle) then Exit;
-    
+
     Result := true;
     i := i + Length(URLMiddle);
     while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
@@ -941,7 +941,7 @@ var
     Result := IsNormalTextAllowed;
     if Result then
       Result := not PreExecute
-    else
+    else if NormalText <> '' then
       DoMessageNonPre(1, pmtWarning,
         'Such content, "%s", is not allowed '+
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
@@ -953,6 +953,7 @@ var
     is the string that should be filtered by DoConvertString. }
   ConvertBeginOffset: Integer;
   ToAppend: string;
+  OffsetEnd: Integer;
 
   { This function increases ConvertBeginOffset to FOffset,
     appending converted version of
@@ -985,7 +986,8 @@ var
 (* Do string replacement.
   Skip in PreExecute.
 *)
-  procedure HandleNormalText(const raw, prep: string);
+  //procedure HandleNormalText(const raw, prep: string);
+  procedure HandleFoundText(const raw, prep: string);
   begin
     if not PreExecute then begin
     //do replacement
@@ -999,10 +1001,24 @@ var
     ConvertBeginOffset := FOffset;
   end;
 
+  //procedure HandleNormalText(const raw, prep: string);
+  procedure HandleNormalText(OffsetEnd: integer; const prep: string);
+  begin
+    if not PreExecute then begin
+    //do replacement
+      DoConvert; //text before raw
+    { convert raw into prep }
+      if CheckNormalTextAllowed('') then
+        Result := Result + prep;
+    end;
+  //adjust pointers
+    FOffset := OffsetEnd;
+    ConvertBeginOffset := FOffset;
+  end;
+
 var
   ReplaceStr: string;
   Params: string;
-  OffsetEnd: Integer;
   FoundTag: TTag;
   URL: string;
   FoundTagData: TObject;
@@ -1039,10 +1055,10 @@ begin
     if Description[FOffset] = '@' then begin
       if FOffset < Length(Description) then
       case Description[FOffset+1] of
-      '(': HandleNormalText('@(', '(');
-      ')': HandleNormalText('@)', ')');
-      '@': HandleNormalText('@@', '@');
-      '-': HandleNormalText('@-', ShortDash);
+      '(': HandleFoundText('@(', '(');
+      ')': HandleFoundText('@)', ')');
+      '@': HandleFoundText('@@', '@');
+      '-': HandleFoundText('@-', ShortDash);
       else //case
         if FindTag(FoundTag, Params, OffsetEnd) then begin
           DoConvert;
@@ -1128,14 +1144,14 @@ begin
     {$ELSE}
       if Description[FOffset + 1] <> '-' then begin //'-'
     {$ENDIF}
-        HandleNormalText('-', ShortDash);
+        HandleFoundText('-', ShortDash);
       end else if not SCharIs(Description, FOffset + 2, '-') then begin
-        HandleNormalText('--', EnDash);
+        HandleFoundText('--', EnDash);
       end else begin
-        HandleNormalText('---', EmDash);
+        HandleFoundText('---', EmDash);
       end;
     end else if FindParagraph(OffsetEnd) then begin
-    {$IFnDEF old}
+    {$IFDEF old}
       DoConvert;
       { If normal text is allowed then append Paragraph to Result.
         Otherwise just ignore any whitespace in Description. }
@@ -1144,13 +1160,13 @@ begin
       //no paragraphs at the begin of the document
         Result := Result + Paragraph;
       end;
-    {$ELSE} //incorrect?
-      FOffset := OffsetEnd;
-      if not PreExecute and (Result <> '') then
-        HandleNormalText('', Paragraph);
-    {$ENDIF}
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
+    {$ELSE} //incorrect?
+    { TODO : HandleNormalText doesn't work with empty raw strings }
+      //if not PreExecute and (Result <> '') then
+      HandleNormalText(OffsetEnd, Paragraph);
+    {$ENDIF}
     end else if FindWhitespace(OffsetEnd) then begin
     { FindWhitespace must be checked after FindParagraph,
       otherwise we would take paragraph as just some whitespace. }
@@ -1163,17 +1179,21 @@ begin
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     {$ELSE}
+      DoConvert;
+      //HandleNormalText(OffsetEnd, Space); <--- would show bad message
+      if not PreExecute and IsNormalTextAllowed then
+        Result := Result + Space;
       FOffset := OffsetEnd;
-      HandleNormalText('', Space);
+      ConvertBeginOffset := FOffset;
     {$ENDIF}
     end else if (not PreExecute) and AutoLink
     and FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier)
     and TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then begin
-      HandleNormalText('', QualifiedIdentifierReplacement);
+      HandleNormalText(OffsetEnd, QualifiedIdentifierReplacement);
     end else if FindURL(OffsetEnd, URL) then begin
-      HandleNormalText('', DoURLLink(URL));
+      HandleNormalText(OffsetEnd, DoURLLink(URL));
     end else if WantFirstSentenceEnd and (FirstSentenceEnd = 0) and FindFirstSentenceEnd then begin
-      HandleNormalText('', ConvertString('.'));
+      HandleFoundText('.', ConvertString('.'));
       FirstSentenceEnd := Length(Result);
     end else
       Inc(FOffset);

@@ -6,10 +6,10 @@
   {$WARN UNSAFE_TYPE OFF}
   {$DEFINE Debug} //DoDi
 {$ENDIF}
-(* Disables .NET warnings for Delphi 7 and later. *)
+(*- Disables .NET warnings for Delphi 7 and later. *)
 
 {$ifdef FPC}
-  { Turn macro on to get FPC_VERSION, FPC_RELEASE, FPC_PATCH macros,
+  {- Turn macro on to get FPC_VERSION, FPC_RELEASE, FPC_PATCH macros,
     used in PasDoc.pas. Also to change "out" to "var" for FPC 1.0.x. }
   {$macro on}
 {$endif}

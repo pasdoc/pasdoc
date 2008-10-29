@@ -98,7 +98,6 @@ type
     procedure ParseFiles;
     procedure SkipBOM(InputStream: TStream);
 
-    { Calls @link(LoadDescriptionFile) with each file name. }
     procedure LoadDescriptionFiles(const c: TStringVector);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -687,7 +686,7 @@ begin
   Generator.AutoLink := AutoLink;
   Generator.BuildLinks; //may become invalid by destruction of excluded units!
 
-  FUnits.SortDeep(SortSettings);
+  //FUnits.SortDeep(SortSettings);
 
 (* Read external descriptions, found while parsing the units.
   Required for the editor, even if no docs are created.
@@ -697,7 +696,9 @@ begin
 
   if fGenerate then begin
     Generator.ExpandDescriptions; //here items are marked for removal
+      //and items are grouped - must be done before sorting!
     Generator.BuildUnitSections; //based on it's private unit list
+    FUnits.SortDeep(SortSettings);
     Generator.WriteDocumentation;
   end else
     FUnits.BuildSections; //optional, for editor, debugger...

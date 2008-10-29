@@ -1,5 +1,5 @@
-{ -*- buffer-read-only: t -*- }
-{ DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
+{-*- buffer-read-only: t -*- }
+{- DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
 'body { font-family: Verdana,Arial; ' + LineEnding + 
 '  color: black; background-color: white; ' + LineEnding + 
 '  font-size: 12px; }' + LineEnding + 

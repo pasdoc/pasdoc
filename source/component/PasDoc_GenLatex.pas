@@ -140,7 +140,6 @@ type
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
-    //procedure WriteDates(const HL: integer; const Created, LastMod: string);
     procedure WriteDates(const HL: integer; Created, LastMod: TDescriptionItem);
     procedure SetLatexHead(const Value: TStrings);
     function FormatHeading(HL: integer; const s: string): string;
@@ -180,7 +179,7 @@ type
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
       
-{ TODO : FormatKeyWord, FormatCompilerComment, FormatComment,
+{- TODO : FormatKeyWord, FormatCompilerComment, FormatComment,
 FormatString and FormatPascalCode are all closely related.
 Maybe they should be extracted into an abstract base class.  There
 could be descendents of the abstract ancestor associated with the HTML and

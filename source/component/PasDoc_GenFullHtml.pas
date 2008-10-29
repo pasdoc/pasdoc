@@ -75,7 +75,6 @@ type
     procedure WriteDate(HL: integer; ADate: TDescriptionItem);
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
-    //procedure WriteAuthors(HL: integer; Authors: TStringVector);
     procedure WriteAuthors(HL: integer; Authors: TDescriptionItem);
     procedure WriteSeeAlso(HL: integer; SeeAlso: TDescriptionItem; AScope: TPasScope);
 
@@ -1049,7 +1048,7 @@ begin //WriteDescriptionItem
   trCreated, trLastModified:
     WriteDate(HL + 1, AItem);  //AItem.Created, AItem.LastMod);
   trSeeAlso:
-    WriteSeeAlso(HL+1, AItem, PasItem.PasScope);
+    WriteSeeAlso(HL+1, AItem, PasItem.MyOwner);
   else  //case
   //write dump
     WriteHeading(HL+1, '', FLanguage.Translation[AItem.id]);

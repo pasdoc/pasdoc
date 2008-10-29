@@ -394,24 +394,15 @@ begin
   OptionFormat.Value := LowerCase(OptionFormat.Value);
   if OptionFormat.Value = 'html' then begin
     PasDoc.Generator := SetHtmlOptions(THTMLDocGenerator.Create(PasDoc));
-  end else
-  if OptionFormat.Value = 'simplexml' then
-  begin
+  end else if OptionFormat.Value = 'simplexml' then begin
     PasDoc.Generator := SetSimpleXMLOptions(TSimpleXMLDocGenerator.Create(PasDoc));
-  end else
-  if OptionFormat.Value = 'latex' then
-  begin
+  end else if OptionFormat.Value = 'latex' then begin
     PasDoc.Generator := SetLatexOptions(TTexDocGenerator.Create(PasDoc));
-  end else
-  if OptionFormat.Value = 'latex2rtf' then
-  begin
+  end else if OptionFormat.Value = 'latex2rtf' then begin
     PasDoc.Generator := SetRtfOptions(TTexDocGenerator.Create(PasDoc));
-  end else
-  if OptionFormat.Value = 'htmlhelp' then
-  begin
+  end else if OptionFormat.Value = 'htmlhelp' then begin
     PasDoc.Generator := SetHtmlHelpOptions(THTMLHelpDocGenerator.Create(PasDoc));
-  end else
-  begin
+  end else begin
     raise EInvalidCommandLine.CreateFmt(
       'Unknown output format "%s"', [OptionFormat.Value]);
   end;

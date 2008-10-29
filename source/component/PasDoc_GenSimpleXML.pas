@@ -38,11 +38,14 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
-    procedure writefunction(const item:TPasItem);
+  {$IFDEF unused}
     procedure writeconstant(const item:TPasItem);
-    procedure writevariable(const item:TPasItem);
     procedure writetypes(const item:TPasItem);
     procedure writeclass(const item:TPasCIO);
+  {$ELSE}
+  {$ENDIF}
+    procedure writefunction(const item:TPasItem);
+    procedure writevariable(const item:TPasItem);
     procedure writeproperty(const item:TPasItem);
   public
     constructor Create(AOwner: TComponent); override;
@@ -159,38 +162,12 @@ begin
         '" storedid="' + ConvertString(prop.storedid)
     {$ELSE}
           '" reader="' + ConvertString(prop.reader) +
-          '" writer="' + ConvertString(prop.writer) 
+          '" writer="' + ConvertString(prop.writer)
     {$ENDIF}
         +'"/>');
 end;
 
-procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
-begin
-  WriteDirectLine(space +
-    '<constant name="' + ConvertString(item.FullDeclaration) + '">');
-  if item.HasDescription then
-    WriteDirectLine(space + '  ' + ItemDescription(Item));
-  WriteDirectLine(space+'</constant>');
-end;
-
-procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
-begin
-  WriteDirectLine(space +
-    '<variable name="' + ConvertString(item.FullDeclaration) + '">');
-  if item.HasDescription then
-    WriteDirectLine(space + '  ' + ItemDescription(Item));
-  WriteDirectLine(space+'</variable>');
-end;
-
-procedure TSimpleXMLDocGenerator.writetypes(const item:TPasItem);
-begin
-  WriteDirectLine(space +
-    '<type name="' + ConvertString(item.FullDeclaration) + '">');
-  if item.HasDescription then
-    WriteDirectLine(space + '  ' + ItemDescription(Item));
-  WriteDirectLine(space+'</type>');
-end;
-
+{$IFDEF unused}
 procedure TSimpleXMLDocGenerator.writeclass(const item:TPasCIO);
 var
   i:cardinal;
@@ -222,6 +199,35 @@ begin
       writeproperty(item.Properties.PasItemAt[i]);
   space:=copy(space,0,length(space)-2);
   WriteDirectLine(space+'</structure>');
+end;
+
+procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
+begin
+  WriteDirectLine(space +
+    '<constant name="' + ConvertString(item.FullDeclaration) + '">');
+  if item.HasDescription then
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
+  WriteDirectLine(space+'</constant>');
+end;
+
+procedure TSimpleXMLDocGenerator.writetypes(const item:TPasItem);
+begin
+  WriteDirectLine(space +
+    '<type name="' + ConvertString(item.FullDeclaration) + '">');
+  if item.HasDescription then
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
+  WriteDirectLine(space+'</type>');
+end;
+{$ELSE}
+{$ENDIF}
+
+procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
+begin
+  WriteDirectLine(space +
+    '<variable name="' + ConvertString(item.FullDeclaration) + '">');
+  if item.HasDescription then
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
+  WriteDirectLine(space+'</variable>');
 end;
 
 {$IFDEF old}
@@ -295,7 +301,7 @@ procedure TSimpleXMLDocGenerator.WriteExternalCore(
   const ExternalItem: TExternalItem;
   const Id: TTranslationID);
 begin
-  { TODO }
+  { TODO }   
 end;
 
 function TSimpleXMLDocGenerator.FormatSection(HL: integer; const Anchor: string;

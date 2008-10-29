@@ -491,9 +491,13 @@ var
         if (not MarkersOptional) and (not WasMarker) then
           cm := cmIgnore;
       end;
-      if (cm = cmFwd) and SCharIs(c.Data, 1, BackCommentMarker) then begin
-        cm := cmBack;
-        Delete(C.Data, 1, Length(BackCommentMarker));
+      if (cm = cmFwd) and (c.Data <> '') then begin
+        case c.Data[1] of
+        BackCommentMarker:  cm := cmBack;
+        cmIgnore: cm := cmIgnore;
+        end;
+        if cm <> cmFwd then
+          Delete(C.Data, 1, Length(BackCommentMarker));
       end;
     end;
   //now dispatch
