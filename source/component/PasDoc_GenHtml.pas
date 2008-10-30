@@ -38,6 +38,7 @@ type
   TGenericHTMLDocGenerator = class(TDocGenerator)
   protected
     FUseTipueSearch: boolean;
+    FItemFiles: boolean;
     FNumericFilenames: boolean;
     FLinkCount: Integer;
     FFooter: string;
@@ -246,7 +247,9 @@ type
 
     { Returns a link to an anchor within a document.
       HTML simply concatenates the strings with a "#" character between them. }
-    function CreateLink(const Item: TBaseItem): string; override;
+    function  CreateLink(const Item: TBaseItem): string; override;
+  // Create file name from qualified item name.
+    function  NewLink(const AFullName: string): string;
 
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
@@ -303,6 +306,8 @@ type
     property Footer: string read FFooter write FFooter;
     { the content of the cascading stylesheet }
     property CSS: string read FCSS write FCSS;
+    { Create output file for every TPasItem? }
+    property ItemFiles: boolean read FItemFiles write FItemFiles default False;
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
@@ -404,18 +409,19 @@ begin
   Result := '<code>' + s + '</code>';
 end;
 
-function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 
-  function NewLink(const AFullName: string): string;
-  begin
-    if NumericFilenames then begin
-      Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
-      Inc(FLinkCount);
-    end else begin
-      Result := AFullName + GetFileExtension;
-    end;
+function TGenericHTMLDocGenerator.NewLink(const AFullName: string): string;
+begin
+  Result := AFullName;
+  if NumericFilenames then begin
+    //Result := Format('%.8d', [FLinkCount]) + GetFileExtension;
+    Str(FLinkCount:8, Result);
+    Inc(FLinkCount);
   end;
+  Result := Result + GetFileExtension;
+end;
 
+function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 var
   PasItem: TPasItem absolute Item;
   PasScope: TPasScope absolute Item;

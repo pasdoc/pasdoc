@@ -169,6 +169,8 @@ const
 {$ELSE}
   TCIOType = KEY_RECORD..KEY_INTERFACE;
 const
+  //AllCioTypes = [TCIOType];
+  AllCioTypes = [KEY_RECORD..KEY_INTERFACE]; //<should read: [TCIOType]
   CioClassTypes = [KEY_CLASS..KEY_DISPINTERFACE];
   CIORecordTypes = [KEY_RECORD];
   CIONonHierarchy = CIORecordTypes;

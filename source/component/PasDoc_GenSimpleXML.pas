@@ -18,10 +18,8 @@ type
     function CodeString(const s: string): string; override;
     function ConvertString(const s: string): string; override;
     function ConvertChar(c: char): string; override;
-  {$IFDEF old}
+
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-  {$ELSE}
-  {$ENDIF}
 
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
@@ -33,20 +31,17 @@ type
   private
     space:string;
 
+    procedure writeconstant(const item:TPasItem);
+    procedure writetypes(const item:TPasItem);
+    procedure writeclass(const item:TPasCIO);
+    procedure writefunction(const item:TPasItem);
+    procedure writeproperty(const item:TPasItem);
+    procedure writevariable(const item:TPasItem);
+
     { Returns XML <description> element with Item's AbstractDescription
       and DetailedDescription.
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
-
-  {$IFDEF unused}
-    procedure writeconstant(const item:TPasItem);
-    procedure writetypes(const item:TPasItem);
-    procedure writeclass(const item:TPasCIO);
-  {$ELSE}
-  {$ENDIF}
-    procedure writefunction(const item:TPasItem);
-    procedure writevariable(const item:TPasItem);
-    procedure writeproperty(const item:TPasItem);
   public
     constructor Create(AOwner: TComponent); override;
     procedure WriteDocumentation; override;
@@ -167,7 +162,6 @@ begin
         +'"/>');
 end;
 
-{$IFDEF unused}
 procedure TSimpleXMLDocGenerator.writeclass(const item:TPasCIO);
 var
   i:cardinal;
@@ -218,8 +212,6 @@ begin
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</type>');
 end;
-{$ELSE}
-{$ENDIF}
 
 procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
 begin
@@ -230,7 +222,6 @@ begin
   WriteDirectLine(space+'</variable>');
 end;
 
-{$IFDEF old}
 procedure TSimpleXMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 var
   i:cardinal;
@@ -294,14 +285,12 @@ begin
       writeclass(TPasCIO(u.CIOs.PasItemAt[i]));
   WriteDirectLine('</unit>');
 end;
-{$ELSE}
-{$ENDIF}
 
 procedure TSimpleXMLDocGenerator.WriteExternalCore(
   const ExternalItem: TExternalItem;
   const Id: TTranslationID);
 begin
-  { TODO }   
+  { TODO }
 end;
 
 function TSimpleXMLDocGenerator.FormatSection(HL: integer; const Anchor: string;

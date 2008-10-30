@@ -366,6 +366,23 @@ var
     end;
   end;
 
+  procedure AddItems(c: TPasItems; scope: TPasScope);
+  var
+    i: integer;
+    m: TPasItem;
+    lst: TPasItems;
+  begin
+  //first add the immediate members, increasing capacity as required
+    lst := scope.Members;
+    c.CopyItems(lst);
+  //then add all sub-scopes
+    for i := 0 to lst.Count - 1 do begin
+      m := lst.PasItemAt[i];
+      if m is TPasScope then
+        AddItems(c, TPasScope(m));
+    end;
+  end;
+
   { ---------------------------------------------------------------------------- }
 
 var
@@ -467,7 +484,7 @@ begin
 
   for j := 0 to Units.Count - 1 do begin
     PU := Units.UnitAt[j];
-
+  {$IFDEF old}
     if Assigned(PU.CIOs) then
       for k := 0 to PU.CIOs.Count - 1 do begin
         CIO := TPasCio(PU.CIOs.PasItemAt[k]);
@@ -481,6 +498,9 @@ begin
     c.CopyItems(PU.Variables);
     c.CopyItems(PU.Constants);
     c.CopyItems(PU.FuncsProcs);
+  {$ELSE}
+    AddItems(c, PU);
+  {$ENDIF}
   end;
 
   if CreateStream(ProjectName + '.hhk', True) = csError then begin
@@ -604,9 +624,7 @@ begin
   WriteDirectLine('Legend.html');
 
   If Introduction <> nil then
-  begin
     WriteDirectLine(Introduction.FullLink);
-  end;
 
   if (LinkGraphVizClasses <> '') then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
@@ -635,9 +653,7 @@ begin
       end;
 
   If Conclusion <> nil then
-  begin
     WriteDirectLine(Conclusion.FullLink);
-  end;
 
   WriteDirectLine('');
 

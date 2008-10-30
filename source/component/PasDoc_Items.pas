@@ -181,6 +181,8 @@ type
     fExternalList: boolean;
   //exclude flag
     FExclude: boolean;
+  //intended use: sequence number for overloaded identifiers, <0 for excluded items.
+    FSeqNum: Shortint;
   //description related kind (rename? remove!?)
     //kind: eDescriptionKind;
     FList: TDescriptionList;
@@ -289,7 +291,6 @@ type
       be sorted are really sorted). }
     procedure Sort(const SortSettings: TSortSettings); virtual;
 
-    //procedure SortByID(const weights: TWeightList);
     //open array!
     procedure SortByID(const weights: array of TTranslationID);
 
@@ -322,6 +323,8 @@ type
 
 (* List of descriptions or other items.
   Only the search methods are implemented, virtual for possible optimizations.
+  Shrink memory requirements by using a neutral base class, which can implement
+    either an TObjectVector or TObjectHash?
 *)
   TDescriptionList = class(TObjectVector)
   {$IFDEF new}
@@ -672,8 +675,10 @@ type
     FKind: TTokenType;
   // All attributes, modifiers etc.
     FAttributes: TPasItemAttributes;
-  // position of identifier in the declaration.
+  //-FSeqNum here? (for excluded and overloaded items)
+  // Position of identifier in the declaration.
     FNamePosition: TTextStreamPos;
+  // File name with the declaration (may become file object?)
     FNameStream: string;
   (* Ancestor reference, depending on item kind.
     CIOs have a list of ancestors (trHierarchy). The first item is the base class, others are interfaces.
@@ -705,7 +710,7 @@ type
     property Attributes: TPasItemAttributes read FAttributes write FAttributes;
     property NamePosition: TTextStreamPos read FNamePosition write FNamePosition;
     property NameStream: string read FNameStream write FNameStream;
-    property MyOwner: TPasScope read FMyOwner;  // write FMyOwner;
+    property MyOwner: TPasScope read FMyOwner;  //- write FMyOwner;
 
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
@@ -722,11 +727,11 @@ type
     function FindName(const NameParts: TNameParts; index: integer = -1): TPasItem; override;
 
     { pointer to unit this item belongs to }
-    property MyUnit: TPasUnit read GetMyUnit; // write SetMyUnit;
+    property MyUnit: TPasUnit read GetMyUnit; //- write SetMyUnit;
 
     { if this item is part of an object or class, the corresponding
       info object is stored here, nil otherwise }
-    property MyObject: TPasCio read GetMyObject;  // write SetMyObject;
+    property MyObject: TPasCio read GetMyObject;  //- write SetMyObject;
   //Returns the first ancestor of this item. Override for CIOs
     function FirstAncestorItem: TDescriptionItem; virtual;
 
@@ -753,7 +758,7 @@ type
        This is (full) parsed declaration of the given item.
 
        DoDi: Long initializers and declarations are abbreviated now,
-       so that the declaration can be displayed as-is.
+       so that the declaration can be displayed as-is. Not for initialized arrays?
 
        Note that that this is not used for some descendants.
        Right now it's used only with
@@ -1050,6 +1055,8 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   public
+    constructor Create(AOwner: TPasScope; AKind: TTokenType;
+      const AName: string); override;
     procedure BuildLinks(AllUnits: TPasUnits; TheGenerator: TLinkGenerator); override;
   {$IFDEF old}
     procedure BuildMemberLists; override;
@@ -1967,7 +1974,6 @@ constructor TPasItem.Create(AOwner: TPasScope; AKind: TTokenType;
 begin
   FMyOwner := AOwner;
   FKind := AKind;
-  //FName := AName;
   inherited Create(AName, '', trNoTrans, dkNoList); //(name, value, tid?, dkKind?)
 //not always used, but required even for parser
   if FRawDescriptionInfo = nil then
@@ -1977,6 +1983,23 @@ begin
     AOwner.AddMember(self)
   else if ord(Kind) > 0 then begin
     assert(self is TPasUnit, 'Non-Unit without owner: ' + TokenNames[kind]);
+  end;
+//assign tid?
+  case AKind of
+  //KEY_ARRAY: ftid := trArray; - ???
+  KEY_CLASS:  FTID := trClass;
+  //KEY_CONST:  FTID := trConstants; - ???
+  KEY_CONSTRUCTOR, KEY_DESTRUCTOR, KEY_FUNCTION, KEY_PROCEDURE: FTID := trSubroutine;
+  KEY_DISPINTERFACE: FTID := trDispInterface;
+  KEY_INTERFACE: FTID := trInterface;
+  KEY_LIBRARY:  FTID := trLibrary;
+  KEY_OBJECT:   FTID := trObject;
+  KEY_PROGRAM:  FTID := trProgram;
+  KEY_RECORD:   FTID := trRecord;
+  //KEY_SET:    FTID := trSet; - ???
+  KEY_TYPE:   FTID := trType;
+  KEY_UNIT:   FTID := trUnit;
+  //else: stay trNoTrans
   end;
 end;
 
@@ -2223,6 +2246,12 @@ const
     trValues, //enums, constants?
     trAuthors, trCreated, trLastModified
   );
+  MemberListSortOrder: array[0..7] of TTranslationID = (
+  //units
+    trClasses, trFunctionsAndProcedures, trTypes, trVariables, trConstants,
+  //CIOs
+    trFields, trMethods, trProperties
+  );
 
 procedure TPasItem.BuildSections;
 begin
@@ -2328,6 +2357,13 @@ end;
 
 { TPasEnum ------------------------------------------------------------------- }
 
+constructor TPasEnum.Create(AOwner: TPasScope; AKind: TTokenType;
+  const AName: string);
+begin
+  inherited;
+  FTID := trEnum;
+end;
+
 procedure TPasEnum.BuildLinks(AllUnits: TPasUnits;
   TheGenerator: TLinkGenerator);
 var
@@ -2335,7 +2371,7 @@ var
   item: TPasItem;
   lst: TDescriptionItem;
 begin
-(* Groups have not been specied yet!
+(* Groups have not yet been specified!
   FMemberLists has been created in TPasScope constructor.
   We add the default member list.
 *)
@@ -2554,6 +2590,8 @@ var
   i: Integer;
 begin
   if IsEmpty(c) then Exit;
+  if Count + c.Count > Capacity then
+    Capacity := (c.Count * 2) + (Capacity * 4 div 3); // Count + c.Count + 100;
   for i := 0 to c.Count - 1 do
     Add(c.GetPasItemAt(i));
 end;
@@ -2587,7 +2625,6 @@ begin
   TObject(Result) := Last;
 end;
 
-//function TStringPairVector.Text(
 function TPasItems.Text(const NameValueSeparator, ItemSeparator: string): string;
 var
   i: Integer;
@@ -2927,8 +2964,12 @@ procedure TPasCio.BuildSections;
 var
   desc, anc: TDescriptionItem;
 begin
+{$IFDEF old}
   desc := AddNew(trUnit, dkDelegate, MyUnit.Name); //description???
   desc.PasItem := MyOwner;
+{$ELSE}
+  //automatic by generator, for every item in a separate file
+{$ENDIF}
 //hierarchy
   if not IsEmpty(Ancestors) then begin
     desc := AddNew(trHierarchy, dkItemList);
@@ -3515,13 +3556,14 @@ var
 begin
 (* Can be: Unit, Cio, but also Type, Method...
   We have a list of member lists, which may deserve sorting.
-  MemberLists: TDescriptionItem .List: TDescriptionList - never/special sort
+  MemberLists: TDescriptionItem .List: TDescriptionList - special sort
     MemberList: TDescriptionItem .List: TPasItems - conditional sort
       Member: TPasCio - deep sort!
 *)
   lists := FMemberLists;
-  if lists = nil then
+  if IsEmpty(lists) then
     exit; //should never happen
+  lists.SortByID(MemberListSortOrder);
   for i := 0 to lists.Count - 1 do begin
     lst := lists.Items[i].PasItems; //can be TPasCios - recurse
   //even if a list is not sorted, it's members may deserve sorting!
@@ -3577,7 +3619,6 @@ begin
     i := FList.IndexOf(o);
     if i >= 0 then begin
       FList.Delete(i); //deletes owned overview
-      //FreeAndNil(FOverview);
       FOverview := nil;
     end;
   end;

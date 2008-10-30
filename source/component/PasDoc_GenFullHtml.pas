@@ -40,6 +40,8 @@ type
   protected
   //the current output file name
     CurFile: string;
+
+    function CreateLink(const Item: TBaseItem): string; override;
   //get menu entries, based on item
     function  GetSectionsInMenu(item: TBaseItem): TSectionsInMenu; virtual;
   //Return anchor string, based on a translation ID.
@@ -1105,6 +1107,14 @@ begin //from WriteCIO
   //anchor for best compatibility?
     WriteHeading(HL, 'AItem', s, AItem.Name);
     WriteSectionMenu(AItem);
+    if not (AItem is TPasUnit) then begin
+    //write unit ref
+      //WriteUnitRef(HL+1, AItem);
+      WriteSectionHeading(HL+1, 'unit', trUnit);
+      //WriteStartOfParagraph('unitlink');
+        WriteLink(AItem.MyUnit.FullLink, ConvertString(AItem.MyUnit.Name), 'unitlink');
+      //WriteEndOfParagraph;
+    end;
   end;
 
   for i := 0 to AItem.Count - 1 do begin
@@ -1276,8 +1286,64 @@ procedure TFullHTMLDocGenerator.WriteItemLongDescription(HL: integer;
 begin
 ...
 end;
+
+function TFullHTMLDocGenerator.GetMemberSectionHeading(
+  items: TDescriptionItem): string;
+begin
+
+end;
+
+procedure TFullHTMLDocGenerator.WriteDescription(HL: integer;
+  AItem: TPasItem);
+begin
+
+end;
 {$ELSE}
 {$ENDIF}
+
+function TFullHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
+var
+  PasItem: TPasItem absolute Item;
+  owner: TPasScope;
+  PasScope: TPasScope absolute Item;
+  Extern: TExternalItem absolute item;
+  Anchor: TAnchorItem absolute item;
+begin
+(* assign file names, return anchor string
+*)
+  Result := '';
+  if (not Assigned(Item)) then Exit;
+
+  if Item is TPasItem then begin
+    owner := PasItem.MyOwner;
+    if FItemFiles then begin
+      if Item.ID = trNoTrans then begin //const, var?
+        Result := owner.OutputFileName + '#' + Item.Name;
+      end else begin
+        Result := NewLink(PasItem.QualifiedName);
+        Item.OutputFileName := Result;
+      end;
+    end else if owner = nil then begin //unit
+      Result := NewLink(Item.Name);
+      Item.OutputFileName := Result;
+    end else if PasItem.Kind in AllCIOTypes then begin
+      Result := NewLink(PasItem.QualifiedName);
+      Item.OutputFileName := Result;
+    end else begin
+      Result := owner.OutputFileName;
+      assert(Result <> '', 'bad call sequence');
+      Result := Result + '#' + Item.Name;
+    end;
+  end else if Item is TAnchorItem then begin
+    Result := Anchor.ExternalItem.OutputFileName + '#' + Item.Name;
+  end else if item is TExternalItem then begin
+  //create file name
+    Result := NewLink(Item.Name);
+    Extern.OutputFileName := Result;
+  end else begin
+    DoError('Unhandled link item: %s.%s', [item.ClassName, item.Name], 3);
+  end;
+end;
 
 end.
 

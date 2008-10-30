@@ -1331,6 +1331,7 @@ object DocMain: TDocMain
       ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
       '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
       '}'#13#10
+    ItemFiles = True
     Left = 492
     Top = 312
   end
