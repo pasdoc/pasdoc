@@ -27,6 +27,7 @@ interface
 
 uses
   Classes,
+  PasDoc_Base,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
@@ -106,8 +107,6 @@ type
     { returned on error }
     csError
   );
-
-  TLinkLook = (llDefault, llFull, llStripped);
 
   { This is used by @link(TDocGenerator.MakeItemLink) }
   TLinkContext = (
@@ -223,48 +222,13 @@ type
     values and program parameters.
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
-  TDocGenerator = class(TComponent)
+  TDocGenerator = class(TPasDocGen)
   private
-    { Things related to spell checking }
-    FCheckSpelling: boolean;
-    FAspellLanguage: string;
     FAspellProcess: TAspellProcess;
-    FSpellCheckIgnoreWords: TStringList;
-
-    FLinkGraphVizUses: string;
-    FLinkGraphVizClasses: string;
-    FAutoAbstract: boolean;
-    FLinkLook: TLinkLook;
-    FConclusion: TExternalItem;
-    FIntroduction: TExternalItem;
-
-    FAbbreviations: TStringList;
-    FGraphVizClasses: boolean;
-    FGraphVizUses: boolean;
-
-    FWriteUsesClause: boolean;
-    FAutoLink: boolean;
-    FAutoLinkExclude: TStringList;
-
-    { Name of the project to create. }
-    FProjectName: string;
-    { if true, no link to pasdoc homepage will be included at the bottom of
-      HTML files;
-      default is false }
-    FNoGeneratorInfo: Boolean;
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
     FCurrentStream: TStream;
-    { Title of documentation. }
-    FTitle: string;
-    { destination directory for documentation; must include terminating
-      forward slash or backslash so that valid file names can be created
-      by concatenating DestinationDirectory and a pathless file name }
-    FDestDir: string;
-
-    FOnMessage: TPasDocMessageEvent;
-
     { These fields are available only for tags OnExecute handlers.
       They are set in ExpandDescription. }
     FCurrentItem: TBaseItem;
@@ -277,11 +241,6 @@ type
     procedure InitTags(Item: TBaseItem);
     procedure AddTags;  //(TagManager: TTagManager);
     procedure ClearTags;
-
-    procedure SetAbbreviations(const Value: TStringList);
-    function  GetLanguage: TLanguageID;
-    procedure SetLanguage(const Value: TLanguageID);
-    procedure SetDestDir(const Value: string);
 
     { This just calls OnMessage (if assigned), but it appends
       to AMessage FCurrentItem.QualifiedName. }
@@ -407,8 +366,6 @@ type
       const TagParameter: string; var ReplaceStr: string);
   //<@groupend
 
-    procedure SetSpellCheckIgnoreWords(Value: TStringList);
-
     procedure TagAllowedInsideLists(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure ItemLabelTagAllowedInside(
@@ -419,9 +376,6 @@ type
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
 
   protected
-    { the (human) output language of the documentation file(s) }
-    FLanguage: TPasDocLanguages;
-
     FClassHierarchy: TDescriptionItem;
 
     procedure DoError(const AMessage: string; const AArguments: array of const;
@@ -455,8 +409,6 @@ type
       const Code: string; WriteItemLink: boolean;
       const NameLinkBegin, NameLinkEnd: string);
   protected
-    { list of all units that were successfully parsed }
-    FUnits: TPasUnits;
     FCurrentFileName: string;
 
   //Create private (shrinkable) unit list.
@@ -515,15 +467,7 @@ type
       at least one row and in each row there will be at least
       one cell, so you don't have to check it within descendants. }
     function FormatTable(Table: TTableData): string; virtual; abstract;
-
   //<@groupend
-
-    { This function is supposed to return a reference to an item, that is the
-      name combined with some linking information like a hyperlink element in
-      HTML or a page number in Tex.
-      The XML generator also must provide appropriate names!
-    }
-    function CreateLink(const Item: TBaseItem): string; virtual;
 
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
@@ -897,130 +841,24 @@ type
     procedure WriteIntroduction;
 
   public
-  //File usable for "open" command, to display the created documentation.
-    MasterFile: string;
-
-    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    { Creates anchors and links for all items in all units.
-      Assign OutputFile names to specific items. }
-    procedure BuildLinks; virtual;
-  { Build the description item (members...) structure for all items.
-    Remove excluded units from the output list. }
-    procedure BuildUnitSections;
 
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
       and item's RawDescription is transformed into DetailedDescription,
       interpreting @@-tags as appropriate for the selected document type. }
-    procedure ExpandDescriptions;
-
-    { Searches all items in all units (given by field @link(Units)) for item
-      with NameParts.
-      Returns a pointer to the item on success, nil otherwise. }
-    function FindGlobal(const NameParts: TNameParts): TBaseItem;
-
-    { Abstract function that provides file extension for documentation format.
-      Must be overwritten by descendants. }
-    function GetFileExtension: string; virtual; abstract;
+    procedure ExpandDescriptions; override; //<Could be implemented in the base class.
 
     { Write all documentation.
 
       This implementation only creates the GraphViz files, using WriteDocumentationGen.
       Must be overwritten for single or multiple output files, depending on the document type.
     }
-    procedure WriteDocumentation; virtual;
+    procedure WriteDocumentation; override; //virtual;
   //Write generator independent GraphViz files.
     procedure WriteDocumentationGen;
-
-    property Units: TPasUnits read FUnits write SetUnits;
-
-    procedure ParseAbbreviationsFile(const AFileName: string);
-
-    property Introduction: TExternalItem read FIntroduction write FIntroduction;
-    property Conclusion: TExternalItem read FConclusion write FConclusion;
-  published
-    { the (human) output language of the documentation file(s) }
-    property Language: TLanguageID read GetLanguage write SetLanguage
-      default DEFAULT_LANGUAGE;
-    { Name of the project to create. }
-    property ProjectName: string read FProjectName write FProjectName;
-
-    { "generator info" are
-      things that can change with each invocation of pasdoc,
-      with different pasdoc binary etc.
-
-      This includes
-      @unorderedList(
-        @item(time of generating docs)
-        @item(compiler name and version used to compile pasdoc,
-          time of compilation and such)
-        @item(pasdoc's version)
-      )
-      See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
-      Default value is false (i.e. show them),
-      as this information is generally considered useful.
-
-      Setting this to true is useful for automatically comparing two
-      versions of pasdoc's output (e.g. when trying to automate pasdoc's
-      tests). }
-    property NoGeneratorInfo: Boolean
-      read FNoGeneratorInfo write FNoGeneratorInfo default False;
-
-    // Documentation title
-    property Title: string read FTitle write FTitle;
-
-    { destination directory for documentation; must include terminating
-      forward slash or backslash so that valid file names can be created
-      by concatenating DestinationDirectory and a pathless file name }
-    property DestinationDirectory: string read FDestDir write SetDestDir;
-
-    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-
-    { generate a GraphViz diagram for the units dependencies }
-    property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses
-      default false;
-    { generate a GraphViz diagram for the Class hierarchy }
-    property OutputGraphVizClassHierarchy: boolean 
-      read FGraphVizClasses write FGraphVizClasses default false;
-    { link the GraphViz uses diagram }
-    property LinkGraphVizUses: string read FLinkGraphVizUses write FLinkGraphVizUses;
-    { link the GraphViz classes diagram }
-    property LinkGraphVizClasses: string read FLinkGraphVizClasses write FLinkGraphVizClasses;
-
-    property Abbreviations: TStringList read FAbbreviations write SetAbbreviations;
-
-    property CheckSpelling: boolean read FCheckSpelling write FCheckSpelling
-      default false;
-      
-    property AspellLanguage: string read FAspellLanguage write FAspellLanguage;
-
-    property SpellCheckIgnoreWords: TStringList
-      read FSpellCheckIgnoreWords write SetSpellCheckIgnoreWords;
-
-    { The meaning of this is just like @--auto-abstract command-line option.
-      It is used in @link(ExpandDescriptions). }
-    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
-    
-    { This controls @link(SearchLink) behavior, as described in
-      [http://pasdoc.sipsolutions.net/LinkLookOption]. }
-    property LinkLook: TLinkLook read FLinkLook write FLinkLook;
-    
-    property WriteUsesClause: boolean 
-      read FWriteUsesClause write FWriteUsesClause default false;
-
-    { This controls auto-linking, see
-      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
-    property AutoLink: boolean
-      read FAutoLink write FAutoLink default false;
-      
-    property AutoLinkExclude: TStringList read FAutoLinkExclude;
   end;
 
-var
-  TheGenerator: TDocGenerator;
-  
 implementation
 
 uses
@@ -1083,102 +921,19 @@ end;
 { TDocGenerator                                                                }
 { ---------------------------------------------------------------------------- }
 
-constructor TDocGenerator.Create(AOwner: TComponent);
-begin
-  inherited;
-  FClassHierarchy := nil;
-  FNoGeneratorInfo := False;
-  FLanguage := TPasDocLanguages.Create;
-  FAbbreviations := TStringList.Create;
-  FAbbreviations.Duplicates := dupIgnore;
-  FSpellCheckIgnoreWords := TStringList.Create;
-
-  FAutoLinkExclude := TStringList.Create;
-  FAutoLinkExclude.CaseSensitive := false;
-end;
-
 destructor TDocGenerator.Destroy;
 begin
-  FreeAndNil(FAutoLinkExclude);
   ClearTags;
-
-  FSpellCheckIgnoreWords.Free;
-  FLanguage.Free;
   FClassHierarchy.Free;
-  FAbbreviations.Free;
   FCurrentStream.Free;
-  FUnits.Free;
   inherited;
 end;
 
 procedure TDocGenerator.SetUnits(U: TPasUnits);
 begin
 //clone the list, allow for later deletion of excluded units.
-  FUnits := TPasUnits.Create(False);
-  FUnits.Assign(U);
-end;
-
-
-procedure TDocGenerator.BuildLinks;
-(* Most of this is already done by parser.
-  Only after deserialization some actions may be required.
-*)
-
-  procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio; c: TPasItems);
-  var
-    i: Integer;
-    p: TPasItem;
-  begin
-    if (not Assigned(c)) or (c.Count < 1) then Exit;
-    for i := 0 to c.Count - 1 do begin
-      p := c.PasItemAt[i];
-      p.FullLink := CreateLink(p);
-    end;
-  end;
-
-var
-  i: Integer;
-  U: TPasUnit;
-begin //BuildLinks
-(* The created files are specific to the generator.
-  Assigning file names here is somewhat HTML specific.
-  Filenames should be assigned by the CreateLink method of the actual generator.
-*)
-  if IsEmpty(Units) then Exit;
-  DoMessage(2, pmtInformation, 'Creating links ...', []);
-
-//assuming that FullLink equals the filename???
-  if Introduction <> nil then begin
-    Introduction.FullLink := CreateLink(Introduction);
-    //Introduction.OutputFileName := Introduction.FullLink;
-  end;
-
-  if Conclusion <> nil then begin
-    Conclusion.FullLink := CreateLink(Conclusion);
-    //Conclusion.OutputFileName := Conclusion.FullLink;
-  end;
-
-  for i := Units.Count - 1 downto 0 do begin
-    U := Units.UnitAt[i];
-  //@exclude has not yet executed - should PreExpand execute earlier?
-    u.BuildLinks(Units, {$IFDEF fpc}@{$ENDIF}self.CreateLink);
-  end;
-  DoMessage(2, pmtInformation, '... ' + ' links created', []);
-end;
-
-procedure TDocGenerator.BuildUnitSections;
-var
-  i: Integer;
-  U: TPasUnit;
-begin
-//remove @exclude'd units from our list.
-  for i := Units.Count - 1 downto 0 do begin
-    U := Units.UnitAt[i];
-    if u.ToBeExcluded then
-      Units.Delete(i)
-    else
-      U.BuildSections;
-  end;
+  //FUnits := TPasUnits.Create(False);
+  Units.Assign(U);
 end;
 
 
@@ -1230,13 +985,6 @@ begin
     FCurrentStream.Free;
     FCurrentStream := nil;
   end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-function TDocGenerator.CreateLink(const Item: TBaseItem): string;
-begin
-  Result := Item.Name;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2189,74 +1937,6 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TDocGenerator.FindGlobal(
-  const NameParts: TNameParts): TBaseItem;
-var
-  i: Integer;
-  Item: TBaseItem;
-  U: TPasUnit;
-begin
-  Result := nil;
-
-  if ObjectVectorIsNilOrEmpty(Units) then Exit;
-
-  case Length(NameParts) of
-    1: begin
-        if (Introduction <> nil) then begin
-          if  SameText(Introduction.Name, NameParts[0]) then begin
-            Result := Introduction;
-            Exit;
-          end;
-          Result := Introduction.FindItem(NameParts[0]);
-          if Result <> nil then Exit;
-        end;
-
-        if (Conclusion <> nil) then begin
-          if  SameText(Conclusion.Name, NameParts[0]) then begin
-            Result := Conclusion;
-            Exit;
-          end;
-          Result := Conclusion.FindItem(NameParts[0]);
-          if Result <> nil then Exit;
-        end;
-
-        for i := 0 to Units.Count - 1 do begin
-           U := Units.UnitAt[i];
-
-           if SameText(U.Name, NameParts[0]) then begin
-             Result := U;
-             Exit;
-           end;
-
-           Result := U.FindItem(NameParts[0]);
-           if Result <> nil then Exit;
-         end;
-       end;
-    2: begin
-         { object.field_method_property }
-         for i := 0 to Units.Count - 1 do begin
-           Result := Units.UnitAt[i].FindFieldMethodProperty(NameParts[0], NameParts[1]);
-           if Assigned(Result) then Exit;
-         end;
-
-         { unit.cio_var_const_type }
-         U := TPasUnit(Units.FindName(NameParts[0]));
-         if Assigned(U) then
-           Result := U.FindItem(NameParts[1]);
-       end;
-    3: begin
-         { unit.objectorclassorinterface.fieldormethodorproperty }
-         U := TPasUnit(Units.FindName(NameParts[0]));
-         if (not Assigned(U)) then Exit;
-         Item := U.FindItem(NameParts[1]);
-         if (not Assigned(Item)) then Exit;
-         Result := Item.FindItem(NameParts[2]);
-       end;
-  end;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
 function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
 begin
   case Directive of
@@ -2271,11 +1951,11 @@ function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
 { TODO : split into token->tid, tid->name }
   case MyType of
-  KEY_RECORD: Result := FLanguage.Translation[trRecord];
-  KEY_CLASS: Result := FLanguage.Translation[trClass];
-  KEY_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
-  KEY_INTERFACE: Result := FLanguage.Translation[trInterface];
-  KEY_OBJECT: Result := FLanguage.Translation[trObject];
+  KEY_RECORD: Result := Language.Translation[trRecord];
+  KEY_CLASS: Result := Language.Translation[trClass];
+  KEY_DISPINTERFACE: Result := Language.Translation[trDispInterface];
+  KEY_INTERFACE: Result := Language.Translation[trInterface];
+  KEY_OBJECT: Result := Language.Translation[trObject];
   else      Result := '';
   end;
 end;
@@ -2639,8 +2319,8 @@ procedure TDocGenerator.DoMessage(const AVerbosity: Cardinal; const
   MessageType: TPasDocMessageType; const AMessage: string; const AArguments: array of
   const);
 begin
-  if Assigned(FOnMessage) then begin
-    FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
+  if Assigned(OnMessage) then begin
+    OnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
   end;
 end;
 
@@ -2693,6 +2373,7 @@ begin
 // nothing - for some output this is irrelevant
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.SetLanguage(const Value: TLanguageID);
 begin
   FLanguage.Language := Value;
@@ -2711,6 +2392,8 @@ function TDocGenerator.GetLanguage: TLanguageID;
 begin
   Result := FLanguage.Language;
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TDocGenerator.WriteGVClasses;
 var
@@ -2761,7 +2444,7 @@ var
   U: TPasUnit;
   OverviewFileName: string;
 begin
-  if not IsEmpty(FUnits) then begin
+  if not IsEmpty(Units) then begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.dot';
     if CreateStream(OverviewFileName, True) = csError then begin
       DoMessage(1, pmtError, 'Could not create output file "%s".',
@@ -2770,8 +2453,8 @@ begin
     end;
 
     WriteDirect('DiGraph Uses {', true);
-    for i := 0 to FUnits.Count-1 do begin
-      U := TPasUnit(FUnits.PasItemAt[i]);
+    for i := 0 to Units.Count-1 do begin
+      U := TPasUnit(Units.PasItemAt[i]);
       if not IsEmpty(U.UsesUnits) then begin
         for j := 0 to U.UsesUnits.Count-1 do begin
           WriteDirectLine('  "' + U.Name + '" -> "' + U.UsesUnits.Items[j].Name + '"');
@@ -2785,45 +2468,11 @@ begin
   end;
 end;
 
-procedure TDocGenerator.SetAbbreviations(const Value: TStringList);
-begin
-  FAbbreviations.Assign(Value);
-end;
-
-procedure TDocGenerator.ParseAbbreviationsFile(const AFileName: string);
-var
-  L: TStringList;
-  i, p: Integer;
-  s, lname, value: string;
-begin
-  if FileExists(AFileName) then begin
-    L := TStringList.Create;
-    try
-      L.LoadFromFile(AFileName);
-      for i := 0 to L.Count-1 do begin
-        s := Trim(L[i]);
-        if length(s)>0 then begin
-          if s[1] = '[' then begin
-            p := pos(']', s);
-            if p>=0 then begin
-              lname := Trim(copy(s, 2, p-2));
-              value := Trim(copy(s,p+1,MaxInt));
-              FAbbreviations.Values[lname] := value;
-            end;
-          end;
-        end;
-      end;
-    finally
-      L.Free;
-    end;
-  end;
-end;
-
 procedure TDocGenerator.CheckString(const AString: string;
   const AErrors: TObjectVector);
 var i: Integer;
 begin
-  if FCheckSpelling and (FAspellProcess <> nil) then
+  if CheckSpelling and (FAspellProcess <> nil) then
   begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
@@ -2879,7 +2528,7 @@ begin
   if CheckSpelling then
   begin
     try
-      FAspellProcess := TAspellProcess.Create(AMode, FAspellLanguage);
+      FAspellProcess := TAspellProcess.Create(AMode, AspellLanguage);
     except
       on E: Exception do
       begin
@@ -2915,10 +2564,13 @@ begin
   end;
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.SetSpellCheckIgnoreWords(Value: TStringList);
 begin
   SpellCheckIgnoreWords.Assign(Value);
 end;
+{$ELSE}
+{$ENDIF}
 
 function TDocGenerator.FormatPascalCode(const Line: string): string;
 
@@ -3518,10 +3170,10 @@ begin
   end;
 
   DoMessage(2, pmtInformation, 'Writing Docs for %s, "%s"',
-    [FLanguage.Translation[Id], ExternalItem.Name]);
+    [Language.Translation[Id], ExternalItem.Name]);
 
   If ExternalItem.Title = '' then begin
-    ExternalItem.Title := FLanguage.Translation[Id];
+    ExternalItem.Title := Language.Translation[Id];
   end;
 
   If ExternalItem.ShortTitle = '' then begin
@@ -3763,7 +3415,7 @@ function  TDocGenerator.GetMemberSectionHeading(items: TDescriptionItem): string
 var
   s, t: string;
 begin
-  s := FLanguage.Translation[Items.id];
+  s := Language.Translation[Items.id];
   if items.Value <> '' then
     t := Items.Value //preferred: group description
   else

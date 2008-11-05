@@ -124,9 +124,9 @@ var
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
     WriteDirectLine('<ul>');
 
-    WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
-    WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
-    WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
+    WriteItemHeadingCollection(Language.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
+    WriteItemHeadingCollection(Language.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
+    WriteItemHeadingCollection(Language.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
 
     WriteDirectLine('</ul>');
   end;
@@ -142,7 +142,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, OverviewFilesInfo[ofUnits].BaseFileName + GetFileExtension)
     else
-      WriteLiObject(FLanguage.Translation[trUnits], OverviewFilesInfo[ofUnits].BaseFileName +
+      WriteLiObject(Language.Translation[trUnits], OverviewFilesInfo[ofUnits].BaseFileName +
         GetFileExtension);
     WriteDirectLine('<ul>');
 
@@ -155,7 +155,7 @@ var
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
-        WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#@Classes');
+        WriteLiObject(Language.Translation[trClasses], PU.FullLink + '#@Classes');
         WriteDirectLine('<ul>');
 
         for k := 0 to c.Count - 1 do
@@ -165,13 +165,13 @@ var
       end;
 
         // For each unit, write Functions & Procedures.
-      WriteItemHeadingCollection(FLanguage.Translation[trFunctionsAndProcedures],
+      WriteItemHeadingCollection(Language.Translation[trFunctionsAndProcedures],
         PU.FullLink, '@FuncsProcs', PU.FuncsProcs);
         // For each unit, write Types.
-      WriteItemHeadingCollection(FLanguage.Translation[trTypes], PU.FullLink,
+      WriteItemHeadingCollection(Language.Translation[trTypes], PU.FullLink,
         '@Types', PU.Types);
         // For each unit, write Constants.
-      WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink,
+      WriteItemHeadingCollection(Language.Translation[trConstants], PU.FullLink,
         '@Constants', PU.Constants);
 
       WriteDirectLine('</ul>');
@@ -193,7 +193,7 @@ var
     // Write Classes to Contents
     if Text <> '' then
       WriteLiObject(Text, FileName) else
-      WriteLiObject(FLanguage.Translation[trClasses], FileName);
+      WriteLiObject(Language.Translation[trClasses], FileName);
     WriteDirectLine('<ul>');
 
     c := TPasItems.Create(False);
@@ -219,7 +219,7 @@ var
     FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName +
       GetFileExtension;
 
-    WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
+    WriteLiObject(Language.Translation[trClassHierarchy], FileName);
   end;
 
   { ---------- }
@@ -229,7 +229,7 @@ var
     procedure WriteParam(Id: TTranslationId);
     begin
       WriteDirect('<param name="Name" value="');
-      WriteConverted(FLanguage.Translation[Id]);
+      WriteConverted(Language.Translation[Id]);
       WriteDirectLine('">');
     end;
 
@@ -239,7 +239,7 @@ var
     if Text <> '' then
       WriteLiObject(Text, '')
     else
-      WriteLiObject(FLanguage.Translation[trOverview], '');
+      WriteLiObject(Language.Translation[trOverview], '');
     WriteDirectLine('<ul>');
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     begin
@@ -262,7 +262,7 @@ var
     FileName := 'Legend' + GetFileExtension;
     if Text <> '' then
       WriteLiObject(Text, FileName) else
-      WriteLiObject(FLanguage.Translation[trLegend], FileName);
+      WriteLiObject(Language.Translation[trLegend], FileName);
   end;
 
   { ---------- }
@@ -275,7 +275,7 @@ var
       '.' + LinkGraphVizUses;
       
     if LinkGraphVizUses <> '' then
-      WriteLiObject(FLanguage.Translation[trGvUses], FileName);
+      WriteLiObject(Language.Translation[trGvUses], FileName);
   end;
 
   { ---------- }
@@ -288,7 +288,7 @@ var
       '.' + LinkGraphVizClasses;
       
     if LinkGraphVizClasses <> '' then
-      WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
+      WriteLiObject(Language.Translation[trGvClasses], FileName);
   end;
 
   { ---------- }
@@ -356,12 +356,12 @@ var
     //looks as if the branches should be reversed?
       then //assume overloaded method
         WriteLiObject(Item.MyObject.Name + ' - ' + Item.MyUnit.Name + #32 +
-          FLanguage.Translation[trUnit], Item.FullLink)
+          Language.Translation[trUnit], Item.FullLink)
       else
         WriteLiObject(Item.MyObject.Name, Item.FullLink);
     end else begin
     //not a CIO member
-      WriteLiObject(Item.MyUnit.Name + #32 + FLanguage.Translation[trUnit],
+      WriteLiObject(Item.MyUnit.Name + #32 + Language.Translation[trUnit],
         Item.FullLink);
     end;
   end;
@@ -388,7 +388,7 @@ var
 var
   j, k, l: Integer;
   CurrentLevel, Level: Integer;
-  CIO: TPasCio;
+  //CIO: TPasCio;
   PU: TPasUnit;
   c: TPasItems;
   Item, NextItem, PreviousItem: TPasItem;
@@ -413,7 +413,7 @@ begin
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  if not NoGeneratorInfo then
+  if GeneratorInfo then
     WriteDirect('<meta name="GENERATOR" content="' +
       PASDOC_NAME_AND_VERSION + '">', true);
   WriteDirectLine('</head><body>');
@@ -514,7 +514,7 @@ begin
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  if not NoGeneratorInfo then
+  if GeneratorInfo then
     WriteDirectLine('<meta name="GENERATOR" content="' + 
       PASDOC_NAME_AND_VERSION + '">');
   WriteDirectLine('</head><body>');
@@ -666,4 +666,6 @@ begin
   CloseStream;
 end;
 
+initialization
+  RegisterGenerator('htmlhelp', THTMLHelpDocGenerator);
 end.

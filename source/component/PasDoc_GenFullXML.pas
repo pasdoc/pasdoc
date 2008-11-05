@@ -64,7 +64,7 @@ type
 implementation
 
 uses
-  PasDoc_ObjectVector, SysUtils, Math;
+  PasDoc_ObjectVector, SysUtils, Math, PasDoc_Base;
 
 constructor TXMLDocGenerator.Create(AOwner: TComponent);
 begin
@@ -97,7 +97,7 @@ begin
   WriteUnits(1);
 {$ELSE}
   CreateStream(self.ProjectName + GetFileExtension, True);
-  MasterFile := FCurrentFileName;
+  Options.MasterFile := FCurrentFileName;
   OpenTag('project', ArgString('name', ProjectName));
     WriteIntroduction;
     WriteUnits(1);

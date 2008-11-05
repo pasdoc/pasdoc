@@ -24,6 +24,7 @@ uses
   SysUtils,
   Classes,
   PasDoc_Types,
+  PasDoc_Base,
   PasDoc_Tokenizer,
 {$IFDEF SymHash}
   PasDoc_Hashes,
@@ -75,6 +76,7 @@ type
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FHandleMacros: boolean;
+    property IncludeFilePaths: TStringVector read FIncludeFilePaths;
 
     { Removes symbol Name from the internal list of symbols.
       If Name was not in that list, nothing is done. }
@@ -124,12 +126,17 @@ type
       (at destruction or when we will read all it's tokens),
       so after creating TScanner you should leave the stream
       to be managed completely by this TScanner. }
+  {$IFDEF old}
     constructor Create(
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
       const AStreamName, AStreamPath: string;
       const AHandleMacros: boolean);
+  {$ELSE}
+    constructor Create(S: TStream; const AStreamName, AStreamPath: string;
+      const CmdOptions: TOptionRec);
+  {$ENDIF}
     destructor Destroy; override;
 
     { Adds Name to the list of symbols (as a normal symbol, not macro). }
@@ -152,12 +159,16 @@ type
     { Returns the name of the file that is currently processed and the line
       number. Good for meaningful error messages. }
     function GetStreamInfo: string;
-    
-    { Paths to search for include files. 
+
+  {$IFDEF old}
+    { Paths to search for include files.
       When you assign something to this property
       it causes Assign(Value) call, not a real reference copy. }
     property IncludeFilePaths: TStringVector read FIncludeFilePaths
       write SetIncludeFilePaths;
+  {$ELSE}
+    //- for internal use only
+  {$ENDIF}
     function PeekToken: TToken;
     
     { Place T in the buffer. Next time you will call GetToken you will
@@ -323,19 +334,24 @@ end;
 { TScanner }
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
   const AStreamName, AStreamPath: string;
   const AHandleMacros: boolean);
+{$ELSE}
+constructor TScanner.Create(S: TStream; const AStreamName, AStreamPath: string;
+  const CmdOptions: TOptionRec);
+{$ENDIF}
 var
   c: TUpperCaseLetter;
 begin
   inherited Create;
-  FOnMessage := OnMessageEvent;
-  FVerbosity := VerbosityLevel;
-  FHandleMacros := AHandleMacros;
+  FOnMessage := CmdOptions.OnMessage;
+  FVerbosity := CmdOptions.Verbosity;
+  FHandleMacros := CmdOptions.HandleMacros;
 
   { Set default switch directives (according to the Delphi 4 Help). }
   for c := Low(SwitchOptions) to High(SwitchOptions) do
@@ -359,7 +375,7 @@ begin
   FSymbols := TStringPairVector.Create(true);
 {$ENDIF}
 
-  FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
+  FTokenizers[0] := TTokenizer.Create(s, CmdOptions.OnMessage, CmdOptions.Verbosity,
     AStreamName, AStreamPath);
   FCurrentTokenizer := 0;
   FBufferedToken := nil;

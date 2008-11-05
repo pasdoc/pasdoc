@@ -221,7 +221,7 @@ begin
     if tid = trNoTrans then
       break;
     WriteDirect('<td>');
-      s := FLanguage.Translation[tid];
+      s := Language.Translation[tid];
       if tid in SectionsAvailable then
       //WriteLink cannot add a '#' - might be a fully qualified link!
         WriteLink('#' + GetSectionAnchorID(tid), s, 'section')
@@ -249,7 +249,7 @@ end;
 procedure TFullHTMLDocGenerator.WriteSectionHeading(HL: integer; const CssClass: string;
       tid: TTranslationID);
 begin
-  WriteHeading(HL, CssClass, FLanguage.Translation[tid], GetSectionAnchorID(tid));
+  WriteHeading(HL, CssClass, Language.Translation[tid], GetSectionAnchorID(tid));
 end;
 
 procedure TFullHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TDescriptionItem);
@@ -261,9 +261,9 @@ begin
   if IsEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
-    WriteHeading(HL, 'authors', FLanguage.Translation[trAuthor])
+    WriteHeading(HL, 'authors', Language.Translation[trAuthor])
   else
-    WriteHeading(HL, 'authors', FLanguage.Translation[trAuthors]);
+    WriteHeading(HL, 'authors', Language.Translation[trAuthors]);
 
   WriteDirectLine('<ul class="authors">');
   for i := 0 to Authors.Count - 1 do begin
@@ -325,7 +325,7 @@ begin
   if IsEmpty(c) then Exit;
 
   WriteSectionHeading(HL, 'cio', trCio);
-  WriteStartOfTable2Columns('classestable', FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
+  WriteStartOfTable2Columns('classestable', Language.Translation[trName], Language.Translation[trDescription]);
   for j := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[j]);
     WriteStartOfTableRow('');
@@ -352,7 +352,7 @@ procedure TFullHTMLDocGenerator.WriteDate(HL: integer;
   ADate: TDescriptionItem);
 begin
   if assigned(ADate) and (ADate.Name <> '') then begin
-    WriteHeading(HL, 'date', FLanguage.Translation[ADate.ID]);
+    WriteHeading(HL, 'date', Language.Translation[ADate.ID]);
     WriteStartOfParagraph;
       WriteDirectLine(ADate.Name);
     WriteEndOfParagraph;
@@ -435,7 +435,7 @@ end;
 
 procedure TFullHTMLDocGenerator.WriteDescriptionSectionHeading(const Caption: TTranslationID);
 begin
-  WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
+  WriteHeading(6, 'description_section', Language.Translation[Caption]);
 end;
 
 procedure TFullHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
@@ -469,7 +469,7 @@ var
   procedure WriteHintDirective(const S: string; attr: TPasItemAttribute);
   begin
     WriteDirect('<p class="hint_directive">');
-    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.');
+    WriteConverted(Language.Translation[trWarning] + ': ' + S + '.');
     WriteDirect('</p>');
     Exclude(attrs, attr);
     OpenCloseParagraph := True;
@@ -493,11 +493,11 @@ begin //WriteItemLongDescription
   OpenCloseParagraph := False;  // (HL < 2) or (AItem.AbstractDescription <> '') and (AItem.DetailedDescription <> '');
 
   if AItem.HasAttribute[SD_DEPRECATED] then
-    WriteHintDirective(FLanguage.Translation[trDeprecated], SD_DEPRECATED);
+    WriteHintDirective(Language.Translation[trDeprecated], SD_DEPRECATED);
   if AItem.HasAttribute[SD_PLATFORM] then
-    WriteHintDirective(FLanguage.Translation[trPlatformSpecific], SD_PLATFORM);
+    WriteHintDirective(Language.Translation[trPlatformSpecific], SD_PLATFORM);
   if AItem.HasAttribute[SD_LIBRARY_] then
-    WriteHintDirective(FLanguage.Translation[trLibrarySpecific], SD_Library_);
+    WriteHintDirective(Language.Translation[trLibrarySpecific], SD_Library_);
 
 {$IFDEF new}
   if attrs <> [] then begin
@@ -588,7 +588,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     DoMessage(3, pmtInformation, 'Writing overview file "' +
       BaseFileName + '" ...', []);
 
-    Headline := FLanguage.Translation[
+    Headline := Language.Translation[
       OverviewFilesInfo[Overview].TranslationHeadlineId];
     WriteStartOfDocument(Headline);
     WriteHeading(1, 'allitems', Headline);
@@ -607,8 +607,8 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
       Exit;
 
     if Assigned(c) and (c.Count > 0) then begin
-      WriteStartOfTable2Columns('unitstable', FLanguage.Translation[trName],
-        FLanguage.Translation[trDescription]);
+      WriteStartOfTable2Columns('unitstable', Language.Translation[trName],
+        Language.Translation[trDescription]);
       for j := 0 to c.Count - 1 do begin
         Item := c.PasItemAt[j];
         WriteStartOfTableRow('');
@@ -662,7 +662,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
 
     if IsEmpty(FClassHierarchy) then begin
       WriteStartOfParagraph;
-      WriteConverted(FLanguage.Translation[trNoCIOsForHierarchy]);
+      WriteConverted(Language.Translation[trNoCIOsForHierarchy]);
       WriteEndOfParagraph;
     end else begin
       WriteLevel(FClassHierarchy);
@@ -686,9 +686,9 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     if not ObjectVectorIsNilOrEmpty(Items) then 
     begin
       WriteStartOfTable3Columns('itemstable',
-        FLanguage.Translation[trName], 
-        FLanguage.Translation[trUnit],
-        FLanguage.Translation[trDescription]);
+        Language.Translation[trName], 
+        Language.Translation[trUnit],
+        Language.Translation[trDescription]);
 
       Items.SortShallow;
 
@@ -715,7 +715,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     end else
     begin
       WriteStartOfParagraph;
-      WriteConverted(FLanguage.Translation[
+      WriteConverted(Language.Translation[
         OverviewFilesInfo[Overview].NoItemsTranslationId]);
       WriteEndOfParagraph;
     end;
@@ -821,7 +821,7 @@ begin
   case CreateStream(ExternalItem.OutputFileName, true) of
     csError: begin
       DoMessage(1, pmtError, 'Could not create HTML unit doc file '
-        + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
+        + 'for the %s file %s.', [Language.Translation[Id], ExternalItem.Name]);
       Exit;
     end;
   end;
@@ -1019,12 +1019,12 @@ begin //WriteDescriptionItem
         WriteMembersDetailed(item, PasItem.Kind in CIOClassTypes, HL+1);
       end;
     end else begin
-      WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
+      WriteHeading(HL + 1, 'overview', Language.Translation[trOverview]);
       for i := 0 to AItem.Count - 1 do begin
         WriteMemberSummary(AItem.ItemAt(i), PasItem.Kind in CIOClassTypes, HL+1);
       end;
 
-      WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescriptions]);
+      WriteHeading(HL + 1, 'description', Language.Translation[trDescriptions]);
       for i := 0 to AItem.Count - 1 do begin
         item := AItem.ItemAt(i); //expect: Classes, Variables...
         WriteMembersDetailed(item, PasItem.Kind in CIOClassTypes, HL+1);
@@ -1053,7 +1053,7 @@ begin //WriteDescriptionItem
     WriteSeeAlso(HL+1, AItem, PasItem.MyOwner);
   else  //case
   //write dump
-    WriteHeading(HL+1, '', FLanguage.Translation[AItem.id]);
+    WriteHeading(HL+1, '', Language.Translation[AItem.id]);
     WriteStartOfParagraph;
       WriteDirect(AItem.Name);
       WriteDirect('<b>');
@@ -1098,7 +1098,7 @@ begin //from WriteCIO
   //write file header
     HL := 1;  //top level of file
     //if not (AItem is TPasUnit) then
-    s := FLanguage.Translation[AItem.id] + ' ' + AItem.Name;
+    s := Language.Translation[AItem.id] + ' ' + AItem.Name;
     if Title = '' then
       t := AItem.MyUnit.Name + ': ' + s
     else
@@ -1316,7 +1316,7 @@ begin
 
   if Item is TPasItem then begin
     owner := PasItem.MyOwner;
-    if FItemFiles then begin
+    if ItemFiles then begin
       if Item.ID = trNoTrans then begin //const, var?
         Result := owner.OutputFileName + '#' + Item.Name;
       end else begin
@@ -1330,8 +1330,9 @@ begin
       Result := NewLink(PasItem.QualifiedName);
       Item.OutputFileName := Result;
     end else begin
-      Result := owner.OutputFileName;
-      assert(Result <> '', 'bad call sequence');
+      Result := owner.GetOutputFileName;
+      if Result = '' then
+        assert(Result <> '', 'bad call sequence');
       Result := Result + '#' + Item.Name;
     end;
   end else if Item is TAnchorItem then begin
@@ -1345,5 +1346,7 @@ begin
   end;
 end;
 
+initialization
+  RegisterGenerator('html', TFullHTMLDocGenerator);
 end.
 

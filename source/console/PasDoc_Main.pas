@@ -13,8 +13,13 @@ uses
   PasDoc_Languages,
   SysUtils,
   PasDoc_Utils,
+{$IFDEF old}
   PasDoc_GenHtml,
   PasDoc_GenSimpleXML,
+{$ELSE}
+  PasDoc_GenFullHtml,
+  PasDoc_GenFullXML,
+{$ENDIF}
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp,
   PasDoc_Gen,
@@ -28,51 +33,55 @@ uses
 type
   TPasdocOptions = class(TOptionParser)
   public
-    OptionVerbosity: TIntegerOption;
-    OptionDefine: TStringOptionList;
-    OptionHelp: TBoolOption;
-    OptionVersion: TBoolOption;
-    OptionIncludePaths: TPathListOption;
-    OptionDescriptions,
-    OptionConditionalFile,
-    OptionSourceList,
-    OptionAbbrevFiles: TStringOptionList;
-    OptionHtmlHelpContents,
-    OptionFooter,
-    OptionHeader,
-    OptionName,
-    OptionTitle,
-    OptionFormat,
-    OptionOutputPath,
-    OptionLanguage,
-    OptionAspell,
-    OptionSpellCheckIgnoreWords: TStringOption;
-    OptionStarOnly,
-    OptionGenerator,
-    OptionNumericFilenames,
-    OptionWriteUsesList,
-    OptionWriteGVUses,
-    OptionWriteGVClasses: TBoolOption;
-    OptionLinkGVUses: TStringOption;
-    OptionLinkGVClasses: TStringOption;
-    OptionVisibleMembers: TSetOption;
-    OptionCommentMarker: TStringOptionList;
-    OptionMarkerOptional: TBoolOption;
-    OptionIgnoreLeading: TStringOption;
-    OptionCacheDir: TStringOption;
-    OptionFullLink: TBoolOption;
+    OptionAbbrevFiles: TStringOptionList; //<Abbreviations using ParseAbbreviationsFile
+    OptionAspell: TStringOption;  //<AspellLanguage, CheckSpelling
+    OptionAutoAbstract: TBoolOption;  //<AutoAbstract
+    OptionAutoLink: TBoolOption;  //<AutoLink
+    OptionAutoLinkExclude: TStringOption; //<AutoLinkExclude
+    OptionCacheDir: TStringOption;  //<CacheDir
+    OptionCommentMarker: TStringOptionList; //<CommentMarkers
+    OptionConclusion: TStringOption;  //<ConclusionFileName
+    OptionConditionalFile: TStringOptionList; //<Directives
     OptionCSS: TStringOption; { Using external CSS file for HTML output }
-    OptionAutoAbstract: TBoolOption;
-    OptionLinkLook: TStringOption;
-    OptionUseTipueSearch: TBoolOption;
-    OptionSort: TSetOption;
-    OptionIntroduction: TStringOption;
-    OptionConclusion: TStringOption;
+    OptionDefine: TStringOptionList;  //<Directives
+    OptionDescriptions: TStringOptionList;  //<DescriptionFileNames
+    OptionFooter: TStringOption;
+    OptionFormat: TStringOption;
+    OptionFullLink: TBoolOption;  //<LinkLook
+    //GeneratorInfo?
+    OptionGenerator: TBoolOption; //<print header
+    OptionHeader: TStringOption;
+    OptionHelp: TBoolOption;  //<Show help and exit
+    OptionHtmlHelpContents: TStringOption;
+    OptionIgnoreLeading: TStringOption; //<IgnoreLeading
+    OptionImplicitVisibility: TStringOption;  //<ImplicitVisibility
+    OptionIncludePaths: TPathListOption;  //<IncludeDirectories
+    OptionIntroduction: TStringOption;  //<IntroductionFileName
+
+    OptionLanguage: TStringOption;  //<LanguageID using GetLanguageFromStr
     OptionLatexHead: TStringOption;
-    OptionImplicitVisibility: TStringOption;
-    OptionNoMacro: TBoolOption;
-    OptionAutoLink: TBoolOption;
-    OptionAutoLinkExclude: TStringOption;
+
+    OptionLinkGVUses: TStringOption;  //<LinkGraphVizUses
+    OptionLinkGVClasses: TStringOption; //<LinkGraphVizClasses
+    OptionLinkLook: TStringOption;  //<LinkLook
+    OptionMarkerOptional: TBoolOption;  //<MarkerOptional
+    OptionName: TStringOption;  //<ProjectName
+    OptionNoMacro: TBoolOption; //<HandleMacros
+    OptionNumericFilenames: TBoolOption;
+    OptionOutputPath: TStringOption;  //<DestinationDirectory
+    //SingleCharMarkers?
+    OptionSort: TSetOption; //<SortSettings
+    OptionSourceList: TStringOptionList;  //<SourceFileNames using AddSourceFileNamesFromFile
+    OptionSpellCheckIgnoreWords: TStringOption; //<SpellCheckIgnoreWords
+    OptionStarOnly: TBoolOption;  //<using StarStyleOnly
+    OptionTitle: TStringOption; //<Title
+    OptionUseTipueSearch: TBoolOption;
+    OptionVersion: TBoolOption; //<show version and exit
+    OptionVerbosity: TIntegerOption;  //<Verbosity
+    OptionVisibleMembers: TSetOption; //<ShowVisibilities
+    OptionWriteGVUses: TBoolOption; //<GraphVizUses
+    OptionWriteGVClasses: TBoolOption;  //<GraphVizClasses
+    OptionWriteUsesList: TBoolOption; //<WriteUsesClause
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -323,7 +332,8 @@ type
 procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
 
   { sets the html specific options and returns its parameter as TDocGenerator }
-  function SetHtmlOptions(Generator: TGenericHTMLDocGenerator): TDocGenerator;
+  //function SetHtmlOptions(Generator: TGenericHTMLDocGenerator): TDocGenerator;
+  procedure SetHtmlOptions(Generator: TPasDoc);
   begin
     if OptionFooter.WasSpecified then
       Generator.Footer := FileToString(OptionFooter.Value);
@@ -339,24 +349,30 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
 
     Generator.UseTipueSearch := OptionUseTipueSearch.TurnedOn;
 
-    Result := Generator;
+    //Result := Generator;
   end;
 
+{$IFDEF old}
   function SetSimpleXMLOptions(Generator: TSimpleXMLDocGenerator): TDocGenerator;
   begin
     Result := Generator;
   end;
+{$ELSE}
+{$ENDIF}
 
   { Sets HTML-help specific options and returns its parameter as TDocGenerator }
-  function SetHtmlHelpOptions(Generator: THTMLHelpDocGenerator): TDocGenerator;
+  //function SetHtmlHelpOptions(Generator: THTMLHelpDocGenerator): TDocGenerator;
+  procedure SetHtmlHelpOptions(Generator: TPasDoc);
   begin
     Generator.ContentsFile := OptionHtmlHelpContents.Value;
 
-    Result := SetHtmlOptions(Generator);
+    //Result :=
+    SetHtmlOptions(Generator);
   end;
 
   { Sets Latex specific options and returns its parameter as TDocGenerator }
-  function SetLatexOptions(Generator: TTexDocGenerator): TDocGenerator;
+  //function SetLatexOptions(Generator: TTexDocGenerator): TDocGenerator;
+  procedure SetLatexOptions(Generator: TPasDoc);
   begin
     if OptionLatexHead.Value <> '' then
     try
@@ -370,15 +386,18 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
       end;
     end;
 
-    Result := Generator;
+    //Result := Generator;
   end;
 
+{$IFDEF old}
   { Sets Latex and Latex2rtf specific options and returns its parameter as TDocGenerator }
   function SetRtfOptions(Generator: TTexDocGenerator): TDocGenerator;
   begin
     Generator.Latex2rtf := True;
     Result := SetLatexOptions(Generator);
   end;
+{$ELSE}
+{$ENDIF}
 
   function GetLanguageFromStr(S: string): TLanguageID;
   begin
@@ -391,6 +410,7 @@ var
   SS: TSortSetting;
   Vis: TVisibility;
 begin
+{$IFDEF old}
   OptionFormat.Value := LowerCase(OptionFormat.Value);
   if OptionFormat.Value = 'html' then begin
     PasDoc.Generator := SetHtmlOptions(THTMLDocGenerator.Create(PasDoc));
@@ -406,17 +426,23 @@ begin
     raise EInvalidCommandLine.CreateFmt(
       'Unknown output format "%s"', [OptionFormat.Value]);
   end;
+{$ELSE}
+  PasDoc.DocType := LowerCase(OptionFormat.Value);
+  SetHtmlHelpOptions(PasDoc);
+  SetLatexOptions(PasDoc);
+  //SetRtfOptions(PasDoc);
+{$ENDIF}
 
   PasDoc.Directives.Assign(OptionDefine.Values);
   for i := 0 to OptionConditionalFile.Values.Count - 1 do begin
     PasDoc.Directives.LoadFromTextFileAdd(OptionConditionalFile.Values[i]);
   end;
 
-  PasDoc.Generator.DestinationDirectory := OptionOutputPath.Value;
+  PasDoc.DestinationDirectory := OptionOutputPath.Value;
   PasDoc.IncludeDirectories.Assign(OptionIncludePaths.Values);
 
   if OptionLanguage.WasSpecified then
-    PasDoc.Generator.Language := GetLanguageFromStr(OptionLanguage.Value);
+    PasDoc.LanguageID := GetLanguageFromStr(OptionLanguage.Value);
 
   PasDoc.ProjectName := OptionName.Value;
 
@@ -430,9 +456,10 @@ begin
 
   PasDoc.Verbosity := OptionVerbosity.Value;
 
-  PasDoc.Generator.NoGeneratorInfo := OptionGenerator.TurnedOn;
-  PasDoc.Generator.WriteUsesClause := OptionWriteUsesList.TurnedOn;
+  PasDoc.GeneratorInfo := not OptionGenerator.TurnedOn;
+  PasDoc.WriteUsesClause := OptionWriteUsesList.TurnedOn;
 
+{$IFDEF old}
   if OptionUseTipueSearch.TurnedOn then begin
     if not (PasDoc.Generator is TGenericHTMLDocGenerator) then begin
       raise EInvalidCommandLine.Create(
@@ -446,6 +473,8 @@ begin
         ' option only for HTMLHelp output format');
     end;
   end;
+{$ELSE}
+{$ENDIF}
 
   if OptionCommentMarker.WasSpecified then begin
     PasDoc.CommentMarkers.Assign(OptionCommentMarker.Values);
@@ -463,37 +492,38 @@ begin
     if OptionVisibleMembers.HasValue(VisToStr(Vis)) then
       PasDoc.ShowVisibilities :=  PasDoc.ShowVisibilities + [Vis];
 
-  PasDoc.Generator.OutputGraphVizUses := OptionWriteGVUses.TurnedOn;
-  PasDoc.Generator.OutputGraphVizClassHierarchy := OptionWriteGVClasses.TurnedOn;
-  PasDoc.Generator.LinkGraphVizUses := OptionLinkGVUses.Value;
-  PasDoc.Generator.LinkGraphVizClasses := OptionLinkGVClasses.Value;
+  PasDoc.OutputGraphVizUses := OptionWriteGVUses.TurnedOn;
+  PasDoc.OutputGraphVizClassHierarchy := OptionWriteGVClasses.TurnedOn;
+  PasDoc.LinkGraphVizUses := OptionLinkGVUses.Value;
+  PasDoc.LinkGraphVizClasses := OptionLinkGVClasses.Value;
 
   for i := 0 to OptionAbbrevFiles.Values.Count-1 do begin
-    PasDoc.Generator.ParseAbbreviationsFile(OptionAbbrevFiles.Values[i]);
+    PasDoc.ParseAbbreviationsFile(OptionAbbrevFiles.Values[i]);
   end;
 
-  PasDoc.Generator.CheckSpelling := OptionASPELL.WasSpecified;
-  PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
+  PasDoc.CheckSpelling := OptionASPELL.WasSpecified;
+  PasDoc.AspellLanguage := OptionASPELL.Value;
   if OptionSpellCheckIgnoreWords.Value <> '' then
-    PasDoc.Generator.SpellCheckIgnoreWords.LoadFromFile(
+    PasDoc.SpellCheckIgnoreWords.LoadFromFile(
       OptionSpellCheckIgnoreWords.Value);
 
   PasDoc.CacheDir := OptionCacheDir.Value;
 
-  PasDoc.Generator.AutoAbstract := OptionAutoAbstract.TurnedOn;
+  PasDoc.AutoAbstract := OptionAutoAbstract.TurnedOn;
 
   if SameText(OptionLinkLook.Value, 'default') then
-    PasDoc.Generator.LinkLook := llDefault else
-  if SameText(OptionLinkLook.Value, 'full') then
-    PasDoc.Generator.LinkLook := llFull else
-  if SameText(OptionLinkLook.Value, 'stripped') then
-    PasDoc.Generator.LinkLook := llStripped else
+    PasDoc.LinkLook := llDefault
+  else if SameText(OptionLinkLook.Value, 'full') then
+    PasDoc.LinkLook := llFull
+  else if SameText(OptionLinkLook.Value, 'stripped') then
+    PasDoc.LinkLook := llStripped
+  else
     raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--link-look" option : "%s"',
       [OptionLinkLook.Value]);
 
   if OptionFullLink.TurnedOn then
-    PasDoc.Generator.LinkLook := llFull;
+    PasDoc.LinkLook := llFull;
 
   { interpret OptionSort value }
   PasDoc.SortSettings := [];
@@ -504,34 +534,35 @@ begin
   PasDoc.IntroductionFileName := OptionIntroduction.Value;
   PasDoc.ConclusionFileName := OptionConclusion.Value;
 
+{$IFDEF old}
   if OptionLatexHead.Value <> '' then begin
     if not (PasDoc.Generator is TTexDocGenerator) then begin
       raise EInvalidCommandLine.Create(
         'You can only use the "latex-head" option with LaTeX output.');
     end;
   end;
-  
+{$ELSE}
+  //show warning?
+{$ENDIF}
+
   if SameText(OptionImplicitVisibility.Value, 'public') then
-    PasDoc.ImplicitVisibility := ivPublic else
-  if SameText(OptionImplicitVisibility.Value, 'published') then
-    PasDoc.ImplicitVisibility := ivPublished else
-  if SameText(OptionImplicitVisibility.Value, 'implicit') then
-    PasDoc.ImplicitVisibility := ivImplicit else
+    PasDoc.ImplicitVisibility := ivPublic
+  else if SameText(OptionImplicitVisibility.Value, 'published') then
+    PasDoc.ImplicitVisibility := ivPublished
+  else if SameText(OptionImplicitVisibility.Value, 'implicit') then
+    PasDoc.ImplicitVisibility := ivImplicit
+  else
     raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--implicit-visibility" option : "%s"',
       [OptionImplicitVisibility.Value]);
-      
+
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
   PasDoc.AutoLink := OptionAutoLink.TurnedOn;
-  
-  if OptionAutoLinkExclude.Value <> '' then
-  begin
-    PasDoc.Generator.AutoLinkExclude.LoadFromFile(OptionAutoLinkExclude.Value);
-    { Sorted makes searching AutoLinkExclude.IndexOf (used heavily when
-      auto-linking to respect this option) obviously much faster.
-      The speed improvement can be literally felt when you specified
-      large file like /usr/share/dict/american-english for this option. }
-    PasDoc.Generator.AutoLinkExclude.Sorted := true;
+
+  if OptionAutoLinkExclude.Value <> '' then begin
+  //speed up loading (unsorted)
+    PasDoc.AutoLinkExclude.Sorted := False;
+    PasDoc.AutoLinkExclude.LoadFromFile(OptionAutoLinkExclude.Value);
   end;
 end;
 

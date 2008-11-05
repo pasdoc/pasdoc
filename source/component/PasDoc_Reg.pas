@@ -19,10 +19,13 @@ implementation
 
 uses
   Classes,
-  PasDoc_GenHtml,
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp,
+{$IFDEF old}
+  PasDoc_GenHtml,
   PasDoc_GenSimpleXML,
+{$ELSE}
+{$ENDIF}
   PasDoc_GenFullXML,
   PasDoc_GenFullHtml,
   PasDoc_Base;
@@ -30,9 +33,15 @@ uses
 procedure Register;
 begin
   RegisterComponents('PasDoc', [TPasDoc,
-    THTMLDocGenerator, THTMLHelpDocGenerator, TFullHTMLDocGenerator,
+  {$IFDEF old}
+    THTMLDocGenerator,
+    TSimpleXMLDocGenerator,
+  {$ELSE}
+  {$ENDIF}
+    THTMLHelpDocGenerator,
+    TFullHTMLDocGenerator,
     TTexDocGenerator,
-    TSimpleXMLDocGenerator, TXMLDocGenerator
+    TXMLDocGenerator
   ]);
 end;
 

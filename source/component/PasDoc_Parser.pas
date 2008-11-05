@@ -33,6 +33,7 @@ interface
 uses
   Classes,
   PasDoc_Types,
+  PasDoc_Base,
   PasDoc_Languages,
   PasDoc_Items,
   PasDoc_Scanner,
@@ -285,23 +286,10 @@ type
 
     procedure ParseUses(const U: TPasUnit);
 
-    { This parses the sequence of identifiers separated by commas
-      and ended by symbol FinalSymbol. More specifically in EBNF it parses
-        TOK_IDENTIFIER (SYM_COMMA TOK_IDENTIFIER)+ FinalSymbol
-      FinalSymbol must be something else than SYM_COMMA.
-      After executing this, next token (returned by GetNextToken and PeekNextToken)
-      will point to the next token right after FinalSymbol.
-      All found identifiers will be appended to Names.
-
-      If RawDescriptions <> nil then this will also get
-      all comments documenting the identifiers in Names
-      (it will append the same number of items to
-      RawDescriptions as it appended to Names).
-      The strategy how comments are assigned to item in this case is
-      described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
-      (see section "Multiple fields/variables in one declaration"). }
-
+  {$IFDEF old}
     procedure SetCommentMarkers(const Value: TStringList);
+  {$ELSE}
+  {$ENDIF}
 
     { Skips all whitespace and comments and while it sees some hint directive
       (platform, library, deprecated) it consumes it, sets appropriate
@@ -335,7 +323,7 @@ type
     This is only a compatibility hack, better use ">" and "<" markers instead.
   *)
     SingleCharMarkers: boolean;
-
+  {$IFDEF old}
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
     constructor Create(
@@ -346,6 +334,12 @@ type
       const VerbosityLevel: Cardinal;
       const AStreamName, AStreamPath: string;
       const AHandleMacros: boolean);
+  {$ELSE}
+    { Create a parser, initialize the scanner with input stream S.
+      All strings in SD are defined compiler directives. }
+    constructor Create(InputStream: TStream; const AStreamName, AStreamPath: string;
+      const CmdOptions: TOptionRec);
+  {$ENDIF}
 
     { Release all dynamically allocated memory. }
     destructor Destroy; override;
@@ -355,7 +349,12 @@ type
     procedure ParseUnitOrProgram(var U: TPasUnit);
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
+  {$IFDEF old}
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
+  {$ELSE}
+  //refers to the global CommentMarkers option.
+    property CommentMarkers: TStringList read FCommentMarkers write FCommentMarkers;
+  {$ENDIF}
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
     property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
   //if this is ever needed... (ShowVisibilities was moved into PasDoc_items)
@@ -382,6 +381,7 @@ end;
 { TParser }
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 constructor TParser.Create(
   const InputStream: TStream;
   const Directives: TStringVector;
@@ -403,19 +403,49 @@ begin
   //ItemsForNextBackComment := TPasItems.Create(false);
   ScopeStack := TList.Create;
 end;
+{$ELSE}
+
+constructor TParser.Create(InputStream: TStream; const AStreamName, AStreamPath: string;
+  const CmdOptions: TOptionRec);
+begin
+  inherited Create;
+  FOnMessage := CmdOptions.OnMessage;
+  FVerbosity := CmdOptions.Verbosity;
+
+{$IFDEF old}
+  Scanner := TScanner.Create(InputStream, OnMessageEvent,
+    VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
+  Scanner.AddSymbols(Directives);
+  Scanner.IncludeFilePaths := IncludeFilePaths;
+  FCommentMarkers := TStringlist.Create;
+{$ELSE}
+  Scanner := TScanner.Create(InputStream, AStreamName, AStreamPath, CmdOptions);
+  ImplicitVisibility := CmdOptions.ImplicitVisibility;
+  CommentMarkers := CmdOptions.CommentMarkers;
+  MarkersOptional := CmdOptions.MarkerOptional;
+  SingleCharMarkers := CmdOptions.SingleCharMarkers;
+  IgnoreLeading := CmdOptions.IgnoreLeading;
+{$ENDIF}
+
+  //ItemsForNextBackComment := TPasItems.Create(false);
+  ScopeStack := TList.Create;
+end;
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
 destructor TParser.Destroy;
 begin
+{$IFDEF old}
   FCommentMarkers.Free;
+{$ELSE}
+  //owned by doc/generator
+{$ENDIF}
   Scanner.Free;
-  //ItemsForNextBackComment.Free;
   ScopeStack.Free;
   Peeked.Free;
   Token.Free;
   Identifier.Free;
-  //BlockComment.Free;
   CancelComments;
   inherited;
 end;
@@ -1753,10 +1783,13 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TParser.SetCommentMarkers(const Value: TStringList);
 begin
   FCommentMarkers.Assign(Value);
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TParser.SkipDeclaration(fSkipNext: boolean; CurItem: TPasItem);
 var

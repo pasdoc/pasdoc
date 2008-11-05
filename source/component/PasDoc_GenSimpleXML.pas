@@ -43,7 +43,10 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
   public
+  {$IFDEF old}
     constructor Create(AOwner: TComponent); override;
+  {$ELSE}
+  {$ENDIF}
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
   end;
@@ -53,10 +56,13 @@ implementation
 uses
   PasDoc_ObjectVector, SysUtils;
 
+{$IFDEF old}
 constructor TSimpleXMLDocGenerator.Create(AOwner: TComponent);
 begin
   inherited create(AOwner);
 end;
+{$ELSE}
+{$ENDIF}
 
 function TSimpleXMLDocGenerator.GetFileExtension:string;
 begin

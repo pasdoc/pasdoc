@@ -563,7 +563,6 @@ type
     property ShortDescription: string read GetShortDescription;
   {$IFDEF paragraphs}
     property Descriptions: TDescriptionItem read FDescriptionList;
-    procedure AddDescription(const s: string);
   {$ELSE}
   {$ENDIF}
 
@@ -813,7 +812,9 @@ type
       Must always end with PathDelim.
       In this class returns MyUnit.BasePath. }
     function BasePath: string; override;
-  end;
+    //return output file to use.
+    function  GetOutputFileName: string;
+end;
 
   TPasItemClass = class of TPasItem;
 
@@ -2148,6 +2149,13 @@ end;
 function TPasItem.BasePath: string;
 begin
   Result := MyUnit.BasePath;
+end;
+
+function TPasItem.GetOutputFileName: string;
+begin
+  Result := FOutputFileName;
+  if Result = '' then
+    Result := MyOwner.GetOutputFileName;
 end;
 
 function TPasItem.QualifiedName: String;
