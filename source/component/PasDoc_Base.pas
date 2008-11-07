@@ -41,12 +41,11 @@ const
   DEFAULT_VERBOSITY_LEVEL = 2;
 
 type
-  TPasDoc = class;
-
   TLinkLook = (llDefault, llFull, llStripped);
 
   TOptionRec = record
   //@groupbegin(out Results)
+    AllUnits, DocUnits: TPasUnits;
     Conclusion, Introduction: TExternalItem;
     MasterFile: string;
   //<@groupend
@@ -100,9 +99,9 @@ type
     UseTipueSearch: boolean;
 
     ContentsFile: string;
+    { The content of the CSS file. The name of the CSS file would be more useful. }
     CSS: string;
     Footer: string;
-    { The content of the CSS file. }
     Header: string;
   //<@groupend
 
@@ -127,13 +126,13 @@ type
   //<@groupend
   end;
 
-(* Base class for both TPasDoc and all generators.
+(* Base class for all generators.
   It is used as a container for the options.
 *)
-  TPasDocBase = class(TComponent)
+  TPasDoc = class(TComponent)
   protected
     FDoc: TPasDoc;  //<nil if not owned
-    FUnits: TPasUnits;
+    //-FUnits: TPasUnits;
     Options: TOptionRec;
   //@groupbegin(setopts Option Setters)
     function  GetLanguage: TLanguageID;
@@ -173,13 +172,6 @@ type
     function CreateLink(const Item: TBaseItem): string; virtual;
 
   //- created read-only properties
-    { All TPasUnit objects which have been created from the list of file names
-      during the parsing. }
-    property Units: TPasUnits read FUnits;
-    // After @link(Execute) has been called, @name holds the conclusion.
-    property Conclusion: TExternalItem read Options.Conclusion;
-    // After @link(Execute) has been called, @name holds the introduction.
-    property Introduction: TExternalItem read Options.Introduction;
     { the (human) output language of the documentation file(s) }
     property Language: TPasDocLanguages read Options.Language;
   public
@@ -188,8 +180,8 @@ type
     destructor Destroy; override;
 
     { Starts creating the documentation.
-      Must be implemented for TPasDoc and TPasGen. }
-    procedure Execute(fGenerate: boolean = True); virtual; abstract;
+      This version invokes the registered generator for DocType. }
+    procedure Execute(fGenerate: boolean = True); virtual;
 
   //------------- command line helpers -----------
 
@@ -203,10 +195,22 @@ type
       DashMeansStdin: boolean);
     procedure ParseAbbreviationsFile(const AFileName: string);
 
+    { All TPasUnit objects which have been created from the list of file names
+      during the parsing. }
+    property AllUnits: TPasUnits read Options.AllUnits;
+    { All TPasUnit objects which have not been @@excluded from the documentation. }
+    property DocUnits: TPasUnits read Options.DocUnits;
   { Item names for which no auto links are created. Loaded from file, if ever used.}
     property AutoLinkExclude: TStringList read Options.AutoLinkExclude;
+    // After @link(Execute) has been called, @name holds the conclusion.
+    property Conclusion: TExternalItem read Options.Conclusion;
+    // After @link(Execute) has been called, @name holds the introduction.
+    property Introduction: TExternalItem read Options.Introduction;
   //File usable for "open" command, to display the created documentation.
     property MasterFile: string read Options.MasterFile;
+  private
+    { All units used in the document preparation step. }
+    property Units: TPasUnits read Options.AllUnits;
 
   published
     property Abbreviations: TStringList read Options.Abbreviations write SetAbbreviations;
@@ -318,20 +322,20 @@ type
 
     property ContentsFile: string read Options.ContentsFile write Options.ContentsFile;
     { The content of the CSS file. }
-    property CSS: string read Options.CSS write Options.CSS;
+    property CSS: string read Options.CSS write Options.CSS stored False;
     property Footer: string read Options.Footer write Options.Footer;
     property Header: string read Options.Header write Options.Header;
   //<@groupend
 
   {@groupbegin(tex TeX Options)}
-    property Latex2rtf: boolean read Options.Latex2rtf;
+    property Latex2rtf: boolean read Options.Latex2rtf write Options.Latex2rtf;
     property LatexHead: TStrings read Options.LatexHead write Options.LatexHead;
   //<@groupend
   end;
 
 (* Base class for generators. Declares the methods used by TPasDoc.
 *)
-  TPasDocGen = class(TPasDocBase)
+  TPasDocGen = class(TPasDoc)
   protected
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
@@ -360,19 +364,6 @@ type
   end;
 
   TGeneratorClass = class of TPasDocGen;
-
-  { The main object in the pasdoc application, holds all parameters.
-    Parses files, then invokes the documentation generator,
-    which creates one or more documentation output files. }
-  TPasDoc = class(TPasDocBase)
-  private
-    FGenerator: TPasDocGen; //- TDocGenerator;
-  public
-    { Starts creating the documentation. Creates and invokes the appropriate generator. }
-    procedure Execute(fGenerate: boolean = True); override;
-    { Create the appropriate generator and let it produce the documentation.
-      @return(False if type is unhandled.) }
-  end;
 
   { ---------------------------------------------------------------------------- }
   { Compiler Identification Constants }
@@ -455,7 +446,7 @@ const
         PASDOC_FULL_INFO. It's too long: contains the time,
         day of the week, and a descriptive version. Like
         @preformatted(2006-11-15 07:12:34 +0100 (Wed, 15 Nov 2006))
-        
+
         Moreover, it contains indication of local user's system time,
         and the words (day of the week and month's name) are
         localized. So it depends on the locale developer has set
@@ -480,10 +471,23 @@ const
   it returns the same thing (as long as this is the same binary). }
 function PASDOC_FULL_INFO: string;
 
+(* @abstract(Register a generator class for a document format.)
 
+  Include e.g. @code(RegisterGenerator('html', THtmlDocGenerator);) in the
+  @code(initialization) part of the unit containing the generator class.
+
+  Please note that the generator units must be used in some unit of your project,
+  otherwise the linker will not include the unit into the executable file,
+  and the format and generator will not be available at runtime.
+*)
 procedure RegisterGenerator(const AName: string; AClass: TGeneratorClass);
 
 var
+(* @abstract(List of all registered generators.)
+  Usable for GUI applications, to get a list of supported document formats.
+  The unit order in the @code(uses) clause is reflected in this list.
+  @seealso(RegisterGenerator for the registration of a generator class)
+*)
   Generators: TStringVector;
 
 implementation
@@ -500,10 +504,13 @@ uses
 function COMPILER_NAME: string;
 begin
   COMPILER_NAME :=
-    {$IFDEF FPC}
-    'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
-    {$ENDIF}
-
+  {$IFDEF FPC}
+    Format('FPC %d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
+  {$ELSE}
+  {$IFDEF conditionalexpressions}
+  //support any future version
+    Format('DELPHI %2.1f', [CompilerVersion]);
+  {$ELSE}
     {$IFDEF KYLIX_1} 'KYLIX 1'; {$ENDIF}
     {$IFDEF KYLIX_2} 'KYLIX 2'; {$ENDIF}
     {$IFDEF KYLIX_3} 'KYLIX 3'; {$ENDIF}
@@ -514,6 +521,8 @@ begin
     {$IFDEF DELPHI_6} 'DELPHI 6'; {$ENDIF}
     {$IFDEF DELPHI_5} 'DELPHI 5'; {$ENDIF}
     {$IFDEF DELPHI_4} 'DELPHI 4'; {$ENDIF}
+  {$ENDIF}
+  {$ENDIF}
 end;
 
 function PASDOC_FULL_INFO: string;
@@ -534,7 +543,7 @@ end;
 
 { TPasDocBase }
 
-constructor TPasDocBase.Create(AOwner: TComponent);
+constructor TPasDoc.Create(AOwner: TComponent);
 var
   doc: TPasDoc absolute AOwner;
 begin
@@ -543,26 +552,24 @@ begin
   //Created by TPasDoc
     FDoc := doc; //signal "owned" in destructor
     Options := doc.Options; //copy options, don't own them
-  //get specific options
-    FUnits := TPasUnits.Create(False);
-    FUnits.Assign(doc.Units);
   end else begin
   //stand alone version, of TPasDoc or an independent generator
-    FUnits := TPasUnits.Create(True);
-
   //Set default property values, init Options objects
     Options.Abbreviations := TStringList.Create;
       Options.Abbreviations.Duplicates := dupIgnore;
+    Options.AllUnits := TPasUnits.Create(True);
     Options.AutoLinkExclude := TStringList.Create;
       Options.AutoLinkExclude.CaseSensitive := false;
     Options.CommentMarkers := TStringList.Create;
-    //Options.CSS := DefaultPasdocCss;
+    //Options.CSS := DefaultPasdocCss; - only when really needed
     Options.DescriptionFileNames := TStringVector.Create;
     Options.Directives := TStringVector.Create;
+    Options.DocUnits := TPasUnits.Create(False);
     Options.GeneratorInfo := true;
     Options.HandleMacros := true;
     Options.ImplicitVisibility := ivPublic;
     Options.IncludeDirectories := TStringVector.Create;
+    Options.LatexHead := TStringList.Create;
     Options.Language := TPasDocLanguages.Create;
     Options.SourceFileNames := TStringVector.Create;
     Options.SpellCheckIgnoreWords := TStringList.Create;
@@ -570,40 +577,40 @@ begin
   end;
 end;
 
-destructor TPasDocBase.Destroy;
+destructor TPasDoc.Destroy;
 begin
   if FDoc = nil then begin //not owned, destroy option objects
     FreeAndNil(Options.Abbreviations);
+    FreeAndNil(Options.AllUnits);
     FreeAndNil(Options.AutoLinkExclude);
     FreeAndNil(Options.CommentMarkers);
+    FreeAndNil(Options.Conclusion);
     FreeAndNil(Options.DescriptionFileNames);
+    FreeAndNil(Options.DocUnits);
     FreeAndNil(Options.Directives);
     FreeAndNil(Options.IncludeDirectories);
+    FreeAndNil(Options.Introduction);
     FreeAndNil(Options.Language);
     FreeAndNil(Options.SourceFileNames);
     FreeAndNil(Options.SpellCheckIgnoreWords);
-    FUnits.Free;
-  //generator objects
-    FreeAndNil(Options.Conclusion);
-    FreeAndNil(Options.Introduction);
   end;
   inherited;
 end;
 
-procedure TPasDocBase.DoError(const AMessage: string; const AArguments: array of
+procedure TPasDoc.DoError(const AMessage: string; const AArguments: array of
   const; const AExitCode: Word);
 begin
   raise EPasDoc.Create(AMessage, AArguments, AExitCode);
 end;
 
-procedure TPasDocBase.DoMessage(const AVerbosity: Cardinal; const AMessageType:
+procedure TPasDoc.DoMessage(const AVerbosity: Cardinal; const AMessageType:
   TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 begin
   if (AVerbosity <= Verbosity) and Assigned(OnMessage) then
     OnMessage(AMessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
-procedure TPasDocBase.GenMessage(const MessageType: TPasDocMessageType;
+procedure TPasDoc.GenMessage(const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
 begin
   DoMessage(AVerbosity, MessageType, AMessage, []);
@@ -611,7 +618,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDocBase.AddSourceFileNames(const AFileNames: TStrings);
+procedure TPasDoc.AddSourceFileNames(const AFileNames: TStrings);
 var
   SR: TSearchRec;
   FileMask, Path, s: string;
@@ -644,7 +651,7 @@ begin
   end;
 end;
 
-procedure TPasDocBase.AddSourceFileNamesFromFile(const FileName: string;
+procedure TPasDoc.AddSourceFileNamesFromFile(const FileName: string;
   DashMeansStdin: boolean);
 var
   ASV: TStringVector;
@@ -661,7 +668,7 @@ begin
   end;
 end;
 
-function TPasDocBase.FindGlobal(const NameParts: TNameParts): TBaseItem;
+function TPasDoc.FindGlobal(const NameParts: TNameParts): TBaseItem;
 var
   i: Integer;
   Item: TBaseItem;
@@ -728,7 +735,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TPasDocBase.ParseAbbreviationsFile(const AFileName: string);
+procedure TPasDoc.ParseAbbreviationsFile(const AFileName: string);
 var
   L: TStringList;
   i, p: Integer;
@@ -757,66 +764,66 @@ begin
   end;
 end;
 
-function TPasDocBase.GetLanguage: TLanguageID;
+function TPasDoc.GetLanguage: TLanguageID;
 begin
   Result := Language.Language;
 end;
 
-function TPasDocBase.GetStarStyle: boolean;
+function TPasDoc.GetStarStyle: boolean;
 begin
   Result := CommentMarkers.IndexOf('**') <> -1;
 end;
 
-procedure TPasDocBase.SetAbbreviations(Value: TStringList);
+procedure TPasDoc.SetAbbreviations(Value: TStringList);
 begin
   Abbreviations.Assign(Value);
 end;
 
-procedure TPasDocBase.SetCommentMarkers(const Value: TStringList);
+procedure TPasDoc.SetCommentMarkers(const Value: TStringList);
 begin
   CommentMarkers.Assign(Value);
 end;
 
-procedure TPasDocBase.SetDescriptionFileNames(
+procedure TPasDoc.SetDescriptionFileNames(
   const ADescriptionFileNames: TStringVector);
 begin
   DescriptionFileNames.Assign(ADescriptionFileNames);
 end;
 
-procedure TPasDocBase.SetDirectives(const ADirectives: TStringVector);
+procedure TPasDoc.SetDirectives(const ADirectives: TStringVector);
 begin
   Directives.Assign(ADirectives);
 end;
 
-procedure TPasDocBase.SetIncludeDirectories(
+procedure TPasDoc.SetIncludeDirectories(
   const AIncludeDirectores: TStringVector);
 begin
   IncludeDirectories.Assign(AIncludeDirectores);
 end;
 
-procedure TPasDocBase.SetLanguage(const Value: TLanguageID);
+procedure TPasDoc.SetLanguage(const Value: TLanguageID);
 begin
   Language.Language := Value;
 end;
 
-procedure TPasDocBase.SetLatexHead(const Value: TStrings);
+procedure TPasDoc.SetLatexHead(const Value: TStrings);
 begin
   LatexHead.Assign(Value);
 end;
 
-procedure TPasDocBase.SetSourceFileNames(
+procedure TPasDoc.SetSourceFileNames(
   const ASourceFileNames: TStringVector);
 begin
   SourceFileNames.Clear;
   AddSourceFileNames(ASourceFileNames);
 end;
 
-procedure TPasDocBase.SetSpellCheckIgnoreWords(Value: TStringList);
+procedure TPasDoc.SetSpellCheckIgnoreWords(Value: TStringList);
 begin
   SpellCheckIgnoreWords.Assign(Value);
 end;
 
-procedure TPasDocBase.SetStarStyle(const Value: boolean);
+procedure TPasDoc.SetStarStyle(const Value: boolean);
 var
   Idx: Integer;
 begin
@@ -829,42 +836,45 @@ begin
   end;
 end;
 
-function TPasDocBase.CreateLink(const Item: TBaseItem): string;
+function TPasDoc.CreateLink(const Item: TBaseItem): string;
 begin
   Result := Item.Name;
 end;
-
-{ TPasDoc }
 
 procedure TPasDoc.Execute(fGenerate: boolean);
 var
   i: integer;
   cls: TGeneratorClass;
+  Generator: TPasDocGen;
 
   procedure Generate;
   begin
-    FGenerator.Execute(fGenerate);
+    Generator.Execute(fGenerate);
   //copy results
-    Options := FGenerator.Options;
+    Options := Generator.Options;
   end;
 
 begin
 (* This is the PasDoc version.
   Create and invoke the appropriate generator.
 *)
+{$IFDEF old}
   if assigned(FGenerator) then
     Generate
-  else begin
+  else
+{$ELSE}
+{$ENDIF}
+  begin
   //create, invoke and destroy generator
     i := Generators.IndexOf(LowerCase(DocType));
     if i < 0 then
       DoError('Unknown generator: %s', [DocType], 3);
     TObject(cls) := Generators.Objects[i];
-    FGenerator := cls.Create(self);
+    Generator := cls.Create(self);
     try
       Generate;
     finally
-      FreeAndNil(FGenerator);
+      FreeAndNil(Generator);
     end;
   end;
 end;
@@ -926,14 +936,19 @@ var
     i: Integer;
     U: TPasUnit;
   begin
-  //remove @exclude'd units from our list.
+  //clone the unit list, remove @@excluded units from that list.
+    //DocUnits.Assign(AllUnits); - doesn't work?
+    //DocUnits.AddItems(AllUnits);
     for i := Units.Count - 1 downto 0 do begin
-      U := Units.UnitAt[i];
+      U := AllUnits.UnitAt[i];
       if u.ToBeExcluded then
-        Units.Delete(i)
-      else
+        //DocUnits.Delete(i)
+      else begin
+        DocUnits.Add(U);
         U.BuildSections;
+      end;
     end;
+  //from now on DocUnits should be used for unit processing
   end;
 
 (* Add linked description.
@@ -1078,7 +1093,7 @@ begin //Execute
   t1 := Now;
   ParseFiles;
 
-  if IsEmpty(FUnits) then
+  if IsEmpty(Units) then
     DoError('At least one unit must have been successfully parsed ' +
         'to write docs', [], 1);
 
@@ -1087,8 +1102,6 @@ begin //Execute
 
   BuildLinks; //may become invalid by destruction of excluded units!
 
-  //FUnits.SortDeep(SortSettings);
-
 (* Read external descriptions, found while parsing the units.
   Required for the editor, even if no docs are created.
   Should reside in TPasDoc, but stream handling is implemented in TDocGenerator.
@@ -1096,13 +1109,17 @@ begin //Execute
   LoadDescriptionFiles(DescriptionFileNames);
 
   if fGenerate then begin
+  (* This is where a specific generator is involved.
+    Descriptions are expanded into the output format,
+    then the output files are created.
+  *)
     ExpandDescriptions; //here items are marked for removal
       //and items are grouped - must be done before sorting!
     BuildUnitSections; //based on it's private unit list
-    FUnits.SortDeep(SortSettings);
+    DocUnits.SortDeep(SortSettings);
     WriteDocumentation;
   end else
-    FUnits.BuildSections; //optional, for editor, debugger...
+    AllUnits.BuildSections; //optional, for editor, debugger...
 
   if Options.GeneratorInfo then begin
     t2 := Now;
@@ -1145,13 +1162,11 @@ begin
     PasDoc_items.ShowVisibilities := ShowVisibilities; //must be known to all CIOs
     LLoaded := false;
 
-    if (CacheDir <> '') and FileExists(LCacheFileName) then
-    begin
+    if (CacheDir <> '') and FileExists(LCacheFileName) then begin
       DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
       U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
-      if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
-      begin
+      if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then begin
         DoMessage(2, pmtInformation, 'Cache file for %s is outdated.',
           [SourceFileName]);
       end else begin
@@ -1159,22 +1174,20 @@ begin
       end;
     end;
 
-    if not LLoaded then
-    begin
+    if not LLoaded then begin
       DoMessage(2, pmtInformation, 'Now parsing file %s...', [SourceFileName]);
       p.ParseUnitOrProgram(U);
     end;
 
-    if FUnits.ExistsUnit(U) then begin
+    if Units.ExistsUnit(U) then begin
       DoMessage(2, pmtWarning,
         'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
-        TPasUnit(FUnits.FindName(U.Name)).SourceFileName, SourceFileName]);
+        TPasUnit(Units.FindName(U.Name)).SourceFileName, SourceFileName]);
       U.Free;
-    end else
-    begin
+    end else begin
       U.SourceFileName := SourceFileName;
       U.SourceFileDateTime := FileDateToDateTime(FileAge(SourceFileName));
-      FUnits.Add(U);
+      Units.Add(U);
 
       { Now we know that unit was 100% successfully parsed.
 
@@ -1247,8 +1260,6 @@ var
   end;
 
 begin
-  FUnits.clear;
-
   DoMessage(1, pmtInformation, 'Starting Source File Parsing ...', []);
   if SourceFileNames.IsEmpty then Exit;
 

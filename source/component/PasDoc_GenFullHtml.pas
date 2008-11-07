@@ -578,8 +578,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
     Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
 
-    if not Result then
-    begin
+    if not Result then begin
       DoMessage(1, pmtError, 'Error: Could not create output file "' +
         BaseFileName + '".', []);
       Exit;
@@ -602,27 +601,28 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
     j: Integer;
   begin
     c := Units;
+    if IsEmpty(c) then
+      Exit; //should never happen
 
     if not CreateOverviewStream(ofUnits) then
       Exit;
 
-    if Assigned(c) and (c.Count > 0) then begin
-      WriteStartOfTable2Columns('unitstable', Language.Translation[trName],
-        Language.Translation[trDescription]);
-      for j := 0 to c.Count - 1 do begin
-        Item := c.PasItemAt[j];
-        WriteStartOfTableRow('');
-        WriteStartOfTableCell('itemname');
-        WriteLink(Item.FullLink, Item.Name, 'bold');
-        WriteEndOfTableCell;
+    //if Assigned(c) and (c.Count > 0) then begin
+    WriteStartOfTable2Columns('unitstable', Language.Translation[trName],
+      Language.Translation[trDescription]);
+    for j := 0 to c.Count - 1 do begin
+      Item := c.PasItemAt[j];
+      WriteStartOfTableRow('');
+      WriteStartOfTableCell('itemname');
+      WriteLink(Item.FullLink, Item.Name, 'bold');
+      WriteEndOfTableCell;
 
-        WriteStartOfTableCell('itemdesc');
-        WriteItemShortDescription(Item);
-        WriteEndOfTableCell;
-        WriteEndOfTableRow;
-      end;
-      WriteEndOfTable;
+      WriteStartOfTableCell('itemdesc');
+      WriteItemShortDescription(Item);
+      WriteEndOfTableCell;
+      WriteEndOfTableRow;
     end;
+    WriteEndOfTable;
     WriteFooter;
     WriteAppInfo;
     WriteEndOfDocument;
@@ -631,7 +631,6 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
 
   { Writes a Hierarchy list - this is more useful than the simple class list }
   procedure WriteHierarchy;
-  { todo -o twm: Make this recursive to handle closing </li> easily }
 
     procedure WriteLevel(lst: TDescriptionItem);
     var
@@ -683,10 +682,10 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
   begin
     if not CreateOverviewStream(Overview) then Exit;
 
-    if not ObjectVectorIsNilOrEmpty(Items) then 
+    if not ObjectVectorIsNilOrEmpty(Items) then
     begin
       WriteStartOfTable3Columns('itemstable',
-        Language.Translation[trName], 
+        Language.Translation[trName],
         Language.Translation[trUnit],
         Language.Translation[trDescription]);
 
@@ -712,11 +711,9 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
         WriteEndOfTableRow;
       end;
       WriteEndOfTable;
-    end else
-    begin
+    end else begin
       WriteStartOfParagraph;
-      WriteConverted(Language.Translation[
-        OverviewFilesInfo[Overview].NoItemsTranslationId]);
+      WriteConverted(Language.Translation[OverviewFilesInfo[Overview].NoItemsTranslationId]);
       WriteEndOfParagraph;
     end;
 
@@ -732,40 +729,54 @@ var
   TotalItems: TPasItems; // Collect all Items for final listing.
   PU: TPasUnit;
   Overview: TCreatedOverviewFile;
-  j: Integer;
+  i, j: Integer;
+  ml: TDescriptionItem;
 begin //WriteOverviewFiles
   WriteUnitOverviewFile;
   WriteHierarchy;
 
   // Make sure we don't free the Items when we free the container.
   TotalItems := TPasItems.Create(False);
+  PartialItems := TPasItems.Create(False);
   try
     for Overview := ofCios to HighCreatedOverviewFile do begin
       // Make sure we don't free the Items when we free the container.
-      PartialItems := TPasItems.Create(False);
-      try
-        for j := 0 to Units.Count - 1 do begin
-          PU := Units.UnitAt[j];
-          case Overview of
-            ofCIos                  : ItemsToCopy := PU.CIOs;
-            ofTypes                 : ItemsToCopy := PU.Types;
-            ofVariables             : ItemsToCopy := PU.Variables;
-            ofConstants             : ItemsToCopy := PU.Constants;
-            ofFunctionsAndProcedures: ItemsToCopy := PU.FuncsProcs;
-          else
-            ItemsToCopy := nil;
-          end;
-          PartialItems.InsertItems(ItemsToCopy);
+      //PartialItems := TPasItems.Create(False);
+      PartialItems.Clear;
+      for i := 0 to Units.Count - 1 do begin
+        PU := Units.UnitAt[i];
+        if PU.ToBeExcluded then
+          continue;
+      {$IFDEF old}
+        case Overview of
+          ofCIos                  : ItemsToCopy := PU.CIOs;
+          ofTypes                 : ItemsToCopy := PU.Types;
+          ofVariables             : ItemsToCopy := PU.Variables;
+          ofConstants             : ItemsToCopy := PU.Constants;
+          ofFunctionsAndProcedures: ItemsToCopy := PU.FuncsProcs;
+        else
+          ItemsToCopy := nil;
         end;
+        PartialItems.InsertItems(ItemsToCopy);
+      {$ELSE}
+        for j := 0 to PU.MemberLists.Count - 1 do begin
+          ml := PU.MemberLists.ItemAt(j);
+          if ml.ID = OverviewFilesInfo[Overview].TranslationId then
+            PartialItems.AddItems(ml);
+        end;
+      {$ENDIF}
+      end;
 
-        WriteItemsOverviewFile(Overview, PartialItems);
+      WriteItemsOverviewFile(Overview, PartialItems);
 
-        TotalItems.InsertItems(PartialItems);
-      finally PartialItems.Free end;
+      TotalItems.InsertItems(PartialItems);
     end;
 
     WriteItemsOverviewFile(ofIdentifiers, TotalItems);
-  finally TotalItems.Free end;
+  finally
+    TotalItems.Free;
+    PartialItems.Free;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1304,7 +1315,7 @@ end;
 function TFullHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 var
   PasItem: TPasItem absolute Item;
-  owner: TPasScope;
+  ItemOwner: TPasScope;
   PasScope: TPasScope absolute Item;
   Extern: TExternalItem absolute item;
   Anchor: TAnchorItem absolute item;
@@ -1315,24 +1326,23 @@ begin
   if (not Assigned(Item)) then Exit;
 
   if Item is TPasItem then begin
-    owner := PasItem.MyOwner;
+    ItemOwner := PasItem.MyOwner;
     if ItemFiles then begin
       if Item.ID = trNoTrans then begin //const, var?
-        Result := owner.OutputFileName + '#' + Item.Name;
+        Result := ItemOwner.OutputFileName + '#' + Item.Name;
       end else begin
         Result := NewLink(PasItem.QualifiedName);
         Item.OutputFileName := Result;
       end;
-    end else if owner = nil then begin //unit
+    end else if ItemOwner = nil then begin //unit
       Result := NewLink(Item.Name);
       Item.OutputFileName := Result;
     end else if PasItem.Kind in AllCIOTypes then begin
       Result := NewLink(PasItem.QualifiedName);
       Item.OutputFileName := Result;
     end else begin
-      Result := owner.GetOutputFileName;
-      if Result = '' then
-        assert(Result <> '', 'bad call sequence');
+      Result := ItemOwner.GetOutputFileName; //recursive, until a file name is found
+      //if Result = '' then assert(Result <> '', 'bad call sequence');
       Result := Result + '#' + Item.Name;
     end;
   end else if Item is TAnchorItem then begin

@@ -8,11 +8,14 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, Menus, CheckLst,
   uShell, 
-  PasDoc_Languages, PasDoc_GenLatex, PasDoc_Serialize, PasDoc_GenHtmlHelp,
-  PasDoc_Base, PasDoc_Items, PasDoc_Gen, PasDoc_GenHtml, PasDoc_SortSettings,
+  PasDoc_Languages,
+  PasDoc_Serialize,
+  //PasDoc_GenLatex, PasDoc_GenHtmlHelp, PasDoc_Gen, PasDoc_GenHtml,
+  //PasDoc_GenSimpleXML, PasDoc_GenFullXML, PasDoc_GenFullHtml,
+  PasDoc_Base, PasDoc_Items,
+  PasDoc_SortSettings,
   PasDoc_Types,
-  frDirs, frDir, ExtCtrls, PasDoc_GenSimpleXML,
-  PasDoc_GenFullXML, PasDoc_GenFullHtml;
+  frDirs, frDir, ExtCtrls;
 
 type
   TDocMain = class(TForm)
@@ -34,9 +37,7 @@ type
     tabGraph: TTabSheet;
     tabHTML: TTabSheet;
     tabSpelling: TTabSheet;
-    tabMarkers: TTabSheet;
     tabFiles: TTabSheet;
-    tabDirectories: TTabSheet;
     tabDefines: TTabSheet;
     tabGenerate: TTabSheet;
     GroupBox1: TGroupBox;
@@ -54,9 +55,6 @@ type
     swBackRef: TCheckBox;
     OpenDialog1: TOpenDialog;
     PasDoc1: TPasDoc;
-    HTMLDocGenerator: THTMLDocGenerator;
-    TexDocGenerator: TTexDocGenerator;
-    HTMLHelpDocGenerator: THTMLHelpDocGenerator;
     GroupBox2: TGroupBox;
     edHeader: TMemo;
     GroupBox3: TGroupBox;
@@ -127,14 +125,7 @@ type
     cbRem: TComboBox;
     edName: TEdit;
     swShowUses: TCheckBox;
-    SimpleXMLDocGenerator: TSimpleXMLDocGenerator;
-    XMLDocGenerator: TXMLDocGenerator;
     edValue: TEdit;
-    FullHTMLDocGenerator: TFullHTMLDocGenerator;
-  {$IFDEF fpc}
-    //procedure btnBrowseIncludeDirectoryClick(Sender: TObject);
-  {$ELSE}
-  {$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure lbOutTypeChange(Sender: TObject);
     procedure lbOutLangChange(Sender: TObject);
@@ -178,11 +169,11 @@ type
     function  _AddFiles(const dir, fn: string;
       const fd: TWIN32FindData; isDir: boolean): eFileEnum;
     procedure InitDirectives;
-    function  CheckIfSpellCheckingAvailable: boolean;
     procedure NewProject;
     procedure SetHasChanged(const AValue: boolean);
     procedure SetDefaults;
   {$IFDEF old}
+    function  CheckIfSpellCheckingAvailable: boolean;
     procedure SetOutputDirectory(const FileName: string);
   {$ELSE}
   {$ENDIF}
@@ -232,6 +223,13 @@ implementation
 
 uses
   PasDoc_Utils,
+//generators to use, in the desired order
+  PasDoc_GenFullHtml,
+  PasDoc_GenHtmlHelp,
+  PasDoc_GenLatex,
+  PasDoc_GenFullXML,
+  //PasDoc_Gen, PasDoc_GenHtml,
+  //PasDoc_GenSimpleXML,
 {$IFDEF fpc}
   frmAboutUnit,
   WWWBrowserRunnerDM,
@@ -285,6 +283,7 @@ end;
 procedure TDocMain.FormCreate(Sender: TObject);
 var
   LanguageIndex: TLanguageID;
+  //i: integer;
 begin
 //init lists
 //spelling
@@ -343,6 +342,7 @@ begin
 {$ELSE}
 {$ENDIF}
 
+  lbOutType.Items.Assign(Generators);
   lbOutTypeChange(nil); //call handler
 
 //connect files to include directories
@@ -583,7 +583,8 @@ const
     mainClassMembers_ = 'ClassMembers_';
     mainConclusionFileName = 'ConclusionFileName';
     mainCssFileName = 'CssFileName';
-    mainGenerateFormat = 'GenerateFormat';
+    //mainGenerateFormat = 'GenerateFormat';
+    mainDocType = 'DocType';
     mainIntroductionFileName = 'IntroductionFileName';
     mainLanguage = 'Language';
     mainLanguageName = 'LanguageName';
@@ -648,7 +649,8 @@ begin
   {$ENDIF}
     Ini.WriteString(secMain, mainRootDir, edRoot.Text);
     Ini.WriteString(secMain, mainOutputDir, edOutput.Text);
-    Ini.WriteInteger(secMain, mainGenerateFormat, lbOutType.ItemIndex);
+    //Ini.WriteInteger(secMain, mainGenerateFormat, lbOutType.ItemIndex);
+    Ini.WriteString(secMain, mainDocType, lbOutType.Text);
     Ini.WriteString(secMain, mainProjectName, edProjectName.Text);
     Ini.WriteInteger(secMain, mainVerbosity, swLevel.Position);
     Ini.WriteInteger(secMain, mainVisibility, swImplicitVisibility.ItemIndex);
@@ -758,7 +760,12 @@ begin
       lbFiles.dlgAdd.InitialDir := edRoot.Text;
     edOutput.Text := Ini.ReadString(secMain, mainOutputDir, '');
 
-    lbOutType.ItemIndex := Ini.ReadInteger(secMain, mainGenerateFormat, 0);
+  //assigning text to a dropdown list seems not to work. (focus?)
+    //lbOutType.ItemIndex := Ini.ReadInteger(secMain, mainGenerateFormat, 0);
+    //lbOutType.Text := Ini.ReadString(secMain, mainDocType, 'html');
+    s := Ini.ReadString(secMain, mainDocType, 'html');
+    i := lbOutType.Items.IndexOf(s);
+    lbOutType.ItemIndex := i;
     //comboGenerateFormatChange(nil);
 
     edProjectName.Text := Ini.ReadString(secMain, mainProjectName, '');
@@ -933,9 +940,9 @@ end;
 
 procedure TDocMain.lbOutTypeChange(Sender: TObject);
 //event handler (comboGenerateFormat)
-var
-  f: boolean;
+//var  f: boolean;
 begin
+{$IFDEF old}
 { TODO -oDoDi -cDelphi port : enum for output types }
 //plain HTML
   f := lbOutType.ItemIndex = 0;
@@ -955,10 +962,13 @@ begin
 {$ELSE}
   tabGraph.TabVisible := not f;
 {$ENDIF}
+{$ELSE}
+{$ENDIF}
 
 //general options
-  tabSpelling.Visible := CheckIfSpellCheckingAvailable;
+  //tabSpelling.Visible := CheckIfSpellCheckingAvailable;
   //FillNavigationListBox; -> Tabs
+  PasDoc1.DocType := lbOutType.Text;
   HasChanged := true;
 end;
 
@@ -1047,6 +1057,7 @@ end;
   //use LanguageFromIndex
 {$ENDIF}
 
+{$IFDEF old}
 function TDocMain.CheckIfSpellCheckingAvailable: boolean;
 (** There exist no means to determine unhandled languages!
   Added flag .NoSpellCheck to the language description.
@@ -1069,22 +1080,27 @@ begin
   //Result := Language <> lgChinese_950;  //wild guess - removed!
 {$ENDIF}
 end;
+{$ELSE}
+{$ENDIF}
 
 procedure TDocMain.LanguagePut(id: TLanguageID);
 begin
+  PasDoc1.LanguageID := id;
   lbOutLang.ItemIndex := ord(id);
 end;
 
 procedure TDocMain.lbOutLangChange(Sender: TObject);
 begin
+  PasDoc1.LanguageID := LanguageGet;
   HasChanged := True;
-  CheckIfSpellCheckingAvailable;
+  //CheckIfSpellCheckingAvailable;
 end;
 
 procedure TDocMain.swSpellCheckClick(Sender: TObject);
 begin
+  PasDoc1.CheckSpelling := swSpellCheck.Checked;
   //if swSpellCheck.Checked then
-  tabSpelling.TabVisible := CheckIfSpellCheckingAvailable;
+  //tabSpelling.TabVisible := CheckIfSpellCheckingAvailable;
   HasChanged := True;
 end;
 
@@ -1123,23 +1139,27 @@ var
   //Files: TStringList;
   //index: integer;
   //SortIndex: TSortSetting;
-  generator: TDocGenerator; //the generators are constructed as components
+  //generator: TDocGenerator; //the generators are constructed as components
   //genHTML: TGenericHTMLDocGenerator absolute generator;
   dir: string;
 const
   VizGraphImageExtension = 'png';
 
-  procedure SetGenericHTMLoptions(gen: TGenericHTMLDocGenerator);
+  procedure SetGenericHTMLoptions(gen: TPasDoc);
   begin
-    generator := gen;
+    //generator := gen;
   //now set the options...
     gen.Header := edHeader.Text;
     gen.Footer := edFooter.Text;
 
+  {$IFDEF old}
     if edCSS.Text <> '' then
       gen.CSS := edCSS.Text
     else
       gen.CSS := DefaultPasDocCss;
+  {$ELSE}
+    gen.CSS := edCSS.Text;
+  {$ENDIF}
 
     gen.UseTipueSearch := swTipue.Checked;
     gen.CheckSpelling := swSpellCheck.Checked;
@@ -1151,13 +1171,13 @@ const
     end;
   end;
 
-  procedure SetTEXoptions(gen: TTexDocGenerator);
+  procedure SetTEXoptions(gen: TPasDoc);
   var
     Index: integer;
   begin
-    generator := gen;
+    //generator := gen;
   //now set the options...
-    gen.Latex2rtf := (lbOutType.ItemIndex = 3);
+    //gen.Latex2rtf := (lbOutType.ItemIndex = 3);
     gen.LatexHead.Clear;
 
     if lbLineBreaks.ItemIndex = 1 then
@@ -1182,11 +1202,6 @@ const
     end;
   end;
 
-  procedure SetXMLoptions(gen: TDocGenerator);
-  begin
-    generator := gen;
-  end;
-
 var
   i: integer;
   fGenerate: boolean;
@@ -1195,7 +1210,7 @@ begin
 //output directory
   if edOutput.Text = '' then begin
     Beep;
-    MessageDlg('You need to specify the output directory on the "Locations" tab.',
+    MessageDlg('You need to specify an output directory.',
       Dialogs.mtWarning, [mbOK], 0);
     Exit;
   end;
@@ -1209,6 +1224,7 @@ try
   i := swImplicitVisibility.ItemIndex;
   PasDoc1.ImplicitVisibility := TImplicitVisibility(i);
 //generator - from components
+{$IFDEF old}
   case lbOutType.ItemIndex of
   0:  //generic HTML
     SetGenericHTMLoptions(HtmlDocGenerator);
@@ -1226,17 +1242,22 @@ try
     Assert(False, 'unknown output type');
   end;
   PasDoc1.Generator := generator;
+{$ELSE}
+  PasDoc1.DocType := lbOutType.Text;
+  SetGenericHTMLoptions(PasDoc1);
+  SetTEXoptions(PasDoc1);
+{$ENDIF}
 
-  Generator.Language := Language;
+  PasDoc1.LanguageID := Language;
 
 // Create the output directory if it does not exist.
   dir := edOutput.Text;
   if not DirectoryExists(dir) then
     CreateDir(dir);
-  Generator.DestinationDirectory := dir;
+  PasDoc1.DestinationDirectory := dir;
 
-  Generator.AutoAbstract := swAutoAbstract.Checked;
-  generator.WriteUsesClause := swShowUses.Checked;
+  PasDoc1.AutoAbstract := swAutoAbstract.Checked;
+  PasDoc1.WriteUsesClause := swShowUses.Checked;
 
   PasDoc1.ProjectName := edProjectName.Text;
   PasDoc1.IntroductionFileName := edIntro.Text;
@@ -1283,19 +1304,19 @@ try
     PasDoc1.Title := edTitle.Text;
 
   if swClassDiagram.Checked then begin
-    Generator.OutputGraphVizClassHierarchy := True;
-    Generator.LinkGraphVizClasses := VizGraphImageExtension;
+    PasDoc1.OutputGraphVizClassHierarchy := True;
+    PasDoc1.LinkGraphVizClasses := VizGraphImageExtension;
   end else begin
-    Generator.OutputGraphVizClassHierarchy := False;
-    Generator.LinkGraphVizClasses := '';
+    PasDoc1.OutputGraphVizClassHierarchy := False;
+    PasDoc1.LinkGraphVizClasses := '';
   end;
 
   if swUsesDiagram.Checked then begin
-    Generator.OutputGraphVizUses := True;
-    Generator.LinkGraphVizUses := VizGraphImageExtension;
+    PasDoc1.OutputGraphVizUses := True;
+    PasDoc1.LinkGraphVizUses := VizGraphImageExtension;
   end else begin
-    Generator.OutputGraphVizUses := False;
-    Generator.LinkGraphVizUses := '';
+    PasDoc1.OutputGraphVizUses := False;
+    PasDoc1.LinkGraphVizUses := '';
   end;
 
   PasDoc1.SortSettings := SortedItems;
@@ -1339,9 +1360,9 @@ try
         SW_SHOWNORMAL);
     end;
   {$ELSE}
-    if generator.MasterFile <> '' then
+    if PasDoc1.MasterFile <> '' then
       ShellExecute(Self.Handle, 'open',
-        PChar(generator.MasterFile), nil, nil,
+        PChar(PasDoc1.MasterFile), nil, nil,
         SW_SHOWNORMAL);
   {$ENDIF}
   {$ENDIF}
@@ -1433,9 +1454,9 @@ begin
       tvUnits.Items.AddObject(nil, PasDoc1.IntroductionFileName, PasDoc1.Introduction);
     end;
     AllUnitsNode := tvUnits.Items.AddObject(nil,
-      Lang.Translation[trUnits], PasDoc1.Units);
-    for UnitIndex := 0 to PasDoc1.Units.Count -1 do begin
-      UnitItem := PasDoc1.Units.UnitAt[UnitIndex];
+      Lang.Translation[trUnits], PasDoc1.DocUnits);
+    for UnitIndex := 0 to PasDoc1.DocUnits.Count -1 do begin
+      UnitItem := PasDoc1.DocUnits.UnitAt[UnitIndex];
       if not UnitItem.ToBeExcluded then begin
         UnitNode := tvUnits.Items.AddChildObject(AllUnitsNode,
           UnitItem.SourceFileName, UnitItem);

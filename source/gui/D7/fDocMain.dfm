@@ -21,7 +21,7 @@ object DocMain: TDocMain
     Top = 0
     Width = 607
     Height = 425
-    ActivePage = tabGenerate
+    ActivePage = tabOpts
     Align = alClient
     TabOrder = 0
     object tabOpts: TTabSheet
@@ -555,7 +555,7 @@ object DocMain: TDocMain
       end
       inline edCSS: TDirBox
         Left = 0
-        Top = 32
+        Top = 52
         Width = 586
         Height = 29
         TabOrder = 3
@@ -613,16 +613,6 @@ object DocMain: TDocMain
           TabOrder = 0
         end
       end
-    end
-    object tabMarkers: TTabSheet
-      Caption = 'Markers'
-      ImageIndex = 5
-      TabVisible = False
-    end
-    object tabDirectories: TTabSheet
-      Caption = 'Directories'
-      ImageIndex = 7
-      TabVisible = False
     end
     object tabDefines: TTabSheet
       Caption = 'Defines'
@@ -1021,196 +1011,16 @@ object DocMain: TDocMain
     Left = 528
   end
   object PasDoc1: TPasDoc
-    OnWarning = PasDocWarning
+    AutoAbstract = False
+    GeneratorInfo = True
+    LinkLook = llDefault
     OnMessage = PasDocWarning
-    StarStyleOnly = False
-    SingleCharMarkers = False
     ShowVisibilities = []
+    SingleCharMarkers = False
+    StarStyleOnly = False
+    NumericFilenames = False
+    UseTipueSearch = False
     Left = 492
-    Top = 360
-  end
-  object HTMLDocGenerator: THTMLDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    CSS = 
-      'body { font-family: Verdana,Arial; '#13#10'  color: black; background-' +
-      'color: white; '#13#10'  font-size: 12px; }'#13#10'body.navigationframe { fon' +
-      't-family: Verdana,Arial; '#13#10'  color: white; background-color: #78' +
-      '7878; '#13#10'  font-size: 12px; }'#13#10#13#10'img { border:0px; }'#13#10#13#10'a:link {c' +
-      'olor:#C91E0C; text-decoration: none; }'#13#10'a:visited {color:#7E5C31' +
-      '; text-decoration: none; }'#13#10'a:hover {text-decoration: underline;' +
-      ' }'#13#10'a:active {text-decoration: underline; }'#13#10#13#10'a.navigation:link' +
-      ' { color: white; text-decoration: none; font-size: 12px;}'#13#10'a.nav' +
-      'igation:visited { color: white; text-decoration: none; font-size' +
-      ': 12px;}'#13#10'a.navigation:hover { color: white; font-weight: bold; ' +
-      #13#10'  text-decoration: none; font-size: 12px; }'#13#10'a.navigation:acti' +
-      've { color: white; text-decoration: none; font-size: 12px;}'#13#10#13#10'a' +
-      '.bold:link {color:#C91E0C; text-decoration: none; font-weight:bo' +
-      'ld; }'#13#10'a.bold:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'a.bold:hover {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10'a.bold:active {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10#13#10'a.section {color: green; text-decoration: non' +
-      'e; font-weight: bold; }'#13#10'a.section:hover {color: green; text-dec' +
-      'oration: underline; font-weight: bold; }'#13#10#13#10'ul.useslist a:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }'#13#10'ul.us' +
-      'eslist a:visited {color:#7E5C31; text-decoration: none; font-wei' +
-      'ght:bold; }'#13#10'ul.useslist a:hover {text-decoration: underline; fo' +
-      'nt-weight:bold; }'#13#10'ul.useslist a:active {text-decoration: underl' +
-      'ine; font-weight:bold; }'#13#10#13#10'ul.hierarchy { list-style-type:none;' +
-      ' }'#13#10'ul.hierarchylevel { list-style-type:none; }'#13#10#13#10'p.unitlink a:' +
-      'link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#13 +
-      #10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'p.unitlink a:hover {text-decoration: underline' +
-      '; font-weight:bold; }'#13#10'p.unitlink a:active {text-decoration: und' +
-      'erline; font-weight:bold; }'#13#10#13#10'tr.list { background: #FFBF44; }'#13 +
-      #10'tr.list2 { background: #FFC982; }'#13#10'tr.listheader { background: ' +
-      '#C91E0C; color: white; }'#13#10#13#10'table.wide_list { border-spacing:2px' +
-      '; width:100%; }'#13#10'table.wide_list td { vertical-align:top; paddin' +
-      'g:4px; }'#13#10#13#10'table.markerlegend { width:auto; }'#13#10'table.markerlege' +
-      'nd td.legendmarker { text-align:center; }'#13#10#13#10'table.sections { ba' +
-      'ckground:white; }'#13#10'table.sections td {background:lightgray; }'#13#10#13 +
-      #10'table.summary td.itemcode { width:100%; }'#13#10'table.detail td.item' +
-      'code { width:100%; }'#13#10#13#10'td.itemname {white-space:nowrap; }'#13#10'td.i' +
-      'temunit {white-space:nowrap; }'#13#10'td.itemdesc { width:100%; }'#13#10#13#10'd' +
-      'iv.nodescription { color:red; }'#13#10'dl.parameters dt { color:blue; ' +
-      '}'#13#10#13#10'/* Various browsers have various default styles for <h6>,'#13#10 +
-      '   sometimes ugly for our purposes, so it'#39's best to set things'#13#10 +
-      '   like font-size and font-weight in out pasdoc.css explicitly. ' +
-      '*/'#13#10'h6.description_section { '#13#10'  /* font-size 100% means that it' +
-      ' has the same font size as the '#13#10'     parent element, i.e. norma' +
-      'l description text */'#13#10'  font-size: 100%;'#13#10'  font-weight: bold; ' +
-      #13#10'  /* By default browsers usually have some large margin-bottom' +
-      ' and '#13#10'     margin-top for <h1-6> tags. In our case, margin-bott' +
-      'om is'#13#10'     unnecessary, we want to visually show that descripti' +
-      'on_section'#13#10'     is closely related to content below. In this si' +
-      'tuation'#13#10'     (where the font size is just as a normal text), sm' +
-      'aller bottom'#13#10'     margin seems to look good. */'#13#10'  margin-botto' +
-      'm: 0em;'#13#10'}'#13#10#13#10'/* Style applied to Pascal code in documentation '#13 +
-      #10'   (e.g. produced by @longcode tag) } */'#13#10'span.pascal_string { ' +
-      'color: #000080; }'#13#10'span.pascal_keyword { font-weight: bolder; }'#13 +
-      #10'span.pascal_comment { color: #000080; font-style: italic; }'#13#10'sp' +
-      'an.pascal_compiler_comment { color: #008000; }'#13#10'span.pascal_nume' +
-      'ric { }'#13#10'span.pascal_hex { }'#13#10#13#10'p.hint_directive { color: red; }' +
-      #13#10#13#10'input#search_text { }'#13#10'input#search_submit_button { }'#13#10#13#10'acr' +
-      'onym.mispelling { background-color: #ffa; }'#13#10#13#10'/* Actually this ' +
-      'reduces vertical space between *every* paragraph'#13#10'   inside list' +
-      ' with @itemSpacing(compact). '#13#10'   While we would like to reduce ' +
-      'this space only for the'#13#10'   top of 1st and bottom of last paragr' +
-      'aph within each list item.'#13#10'   But, well, user probably will not' +
-      ' do any paragraph breaks'#13#10'   within a list with @itemSpacing(com' +
-      'pact) anyway, so it'#39's'#13#10'   acceptable solution. */'#13#10'ul.compact_sp' +
-      'acing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'ol.compact_spa' +
-      'cing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'dl.compact_spac' +
-      'ing p { margin-top: 0em; margin-bottom: 0em; }'#13#10#13#10'/* Style for t' +
-      'able created by @table tags:'#13#10'   just some thin border.'#13#10'   '#13#10'  ' +
-      ' This way we have some borders around the cells'#13#10'   (so cells ar' +
-      'e visibly separated), but the border '#13#10'   "blends with the backg' +
-      'round" so it doesn'#39't look too ugly.'#13#10'   Hopefully it looks satis' +
-      'factory in most cases and for most'#13#10'   people. '#13#10'   '#13#10'   We add ' +
-      'padding for cells, otherwise they look too close.'#13#10'   This is no' +
-      'rmal thing to do when border-collapse is set to'#13#10'   collapse (be' +
-      'cause this eliminates spacing between cells). '#13#10'*/'#13#10'table.table_' +
-      'tag { border-collapse: collapse; }'#13#10'table.table_tag td { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10'table.table_tag th { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
-      '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
-      '}'#13#10
-    Left = 456
-    Top = 360
-  end
-  object TexDocGenerator: TTexDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    Left = 416
-    Top = 360
-  end
-  object HTMLHelpDocGenerator: THTMLHelpDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    CSS = 
-      'body { font-family: Verdana,Arial; '#13#10'  color: black; background-' +
-      'color: white; '#13#10'  font-size: 12px; }'#13#10'body.navigationframe { fon' +
-      't-family: Verdana,Arial; '#13#10'  color: white; background-color: #78' +
-      '7878; '#13#10'  font-size: 12px; }'#13#10#13#10'img { border:0px; }'#13#10#13#10'a:link {c' +
-      'olor:#C91E0C; text-decoration: none; }'#13#10'a:visited {color:#7E5C31' +
-      '; text-decoration: none; }'#13#10'a:hover {text-decoration: underline;' +
-      ' }'#13#10'a:active {text-decoration: underline; }'#13#10#13#10'a.navigation:link' +
-      ' { color: white; text-decoration: none; font-size: 12px;}'#13#10'a.nav' +
-      'igation:visited { color: white; text-decoration: none; font-size' +
-      ': 12px;}'#13#10'a.navigation:hover { color: white; font-weight: bold; ' +
-      #13#10'  text-decoration: none; font-size: 12px; }'#13#10'a.navigation:acti' +
-      've { color: white; text-decoration: none; font-size: 12px;}'#13#10#13#10'a' +
-      '.bold:link {color:#C91E0C; text-decoration: none; font-weight:bo' +
-      'ld; }'#13#10'a.bold:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'a.bold:hover {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10'a.bold:active {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10#13#10'a.section {color: green; text-decoration: non' +
-      'e; font-weight: bold; }'#13#10'a.section:hover {color: green; text-dec' +
-      'oration: underline; font-weight: bold; }'#13#10#13#10'ul.useslist a:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }'#13#10'ul.us' +
-      'eslist a:visited {color:#7E5C31; text-decoration: none; font-wei' +
-      'ght:bold; }'#13#10'ul.useslist a:hover {text-decoration: underline; fo' +
-      'nt-weight:bold; }'#13#10'ul.useslist a:active {text-decoration: underl' +
-      'ine; font-weight:bold; }'#13#10#13#10'ul.hierarchy { list-style-type:none;' +
-      ' }'#13#10'ul.hierarchylevel { list-style-type:none; }'#13#10#13#10'p.unitlink a:' +
-      'link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#13 +
-      #10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'p.unitlink a:hover {text-decoration: underline' +
-      '; font-weight:bold; }'#13#10'p.unitlink a:active {text-decoration: und' +
-      'erline; font-weight:bold; }'#13#10#13#10'tr.list { background: #FFBF44; }'#13 +
-      #10'tr.list2 { background: #FFC982; }'#13#10'tr.listheader { background: ' +
-      '#C91E0C; color: white; }'#13#10#13#10'table.wide_list { border-spacing:2px' +
-      '; width:100%; }'#13#10'table.wide_list td { vertical-align:top; paddin' +
-      'g:4px; }'#13#10#13#10'table.markerlegend { width:auto; }'#13#10'table.markerlege' +
-      'nd td.legendmarker { text-align:center; }'#13#10#13#10'table.sections { ba' +
-      'ckground:white; }'#13#10'table.sections td {background:lightgray; }'#13#10#13 +
-      #10'table.summary td.itemcode { width:100%; }'#13#10'table.detail td.item' +
-      'code { width:100%; }'#13#10#13#10'td.itemname {white-space:nowrap; }'#13#10'td.i' +
-      'temunit {white-space:nowrap; }'#13#10'td.itemdesc { width:100%; }'#13#10#13#10'd' +
-      'iv.nodescription { color:red; }'#13#10'dl.parameters dt { color:blue; ' +
-      '}'#13#10#13#10'/* Various browsers have various default styles for <h6>,'#13#10 +
-      '   sometimes ugly for our purposes, so it'#39's best to set things'#13#10 +
-      '   like font-size and font-weight in out pasdoc.css explicitly. ' +
-      '*/'#13#10'h6.description_section { '#13#10'  /* font-size 100% means that it' +
-      ' has the same font size as the '#13#10'     parent element, i.e. norma' +
-      'l description text */'#13#10'  font-size: 100%;'#13#10'  font-weight: bold; ' +
-      #13#10'  /* By default browsers usually have some large margin-bottom' +
-      ' and '#13#10'     margin-top for <h1-6> tags. In our case, margin-bott' +
-      'om is'#13#10'     unnecessary, we want to visually show that descripti' +
-      'on_section'#13#10'     is closely related to content below. In this si' +
-      'tuation'#13#10'     (where the font size is just as a normal text), sm' +
-      'aller bottom'#13#10'     margin seems to look good. */'#13#10'  margin-botto' +
-      'm: 0em;'#13#10'}'#13#10#13#10'/* Style applied to Pascal code in documentation '#13 +
-      #10'   (e.g. produced by @longcode tag) } */'#13#10'span.pascal_string { ' +
-      'color: #000080; }'#13#10'span.pascal_keyword { font-weight: bolder; }'#13 +
-      #10'span.pascal_comment { color: #000080; font-style: italic; }'#13#10'sp' +
-      'an.pascal_compiler_comment { color: #008000; }'#13#10'span.pascal_nume' +
-      'ric { }'#13#10'span.pascal_hex { }'#13#10#13#10'p.hint_directive { color: red; }' +
-      #13#10#13#10'input#search_text { }'#13#10'input#search_submit_button { }'#13#10#13#10'acr' +
-      'onym.mispelling { background-color: #ffa; }'#13#10#13#10'/* Actually this ' +
-      'reduces vertical space between *every* paragraph'#13#10'   inside list' +
-      ' with @itemSpacing(compact). '#13#10'   While we would like to reduce ' +
-      'this space only for the'#13#10'   top of 1st and bottom of last paragr' +
-      'aph within each list item.'#13#10'   But, well, user probably will not' +
-      ' do any paragraph breaks'#13#10'   within a list with @itemSpacing(com' +
-      'pact) anyway, so it'#39's'#13#10'   acceptable solution. */'#13#10'ul.compact_sp' +
-      'acing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'ol.compact_spa' +
-      'cing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'dl.compact_spac' +
-      'ing p { margin-top: 0em; margin-bottom: 0em; }'#13#10#13#10'/* Style for t' +
-      'able created by @table tags:'#13#10'   just some thin border.'#13#10'   '#13#10'  ' +
-      ' This way we have some borders around the cells'#13#10'   (so cells ar' +
-      'e visibly separated), but the border '#13#10'   "blends with the backg' +
-      'round" so it doesn'#39't look too ugly.'#13#10'   Hopefully it looks satis' +
-      'factory in most cases and for most'#13#10'   people. '#13#10'   '#13#10'   We add ' +
-      'padding for cells, otherwise they look too close.'#13#10'   This is no' +
-      'rmal thing to do when border-collapse is set to'#13#10'   collapse (be' +
-      'cause this eliminates spacing between cells). '#13#10'*/'#13#10'table.table_' +
-      'tag { border-collapse: collapse; }'#13#10'table.table_tag td { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10'table.table_tag th { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
-      '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
-      '}'#13#10
-    Left = 380
     Top = 360
   end
   object OpenDialog2: TOpenDialog
@@ -1232,107 +1042,5 @@ object DocMain: TDocMain
       Caption = 'Save &As...'
       OnClick = SaveLog
     end
-  end
-  object SimpleXMLDocGenerator: TSimpleXMLDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    Left = 540
-    Top = 360
-  end
-  object XMLDocGenerator: TXMLDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    Left = 544
-    Top = 312
-  end
-  object FullHTMLDocGenerator: TFullHTMLDocGenerator
-    AutoAbstract = False
-    LinkLook = llDefault
-    CSS = 
-      'body { font-family: Verdana,Arial; '#13#10'  color: black; background-' +
-      'color: white; '#13#10'  font-size: 12px; }'#13#10'body.navigationframe { fon' +
-      't-family: Verdana,Arial; '#13#10'  color: white; background-color: #78' +
-      '7878; '#13#10'  font-size: 12px; }'#13#10#13#10'img { border:0px; }'#13#10#13#10'a:link {c' +
-      'olor:#C91E0C; text-decoration: none; }'#13#10'a:visited {color:#7E5C31' +
-      '; text-decoration: none; }'#13#10'a:hover {text-decoration: underline;' +
-      ' }'#13#10'a:active {text-decoration: underline; }'#13#10#13#10'a.navigation:link' +
-      ' { color: white; text-decoration: none; font-size: 12px;}'#13#10'a.nav' +
-      'igation:visited { color: white; text-decoration: none; font-size' +
-      ': 12px;}'#13#10'a.navigation:hover { color: white; font-weight: bold; ' +
-      #13#10'  text-decoration: none; font-size: 12px; }'#13#10'a.navigation:acti' +
-      've { color: white; text-decoration: none; font-size: 12px;}'#13#10#13#10'a' +
-      '.bold:link {color:#C91E0C; text-decoration: none; font-weight:bo' +
-      'ld; }'#13#10'a.bold:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'a.bold:hover {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10'a.bold:active {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10#13#10'a.section {color: green; text-decoration: non' +
-      'e; font-weight: bold; }'#13#10'a.section:hover {color: green; text-dec' +
-      'oration: underline; font-weight: bold; }'#13#10#13#10'ul.useslist a:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }'#13#10'ul.us' +
-      'eslist a:visited {color:#7E5C31; text-decoration: none; font-wei' +
-      'ght:bold; }'#13#10'ul.useslist a:hover {text-decoration: underline; fo' +
-      'nt-weight:bold; }'#13#10'ul.useslist a:active {text-decoration: underl' +
-      'ine; font-weight:bold; }'#13#10#13#10'ul.hierarchy { list-style-type:none;' +
-      ' }'#13#10'ul.hierarchylevel { list-style-type:none; }'#13#10#13#10'p.unitlink a:' +
-      'link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#13 +
-      #10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'p.unitlink a:hover {text-decoration: underline' +
-      '; font-weight:bold; }'#13#10'p.unitlink a:active {text-decoration: und' +
-      'erline; font-weight:bold; }'#13#10#13#10'tr.list { background: #FFBF44; }'#13 +
-      #10'tr.list2 { background: #FFC982; }'#13#10'tr.listheader { background: ' +
-      '#C91E0C; color: white; }'#13#10#13#10'table.wide_list { border-spacing:2px' +
-      '; width:100%; }'#13#10'table.wide_list td { vertical-align:top; paddin' +
-      'g:4px; }'#13#10#13#10'table.markerlegend { width:auto; }'#13#10'table.markerlege' +
-      'nd td.legendmarker { text-align:center; }'#13#10#13#10'table.sections { ba' +
-      'ckground:white; }'#13#10'table.sections td {background:lightgray; }'#13#10#13 +
-      #10'table.summary td.itemcode { width:100%; }'#13#10'table.detail td.item' +
-      'code { width:100%; }'#13#10#13#10'td.itemname {white-space:nowrap; }'#13#10'td.i' +
-      'temunit {white-space:nowrap; }'#13#10'td.itemdesc { width:100%; }'#13#10#13#10'd' +
-      'iv.nodescription { color:red; }'#13#10'dl.parameters dt { color:blue; ' +
-      '}'#13#10#13#10'/* Various browsers have various default styles for <h6>,'#13#10 +
-      '   sometimes ugly for our purposes, so it'#39's best to set things'#13#10 +
-      '   like font-size and font-weight in out pasdoc.css explicitly. ' +
-      '*/'#13#10'h6.description_section { '#13#10'  /* font-size 100% means that it' +
-      ' has the same font size as the '#13#10'     parent element, i.e. norma' +
-      'l description text */'#13#10'  font-size: 100%;'#13#10'  font-weight: bold; ' +
-      #13#10'  /* By default browsers usually have some large margin-bottom' +
-      ' and '#13#10'     margin-top for <h1-6> tags. In our case, margin-bott' +
-      'om is'#13#10'     unnecessary, we want to visually show that descripti' +
-      'on_section'#13#10'     is closely related to content below. In this si' +
-      'tuation'#13#10'     (where the font size is just as a normal text), sm' +
-      'aller bottom'#13#10'     margin seems to look good. */'#13#10'  margin-botto' +
-      'm: 0em;'#13#10'}'#13#10#13#10'/* Style applied to Pascal code in documentation '#13 +
-      #10'   (e.g. produced by @longcode tag) } */'#13#10'span.pascal_string { ' +
-      'color: #000080; }'#13#10'span.pascal_keyword { font-weight: bolder; }'#13 +
-      #10'span.pascal_comment { color: #000080; font-style: italic; }'#13#10'sp' +
-      'an.pascal_compiler_comment { color: #008000; }'#13#10'span.pascal_nume' +
-      'ric { }'#13#10'span.pascal_hex { }'#13#10#13#10'p.hint_directive { color: red; }' +
-      #13#10#13#10'input#search_text { }'#13#10'input#search_submit_button { }'#13#10#13#10'acr' +
-      'onym.mispelling { background-color: #ffa; }'#13#10#13#10'/* Actually this ' +
-      'reduces vertical space between *every* paragraph'#13#10'   inside list' +
-      ' with @itemSpacing(compact). '#13#10'   While we would like to reduce ' +
-      'this space only for the'#13#10'   top of 1st and bottom of last paragr' +
-      'aph within each list item.'#13#10'   But, well, user probably will not' +
-      ' do any paragraph breaks'#13#10'   within a list with @itemSpacing(com' +
-      'pact) anyway, so it'#39's'#13#10'   acceptable solution. */'#13#10'ul.compact_sp' +
-      'acing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'ol.compact_spa' +
-      'cing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'dl.compact_spac' +
-      'ing p { margin-top: 0em; margin-bottom: 0em; }'#13#10#13#10'/* Style for t' +
-      'able created by @table tags:'#13#10'   just some thin border.'#13#10'   '#13#10'  ' +
-      ' This way we have some borders around the cells'#13#10'   (so cells ar' +
-      'e visibly separated), but the border '#13#10'   "blends with the backg' +
-      'round" so it doesn'#39't look too ugly.'#13#10'   Hopefully it looks satis' +
-      'factory in most cases and for most'#13#10'   people. '#13#10'   '#13#10'   We add ' +
-      'padding for cells, otherwise they look too close.'#13#10'   This is no' +
-      'rmal thing to do when border-collapse is set to'#13#10'   collapse (be' +
-      'cause this eliminates spacing between cells). '#13#10'*/'#13#10'table.table_' +
-      'tag { border-collapse: collapse; }'#13#10'table.table_tag td { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10'table.table_tag th { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
-      '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
-      '}'#13#10
-    ItemFiles = True
-    Left = 492
-    Top = 312
   end
 end

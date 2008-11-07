@@ -347,7 +347,8 @@ type
     function  IndexOfID(tid: TTranslationID): integer;
 
   //append list of items
-    procedure InsertItems(lst: TDescriptionList);
+    procedure InsertItems(lst: TDescriptionList); deprecated;
+    procedure AddItems(lst: TDescriptionItem);
   //get description item from list.
     function  ItemAt(index: integer): TDescriptionItem; //virtual;
     property Items[index: integer]: TDescriptionItem read ItemAt; default;
@@ -1846,20 +1847,21 @@ const
 begin
 (* Get abstract, or first sentence, or first part of description.
   Handling of line breaks???
+  It seems to be good to also truncate excessive abstracts.
 *)
 { ToDo: collect words, until end of sentence or limit reached. }
 
 //try abstract, if found
   Result := AbstractDescription;
-  if Result <> '' then
-    exit;
-//try first sentence of full description
-  Result := DetailedDescription;
-//extract first sentence - retry after '.'<non-white>?
-  i := Pos('.', Result);
-  if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
-    Result := Copy(Result, 1, i+1);
-    exit;
+  if Result = '' then begin
+  //try first sentence of full description
+    Result := DetailedDescription;
+  //extract first sentence - retry after '.'<non-white>?
+    i := Pos('.', Result);
+    if (i > 1) and (i < Length(Result)) and (Result[i+1] in WhiteSpace) then begin
+      Result := Copy(Result, 1, i+1);
+      //exit;
+    end;
   end;
 //fit as short description?
   if Length(Result) > MaxShortDescription then begin
@@ -4260,6 +4262,11 @@ function TDescriptionList.Add(const AObject: TDescriptionItem): integer;
 begin
 //here: simply add to the list
   Result := inherited Add(AObject);
+end;
+
+procedure TDescriptionList.AddItems(lst: TDescriptionItem);
+begin
+  InsertItems(lst.FList);
 end;
 
 procedure TDescriptionList.InsertItems(lst: TDescriptionList);

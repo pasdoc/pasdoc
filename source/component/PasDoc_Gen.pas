@@ -217,9 +217,11 @@ type
   { @abstract(basic documentation generator object)
     This abstract object will do the complete process of writing
     documentation files.
-    It will be given the collection of units that was the result of the
-    parsing process and a configuration object that was created from default
-    values and program parameters.
+
+    A collection of units is created by the base class, in @link(Execute).
+    Configuration options are stored in the @link(Options) record and
+    also are accessible as properties.
+
     Depending on the output format, one or more files may be created (HTML
     will create several, Tex only one). }
   TDocGenerator = class(TPasDocGen)
@@ -234,12 +236,12 @@ type
     FCurrentItem: TBaseItem;
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
-  //reusable object
+  //--- reusable objects ---
     FTagManager: TTagManager;
     TagCache: TObjectVector;
     procedure InitTagMgr;
     procedure InitTags(Item: TBaseItem);
-    procedure AddTags;  //(TagManager: TTagManager);
+    procedure AddTags;
     procedure ClearTags;
 
     { This just calls OnMessage (if assigned), but it appends
@@ -411,8 +413,11 @@ type
   protected
     FCurrentFileName: string;
 
+  {$IFDEF old}
   //Create private (shrinkable) unit list.
     procedure SetUnits(U: TPasUnits);
+  {$ELSE}
+  {$ENDIF}
 
     { If @link(CurrentStream) still exists (<> nil), it is closed.
       Then, a new output stream in the destination directory with given
@@ -840,6 +845,9 @@ type
      See @link(WriteExternal).}
     procedure WriteIntroduction;
 
+    { All units used in the document output step. }
+    property Units: TPasUnits read Options.DocUnits;
+
   public
     destructor Destroy; override;
 
@@ -929,12 +937,15 @@ begin
   inherited;
 end;
 
+{$IFDEF old}
 procedure TDocGenerator.SetUnits(U: TPasUnits);
 begin
 //clone the list, allow for later deletion of excluded units.
   //FUnits := TPasUnits.Create(False);
   Units.Assign(U);
 end;
+{$ELSE}
+{$ENDIF}
 
 
 function  TDocGenerator.FindSections(item: TDescriptionItem): TSectionSet;
@@ -1849,8 +1860,8 @@ procedure TDocGenerator.ExpandDescriptions;
     if Conclusion <> nil then
       ExpandExternalItem(PreExpand, Conclusion);
 
-    for i := 0 to Units.Count - 1 do begin
-      U := Units.UnitAt[i];
+    for i := 0 to AllUnits.Count - 1 do begin
+      U := AllUnits.UnitAt[i];
       ExpandPasItem(PreExpand, U);
     end;
   end;
