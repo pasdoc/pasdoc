@@ -19,6 +19,7 @@ unit PasDoc_Items;
 {-$DEFINE DetailedProps}
 {-$DEFINE paragraphs}
 {$DEFINE groups}
+{-$DEFINE DbgFree} //-debug destruction?
 
 interface
 
@@ -33,7 +34,6 @@ uses
   PasDoc_Serialize,
   PasDoc_SortSettings,
   PasDoc_Languages;
-  //PasDoc_StringPairVector;
 
 type
   { Visibility of a field/method. }
@@ -684,7 +684,9 @@ type
     CIOs have a list of ancestors (trHierarchy). The first item is the base class, others are interfaces.
     Units have a list of used units (trUnits).
     The lists are owned by scope classes.
+
     Class members have a reference to their (virtual) ancestor item (tr?).
+    This seems to cause problems during destruction!?
   *)
     FHeritage: TDescriptionItem;
   { Owner shall be the item, of which this item is a member.
@@ -715,6 +717,7 @@ type
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); reintroduce; virtual;
+    destructor Destroy; override;
 
     procedure RegisterTags(TagManager: TTagManager); override;
 
@@ -1221,6 +1224,7 @@ end;
 
   protected
   {$IFDEF new}
+  //it's unclear how this tag can be handled here
     procedure HandleClassnameTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -1446,6 +1450,7 @@ end;
   public
     constructor Create(AOwner: TPasScope; AKind: TTokenType;
       const AName: string); override;
+    destructor Destroy; override;
 
   (* Resolve links to used units, inherited classes and interfaces.
     To be called by generator.
@@ -1558,12 +1563,20 @@ var
   FGroup: TDescriptionItem;
   gFirst, gLast, gScope: TDescriptionItem;
 
+{$IFDEF DbgFree}
+//this is the currently destructed unit. Only it's members can be destroyed.
+  UnitUnderDestruction: TPasUnit;
+{$ELSE}
+{$ENDIF}
+
 function CompareWeight(PItem1, PItem2: pointer): integer;
 var
   Item1: TDescriptionItem absolute PItem1;
   Item2: TDescriptionItem absolute PItem2;
 begin
   Result := ItemWeights[Item1.ID] - ItemWeights[Item2.ID];
+  if Result = 0 then //try: sort groups, anonymous first
+    Result := CompareText(Item1.Value, Item2.Value);
 end;
 
 function CompareDescriptionItemsByName(PItem1, PItem2: Pointer): Integer;
@@ -2006,6 +2019,22 @@ begin
   end;
 end;
 
+destructor TPasItem.Destroy;
+begin
+{$IFDEF DbgFree}
+  if MyOwner = nil then begin
+  //we are unit
+    if self <> UnitUnderDestruction then
+      assert(False, 'bad unit destroy');
+  end else begin
+    if MyUnit <> UnitUnderDestruction then
+      assert(False, 'bad PasItem destroy');
+  end;
+{$ELSE}
+{$ENDIF}
+  inherited;
+end;
+
 function TPasItem.IsKey(AKey: TTokenType): boolean;
 begin
   Result := FKind = AKey;
@@ -2258,7 +2287,8 @@ const
   );
   MemberListSortOrder: array[0..7] of TTranslationID = (
   //units
-    trClasses, trFunctionsAndProcedures, trTypes, trVariables, trConstants,
+    //trClasses, //not here, actually is trCio
+    trCio, trFunctionsAndProcedures, trTypes, trVariables, trConstants,
   //CIOs
     trFields, trMethods, trProperties
   );
@@ -2290,7 +2320,18 @@ destructor TPasScope.Destroy;
 begin
   FreeAndNil(FMembers);
   FreeAndNil(FMemberLists);
-  FreeAndNil(FHeritage);
+  if FHeritage is TPasItem then
+  //this is the ancestor of an overwritten class member
+    FHeritage := nil  //don't destroy the ancestor item - become delegate???
+  else if FHeritage <> nil then begin
+  {$IFDEF DbgFree}
+  { TODO : this destruction causes AV's, immediately or later }
+  //most probably the delegates destroy their targets - why?
+    FreeAndNil(FHeritage); //free the uses/ancestor list
+  {$ELSE}
+    //don't destroy, until the bug is fixed
+  {$ENDIF}
+  end;
   inherited;
 end;
 
@@ -2326,7 +2367,6 @@ FindItem should be used for specific parts of the NameParts.
     //unbounded search, try find first part in immediate members
       Result := FindName(NameParts, 0);
     end else begin
-      //Result := Members.FindName(NameParts[index]);
       Result := Members.FindName(NameParts[index]);
         //this effectively is a FindItem! (rename?)
       if assigned(Result) then begin
@@ -2702,7 +2742,7 @@ const
   end;
 
 begin
-  inherited;
+  inherited Create(AOwner, AKind, AName);
   FTID := GetTid(AKind);
   case AKind of
   KEY_RECORD: //has no ancestors, but possibly methods?
@@ -2859,7 +2899,6 @@ begin
   MemberDesc := TagParameter;
   MemberName := ExtractFirstWord(MemberDesc);
 
-  //Member := FindItem(MemberName); //should only search immediate members?
   Member := Members.FindName(MemberName);
   if Assigned(Member) then begin
     Member.WriteRawDescription(MemberDesc);
@@ -2926,6 +2965,7 @@ var
     //also search in own unit!
       found := AllUnits.UnitAt[iu].CIOs.FindName(item.Name);
       if found <> nil then begin
+        assert(item is TPasDelegate, 'expected delegate in class ancestors');
         item.PasItem := found.PasItem;
         break;
       end;
@@ -2935,7 +2975,7 @@ var
 begin //BuildLinks
 (* Resolve references to all ancestors.
   Exclude invisible members.
-  Sort members?
+  Sort members? - later, after grouping (by ExpandDescriptions)
   Assign OutputFileName.
   Expose member lists (or remove empty lists)
 *)
@@ -2947,25 +2987,12 @@ begin //BuildLinks
     if item.PasItem = nil then
       SearchAncestor;
   end;
-{$IFDEF new}
-//exclude invisible members - in member lists only!
-  for i := FMemberLists.Count - 1 downto 0 do begin
-    lst := FMemberLists.Items[i];
-    for m := lst.Count - 1 downto 0 do begin
-      pi := lst.PasItemAt(m);
-      pi.FFullLink := TheGenerator(pi);
-      if not (pi.Visibility in ShowVisibilities) then
-        lst.FList.Delete(m);
-    end;
-  end;
-{$ELSE}
 //link members
   for i := 0 to Members.Count - 1 do begin
     pi := Members.PasItemAt[i];
     pi.FFullLink := TheGenerator(pi);
     pi.FHeritage := FindItemInAncestors(pi.Name); //problem with overloaded ancestors!
   end;
-{$ENDIF}
 //add non-empty member lists to descriptions
   inherited BuildLinks(AllUnits, TheGenerator);
 end;
@@ -2989,6 +3016,7 @@ begin
       //anc := anc.Items[0];
     //add ancestors in reverse order
       desc.FList.Insert(0, anc);
+    //anc is a delegate, we must use anc.PasItem to get the TPasCio from it.
       if anc.PasItem is TPasCio then
         anc := TPasCio(anc.PasItem).FirstAncestorItem
       else
@@ -2996,6 +3024,7 @@ begin
     end;
   //add self as last item
     desc.AddNew(ID, dkNoList, Name, Value);
+      //why not: desc.Add(self)?
   end;
   inherited BuildSections; //build overview
 {$IFDEF old}
@@ -3015,21 +3044,37 @@ const
   owns = False;
 begin
   inherited;
-//description
-//uses
-  //FUsesUnits := FMemberLists.AddNew(trUses, dkItemList);
+//description - implicit
+//uses - reuse heritage
   FHeritage.FTID := trUses;
   FHeritage.FList.SortKind := ssUsesClauses;
     //only add to descriptions if ShowUses!
 //overview
-  FCIOs := FMemberLists.AddNew(trClasses, dkPasItems).PasItems;
+  //FCIOs := FMemberLists.AddNew(trClasses, dkPasItems).PasItems;
+  FCIOs := FMemberLists.AddNew(trCio, dkPasItems).PasItems;
   FFuncsProcs := FMemberLists.AddNew(trFunctionsAndProcedures, dkPasItems).PasItems;
   FTypes := FMemberLists.AddNew(trTypes, dkPasItems).PasItems;
   FVariables := FMemberLists.AddNew(trVariables, dkPasItems).PasItems;
   FConstants := FMemberLists.AddNew(trConstants, dkPasItems).PasItems;
-//authors
-//dates: Created, LastMod
-//footer
+end;
+
+destructor TPasUnit.Destroy;
+{$IFDEF DbgFree}
+var
+  s: string;
+{$ELSE}
+{$ENDIF}
+begin
+{$IFDEF DbgFree}
+//debug - we could set up ourself as "unit under destruction".
+  s := self.Name;
+  assert(UnitUnderDestruction = nil, 'illegal destroy unit');
+  UnitUnderDestruction := self;
+  inherited Destroy;
+  UnitUnderDestruction := nil;
+{$ELSE}
+  inherited Destroy;
+{$ENDIF}
 end;
 
 procedure TPasUnit.Deserialize(const ASource: TStream);
@@ -3574,6 +3619,7 @@ begin
   if IsEmpty(lists) then
     exit; //should never happen
   lists.SortByID(MemberListSortOrder);
+    //this seems not to work?
   for i := 0 to lists.Count - 1 do begin
     lst := lists.Items[i].PasItems; //can be TPasCios - recurse
   //even if a list is not sorted, it's members may deserve sorting!
@@ -3606,6 +3652,9 @@ begin
 
   Also remove excluded items (FExclude).
 *)
+//the member lists are not yet sorted???
+  FMemberLists.SortByID(MemberListSortOrder);
+//allocate overview
   o := NeedOverview;
 //for now, we add all non-empty member lists
   for i := 0 to FMemberLists.Count - 1 do begin
@@ -3654,13 +3703,21 @@ var
   iFirst, iLast: integer;
 begin
 (* Since the tags can be expanded in any (fwd/back) order, we'll have to track
-  the groupstart/groupend item. When both are assigned, the range is moved.
+  the groupbegin/groupend item. When both are assigned, the range is moved.
 
   We have already built the default lists in MemberLists, while Overview still is nil.
 
   lst has to be determined by the overridden methods.
 *)
-  //lst := MemberLists.Items[0];
+(* Known problems:
+  Multiple items in a declaration will receive the same comments, so that
+    all tags are copied and processed, resulting in errors.
+    It's suggested to drop the copy-comments feature!
+  The groupend tag is associated with the last item in the range. This tag
+    should be given in a back-comment, following that last item.
+*)
+{$DEFINE both} //disable in case the occurence order makes problems
+
   if lst = nil then begin
     Result := False;
     exit;
@@ -3709,23 +3766,34 @@ begin
       begin
         FGroup := grp;
         gFirst := AItem;
+      {$IFDEF both}
         if gLast = nil then begin
           gScope := self;
           exit; //move at gaEnd
         end;
         iFirst := m;
         iLast := lst.FList.IndexOf(gLast);
+      {$ELSE}
+          gScope := self;
+          exit; //move at gaEnd
+      {$ENDIF}
       end;
     gaEnd:
       begin
         gLast := AItem;
         if gFirst = nil then begin
+        {$IFDEF both}
           gScope := self;
           exit; //move at gaStart
+        {$ELSE}
+          Result := False; //error!
+          grp := nil; //force no-copy
+        {$ENDIF}
+        end else begin
+          grp := FGroup;
+          iFirst := lst.FList.IndexOf(gFirst);
+          iLast := m;
         end;
-        grp := FGroup;
-        iFirst := lst.FList.IndexOf(gFirst);
-        iLast := m;
       end;
     else //keep compiler happy
       iFirst := -1;
@@ -3834,7 +3902,7 @@ destructor TDescriptionItem.Destroy;
 begin
   if fExternalList then
     FList := nil  //do NOT destroy
-  else
+  else if FList <> nil then
     FreeAndNil(FList);
   inherited;
 end;
@@ -4238,12 +4306,38 @@ procedure TDescriptionItem.SortByID(
 var
   it: TTranslationID;
   iw, w: integer;
+
+  procedure CheckSort;
+  var
+    i, iLast, iNext: integer;
+    item: TDescriptionItem;
+  begin
+    iLast := -1;
+    for i := 0 to FList.Count - 1 do begin
+      item := FList.Items[i];
+      iNext := ItemWeights[Item.ID];
+      if iNext < iLast then
+        assert(iNext >= iLast, 'not sorted');
+      iLast := iNext;
+    end;
+  end;
+
 begin
+(* Create a map array for the given item IDs.
+  The defined IDs have lowest ranks (sort first),
+  all others are assigned higher ranks.
+
+  Possible optimization: init everything to the highest rank,
+    then overwrite for the defined IDs.
+
+  Possible extensions: lists for
+  - items to show first, items to show last (all others in between)
+  - items to ignore (remove if found)
+*)
   if GetCount < 2 then
     exit; //no sort required
 //build weight table
   w := Length(weights);
-  //FillChar(ItemWeights[0], w*sizeof(ItemWeights[0]), 0);
   FillChar(ItemWeights, sizeof(ItemWeights), 0); //-1?
   for iw := 0 to w-1 do
     ItemWeights[weights[iw]] := iw + 1;
@@ -4254,6 +4348,8 @@ begin
     end;
   end;
   FList.Sort({$IFDEF fpc}@{$ENDIF} CompareWeight);
+//debug
+  CheckSort;
 end;
 
 { TDescriptionList }

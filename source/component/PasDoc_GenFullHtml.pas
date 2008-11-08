@@ -724,7 +724,7 @@ procedure TFullHTMLDocGenerator.WriteOverviewFiles;
   end;
 
 var
-  ItemsToCopy: TPasItems;
+  //ItemsToCopy: TPasItems;
   PartialItems: TPasItems;
   TotalItems: TPasItems; // Collect all Items for final listing.
   PU: TPasUnit;

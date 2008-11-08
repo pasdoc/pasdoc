@@ -112,8 +112,10 @@ type
       any valid Delphi or FPC code. }
     function SkipUntilElseOrEndif: Boolean;
     procedure ResolveSwitchDirectives(const Comment: String);
-    
+  {$IFDEF old}
     procedure SetIncludeFilePaths(Value: TStringVector);
+  {$ELSE}
+  {$ENDIF}
   protected
     procedure DoError(const AMessage: string; 
       const AArguments: array of const);
@@ -403,10 +405,13 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$IFDEF old}
 procedure TScanner.SetIncludeFilePaths(Value: TStringVector);
 begin
   FIncludeFilePaths.Assign(Value);
 end;
+{$ELSE}
+{$ENDIF}
 
 { ---------------------------------------------------------------------------- }
 
