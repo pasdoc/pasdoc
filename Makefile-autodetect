@@ -13,9 +13,9 @@
 # - $(PATHSEP) is set to path seperator on this system.
 #
 # - $(MKDIRPROG) is set the command that behaves like "mkdir"
-#   on POSIX-like environments (so you can pass "-p" so it, and so on).
+#   on POSIX-like environments (so you can pass "-p" to it, and so on).
 #
-#   Note that this will work even if you have only a
+#   Note that this will work even if you're on Windows and have only a
 #   subset of MinGW tools that are installed with FPC
 #   (and you don't have Cygwin or full MinGW Msys environment available).
 #   In such case `make' runs your commands within a Windows shell,
