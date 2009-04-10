@@ -218,9 +218,11 @@ type
 
 //Full language name
 function LanguageFromIndex(i: integer): string;
+function LanguageFromID(i: TLanguageID): string;
 
 //Language abbreviation
 function SyntaxFromIndex(i: integer): string;
+function SyntaxFromID(i: TLanguageID): string;
 
 //Search for language by short or long name
 function IDfromLanguage(const s: string): TLanguageID;
@@ -2386,11 +2388,21 @@ begin
   Result := language_array[TLanguageID(i)].Name;
 end;
 
+function LanguageFromID(i: TLanguageID): string;
+begin
+  Result := language_array[i].Name;
+end;
+
 function SyntaxFromIndex(i: integer): string;
 var
   l: TLanguageID absolute i;
 begin
   Result := Language_array[l].Syntax;
+end;
+
+function SyntaxFromID(i: TLanguageID): string;
+begin
+  Result := Language_array[i].Syntax;
 end;
 
 function IDfromLanguage(const s: string): TLanguageID;
