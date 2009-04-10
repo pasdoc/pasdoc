@@ -22,6 +22,7 @@
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
   @author(Liu Da <xmacmail AT gmail.com> (Chinese gb2312 translation))
   @author(DoDi)
+  @author(René Mihula <rene.mihula@gmail.com> (Czech translation))
 }
 
 unit PasDoc_Languages;
@@ -51,7 +52,9 @@ type
     lgSlovak,
     lgSpanish,
     lgSwedish,
-    lgHungarian_1250
+    lgHungarian_1250,
+    lgCzech_CP1250,
+    lgCzech_ISO_8859_2
    );
 
   { An enumeration type of all static output texts.
@@ -201,8 +204,6 @@ type
     procedure SetLanguageRussian_866;
     { Defines translations for Russian (KOI-8). }
     procedure SetLanguageRussian_koi8;
-
-
   public
     { Charset for current language }
     property CharSet: string read FCharSet;
@@ -2289,6 +2290,9 @@ const
     {trSeeAlso} 'Lásd még',
     ''  //dummy
   );
+  
+  aCzech_ISO_8859_2: {$I PasDoc_Languages_Czech_ISO_8859_2.inc}
+  aCzech_CP1250: {$I PasDoc_Languages_Czech_CP1250.inc}
 
 const
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
@@ -2312,7 +2316,9 @@ const
     (Table: @aSlovak; Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
     (Table: @aSpanish; Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'),
     (Table: @aSwedish; Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'),
-    (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250')
+    (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250'),
+    (Table: @aCzech_CP1250; Name: 'Czech (Codepage CP1250)'; Syntax: 'cz'; CharSet: 'windows-1250'),
+    (Table: @aCzech_ISO_8859_2; Name: 'Czech (Codepage ISO 8859-2)'; Syntax: 'cz.iso-8859-2'; CharSet: 'iso-8859-2')
   );
 
 function TPasDocLanguages.GetTranslation(
