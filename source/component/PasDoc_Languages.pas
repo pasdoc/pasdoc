@@ -1458,20 +1458,20 @@ const
   //tables and members
     {trClasses} 'Klasy',
       {trClass} 'Klasa',
-      {trDispInterface} strToDo, //'DispInterface',
+      {trDispInterface} 'DispInterface', //'DispInterface',
       {trInterface} 'Interfejs',
     {trObjects} 'Obiekty',
       {trObject} 'Obiekt',
-      {trRecord} strToDo, //'Record',
+      {trRecord} 'Rekord', //'Record',
         {trHierarchy} 'Hierarchia',
         {trFields} 'Pola',
         {trMethods} 'Metody',
         {trProperties} 'W³aœciwoœci',
-    {trLibrary} strToDo,  //'Library',
-    {trPackage} strToDo,  //'Package',
-    {trProgram} strToDo,  //'Program',
+    {trLibrary} 'Biblioteka',  //'Library',
+    {trPackage} 'Pakiet',  //'Package',
+    {trProgram} 'Program',  //'Program',
     {trUnit} 'Modu³',
-      {trUses} strToDo, //'Uses',
+      {trUses} 'U¿ywa', //'Uses',
       {trConstants} 'Sta³e',
       {trFunctionsAndProcedures} 'Podprogramy',
       {trTypes} 'Typy',
@@ -1486,17 +1486,17 @@ const
       {trReturns} 'Wynik',
       {trExceptionsRaised} 'Generowane wyj¹tki',
     {trExceptions} 'Wyj¹tki',
-      {trException} strToDo, //'Exception',
+      {trException} 'Wyj¹tek', //'Exception',
     {trEnum} 'Wyliczenie',
   //visibilities
-    {trVisibility} 'Kabeh Unit',
+    {trVisibility} 'Widocznoœæ',
       {trPrivate} 'Prywatne',
-      {trStrictPrivate} strToDo, //'Strict Private',
+      {trStrictPrivate} 'Œciœle prywatne', //'Strict Private',
       {trProtected} 'Chronione',
-      {trStrictProtected} strToDo, //'Strict Protected',
+      {trStrictProtected} 'Œciœle chronione', //'Strict Protected',
       {trPublic} 'Publiczne',
       {trPublished} 'Publikowane',
-      {trAutomated} strToDo, //'Automated',
+      {trAutomated} 'Automated', //'Automated',
       {trImplicit} 'Domyœlne',
   //hints
     {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
@@ -1517,7 +1517,7 @@ const
   //column headings
     {trDeclaration} 'Deklaracja',
     {trDescription} 'Opis',
-    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
+    {trDescriptions} 'Szczegó³y', //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Wartoœci',
   //empty
@@ -1555,20 +1555,20 @@ const
   //tables and members
     {trClasses} 'Klasy',
       {trClass} 'Klasa',
-      {trDispInterface} strToDo, //'DispInterface',
+      {trDispInterface} 'DispInterface', //'DispInterface',
       {trInterface} 'Interfejs',
     {trObjects} 'Obiekty',
       {trObject} 'Obiekt',
-      {trRecord} strToDo, //'Record',
+      {trRecord} 'Rokord', //'Record',
         {trHierarchy} 'Hierarchia',
         {trFields} 'Pola',
         {trMethods} 'Metody',
         {trProperties} 'W³a¶ciwo¶ci',
-    {trLibrary} strToDo,  //'Library',
-    {trPackage} strToDo,  //'Package',
-    {trProgram} strToDo,  //'Program',
+    {trLibrary} 'Biblioteka',  //'Library',
+    {trPackage} 'Pakiet',  //'Package',
+    {trProgram} 'Program',  //'Program',
     {trUnit} 'Modu³',
-      {trUses} strToDo, //'Uses',
+      {trUses} 'U¿ywa', //'Uses',
       {trConstants} 'Sta³e',
       {trFunctionsAndProcedures} 'Podprogramy',
       {trTypes} 'Typy',
@@ -1578,22 +1578,22 @@ const
         {trAuthor} 'Autor',
       {trCreated} 'Utworzony',
       {trLastModified} 'Ostatnia modyfikacja',
-    {trSubroutine} 'Podprograma', //???
+    {trSubroutine} 'Podprogram',
       {trParameters} 'Parametry',
       {trReturns} 'Wynik',
       {trExceptionsRaised} 'Generowane wyj±tki',
     {trExceptions} 'Wyj±tki',
-      {trException} strToDo, //'Exception',
+      {trException} 'Wyj±tek',
     {trEnum} 'Wyliczenie',
   //visibilities
     {trVisibility} 'Widoczno¶æ',
       {trPrivate} 'Prywatne',
-      {trStrictPrivate} strToDo, //'Strict Private',
+      {trStrictPrivate} '¦ci¶le prywatne', //'Strict Private',
       {trProtected} 'Chronione',
-      {trStrictProtected} strToDo, //'Strict Protected',
+      {trStrictProtected} '¦ci¶le chronione', //'Strict Protected',
       {trPublic} 'Publiczne',
       {trPublished} 'Publikowane',
-      {trAutomated} strToDo, //'Automated',
+      {trAutomated} 'Automated', //'Automated',
       {trImplicit} 'Domy¶lne',
   //hints
     {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
@@ -1614,7 +1614,7 @@ const
   //column headings
     {trDeclaration} 'Deklaracja',
     {trDescription} 'Opis',
-    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
+    {trDescriptions} 'Szczegó³y', //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Warto¶ci',
   //empty
@@ -2435,3 +2435,5 @@ begin
 end;
 
 end.
+
+ 	  	 
