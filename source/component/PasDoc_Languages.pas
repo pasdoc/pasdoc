@@ -47,6 +47,7 @@ type
     lgPolish_CP1250,
     lgPolish_ISO_8859_2,
     lgRussian_1251,
+    lgRussian_utf8,
     lgRussian_866,
     lgRussian_koi8,
     lgSlovak,
@@ -1737,6 +1738,8 @@ const
     ''  //dummy
   );
 
+{$I PasDoc_Languages_Russian_utf8.inc}
+
 { ---------------------------------------------------------------------------- }
 
 procedure TPasDocLanguages.SetLanguageRussian_866;
@@ -2313,6 +2316,7 @@ const
     (Table: @aPolish1250; Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),
     (Table: @aPolish_ISO_8859_2; Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'),
     (Table: @aRussian_1251; Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
+    (Table: @aRussian_utf8; Name: 'Russian (Codepage utf8)'; Syntax: 'ru.utf8'; CharSet: 'utf-8'),
     (Table: nil;  Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
     (Table: nil;  Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
     (Table: @aSlovak; Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
