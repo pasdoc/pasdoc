@@ -5,7 +5,7 @@
   [ 1196073 ] "some modifiers are not parsed"
 
   I want to implement at once handling these directives everywhere
-  where Delphi/Kylix allows them. FPC doesn't support them (yet).
+  where Delphi/Kylix allows them. FPC >= 2.5.1 supports them too.
 
   Quoting Delphi help (from Kylix 3):
   "Hint directives can be applied to type declarations, variable declarations,
