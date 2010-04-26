@@ -1,6 +1,6 @@
 { @abstract(Test of handling the
   "@italic($I or $INCLUDE : Include compiler info)"
-  feature of FPC, see [http://www.freepascal.org/docs-html/prog/progsu30.html].)
+  feature of FPC, see [http://www.freepascal.org/docs-html/prog/progsu38.html].)
 
   PasDoc bug spotted by Michalis on 2005-12-04 when
   trying `make htmldocs' on fpc compiler sources, in file version.pas.
