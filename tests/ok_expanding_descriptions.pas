@@ -131,6 +131,11 @@ function TestPasMethodTags(A, B: Integer): string;
 
 type
   TMyClassAncestor  = class
+  private
+    MyField: boolean;
+  public
+  //@abstract(This comment should be inherited.)
+    property inheritable: boolean read MyField;
   end;
 
   { These are some tags that are not allowed to have parameters:
@@ -140,6 +145,9 @@ type
 
     @cvs($Date$) }
   TMyClass = class(TMyClassAncestor)
+  published
+  //This is the detailed description.
+    property inheritable;
   end;
 
 { And a test of @exclude.
