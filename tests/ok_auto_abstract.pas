@@ -1,3 +1,5 @@
+{$ifdef FPC} {$mode objfpc} {$endif}
+
 { This is the 1st sentence, it will be turned into
   @@abstact description of this item. This is the 2nd sentence of the
   description.

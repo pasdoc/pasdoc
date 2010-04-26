@@ -1,8 +1,12 @@
+{$ifdef FPC} {$mode objfpc} {$endif}
+
 unit ok_back_comment;
 
 {< Description of unit ok_back_comment. }
 
 interface
+
+uses SysUtils;
 
 type
   TMyType = Integer; {< Description of TMyType }
@@ -35,5 +39,8 @@ const
   MyConst = 2; //< Description of MyConst
 
 implementation
+
+procedure TMyClass.MyProc; begin end;
+procedure Foo; begin end;
 
 end.

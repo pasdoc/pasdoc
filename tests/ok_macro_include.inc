@@ -1,4 +1,4 @@
 {$DEFINE CLASS_CONSTRUCTOR:=Constructor Init;
-Override;Overload}
+Overload}
 {$DEFINE SPAWNABLE_CONSTRUCTOR:=Constructor Init(Param:String);
-Override;Overload}
+Overload}

@@ -1,5 +1,7 @@
+{$ifdef FPC} {$mode objfpc} {$endif}
+
 // description of @name
-unit AbstractSealed;
+unit ok_abstract_sealed;
 
 interface
 

@@ -1,4 +1,6 @@
-unit StrictVisibilities;
+{$ifdef FPC} {$mode objfpc} {$endif}
+
+unit ok_strict_visibilities;
 
 interface
 

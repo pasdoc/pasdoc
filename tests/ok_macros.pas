@@ -1,3 +1,6 @@
+{$macro on}
+{$mode objfpc}
+
 {$define UNIT_DECL := unit ok_macros; interface}
 
 { @abstract(Test of FPC macros handling.)
@@ -11,6 +14,7 @@ UNIT_DECL
 {$INCLUDE ok_macro_include.inc}
 
 type
+  TAncestor = class end;
   TMyClass = class(TAncestor)
   public
     CLASS_CONSTRUCTOR;
@@ -46,9 +50,9 @@ const
 {$undef FOO}
 
 {$ifndef FOO}
-procedure ThisShouldBeIncluded;
+procedure ThisShouldBeIncluded2;
 {$else}
-procedure ThisShouldNotBeIncluded;
+procedure ThisShouldNotBeIncluded2;
 {$endif}
 
 { Test of recursive macro expansion. }
@@ -58,11 +62,11 @@ procedure ThisShouldNotBeIncluded;
 {$define FOUR := (TWO) * (TWO)}
 const
   FourConst = FOUR;
-  
+
 { Test that symbol that is not a macro is something different than
   a macro that expands to nothing. }
-  
-{$define NOT_NOTHING}
+
+{$define NOT_NOTHING := + 1}
 {$define NOTHING :=}
 
 const
@@ -70,5 +74,13 @@ const
   OnlyOne = 1 NOTHING;
 
 implementation
+
+constructor TMyClass.Init; begin end;
+procedure MyProc1(a: Integer); begin end;
+procedure MyProc2(b: Integer); begin end;
+procedure MyProc3(X: Integer; Y: Integer); begin end;
+function Foo(c: string): Integer; begin end;
+procedure ThisShouldBeIncluded; begin end;
+procedure ThisShouldBeIncluded2; begin end;
 
 end.
