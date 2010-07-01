@@ -1,6 +1,7 @@
 { @abstract(PasDoc language definitions and translations.)
   @author(Johannes Berg <johannes AT sipsolutions.de>)
   @author(Ralf Junker <delphi AT zeitungsjunge.de>)
+  @author(Andrew Andreev <andrew AT alteragate.net> (Bulgarian translation))
   @author(Alexander Lisnevsky <alisnevsky AT yandex.ru> (Russian translation))
   @author(Hendy Irawan <ceefour AT gauldong.net> (Indonesian and Javanese translation))
   @author(Ivan Montes Velencoso (Catalan and Spanish translations))
@@ -34,6 +35,7 @@ type
   TLanguageID = (
     lgBosnian,
     lgBrasilian,
+    lgBulgarian,
     lgCatalan,
     lgChinese_gb2312,
     lgDanish,
@@ -660,6 +662,8 @@ const
     {trSeeAlso} strToDo, //'See also',
     ''  //dummy
   );
+
+  {$I PasDoc_Languages_Bulgarian.inc}
 
   aCatalan: RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
@@ -2303,6 +2307,7 @@ const
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
     (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
     (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
+    (Table: @aBulgarian; Name: 'Bulgarian'; Syntax: 'bg'; CharSet: 'utf-8'),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
