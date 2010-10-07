@@ -865,7 +865,8 @@ begin
       i.RawDescriptionInfo^ := RawDescriptionInfo;
       i.MyType := CIOType;
 
-      if (CIOType = CIO_CLASS) and (t.MyType = TOK_IDENTIFIER) and
+      if (CIOType in [ CIO_CLASS, CIO_PACKEDCLASS ] ) and 
+        (t.MyType = TOK_IDENTIFIER) and
         (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
       begin
         if t.Info.StandardDirective = SD_ABSTRACT then
@@ -940,7 +941,7 @@ begin
       end else begin
         Scanner.UnGetToken(t);
         case i.MyType of
-          CIO_CLASS: begin
+          CIO_CLASS, CIO_PACKEDCLASS: begin
             if not SameText(i.Name, 'tobject') then begin
               i.Ancestors.Add('TObject');
             end;
@@ -955,7 +956,7 @@ begin
               i.Ancestors.Add('IInterface');
             end;
           end;
-          CIO_OBJECT: begin
+          CIO_OBJECT, CIO_PACKEDOBJECT: begin
             if not SameText(i.Name, 'tobject') then begin
               i.Ancestors.Add('TObject');
             end;
@@ -979,7 +980,7 @@ begin
         Scanner.UnGetToken(t);
       end;
 
-      if I.MyType = CIO_CLASS then
+      if I.MyType in [ CIO_CLASS, CIO_PACKEDCLASS ] then
       begin
         { Visibility of members at the beginning of a class declaration
           that don't have a specified visibility is controlled
@@ -1641,6 +1642,19 @@ begin
             ParseCIO(U, TypeName, CIO_PACKEDRECORD, 
               RawDescriptionInfo, False);
             exit;
+          end else if t.IsKeyWord(KEY_OBJECT) then
+          begin
+            FreeAndNil(t);
+            ParseCIO(U, TypeName, CIO_PACKEDOBJECT, 
+              RawDescriptionInfo, False);
+            Exit;
+          end else if t.IsKeyWord(KEY_CLASS) then
+          begin
+            // no check for "of", no packed classpointers allowed
+            FreeAndNil(t);
+            ParseCIO(U, TypeName, CIO_PACKEDCLASS, 
+              RawDescriptionInfo, False);
+            Exit;
           end;
         end;
     end;

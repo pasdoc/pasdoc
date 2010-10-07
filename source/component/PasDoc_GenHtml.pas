@@ -570,9 +570,11 @@ type
 const
   CIO_NAMES: TCIONames = (
     'class',
+    'packed class',
     'dispinterface',
     'interface',
     'object',
+    'packed object',
     'record',
     'packed record');
 var

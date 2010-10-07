@@ -182,9 +182,11 @@ begin
   result:='unknown';
   case t of
     CIO_CLASS:result:='class';
+    CIO_PACKEDCLASS:result:='packed class';
     CIO_SPINTERFACE:result:='dispinterface';
     CIO_INTERFACE:result:='interface';
     CIO_OBJECT:result:='object';
+    CIO_PACKEDOBJECT:result:='packed object';
     CIO_RECORD:result:='record';
     CIO_PACKEDRECORD:result:='packed record';
   end;

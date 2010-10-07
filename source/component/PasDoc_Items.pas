@@ -618,8 +618,10 @@ type
   end;
 
   { enumeration type to determine type of @link(TPasCio) item }
-  TCIOType = (CIO_CLASS, CIO_SPINTERFACE, CIO_INTERFACE, CIO_OBJECT, 
-    CIO_RECORD, CIO_PACKEDRECORD);
+  TCIOType = (CIO_CLASS, CIO_PACKEDCLASS,
+    CIO_SPINTERFACE, CIO_INTERFACE, 
+    CIO_OBJECT, CIO_PACKEDOBJECT, 
+    CIO_RECORD, CIO_PACKEDRECORD );
 
   TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED);
 
@@ -1686,11 +1688,11 @@ begin
 
   for j := 0 to Count - 1 do
     case TPasCio(GetPasItemAt(j)).MyType of
-      CIO_CLASS:
+      CIO_CLASS, CIO_PACKEDCLASS:
         Inc(c);
       CIO_INTERFACE:
         Inc(i);
-      CIO_OBJECT:
+      CIO_OBJECT, CIO_PACKEDOBJECT:
         Inc(o);
     end;
 end;
