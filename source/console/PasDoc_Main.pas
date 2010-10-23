@@ -3,7 +3,7 @@ unit PasDoc_Main;
 
 interface
 
-{ This is the main procedure of PasDoc, it does everyting. }
+{ This is the main procedure of PasDoc, it does everything. }
 procedure Main;
 
 implementation
