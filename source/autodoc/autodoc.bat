@@ -9,7 +9,7 @@ rem BAT script, not to mention that Makefile gives you many more possibilities.
 
 set PASDOC=..\console\pasdoc
 set INCLUDE=..\component
-set SOURCE=..\component\*.pas ..\component\tiptue\*.pas ..\console\*.pas
+set SOURCE=..\component\*.pas ..\component\tipue\*.pas ..\console\*.pas
 set OPTIONS=--write-uses-list --auto-abstract --title "PasDoc's autodoc" --introduction=introduction.txt --use-tipue-search
 set GRAPHVIZ=--graphviz-classes --graphviz-uses --link-gv-classes jpg --link-gv-uses jpg
 set OUTPUT=html\
