@@ -191,7 +191,7 @@ begin
 end;
 
 var
-  i:cardinal;
+  i: Integer;
 begin
   WriteDirectLine(space +
     '<structure name="' + ConvertString(item.name) +
@@ -219,7 +219,7 @@ end;
 
 procedure TSimpleXMLDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 var
-  i:cardinal;
+  i: Integer;
 begin
   U.OutputFileName:=U.OutputFileName+'.xml';
   if not Assigned(U) then begin
