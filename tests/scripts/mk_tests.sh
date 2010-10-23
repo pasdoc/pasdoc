@@ -201,3 +201,4 @@ mk_special_test ok_ignore_leading_star ok_ignore_leading_star.pas --ignore-leadi
 mk_special_test ok_ignore_leading_hash ok_ignore_leading_hash.pas --ignore-leading=#
 mk_special_test ok_ignore_leading_length2 ok_ignore_leading_length2.pas --ignore-leading=#?
 mk_special_test ok_packed_class_object ok_packed_class_object.pas
+mk_special_test ok_vorbisfile ok_vorbisfile.pas
