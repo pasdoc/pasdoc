@@ -264,6 +264,8 @@ type
   protected
     procedure CreateWnd; override;
   public
+    DefaultDirectives: TStringList;
+
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
     property Changed: boolean read FChanged write SetChanged;
@@ -283,8 +285,6 @@ type
 
       This follows GNOME HIG standard for window caption. }
     function SettingsFileNameNice: string;
-
-    DefaultDirectives: TStringList;
   end;
 
 var
@@ -532,8 +532,6 @@ begin
       lgBosnian: result := 'bs';
       lgBrasilian: result := 'pt';  // Portuguese used for brazilian.
       lgCatalan: result := 'ca';
-      lgChinese_950: raise EInvalidSpellingLanguage.Create(
-        'Sorry, that language is not supported for spell checking');
       lgDanish: result := 'da';
       lgDutch: result := 'nl';
       lgEnglish: result := 'en';
@@ -589,7 +587,7 @@ begin
     Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
   for LanguageIndex := Low(TLanguageID) to High(TLanguageID) do
   begin
-    comboLanguages.Items.Add(LANGUAGE_ARRAY[LanguageIndex].Name);
+    comboLanguages.Items.Add(LanguageDescriptor(LanguageIndex)^.Name);
   end;
 
   Constraints.MinWidth := Width;
@@ -1170,7 +1168,7 @@ begin
         is not recognized. }
         
       LanguageSyntax := Ini.ReadString('Main', 'Language',
-        LANGUAGE_ARRAY[DEFAULT_LANGUAGE].Syntax);
+        LanguageDescriptor(DEFAULT_LANGUAGE)^.Syntax);
       if not LanguageFromStr(LanguageSyntax, LanguageId) then
         LanguageId := DEFAULT_LANGUAGE;
       comboLanguages.ItemIndex := Ord(LanguageId);
@@ -1297,7 +1295,7 @@ begin
     Ini.WriteBool('Main', 'StoreRelativePaths', CheckStoreRelativePaths.Checked);
 
     Ini.WriteString('Main', 'Language',
-      LANGUAGE_ARRAY[TLanguageID(comboLanguages.ItemIndex)].Syntax);
+      LanguageDescriptor(TLanguageID(comboLanguages.ItemIndex))^.Syntax);
     Ini.WriteString('Main', 'OutputDir', CorrectFileName(edOutput.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteString('Main', 'ProjectName', edProjectName.Text);

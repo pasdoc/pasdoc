@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <SaveClosedFiles Value="False"/>
         <SaveOnlyProjectUnits Value="True"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
       <UseAppBundle Value="False"/>
@@ -55,12 +54,12 @@
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
-        <ComponentName Value="frmHelpGenerator"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="frmhelpgeneratorunit.lrs"/>
+        <ComponentName Value="frmHelpGenerator"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="5" Y="1458"/>
-        <TopLine Value="1412"/>
+        <CursorPos X="65" Y="1298"/>
+        <TopLine Value="1287"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="98"/>
         <Bookmarks Count="1">
@@ -70,9 +69,8 @@
       </Unit1>
       <Unit2>
         <Filename Value="frmaboutunit.pas"/>
-        <ComponentName Value="frmAbout"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="frmaboutunit.lrs"/>
+        <ComponentName Value="frmAbout"/>
         <UnitName Value="frmAboutUnit"/>
         <CursorPos X="3" Y="65"/>
         <TopLine Value="55"/>
@@ -88,9 +86,8 @@
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
-        <ComponentName Value="WWWBrowserRunner"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="wwwbrowserrunnerdm.lrs"/>
+        <ComponentName Value="WWWBrowserRunner"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="5" Y="23"/>
         <TopLine Value="12"/>
@@ -98,9 +95,8 @@
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
-        <ComponentName Value="Preferences"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="preferencesfrm.lrs"/>
+        <ComponentName Value="Preferences"/>
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="3" Y="9"/>
         <TopLine Value="1"/>
@@ -117,7 +113,7 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <SearchPaths>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
@@ -126,9 +122,6 @@
         <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="True"/>
