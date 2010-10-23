@@ -471,7 +471,7 @@ var
   s, S1, S2: string;
   Address: string;
 begin
-  if StringVectorIsNilOrEmpty(Authors) then Exit;
+  if IsEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
     WriteHeading(HL, 'authors', FLanguage.Translation[trAuthor])
@@ -641,7 +641,7 @@ begin
   WriteConverted(CIO_NAMES[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
-  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
+  if not IsEmpty(CIO.Ancestors) then begin
     WriteConverted('(');
     for i := 0 to CIO.Ancestors.Count - 1 do
     begin
@@ -662,7 +662,7 @@ begin
   WriteItemLongDescription(CIO);
 
   { Write Hierarchy }
-  if not StringVectorIsNilOrEmpty(CIO.Ancestors) then begin
+  if not IsEmpty(CIO.Ancestors) then begin
     WriteAnchor(SectionAnchors[dsHierarchy]);
     WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
@@ -1144,7 +1144,7 @@ begin
       if OpenCloseParagraph then WriteEndOfParagraph;
     end else 
     begin
-      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then begin
+      if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;
         if Assigned(Ancestor) and (Ancestor is TPasItem) then
@@ -1590,7 +1590,7 @@ const
     i: Integer;
     ULink: TPasItem;
   begin
-    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then begin
       WriteHeading(HL, 'uses', FLanguage.Translation[trUses]);
       WriteDirect('<ul class="useslist">');
       for i := 0 to U.UsesUnits.Count-1 do begin
@@ -1695,7 +1695,7 @@ begin
   SectionHeads[dsVariables]:= FLanguage.Translation[trVariables];
 
   SectionsAvailable := [dsDescription];
-  ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
+  ConditionallyAddSection(dsUses, WriteUsesClause and not IsEmpty(U.UsesUnits));
   ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));
   ConditionallyAddSection(dsFuncsProcs, not ObjectVectorIsNilOrEmpty(U.FuncsProcs));
   ConditionallyAddSection(dsTypes, not ObjectVectorIsNilOrEmpty(U.Types));

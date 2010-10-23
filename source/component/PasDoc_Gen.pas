@@ -2624,7 +2624,7 @@ begin
       if FUnits.PasItemAt[i] is TPasUnit then 
       begin
         U := TPasUnit(FUnits.PasItemAt[i]);
-        if not StringVectorIsNilOrEmpty(U.UsesUnits) then 
+        if not IsEmpty(U.UsesUnits) then 
         begin
           for j := 0 to U.UsesUnits.Count-1 do 
           begin

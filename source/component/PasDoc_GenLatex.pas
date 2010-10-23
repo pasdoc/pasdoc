@@ -343,7 +343,7 @@ var
   s, S1, S2: string;
   EmailAddress: string;
 begin
-  if StringVectorIsNilOrEmpty(Authors) then Exit;
+  if IsEmpty(Authors) then Exit;
 
   if (Authors.Count = 1) then
     WriteHeading(HL, FLanguage.Translation[trAuthor])
@@ -440,7 +440,7 @@ begin
                 s := MakeItemLink(Item, Item.Name, lcNormal);
                 WriteDirect(s);
 
-                if not StringVectorIsNilOrEmpty(TPasCio(Item).Ancestors) then 
+                if not IsEmpty(TPasCio(Item).Ancestors) then 
                   begin
                     s := TPasCio(Item).Ancestors.FirstName;
                     Item := TPasCio(Item).FirstAncestor;
@@ -942,7 +942,7 @@ begin
 
   if Result then Exit;
 
-  if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
+  if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then 
   begin
     Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) and (Ancestor is TPasItem) then
@@ -1080,7 +1080,7 @@ begin
       WriteSpellChecked(AItem.DetailedDescription);
     end else 
     begin
-      if (AItem is TPasCio) and not StringVectorIsNilOrEmpty(TPasCio(AItem).Ancestors) then 
+      if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then 
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;
@@ -1340,7 +1340,7 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
     i: Integer;
     ULink: TPasItem;
   begin
-    if WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits) then begin
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then begin
       WriteHeading(HL, FLanguage.Translation[trUses]);
       WriteDirect('\begin{itemize}',true);
       for i := 0 to U.UsesUnits.Count-1 do begin
@@ -1376,7 +1376,7 @@ var
 
 begin
   SectionsAvailable := [dsDescription];
-  ConditionallyAddSection(dsUses, WriteUsesClause and not StringVectorIsNilOrEmpty(U.UsesUnits));
+  ConditionallyAddSection(dsUses, WriteUsesClause and not IsEmpty(U.UsesUnits));
   ConditionallyAddSection(dsClasses, not ObjectVectorIsNilOrEmpty(U.CIOs));
   ConditionallyAddSection(dsFuncsProcs, not ObjectVectorIsNilOrEmpty(U.FuncsProcs));
   ConditionallyAddSection(dsTypes, not ObjectVectorIsNilOrEmpty(U.Types));

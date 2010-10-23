@@ -49,13 +49,13 @@ type
   end;
 
 function NewStringVector: TStringVector;
-function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
+function IsEmpty(const AOV: TStringVector): boolean;
 
 implementation
 uses
   SysUtils, PasDoc_Serialize;
 
-function StringVectorIsNilOrEmpty(const AOV: TStringVector): boolean;
+function IsEmpty(const AOV: TStringVector): boolean;
 begin
   Result := not Assigned(AOV);
   if not Result then begin
