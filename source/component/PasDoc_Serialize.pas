@@ -20,8 +20,8 @@ type
     class procedure SaveStringToStream(const AValue: string; const ADestination: TStream);
     class function LoadDoubleFromStream(const ASource: TStream): double;
     class procedure SaveDoubleToStream(const AValue: double; const ADestination: TStream);
-    class function LoadIntegerFromStream(const ASource: TStream): Integer;
-    class procedure SaveIntegerToStream(const AValue: Integer; const ADestination: TStream);
+    class function LoadIntegerFromStream(const ASource: TStream): Longint;
+    class procedure SaveIntegerToStream(const AValue: Longint; const ADestination: TStream);
 
     constructor Create; virtual;
     class procedure SerializeObject(const AObject: TSerializable; const ADestination: TStream);
@@ -60,7 +60,7 @@ class function TSerializable.DeserializeFromFile(
 var
   LF: TFileStream;
 begin
-  LF := TFileStream.Create(AFileName, fmOpenRead);
+  LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
   try
     Result := DeserializeObject(LF);
   finally
@@ -88,7 +88,7 @@ begin
 end;
 
 class function TSerializable.LoadIntegerFromStream(
-  const ASource: TStream): Integer;
+  const ASource: TStream): Longint;
 begin
   ASource.Read(Result, SizeOf(Result));
 end;
@@ -102,7 +102,7 @@ end;
 class function TSerializable.LoadStringFromStream(
   const ASource: TStream): string;
 var
-  L: Integer;
+  L: LongInt;
 begin
   ASource.Read(L, SizeOf(L));
   SetLength(Result, L);
@@ -115,7 +115,7 @@ begin
 end;
 
 class procedure TSerializable.SaveIntegerToStream(
-  const AValue: Integer; const ADestination: TStream);
+  const AValue: Longint; const ADestination: TStream);
 begin
   ADestination.Write(AValue, SizeOf(AValue));
 end;
@@ -129,7 +129,7 @@ end;
 class procedure TSerializable.SaveStringToStream(const AValue: string;
   const ADestination: TStream);
 var
-  L: Integer;
+  L: Longint;
 begin
   L := Length(AValue);
   ADestination.Write(L, SizeOf(L));
@@ -166,4 +166,3 @@ initialization
 finalization
   GClassNames.Free;
 end.
- 

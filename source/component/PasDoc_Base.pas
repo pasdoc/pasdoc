@@ -496,7 +496,7 @@ begin
   begin
     p := FSourceFileNames[i];
     try
-      InputStream := TFileStream.Create(p, fmOpenRead);
+      InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
     except
       on E: Exception do
       begin

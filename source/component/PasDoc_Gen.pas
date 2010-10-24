@@ -2194,7 +2194,7 @@ begin
   ItemName := '';
   if n = '' then Exit;
   try
-    f := TFileStream.Create(n, fmOpenRead);
+    f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
   
     Assert(Assigned(f));
   

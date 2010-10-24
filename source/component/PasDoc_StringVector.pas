@@ -13,43 +13,43 @@ unit PasDoc_StringVector;
 interface
 uses
   Classes;
-   
+
 type
   TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
     { This is the same thing as Items[0] }
     function FirstName: string;
-    
+
     procedure LoadFromTextFileAdd(const AFilename: string); overload;
     procedure LoadFromTextFileAdd(var ATextFile: TextFile); overload;
     procedure RemoveAllNamesCI(const AName: string);
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
     procedure Iterate(const AItFunc: TIterateFunc);
-    procedure AddNotExisting(const AString: string);
-    
+    function AddNotExisting(const AString: string): Integer;
+
     { This loads our contents (i.e. Count and Items[] values)
       from a stream using the binary format
       - SizeOf(Count) bytes for Count
-      - then each string is loaded using 
-        @link(TSerializable.LoadStringFromStream). 
+      - then each string is loaded using
+        @link(TSerializable.LoadStringFromStream).
 
       This is better than simply loading/saving our Text value,
       by @code(Text := TSerializable.LoadStringFromStream(Stream)),
       because when such loading splits multiline strings,
-      e.g. if Items[0] = 'foo' + LineEnding + 'bar', 
+      e.g. if Items[0] = 'foo' + LineEnding + 'bar',
       then after you do Text := 'foo' + LineEnding + 'bar'
       you get two items: Items[0] = 'foo' and Items[1] = 'bar'. }
     procedure LoadFromBinaryStream(Stream: TStream);
-    
-    { This saves our contents in a format readable by 
+
+    { This saves our contents in a format readable by
       @link(LoadFromBinaryStream). }
     procedure SaveToBinaryStream(Stream: TStream);
   end;
 
 function NewStringVector: TStringVector;
-function IsEmpty(const AOV: TStringVector): boolean;
+function IsEmpty(const AOV: TStringVector): boolean; overload;
 
 implementation
 uses
@@ -57,10 +57,7 @@ uses
 
 function IsEmpty(const AOV: TStringVector): boolean;
 begin
-  Result := not Assigned(AOV);
-  if not Result then begin
-    Result := AOV.Count = 0;
-  end;
+  Result := (not Assigned(AOV)) or (AOV.Count = 0);
 end;
 
 function NewStringVector: TStringVector;
@@ -71,10 +68,11 @@ end;
 
 { TStringVector }
 
-procedure TStringVector.AddNotExisting(const AString: string);
+function TStringVector.AddNotExisting(const AString: string): integer;
 begin
-  if IndexOf(AString) < 0 then begin
-    Add(AString);
+  Result := IndexOf(AString);
+  if Result < 0 then begin
+    Result := Add(AString);
   end;
 end;
 
@@ -153,10 +151,13 @@ begin
 end;
 
 procedure TStringVector.LoadFromBinaryStream(Stream: TStream);
-var i: Integer;
+var
+  i, n: Integer;
 begin
   Clear;
-  for i := 0 to TSerializable.LoadIntegerFromStream(Stream) - 1 do
+  n := TSerializable.LoadIntegerFromStream(Stream);
+  Capacity := n;
+  for i := 0 to n - 1 do
     Append(TSerializable.LoadStringFromStream(Stream));
 end;
 

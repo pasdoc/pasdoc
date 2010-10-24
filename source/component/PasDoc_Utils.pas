@@ -323,7 +323,7 @@ end;
 function FileToString(const FileName: string): string;
 var F: TFileStream;
 begin
-  F := TFileStream.Create(FileName, fmOpenRead);
+  F := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
   try
     SetLength(Result, F.Size);
     F.ReadBuffer(Pointer(Result)^, F.Size);
@@ -364,7 +364,7 @@ var Source, Destination: TFileStream;
 begin
   Destination := TFileStream.Create(DestinationFileName, fmCreate);
   try
-    Source := TFileStream.Create(SourceFileName, fmOpenRead);
+    Source := TFileStream.Create(SourceFileName, fmOpenRead or fmShareDenyWrite);
     try
       Destination.CopyFrom(Source, Source.Size);
     finally Source.Free end;

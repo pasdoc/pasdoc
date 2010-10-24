@@ -273,7 +273,7 @@ type
     { This is the settings filename (.pds file) that is currently
       opened. You can look at pasdoc_gui as a "program to edit pds files".
       It is '' if current settings are not associated with any filename
-      (because user did not opened any pds file, or he chose "New" menu item). }
+      (because user did not open any pds file, or he chose "New" menu item). }
     property SettingsFileName: string read FSettingsFileName
       write SetSettingsFileName;
       

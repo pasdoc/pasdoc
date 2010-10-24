@@ -53,7 +53,7 @@ type
     LastNewLineChar: char;
   public
     { This is a comfortable constructor, equivalent to
-        TTextReader.Create(TFileStream.Create(FileName, fmOpenRead), true) }
+        TTextReader.Create(TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite), true) }
     constructor CreateFromFileStream(const FileName: string);
 
     { If AOwnsStream then in Destroy we will free Stream object. }
@@ -114,7 +114,7 @@ uses PasDoc_StreamUtils;
 
 constructor TTextReader.CreateFromFileStream(const FileName: string);
 begin
- Create(TFileStream.Create(FileName, fmOpenRead), true);
+ Create(TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite), true);
 end;
 
 constructor TTextReader.Create(AStream: TStream; AOwnsStream: boolean);

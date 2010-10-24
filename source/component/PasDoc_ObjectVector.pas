@@ -28,10 +28,7 @@ implementation
 
 function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean;
 begin
-  Result := not Assigned(AOV);
-  if not Result then begin
-    Result := AOV.Count = 0;
-  end;
+  Result := (not Assigned(AOV)) or (AOV.Count = 0);
 end;
 
 { TObjectVector }
