@@ -1,5 +1,5 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  Left = 472
+  Left = 471
   Height = 557
   Top = 142
   Width = 787
@@ -7,7 +7,6 @@ object frmHelpGenerator: TfrmHelpGenerator
   HelpKeyword = 'PasDocGui'
   HorzScrollBar.Page = 739
   VertScrollBar.Page = 415
-  ActiveControl = lbNavigation
   AutoSize = True
   Caption = 'pasdoc gui'
   ClientHeight = 525
@@ -23,30 +22,19 @@ object frmHelpGenerator: TfrmHelpGenerator
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '0.9.28.2'
-  object lbNavigation: TListBox
-    Left = 0
-    Height = 525
-    Top = 0
-    Width = 144
-    Align = alLeft
-    ItemHeight = 0
-    OnClick = lbNavigationClick
-    TabOrder = 0
-    TopIndex = -1
-  end
   object NotebookMain: TNotebook
-    Left = 144
+    Left = 208
     Height = 525
     Top = 0
-    Width = 643
+    Width = 579
     Align = alClient
     PageIndex = 11
     ShowTabs = False
-    TabOrder = 1
+    TabOrder = 0
     object pageOptions: TPage
       Caption = 'Options'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelTitle: TLabel
         Left = 8
         Height = 28
@@ -244,7 +232,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelVisibleMembers: TLabel
         Left = 10
         Height = 61
@@ -273,9 +261,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 33
+        ItemHeight = 0
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
+        TopIndex = -1
         Data = {
           06000000000000000000
         }
@@ -318,7 +307,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelOutputDirectory: TLabel
         Left = 8
         Height = 28
@@ -445,7 +434,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageLatexOptions: TPage
       Caption = 'LaTeX Options'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelLatexGraphicsPackage: TLabel
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
@@ -508,13 +497,13 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelLatexHyphenation: TPanel
         Left = 235
-        Height = 519
+        Height = 483
         Top = 0
         Width = 402
         Align = alRight
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 519
+        ClientHeight = 483
         ClientWidth = 402
         TabOrder = 2
         object Label17: TLabel
@@ -530,7 +519,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoHyphenatedWords: TMemo
           Left = 10
-          Height = 339
+          Height = 303
           Top = 170
           Width = 382
           Align = alClient
@@ -952,7 +941,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageDefines: TPage
       Caption = 'Defines'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object Label12: TLabel
         Left = 10
         Height = 292
@@ -967,7 +956,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 197
+        Height = 161
         Top = 312
         Width = 617
         HelpType = htKeyword
@@ -982,7 +971,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object PageSort: TPage
       Caption = 'Sort'
-      ClientWidth = 637
+      ClientWidth = 573
       ClientHeight = 519
       object LabelItemsToSort: TLabel
         Left = 8
@@ -1001,7 +990,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 475
         Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
         Top = 36
-        Width = 622
+        Width = 558
         HelpType = htKeyword
         HelpKeyword = 'SortOption'
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -1028,7 +1017,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageGenerate: TPage
       Caption = 'Generate'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelGenerateTop: TPanel
         Left = 0
         Height = 105
@@ -1080,7 +1069,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoMessages: TMemo
         Left = 10
-        Height = 394
+        Height = 358
         Top = 115
         Width = 617
         HelpType = htKeyword
@@ -1093,10 +1082,10 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageEdit: TPage
       Caption = 'Display Comments'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object tvUnits: TTreeView
         Left = 0
-        Height = 295
+        Height = 259
         Top = 28
         Width = 637
         Align = alClient
@@ -1107,7 +1096,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object seComment: TSynEdit
         Left = 0
         Height = 191
-        Top = 328
+        Top = 292
         Width = 637
         Align = alBottom
         Font.Height = -16
@@ -1117,6 +1106,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
+        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item
@@ -1698,7 +1688,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Cursor = crVSplit
         Left = 0
         Height = 5
-        Top = 323
+        Top = 287
         Width = 637
         Align = alBottom
         ResizeAnchor = akBottom
@@ -1713,6 +1703,41 @@ object frmHelpGenerator: TfrmHelpGenerator
         FullRepaint = False
         TabOrder = 2
       end
+    end
+  end
+  object PanelLeft: TPanel
+    Left = 0
+    Height = 525
+    Top = 0
+    Width = 208
+    Align = alLeft
+    BevelOuter = bvNone
+    ClientHeight = 525
+    ClientWidth = 208
+    TabOrder = 1
+    object lbNavigation: TListBox
+      Left = 0
+      Height = 466
+      Top = 59
+      Width = 208
+      Align = alClient
+      ItemHeight = 0
+      OnClick = lbNavigationClick
+      TabOrder = 0
+      TopIndex = -1
+    end
+    object ButtonGenerate: TBitBtn
+      Left = 10
+      Height = 39
+      Hint = 'Generate documentation (F9)'
+      Top = 10
+      Width = 188
+      Align = alTop
+      AutoSize = True
+      BorderSpacing.Around = 10
+      Caption = 'Generate'
+      OnClick = MenuGenerateRunClick
+      TabOrder = 1
     end
   end
   object PasDoc1: TPasDoc

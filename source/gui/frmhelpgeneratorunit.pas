@@ -110,7 +110,6 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    lbNavigation: TListBox;
     memoCommentMarkers: TMemo;
     memoDefines: TMemo;
     // @name holds the complete paths of all the source files
@@ -185,6 +184,9 @@ type
     PageSort: TPage;
     LabelItemsToSort: TLabel;
     clbSorting: TCheckListBox;
+    PanelLeft: TPanel;
+    lbNavigation: TListBox;
+    ButtonGenerate: TBitBtn;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
