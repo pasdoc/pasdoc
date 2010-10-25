@@ -40,7 +40,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 0
     Width = 643
     Align = alClient
-    PageIndex = 0
+    PageIndex = 3
     ShowTabs = False
     TabOrder = 1
     object pageOptions: TPage
@@ -61,9 +61,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
       end
       object LabelTitle: TLabel
-        Left = 10
+        Left = 8
         Height = 28
-        Top = 14
+        Top = 8
         Width = 47
         HelpType = htKeyword
         Caption = 'Title'
@@ -71,11 +71,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
       end
       object LabelOutputType: TLabel
-        AnchorSideTop.Control = edProjectName
+        AnchorSideTop.Control = edTitle
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 28
-        Top = 144
+        Top = 73
         Width = 136
         HelpType = htKeyword
         Caption = 'Output Type'
@@ -83,23 +83,23 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
       end
       object LabelProjectName: TLabel
-        AnchorSideTop.Control = edTitle
+        AnchorSideTop.Control = comboGenerateFormat
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 28
-        Top = 79
-        Width = 147
+        Top = 139
+        Width = 548
         HelpType = htKeyword
-        Caption = 'Project Name'
+        Caption = 'Output filename (without directory; not for HTML)'
         FocusControl = edProjectName
         ParentColor = False
       end
       object LabelLanguages: TLabel
-        AnchorSideTop.Control = comboGenerateFormat
+        AnchorSideTop.Control = edProjectName
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 28
-        Top = 210
+        Top = 204
         Width = 108
         HelpType = htKeyword
         Caption = 'Language'
@@ -137,10 +137,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckAutoAbstract: TCheckBox
         AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 338
+        Top = 332
         Width = 915
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
@@ -151,10 +151,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckUseTipueSearch: TCheckBox
         AnchorSideTop.Control = CheckWriteUsesList
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 307
+        Top = 301
         Width = 462
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
@@ -165,10 +165,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       object edTitle: TEdit
         AnchorSideTop.Control = LabelTitle
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 37
         Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
-        Top = 42
+        Top = 36
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
@@ -178,9 +178,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object comboGenerateFormat: TComboBox
         AnchorSideTop.Control = LabelOutputType
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 38
-        Top = 172
+        Top = 101
         Width = 254
         HelpType = htKeyword
         ItemHeight = 0
@@ -197,10 +197,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       object edProjectName: TEdit
         AnchorSideTop.Control = LabelProjectName
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 37
         Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
-        Top = 107
+        Top = 167
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
@@ -210,9 +210,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object comboLanguages: TComboBox
         AnchorSideTop.Control = LabelLanguages
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 38
-        Top = 238
+        Top = 232
         Width = 332
         HelpType = htKeyword
         HelpKeyword = 'OutputLanguage'
@@ -225,9 +225,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckAutoLink: TCheckBox
         AnchorSideTop.Control = CheckAutoAbstract
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
-        Top = 369
+        Top = 363
         Width = 799
         HelpType = htKeyword
         HelpKeyword = 'AutoLinkOption'
@@ -238,9 +238,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckHandleMacros: TCheckBox
         AnchorSideTop.Control = CheckAutoLink
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
-        Top = 400
+        Top = 394
         Width = 506
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
@@ -253,9 +253,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckStoreRelativePaths: TCheckBox
         AnchorSideTop.Control = CheckHandleMacros
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
-        Top = 431
+        Top = 425
         Width = 443
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
@@ -268,9 +268,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckWriteUsesList: TCheckBox
         AnchorSideTop.Control = comboLanguages
         AnchorSideTop.Side = asrBottom
-        Left = 10
+        Left = 8
         Height = 31
-        Top = 276
+        Top = 270
         Width = 239
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
@@ -285,7 +285,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object LabelVisibleMembers: TLabel
         Left = 10
         Height = 61
@@ -314,10 +314,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 0
+        ItemHeight = 33
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
-        TopIndex = -1
         Data = {
           06000000000000000000
         }
@@ -360,7 +359,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object LabelOutputDirectory: TLabel
         Left = 8
         Height = 28
@@ -487,7 +486,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageLatexOptions: TPage
       Caption = 'LaTeX Options'
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object LabelLatexGraphicsPackage: TLabel
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
@@ -550,13 +549,13 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelLatexHyphenation: TPanel
         Left = 235
-        Height = 483
+        Height = 519
         Top = 0
         Width = 402
         Align = alRight
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 483
+        ClientHeight = 519
         ClientWidth = 402
         TabOrder = 2
         object Label17: TLabel
@@ -572,7 +571,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoHyphenatedWords: TMemo
           Left = 10
-          Height = 303
+          Height = 339
           Top = 170
           Width = 382
           Align = alClient
