@@ -29,28 +29,28 @@ var
 
 const
   DefaultWWWBrowserCommand =
-    {$ifdef WIN32} '' {$else} 'sh -c "$BROWSER %s"' {$endif};
+    {$ifdef MSWINDOWS} '' {$else} 'xdg-open "%s"' {$endif};
 
 implementation
 
-uses {$ifdef WIN32} Windows, ShellAPI, {$endif} PasDocGuiSettings;
+uses {$ifdef MSWINDOWS} Windows, ShellAPI, {$endif} PasDocGuiSettings;
 
 { TWWWBrowserRunner }
 
 procedure TWWWBrowserRunner.DataModuleCreate(Sender: TObject);
 begin
-  BrowserCommand := IniFile.ReadString('Main', 'WWWBrowserCommand',
+  BrowserCommand := IniFile.ReadString('Main', 'WWWBrowserCommand_V2',
     DefaultWWWBrowserCommand);
 end;
 
 procedure TWWWBrowserRunner.DataModuleDestroy(Sender: TObject);
 begin
-  IniFile.WriteString('Main', 'WWWBrowserCommand', BrowserCommand);
+  IniFile.WriteString('Main', 'WWWBrowserCommand_V2', BrowserCommand);
 end;
 
 procedure TWWWBrowserRunner.RunBrowser(const URL: string);
 
-  {$ifdef WIN32}
+  {$ifdef MSWINDOWS}
   procedure ShellExecuteURL;
   var
     ExecInfo: TShellExecuteInfo;
@@ -70,7 +70,7 @@ procedure TWWWBrowserRunner.RunBrowser(const URL: string);
   {$endif}
 
 begin
-  {$ifdef WIN32}
+  {$ifdef MSWINDOWS}
   if Trim(BrowserCommand) = '' then
   begin
     ShellExecuteURL;
