@@ -1,86 +1,103 @@
 object Preferences: TPreferences
-  Caption = 'Preferences'
-  ClientHeight = 192
-  ClientWidth = 424
-  PixelsPerInch = 96
-  Position = poMainFormCenter
+  Left = 286
+  Height = 316
+  Top = 207
+  Width = 471
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 191
-  Left = 287
-  Height = 192
-  Top = 206
-  Width = 424
+  ActiveControl = EditWWWBrowserCommand
+  AutoSize = True
+  BorderWidth = 10
+  Caption = 'Preferences'
+  ClientHeight = 316
+  ClientWidth = 471
+  Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
   object LabelWWWBrowserCommand: TLabel
-    BorderSpacing.OnChange = nil
-    Caption = 'C&ommand to run WWW browser :'#10'(%s will be replaced with the URL, %% with %)'#10'(under Windows you can leave this blank to use default WWW browser)'
-    Color = clNone
-    FocusControl = EditWWWBrowserCommand
     Left = 8
-    Height = 39
-    Top = 16
-    Width = 345
+    Height = 141
+    Top = 8
+    Width = 448
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'C&ommand to run WWW browser :'#10'(%s will be replaced with the URL, %% with %)'#10'(under Windows you can leave this blank to use default WWW browser)'
+    FocusControl = EditWWWBrowserCommand
+    ParentColor = False
+    WordWrap = True
   end
   object LabelWWWHelpServer: TLabel
-    Caption = '&URL of server with help pages :'
-    Color = clNone
-    FocusControl = EditWWWHelpServer
+    AnchorSideTop.Control = EditWWWBrowserCommand
+    AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 13
-    Top = 104
-    Width = 158
+    Height = 25
+    Top = 193
+    Width = 327
+    BorderSpacing.Top = 10
+    Caption = '&URL of server with help pages :'
+    FocusControl = EditWWWHelpServer
+    ParentColor = False
   end
   object EditWWWBrowserCommand: TEdit
-    BorderSpacing.OnChange = nil
+    AnchorSideTop.Control = LabelWWWBrowserCommand
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 34
+    Top = 149
+    Width = 392
     TabOrder = 0
     Text = 'EditWWWBrowserCommand'
-    Left = 8
-    Height = 23
-    Top = 64
-    Width = 392
   end
   object EditWWWHelpServer: TEdit
+    AnchorSideTop.Control = LabelWWWHelpServer
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 34
+    Top = 218
+    Width = 392
     TabOrder = 1
     Text = 'EditWWWHelpServer'
-    Left = 8
-    Height = 23
-    Top = 120
-    Width = 392
   end
   object BtnOK: TButton
-    Anchors = [akRight, akBottom]
-    BorderSpacing.OnChange = nil
+    AnchorSideTop.Control = BtnResetDefaults
+    Left = 411
+    Height = 40
+    Top = 262
+    Width = 45
+    Anchors = [akTop, akRight]
+    AutoSize = True
     BorderSpacing.InnerBorder = 2
     Caption = '&OK'
     Default = True
     ModalResult = 1
     TabOrder = 3
-    Left = 244
-    Height = 25
-    Top = 157
-    Width = 75
   end
   object BtnCancel: TButton
-    Anchors = [akRight, akBottom]
-    BorderSpacing.OnChange = nil
+    AnchorSideTop.Control = BtnResetDefaults
+    AnchorSideRight.Control = BtnOK
+    Left = 317
+    Height = 40
+    Top = 262
+    Width = 84
+    Anchors = [akTop, akRight]
+    AutoSize = True
+    BorderSpacing.Right = 10
     BorderSpacing.InnerBorder = 2
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 4
-    Left = 332
-    Height = 25
-    Top = 156
-    Width = 75
   end
   object BtnResetDefaults: TButton
-    Anchors = [akLeft, akBottom]
+    AnchorSideTop.Control = EditWWWHelpServer
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 40
+    Top = 262
+    Width = 184
+    AutoSize = True
+    BorderSpacing.Top = 10
     BorderSpacing.InnerBorder = 2
     Caption = '&Reset to defaults'
     OnClick = BtnResetDefaultsClick
     TabOrder = 2
-    Left = 8
-    Height = 25
-    Top = 156
-    Width = 139
   end
 end

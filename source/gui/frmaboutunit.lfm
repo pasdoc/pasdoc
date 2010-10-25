@@ -6,7 +6,6 @@ object frmAbout: TfrmAbout
   HorzScrollBar.Page = 407
   VertScrollBar.Page = 346
   ActiveControl = MemoInformation
-  AutoSize = True
   Caption = 'About'
   ClientHeight = 372
   ClientWidth = 488

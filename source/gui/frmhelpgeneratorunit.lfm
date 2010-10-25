@@ -45,7 +45,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageOptions: TPage
       Caption = 'Options'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelItemsToSort: TLabel
         AnchorSideLeft.Control = clbSorting
         AnchorSideBottom.Control = clbSorting
@@ -126,9 +126,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           'methods'
           'properties'
         )
-        ItemHeight = 33
+        ItemHeight = 0
         OnClick = SomethingChanged
         TabOrder = 0
+        TopIndex = -1
         Data = {
           0A00000000000000000000000000
         }
@@ -284,7 +285,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelVisibleMembers: TLabel
         Left = 10
         Height = 61
@@ -313,9 +314,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 33
+        ItemHeight = 0
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
+        TopIndex = -1
         Data = {
           06000000000000000000
         }
@@ -358,7 +360,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelOutputDirectory: TLabel
         Left = 8
         Height = 28
@@ -485,7 +487,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageLatexOptions: TPage
       Caption = 'LaTeX Options'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelLatexGraphicsPackage: TLabel
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
@@ -548,13 +550,13 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelLatexHyphenation: TPanel
         Left = 235
-        Height = 519
+        Height = 483
         Top = 0
         Width = 402
         Align = alRight
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 519
+        ClientHeight = 483
         ClientWidth = 402
         TabOrder = 2
         object Label17: TLabel
@@ -570,7 +572,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoHyphenatedWords: TMemo
           Left = 10
-          Height = 339
+          Height = 303
           Top = 170
           Width = 382
           Align = alClient
@@ -582,7 +584,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageHeadFoot: TPage
       Caption = 'Header / Footer'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelHeaderHidden: TPanel
         Left = 0
         Height = 179
@@ -629,13 +631,13 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelFooterHidden: TPanel
         Left = 0
-        Height = 331
+        Height = 295
         Top = 188
         Width = 637
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 331
+        ClientHeight = 295
         ClientWidth = 637
         TabOrder = 1
         object LabelFooter: TLabel
@@ -651,7 +653,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoFooter: TMemo
           Left = 10
-          Height = 283
+          Height = 247
           Top = 38
           Width = 617
           HelpType = htKeyword
@@ -666,7 +668,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageGraphViz: TPage
       Caption = 'GraphViz'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object Label22: TLabel
         AnchorSideTop.Control = cbVizGraphUses
         AnchorSideTop.Side = asrBottom
@@ -719,7 +721,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageSpellChecking: TPage
       Caption = 'Spell Checking'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelSpellCheckingTop1: TPanel
         Left = 0
         Height = 208
@@ -787,7 +789,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoSpellCheckingIgnore: TMemo
         Left = 10
-        Height = 291
+        Height = 255
         Top = 218
         Width = 617
         HelpType = htKeyword
@@ -802,10 +804,10 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageMarkers: TPage
       Caption = 'Markers'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object memoCommentMarkers: TMemo
         Left = 10
-        Height = 327
+        Height = 291
         Top = 182
         Width = 617
         HelpType = htKeyword
@@ -875,7 +877,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageSourceFiles: TPage
       Caption = 'Source Files'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelSourceFilesTop: TPanel
         Left = 0
         Height = 189
@@ -920,7 +922,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoFiles: TMemo
         Left = 10
-        Height = 310
+        Height = 274
         Top = 199
         Width = 617
         HelpType = htKeyword
@@ -935,7 +937,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageIncludeDirectories: TPage
       Caption = 'Include Directories'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
         Height = 118
@@ -976,7 +978,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoIncludeDirectories: TMemo
         Left = 10
-        Height = 381
+        Height = 345
         Top = 128
         Width = 617
         HelpType = htKeyword
@@ -992,7 +994,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageDefines: TPage
       Caption = 'Defines'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object Label12: TLabel
         Left = 10
         Height = 292
@@ -1007,7 +1009,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 197
+        Height = 161
         Top = 312
         Width = 617
         HelpType = htKeyword
@@ -1023,7 +1025,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageGenerate: TPage
       Caption = 'Generate'
       ClientWidth = 637
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelGenerateTop: TPanel
         Left = 0
         Height = 105
@@ -1075,7 +1077,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoMessages: TMemo
         Left = 10
-        Height = 394
+        Height = 358
         Top = 115
         Width = 617
         HelpType = htKeyword
@@ -1112,7 +1114,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item

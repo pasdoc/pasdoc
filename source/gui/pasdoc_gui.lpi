@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="100"/>
+        <UsageCount Value="101"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,10 +58,10 @@
         <ComponentName Value="frmHelpGenerator"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="17" Y="1438"/>
+        <TopLine Value="1427"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="100"/>
+        <UsageCount Value="101"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="317" ID="1"/>
         </Bookmarks>
@@ -71,10 +71,13 @@
         <Filename Value="frmaboutunit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmAbout"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAboutUnit"/>
         <CursorPos X="3" Y="65"/>
         <TopLine Value="55"/>
-        <UsageCount Value="100"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="101"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
@@ -82,25 +85,29 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WWWBrowserRunner"/>
+        <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="5" Y="23"/>
         <TopLine Value="12"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Preferences"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="3" Y="9"/>
         <TopLine Value="1"/>
-        <UsageCount Value="35"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
@@ -108,7 +115,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="28"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="35"/>
       </Unit6>
     </Units>
   </ProjectOptions>
