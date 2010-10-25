@@ -58,7 +58,7 @@
         <ComponentName Value="frmHelpGenerator"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="56" Y="15"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="104"/>

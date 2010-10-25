@@ -485,7 +485,7 @@ begin
 
   edTitle.Text := '';
   edProjectName.Text := '';
-  EditOutputDirectory.Directory := '';
+  EditOutputDirectory.Directory := GetTempDir(true);
   seVerbosity.Value := 2;
   comboGenerateFormat.ItemIndex := 0;
   memoFiles.Clear;
