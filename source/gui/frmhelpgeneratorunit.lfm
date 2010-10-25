@@ -29,13 +29,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 0
     Width = 579
     Align = alClient
-    PageIndex = 2
+    PageIndex = 3
     ShowTabs = False
     TabOrder = 0
     object pageOptions: TPage
       Caption = 'Options'
       ClientWidth = 573
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelTitle: TLabel
         Left = 8
         Height = 28
@@ -254,573 +254,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         OnChange = SomethingChanged
       end
     end
-    object PageVisibleMembers: TPage
-      Caption = 'Visible members'
-      ChildSizing.LeftRightSpacing = 10
-      ChildSizing.TopBottomSpacing = 10
-      ChildSizing.VerticalSpacing = 10
-      ClientWidth = 573
-      ClientHeight = 519
-      object LabelVisibleMembers: TLabel
-        Left = 10
-        Height = 94
-        Top = 10
-        Width = 553
-        HelpType = htKeyword
-        Align = alTop
-        Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
-        FocusControl = CheckListVisibleMembers
-        ParentColor = False
-        WordWrap = True
-      end
-      object CheckListVisibleMembers: TCheckListBox
-        Left = 10
-        Height = 130
-        Top = 114
-        Width = 553
-        HelpType = htKeyword
-        HelpKeyword = 'IncludeByVisibility'
-        Align = alTop
-        Items.Strings = (
-          'Published'
-          'Public'
-          'Protected'
-          'Private'
-          'Automated'
-          'Implicit'
-        )
-        ItemHeight = 33
-        OnClick = CheckListVisibleMembersClick
-        TabOrder = 0
-        Data = {
-          06000000000000000000
-        }
-      end
-      object RadioImplicitVisibility: TRadioGroup
-        Left = 10
-        Height = 134
-        Top = 254
-        Width = 553
-        HelpType = htKeyword
-        HelpKeyword = 'ImplicitVisibilityOption'
-        Align = alTop
-        AutoFill = True
-        AutoSize = True
-        Caption = 'Default visibility of members'
-        ChildSizing.LeftRightSpacing = 6
-        ChildSizing.TopBottomSpacing = 6
-        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-        ChildSizing.EnlargeVertical = crsHomogenousChildResize
-        ChildSizing.ShrinkHorizontal = crsScaleChilds
-        ChildSizing.ShrinkVertical = crsScaleChilds
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 1
-        ClientHeight = 105
-        ClientWidth = 549
-        ItemIndex = 0
-        Items.Strings = (
-          '"Public", unless the class is declared within {$M+} state, then it''s "published"'
-          'Always "published"'
-          'Always "implicit"'
-        )
-        OnClick = SomethingChanged
-        TabOrder = 1
-      end
-    end
-    object pageCustomFiles: TPage
-      Caption = 'Custom Files'
-      ChildSizing.LeftRightSpacing = 10
-      ChildSizing.TopBottomSpacing = 10
-      ChildSizing.HorizontalSpacing = 10
-      ChildSizing.ControlsPerLine = 1
-      ClientWidth = 573
-      ClientHeight = 519
-      object LabelConclusionFile: TLabel
-        AnchorSideTop.Control = EditIntroductionFileName
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 28
-        Top = 138
-        Width = 158
-        HelpType = htKeyword
-        Caption = 'Conclusion file'
-        FocusControl = EditConclusionFileName
-        ParentColor = False
-      end
-      object LabelIntroductionFile: TLabel
-        AnchorSideTop.Control = EditCssFileName
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 28
-        Top = 73
-        Width = 173
-        HelpType = htKeyword
-        Caption = 'Introduction file'
-        FocusControl = EditIntroductionFileName
-        ParentColor = False
-      end
-      object LabelCssFileName: TLabel
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 28
-        Hint = 'Custom CSS file. Leave empty to use default pasdoc.css.'
-        Top = 8
-        Width = 377
-        HelpType = htKeyword
-        Caption = 'Custom CSS file (for HTML output)'
-        FocusControl = EditCssFileName
-        ParentColor = False
-      end
-      object EditConclusionFileName: TFileNameEdit
-        AnchorSideTop.Control = LabelConclusionFile
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 37
-        Hint = 'Optional file used as a conclusion to your project.'
-        Top = 166
-        Width = 436
-        HelpType = htKeyword
-        HelpKeyword = 'IntroductionAndConclusion'
-        DialogTitle = 'Choose conclusion file'
-        DialogOptions = []
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 0
-        OnChange = SomethingChanged
-      end
-      object EditIntroductionFileName: TFileNameEdit
-        AnchorSideTop.Control = LabelIntroductionFile
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 37
-        Hint = 'Optional file used as an introduction to your project.'
-        Top = 101
-        Width = 436
-        HelpType = htKeyword
-        HelpKeyword = 'IntroductionAndConclusion'
-        DialogTitle = 'Choose introduction file'
-        DialogOptions = []
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Anchors = [akTop, akLeft, akRight]
-        TabOrder = 1
-        OnChange = SomethingChanged
-      end
-      object EditCssFileName: TFileNameEdit
-        AnchorSideTop.Control = LabelCssFileName
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 37
-        Top = 36
-        Width = 483
-        HelpType = htKeyword
-        HelpKeyword = 'CssOption'
-        DialogTitle = 'Choose custom CSS file'
-        DialogOptions = []
-        Filter = 'Cascading Style Sheets (*.css)|*.css'
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        TabOrder = 2
-        OnChange = SomethingChanged
-      end
-    end
-    object pageLatexOptions: TPage
-      Caption = 'LaTeX Options'
-      ClientWidth = 573
-      ClientHeight = 519
-      object LabelLatexGraphicsPackage: TLabel
-        AnchorSideTop.Control = rgLineBreakQuality
-        AnchorSideTop.Side = asrBottom
-        Left = 12
-        Height = 28
-        Top = 110
-        Width = 263
-        Caption = 'LateX graphics package'
-        FocusControl = comboLatexGraphicsPackage
-        ParentColor = False
-      end
-      object rgLineBreakQuality: TRadioGroup
-        Left = 12
-        Height = 103
-        Top = 7
-        Width = 112
-        HelpType = htKeyword
-        HelpKeyword = 'PasDocGui/LatexLineBreaks'
-        AutoFill = True
-        AutoSize = True
-        Caption = 'Line Breaks'
-        ChildSizing.LeftRightSpacing = 6
-        ChildSizing.TopBottomSpacing = 6
-        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-        ChildSizing.EnlargeVertical = crsHomogenousChildResize
-        ChildSizing.ShrinkHorizontal = crsScaleChilds
-        ChildSizing.ShrinkVertical = crsScaleChilds
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 1
-        ClientHeight = 74
-        ClientWidth = 108
-        ItemIndex = 0
-        Items.Strings = (
-          'strict'
-          'sloppy'
-        )
-        OnClick = SomethingChanged
-        TabOrder = 1
-      end
-      object comboLatexGraphicsPackage: TComboBox
-        AnchorSideTop.Control = LabelLatexGraphicsPackage
-        AnchorSideTop.Side = asrBottom
-        Left = 12
-        Height = 38
-        Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
-        Top = 138
-        Width = 148
-        Enabled = False
-        ItemHeight = 0
-        ItemIndex = 0
-        Items.Strings = (
-          'None'
-          'PDF'
-          'DVI'
-        )
-        OnChange = SomethingChanged
-        Style = csDropDownList
-        TabOrder = 0
-        Text = 'None'
-      end
-      object PanelLatexHyphenation: TPanel
-        Left = 171
-        Height = 519
-        Top = 0
-        Width = 402
-        Align = alRight
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ClientHeight = 519
-        ClientWidth = 402
-        TabOrder = 2
-        object Label17: TLabel
-          Left = 10
-          Height = 160
-          Top = 10
-          Width = 382
-          HelpType = htKeyword
-          Align = alTop
-          Caption = 'You can specify how you want words to be hyphenated here. Just enter the word (one per line) with hyphens in the correct places. Only English letters are allowed.'
-          ParentColor = False
-          WordWrap = True
-        end
-        object memoHyphenatedWords: TMemo
-          Left = 10
-          Height = 339
-          Top = 170
-          Width = 382
-          Align = alClient
-          OnChange = SomethingChanged
-          TabOrder = 0
-        end
-      end
-    end
-    object pageHeadFoot: TPage
-      Caption = 'Header / Footer'
-      ClientWidth = 573
-      ClientHeight = 519
-      object PanelHeaderHidden: TPanel
-        Left = 0
-        Height = 179
-        Top = 0
-        Width = 573
-        Align = alTop
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ClientHeight = 179
-        ClientWidth = 573
-        TabOrder = 0
-        object LabelHeader: TLabel
-          Left = 10
-          Height = 28
-          Top = 10
-          Width = 553
-          HelpType = htKeyword
-          Align = alTop
-          Caption = '&Header (Will appear at the top of every web page)'
-          FocusControl = memoHeader
-          ParentColor = False
-        end
-        object memoHeader: TMemo
-          Left = 10
-          Height = 131
-          Top = 38
-          Width = 553
-          HelpType = htKeyword
-          HelpKeyword = 'FileAsHeaderOrFooter'
-          Align = alClient
-          OnChange = SomethingChanged
-          TabOrder = 0
-          WordWrap = False
-        end
-      end
-      object Splitter2: TSplitter
-        Cursor = crVSplit
-        Left = 0
-        Height = 9
-        Top = 179
-        Width = 573
-        Align = alTop
-        ResizeAnchor = akTop
-      end
-      object PanelFooterHidden: TPanel
-        Left = 0
-        Height = 331
-        Top = 188
-        Width = 573
-        Align = alClient
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ClientHeight = 331
-        ClientWidth = 573
-        TabOrder = 1
-        object LabelFooter: TLabel
-          Left = 10
-          Height = 28
-          Top = 10
-          Width = 553
-          HelpType = htKeyword
-          Align = alTop
-          Caption = '&Footer (Will appear at the bottom of every page)'
-          FocusControl = memoFooter
-          ParentColor = False
-        end
-        object memoFooter: TMemo
-          Left = 10
-          Height = 283
-          Top = 38
-          Width = 553
-          HelpType = htKeyword
-          HelpKeyword = 'FileAsHeaderOrFooter'
-          Align = alClient
-          OnChange = SomethingChanged
-          TabOrder = 0
-          WordWrap = False
-        end
-      end
-    end
-    object pageGraphs: TPage
-      Caption = 'Graphs'
-      ClientWidth = 573
-      ClientHeight = 519
-      object Label22: TLabel
-        AnchorSideTop.Control = cbVizGraphUses
-        AnchorSideTop.Side = asrBottom
-        Left = 14
-        Height = 61
-        Top = 92
-        Width = 465
-        BorderSpacing.Top = 20
-        Caption = 'You will have to generate graphs yourself. '#10'Use the "dot" program from GraphViz:'
-        ParentColor = False
-      end
-      object cbVizGraphUses: TCheckBox
-        AnchorSideTop.Control = cbVizGraphClasses
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 31
-        Top = 41
-        Width = 347
-        HelpType = htKeyword
-        HelpKeyword = 'GraphVizSupport'
-        Caption = 'Generate and use Uses graph'
-        OnChange = SomethingChanged
-        TabOrder = 0
-      end
-      object cbVizGraphClasses: TCheckBox
-        Left = 8
-        Height = 31
-        Top = 10
-        Width = 376
-        HelpType = htKeyword
-        HelpKeyword = 'GraphVizSupport'
-        Caption = 'Generate and use Classes graph'
-        OnChange = SomethingChanged
-        TabOrder = 1
-      end
-      object ButtonGraphVizURL: TButton
-        AnchorSideTop.Control = Label22
-        AnchorSideTop.Side = asrBottom
-        Left = 14
-        Height = 47
-        Top = 153
-        Width = 292
-        AutoSize = True
-        BorderSpacing.InnerBorder = 4
-        Caption = 'http://www.graphviz.org/'
-        OnClick = ButtonURLClick
-        TabOrder = 2
-      end
-    end
-    object pageSpellChecking: TPage
-      Caption = 'Spell Checking'
-      ClientWidth = 573
-      ClientHeight = 519
-      object PanelSpellCheckingTop1: TPanel
-        Left = 0
-        Height = 208
-        Top = 0
-        Width = 573
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ClientHeight = 208
-        ClientWidth = 573
-        FullRepaint = False
-        TabOrder = 1
-        object Label20: TLabel
-          AnchorSideTop.Control = ButtonAspellURL
-          AnchorSideTop.Side = asrBottom
-          Left = 10
-          Height = 61
-          Top = 147
-          Width = 556
-          HelpType = htKeyword
-          Anchors = [akTop, akLeft, akRight]
-          AutoSize = False
-          Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
-          FocusControl = memoSpellCheckingIgnore
-          ParentColor = False
-          WordWrap = True
-        end
-        object Label23: TLabel
-          AnchorSideTop.Control = cbCheckSpelling
-          AnchorSideTop.Side = asrBottom
-          Left = 8
-          Height = 61
-          Top = 39
-          Width = 556
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
-          ParentColor = False
-          WordWrap = True
-        end
-        object cbCheckSpelling: TCheckBox
-          Left = 8
-          Height = 31
-          Top = 8
-          Width = 185
-          HelpType = htKeyword
-          HelpKeyword = 'SpellChecking'
-          Caption = 'Check Spelling'
-          OnChange = cbCheckSpellingChange
-          TabOrder = 0
-        end
-        object ButtonAspellURL: TButton
-          AnchorSideTop.Control = Label23
-          AnchorSideTop.Side = asrBottom
-          Left = 8
-          Height = 47
-          Top = 100
-          Width = 336
-          AutoSize = True
-          BorderSpacing.InnerBorder = 4
-          Caption = 'http://aspell.sourceforge.net/'
-          OnClick = ButtonURLClick
-          TabOrder = 1
-        end
-      end
-      object memoSpellCheckingIgnore: TMemo
-        Left = 10
-        Height = 291
-        Top = 218
-        Width = 553
-        HelpType = htKeyword
-        HelpKeyword = 'SpellChecking'
-        Align = alClient
-        BorderSpacing.Around = 10
-        ScrollBars = ssAutoBoth
-        TabOrder = 0
-        WordWrap = False
-      end
-    end
-    object pageMarkers: TPage
-      Caption = 'Markers'
-      ClientWidth = 573
-      ClientHeight = 519
-      object memoCommentMarkers: TMemo
-        Left = 10
-        Height = 327
-        Top = 182
-        Width = 553
-        HelpType = htKeyword
-        HelpKeyword = 'CommentMarker'
-        Align = alClient
-        BorderSpacing.Around = 10
-        OnChange = SomethingChanged
-        TabOrder = 0
-      end
-      object PanelMarkers: TPanel
-        Left = 0
-        Height = 172
-        Top = 0
-        Width = 573
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ChildSizing.VerticalSpacing = 10
-        ClientHeight = 172
-        ClientWidth = 573
-        FullRepaint = False
-        TabOrder = 1
-        object LabelCommentMarkers: TLabel
-          Left = 10
-          Height = 28
-          Top = 154
-          Width = 553
-          HelpType = htKeyword
-          Align = alTop
-          Caption = 'Special comment markers'
-          FocusControl = memoCommentMarkers
-          ParentColor = False
-        end
-        object rgCommentMarkers: TRadioGroup
-          Left = 10
-          Height = 134
-          Top = 10
-          Width = 553
-          HelpType = htKeyword
-          HelpKeyword = 'CommentMarker'
-          Align = alTop
-          AutoFill = True
-          AutoSize = True
-          Caption = 'Comment marker treatment'
-          ChildSizing.LeftRightSpacing = 6
-          ChildSizing.TopBottomSpacing = 6
-          ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-          ChildSizing.EnlargeVertical = crsHomogenousChildResize
-          ChildSizing.ShrinkHorizontal = crsScaleChilds
-          ChildSizing.ShrinkVertical = crsScaleChilds
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ChildSizing.ControlsPerLine = 1
-          ClientHeight = 105
-          ClientWidth = 549
-          ItemIndex = 1
-          Items.Strings = (
-            'Ignore special comment markers'
-            'Include all comments but remove special comment markers'
-            'Include only comments with special comment markers'
-          )
-          OnClick = rgCommentMarkersClick
-          TabOrder = 0
-        end
-      end
-    end
     object pageSourceFiles: TPage
       Caption = 'Source Files'
       ClientWidth = 573
@@ -969,14 +402,582 @@ object frmHelpGenerator: TfrmHelpGenerator
         WordWrap = False
       end
     end
+    object PageVisibleMembers: TPage
+      Caption = 'Visible members'
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.VerticalSpacing = 10
+      ClientWidth = 573
+      ClientHeight = 483
+      object LabelVisibleMembers: TLabel
+        Left = 10
+        Height = 94
+        Top = 10
+        Width = 553
+        HelpType = htKeyword
+        Align = alTop
+        Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
+        FocusControl = CheckListVisibleMembers
+        ParentColor = False
+        WordWrap = True
+      end
+      object CheckListVisibleMembers: TCheckListBox
+        Left = 10
+        Height = 130
+        Top = 114
+        Width = 553
+        HelpType = htKeyword
+        HelpKeyword = 'IncludeByVisibility'
+        Align = alTop
+        Items.Strings = (
+          'Published'
+          'Public'
+          'Protected'
+          'Private'
+          'Automated'
+          'Implicit'
+        )
+        ItemHeight = 0
+        OnClick = CheckListVisibleMembersClick
+        TabOrder = 0
+        TopIndex = -1
+        Data = {
+          06000000000000000000
+        }
+      end
+      object RadioImplicitVisibility: TRadioGroup
+        Left = 10
+        Height = 134
+        Top = 254
+        Width = 553
+        HelpType = htKeyword
+        HelpKeyword = 'ImplicitVisibilityOption'
+        Align = alTop
+        AutoFill = True
+        AutoSize = True
+        Caption = 'Default visibility of members'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 105
+        ClientWidth = 549
+        ItemIndex = 0
+        Items.Strings = (
+          '"Public", unless the class is declared within {$M+} state, then it''s "published"'
+          'Always "published"'
+          'Always "implicit"'
+        )
+        OnClick = SomethingChanged
+        TabOrder = 1
+      end
+    end
+    object pageCustomFiles: TPage
+      Caption = 'Custom Files'
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.HorizontalSpacing = 10
+      ChildSizing.ControlsPerLine = 1
+      ClientWidth = 573
+      ClientHeight = 519
+      object LabelConclusionFile: TLabel
+        AnchorSideTop.Control = EditIntroductionFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 138
+        Width = 158
+        HelpType = htKeyword
+        Caption = 'Conclusion file'
+        FocusControl = EditConclusionFileName
+        ParentColor = False
+      end
+      object LabelIntroductionFile: TLabel
+        AnchorSideTop.Control = EditCssFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 73
+        Width = 173
+        HelpType = htKeyword
+        Caption = 'Introduction file'
+        FocusControl = EditIntroductionFileName
+        ParentColor = False
+      end
+      object LabelCssFileName: TLabel
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Hint = 'Custom CSS file. Leave empty to use default pasdoc.css.'
+        Top = 8
+        Width = 377
+        HelpType = htKeyword
+        Caption = 'Custom CSS file (for HTML output)'
+        FocusControl = EditCssFileName
+        ParentColor = False
+      end
+      object EditConclusionFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelConclusionFile
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Hint = 'Optional file used as a conclusion to your project.'
+        Top = 166
+        Width = 436
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
+        DialogTitle = 'Choose conclusion file'
+        DialogOptions = []
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+        OnChange = SomethingChanged
+      end
+      object EditIntroductionFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelIntroductionFile
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Hint = 'Optional file used as an introduction to your project.'
+        Top = 101
+        Width = 436
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
+        DialogTitle = 'Choose introduction file'
+        DialogOptions = []
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 1
+        OnChange = SomethingChanged
+      end
+      object EditCssFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelCssFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Top = 36
+        Width = 483
+        HelpType = htKeyword
+        HelpKeyword = 'CssOption'
+        DialogTitle = 'Choose custom CSS file'
+        DialogOptions = []
+        Filter = 'Cascading Style Sheets (*.css)|*.css'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        TabOrder = 2
+        OnChange = SomethingChanged
+      end
+    end
+    object pageLatexOptions: TPage
+      Caption = 'LaTeX Options'
+      ClientWidth = 573
+      ClientHeight = 483
+      object LabelLatexGraphicsPackage: TLabel
+        AnchorSideTop.Control = rgLineBreakQuality
+        AnchorSideTop.Side = asrBottom
+        Left = 12
+        Height = 28
+        Top = 110
+        Width = 263
+        Caption = 'LateX graphics package'
+        FocusControl = comboLatexGraphicsPackage
+        ParentColor = False
+      end
+      object rgLineBreakQuality: TRadioGroup
+        Left = 12
+        Height = 103
+        Top = 7
+        Width = 112
+        HelpType = htKeyword
+        HelpKeyword = 'PasDocGui/LatexLineBreaks'
+        AutoFill = True
+        AutoSize = True
+        Caption = 'Line Breaks'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 74
+        ClientWidth = 108
+        ItemIndex = 0
+        Items.Strings = (
+          'strict'
+          'sloppy'
+        )
+        OnClick = SomethingChanged
+        TabOrder = 1
+      end
+      object comboLatexGraphicsPackage: TComboBox
+        AnchorSideTop.Control = LabelLatexGraphicsPackage
+        AnchorSideTop.Side = asrBottom
+        Left = 12
+        Height = 38
+        Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
+        Top = 138
+        Width = 148
+        Enabled = False
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'None'
+          'PDF'
+          'DVI'
+        )
+        OnChange = SomethingChanged
+        Style = csDropDownList
+        TabOrder = 0
+        Text = 'None'
+      end
+      object PanelLatexHyphenation: TPanel
+        Left = 171
+        Height = 483
+        Top = 0
+        Width = 402
+        Align = alRight
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 483
+        ClientWidth = 402
+        TabOrder = 2
+        object Label17: TLabel
+          Left = 10
+          Height = 160
+          Top = 10
+          Width = 382
+          HelpType = htKeyword
+          Align = alTop
+          Caption = 'You can specify how you want words to be hyphenated here. Just enter the word (one per line) with hyphens in the correct places. Only English letters are allowed.'
+          ParentColor = False
+          WordWrap = True
+        end
+        object memoHyphenatedWords: TMemo
+          Left = 10
+          Height = 303
+          Top = 170
+          Width = 382
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+        end
+      end
+    end
+    object pageHeadFoot: TPage
+      Caption = 'Header / Footer'
+      ClientWidth = 573
+      ClientHeight = 483
+      object PanelHeaderHidden: TPanel
+        Left = 0
+        Height = 179
+        Top = 0
+        Width = 573
+        Align = alTop
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 179
+        ClientWidth = 573
+        TabOrder = 0
+        object LabelHeader: TLabel
+          Left = 10
+          Height = 28
+          Top = 10
+          Width = 553
+          HelpType = htKeyword
+          Align = alTop
+          Caption = '&Header (Will appear at the top of every web page)'
+          FocusControl = memoHeader
+          ParentColor = False
+        end
+        object memoHeader: TMemo
+          Left = 10
+          Height = 131
+          Top = 38
+          Width = 553
+          HelpType = htKeyword
+          HelpKeyword = 'FileAsHeaderOrFooter'
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+          WordWrap = False
+        end
+      end
+      object Splitter2: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 9
+        Top = 179
+        Width = 573
+        Align = alTop
+        ResizeAnchor = akTop
+      end
+      object PanelFooterHidden: TPanel
+        Left = 0
+        Height = 295
+        Top = 188
+        Width = 573
+        Align = alClient
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 295
+        ClientWidth = 573
+        TabOrder = 1
+        object LabelFooter: TLabel
+          Left = 10
+          Height = 28
+          Top = 10
+          Width = 553
+          HelpType = htKeyword
+          Align = alTop
+          Caption = '&Footer (Will appear at the bottom of every page)'
+          FocusControl = memoFooter
+          ParentColor = False
+        end
+        object memoFooter: TMemo
+          Left = 10
+          Height = 247
+          Top = 38
+          Width = 553
+          HelpType = htKeyword
+          HelpKeyword = 'FileAsHeaderOrFooter'
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+          WordWrap = False
+        end
+      end
+    end
+    object pageGraphs: TPage
+      Caption = 'Graphs'
+      ClientWidth = 573
+      ClientHeight = 483
+      object Label22: TLabel
+        AnchorSideTop.Control = cbVizGraphUses
+        AnchorSideTop.Side = asrBottom
+        Left = 14
+        Height = 61
+        Top = 92
+        Width = 465
+        BorderSpacing.Top = 20
+        Caption = 'You will have to generate graphs yourself. '#10'Use the "dot" program from GraphViz:'
+        ParentColor = False
+      end
+      object cbVizGraphUses: TCheckBox
+        AnchorSideTop.Control = cbVizGraphClasses
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 31
+        Top = 41
+        Width = 347
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
+        Caption = 'Generate and use Uses graph'
+        OnChange = SomethingChanged
+        TabOrder = 0
+      end
+      object cbVizGraphClasses: TCheckBox
+        Left = 8
+        Height = 31
+        Top = 10
+        Width = 376
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
+        Caption = 'Generate and use Classes graph'
+        OnChange = SomethingChanged
+        TabOrder = 1
+      end
+      object ButtonGraphVizURL: TButton
+        AnchorSideTop.Control = Label22
+        AnchorSideTop.Side = asrBottom
+        Left = 14
+        Height = 47
+        Top = 153
+        Width = 292
+        AutoSize = True
+        BorderSpacing.InnerBorder = 4
+        Caption = 'http://www.graphviz.org/'
+        OnClick = ButtonURLClick
+        TabOrder = 2
+      end
+    end
+    object pageSpellChecking: TPage
+      Caption = 'Spell Checking'
+      ClientWidth = 573
+      ClientHeight = 483
+      object PanelSpellCheckingTop1: TPanel
+        Left = 0
+        Height = 208
+        Top = 0
+        Width = 573
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 208
+        ClientWidth = 573
+        FullRepaint = False
+        TabOrder = 1
+        object Label20: TLabel
+          AnchorSideTop.Control = ButtonAspellURL
+          AnchorSideTop.Side = asrBottom
+          Left = 10
+          Height = 61
+          Top = 147
+          Width = 556
+          HelpType = htKeyword
+          Anchors = [akTop, akLeft, akRight]
+          AutoSize = False
+          Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
+          FocusControl = memoSpellCheckingIgnore
+          ParentColor = False
+          WordWrap = True
+        end
+        object Label23: TLabel
+          AnchorSideTop.Control = cbCheckSpelling
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 61
+          Top = 39
+          Width = 556
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
+          ParentColor = False
+          WordWrap = True
+        end
+        object cbCheckSpelling: TCheckBox
+          Left = 8
+          Height = 31
+          Top = 8
+          Width = 185
+          HelpType = htKeyword
+          HelpKeyword = 'SpellChecking'
+          Caption = 'Check Spelling'
+          OnChange = cbCheckSpellingChange
+          TabOrder = 0
+        end
+        object ButtonAspellURL: TButton
+          AnchorSideTop.Control = Label23
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 47
+          Top = 100
+          Width = 336
+          AutoSize = True
+          BorderSpacing.InnerBorder = 4
+          Caption = 'http://aspell.sourceforge.net/'
+          OnClick = ButtonURLClick
+          TabOrder = 1
+        end
+      end
+      object memoSpellCheckingIgnore: TMemo
+        Left = 10
+        Height = 255
+        Top = 218
+        Width = 553
+        HelpType = htKeyword
+        HelpKeyword = 'SpellChecking'
+        Align = alClient
+        BorderSpacing.Around = 10
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object pageMarkers: TPage
+      Caption = 'Markers'
+      ClientWidth = 573
+      ClientHeight = 483
+      object memoCommentMarkers: TMemo
+        Left = 10
+        Height = 291
+        Top = 182
+        Width = 553
+        HelpType = htKeyword
+        HelpKeyword = 'CommentMarker'
+        Align = alClient
+        BorderSpacing.Around = 10
+        OnChange = SomethingChanged
+        TabOrder = 0
+      end
+      object PanelMarkers: TPanel
+        Left = 0
+        Height = 172
+        Top = 0
+        Width = 573
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ChildSizing.VerticalSpacing = 10
+        ClientHeight = 172
+        ClientWidth = 573
+        FullRepaint = False
+        TabOrder = 1
+        object LabelCommentMarkers: TLabel
+          Left = 10
+          Height = 28
+          Top = 154
+          Width = 553
+          HelpType = htKeyword
+          Align = alTop
+          Caption = 'Special comment markers'
+          FocusControl = memoCommentMarkers
+          ParentColor = False
+        end
+        object rgCommentMarkers: TRadioGroup
+          Left = 10
+          Height = 134
+          Top = 10
+          Width = 553
+          HelpType = htKeyword
+          HelpKeyword = 'CommentMarker'
+          Align = alTop
+          AutoFill = True
+          AutoSize = True
+          Caption = 'Comment marker treatment'
+          ChildSizing.LeftRightSpacing = 6
+          ChildSizing.TopBottomSpacing = 6
+          ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+          ChildSizing.EnlargeVertical = crsHomogenousChildResize
+          ChildSizing.ShrinkHorizontal = crsScaleChilds
+          ChildSizing.ShrinkVertical = crsScaleChilds
+          ChildSizing.Layout = cclLeftToRightThenTopToBottom
+          ChildSizing.ControlsPerLine = 1
+          ClientHeight = 105
+          ClientWidth = 549
+          ItemIndex = 1
+          Items.Strings = (
+            'Ignore special comment markers'
+            'Include all comments but remove special comment markers'
+            'Include only comments with special comment markers'
+          )
+          OnClick = rgCommentMarkersClick
+          TabOrder = 0
+        end
+      end
+    end
     object PageSort: TPage
       Caption = 'Sort'
       ClientWidth = 573
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelItemsToSort: TLabel
         Left = 8
         Height = 28
-        Top = 8
+        Top = -28
         Width = 300
         HelpType = htKeyword
         Anchors = [akLeft, akBottom]
@@ -989,7 +990,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 8
         Height = 475
         Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
-        Top = 36
+        Top = 0
         Width = 558
         HelpType = htKeyword
         HelpKeyword = 'SortOption'
@@ -1006,9 +1007,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           'methods'
           'properties'
         )
-        ItemHeight = 33
+        ItemHeight = 0
         OnClick = SomethingChanged
         TabOrder = 0
+        TopIndex = -1
         Data = {
           0A00000000000000000000000000
         }
@@ -1017,7 +1019,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageGenerate: TPage
       Caption = 'Generate'
       ClientWidth = 573
-      ClientHeight = 519
+      ClientHeight = 483
       object PanelGenerateTop: TPanel
         Left = 0
         Height = 105
@@ -1069,7 +1071,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoMessages: TMemo
         Left = 10
-        Height = 394
+        Height = 358
         Top = 115
         Width = 553
         HelpType = htKeyword
@@ -1082,10 +1084,10 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageDisplayComments: TPage
       Caption = 'Display Comments'
       ClientWidth = 573
-      ClientHeight = 519
+      ClientHeight = 483
       object tvUnits: TTreeView
         Left = 0
-        Height = 295
+        Height = 259
         Top = 28
         Width = 573
         Align = alClient
@@ -1096,7 +1098,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object seComment: TSynEdit
         Left = 0
         Height = 191
-        Top = 328
+        Top = 292
         Width = 573
         Align = alBottom
         Font.Height = -16
@@ -1106,7 +1108,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item
@@ -1688,7 +1689,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Cursor = crVSplit
         Left = 0
         Height = 5
-        Top = 323
+        Top = 287
         Width = 573
         Align = alBottom
         ResizeAnchor = akBottom

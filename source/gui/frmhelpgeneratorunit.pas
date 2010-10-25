@@ -832,7 +832,7 @@ begin
   if EditOutputDirectory.Directory = '' then
   begin
     Beep;
-    MessageDlg('You need to specify the output directory on the "Locations" tab.',
+    MessageDlg('You need to specify the output directory on the "Options" tab.',
       Dialogs.mtWarning, [mbOK], 0);
     Exit;
   end;
