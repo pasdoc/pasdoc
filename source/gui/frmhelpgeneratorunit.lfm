@@ -1,5 +1,5 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  Left = 473
+  Left = 472
   Height = 557
   Top = 142
   Width = 787
@@ -40,26 +40,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 0
     Width = 643
     Align = alClient
-    PageIndex = 3
+    PageIndex = 11
     ShowTabs = False
     TabOrder = 1
     object pageOptions: TPage
       Caption = 'Options'
       ClientWidth = 637
       ClientHeight = 519
-      object LabelItemsToSort: TLabel
-        AnchorSideLeft.Control = clbSorting
-        AnchorSideBottom.Control = clbSorting
-        Left = 367
-        Height = 28
-        Top = 8
-        Width = 300
-        HelpType = htKeyword
-        Anchors = [akLeft, akBottom]
-        Caption = 'Items to sort alphabetically'
-        FocusControl = clbSorting
-        ParentColor = False
-      end
       object LabelTitle: TLabel
         Left = 8
         Height = 28
@@ -106,34 +93,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         FocusControl = comboLanguages
         ParentColor = False
       end
-      object clbSorting: TCheckListBox
-        Left = 367
-        Height = 243
-        Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
-        Top = 36
-        Width = 254
-        HelpType = htKeyword
-        HelpKeyword = 'SortOption'
-        Anchors = [akTop, akRight]
-        Items.Strings = (
-          'structures'
-          'constants'
-          'global functions'
-          'types'
-          'variables'
-          'uses-clauses'
-          'record-fields'
-          'non-record-fields'
-          'methods'
-          'properties'
-        )
-        ItemHeight = 33
-        OnClick = SomethingChanged
-        TabOrder = 0
-        Data = {
-          0A00000000000000000000000000
-        }
-      end
       object CheckAutoAbstract: TCheckBox
         AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
@@ -146,7 +105,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'AutoAbstractOption'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
         OnChange = SomethingChanged
-        TabOrder = 1
+        TabOrder = 0
       end
       object CheckUseTipueSearch: TCheckBox
         AnchorSideTop.Control = CheckWriteUsesList
@@ -160,7 +119,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
         OnChange = SomethingChanged
-        TabOrder = 2
+        TabOrder = 1
       end
       object edTitle: TEdit
         AnchorSideTop.Control = LabelTitle
@@ -173,7 +132,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
         OnChange = SomethingChanged
-        TabOrder = 3
+        TabOrder = 2
       end
       object comboGenerateFormat: TComboBox
         AnchorSideTop.Control = LabelOutputType
@@ -192,7 +151,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         )
         OnChange = comboGenerateFormatChange
         Style = csDropDownList
-        TabOrder = 4
+        TabOrder = 3
       end
       object edProjectName: TEdit
         AnchorSideTop.Control = LabelProjectName
@@ -205,7 +164,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
         OnChange = SomethingChanged
-        TabOrder = 5
+        TabOrder = 4
       end
       object comboLanguages: TComboBox
         AnchorSideTop.Control = LabelLanguages
@@ -220,7 +179,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ItemHeight = 0
         OnChange = comboLanguagesChange
         Style = csDropDownList
-        TabOrder = 6
+        TabOrder = 5
       end
       object CheckAutoLink: TCheckBox
         AnchorSideTop.Control = CheckAutoAbstract
@@ -233,7 +192,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'AutoLinkOption'
         Caption = 'Automatically turn identifiers into links, without the need for @link tag'
         OnChange = SomethingChanged
-        TabOrder = 8
+        TabOrder = 7
       end
       object CheckHandleMacros: TCheckBox
         AnchorSideTop.Control = CheckAutoLink
@@ -248,7 +207,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Checked = True
         OnChange = SomethingChanged
         State = cbChecked
-        TabOrder = 7
+        TabOrder = 6
       end
       object CheckStoreRelativePaths: TCheckBox
         AnchorSideTop.Control = CheckHandleMacros
@@ -263,7 +222,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Checked = True
         OnChange = SomethingChanged
         State = cbChecked
-        TabOrder = 9
+        TabOrder = 8
       end
       object CheckWriteUsesList: TCheckBox
         AnchorSideTop.Control = comboLanguages
@@ -276,7 +235,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'WriteUsesList'
         Caption = 'Show units uses list'
         OnChange = SomethingChanged
-        TabOrder = 10
+        TabOrder = 9
       end
     end
     object PageVisibleMembers: TPage
@@ -993,7 +952,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageDefines: TPage
       Caption = 'Defines'
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object Label12: TLabel
         Left = 10
         Height = 292
@@ -1008,7 +967,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 161
+        Height = 197
         Top = 312
         Width = 617
         HelpType = htKeyword
@@ -1021,10 +980,55 @@ object frmHelpGenerator: TfrmHelpGenerator
         WordWrap = False
       end
     end
+    object PageSort: TPage
+      Caption = 'Sort'
+      ClientWidth = 637
+      ClientHeight = 519
+      object LabelItemsToSort: TLabel
+        Left = 8
+        Height = 28
+        Top = 8
+        Width = 300
+        HelpType = htKeyword
+        Anchors = [akLeft, akBottom]
+        Caption = 'Items to sort alphabetically'
+        ParentColor = False
+      end
+      object clbSorting: TCheckListBox
+        AnchorSideTop.Control = LabelItemsToSort
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 475
+        Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
+        Top = 36
+        Width = 622
+        HelpType = htKeyword
+        HelpKeyword = 'SortOption'
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Items.Strings = (
+          'structures'
+          'constants'
+          'global functions'
+          'types'
+          'variables'
+          'uses-clauses'
+          'record-fields'
+          'non-record-fields'
+          'methods'
+          'properties'
+        )
+        ItemHeight = 33
+        OnClick = SomethingChanged
+        TabOrder = 0
+        Data = {
+          0A00000000000000000000000000
+        }
+      end
+    end
     object pageGenerate: TPage
       Caption = 'Generate'
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object PanelGenerateTop: TPanel
         Left = 0
         Height = 105
@@ -1076,7 +1080,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoMessages: TMemo
         Left = 10
-        Height = 358
+        Height = 394
         Top = 115
         Width = 617
         HelpType = htKeyword

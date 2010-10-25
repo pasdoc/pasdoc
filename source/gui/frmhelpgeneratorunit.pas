@@ -74,7 +74,6 @@ type
     // will be included in generated output.
     CheckListVisibleMembers: TCheckListBox;
     CheckWriteUsesList: TCheckBox;
-    clbSorting: TCheckListBox;
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
     // comboLanguages is used to set the language in which the web page will
@@ -91,7 +90,6 @@ type
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
-    LabelItemsToSort: TLabel;
     LabelProjectName: TLabel;
     Label17: TLabel;
     LabelHeader: TLabel;
@@ -184,6 +182,9 @@ type
     MenuHelp: TMenuItem;
     tvUnits: TTreeView;
     Label12: TLabel;
+    PageSort: TPage;
+    LabelItemsToSort: TLabel;
+    clbSorting: TCheckListBox;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
