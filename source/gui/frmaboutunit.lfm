@@ -1,23 +1,25 @@
 object frmAbout: TfrmAbout
-  Left = 167
-  Height = 347
-  Top = 62
-  Width = 408
+  Left = 338
+  Height = 372
+  Top = 91
+  Width = 488
   HorzScrollBar.Page = 407
   VertScrollBar.Page = 346
-  ActiveControl = BitBtn1
+  ActiveControl = MemoInformation
+  AutoSize = True
   Caption = 'About'
-  ClientHeight = 347
-  ClientWidth = 408
+  ClientHeight = 372
+  ClientWidth = 488
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   OnCreate = frmAboutCreate
   Position = poMainFormCenter
+  LCLVersion = '0.9.28.2'
   object LabelTitle: TLabel
     Left = 13
-    Height = 17
+    Height = 33
     Top = 8
-    Width = 372
+    Width = 452
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
     Caption = 'pasdoc_gui'
@@ -25,12 +27,14 @@ object frmAbout: TfrmAbout
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
-  object BitBtn1: TBitBtn
-    Left = 323
-    Height = 36
-    Top = 300
-    Width = 70
+  object BtnClose: TBitBtn
+    AnchorSideTop.Side = asrBottom
+    Left = 374
+    Height = 43
+    Top = 318
+    Width = 99
     Anchors = [akRight, akBottom]
     AutoSize = True
     BorderSpacing.InnerBorder = 2
@@ -40,22 +44,30 @@ object frmAbout: TfrmAbout
     TabOrder = 0
   end
   object MemoInformation: TMemo
+    AnchorSideTop.Control = LabelTitle
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = ButtonPasDocURL
     Left = 13
-    Height = 233
-    Top = 34
-    Width = 380
+    Height = 224
+    Top = 41
+    Width = 460
     Anchors = [akTop, akLeft, akRight, akBottom]
     Color = clBtnFace
     ReadOnly = True
     TabOrder = 1
   end
   object ButtonPasDocURL: TButton
-    Left = 16
-    Height = 34
-    Top = 270
-    Width = 225
+    AnchorSideLeft.Control = MemoInformation
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = BtnClose
+    Left = 70
+    Height = 43
+    Top = 265
+    Width = 346
     Anchors = [akLeft, akBottom]
     AutoSize = True
+    BorderSpacing.Bottom = 10
     BorderSpacing.InnerBorder = 2
     Caption = 'http://pasdoc.sourceforge.net/'
     OnClick = ButtonPasDocURLClick
