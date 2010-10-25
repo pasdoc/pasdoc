@@ -63,12 +63,10 @@ uses PasDoc_Base, WWWBrowserRunnerDM;
 procedure TfrmAbout.frmAboutCreate(Sender: TObject);
 begin
   MemoInformation.Lines.Text :=
-    'Original version Richard B. Winston (rbwinst@usgs.gov), ' +
+    'Authors:' + LineEnding +
+    'Richard B. Winston (rbwinst@usgs.gov), ' +
     'U.S. Geological Survey (USGS)' + LineEnding +
-    LineEnding +
-    'Modifications copyright 2005 Michalis Kamburelis' + LineEnding +
-    LineEnding +
-    'Additional modifications by Richard B. Winston' + LineEnding +
+    'and Michalis Kamburelis.' + LineEnding +
     LineEnding +
     'pasdoc_gui and PasDoc component are free software. ' +
     'You are welcome to further modify and redistribute them on terms ' +

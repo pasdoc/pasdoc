@@ -21,7 +21,7 @@ object frmAbout: TfrmAbout
     Width = 452
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
-    Caption = 'pasdoc_gui'
+    Caption = 'PasDoc GUI'
     Font.Height = -19
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
