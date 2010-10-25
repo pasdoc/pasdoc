@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="103"/>
+        <UsageCount Value="104"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,10 +58,10 @@
         <ComponentName Value="frmHelpGenerator"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="45" Y="671"/>
-        <TopLine Value="649"/>
+        <CursorPos X="20" Y="141"/>
+        <TopLine Value="119"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="103"/>
+        <UsageCount Value="104"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="320" ID="1"/>
         </Bookmarks>
@@ -76,7 +76,7 @@
         <CursorPos X="3" Y="65"/>
         <TopLine Value="10"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="103"/>
+        <UsageCount Value="104"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -85,7 +85,7 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="40"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -95,7 +95,7 @@
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="46" Y="32"/>
         <TopLine Value="1"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="40"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -105,7 +105,7 @@
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="54" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="39"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
@@ -113,7 +113,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="28"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="38"/>
       </Unit6>
     </Units>
   </ProjectOptions>
