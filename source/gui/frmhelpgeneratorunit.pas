@@ -87,7 +87,6 @@ type
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     LabelProjectName: TLabel;
-    Label17: TLabel;
     LabelHeader: TLabel;
     LabelFooter: TLabel;
     LabelConclusionFile: TLabel;
@@ -111,7 +110,6 @@ type
     memoFiles: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
-    memoHyphenatedWords: TMemo;
     // The lines in @name are the paths of the files that
     // may have include files that are part of the project.
     memoIncludeDirectories: TMemo;
@@ -139,7 +137,6 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
-    PanelLatexHyphenation: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
@@ -184,6 +181,8 @@ type
     EditOutputDirectory: TDirectoryEdit;
     Label8: TLabel;
     btnBrowseSourceFiles: TButton;
+    LabelHyphenatedWords: TLabel;
+    memoHyphenatedWords: TMemo;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
