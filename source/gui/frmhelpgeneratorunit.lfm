@@ -1,8 +1,8 @@
 object frmHelpGenerator: TfrmHelpGenerator
   Left = 471
-  Height = 557
+  Height = 566
   Top = 142
-  Width = 787
+  Width = 777
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
   HorzScrollBar.Page = 739
@@ -10,8 +10,8 @@ object frmHelpGenerator: TfrmHelpGenerator
   ActiveControl = PanelLeft
   AutoSize = True
   Caption = 'pasdoc gui'
-  ClientHeight = 525
-  ClientWidth = 787
+  ClientHeight = 534
+  ClientWidth = 777
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
   KeyPreview = True
@@ -25,11 +25,11 @@ object frmHelpGenerator: TfrmHelpGenerator
   LCLVersion = '0.9.28.2'
   object NotebookMain: TNotebook
     Left = 208
-    Height = 525
+    Height = 534
     Top = 0
-    Width = 579
+    Width = 569
     Align = alClient
-    PageIndex = 3
+    PageIndex = 1
     ShowTabs = False
     TabOrder = 0
     object pageOptions: TPage
@@ -256,86 +256,74 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageSourceFiles: TPage
       Caption = 'Source Files'
-      ClientWidth = 573
-      ClientHeight = 519
-      object PanelSourceFilesTop: TPanel
-        Left = 0
-        Height = 189
-        Top = 0
-        Width = 573
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ClientHeight = 189
-        ClientWidth = 573
-        FullRepaint = False
-        TabOrder = 1
-        object Label8: TLabel
-          Left = 10
-          Height = 160
-          Top = 10
-          Width = 553
-          HelpType = htKeyword
-          Align = alCustom
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
-          FocusControl = memoFiles
-          ParentColor = False
-          WordWrap = True
-        end
-        object btnBrowseSourceFiles: TButton
-          AnchorSideTop.Control = Label8
-          AnchorSideTop.Side = asrBottom
-          Left = 10
-          Height = 9
-          Top = 170
-          Width = 553
-          Align = alBottom
-          Anchors = [akTop, akLeft, akRight, akBottom]
-          AutoSize = True
-          BorderSpacing.InnerBorder = 4
-          Caption = 'Browse'
-          OnClick = btnBrowseSourceFilesClick
-          TabOrder = 0
-        end
+      ClientWidth = 563
+      ClientHeight = 528
+      object Label8: TLabel
+        Left = 8
+        Height = 160
+        Top = 8
+        Width = 547
+        HelpType = htKeyword
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+        FocusControl = memoFiles
+        ParentColor = False
+        WordWrap = True
       end
       object memoFiles: TMemo
-        Left = 10
-        Height = 310
-        Top = 199
-        Width = 553
+        AnchorSideTop.Control = btnBrowseSourceFiles
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 293
+        Top = 225
+        Width = 547
         HelpType = htKeyword
-        Align = alClient
+        Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Around = 10
         OnChange = SomethingChanged
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
       end
+      object btnBrowseSourceFiles: TButton
+        AnchorSideTop.Control = Label8
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 47
+        Top = 168
+        Width = 547
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
+        BorderSpacing.InnerBorder = 4
+        Caption = 'Browse'
+        OnClick = btnBrowseSourceFilesClick
+        TabOrder = 1
+      end
     end
     object pageIncludeDirectories: TPage
       Caption = 'Include Directories'
-      ClientWidth = 573
-      ClientHeight = 519
+      ClientWidth = 563
+      ClientHeight = 528
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
         Height = 151
         Top = 0
-        Width = 573
+        Width = 563
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
         ClientHeight = 151
-        ClientWidth = 573
+        ClientWidth = 563
         FullRepaint = False
         TabOrder = 1
         object Label9: TLabel
           Left = 10
           Height = 94
           Top = 10
-          Width = 553
+          Width = 543
           HelpType = htKeyword
           Align = alTop
           Caption = 'The directories where PasDoc can find include files.'#10'(If you use $I, $INCLUDE compiler directives.)'
@@ -347,7 +335,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Left = 10
           Height = 47
           Top = 104
-          Width = 553
+          Width = 543
           Align = alTop
           AutoSize = True
           BorderSpacing.InnerBorder = 4
@@ -358,9 +346,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoIncludeDirectories: TMemo
         Left = 10
-        Height = 348
+        Height = 357
         Top = 161
-        Width = 553
+        Width = 543
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
         Align = alClient
@@ -373,13 +361,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageDefines: TPage
       Caption = 'Defines'
-      ClientWidth = 573
-      ClientHeight = 519
+      ClientWidth = 563
+      ClientHeight = 528
       object Label12: TLabel
         Left = 10
         Height = 325
         Top = 10
-        Width = 553
+        Width = 543
         Align = alTop
         BorderSpacing.Around = 10
         Caption = 'Put here any symbols that you want to have defined at the start, just as if they would be defined by $DEFINE at the beginning of each unit.'#10#10'Note that your compiler may define some symbols by default (for example, "FPC" by FreePascal, "VER150" by Delphi 7, target OS and architecture like "UNIX", "MSWINDOWS" etc.) --- you may want to define some of these for pasdoc too.'
@@ -389,9 +377,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 164
+        Height = 173
         Top = 345
-        Width = 553
+        Width = 543
         HelpType = htKeyword
         HelpKeyword = 'ConditionalDefines'
         Align = alClient
@@ -483,7 +471,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
       ClientWidth = 573
-      ClientHeight = 519
+      ClientHeight = 483
       object LabelConclusionFile: TLabel
         AnchorSideTop.Control = EditIntroductionFileName
         AnchorSideTop.Side = asrBottom
@@ -1108,6 +1096,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
+        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item
@@ -1708,17 +1697,17 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 525
+    Height = 534
     Top = 0
     Width = 208
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 525
+    ClientHeight = 534
     ClientWidth = 208
     TabOrder = 1
     object lbNavigation: TListBox
       Left = 0
-      Height = 466
+      Height = 475
       Top = 59
       Width = 208
       Align = alClient

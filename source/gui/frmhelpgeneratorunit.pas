@@ -55,9 +55,6 @@ type
     // Click @name  to select a directory that may
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
-    // Click @name to select one or more sorce files for the
-    // project.
-    btnBrowseSourceFiles: TButton;
     // Click @name to generate output
     ButtonGenerateDocs: TButton;
     ButtonAspellURL: TButton;
@@ -106,7 +103,6 @@ type
     LabelLatexGraphicsPackage: TLabel;
     LabelOutputType: TLabel;
     Label7: TLabel;
-    Label8: TLabel;
     Label9: TLabel;
     memoCommentMarkers: TMemo;
     memoDefines: TMemo;
@@ -150,7 +146,6 @@ type
     PanelMarkers: TPanel;
     PanelGenerateTop: TPanel;
     PanelIncludeDirectoriesTop: TPanel;
-    PanelSourceFilesTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
@@ -187,6 +182,8 @@ type
     ButtonGenerate: TBitBtn;
     LabelOutputDirectory: TLabel;
     EditOutputDirectory: TDirectoryEdit;
+    Label8: TLabel;
+    btnBrowseSourceFiles: TButton;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
