@@ -8,6 +8,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   HorzScrollBar.Page = 739
   VertScrollBar.Page = 415
   ActiveControl = lbNavigation
+  AutoSize = True
   Caption = 'pasdoc gui'
   ClientHeight = 525
   ClientWidth = 787
@@ -39,13 +40,13 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 0
     Width = 643
     Align = alClient
-    PageIndex = 12
+    PageIndex = 0
     ShowTabs = False
     TabOrder = 1
     object pageOptions: TPage
       Caption = 'Options'
       ClientWidth = 637
-      ClientHeight = 483
+      ClientHeight = 519
       object LabelItemsToSort: TLabel
         AnchorSideLeft.Control = clbSorting
         AnchorSideBottom.Control = clbSorting
@@ -126,10 +127,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           'methods'
           'properties'
         )
-        ItemHeight = 0
+        ItemHeight = 33
         OnClick = SomethingChanged
         TabOrder = 0
-        TopIndex = -1
         Data = {
           0A00000000000000000000000000
         }
@@ -1800,7 +1800,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object MenuHelp: TMenuItem
       Caption = '&Help'
       object MenuContextHelp: TMenuItem
-        Caption = 'Help'
+        Caption = 'Online Help'
         OnClick = MenuContextHelpClick
       end
       object MenuAbout: TMenuItem

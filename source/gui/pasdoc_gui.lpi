@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="102"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,10 +58,10 @@
         <ComponentName Value="frmHelpGenerator"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="17" Y="1438"/>
-        <TopLine Value="1427"/>
+        <CursorPos X="5" Y="978"/>
+        <TopLine Value="965"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="102"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="317" ID="1"/>
         </Bookmarks>
@@ -76,7 +76,7 @@
         <CursorPos X="3" Y="65"/>
         <TopLine Value="55"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -85,7 +85,7 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="38"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -95,7 +95,7 @@
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="5" Y="23"/>
         <TopLine Value="12"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="38"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -106,7 +106,7 @@
         <CursorPos X="3" Y="9"/>
         <TopLine Value="1"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -115,7 +115,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="28"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="36"/>
       </Unit6>
     </Units>
   </ProjectOptions>
