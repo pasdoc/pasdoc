@@ -92,18 +92,14 @@ type
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     LabelItemsToSort: TLabel;
-    Label10: TLabel;
     LabelProjectName: TLabel;
-    Label12: TLabel;
     Label17: TLabel;
-    Label4: TLabel;
     LabelHeader: TLabel;
     LabelFooter: TLabel;
-    LabelImplicitVisibility: TLabel;
     LabelConclusionFile: TLabel;
     LabelIntroductionFile: TLabel;
     LabelCssFileName: TLabel;
-    Label18: TLabel;
+    LabelCommentMarkers: TLabel;
     LabelLanguages: TLabel;
     LabelTitle: TLabel;
     Label20: TLabel;
@@ -157,7 +153,6 @@ type
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
     PanelMarkers: TPanel;
-    PanelDefinesTop: TPanel;
     PanelGenerateTop: TPanel;
     PanelIncludeDirectoriesTop: TPanel;
     PanelSourceFilesTop: TPanel;
@@ -188,6 +183,7 @@ type
     TexDocGenerator: TTexDocGenerator;
     MenuHelp: TMenuItem;
     tvUnits: TTreeView;
+    Label12: TLabel;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
