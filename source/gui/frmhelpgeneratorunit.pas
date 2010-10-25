@@ -442,6 +442,7 @@ begin
         lbNavigation.Items.AddObject(page.Caption, page);
       end;
     end;
+    lbNavigation.ItemIndex := 0; { otherwise it may stay -1 after program loads }
   finally
     lbNavigation.OnClick := lbNavigationClick;
   end;
