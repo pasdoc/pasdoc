@@ -1,25 +1,25 @@
 object Preferences: TPreferences
   Left = 286
-  Height = 316
+  Height = 340
   Top = 207
-  Width = 471
+  Width = 598
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 191
   ActiveControl = EditWWWBrowserCommand
   AutoSize = True
   BorderWidth = 10
   Caption = 'Preferences'
-  ClientHeight = 316
-  ClientWidth = 471
+  ClientHeight = 340
+  ClientWidth = 598
   Position = poMainFormCenter
   LCLVersion = '0.9.28.2'
   object LabelWWWBrowserCommand: TLabel
     Left = 8
     Height = 141
     Top = 8
-    Width = 448
+    Width = 582
     Anchors = [akTop, akLeft, akRight]
-    Caption = 'C&ommand to run WWW browser :'#10'(%s will be replaced with the URL, %% with %)'#10'(under Windows you can leave this blank to use default WWW browser)'
+    Caption = 'WWW browser command.'#10'(%s will be replaced with the URL, and "%%" will be replaced by the single "%" character.)'#10'Under Windows you can leave this blank to use default WWW browser.'
     FocusControl = EditWWWBrowserCommand
     ParentColor = False
     WordWrap = True
@@ -29,10 +29,10 @@ object Preferences: TPreferences
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 25
-    Top = 193
-    Width = 327
-    BorderSpacing.Top = 10
-    Caption = '&URL of server with help pages :'
+    Top = 199
+    Width = 328
+    BorderSpacing.Top = 16
+    Caption = 'Base &URL of PasDoc help pages'
     FocusControl = EditWWWHelpServer
     ParentColor = False
   end
@@ -42,7 +42,8 @@ object Preferences: TPreferences
     Left = 8
     Height = 34
     Top = 149
-    Width = 392
+    Width = 582
+    Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
     Text = 'EditWWWBrowserCommand'
   end
@@ -51,16 +52,17 @@ object Preferences: TPreferences
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 34
-    Top = 218
-    Width = 392
+    Top = 224
+    Width = 582
+    Anchors = [akTop, akLeft, akRight]
     TabOrder = 1
     Text = 'EditWWWHelpServer'
   end
   object BtnOK: TButton
     AnchorSideTop.Control = BtnResetDefaults
-    Left = 411
+    Left = 545
     Height = 40
-    Top = 262
+    Top = 274
     Width = 45
     Anchors = [akTop, akRight]
     AutoSize = True
@@ -73,9 +75,9 @@ object Preferences: TPreferences
   object BtnCancel: TButton
     AnchorSideTop.Control = BtnResetDefaults
     AnchorSideRight.Control = BtnOK
-    Left = 317
+    Left = 451
     Height = 40
-    Top = 262
+    Top = 274
     Width = 84
     Anchors = [akTop, akRight]
     AutoSize = True
@@ -91,10 +93,10 @@ object Preferences: TPreferences
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 40
-    Top = 262
+    Top = 274
     Width = 184
     AutoSize = True
-    BorderSpacing.Top = 10
+    BorderSpacing.Top = 16
     BorderSpacing.InnerBorder = 2
     Caption = '&Reset to defaults'
     OnClick = BtnResetDefaultsClick
