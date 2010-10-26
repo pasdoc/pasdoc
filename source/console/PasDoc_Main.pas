@@ -482,7 +482,9 @@ begin
   end;
 
   PasDoc.Generator.CheckSpelling := OptionASPELL.WasSpecified;
-  PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
+  if OptionASPELL.Value = '' then
+    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
+    PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
   if OptionSpellCheckIgnoreWords.Value <> '' then
     PasDoc.Generator.SpellCheckIgnoreWords.LoadFromFile(
       OptionSpellCheckIgnoreWords.Value);
