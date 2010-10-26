@@ -1,11 +1,20 @@
 [Next release -- release date and new version number unknown yet...]
 
+  * Many improvements to pasdoc_gui:
+    * Better adjusts to various themes and font sizes, on all platforms (GTK, Windows etc.)
+    * More intuitive UI: "Generate" button on the left, "Output directory" on the "Options" tab and filled by default with temp directory, and more.
+    * xdg-open is used on Unix now.
+    (by Michalis Kamburelis)
   + --ignore-leading= option by tobigun at users.sourceforge.net
     (see [http://pasdoc.sipsolutions.net/IgnoreLeadingOption])
   * Translations:
-    * Russian localization updated, "uses" localization by
-      werewolf_ at users.sourceforge.net
+    * Russian localization updated by werewolf_ at users.sourceforge.net
     * Simplified Chinese Translation updated by Liu Da
+    * Czech translation by Rene Mihula
+    * Polish translation updated (by anonymous)
+    * Bulgarian translation by Andrew Andreev
+    * French translation updated (and utf-8 version added) by Yann Merignac
+    (see [http://pasdoc.sipsolutions.net/OutputLanguage])
 
 2008-06-22 v0.11.0
 
