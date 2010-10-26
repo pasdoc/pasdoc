@@ -911,11 +911,11 @@ type
 
     { The meaning of this is just like @--auto-abstract command-line option.
       It is used in @link(ExpandDescriptions). }
-    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract;
+    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
     
     { This controls @link(SearchLink) behavior, as described in
       [http://pasdoc.sipsolutions.net/LinkLookOption]. }
-    property LinkLook: TLinkLook read FLinkLook write FLinkLook;
+    property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
     
     property WriteUsesClause: boolean 
       read FWriteUsesClause write FWriteUsesClause default false;
