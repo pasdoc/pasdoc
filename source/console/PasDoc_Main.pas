@@ -460,7 +460,7 @@ begin
     PasDoc.CommentMarkers.Assign(OptionCommentMarker.Values);
   end;
   if OptionStarOnly.TurnedOn then
-    PasDoc.StarStyleOnly := true;
+    PasDoc.StarOnly := true;
   PasDoc.MarkerOptional := OptionMarkerOptional.TurnedOn;
 
   PasDoc.IgnoreLeading := OptionIgnoreLeading.Value;
