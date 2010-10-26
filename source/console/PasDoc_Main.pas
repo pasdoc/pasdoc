@@ -45,7 +45,8 @@ type
     OptionFormat,
     OptionOutputPath,
     OptionLanguage,
-    OptionAspell,
+    OptionAspell: TStringOption;
+    OptionSpellCheck: TBoolOption;
     OptionSpellCheckIgnoreWords: TStringOption;
     OptionStarOnly,
     OptionGenerator,
@@ -221,13 +222,17 @@ begin
   OptionAbbrevFiles.Explanation := 'Abbreviation file, format is "[name]  value", value is trimmed, lines that do not start with ''['' (or whitespace before that) are ignored';
   AddOption(OptionAbbrevFiles);
 
-  OptionASPELL := TStringOption.Create(#0, 'aspell');
-  OptionASPELL.Explanation := 'Enable aspell, giving language as parameter, currently only done in HTML output';
-  AddOption(OptionASPELL);
+  OptionSpellCheck := TBoolOption.Create(#0, 'spell-check');
+  OptionSpellCheck.Explanation := 'Enable spell-checking by Aspell, specify language by the --language option';
+  AddOption(OptionSpellCheck);
 
   OptionSpellCheckIgnoreWords := TStringOption.Create(#0, 'spell-check-ignore-words');
   OptionSpellCheckIgnoreWords.Explanation := 'When spell-checking, ignore the words in that file. The file should contain one word on every line';
   AddOption(OptionSpellCheckIgnoreWords);
+
+  OptionASPELL := TStringOption.Create(#0, 'aspell');
+  OptionASPELL.Explanation := 'Deprecated, use --spell-check. Enable spell-checking by Aspell, giving language as parameter';
+  AddOption(OptionASPELL);
 
   OptionCacheDir := TStringOption.Create(#0, 'cache-dir');
   OptionCacheDir.Explanation := 'Cache directory for parsed files (default not set)';
@@ -481,7 +486,10 @@ begin
     PasDoc.Generator.ParseAbbreviationsFile(OptionAbbrevFiles.Values[i]);
   end;
 
-  PasDoc.Generator.CheckSpelling := OptionASPELL.WasSpecified;
+  PasDoc.Generator.CheckSpelling := 
+    OptionASPELL.WasSpecified or OptionSpellCheck.WasSpecified;
+  if OptionSpellCheck.WasSpecified then
+    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
   if OptionASPELL.Value = '' then
     PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
     PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
