@@ -29,7 +29,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 0
     Width = 569
     Align = alClient
-    PageIndex = 12
+    PageIndex = 10
     ShowTabs = False
     TabOrder = 0
     object pageOptions: TPage
@@ -396,7 +396,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
       ClientWidth = 563
-      ClientHeight = 492
+      ClientHeight = 528
       object LabelVisibleMembers: TLabel
         Left = 10
         Height = 94
@@ -425,10 +425,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 0
+        ItemHeight = 33
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
-        TopIndex = -1
         Data = {
           06000000000000000000
         }
@@ -471,7 +470,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
       ClientWidth = 563
-      ClientHeight = 492
+      ClientHeight = 528
       object LabelConclusionFile: TLabel
         AnchorSideTop.Control = EditIntroductionFileName
         AnchorSideTop.Side = asrBottom
@@ -881,74 +880,62 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageMarkers: TPage
       Caption = 'Markers'
       ClientWidth = 563
-      ClientHeight = 492
+      ClientHeight = 528
+      object LabelCommentMarkers: TLabel
+        AnchorSideTop.Control = rgCommentMarkers
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 142
+        Width = 287
+        HelpType = htKeyword
+        BorderSpacing.Top = 8
+        Caption = 'Special comment markers'
+        FocusControl = memoCommentMarkers
+        ParentColor = False
+      end
       object memoCommentMarkers: TMemo
+        AnchorSideTop.Control = LabelCommentMarkers
+        AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 300
-        Top = 182
+        Height = 338
+        Top = 180
         Width = 543
         HelpType = htKeyword
         HelpKeyword = 'CommentMarker'
-        Align = alClient
+        Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Around = 10
         OnChange = SomethingChanged
         TabOrder = 0
       end
-      object PanelMarkers: TPanel
+      object rgCommentMarkers: TRadioGroup
         Left = 0
-        Height = 172
+        Height = 134
         Top = 0
-        Width = 563
-        Align = alTop
+        Width = 699
+        HelpType = htKeyword
+        HelpKeyword = 'CommentMarker'
+        AutoFill = True
         AutoSize = True
-        BevelOuter = bvNone
-        BorderWidth = 10
-        ChildSizing.VerticalSpacing = 10
-        ClientHeight = 172
-        ClientWidth = 563
-        FullRepaint = False
+        Caption = 'Comment marker treatment'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 105
+        ClientWidth = 695
+        ItemIndex = 1
+        Items.Strings = (
+          'Ignore special comment markers'
+          'Include all comments but remove special comment markers'
+          'Include only comments with special comment markers'
+        )
+        OnClick = rgCommentMarkersClick
         TabOrder = 1
-        object LabelCommentMarkers: TLabel
-          Left = 10
-          Height = 28
-          Top = 154
-          Width = 543
-          HelpType = htKeyword
-          Align = alTop
-          Caption = 'Special comment markers'
-          FocusControl = memoCommentMarkers
-          ParentColor = False
-        end
-        object rgCommentMarkers: TRadioGroup
-          Left = 10
-          Height = 134
-          Top = 10
-          Width = 543
-          HelpType = htKeyword
-          HelpKeyword = 'CommentMarker'
-          Align = alTop
-          AutoFill = True
-          AutoSize = True
-          Caption = 'Comment marker treatment'
-          ChildSizing.LeftRightSpacing = 6
-          ChildSizing.TopBottomSpacing = 6
-          ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-          ChildSizing.EnlargeVertical = crsHomogenousChildResize
-          ChildSizing.ShrinkHorizontal = crsScaleChilds
-          ChildSizing.ShrinkVertical = crsScaleChilds
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ChildSizing.ControlsPerLine = 1
-          ClientHeight = 105
-          ClientWidth = 539
-          ItemIndex = 1
-          Items.Strings = (
-            'Ignore special comment markers'
-            'Include all comments but remove special comment markers'
-            'Include only comments with special comment markers'
-          )
-          OnClick = rgCommentMarkersClick
-          TabOrder = 0
-        end
       end
     end
     object PageSort: TPage
@@ -1090,7 +1077,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item

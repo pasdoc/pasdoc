@@ -12,7 +12,7 @@
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -50,7 +50,7 @@
         <UnitName Value="pasdoc_gui"/>
         <CursorPos X="3" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="107"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -58,10 +58,10 @@
         <ComponentName Value="frmHelpGenerator"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="32" Y="1323"/>
-        <TopLine Value="1302"/>
+        <CursorPos X="1" Y="969"/>
+        <TopLine Value="958"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="107"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -72,7 +72,7 @@
         <UnitName Value="frmAboutUnit"/>
         <CursorPos X="22" Y="4"/>
         <TopLine Value="1"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="107"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
@@ -80,7 +80,7 @@
         <UnitName Value="HelpProcessor"/>
         <CursorPos X="14" Y="7"/>
         <TopLine Value="1"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="43"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -90,9 +90,7 @@
         <UnitName Value="WWWBrowserRunnerDM"/>
         <CursorPos X="57" Y="62"/>
         <TopLine Value="51"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="42"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="43"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -102,7 +100,7 @@
         <UnitName Value="PreferencesFrm"/>
         <CursorPos X="54" Y="2"/>
         <TopLine Value="1"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="42"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
@@ -110,7 +108,7 @@
         <UnitName Value="PasDocGuiSettings"/>
         <CursorPos X="28" Y="45"/>
         <TopLine Value="88"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit6>
     </Units>
   </ProjectOptions>

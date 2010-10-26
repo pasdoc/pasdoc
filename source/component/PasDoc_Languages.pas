@@ -183,6 +183,25 @@ type
     Name: string;
     Syntax: string;
     CharSet: string;
+    { Name of this language as used by Aspell, see
+      http://aspell.net/man-html/Supported.html .
+      
+      Set this to empty string if it's the same as our Syntax up to a dot.
+      So a Syntax = 'pl' or Syntax = 'pl.iso-8859-2' already indicates
+      AspellLanguage = 'pl'.
+      
+      TODO: In the future, it would be nice if all language names used by PasDoc
+      and Aspell matched. Aspell language naming follows the standard
+      http://en.wikipedia.org/wiki/ISO_639-1 as far as I see,
+      and we should probably follow it too (currently, we deviate for
+      some languages).
+      
+      So in the future, we'll probably replace Syntax and AspellLanguage
+      by LanguageCode and CharsetCode. LanguageCode = code (suitable for both
+      PasDoc and Aspell command-line; the thing currently up to a dot in Syntax),
+      CharsetCode = the short representation of CharSet (the thing currently
+      after a dot in Syntax). }
+    AspellLanguage: string;
   end;
 
 const
@@ -241,6 +260,9 @@ function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
 
 //access LANGUAGE_ARRAY
 function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
+
+{ Language code suitable for Aspell. }
+function LanguageAspellCode(const Language: TLanguageID): string;
 
 implementation
 
@@ -2213,32 +2235,32 @@ const
 
 const
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
-    (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'),
-    (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''),
-    (Table: @aBulgarian; Name: 'Bulgarian'; Syntax: 'bg'; CharSet: 'utf-8'),
-    (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''),
-    (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'),
-    (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'),
-    (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'),
-    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'),
-    (Table: @aFrench_ISO_8859_15; Name: 'French'; Syntax: 'fr'; CharSet: 'iso-8859-15'),
-    (Table: @aFrench_UTF_8; Name: 'French'; Syntax: 'fr.utf8'; CharSet: 'utf-8'),    
-    (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'),
-    (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: ''),
-    (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'),
-    (Table: @aJavanese; Name: 'Javanese'; Syntax: 'jv'; CharSet: ''),
-    (Table: @aPolish1250; Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'),
-    (Table: @aPolish_ISO_8859_2; Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'),
-    (Table: @aRussian_1251; Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'),
-    (Table: @aRussian_utf8; Name: 'Russian (Codepage utf8)'; Syntax: 'ru.utf8'; CharSet: 'utf-8'),
-    (Table: nil;  Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'),
-    (Table: nil;  Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'),
-    (Table: @aSlovak; Name: 'Slovak'; Syntax: 'sk'; CharSet: ''),
-    (Table: @aSpanish; Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'),
-    (Table: @aSwedish; Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'),
-    (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250'),
-    (Table: @aCzech_CP1250; Name: 'Czech (Codepage CP1250)'; Syntax: 'cz'; CharSet: 'windows-1250'),
-    (Table: @aCzech_ISO_8859_2; Name: 'Czech (Codepage ISO 8859-2)'; Syntax: 'cz.iso-8859-2'; CharSet: 'iso-8859-2')
+    (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'; AspellLanguage: 'bs'),
+    (Table: @aBrasilian; Name: 'Brasilian'; Syntax: 'br'; CharSet: ''; AspellLanguage: 'pt' { Portuguese used for brazilian } ),
+    (Table: @aBulgarian; Name: 'Bulgarian'; Syntax: 'bg'; CharSet: 'utf-8'; AspellLanguage: ''),
+    (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: ''; AspellLanguage: 'ca'),
+    (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'; AspellLanguage: 'zh'),
+    (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
+    (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'; AspellLanguage: ''),
+    (Table: @aFrench_ISO_8859_15; Name: 'French'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aFrench_UTF_8; Name: 'French'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
+    (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: ''; AspellLanguage: ''),
+    (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aJavanese; Name: 'Javanese'; Syntax: 'jv'; CharSet: ''; AspellLanguage: ''),
+    (Table: @aPolish1250; Name: 'Polish (Codepage CP1250)'; Syntax: 'pl.cp1250'; CharSet: 'windows-1250'; AspellLanguage: ''),
+    (Table: @aPolish_ISO_8859_2; Name: 'Polish (Codepage ISO 8859-2)'; Syntax: 'pl.iso-8859-2'; CharSet: 'iso-8859-2'; AspellLanguage: ''),
+    (Table: @aRussian_1251; Name: 'Russian (Codepage 1251)'; Syntax: 'ru.1251'; CharSet: 'windows-1251'; AspellLanguage: ''),
+    (Table: @aRussian_utf8; Name: 'Russian (Codepage utf8)'; Syntax: 'ru.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
+    (Table: nil;  Name: 'Russian (Codepage 866)'; Syntax: 'ru.866'; CharSet: 'IBM866'; AspellLanguage: ''),
+    (Table: nil;  Name: 'Russian (KOI-8)'; Syntax: 'ru.KOI8'; CharSet: 'koi8-r'; AspellLanguage: ''),
+    (Table: @aSlovak; Name: 'Slovak'; Syntax: 'sk'; CharSet: ''; AspellLanguage: ''),
+    (Table: @aSpanish; Name: 'Spanish'; Syntax: 'es'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aSwedish; Name: 'Swedish'; Syntax: 'se'; CharSet: 'iso-8859-15'; AspellLanguage: 'sv'),
+    (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250'; AspellLanguage: ''),
+    (Table: @aCzech_CP1250; Name: 'Czech (Codepage CP1250)'; Syntax: 'cz'; CharSet: 'windows-1250'; AspellLanguage: ''),
+    (Table: @aCzech_ISO_8859_2; Name: 'Czech (Codepage ISO 8859-2)'; Syntax: 'cz.iso-8859-2'; CharSet: 'iso-8859-2'; AspellLanguage: 'cs')
   );
 
 function TPasDocLanguages.GetTranslation(
@@ -2352,6 +2374,17 @@ begin
   Result := tbl^[id];
 end;
 
-end.
+function LanguageAspellCode(const Language: TLanguageID): string;
+var
+  Dot: Integer;
+begin
+  Result := LANGUAGE_ARRAY[Language].AspellLanguage;
+  if Result = '' then
+  begin
+    Result := LANGUAGE_ARRAY[Language].Syntax;
+    Dot := Pos('.', Result);
+    if Dot <> 0 then SetLength(Result, Dot - 1); { cut stuff after '.' }
+  end;
+end;
 
- 	  	 
+end.

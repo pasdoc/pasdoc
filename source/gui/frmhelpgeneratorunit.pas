@@ -1,5 +1,5 @@
 {
-  Copyright 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
+  Copyright 2004-2008 Richard B. Winston, U.S. Geological Survey (USGS)
   Copyright 2005-2010 Michalis Kamburelis
 
   This file is part of pasdoc_gui.
@@ -91,7 +91,6 @@ type
     LabelConclusionFile: TLabel;
     LabelIntroductionFile: TLabel;
     LabelCssFileName: TLabel;
-    LabelCommentMarkers: TLabel;
     LabelLanguages: TLabel;
     LabelTitle: TLabel;
     Label20: TLabel;
@@ -139,7 +138,6 @@ type
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
-    PanelMarkers: TPanel;
     PanelGenerateTop: TPanel;
     PanelIncludeDirectoriesTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
@@ -151,7 +149,6 @@ type
     HtmlDocGenerator: THTMLDocGenerator;
     OpenDialog1: TOpenDialog;
     RadioImplicitVisibility: TRadioGroup;
-    rgCommentMarkers: TRadioGroup;
     rgLineBreakQuality: TRadioGroup;
     SaveDialog1: TSaveDialog;
     OpenDialog2: TOpenDialog;
@@ -182,6 +179,8 @@ type
     btnBrowseSourceFiles: TButton;
     LabelHyphenatedWords: TLabel;
     memoHyphenatedWords: TMemo;
+    LabelCommentMarkers: TLabel;
+    rgCommentMarkers: TRadioGroup;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -231,8 +230,6 @@ type
     procedure SetDefaults;
     procedure SetSettingsFileName(const AValue: string);
     procedure UpdateCaption;
-    function LanguageIdToString(const LanguageID: TLanguageID): string;
-    procedure CheckIfSpellCheckingAvailable;
     procedure FillNavigationListBox;
     procedure SetOutputDirectory(const FileName: string);
     // @name fills @link(tvUnits) with a heirarchical representation of the
@@ -395,30 +392,6 @@ begin
   end;
 end;
 
-procedure TfrmHelpGenerator.CheckIfSpellCheckingAvailable;
-var
-  Available: boolean;
-begin
-  if not cbCheckSpelling.Enabled or not cbCheckSpelling.Checked then
-  begin
-    Exit;
-  end;
-  
-  Available := comboGenerateFormat.ItemIndex in [0,1];
-  if Available then
-  begin
-    try
-      LanguageIdToString(TLanguageID(comboLanguages.ItemIndex));
-    except on E: EInvalidSpellingLanguage do
-      begin
-        Available := False;
-        Beep;
-        MessageDlg(E.Message, Dialogs.mtError, [mbOK], 0);
-      end;
-    end;
-  end;
-end;
-
 procedure TfrmHelpGenerator.FillNavigationListBox;
 var
   Index: integer;
@@ -446,10 +419,6 @@ end;
 procedure TfrmHelpGenerator.cbCheckSpellingChange(Sender: TObject);
 begin
   Changed := True;
-  if cbCheckSpelling.Checked then
-  begin
-    CheckIfSpellCheckingAvailable;
-  end;
 end;
 
 procedure TfrmHelpGenerator.CheckListVisibleMembersClick(Sender: TObject);
@@ -516,43 +485,6 @@ begin
   NewCaption += SettingsFileNameNice;
   NewCaption += ' - PasDoc GUI';
   Caption := NewCaption;
-end;
-
-function TfrmHelpGenerator.LanguageIdToString(const LanguageID: TLanguageID
-  ): string;
-begin
-  try
-    result := 'en';
-    case LanguageID of
-      lgBosnian: result := 'bs';
-      lgBrasilian: result := 'pt';  // Portuguese used for brazilian.
-      lgCatalan: result := 'ca';
-      lgDanish: result := 'da';
-      lgDutch: result := 'nl';
-      lgEnglish: result := 'en';
-      lgFrench: result := 'fr';
-      lgGerman: result := 'de';
-      lgIndonesian: result := 'id';
-      lgItalian: result := 'it';
-      lgJavanese: result := 'jv';
-      lgPolish_CP1250: result := 'pl';
-      lgPolish_ISO_8859_2: result := 'pl';
-      lgRussian_1251: result := 'ru';
-      lgRussian_866: result := 'ru';
-      lgRussian_koi8: result := 'ru';
-      lgSlovak: result := 'sk';
-      lgSpanish: result := 'es';
-      lgSwedish: result := 'sv';
-      lgHungarian_1250: result := 'hu';
-    else raise EInvalidSpellingLanguage.Create(
-        'Sorry, that language is not supported for spell checking');
-    end;
-  except on EInvalidSpellingLanguage do
-    begin
-      cbCheckSpelling.Checked := False;
-      raise;
-    end;
-  end;
 end;
 
 procedure TfrmHelpGenerator.SetChanged(const AValue: boolean);
@@ -894,7 +826,7 @@ begin
         
       TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
         CheckUseTipueSearch.Checked;
-      TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageIdToString(TLanguageID(comboLanguages.ItemIndex));
+      TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageAspellCode(TLanguageID(comboLanguages.ItemIndex));
       TGenericHTMLDocGenerator(PasDoc1.Generator).CheckSpelling := cbCheckSpelling.Checked;
       if cbCheckSpelling.Checked then
       begin
@@ -1034,7 +966,6 @@ end;
 
 procedure TfrmHelpGenerator.comboLanguagesChange(Sender: TObject);
 begin
-  CheckIfSpellCheckingAvailable;
   Changed := True;
 end;
 
