@@ -28,11 +28,13 @@ type
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TPasDocMessageType; const AMessage: string);
   public
-    { Values for AspellMode and AspellLanguage are the same as for
+    { Constructor.
+      Values for AspellMode and AspellLanguage are the same as for
       aspell @--mode and @--lang command-line options.
       You can pass here '', then we will not pass appropriate
       command-line option to aspell. }
-    constructor Create(const AAspellMode, AAspellLanguage: string);
+    constructor Create(const AAspellMode, AAspellLanguage: string;
+      AOnMessage: TPasDocMessageEvent);
     destructor Destroy; override;
 
     property AspellMode: string read FAspellMode;
@@ -54,13 +56,15 @@ implementation
 
 uses PasDoc_Utils;
 
-constructor TAspellProcess.Create(const AAspellMode, AAspellLanguage: string);
+constructor TAspellProcess.Create(const AAspellMode, AAspellLanguage: string;
+  AOnMessage: TPasDocMessageEvent);
 var FirstAspellLine: string;
 begin
   inherited Create;
   
   FAspellMode := AAspellMode;
   FAspellLanguage := AAspellLanguage;
+  FOnMessage := AOnMessage;
   
   FProcess := TProcessLineTalk.Create(nil);
   
@@ -70,6 +74,8 @@ begin
     FProcess.CommandLine := FProcess.CommandLine + ' --mode=' + AspellMode;
   if AspellLanguage <> '' then
     FProcess.CommandLine := FProcess.CommandLine + ' --lang=' + AspellLanguage;
+    
+  DoMessage(3, pmtInformation, 'Calling aspell process: "' + FProcess.CommandLine + '"');
 
   { execute }
   FProcess.Execute;

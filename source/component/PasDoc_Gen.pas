@@ -2698,7 +2698,7 @@ end;
 procedure TDocGenerator.EndSpellChecking;
 begin
   { If CheckSpelling was false or StartSpellChecking failed then
-    FAspellPipe will be nil, so it's safe to just always call FreeAndNil here. }
+    FAspellProcess will be nil, so it's safe to just always call FreeAndNil here. }
   FreeAndNil(FAspellProcess);
 end;
 
@@ -2767,7 +2767,7 @@ begin
   if CheckSpelling then 
   begin
     try
-      FAspellProcess := TAspellProcess.Create(AMode, FAspellLanguage);
+      FAspellProcess := TAspellProcess.Create(AMode, FAspellLanguage, OnMessage);
     except
       on E: Exception do
       begin
@@ -2776,8 +2776,6 @@ begin
         Exit;
       end;
     end;
-    
-    FAspellProcess.OnMessage := OnMessage;
     
     WordsToIgnore := TStringList.Create;
     try
