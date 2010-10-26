@@ -257,7 +257,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageSourceFiles: TPage
       Caption = 'Source Files'
       ClientWidth = 563
-      ClientHeight = 528
+      ClientHeight = 492
       object Label8: TLabel
         Left = 8
         Height = 160
@@ -275,7 +275,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = btnBrowseSourceFiles
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 293
+        Height = 257
         Top = 225
         Width = 547
         HelpType = htKeyword
@@ -571,7 +571,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageLatexOptions: TPage
       Caption = 'LaTeX Options'
       ClientWidth = 563
-      ClientHeight = 528
+      ClientHeight = 492
       object LabelLatexGraphicsPackage: TLabel
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
@@ -649,7 +649,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHyphenatedWords
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 225
+        Height = 189
         Top = 300
         Width = 549
         Align = alCustom
@@ -798,7 +798,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object pageSpellChecking: TPage
       Caption = 'Spell Checking'
       ClientWidth = 563
-      ClientHeight = 528
+      ClientHeight = 492
       object PanelSpellCheckingTop1: TPanel
         Left = 0
         Height = 208
@@ -866,7 +866,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoSpellCheckingIgnore: TMemo
         Left = 10
-        Height = 300
+        Height = 264
         Top = 218
         Width = 543
         HelpType = htKeyword
@@ -954,7 +954,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     object PageSort: TPage
       Caption = 'Sort'
       ClientWidth = 563
-      ClientHeight = 528
+      ClientHeight = 492
       object LabelItemsToSort: TLabel
         Left = 8
         Height = 28
@@ -968,7 +968,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelItemsToSort
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 484
+        Height = 448
         Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
         Top = 36
         Width = 548
@@ -987,9 +987,10 @@ object frmHelpGenerator: TfrmHelpGenerator
           'methods'
           'properties'
         )
-        ItemHeight = 33
+        ItemHeight = 0
         OnClick = SomethingChanged
         TabOrder = 0
+        TopIndex = -1
         Data = {
           0A00000000000000000000000000
         }
@@ -1089,6 +1090,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
+        BookMarkOptions.OnChange = nil
         Gutter.Width = 67
         Gutter.MouseActions = <        
           item

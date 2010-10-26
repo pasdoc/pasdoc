@@ -1,6 +1,6 @@
 {
   Copyright 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
-  Copyright 2005 Michalis Kamburelis
+  Copyright 2005-2010 Michalis Kamburelis
 
   This file is part of pasdoc_gui.
 
@@ -26,7 +26,7 @@
 
 unit frmAboutUnit;
 
-{$mode DELPHI}
+{$mode objfpc}{$H+}
 
 interface
 

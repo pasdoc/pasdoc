@@ -1,7 +1,6 @@
 {
-  Original version 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
-  Modifications copyright 2005 Michalis Kamburelis
-  Additional modifications by Richard B. Winston, April 26, 2005.
+  Copyright 2004-2005 Richard B. Winston, U.S. Geological Survey (USGS)
+  Copyright 2005-2010 Michalis Kamburelis
 
   This file is part of pasdoc_gui.
 
@@ -30,7 +29,7 @@
 
 unit frmHelpGeneratorUnit;
 
-{$mode DELPHI}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -204,7 +203,7 @@ type
     procedure btnOpenClick(Sender: TObject);
     procedure MenuSaveAsClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject; var AnAction: TCloseAction);
     procedure MenuNewClick(Sender: TObject);
     procedure comboGenerateFormatChange(Sender: TObject);
     procedure lbNavigationClick(Sender: TObject);
@@ -250,12 +249,12 @@ type
     { Saves current settings to FileName. Additionally may
       also do some other things commonly done at saving time:
       
-      if SetSettingsFileName then sets SettingsFileName property
+      if UpdateSettingsFileName then sets SettingsFileName property
       to FileName.
       
       if ClearChanged then sets Changed to false. }
     procedure SaveSettingsToFile(const FileName: string;
-      SetSettingsFileName, ClearChanged: boolean);
+      UpdateSettingsFileName, ClearChanged: boolean);
   protected
     procedure CreateWnd; override;
   public
@@ -398,21 +397,21 @@ end;
 
 procedure TfrmHelpGenerator.CheckIfSpellCheckingAvailable;
 var
-  CheckIfSpellCheckingAvailable: boolean;
+  Available: boolean;
 begin
   if not cbCheckSpelling.Enabled or not cbCheckSpelling.Checked then
   begin
     Exit;
   end;
   
-  CheckIfSpellCheckingAvailable := comboGenerateFormat.ItemIndex in [0,1];
-  if CheckIfSpellCheckingAvailable then
+  Available := comboGenerateFormat.ItemIndex in [0,1];
+  if Available then
   begin
     try
       LanguageIdToString(TLanguageID(comboLanguages.ItemIndex));
     except on E: EInvalidSpellingLanguage do
       begin
-        CheckIfSpellCheckingAvailable := False;
+        Available := False;
         Beep;
         MessageDlg(E.Message, Dialogs.mtError, [mbOK], 0);
       end;
@@ -440,7 +439,7 @@ begin
     end;
     lbNavigation.ItemIndex := 0; { otherwise it may stay -1 after program loads }
   finally
-    lbNavigation.OnClick := lbNavigationClick;
+    lbNavigation.OnClick := @lbNavigationClick;
   end;
 end;
 
@@ -1237,7 +1236,7 @@ begin
 end;
 
 procedure TfrmHelpGenerator.SaveSettingsToFile(const FileName: string;
-  SetSettingsFileName, ClearChanged: boolean);
+  UpdateSettingsFileName, ClearChanged: boolean);
 var
   Ini: TIniFile;
 
@@ -1343,7 +1342,7 @@ begin
     Ini.UpdateFile;
   finally Ini.Free end;
   
-  if SetSettingsFileName then
+  if UpdateSettingsFileName then
     SettingsFileName := FileName;
 
   if ClearChanged then
@@ -1388,10 +1387,10 @@ begin
 end;
 
 procedure TfrmHelpGenerator.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+  var AnAction: TCloseAction);
 begin
   if not SaveChanges then
-    Action := caNone;
+    AnAction := caNone;
 end;
 
 procedure TfrmHelpGenerator.MenuNewClick(Sender: TObject);
@@ -1527,9 +1526,9 @@ begin
       seComment.Lines.Text := Item.RawDescription;
       seComment.Hint := Format(
         'Comment in stream "%s", on position %d - %d',
-        [ Item.RawDescriptionInfo.StreamName,
-          Item.RawDescriptionInfo.BeginPosition,
-          Item.RawDescriptionInfo.EndPosition ]);
+        [ Item.RawDescriptionInfo^.StreamName,
+          Item.RawDescriptionInfo^.BeginPosition,
+          Item.RawDescriptionInfo^.EndPosition ]);
     end;
   end;
 end;
