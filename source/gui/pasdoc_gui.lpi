@@ -12,7 +12,7 @@
       <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -88,9 +88,11 @@
         <ComponentName Value="WWWBrowserRunner"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
-        <CursorPos X="46" Y="32"/>
-        <TopLine Value="1"/>
+        <CursorPos X="57" Y="62"/>
+        <TopLine Value="51"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="42"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>

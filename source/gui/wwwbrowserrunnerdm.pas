@@ -59,7 +59,7 @@ procedure TWWWBrowserRunner.RunBrowser(const URL: string);
   begin
     ExecInfo.cbSize := SizeOf(ExecInfo);
     ExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
-    ExecInfo.hWnd := 0;
+    ExecInfo. {$ifdef VER2_2} hWnd {$else} Wnd {$endif} := 0;
     ExecInfo.lpVerb := PChar(OpenCommand);
     ExecInfo.lpFile := PChar(URL);
     ExecInfo.lpParameters := nil;
