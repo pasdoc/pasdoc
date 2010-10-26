@@ -848,6 +848,15 @@ type
     property Introduction: TExternalItem read FIntroduction
       write FIntroduction;
     property Conclusion: TExternalItem read FConclusion write FConclusion;
+    
+    { Callback receiving messages from generator.
+    
+      This is usually used internally by TPasDoc class, that assigns
+      it's internal callback here when using this generator.
+      Also, for the above reason, do not make this published.
+      
+      See TPasDoc.OnMessage for something more useful for final programs. }
+    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   published
     { the (human) output language of the documentation file(s) }
     property Language: TLanguageID read GetLanguage write SetLanguage
@@ -885,8 +894,6 @@ type
       forward slash or backslash so that valid file names can be created
       by concatenating DestinationDirectory and a pathless file name }
     property DestinationDirectory: string read FDestDir write SetDestDir;
-
-    property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
 
     { generate a GraphViz diagram for the units dependencies }
     property OutputGraphVizUses: boolean read FGraphVizUses write FGraphVizUses

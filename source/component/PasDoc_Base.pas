@@ -148,7 +148,7 @@ type
       SetIncludeDirectories;
 
     { This is deprecated name for @link(OnMessage) }
-    property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage;
+    property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage stored false;
     
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     
