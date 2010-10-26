@@ -83,8 +83,8 @@ type
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
     procedure SetSourceFileNames(const ASourceFileNames: TStringVector);
     procedure SetGenerator(const Value: TDocGenerator);
-    procedure SetStarStyle(const Value: boolean);
-    function GetStarStyle: boolean;
+    procedure SetStarOnly(const Value: boolean);
+    function GetStarOnly: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
       
     { Creates a @link(TPasUnit) object from the stream and adds it to
@@ -160,7 +160,7 @@ type
     property Title: string read FTitle write FTitle;
     property Verbosity: Cardinal read FVerbosity write FVerbosity 
       default DEFAULT_VERBOSITY_LEVEL;
-    property StarStyleOnly: boolean read GetStarStyle write SetStarStyle;
+    property StarOnly: boolean read GetStarOnly write SetStarOnly stored false;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
       default false;
@@ -758,20 +758,23 @@ begin
   end;
 end;
 
-procedure TPasDoc.SetStarStyle(const Value: boolean);
+procedure TPasDoc.SetStarOnly(const Value: boolean);
 var
   Idx: Integer;
 begin
-  if Value then begin
-    FCommentMarkers.Add('**');
-  end else begin
-    Idx := FCommentMarkers.IndexOf('**');
-    if Idx <> -1 then
+  Idx := FCommentMarkers.IndexOf('**');
+  { Compare Value with previous value,
+    to not add a 2nd string '**' to FCommentMarkers,
+    and only remove valid indexes. }
+  if Value <> (Idx <> -1) then
+  begin
+    if Value then
+      FCommentMarkers.Add('**') else
       FCommentMarkers.Delete(Idx);
   end;
 end;
 
-function TPasDoc.GetStarStyle: boolean;
+function TPasDoc.GetStarOnly: boolean;
 begin
   Result := FCommentMarkers.IndexOf('**') <> -1;
 end;
