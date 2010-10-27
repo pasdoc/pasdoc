@@ -1,0 +1,120 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{8e4600a9-342b-487a-ad12-37343bf61652}</ProjectGuid>
+    <MainSource>pasdoc_package.dpk</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>C:\Dokumente und Einstellungen\All Users\Dokumente\RAD Studio\5.0\Bpl\pasdoc_package.bpl</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_IntegerOverflowCheck>True</DCC_IntegerOverflowCheck>
+    <DCC_RangeChecking>True</DCC_RangeChecking>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_UnitSearchPath>..\..\..\..\component\images</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\..\component\images</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\..\component\images</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\..\component\images</DCC_IncludePath>
+    <DCC_Define>RELEASE</DCC_Define>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+    <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_IntegerOverflowCheck>True</DCC_IntegerOverflowCheck>
+    <DCC_RangeChecking>True</DCC_RangeChecking>
+    <DCC_UnitSearchPath>..\..\..\..\component\images</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\..\component\images</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\..\component\images</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\..\component\images</DCC_IncludePath>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+    <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>Package</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject xmlns=""> <Delphi.Personality>   <Parameters>
+      <Parameters Name="UseLauncher">False</Parameters>
+      <Parameters Name="LoadAllSymbols">True</Parameters>
+      <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+    </Parameters>
+    <Package_Options>
+      <Package_Options Name="PackageDescription">PasDoc components</Package_Options>
+      <Package_Options Name="ImplicitBuild">False</Package_Options>
+      <Package_Options Name="DesigntimeOnly">False</Package_Options>
+      <Package_Options Name="RuntimeOnly">False</Package_Options>
+    </Package_Options>
+    <Language>
+      <Language Name="RootDir">C:\Program Files\Borland\Delphi7\Bin\</Language>
+    </Language>
+    <VersionInfo>
+      <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+      <VersionInfo Name="AutoIncBuild">False</VersionInfo>
+      <VersionInfo Name="MajorVer">0</VersionInfo>
+      <VersionInfo Name="MinorVer">9</VersionInfo>
+      <VersionInfo Name="Release">0</VersionInfo>
+      <VersionInfo Name="Build">0</VersionInfo>
+      <VersionInfo Name="Debug">False</VersionInfo>
+      <VersionInfo Name="PreRelease">False</VersionInfo>
+      <VersionInfo Name="Special">False</VersionInfo>
+      <VersionInfo Name="Private">False</VersionInfo>
+      <VersionInfo Name="DLL">False</VersionInfo>
+      <VersionInfo Name="Locale">1045</VersionInfo>
+      <VersionInfo Name="CodePage">1250</VersionInfo>
+    </VersionInfo>
+    <VersionInfoKeys>
+      <VersionInfoKeys Name="CompanyName"></VersionInfoKeys>
+      <VersionInfoKeys Name="FileDescription"></VersionInfoKeys>
+      <VersionInfoKeys Name="FileVersion">0.11.0</VersionInfoKeys>
+      <VersionInfoKeys Name="InternalName"></VersionInfoKeys>
+      <VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys>
+      <VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
+      <VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
+      <VersionInfoKeys Name="ProductName"></VersionInfoKeys>
+      <VersionInfoKeys Name="ProductVersion">0.11.0</VersionInfoKeys>
+      <VersionInfoKeys Name="Comments"></VersionInfoKeys>
+    </VersionInfoKeys>
+    <Source>
+      <Source Name="MainSource">pasdoc_package.dpk</Source>
+    </Source>
+  </Delphi.Personality> </BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="pasdoc_package.dpk">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="..\..\..\..\component\PasDoc_Aspell.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Base.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Gen.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_GenHtml.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_GenHtmlHelp.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_GenLatex.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Hashes.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_HierarchyTree.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Items.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Languages.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_ObjectVector.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Parser.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_ProcessLineTalk.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Reg.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Scanner.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Serialize.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_SortSettings.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_StreamUtils.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_StringPairVector.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_StringVector.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_TagManager.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Tokenizer.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Types.pas" />
+    <DCCReference Include="..\..\..\..\component\PasDoc_Utils.pas" />
+    <DCCReference Include="..\..\..\..\component\rtl.dcp" />
+    <DCCReference Include="..\..\..\..\component\tipue\PasDoc_Tipue.pas" />
+    <DCCReference Include="..\..\..\..\component\vcl.dcp" />
+    <DCCReference Include="..\..\..\..\component\vclx.dcp" />
+  </ItemGroup>
+</Project>
