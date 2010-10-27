@@ -1,9 +1,14 @@
+{ @author(Arno Garrels <first name.name@nospamgmx.de>) }
 unit PasDoc_Serialize;
 
+{$I pasdoc_defines.inc}
+
 interface
+
 uses
   Classes,
-  SysUtils;
+  SysUtils,
+  PasDoc_StreamUtils;
 
 type
   TSerializable = class;
@@ -15,7 +20,10 @@ type
   protected
     procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
-  public  
+  public
+    class function Read7BitEncodedInt(const ASource: TStream): Integer;
+    class procedure Write7BitEncodedInt(Value: Integer;
+      const ADestination: TStream);
     class function LoadStringFromStream(const ASource: TStream): string;
     class procedure SaveStringToStream(const AValue: string; const ADestination: TStream);
     class function LoadDoubleFromStream(const ASource: TStream): double;
@@ -46,7 +54,43 @@ begin
   inherited;
 end;
 
-procedure TSerializable.Serialize(const ADestination: TStream); 
+class function TSerializable.Read7BitEncodedInt(const ASource: TStream): Integer;
+var
+  Shift: Integer;
+  Value: Integer;
+  B: Byte;
+begin
+  Shift  := 0;
+  Result := 0;
+  repeat
+    if Shift = 35 then
+      raise ESerializedException.Create('Invalid 7 bit integer encoding');
+    ASource.Read(B, 1);
+    Value := B;
+    Result := Result or ((Value and $7F) shl Shift);
+    Inc(Shift, 7);
+  until Value and $80 = 0;
+end;
+
+class procedure TSerializable.Write7BitEncodedInt(Value: Integer;
+ const ADestination: TStream);
+var
+  B: Byte;
+begin
+  repeat
+    if Value > $7f then begin
+      B := Byte((Value and $7f) or $80);
+      ADestination.Write(B, 1);
+    end
+    else begin
+      B := Byte(Value);
+      ADestination.Write(B, 1);
+    end;
+    Value := Value shr 7;
+  until Value = 0;
+end;
+
+procedure TSerializable.Serialize(const ADestination: TStream);
 begin
 end;
 
@@ -58,9 +102,13 @@ end;
 class function TSerializable.DeserializeFromFile(
   const AFileName: string): TSerializable;
 var
-  LF: TFileStream;
+  LF: TStream;
 begin
+{$IFDEF COMPILER_7_UP}
+  LF := TBufferedStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+{$ELSE}
   LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+{$ENDIF}
   try
     Result := DeserializeObject(LF);
   finally
@@ -71,14 +119,13 @@ end;
 class function TSerializable.DeserializeObject(
   const ASource: TStream): TSerializable;
 var
-  S: shortstring;
+  S: string;
   LClass: TSerializableClass;
   Idx: Integer;
 begin
-  ASource.Read(S[0], 1);
-  ASource.Read(S[1], Byte(S[0]));
+  S := LoadStringFromStream(ASource);
   Idx := GClassNames.IndexOf(S);
-  if Idx<0 then begin
+  if Idx < 0 then begin
     raise ESerializedException.CreateFmt('Tried loading unknown class %s', [S]);
   end else begin
     LClass := TSerializableClass(GClassNames.Objects[Idx]);
@@ -104,9 +151,9 @@ class function TSerializable.LoadStringFromStream(
 var
   L: LongInt;
 begin
-  ASource.Read(L, SizeOf(L));
+  L := Read7BitEncodedInt(ASource);
   SetLength(Result, L);
-  ASource.Read(Pointer(Result)^, L);
+  ASource.Read(Pointer(Result)^, L * SizeOf(Char));
 end;
 
 class procedure TSerializable.Register(const AClass: TSerializableClass);
@@ -132,28 +179,32 @@ var
   L: Longint;
 begin
   L := Length(AValue);
-  ADestination.Write(L, SizeOf(L));
-  ADestination.Write(Pointer(AValue)^, L);
+  Write7BitEncodedInt(L, ADestination);
+  ADestination.Write(Pointer(AValue)^, L * SizeOf(Char));
 end;
 
 class procedure TSerializable.SerializeObject(const AObject: TSerializable;
   const ADestination: TStream);
 var
-  S: shortstring;
+  S: string;
 begin
   S := AObject.ClassName;
-  if GClassNames.IndexOf(S)<0 then begin
+  if GClassNames.IndexOf(S)< 0 then begin
     raise ESerializedException.CreateFmt('Tried saving unregistered class %s', [S]);
   end;
-  ADestination.Write(S[0], Byte(S[0])+1);
+  SaveStringToStream(S, ADestination);
   AObject.Serialize(ADestination);
 end;
 
 procedure TSerializable.SerializeToFile(const AFileName: string);
 var
-  LF: TFileStream;
+  LF: TStream;
 begin
+{$IFDEF COMPILER_7_UP}
+  LF := TBufferedStream.Create(AFileName, fmCreate);
+{$ELSE}
   LF := TFileStream.Create(AFileName, fmCreate);
+{$ENDIF}
   try
     SerializeObject(Self, LF);
   finally

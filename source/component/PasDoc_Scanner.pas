@@ -3,6 +3,7 @@
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
 
   @abstract(Provides a simplified Pascal scanner.)
   
@@ -23,8 +24,9 @@ uses
   SysUtils,
   Classes,
   PasDoc_Types,
-  PasDoc_Tokenizer,
+  PasDoc_Tokenizer,  
   PasDoc_StringVector,
+  PasDoc_StreamUtils,
   PasDoc_StringPairVector;
 
 const
@@ -654,7 +656,7 @@ begin
   if Length(N) >= 2 then
     begin;
       if (N[1] >= 'a') and (N[1] <= 'z') then
-        N[1] := AnsiChar(Ord(N[1]) - 32);
+        N[1] := Char(Ord(N[1]) - 32);
       if (N[1] >= 'A') and (N[1] <= 'Z') and ((N[2] = '-') or (N[2] = '+')) then
         begin
           Result := FSwitchOptions[N[1]] = (N[2] = '+');
@@ -726,8 +728,18 @@ var
     
     if Result then
       { create new tokenizer with stream }
+    {$IFDEF STRING_UNICODE}
+      OpenNewTokenizer(TStreamReader.Create(Name),
+        Name, ExtractFilePath(Name));
+    {$ELSE}
+    {$IFDEF COMPILER_7_UP}
+      OpenNewTokenizer(TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite),
+        Name, ExtractFilePath(Name));
+    {$ELSE}
       OpenNewTokenizer(TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite),
         Name, ExtractFilePath(Name));
+    {$ENDIF}
+    {$ENDIF}
   end;
 
   function TryOpenIncludeFilePaths: boolean;
@@ -883,10 +895,10 @@ begin
     if l < 3 then Exit;
  
     c := p^;
-    if c in ['a'..'z'] then
+    if IsCharInSet(c, ['a'..'z']) then
       Dec(c, 32);
  
-    if not (c in ['A'..'Z']) or not (p[1] in ['-', '+']) then
+    if not IsCharInSet(c, ['A'..'Z']) or not IsCharInSet(p[1], ['-', '+']) then
       Exit;
  
     FSwitchOptions[c] := p[1] = '+';

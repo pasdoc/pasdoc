@@ -679,7 +679,7 @@ var
     i := FOffset + 1;
 
     while (i <= Length(Description)) and
-          (Description[i] in ['A'..'Z', 'a'..'z']) do
+          IsCharInSet(Description[i], ['A'..'Z', 'a'..'z']) do
       Inc(i);
 
     if i = FOffset + 1 then Exit; { exit with false }
@@ -737,7 +737,7 @@ var
     begin
       { Read Parameters to the end of Description or newline. }
       while (i <= Length(Description)) and
-            (not (Description[i] in [#10, #13])) do
+            (not IsCharInSet(Description[i], [#10, #13])) do
         Inc(i);
       Parameters := Trim(Copy(Description, OffsetEnd, i - OffsetEnd));
       OffsetEnd := i;
@@ -831,7 +831,7 @@ var
     i := i + Length(URLMiddle);
     while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
     Dec(i);
-    while (Description[i] in HalfLinkChars) do Dec(i);
+    while IsCharInSet(Description[i], HalfLinkChars) do Dec(i);
     Inc(i);
     OffsetEnd := i;
     
@@ -860,7 +860,7 @@ var
   begin
     Result := 
       ( (FOffset = 1) or
-        not (Description[FOffset - 1] in AnyQualifiedIdentChar) ) and
+        not IsCharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
       SCharIs(Description, FOffset, FirstIdentChar);
     
     if Result then

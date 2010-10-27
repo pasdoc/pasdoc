@@ -1,5 +1,7 @@
 unit PasDoc_StringPairVector;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 uses

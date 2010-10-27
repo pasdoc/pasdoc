@@ -3,6 +3,7 @@
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @cvs($Date$)
 
   Parsing implements most of the functionality of the pasdoc program.
@@ -299,7 +300,7 @@ type
         each variable/field instance.) 
       @param(IsInRecordCase indicates if we're within record's case.
         It's relevant only if OfObject is true.) }
-    procedure ParseFieldsVariables(Items: TPasItems; 
+    procedure ParseFieldsVariables(Items: TPasItems;
       OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
       const ClassKeyWordString: string = '');
     
@@ -697,9 +698,11 @@ begin
 
         { * External declarations might be followed by a string constant.
           * Messages are followed by an integer constant between 1 and 49151 which
-            specifies the message ID. }
-        SD_EXTERNAL, SD_MESSAGE, SD_NAME:
+            specifies the message ID.
+          * Deprecated might be followed by a string constant since D2010. }
+        SD_EXTERNAL, SD_MESSAGE, SD_NAME, SD_DEPRECATED:
           begin
+            M.IsDeprecated := t.Info.StandardDirective = SD_DEPRECATED;
             M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
             FreeAndNil(t);
 
@@ -731,13 +734,6 @@ begin
                 FreeAndNil(t);
               end;
             until False;
-          end;
-        SD_DEPRECATED: 
-          begin
-            M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-            M.IsDeprecated := True;
-            FreeAndNil(t);
-            t := GetNextToken;
           end;
         SD_PLATFORM: 
           begin
@@ -1216,17 +1212,95 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
 procedure TParser.ParseConstant(const U: TPasUnit);
 var
   i: TPasConstant;
+  t: TToken;
+  WhitespaceCollector: string;
+
+  { Same as SkipDeclaration() except that it returns TRUE if we hit a  }
+  { procedural constant, it might be followed by a calling convention  }
+  function LocalSkipDeclaration: Boolean;
+  var
+    EndLevel, PLevel: Integer;
+    IsSemicolon: Boolean;
+  begin
+    EndLevel := 0;
+    PLevel := 0;
+    Result := False;
+    {AG}
+    repeat
+      t := GetNextToken(WhitespaceCollector);
+
+      i.FullDeclaration := i.FullDeclaration + WhitespaceCollector;
+      case t.MyType of
+        TOK_SYMBOL:
+          case t.Info.SymbolType of
+            SYM_LEFT_PARENTHESIS: Inc(PLevel);
+            SYM_RIGHT_PARENTHESIS: Dec(PLevel);
+          end;
+        TOK_KEYWORD:
+          case t.Info.KeyWord of
+            KEY_END: Dec(EndLevel);
+            KEY_RECORD: Inc(EndLevel);
+            KEY_LIBRARY:
+              i.IsLibrarySpecific := true;
+            KEY_FUNCTION,
+            KEY_PROCEDURE:
+              Result := True;
+        end;
+      TOK_IDENTIFIER:
+        case t.Info.StandardDirective of
+          SD_PLATFORM:
+            i.IsPlatformSpecific := true;
+          SD_DEPRECATED:
+            i.IsDeprecated := true;
+        end;
+      end;
+      IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
+
+      { Reason for "EndLevel < 0" condition:
+          Within records et al. the last declaration need not be terminated by ;
+        Reason for "(PLevel < 0) and IsInRecordCase" condition:
+          See autodoc of SkipDeclaration in TParser interface. }
+      if (EndLevel < 0) {or
+        ( (PLevel < 0) and IsInRecordCase )} then
+      begin
+        Scanner.UnGetToken(t);
+        Exit;
+      end;
+      i.FullDeclaration := i.FullDeclaration + t.Data;
+      t.Free;
+    until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
+  end;
+  {/AG}
+
 begin
   i := TPasConstant.Create;
   i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
   DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
   i.RawDescriptionInfo^ := GetLastComment;
   i.FullDeclaration := i.Name;
-  SkipDeclaration(i, false);
+  {AG}
+  if LocalSkipDeclaration then
+  begin
+    { Check for following calling conventions }
+    t := GetNextToken(WhitespaceCollector);
+    case t.Info.StandardDirective of
+      SD_CDECL, SD_STDCALL, SD_PASCAL, SD_REGISTER, SD_SAFECALL:
+        begin
+          i.FullDeclaration := i.FullDeclaration + WhitespaceCollector;
+          i.FullDeclaration := i.FullDeclaration + t.Data;
+          t.Free;
+          SkipDeclaration(i, false);
+        end;
+    else
+      Scanner.UnGetToken(t);
+    end;
+  end;
+  //SkipDeclaration(i, false);
+  {/AG}
+
   U.AddConstant(i);
   ItemsForNextBackComment.ClearAndAdd(I);
 end;
@@ -1318,10 +1392,10 @@ begin
 
     try
       case t.MyType of
-        TOK_IDENTIFIER: 
+        TOK_IDENTIFIER:
           if T.Info.StandardDirective = SD_OPERATOR then
           begin
-            ParseCDFP(M, '', t.Data, METHOD_OPERATOR, 
+            ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
               GetLastComment, true, true);
             u.FuncsProcs.Add(M);
             Mode := MODE_UNDEFINED;
@@ -1910,9 +1984,9 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
         // This does not take into account the "absolute" modifier
         // (which is not preceeded by a semicolon).
         FirstCheck := False;
-        if (ttemp.MyType = TOK_IDENTIFIER) and 
-           (ttemp.Info.StandardDirective in 
-             [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then 
+        if (ttemp.MyType = TOK_IDENTIFIER) and
+           (ttemp.Info.StandardDirective in
+             [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then
         begin
           ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
           FreeAndNil(ttemp)
@@ -1966,7 +2040,7 @@ begin
       ItemCollector.FullDeclaration := ':';
       
       t := GetNextToken(ItemCollector);
-      
+
       { If symnbol is "(", we will later unget it and read it once again.
         This way SkipDeclaration can read type declaration up to the matching
         parenthesis, which is needed to handle fiels/var declarations with
@@ -1977,22 +2051,22 @@ begin
       begin
         ItemCollector.FullDeclaration := ItemCollector.FullDeclaration + t.Data;
       end;
-      
-      if (t.MyType = TOK_KEYWORD) and 
-         (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then 
+
+      if (t.MyType = TOK_KEYWORD) and
+         (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then
       begin
         { MethodTypeString for ParseCDFP below is '', because we already included
-          t.Data inside ItemCollector.FullDeclaration. 
+          t.Data inside ItemCollector.FullDeclaration.
           If MethodTypeString would be t.Data, then we would incorrectly
           append t.Data twice to ItemCollector.FullDeclaration
-          when appending m.FullDeclaration to ItemCollector.FullDeclaration. 
-          
-          Note that param InitItemsForNextBackComment for ParseCDFP 
+          when appending m.FullDeclaration to ItemCollector.FullDeclaration.
+
+          Note that param InitItemsForNextBackComment for ParseCDFP
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
-        ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), 
+        ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord),
           EmptyRawDescriptionInfo, false, false);
-        ItemCollector.FullDeclaration := 
+        ItemCollector.FullDeclaration :=
           ItemCollector.FullDeclaration + M.FullDeclaration;
         M.Free;
         FreeAndNil(t);
@@ -2000,10 +2074,10 @@ begin
 
         if t.IsSymbol(SYM_EQUAL) then
         begin
-          ItemCollector.FullDeclaration := 
+          ItemCollector.FullDeclaration :=
             ItemCollector.FullDeclaration + t.Data;
           SkipDeclaration(ItemCollector, IsInRecordCase);
-        end else 
+        end else
         begin
           Scanner.UnGetToken(t);
         end;
@@ -2122,32 +2196,32 @@ begin
         case t.Info.KeyWord of
           KEY_END: Dec(EndLevel);
           KEY_RECORD: Inc(EndLevel);
-          KEY_LIBRARY: 
+          KEY_LIBRARY:
             if Assigned(Item) then Item.IsLibrarySpecific := true;
         end;
       TOK_IDENTIFIER:
         case t.Info.StandardDirective of
-          SD_PLATFORM: 
+          SD_PLATFORM:
             if Assigned(Item) then Item.IsPlatformSpecific := true;
-          SD_DEPRECATED: 
+          SD_DEPRECATED:
             if Assigned(Item) then Item.IsDeprecated := true;
         end;
     end;
     IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
-    
+
     { Reason for "EndLevel < 0" condition:
         Within records et al. the last declaration need not be terminated by ;
       Reason for "(PLevel < 0) and IsInRecordCase" condition:
         See autodoc of SkipDeclaration in TParser interface. }
     if (EndLevel < 0) or
-       ( (PLevel < 0) and IsInRecordCase ) then 
+       ( (PLevel < 0) and IsInRecordCase ) then
     begin
       Scanner.UnGetToken(t);
       Exit;
     end;
-    
+
     if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
-    
+
     FreeAndNil(t);
   until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
 end;

@@ -7,6 +7,7 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Damien Honeyford)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
 
   For each item (type, variable, class etc.) that may appear in a Pascal
   source code file and can thus be taken into the documentation, this unit
@@ -14,6 +15,8 @@
   on this item. }
 
 unit PasDoc_Items;
+
+{$I PasDoc_Defines.inc}
 
 interface
 
@@ -2044,8 +2047,13 @@ end;
 
 function TPasUnit.FileNewerThanCache(const FileName: string): boolean;
 begin
+{$IFDEF COMPILER_10_UP}
+  Result := WasDeserialized and FileExists(FileName) and
+    (CacheDateTime < CheckGetFileDate(FileName));
+{$ELSE}
   Result := WasDeserialized and FileExists(FileName) and
     (CacheDateTime < FileDateToDateTime(FileAge(FileName)));
+{$ENDIF}
 end;
 
 procedure TPasUnit.Sort(const SortSettings: TSortSettings);
@@ -2409,7 +2417,7 @@ end;
 
 function VisToStr(const Vis: TVisibility): string;
 begin
-  result := StringReplace(VisibilityStr[Vis], ' ', '', [rfReplaceAll]);
+  result := StringReplace(string(VisibilityStr[Vis]), ' ', '', [rfReplaceAll]);
 end;
 
 function VisibilitiesToStr(const Visibilities: TVisibilities): string;

@@ -10,6 +10,8 @@
 
 unit PasDoc_Reg;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 { Registers the PasDoc components into the IDE. }

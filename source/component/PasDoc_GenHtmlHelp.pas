@@ -1,8 +1,10 @@
 unit PasDoc_GenHtmlHelp;
 
+{$I pasdoc_defines.inc}
+
 interface
 
-uses PasDoc_GenHtml;
+uses PasDoc_GenHtml, PasDoc_Utils, PasDoc_SortSettings;
 
 type
   THTMLHelpDocGenerator = class(TGenericHTMLDocGenerator)
@@ -56,7 +58,7 @@ begin
   Result := 0;
   p := Pointer(s);
   l := Length(s);
-  while (l > 0) and (p^ in [' ', #9]) do begin
+  while (l > 0) and IsCharInSet(p^, [' ', #9]) do begin
     Inc(Result);
     Inc(p);
     Dec(l);
@@ -203,9 +205,14 @@ var
       c.CopyItems(PU.CIOs);
     end;
     // Output sorted classes
-    // TODO: Sort
+    // TODO: Sort by sort settings rather than const values
+    c.SortShallow;
     for j := 0 to c.Count - 1 do
+    begin
+      TPasCio(c.PasItemAt[j]).Sort([ssRecordFields, ssNonRecordFields,
+                                    ssMethods, ssProperties]);
       InternalWriteCIO(TPasCio(c.PasItemAt[j]));
+    end;
     c.Free;
     WriteDirectLine('</ul>');
   end;

@@ -1,5 +1,7 @@
 unit PasDoc_GenSimpleXML;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 uses

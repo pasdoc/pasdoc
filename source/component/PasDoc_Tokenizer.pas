@@ -3,6 +3,7 @@
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @abstract(Provides simplified Pascal tokenizer.)
 
 The @link(TTokenizer) object creates @link(TToken) objects (tokens) for the
@@ -19,9 +20,13 @@ unit PasDoc_Tokenizer;
 interface
 
 uses
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
+  Classes,
   PasDoc_Utils,
   PasDoc_Types,
-  Classes;
+  PasDoc_StreamUtils;
 
 type
   { enumeration type that provides all types of tokens; each token's name
@@ -264,6 +269,7 @@ type
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
   private
+    FBufferedCharSize : Integer;
     function StreamPosition: Int64;
   protected
     FOnMessage: TPasDocMessageEvent;
@@ -297,8 +303,15 @@ type
       
     { Uses default symbol representation, from SymbolNames[st] }
     function CreateSymbolToken(const st: TSymbolType): TToken; overload;
-    
-    function GetChar(out c: Char): Boolean;
+{$IFDEF STRING_UNICODE}
+    { Returns source codepoint size in bytes on success or 0 on failure. }
+    { Supports ANSI, UTF-8, UCS2 and UCS2 big endian sources.            }
+    { Note that only Unicode codepoints from the BMP are supported.      }    
+    function GetChar(out c: WideChar): Integer;
+{$ELSE}
+    { Returns 1 on success or 0 on failure }
+    function GetChar(out c: AnsiChar): Integer;
+{$ENDIF}
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
@@ -513,7 +526,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
 procedure TTokenizer.CheckForDirective(const t: TToken);
 begin
   if SCharIs(T.CommentContent, 1, '$') then
@@ -563,22 +575,88 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
-function TTokenizer.GetChar(out c: Char): Boolean;
+{$IFDEF STRING_UNICODE}
+function TTokenizer.GetChar(out c: WideChar): Integer;
+var
+  Buf : array [0..7] of Byte;
+  LInt: Integer;
 begin
-  if IsCharBuffered then begin
+  if IsCharBuffered then
+  begin
     c := BufferedChar;
     IsCharBuffered := False;
-    Result := True;
+    Result := FBufferedCharSize;
   end
-  else begin
-    Result := Stream.Position < Stream.Size;
-    if Result then begin
-      Stream.Read(c, 1);
+  else begin // Actually only UCS2 and UCS2Be
+    case TStreamReader(Stream).CurrentCodePage of
+        CP_UTF16    :
+          begin
+            Result := Stream.Read(c, 2);
+            if (Result = 0) then
+              Beep;
+            Exit;
+          end;
+        CP_UTF16BE  :
+            begin
+                Result := Stream.Read(c, 2);
+                Swap16Buf(@c, @c, 1);
+                Exit;
+            end;
+    end; // case
+
+    { MBCS text }
+    Result := 0;
+    Buf[0] := 0;
+
+    Result := Stream.Read(Buf[Result], 1);
+    if Result = 0 then
+      Exit;
+    if TStreamReader(Stream).CurrentCodePage = CP_UTF8 then
+    begin
+      LInt := Utf8Size(Buf[0]); // Read number of bytes
+      if LInt > 1 then
+      begin
+        Result := Stream.Read(Buf[Result], LInt - 1){ = LInt - 1};
+        if Result > 0 then
+          Inc(Result)
+        else begin
+          Result := 0;
+          Exit;
+        end;
+      end;
+    end
+    else begin
+      while AnsiChar(Buf[Result -1]) in TStreamReader(Stream).LeadBytes do
+      begin
+        if Stream.Read(Buf[Result], 1) = 1 then
+          Inc(Result)
+        else begin
+          Result := 0;
+          Exit;
+        end;
+      end
     end;
+
+    if MultiByteToWideChar(TStreamReader(Stream).CurrentCodePage,
+                           0, @Buf[0], Result, @c, 1) <> 1 then
+        Result := 0;
   end;
 end;
 
+{$ELSE}
+
+function TTokenizer.GetChar(out c: AnsiChar): Integer;
+begin
+  if IsCharBuffered then
+  begin
+    c := BufferedChar;
+    IsCharBuffered := False;
+    Result := FBufferedCharSize;
+  end
+  else
+    Result := Stream.Read(c, 1);
+end;
+{$ENDIF}
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.GetStreamInfo: string;
@@ -598,7 +676,8 @@ end;
 function TTokenizer.StreamPosition: Int64;
 begin
   if IsCharBuffered then
-    Result := Stream.Position - 1 else
+    Result := Stream.Position - FBufferedCharSize
+  else
     Result := Stream.Position;
 end;
 
@@ -615,10 +694,10 @@ begin
   Result := nil;
   BeginPosition := StreamPosition; //used in finally
   try
-    if not GetChar(c) then
+    if GetChar(c) = 0 then
       DoError('Tokenizer: could not read character', [], 0);
-    
-    if c in Whitespace then
+
+    if IsCharInSet(c, Whitespace) then
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
@@ -628,7 +707,7 @@ begin
       else
         DoError('Tokenizer: could not read character', [], 0);
     end else
-    if c in IdentifierStart then 
+    if IsCharInSet(c, IdentifierStart) then
     begin
       if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
       begin
@@ -646,7 +725,7 @@ begin
         end;
       end;
     end else
-    if c in NumberStart then
+    if IsCharInSet(c, NumberStart) then
       ReadToken(c, NumberOther, TOK_NUMBER, Result)
     else
       case c of
@@ -787,8 +866,9 @@ begin
     Result := True;
   end
   else begin
-    if Stream.Position < Stream.Size then begin
-      Stream.Read(c, 1);
+    FBufferedCharSize := GetChar(c);
+    if FBufferedCharSize > 0 then
+    begin
       BufferedChar := c;
       IsCharBuffered := True;
       Result := True;
@@ -807,11 +887,11 @@ var
   c: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_EXT);
-  with Result do 
+  with Result do
   begin
     CommentContent := '';
     repeat
-      if not HasData or not GetChar(c) then Exit;
+      if not HasData or (GetChar(c) = 0) then Exit;
       if c = #10 then Inc(Row);
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
@@ -830,15 +910,15 @@ var
 begin
   Result := TToken.Create(TOK_COMMENT_PAS);
   Result.CommentContent := '';
-  if not HasData or not GetChar(c) then Exit;
+  if not HasData or (GetChar(c) = 0) then Exit;
   repeat
     Result.CommentContent := Result.CommentContent + c;
 
     if c <> '*' then begin
       if c = #10 then Inc(Row);
-      if not HasData or not GetChar(c) then Exit;
+      if not HasData or (GetChar(c) = 0) then Exit;
     end else begin
-      if not HasData or not GetChar(c) then Exit;
+      if not HasData or (GetChar(c) = 0) then Exit;
       if c = ')' then
         begin
           ConsumeChar;
@@ -862,7 +942,7 @@ begin
   begin
     CommentContent := '';
     
-    while HasData and GetChar(c) do
+    while HasData and (GetChar(c) > 0) do
     begin
       case c of
         #10: begin Inc(Row); break end;
@@ -886,7 +966,7 @@ begin
   Result.Data := '%';
   repeat
     if (not HasData) or (not PeekChar(C)) then Exit;
-    if C in ['a'..'z', 'A'..'Z', '0'..'9'] then
+    if IsCharInSet(C, ['a'..'z', 'A'..'Z', '0'..'9']) then
     begin
       GetChar(C);
       Result.Data := Result.Data + C;
@@ -919,7 +999,7 @@ begin
       ReleaseToken;
       DoError('Tokenizer: unexpected end of stream', [], 0);
     end;
-    if not GetChar(c) then begin
+    if GetChar(c) = 0 then begin
       ReleaseToken;
       DoError('Tokenizer: could not read character', [], 0);
     end;
@@ -964,7 +1044,7 @@ begin
       end;
       break;
     end;
-    if (c in s) then begin
+    if IsCharInSet(c, s) then begin
       t.Data := t.Data + c;
       ConsumeChar;
     end else begin
@@ -985,7 +1065,7 @@ var
 begin
   Result := nil;
   repeat
-    if GetChar(c) then
+    if GetChar(c) > 0 then
       case c of
         '{':
           begin

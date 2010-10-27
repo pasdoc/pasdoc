@@ -5,6 +5,8 @@
 }
 unit PasDoc_ObjectVector;
 
+{$I pasdoc_defines.inc}
+
 interface
 uses
   Contnrs,

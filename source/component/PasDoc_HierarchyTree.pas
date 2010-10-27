@@ -5,7 +5,10 @@
 }
 unit PasDoc_HierarchyTree;
 
+{$I pasdoc_defines.inc}
+
 interface
+
 uses
   Classes,
   PasDoc_Items;

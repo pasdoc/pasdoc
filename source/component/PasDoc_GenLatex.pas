@@ -6,6 +6,8 @@
 
 unit PasDoc_GenLatex;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 uses
@@ -754,7 +756,7 @@ begin
     WriteStartList(s);
 
     if ShowVisibility then
-      Visibility := VisibilityStr[Item.Visibility] + ' ' else
+      Visibility := string(VisibilityStr[Item.Visibility]) + ' ' else
       Visibility := '';
     WriteDeclarationItem(Item, FLanguage.Translation[trDeclaration],
       Visibility + Item.FullDeclaration);
@@ -1166,7 +1168,7 @@ begin
       WriteAnchor(Item.Name, Item.FullLink);
       
       if ShowVisibility then
-        Visibility := VisibilityStr[Item.Visibility] + ' ' else
+        Visibility := string(VisibilityStr[Item.Visibility]) + ' ' else
         Visibility := '';
       WriteDeclarationItem(Item, Item.Name, 
         Visibility + Item.FullDeclaration);

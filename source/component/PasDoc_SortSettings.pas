@@ -1,5 +1,7 @@
 unit PasDoc_SortSettings;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 uses SysUtils;

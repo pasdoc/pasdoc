@@ -1,4 +1,5 @@
-{ @author(Michalis Kamburelis) }
+{ @author(Michalis Kamburelis) 
+  @author(Arno Garrels <first name.name@nospamgmx.de>)}
 
 unit PasDoc_ProcessLineTalk;
 
@@ -43,6 +44,7 @@ type
     Original version of this class comes from Michalis Kamburelis
     code library, see [http://www.camelot.homedns.org/~michalis/],
     unit base/KambiClassUtils.pas. }
+
   TTextReader = class
   private
     Stream: TStream;
@@ -108,10 +110,9 @@ type
 
 implementation
 
-uses PasDoc_StreamUtils;
+uses PasDoc_Types, PasDoc_Utils, PasDoc_StreamUtils;
 
 { TTextReader ---------------------------------------------------------------- }
-
 constructor TTextReader.CreateFromFileStream(const FileName: string);
 begin
  Create(TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite), true);
@@ -164,7 +165,7 @@ begin
    Delete(ReadBuf, 1, 1);
    LastNewLineChar := #0;
   end else
-  if ReadBuf[i] in [#10, #13] then
+  if IsCharInSet(ReadBuf[i], [#10, #13]) then
   begin
    Result := Copy(ReadBuf, 1, i-1);
    LastNewLineChar := ReadBuf[i];

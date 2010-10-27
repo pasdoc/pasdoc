@@ -7,6 +7,7 @@
   @author(Michael van Canneyt (michael@tfdec1.fys.kuleuven.ac.be))
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(24 Sep 1999)
   
   Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
@@ -28,6 +29,7 @@ uses
   PasDoc_Types,
   PasDoc_StringVector,
   PasDoc_SortSettings,
+  PasDoc_StreamUtils,
   PasDoc_TagManager
 {$IFNDEF FPC}
 {$IFDEF WIN32}
@@ -96,7 +98,9 @@ type
       const FileName: string; out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
+{$IFNDEF STRING_UNICODE}
     procedure SkipBOM(InputStream: TStream);
+{$ENDIF}
   protected
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
@@ -345,12 +349,12 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
+{$IFNDEF STRING_UNICODE}
 procedure TPasDoc.SkipBOM(InputStream: TStream);
 const
-  BOM: string = #$EF#$BB#$BF;
+  BOM : array [0..2] of byte = ($EF, $BB, $BF);
 var
-  c: char;
+  c: byte;
   i: integer;
 begin
   i := 0;
@@ -359,7 +363,7 @@ begin
       DoError('Tokenizer: could not read character', [], 0);
     InputStream.Read(c, 1);
     Inc(i);
-    if i > Length(BOM) then
+    if i > SizeOf(BOM) then
       begin
         InputStream.Position := InputStream.Position - 1;
         exit;
@@ -367,6 +371,7 @@ begin
   until c <> BOM[i];
   InputStream.Position := 0;
 end;
+{$ENDIF}
 
 procedure TPasDoc.HandleStream(
   const InputStream: TStream;
@@ -377,7 +382,9 @@ var
   LLoaded: boolean;
   LCacheFileName: string;
 begin
+{$IFNDEF STRING_UNICODE}
   SkipBOM(InputStream);
+{$ENDIF}
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
@@ -395,8 +402,13 @@ begin
     begin
       DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
+    {$IFDEF COMPILER_10_UP}
+      U.CacheDateTime := CheckGetFileDate(LCacheFileName);
+      if U.CacheDateTime < CheckGetFileDate(SourceFileName) then
+    {$ELSE}
       U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
       if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
+    {$ENDIF}
       begin
         DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
           [SourceFileName]);
@@ -419,7 +431,11 @@ begin
     end else 
     begin
       U.SourceFileName := SourceFileName;
+    {$IFDEF COMPILER_10_UP}
+      U.SourceFileDateTime := CheckGetFileDate(SourceFileName);
+    {$ELSE}
       U.SourceFileDateTime := FileDateToDateTime(FileAge(SourceFileName));
+    {$ENDIF}
       FUnits.Add(U);
 
       { Now we know that unit was 100% successfully parsed.
@@ -496,7 +512,15 @@ begin
   begin
     p := FSourceFileNames[i];
     try
+    {$IFDEF STRING_UNICODE}
+      InputStream := TStreamReader.Create(p);
+    {$ELSE}
+    {$IFDEF COMPILER_7_UP}
+      InputStream := TBufferedStream.Create(p, fmOpenRead or fmShareDenyWrite);
+    {$ELSE}
       InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
+    {$ENDIF}
+    {$ENDIF}
     except
       on E: Exception do
       begin
@@ -816,22 +840,25 @@ end;
 
 function COMPILER_NAME: string;
 begin
-  COMPILER_NAME := 
+  COMPILER_NAME :=
     {$IFDEF FPC}
     'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
     {$define COMPILER_VERSION_DEFINED}
     {$ENDIF}
 
-    {$IFDEF KYLIX_1} 'KYLIX 1'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_2} 'KYLIX 2'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_3} 'KYLIX 3'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-
-    {$IFDEF DELPHI_10} 'DELPHI 10'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_9} 'DELPHI 9'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_7} 'DELPHI 7'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_6} 'DELPHI 6'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_5} 'DELPHI 5'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_4} 'DELPHI 4'; {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF KYLIX_1}   'KYLIX 1';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF KYLIX_2}   'KYLIX 2';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF KYLIX_3}   'KYLIX 3';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_15} 'DELPHI XE';    {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_14} 'DELPHI 2010';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_12} 'DELPHI 2009';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_11} 'DELPHI 2007';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_10} 'DELPHI 2006';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_9}  'DELPHI 2005';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_7}  'DELPHI 7';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_6}  'DELPHI 6';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_5}  'DELPHI 5';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
+    {$IFDEF DELPHI_4}  'DELPHI 4';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
     
     {$IFNDEF COMPILER_VERSION_DEFINED}
     { As a fallback, use Delphi CompilerVersion. }

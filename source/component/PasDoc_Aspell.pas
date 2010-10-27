@@ -1,5 +1,7 @@
 unit PasDoc_Aspell;
 
+{$I pasdoc_defines.inc}
+
 interface
 
 uses SysUtils, Classes, PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;

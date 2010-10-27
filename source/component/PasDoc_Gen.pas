@@ -10,6 +10,7 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(30 Aug 1998)
   @cvs($Date$)
 
@@ -34,6 +35,7 @@ uses
   Classes,
   PasDoc_TagManager,
   PasDoc_Aspell,
+  PasDoc_StreamUtils,
   PasDoc_StringPairVector;
 
 type
@@ -251,7 +253,11 @@ type
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
+  {$IFDEF STRING_UNICODE}
+    FCurrentStream: TStreamWriter;
+  {$ELSE}
     FCurrentStream: TStream;
+  {$ENDIF}
     { Title of documentation. }
     FTitle: string;
     { destination directory for documentation; must include terminating
@@ -419,8 +425,11 @@ type
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
-
+  {$IFDEF STRING_UNICODE}
+    property CurrentStream: TStreamWriter read FCurrentStream;
+  {$ELSE}
     property CurrentStream: TStream read FCurrentStream;
+  {$ENDIF}
 
     procedure CreateClassHierarchy;
     
@@ -484,9 +493,12 @@ type
       No path or extension should therefore be in Name.
       Typical values for Name would be 'Objects' or 'AllUnits'.
       Returns true if creation was successful, false otherwise. }
-    function CreateStream(const AName: string; const AOverwrite: boolean): 
-      TCreateStreamResult;
-
+    function CreateStream(const AName: string; const AOverwrite: Boolean):
+      TCreateStreamResult; 
+{$IFDEF STRING_UNICODE} overload;
+    function CreateStream(const AName: string; const AOverwrite: Boolean;
+      ADstCodePage: LongWord): TCreateStreamResult; overload;
+{$ENDIF}
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
@@ -939,7 +951,6 @@ implementation
 
 uses
   SysUtils,
-  PasDoc_StreamUtils,
   PasDoc_Utils,
   PasDoc_Tokenizer;
 
@@ -1097,9 +1108,9 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
+{$IFDEF STRING_UNICODE}
 function TDocGenerator.CreateStream(const AName: string;
-  const AOverwrite: boolean): TCreateStreamResult;
+  const AOverwrite: Boolean; ADstCodePage: LongWord): TCreateStreamResult;
 begin
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
@@ -1107,12 +1118,40 @@ begin
   if FileExists(DestinationDirectory + AName) and not AOverwrite then begin
     Result := csExisted;
   end else begin
-    try
-      FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
+    try    
+      FCurrentStream := TStreamWriter.Create(DestinationDirectory+AName,
+                                             FALSE, FALSE, ADstCodePage);    
       Result := csCreated;
     except
     end;
   end;
+end;
+ {$ENDIF}
+{ ---------------------------------------------------------------------------- }
+
+function TDocGenerator.CreateStream(const AName: string;
+  const AOverwrite: boolean): TCreateStreamResult;
+begin
+{$IFDEF STRING_UNICODE}
+  Result := CreateStream(AName, AOverwrite, 0);
+{$ELSE}
+  CloseStream;
+  DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
+  Result := csError;
+  if FileExists(DestinationDirectory + AName) and not AOverwrite then
+    Result := csExisted
+  else begin
+    try
+    {$IFDEF COMPILER_7_UP}
+      FCurrentStream := TBufferedStream.Create(DestinationDirectory+AName, fmCreate);
+    {$ELSE}
+      FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
+    {$ENDIF}
+      Result := csCreated;
+    except
+    end;
+  end;  
+{$ENDIF}  
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2017,19 +2056,19 @@ begin
   if (atPos < 2) or (atPos > Length(s) - 3) then Exit;
   { assemble address left of @ }
   i := atPos - 1;
-  while (i >= 1) and (s[i] in ALLOWED_CHARS) do
+  while (i >= 1) and IsCharInSet(s[i], ALLOWED_CHARS) do
     Dec(i);
   EmailAddress := System.Copy(s, i + 1, atPos - i - 1) + '@';
   S1 := '';
   if (i > 1) then S1 := System.Copy(s, 1, i);
   { assemble address right of @ }
   i := atPos + 1;
-  while (i <= Length(s)) and (s[i] in ALLOWED_CHARS) do
+  while (i <= Length(s)) and IsCharInSet(s[i], ALLOWED_CHARS) do
     Inc(i);
   EmailAddress := EmailAddress + System.Copy(s, atPos + 1, i - atPos - 1);
   if (Length(EmailAddress) < 6) or
-    (not (EmailAddress[Length(EmailAddress)] in Letters)) or
-  (not (EmailAddress[Length(EmailAddress) - 1] in Letters)) then Exit;
+    (not IsCharInSet(EmailAddress[Length(EmailAddress)], Letters)) or
+  (not IsCharInSet(EmailAddress[Length(EmailAddress) - 1], Letters)) then Exit;
   S2 := '';
   if (i <= Length(s)) then S2 := System.Copy(s, i, Length(s) - i + 1);
   Result := True;
@@ -2049,7 +2088,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p + 7, 255);
     p := 1;
-    while (p < Length(WebAddress)) and (WebAddress[p] in ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -2063,7 +2102,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p, 255);
     p := 1;
-    while (p < Length(WebAddress)) and (WebAddress[p] in ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -2190,7 +2229,11 @@ end;
 
 procedure TDocGenerator.LoadDescriptionFile(n: string);
 var
+{$IFDEF STRING_UNICODE}
+  f           : TStreamReader;
+{$ELSE}
   f           : TStream;
+{$ENDIF}
   ItemName    : string;
   Description : string;
   i           : Integer;
@@ -2201,27 +2244,38 @@ begin
   ItemName := '';
   if n = '' then Exit;
   try
+  {$IFDEF STRING_UNICODE}
+    f := TStreamReader.Create(n);
+  {$ELSE}
+  {$IFDEF COMPILER_7_UP}
+    f := TBufferedStream.Create(n, fmOpenRead or fmShareDenyWrite);
+  {$ELSE}
     f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
-  
-    Assert(Assigned(f));
+  {$ENDIF}
+  {$ENDIF}
+    // Assert(Assigned(f)); useless here
   
     try
+      {$IFDEF STRING_UNICODE}
+      while f.ReadLine(S) do begin
+      {$ELSE}
       while f.Position < f.Size do begin
         s := StreamReadLine(f);
+      {$ENDIF}
         if s[1] = '#' then begin
           i := 2;
-          while s[i] in [' ', #9] do Inc(i);
+          while IsCharInSet(s[i], [' ', #9]) do Inc(i);
           { Make sure we read a valid name - the user might have used # in his
             description. }
-          if s[i] in IdentChars then begin
+          if IsCharInSet(s[i], IdentChars) then begin
             if ItemName <> '' then StoreDescription(ItemName, Description);
             { Read item name and beginning of the description }
             ItemName := '';
             repeat
               ItemName := ItemName + s[i];
               Inc(i);
-            until not (s[i] in IdentChars);
-            while s[i] in [' ', #9] do Inc(i);
+            until not IsCharInSet(s[i], IdentChars);
+            while IsCharInSet(s[i], [' ', #9]) do Inc(i);
             Description := Copy(s, i, MaxInt);
             Continue;
           end;
@@ -2411,12 +2465,20 @@ end;
 
 procedure TDocGenerator.WriteDirect(const t: string);
 begin
-  StreamWriteString(CurrentStream, t);
+{$IFDEF STRING_UNICODE}
+  CurrentStream.Write(t);
+{$ELSE}
+  StreamWriteString(CurrentStream, AnsiString(t));
+{$ENDIF}
 end;
 
 procedure TDocGenerator.WriteDirectLine(const t: string);
 begin
-  StreamWriteLine(CurrentStream, t);
+{$IFDEF STRING_UNICODE}
+  CurrentStream.WriteLine(t);
+{$ELSE}
+  StreamWriteLine(CurrentStream, AnsiString(t));
+{$ENDIF}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2897,7 +2959,7 @@ begin
   StringBeginning := 1;
   HexBeginning    := 1;
   NumBeginning    := 1;
-  result := '';
+  result          := '';
   CodeType := ctWhiteSpace;
   WhiteSpaceBeginning := 1;
   CodeBeginning := 1;
@@ -2927,13 +2989,13 @@ begin
             HexBeginning := CharIndex;
             EndOfCode := True;
           end else 
-          if Line[CharIndex] in Numeric then
+          if IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if Line[CharIndex] in AlphaNumeric then
+          if IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -2974,7 +3036,7 @@ begin
           begin
             EndOfCode := True;
           end
-          else if not (Line[CharIndex] in AlphaNumeric) then
+          else if not IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             EndOfCode := True;
             CodeType := ctWhiteSpace;
@@ -3001,12 +3063,12 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if Line[CharIndex] in Numeric then
+          else if IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if Line[CharIndex] in AlphaNumeric then
+          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3027,7 +3089,7 @@ begin
           begin
             // do nothing
           end
-          else if Line[CharIndex] in Separators then
+          else if IsCharInSet(Line[CharIndex], Separators) then
           begin
             result := result + FormatString(Copy(Line, StringBeginning,
               CharIndex - StringBeginning));
@@ -3067,7 +3129,7 @@ begin
         end;
       ctSlashComment:
         begin
-          if Line[CharIndex] in LineEnd then
+          if IsCharInSet(Line[CharIndex], LineEnd) then
           begin
             CodeType := ctWhiteSpace;
             result := result + FormatComment(Copy(Line, CommentBegining,
@@ -3081,7 +3143,7 @@ begin
           begin
             // do nothing
           end
-          else if Line[CharIndex] in Separators then
+          else if IsCharInSet(Line[CharIndex], Separators) then
           begin
             CodeType := ctWhiteSpace;
             WhiteSpaceBeginning := CharIndex;
@@ -3091,12 +3153,12 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if Line[CharIndex] in Numeric then
+          else if IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if Line[CharIndex] in AlphaNumeric then
+          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3104,8 +3166,8 @@ begin
         end;
       ctHex:
         Begin
-          If (Line[CharIndex] in (Separators)) Or
-              Not(Line[CharIndex] in Hexadec) then
+          If IsCharInSet(Line[CharIndex], Separators) Or
+              Not IsCharInSet(Line[CharIndex], Hexadec) then
           begin
             CodeType := ctEndHex;
             result := result + FormatHex(Copy(Line, HexBeginning,
@@ -3115,8 +3177,8 @@ begin
         End;
       ctNumeric:
         Begin
-          If (Line[CharIndex] in (Separators - ['.'])) Or
-              Not(Line[CharIndex] in Numeric) then
+          If IsCharInSet(Line[CharIndex], (Separators - ['.'])) Or
+              Not IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctEndNumeric;
             If Pos('.', Copy(Line, NumBeginning, CharIndex - NumBeginning)) > 0 Then
@@ -3149,12 +3211,12 @@ begin
           begin
             // do nothing
           end
-          else if Line[CharIndex] in Numeric then
+          else if IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if Line[CharIndex] in AlphaNumeric then
+          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3180,7 +3242,7 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if Line[CharIndex] in AlphaNumeric then
+          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3393,7 +3455,7 @@ begin
           repeat
             Inc(i);
           until (i > l) or 
-            (not (Code[i] in ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
+            (not IsCharInSet(Code[i], ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
           if not NameFound and (s = Item.Name) then 

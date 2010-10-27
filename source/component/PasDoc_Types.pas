@@ -1,21 +1,32 @@
 { @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @abstract(basic types used in PasDoc) }
 unit PasDoc_Types;
 
+{$I pasdoc_defines.inc}
+
 interface
+
 uses
   SysUtils;
   
 type
+{$IFNDEF COMPILER_11_UP}
+  TBytes = array of Byte;
+{$ENDIF}
+{$IFNDEF COMPILER_12_UP}
+  UnicodeString = WideString;
+  RawByteString = AnsiString;
+{$ENDIF}
   { }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
   { }
   TPasDocMessageEvent = procedure(const MessageType: TPasDocMessageType; const
     AMessage: string; const AVerbosity: Cardinal) of object;
 
-  TCharSet = set of Char;
+  TCharSet = set of AnsiChar;
 
 { }
   EPasDoc = class(Exception)
@@ -35,6 +46,15 @@ type
 
 const
   MaxNameParts = 3;
+  { Windows Unicode code page ID }
+  CP_UTF16      = 1200;
+  CP_UTF16Be    = 1201;
+
+{$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
+  LineEnding    = #13#10;
+{$ENDIF}
+{$ENDIF}
 
 { Splits S, which can be made of up to three parts, separated by dots.
   If S is not a valid identifier or if it has more than
@@ -71,11 +91,11 @@ function SplitNameParts(S: string;
 
 const
   { set of characters, including all letters and the underscore }
-  IdentifierStart = ['A'..'Z', 'a'..'z', '_'];
+  IdentifierStart : TCharSet = ['A'..'Z', 'a'..'z', '_'];
 
   { set of characters, including all characters from @link(IdentifierStart)
     plus the ten decimal digits }
-  IdentifierOther = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
+  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
 
   procedure SplitInTwo(s: string; var S1, S2: string);
   var
@@ -105,13 +125,21 @@ begin
   { Check that S starts with IdentifierStart and 
     then only IdentifierOther chars follow }
   if S = '' then Exit;
+{$IFNDEF COMPILER_12_UP}
   if (not (s[1] in IdentifierStart)) then Exit;
+{$ELSE}
+  if not CharInSet(s[1], IdentifierStart) then Exit;
+{$ENDIF}
   i := 2;
   while (i <= Length(s)) do begin
+  {$IFNDEF COMPILER_12_UP}
     if (not (s[i] in IdentifierOther)) then Exit;
+  {$ELSE}
+    if not CharInSet(s[i], IdentifierOther) then Exit;
+  {$ENDIF}
     Inc(i);
   end;
-  
+
   SplitInTwo(S, NameParts[0], NameParts[1]);
   if NameParts[1] = '' then 
   begin

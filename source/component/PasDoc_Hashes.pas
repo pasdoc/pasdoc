@@ -118,6 +118,8 @@
 
 unit PasDoc_Hashes;
 
+{$I pasdoc_defines.inc}
+
 {$Q-} // no integer overflow checks (I need overflow in THash.Hash)
 {$R-} // no range checks (because free bounds of TFakeArray[0..0])
 

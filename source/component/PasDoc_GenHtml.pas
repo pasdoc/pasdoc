@@ -12,12 +12,15 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }
 
 unit PasDoc_GenHtml;
+
+{$I pasdoc_defines.inc}
 
 interface
 
@@ -717,8 +720,11 @@ begin
         'skipped.', [p.Name]);
       Continue;
     end;
-    
+{$IFDEF STRING_UNICODE}
+    case CreateStream(p.OutputFileName, true, FLanguage.CodePage) of
+{$ELSE}
     case CreateStream(p.OutputFileName, true) of
+{$ENDIF}
       csError: begin
           DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
           Continue;
@@ -1198,8 +1204,13 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     BaseFileName, Headline: string;
   begin
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
+{$IFDEF STRING_UNICODE}
+    Result := CreateStream(BaseFileName + GetFileExtension, True,
+                           FLanguage.CodePage) <> csError;
+{$ELSE}
     Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
-    
+{$ENDIF}
+
     if not Result then
     begin
       DoMessage(1, pmtError, 'Error: Could not create output file "' +
@@ -1678,8 +1689,11 @@ begin
       'skipped.', [U.Name]);
     Exit;
   end;
-
+{$IFDEF STRING_UNICODE}
+  case CreateStream(U.OutputFileName, true, FLanguage.CodePage) of
+{$ELSE}
   case CreateStream(U.OutputFileName, true) of
+{$ENDIF}
     csError: begin
       DoMessage(1, pmtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
       Exit;
@@ -1837,7 +1851,12 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 const
   Filename = 'legend';
 begin
+{$IFDEF STRING_UNICODE}
+  if CreateStream(Filename + GetFileextension, True,
+                  FLanguage.CodePage) = csError then
+{$ELSE}
   if CreateStream(Filename + GetFileextension, True) = csError then
+{$ENDIF}
     begin
       DoMessage(1, pmtError, 'Could not create output file "%s".',
         [Filename + GetFileExtension]);
@@ -1963,7 +1982,11 @@ procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
 var
   Overview: TCreatedOverviewFile;
 begin
+{$IFDEF STRING_UNICODE}
+  CreateStream('index.html', True, FLanguage.CodePage);
+{$ELSE}
   CreateStream('index.html', True);
+{$ENDIF}
   WriteDirectLine(DoctypeFrameset);
   WriteDirectLine('<html><head>');
   WriteDirect(MetaContentType);
@@ -1982,8 +2005,11 @@ begin
   end;
   WriteDirectLine('</frameset></html>');
   CloseStream;
-
+{$IFDEF STRING_UNICODE}
+  CreateStream('navigation.html', True, FLanguage.CodePage);
+{$ELSE}
   CreateStream('navigation.html', True);
+{$ENDIF}
   WriteDirectLine(DoctypeNormal);
   WriteDirectLine('<html><head>');
   WriteDirect('<link rel="StyleSheet" type="text/css" href="');
@@ -2082,7 +2108,7 @@ begin
       
     if AString[i] = '&' then
       Result := Result + '&amp;' else
-    if AString[i] in [Chr($21)..Chr($7E)] then
+    if IsCharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
       Result := Result + AString[i] else
       Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
   end;
@@ -2155,7 +2181,11 @@ procedure TGenericHTMLDocGenerator.WriteExternalCore(
 var
   HL: integer;
 begin
+{$IFDEF STRING_UNICODE}
+  case CreateStream(ExternalItem.OutputFileName, true, FLanguage.CodePage) of
+{$ELSE}
   case CreateStream(ExternalItem.OutputFileName, true) of
+{$ENDIF}
     csError: begin
       DoMessage(1, pmtError, 'Could not create HTML unit doc file '
         + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
