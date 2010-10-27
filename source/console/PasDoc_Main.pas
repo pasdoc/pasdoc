@@ -83,7 +83,7 @@ type
   TPasdocMain = class
   private
     procedure WriteWarning(const MessageType: TPasDocMessageType;
-      const AMessage: AnsiString; const AVerbosity: Cardinal);
+      const AMessage: string; const AVerbosity: Cardinal);
     procedure PrintHeader;
     procedure PrintUsage(OptionParser: TOptionParser);
     procedure PrintVersion;
@@ -559,7 +559,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TPasdocMain.WriteWarning(const MessageType: TPasDocMessageType;
-  const AMessage: AnsiString; const AVerbosity: Cardinal);
+  const AMessage: string; const AVerbosity: Cardinal);
 begin
   case MessageType of
     pmtInformation: WriteLn('Info[', AVerbosity, ']:    ', AMessage);
@@ -610,12 +610,26 @@ procedure Main;
 var
   PasdocMain: TPasdocMain;
 begin
-  PasdocMain := TPasdocMain.Create;
   try
-    PasdocMain.Execute;
-  finally
-    PasdocMain.Free;
+    PasdocMain := TPasdocMain.Create;
+    try
+      PasdocMain.Execute;
+    finally
+      PasdocMain.Free;
+    end;
+  except
+    on E: Exception do
+      WriteLn(E.ClassName + ' :' + E.Message);
   end;
+{$IFNDEF FPC}
+  {$IFDEF CONDITIONALEXPRESSIONS}
+    {$IF CompilerVersion > 14}
+      {$WARN SYMBOL_PLATFORM OFF}
+    {$IFEND}
+  {$ENDIF}
+  if DebugHook <> 0 then
+    ReadLn;
+{$ENDIF}
 end;
 
 end.
