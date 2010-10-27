@@ -453,7 +453,7 @@ const
   aDanish             : {$I lang\PasDoc_Languages_Danish_1252.inc}
   aDutch              : {$I lang\PasDoc_Languages_Dutch_1252.inc}
   aFrench_ISO_8859_15 : {$I lang\PasDoc_Languages_French_ISO_8859_15.inc}
-  aFrench_UTF_8       : {$I lang\PasDoc_Languages_French_utf8_bom.inc}
+  aFrench_UTF_8       : {$I lang\PasDoc_Languages_French_utf8.inc}
   aGerman             : {$I lang\PasDoc_Languages_German_1252.inc}
   aIndonesian         : {$I lang\PasDoc_Languages_Indonesian_1252.inc}
   aItalian            : {$I lang\PasDoc_Languages_Italian_1252.inc}
