@@ -309,17 +309,17 @@ uses
 {$ENDIF}
 
 const
-  { NewLanguageTemplate value is not actually used. We include it just to 
-    force developers to keep PasDoc_Languages_Template_New_Language.inc
-    in compileable state. }
-  NewLanguageTemplate: {$I lang\PasDoc_Languages_Template_New_Language.inc}
-
   { Translation markers.
     For ease of finding missing translations, special markers can be used:
     strToDo should be obvious ;-)
     strKeep means to keep the English (default language) wording. }
   strKeep = {$IFDEF debug} '=' {$else} '' {$endif};
   strToDo = {$IFDEF debug} '?' {$else} '' {$endif};
+
+  { NewLanguageTemplate value is not actually used. We include it just to 
+    force developers to keep PasDoc_Languages_Template_New_Language.inc
+    in compileable state. }
+  NewLanguageTemplate: {$I lang\PasDoc_Languages_Template_New_Language.inc}
 
 {$IFDEF STRING_UNICODE}
   aEnglish            : {$I lang\PasDoc_Languages_English_utf8_bom.inc}
