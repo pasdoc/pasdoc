@@ -299,129 +299,28 @@ function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
 { Language code suitable for Aspell. }
 function LanguageAspellCode(const Language: TLanguageID): string;
 
-const
-(* Translation markers
-  For ease of finding missing translations, special markers can be used:
-  strToDo should be obvious ;-)
-  strKeep means to keep the English (default language) wording.
-*)
-{$IFDEF debug}
-  strKeep = '='; //keep English wording
-  strToDo = '?'; //to be translated
+implementation
+
+{$IFDEF fpc}
 {$ELSE}
-  strKeep = ''; //'='? keep English wording
-  strToDo = ''; //'?'? to be translated
+//Delphi
+uses
+  SysUtils;
 {$ENDIF}
 
-(* New language template. To add a new language or encoding:
-
-1)  Copy aNewLanguage into a const section and rename it to the new language name.
-
-2)  Put a reference to the new const array into LANGUAGE_ARRAY[...].Table.
-
-3)  Then replace all occurences of strToDo by your translation of the text in the comment,
-  or rename them into strKeep for all strings that need no translation,
-  or leave the strToDo in place, it will be replaced by the default (English) text.
-*)
-var //writeable, for old (explicit) setup
-  aNewLanguage: RTransTable = (
-    {trNoTrans} '<what?>', //no ID assigned, so far
-    {trLanguage} strToDo, //<<<<<< replace with the name of the new language
-  //map
-    {trUnits} strToDo, //'Units',
-    {trClassHierarchy} strToDo, //'Class Hierarchy',
-    {trCio} strToDo, //'Classes, Interfaces, Objects and Records',
-    {trIdentifiers} strToDo, //'Identifiers',
-    {trGvUses} strToDo, //'Unit dependency graph',
-    {trGvClasses} strToDo, //'Classes hierarchy graph',
-  //tables and members
-    {trClasses} strToDo, //'Classes',
-      {trClass} strToDo, //'Class',
-      {trDispInterface} strToDo, //'DispInterface',
-      {trInterface} strToDo, //'Interface',
-    {trObjects} strToDo, //'Objects',
-      {trObject} strToDo, //'Object',
-      {trRecord} strToDo, //'Record',
-        {trHierarchy} strToDo, //'Hierarchy',
-        {trFields} strToDo, //'Fields',
-        {trMethods} strToDo, //'Methods',
-        {trProperties} strToDo, //'Properties',
-    {trLibrary} strToDo,  //'Library',
-    {trPackage} strToDo,  //'Package',
-    {trProgram} strToDo,  //'Program',
-    {trUnit} strToDo, //'Unit',
-      {trUses} strToDo, //'Uses',
-      {trConstants} strToDo, //'Constants',
-      {trFunctionsAndProcedures} strToDo, //'Functions and Procedures',
-      {trTypes} strToDo, //'Types',
-        {trType} strToDo, //'Type',
-      {trVariables} strToDo, //'Variables',
-      {trAuthors} strToDo, //'Authors',
-        {trAuthor} strToDo, //'Author',
-      {trCreated} strToDo, //'Created',
-      {trLastModified} strToDo, //'Last Modified',
-    {trSubroutine} strToDo, //'Subroutine',
-      {trParameters} strToDo, //'Parameters',
-      {trReturns} strToDo, //'Returns',
-      {trExceptionsRaised} strToDo, //'Exceptions raised',
-    {trExceptions} strToDo, //'Exceptions',
-      {trException} strToDo, //'Exception',
-    {trEnum} strToDo, //'Enumeration',
-  //visibilities
-    {trVisibility} strToDo, //'Visibility',
-      {trPrivate} strToDo, //'Private',
-      {trStrictPrivate} strToDo, //'Strict Private',
-      {trProtected} strToDo, //'Protected',
-      {trStrictProtected} strToDo, //'Strict Protected',
-      {trPublic} strToDo, //'Public',
-      {trPublished} strToDo, //'Published',
-      {trAutomated} strToDo, //'Automated',
-      {trImplicit} strToDo, //'Implicit',
-  //hints
-    {trDeprecated} strToDo, //'this symbol is deprecated',
-    {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
-    {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
-  //headings
-    {trOverview} strToDo, //'Overview',
-    {trIntroduction} strToDo, //'Introduction',
-    {trConclusion} strToDo, //'Conclusion',
-    {trHeadlineCio} strToDo, //'All Classes, Interfaces, Objects and Records',
-    {trHeadlineConstants} strToDo, //'All Constants',
-    {trHeadlineFunctionsAndProcedures} strToDo, //'All Functions and Procedures',
-    {trHeadlineIdentifiers} strToDo, //'All Identifiers',
-    {trHeadlineTypes} strToDo, //'All Types',
-    {trHeadlineUnits} strToDo, //'All Units',
-    {trHeadlineVariables} strToDo, //'All Variables',
-    {trSummaryCio} strToDo, //'Summary of Classes, Interfaces, Objects and Records',
-  //column headings
-    {trDeclaration} strToDo, //'Declaration',
-    {trDescription} strToDo, //'Description',
-    {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
-    {trName} strToDo, //'Name',
-    {trValues} strToDo, //'Values',
-  //empty
-    {trNone} strToDo, //'None',
-    {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
-    {trNoCIOsForHierarchy} strToDo, //'The units do not contain any classes, interfaces or objects.',
-    {trNoTypes} strToDo, //'The units do not contain any types.',
-    {trNoVariables} strToDo, //'The units do not contain any variables.',
-    {trNoConstants} strToDo, //'The units do not contain any constants.',
-    {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
-    {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
-  //misc
-    {trHelp} strToDo, //'Help',
-    {trLegend} strToDo, //'Legend',
-    {trMarker} strToDo, //'Marker',
-    {trWarningOverwrite} strToDo, //'Warning: Do not edit - this file has been created automatically and is likely be overwritten',
-    {trWarning} strToDo, //'Warning',
-    {trGeneratedBy} strToDo, //'Generated by',
-    {trOnDateTime} strToDo, //'on',
-    {trSearch} strToDo, //'Search',
-    {trSeeAlso} strToDo, //'See also',
-    ''  //dummy
-  );
-
 const
+  { NewLanguageTemplate value is not actually used. We include it just to 
+    force developers to keep PasDoc_Languages_Template_New_Language.inc
+    in compileable state. }
+  NewLanguageTemplate: {$I lang\PasDoc_Languages_Template_New_Language.inc}
+
+  { Translation markers.
+    For ease of finding missing translations, special markers can be used:
+    strToDo should be obvious ;-)
+    strKeep means to keep the English (default language) wording. }
+  strKeep = {$IFDEF debug} '=' {$else} '' {$endif};
+  strToDo = {$IFDEF debug} '?' {$else} '' {$endif};
+
 {$IFDEF STRING_UNICODE}
   aEnglish            : {$I lang\PasDoc_Languages_English_utf8_bom.inc}
   aBosnian            : {$I lang\PasDoc_Languages_Bosnia_utf8_bom.inc}
@@ -472,7 +371,6 @@ const
   aCzech_CP1250       : {$I lang\PasDoc_Languages_Czech_1250.inc}
 {$ENDIF}
 
-const
 {$IFDEF STRING_UNICODE}
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
     (Table: @aBosnian; Name: 'Bosnian'; Syntax: 'ba'; AspellLanguage: 'bs'),
@@ -527,15 +425,6 @@ const
   );
 {$ENDIF}
 
-implementation
-
-{$IFDEF fpc}
-{$ELSE}
-//Delphi
-uses
-  SysUtils;
-{$ENDIF}
-
 function TPasDocLanguages.GetTranslation(
   ATranslationID: TTranslationID): string;
 begin
@@ -568,11 +457,7 @@ begin
 
 //get table
   pTable := LANGUAGE_ARRAY[Value].Table;
-  if assigned(pTable) then
-    exit; //array already exists
-
-//use writeable table
-  pTable := addr(aNewLanguage);
+  Assert(Assigned(pTable));
 end;
 
 function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
