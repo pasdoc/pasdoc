@@ -626,7 +626,7 @@ begin
     else begin
       { Only DBCS have constant LeadBytes so we actually do not support }
       { some rarely used MBCS, such as euc-jp or UTF-7, with a maximum  }
-      { codepoint size > 2 bytes.                                  { AG }
+      { codepoint size > 2 bytes.                                 }{ AG }
       if AnsiChar(Buf[0]) in TStreamReader(Stream).LeadBytes then
       begin
         if Stream.Read(Buf[Result], 1) = 1 then
