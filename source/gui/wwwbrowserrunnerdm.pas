@@ -53,19 +53,24 @@ procedure TWWWBrowserRunner.RunBrowser(const URL: string);
   {$ifdef MSWINDOWS}
   procedure ShellExecuteURL;
   var
-    ExecInfo: TShellExecuteInfo;
+    { Make it clear that the ANSI shell API is used here.         }
+    ExecInfo: TShellExecuteInfoA;
   const
     OpenCommand = 'open';
-  begin
+  begin   
+    { Get rid of the discussion when declaration of ExecInfo.hWnd }
+    { changed to ExecInfo.Wnd.                                    }
+    FillChar(ExecInfo, SizeOf(ExecInfo), 0);    
+    
     ExecInfo.cbSize := SizeOf(ExecInfo);
-    ExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
-    ExecInfo. {$ifdef VER2_2} hWnd {$else} Wnd {$endif} := 0;
-    ExecInfo.lpVerb := PChar(OpenCommand);
-    ExecInfo.lpFile := PChar(URL);
-    ExecInfo.lpParameters := nil;
-    ExecInfo.lpDirectory := nil;
+    ExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;        
+    //ExecInfo. {$ifdef VER2_2} hWnd {$else} Wnd {$endif} := 0;
+    ExecInfo.lpVerb := PAnsiChar(OpenCommand);
+    ExecInfo.lpFile := PAnsiChar(URL);
+    //ExecInfo.lpParameters := nil;
+    //ExecInfo.lpDirectory := nil;
     ExecInfo.nShow := SW_SHOWNORMAL;
-    ShellExecuteEx( LPSHELLEXECUTEINFOA(@ExecInfo) );
+    ShellExecuteExA( @ExecInfo );
   end;
   {$endif}
 
