@@ -591,17 +591,15 @@ begin
     case TStreamReader(Stream).CurrentCodePage of
         CP_UTF16    :
           begin
-            Result := Stream.Read(c, 2);
-            if (Result = 0) then
-              Beep;
+            Result := Stream.Read(c, 2);            
             Exit;
           end;
         CP_UTF16BE  :
-            begin
-                Result := Stream.Read(c, 2);
-                Swap16Buf(@c, @c, 1);
-                Exit;
-            end;
+          begin
+            Result := Stream.Read(c, 2);            
+            Swap16Buf(@c, @c, 1);
+            Exit;
+          end;
     end; // case
 
     { MBCS text }
@@ -616,7 +614,7 @@ begin
       LInt := Utf8Size(Buf[0]); // Read number of bytes
       if LInt > 1 then
       begin
-        Result := Stream.Read(Buf[Result], LInt - 1){ = LInt - 1};
+        Result := Stream.Read(Buf[Result], LInt - 1);
         if Result > 0 then
           Inc(Result)
         else begin
@@ -626,7 +624,10 @@ begin
       end;
     end
     else begin
-      while AnsiChar(Buf[Result -1]) in TStreamReader(Stream).LeadBytes do
+      { Only DBCS have constant LeadBytes so we actually do not support }
+      { some rarely used MBCS, such as euc-jp or UTF-7, with a maximum  }
+      { codepoint size > 2 bytes.                                  { AG }
+      if AnsiChar(Buf[0]) in TStreamReader(Stream).LeadBytes then
       begin
         if Stream.Read(Buf[Result], 1) = 1 then
           Inc(Result)
@@ -636,7 +637,9 @@ begin
         end;
       end
     end;
-
+    if (Result = 1) and (Buf[0] < 128) then
+      c := WideChar(Buf[0]) // Plain ASCII, no need to call MbToWc (speed)
+    else
     if MultiByteToWideChar(TStreamReader(Stream).CurrentCodePage,
                            0, @Buf[0], Result, @c, 1) <> 1 then
         Result := 0;
