@@ -1,5 +1,9 @@
 [Next release -- release date and new version number unknown yet...]
 
+  * Support for Delphi Unicode compilers,
+    improve processing speed by using TBufferedStream,
+    parsing some new Delphi features (like "deprecated 'string'")
+    (by Arno Garrels)
   * Many improvements to pasdoc_gui:
     * Better adjusts to various themes and font sizes, on all platforms (GTK, Windows etc.)
     * More intuitive UI: "Generate" button on the left, "Output directory" on the "Options" tab and filled by default with temp directory, and more.
