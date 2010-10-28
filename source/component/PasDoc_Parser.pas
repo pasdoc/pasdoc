@@ -718,14 +718,20 @@ begin
               if t.IsSymbol(SYM_SEMICOLON) then begin
                 Break
               end else begin
+                { Some directives mean that the next part starts immediately,
+                  without a semicolon between. For example,
+                  "deprecated platform" may be placed after a procedure
+                  (without a semicolon after "deprecated"). }
                 if t.MyType = TOK_IDENTIFIER then 
                   case t.Info.StandardDirective of
-                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT, SD_EXTERNAL,
-                      SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
-                      SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
-                      SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
+                    SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
+                    SD_EXTERNAL,
+                    SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                    SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
+                    SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+                    SD_DEPRECATED, SD_PLATFORM:
                       begin
-                        // FScanner.UnGetToken(t);
+                        Scanner.UnGetToken(t);
                         Break;
                       end;
                   end;
@@ -785,16 +791,20 @@ begin
       Break;
     end;
 
-    { Apparently, the Delphi compiler does NOT enforce that
-      directives must be separated and be terminated by a semicolon,
-      even though Delphi help consistently uses them consistently.
-      However, we take the compiler as a reference and try to mimic its behaviour. }
-    { Is current token a semicolon? }
-    if t.IsSymbol(SYM_SEMICOLON) then
+    { Directives don't have to be separated and be terminated by a semicolon.
+      This is known at least for combination "deprecated platform".
+      Apparently, some Delphi versions also allowed not using semicolon
+      at other places (and we have to mimic compiler behavior, not only
+      documented behavior, since in practice people (over)use everything
+      that compiler allows).
+      
+      So, check is current token a semicolon and append to FullDeclaration.
+      Note that T may be nil now (e.g. because we used UnGetToken last). }
+    if (t <> nil) and t.IsSymbol(SYM_SEMICOLON) then
       M.FullDeclaration := M.FullDeclaration + ';'
     else begin
       M.FullDeclaration := M.FullDeclaration + ' ';
-      Scanner.UnGetToken(t);
+      if t <> nil then Scanner.UnGetToken(t);
     end;
 
   until False;
