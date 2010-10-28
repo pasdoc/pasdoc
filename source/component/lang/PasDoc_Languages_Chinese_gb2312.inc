@@ -1,6 +1,5 @@
 { Simplified Chinese (Codepage 936, GB2312) Translation by Liu Da <xmacmail AT gmail.com> }
 
-
 RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Chinese_gb2312',
