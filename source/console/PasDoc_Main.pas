@@ -62,7 +62,7 @@ type
     OptionIgnoreLeading: TStringOption;
     OptionCacheDir: TStringOption;
     OptionFullLink: TBoolOption;
-    OptionCSS: TStringOption; { Using external CSS file for HTML output }
+    OptionCSS: TStringOption; {< Using external CSS file for HTML output }
     OptionAutoAbstract: TBoolOption;
     OptionLinkLook: TStringOption;
     OptionUseTipueSearch: TBoolOption;
@@ -74,6 +74,7 @@ type
     OptionNoMacro: TBoolOption;
     OptionAutoLink: TBoolOption;
     OptionAutoLinkExclude: TStringOption;
+    OptionExternalClassHierarchy: TStringOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -297,6 +298,10 @@ begin
   OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
   OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
   AddOption(OptionAutoLinkExclude);
+  
+  OptionExternalClassHierarchy := TStringOption.Create(#0, 'external-class-hierarchy');
+  OptionExternalClassHierarchy.Explanation := 'File defining hierarchy of classes not included in your source code, for more complete class tree diagrams';
+  AddOption(OptionExternalClassHierarchy);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -552,9 +557,11 @@ begin
       large file like /usr/share/dict/american-english for this option. }
     PasDoc.Generator.AutoLinkExclude.Sorted := true;
   end;
+  
+  if OptionExternalClassHierarchy.WasSpecified then
+    PasDoc.Generator.ExternalClassHierarchy.LoadFromFile(
+      OptionExternalClassHierarchy.Value);
 end;
-
-{ TPasdocMain }
 
 { ---------------------------------------------------------------------------- }
 

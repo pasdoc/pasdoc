@@ -273,7 +273,7 @@ type
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
     
-    ExternalClassHierarchy: TStringList;
+    FExternalClassHierarchy: TStrings;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -415,7 +415,8 @@ type
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
     procedure TagAllowedInsideRows(
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
-
+      
+    procedure SetExternalClassHierarchy(const Value: TStrings);
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -947,6 +948,9 @@ type
       read FAutoLink write FAutoLink default false;
       
     property AutoLinkExclude: TStringList read FAutoLinkExclude;
+    
+    property ExternalClassHierarchy: TStrings
+      read FExternalClassHierarchy write SetExternalClassHierarchy;
   end;
 
 implementation
@@ -2529,14 +2533,14 @@ begin
   FAutoLinkExclude := TStringList.Create;
   FAutoLinkExclude.CaseSensitive := false;
 
-  ExternalClassHierarchy := TStringList.Create;
-  ExternalClassHierarchy.Text := DefaultExternalClassHierarchy;
-  ExternalClassHierarchy.CaseSensitive := false;
+  FExternalClassHierarchy := TStringList.Create;
+  FExternalClassHierarchy.Text := DefaultExternalClassHierarchy;
+  TStringList(FExternalClassHierarchy).CaseSensitive := false;
 end;
 
 destructor TDocGenerator.Destroy;
 begin
-  FreeAndNil(ExternalClassHierarchy);
+  FreeAndNil(FExternalClassHierarchy);
   FreeAndNil(FAutoLinkExclude);
   
   FSpellCheckIgnoreWords.Free;
@@ -3857,6 +3861,11 @@ begin
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);
+end;
+
+procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);
+begin
+  FExternalClassHierarchy.Assign(Value);
 end;
 
 end.
