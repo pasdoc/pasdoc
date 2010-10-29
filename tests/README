@@ -1,8 +1,23 @@
 Test units for pasdoc.
 
-The goal of these units is to be short and difficult for pasdoc.
-"Difficult" usually means that pasdoc failed to handle them correctly
-at some time, i.e. most of these units are test cases of some pasdoc's bugs.
+Some short and difficult Pasdoc sources. Some of these are taken
+from bugreports, to make sure we don't reintroduce an old bug again.
+Some of these are written to test new features.
+
+To add a new testcase,
+1. first of all just add the file here
+   (follow the naming conventions below, usually just ok_xxx.pas).
+2. make it used by the "make html" and such tests by adding
+   an appropriate line at the end of scripts/mk_tests.sh.
+3. after you make sure it works, you may upload new
+   version of "correct tests", see below. Or just notify Michalis about it :)
+
+Using these tests fully requires having some standard Unix tools
+installed and available on $PATH. You need GNU `make`, bash, diff.
+Also wget is used for downloading correct tests for comparison.
+And tar, scp are used for uploading correct tests by developers.
+
+Of course, you also need the `pasdoc` binary available on $PATH.
 
 --------------------
 Naming of Pascal unit files in this directory:
@@ -32,7 +47,7 @@ error_*
 
 Units are divided into these 3 groups because
 -- These groups are precisely defined, so there shouldn't be any concern
-   about "where this test unit belong".
+   about "where this test unit belongs".
 -- We should be eventually able to use output messages and exit status
    of pasdoc to automate testing as much as we can.
 
@@ -67,16 +82,15 @@ Possible tests to be done:
      make latex
      make pdf
 
-   Remember that some tests are created in subdirectories,
+   Tests are created in subdirectories,
    e.g. html/ok_const_1st_comment_missing/ and
    latex/ok_const_1st_comment_missing/ will contain output for
-   ok_const_1st_comment_missing.pas unit (because it must be generated
-   with special command-line option : --marker=:).
+   ok_const_1st_comment_missing.pas unit.
 
-   Now, to automatically test this output, see below,
+   To automatically test this output, see below,
    for "correct tests output", "validate_html", "validate_simplexml".
 
-   But you can of course try to manually look at units'
+   But you can of course just manually look at units'
    sources and comments there to know what generated documentation should
    look like (in case of ok_* and warning_* files) and what
    warnings/errors should be reported (in case of warning_* and error_* files).
@@ -110,7 +124,9 @@ Possible tests to be done:
 
    Then whenever you want you can compare current documentation generated
    by pasdoc to downloaded "correct output"
-   e.g. using `diff -ur correct_output/html/ html/'.
+   e.g. using
+
+     diff -ur correct_output/html/ html/
 
    Note that *failure* of comparison does not necessarily mean that
    current pasdoc *has* a bug, since it's possible that current output of
@@ -121,13 +137,10 @@ Possible tests to be done:
    accepted at some point by human as "correct".
    So, this is unfortunately no ultimate test.
 
-   Hmmm, I may as well put here a link to mail with my concerns
-   (and read also Thomas answers!) about this:
-   [http://sourceforge.net/mailarchive/message.php?msg_id=11427925].
-   In short: this technique of checking will be successful
-   if pasdoc's output will not change very often, or if the changes
-   will be very local (because then developer will be able to grok them
-   by looking at output of `diff -u html/ correct_output/html/').
+   But in practice it often works great, and allows us to quickly
+   check that nothing is broken :) When no output changes are expected,
+   or the changes are very local, then looking at "diff" output is a great
+   and simple way to test.
 
    If pasdoc's developer sees at any point that "current output" differs
    from "correct output" and also he carefully checked that "current
@@ -162,7 +175,7 @@ Possible tests to be done:
    This is an automatic test that makes simplexml docs for all test units
    and validates them using xmllint.
    xmllint must be installed for this to work.
-   
+
    We do not have any DTD, so it doesn't check that our XML files
    conform to anything. But at least it checks that they are well-formed
    (all open elements are closed and such).
@@ -248,11 +261,6 @@ In this case, unit's name tells what pasdoc *should* do with such unit,
 even if it doesn't do it for now.
 The idea is that when developer fixes a problem with some unit
 in tests/todo/ directory, he can simply move this unit to tests/.
-
-(Note: moving files inside CVS is problematic (you know, it's actually
-`cvs remove' + `cvs add' and this does not move cvs log info),
-but I don't think that accurate cvs log info for test
-units is so much important to worry about it.)
 
 These files are in separate todo/ subdirectory, because otherwise
 every time we would like to check our tests we would have to
