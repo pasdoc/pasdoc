@@ -1,5 +1,9 @@
 [Next release -- release date and new version number unknown yet...]
 
+  * Class Hierarchy diagrams are more complete, because PasDoc knows
+    about hierarchy of standard ObjectPascal classes.
+    You can also extend this by --external-class-hierarchy= option.
+    See [http://pasdoc.sipsolutions.net/ExternalClassHierarchy] (by Michalis)
   * Support for Delphi Unicode compilers,
     improve processing speed by using TBufferedStream,
     parsing some new Delphi features (like "deprecated 'string'")
