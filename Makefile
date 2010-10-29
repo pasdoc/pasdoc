@@ -353,9 +353,8 @@ ifdef DOCFILES
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef ADD_PASDOC_GUI
-	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)experimental
 	strip source/gui/pasdoc_gui$(EXE)
-	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)experimental$(PATHSEP)
+	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
 endif
 
 # This target archives distribution into a zip file.
