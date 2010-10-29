@@ -22,6 +22,7 @@ type
     FName: string;
     function GetName: string;
   protected
+    procedure AddChild(const Child: TPasItemNode); overload;
     function AddChild(const AName: string): TPasItemNode; overload;
     function AddChild(const AItem: TPasItem): TPasItemNode; overload;
     function FindItem(const AName: string): TPasItemNode;
@@ -47,9 +48,10 @@ type
     function ItemOfName(const AName: string): TPasItemNode;
     function InsertName(const AName: string): TPasItemNode; overload;
     function InsertItem(const AItem: TPasItem): TPasItemNode; overload;
-    function InsertItemParented(
-      const AParent: TPasItemNode;
-      const AItem: TPasItem): TPasItemNode;
+    function InsertParented(const AParent: TPasItemNode;
+      const AItem: TPasItem): TPasItemNode; overload;
+    function InsertParented(const AParent: TPasItemNode;
+      const AName: string): TPasItemNode; overload;
     procedure MoveChildLast(const Child, Parent: TPasItemNode);
 
     property IsEmpty: boolean read GetIsEmpty;
@@ -115,7 +117,7 @@ begin
   Result := FRoot.AddChild(AName);
 end;
 
-function TStringCardinalTree.InsertItemParented(const AParent: TPasItemNode;
+function TStringCardinalTree.InsertParented(const AParent: TPasItemNode;
   const AItem: TPasItem): TPasItemNode;
 begin
   if AParent = nil then begin
@@ -123,6 +125,17 @@ begin
     Result := FRoot.AddChild(AItem);
   end else begin
     Result := AParent.AddChild(AItem);
+  end
+end;
+
+function TStringCardinalTree.InsertParented(const AParent: TPasItemNode;
+  const AName: string): TPasItemNode;
+begin
+  if AParent = nil then begin
+    NeedRoot;
+    Result := FRoot.AddChild(AName);
+  end else begin
+    Result := AParent.AddChild(AName);
   end
 end;
 
@@ -199,10 +212,15 @@ end;
 function TStringCardinalTree.InsertItem(
   const AItem: TPasItem): TPasItemNode;
 begin
-  Result := InsertItemParented(nil, AItem);
+  Result := InsertParented(nil, AItem);
 end;
 
 { TPasItemNode }
+
+procedure TPasItemNode.AddChild(const Child: TPasItemNode);
+begin
+  FChildren.Add(Child);
+end;
 
 function TPasItemNode.AddChild(const AName: string): TPasItemNode;
 begin
@@ -210,7 +228,7 @@ begin
   Result.FItem := nil;
   Result.FName := AName;
   Result.FParent := Self;
-  FChildren.Add(Result);
+  AddChild(Result);
 end;
 
 function TPasItemNode.AddChild(const AItem: TPasItem): TPasItemNode;
@@ -218,7 +236,7 @@ begin
   Result := TPasItemNode.Create;
   Result.FItem := AItem;
   Result.FParent := Self;
-  FChildren.Add(Result);
+  AddChild(Result);
 end;
 
 procedure TPasItemNode.Adopt(const AChild:

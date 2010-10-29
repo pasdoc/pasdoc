@@ -273,6 +273,8 @@ type
     OrderedListTag, UnorderedListTag, DefinitionListTag,
       TableTag, RowTag, RowHeadTag: TTag;
     
+    ExternalClassHierarchy: TStringList;
+
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
     procedure SetLanguage(const Value: TLanguageID);
@@ -2513,6 +2515,8 @@ begin
 end;
 
 constructor TDocGenerator.Create(AOwner: TComponent);
+const
+  DefaultExternalClassHierarchy = {$I external_class_hierarchy.txt.inc};
 begin
   inherited;
   FClassHierarchy := nil;
@@ -2524,10 +2528,15 @@ begin
   
   FAutoLinkExclude := TStringList.Create;
   FAutoLinkExclude.CaseSensitive := false;
+
+  ExternalClassHierarchy := TStringList.Create;
+  ExternalClassHierarchy.Text := DefaultExternalClassHierarchy;
+  ExternalClassHierarchy.CaseSensitive := false;
 end;
 
 destructor TDocGenerator.Destroy;
 begin
+  FreeAndNil(ExternalClassHierarchy);
   FreeAndNil(FAutoLinkExclude);
   
   FSpellCheckIgnoreWords.Free;
@@ -2549,51 +2558,101 @@ procedure TDocGenerator.CreateClassHierarchy;
       Result := nil;
   end;
 
+  { Insert a parent->child relation into the tree.
+  
+    ParentItem may be nil, then only ParentName (not linked) will be used.
+    When ParentName is '', this child has no parent (for example, maybe
+    it's TObject class).
+    
+    ChildItem also may be nil, then only ChildName (not linked) will be used.
+    ChildName must not be empty. }
+  procedure Insert(const ParentName: string; ParentItem: TPasItem;
+    const ChildName: string; ChildItem: TPasItem);
+  var
+    Parent, Child: TPasItemNode;
+    GrandParentName: string;
+    GrandParentItem: TPasItem;
+  begin
+    if Assigned(ParentItem) then 
+    begin
+      Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
+      // Add parent if not already there.
+      if Parent = nil then
+        Parent := FClassHierarchy.InsertItem(ParentItem);
+    end else 
+    if Length(ParentName) <> 0 then
+    begin
+      Parent := FClassHierarchy.ItemOfName(ParentName);
+      if Parent = nil then 
+      begin
+        Parent := FClassHierarchy.InsertName(ParentName);
+        
+        { We add a new item to the tree that is not a TPasItem.
+          So look for it's parents using ExternalClassHierarchy. }
+        GrandParentName := ExternalClassHierarchy.Values[ParentName];
+        if GrandParentName <> '' then
+        begin
+          { Although we found GrandParentName using ExternalClassHierarchy,
+            it's possible that it's actually present in parsed files.
+            This may happen when you have classes A -> B -> C (descending like
+            this), and your source code includes classes A and C, but not B.
+            So we have to use here FindGlobalPasItem. }
+          GrandParentItem := FindGlobalPasItem(OneNamePart(GrandParentName));
+          
+          Insert(GrandParentName, GrandParentItem, ParentName, nil);
+        end;
+      end;
+    end else
+      Parent := nil;
+  
+    Child := FClassHierarchy.ItemOfName(ChildName);
+    if Child = nil then 
+    begin
+      if ChildItem <> nil then
+        FClassHierarchy.InsertParented(Parent, ChildItem) else
+        FClassHierarchy.InsertParented(Parent, ChildName);
+    end else 
+    begin
+      if Parent <> nil then
+        FClassHierarchy.MoveChildLast(Child, Parent);
+    end;
+  end;
+
 var
   unitLoop: Integer;
   classLoop: Integer;
   PU: TPasUnit;
   ACIO: TPasCio;
   ParentItem: TPasItem;
-  Parent, Child: TPasItemNode;
+  ParentName: string;
 begin
   FClassHierarchy.Free;
   FClassHierarchy := TStringCardinalTree.Create;
-  for unitLoop := 0 to Units.Count - 1 do begin
+
+  for unitLoop := 0 to Units.Count - 1 do
+  begin
     PU := Units.UnitAt[unitLoop];
     if PU.CIOs = nil then Continue;
-    for classLoop := 0 to PU.CIOs.Count - 1 do begin
+    for classLoop := 0 to PU.CIOs.Count - 1 do
+    begin
       ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
       if ACIO.MyType in CIONonHierarchy then continue;
 
-      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then begin
-        ParentItem := FindGlobalPasItem(OneNamePart(ACIO.Ancestors.FirstName));
-        if Assigned(ParentItem) then begin
-          Parent := FClassHierarchy.ItemOfName(ParentItem.Name);
-          // Add parent if not already there.
-          if Parent = nil then begin
-            Parent := FClassHierarchy.InsertItem(ParentItem);
-          end;
-        end else begin
-          Parent := FClassHierarchy.ItemOfName(ACIO.Ancestors.FirstName);
-          if Parent = nil then begin
-            Parent := FClassHierarchy.InsertName(ACIO.Ancestors.FirstName);
-          end;
-        end;
-      end else begin
-        Parent := nil;
+      { calculate ParentName and ParentItem for current ACIO. }
+      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then
+      begin
+        ParentName := ACIO.Ancestors.FirstName;
+        ParentItem := FindGlobalPasItem(OneNamePart(ParentName));
+      end else
+      begin
+        ParentName := '';
+        ParentItem := nil;
       end;
 
-      Child := FClassHierarchy.ItemOfName(ACIO.Name);
-      if Child = nil then begin
-        FClassHierarchy.InsertItemParented(Parent, ACIO)
-      end else begin
-        if Parent <> nil then begin
-          FClassHierarchy.MoveChildLast(Child, Parent);
-        end;
-      end;
+      Insert(ParentName, ParentItem, ACIO.Name, ACIO);
     end;
   end;
+
   FClassHierarchy.Sort;
 end;
 
