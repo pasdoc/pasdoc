@@ -602,11 +602,7 @@ begin
 {$ELSE}
 var F: TStream;
 begin
-{$IFDEF COMPILER_7_UP}
-  F := TBufferedStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-{$ELSE}
   F := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-{$ENDIF}
   try
     SetLength(Result, F.Size);
     F.ReadBuffer(Pointer(Result)^, F.Size);
@@ -618,18 +614,14 @@ procedure StringToFile(const FileName, S: string);
 {$IFDEF STRING_UNICODE}
 var Writer: TStreamWriter;
 begin
-  Writer := TStreamWriter.Create(FileName);
+  Writer := TStreamWriter.Create(FileName, FALSE, FALSE);
   try
     Writer.Write(S);
   finally Writer.Free; end;
 {$ELSE}
 var F: TStream;
 begin
-{$IFDEF COMPILER_7_UP}
-  F := TBufferedStream.Create(FileName, fmCreate);
-{$ELSE}
   F := TFileStream.Create(FileName, fmCreate);
-{$ENDIF}
   try
     F.WriteBuffer(Pointer(S)^, Length(S));
   finally F.Free end;
