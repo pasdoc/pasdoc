@@ -185,7 +185,15 @@ type
     ButtonCssFileName: TButton;
     ButtonOutPutPathName: TButton;
     OpenDialog3: TOpenDialog;
-    seComment: TMemo;    
+    seComment: TMemo;
+    PanelLeft: TPanel;
+    PanelLeftTop: TPanel;
+    ButtonGenerate: TButton;
+    PanelSort: TPanel;
+    PanelSpellCheckingBottom: TPanel;
+    PanelGenerateBottom: TPanel;
+    PanelDisplayCommentsMid: TPanel;
+    PanelDisplayCommentsBottom: TPanel;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -906,7 +914,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     memoMessages.Clear;
-    
+    Update;
     case comboGenerateFormat.ItemIndex of
       0: PasDoc1.Generator := HtmlDocGenerator;
       1: PasDoc1.Generator := HtmlHelpDocGenerator;

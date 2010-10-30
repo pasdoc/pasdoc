@@ -1,5 +1,7 @@
 program pasdoc_gui;
 
+{$R 'pasdoc_gui_manifest.res' 'pasdoc_gui_manifest.rc'}
+
 uses
   Forms,
   frmAboutUnit in 'frmAboutUnit.pas' {frmAbout},
