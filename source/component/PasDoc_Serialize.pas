@@ -104,7 +104,7 @@ class function TSerializable.DeserializeFromFile(
 var
   LF: TStream;
 begin
-{$IFDEF COMPILER_7_UP}
+{$IFDEF USE_BUFFERED_STREAM}
   LF := TBufferedStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
 {$ELSE}
   LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
@@ -200,7 +200,7 @@ procedure TSerializable.SerializeToFile(const AFileName: string);
 var
   LF: TStream;
 begin
-{$IFDEF COMPILER_7_UP}
+{$IFDEF USE_BUFFERED_STREAM}
   LF := TBufferedStream.Create(AFileName, fmCreate);
 {$ELSE}
   LF := TFileStream.Create(AFileName, fmCreate);

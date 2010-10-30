@@ -515,7 +515,7 @@ begin
     {$IFDEF STRING_UNICODE}
       InputStream := TStreamReader.Create(p);
     {$ELSE}
-    {$IFDEF COMPILER_7_UP}
+    {$IFDEF USE_BUFFERED_STREAM}
       InputStream := TBufferedStream.Create(p, fmOpenRead or fmShareDenyWrite);
     {$ELSE}
       InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);

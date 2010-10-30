@@ -1148,7 +1148,7 @@ begin
     Result := csExisted
   else begin
     try
-    {$IFDEF COMPILER_7_UP}
+    {$IFDEF USE_BUFFERED_STREAM}
       FCurrentStream := TBufferedStream.Create(DestinationDirectory+AName, fmCreate);
     {$ELSE}
       FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
@@ -2253,7 +2253,7 @@ begin
   {$IFDEF STRING_UNICODE}
     f := TStreamReader.Create(n);
   {$ELSE}
-  {$IFDEF COMPILER_7_UP}
+  {$IFDEF USE_BUFFERED_STREAM}
     f := TBufferedStream.Create(n, fmOpenRead or fmShareDenyWrite);
   {$ELSE}
     f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);

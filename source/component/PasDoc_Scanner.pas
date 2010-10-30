@@ -732,7 +732,7 @@ var
       OpenNewTokenizer(TStreamReader.Create(Name),
         Name, ExtractFilePath(Name));
     {$ELSE}
-    {$IFDEF COMPILER_7_UP}
+    {$IFDEF USE_BUFFERED_STREAM}
       OpenNewTokenizer(TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite),
         Name, ExtractFilePath(Name));
     {$ELSE}

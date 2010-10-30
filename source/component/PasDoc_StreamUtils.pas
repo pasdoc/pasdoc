@@ -25,18 +25,12 @@ uses
   SysUtils, Classes,
   PasDoc_Types;
 
-{$IFDEF COMPILER_7_UP}
-resourcestring
-    SFCreateErrorEx = 'Cannot create file "%s". %s';
-    SFOpenErrorEx   = 'Cannot open file "%s". %s';
-
+{$IFDEF USE_BUFFERED_STREAM}
 const
     DEFAULT_BUFSIZE = 4096;
     MIN_BUFSIZE     = 128;
     MAX_BUFSIZE     = 1024 * 64;
-{$ENDIF}
 
-{$IFDEF COMPILER_7_UP}
 type
     TBufferedStream = class(TStream)
     private
@@ -212,7 +206,7 @@ uses PasDoc_Utils; // for LineEnding in Kylix/Delphi
 { TBufferedStream }
 {---------------------------------------------------------------------------}
 
-{$IFDEF COMPILER_7_UP}
+{$IFDEF USE_BUFFERED_STREAM}
 
 {$IFOPT R+}
   {$DEFINE SETRANGECHECKSBACK} { We'll turn off range checking temporarily }
