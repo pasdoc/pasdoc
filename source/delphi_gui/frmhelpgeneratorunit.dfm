@@ -1177,7 +1177,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           Align = alClient
           Lines.Strings = (
             '')
+          ScrollBars = ssBoth
           TabOrder = 0
+          WordWrap = False
         end
       end
     end
