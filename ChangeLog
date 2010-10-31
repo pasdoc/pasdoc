@@ -1,7 +1,7 @@
-[Next release -- release date and new version number unknown yet...]
+2010-10-31 v0.12.0
 
   * Class Hierarchy diagrams are more complete, because PasDoc knows
-    about hierarchy of standard ObjectPascal classes.
+    about hierarchy of the standard ObjectPascal classes.
     You can also extend this by --external-class-hierarchy= option.
     See [http://pasdoc.sipsolutions.net/ExternalClassHierarchy] (by Michalis)
   * Support for Delphi Unicode compilers,
@@ -9,14 +9,17 @@
     parsing some new Delphi features (like "deprecated 'string'")
     (by Arno Garrels)
   * Many improvements to pasdoc_gui:
-    * Better adjusts to various themes and font sizes, on all platforms (GTK, Windows etc.)
-    * More intuitive UI: "Generate" button on the left, "Output directory" on the "Options" tab and filled by default with temp directory, and more.
+    * Better adjusts to various themes and font sizes, on all platforms
+    * More intuitive UI: "Generate" button on the left, 
+      "Output directory" on the "Options" tab and filled by default 
+      with temp directory, and more.
     * xdg-open is used on Unix now.
     (by Michalis Kamburelis)
-  + --ignore-leading= option by tobigun at users.sourceforge.net
-    (see [http://pasdoc.sipsolutions.net/IgnoreLeadingOption])
+  + --ignore-leading= option,
+    see [http://pasdoc.sipsolutions.net/IgnoreLeadingOption]
+    (by <tobigun at users.sourceforge.net>)
   * Translations:
-    * Russian localization updated by werewolf_ at users.sourceforge.net
+    * Russian localization updated by <werewolf_ at users.sourceforge.net>
     * Simplified Chinese Translation updated by Liu Da
     * Czech translation by Rene Mihula
     * Polish translation updated (by anonymous)
