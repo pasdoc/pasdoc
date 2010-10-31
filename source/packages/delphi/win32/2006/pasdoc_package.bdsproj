@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
   <PersonalityInfo>
     <Option>
@@ -162,13 +162,13 @@
     <VersionInfoKeys>
       <VersionInfoKeys Name="CompanyName"></VersionInfoKeys>
       <VersionInfoKeys Name="FileDescription"></VersionInfoKeys>
-      <VersionInfoKeys Name="FileVersion">0.11.0</VersionInfoKeys>
+      <VersionInfoKeys Name="FileVersion">0.12.0</VersionInfoKeys>
       <VersionInfoKeys Name="InternalName"></VersionInfoKeys>
       <VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys>
       <VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
       <VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
       <VersionInfoKeys Name="ProductName"></VersionInfoKeys>
-      <VersionInfoKeys Name="ProductVersion">0.11.0</VersionInfoKeys>
+      <VersionInfoKeys Name="ProductVersion">0.12.0</VersionInfoKeys>
       <VersionInfoKeys Name="Comments"></VersionInfoKeys>
     </VersionInfoKeys>
   </Delphi.Personality>
