@@ -398,7 +398,7 @@ dist-linux-x86: clean build-fpc-linux-x86
 
 dist-linux-x86_64: clean build-fpc-linux-x86_64
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64 ADD_PASDOC_GUI=t
 
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
