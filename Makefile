@@ -414,7 +414,7 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 
 dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 ADD_PASDOC_GUI=t
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
