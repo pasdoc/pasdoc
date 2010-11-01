@@ -1,10 +1,25 @@
 {$mode objfpc}
-
+// Operator overloads Delphi and FPC
 unit ok_operator_test;
 
 interface
 
 type
+  { @abstract(Operator overloads declared within a record (Delphi 2006+)) } 
+  TDelphiRec = record
+    { Addition of two operands of type TDelphiRec }
+    class operator Add(a, b: TDelphiRec): TDelphiRec;
+    { Subtraction of type TDelphiRec }
+    class operator Subtract(a, b: TDelphiRec): TDelphiRec;
+    { Implicit conversion of an Integer to type TDelphiRec }
+    class operator Implicit(a: Integer): TDelphiRec;
+    { Implicit conversion of TDelphiRec to Integer }
+    class operator Implicit(a: TDelphiRec): Integer;
+    { Explicit conversion of a Double to TDelphiRec }
+    class operator Explicit(a: Double): TDelphiRec;
+  end;
+
+  { @abstract(In this case, "Operator" is used as a normal Delphi identifier) }
   TMyClass = class
   private
     FOperator: string;
@@ -52,6 +67,12 @@ operator and (const c,d:TMyType) : TMyType;
 operator xor (const c,d:TMyType) : TMyType;
 
 implementation
+
+class operator TDelphiRec.Add(a, b: TDelphiRec): TDelphiRec; begin end;
+class operator TDelphiRec.Explicit(a: Double): TDelphiRec; begin end;
+class operator TDelphiRec.Implicit(a: Integer): TDelphiRec; begin end;
+class operator TDelphiRec.Implicit(a: TDelphiRec): Integer; begin end;
+class operator TDelphiRec.Subtract(a, b: TDelphiRec): TDelphiRec; begin end;
 
 Operator := (C : TMyType2) z : TMyType; begin end;
 Operator + (c: TMyType; c1: TMyType) c2: TMyType; begin end;

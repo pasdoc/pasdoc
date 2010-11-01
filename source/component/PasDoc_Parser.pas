@@ -639,9 +639,12 @@ begin
     end;
     if (MethodType = METHOD_OPERATOR) then
     begin
-      { Operators "or", "and", "xor" (expressed as keywords) can be overloaded,
-        also symbolic operators like "+", "*" etc. }
-      InvalidType := (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
+      { In FPC operators "or", "and", "xor" (expressed as keywords) can be
+        overloaded, also symbolic operators like "+", "*" etc..
+        In Delphi 2006+ "operator" is followed by identifiers like
+        "Implicit", "Explicit" or "LogicalNot",  "BitwiseAnd" etc.. }
+      InvalidType := (t.MyType <> TOK_IDENTIFIER) and
+                     (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
     end
     else
     begin
@@ -1029,8 +1032,32 @@ begin
           Scanner.UnGetToken(T);
           Finished := True;
         end
-        else
-          if (t.MyType = TOK_KEYWORD) then
+        else if T.Info.StandardDirective = SD_OPERATOR then
+        begin
+          { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
+            KEY_FUNCTION, KEY_PROCEDURE below, something to be optimized. }
+
+          try
+            ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
+              GetLastComment, true, true);
+          except
+            i.Free;
+            FreeAndNil(t);
+            raise;
+          end;
+          ClassKeyWordString := '';
+
+          if Visibility in ShowVisibilities then
+          begin
+            M.Visibility := Visibility;
+            i.Methods.Add(M);
+          end
+          else begin
+            ItemsForNextBackComment.Clear;
+            FreeAndNil(M);
+          end;
+        end
+        else if (t.MyType = TOK_KEYWORD) then
           begin
             if StrictVisibility then
             begin
