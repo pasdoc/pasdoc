@@ -54,6 +54,7 @@ PASDOC=pasdoc
 PASDOC_OPTIONS=--include ../component \
   ../component/*.pas ../component/tipue/*.pas \
   ../console/*.pas \
+  -DFPC -DVER2 \
   --title "PasDoc's autodoc" --write-uses-list  --auto-abstract \
   --introduction=introduction.txt
 
@@ -157,10 +158,10 @@ public: html pdf latex
 # like `make upload SF_USERNAME=my_user_name'
 SF_USERNAME=kambi
 
-SF_HOST=shell.sourceforge.net
+SF_HOST=web.sourceforge.net
 SF_PATH=/home/groups/p/pa/pasdoc/htdocs/autodoc/
 
-SF_CONNECT=$(SF_USERNAME)@$(SF_HOST):$(SF_PATH)
+SF_CONNECT=$(SF_USERNAME),pasdoc@$(SF_HOST):$(SF_PATH)
 
 SCP_OPTIONS=
 
@@ -169,6 +170,6 @@ upload:
 	scp $(SCP_OPTIONS) latex/docs.pdf $(SF_CONNECT)latex/
 	scp $(SCP_OPTIONS) latex/docs.tex $(SF_CONNECT)latex/
 	../../tests/scripts/ssh_chmod_writeable_by_pasdoc.sh \
-	  $(SF_USERNAME) $(SF_PATH)
+	  $(SF_USERNAME),pasdoc $(SF_PATH)
 
 # eof ------------------------------------------------------------
