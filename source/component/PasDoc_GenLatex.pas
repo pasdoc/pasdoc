@@ -421,8 +421,11 @@ begin
 
   if SectionsAvailable = [] then exit;
 
+  if CIO.ClassDirective = CT_HELPER then
+    s := ' for ' + CIO.HelperTypeIdentifier else s := '';
+    
   WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType))
-    + ConvertString(GetClassDirectiveName(CIO.ClassDirective)));
+    + ConvertString(GetClassDirectiveName(CIO.ClassDirective)) + ConvertString(s));
   WriteAnchor(CIO.Name,CIO.FullLink);
 
   if dsHierarchy in SectionsAvailable then

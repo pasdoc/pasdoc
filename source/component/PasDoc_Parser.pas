@@ -888,6 +888,21 @@ begin
         end;
         FreeAndNil(t);
         t := GetNextToken;
+      end
+      else if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+        (t.MyType = TOK_IDENTIFIER) and
+        (t.Info.StandardDirective = SD_HELPER) then
+      begin
+        { Class or record helpers are declared as:
+          identifierName = class|record helper [(ancestor list)] for TypeIdentifierName
+            memberList
+          end;
+
+          Ancestor list is optional, records cannot have ancestors, accepted nevertheless. 
+        }
+        i.ClassDirective := CT_HELPER;
+        FreeAndNil(t);
+        t := GetNextToken;
       end;
       
       { This allows to write back-comment for class declarations like
@@ -974,6 +989,26 @@ begin
       end;
       t := GetNextToken;
 
+      if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+          (i.ClassDirective = CT_HELPER) then
+      begin
+        if t.IsKeyWord(KEY_FOR) then
+        begin
+          FreeAndNil(t);
+          t := GetNextToken;
+          if t.MyType = TOK_IDENTIFIER then
+          begin
+            i.HelperTypeIdentifier := t.Data;
+            FreeAndNil(t);
+            t := GetNextToken;
+          end
+          else
+            DoError('Identifier expected but %s found', ['''' + t.Data + '''']);
+        end
+        else
+          DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
+      end;
+
       if (t.IsSymbol(SYM_LEFT_BRACKET)) then begin
         FreeAndNil(t);
 
@@ -1031,31 +1066,6 @@ begin
           { A declaration of type "name = class(ancestor);" }
           Scanner.UnGetToken(T);
           Finished := True;
-        end
-        else if T.Info.StandardDirective = SD_OPERATOR then
-        begin
-          { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
-            KEY_FUNCTION, KEY_PROCEDURE below, something to be optimized. }
-
-          try
-            ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
-              GetLastComment, true, true);
-          except
-            i.Free;
-            FreeAndNil(t);
-            raise;
-          end;
-          ClassKeyWordString := '';
-
-          if Visibility in ShowVisibilities then
-          begin
-            M.Visibility := Visibility;
-            i.Methods.Add(M);
-          end
-          else begin
-            ItemsForNextBackComment.Clear;
-            FreeAndNil(M);
-          end;
         end
         else if (t.MyType = TOK_KEYWORD) then
           begin
@@ -1134,7 +1144,31 @@ begin
             begin
 
               case t.Info.StandardDirective of
-                SD_DEFAULT: 
+                SD_OPERATOR:
+                  begin
+                    { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
+                    KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
+                    try
+                      ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
+                      GetLastComment, true, true);
+                    except
+                      i.Free;
+                      FreeAndNil(t);
+                      raise;
+                    end;
+                    ClassKeyWordString := '';
+
+                    if Visibility in ShowVisibilities then
+                    begin
+                      M.Visibility := Visibility;
+                      i.Methods.Add(M);
+                    end
+                    else begin
+                      ItemsForNextBackComment.Clear;
+                      FreeAndNil(M);
+                    end;
+                  end;
+                SD_DEFAULT:
                   begin
                     if StrictVisibility then
                     begin

@@ -657,6 +657,9 @@ begin
     end;
     WriteConverted(')');
   end;
+  if CIO.ClassDirective = CT_HELPER then
+    WriteConverted(' for ' + CIO.HelperTypeIdentifier);
+
   WriteEndOfCode;
   WriteEndOfParagraph;
 

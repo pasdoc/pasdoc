@@ -2194,7 +2194,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
 function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
 begin
   case Directive of
@@ -2209,6 +2208,10 @@ begin
     CT_SEALED:
       begin
         result := ' sealed';
+      end;
+    CT_HELPER:
+      begin
+        result := ' helper';
       end;
   else
     Assert(False);

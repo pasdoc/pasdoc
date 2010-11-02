@@ -626,7 +626,7 @@ type
     CIO_OBJECT, CIO_PACKEDOBJECT, 
     CIO_RECORD, CIO_PACKEDRECORD );
 
-  TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED);
+  TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
 
   { @abstract(Extends @link(TPasItem) to store all items in 
     a class / an object, e.g. fields.) }
@@ -639,6 +639,7 @@ type
     FAncestors: TStringVector;
     FOutputFileName: string;
     FMyType: TCIOType;
+    FHelperTypeIdentifier: string;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
@@ -730,6 +731,10 @@ type
     
     { list of all fields }
     property Fields: TPasItems read FFields;
+
+    { Class or record helper type identifier }
+    property HelperTypeIdentifier: string read  FHelperTypeIdentifier
+                                          write FHelperTypeIdentifier;
     
     { list of all methods }
     property Methods: TPasMethods read FMethods;
