@@ -308,11 +308,9 @@ help:
 	@echo "    and then makes a release archive for given <os/arch>."
 	@echo
 	@echo "  dist-src:"
-	@echo "    This creates source archive, by checking out whole pasdoc sources"
-	@echo "    from pasdoc SVN. It checks out using the tag name taken from"
+	@echo "    This creates source archive, by exporting whole pasdoc sources"
+	@echo "    from pasdoc SVN. It exports using the tag name taken from"
 	@echo "    VERSION variable in this Makefile (currently it's "$(VERSION)")."
-	@echo "    This way user can easily update downloaded sources tree by"
-	@echo "    simple \"svn switch https://svn.sourceforge.net/svnroot/pasdoc/trunk\" command."
 
 ############################################################################
 # Targets to make release archives
@@ -421,7 +419,7 @@ SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 dist-src:
 	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
 	cd $(PACKAGEBASEDIR); \
-	  svn co https://pasdoc.svn.sourceforge.net/svnroot/pasdoc/tags/$(VERSION) pasdoc
+	  svn export https://pasdoc.svn.sourceforge.net/svnroot/pasdoc/tags/$(VERSION) pasdoc
 	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz pasdoc/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
