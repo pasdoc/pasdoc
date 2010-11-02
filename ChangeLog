@@ -1,3 +1,8 @@
+[Next release -- release date and new version number unknown yet...]
+
+  * Parsing Delphi operator overloads (D2006+),
+    Delphi anonymous methods (D2009+) (by Arno Garrels)
+
 2010-10-31 v0.12.0
 
   * Class Hierarchy diagrams are more complete, because PasDoc knows

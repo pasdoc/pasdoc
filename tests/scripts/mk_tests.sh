@@ -195,3 +195,4 @@ mk_test ok_vorbisfile ok_vorbisfile.pas
 mk_test ok_procedural_const ok_procedural_const.pas
 mk_test ok_deprecated_const_string ok_deprecated_const_string.pas
 mk_test ok_external_class_hierarchy ok_external_class_hierarchy.pas --external-class-hierarchy=ok_external_class_hierarchy.txt
+mk_test ok_anonymous_methods ok_anonymous_methods.pas
