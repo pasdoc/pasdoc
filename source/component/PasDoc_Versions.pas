@@ -96,9 +96,9 @@ const
       )
     )
   }
-  PASDOC_DATE = '2010-10-31';
+  PASDOC_DATE = '2010-11-03';
   { }
-  PASDOC_VERSION = '0.12.0';
+  PASDOC_VERSION = '0.12.1';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }

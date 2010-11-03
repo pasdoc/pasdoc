@@ -34,7 +34,7 @@
 "/>
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
-    <Version Minor="12"/>
+    <Version Minor="12" Release="1"/>
     <Files Count="28">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>

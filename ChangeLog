@@ -1,8 +1,11 @@
-[Next release -- release date and new version number unknown yet...]
+2010-11-03 v0.12.1
 
   * Parsing Delphi operator overloads (D2006+),
     Delphi anonymous methods (D2009+),
     Delphi class and record helpers (by Arno Garrels)
+  * Fix handling source files that start with UTF-8 BOM (closes: #3101708)
+    (and clear error messages when encountering UTF-16 or UTF-32 BOMs)
+  * Cache files get version markers (closes: #3101524)
 
 2010-10-31 v0.12.0
 
