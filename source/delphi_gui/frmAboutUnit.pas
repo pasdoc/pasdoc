@@ -56,7 +56,7 @@ implementation
 
 {$R *.dfm}
 
-uses PasDoc_Types, PasDoc_Base, WWWBrowserRunnerDM;
+uses PasDoc_Types, PasDoc_Base, WWWBrowserRunnerDM, PasDoc_Versions;
 
 { TfrmAbout }
 

@@ -245,7 +245,8 @@ uses
   PasDoc_ObjectVector,
   PasDoc_Utils, 
   PasDoc_StringPairVector,
-  StrUtils;
+  StrUtils,
+  PasDoc_Versions;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin

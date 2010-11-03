@@ -23,7 +23,8 @@ uses
   PasDoc_Types,
   PasDoc_Tokenizer,
   PasDoc_Serialize,
-  PasDoc_SortSettings;
+  PasDoc_SortSettings,
+  PasDoc_Versions;
 
 type
   TPasdocOptions = class(TOptionParser)

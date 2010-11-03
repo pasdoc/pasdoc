@@ -24,7 +24,7 @@ type
 implementation
 
 uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items, 
-  PasDoc_Languages, PasDoc_Gen;
+  PasDoc_Languages, PasDoc_Gen, PasDoc_Versions;
 
 { HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
 

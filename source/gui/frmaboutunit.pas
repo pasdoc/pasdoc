@@ -56,7 +56,7 @@ var
 
 implementation
 
-uses PasDoc_Base, WWWBrowserRunnerDM;
+uses PasDoc_Base, WWWBrowserRunnerDM, PasDoc_Versions;
 
 { TfrmAbout }
 

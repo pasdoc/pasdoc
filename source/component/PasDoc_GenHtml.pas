@@ -327,7 +327,8 @@ uses
   PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
-  PasDoc_Aspell;
+  PasDoc_Aspell,
+  PasDoc_Versions;
 
 const 
   img_automated : {$I automated.gif.inc};

@@ -4,7 +4,7 @@
     <Name Value="pasdoc_package"/>
     <Author Value="PasDoc developers"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../../component/;../../component/tipue/;../../component/images/"/>
         <OtherUnitFiles Value="../../component/;../../component/tipue/"/>
@@ -20,7 +20,6 @@
         <Checks>
           <IOChecks Value="True"/>
         </Checks>
-        <Generate Value="Faster"/>
       </CodeGeneration>
       <Other>
         <Verbosity>
@@ -36,7 +35,7 @@
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
     <Version Minor="12"/>
-    <Files Count="27">
+    <Files Count="28">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
         <AddToUsesPkgSection Value="False"/>
@@ -147,9 +146,13 @@
         <UnitName Value="PasDoc_Utils"/>
       </Item26>
       <Item27>
+        <Filename Value="../../component/PasDoc_Versions.pas"/>
+        <UnitName Value="PasDoc_Versions"/>
+      </Item27>
+      <Item28>
         <Filename Value="../../component/tipue/PasDoc_Tipue.pas"/>
         <UnitName Value="PasDoc_Tipue"/>
-      </Item27>
+      </Item28>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
