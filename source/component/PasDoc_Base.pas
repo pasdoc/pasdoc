@@ -352,9 +352,9 @@ end;
 {$IFNDEF STRING_UNICODE}
 procedure TPasDoc.SkipBOM(InputStream: TStream);
 const
-  BOM : array [0..2] of byte = ($EF, $BB, $BF);
+  BOM: string = #$EF#$BB#$BF;
 var
-  c: byte;
+  c: char;
   i: integer;
 begin
   i := 0;
@@ -363,7 +363,7 @@ begin
       DoError('Tokenizer: could not read character', [], 0);
     InputStream.Read(c, 1);
     Inc(i);
-    if i > SizeOf(BOM) then
+    if i > Length(BOM) then
       begin
         InputStream.Position := InputStream.Position - 1;
         exit;
