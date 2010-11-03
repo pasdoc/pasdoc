@@ -1,7 +1,8 @@
 [Next release -- release date and new version number unknown yet...]
 
   * Parsing Delphi operator overloads (D2006+),
-    Delphi anonymous methods (D2009+) (by Arno Garrels)
+    Delphi anonymous methods (D2009+),
+    Delphi class and record helpers (by Arno Garrels)
 
 2010-10-31 v0.12.0
 
