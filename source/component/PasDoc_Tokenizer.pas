@@ -579,6 +579,8 @@ end;
 { ---------------------------------------------------------------------------- }
 {$IFDEF STRING_UNICODE}
 function TTokenizer.GetChar(out c: WideChar): Integer;
+const
+  LDefaultFailChar = '?';
 var
   Buf : array [0..7] of Byte;
   LInt: Integer;
@@ -616,11 +618,10 @@ begin
       LInt := Utf8Size(Buf[0]); // Read number of bytes
       if LInt > 1 then
       begin
-        Result := Stream.Read(Buf[Result], LInt - 1);
-        if Result > 0 then
-          Inc(Result)
-        else begin
-          Result := 0;
+        Inc(Result, Stream.Read(Buf[Result], LInt -1));
+        if Result <> LInt then
+        begin
+          c := LDefaultFailChar;    // return the default fail char.
           Exit;
         end;
       end;
@@ -644,7 +645,7 @@ begin
     else
     if MultiByteToWideChar(TStreamReader(Stream).CurrentCodePage,
                            0, @Buf[0], Result, @c, 1) <> 1 then
-        Result := 0;
+        c := LDefaultFailChar; // return the default fail char.
   end;
 end;
 
