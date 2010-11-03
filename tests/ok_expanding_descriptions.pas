@@ -7,7 +7,7 @@
 
   @author(Michalis <my@email.address>)
   @created(2005-03-30)
-  @cvs($Author$)
+  @cvs($Author: kambi $)
   @lastmod(2005-03-30)
 
   See also @link(TMyClass) for other test of @@cvs tag (with $Date,
@@ -143,7 +143,7 @@ type
     classname @classname. Some of them are valid only within a class,
     but this is not important for this test.
 
-    @cvs($Date$) }
+    @cvs($Date: 2010-04-26 04:04:35 +0200 (pon) $) }
   TMyClass = class(TMyClassAncestor)
   published
   //This is the detailed description.

@@ -15,7 +15,7 @@
   @author Michalis
   @created 2005-05-04
   @lastmod 2005-05-04
-  @cvs $Author$ }
+  @cvs $Author: kambi $ }
 unit ok_tag_params_no_parens;
 
 interface
