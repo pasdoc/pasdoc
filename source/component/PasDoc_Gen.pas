@@ -2300,7 +2300,9 @@ begin
       f.Free;
     end;
   except
-    DoError('Could not open description file "%s".', [n], 0);
+    on E: Exception do
+      DoError('Could not open description file "%s". Reason: "%s"',
+        [n, E.Message], 0);
   end;
 end; {TDocGenerator.LoadDescriptionFile}
 

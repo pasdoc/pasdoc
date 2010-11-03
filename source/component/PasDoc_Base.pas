@@ -443,7 +443,8 @@ begin
     except
       on E: Exception do
       begin
-        DoMessage(1, pmtError, 'Cannot open file "%s", skipping', [p]);
+        DoMessage(1, pmtError, 'Cannot open file "%s". Reason: "%s", skipping',
+          [p, E.Message]);
         Continue;
       end;
     end;

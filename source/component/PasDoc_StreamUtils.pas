@@ -79,6 +79,7 @@ type
  {$ENDIF}
  {$IFDEF STRING_UNICODE}
     EStreamReaderError = class(Exception);
+    EStreamWriterError = class(Exception);
     TLineBreakStyle = (ilbsCRLF, ilbsLF, ilbsCR);
     TStreamReader = class(TBufferedStream)
     private
@@ -144,6 +145,7 @@ type
         procedure   SetLineBreakStyle(Value: TLineBreakStyle);
         procedure   EnsureWriteBuffer(Size: Integer); {$IFDEF USE_INLINE} inline; {$ENDIF}
         procedure   EnsureReadBuffer(Size: Integer); {$IFDEF USE_INLINE} inline; {$ENDIF}
+        procedure   SetCodePage(const Value: LongWord);
     protected
         function    GetBomFromCodePage(ACodePage: LongWord) : TBytes; virtual;
         function    GetCodePageFromBOM: LongWord; virtual;
@@ -183,7 +185,7 @@ type
                               SrcCodePage : LongWord = CP_ACP); overload;
           {$IFDEF USE_INLINE} inline; {$ENDIF}
         procedure   WriteBOM;
-        property    CurrentCodePage : LongWord read FCodePage write FCodePage;
+        property    CurrentCodePage : LongWord read FCodePage write SetCodePage;
         property    LineBreakStyle  : TLineBreakStyle    read  FLineBreakStyle
                                                          write SetLineBreakStyle;
     end;
@@ -469,6 +471,10 @@ end;
 { TStreamReader }
 
 {$IFDEF STRING_UNICODE}
+
+const
+  S_ERR_CP_NOSUPPORT = 'Unsupported code page %s';
+
 const
     DEFAULT_READBUFFER_SIZE = 1024 * SizeOf(Char);
 
@@ -542,6 +548,11 @@ var
     J      : Byte;
 begin
     case Value of
+        CP_UTF32    :
+            raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE']);
+        CP_UTF32Be  :
+            raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 BE']);
+        
         CP_ACP      :
             begin
                 FLeadBytes := SysUtils.Leadbytes;
@@ -579,14 +590,20 @@ end;
 function TStreamReader.GetCodePageFromBOM: LongWord;
 var
     OldPos : Int64;
-    A : array [0..2] of Byte;
+    A : array [0..3] of Byte;
     BomLen : Integer;
 begin
-    FillChar(A, 3, #0);
+    FillChar(A, 4, #0);
     OldPos := Position;
     Seek(0, soBeginning);
-    Read(A, 3);
-    if (A[0] = $FF) and (A[1] = $FE) then begin
+    Read(A, 4);
+    if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then begin
+        raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE detected']);
+    end
+    else if (A[0] = 0) and (A[1] = 0) and (A[2] = $FE) and (A[3] = $FF) then begin
+        raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 BE detected']);
+    end
+    else if (A[0] = $FF) and (A[1] = $FE) then begin
         Result := CP_UTF16;
         BomLen := 2;
     end
@@ -1061,15 +1078,21 @@ end;
 {---------------------------------------------------------------------------}
 function TStreamWriter.GetCodePageFromBOM: LongWord;
 var
-    OldPos: Int64;
-    A : array [0..2] of Byte;
+    OldPos : Int64;
+    A : array [0..3] of Byte;
     BomLen : Integer;
 begin
-    FillChar(a, 3, #0);
+    FillChar(A, 4, #0);
     OldPos := Position;
-    Seek(0, sofromBeginning);
-    Read(A, 3);
-    if (A[0] = $FF) and (A[1] = $FE) then begin
+    Seek(0, soBeginning);
+    Read(A, 4);
+    if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then begin
+        raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE detected']);
+    end
+    else if (A[0] = 0) and (A[1] = 0) and (A[2] = $FE) and (A[3] = $FF) then begin
+        raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 BE detected']);
+    end
+    else if (A[0] = $FF) and (A[1] = $FE) then begin
         Result := CP_UTF16;
         BomLen := 2;
     end
@@ -1115,6 +1138,11 @@ begin
                 Result[1] := $BB;
                 Result[2] := $BF;
             end;
+        CP_UTF32   :
+            raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE']);
+        CP_UTF32Be :
+            raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE']);
+
         else
             SetLength(Result, 0);
     end;
@@ -1356,7 +1384,31 @@ end;
 
 
 {---------------------------------------------------------------------------}
+procedure TStreamWriter.SetCodePage(const Value: LongWord);
+var
+  LCPInfo: TCPInfo;
+begin
+  case Value of
+    CP_ACP,
+    CP_UTF8,
+    CP_UTF16,
+    CP_UTF16Be : FCodePage := Value;
 
+    CP_UTF32   :
+      raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE']);
+    CP_UTF32Be :
+      raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 BE']);
+
+    else
+      if not GetCPInfo(Value, LCPInfo) then
+         raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT,
+          [SysErrorMessage(GetLastError)]);
+      FCodePage := FCodepage;   
+  end;
+end;
+
+
+{---------------------------------------------------------------------------}
 {$ENDIF}
 
 function StreamReadLine(const AStream: TStream): AnsiString;

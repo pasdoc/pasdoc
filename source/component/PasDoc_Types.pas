@@ -49,6 +49,8 @@ const
   { Windows Unicode code page ID }
   CP_UTF16      = 1200;
   CP_UTF16Be    = 1201;
+  CP_UTF32      = 12000;
+  CP_UTF32Be    = 12001;
 
 {$IFNDEF FPC}
 {$IFDEF MSWINDOWS}
