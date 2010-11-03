@@ -99,25 +99,20 @@ upload_one_format ()
   #   ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
   # because I can chmod only the files that "$SF_USERNAME" owns
   # (so I chmod only the files that I uploaded).
-  #
-  # 2008-09-19 Kambi notes: interactive shell access is for now
-  # turned off on SourceForge, (documented
-  # http://sourceforge.net/community/forum/topic.php?id=2838&page ).
-  # So following doesn't work
-  # (server answers "This is a restricted Shell Account
-  # You cannot execute anything here.").
-  # Possibly files will be forced to have correct group (that's the idea
-  # behind username "xxx,pasdoc" after all), but I don't know
-  # what permissions they will have.
-  # TODO: check and eventually fix (chmod locally and uploading by rsync
-  # should help to set the right permissions?)
+  # Although this isn't really needed: since new SF username is like
+  # "kambi,pasdoc" (not just "kambi"), so I'm logged with default
+  # group "pasdoc" already.
 
-#   ssh -l "$SF_USERNAME",pasdoc web.sourceforge.net <<EOF
-#   cd "$SF_PATH"
-#   tar xzf "$ARCHIVE_FILENAME_NONDIR"
-#   chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
-#   chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
-# EOF
+  echo 'Unpacking on shell.sourceforge.net. If this fails, create a shell by'
+  echo '  ssh -t '"$SF_USERNAME"',pasdoc@shell.sourceforge.net create'
+  echo 'and rerun this script.'
+
+  ssh "$SF_USERNAME",pasdoc@shell.sourceforge.net <<EOF
+  cd "$SF_PATH"
+  tar xzf "$ARCHIVE_FILENAME_NONDIR"
+  chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
+  chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
+EOF
 
   # Clean temp dir
   rm -Rf upload_correct_tests_output_tmp/
