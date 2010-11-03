@@ -849,7 +849,7 @@ begin
               exit;
             end;
           end;
-          DoError('Invalid character in Pascal input stream', [], 0);
+          DoError('Invalid character (code %d) in Pascal input stream', [Ord(C)], 0);
         end;
       end;
   finally
