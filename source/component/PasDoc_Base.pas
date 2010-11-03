@@ -351,25 +351,30 @@ end;
 { ---------------------------------------------------------------------------- }
 {$IFNDEF STRING_UNICODE}
 procedure TPasDoc.SkipBOM(InputStream: TStream);
-const
-  BOM: string = #$EF#$BB#$BF;
 var
-  c: char;
-  i: integer;
+  A : array [0..2] of Byte;
 begin
-  i := 0;
-  repeat
-    if InputStream.Position >= InputStream.Size then
-      DoError('Tokenizer: could not read character', [], 0);
-    InputStream.Read(c, 1);
-    Inc(i);
-    if i > Length(BOM) then
-      begin
-        InputStream.Position := InputStream.Position - 1;
-        exit;
-      end;
-  until c <> BOM[i];
-  InputStream.Position := 0;
+  InputStream.ReadBuffer(A, 3);
+  
+  { See also TStreamReader.GetCodePageFromBOM for an implementation
+    that actually uses UTF-x BOM. Here, we only detect BOM to make
+    nice error (in case of UTF-16) or skip it (in case of UTF-8). }
+  
+  if (A[0] = $FF) and (A[1] = $FE) then
+  begin
+    DoError('Detected UTF-16 (little endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)', [], 0);
+  end else
+  if (A[0] = $FE) and (A[1] = $FF) then
+  begin
+    DoError('Detected UTF-16 (big endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)', [], 0);
+  end else
+  if (A[0] = $EF) and (A[1] = $BB) and (A[2] = $BF) then
+  begin
+    { Detected UTF-8 BOM. Cool, we just skipped it. }
+    DoMessage(6, pmtInformation, 'Detected UTF-8 BOM, skipping.', []);
+  end else
+    { No BOM: get back to the beginning of the steam }
+    InputStream.Position := 0;
 end;
 {$ENDIF}
 
@@ -382,14 +387,15 @@ var
   LLoaded: boolean;
   LCacheFileName: string;
 begin
-{$IFNDEF STRING_UNICODE}
-  SkipBOM(InputStream);
-{$ENDIF}
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
     SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
   try
+    {$IFNDEF STRING_UNICODE}
+    SkipBOM(InputStream);
+    {$ENDIF}
+
     p.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
