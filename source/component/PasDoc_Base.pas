@@ -310,19 +310,29 @@ begin
     if (CacheDir <> '') and FileExists(LCacheFileName) then
     begin
       DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
-      U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
-    {$IFDEF COMPILER_10_UP}
-      U.CacheDateTime := CheckGetFileDate(LCacheFileName);
-      if U.CacheDateTime < CheckGetFileDate(SourceFileName) then
-    {$ELSE}
-      U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
-      if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
-    {$ENDIF}
-      begin
-        DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
-          [SourceFileName]);
-      end else begin
-        LLoaded := True;
+      try
+        U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
+        {$IFDEF COMPILER_10_UP}
+        U.CacheDateTime := CheckGetFileDate(LCacheFileName);
+        if U.CacheDateTime < CheckGetFileDate(SourceFileName) then
+        {$ELSE}
+        U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
+        if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
+        {$ENDIF}
+        begin
+          DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
+            [SourceFileName]);
+        end else begin
+          LLoaded := True;
+        end;
+      except
+        on E: EInvalidCacheFileVersion do
+        begin
+          { On EInvalidCacheFileVersion, make nice message and continue
+            (with LLoaded = false, just like the cache would not exist). }
+          DoMessage(2, pmtInformation, 'Cache file for %s is incompatible (probably from a different PasDoc release).',
+            [SourceFileName]);
+        end;
       end;
     end;
 

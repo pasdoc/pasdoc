@@ -13,6 +13,8 @@ uses
 type
   TSerializable = class;
   TSerializableClass = class of TSerializable;
+  
+  EInvalidCacheFileVersion = class(Exception);
 
   TSerializable = class
   private
@@ -36,6 +38,9 @@ type
     class function DeserializeObject(const ASource: TStream): TSerializable;
     class procedure Register(const AClass: TSerializableClass);
     procedure SerializeToFile(const AFileName: string);
+    { Read back from file.
+      @raises(EInvalidCacheFileVersion When the cached file contents
+        are from an old pasdoc version (or invalid).) }
     class function DeserializeFromFile(const AFileName: string): TSerializable;
     property WasDeserialized: boolean read FWasDeserialized;
   end;
@@ -43,6 +48,22 @@ type
   ESerializedException = class(Exception);
 
 implementation
+
+uses PasDoc_Versions;
+
+const
+  { String to mark cache file version.
+
+    When you change how/what is serialized, you generally break previous
+    cache files. So we store, and read, a string at the beginning
+    of cache file. Only when it's equal to our current CacheFormatVersion,
+    we know it's Ok. This allows us to behave nicely when encountering
+    cache files from previous pasdoc versions.
+
+    Changing PasDoc_Version always changes cache version, for safety.
+    If you want, you can also bump the suffix -xxx added here,
+    when some SVN revision changes cache format. }
+  CacheFormatVersion = PasDoc_Version + '-0';
 
 var
   GClassNames: TStringList;
@@ -103,6 +124,7 @@ class function TSerializable.DeserializeFromFile(
   const AFileName: string): TSerializable;
 var
   LF: TStream;
+  CacheFormatVersionFromFile: string;
 begin
 {$IFDEF USE_BUFFERED_STREAM}
   LF := TBufferedStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
@@ -110,6 +132,21 @@ begin
   LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
 {$ENDIF}
   try
+    try 
+      CacheFormatVersionFromFile := LoadStringFromStream(LF);
+    except
+      { Convert any exception from LoadStringToStream (maybe because 
+        string length is invalid, or stream ends too soon or such)
+        to EInvalidCacheFileVersion. }
+      on E: Exception do 
+        raise EInvalidCacheFileVersion.CreateFmt(
+          'Cache file version is invalid (error when reading: %s), assuming the cache file is outdated',
+          [E.ClassName]);
+    end;
+    
+    if CacheFormatVersionFromFile <> CacheFormatVersion then
+      raise EInvalidCacheFileVersion.Create('Cache file version is from a different PasDoc release');
+    
     Result := DeserializeObject(LF);
   finally
     LF.Free;
@@ -206,6 +243,7 @@ begin
   LF := TFileStream.Create(AFileName, fmCreate);
 {$ENDIF}
   try
+    SaveStringToStream(CacheFormatVersion, LF);
     SerializeObject(Self, LF);
   finally
     LF.Free;
