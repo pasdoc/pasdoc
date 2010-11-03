@@ -56,6 +56,6 @@ contains
   PasDoc_StringPairVector in '..\..\..\..\component\PasDoc_StringPairVector.pas',
   PasDoc_Aspell in '..\..\..\..\component\PasDoc_Aspell.pas',
   PasDoc_ProcessLineTalk in '..\..\..\..\component\PasDoc_ProcessLineTalk.pas',
-  PasDoc_GenSimpleXML in '..\..\..\..\component\PasDoc_GenSimpleXML.pas';
+  PasDoc_Versions in '..\..\..\..\component\PasDoc_Versions.pas';
 
 end.
