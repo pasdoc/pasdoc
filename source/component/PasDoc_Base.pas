@@ -352,14 +352,22 @@ end;
 {$IFNDEF STRING_UNICODE}
 procedure TPasDoc.SkipBOM(InputStream: TStream);
 var
-  A : array [0..2] of Byte;
+  A : array [0..3] of Byte;
 begin
-  InputStream.ReadBuffer(A, 3);
+  InputStream.ReadBuffer(A, 4);
   
   { See also TStreamReader.GetCodePageFromBOM for an implementation
     that actually uses UTF-x BOM. Here, we only detect BOM to make
-    nice error (in case of UTF-16) or skip it (in case of UTF-8). }
+    nice error (in case of UTF-16/32) or skip it (in case of UTF-8). }
   
+  if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then
+  begin
+    DoError('Detected UTF-32 (little endian) encoding (right now we cannot read such files)', [], 0);
+  end else
+  if (A[0] = 0) and (A[1] = 0) and (A[2] = $FE) and (A[3] = $FF) then
+  begin
+    DoError('Detected UTF-32 (big endian) encoding (right now we cannot read such files)', [], 0);
+  end else
   if (A[0] = $FF) and (A[1] = $FE) then
   begin
     DoError('Detected UTF-16 (little endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)', [], 0);
@@ -370,8 +378,8 @@ begin
   end else
   if (A[0] = $EF) and (A[1] = $BB) and (A[2] = $BF) then
   begin
-    { Detected UTF-8 BOM. Cool, we just skipped it. }
     DoMessage(6, pmtInformation, 'Detected UTF-8 BOM, skipping.', []);
+    InputStream.Position := 3;
   end else
     { No BOM: get back to the beginning of the steam }
     InputStream.Position := 0;
