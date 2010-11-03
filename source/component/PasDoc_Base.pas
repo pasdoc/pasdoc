@@ -98,6 +98,7 @@ type
       const FileName: string; out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
+    procedure SetCompilerVersion(ADirectives: TStrings);
 {$IFNDEF STRING_UNICODE}
     procedure SkipBOM(InputStream: TStream);
 {$ENDIF}
@@ -516,6 +517,7 @@ var
   CacheDirNoDelim: string;
   UnitsCountBeforeExcluding: Cardinal;
 begin
+  SetCompilerVersion(Directives);
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
   end;
@@ -605,6 +607,79 @@ procedure TPasDoc.DoMessage(const AVerbosity: Cardinal; const AMessageType:
 begin
   if (AVerbosity <= FVerbosity) and Assigned(FOnMessage) then
     FOnMessage(AMessageType, Format(AMessage, AArguments), AVerbosity);
+end;
+
+{ ---------------------------------------------------------------------------- }  
+
+procedure TPasDoc.SetCompilerVersion(ADirectives: TStrings);
+var
+  s: string;
+  I: Integer;
+begin
+  GCompilerVersions := GDefaultCompilerVersions; { includes FPC and Dcc7     }
+  if not Assigned(Directives) then
+    Exit;
+  for I := 0 to Directives.Count - 1 do
+  begin
+    s := UpperCase(Directives[I]);
+    if s = 'VER2' then              { Defined for Free Pascal version 2.x.x. }
+      Include(GCompilerVersions, pdcFpc2)
+    else if s = 'VER2_0' then begin { Defined for Free Pascal version 2.0.x. }
+      Include(GCompilerVersions, pdcFpc2);
+      Include(GCompilerVersions, pdcFpc2_0);
+      Exclude(GCompilerVersions, pdcFpc2_2);
+    end
+    else if s = 'VER2_2' then begin { Defined for Free Pascal version 2.2.x. }
+      Include(GCompilerVersions, pdcFpc2);
+      Include(GCompilerVersions, pdcFpc2_2);
+      Exclude(GCompilerVersions, pdcFpc2_0);
+    end
+    else if s = 'VER170' then begin { Defined for Delphi 2005                }
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end
+    else if s = 'VER180' then begin { Defined for Delphi 2006                }
+      Include(GCompilerVersions, pdcDcc10);
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end
+    else if s = 'VER185' then begin { Defined for Delphi 2007                }
+      Include(GCompilerVersions, pdcDcc11);
+      Include(GCompilerVersions, pdcDcc10);
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end
+    else if s = 'VER200' then begin { Defined for Delphi 2009                }
+      Include(GCompilerVersions, pdcDcc12);
+      Include(GCompilerVersions, pdcDcc11);
+      Include(GCompilerVersions, pdcDcc10);
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end
+    else if s = 'VER210' then begin { Defined for Delphi 2010                }
+      Include(GCompilerVersions, pdcDcc14);
+      Include(GCompilerVersions, pdcDcc12);
+      Include(GCompilerVersions, pdcDcc11);
+      Include(GCompilerVersions, pdcDcc10);
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end
+    else if s = 'VER220' then begin { Defined for Delphi XE                  }
+      Include(GCompilerVersions, pdcDcc15);
+      Include(GCompilerVersions, pdcDcc14);
+      Include(GCompilerVersions, pdcDcc12);
+      Include(GCompilerVersions, pdcDcc11);
+      Include(GCompilerVersions, pdcDcc10);
+      Include(GCompilerVersions, pdcDcc9);
+      Include(GCompilerVersions, pdcDcc7);
+      Include(GCompilerVersions, pdcDcc6);
+    end;
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }

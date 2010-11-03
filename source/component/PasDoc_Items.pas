@@ -1935,7 +1935,7 @@ end;
 
 function TPasCio.ShowVisibility: boolean;
 begin
-  Result := not (MyType in CIORecordType);
+  Result := (pdcDcc10 in GCompilerVersions) or (not (MyType in CIORecordType));
 end;
 
 function TPasCio.FirstAncestor: TPasItem;
