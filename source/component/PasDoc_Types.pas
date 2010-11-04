@@ -20,10 +20,6 @@ type
   UnicodeString = WideString;
   RawByteString = AnsiString;
 {$ENDIF}
-  TPasDocCompiler = (pdcFpc, pdcFpc2, pdcFpc2_0, pdcFpc2_2,
-    pdcDcc1, pdcDcc2, pdcDcc3, pdcDcc4, pdcDcc5, pdcDcc6, pdcDcc7, pdcDcc9,
-    pdcDcc10, pdcDcc11, pdcDcc12, pdcDcc14, pdcDcc15);
-  TPasDocCompilerSet = set of TPasDocCompiler;
   { }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
   { }
@@ -61,12 +57,6 @@ const
   LineEnding    = #13#10;
 {$ENDIF}
 {$ENDIF}
-
-  GDefaultCompilerVersions = [pdcFpc, pdcDcc1, pdcDcc2, pdcDcc3, pdcDcc4,
-    pdcDcc5, pdcDcc6, pdcDcc7];
-
-var
-  GCompilerVersions: TPasDocCompilerSet = GDefaultCompilerVersions;
 
 { Splits S, which can be made of up to three parts, separated by dots.
   If S is not a valid identifier or if it has more than
