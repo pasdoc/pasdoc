@@ -58,12 +58,18 @@ const
     cache files. So we store, and read, a string at the beginning
     of cache file. Only when it's equal to our current CacheFormatVersion,
     we know it's Ok. This allows us to behave nicely when encountering
-    cache files from previous pasdoc versions.
+    cache files from previous pasdoc versions. Note that Delphi Unicode
+    versions write UTF-16 strings, that's why Ansi and Unicode versions
+    cannot share the same cache files.
 
     Changing PasDoc_Version always changes cache version, for safety.
     If you want, you can also bump the suffix -xxx added here,
     when some SVN revision changes cache format. }
+{$IFDEF STRING_UNICODE}
+  CacheFormatVersion = PasDoc_Version + '-0U';
+{$ELSE}
   CacheFormatVersion = PasDoc_Version + '-0';
+{$ENDIF}
 
 var
   GClassNames: TStringList;
