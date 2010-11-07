@@ -2037,53 +2037,49 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
   // This consumes some tokens and appends to ItemCollector.FullDeclaration.
   procedure ParseVariableModifiers(ItemCollector: TPasFieldVariable);
   var
-    Finished: Boolean;
-    FirstCheck: boolean;
+    ModifierFound: Boolean;
+    SemicolonFound: boolean;
     ttemp: TToken;
   begin
-    Finished := False;
-    FirstCheck := True;
+    ModifierFound := False;
     repeat
       ttemp := GetNextToken;
 
-      if FirstCheck then
+      // If the first non-white character token after the semicolon
+      // is "cvar", "export', "external", or "public", there is
+      // a variable modifier present.
+      // This does not take into account the "absolute" modifier
+      // (which is not preceeded by a semicolon).
+        
+      ModifierFound :=  
+        (ttemp.MyType = TOK_IDENTIFIER) and
+        (ttemp.Info.StandardDirective in 
+          [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]);
+          
+      if ModifierFound then
       begin
-        // If the first non-white character token after the semicolon
-        // is "cvar", "export', "external", or "public", there is
-        // a variable modifier present.
-
-        // This does not take into account the "absolute" modifier
-        // (which is not preceeded by a semicolon).
-        FirstCheck := False;
-        if (ttemp.MyType = TOK_IDENTIFIER) and
-           (ttemp.Info.StandardDirective in
-             [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]) then
-        begin
-          ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
-          FreeAndNil(ttemp)
-        end
-        else
-        begin
-          Finished := True;
-          Scanner.UnGetToken(ttemp);
-        end;
-        while not Finished do
+        ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
+        FreeAndNil(ttemp);
+        
+        { now eat tokens up to a ";" }
+        SemicolonFound := false;
+        while not SemicolonFound do
         begin
           ttemp := GetNextToken;
           if ttemp.IsSymbol(SYM_SEMICOLON) then
           begin
-            Finished := True;
-            FirstCheck := False;
+            SemicolonFound := True;
             ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ttemp.Data;
           end
           else
           begin
             ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
           end;
-          FreeAndNil(ttemp)
+          FreeAndNil(ttemp);
         end;
-      end;
-    until Finished and not FirstCheck;
+      end else
+        Scanner.UnGetToken(ttemp);
+    until not ModifierFound;
   end;
   
 var

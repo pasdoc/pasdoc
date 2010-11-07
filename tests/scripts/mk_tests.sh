@@ -198,3 +198,4 @@ mk_test ok_external_class_hierarchy ok_external_class_hierarchy.pas --external-c
 mk_test ok_anonymous_methods ok_anonymous_methods.pas
 mk_test ok_class_record_helpers ok_class_record_helpers.pas
 mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas error_bom_utf32_be.pas
+mk_test ok_cvar ok_cvar.pas
