@@ -75,7 +75,7 @@ upload_one_format ()
   TIMESTAMP_FILENAME_NONDIR="$FORMAT.timestamp"
   TIMESTAMP_FILENAME="$TEMP_PATH""$TIMESTAMP_FILENAME_NONDIR"
   echo "Creating $TIMESTAMP_FILENAME_NONDIR ..."
-  date '+%F %T' > "$TIMESTAMP_FILENAME"
+  date --rfc-2822 > "$TIMESTAMP_FILENAME"
   echo "$SF_USERNAME" >> "$TIMESTAMP_FILENAME"
 
   # Do the actual uploading to the server
@@ -103,10 +103,6 @@ upload_one_format ()
   # "kambi,pasdoc" (not just "kambi"), so I'm logged with default
   # group "pasdoc" already.
 
-  echo 'Unpacking on shell.sourceforge.net. If this fails, create a shell by'
-  echo '  ssh -t '"$SF_USERNAME"',pasdoc@shell.sourceforge.net create'
-  echo 'and rerun this script.'
-
   ssh "$SF_USERNAME",pasdoc@shell.sourceforge.net <<EOF
   cd "$SF_PATH"
   tar xzf "$ARCHIVE_FILENAME_NONDIR"
@@ -119,6 +115,9 @@ EOF
 
   ./download_correct_tests_output.sh "$FORMAT"
 }
+
+echo 'Making sure interactive shell on SourceForge is created (for later "Uploading on SF" stage) ...'
+ssh "$SF_USERNAME",pasdoc@shell.sourceforge.net create
 
 for FORMAT; do
   upload_one_format "$FORMAT"
