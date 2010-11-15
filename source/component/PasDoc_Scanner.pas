@@ -532,106 +532,112 @@ begin
     FBufferedToken := nil;
     Exit;
   end;
-  
+
   Finished := False;
   repeat
     { check if we have a tokenizer left }
     if (FCurrentTokenizer = -1) then
       raise ETokenizerStreamEnd.Create('Unexpected end of stream', [], 1);
 
-    if FTokenizers[FCurrentTokenizer].HasData then 
+    if FTokenizers[FCurrentTokenizer].HasData then
     begin
       { get next token from tokenizer }
       Result := FTokenizers[FCurrentTokenizer].GetToken;
-      
-      { if token is a directive, then we handle it }
-      if Result.MyType = TOK_DIRECTIVE then
-      begin
-        if IdentifyDirective(Result.CommentContent, dt, 
-          DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then 
+      try
+        { if token is a directive, then we handle it }
+        if Result.MyType = TOK_DIRECTIVE then
         begin
-          case dt of
-            DT_DEFINE: 
-              HandleDefineDirective(DirectiveParamBlack, DirectiveParamWhite);
-            DT_ELSE: 
-              begin
-                DoMessage(5, pmtInformation, 'ELSE encountered', []);
-                if (FDirectiveLevel > 0) then
+          if IdentifyDirective(Result.CommentContent, dt,
+            DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then
+          begin
+            case dt of
+              DT_DEFINE:
+                HandleDefineDirective(DirectiveParamBlack, DirectiveParamWhite);
+              DT_ELSE:
                 begin
-                  if not SkipUntilElseOrEndif then
-                    Dec(FDirectiveLevel);
-                end else
-                  DoError(GetStreamInfo + ': unexpected $ELSE directive', []);
-              end;
-            DT_ENDIF, DT_IFEND:
-              begin
-                DoMessage(5, pmtInformation, '$%s encountered', [DirectiveName]);
-                if (FDirectiveLevel > 0) then
-                begin
-                  Dec(FDirectiveLevel);
-                  DoMessage(6, pmtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
-                end else 
-                  DoError(GetStreamInfo + ': unexpected $%s directive', [DirectiveName]);
-              end;
-            DT_IFDEF: HandleIfDirective(IsSymbolDefined(DirectiveParamBlack), 
-              'IFDEF', DirectiveParamBlack);
-            DT_IFNDEF: HandleIfDirective(not IsSymbolDefined(DirectiveParamBlack),
-              'IFNDEF', DirectiveParamBlack);
-            DT_IFOPT: HandleIfDirective(IsSwitchDefined(DirectiveParamBlack),
-              'IFOPT', DirectiveParamBlack);
-            DT_IF: HandleIfDirective(IsIfConditionTrue(DirectiveParamWhite),
-              'IF', DirectiveParamWhite);
-            DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
-              begin
-                if (Length(DirectiveParamBlack) >= 2) and
-                   (DirectiveParamBlack[1] = '%') and
-                   (DirectiveParamBlack[Length(DirectiveParamBlack)] = '%') then
-                begin
-                  (* Then this is FPC's feature, see
-                    "$I or $INCLUDE : Include compiler info" on
-                    [http://www.freepascal.org/docs-html/prog/progsu30.html]. 
-                    
-                    Unlike FPC, PasDoc will not expand the %variable%
-                    (for reasoning, see comments in 
-                    ../../tests/ok_include_environment.pas file). 
-                    We change Result to say that it's a string literal
-                    (but we leave Result.Data as it is, to show exact
-                    info to the user). We do *not* want to enclose it in
-                    quotes, because then real string literal '{$I %DATE%}'
-                    wouldn't be different than using {$I %DATE%} feature. *)
-                    
-                  Result.MyType := TOK_STRING;
-                  Break;
-                end else
-                begin
-                  OpenIncludeFile(DirectiveParamBlack);
+                  DoMessage(5, pmtInformation, 'ELSE encountered', []);
+                  if (FDirectiveLevel > 0) then
+                  begin
+                    if not SkipUntilElseOrEndif then
+                      Dec(FDirectiveLevel);
+                  end else
+                    DoError(GetStreamInfo + ': unexpected $ELSE directive', []);
                 end;
-              end;
-            DT_UNDEF: 
-              begin
-                DoMessage(6, pmtInformation, 'UNDEF encountered (%s)', [DirectiveParamBlack]);
-                DeleteSymbol(DirectiveParamBlack);
-              end;
+              DT_ENDIF, DT_IFEND:
+                begin
+                  DoMessage(5, pmtInformation, '$%s encountered', [DirectiveName]);
+                  if (FDirectiveLevel > 0) then
+                  begin
+                    Dec(FDirectiveLevel);
+                    DoMessage(6, pmtInformation, 'FDirectiveLevel = ' + IntToStr(FDirectiveLevel), []);
+                  end else
+                    DoError(GetStreamInfo + ': unexpected $%s directive', [DirectiveName]);
+                end;
+              DT_IFDEF: HandleIfDirective(IsSymbolDefined(DirectiveParamBlack),
+                'IFDEF', DirectiveParamBlack);
+              DT_IFNDEF: HandleIfDirective(not IsSymbolDefined(DirectiveParamBlack),
+                'IFNDEF', DirectiveParamBlack);
+              DT_IFOPT: HandleIfDirective(IsSwitchDefined(DirectiveParamBlack),
+                'IFOPT', DirectiveParamBlack);
+              DT_IF: HandleIfDirective(IsIfConditionTrue(DirectiveParamWhite),
+                'IF', DirectiveParamWhite);
+              DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
+                begin
+                  if (Length(DirectiveParamBlack) >= 2) and
+                     (DirectiveParamBlack[1] = '%') and
+                     (DirectiveParamBlack[Length(DirectiveParamBlack)] = '%') then
+                  begin
+                    (* Then this is FPC's feature, see
+                      "$I or $INCLUDE : Include compiler info" on
+                      [http://www.freepascal.org/docs-html/prog/progsu30.html].
+
+                      Unlike FPC, PasDoc will not expand the %variable%
+                      (for reasoning, see comments in
+                      ../../tests/ok_include_environment.pas file).
+                      We change Result to say that it's a string literal
+                      (but we leave Result.Data as it is, to show exact
+                      info to the user). We do *not* want to enclose it in
+                      quotes, because then real string literal '{$I %DATE%}'
+                      wouldn't be different than using {$I %DATE%} feature. *)
+
+                    Result.MyType := TOK_STRING;
+                    Break;
+                  end else
+                  begin
+                    OpenIncludeFile(DirectiveParamBlack);
+                  end;
+                end;
+              DT_UNDEF:
+                begin
+                  DoMessage(6, pmtInformation, 'UNDEF encountered (%s)', [DirectiveParamBlack]);
+                  DeleteSymbol(DirectiveParamBlack);
+                end;
+            end;
+          end else
+          begin
+            ResolveSwitchDirectives(Result.Data);
           end;
+
+          FreeAndNil(Result);
+        end else
+        if ExpandMacro(Result) then
+        begin
+          FreeAndNil(Result);
         end else
         begin
-          ResolveSwitchDirectives(Result.Data);
+          { If the token is not a directive, and not an identifier that expands
+            to a macro, then we just return it. }
+          Finished := True;
         end;
-        
+
+      except
         FreeAndNil(Result);
-      end else
-      if ExpandMacro(Result) then
-      begin
-        FreeAndNil(Result);
-      end else
-      begin
-        { If the token is not a directive, and not an identifier that expands
-          to a macro, then we just return it. }
-        Finished := True;
+        raise;
       end;
+
     end else
     begin
-      DoMessage(5, pmtInformation, 'Closing file "%s"', 
+      DoMessage(5, pmtInformation, 'Closing file "%s"',
         [FTokenizers[FCurrentTokenizer].GetStreamInfo]);
       FTokenizers[FCurrentTokenizer].Free;
       FTokenizers[FCurrentTokenizer] := nil;
