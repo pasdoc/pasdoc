@@ -306,6 +306,8 @@ begin
     p.IgnoreLeading := IgnoreLeading;
 
     LLoaded := false;
+    
+    U := nil;
 
     if (CacheDir <> '') and FileExists(LCacheFileName) then
     begin
@@ -339,6 +341,9 @@ begin
     if not LLoaded then
     begin
       DoMessage(2, pmtInformation, 'Now parsing file %s...', [SourceFileName]);
+      { In case unit was loaded from cache, but rejected for whatever reason,
+        free it to avoid memory leaks. }
+      FreeAndNil(U);
       p.ParseUnitOrProgram(U);
     end;
 
