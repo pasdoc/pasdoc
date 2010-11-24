@@ -1218,7 +1218,7 @@ procedure TParser.ParseRecordCase(const R: TPasCio;
 var
   t1: TToken;
   LNeedId: boolean;
-  P: TPasItem;
+  P: TPasFieldVariable;
 begin
   t1 := GetNextToken;
   try
@@ -1231,7 +1231,7 @@ begin
       { consume and free the colon token }
       GetNextToken.Free; 
 
-      P := TPasItem.Create;
+      P := TPasFieldVariable.Create;
       p.Name := T1.Data;
       p.RawDescriptionInfo^ := GetLastComment;
       p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);

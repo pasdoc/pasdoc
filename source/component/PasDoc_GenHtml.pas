@@ -634,7 +634,7 @@ var
   SectionHeads: array[TSections] of string;
   Section: TSections;
   AnyItem: boolean;
-  Fv: TPasItem;
+  Fv: TPasFieldVariable;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -667,12 +667,8 @@ begin
   begin
     for I := 0 to CIO.Fields.Count - 1 do
     begin
-      Fv := CIO.Fields.PasItemAt[I];
-      { TODO: instead of this TPasFieldVariable check, maybe fix parser 
-        (after nested types change) to not place here anything 
-        else than TPasFieldVariable? }
-      if (Fv is TPasFieldVariable) and 
-        TPasFieldVariable(Fv).IsConstant then
+      Fv := TPasFieldVariable(CIO.Fields.PasItemAt[I]);
+      if Fv.IsConstant then
         Fv.FullDeclaration := FLanguage.Translation[trInternal] + ' ' +
           Fv.FullDeclaration;
     end;
