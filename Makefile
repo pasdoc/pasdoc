@@ -159,6 +159,7 @@ default: build-fpc-default-debug
 
 # Clean up the output files.
 clean:
+	rm -f source/console/pasdoc.compiled
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
 endif
