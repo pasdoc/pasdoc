@@ -618,6 +618,13 @@ procedure Main;
 var
   PasdocMain: TPasdocMain;
 begin
+{$IFNDEF FPC}
+  {$IFDEF CONDITIONALEXPRESSIONS}
+    {$IF CompilerVersion > 17}
+      ReportMemoryLeaksOnShutdown := DebugHook <> 0;
+    {$IFEND}
+  {$ENDIF}
+{$ENDIF}
   try
     PasdocMain := TPasdocMain.Create;
     try

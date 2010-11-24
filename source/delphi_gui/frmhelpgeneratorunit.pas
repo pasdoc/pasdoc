@@ -624,6 +624,11 @@ var
   Index: integer;
   Vis: TVisibility;
 begin
+{$IFDEF CONDITIONALEXPRESSIONS}
+  {$IF COMPILERVERSION > 17}
+    ReportMemoryLeaksOnShutDown := DebugHook <> 0;
+  {$IFEND}
+{$ENDIF}
   MisspelledWords:= TStringList.Create;
   MisspelledWords.Sorted := True;
   MisspelledWords.Duplicates := dupIgnore;
