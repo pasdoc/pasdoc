@@ -498,10 +498,11 @@ type
   TPasConstant = class(TPasItem)
   end;
 
-  { @abstract(Pascal global variable or field of CIO.)
+  { @abstract(Pascal global variable or field or nested constant of CIO.)
   
-    Precise definition is "a name with some type".
-    And optionally with some initial value, for global variables.
+    Precise definition is "a name with some type". And Optionally with some
+    initial value, for global variables. It also holds a nested constant of
+    extended classes and records.
     In the future we may introduce here some property like Type: TPasType. }
   TPasFieldVariable = class(TPasItem)
   private
@@ -510,6 +511,7 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
+    { @abstract(Set if this is a nested constant field) }
     property IsConstant: Boolean read FIsConstant write FIsConstant;
   end;
 
