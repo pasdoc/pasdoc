@@ -66,9 +66,9 @@ const
     If you want, you can also bump the suffix -xxx added here,
     when some SVN revision changes cache format. }
 {$IFDEF STRING_UNICODE}
-  CacheFormatVersion = PasDoc_Version + '-0U';
+  CacheFormatVersion = PasDoc_Version + '-1U';
 {$ELSE}
-  CacheFormatVersion = PasDoc_Version + '-0';
+  CacheFormatVersion = PasDoc_Version + '-1';
 {$ENDIF}
 
 var

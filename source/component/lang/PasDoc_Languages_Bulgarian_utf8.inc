@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} 'Модули',
     {trClassHierarchy} 'Йерархия на класовете',
     {trCio} 'Класове, интерфейси и обекти',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Идентификатори',
     {trGvUses} 'Зависимости на модулите',
     {trGvClasses} 'Зависимости на класовете',
@@ -63,6 +65,7 @@ RTransTable = (
     {trOverview} 'Съдържание',
     {trIntroduction} 'Въведение',
     {trConclusion} 'Заключение',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Всички класове, интерфейси и обекти',
     {trHeadlineConstants} 'Всички константи',
     {trHeadlineFunctionsAndProcedures} 'Всички процедури и функции',
@@ -97,5 +100,6 @@ RTransTable = (
     {trOnDateTime} 'на дата', //really???
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

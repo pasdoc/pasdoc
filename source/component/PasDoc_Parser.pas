@@ -20,6 +20,7 @@ interface
 
 uses
   Classes,
+  Contnrs,
   PasDoc_Types,
   PasDoc_Items,
   PasDoc_Scanner,
@@ -27,6 +28,36 @@ uses
   PasDoc_StringVector;
 
 type
+  TCioParseMode = (pmUndefined, pmConst, pmVar, pmType);
+  { @name stores a CIO reference and current state. }
+  TPasCioHelper = class(TObject)
+  private
+    FCio: TPasCio;
+    FCurVisibility: TVisibility;
+    FMode: TCioParseMode;
+    FSkipCioDecl: Boolean;
+  public
+    { Frees included objects and calls its own destructor. Objects are not
+      owned by default. }
+    procedure FreeAll;
+    property Cio: TPasCio read FCio write FCio;
+    property CurVisibility: TVisibility read FCurVisibility write FCurVisibility;
+    property Mode: TCioParseMode read FMode write FMode;
+    property SkipCioDecl: Boolean read FSkipCioDecl write FSkipCioDecl;
+  end;
+
+  { A stack of @link(TPasCioHelper) objects currently used to parse nested
+    classes and records }
+  TPasCioHelperStack = class(TObjectStack)
+  public
+    { Frees all items including their CIOs and clears the stack }
+    procedure Clear;
+    function Push(AHelper: TPasCioHelper): TPasCioHelper;
+      {$IFDEF USE_INLINE} inline; {$ENDIF}
+    function Pop: TPasCioHelper; {$IFDEF USE_INLINE} inline; {$ENDIF}
+    function Peek: TPasCioHelper; {$IFDEF USE_INLINE} inline; {$ENDIF}
+  end;
+
   // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).
   // It is modelled after TStringList but has only the minimum number
   // of methods required for use in PasDoc.
@@ -106,6 +137,8 @@ type
   TParser = class
   private
     FImplicitVisibility: TImplicitVisibility;
+
+    FCioSk : TPasCioHelperStack;
 
     { Last comment found in input.
       This only takes into account normal comments, i.e. not back-comments.
@@ -191,7 +224,7 @@ type
     function GetNextToken(out WhitespaceCollector: string): TToken; overload;
     
     { Just like @link(PeekNextToken), but returned token is already consumed.
-      Moreover, whitespace collected is appended to 
+      Moreover, whitespace collected is appended to
       WhitespaceCollectorItem.FullDeclaration
       (does not delete previous WhitespaceCollectorItem.FullDeclaration value, 
       it only appends to it). }
@@ -255,8 +288,21 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
     
+    procedure ParseCioEx(const U: TPasUnit;
+      const CioName: string; CIOType: TCIOType;
+      const RawDescriptionInfo: TRawDescriptionInfo;
+      const IsInRecordCase: boolean);
+
+    function ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
+      const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
+
+    procedure ParseCioTypeDecl(out ACio: TPasCio;
+      const CioName: string; CIOType: TCIOType;
+      const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
+
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
-    procedure ParseConstant(const U: TPasUnit);
+    procedure ParseConstant(const Item: TPasItem;
+      const Visibility: TVisibility = viPublished);
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
@@ -337,6 +383,7 @@ type
     procedure ParseProgram(U: TPasUnit);
     procedure ParseProgramOrLibraryUses(U: TPasUnit);
     procedure ParseLibrary(U: TPasUnit);
+
   public
     { Create a parser, initialize the scanner with input stream S.
       All strings in SD are defined compiler directives. }
@@ -398,6 +445,7 @@ begin
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
+  FCioSk := TPasCioHelperStack.Create;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -407,6 +455,7 @@ begin
   FCommentMarkers.Free;
   Scanner.Free;
   ItemsForNextBackComment.Free;
+  FCioSk.Free;
   inherited;
 end;
 
@@ -791,424 +840,19 @@ procedure TParser.ParseCIO(const U: TPasUnit;
   const CioName: string; CIOType: TCIOType; 
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: boolean);
-
-  { Parse fields clause, i.e. something like
-      NAME1, NAME2, ... : TYPE;
-    If AddToFields then adds parsed fields to i.Fields.
-    Visibility of created fields is set to given Visibility parameter. }
-  procedure ParseFields(i: TPasCio; AddToFields: boolean; 
-    Visibility: TVisibility; const ClassKeyWordString: string);
-  var Items: TPasItems;
-  begin
-    if AddToFields then
-      Items := i.Fields else
-      Items := nil;
-      
-    { Note: 4th arg for ParseFieldsVariables is always "false",
-      not "IsInRecordCase". That's because even if declaration
-      of this CIO is within a record case, then we want to
-      see record's terminating "end" keyword anyway.
-      So it doesn't matter here whether our IsInRecordCase 
-      parameter is true. }
-    ParseFieldsVariables(Items, true, Visibility, false, ClassKeyWordString);
-  end;
-
-var
-  Finished: Boolean;
-  i: TPasCio;
-  M: TPasMethod;
-  p: TPasProperty;
-  s: string;
-  Visibility: TVisibility;
-  t: TToken;
-  ClassKeyWordString: string;
-  StrictVisibility: boolean;
 begin
-  DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioName]);
-  StrictVisibility := False;
-  t := nil;
-  i := nil;
   try
-    t := GetNextToken;
-
-    { Test for forward class definition here:
-        class MyClass = class;
-      with no ancestor or class members listed after the word class. }
-    if t.IsSymbol(SYM_SEMICOLON) then begin
-      // No error, continue the parsing.
-      t.Free;
-      Exit;
-    end;
-
-    i := TPasCio.Create;
-    i.Name := CioName;
-    i.RawDescriptionInfo^ := RawDescriptionInfo;
-    i.MyType := CIOType;
-
-    if (CIOType in [ CIO_CLASS, CIO_PACKEDCLASS ] ) and
-      (t.MyType = TOK_IDENTIFIER) and
-      (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
-    begin
-      if t.Info.StandardDirective = SD_ABSTRACT then
-        i.ClassDirective := CT_ABSTRACT
-      else
-        i.ClassDirective := CT_SEALED;
-      FreeAndNil(t);
-      t := GetNextToken;
-    end
-    else if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
-      (t.MyType = TOK_IDENTIFIER) and
-      (t.Info.StandardDirective = SD_HELPER) then
-    begin
-      { Class or record helpers are declared as:
-        identifierName = class|record helper [(ancestor list)] for TypeIdentifierName
-          memberList
-        end;
-
-        Ancestor list is optional, records cannot have ancestors, accepted nevertheless.
-      }
-      i.ClassDirective := CT_HELPER;
-      FreeAndNil(t);
-      t := GetNextToken;
-    end;
-
-    { This allows to write back-comment for class declarations like
-        TMyClass = class(TMyAncestor) //< back comment
-    }
-    ItemsForNextBackComment.ClearAndAdd(I);
-
-    { get all ancestors; remember, this could look like
-      TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
-      All class ancestors are supposed to be included in the docs!
-    }
-    { TODO -otwm :
-      That's not quite true since multiple inheritance is not supported by
-       Delphi/Kylix or FPC. Every entry but the first must be an interface. }
-    if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
-    begin
-      { optional ancestor introduced by ( }
-      Finished := False;
-      { outer repeat loop: one ancestor per pass }
-      repeat
-        FreeAndNil(t);
-        t := GetNextToken;
-
-        if t.MyType = TOK_IDENTIFIER then { an ancestor }
-        begin
-          s := t.Data;
-              { inner repeat loop: one part of the ancestor per name }
-          repeat
-            FreeAndNil(t);
-            t := Scanner.GetToken;
-            if not t.IsSymbol(SYM_PERIOD) then
-            begin
-              Scanner.UnGetToken(t);
-              Break; { leave inner repeat loop }
-            end;
-            FreeAndNil(t);
-            s := s + '.';
-            t := Scanner.GetToken;
-            if t.MyType <> TOK_IDENTIFIER then
-              DoError('Expected class, object or interface in ancestor' +
-                ' declaration', []);
-
-            s := s + t.Data;
-          until False;
-          i.Ancestors.Add(s);
-        end
-        else begin
-          if (t.IsSymbol(SYM_COMMA)) then
-            { comma, separating two ancestors }
-            FreeAndNil(t)
-          else begin
-            CheckToken(T, SYM_RIGHT_PARENTHESIS);
-            FreeAndNil(t);
-            Finished := true;
-          end;
-        end;
-      until Finished;
-    end
-    else begin
-      Scanner.UnGetToken(t);
-      case i.MyType of
-        CIO_CLASS, CIO_PACKEDCLASS:
-          if not SameText(i.Name, 'tobject') then
-            i.Ancestors.Add('TObject');
-        CIO_SPINTERFACE:
-          if not SameText(i.Name, 'idispinterface') then
-            i.Ancestors.Add('IDispInterface');
-        CIO_INTERFACE:
-          if not SameText(i.Name, 'iinterface') then
-            i.Ancestors.Add('IInterface');
-        CIO_OBJECT, CIO_PACKEDOBJECT:
-          if not SameText(i.Name, 'tobject') then
-            i.Ancestors.Add('TObject');
-      end; //case
-    end;
-    t := GetNextToken;
-
-    if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
-        (i.ClassDirective = CT_HELPER) then
-    begin
-      if t.IsKeyWord(KEY_FOR) then
-      begin
-        FreeAndNil(t);
-        t := GetNextToken;
-        if t.MyType = TOK_IDENTIFIER then
-        begin
-          i.HelperTypeIdentifier := t.Data;
-          FreeAndNil(t);
-          t := GetNextToken;
-        end
-        else
-          DoError('Identifier expected but %s found', ['''' + t.Data + '''']);
-      end
-      else
-        DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
-    end;
-
-    if (t.IsSymbol(SYM_LEFT_BRACKET)) then
-    begin
-      FreeAndNil(t);
-
-      { for the time being, we throw away the ID itself }
-      t := GetNextToken;
-      if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
-        DoError('Literal String or identifier as interface ID expected', []);
-      FreeAndNil(t);
-
-      t := GetNextToken;
-      CheckToken(T, SYM_RIGHT_BRACKET);
-      FreeAndNil(t);
-    end
-    else
-      Scanner.UnGetToken(t);
-
-
-    if I.MyType in [ CIO_CLASS, CIO_PACKEDCLASS ] then
-    begin
-      { Visibility of members at the beginning of a class declaration
-        that don't have a specified visibility is controlled
-        by ImplicitVisibility value. }
-      case ImplicitVisibility of
-        ivPublic:
-          if Scanner.SwitchOptions['M'] then
-            Visibility := viPublished
-          else
-            Visibility := viPublic;
-        ivPublished:
-          Visibility := viPublished;
-        ivImplicit:
-          Visibility := viImplicit;
-        else raise EInternalError.Create('ImplicitVisibility = ??');
-      end;
-    end else
-    begin
-      { Everything besides a class always starts with visibility "public". }
-      Visibility := viPublic;
-    end;
-
-    { now collect methods, fields and properties }
-
-    { This is needed to include ClassKeyWordString in
-      class methods declarations. }
-    ClassKeyWordString := '';
-
-    Finished := False;
-    repeat
-      FreeAndNil(t);
-      t := GetNextToken;
-
-      if (t.IsSymbol(SYM_SEMICOLON)) then
-      begin
-        { A declaration of type "name = class(ancestor);" }
-        Scanner.UnGetToken(T);
-        Finished := True;
-      end
-      else if (t.MyType = TOK_KEYWORD) then
-      begin
-        if StrictVisibility then
-          DoError('"strict" found in an unexpected location', []);
-
-        case t.Info.KeyWord of
-          KEY_VAR:
-            begin
-              ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
-            end;
-          KEY_CLASS: ClassKeyWordString := t.Data;
-          KEY_CONSTRUCTOR,
-          KEY_DESTRUCTOR,
-          KEY_FUNCTION,
-          KEY_PROCEDURE:
-            begin
-              ParseCDFP(M, ClassKeyWordString,
-                t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                GetLastComment, true, true);
-
-              ClassKeyWordString := '';
-
-              if Visibility in ShowVisibilities then
-              begin
-                M.Visibility := Visibility;
-                i.Methods.Add(M);
-              end else
-              begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(M);
-              end;
-            end;
-          KEY_END: Finished := True;
-          KEY_PROPERTY:
-            begin
-              ParseProperty(p);
-              if Visibility in ShowVisibilities then
-              begin
-                p.Visibility := Visibility;
-                i.Properties.Add(p);
-              end else
-              begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(p);
-              end;
-            end;
-          KEY_CASE: ParseRecordCase(i, false);
-        else // case
-            DoError('Unexpected %s', [T.Description]);
-        end; // case
-      end
-      else if (t.MyType = TOK_IDENTIFIER) then
-      begin
-        case t.Info.StandardDirective of
-          SD_OPERATOR:
-            begin
-              { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
-              KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
-
-              ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
-                GetLastComment, true, true);
-
-              ClassKeyWordString := '';
-
-              if Visibility in ShowVisibilities then
-              begin
-                M.Visibility := Visibility;
-                i.Methods.Add(M);
-              end
-              else begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(M);
-              end;
-            end;
-          SD_DEFAULT:
-            begin
-              if StrictVisibility then
-                DoError('"strict" found in an unexpected location', []);
-
-              { Note: 2nd arg for SkipDeclaration is always "false",
-                not "IsInRecordCase". That's because even if declaration
-                of this CIO is within a record case, then we want to
-                see record's terminating "end" keyword anyway.
-                So it doesn't matter here whether our IsInRecordCase
-                parameter is true. }
-              SkipDeclaration(nil, false);
-              DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
-            end;
-          SD_PUBLIC:
-            begin
-              if StrictVisibility then
-                DoError('"strict" found in an unexpected location', []);
-              Visibility := viPublic;
-            end;
-          SD_PUBLISHED:
-            begin
-              if StrictVisibility then
-                DoError('"strict" found in an unexpected location', []);
-              Visibility := viPublished;
-            end;
-          SD_PRIVATE:
-            begin
-              if StrictVisibility then
-              begin
-                StrictVisibility := False;
-                Visibility := viStrictPrivate;
-              end
-              else
-              begin
-                Visibility := viPrivate;
-              end;
-            end;
-          SD_PROTECTED:
-            begin
-              if StrictVisibility then
-              begin
-                StrictVisibility := False;
-                Visibility := viStrictProtected;
-              end
-              else
-              begin
-                Visibility := viProtected;
-              end;
-            end;
-          SD_AUTOMATED:
-            begin
-              Visibility := viAutomated;
-            end;
-          SD_STRICT: StrictVisibility := True;
-          else
-            begin
-              Scanner.UnGetToken(T);
-              ParseFields(i, Visibility in ShowVisibilities, Visibility,
-                ClassKeyWordString);
-              if not (Visibility in ShowVisibilities) then
-                ItemsForNextBackComment.Clear;
-              ClassKeyWordString := '';
-            end;
-        end;
-      end;
-      FreeAndNil(t);
-    until Finished;
-
-    ParseHintDirectives(i);
-
-    t := GetNextToken;
-    try
-      if not t.IsSymbol(SYM_SEMICOLON) then
-      begin
-        if IsInRecordCase then
-        begin
-          if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
-            Scanner.UnGetToken(t)
-          else
-            DoError('Unexpected symbol at end of sub-record', []);
-        end
-        else
-          DoError('Semicolon at the end of Class / Object / Interface' +
-            ' / Record expected', []);
-      end;
-    finally
-      FreeAndNil(t);
-    end;
-
-    if Assigned(U) then
-    begin
-      ItemsForNextBackComment.ClearAndAdd(i);
-      U.AddCIO(i); // This is the last line here since "U" owns the objects,
-                   // bad luck if adding the item raised an exception.
-    end
-    else
-      i.Free;
-
-  except
-    t.Free;
-    i.Free;
-    raise;
+    ParseCioEx(U, CioName, CIOType, RawDescriptionInfo, IsInRecordCase);
+  finally
+    FCioSk.Clear;
   end;
 end;
 
 { ---------------------------------------------------------------------------- }
-procedure TParser.ParseConstant(const U: TPasUnit);
+procedure TParser.ParseConstant(const Item: TPasItem;
+  const Visibility: TVisibility = viPublished);
 var
-  i: TPasConstant;
+  i: TPasItem;
   t: TToken;
   WhitespaceCollector: string;
 
@@ -1274,7 +918,12 @@ var
   {/AG}
 
 begin
-  i := TPasConstant.Create;
+  Assert((Item is TPasUnit) or (Item is TPasCio));
+  { When in CIO treat this constant as a constant field }
+  if Item is TPasCio then
+    i := TPasFieldVariable.Create
+  else
+    i := TPasConstant.Create;
   try
     i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
     DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
@@ -1306,8 +955,19 @@ begin
     {/AG}
 
     ItemsForNextBackComment.ClearAndAdd(i);
-    U.AddConstant(i); // This is the last line here since "U" owns the objects,
-                      // bad luck if adding the item raised an exception.
+    if Item is TPasCio then
+    begin
+      if Visibility in ShowVisibilities then
+      begin
+        i.Visibility := Visibility;
+        i.FullDeclaration := 'const ' + i.FullDeclaration;
+        TPasFieldVariable(i).IsConstant := True;
+        TPasCio(Item).Fields.Add(i);
+      end;
+    end
+    else
+      TPasUnit(Item).AddConstant(i); // This is the last line here since "U" owns the objects,
+                        // bad luck if adding the item raised an exception.
   except
     i.Free;
     raise;
@@ -1980,7 +1640,7 @@ begin
   ParseFieldsVariables(U.Variables, false, viPublished, false);
 end;
 
-procedure TParser.ParseFieldsVariables(Items: TPasItems; 
+procedure TParser.ParseFieldsVariables(Items: TPasItems;
   OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
   const ClassKeyWordString: string = '');
   
@@ -1993,7 +1653,6 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
     SemicolonFound: boolean;
     ttemp: TToken;
   begin
-    ModifierFound := False;
     repeat
       ttemp := GetNextToken;
       try
@@ -2484,7 +2143,738 @@ begin
   until false;
 end;
 
-{ TRawDescriptionInfoList --------------------------------------------------------------- }
+{ ------------------------------------------------------------ }
+
+function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
+  const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
+
+  { Parse fields clause, i.e. something like
+      NAME1, NAME2, ... : TYPE;
+    If AddToFields then adds parsed fields to i.Fields.
+    Visibility of created fields is set to given Visibility parameter. }
+  procedure ParseFields(AddToFields: Boolean;
+    Visibility: TVisibility; const ClassKeyWordString: string);
+  var Items: TPasItems;
+  begin
+    if AddToFields then
+      Items := ACio.Fields
+    else
+      Items := nil;
+
+    { Note: 4th arg for ParseFieldsVariables is always "false",
+      not "IsInRecordCase". That's because even if declaration
+      of this CIO is within a record case, then we want to
+      see record's terminating "end" keyword anyway.
+      So it doesn't matter here whether our IsInRecordCase
+      parameter is true. }
+    ParseFieldsVariables(Items, True, Visibility, False, ClassKeyWordString);
+  end;
+
+var
+  ClassKeyWordString: string;
+  Finished: Boolean;
+  M: TPasMethod;
+  p: TPasProperty;
+  StrictVisibility: Boolean;
+  t: TToken;
+begin
+  t := nil;
+  try
+  { This is needed to include ClassKeyWordString in
+    class methods declarations. }
+      ClassKeyWordString := '';
+      StrictVisibility := False;
+      Result := False;
+      Finished := False;
+      repeat
+        FreeAndNil(t);
+        t := GetNextToken;
+
+        if (t.IsSymbol(SYM_SEMICOLON)) then
+        begin
+          { A declaration of type "name = class(ancestor);" }
+          Scanner.UnGetToken(T);
+          Finished := True;
+          Result := TRUE;
+        end
+        else if (t.MyType = TOK_KEYWORD) then
+        begin
+          Mode := pmUndefined;
+          if StrictVisibility then
+            DoError('"strict" found in an unexpected location', []);
+
+          case t.Info.KeyWord of
+            KEY_VAR:
+              begin
+                if ClassKeyWordString = '' then
+                begin
+                  Mode := pmVar;
+                  ClassKeyWordString := t.Data;
+                  ParseFields(Visibility in ShowVisibilities, Visibility,
+                  ClassKeyWordString);
+                  if not (Visibility in ShowVisibilities) then
+                    ItemsForNextBackComment.Clear;
+                  ClassKeyWordString := '';
+                end
+                else
+                  ClassKeyWordString := Trim(ClassKeyWordString + t.Data);
+              end;
+            KEY_CLASS: ClassKeyWordString := t.Data;
+            KEY_CONSTRUCTOR,
+            KEY_DESTRUCTOR,
+            KEY_FUNCTION,
+            KEY_PROCEDURE:
+              begin
+                ParseCDFP(M, ClassKeyWordString,
+                  t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                  GetLastComment, true, true);
+
+                ClassKeyWordString := '';
+
+                if Visibility in ShowVisibilities then
+                begin
+                  M.Visibility := Visibility;
+                  ACio.Methods.Add(M);
+                end
+                else begin
+                  ItemsForNextBackComment.Clear;
+                  FreeAndNil(M);
+                end;
+              end;
+            KEY_END:
+              begin
+                Finished := True;
+                Result := TRUE;
+              end;
+            KEY_PROPERTY:
+              begin
+                ParseProperty(p);
+
+                if Visibility in ShowVisibilities then
+                begin
+                  p.Visibility := Visibility;
+                  ACio.Properties.Add(p);
+                end
+                else begin
+                  ItemsForNextBackComment.Clear;
+                  FreeAndNil(p);
+                end;
+              end;
+            KEY_CASE: ParseRecordCase(ACio, False);
+
+            KEY_TYPE:
+              begin
+                Mode := pmType;
+                FreeAndNil(t);
+                Exit;
+              end;
+            KEY_CONST:
+              begin
+                Mode := pmConst;
+                FreeAndNil(t);
+                ParseConstant(ACio, Visibility);
+              end;
+             else
+               DoError('Unexpected %s', [T.Description]);
+            end; // case
+        end
+        else if (t.MyType = TOK_IDENTIFIER) then
+        begin
+          case t.Info.StandardDirective of
+            SD_OPERATOR:
+              begin
+                { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
+                KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
+                Mode := pmUndefined;
+                ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
+                  GetLastComment, true, true);
+                ClassKeyWordString := '';
+
+                if Visibility in ShowVisibilities then
+                begin
+                  M.Visibility := Visibility;
+                  ACio.Methods.Add(M);
+                end
+                else begin
+                  ItemsForNextBackComment.Clear;
+                  FreeAndNil(M);
+                end;
+              end;
+            SD_DEFAULT:
+              begin
+                if StrictVisibility then
+                  DoError('"strict" found in an unexpected location', []);
+
+                { Note: 2nd arg for SkipDeclaration is always "false",
+                  not "IsInRecordCase". That's because even if declaration
+                  of this CIO is within a record case, then we want to
+                  see record's terminating "end" keyword anyway.
+                  So it doesn't matter here whether our IsInRecordCase
+                  parameter is true. }
+                SkipDeclaration(nil, false);
+                DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
+              end;
+            SD_PUBLIC:
+              begin
+                if StrictVisibility then
+                  DoError('"strict" found in an unexpected location', []);
+
+                Visibility := viPublic;
+                Mode := pmUndefined;
+              end;
+            SD_PUBLISHED:
+              begin
+                if StrictVisibility then
+                  DoError('"strict" found in an unexpected location', []);
+
+                Visibility := viPublished;
+                Mode := pmUndefined;
+              end;
+            SD_PRIVATE:
+              begin
+                if StrictVisibility then
+                begin
+                  StrictVisibility := False;
+                  Visibility := viStrictPrivate;
+                end
+                else
+                  Visibility := viPrivate;
+                Mode := pmUndefined;
+              end;
+            SD_PROTECTED:
+              begin
+                if StrictVisibility then
+                begin
+                  StrictVisibility := False;
+                  Visibility := viStrictProtected;
+                end
+                else
+                  Visibility := viProtected;
+                Mode := pmUndefined;
+              end;
+            SD_AUTOMATED:
+              begin
+                Visibility := viAutomated;
+                Mode := pmUndefined;
+              end;
+            SD_STRICT:
+              begin
+                StrictVisibility := True;
+                Mode := pmUndefined;
+              end
+          else // case
+              Scanner.UnGetToken(T);
+              if Mode = pmType then
+                Exit;
+              if Mode = pmConst then
+                ParseConstant(ACio, Visibility)
+              else begin
+                ParseFields(Visibility in ShowVisibilities, Visibility,
+                  ClassKeyWordString);
+                if not (Visibility in ShowVisibilities) then
+                  ItemsForNextBackComment.Clear;
+                ClassKeyWordString := '';
+              end;
+          end; // case
+        end;
+        FreeAndNil(t);
+      until Finished;
+
+      ParseHintDirectives(ACio);
+
+      t := GetNextToken;
+      if not t.IsSymbol(SYM_SEMICOLON) then
+      begin
+        if IsInRecordCase then
+        begin
+          if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+            Scanner.UnGetToken(t)
+          else
+            DoError('Unexpected symbol at end of sub-record', []);
+        end
+        else
+          DoError('Semicolon at the end of Class / Object / Interface' +
+            ' / Record expected', []);
+      end;
+  finally
+    t.Free;
+  end;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TParser.ParseCioTypeDecl(out ACio: TPasCio;
+  const CioName: string; CIOType: TCIOType;
+  const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
+var
+  Finished: Boolean;
+  s: string;
+  t: TToken;
+begin
+  DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioName]);
+  t := nil;
+  try
+    t := GetNextToken;
+
+    { Test for forward class definition here:
+        class MyClass = class;
+      with no ancestor or class members listed after the word class. }
+    if t.IsSymbol(SYM_SEMICOLON) then
+      // No error, continue the parsing.
+      Exit;
+
+    ACio := TPasCio.Create;
+    try
+      ACio.Name := CioName;
+      ACio.RawDescriptionInfo^ := RawDescriptionInfo;
+      ACio.MyType := CIOType;
+
+      if (CIOType in [ CIO_CLASS, CIO_PACKEDCLASS ] ) and
+        (t.MyType = TOK_IDENTIFIER) and
+        (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
+      begin
+        if t.Info.StandardDirective = SD_ABSTRACT then
+          ACio.ClassDirective := CT_ABSTRACT
+        else
+          ACio.ClassDirective := CT_SEALED;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end
+      else if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+        (t.MyType = TOK_IDENTIFIER) and
+        (t.Info.StandardDirective = SD_HELPER) then
+      begin
+        { Class or record helpers are declared as:
+          identifierName = class|record helper [(ancestor list)] for TypeIdentifierName
+            memberList
+          end;
+
+          Ancestor list is optional, records cannot have ancestors, accepted nevertheless.
+        }
+        ACio.ClassDirective := CT_HELPER;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end;
+
+      { This allows to write back-comment for class declarations like
+          TMyClass = class(TMyAncestor) //< back comment
+      }
+      ItemsForNextBackComment.ClearAndAdd(ACio);
+
+      { get all ancestors; remember, this could look like
+        TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
+        All class ancestors are supposed to be included in the docs!
+      }
+      { TODO -otwm :
+        That's not quite true since multiple inheritance is not supported by
+         Delphi/Kylix or FPC. Every entry but the first must be an interface. }
+      if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
+          { optional ancestor introduced by ( }
+        FreeAndNil(t);
+        Finished := False;
+        { outer repeat loop: one ancestor per pass }
+        repeat
+          FreeAndNil(t);
+          t := GetNextToken;
+
+          if t.MyType = TOK_IDENTIFIER then { an ancestor }
+          begin
+            s := t.Data;
+                { inner repeat loop: one part of the ancestor per name }
+            repeat
+              FreeAndNil(t);
+              t := Scanner.GetToken;
+              if not t.IsSymbol(SYM_PERIOD) then
+              begin
+                Scanner.UnGetToken(t);
+                Break; { leave inner repeat loop }
+              end;
+              FreeAndNil(t);
+              s := s + '.';
+              t := Scanner.GetToken;
+              if t.MyType <> TOK_IDENTIFIER then
+                DoError('Expected class, object or interface in ancestor' +
+                  ' declaration', []);
+
+              s := s + t.Data;
+            until False;
+            ACio.Ancestors.Add(s);
+          end
+          else begin
+            if (t.IsSymbol(SYM_COMMA)) then
+                { comma, separating two ancestors }
+              FreeAndNil(t)
+            else begin
+              CheckToken(t, SYM_RIGHT_PARENTHESIS);
+              FreeAndNil(t);
+              Finished := true;
+            end;
+          end;
+        until Finished;
+      end
+      else begin
+        Scanner.UnGetToken(t);
+        case ACio.MyType of
+          CIO_CLASS, CIO_PACKEDCLASS:
+            begin
+              if not SameText(ACio.Name, 'tobject') then
+                ACio.Ancestors.Add('TObject');
+            end;
+          CIO_SPINTERFACE:
+            begin
+              if not SameText(ACio.Name, 'idispinterface') then
+                ACio.Ancestors.Add('IDispInterface');
+            end;
+          CIO_INTERFACE:
+            begin
+              if not SameText(ACio.Name, 'iinterface') then
+                ACio.Ancestors.Add('IInterface');
+            end;
+          CIO_OBJECT, CIO_PACKEDOBJECT:
+            begin
+              if not SameText(ACio.Name, 'tobject') then
+              ACio.Ancestors.Add('TObject');
+            end;
+        end;
+      end;
+      t := GetNextToken;
+
+      if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+          (ACio.ClassDirective = CT_HELPER) then
+      begin
+        if t.IsKeyWord(KEY_FOR) then
+        begin
+          FreeAndNil(t);
+          t := GetNextToken;
+          if t.MyType = TOK_IDENTIFIER then
+          begin
+            ACio.HelperTypeIdentifier := t.Data;
+            FreeAndNil(t);
+            t := GetNextToken;
+          end
+          else
+            DoError('Identifier expected but %s found', ['''' + t.Data + '''']);
+        end
+        else
+          DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
+      end;
+
+      if (t.IsSymbol(SYM_LEFT_BRACKET)) then
+      begin
+        FreeAndNil(t);
+
+        { for the time being, we throw away the ID itself }
+        t := GetNextToken;
+        if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
+          DoError('Literal String or identifier as interface ID expected', []);
+        FreeAndNil(t);
+
+        t := GetNextToken;
+        CheckToken(T, SYM_RIGHT_BRACKET);
+        FreeAndNil(t);
+      end
+      else
+        Scanner.UnGetToken(t);
+
+      if ACio.MyType in [ CIO_CLASS, CIO_PACKEDCLASS ] then
+      begin
+        { Visibility of members at the beginning of a class declaration
+          that don't have a specified visibility is controlled
+          by ImplicitVisibility value. }
+        case ImplicitVisibility of
+          ivPublic:
+            if Scanner.SwitchOptions['M'] then
+              Visibility := viPublished
+            else
+              Visibility := viPublic;
+          ivPublished:
+            Visibility := viPublished;
+          ivImplicit:
+            Visibility := viImplicit;
+          else
+            raise EInternalError.Create('ImplicitVisibility = ??');
+        end;
+      end
+      else
+        { Everything besides a class always starts with visibility "public". }
+        Visibility := viPublic;
+
+      { now collect methods, fields and properties }
+      { Flag is set when the class is finished     }
+      { Code moved to ParseCioMembers              }
+
+    except
+      FreeAndNil(ACio);
+      raise;
+    end;
+
+  finally
+    t.Free;
+  end;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
+  CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: Boolean);
+
+  procedure ParseInternalType;
+  var
+    RawDescriptionInfo: TRawDescriptionInfo;
+    NormalType: TPasType;
+    TypeName: string;
+    LCollected, LTemp: string;
+    MethodType: TPasMethod;
+    EnumType: TPasEnum;
+    T: TToken;
+  begin
+    TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+
+    RawDescriptionInfo := GetLastComment;
+    t := GetNextToken(LCollected);
+    try
+      if (not t.IsSymbol(SYM_EQUAL)) then
+      begin
+        if (t.IsSymbol(SYM_SEMICOLON)) then
+        begin
+          FreeAndNil(t);
+          Exit;
+        end;
+        FreeAndNil(t);
+        DoError('Symbol "=" expected', []);
+      end;
+
+      LCollected := TypeName + LCollected + t.Data;
+      FreeAndNil(t);
+
+      t := GetNextToken(LTemp);
+      LCollected := LCollected + LTemp + t.Data;
+
+      if (t.MyType = TOK_KEYWORD) then
+      begin
+        FCioSk.Peek.SkipCioDecl := FALSE;
+        case t.Info.KeyWord of
+          KEY_CLASS:
+            begin
+              FreeAndNil(t);
+              t := GetNextToken(LTemp);
+              LCollected := LCollected + LTemp + t.Data;
+              if t.IsKeyWord(KEY_OF) then
+              begin
+                { include "identifier = class of something;" as standard type }
+              end
+              else begin
+                Scanner.UnGetToken(t);
+                t := nil;
+                ParseCioEx(U, TypeName, CIO_CLASS,
+                  RawDescriptionInfo, False);
+                Exit;
+              end;
+            end;
+          KEY_DISPINTERFACE:
+            begin
+              FreeAndNil(t);
+              ParseCioEx(U, TypeName, CIO_SPINTERFACE,
+                RawDescriptionInfo, False);
+              Exit;
+            end;
+          KEY_INTERFACE:
+            begin
+              FreeAndNil(t);
+              ParseCioEx(U, TypeName, CIO_INTERFACE,
+                RawDescriptionInfo, False);
+              Exit;
+            end;
+          KEY_OBJECT:
+            begin
+              FreeAndNil(t);
+              ParseCioEx(U, TypeName, CIO_OBJECT,
+                RawDescriptionInfo, False);
+              Exit;
+            end;
+          KEY_RECORD:
+            begin
+              FreeAndNil(t);
+              ParseCioEx(U, TypeName, CIO_RECORD,
+                RawDescriptionInfo, False);
+              Exit;
+            end;
+          KEY_PACKED:
+            begin
+              FreeAndNil(t);
+              t := GetNextToken(LTemp);
+              LCollected := LCollected + LTemp + t.Data;
+              if t.IsKeyWord(KEY_RECORD) then
+              begin
+                FreeAndNil(t);
+                ParseCioEx(U, TypeName, CIO_PACKEDRECORD,
+                  RawDescriptionInfo, False);
+                exit;
+              end
+              else if t.IsKeyWord(KEY_OBJECT) then
+              begin
+                FreeAndNil(t);
+                ParseCioEx(U, TypeName, CIO_PACKEDOBJECT,
+                  RawDescriptionInfo, False);
+                Exit;
+              end
+              else if t.IsKeyWord(KEY_CLASS) then
+              begin
+                // no check for "of", no packed classpointers allowed
+                FreeAndNil(t);
+                ParseCioEx(U, TypeName, CIO_PACKEDCLASS,
+                  RawDescriptionInfo, False);
+                Exit;
+              end;
+            end;
+        end;
+      end;
+      if Assigned(t) then
+      begin
+        if (t.MyType = TOK_KEYWORD) then
+        begin
+          if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
+          begin
+            ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+            RawDescriptionInfo, false, true);
+            MethodType.Name := TypeName;
+            MethodType.FullDeclaration :=
+              TypeName + ' = ' + MethodType.FullDeclaration;
+            FCioSk.Peek.Cio.Types.Add(MethodType);
+            FreeAndNil(t);
+            FCioSk.Peek.SkipCioDecl := TRUE;
+            ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+            Exit;
+          end;
+        end;
+        if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
+        begin
+          ParseEnum(EnumType, TypeName, RawDescriptionInfo);
+          FCioSk.Peek.Cio.Types.Add(EnumType);
+          FreeAndNil(t);
+          FCioSk.Peek.SkipCioDecl := TRUE;
+          ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+          Exit;
+        end;
+        SetLength(LCollected, Length(LCollected)-Length(t.Data));
+        Scanner.UnGetToken(t);
+      end;
+      FreeAndNil(t);
+
+      NormalType := TPasType.Create;
+      try
+        NormalType.FullDeclaration := LCollected;
+        SkipDeclaration(NormalType, false);
+        NormalType.Name := TypeName;
+        NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
+        NormalType.Visibility := FCioSk.Peek.CurVisibility;
+        ItemsForNextBackComment.ClearAndAdd(NormalType);
+        if FCioSk.Peek.CurVisibility in ShowVisibilities then
+          FCioSk.Peek.Cio.Types.Add(NormalType)
+        else
+          NormalType.Free;
+      except
+        NormalType.Free;
+        raise;
+      end;
+
+      FCioSk.Peek.SkipCioDecl := TRUE;
+      ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+    except
+      t.Free;
+      raise;
+    end;
+  end;
+
+{ - - - - - - }
+
+{ This is the attempt to change as less as possible and to reuse as much code
+  as possible to support nested types. A design change as DoDi suggested in
+  PasDoc2 should be considered sooner or later. }
+
+var
+  LCio         : TPasCio;
+  LHlp         : TPasCioHelper;
+  LMode        : TCioParseMode;
+  LVisibility  : TVisibility;
+
+begin
+  LCio := nil;
+  LHlp := nil;
+
+  try
+    if FCioSk.Count > 0 then
+    begin
+      if FCioSk.Peek.SkipCioDecl then
+      begin
+        LCio  := FCioSk.Peek.Cio;
+        LMode := FCioSk.Peek.Mode;
+        LVisibility := FCioSk.Peek.CurVisibility;
+        FCioSk.Pop.Free;
+      end
+      else begin
+        LMode := pmUndefined;
+      end;
+    end
+    else
+      LMode := pmUndefined;
+
+    if not Assigned(LCio) then
+      ParseCioTypeDecl(LCio, CioName, CioType, RawDescriptionInfo, LVisibility);
+
+    if not Assigned(LCio) then
+      Exit;
+
+    while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
+    begin // A Cio completed, internal or outer CIO
+      ItemsForNextBackComment.ClearAndAdd(LCio);
+      if (FCioSk.Count > 0) then
+      begin
+        LVisibility := FCioSk.Peek.CurVisibility;
+        if LVisibility in ShowVisibilities then
+        begin
+          LCio.Visibility := LVisibility;
+          FCioSk.Peek.Cio.Cios.Add(LCio);
+        end
+        else
+          FreeAndNil(LCio);
+        LCio  := FCioSk.Peek.Cio;
+        LMode := FCioSk.Peek.Mode;
+        FCioSk.Pop.Free;
+      end
+      else begin
+        if Assigned(U) then
+        begin
+          ItemsForNextBackComment.ClearAndAdd(LCio);
+          U.AddCIO(LCio);
+          LCio := nil;
+        end
+        else
+          LCio.Free;
+        Exit; // Finished
+      end;
+    end;
+
+    LHlp := TPasCioHelper.Create;
+    LHlp.Mode := LMode;
+    LHlp.CurVisibility := LVisibility;
+    LHlp.Cio := LCio;
+    FCioSk.Push(LHlp);
+    LHlp := nil;
+    LCio := nil;
+
+    ParseInternalType;
+
+  except
+    LCio.Free;
+    LHlp.Free;
+    FCioSk.Clear;
+    raise;
+  end;
+end;
+
+{ TRawDescriptionInfoList ---------------------------------------------------- }
 
 function TRawDescriptionInfoList.GetItems(Index: integer): TRawDescriptionInfo;
 begin
@@ -2520,6 +2910,37 @@ begin
   inherited;
   SetLength(FItems, 4);
   FCount := 0;
+end;
+
+{ TPasCioHelperStack }
+
+procedure TPasCioHelperStack.Clear;
+begin
+  while Count > 0 do
+    Pop.FreeAll;
+end;
+
+function TPasCioHelperStack.Peek: TPasCioHelper;
+begin
+  Result := TPasCioHelper(inherited Peek);
+end;
+
+function TPasCioHelperStack.Pop: TPasCioHelper;
+begin
+  Result := TPasCioHelper(inherited Pop);
+end;
+
+function TPasCioHelperStack.Push(AHelper: TPasCioHelper): TPasCioHelper;
+begin
+  Result := TPasCioHelper(inherited Push(AHelper));
+end;
+
+{ TPasCioHelper }
+
+procedure TPasCioHelper.FreeAll;
+begin
+  FCio.Free;
+  Destroy;
 end;
 
 end.

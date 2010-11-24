@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Kelas, Interface, lan Objek',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Pambuka',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Kabeh Kelas, Interface, lan Objek',
     {trHeadlineConstants} 'Kabeh Konstanta',
     {trHeadlineFunctionsAndProcedures} 'Kabeh Fungsi lan Prosedur',
@@ -93,5 +96,6 @@ RTransTable = (
     {trOnDateTime} 'ing',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

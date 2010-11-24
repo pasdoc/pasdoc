@@ -84,6 +84,8 @@ type
   TPasItems = class;
   TPasMethods = class;
   TPasProperties = class;
+  TPasCios = class;
+  TPasTypes = class;
 
   { Raw description, in other words: the contents of comment before
     given item. Besides the content, this also
@@ -314,6 +316,7 @@ type
     FIsLibrarySpecific: boolean;
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
+    FCachedUnitRelativeQualifiedName: string; { do not serialize }
 
     procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -398,7 +401,8 @@ type
       available. }
     function HasDescription: Boolean;
 
-    function QualifiedName: String; override;    
+    function QualifiedName: String; override;
+    function UnitRelativeQualifiedName: string; virtual;
 
     { pointer to unit this item belongs to }
     property MyUnit: TPasUnit read FMyUnit write FMyUnit;
@@ -498,11 +502,17 @@ type
   
     Precise definition is "a name with some type".
     And optionally with some initial value, for global variables.
-    
     In the future we may introduce here some property like Type: TPasType. }
   TPasFieldVariable = class(TPasItem)
+  private
+    FIsConstant: Boolean;
+  protected
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
+  public
+    property IsConstant: Boolean read FIsConstant write FIsConstant;
   end;
-  
+
   { @abstract(Pascal type (but not a procedural type --- these are expressed
     as @link(TPasMethod).)) }
   TPasType = class(TPasItem)
@@ -640,6 +650,9 @@ type
     FOutputFileName: string;
     FMyType: TCIOType;
     FHelperTypeIdentifier: string;
+    FCios: TPasCios;
+    FTypes: TPasTypes;
+
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
@@ -692,6 +705,9 @@ type
       and this class name is not 'TObject' (in case pasdoc parses the RTL),
       the Ancestors[0] will be set to 'TObject'. }
     property Ancestors: TStringVector read FAncestors;
+
+    { Internal classes and records }
+    property Cios: TPasCios read FCios;
 
     {@name is used to indicate whether a class is sealed or abstract.}
     property ClassDirective: TClassDirective read FClassDirective
@@ -749,10 +765,15 @@ type
       its own file, that's the case for HTML, but not for TeX) }
     property OutputFileName: string read FOutputFileName write FOutputFileName;
 
+    //function QualifiedName: String; override;
+
     { Is Visibility of items (Fields, Methods, Properties) important ? }
     function ShowVisibility: boolean;
+
+    { Simple internal types }
+    property Types: TPasTypes read FTypes;
   end;
-  
+
   EAnchorAlreadyExists = class(Exception);
 
   { @name extends @link(TBaseItem) to store extra information about a project.
@@ -952,7 +973,7 @@ type
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
   public
-    { This is a comfortable routine that just calls inherited and 
+    { This is a comfortable routine that just calls inherited and
       casts result to TPasItem, since every item on this list must 
       be always TPasItem. }
     function FindName(const AName: string): TPasItem;
@@ -1025,6 +1046,19 @@ type
   TPasProperties = class(TPasItems)
   end;
 
+  { @Name holds an owned collection of inner classes/records/interfaces. }
+  TPasCios = class(TPasItems)
+  public
+    constructor Create; reintroduce;
+    function FindName(const AName: string): TPasItem;
+  end;
+
+  { @Name holds a collection of nested simple types. It introduces no
+    new methods compared to @link(TPasItems), but this may be
+    implemented in a later stage. }
+  TPasTypes = class(TPasItems)
+  end;
+
   { @abstract(Holds a collection of units.) }
   TPasUnits = class(TPasItems)
   private
@@ -1059,7 +1093,8 @@ uses PasDoc_Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
-  Result := CompareText(TPasItem(PItem1).Name, TPasItem(PItem2).Name);
+  Result := CompareText(TPasItem(PItem1).UnitRelativeQualifiedName,
+    TPasItem(PItem2).UnitRelativeQualifiedName);
   // Sort duplicate class names by unit name if available.
   if (Result = 0) and
     (TObject(PItem1).ClassType = TPasCio) and
@@ -1469,14 +1504,27 @@ end;
 
 function TPasItem.QualifiedName: String;
 begin
-  Result := '';
-  if MyUnit <> nil then begin
-    Result := Result + MyUnit.Name + '.';
+  Result := UnitRelativeQualifiedName;
+  if MyUnit <> nil then
+    Result := MyUnit.Name + '.' + Result;
+end;
+
+function TPasItem.UnitRelativeQualifiedName: String;
+var
+  LItem: TPasItem;
+begin
+  if FCachedUnitRelativeQualifiedName <> '' then
+    Result := FCachedUnitRelativeQualifiedName
+  else begin
+    Result := FName;
+    LItem := Self;
+    while LItem.MyObject <> nil do
+    begin
+      Result := LItem.MyObject.Name + '.' + Result;
+      LItem := LItem.MyObject;
+    end;
+    FCachedUnitRelativeQualifiedName := Result;
   end;
-  if MyObject <> nil then begin
-    Result := Result + MyObject.Name + '.';
-  end;
-  Result := Result + Name;
 end;
 
 procedure TPasItem.Deserialize(const ASource: TStream);
@@ -1583,6 +1631,20 @@ begin
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
+end;
+
+{ TPasFieldVariable ---------------------------------------------------------- }
+
+procedure TPasFieldVariable.Deserialize(const ASource: TStream);
+begin
+  inherited;
+  ASource.Read(FIsConstant, SizeOf(FIsConstant));
+end;
+
+procedure TPasFieldVariable.Serialize(const ADestination: TStream);
+begin
+  inherited;
+  ADestination.Write(FIsConstant, SizeOf(FIsConstant));
 end;
 
 { TBaseItems ----------------------------------------------------------------- }
@@ -1739,7 +1801,7 @@ end;
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
 var i: Integer;
 begin
-  for i := 0 to Count - 1 do 
+  for i := 0 to Count - 1 do
     PasItemAt[i].Sort(SortSettings);
 end;
 
@@ -1784,6 +1846,30 @@ begin
   end;
 end;
 
+{ TPasCios ------------------------------------------------------------- }
+constructor TPasCios.Create;
+begin
+  inherited Create(True);
+end;
+
+function TPasCios.FindName(const AName: string): TPasItem;
+var
+  LCio: TPasCio;
+  I: Integer;
+begin
+  Result := TPasItem(inherited FindName(AName));
+  if (Result = nil) and (Count > 0) then
+  begin
+    for I := 0 to Count -1 do
+    begin
+      LCio := TPasCio(PasItemAt[I]);
+      Result := TPasItem(LCio.FindItem(AName));
+      if Result <> nil then
+        Exit;
+    end;
+  end;
+end;
+
 { TPasCio -------------------------------------------------------------------- }
 
 constructor TPasCio.Create;
@@ -1794,6 +1880,8 @@ begin
   FMethods := TPasMethods.Create(True);
   FProperties := TPasProperties.Create(True);
   FAncestors := TStringVector.Create;
+  FCios := TPasCios.Create;
+  FTypes := TPasTypes.Create(True);
 end;
 
 destructor TPasCio.Destroy;
@@ -1802,6 +1890,8 @@ begin
   Fields.Free;
   Methods.Free;
   Properties.Free;
+  FCios.Free;
+  FTypes.Free;
   inherited;
 end;
 
@@ -1815,6 +1905,8 @@ begin
   ASource.Read(FMyType, SizeOf(FMyType));
   ASource.Read(FClassDirective, SizeOf(FClassDirective));
   FHelperTypeIdentifier := LoadStringFromStream(ASource);
+  FTypes.Deserialize(ASource);
+  FCios.Deserialize(ASource);
 
   { No need to serialize, because it's not generated by parser:
   FOutputFileName := LoadStringFromStream(ASource); }
@@ -1830,7 +1922,9 @@ begin
   ADestination.Write(FMyType, SizeOf(FMyType));
   ADestination.Write(FClassDirective, SizeOf(FClassDirective));
   SaveStringToStream(HelperTypeIdentifier, ADestination);
-  
+  FTypes.Serialize(ADestination);
+  FCios.Serialize(ADestination);
+
   { No need to serialize, because it's not generated by parser:
   SaveStringToStream(FOutputFileName, ADestination); }
 end;
@@ -1849,6 +1943,16 @@ begin
 
   if Properties <> nil then begin
     Result := Properties.FindName(ItemName);
+    if Result <> nil then Exit;
+  end;
+
+  if FTypes <> nil then begin
+    Result := FTypes.FindName(ItemName);
+    if Result <> nil then Exit;
+  end;
+
+  if FCios <> nil then begin
+    Result := FCios.FindName(ItemName);
     if Result <> nil then Exit;
   end;
 
@@ -1885,6 +1989,13 @@ begin
   
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
+
+  if (FCios <> nil) then
+    FCios.SortDeep(SortSettings);
+
+  if (FTypes <> nil) then
+    FTypes.SortDeep(SortSettings);
+
 end;
 
 procedure TPasCio.RegisterTags(TagManager: TTagManager);
@@ -2438,6 +2549,8 @@ begin
       Result := Result + VisToStr(Vis);
     end;
 end;
+
+
 
 initialization
   TSerializable.Register(TPasItem);

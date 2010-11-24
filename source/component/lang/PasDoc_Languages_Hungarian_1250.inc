@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} 'Egységek',
     {trClassHierarchy} 'Osztály hierarchia',
     {trCio} 'Osztályok, Kapcsolódási felületek és Objektumok',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Azonosítók',
     {trGvUses} 'Egység függõségi gráf',
     {trGvClasses} 'Osztály hierarchia gráf',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezetõ',
     {trConclusion} 'Összefoglaló',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Összes Osztály, Kapcsolódási felület és Objektumok',
     {trHeadlineConstants} 'Összes Kontans',
     {trHeadlineFunctionsAndProcedures} 'Összes Függvény és Eljárás',
@@ -92,5 +95,6 @@ RTransTable = (
     {trOnDateTime} ' ', //none in Hungarian language
     {trSearch} 'Keresés',
     {trSeeAlso} 'Lásd még',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

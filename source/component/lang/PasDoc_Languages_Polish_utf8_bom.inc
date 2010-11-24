@@ -5,6 +5,8 @@
     {trUnits} 'Moduły',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zależności modułów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -59,6 +61,7 @@
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',
     {trConclusion} 'Podsumowanie',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie stałe',
     {trHeadlineFunctionsAndProcedures} 'Wszystkie podprogramy',
@@ -92,5 +95,6 @@
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz także',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

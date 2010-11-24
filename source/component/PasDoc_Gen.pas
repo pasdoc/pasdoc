@@ -1041,10 +1041,33 @@ procedure TDocGenerator.BuildLinks;
   end;
 
 var
-  CO: TPasCio;
+  U: TPasUnit;
+
+  procedure CiosAssignLinks(ACios: TPasItems);
+  var
+    ACio : TPasCio;
+    I : Integer;
+  begin
+    for I := 0 to ACios.Count -1 do
+    begin
+      ACio := TPasCio(ACios.PasItemAt[I]);
+      ACio.MyUnit := U;
+      ACio.FullLink := CreateLink(ACio);
+      ACio.OutputFileName := ACio.FullLink;
+      AssignCioAncestorLinks(ACio);
+      AssignLinks(U, ACio, ACio.Fields);
+      AssignLinks(U, ACio, ACio.Methods);
+      AssignLinks(U, ACio, ACio.Properties);
+      AssignLinks(U, ACio, ACio.Types);
+      AssignLinks(U, ACio, ACio.Cios);
+      if ACio.Cios.Count > 0 then
+        CiosAssignLinks(ACio.Cios);
+    end;
+  end;
+
+var
   i: Integer;
   j: Integer;
-  U: TPasUnit;
 begin
   DoMessage(2, pmtInformation, 'Creating links ...', []);
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
@@ -1078,20 +1101,8 @@ begin
     AssignLinks(U, nil, U.Types);
     AssignLinks(U, nil, U.FuncsProcs);
 
-    if not ObjectVectorIsNilOrEmpty(U.CIOs) then begin
-      for j := 0 to U.CIOs.Count - 1 do begin
-        CO := TPasCio(U.CIOs.PasItemAt[j]);
-        CO.MyUnit := U;
-        CO.FullLink := CreateLink(CO);
-        CO.OutputFileName := CO.FullLink;
-        
-        AssignCioAncestorLinks(CO);
-
-        AssignLinks(U, CO, CO.Fields);
-        AssignLinks(U, CO, CO.Methods);
-        AssignLinks(U, CO, CO.Properties);
-      end;
-    end;
+    if not ObjectVectorIsNilOrEmpty(U.CIOs) then
+      CiosAssignLinks(U.CIOs);
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
 end;
@@ -1107,7 +1118,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-
 function TDocGenerator.CreateLink(const Item: TBaseItem): string;
 begin
   Result := Item.Name;
@@ -2002,10 +2012,32 @@ procedure TDocGenerator.ExpandDescriptions;
   end;
 
   procedure ExpandEverything(PreExpand: boolean);
+
+    procedure CiosExpand(const ACios: TPasItems);
+
+      procedure CioExpand(const ACio: TPasCio);
+      begin
+        ExpandPasItem(PreExpand, ACio);
+        ExpandCollection(PreExpand, ACio.Fields);
+        ExpandCollection(PreExpand, ACio.Methods);
+        ExpandCollection(PreExpand, ACio.Properties);
+        ExpandCollection(PreExpand, ACio.Types);
+        if ACio.Cios.Count > 0 then
+          CiosExpand(ACio.Cios);
+      end;
+
+    var
+      I: Integer;
+      LCio: TPasCio;
+    begin
+      for I := 0 to ACios.Count - 1 do
+      begin
+        LCio := TPasCio(ACios.PasItemAt[I]);
+        CioExpand(LCio);
+      end;
+    end;
   var
-    CO: TPasCio;
     i: Integer;
-    j: Integer;
     U: TPasUnit;
   begin
     if Introduction <> nil then
@@ -2027,13 +2059,7 @@ procedure TDocGenerator.ExpandDescriptions;
       ExpandCollection(PreExpand, U.FuncsProcs);
 
       if not ObjectVectorIsNilOrEmpty(U.CIOs) then
-        for j := 0 to U.CIOs.Count - 1 do begin
-          CO := TPasCio(U.CIOs.PasItemAt[j]);
-          ExpandPasItem(PreExpand, CO);
-          ExpandCollection(PreExpand, CO.Fields);
-          ExpandCollection(PreExpand, CO.Methods);
-          ExpandCollection(PreExpand, CO.Properties);
-        end;
+        CiosExpand(U.CIOs);
     end;
   end;
   
@@ -2628,12 +2654,43 @@ procedure TDocGenerator.CreateClassHierarchy;
   end;
 
 var
+  ParentItem: TPasItem;
+  ParentName: string;
+
+  procedure CioClassHierarchy(const ACio: TPasCio);
+  begin
+    if ACio.MyType in CIONonHierarchy then
+      Exit;
+    { calculate ParentName and ParentItem for current ACIO. }
+    if Assigned(ACio.Ancestors) and (ACio.Ancestors.Count > 0) then
+    begin
+      ParentName := ACio.Ancestors.FirstName;
+      ParentItem := FindGlobalPasItem(OneNamePart(ParentName));
+    end
+    else begin
+      ParentName := '';
+      ParentItem := nil;
+    end;
+    Insert(ParentName, ParentItem, ACio.Name, ACio);
+  end;
+  
+  procedure CiosClassHierarchy(const ACios: TPasCios);
+  var
+    I: Integer;
+    LCio: TPasCio;
+  begin
+    for I := 0 to ACios.Count - 1 do
+    begin
+      LCio := TPasCio(ACios.PasItemAt[I]);
+      CioClassHierarchy(LCio);
+    end;
+  end;
+
+var
   unitLoop: Integer;
   classLoop: Integer;
   PU: TPasUnit;
-  ACIO: TPasCio;
-  ParentItem: TPasItem;
-  ParentName: string;
+  LCio: TPasCio;
 begin
   FClassHierarchy.Free;
   FClassHierarchy := TStringCardinalTree.Create;
@@ -2644,21 +2701,10 @@ begin
     if PU.CIOs = nil then Continue;
     for classLoop := 0 to PU.CIOs.Count - 1 do
     begin
-      ACIO := TPasCio(PU.CIOs.PasItemAt[classLoop]);
-      if ACIO.MyType in CIONonHierarchy then continue;
-
-      { calculate ParentName and ParentItem for current ACIO. }
-      if Assigned(ACIO.Ancestors) and (ACIO.Ancestors.Count > 0) then
-      begin
-        ParentName := ACIO.Ancestors.FirstName;
-        ParentItem := FindGlobalPasItem(OneNamePart(ParentName));
-      end else
-      begin
-        ParentName := '';
-        ParentItem := nil;
-      end;
-
-      Insert(ParentName, ParentItem, ACIO.Name, ACIO);
+      LCio := TPasCio(PU.CIOs.PasItemAt[classLoop]);
+      CioClassHierarchy(LCio);
+      if LCio.Cios.Count > 0 then
+        CiosClassHierarchy(LCio.Cios);
     end;
   end;
 

@@ -101,6 +101,8 @@ type
     trUnits,
     trClassHierarchy,
     trCio,
+    trInternalCR,
+    trInternalTypes,
     trIdentifiers,
     trGvUses,
     trGvClasses,
@@ -157,6 +159,7 @@ type
     trOverview,
     trIntroduction,
     trConclusion,
+    trEnclosingClass,
     trHeadlineCio,
     trHeadlineConstants,
     trHeadlineFunctionsAndProcedures,
@@ -195,6 +198,7 @@ type
 
     trSearch,
     trSeeAlso,
+    trInternal,
   //add more here
     trDummy
   );

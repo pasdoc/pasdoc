@@ -5,6 +5,8 @@
     {trUnits} 'Модули',
     {trClassHierarchy} 'Иерархия классов',
     {trCio} 'Классы, интерфейсы и объекты',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Идентификаторы',
     {trGvUses} 'График зависимости модулей',
     {trGvClasses} 'График иерархии классов',
@@ -59,6 +61,7 @@
     {trOverview} 'Обзор',
     {trIntroduction} 'Введение',
     {trConclusion} 'Заключение',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Все классы, интерфейсы и объекты',
     {trHeadlineConstants} 'Все константы',
     {trHeadlineFunctionsAndProcedures} 'Все процедуры и функции',
@@ -93,5 +96,6 @@
     {trOnDateTime} 'дата/время', //really???
     {trSearch} 'Найти',
     {trSeeAlso} 'Материалы по теме',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

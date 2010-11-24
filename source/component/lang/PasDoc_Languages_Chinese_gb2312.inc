@@ -7,6 +7,8 @@ RTransTable = (
     {trUnits} '单元',
     {trClassHierarchy} '类继承',
     {trCio} '类、接口、对象和记录',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} '标识符',
     {trGvUses} '单元依赖关系图',
     {trGvClasses} '类继承关系图',
@@ -61,6 +63,7 @@ RTransTable = (
     {trOverview} '综述',
     {trIntroduction} '前言',
     {trConclusion} '后记',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} '所有的类、接口、对象和记录',
     {trHeadlineConstants} '所有常量',
     {trHeadlineFunctionsAndProcedures} '所有函数和过程',
@@ -94,5 +97,6 @@ RTransTable = (
     {trOnDateTime} '生成于',
     {trSearch} '搜索',
     {trSeeAlso} '参见',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

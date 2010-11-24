@@ -423,15 +423,15 @@ begin
   
   if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then
   begin
-    if Assigned(TPasItem(Item).MyObject) then 
+    if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
     begin
-      { it's a method, a field or a property - only those have MyObject initialized }
+      { it's a method, a field or a property }
       Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
     end else begin
-      if Item is TPasCio then 
+      if Item is TPasCio then
       begin
         { it's an object / a class }
-        Result := NewLink(TPasItem(Item).MyUnit.Name + '.' + Item.Name);
+        Result := NewLink(TPasItem(Item).QualifiedName)
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
         Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
@@ -506,16 +506,34 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
-  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
+  TSections = (dsDescription, dsHierarchy, dsEnclosingClass, dsInternalCRs,
+  dsInternalTypes, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
   TSectionAnchors = array[TSections] of string;
 const
   SectionAnchors: TSectionAnchors = (
     '%40Description',
     '%40Hierarchy',
+    '%40EnclosingClass',
+    '%40InternalCRs',
+    '%40InternalTypes',
     '%40Fields',
     '%40Methods',
     '%40Properties');
+
+type
+  TCIONames = array[TCIOType] of string;
+
+const
+  CIO_NAMES: TCIONames = (
+    'class',
+    'packed class',
+    'dispinterface',
+    'interface',
+    'object',
+    'packed object',
+    'record',
+    'packed record');
 
   procedure WriteMethodsSummary;
   begin
@@ -550,6 +568,43 @@ const
     WriteItemsDetailed(CIO.Fields, CIO.ShowVisibility, HL + 1, trFields);
   end;
 
+  procedure WriteInternalCioSummary;
+  var
+    I, J: Integer;
+    LCio: TPasCio;
+  begin
+    for I := 0 to CIO.Cios.Count - 1 do
+    begin
+      LCio := TPasCio(CIO.Cios.PasItemAt[I]);
+      LCio.FullDeclaration := LCIO.Name + ' = ' +
+        CIO_NAMES[LCIO.MyType] + GetClassDirectiveName(LCIO.ClassDirective);
+      if not IsEmpty(LCio.Ancestors) then
+      begin
+        LCio.FullDeclaration := LCio.FullDeclaration + '(';
+        for J := 0 to LCIO.Ancestors.Count - 1 do
+        begin
+            LCio.FullDeclaration := LCio.FullDeclaration + LCio.Ancestors[J];
+            if (J <> LCio.Ancestors.Count - 1) then
+              LCio.FullDeclaration := LCio.FullDeclaration + ', ';
+        end;
+        LCio.FullDeclaration := LCio.FullDeclaration + ')';
+      end;
+    end;
+    WriteItemsSummary(CIO.Cios, CIO.ShowVisibility, HL + 1,
+      SectionAnchors[dsInternalCRs], trInternalCR);
+  end;
+
+  procedure WriteInternalTypesSummary;
+  begin
+    WriteItemsSummary(CIO.Types, CIO.ShowVisibility, HL + 1,
+      SectionAnchors[dsInternalTypes], trInternalTypes);
+  end;
+
+  procedure WriteInternalTypesDetailed;
+  begin
+    WriteItemsDetailed(CIO.Types, CIO.ShowVisibility, HL + 1, trInternalTypes);
+  end;
+
   { writes all ancestors of the given item and the item itself }
   procedure WriteHierarchy(Name: string; Item: TBaseItem);
   var
@@ -558,29 +613,20 @@ const
     if not Assigned(Item) then begin
       WriteDirectLine('<li class="ancestor">' + Name + '</li>');
       { recursion ends here, when the item is an external class }
-    end else if Item is TPasCio then begin
+    end
+    else if Item is TPasCio then
+    begin
       CIO := TPasCio(Item);
       { first, write the ancestors }
       WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
       { then write itself }
-      WriteDirectLine('<li class="ancestor">' + 
-        MakeItemLink(CIO, CIO.Name, lcNormal) + '</li>')
+      WriteDirectLine('<li class="ancestor">' +
+        MakeItemLink(CIO, CIO.UnitRelativeQualifiedName, lcNormal) + '</li>')
     end;
     { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
   end;
 
-type
-  TCIONames = array[TCIOType] of string;
-const
-  CIO_NAMES: TCIONames = (
-    'class',
-    'packed class',
-    'dispinterface',
-    'interface',
-    'object',
-    'packed object',
-    'record',
-    'packed record');
+
 var
   i: Integer;
   s: string;
@@ -588,6 +634,7 @@ var
   SectionHeads: array[TSections] of string;
   Section: TSections;
   AnyItem: boolean;
+  Fv: TPasFieldVariable;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -596,6 +643,9 @@ begin
   SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
   SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
   SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
+  SectionHeads[dsInternalTypes]:= FLanguage.Translation[trInternalTypes];
+  SectionHeads[dsInternalCRs]:= FLanguage.Translation[trInternalCR];
+  SectionHeads[dsEnclosingClass]:= FLanguage.Translation[trEnclosingClass];
 
   SectionsAvailable := [dsDescription];
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
@@ -606,8 +656,25 @@ begin
     Include(SectionsAvailable, dsMethods);
   if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
     Include(SectionsAvailable, dsProperties);
+  if not ObjectVectorIsNilOrEmpty(CIO.Types) then
+    Include(SectionsAvailable, dsInternalTypes);
+  if not ObjectVectorIsNilOrEmpty(CIO.Cios) then
+    Include(SectionsAvailable, dsInternalCRs);
+  if CIO.MyObject <> nil then
+    Include(SectionsAvailable, dsEnclosingClass);
 
-  s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.Name;
+  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
+  begin
+    for I := 0 to CIO.Fields.Count - 1 do
+    begin
+      Fv := TPasFieldVariable(CIO.Fields.PasItemAt[I]);
+      if Fv.IsConstant then
+        Fv.FullDeclaration := FLanguage.Translation[trInternal] + ' ' +
+          Fv.FullDeclaration;
+    end;
+  end;
+
+  s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.UnitRelativeQualifiedName;
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
 
@@ -618,6 +685,12 @@ begin
   WriteDirectLine('<tr>');
   for Section := Low(TSections) to High(TSections) do
     begin
+      { Most classes don't contain nested types so exclude this stuff
+        if not available in order to keep it simple. }
+      if (not (Section in SectionsAvailable)) and
+        (Section in [dsEnclosingClass..dsInternalTypes]) then
+        Continue;
+
       WriteDirect('<td>');
       if Section in SectionsAvailable then
         WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
@@ -650,7 +723,7 @@ begin
     for i := 0 to CIO.Ancestors.Count - 1 do
     begin
       if CIO.Ancestors.Objects[i] <> nil then
-        WriteDirect(MakeItemLink(CIO.Ancestors.Objects[i] as TPasItem, 
+        WriteDirect(MakeItemLink(CIO.Ancestors.Objects[i] as TPasItem,
           CIO.Ancestors[i], lcNormal)) else
         WriteConverted(CIO.Ancestors[i]);
       if (i <> CIO.Ancestors.Count - 1) then
@@ -674,25 +747,40 @@ begin
     WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
     WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
-    WriteDirect('<li class="thisitem">' + CIO.Name + '</li>');
+    WriteDirect('<li class="thisitem">' + CIO.UnitRelativeQualifiedName + '</li>');
     WriteDirect('</ul>');
+  end;
+
+  { Write Enclosing Class }
+  if CIO.MyObject <> nil then
+  begin
+    WriteAnchor(SectionAnchors[dsEnclosingClass]);
+    WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsEnclosingClass]);
+    WriteDirect('<ul class="hierarchy"><li class="thisitem">');
+    WriteLink(CIO.MyObject.FullLink, CIO.MyObject.Name, 'ancestor');
+    WriteDirect('</li></ul>');
   end;
 
   AnyItem :=
     (not ObjectVectorIsNilOrEmpty(CIO.Fields)) or
     (not ObjectVectorIsNilOrEmpty(CIO.Methods)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Properties));
+    (not ObjectVectorIsNilOrEmpty(CIO.Properties)) or
+    (not ObjectVectorIsNilOrEmpty(CIO.Types)) or
+    (not ObjectVectorIsNilOrEmpty(CIO.Cios));
 
   { AnyItem is used here to avoid writing headers "Overview"
     and "Description" when there are no items. }
   if AnyItem then
   begin
     WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
+    WriteInternalCioSummary;
+    WriteInternalTypesSummary;
     WriteFieldsSummary;
     WriteMethodsSummary;
     WritePropertiesSummary;
 
     WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
+    WriteInternalTypesDetailed;
     WriteFieldsDetailed;
     WriteMethodsDetailed;
     WritePropertiesDetailed;
@@ -706,45 +794,83 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
-var
-  i: Integer;
-  p: TPasCio;
-begin
-  if c = nil then Exit;
 
-  for i := 0 to c.Count - 1 do
+  procedure LocalWriteCio(const HL: Integer; const ACio: TPasCio);
   begin
-    p := TPasCio(c.PasItemAt[i]);
-    
-    if (p.MyUnit <> nil) and
-       p.MyUnit.FileNewerThanCache(DestinationDirectory + p.OutputFileName) then
+    if (ACio.MyUnit <> nil) and
+       ACio.MyUnit.FileNewerThanCache(DestinationDirectory + ACio.OutputFileName) then
     begin
       DoMessage(3, pmtInformation, 'Data for "%s" was loaded from cache, '+
         'and output file of this item exists and is newer than cache, '+
-        'skipped.', [p.Name]);
-      Continue;
+        'skipped.', [ACio.Name]);
+      Exit;
     end;
-{$IFDEF STRING_UNICODE}
-    case CreateStream(p.OutputFileName, true, FLanguage.CodePage) of
-{$ELSE}
-    case CreateStream(p.OutputFileName, true) of
-{$ENDIF}
+
+  {$IFDEF STRING_UNICODE}
+    case CreateStream(ACio.OutputFileName, true, FLanguage.CodePage) of
+  {$ELSE}
+    case CreateStream(ACio.OutputFileName, true) of
+  {$ENDIF}
       csError: begin
           DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
-          Continue;
+          Exit;
         end;
       csCreated: begin
-          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [p.Name]);
-          WriteCIO(HL, p);
+          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
+          WriteCIO(HL, ACio);
         end;
     end;
   end;
+
+  procedure LocalWriteCios(const HL: Integer; const ACios: TPasItems);
+  var
+    LCio: TPasCio;
+    I: Integer;
+  begin
+    for I := 0 to ACios.Count -1 do
+    begin
+      LCio := TPasCio(ACios.PasItemAt[I]);
+      LocalWriteCio(HL, LCio);
+      if LCio.Cios.Count > 0 then
+        LocalWriteCios(HL, LCio.Cios);
+    end;
+  end;
+
+begin
+  if c = nil then Exit;
+
+  LocalWriteCios(HL, c);
+
   CloseStream;
 end;
 
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
+
+  procedure WriteCioRow(ACio: TPasCio);
+  begin
+    WriteStartOfTableRow('');
+    { name of class/interface/object and unit }
+    WriteStartOfTableCell('itemname');
+    WriteConverted(GetCIOTypeName(ACio.MyType));
+    WriteDirect('&nbsp;');
+    WriteLink(ACio.FullLink, CodeString(ACio.UnitRelativeQualifiedName), 'bold');
+    WriteEndOfTableCell;
+
+    { Description of class/interface/object }
+    WriteStartOfTableCell('itemdesc');
+    { Write only the AbstractDescription and do not opt for DetailedDescription,
+      like WriteItemShortDescription does. }
+    if ACio.AbstractDescription <> '' then
+      WriteSpellChecked(ACio.AbstractDescription)
+    else
+      WriteDirect('&nbsp;');
+
+    WriteEndOfTableCell;
+    WriteEndOfTableRow;
+  end;
+
 var
   j: Integer;
   p: TPasCio;
@@ -757,25 +883,7 @@ begin
   WriteStartOfTable2Columns('classestable', FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
   for j := 0 to c.Count - 1 do begin
     p := TPasCio(c.PasItemAt[j]);
-    WriteStartOfTableRow('');
-    { name of class/interface/object and unit }
-    WriteStartOfTableCell('itemname');
-    WriteConverted(GetCIOTypeName(p.MyType));
-    WriteDirect('&nbsp;');
-    WriteLink(p.FullLink, CodeString(p.Name), 'bold');
-    WriteEndOfTableCell;
-
-    { Description of class/interface/object }
-    WriteStartOfTableCell('itemdesc');
-    { Write only the AbstractDescription and do not opt for DetailedDescription,
-      like WriteItemShortDescription does. }
-    if p.AbstractDescription <> '' then
-      WriteSpellChecked(p.AbstractDescription)
-    else
-      WriteDirect('&nbsp;');
-
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
+    WriteCioRow(p);
   end;
   WriteEndOfTable;
 end;
@@ -1300,8 +1408,10 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
         WriteDirect('<li>');
         if Node.Item = nil then
-          WriteConverted(Node.Name) else
-          WriteLink(Node.Item.FullLink, ConvertString(Node.Name), 'bold');
+          WriteConverted(Node.Name)
+        else
+          WriteLink(Node.Item.FullLink,
+            ConvertString(Node.Item.UnitRelativeQualifiedName), 'bold');
         { We can't simply write here an explicit '</li>' because current
           list item may be not finished yet (in case next Nodes
           (with larger Level) will follow in the FClassHierarchy). }
@@ -1347,7 +1457,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteStartOfTableRow('');
 
         WriteStartOfTableCell('itemname');
-        WriteLink(Item.FullLink, Item.Name, 'bold');
+        WriteLink(Item.FullLink, Item.UnitRelativeQualifiedName, 'bold');
         WriteEndOfTableCell;
 
         WriteStartOfTableCell('itemunit');
@@ -1378,10 +1488,29 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 var
   ItemsToCopy: TPasItems;
   PartialItems: TPasItems;
+  Overview: TCreatedOverviewFile;
+
+  procedure CiosInsertIntoPartitialItems(const ACios: TPasCios);
+  var
+    I: Integer;
+    LCio: TPasCio;
+  begin
+    if Overview = ofCIos then
+      PartialItems.InsertItems(ACios);
+    for I := 0 to ACios.Count -1 do
+    begin
+      LCio := TPasCio(ACios.PasItemAt[I]);
+      if Overview = ofTypes then
+        PartialItems.InsertItems(LCio.Types);
+      if LCio.Cios.Count > 0 then
+        CiosInsertIntoPartitialItems(LCio.Cios);
+    end;
+  end;
+
+var
   TotalItems: TPasItems; // Collect all Items for final listing.
   PU: TPasUnit;
-  Overview: TCreatedOverviewFile;
-  j: Integer;
+  i, j: Integer;
 begin
   WriteUnitOverviewFile;
   WriteHierarchy;
@@ -1407,6 +1536,11 @@ begin
             ItemsToCopy := nil;
           end;
           PartialItems.InsertItems(ItemsToCopy);
+
+          if (Overview in [ofCIos, ofTypes]) and
+             not ObjectVectorIsNilOrEmpty(PU.CIOs) then
+            for i := 0 to PU.CIOs.Count - 1 do
+              CiosInsertIntoPartitialItems(TPasCio(PU.CIOs.PasItemAt[i]).Cios);
         end;
 
         WriteItemsOverviewFile(Overview, PartialItems);
@@ -1785,6 +1919,7 @@ begin
   WriteAppInfo;
   WriteEndOfDocument;
   CloseStream;
+
   WriteCIOs(HL, U.CIOs);
 end;
 

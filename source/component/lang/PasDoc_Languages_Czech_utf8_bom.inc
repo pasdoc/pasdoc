@@ -18,6 +18,8 @@ RTransTable = (
     {trUnits} 'Unity',
     {trClassHierarchy} 'Hierarchie tříd',
     {trCio} 'Třídy, rozhraní a objekty',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identifikátory',
     {trGvUses} 'Graf závislostí unit',
     {trGvClasses} 'Graf závislostí tříd',
@@ -72,6 +74,7 @@ RTransTable = (
     {trOverview} 'Přehled',
     {trIntroduction} 'Úvod',
     {trConclusion} 'Závěr',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Všechny třídy, rozhraní a objekty',
     {trHeadlineConstants} 'Seznam konstant',
     {trHeadlineFunctionsAndProcedures} 'Seznam funkcí a procedur',
@@ -105,5 +108,6 @@ RTransTable = (
     {trOnDateTime} 'v',
     {trSearch} 'Hledat',
     {trSeeAlso} 'Viz také',
+    {trInternal} strToDo, //'internal',
     '' //dummy
   );

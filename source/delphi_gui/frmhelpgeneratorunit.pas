@@ -759,6 +759,78 @@ end;
 
 procedure TfrmHelpGenerator.FillTreeView;
 var
+   Lang: TPasDocLanguages;
+
+  procedure TreeAddCio(const ALLCiosNode: TTreeNode);
+  var
+    LCio: TPasCio;
+    LCios: TPasCios;
+    I, J: Integer;
+    ClassNode: TTreeNode;
+    FieldsNode: TTreeNode;
+    MethodNode: TTreeNode;
+    PropertiesNode: TTreeNode;
+    TypesNode: TTreeNode;
+    PasItem: TPasItem;
+  begin
+    LCios := TPasCios(ALLCiosNode.Data);
+    for J := 0 to LCios.Count - 1 do
+    begin
+      LCio := TPasCio(LCios.PasItemAt[J]);
+
+      ClassNode := tvUnits.Items.AddChildObject(ALLCiosNode,
+        LCio.Name, LCio);
+
+      if LCio.Fields.Count > 0 then
+      begin
+        FieldsNode := tvUnits.Items.AddChildObject(ClassNode,
+          Lang.Translation[trFields], LCio.Fields);
+        for I := 0 to LCio.Fields.Count -1 do
+        begin
+          PasItem := LCio.Fields.PasItemAt[I];
+          tvUnits.Items.AddChildObject(FieldsNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if LCio.Methods.Count > 0 then
+      begin
+        MethodNode := tvUnits.Items.AddChildObject(ClassNode,
+          Lang.Translation[trMethods], LCio.Methods);
+        for I := 0 to LCio.Methods.Count -1 do
+        begin
+          PasItem := LCio.Methods.PasItemAt[I];
+          tvUnits.Items.AddChildObject(MethodNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if LCio.Properties.Count > 0 then
+      begin
+        PropertiesNode := tvUnits.Items.AddChildObject(ClassNode,
+          Lang.Translation[trProperties], LCio.Properties);
+        for I := 0 to LCio.Properties.Count -1 do
+        begin
+          PasItem := LCio.Properties.PasItemAt[I];
+          tvUnits.Items.AddChildObject(PropertiesNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if LCio.Types.Count > 0 then
+      begin
+        TypesNode := tvUnits.Items.AddChildObject(ClassNode,
+          Lang.Translation[trInternalTypes], LCio.Types);
+        for I := 0 to LCio.Types.Count -1 do
+        begin
+          PasItem := LCio.Types.PasItemAt[I];
+          tvUnits.Items.AddChildObject(TypesNode, PasItem.Name, PasItem);
+        end;
+      end;
+      if LCio.Cios.Count > 0 then
+      begin
+        ClassNode := tvUnits.Items.AddChildObject(ClassNode,
+          Lang.Translation[trInternalCR], LCio.CIOs);
+        TreeAddCio(ClassNode);
+      end;
+    end;
+  end;
+
+var
   UnitItem: TPasUnit;
   AllUnitsNode: TTreeNode;
   UnitIndex: integer;
@@ -772,13 +844,6 @@ var
   PasItemIndex: integer;
   PasItem: TPasItem;
   UsesIndex: integer;
-  ClassIndex: integer;
-  ClassInterfaceObjectOrRecord: TPasCio;
-  ClassNode: TTreeNode;
-  FieldsNode: TTreeNode;
-  MethodNode: TTreeNode;
-  PropertiesNode: TTreeNode;
-  Lang: TPasDocLanguages;
 begin
   tvUnits.Items.Clear;
   Lang := TPasDocLanguages.Create;
@@ -819,42 +884,7 @@ begin
       begin
         AllCIOs_Node := tvUnits.Items.AddChildObject(UnitNode,
           Lang.Translation[trCio], UnitItem.CIOs);
-        for ClassIndex := 0 to UnitItem.CIOs.Count-1 do
-        begin
-          ClassInterfaceObjectOrRecord := UnitItem.CIOs.PasItemAt[ClassIndex] as TPasCio;
-          ClassNode := tvUnits.Items.AddChildObject(AllCIOs_Node,
-            ClassInterfaceObjectOrRecord.Name, ClassInterfaceObjectOrRecord);
-          if ClassInterfaceObjectOrRecord.Fields.Count > 0 then
-          begin
-            FieldsNode := tvUnits.Items.AddChildObject(ClassNode,
-              Lang.Translation[trFields], ClassInterfaceObjectOrRecord.Fields);
-            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Fields.Count -1 do
-            begin
-              PasItem := ClassInterfaceObjectOrRecord.Fields.PasItemAt[PasItemIndex];
-              tvUnits.Items.AddChildObject(FieldsNode, PasItem.Name, PasItem);
-            end;
-          end;
-          if ClassInterfaceObjectOrRecord.Methods.Count > 0 then
-          begin
-            MethodNode := tvUnits.Items.AddChildObject(ClassNode,
-              Lang.Translation[trMethods], ClassInterfaceObjectOrRecord.Methods);
-            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Methods.Count -1 do
-            begin
-              PasItem := ClassInterfaceObjectOrRecord.Methods.PasItemAt[PasItemIndex];
-              tvUnits.Items.AddChildObject(MethodNode, PasItem.Name, PasItem);
-            end;
-          end;
-          if ClassInterfaceObjectOrRecord.Properties.Count > 0 then
-          begin
-            PropertiesNode := tvUnits.Items.AddChildObject(ClassNode,
-              Lang.Translation[trProperties], ClassInterfaceObjectOrRecord.Properties);
-            for PasItemIndex := 0 to ClassInterfaceObjectOrRecord.Properties.Count -1 do
-            begin
-              PasItem := ClassInterfaceObjectOrRecord.Properties.PasItemAt[PasItemIndex];
-              tvUnits.Items.AddChildObject(PropertiesNode, PasItem.Name, PasItem);
-            end;
-          end;
-        end;
+        TreeAddCio(AllCIOs_Node);
       end;
       if UnitItem.Constants.Count > 0 then
       begin
@@ -1089,6 +1119,7 @@ begin
     PasDoc1.OnMessage := PasDocMessages;
     PasDoc1.Execute;
     PasDoc1.OnMessage := nil;
+
     if MisspelledWords.Count > 0 then
     begin
       memoMessages.Lines.Add('');
@@ -1107,7 +1138,7 @@ begin
 
     if PasDoc1.Generator is TGenericHTMLDocGenerator then
       WWWBrowserRunner.RunBrowser(
-        HtmlDocGenerator.DestinationDirectory + 'index.html');
+        PasDoc1.Generator.DestinationDirectory + 'index.html');
   finally
     Screen.Cursor := crDefault;
   end;

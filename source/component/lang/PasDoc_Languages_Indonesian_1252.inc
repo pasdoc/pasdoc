@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} 'Unit',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Kelas, Interface, dan Objek',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Sekilas',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Semua Kelas, Interface, dan Objek',
     {trHeadlineConstants} 'Semua Konstanta',
     {trHeadlineFunctionsAndProcedures} 'Semua Fungsi dan Prosedur',
@@ -93,5 +96,6 @@ RTransTable = (
     {trOnDateTime} 'pada',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

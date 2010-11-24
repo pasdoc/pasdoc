@@ -151,6 +151,9 @@ procedure TipueAddFiles(Units: TPasUnits;
         WriteItemsIndexData(CIO.Fields);
         WriteItemsIndexData(CIO.Methods);
         WriteItemsIndexData(CIO.Properties);
+        WriteItemsIndexData(CIO.Types);
+        if CIO.Cios.Count > 0 then
+          WriteCIOsIndexData(CIO.Cios);
       end;
     end;
     

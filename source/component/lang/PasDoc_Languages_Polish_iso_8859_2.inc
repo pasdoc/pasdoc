@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} 'Modu³y',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zale¿no¶ci modu³ów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Przegl±d',
     {trIntroduction} 'Wstêp',
     {trConclusion} 'Podsumowanie',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie sta³e',
     {trHeadlineFunctionsAndProcedures} 'Wszystkie podprogramy',
@@ -92,5 +95,6 @@ RTransTable = (
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz tak¿e',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

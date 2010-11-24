@@ -5,6 +5,8 @@
     {trUnits} 'Unidades',
     {trClassHierarchy} 'Jerarquía de clases',
     {trCio} 'Clases, interfaces y objetos',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identificadores',
     {trGvUses} 'Gráfico de las dependencias de unidades',
     {trGvClasses} 'Gráfico de la jerarquía de clases',
@@ -59,6 +61,7 @@
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducción',
     {trConclusion} 'Conclusión',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Todas las clases, interfaces y objetos',
     {trHeadlineConstants} 'Todas las constantes',
     {trHeadlineFunctionsAndProcedures} 'Todos las funciones y procedimientos',
@@ -93,5 +96,6 @@
     {trOnDateTime} 'a',
     {trSearch} 'Buscar',
     {trSeeAlso} 'Ver',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

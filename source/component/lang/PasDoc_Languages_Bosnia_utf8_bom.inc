@@ -5,6 +5,8 @@
     {trUnits} 'Fajlovi',
     {trClassHierarchy} 'Klasna hijerarhija',
     {trCio} 'Klase, Interfejsi i Objekti',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identifikatori',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -59,6 +61,7 @@
     {trOverview} 'Pregled',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Sve Klase, Interfejsi i Objekti',
     {trHeadlineConstants} 'Sve Konstante',
     {trHeadlineFunctionsAndProcedures} 'Sve Funkcije i Procedure',
@@ -92,5 +95,6 @@
     {trOnDateTime} strToDo, //'on',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

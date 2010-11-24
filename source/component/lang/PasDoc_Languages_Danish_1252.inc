@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Klasser, interfaces og objekter',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Sammendrag',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Alle Klasesr, Interfaces og Objekter',
     {trHeadlineConstants} 'Alle Konstanter',
     {trHeadlineFunctionsAndProcedures} 'Alle Functioner and Procedurer',
@@ -92,5 +95,6 @@ RTransTable = (
     {trOnDateTime} strToDo, //'on',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

@@ -5,6 +5,8 @@ RTransTable = (
     {trUnits} '<<<Unités>>>',
     {trClassHierarchy} 'Hiérarchie des classes',
     {trCio} 'Classes, interfaces, enregistrements et objets',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identificateurs',
     {trGvUses} 'Graphe de dépendance d''unités',
     {trGvClasses} 'Graphe de hiérarchie des classes',
@@ -59,6 +61,7 @@ RTransTable = (
     {trOverview} 'Aperçu',
     {trIntroduction} strKeep, //'Introduction',
     {trConclusion} strKeep, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Toutes les classes, interfaces, objets et enregistrements',
     {trHeadlineConstants} 'Toutes les constants',
     {trHeadlineFunctionsAndProcedures} 'Toutes les fonctions et procédures',
@@ -92,6 +95,7 @@ RTransTable = (
     {trOnDateTime} 'le',
     {trSearch} 'Cherche', //? 'Recherche'
     {trSeeAlso} 'Voir aussi', //?
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );
 

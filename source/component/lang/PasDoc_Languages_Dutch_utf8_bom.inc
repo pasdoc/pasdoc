@@ -5,6 +5,8 @@
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Classes, interfaces and objecten',
+    {trInternalCR} strToDo, // 'Internal Classes and Records',
+    {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -59,6 +61,7 @@
     {trOverview} 'Overzicht',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Alle classes, interfaces en objecten',
     {trHeadlineConstants} 'Alle constanten',
     {trHeadlineFunctionsAndProcedures} 'Alle functies en procedures',
@@ -92,5 +95,6 @@
     {trOnDateTime} strToDo, //'on',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
+    {trInternal} strToDo, //'internal',
     ''  //dummy
   );

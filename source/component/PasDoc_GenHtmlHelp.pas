@@ -122,10 +122,27 @@ var
   { ---------- }
 
   procedure InternalWriteCIO(const ClassItem: TPasCio);
+  var
+    I: Integer;
   begin
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
     WriteDirectLine('<ul>');
 
+    if ClassItem.Cios.Count > 0 then
+    begin
+      WriteLiObject(FLanguage.Translation[trInternalCR], ClassItem.FullLink + '#@InternalCRs');
+      ClassItem.Cios.SortShallow;
+      WriteDirectLine('<ul>');
+      for I := 0 to ClassItem.Cios.Count - 1 do
+      begin
+        TPasCio(ClassItem.Cios.PasItemAt[I]).Sort([ssRecordFields,
+          ssNonRecordFields, ssMethods, ssProperties]);
+        InternalWriteCIO(TPasCio(ClassItem.Cios.PasItemAt[I]));
+      end;
+      WriteDirectLine('</ul>');
+    end;
+
+    WriteItemHeadingCollection(fLanguage.Translation[trInternalTypes], ClassItem.FullLink, '@InternalTypes', ClassItem.Types);
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
@@ -372,12 +389,30 @@ var
     end;
   end;
 
-  { ---------------------------------------------------------------------------- }
+  { ---------- }
 
+  procedure CopyCiosRecursively(ADst: TPasItems; ACios: TPasItems);
+    procedure AddRecursive(ACio: TPasCio);
+    begin
+      ADst.Add(ACio);
+      ADst.CopyItems(ACio.Fields);
+      ADst.CopyItems(ACio.Properties);
+      ADst.CopyItems(ACio.Methods);
+      ADst.CopyItems(ACio.Types);
+      if ACio.Cios.Count > 0 then
+        CopyCiosRecursively(ADst, ACio.Cios);
+    end;
+  var
+    I: Integer;
+  begin
+    for I := 0 to ACios.Count - 1 do
+      AddRecursive(TPasCio(ACios.PasItemAt[I]));
+  end;
+
+  { -------------------------------------------------------------------------- }
 var
   j, k, l: Integer;
   CurrentLevel, Level: Integer;
-  CIO: TPasCio;
   PU: TPasUnit;
   c: TPasItems;
   Item, NextItem, PreviousItem: TPasItem;
@@ -480,13 +515,7 @@ begin
     PU := Units.UnitAt[j];
 
     if Assigned(PU.CIOs) then
-      for k := 0 to PU.CIOs.Count - 1 do begin
-        CIO := TPasCio(PU.CIOs.PasItemAt[k]);
-        c.Add(CIO);
-        c.CopyItems(CIO.Fields);
-        c.CopyItems(CIO.Properties);
-        c.CopyItems(CIO.Methods);
-      end;
+      CopyCiosRecursively(c, PU.CIOs);
 
     c.CopyItems(PU.Types);
     c.CopyItems(PU.Variables);
