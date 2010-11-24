@@ -2,23 +2,22 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <SaveClosedFiles Value="False"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value=".\"/>
       <TargetFileExt Value=""/>
       <Title Value="pasdoc"/>
       <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="$(TestDir)\publishedproject\"/>
       <IgnoreBinaries Value="False"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
@@ -26,9 +25,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-L de ..\ok_back_comment.pas"/>
-        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
-        <WorkingDirectory Value="D:\SourceForge\pasdocOld\trunk\tests\html"/>
+        <CommandLineParams Value="..\..\tests\ok_record_case_parsing.pas --output=\tmp\"/>
+        <LaunchingApplication Use="True" PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -41,7 +39,7 @@
         <Filename Value="pasdoc.dpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="1" Y="42"/>
-        <TopLine Value="1"/>
+        <TopLine Value="20"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -58,14 +56,14 @@
       <Unit2>
         <Filename Value="..\component\PasDoc_Base.pas"/>
         <UnitName Value="PasDoc_Base"/>
-        <CursorPos X="1" Y="651"/>
-        <TopLine Value="629"/>
+        <CursorPos X="1" Y="603"/>
+        <TopLine Value="603"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit2>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="12" HistoryIndex="11">
       <Position1>
         <Filename Value="PasDoc_Main.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
@@ -110,10 +108,14 @@
         <Filename Value="..\component\PasDoc_Base.pas"/>
         <Caret Line="651" Column="1" TopLine="629"/>
       </Position11>
+      <Position12>
+        <Filename Value="pasdoc.dpr"/>
+        <Caret Line="42" Column="1" TopLine="22"/>
+      </Position12>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="..\component\"/>
@@ -132,7 +134,7 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <Generate Value="Faster"/>
+      <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Other>
       <Verbosity>
@@ -142,12 +144,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Source Value="pasdoc.dpr"/>
-        <Line Value="42"/>
-      </Item1>
-    </BreakPoints>
     <Watches Count="1">
       <Item1>
         <Expression Value="Options"/>
