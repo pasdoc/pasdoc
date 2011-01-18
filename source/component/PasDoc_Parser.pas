@@ -1169,7 +1169,7 @@ begin
       p.IndexDecl := '[';
       p.FullDeclaration := p.FullDeclaration + '[';
       repeat
-        t := Scanner.GetToken;
+        t := GetNextToken;
 
         if not (t.MyType in TokenCommentTypes + [TOK_DIRECTIVE]) then
         begin
@@ -2480,10 +2480,22 @@ begin
           if t.MyType = TOK_IDENTIFIER then { an ancestor }
           begin
             s := t.Data;
-                { inner repeat loop: one part of the ancestor per name }
+            
+            { For FPC-style generic specialization, the "specialize"
+              directive is specified before generic name.
+              That's easy to handle, just move to the next token. }
+            if t.IsStandardDirective(SD_SPECIALIZE) then
+            begin
+              FreeAndNil(t);
+              t := GetNextToken;
+              CheckToken(T, TOK_IDENTIFIER);
+              s := s + ' ' + t.Data;
+            end;
+            
+            { inner repeat loop: one part of the ancestor per name }
             repeat
               FreeAndNil(t);
-              t := Scanner.GetToken;
+              t := GetNextToken;
               if not t.IsSymbol(SYM_PERIOD) then
               begin
                 Scanner.UnGetToken(t);
@@ -2491,13 +2503,29 @@ begin
               end;
               FreeAndNil(t);
               s := s + '.';
-              t := Scanner.GetToken;
+              t := GetNextToken;
               if t.MyType <> TOK_IDENTIFIER then
                 DoError('Expected class, object or interface in ancestor' +
                   ' declaration', []);
 
               s := s + t.Data;
             until False;
+            
+            { Dumb reading of generic specialization, just blindly consume
+              (add to T.Data) everything between <...>. }
+            t := GetNextToken;
+            if t.IsSymbol(SYM_LESS_THAN) then
+            begin
+              s := s + t.Data;
+              repeat
+                FreeAndNil(t);
+                t := GetNextToken;
+                s := s + t.Data;
+              until t.IsSymbol(SYM_GREATER_THAN);
+              FreeAndNil(t); { free last ">" }
+            end else
+              Scanner.UnGetToken(t);
+            
             ACio.Ancestors.Add(s);
           end
           else begin
