@@ -82,7 +82,7 @@ upload_one_format ()
 
   echo "Uploading ..."
 
-  SF_PATH=/home/groups/p/pa/pasdoc/htdocs/correct_tests_output/
+  SF_PATH=/home/project-web/pasdoc/htdocs/correct_tests_output/
   SF_CONNECT="$SF_USERNAME",pasdoc@web.sourceforge.net:"$SF_PATH"
 
   scp "$ARCHIVE_FILENAME" "$TIMESTAMP_FILENAME" "$SF_CONNECT"

@@ -3,7 +3,7 @@ set -eu
 
 # $1 is your username on sourceforge,
 # $2 is directory on sourcefore (usually you will start this with
-# /home/groups/p/pa/pasdoc/...).
+# /home/project-web/pasdoc/...).
 #
 # This script logs to sourceforge using given username
 # (you will be asked for password unless you set up ssh keys)

@@ -157,7 +157,7 @@ public: html pdf latex
 SF_USERNAME=kambi
 
 SF_HOST=web.sourceforge.net
-SF_PATH=/home/groups/p/pa/pasdoc/htdocs/autodoc/
+SF_PATH=/home/project-web/pasdoc/htdocs/autodoc/
 
 SF_CONNECT=$(SF_USERNAME),pasdoc@$(SF_HOST):$(SF_PATH)
 
