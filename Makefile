@@ -313,6 +313,10 @@ help:
 	@echo "    from pasdoc SVN. It exports using the tag name taken from"
 	@echo "    VERSION variable in this Makefile (currently it's "$(VERSION)")."
 
+.PHONY: version
+version:
+	@echo $(VERSION)
+
 ############################################################################
 # Targets to make release archives
 #
