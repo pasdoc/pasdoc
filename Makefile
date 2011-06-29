@@ -159,7 +159,13 @@ default: build-fpc-default-debug
 
 # Clean up the output files.
 clean:
-	rm -f source/console/pasdoc.compiled
+	rm -Rf source/console/pasdoc.compiled \
+	       source/packages/lazarus/lib/ \
+	       source/gui/pasdoc_gui.compiled \
+	       source/gui/pasdoc_gui \
+	       source/gui/*.o \
+	       source/gui/*.or \
+	       source/gui/*.ppu
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
 endif
