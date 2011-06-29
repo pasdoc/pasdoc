@@ -19,7 +19,7 @@ PASDOC_VERSION=`make version`
 
 # make dist-src >> "$OUTPUT_LOG"  2>&1 # Useless, it checks out stable version.
 make dist-linux-x86 >> "$OUTPUT_LOG"  2>&1
-make dist-win32 FPC_WIN32='fpc -Twin32' NO_LAZARUS='t' >> "$OUTPUT_LOG"  2>&1
+make dist-win32 FPC_WIN32='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32' >> "$OUTPUT_LOG"  2>&1
 
 echo '---- Build OK.' >> "$OUTPUT_LOG"
 
