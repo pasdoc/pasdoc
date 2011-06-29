@@ -1,0 +1,53 @@
+#!/bin/bash
+set -eu
+
+# log messages and dates in English
+export LANG=C
+
+# Make sure you have fpc on $PATH
+export PATH=/usr/local/bin:"${PATH}"
+
+OUTPUT_PATH=~/public_html/pasdoc-snapshots/`date +%F`/
+mkdir -p "$OUTPUT_PATH"
+
+OUTPUT_LOG="$OUTPUT_PATH"compilation_output.log
+
+cd ~/sources/pasdoc/trunk/
+svn up > "$OUTPUT_LOG"
+
+PASDOC_VERSION=`make version`
+
+# make dist-src >> "$OUTPUT_LOG"  2>&1 # Useless, it checks out stable version.
+make dist-linux-x86 >> "$OUTPUT_LOG"  2>&1
+make dist-win32 FPC_WIN32='fpc -Twin32' NO_LAZARUS='t' >> "$OUTPUT_LOG"  2>&1
+
+echo '---- Build OK.' >> "$OUTPUT_LOG"
+
+# Move archives to output dir
+mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
+      pasdoc-"$PASDOC_VERSION"-win32.zip \
+      "$OUTPUT_PATH"
+
+# Create "latest" link, comfortable for users.
+rm -f ~/public_html/pasdoc-snapshots/latest
+ln -s `date +%F` ~/public_html/pasdoc-snapshots/latest
+
+# Clean old snapshots, to conserve disk space.
+# Keep only snapshots from last couple of days.
+cd ~/public_html/pasdoc-snapshots/
+set +e
+find . -mindepth 1 -maxdepth 1 \
+  -type d -and \
+  -name '????-??-??' -and \
+  '(' -not -iname `date +%F` ')' -and \
+  '(' -not -iname `date --date='-1 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-2 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-3 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-4 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-5 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-6 day' +%F` ')' -and \
+  '(' -not -iname `date --date='-7 day' +%F` ')' -and \
+  -exec rm -Rf '{}' ';'
+set -e
+
+echo '---- The end, everything finished Ok.' >> "$OUTPUT_LOG"
