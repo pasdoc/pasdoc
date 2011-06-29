@@ -163,6 +163,7 @@ clean:
 	       source/packages/lazarus/lib/ \
 	       source/gui/pasdoc_gui.compiled \
 	       source/gui/pasdoc_gui \
+	       source/gui/pasdoc_gui.exe \
 	       source/gui/*.o \
 	       source/gui/*.or \
 	       source/gui/*.ppu
@@ -362,12 +363,10 @@ ifdef DOCFILES
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef ADD_PASDOC_GUI
-ifndef NO_LAZARUS
 	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
 	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
 	strip source/gui/pasdoc_gui$(EXE)
 	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
-endif
 endif
 
 # This target archives distribution into a zip file.
