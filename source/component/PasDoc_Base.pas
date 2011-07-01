@@ -690,16 +690,15 @@ begin
     if (FileMask = '') and (I = AFileNames.Count - 1) then
       Continue;
 
-    SearchResult := SysUtils.FindFirst(FileMask, 63, SR);
+    SearchResult := SysUtils.FindFirst(FileMask,
+      faArchive or faSysFile or faHidden or faReadOnly, SR);
     if SearchResult <> 0 then begin
-      DoMessage(1, pmtWarning, 'No files found for "%s", skipping', [FileMask]);
+      DoMessage(1, pmtWarning, 'No regular files found for "%s", skipping', [FileMask]);
     end else begin
       repeat
-        if (SR.Attr and 24) = 0 then begin
-          s := Path + SR.Name;
-          if not FSourceFileNames.ExistsNameCI(s) then
-            FSourceFileNames.Add(s)
-        end;
+        s := Path + SR.Name;
+        if not FSourceFileNames.ExistsNameCI(s) then
+          FSourceFileNames.Add(s);
         SearchResult := FindNext(SR);
       until SearchResult <> 0;
     end;
