@@ -1,6 +1,4 @@
-{ Tests of generics, both FPC and Delphi style.
-  For now, only basic tests of using (specializing), not declaring
-  generic classes. }
+{ Tests of generics, both FPC and Delphi style. }
 unit ok_generic;
 
 interface
@@ -11,16 +9,23 @@ uses Generics.Collections, FGL;
 type
   { FPC generics tests ------------------------------------------------------- }
 
+  generic TMyList<T> = class(TFPSList)
+  private
+    type PT = ^T;
+  public
+    function Blah: PT;
+  end;
+
   { }
   TGeometryAttrib = class
     Name: string;
     AType: TGeometryAttribType;
     Offset: Integer;
   end;
-  TGeometryAttribsList2 = specialize TFPGObjectList<TALBuffersCache>;
+  TGeometryAttribsList2 = specialize TMyList<TALBuffersCache>;
 
   { You can also specialize and make a descendant at the same time. }
-  TGeometryAttribsList = class(specialize TFPGObjectList<TGeometryAttrib>)
+  TGeometryAttribsList = class(specialize TMyList<TGeometryAttrib>)
   public
     function Find(const Name: string): TGeometryAttrib;
   end;
@@ -35,29 +40,29 @@ type
     // To Something here
    end;
 
+  TMyNewGeneric<T1,T2> = class
+  private
+    type PT = ^T1;
+  public
+    function Blah: PT;
+  end;
+
   { Sample for a generic with more than one type. TPair is a Key-Value-Relation }
   TAnotherGenericType = class(TDictionary<TObject,TObject>);
 
-  { All standard Generics:
-    TArray = class
-    TEnumerator<T> = class abstract
-    TEnumerable<T> = class abstract
-    TList<T> = class(TEnumerable<T>)
-    TQueue<T> = class(TEnumerable<T>)
-    TStack<T> = class(TEnumerable<T>)
-    TPair<TKey,TValue> = record
-    TDictionary<TKey,TValue> = class(TEnumerable<TPair<TKey,TValue>>)
-    TObjectList<T: class> = class(TList<T>)
-    TObjectQueue<T: class> = class(TQueue<T>)
-    TObjectStack<T: class> = class(TStack<T>)
-    TObjectDictionary<TKey,TValue> = class(TDictionary<TKey,TValue>)
-
-    The placeholder <T> is only necessary when designing own generics. Specializing existing
-    types replace <T> with <DesiredType>.
-
-    Quick and usable solution would be: Let the class name of TMyGenericList be
-    "TObjectList<TMyObject>" and just reference to TObjectList.
-   }
+  { All standard Generics: }
+  TArray = class end;
+  TEnumerator<T> = class abstract end;
+  TEnumerable<T> = class abstract end;
+  TList<T> = class(TEnumerable<T>) end;
+  TQueue<T> = class(TEnumerable<T>) end;
+  TStack<T> = class(TEnumerable<T>) end;
+  TPair<TKey,TValue> = record end;
+  TDictionary<TKey,TValue> = class(TEnumerable<TPair<TKey,TValue>>) end;
+  TObjectList<T: class> = class(TList<T>) end;
+  TObjectQueue<T: class> = class(TQueue<T>) end;
+  TObjectStack<T: class> = class(TStack<T>) end;
+  TObjectDictionary<TKey,TValue> = class(TDictionary<TKey,TValue>) end;
 
 implementation
 

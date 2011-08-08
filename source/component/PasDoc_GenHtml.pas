@@ -576,7 +576,7 @@ const
     for I := 0 to CIO.Cios.Count - 1 do
     begin
       LCio := TPasCio(CIO.Cios.PasItemAt[I]);
-      LCio.FullDeclaration := LCIO.Name + ' = ' +
+      LCio.FullDeclaration := LCIO.NameWithGeneric + ' = ' +
         CIO_NAMES[LCIO.MyType] + GetClassDirectiveName(LCIO.ClassDirective);
       if LCio.Ancestors.Count <> 0 then
       begin
@@ -714,7 +714,7 @@ begin
   WriteHeading(HL + 1, 'declaration', FLanguage.Translation[trDeclaration]);
   WriteStartOfParagraph('declaration');
   WriteStartOfCode;
-  WriteConverted('type ' + CIO.Name + ' = ');
+  WriteConverted('type ' + CIO.NameWithGeneric + ' = ');
   WriteConverted(CIO_NAMES[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 

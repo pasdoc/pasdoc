@@ -284,20 +284,25 @@ type
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
     procedure ParseCIO(const U: TPasUnit; 
-      const CioName: string; CIOType: TCIOType; 
+      const CioName, CioNameWithGeneric: string; CIOType: TCIOType; 
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
     
     procedure ParseCioEx(const U: TPasUnit;
-      const CioName: string; CIOType: TCIOType;
+      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
     function ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
       const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
+      
+    { Assume that T is "<" symbol, and parse everything up to a matching ">".
+      Append everything (including this "<") to Content string.
+      At the end, T is freed and nil. }
+    procedure ParseGenericTypeIdentifierList(var T: TToken; var Content: string);
 
     procedure ParseCioTypeDecl(out ACio: TPasCio;
-      const CioName: string; CIOType: TCIOType;
+      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
@@ -836,12 +841,13 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCIO(const U: TPasUnit; 
-  const CioName: string; CIOType: TCIOType; 
+  const CioName, CioNameWithGeneric: string; CIOType: TCIOType; 
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: boolean);
 begin
   try
-    ParseCioEx(U, CioName, CIOType, RawDescriptionInfo, IsInRecordCase);
+    ParseCioEx(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
+      IsInRecordCase);
   finally
     FCioSk.Clear;
   end;
@@ -1312,27 +1318,57 @@ var
   RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
   TypeName: string;
-  LCollected, LTemp: string;
+  LCollected, LTemp, TypeNameWithGeneric: string;
   MethodType: TPasMethod;
   EnumType: TPasEnum;
   T: TToken;
+  IsGeneric: boolean;
 begin
-  TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+  { Read the type name, preceded by optional "generic" directive.
+    Calculate TypeName, IsGeneric, TypeNameWithGeneric.
+    FPC requires "generic" directive, but Delphi doesn't,
+    so it's just optional for us (serves for some checks later). }
+  T := GetNextToken;
+  try
+    TypeNameWithGeneric := '';
+    IsGeneric := T.IsStandardDirective(SD_GENERIC);
+    if IsGeneric then
+    begin
+      TypeNameWithGeneric := T.Data + ' ';
+      TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+    end else
+    begin
+      CheckToken(T, TOK_IDENTIFIER);
+      TypeName := T.Data;
+    end;
+    TypeNameWithGeneric := TypeNameWithGeneric + TypeName;
+  finally FreeAndNil(T) end;
+
   DoMessage(5, pmtInformation, 'Parsing type "%s"', [TypeName]);
   
   RawDescriptionInfo := GetLastComment;
   t := GetNextToken(LCollected);
   try
-    if (not t.IsSymbol(SYM_EQUAL)) then begin
-      if (t.IsSymbol(SYM_SEMICOLON)) then begin
-        FreeAndNil(t);
-        Exit;
-      end;
-      FreeAndNil(t);
+    if T.IsSymbol(SYM_LESS_THAN) then
+    begin
+      ParseGenericTypeIdentifierList(T, TypeNameWithGeneric);
+      T := GetNextToken(LCollected);
+    end;
+
+    if T.IsSymbol(SYM_SEMICOLON) then
+    begin
+      FreeAndNil(T);
+      Exit;
+    end else
+    if T.IsSymbol(SYM_EQUAL) then 
+    begin
+      LCollected := TypeNameWithGeneric + LCollected + T.Data;
+      FreeAndNil(T);
+    end else
+    begin
+      FreeAndNil(T);
       DoError('Symbol "=" expected', []);
     end;
-    LCollected := TypeName + LCollected + t.Data;
-    FreeAndNil(t);
 
     t := GetNextToken(LTemp);
     LCollected := LCollected + LTemp + t.Data;
@@ -1348,32 +1384,32 @@ begin
               { include "identifier = class of something;" as standard type }
             end else begin
               Scanner.UnGetToken(t);
-              ParseCIO(U, TypeName, CIO_CLASS,
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_CLASS,
                 RawDescriptionInfo, False);
               Exit;
             end;
           end;
         KEY_DISPINTERFACE: begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_DISPINTERFACE,
+            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
               RawDescriptionInfo, False);
             Exit;
           end;
         KEY_INTERFACE: begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_INTERFACE,
+            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
               RawDescriptionInfo, False);
             Exit;
           end;
         KEY_OBJECT: begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_OBJECT,
+            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_OBJECT,
               RawDescriptionInfo, False);
             Exit;
           end;
         KEY_RECORD: begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_RECORD,
+            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
               RawDescriptionInfo, False);
             Exit;
           end;
@@ -1384,20 +1420,20 @@ begin
             if t.IsKeyWord(KEY_RECORD) then
             begin
               FreeAndNil(t);
-              ParseCIO(U, TypeName, CIO_PACKEDRECORD,
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
                 RawDescriptionInfo, False);
               exit;
             end else if t.IsKeyWord(KEY_OBJECT) then
             begin
               FreeAndNil(t);
-              ParseCIO(U, TypeName, CIO_PACKEDOBJECT,
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDOBJECT,
                 RawDescriptionInfo, False);
               Exit;
             end else if t.IsKeyWord(KEY_CLASS) then
             begin
               // no check for "of", no packed classpointers allowed
               FreeAndNil(t);
-              ParseCIO(U, TypeName, CIO_PACKEDCLASS,
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDCLASS,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -1767,7 +1803,7 @@ begin
       end else
       if t.IsKeyWord(KEY_RECORD) then
       begin
-        ParseCIO(nil, '', CIO_RECORD, EmptyRawDescriptionInfo, IsInRecordCase);
+        ParseCIO(nil, '', '', CIO_RECORD, EmptyRawDescriptionInfo, IsInRecordCase);
       end else
       if t.IsKeyWord(KEY_PACKED) then
       begin 
@@ -1775,7 +1811,7 @@ begin
         t := GetNextToken;
         if t.IsKeyWord(KEY_RECORD) then 
         begin
-          ParseCIO(nil, '', CIO_PACKEDRECORD, EmptyRawDescriptionInfo, IsInRecordCase);
+          ParseCIO(nil, '', '', CIO_PACKEDRECORD, EmptyRawDescriptionInfo, IsInRecordCase);
         end else 
         begin
           SkipDeclaration(ItemCollector, IsInRecordCase);
@@ -2402,15 +2438,35 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+procedure TParser.ParseGenericTypeIdentifierList(var T: TToken; var Content: string);
+var
+  Level: Cardinal;
+begin
+  Content := Content + T.Data;
+  Level := 1;
+  repeat
+    FreeAndNil(T);
+    T := GetNextToken;
+    Content := Content + T.Data;
+    if T.IsSymbol(SYM_LESS_THAN) then 
+      Inc(Level) else
+    if T.IsSymbol(SYM_GREATER_THAN) then 
+      Dec(Level);
+  until Level = 0;
+  FreeAndNil(T); { free last ">" }
+end;
+
+{ ---------------------------------------------------------------------------- }
+
 procedure TParser.ParseCioTypeDecl(out ACio: TPasCio;
-  const CioName: string; CIOType: TCIOType;
+  const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
   const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 var
   Finished: Boolean;
   AncestorName, AncestorFullDeclaration: string;
   t: TToken;
 begin
-  DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioName]);
+  DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioNameWithGeneric]);
   t := nil;
   try
     t := GetNextToken;
@@ -2425,6 +2481,7 @@ begin
     ACio := TPasCio.Create;
     try
       ACio.Name := CioName;
+      ACio.NameWithGeneric := CioNameWithGeneric;
       ACio.RawDescriptionInfo^ := RawDescriptionInfo;
       ACio.MyType := CIOType;
 
@@ -2516,15 +2573,7 @@ begin
               (add to AncestorFullDeclaration) everything between <...>. }
             t := GetNextToken;
             if t.IsSymbol(SYM_LESS_THAN) then
-            begin
-              AncestorFullDeclaration := AncestorFullDeclaration + t.Data;
-              repeat
-                FreeAndNil(t);
-                t := GetNextToken;
-                AncestorFullDeclaration := AncestorFullDeclaration + t.Data;
-              until t.IsSymbol(SYM_GREATER_THAN);
-              FreeAndNil(t); { free last ">" }
-            end else
+              ParseGenericTypeIdentifierList(T, AncestorFullDeclaration) else
               Scanner.UnGetToken(t);
             
             ACio.Ancestors.Add(TStringPair.Create(AncestorName, AncestorFullDeclaration));
@@ -2644,38 +2693,67 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
+procedure TParser.ParseCioEx(const U: TPasUnit;
+  const CioName, CioNameWithGeneric: string;
   CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: Boolean);
 
+  { TODO: this is mostly a copy&paste of ParseType! Should be merged,
+    otherwise modifying one of them always needs to be carefully duplicated. }
   procedure ParseInternalType;
   var
     RawDescriptionInfo: TRawDescriptionInfo;
     NormalType: TPasType;
     TypeName: string;
-    LCollected, LTemp: string;
+    LCollected, LTemp, TypeNameWithGeneric: string;
     MethodType: TPasMethod;
     EnumType: TPasEnum;
     T: TToken;
+    IsGeneric: boolean;
   begin
-    TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+    { Read the type name, preceded by optional "generic" directive.
+      Calculate TypeName, IsGeneric, TypeNameWithGeneric.
+      FPC requires "generic" directive, but Delphi doesn't,
+      so it's just optional for us (serves for some checks later). }
+    T := GetNextToken;
+    try
+      TypeNameWithGeneric := '';
+      IsGeneric := T.IsStandardDirective(SD_GENERIC);
+      if IsGeneric then
+      begin
+        TypeNameWithGeneric := T.Data + ' ';
+        TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
+      end else
+      begin
+        CheckToken(T, TOK_IDENTIFIER);
+        TypeName := T.Data;
+      end;
+      TypeNameWithGeneric := TypeNameWithGeneric + TypeName;
+    finally FreeAndNil(T) end;
 
     RawDescriptionInfo := GetLastComment;
     t := GetNextToken(LCollected);
     try
-      if (not t.IsSymbol(SYM_EQUAL)) then
+      if T.IsSymbol(SYM_LESS_THAN) then
       begin
-        if (t.IsSymbol(SYM_SEMICOLON)) then
-        begin
-          FreeAndNil(t);
-          Exit;
-        end;
-        FreeAndNil(t);
+        ParseGenericTypeIdentifierList(T, TypeNameWithGeneric);
+        T := GetNextToken(LCollected);
+      end;
+    
+      if T.IsSymbol(SYM_SEMICOLON) then
+      begin
+        FreeAndNil(T);
+        Exit;
+      end else
+      if T.IsSymbol(SYM_EQUAL) then 
+      begin
+        LCollected := TypeNameWithGeneric + LCollected + T.Data;
+        FreeAndNil(T);
+      end else
+      begin
+        FreeAndNil(T);
         DoError('Symbol "=" expected', []);
       end;
-
-      LCollected := TypeName + LCollected + t.Data;
-      FreeAndNil(t);
 
       t := GetNextToken(LTemp);
       LCollected := LCollected + LTemp + t.Data;
@@ -2696,7 +2774,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
               else begin
                 Scanner.UnGetToken(t);
                 t := nil;
-                ParseCioEx(U, TypeName, CIO_CLASS,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_CLASS,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -2704,28 +2782,28 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
           KEY_DISPINTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, CIO_DISPINTERFACE,
+              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_INTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, CIO_INTERFACE,
+              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_OBJECT:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, CIO_OBJECT,
+              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_OBJECT,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_RECORD:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, CIO_RECORD,
+              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -2737,14 +2815,14 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
               if t.IsKeyWord(KEY_RECORD) then
               begin
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, CIO_PACKEDRECORD,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
                   RawDescriptionInfo, False);
                 exit;
               end
               else if t.IsKeyWord(KEY_OBJECT) then
               begin
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, CIO_PACKEDOBJECT,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDOBJECT,
                   RawDescriptionInfo, False);
                 Exit;
               end
@@ -2752,7 +2830,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
               begin
                 // no check for "of", no packed classpointers allowed
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, CIO_PACKEDCLASS,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDCLASS,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -2773,7 +2851,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
             FCioSk.Peek.Cio.Types.Add(MethodType);
             FreeAndNil(t);
             FCioSk.Peek.SkipCioDecl := TRUE;
-            ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+            ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
             Exit;
           end;
         end;
@@ -2783,7 +2861,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
           FCioSk.Peek.Cio.Types.Add(EnumType);
           FreeAndNil(t);
           FCioSk.Peek.SkipCioDecl := TRUE;
-          ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+          ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
           Exit;
         end;
         SetLength(LCollected, Length(LCollected)-Length(t.Data));
@@ -2809,7 +2887,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
       end;
 
       FCioSk.Peek.SkipCioDecl := TRUE;
-      ParseCioEx(U, TypeName, CIOType, RawDescriptionInfo, False); //recursion
+      ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
     except
       t.Free;
       raise;
@@ -2850,7 +2928,8 @@ begin
       LMode := pmUndefined;
 
     if not Assigned(LCio) then
-      ParseCioTypeDecl(LCio, CioName, CioType, RawDescriptionInfo, LVisibility);
+      ParseCioTypeDecl(LCio, CioName, CioNameWithGeneric, CioType,
+        RawDescriptionInfo, LVisibility);
 
     if not Assigned(LCio) then
       Exit;
