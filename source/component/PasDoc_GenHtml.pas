@@ -578,12 +578,12 @@ const
       LCio := TPasCio(CIO.Cios.PasItemAt[I]);
       LCio.FullDeclaration := LCIO.Name + ' = ' +
         CIO_NAMES[LCIO.MyType] + GetClassDirectiveName(LCIO.ClassDirective);
-      if not IsEmpty(LCio.Ancestors) then
+      if LCio.Ancestors.Count <> 0 then
       begin
         LCio.FullDeclaration := LCio.FullDeclaration + '(';
         for J := 0 to LCIO.Ancestors.Count - 1 do
         begin
-            LCio.FullDeclaration := LCio.FullDeclaration + LCio.Ancestors[J];
+            LCio.FullDeclaration := LCio.FullDeclaration + LCio.Ancestors[J].Name;
             if (J <> LCio.Ancestors.Count - 1) then
               LCio.FullDeclaration := LCio.FullDeclaration + ', ';
         end;
@@ -718,14 +718,15 @@ begin
   WriteConverted(CIO_NAMES[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
-  if not IsEmpty(CIO.Ancestors) then begin
+  if CIO.Ancestors.Count <> 0 then 
+  begin
     WriteConverted('(');
     for i := 0 to CIO.Ancestors.Count - 1 do
     begin
-      if CIO.Ancestors.Objects[i] <> nil then
-        WriteDirect(MakeItemLink(CIO.Ancestors.Objects[i] as TPasItem,
-          CIO.Ancestors[i], lcNormal)) else
-        WriteConverted(CIO.Ancestors[i]);
+      if CIO.Ancestors[i].Data <> nil then
+        WriteDirect(MakeItemLink(TObject(CIO.Ancestors[i].Data) as TPasItem,
+          CIO.Ancestors[i].Name, lcNormal)) else
+        WriteConverted(CIO.Ancestors[i].Name);
       if (i <> CIO.Ancestors.Count - 1) then
         WriteConverted(', ');
     end;
@@ -742,7 +743,8 @@ begin
   WriteItemLongDescription(CIO);
 
   { Write Hierarchy }
-  if not IsEmpty(CIO.Ancestors) then begin
+  if CIO.Ancestors.Count <> 0 then
+  begin
     WriteAnchor(SectionAnchors[dsHierarchy]);
     WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsHierarchy]);
     WriteDirect('<ul class="hierarchy">');
@@ -1262,7 +1264,9 @@ begin
       if OpenCloseParagraph then WriteEndOfParagraph;
     end else 
     begin
-      if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then begin
+      if (AItem is TPasCio) and 
+         (TPasCio(AItem).Ancestors.Count <> 0) then 
+      begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;
         if Assigned(Ancestor) and (Ancestor is TPasItem) then

@@ -419,8 +419,7 @@ type
 implementation
 
 uses
-  SysUtils,
-  PasDoc_Utils;
+  SysUtils, PasDoc_Utils, PasDoc_StringPairVector;
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -2526,7 +2525,7 @@ begin
             end else
               Scanner.UnGetToken(t);
             
-            ACio.Ancestors.Add(s);
+            ACio.Ancestors.Add(TStringPair.Create(S, ''));
           end
           else begin
             if (t.IsSymbol(SYM_COMMA)) then
@@ -2546,22 +2545,22 @@ begin
           CIO_CLASS, CIO_PACKEDCLASS:
             begin
               if not SameText(ACio.Name, 'tobject') then
-                ACio.Ancestors.Add('TObject');
+                ACio.Ancestors.Add(TStringPair.Create('TObject', ''));
             end;
           CIO_SPINTERFACE:
             begin
               if not SameText(ACio.Name, 'idispinterface') then
-                ACio.Ancestors.Add('IDispInterface');
+                ACio.Ancestors.Add(TStringPair.Create('IDispInterface', ''));
             end;
           CIO_INTERFACE:
             begin
               if not SameText(ACio.Name, 'iinterface') then
-                ACio.Ancestors.Add('IInterface');
+                ACio.Ancestors.Add(TStringPair.Create('IInterface', ''));
             end;
           CIO_OBJECT, CIO_PACKEDOBJECT:
             begin
               if not SameText(ACio.Name, 'tobject') then
-              ACio.Ancestors.Add('TObject');
+              ACio.Ancestors.Add(TStringPair.Create('TObject', ''));
             end;
         end;
       end;

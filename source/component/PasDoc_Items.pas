@@ -648,7 +648,7 @@ type
     FFields: TPasItems;
     FMethods: TPasMethods;
     FProperties: TPasProperties;
-    FAncestors: TStringVector;
+    FAncestors: TStringPairVector;
     FOutputFileName: string;
     FMyType: TCIOType;
     FHelperTypeIdentifier: string;
@@ -684,11 +684,16 @@ type
     procedure RegisterTags(TagManager: TTagManager); override;
   public
 
-    { Name of the ancestor class / object.
-      Objects[] of this vector are assigned in TDocGenerator.BuildLinks to
-      TPasItem instances of ancestors (or nil if such ancestor is not found).
+    { Name of the ancestor (class, object, interface).
+      Each item is a TStringPair, with 
+      @unorderedList(
+        @item @code(Name) is the name (single Pascal identifier) of this ancestor,
+        @item @code(Value) is the optional generic specialization text,
+        @item(@code(Data) is a TPasItem reference to this ancestor,
+          or @nil if not found. This is assigned only in TDocGenerator.BuildLinks.)
+      )
       
-      Note that they are TPasItem, @italic(not necessarily) TPasCio.
+      Note that each ancestor is a TPasItem, @italic(not necessarily) TPasCio.
       Consider e.g. the case
       @longcode(#
         TMyStringList = Classes.TStringList;
@@ -701,12 +706,12 @@ type
       ancestor of TMyExtendedStringList will be a TPasType instance. 
       
       Note that the PasDoc_Parser already takes care of correctly
-      setting Ancestors when user didn't specify ancestor name
+      setting Ancestors when user didn't specify any ancestor name
       at cio declaration. E.g. if this cio is a class, 
       and user didn't specify ancestor name at class declaration,
       and this class name is not 'TObject' (in case pasdoc parses the RTL),
       the Ancestors[0] will be set to 'TObject'. }
-    property Ancestors: TStringVector read FAncestors;
+    property Ancestors: TStringPairVector read FAncestors;
 
     { Internal classes and records }
     property Cios: TPasCios read FCios;
@@ -715,7 +720,7 @@ type
     property ClassDirective: TClassDirective read FClassDirective
       write FClassDirective;
 
-    { This returns Ancestors.Objects[0], i.e. instance of the first
+    { This returns Ancestors[0].Data, i.e. instance of the first
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
     function FirstAncestor: TPasItem;
@@ -1881,7 +1886,7 @@ begin
   FFields := TPasItems.Create(True);
   FMethods := TPasMethods.Create(True);
   FProperties := TPasProperties.Create(True);
-  FAncestors := TStringVector.Create;
+  FAncestors := TStringPairVector.Create(True);
   FCios := TPasCios.Create;
   FTypes := TPasTypes.Create(True);
 end;
@@ -2054,14 +2059,14 @@ end;
 function TPasCio.FirstAncestor: TPasItem;
 begin
   if Ancestors.Count <> 0 then
-    Result := Ancestors.Objects[0] as TPasItem else
+    Result := TObject(Ancestors[0].Data) as TPasItem else
     Result := nil;
 end;
 
 function TPasCio.FirstAncestorName: string;
 begin
   if Ancestors.Count <> 0 then
-    Result := Ancestors[0] else
+    Result := Ancestors[0].Name else
     Result := '';
 end;
 

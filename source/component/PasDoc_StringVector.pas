@@ -32,21 +32,23 @@ type
     procedure Iterate(const AItFunc: TIterateFunc);
     function AddNotExisting(const AString: string): Integer;
 
-    { This loads our contents (i.e. Count and Items[] values)
-      from a stream using the binary format
-      - SizeOf(Count) bytes for Count
-      - then each string is loaded using
-        @link(TSerializable.LoadStringFromStream).
+    { Load from a stream using the binary format.
+      
+      The binary format is
+      @unorderedList(
+        @item Count
+        @item(followed by each string, loaded using
+          @link(TSerializable.LoadStringFromStream).)
+      )
 
-      This is better than simply loading/saving our Text value,
-      by @code(Text := TSerializable.LoadStringFromStream(Stream)),
-      because when such loading splits multiline strings,
-      e.g. if Items[0] = 'foo' + LineEnding + 'bar',
-      then after you do Text := 'foo' + LineEnding + 'bar'
-      you get two items: Items[0] = 'foo' and Items[1] = 'bar'. }
+      Note that you should never use our Text value to load/save this object 
+      from/into a stream, like
+      @code(Text := TSerializable.LoadStringFromStream(Stream)).
+      Using and assigning to the Text value breaks when some strings have
+      newlines inside that should be preserved. }
     procedure LoadFromBinaryStream(Stream: TStream);
 
-    { This saves our contents in a format readable by
+    { Save to a stream, in a format readable by
       @link(LoadFromBinaryStream). }
     procedure SaveToBinaryStream(Stream: TStream);
   end;

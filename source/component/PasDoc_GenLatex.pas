@@ -446,7 +446,7 @@ begin
                 s := MakeItemLink(Item, Item.Name, lcNormal);
                 WriteDirect(s);
 
-                if not IsEmpty(TPasCio(Item).Ancestors) then 
+                if TPasCio(Item).Ancestors.Count <> 0 then 
                   begin
                     s := TPasCio(Item).Ancestors.FirstName;
                     Item := TPasCio(Item).FirstAncestor;
@@ -948,7 +948,8 @@ begin
 
   if Result then Exit;
 
-  if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then 
+  if (AItem is TPasCio) and 
+     (TPasCio(AItem).Ancestors.Count <> 0) then
   begin
     Ancestor := TPasCio(AItem).FirstAncestor;
     if Assigned(Ancestor) and (Ancestor is TPasItem) then
@@ -1086,7 +1087,8 @@ begin
       WriteSpellChecked(AItem.DetailedDescription);
     end else 
     begin
-      if (AItem is TPasCio) and not IsEmpty(TPasCio(AItem).Ancestors) then 
+      if (AItem is TPasCio) and
+         (TPasCio(AItem).Ancestors.Count <> 0) then 
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;

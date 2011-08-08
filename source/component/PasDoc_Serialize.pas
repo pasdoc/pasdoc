@@ -65,11 +65,7 @@ const
     Changing PasDoc_Version always changes cache version, for safety.
     If you want, you can also bump the suffix -xxx added here,
     when some SVN revision changes cache format. }
-{$IFDEF STRING_UNICODE}
-  CacheFormatVersion = PasDoc_Version + '-1U';
-{$ELSE}
-  CacheFormatVersion = PasDoc_Version + '-1';
-{$ENDIF}
+  CacheFormatVersion = PasDoc_Version + '-2' {$IFDEF STRING_UNICODE} + 'U' {$ENDIF};
 
 var
   GClassNames: TStringList;

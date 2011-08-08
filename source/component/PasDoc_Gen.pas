@@ -1022,7 +1022,7 @@ procedure TDocGenerator.BuildLinks;
     i: Integer;
   begin
     for i := 0 to Cio.Ancestors.Count - 1 do
-      Cio.Ancestors.Objects[i] := SearchItem(Cio.Ancestors[i], Cio, true);
+      Cio.Ancestors[i].Data := SearchItem(Cio.Ancestors[i].Name, Cio, true);
   end;
 
   procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;

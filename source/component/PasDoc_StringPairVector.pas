@@ -17,10 +17,11 @@ type
     { Init Name and Value by @link(ExtractFirstWord) from S. }
     constructor CreateExtractFirstWord(const S: string);
     
-    constructor Create(const AName, AValue: string; AData: Pointer = nil);
+    constructor Create; overload;
+    constructor Create(const AName, AValue: string; AData: Pointer = nil); overload;
   end;
   
-  { This is a list of string pairs.
+  { List of string pairs.
     This class contains only non-nil objects of class TStringPair.
 
     Using this class instead of TStringList (with it's Name and Value
@@ -55,13 +56,25 @@ type
     { Removes first string pair with given Name. 
       Returns if some pair was removed. }
     function DeleteName(const Name: string; IgnoreCase: boolean = true): boolean;
+    
+    { Load from a stream using the binary format.
+      For each item, it's Name and Value are saved.
+      (TStringPair.Data pointers are @italic(not) saved.) }
+    procedure LoadFromBinaryStream(Stream: TStream);
+
+    { Save to a stream, in a format readable by
+      @link(LoadFromBinaryStream). }
+    procedure SaveToBinaryStream(Stream: TStream);
+    
+    { Name of first item, or '' if list empty. }
+    function FirstName: string;
   end;
 
 implementation
 
 uses 
   SysUtils { For LowerCase under Kylix 3 }, 
-  PasDoc_Utils;
+  PasDoc_Utils, PasDoc_Serialize;
 
 { TStringPair ---------------------------------------------------------------- }
 
@@ -73,9 +86,14 @@ begin
   Create(FirstWord, Rest);
 end;
 
-constructor TStringPair.Create(const AName, AValue: string; AData: Pointer);
+constructor TStringPair.Create;
 begin
   inherited Create;
+end;
+
+constructor TStringPair.Create(const AName, AValue: string; AData: Pointer);
+begin
+  Create;
   Name := AName;
   Value := AValue;
   Data := AData;
@@ -137,6 +155,42 @@ begin
   Result := i <> -1;
   if Result then
     Delete(i);
+end;
+
+procedure TStringPairVector.LoadFromBinaryStream(Stream: TStream);
+var
+  I, N: Integer;
+  P: TStringPair;
+begin
+  Clear;
+  N := TSerializable.LoadIntegerFromStream(Stream);
+  Capacity := N;
+  for I := 0 to N - 1 do
+  begin
+    P := TStringPair.Create;
+    Add(P);
+    P.Name := TSerializable.LoadStringFromStream(Stream);
+    P.Value := TSerializable.LoadStringFromStream(Stream);
+  end;
+end;
+
+procedure TStringPairVector.SaveToBinaryStream(Stream: TStream);
+var 
+  I: Integer;
+begin
+  TSerializable.SaveIntegerToStream(Count, Stream);
+  for i := 0 to Count - 1 do
+  begin
+    TSerializable.SaveStringToStream(Items[I].Name, Stream);
+    TSerializable.SaveStringToStream(Items[I].Value, Stream);
+  end;
+end;
+
+function TStringPairVector.FirstName: string;
+begin
+  if Count > 0 then
+    Result := Items[0].Name else
+    Result := '';
 end;
 
 end.
