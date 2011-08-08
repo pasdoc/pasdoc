@@ -634,7 +634,7 @@ type
 
   { enumeration type to determine type of @link(TPasCio) item }
   TCIOType = (CIO_CLASS, CIO_PACKEDCLASS,
-    CIO_SPINTERFACE, CIO_INTERFACE, 
+    CIO_DISPINTERFACE, CIO_INTERFACE, 
     CIO_OBJECT, CIO_PACKEDOBJECT, 
     CIO_RECORD, CIO_PACKEDRECORD );
 

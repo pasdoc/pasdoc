@@ -1355,7 +1355,7 @@ begin
           end;
         KEY_DISPINTERFACE: begin
             FreeAndNil(t);
-            ParseCIO(U, TypeName, CIO_SPINTERFACE,
+            ParseCIO(U, TypeName, CIO_DISPINTERFACE,
               RawDescriptionInfo, False);
             Exit;
           end;
@@ -2549,7 +2549,7 @@ begin
               if not SameText(ACio.Name, 'tobject') then
                 ACio.Ancestors.Add(TStringPair.Create('TObject', 'TObject'));
             end;
-          CIO_SPINTERFACE:
+          CIO_DISPINTERFACE:
             begin
               if not SameText(ACio.Name, 'idispinterface') then
                 ACio.Ancestors.Add(TStringPair.Create('IDispInterface', 'IDispInterface'));
@@ -2704,7 +2704,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit; const CioName: string;
           KEY_DISPINTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, CIO_SPINTERFACE,
+              ParseCioEx(U, TypeName, CIO_DISPINTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;

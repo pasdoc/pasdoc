@@ -183,7 +183,7 @@ begin
   case t of
     CIO_CLASS:result:='class';
     CIO_PACKEDCLASS:result:='packed class';
-    CIO_SPINTERFACE:result:='dispinterface';
+    CIO_DISPINTERFACE:result:='dispinterface';
     CIO_INTERFACE:result:='interface';
     CIO_OBJECT:result:='object';
     CIO_PACKEDOBJECT:result:='packed object';
