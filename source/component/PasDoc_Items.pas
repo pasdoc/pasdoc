@@ -688,7 +688,11 @@ type
       Each item is a TStringPair, with 
       @unorderedList(
         @item @code(Name) is the name (single Pascal identifier) of this ancestor,
-        @item @code(Value) is the optional generic specialization text,
+        @item(@code(Value) is the full declaration of this ancestor.
+          For example, in addition to Name, this may include "specialize" 
+          directive (for FPC generic specialization) at the beginning.
+          And "<foo,bar>" section at the end (for FPC or Delphi 
+          generic specialization).)
         @item(@code(Data) is a TPasItem reference to this ancestor,
           or @nil if not found. This is assigned only in TDocGenerator.BuildLinks.)
       )

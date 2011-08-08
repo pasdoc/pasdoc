@@ -205,7 +205,8 @@ begin
 
     for i:=0 to item.ancestors.count-1 do
       WriteDirectLine(space +
-        '<ancestor name="' + ConvertString(item.ancestors[i].Name) + '"/>');
+        '<ancestor name="' + ConvertString(item.ancestors[i].Name) + 
+         '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
 
     for i:=0 to item.Methods.count-1 do
       writefunction(item.Methods.PasItemAt[i]);

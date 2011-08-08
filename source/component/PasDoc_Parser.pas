@@ -2407,7 +2407,7 @@ procedure TParser.ParseCioTypeDecl(out ACio: TPasCio;
   const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 var
   Finished: Boolean;
-  s: string;
+  AncestorName, AncestorFullDeclaration: string;
   t: TToken;
 begin
   DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioName]);
@@ -2478,7 +2478,8 @@ begin
 
           if t.MyType = TOK_IDENTIFIER then { an ancestor }
           begin
-            s := t.Data;
+            AncestorFullDeclaration := t.Data;
+            AncestorName := t.Data;
             
             { For FPC-style generic specialization, the "specialize"
               directive is specified before generic name.
@@ -2488,7 +2489,8 @@ begin
               FreeAndNil(t);
               t := GetNextToken;
               CheckToken(T, TOK_IDENTIFIER);
-              s := s + ' ' + t.Data;
+              AncestorFullDeclaration := AncestorFullDeclaration + ' ' + t.Data;
+              AncestorName := t.Data; { previous AncestorName was wrong }
             end;
             
             { inner repeat loop: one part of the ancestor per name }
@@ -2501,31 +2503,31 @@ begin
                 Break; { leave inner repeat loop }
               end;
               FreeAndNil(t);
-              s := s + '.';
               t := GetNextToken;
               if t.MyType <> TOK_IDENTIFIER then
                 DoError('Expected class, object or interface in ancestor' +
                   ' declaration', []);
 
-              s := s + t.Data;
+              AncestorFullDeclaration := AncestorFullDeclaration + '.' + T.Data;
+              AncestorName            := AncestorName            + '.' + T.Data;
             until False;
             
             { Dumb reading of generic specialization, just blindly consume
-              (add to T.Data) everything between <...>. }
+              (add to AncestorFullDeclaration) everything between <...>. }
             t := GetNextToken;
             if t.IsSymbol(SYM_LESS_THAN) then
             begin
-              s := s + t.Data;
+              AncestorFullDeclaration := AncestorFullDeclaration + t.Data;
               repeat
                 FreeAndNil(t);
                 t := GetNextToken;
-                s := s + t.Data;
+                AncestorFullDeclaration := AncestorFullDeclaration + t.Data;
               until t.IsSymbol(SYM_GREATER_THAN);
               FreeAndNil(t); { free last ">" }
             end else
               Scanner.UnGetToken(t);
             
-            ACio.Ancestors.Add(TStringPair.Create(S, ''));
+            ACio.Ancestors.Add(TStringPair.Create(AncestorName, AncestorFullDeclaration));
           end
           else begin
             if (t.IsSymbol(SYM_COMMA)) then
@@ -2545,22 +2547,22 @@ begin
           CIO_CLASS, CIO_PACKEDCLASS:
             begin
               if not SameText(ACio.Name, 'tobject') then
-                ACio.Ancestors.Add(TStringPair.Create('TObject', ''));
+                ACio.Ancestors.Add(TStringPair.Create('TObject', 'TObject'));
             end;
           CIO_SPINTERFACE:
             begin
               if not SameText(ACio.Name, 'idispinterface') then
-                ACio.Ancestors.Add(TStringPair.Create('IDispInterface', ''));
+                ACio.Ancestors.Add(TStringPair.Create('IDispInterface', 'IDispInterface'));
             end;
           CIO_INTERFACE:
             begin
               if not SameText(ACio.Name, 'iinterface') then
-                ACio.Ancestors.Add(TStringPair.Create('IInterface', ''));
+                ACio.Ancestors.Add(TStringPair.Create('IInterface', 'IInterface'));
             end;
           CIO_OBJECT, CIO_PACKEDOBJECT:
             begin
               if not SameText(ACio.Name, 'tobject') then
-              ACio.Ancestors.Add(TStringPair.Create('TObject', ''));
+              ACio.Ancestors.Add(TStringPair.Create('TObject', 'TObject'));
             end;
         end;
       end;

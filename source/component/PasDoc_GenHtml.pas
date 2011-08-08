@@ -583,7 +583,7 @@ const
         LCio.FullDeclaration := LCio.FullDeclaration + '(';
         for J := 0 to LCIO.Ancestors.Count - 1 do
         begin
-            LCio.FullDeclaration := LCio.FullDeclaration + LCio.Ancestors[J].Name;
+            LCio.FullDeclaration := LCio.FullDeclaration + LCio.Ancestors[J].Value;
             if (J <> LCio.Ancestors.Count - 1) then
               LCio.FullDeclaration := LCio.FullDeclaration + ', ';
         end;
@@ -725,8 +725,8 @@ begin
     begin
       if CIO.Ancestors[i].Data <> nil then
         WriteDirect(MakeItemLink(TObject(CIO.Ancestors[i].Data) as TPasItem,
-          CIO.Ancestors[i].Name, lcNormal)) else
-        WriteConverted(CIO.Ancestors[i].Name);
+          CIO.Ancestors[i].Value, lcNormal)) else
+        WriteConverted(CIO.Ancestors[i].Value);
       if (i <> CIO.Ancestors.Count - 1) then
         WriteConverted(', ');
     end;
