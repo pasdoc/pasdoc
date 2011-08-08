@@ -196,8 +196,9 @@ var
   i: Integer;
 begin
   WriteDirectLine(space +
-    '<structure name="' + ConvertString(item.name) +
-             '" type="' + ConvertString(writetype(item.MyType)) + '">');
+      '<structure name="' + ConvertString(item.name) +
+  '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
+               '" type="' + ConvertString(writetype(item.MyType)) + '">');
   space:=space+'  ';
 
   if item.HasDescription then
