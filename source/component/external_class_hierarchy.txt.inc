@@ -156,4 +156,11 @@
 'Tvector4_double=TObject' + LineEnding + 
 'Tvector4_extended=TObject' + LineEnding + 
 'Tvector4_single=TObject' + LineEnding + 
+'TFPSList=TObject' + LineEnding + 
+'TFPGList=TFPSList' + LineEnding + 
+'TFPGObjectList=TFPSList' + LineEnding + 
+'TFPGInterfacedObjectList=TFPSList' + LineEnding + 
+'TFPSMap=TFPSList' + LineEnding + 
+'TFPGMap=TFPSMap' + LineEnding + 
+'TFPGMapInterfacedObjectData=TFPSMap' + LineEnding + 
 ''
