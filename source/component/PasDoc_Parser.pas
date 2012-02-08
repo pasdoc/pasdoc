@@ -149,7 +149,7 @@ type
       LastCommentContent is only the comment content, with comment braces
       and markers already stripped. }
     IsLastComment: boolean;
-    LastCommentWasCStyle: boolean;
+    LastCommentWasCStyle, LastCommentHelpInsight: boolean;
     LastCommentInfo: TRawDescriptionInfo;
     
     { The underlying scanner object. }
@@ -593,7 +593,8 @@ function TParser.GetLastComment: TRawDescriptionInfo;
 begin
   if IsLastComment then
   begin
-    ExpandHelpInsightDescriptions(LastCommentInfo);
+    if LastCommentHelpInsight then
+      ExpandHelpInsightDescriptions(LastCommentInfo);
     Result := LastCommentInfo;
     IsLastComment := false;
   end else
@@ -2126,7 +2127,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 
 var
   T: TToken;
-  TBackComment, TIsCStyle: boolean;
+  TBackComment, TIsCStyle, THelpInsight: boolean;
   TCommentInfo: TRawDescriptionInfo;
   i: Integer;
 begin
@@ -2142,6 +2143,7 @@ begin
         { Get info from T }
         ExtractDocComment(T, TCommentInfo, TBackComment);
         TIsCStyle := (t.MyType in [TOK_COMMENT_CSTYLE, TOK_COMMENT_HELPINSIGHT]);
+        THelpInsight := t.MyType = TOK_COMMENT_HELPINSIGHT;
         FreeAndNil(T);
       
         if TBackComment then
@@ -2182,6 +2184,7 @@ begin
           { This is a normal comment, so fill [Is]LastCommentXxx properties }
           IsLastComment := true;
           LastCommentWasCStyle := TIsCStyle;
+          LastCommentHelpInsight := THelpInsight;
           LastCommentInfo := TCommentInfo;
         end;
       end else
