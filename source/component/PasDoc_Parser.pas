@@ -190,6 +190,9 @@ type
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
 
+    { Replaces HelpInsight XML tags like <summary> with PasDoc tags }
+    procedure ExpandHelpInsightDescriptions(var DescriptionInfo: TRawDescriptionInfo);
+
     { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
       otherwise returns LastCommentInfo and sets IsLastComment to false. }
     function GetLastComment: TRawDescriptionInfo;
@@ -424,6 +427,8 @@ type
 implementation
 
 uses
+  {$ifdef FPC_RegExpr} RegExpr, {$endif}
+  {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
   SysUtils, PasDoc_Utils, PasDoc_StringPairVector;
 
 { ---------------------------------------------------------------------------- }
@@ -494,6 +499,67 @@ begin
     FOnMessage(MessageType, Format(AMessage, AArguments), AVerbosity);
 end;
 
+procedure TParser.ExpandHelpInsightDescriptions(var DescriptionInfo: TRawDescriptionInfo);
+
+  {$ifdef FPC_RegExpr}
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := ReplaceRegExpr(ARegExpr, AInputStr, AReplaceStr, true);
+  end;
+  {$else}
+  {$ifdef DELPHI_RegularExpressions}
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := TRegEx.Replace(AInputStr, ARegExpr, AReplaceStr);
+  end;
+  {$else}
+  { No regular expressions support, help insight comments will not work. }
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := AInputStr;
+  end;
+  {$endif}
+  {$endif}
+
+var s: string;
+begin
+  s := DescriptionInfo.Content;
+  s := ReplaceRegEx(s, '<summary[^>]*>', '@abstract(');
+  s := ReplaceRegEx(s, '</summary>', ')');
+  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1');
+  s := ReplaceRegEx(s, '</param>', ')');
+  s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
+  s := ReplaceRegEx(s, '</returns>', ')');
+  s := ReplaceRegEx(s, '<exception[ ]*([^>]*)>', '@raises($1');
+  s := ReplaceRegEx(s, '</exception>', ')');
+  s := ReplaceRegEx(s, '<permission[ ]*([^>]*)>', '@permission($1');  //not yet implemented
+  s := ReplaceRegEx(s, '</permission>', ')');
+  s := ReplaceRegEx(s, '<c>', '@code(');
+  s := ReplaceRegEx(s, '</c>', ')');
+  s := ReplaceRegEx(s, '<code>', '@preformatted(');
+  s := ReplaceRegEx(s, '</code>', ')');
+  s := ReplaceRegEx(s, '<b>', '@bold(');
+  s := ReplaceRegEx(s, '</b>', ')');
+  s := ReplaceRegEx(s, '<i>', '@italic(');
+  s := ReplaceRegEx(s, '</i>', ')');
+  s := ReplaceRegEx(s, '<u>', '@underline(');  // not yet implemented
+  s := ReplaceRegEx(s, '</u>', ')');
+  s := ReplaceRegEx(s, '<br>', '@br');
+  s := ReplaceRegEx(s, '<ul>', '@unorderedList(');
+  s := ReplaceRegEx(s, '</ul>', ')');
+  s := ReplaceRegEx(s, '<ol>', '@orderedList(');
+  s := ReplaceRegEx(s, '</ol>', ')');
+  s := ReplaceRegEx(s, '<li>', '@item(');
+  s := ReplaceRegEx(s, '</li>', ')');
+  s := ReplaceRegEx(s, '<remark>', '');
+  s := ReplaceRegEx(s, '</remark>', '');
+  s := ReplaceRegEx(s, '<remarks>', '');
+  s := ReplaceRegEx(s, '</remarks>', '');
+  s := ReplaceRegEx(s, '<comment>', '');
+  s := ReplaceRegEx(s, '</comment>', '');
+  DescriptionInfo.Content := s;
+end;
+
 { ---------------------------------------------------------------------------- }
 
 const
@@ -527,6 +593,7 @@ function TParser.GetLastComment: TRawDescriptionInfo;
 begin
   if IsLastComment then
   begin
+    ExpandHelpInsightDescriptions(LastCommentInfo);
     Result := LastCommentInfo;
     IsLastComment := false;
   end else
@@ -2037,7 +2104,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       end;
     end;
 
-    if SCharIs(CommentInfo.Content, 1, BackCommentMarker) then
+    if (not (T.MyType = TOK_COMMENT_HELPINSIGHT)) and SCharIs(CommentInfo.Content, 1, BackCommentMarker) then
     begin
       BackComment := true;
       Delete(CommentInfo.Content, 1, Length(BackCommentMarker));
@@ -2074,7 +2141,7 @@ begin
 
         { Get info from T }
         ExtractDocComment(T, TCommentInfo, TBackComment);
-        TIsCStyle := t.MyType = TOK_COMMENT_CSTYLE;
+        TIsCStyle := (t.MyType in [TOK_COMMENT_CSTYLE, TOK_COMMENT_HELPINSIGHT]);
         FreeAndNil(T);
       
         if TBackComment then

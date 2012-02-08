@@ -43,6 +43,7 @@ type
     You can check TToken.Info.StandardDirective to know whether
     this identifier is @italic(maybe) used as real standard directive. }
   TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
+                TOK_COMMENT_HELPINSIGHT,
                 TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
                 TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD,
                 TOK_ATT_ASSEMBLER_REGISTER);
@@ -173,11 +174,14 @@ const
     TTokenType. }
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
   ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)', 
+    'comment (///-style)',
     'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
     'directive', 'reserved word', 'AT&T assembler register name');
 
   TokenCommentTypes: set of TTokenType = 
-  [ TOK_COMMENT_PAS, TOK_COMMENT_EXT, TOK_COMMENT_CSTYLE ];
+  [ TOK_COMMENT_PAS, TOK_COMMENT_EXT,
+  TOK_COMMENT_HELPINSIGHT,
+  TOK_COMMENT_CSTYLE ];
 
 type
   { enumeration type that provides all types of symbols; each
@@ -944,22 +948,32 @@ end;
 function TTokenizer.ReadCommentType3: TToken;
 var
   c: Char;
+  pos: Integer;
+  Prefix: string;
 begin
   Result := TToken.Create(TOK_COMMENT_CSTYLE);
-  with Result do 
+  with Result do
   begin
     CommentContent := '';
-    
+    pos := 0;
+
+    Prefix := '//';
     while HasData and (GetChar(c) > 0) do
     begin
       case c of
         #10: begin Inc(Row); break end;
         #13: break;
-        else CommentContent := CommentContent + c;
+        else if (c = '/') and (pos = 0) then
+          begin
+            MyType := TOK_COMMENT_HELPINSIGHT;
+            Prefix := '///';
+          end else
+            CommentContent := CommentContent + c;
       end;
+      Inc(pos);
     end;
 
-    Data := '//' + CommentContent;
+    Data := Prefix + CommentContent;
   end;
 end;
 
