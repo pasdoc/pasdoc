@@ -201,3 +201,4 @@ mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas er
 mk_test ok_cvar ok_cvar.pas
 mk_test ok_nested_types ok_nested_types.pas
 mk_test ok_generic ok_generic.pas
+mk_test ok_helpinsight_comments ok_helpinsight_comments.pas

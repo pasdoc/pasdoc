@@ -1,5 +1,6 @@
-{ Test of handling http://delphi.wikia.com/wiki/Help_insight.
-  Example snippet with @link(Parse) function is straight from there.
+{ Test of handling help insight comments, in the form "/// <tag> ... </tag>".
+  See http://delphi.wikia.com/wiki/Help_insight,
+  example snippet with @link(Parse) function is straight from there.
   See https://sourceforge.net/tracker/?func=detail&atid=304213&aid=3485263&group_id=4213. }
 unit ok_helpinsight_comments;
 interface
