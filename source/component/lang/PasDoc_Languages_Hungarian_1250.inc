@@ -96,5 +96,6 @@ RTransTable = (
     {trSearch} 'Keresés',
     {trSeeAlso} 'Lásd még',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

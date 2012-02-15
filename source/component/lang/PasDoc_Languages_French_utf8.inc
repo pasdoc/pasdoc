@@ -1,4 +1,4 @@
-RTransTable = (
+﻿﻿RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'French',
   //map
@@ -96,6 +96,7 @@ RTransTable = (
     {trSearch} 'Cherche', //? 'Recherche'
     {trSeeAlso} 'Voir aussi', //?
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );
 

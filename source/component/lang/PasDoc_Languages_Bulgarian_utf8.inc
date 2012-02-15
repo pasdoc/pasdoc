@@ -1,4 +1,4 @@
-RTransTable = (
+﻿﻿RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Bulgarian',
   //map
@@ -101,5 +101,6 @@ RTransTable = (
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

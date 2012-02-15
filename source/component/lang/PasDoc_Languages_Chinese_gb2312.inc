@@ -98,5 +98,6 @@ RTransTable = (
     {trSearch} 'ËÑË÷',
     {trSeeAlso} '²Î¼û',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

@@ -96,6 +96,7 @@
     {trSearch} 'Cherche', //? 'Recherche'
     {trSeeAlso} 'Voir aussi', //?
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );
 

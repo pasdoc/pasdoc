@@ -101,5 +101,6 @@
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

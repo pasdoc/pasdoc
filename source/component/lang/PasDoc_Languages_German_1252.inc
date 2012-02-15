@@ -96,5 +96,6 @@ RTransTable = (
     {trSearch} 'Suchen',
     {trSeeAlso} 'Siehe auch',
     {trInternal} 'intern',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

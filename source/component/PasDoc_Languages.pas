@@ -200,6 +200,7 @@ type
     trSeeAlso,
     trInternal,
   //add more here
+    trAttributes,
     trDummy
   );
 

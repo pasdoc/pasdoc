@@ -97,5 +97,6 @@ RTransTable = (
     {trSearch} 'Найти',
     {trSeeAlso} 'Материалы по теме',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

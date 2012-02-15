@@ -98,5 +98,6 @@ RTransTable = (
     {trSearch} '搜索',
     {trSeeAlso} '参见',
     {trInternal} strToDo, //'internal',
+    {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );
