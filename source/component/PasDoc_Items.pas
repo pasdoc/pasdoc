@@ -316,8 +316,9 @@ type
     FIsLibrarySpecific: boolean;
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
-    FCachedUnitRelativeQualifiedName: string; { do not serialize }
-
+    FCachedUnitRelativeQualifiedName: string; //< do not serialize
+    FAttributes: TStringPairVector;
+    
     procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -483,7 +484,11 @@ type
       Name of each item is the 1st part of @@seealso parameter.
       Value is the 2nd part of @@seealso parameter. }
     property SeeAlso: TStringPairVector read FSeeAlso;
-    
+
+    { List of attributes defined for this item }
+    property Attributes: TStringPairVector read FAttributes;
+    procedure SetAttributes(var Value: TStringPairVector);
+
     function BasePath: string; override;
   end;
 
@@ -1573,6 +1578,14 @@ begin
   ADestination.Write(FAbstractDescriptionWasAutomatic, 
     SizeOf(FAbstractDescriptionWasAutomatic)); 
   SeeAlso }
+end;
+
+procedure TPasItem.SetAttributes(var Value: TStringPairVector);
+begin
+  if Value.Count > 0 then begin
+    FAttributes := Value;
+    Value := TStringPairVector.Create(true);
+  end;
 end;
 
 function TPasItem.BasePath: string;

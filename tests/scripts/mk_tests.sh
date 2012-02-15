@@ -202,3 +202,4 @@ mk_test ok_cvar ok_cvar.pas
 mk_test ok_nested_types ok_nested_types.pas
 mk_test ok_generic ok_generic.pas
 mk_test ok_helpinsight_comments ok_helpinsight_comments.pas
+mk_test ok_attributes ok_attributes.pas

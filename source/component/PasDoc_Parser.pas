@@ -25,6 +25,7 @@ uses
   PasDoc_Items,
   PasDoc_Scanner,
   PasDoc_Tokenizer,
+  PasDoc_StringPairVector,
   PasDoc_StringVector;
 
 type
@@ -151,7 +152,10 @@ type
     IsLastComment: boolean;
     LastCommentWasCStyle, LastCommentHelpInsight: boolean;
     LastCommentInfo: TRawDescriptionInfo;
-    
+
+    AttributeIsPossible: boolean;
+    CurrentAttributes: TStringPairVector;
+
     { The underlying scanner object. }
     Scanner: TScanner;
     
@@ -429,7 +433,7 @@ implementation
 uses
   {$ifdef FPC_RegExpr} RegExpr, {$endif}
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
-  SysUtils, PasDoc_Utils, PasDoc_StringPairVector;
+  SysUtils, PasDoc_Utils;
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -455,12 +459,14 @@ begin
   FCommentMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
   FCioSk := TPasCioHelperStack.Create;
+  CurrentAttributes := TStringPairVector.Create(true);
 end;
 
 { ---------------------------------------------------------------------------- }
 
 destructor TParser.Destroy;
 begin
+  CurrentAttributes.Free;
   FCommentMarkers.Free;
   Scanner.Free;
   ItemsForNextBackComment.Free;
@@ -741,6 +747,7 @@ begin
   M := TPasMethod.Create;
   try
     M.RawDescriptionInfo^ := RawDescriptionInfo;
+    M.SetAttributes(CurrentAttributes);
     if InitItemsForNextBackComment then
       ItemsForNextBackComment.ClearAndAdd(M);
 
@@ -1002,6 +1009,7 @@ begin
     DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
     i.RawDescriptionInfo^ := GetLastComment;
     i.FullDeclaration := i.Name;
+    i.SetAttributes(CurrentAttributes);
     {AG}
     if LocalSkipDeclaration then
     begin
@@ -1062,6 +1070,7 @@ begin
     p.Name := Name;
     p.RawDescriptionInfo^ := RawDescriptionInfo;
     p.FullDeclaration := Name + ' = (...);';
+    p.SetAttributes(CurrentAttributes);
     ItemsForNextBackComment.ClearAndAdd(P);
 
     T := GetNextToken;
@@ -1135,6 +1144,8 @@ begin
   Finished := False;
   Mode := MODE_UNDEFINED;
 
+  AttributeIsPossible := False;
+
   repeat
     t := GetNextToken;
 
@@ -1159,6 +1170,7 @@ begin
                 begin
                   Scanner.UnGetToken(T);
                   ParseType(U);
+                  AttributeIsPossible := True;
                 end;
               MODE_VAR:
                 begin
@@ -1184,7 +1196,10 @@ begin
               KEY_IMPLEMENTATION:
                 Finished := True;
               KEY_TYPE:
-                Mode := MODE_TYPE;
+                begin
+                  Mode := MODE_TYPE;
+                  AttributeIsPossible := True;
+                end;
               KEY_USES:
                 ParseUses(U);
               KEY_THREADVAR,
@@ -1223,6 +1238,7 @@ begin
     p.Proptype := '';
     p.FullDeclaration := 'property ' + p.Name;
     p.RawDescriptionInfo^ := GetLastComment;
+    p.SetAttributes(CurrentAttributes);
     ItemsForNextBackComment.ClearAndAdd(P);
   
     { Is this only a redeclaration of property from ancestor
@@ -1292,6 +1308,7 @@ var
   t1: TToken;
   LNeedId: boolean;
   P: TPasFieldVariable;
+  OldAttribPossible: Boolean;
 begin
   t1 := GetNextToken;
   try
@@ -1308,6 +1325,7 @@ begin
       p.Name := T1.Data;
       p.RawDescriptionInfo^ := GetLastComment;
       p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);
+      p.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(P);
       R.Fields.Add(p);
     end;
@@ -1317,6 +1335,11 @@ begin
   
     GetAndCheckNextToken(KEY_OF);
   
+    CurrentAttributes.Clear;
+    OldAttribPossible := AttributeIsPossible;
+    AttributeIsPossible := False;
+
+    { no support for attributes in case record, if found, unexpected behaviour }
     t1 := GetNextToken;
     LNeedId := True;
     repeat
@@ -1374,6 +1397,8 @@ begin
     until t1.IsKeyWord(KEY_END) or
       (SubCase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS));
     
+    AttributeIsPossible := OldAttribPossible;
+
     Scanner.UnGetToken(t1);
   except
     t1.Free;
@@ -1415,6 +1440,7 @@ begin
   DoMessage(5, pmtInformation, 'Parsing type "%s"', [TypeName]);
   
   RawDescriptionInfo := GetLastComment;
+  AttributeIsPossible := False;
   t := GetNextToken(LCollected);
   try
     if T.IsSymbol(SYM_LESS_THAN) then
@@ -1533,12 +1559,15 @@ begin
     end;
     FreeAndNil(t);
 
+    AttributeIsPossible := True;
+
     NormalType := TPasType.Create;
     try
       NormalType.FullDeclaration := LCollected;
       SkipDeclaration(NormalType, false);
       NormalType.Name := TypeName;
       NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
+      NormalType.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(NormalType);
       U.AddType(NormalType); { This is the last line here since "U" owns the
                                objects, bad luck if adding the item raised an
@@ -1913,11 +1942,13 @@ begin
           NewItem.Name := NewItemNames[I];
           NewItem.RawDescriptionInfo^ := RawDescriptions[I];
           NewItem.Visibility := Visibility;
+          NewItem.SetAttributes(CurrentAttributes);
           Items.Add(NewItem);
           NewItems.Add(NewItem);
           ItemsForNextBackComment.Add(NewItem);
         end;
       end;
+      CurrentAttributes.Clear;
 
       if not OfObject then
         ParseVariableModifiers(ItemCollector);
@@ -1964,11 +1995,15 @@ var
   PLevel: Integer;
   t: TToken;
   WhitespaceCollector: string;
+  oldAttributeIsPossible: Boolean;
 begin
   EndLevel := 0;
   PLevel := 0;
   repeat
+    oldAttributeIsPossible := AttributeIsPossible;
+    AttributeIsPossible := False;
     t := GetNextToken(WhitespaceCollector);
+    AttributeIsPossible := oldAttributeIsPossible;
     try
       if Assigned(Item) then begin
         Item.FullDeclaration := Item.FullDeclaration + WhitespaceCollector;
@@ -2130,12 +2165,86 @@ var
   TBackComment, TIsCStyle, THelpInsight: boolean;
   TCommentInfo: TRawDescriptionInfo;
   i: Integer;
+  name, value: string;
+  AttribPair: TStringPair;
+  innerBrackets: Integer;
+  parenthesis: Integer;
+  finish: Boolean;
+  firstToken: Boolean;
 begin
   Result := nil;
   WhitespaceCollector := '';
   repeat
     t := Scanner.PeekToken;
     try
+      { when identifier is found, it cannot be attribute until next semicolon }
+      if T.MyType = TOK_IDENTIFIER then AttributeIsPossible := False;
+
+      if AttributeIsPossible and T.IsSymbol(SYM_LEFT_BRACKET) then begin
+        name := '';
+        value := '';
+        innerBrackets := 0;
+        parenthesis := 0;
+        finish := False;
+        firstToken := True;
+        repeat
+          Scanner.ConsumeToken;
+          FreeAndNil(T);
+          t := Scanner.PeekToken;
+          { first token is the attribute class, at this moment unevaluated }
+          if firstToken then begin
+            case t.MyType of
+            TOK_IDENTIFIER:
+              begin
+                name := t.Data;
+                firstToken := False;
+              end;
+            TOK_STRING:
+              begin
+                { this is GUID, belongs to the interface, but no check for
+                interface only is performed }
+                name := 'GUID';
+                value := '[' + t.Data + ']';
+                firstToken := False;
+              end;
+            end;
+            continue;
+          end;
+
+          { check for start of attribute parameters }
+          { there might be more nested parenthesis }
+          if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(parenthesis);
+          if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
+            if parenthesis = 0 then DoError('parenthesis do not match.', []);
+
+            Dec(parenthesis);
+          end;
+
+          {there might be some square brackets used in attributes parameters,
+          ignore them, but count them (example: param is set)}
+          if T.IsSymbol(SYM_LEFT_BRACKET) then Inc(innerBrackets);
+          if T.IsSymbol(SYM_RIGHT_BRACKET) then begin
+            if innerBrackets > 0 then begin
+              Dec(innerBrackets);
+              value := value + t.Data;
+            end else finish := True;
+          end else begin
+            { there is list of attributes separated by coma }
+            if t.IsSymbol(SYM_COMMA) and (parenthesis = 0) then begin
+              AttribPair := TStringPair.Create(name, value);
+              CurrentAttributes.Add(AttribPair);
+              firstToken := True;
+              name := '';
+              value := '';
+            end else value := value + t.Data;  // anything other
+          end;
+        until finish;
+
+        Scanner.ConsumeToken;
+        FreeAndNil(T);
+        AttribPair := TStringPair.Create(name, value);
+        CurrentAttributes.Add(AttribPair);
+      end else
       if t.MyType in TokenCommentTypes then
       begin
         Scanner.ConsumeToken;
@@ -2293,7 +2402,10 @@ begin
       Finished := False;
       repeat
         FreeAndNil(t);
+        { Attribute can be just in front of keyword or identifier }
+        AttributeIsPossible := True;
         t := GetNextToken;
+        AttributeIsPossible := False;
 
         if (t.IsSymbol(SYM_SEMICOLON)) then
         begin
@@ -2484,6 +2596,7 @@ begin
         end;
         FreeAndNil(t);
       until Finished;
+      CurrentAttributes.Clear;
 
       ParseHintDirectives(ACio);
 
@@ -2539,7 +2652,9 @@ begin
   DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioNameWithGeneric]);
   t := nil;
   try
+    AttributeIsPossible := True;
     t := GetNextToken;
+    AttributeIsPossible := False;
 
     { Test for forward class definition here:
         class MyClass = class;
@@ -2714,7 +2829,10 @@ begin
         { for the time being, we throw away the ID itself }
         t := GetNextToken;
         if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
-          DoError('Literal String or identifier as interface ID expected', []);
+          DoError('Literal String or identifier as interface ID expected', [])
+        else begin
+          CurrentAttributes.Add(TStringPair.Create('GUID', '[' + t.Data + ']'));
+        end;
         FreeAndNil(t);
 
         t := GetNextToken;
@@ -2747,6 +2865,7 @@ begin
         { Everything besides a class always starts with visibility "public". }
         Visibility := viPublic;
 
+      ACio.SetAttributes(CurrentAttributes);
       { now collect methods, fields and properties }
       { Flag is set when the class is finished     }
       { Code moved to ParseCioMembers              }

@@ -3,6 +3,7 @@ Next release:
   * Handling of declarations nested inside classes (of other types, classes,
     constans and such) (by Arno Garrels)
   * Handling HelpInsight comments (by VCejka)
+  * Parsing Delphi attributes (by VCejka)
 
 2010-11-03 v0.12.1
 

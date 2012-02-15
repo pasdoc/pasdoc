@@ -1205,6 +1205,37 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
+  procedure WriteAttributes(Attributes: TStringPairVector);
+  var
+    i: integer;
+    name, value: string;
+    AttributesItem: TBaseItem;
+    AttributesLink: string;
+  begin
+    if ObjectVectorIsNilOrEmpty(Attributes) then
+      Exit;
+
+    WriteDescriptionSectionHeading(trAttributes);
+    WriteDirectLine('<dl class="attributes">');
+    for i := 0 to Attributes.Count - 1 do
+    begin
+      WriteDirect('  <dt>');
+      name := Attributes.Items[I].Name;
+      value := Attributes.Items[I].Value;
+      AttributesLink := SearchLink(name, AItem, name, true, AttributesItem);
+        WriteDirect(AttributesLink);
+
+      WriteConverted(value);
+      WriteDirectLine('</dt>');
+      WriteDirect('  <dd>');
+
+      if (AttributesItem <> nil) and (AttributesItem is TPasItem) then
+        WriteDirect(TPasItem(AttributesItem).AbstractDescription);
+      WriteDirectLine('</dd>');
+    end;
+    WriteDirectLine('</dl>');
+  end;
+
   procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
   begin
     if ReturnDesc = '' then
@@ -1282,7 +1313,9 @@ begin
       end;
     end;
   end;
-  
+
+  WriteAttributes(AItem.Attributes);
+
   if AItem is TPasMethod then
   begin
     AItemMethod := TPasMethod(AItem);
