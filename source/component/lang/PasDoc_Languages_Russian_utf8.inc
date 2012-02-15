@@ -1,4 +1,4 @@
-﻿﻿RTransTable = (
+RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Russian',
   //map
