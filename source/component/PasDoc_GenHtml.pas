@@ -1222,8 +1222,13 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       WriteDirect('  <dt>');
       name := Attributes.Items[I].Name;
       value := Attributes.Items[I].Value;
-      AttributesLink := SearchLink(name, AItem, name, true, AttributesItem);
-        WriteDirect(AttributesLink);
+      { In case of attribute named 'GUID', it (may) come from interface GUID.
+        So we should not actually search for identifier named 'GUID'
+        (neither should we make a confusing warning that it cannot be found). }
+      if name = 'GUID' then
+        AttributesLink := name else
+        AttributesLink := SearchLink(name, AItem, name, true, AttributesItem);
+      WriteDirect(AttributesLink);
 
       WriteConverted(value);
       WriteDirectLine('</dt>');
