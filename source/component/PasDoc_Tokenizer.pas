@@ -166,7 +166,8 @@ type
     SD_DEPRECATED,
     SD_SAFECALL,
     SD_PLATFORM,
-    SD_VARARGS);
+    SD_VARARGS,
+    SD_FINAL);
 
 const
   { Names of the token types. All start with lower letter.
@@ -390,7 +391,7 @@ const
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REFERENCE', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'SPECIALIZE', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS');
+    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS', 'FINAL');
 
 { Checks is Name (case ignored) some Pascal keyword.
   Returns SD_INVALIDSTANDARDDIRECTIVE if not. }

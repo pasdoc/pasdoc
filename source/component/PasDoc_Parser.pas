@@ -799,7 +799,7 @@ begin
           SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
           SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
           SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-          SD_VARARGS:
+          SD_VARARGS, SD_FINAL:
             begin
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(t);
