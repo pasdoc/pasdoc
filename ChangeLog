@@ -4,6 +4,7 @@ Next release:
     constans and such) (by Arno Garrels)
   * Handling HelpInsight comments (by VCejka)
   * Parsing Delphi attributes (by VCejka)
+  * Parsing "final" standard directive (by VCejka)
 
 2010-11-03 v0.12.1
 
