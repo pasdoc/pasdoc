@@ -47,15 +47,29 @@ type
       without including toRecursiveTags, e.g. @@longcode or @@html,
       that want to get their parameters "verbatim", not processed. 
       
-      Note that if toRecursiveTags is not included in tag options,
-      then @italic(everything) is allowed within parameter of this tag,
+      @bold(If toRecursiveTags is not included in tag options:)
+      Then @italic(everything) is allowed within parameter of this tag,
       but nothing is interpreted. E.g. you can freely use @@ char,
       and even write various @@-tags inside @@html tag --- this doesn't
       matter, because @@-tags will not be interpreted (they will
       not be even searched !) inside @@html tag. In other words,
-      @@ character means literally "@@" inside @@html, nothing more. }
+      @@ character means literally "@@" inside @@html, nothing more.
+      The only exception are double @@@@, @@( and @@): we still treat them
+      specially, to allow escaping the default parenthesis matching rules.
+      Unless toRecursiveTagsManually is present. }
     toRecursiveTags,
     
+    { Use this, instead of toRecursiveTags, if the implementation of your
+      tag calls (always!) TagManager.CoreExecute on given TagParameter.
+      This means that your tag is expanded recursively (it handles @-tags inside),
+      but you do it manually (instead of allowing toRecursiveTags to do the job).
+      In this case, TagParameter given will be really absolutely unmodified
+      (even the special @@@@, @@( and @@) will not be handled),
+      because we know that it will be handled later by special CoreExecute call.
+
+      Never use both flags toRecursiveTags and toRecursiveTagsManually. }
+    toRecursiveTagsManually,
+
     { This is meaningful only if toRecursiveTags is included.
       Then toAllowOtherTagsInsideByDefault determines
       are other tags allowed by the default implementation
@@ -476,7 +490,7 @@ type
 
 implementation
 
-uses PasDoc_Utils;
+uses PasDoc_Utils, StrUtils;
 
 { TTag ------------------------------------------------------------  }
 
@@ -920,6 +934,39 @@ var
         'directly within the tag @%s', [NormalText, EnclosingTag.Name]);
   end;
 
+  { Strip initial @ from @( and @). Do not touch other @ occurences.
+    This is only used for tags without toRecursiveTags
+    (for toRecursiveTags, the recursive call to CoreExecute
+    will already handle it). }
+  function HandleAtChar(const S: string): string;
+  var
+    PosAt, HandledCount: Integer;
+  begin
+    Result := '';
+    HandledCount := 0;
+    while HandledCount < Length(S) do
+    begin
+      PosAt := PosEx('@', S, HandledCount + 1);
+      if PosAt = 0 then
+      begin
+        Result := Result + SEnding(S, HandledCount + 1);
+        HandledCount := Length(S);
+      end else
+      if SCharIs(S, PosAt + 1, ['(', ')', '@']) then
+      begin
+        { strip @, add the next ( or ) or @ }
+        Result := Result + Copy(S, HandledCount + 1, PosAt - HandledCount - 1) +
+          S[PosAt + 1];
+        HandledCount := PosAt + 1;
+      end else
+      begin
+        { do not strip @ }
+        Result := Result + Copy(S, HandledCount + 1, PosAt - HandledCount);
+        HandledCount := PosAt;
+      end;
+    end;
+  end;
+
 var
   { Always ConvertBeginOffset <= FOffset. 
     Description[ConvertBeginOffset ... FOffset - 1] 
@@ -1011,7 +1058,9 @@ begin
               Unabbreviate(Params);
               if toRecursiveTags in FoundTag.TagOptions then
                 { recursively expand Params }
-                Params := CoreExecute(Params, AutoLink, FoundTag, FoundTagData);
+                Params := CoreExecute(Params, AutoLink, FoundTag, FoundTagData) else
+              if not (toRecursiveTagsManually in FoundTag.TagOptions) then
+                Params := HandleAtChar(Params);
             end else
             begin
               { Note that in this case we ignore whether

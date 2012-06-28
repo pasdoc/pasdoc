@@ -1864,13 +1864,10 @@ procedure TDocGenerator.ExpandDescriptions;
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
 
-      { Note that @@noAutoLink doesn't have toRecursiveTags flag specified.
-        But it *does* recursively expand it's parameters -- it's handled
-        by explicitly calling TagManager.Execute inside HandleNoAutoLinkTag. }
       TTag.Create(TagManager, 'noautolink',
         nil, {$IFDEF FPC}@{$ENDIF} HandleNoAutoLinkTag,
-        [toParameterRequired, toAllowOtherTagsInsideByDefault,
-         toAllowNormalTextInside]);
+        [toParameterRequired, toRecursiveTagsManually, 
+         toAllowOtherTagsInsideByDefault, toAllowNormalTextInside]);
 
       OrderedListTag := TListTag.Create(TagManager, 'orderedlist',
         nil, {$IFDEF FPC}@{$ENDIF} HandleOrderedListTag,
