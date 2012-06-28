@@ -1776,10 +1776,15 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
   OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
   const ClassKeyWordString: string = '');
   
-  // The section allows PasDoc to parse variable modifiers in FPC.
-  // See: http://www.freepascal.org/docs-html/ref/refse19.html
-  // This consumes some tokens and appends to ItemCollector.FullDeclaration.
-  procedure ParseVariableModifiers(ItemCollector: TPasFieldVariable);
+  // Parse variable/field modifiers in FPC.
+  // See: http://www.freepascal.org/docs-html/ref/refse19.html for variable
+  // modifiers.
+  // This consumes some tokens and appends them to ItemCollector.FullDeclaration.
+  procedure ParseModifiers(ItemCollector: TPasFieldVariable);
+  const
+    Modifiers: array [boolean { OfObject }] of set of TStandardDirective =
+    ( ([SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]),
+      ([SD_STATIC]) );
   var
     ModifierFound: Boolean;
     SemicolonFound: boolean;
@@ -1788,16 +1793,14 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
     repeat
       ttemp := GetNextToken;
       try
-        // If the first non-white character token after the semicolon
-        // is "cvar", "export', "external", or "public", there is
-        // a variable modifier present.
+        // The first token after the semicolon may be a variable or field modifier.
+        // If we see it, we eat it, up to the next semicolon.
         // This does not take into account the "absolute" modifier
         // (which is not preceeded by a semicolon).
         
         ModifierFound :=
           (ttemp.MyType = TOK_IDENTIFIER) and
-          (ttemp.Info.StandardDirective in
-            [SD_CVAR, SD_EXPORT, SD_EXTERNAL, SD_PUBLIC]);
+          (ttemp.Info.StandardDirective in Modifiers[OfObject]);
           
         if ModifierFound then
         begin
@@ -1950,8 +1953,7 @@ begin
       end;
       CurrentAttributes.Clear;
 
-      if not OfObject then
-        ParseVariableModifiers(ItemCollector);
+      ParseModifiers(ItemCollector);
 
       { Now, when whole parsing work is finished, finish initializing NewItems. }
       if Items <> nil then
