@@ -16,6 +16,11 @@ type
     property Age : Integer read FAge write FAge;
   end;
 
+  // Test that GUIDs are handled gracefully
+  IUIContainer = interface
+  ['{0F0BA87D-95C3-4520-B9F9-CDF30015FDB3}']
+  end;
+
 implementation
 
 end.
