@@ -1848,7 +1848,9 @@ begin
   try
     NewItemNames := TStringList.Create;
     RawDescriptions := TRawDescriptionInfoList.Create;
-    NewItems := TPasItems.Create(false);
+    { When Items = nil, we will gather NewItems only for internal use,
+      so we will free them ourselves. }
+    NewItems := TPasItems.Create(Items = nil);
     
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
 
@@ -1928,28 +1930,34 @@ begin
       { Create and add (to Items and ItemsForNextBackComment and NewItems) 
         new items now.
         We must do it, because we want to init ItemsForNextBackComment *now*,
-        not later (after parsing variable modifiers).
+        not later (after ParseModifiers).
         Otherwise we could accidentaly "miss"
-        some back-comment while searching for variable modifiers. 
+        some back-comment while searching for variable/field modifiers
+        in ParseModifiers.
+        
+        Note that we have to set ItemsForNextBackComment regardless
+        of Items being nil or not. Items may be nil when caller is not interested
+        in gathering them, e.g. a private fields section.
+        Even in this case, we still want to capture back comments and assign them
+        to private fields (that will be thrown out later), instead of accidentally
+        assigning back comments to previous non-private item.
+        See tests/ok_back_comment_private.pas for example when this is important.
         
         Note that when parsing variable modifiers, Get/PeekNextToken
         inside may actually use ItemsForNextBackComment and clear it,
         that's why we can't count on ItemsForNextBackComment to hold
         all our new items and we have to use NewItems. }
-      if Items <> nil then
+      ItemsForNextBackComment.Clear;
+      for I := 0 to NewItemNames.Count - 1 do
       begin
-        ItemsForNextBackComment.Clear;
-        for I := 0 to NewItemNames.Count - 1 do
-        begin
-          NewItem := TPasFieldVariable.Create;
-          NewItem.Name := NewItemNames[I];
-          NewItem.RawDescriptionInfo^ := RawDescriptions[I];
-          NewItem.Visibility := Visibility;
-          NewItem.SetAttributes(CurrentAttributes);
-          Items.Add(NewItem);
-          NewItems.Add(NewItem);
-          ItemsForNextBackComment.Add(NewItem);
-        end;
+        NewItem := TPasFieldVariable.Create;
+        NewItem.Name := NewItemNames[I];
+        NewItem.RawDescriptionInfo^ := RawDescriptions[I];
+        NewItem.Visibility := Visibility;
+        NewItem.SetAttributes(CurrentAttributes);
+        if Items <> nil then Items.Add(NewItem);
+        NewItems.Add(NewItem);
+        ItemsForNextBackComment.Add(NewItem);
       end;
       CurrentAttributes.Clear;
 
