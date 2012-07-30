@@ -1,12 +1,12 @@
 # Generates all *.inc files from text/binary files in this directory.
 
-ALL_OUTPUT := tip_form.js.inc tip_search.js.inc _tipue_results.html.inc tipue_b1.png.inc
+ALL_OUTPUT := tipuesearch.css.inc tipuesearch.js.inc tipuesearch_set.js.inc _tipue_results.html.inc search.gif.inc
 
 .PHONY: all clean
 
 all: $(ALL_OUTPUT)
 
-tipue_b1.png.inc: tipue_b1.png
+search.gif.inc: search.gif
 	../../tools/file_to_pascal_data $< $@
 
 %.inc: %

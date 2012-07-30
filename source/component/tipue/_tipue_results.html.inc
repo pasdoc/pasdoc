@@ -6,48 +6,25 @@
 '<head>' + LineEnding + 
 '<title>Search Results</title>' + LineEnding + 
 '' + LineEnding + 
-'<link rel="StyleSheet" type="text/css" href="pasdoc.css">' + LineEnding + 
+'<!-- head required by tipue -->' + LineEnding + 
 '' + LineEnding + 
-'<!-- The following lines are required and must be in the <head> section of your HTML document -->' + LineEnding + 
+'<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>' + LineEnding + 
+'<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding + 
+'<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding + 
+'<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding + 
 '' + LineEnding + 
-'<script language="JavaScript1.3" type="text/javascript" src="tip_data.js"></script>' + LineEnding + 
-'<script language="JavaScript1.3" type="text/javascript" src="tip_search.js"></script>' + LineEnding + 
+'<!-- head required by pasdoc -->' + LineEnding + 
 '' + LineEnding + 
-'<!-- End of required <head> section -->' + LineEnding + 
+'<link rel="stylesheet" type="text/css" href="pasdoc.css">' + LineEnding + 
 '' + LineEnding + 
 '###-PASDOC-INSERT-HEAD-###' + LineEnding + 
 '' + LineEnding + 
 '</head>' + LineEnding + 
 '<body>' + LineEnding + 
-'' + LineEnding + 
-'<div>' + LineEnding + 
-'' + LineEnding + 
-'<!-- The following JavaScript uses the tip_Num variable to return the number of matches found -->' + LineEnding + 
-'' + LineEnding + 
-'<script language="JavaScript1.3" type="text/javascript">' + LineEnding + 
-'if (tip_Num == 0) {' + LineEnding + 
-'  document.write(''No matches found'');' + LineEnding + 
-'}' + LineEnding + 
-'if (tip_Num == 1) {' + LineEnding + 
-'  document.write(''1 match found'');' + LineEnding + 
-'}' + LineEnding + 
-'if (tip_Num > 1) {' + LineEnding + 
-'  document.write(tip_Num, '' matches found'');' + LineEnding + 
-'}' + LineEnding + 
-'</script>' + LineEnding + 
-'' + LineEnding + 
-'<hr>' + LineEnding + 
-'' + LineEnding + 
-'<!-- The following line returns the results -->' + LineEnding + 
-'' + LineEnding + 
-'<script language="JavaScript1.3" type="text/javascript">tip_out()</script>' + LineEnding + 
-'' + LineEnding + 
-'<hr>' + LineEnding + 
-'' + LineEnding + 
-'<p>' + LineEnding + 
-'<a href="http://www.tipue.com" target="_parent"><img src="tipue_b1.png" title="Tipue" alt="Tipue" border=0 width=138 height=32></a>' + LineEnding + 
-'</div>' + LineEnding + 
-'' + LineEnding + 
+'<div style="float: left;"><input type="text" id="tipue_search_input"></div>' + LineEnding + 
+'<div style="float: left; margin-left: 13px;"><input type="button" id="tipue_search_button"></div>' + LineEnding + 
+'<div id="tipue_search_content"></div>' + LineEnding + 
+'<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding + 
 '</body>' + LineEnding + 
 '</html>' + LineEnding + 
 ''

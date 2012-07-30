@@ -17,11 +17,12 @@ function TipueSearchButtonHead: string;
   for English.}
 const
   TipueSearchButton =
-    '<form name="tip_Form" onsubmit="search_form(tip_Form);return false">' + LineEnding +
-    '<input type="text" id="search_text" name="d">' + LineEnding +
-    '<input type="submit" id="search_submit_button" value="%s">' + LineEnding +
-    '</form>' + LineEnding;
-
+    { PasDoc: we add target="content" to open results in our content frame }
+    '<form action="_tipue_results.html" target="content">' + LineEnding +
+    '<div style="float: left;"><input type="text" name="q" id="tipue_search_input"></div>' + LineEnding +
+    '<div style="float: left; margin-left: 13px;"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' + LineEnding +
+    '</form>' + LineEnding +
+    '<div style="clear: both"></div>';
 
 { Adds some additional files to html documentation, needed for tipue engine.
 
@@ -40,8 +41,7 @@ uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
-  Result := '<script language="JavaScript1.3" ' +
-    'type="text/javascript" src="tip_form.js"></script>';
+  Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">';
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;
@@ -50,40 +50,47 @@ procedure TipueAddFiles(Units: TPasUnits;
   const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
-  var 
+  var
     OutFile: TextFile;
-    IndexDataNum: Cardinal;
-    
+    NeedsLeadingComma: boolean;
+
     { Write one line of index data.
-      Title, URL, ShortDescription, LongDescription 
-      are 1st four parameters of data, see tipue docs. }
+      See http://www.tipue.com/help/search/data/.
+      Note: we try hard to *not* place a comma on the final newline,
+      as google suggests that IE may have problems with it.
+
+      For now ShortDescription is not used. It was useful
+      with old tipue version, we keep calculating it as it may be useful again
+      in the future. }
     procedure WriteIndexData(
       const Title, URL, ShortDescription, LongDescription: string);
     begin
-      Writeln(OutFile, 's[', IndexDataNum, '] = "', Title, '^', URL, '^', 
-        ShortDescription, '^', LongDescription, '^0"');
-      Inc(IndexDataNum);
+      if NeedsLeadingComma then
+        Write(OutFile, ',');
+      Writeln(OutFile);
+      Write(OutFile, '     {"title": "', Title,
+        '", "text": "', LongDescription,
+        '", "tags": "', { no tags for now? Or maybe use here ShortDescription? }
+        '", "loc": "', URL, '"}');
+      NeedsLeadingComma := true;
     end;
-    
+
     procedure WriteItemIndexData(Item: TBaseItem);
-    
+
       function EscapeIndexEntry(const S: string): string;
       const
         { We want to avoid introducing special chars in JavaScript string,
-          so \ and " and newline markers must be escaped.
-          ^ must be escaped because it's a field-marker for tipue index data
-          entry. }
-        ReplacementArray: array[0..4] of TCharReplacement = (
+          so \ and " and newline markers must be escaped. }
+        ReplacementArray: array[0..3] of TCharReplacement = (
           (cChar: #10; sSpec: ' '),
           (cChar: #13; sSpec: ' '),
           (cChar: '"'; sSpec: '\"'),
-          (cChar: '\'; sSpec: '\\'),
-          (cChar: '^'; sSpec: '&circ;')
+          (cChar: '\'; sSpec: '\\')
         );
       begin
         Result := StringReplaceChars(S, ReplacementArray);
       end;
-      
+
     var
       ShortDescription, LongDescription: string;
       EnumMember: TPasItem;
@@ -91,16 +98,16 @@ procedure TipueAddFiles(Units: TPasUnits;
     begin
       { calculate ShortDescription }
       if Item is TPasItem then
-        ShortDescription := 
+        ShortDescription :=
           EscapeIndexEntry(TPasItem(Item).AbstractDescription) else
       if Item is TExternalItem then
-        ShortDescription := 
+        ShortDescription :=
           EscapeIndexEntry(TExternalItem(Item).ShortTitle) else
         ShortDescription := '';
-      
+
       { calculate LongDescription.
         Note that LongDescription will not be shown to user anywhere
-        (it will only be searched by tipue), so we don't care how 
+        (it will only be searched by tipue), so we don't care how
         things look here. We just glue some properties of Item together. }
       LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
         ' ' + EscapeIndexEntry(Item.Authors.Text);
@@ -114,7 +121,7 @@ procedure TipueAddFiles(Units: TPasUnits;
         for i := 0 to TPasEnum(Item).Members.Count - 1 do
         begin
           EnumMember := TPasEnum(Item).Members.PasItemAt[i];
-          LongDescription := LongDescription + 
+          LongDescription := LongDescription +
             ' ' + EscapeIndexEntry(EnumMember.Name) +
             ' ' + EscapeIndexEntry(EnumMember.AbstractDescription) +
             ' ' + EscapeIndexEntry(EnumMember.DetailedDescription) +
@@ -126,11 +133,11 @@ procedure TipueAddFiles(Units: TPasUnits;
         LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TExternalItem(Item).Title);
       end;
-      
-      WriteIndexData(Item.QualifiedName, Item.FullLink, 
+
+      WriteIndexData(Item.QualifiedName, Item.FullLink,
         ShortDescription, LongDescription);
     end;
-    
+
     procedure WriteItemsIndexData(Items: TPasItems);
     var
       i: Integer;
@@ -138,9 +145,9 @@ procedure TipueAddFiles(Units: TPasUnits;
       for i := 0 to Items.Count - 1 do
         WriteItemIndexData(Items.PasItemAt[i]);
     end;
-    
+
     procedure WriteCIOsIndexData(CIOs: TPasItems);
-    var 
+    var
       i: Integer;
       CIO: TPasCIO;
     begin
@@ -156,9 +163,9 @@ procedure TipueAddFiles(Units: TPasUnits;
           WriteCIOsIndexData(CIO.Cios);
       end;
     end;
-    
+
     procedure WriteUnitsIndexData(Units: TPasUnits);
-    var 
+    var
       i: Integer;
       U: TPasUnit;
     begin
@@ -173,42 +180,40 @@ procedure TipueAddFiles(Units: TPasUnits;
         WriteItemsIndexData(U.Variables);
       end;
     end;
-    
+
   begin
     Assign(OutFile, FileName);
     Rewrite(OutFile);
     try
-      Writeln(OutFile, 'var s = new Array()');
-      Writeln(OutFile);
-      
-      IndexDataNum := 0;
-      
-      if Introduction <> nil then
-      begin
-        WriteItemIndexData(Introduction);
-      end;
-      if Conclusion <> nil then
-      begin
-        WriteItemIndexData(Conclusion);
-      end;
+      Write(OutFile, 'var tipuesearch = {"pages": [');
+      NeedsLeadingComma := false;
 
+      if Introduction <> nil then
+        WriteItemIndexData(Introduction);
+      if Conclusion <> nil then
+        WriteItemIndexData(Conclusion);
       WriteUnitsIndexData(Units);
+
+      Writeln(OutFile, LineEnding + ']};');
     finally CloseFile(OutFile) end;
   end;
 
 const
-  TipFormScript = {$I tip_form.js.inc};
-  TipSearchScript = {$I tip_search.js.inc};
-  TipResultsPage = {$I _tipue_results.html.inc};
-  TipLogoImage : {$I tipue_b1.png.inc};
+  TipueSearchCss = {$I tipuesearch.css.inc};
+  TipueSearchScript = {$I tipuesearch.js.inc};
+  TipueSearchSetScript = {$I tipuesearch_set.js.inc};
+  TipueResultsPage = {$I _tipue_results.html.inc};
+  TipueSearchImage : {$I search.gif.inc};
 begin
-  StringToFile(OutputPath + 'tip_search.js', TipSearchScript);
-  StringToFile(OutputPath + 'tip_form.js', TipFormScript);
-  StringToFile(OutputPath + '_tipue_results.html', 
-    StringReplace(TipResultsPage, 
+  CreateDir(OutputPath + 'tipuesearch');
+  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
+  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
+  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
+  StringToFile(OutputPath + '_tipue_results.html',
+    StringReplace(TipueResultsPage,
       '###-PASDOC-INSERT-HEAD-###', MetaContentType, []));
-  DataToFile(OutputPath + 'tipue_b1.png', TipLogoImage);
-  WriteTipueIndexData(OutputPath + 'tip_data.js');
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.gif', TipueSearchImage);
+  WriteTipueIndexData(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_data.js');
 end;
 
 end.

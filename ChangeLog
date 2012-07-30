@@ -5,6 +5,8 @@ Next release:
   * Handling HelpInsight comments (by VCejka)
   * Parsing Delphi attributes (by VCejka)
   * Parsing "final" standard directive (by VCejka)
+  * Tipue search upgraded to latest Tipue version, fixes problems in
+    Google Chrome in some cases (by Michalis Kamburelis)
 
 2010-11-03 v0.12.1
 

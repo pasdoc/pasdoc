@@ -4,47 +4,24 @@
 <head>
 <title>Search Results</title>
 
-<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+<!-- head required by tipue -->
 
-<!-- The following lines are required and must be in the <head> section of your HTML document -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>
+<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>
+<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">
 
-<script language="JavaScript1.3" type="text/javascript" src="tip_data.js"></script>
-<script language="JavaScript1.3" type="text/javascript" src="tip_search.js"></script>
+<!-- head required by pasdoc -->
 
-<!-- End of required <head> section -->
+<link rel="stylesheet" type="text/css" href="pasdoc.css">
 
 ###-PASDOC-INSERT-HEAD-###
 
 </head>
 <body>
-
-<div>
-
-<!-- The following JavaScript uses the tip_Num variable to return the number of matches found -->
-
-<script language="JavaScript1.3" type="text/javascript">
-if (tip_Num == 0) {
-  document.write('No matches found');
-}
-if (tip_Num == 1) {
-  document.write('1 match found');
-}
-if (tip_Num > 1) {
-  document.write(tip_Num, ' matches found');
-}
-</script>
-
-<hr>
-
-<!-- The following line returns the results -->
-
-<script language="JavaScript1.3" type="text/javascript">tip_out()</script>
-
-<hr>
-
-<p>
-<a href="http://www.tipue.com" target="_parent"><img src="tipue_b1.png" title="Tipue" alt="Tipue" border=0 width=138 height=32></a>
-</div>
-
+<div style="float: left;"><input type="text" id="tipue_search_input"></div>
+<div style="float: left; margin-left: 13px;"><input type="button" id="tipue_search_button"></div>
+<div id="tipue_search_content"></div>
+<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>
 </body>
 </html>

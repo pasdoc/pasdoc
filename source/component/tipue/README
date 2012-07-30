@@ -1,87 +1,39 @@
-This directory contains some files from tipue, version 1.63, slightly modified.
+This directory contains some files from tipue,
+version 1.1.1 from http://www.tipue.com/,
+slightly modified.
+
+Our modifications and reasoning are marked in source with "PasDoc" comment.
+Our results page is named "_tipue_results.html" (new tipue version
+doesn't suggest any particular name for this; we pick a name to not collide with
+user unit name).
 
 These files are processed by programs file_to_pascal_string and
 file_to_pascal_data (in ../../tools/)
 and then their contents are included in PasDoc_Tipue unit.
 So all needed tipue data is compiled inside pasdoc binary.
 This way you don't have to download and unpack tipue to use it with pasdoc.
-When pasdoc will be able to automatically generate tipue index data,
-users will not have to do (or even know) *anything* about tipue at all
-to use it with pasdoc. It will be just a matter of passing --use-tipue-search
+As pasdoc is now able to automatically generate tipue index data,
+users do not have to do (or even know) *anything* about tipue at all
+to use it with pasdoc. It's just a matter of passing --use-tipue-search.
 (we can't use tipue by default, without explicit request by --use-tipue-search
 option, since it's not suitable for really large documentation,
 see [http://pasdoc.sipsolutions.net/UseTipueSearchOption]).
 
-With my first try at integrating tipue with pasdoc, I made an option
---use-tipue-search=/path/where/tipue/was/unpacked/ and then in pasdoc
-I was copying scripts from tipue (with some processing in the middle).
-But it turned out that there are a few modifications to tipue files
-that I would like to do, so, since tipue scripts are very small,
-I realized that just including "fixed" tipue version compiled inside
-pasdoc may be better solution.
+Future notes about possible data layout (possibly outdated rambling,
+Michalis wrote it when implementing first tipue version :)
 
-In the future the best option would be to make some installers/packages
-for pasdoc and put tipue files for pasdoc in some directory that pasdoc
-knows about. This would remove the necessity to keep everything in one
-binary file, as we could handle nicely the fact that pasdoc always
-installs some additional external files for itself.
-For now, embedding these files in pasdoc binary seems the simplest option
-for users.
+    With my first try at integrating tipue with pasdoc, I made an option
+    --use-tipue-search=/path/where/tipue/was/unpacked/ and then in pasdoc
+    I was copying scripts from tipue (with some processing in the middle).
+    But it turned out that there are a few modifications to tipue files
+    that I would like to do, so, since tipue scripts are very small,
+    I realized that just including "fixed" tipue version compiled inside
+    pasdoc may be better solution.
 
-Modifications to tipue scripts:
-
-tip_form.js:
-  results_location = "results.html";
-  -> results_location = "_tipue_results.html";
-
-  window.location = results_location;
-  -> parent.content.location.href = results_location;
-  (makes results appear in our "content" frame, see [http://www.tipue.com/kb/a0003.html])
-
-tip_search.js
-  results_location = "results.html";
-  -> results_location = "_tipue_results.html";
-  
-  include_url is set to 0
-  (including urls is not much useful for pasdoc-made docs,
-  since our pasdoc's internal tipue index generator will always
-  give nice detailed title (QualifiedName) for each entry;
-  and all URLs refer to html files in the same directory...
-  so showing URL is hardly useful)
-  
-  include_num is set to 1
-  (very useful, because results page does not show which
-  result entries are currently displayed (first 10 ? last 10 ?)
-  so after clicking a few times on "Next 10" and "Previous 10"
-  user gets easily confused where he is)
-  
-  Note that bold_query must remain at 0.
-  It's would be very useful to set this to 1, because in pasdoc-made 
-  docs search phrase is often found in item's short description.
-  But, unfortunately, the way how tip_search inserts <b>..</b> into
-  resulting output is too dumb when pasdoc writes index data entry's
-  short description in html. E.g. tip_search can accidentaly insert <b>...</b>
-  inside target URL of link, making nasty things like 
-  <a href="PageName#<b>FoundWord</b>">
-
-_tipue_results.html (based on results.html example page in tipue sources)
-
-  Our results page is named "_tipue_results.html",
-  instead of standard "results.html".
-  This avoids problems where user could have a unit named "Results".
-
-  Modifications:
-  * excessive css removed
-    (let's be more usable instead of looking "cool" without any purpose),
-    can be always adjusted by pasdoc.css
-  * we open external links with target="_parent"
-  * removed <form> to search from results page
-    (since our search form is visible all the time in navigation frame,
-    so it's needless/confusing to show second "Search" edit box and button
-    that do the same thing)
-  * links to png version of the logo
-  * Added ###-PASDOC-INSERT-HEAD-###
-
-tipue_b1.png
-  This is converted to png version of tipue_b1.gif
-  (Why ? Because I prefer png :). But it's also 3 times smaler.)
+    In the future the best option would be to make some installers/packages
+    for pasdoc and put tipue files for pasdoc in some directory that pasdoc
+    knows about. This would remove the necessity to keep everything in one
+    binary file, as we could handle nicely the fact that pasdoc always
+    installs some additional external files for itself.
+    For now, embedding these files in pasdoc binary seems the simplest option
+    for users.
