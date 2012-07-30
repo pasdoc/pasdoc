@@ -12,6 +12,7 @@ program file_to_pascal_string;
 
 {$apptype CONSOLE}
 {$ifdef FPC} {$mode objfpc} {$endif}
+{$H+}
 
 uses SysUtils;
 

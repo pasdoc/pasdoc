@@ -13,6 +13,7 @@ program file_to_pascal_data;
 
 {$apptype CONSOLE}
 {$ifdef FPC} {$mode objfpc} {$endif}
+{$H+}
 
 uses SysUtils, Classes;
 
