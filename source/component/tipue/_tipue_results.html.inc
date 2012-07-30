@@ -8,7 +8,7 @@
 '' + LineEnding + 
 '<!-- head required by tipue -->' + LineEnding + 
 '' + LineEnding + 
-'<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>' + LineEnding + 
+'<script type="text/javascript" src="tipuesearch/jquery-1.7.1.min.js"></script>' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding + 
 '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding + 

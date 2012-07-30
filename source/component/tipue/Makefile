@@ -1,6 +1,6 @@
 # Generates all *.inc files from text/binary files in this directory.
 
-ALL_OUTPUT := tipuesearch.css.inc tipuesearch.js.inc tipuesearch_set.js.inc _tipue_results.html.inc search.gif.inc
+ALL_OUTPUT := tipuesearch.css.inc tipuesearch.js.inc tipuesearch_set.js.inc _tipue_results.html.inc search.gif.inc jquery-1.7.1.min.js.inc
 
 .PHONY: all clean
 

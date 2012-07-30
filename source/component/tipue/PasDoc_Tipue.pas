@@ -202,6 +202,7 @@ const
   TipueSearchCss = {$I tipuesearch.css.inc};
   TipueSearchScript = {$I tipuesearch.js.inc};
   TipueSearchSetScript = {$I tipuesearch_set.js.inc};
+  JQueryScript = {$I jquery-1.7.1.min.js.inc};
   TipueResultsPage = {$I _tipue_results.html.inc};
   TipueSearchImage : {$I search.gif.inc};
 begin
@@ -209,6 +210,7 @@ begin
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
+  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery-1.7.1.min.js', JQueryScript);
   StringToFile(OutputPath + '_tipue_results.html',
     StringReplace(TipueResultsPage,
       '###-PASDOC-INSERT-HEAD-###', MetaContentType, []));
