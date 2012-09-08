@@ -1,21 +1,18 @@
-{ @abstract(This unit tests parsing platform, library and deprecated
+{ @abstract(Test parsing "platform", "library" and "deprecated"
   directives (called collectively "hint directives") by pasdoc.)
 
-  I'm doing this testcase in order to fix bug submitted to tracker:
-  [ 1196073 ] "some modifiers are not parsed"
+  Related tracker bug: [ 1196073 ] "some modifiers are not parsed".
 
-  I want to implement at once handling these directives everywhere
-  where Delphi/Kylix allows them. FPC >= 2.5.1 supports them too.
-
+  We want to support all situations where these directives are allowed
+  in modern FPC (>= 2.5.1) and Delphi. Their placement in unfortunately
+  not consistent, thanks go to Borland.
   Quoting Delphi help (from Kylix 3):
   "Hint directives can be applied to type declarations, variable declarations,
   class and structure declarations, field declarations within classes or
   records, procedure, function and method declarations, and unit declarations."
 
-  Looking below you can see that the way how these hints are parsed
-  by Delphi is pretty much stupid and non-consequent (sorry all Delphi
-  lovers, but this is really a mess) :
-  
+  Summary:
+
   @orderedList(
     @item(
       Between "unit UnitName" and hints you @italic(mustn't) put any semicolon,
@@ -29,7 +26,7 @@
       Between "procedure/function Name (...)" and hints you @italic(must)
       put a semicolon, and semicolons between hints are allowed but
       not required. It seems that you can't specify "library" directive
-      for procedures/functions -- why ? Probably because "library"
+      for procedures/functions -- why? Probably because "library"
       is a keyword and Borland was unable to correctly modify it's compiler
       to parse such thing. But pasdoc parses library directive correctly.)
 
@@ -44,7 +41,8 @@
   @unorderedList(
     @itemSpacing compact
     @item tell me how to specify hint directives for non-structural types or
-    @item explain why parsing these directives is so non-consequent in Delphi or
+    @item(explain why parsing these directives is so weird and inconsistent
+      in Delphi or)
     @item(point me to some precise documentation by Borland specifying grammar
       rules with these directives)
   )
@@ -54,7 +52,7 @@
   I will be grateful.
 
   Contrary to most units in tests/, this unit @italic(is) kept at compileable
-  by Delphi/Kylix. That's because this unit is also a test whether we
+  by Delphi/Kylix and FPC. That's because this unit is also a test whether we
   really specify here hint directives in the way parseable by Delphi/Kylix.
 }
 
@@ -105,13 +103,21 @@ type
     TestFieldDeprecated: Integer deprecated;
     TestFieldCombined: Integer library deprecated platform;
 
-    { Hint directives for properties are not allowed.
+    { Testing on Delphi 7 / Kylix 3:
+      Hint directives for properties are not allowed.
       Nowhere in Delphi help do they say that hint directives
       are supported for properties, and indeed it doesn't seem
       to be supported.
 
       property SomeProperty: Integer
         read TestFieldPlatform write TestFieldPlatform; platform;}
+
+    { Testing on FPC 2.6.0:
+      Hint directives for properties are allowed Ok.
+      I don't know if this is Delphi-compatible or FPC extension,
+      anyway PasDoc supports it too. }
+    property TestPropertyCombined: Integer; library deprecated platform;
+    property TestPropertyCombined2: Integer; library; deprecated; platform;
 
     { }
     procedure TestMethodLibrary; library;

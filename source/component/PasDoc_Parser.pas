@@ -1,4 +1,4 @@
-{ @abstract(provides all the parsing functionality of pasdoc)
+{ @abstract(Parse ObjectPascal code.)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Johannes Berg <johannes@sipsolutions.de>)
@@ -6,11 +6,8 @@
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @cvs($Date$)
 
-  Parsing implements most of the functionality of the pasdoc program.
-
-  It provides the @link(TParser) object, which scans the command line parameters
-  for file names and switches and then starts collecting information from those
-  files, issueing warnings to standard out if necessary. }
+  Contains the @link(TParser) object, which can parse an ObjectPascal
+  code, and put the collected information into the TPasUnit instance. }
 
 unit PasDoc_Parser;
 
@@ -382,14 +379,25 @@ type
     
     procedure SetCommentMarkers(const Value: TStringList);
     
-    { Skips all whitespace and comments and while it sees some hint directive
-      (platform, library, deprecated) it consumes it, sets appropriate
-      property of Item (IsPlatformSpecific, IsLibrarySpecific or IsDeprecated)
-      to true and goes further.
+    { Consume a hint directive (platform, library or deprecated) as long as you
+      see one. Skips all whitespace and comments.
+      Sets appropriate property of Item (IsPlatformSpecific, 
+      IsLibrarySpecific or IsDeprecated) to true.
       
-      Stops when PeekNextToken returns some non-whitespace non-comment 
-      non-hint-directive token. }
-    procedure ParseHintDirectives(Item: TPasItem);
+      Stops when PeekNextToken returns some token that is not a whitespace,
+      comment or hint directive.
+      
+      If ConsumeFollowingSemicolon then we will also look for, and consume,
+      a semicolon following (any one of) the hint directives. This is a little
+      hazy, but parsing rules for hint directives *are* hazy, the semicolon
+      sometimes is optional and sometimes required, see tests/ok_hint_directives.pas
+      testcase.
+      
+      If ExtendFullDeclaration then the hint directives (and eventual semicolons,
+      if ConsumeFollowingSemicolon) will also be added to the Item.FullDeclaration). }
+    procedure ParseHintDirectives(Item: TPasItem; 
+      const ConsumeFollowingSemicolon: boolean = false;
+      const ExtendFullDeclaration: boolean = false);
     
     procedure ParseUnit(U: TPasUnit);
     procedure ParseProgram(U: TPasUnit);
@@ -1293,6 +1301,8 @@ begin
   
     { read the rest of declaration }
     SkipDeclaration(P, false);
+    
+    ParseHintDirectives(P, true, true);
   except
     p.Free;
     t.Free;
@@ -2338,32 +2348,38 @@ end;
 
 { ------------------------------------------------------------ }
 
-procedure TParser.ParseHintDirectives(Item: TPasItem);
+procedure TParser.ParseHintDirectives(Item: TPasItem;
+  const ConsumeFollowingSemicolon, ExtendFullDeclaration: boolean);
 var
-  t: TToken;
+  T: TToken;
 begin
   repeat
-    t := PeekNextToken;
+    T := PeekNextToken;
     
-    if t.IsStandardDirective(SD_PLATFORM) then
-    begin
-      Scanner.ConsumeToken;
-      Item.IsPlatformSpecific := true;
-      FreeAndNil(t);
-    end else
-    if t.IsStandardDirective(SD_DEPRECATED) then
-    begin
-      Scanner.ConsumeToken;
-      Item.IsDeprecated := true;
-      FreeAndNil(t);
-    end else
-    if t.IsKeyWord(KEY_LIBRARY) then
-    begin
-      Scanner.ConsumeToken;
-      Item.IsLibrarySpecific := true;
-      FreeAndNil(t);
-    end else
+    if T.IsStandardDirective(SD_PLATFORM) then
+      Item.IsPlatformSpecific := true else
+    if T.IsStandardDirective(SD_DEPRECATED) then
+      Item.IsDeprecated := true else
+    if T.IsKeyWord(KEY_LIBRARY) then
+      Item.IsLibrarySpecific := true else
       break;
+
+    if ExtendFullDeclaration then
+      Item.FullDeclaration := Item.FullDeclaration + ' ' + T.Data;
+    Scanner.ConsumeToken;
+    FreeAndNil(T);
+
+    if ConsumeFollowingSemicolon then
+    begin
+      T := PeekNextToken;
+      if T.IsSymbol(SYM_SEMICOLON) then
+      begin
+        if ExtendFullDeclaration then
+          Item.FullDeclaration := Item.FullDeclaration + T.Data;
+        Scanner.ConsumeToken;
+        FreeAndNil(T);
+      end;
+    end;
   until false;
 end;
 
