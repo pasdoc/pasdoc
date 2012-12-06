@@ -43,6 +43,7 @@ type
     lgBulgarian,
     lgCatalan,
     lgChinese,
+    lgCroatian,
     lgDanish,
     lgDutch,
     lgEnglish,
@@ -66,6 +67,7 @@ type
     lgBulgarian,
     lgCatalan,
     lgChinese_gb2312,
+    lgCroatian,    
     lgDanish,
     lgDutch,
     lgEnglish,
@@ -333,6 +335,7 @@ const
   aBulgarian          : {$I lang\PasDoc_Languages_Bulgarian_utf8_bom.inc}
   aCatalan            : {$I lang\PasDoc_Languages_Catalan_utf8_bom.inc}
   aChinese            : {$I lang\PasDoc_Languages_Chinese_utf8_bom.inc}
+  aCroatian           : {$I lang\PasDoc_Languages_Croatia_utf8_bom.inc}
   aDanish             : {$I lang\PasDoc_Languages_Danish_utf8_bom.inc}
   aDutch              : {$I lang\PasDoc_Languages_Dutch_utf8_bom.inc}
   aFrench             : {$I lang\PasDoc_Languages_French_utf8_bom.inc}
@@ -354,6 +357,7 @@ const
   aBulgarian          : {$I lang\PasDoc_Languages_Bulgarian_utf8.inc}
   aCatalan            : {$I lang\PasDoc_Languages_Catalan_1252.inc}
   aChinese_gb2312     : {$I lang\PasDoc_Languages_Chinese_gb2312.inc}
+  aCroatian           : {$I lang\PasDoc_Languages_Croatia_1250.inc}
   aDanish             : {$I lang\PasDoc_Languages_Danish_1252.inc}
   aDutch              : {$I lang\PasDoc_Languages_Dutch_1252.inc}
   aFrench_ISO_8859_15 : {$I lang\PasDoc_Languages_French_ISO_8859_15.inc}
@@ -383,6 +387,7 @@ const
     (Table: @aBulgarian; Name: 'Bulgarian'; Syntax: 'bg'; AspellLanguage: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; AspellLanguage: 'ca'),
     (Table: @aChinese; Name: 'Chinese'; Syntax: 'zh'; AspellLanguage: 'zh'),
+    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; AspellLanguage: 'hr'),
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; AspellLanguage: ''),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; AspellLanguage: ''),
@@ -406,6 +411,7 @@ const
     (Table: @aBulgarian; Name: 'Bulgarian (Codepage UTF-8)'; Syntax: 'bg'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: 'windows-1252'; AspellLanguage: 'ca'),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'; AspellLanguage: 'zh'),
+    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),    
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'; AspellLanguage: ''),
