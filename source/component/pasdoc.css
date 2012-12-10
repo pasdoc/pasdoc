@@ -128,3 +128,6 @@ table.detail {
   margin-top: 0.3em;
   margin-bottom: 0.3em;
 }
+
+.search-input { float: left; }
+.search-button {  float: left; margin-left: 13px; }

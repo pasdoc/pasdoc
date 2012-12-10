@@ -130,4 +130,7 @@
 '  margin-top: 0.3em;' + LineEnding + 
 '  margin-bottom: 0.3em;' + LineEnding + 
 '}' + LineEnding + 
+'' + LineEnding + 
+'.search-input { float: left; }' + LineEnding + 
+'.search-button {  float: left; margin-left: 13px; }' + LineEnding + 
 ''
