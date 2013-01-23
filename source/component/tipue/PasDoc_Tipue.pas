@@ -31,7 +31,7 @@ const
   Units must be non-nil. It will be used to generate index data for tipue. }
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
-  const MetaContentType: string;
+  const Head, BodyBegin, BodyEnd: string;
   const OutputPath: string);
 
 implementation
@@ -45,7 +45,7 @@ end;
 
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
-  const MetaContentType: string;
+  const Head, BodyBegin, BodyEnd: string;
   const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
@@ -202,17 +202,22 @@ const
   TipueSearchScript = {$I tipuesearch.js.inc};
   TipueSearchSetScript = {$I tipuesearch_set.js.inc};
   JQueryScript = {$I jquery-1.7.1.min.js.inc};
-  TipueResultsPage = {$I _tipue_results.html.inc};
   TipueSearchImage : {$I search.gif.inc};
+var
+  TipueResultsPage: string;
 begin
   CreateDir(OutputPath + 'tipuesearch');
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
   StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery-1.7.1.min.js', JQueryScript);
-  StringToFile(OutputPath + '_tipue_results.html',
-    StringReplace(TipueResultsPage,
-      '###-PASDOC-INSERT-HEAD-###', MetaContentType, []));
+
+  TipueResultsPage := {$I _tipue_results.html.inc};
+  TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);
+  TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-BEGIN-###', BodyBegin, []);
+  TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-END-###', BodyEnd, []);
+  StringToFile(OutputPath + '_tipue_results.html', TipueResultsPage);
+
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.gif', TipueSearchImage);
   WriteTipueIndexData(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_data.js');
 end;

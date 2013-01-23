@@ -8,23 +8,26 @@
 '' + LineEnding + 
 '<!-- head required by tipue -->' + LineEnding + 
 '' + LineEnding + 
+'<!-- PasDoc: note that we use local jquery copy, not from google, to work offline -->' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/jquery-1.7.1.min.js"></script>' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding + 
 '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding + 
 '' + LineEnding + 
-'<!-- head required by pasdoc -->' + LineEnding + 
-'' + LineEnding + 
-'<link rel="stylesheet" type="text/css" href="pasdoc.css">' + LineEnding + 
-'' + LineEnding + 
-'###-PASDOC-INSERT-HEAD-###' + LineEnding + 
+'###-PASDOC-HEAD-###' + LineEnding + 
 '' + LineEnding + 
 '</head>' + LineEnding + 
 '<body>' + LineEnding + 
-'<div style="float: left;"><input type="text" id="tipue_search_input"></div>' + LineEnding + 
-'<div style="float: left; margin-left: 13px;"><input type="button" id="tipue_search_button"></div>' + LineEnding + 
+'' + LineEnding + 
+'###-PASDOC-BODY-BEGIN-###' + LineEnding + 
+'' + LineEnding + 
+'<h1>Search results</h1>' + LineEnding + 
+'' + LineEnding + 
 '<div id="tipue_search_content"></div>' + LineEnding + 
 '<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding + 
+'' + LineEnding + 
+'###-PASDOC-BODY-END-###' + LineEnding + 
+'' + LineEnding + 
 '</body>' + LineEnding + 
 '</html>' + LineEnding + 
 ''

@@ -50,10 +50,14 @@ type
     FOddTableRow: boolean;
 
     FImages: TStringList;
+    
+    { Return common HTML content that goes inside <head>. }
+    function MakeHead: string;
+    { Return common HTML content that goes right after <body>. }
+    function MakeBodyBegin: string;
+    { Return common HTML content that goes right before </body>. }
+    function MakeBodyEnd: string;
 
-    { Returns line with <meta http-equiv="Content-Type" ...>
-      describing current charset (from FLanguage). }
-    function MetaContentType: string;
     { Makes a link.
       @param href is the link's reference
       @param caption is the link's text
@@ -921,8 +925,8 @@ begin
   begin
     DoMessage(2, pmtInformation, 
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(Units, Introduction, Conclusion, MetaContentType,
-      DestinationDirectory);
+    TipueAddFiles(Units, Introduction, Conclusion, 
+      MakeHead, MakeBodyBegin, MakeBodyEnd, DestinationDirectory);
   end;
   EndSpellChecking;
 end;
@@ -931,7 +935,7 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteEndOfDocument;
 begin
-  WriteDirectLine('</td></tr></table>'); // end <table class="container">
+  WriteDirect(MakeBodyEnd);
   WriteDirect('</body>');
   WriteDirectLine('</html>');
 end;
@@ -1617,105 +1621,107 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TGenericHTMLDocGenerator.MetaContentType: string;
+function TGenericHTMLDocGenerator.MakeHead: string;
 begin
+  Result := '';
+  
+  if not NoGeneratorInfo then
+    Result := Result + '<meta name="generator" content="'
+      + PASDOC_NAME_AND_VERSION + '">' + LineEnding;
   if FLanguage.CharSet <> '' then
-    Result := '<meta http-equiv="content-type" content="text/html; charset='
-      + FLanguage.CharSet + '">' + LineEnding else
-    Result := '';
+    Result := Result + '<meta http-equiv="content-type" content="text/html; charset='
+      + FLanguage.CharSet + '">' + LineEnding;
+  if UseTipueSearch then
+    Result := Result + TipueSearchButtonHead + LineEnding;
+  
+  // StyleSheet
+  Result := Result + '<link rel="StyleSheet" type="text/css" href="' + 
+    EscapeURL('pasdoc.css') + '">' + LineEnding;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
+function TGenericHTMLDocGenerator.MakeBodyBegin: string;
 
-  procedure WriteNavigation;
+  function MakeNavigation: string;
 
-    procedure LocalWriteLink(const Filename, Caption: string); overload;
+    function LocalMakeLink(const Filename, Caption: string): string; overload;
     begin
-      WriteDirect('<p><a href="' + EscapeURL(Filename) + '" class="navigation">');
-      WriteConverted(Caption);
-      WriteDirectLine('</a></p>');
+      Result := '<p><a href="' + EscapeURL(Filename) + '" class="navigation">' +
+        ConvertString(Caption) + '</a></p>';
     end;
 
-    procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID); overload;
+    function LocalMakeLink(const Filename: string; CaptionId: TTranslationID): string; overload;
     begin
-      LocalWriteLink(Filename, FLanguage.Translation[CaptionId]);
+      Result := LocalMakeLink(Filename, FLanguage.Translation[CaptionId]);
     end;
 
   var
     Overview: TCreatedOverviewFile;
   begin
+    Result := '';
+    
     if Title <> '' then
-      WriteDirect('<h2>'+Title+'</h2>');
+      Result := Result + '<h2>' + ConvertString(Title) + '</h2>';
     
     if Introduction <> nil then
     begin
       if Introduction.ShortTitle = '' then
-      begin
-        LocalWriteLink(Introduction.OutputFileName, trIntroduction);
-      end else
-      begin
-        LocalWriteLink(Introduction.OutputFileName, Introduction.ShortTitle)
-      end;
+        Result := Result + LocalMakeLink(Introduction.OutputFileName, trIntroduction) else
+        Result := Result + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle);
     end;
 
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
-      LocalWriteLink(
+      Result := Result + LocalMakeLink(
         OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
         OverviewFilesInfo[Overview].TranslationId);
 
     if LinkGraphVizUses <> '' then
-      LocalWriteLink(
+      Result := Result + LocalMakeLink(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
 
     if LinkGraphVizClasses <> '' then
-      LocalWriteLink(
+      Result := Result + LocalMakeLink(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
 
     if Conclusion <> nil then
     begin
       if Conclusion.ShortTitle = '' then
-      begin
-        LocalWriteLink(Conclusion.OutputFileName, trConclusion);
-      end else
-      begin
-        LocalWriteLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
-      end;
+        Result := Result + LocalMakeLink(Conclusion.OutputFileName, trConclusion) else
+        Result := Result + LocalMakeLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
     end;
 
     if UseTipueSearch then
-      WriteDirect('<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>');
+      Result := Result + '<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>';
   end;
 
+begin
+  { TODO: get rid of <table> layout, use <div> for navigation instead }
+  Result := '<table class="container"><tr><td class="navigation">' + LineEnding;
+  Result := Result + MakeNavigation;
+  Result := Result + '</td><td class="content">' + LineEnding;
+end;
+
+function TGenericHTMLDocGenerator.MakeBodyEnd: string;
+begin
+  Result := '</td></tr></table>'; // end <table class="container">
+end;
+
+procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
   WriteDirectLine(DoctypeNormal);
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
-  if not NoGeneratorInfo then
-    WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
-  WriteDirect(MetaContentType);
-  if UseTipueSearch then
-    WriteDirect(TipueSearchButtonHead);
   // Title
   WriteDirect('<title>');
   if Title <> '' then 
     WriteConverted(Title + ': ');
   WriteConverted(AName);
   WriteDirectLine('</title>');
-  // StyleSheet
-  WriteDirect('<link rel="StyleSheet" type="text/css" href="');
-  WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirectLine('">');
-
+  WriteDirect(MakeHead);
   WriteDirectLine('</head>');
   WriteDirectLine('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">');
-
-  { TODO: get rid of <table> layout, use <div> for navigation instead }
-  WriteDirectLine('<table class="container"><tr><td class="navigation">');
-  WriteNavigation;
-  WriteDirectLine('</td><td class="content">');
-
+  WriteDirect(MakeBodyBegin);
   if Length(Header) > 0 then begin
     WriteSpellChecked(Header);
   end;
