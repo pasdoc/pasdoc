@@ -134,12 +134,14 @@
 '.search-input { float: left; }' + LineEnding + 
 '.search-button {  float: left; margin-left: 13px; }' + LineEnding + 
 '' + LineEnding + 
-'/* Do not make extra vertical space at the beginning/end of table cells. */' + LineEnding + 
-'table.table_tag td p:first-child,' + LineEnding + 
-'table.table_tag th p:first-child,' + LineEnding + 
-'       td.itemdesc p:first-child { margin-top: 0em; }' + LineEnding + 
+'/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding + 
+'   We need ">" selector, to not change paragraphs inside lists inside' + LineEnding + 
+'   table cells. */' + LineEnding + 
+'table.table_tag td > p:first-child,' + LineEnding + 
+'table.table_tag th > p:first-child,' + LineEnding + 
+'       td.itemdesc > p:first-child { margin-top: 0em; }' + LineEnding + 
 '' + LineEnding + 
-'table.table_tag td p:last-child,' + LineEnding + 
-'table.table_tag th p:last-child,' + LineEnding + 
-'       td.itemdesc p:last-child { margin-bottom: 0em; }' + LineEnding + 
+'table.table_tag td > p:last-child,' + LineEnding + 
+'table.table_tag th > p:last-child,' + LineEnding + 
+'       td.itemdesc > p:last-child { margin-bottom: 0em; }' + LineEnding + 
 ''
