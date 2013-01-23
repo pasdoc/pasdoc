@@ -899,15 +899,14 @@ type
       tests). }
     property NoGeneratorInfo: Boolean 
       read FNoGeneratorInfo write FNoGeneratorInfo default False;
-    
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
+
+    { Title of the documentation, supplied by user. May be empty.
+      See @link(TPasDoc.Title). }
     property Title: string read FTitle write FTitle;
 
-    { destination directory for documentation; must include terminating
+    { Destination directory for documentation. Must include terminating
       forward slash or backslash so that valid file names can be created
-      by concatenating DestinationDirectory and a pathless file name }
+      by concatenating DestinationDirectory and a pathless file name. }
     property DestinationDirectory: string read FDestDir write SetDestDir;
 
     { generate a GraphViz diagram for the units dependencies }
