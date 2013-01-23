@@ -54,13 +54,11 @@ type
     { Returns line with <meta http-equiv="Content-Type" ...>
       describing current charset (from FLanguage). }
     function MetaContentType: string;
-    { makes a link with a target frame
+    { Makes a link.
       @param href is the link's reference
       @param caption is the link's text
-      @param CssClass is the link's CSS class
-      @param TargetFrame is the link's target frame (or empty) }
-    function MakeTargettedLink(
-      const href, caption, CssClass, TargetFrame: string): string;
+      @param CssClass is the link's CSS class }
+    function MakeLink(const href, caption, CssClass: string): string;
       
     { Used by WriteItemsSummary and WriteItemsDetailed. }
     procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
@@ -141,8 +139,8 @@ type
     { output all the necessary images }
     procedure WriteBinaryFiles;
 
-    { output the index.html and navigation.html files }
-    procedure WriteFramesetFiles;
+    { output the index.html file }
+    procedure WriteIndex;
 
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
@@ -152,12 +150,6 @@ type
       @param caption is the link's caption (must already been converted)
       @param CssClass is the link's CSS class }
     procedure WriteLink(const href, caption, CssClass: string);
-    { writes a link with a target frame
-      @param href is the link's reference
-      @param caption is the link's caption (must already been converted)
-      @param CssClass is the link's CSS class
-      @param TargetFrame is the link's target frame (or empty) }
-    procedure WriteTargettedLink(const href, caption, CssClass, TargetFrame: string);
 
     procedure WriteSpellChecked(const AString: string);
 
@@ -338,9 +330,6 @@ const
   img_protected : {$I protected.gif.inc};
 
 const
-  DoctypeFrameset = '<!DOCTYPE HTML PUBLIC ' +
-    '"-//W3C//DTD HTML 4.01 Frameset//EN" ' +
-    '"http://www.w3.org/TR/1999/REC-html401-19991224/frameset.dtd">';
   DoctypeNormal = '<!DOCTYPE HTML PUBLIC ' +
     '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
     '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
@@ -462,7 +451,7 @@ begin
   WriteDirect('<span class="appinfo">');
   WriteDirect('<em>');
   WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteTargettedLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '', '_parent');
+  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
   WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
     FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
   WriteDirectLine('</em>');
@@ -927,7 +916,7 @@ begin
   WriteVisibilityLegendFile;
   WriteIntroduction;
   WriteConclusion;
-  WriteFramesetFiles;
+  WriteIndex;
   if UseTipueSearch then
   begin
     DoMessage(2, pmtInformation, 
@@ -942,6 +931,7 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteEndOfDocument;
 begin
+  WriteDirectLine('</td></tr></table>'); // end <table class="container">
   WriteDirect('</body>');
   WriteDirectLine('</html>');
 end;
@@ -949,11 +939,6 @@ end;
 procedure TGenericHTMLDocGenerator.WriteEndOfCode;
 begin
   WriteDirect('</code>');
-end;
-
-procedure TGenericHTMLDocGenerator.WriteLink(const href, caption, CssClass: string);
-begin
-  WriteTargettedLink(href, caption, CssClass, '');
 end;
 
 function TGenericHTMLDocGenerator.MakeItemLink(
@@ -967,23 +952,21 @@ begin
     CssClass := 'normal' else
     CssClass := '';
 
-  Result := MakeTargettedLink(Item.FullLink, ConvertString(LinkCaption), 
-    CssClass, '');
+  Result := MakeLink(Item.FullLink, ConvertString(LinkCaption), CssClass);
 end;
 
-function TGenericHTMLDocGenerator.MakeTargettedLink(
-  const href, caption, CssClass, TargetFrame: string): string;
+function TGenericHTMLDocGenerator.MakeLink(
+  const href, caption, CssClass: string): string;
 begin
-  Result := Format('<a %s %s href="%s">%s</a>',
+  Result := Format('<a %s href="%s">%s</a>',
     [ifthen(CssClass = '', '', 'class="' + CssClass + '"'),
-     ifthen(TargetFrame = '', '', 'target="' + TargetFrame + '"'),
      EscapeURL(href), caption]);
 end;
 
-procedure TGenericHTMLDocGenerator.WriteTargettedLink(
-  const href, caption, CssClass, TargetFrame: string);
+procedure TGenericHTMLDocGenerator.WriteLink(
+  const href, caption, CssClass: string);
 begin
-  WriteDirect(MakeTargettedLink(href, caption, CssClass, TargetFrame));
+  WriteDirect(MakeLink(href, caption, CssClass));
 end;
 
 procedure TGenericHTMLDocGenerator.WriteEndOfParagraph;
@@ -1643,6 +1626,68 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
+
+  procedure WriteNavigation;
+
+    procedure LocalWriteLink(const Filename, Caption: string); overload;
+    begin
+      WriteDirect('<p><a href="' + EscapeURL(Filename) + '" class="navigation">');
+      WriteConverted(Caption);
+      WriteDirectLine('</a></p>');
+    end;
+
+    procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID); overload;
+    begin
+      LocalWriteLink(Filename, FLanguage.Translation[CaptionId]);
+    end;
+
+  var
+    Overview: TCreatedOverviewFile;
+  begin
+    if Title <> '' then
+      WriteDirect('<h2>'+Title+'</h2>');
+    
+    if Introduction <> nil then
+    begin
+      if Introduction.ShortTitle = '' then
+      begin
+        LocalWriteLink(Introduction.OutputFileName, trIntroduction);
+      end else
+      begin
+        LocalWriteLink(Introduction.OutputFileName, Introduction.ShortTitle)
+      end;
+    end;
+
+    for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+      LocalWriteLink(
+        OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
+        OverviewFilesInfo[Overview].TranslationId);
+
+    if LinkGraphVizUses <> '' then
+      LocalWriteLink(
+        OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
+        OverviewFilesInfo[ofGraphVizUses].TranslationId);
+
+    if LinkGraphVizClasses <> '' then
+      LocalWriteLink(
+        OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
+        OverviewFilesInfo[ofGraphVizClasses].TranslationId);
+
+    if Conclusion <> nil then
+    begin
+      if Conclusion.ShortTitle = '' then
+      begin
+        LocalWriteLink(Conclusion.OutputFileName, trConclusion);
+      end else
+      begin
+        LocalWriteLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
+      end;
+    end;
+
+    if UseTipueSearch then
+      WriteDirect('<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>');
+  end;
+
 begin
   WriteDirectLine(DoctypeNormal);
   WriteDirectLine('<html>');
@@ -1650,6 +1695,8 @@ begin
   if not NoGeneratorInfo then
     WriteDirectLine('<meta name="GENERATOR" content="' + PASDOC_NAME_AND_VERSION + '">');
   WriteDirect(MetaContentType);
+  if UseTipueSearch then
+    WriteDirect(TipueSearchButtonHead);
   // Title
   WriteDirect('<title>');
   if Title <> '' then 
@@ -1663,6 +1710,11 @@ begin
 
   WriteDirectLine('</head>');
   WriteDirectLine('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">');
+
+  { TODO: get rid of <table> layout, use <div> for navigation instead }
+  WriteDirectLine('<table class="container"><tr><td class="navigation">');
+  WriteNavigation;
+  WriteDirectLine('</td><td class="content">');
 
   if Length(Header) > 0 then begin
     WriteSpellChecked(Header);
@@ -2153,109 +2205,16 @@ begin
   StringToFile(PasdocCssFileName, CSS);
 end;
 
-procedure TGenericHTMLDocGenerator.WriteFramesetFiles;
-
-  procedure LocalWriteLink(const Filename, Caption: string); overload;
-  begin
-    WriteDirect('<tr><td><a target="content" href="' + EscapeURL(Filename) + '" class="navigation">');
-    WriteConverted(Caption);
-    WriteDirectLine('</a></td></tr>');
-  end;  
-
-  procedure LocalWriteLink(const Filename: string; CaptionId: TTranslationID); overload;
-  begin
-    LocalWriteLink(Filename, FLanguage.Translation[CaptionId]);
-  end;
-
+procedure TGenericHTMLDocGenerator.WriteIndex;
 var
-  Overview: TCreatedOverviewFile;
+  IndexSourceFileName: string;
 begin
-{$IFDEF STRING_UNICODE}
-  CreateStream('index.html', True, FLanguage.CodePage);
-{$ELSE}
-  CreateStream('index.html', True);
-{$ENDIF}
-  WriteDirectLine(DoctypeFrameset);
-  WriteDirectLine('<html><head>');
-  WriteDirect(MetaContentType);
-  WriteDirectLine('<title>'+Title+'</title>');
-  WriteDirectLine('</head><frameset cols="200,*">');
-  WriteDirectLine('<frame src="navigation.html" frameborder="0">');
+  { TODO: It would be cleaner to actually rename the appropriate file
+    (introduction or AllUnits) to index.html, instead of copying it? }
   if Introduction <> nil then
-  begin
-    WriteDirectLine('<frame src="' +
-      Introduction.OutputFileName +
-      '" frameborder="0" name="content">');
-  end
-  else
-  begin
-    WriteDirectLine('<frame src="AllUnits.html" frameborder="0" name="content">');
-  end;
-  WriteDirectLine('</frameset></html>');
-  CloseStream;
-{$IFDEF STRING_UNICODE}
-  CreateStream('navigation.html', True, FLanguage.CodePage);
-{$ELSE}
-  CreateStream('navigation.html', True);
-{$ENDIF}
-  WriteDirectLine(DoctypeNormal);
-  WriteDirectLine('<html><head>');
-  WriteDirect('<link rel="StyleSheet" type="text/css" href="');
-  WriteDirect(EscapeURL('pasdoc.css'));
-  WriteDirectLine('">');
-  WriteDirect(MetaContentType);
-  WriteDirectLine('<title>Navigation</title>');
-  if UseTipueSearch then
-    WriteDirect(TipueSearchButtonHead);
-  WriteDirectLine('</head>');
-  WriteDirectLine('<body class="navigationframe">');
-  WriteDirect('<h2>'+Title+'</h2>');
-
-  WriteStartOfTable('navigation');
-
-  if Introduction <> nil then
-  begin
-    if Introduction.ShortTitle = '' then
-    begin
-      LocalWriteLink(Introduction.OutputFileName, trIntroduction);
-    end else
-    begin
-      LocalWriteLink(Introduction.OutputFileName, Introduction.ShortTitle)
-    end;
-  end;
-    
-  for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
-    LocalWriteLink(
-      OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
-      OverviewFilesInfo[Overview].TranslationId);
-      
-  if LinkGraphVizUses <> '' then
-    LocalWriteLink(
-      OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
-      OverviewFilesInfo[ofGraphVizUses].TranslationId);
-
-  if LinkGraphVizClasses <> '' then
-    LocalWriteLink(
-      OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
-      OverviewFilesInfo[ofGraphVizClasses].TranslationId);  
-
-  if Conclusion <> nil then
-  begin
-    if Conclusion.ShortTitle = '' then
-    begin
-      LocalWriteLink(Conclusion.OutputFileName, trConclusion);
-    end else
-    begin
-      LocalWriteLink(Conclusion.OutputFileName, Conclusion.ShortTitle)
-    end;
-  end;
-    
-  if UseTipueSearch then
-    WriteDirect('<tr><td>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</td></tr>');
-    
-  WriteDirectLine('</table>');
-  WriteDirectLine('</body></html>');
-  CloseStream;
+    IndexSourceFileName := Introduction.OutputFileName else
+    IndexSourceFileName := 'AllUnits.html';
+  CopyFile(DestinationDirectory + IndexSourceFileName, DestinationDirectory + 'index.html');
 end;
 
 function TGenericHTMLDocGenerator.ConvertString(const S: String): String;
@@ -2360,7 +2319,7 @@ end;
 
 function TGenericHTMLDocGenerator.URLLink(const URL: string): string;
 begin
-  Result := MakeTargettedLink(URL, ConvertString(URL), '', '_parent');
+  Result := MakeLink(URL, ConvertString(URL), '');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteExternalCore(

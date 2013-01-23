@@ -1,11 +1,39 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
-'body { font-family: Verdana,Arial;' + LineEnding + 
-'  color: black; background-color: white;' + LineEnding + 
-'  font-size: 12px; }' + LineEnding + 
-'body.navigationframe { font-family: Verdana,Arial;' + LineEnding + 
-'  color: white; background-color: #787878;' + LineEnding + 
-'  font-size: 12px; }' + LineEnding + 
+'body, html, table.container {' + LineEnding + 
+'  margin: 0;' + LineEnding + 
+'  padding: 0;' + LineEnding + 
+'}' + LineEnding + 
+'' + LineEnding + 
+'body {' + LineEnding + 
+'  font-family: Verdana,Arial;' + LineEnding + 
+'  color: black;' + LineEnding + 
+'  background-color: white;' + LineEnding + 
+'  font-size: 12px;' + LineEnding + 
+'}' + LineEnding + 
+'' + LineEnding + 
+'table.container {' + LineEnding + 
+'  width: 100%;' + LineEnding + 
+'  border-spacing: 0;' + LineEnding + 
+'}' + LineEnding + 
+'table.container td {' + LineEnding + 
+'  vertical-align: top;' + LineEnding + 
+'}' + LineEnding + 
+'' + LineEnding + 
+'td.navigation {' + LineEnding + 
+'  width: 200px;' + LineEnding + 
+'  color: white;' + LineEnding + 
+'  background-color: #787878;' + LineEnding + 
+'  margin: 0;' + LineEnding + 
+'  /* padding-bottom is a little larger, to make navigation column have some' + LineEnding + 
+'     nice height even when td.content column is very small. */' + LineEnding + 
+'  padding: 1em 1em 100px 1em;' + LineEnding + 
+'}' + LineEnding + 
+'td.navigation p { padding: 0; }' + LineEnding + 
+'td.navigation h2 { margin-top: 0; }' + LineEnding + 
+'' + LineEnding + 
+'td.content { padding: 1em; }' + LineEnding + 
+'td.content h1 { margin-top: 0; }' + LineEnding + 
 '' + LineEnding + 
 'img { border:0px; }' + LineEnding + 
 '' + LineEnding + 
@@ -14,11 +42,10 @@
 'a:hover {text-decoration: underline; }' + LineEnding + 
 'a:active {text-decoration: underline; }' + LineEnding + 
 '' + LineEnding + 
-'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
-'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
-'a.navigation:hover { color: white; font-weight: bold;' + LineEnding + 
-'  text-decoration: none; font-size: 12px; }' + LineEnding + 
-'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
+'a.navigation:link { color: white; text-decoration: none; }' + LineEnding + 
+'a.navigation:visited { color: white; text-decoration: none; }' + LineEnding + 
+'a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding + 
+'a.navigation:active { color: white; text-decoration: none; }' + LineEnding + 
 '' + LineEnding + 
 'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }' + LineEnding + 
 'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }' + LineEnding + 
