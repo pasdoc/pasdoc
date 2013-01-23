@@ -1665,7 +1665,7 @@ begin
   WriteDirectLine('</title>');
   WriteDirect(MakeHead);
   WriteDirectLine('</head>');
-  WriteDirectLine('<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#FF0000">');
+  WriteDirectLine('<body>');
   WriteDirect(MakeBodyBegin);
   if Length(Header) > 0 then begin
     WriteSpellChecked(Header);
