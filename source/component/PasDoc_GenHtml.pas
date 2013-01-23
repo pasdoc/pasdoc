@@ -508,14 +508,14 @@ type
   TSectionAnchors = array[TSections] of string;
 const
   SectionAnchors: TSectionAnchors = (
-    '%40Description',
-    '%40Hierarchy',
-    '%40EnclosingClass',
-    '%40InternalCRs',
-    '%40InternalTypes',
-    '%40Fields',
-    '%40Methods',
-    '%40Properties');
+    'PasDoc-Description',
+    'PasDoc-Hierarchy',
+    'PasDoc-EnclosingClass',
+    'PasDoc-InternalCRs',
+    'PasDoc-InternalTypes',
+    'PasDoc-Fields',
+    'PasDoc-Methods',
+    'PasDoc-Properties');
 
 type
   TCIONames = array[TCIOType] of string;
@@ -875,7 +875,7 @@ var
 begin
   if ObjectVectorIsNilOrEmpty(c) then Exit;
 
-  WriteAnchor('%40Classes');
+  WriteAnchor('PasDoc-Classes');
 
   WriteHeading(HL, 'cio', FLanguage.Translation[trCio]);
   WriteStartOfTable2Columns('classestable', FLanguage.Translation[trName], FLanguage.Translation[trDescription]);
@@ -1772,13 +1772,13 @@ type
   TSectionAnchors = array[TSections] of string;
 const
   SectionAnchors: TSectionAnchors = (
-    '%40Description',
-    '%40Uses',
-    '%40Classes',
-    '%40FuncsProcs',
-    '%40Types',
-    '%40Constants',
-    '%40Variables');
+    'PasDoc-Description',
+    'PasDoc-Uses',
+    'PasDoc-Classes',
+    'PasDoc-FuncsProcs',
+    'PasDoc-Types',
+    'PasDoc-Constants',
+    'PasDoc-Variables');
 
   procedure WriteUnitDescription(HL: integer; U: TPasUnit);
   begin
