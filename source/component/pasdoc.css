@@ -134,6 +134,9 @@ table.detail {
 
 /* Do not make extra vertical space at the beginning/end of table cells. */
 table.table_tag td p:first-child,
-table.table_tag th p:first-child { margin-top: 0em; }
+table.table_tag th p:first-child,
+       td.itemdesc p:first-child { margin-top: 0em; }
+
 table.table_tag td p:last-child,
-table.table_tag th p:last-child { margin-bottom: 0em; }
+table.table_tag th p:last-child,
+       td.itemdesc p:last-child { margin-bottom: 0em; }

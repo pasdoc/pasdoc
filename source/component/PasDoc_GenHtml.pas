@@ -1407,7 +1407,9 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteEndOfTableCell;
 
         WriteStartOfTableCell('itemdesc');
+        WriteDirect('<p>');
         WriteItemShortDescription(Item);
+        WriteDirect('</p>');
         WriteEndOfTableCell;
         WriteEndOfTableRow;
       end;
@@ -1510,7 +1512,9 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         WriteEndOfTableCell;
 
         WriteStartOfTableCell('itemdesc');
+        WriteDirect('<p>');
         WriteItemShortDescription(Item);
+        WriteDirect('</p>');
         WriteEndOfTableCell;
 
         WriteEndOfTableRow;
