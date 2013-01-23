@@ -17,10 +17,9 @@ function TipueSearchButtonHead: string;
   for English.}
 const
   TipueSearchButton =
-    { PasDoc: we add target="content" to open results in our content frame }
-    '<form class="search-form" action="_tipue_results.html" target="content">' + LineEnding +
-    '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' + LineEnding +
-    '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' + LineEnding +
+    '<form class="search-form" action="_tipue_results.html">' +
+    '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
+    '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
     '</form>' + LineEnding +
     '<div style="clear: both"></div>';
 

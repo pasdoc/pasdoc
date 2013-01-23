@@ -34,7 +34,6 @@
 '{' + LineEnding + 
 '     width: 60px;' + LineEnding + 
 '     height: 33px;' + LineEnding + 
-'     margin-top: 1px;' + LineEnding + 
 '     border: 1px solid #dcdcdc;' + LineEnding + 
 '     border-radius: 3px;' + LineEnding + 
 '     background: #f1f1f1 url(''search.gif'') no-repeat center;' + LineEnding + 

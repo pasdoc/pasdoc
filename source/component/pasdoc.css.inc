@@ -158,8 +158,8 @@
 '  margin-bottom: 0.3em;' + LineEnding + 
 '}' + LineEnding + 
 '' + LineEnding + 
-'.search-input { float: left; }' + LineEnding + 
-'.search-button {  float: left; margin-left: 13px; }' + LineEnding + 
+'.search-form { white-space: nowrap; }' + LineEnding + 
+'.search-input, .search-button { display: inline-block; vertical-align: middle; }' + LineEnding + 
 '' + LineEnding + 
 '/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding + 
 '   We need ">" selector, to not change paragraphs inside lists inside' + LineEnding + 

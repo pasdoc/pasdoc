@@ -156,8 +156,8 @@ table.detail {
   margin-bottom: 0.3em;
 }
 
-.search-input { float: left; }
-.search-button {  float: left; margin-left: 13px; }
+.search-form { white-space: nowrap; }
+.search-input, .search-button { display: inline-block; vertical-align: middle; }
 
 /* Do not make extra vertical space at the beginning/end of table cells.
    We need ">" selector, to not change paragraphs inside lists inside
