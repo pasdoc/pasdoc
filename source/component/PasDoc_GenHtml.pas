@@ -2532,22 +2532,6 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.FormatTable(Table: TTableData): string;
-
-(*
-  TODO: about html validity and enclosing cell content within <p>:
-
-  We could enclose cell content (inside <td> and <th>) within <p></p>, 
-  to be validatable, but this introduces the ugly effect of 
-  adding additional margins between text and cell borders.
-  
-  We could get rid of this margin by using CSS below:
-    table.table_tag p { margin-top: 0em; margin-bottom: 0em; }
-  but this also makes gap between paragraphs within
-  cells too small.
-  
-  So for now, we're not HTML valid.
-*)
-
 const
   CellTag: array[boolean]of string = ('td', 'th');
 var
@@ -2575,7 +2559,7 @@ begin
     Result := Result + '  <tr class="' + RowClass + '">' + LineEnding;
     
     for ColNum := 0 to Row.Cells.Count - 1 do
-      Result := Result + Format('    <%s>%s</%0:s>%2:s',
+      Result := Result + Format('    <%s><p>%s</p></%0:s>%2:s',
         [CellTag[Row.Head], Row.Cells[ColNum], LineEnding]);
     
     Result := Result + '  </tr>' + LineEnding;

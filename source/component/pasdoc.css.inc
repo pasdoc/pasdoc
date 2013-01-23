@@ -1,10 +1,10 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
-'body { font-family: Verdana,Arial; ' + LineEnding + 
-'  color: black; background-color: white; ' + LineEnding + 
+'body { font-family: Verdana,Arial;' + LineEnding + 
+'  color: black; background-color: white;' + LineEnding + 
 '  font-size: 12px; }' + LineEnding + 
-'body.navigationframe { font-family: Verdana,Arial; ' + LineEnding + 
-'  color: white; background-color: #787878; ' + LineEnding + 
+'body.navigationframe { font-family: Verdana,Arial;' + LineEnding + 
+'  color: white; background-color: #787878;' + LineEnding + 
 '  font-size: 12px; }' + LineEnding + 
 '' + LineEnding + 
 'img { border:0px; }' + LineEnding + 
@@ -16,7 +16,7 @@
 '' + LineEnding + 
 'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
 'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
-'a.navigation:hover { color: white; font-weight: bold; ' + LineEnding + 
+'a.navigation:hover { color: white; font-weight: bold;' + LineEnding + 
 '  text-decoration: none; font-size: 12px; }' + LineEnding + 
 'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}' + LineEnding + 
 '' + LineEnding + 
@@ -67,12 +67,12 @@
 '/* Various browsers have various default styles for <h6>,' + LineEnding + 
 '   sometimes ugly for our purposes, so it''s best to set things' + LineEnding + 
 '   like font-size and font-weight in out pasdoc.css explicitly. */' + LineEnding + 
-'h6.description_section { ' + LineEnding + 
-'  /* font-size 100% means that it has the same font size as the ' + LineEnding + 
+'h6.description_section {' + LineEnding + 
+'  /* font-size 100% means that it has the same font size as the' + LineEnding + 
 '     parent element, i.e. normal description text */' + LineEnding + 
 '  font-size: 100%;' + LineEnding + 
-'  font-weight: bold; ' + LineEnding + 
-'  /* By default browsers usually have some large margin-bottom and ' + LineEnding + 
+'  font-weight: bold;' + LineEnding + 
+'  /* By default browsers usually have some large margin-bottom and' + LineEnding + 
 '     margin-top for <h1-6> tags. In our case, margin-bottom is' + LineEnding + 
 '     unnecessary, we want to visually show that description_section' + LineEnding + 
 '     is closely related to content below. In this situation' + LineEnding + 
@@ -81,7 +81,7 @@
 '  margin-bottom: 0em;' + LineEnding + 
 '}' + LineEnding + 
 '' + LineEnding + 
-'/* Style applied to Pascal code in documentation ' + LineEnding + 
+'/* Style applied to Pascal code in documentation' + LineEnding + 
 '   (e.g. produced by @longcode tag) } */' + LineEnding + 
 'span.pascal_string { color: #000080; }' + LineEnding + 
 'span.pascal_keyword { font-weight: bolder; }' + LineEnding + 
@@ -98,7 +98,7 @@
 'acronym.mispelling { background-color: #ffa; }' + LineEnding + 
 '' + LineEnding + 
 '/* Actually this reduces vertical space between *every* paragraph' + LineEnding + 
-'   inside list with @itemSpacing(compact). ' + LineEnding + 
+'   inside list with @itemSpacing(compact).' + LineEnding + 
 '   While we would like to reduce this space only for the' + LineEnding + 
 '   top of 1st and bottom of last paragraph within each list item.' + LineEnding + 
 '   But, well, user probably will not do any paragraph breaks' + LineEnding + 
@@ -110,16 +110,16 @@
 '' + LineEnding + 
 '/* Style for table created by @table tags:' + LineEnding + 
 '   just some thin border.' + LineEnding + 
-'   ' + LineEnding + 
+'' + LineEnding + 
 '   This way we have some borders around the cells' + LineEnding + 
-'   (so cells are visibly separated), but the border ' + LineEnding + 
+'   (so cells are visibly separated), but the border' + LineEnding + 
 '   "blends with the background" so it doesn''t look too ugly.' + LineEnding + 
 '   Hopefully it looks satisfactory in most cases and for most' + LineEnding + 
-'   people. ' + LineEnding + 
-'   ' + LineEnding + 
+'   people.' + LineEnding + 
+'' + LineEnding + 
 '   We add padding for cells, otherwise they look too close.' + LineEnding + 
 '   This is normal thing to do when border-collapse is set to' + LineEnding + 
-'   collapse (because this eliminates spacing between cells). ' + LineEnding + 
+'   collapse (because this eliminates spacing between cells).' + LineEnding + 
 '*/' + LineEnding + 
 'table.table_tag { border-collapse: collapse; }' + LineEnding + 
 'table.table_tag td { border: 1pt solid gray; padding: 0.3em; }' + LineEnding + 
@@ -133,4 +133,10 @@
 '' + LineEnding + 
 '.search-input { float: left; }' + LineEnding + 
 '.search-button {  float: left; margin-left: 13px; }' + LineEnding + 
+'' + LineEnding + 
+'/* Do not make extra vertical space at the beginning/end of table cells. */' + LineEnding + 
+'table.table_tag td p:first-child,' + LineEnding + 
+'table.table_tag th p:first-child { margin-top: 0em; }' + LineEnding + 
+'table.table_tag td p:last-child,' + LineEnding + 
+'table.table_tag th p:last-child { margin-bottom: 0em; }' + LineEnding + 
 ''

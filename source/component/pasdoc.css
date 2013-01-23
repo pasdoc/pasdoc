@@ -1,8 +1,8 @@
-body { font-family: Verdana,Arial; 
-  color: black; background-color: white; 
+body { font-family: Verdana,Arial;
+  color: black; background-color: white;
   font-size: 12px; }
-body.navigationframe { font-family: Verdana,Arial; 
-  color: white; background-color: #787878; 
+body.navigationframe { font-family: Verdana,Arial;
+  color: white; background-color: #787878;
   font-size: 12px; }
 
 img { border:0px; }
@@ -14,7 +14,7 @@ a:active {text-decoration: underline; }
 
 a.navigation:link { color: white; text-decoration: none; font-size: 12px;}
 a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}
-a.navigation:hover { color: white; font-weight: bold; 
+a.navigation:hover { color: white; font-weight: bold;
   text-decoration: none; font-size: 12px; }
 a.navigation:active { color: white; text-decoration: none; font-size: 12px;}
 
@@ -65,12 +65,12 @@ dl.parameters dt { color:blue; }
 /* Various browsers have various default styles for <h6>,
    sometimes ugly for our purposes, so it's best to set things
    like font-size and font-weight in out pasdoc.css explicitly. */
-h6.description_section { 
-  /* font-size 100% means that it has the same font size as the 
+h6.description_section {
+  /* font-size 100% means that it has the same font size as the
      parent element, i.e. normal description text */
   font-size: 100%;
-  font-weight: bold; 
-  /* By default browsers usually have some large margin-bottom and 
+  font-weight: bold;
+  /* By default browsers usually have some large margin-bottom and
      margin-top for <h1-6> tags. In our case, margin-bottom is
      unnecessary, we want to visually show that description_section
      is closely related to content below. In this situation
@@ -79,7 +79,7 @@ h6.description_section {
   margin-bottom: 0em;
 }
 
-/* Style applied to Pascal code in documentation 
+/* Style applied to Pascal code in documentation
    (e.g. produced by @longcode tag) } */
 span.pascal_string { color: #000080; }
 span.pascal_keyword { font-weight: bolder; }
@@ -96,7 +96,7 @@ input#search_submit_button { }
 acronym.mispelling { background-color: #ffa; }
 
 /* Actually this reduces vertical space between *every* paragraph
-   inside list with @itemSpacing(compact). 
+   inside list with @itemSpacing(compact).
    While we would like to reduce this space only for the
    top of 1st and bottom of last paragraph within each list item.
    But, well, user probably will not do any paragraph breaks
@@ -108,16 +108,16 @@ dl.compact_spacing p { margin-top: 0em; margin-bottom: 0em; }
 
 /* Style for table created by @table tags:
    just some thin border.
-   
+
    This way we have some borders around the cells
-   (so cells are visibly separated), but the border 
+   (so cells are visibly separated), but the border
    "blends with the background" so it doesn't look too ugly.
    Hopefully it looks satisfactory in most cases and for most
-   people. 
-   
+   people.
+
    We add padding for cells, otherwise they look too close.
    This is normal thing to do when border-collapse is set to
-   collapse (because this eliminates spacing between cells). 
+   collapse (because this eliminates spacing between cells).
 */
 table.table_tag { border-collapse: collapse; }
 table.table_tag td { border: 1pt solid gray; padding: 0.3em; }
@@ -131,3 +131,9 @@ table.detail {
 
 .search-input { float: left; }
 .search-button {  float: left; margin-left: 13px; }
+
+/* Do not make extra vertical space at the beginning/end of table cells. */
+table.table_tag td p:first-child,
+table.table_tag th p:first-child { margin-top: 0em; }
+table.table_tag td p:last-child,
+table.table_tag th p:last-child { margin-bottom: 0em; }
