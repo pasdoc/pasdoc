@@ -9,6 +9,8 @@ Next release:
     Google Chrome in some cases (by Michalis Kamburelis)
   * Parsing of "deprecated", "platform", "library" directives for properties
     (by Michalis)
+  * HTML ouput changes (no more <frameset>, so external links/bookmarks
+    work naturally; tipue search input+button layout corrected) (by Michalis)
 
 2010-11-03 v0.12.1
 
