@@ -51,13 +51,6 @@ type
 
     FImages: TStringList;
     
-    { Return common HTML content that goes inside <head>. }
-    function MakeHead: string;
-    { Return common HTML content that goes right after <body>. }
-    function MakeBodyBegin: string;
-    { Return common HTML content that goes right before </body>. }
-    function MakeBodyEnd: string;
-
     { Makes a link.
       @param href is the link's reference
       @param caption is the link's text
@@ -186,6 +179,13 @@ type
     function FormatAnAnchor(const AName, Caption: string): string; 
 
   protected
+    { Return common HTML content that goes inside <head>. }
+    function MakeHead: string;
+    { Return common HTML content that goes right after <body>. }
+    function MakeBodyBegin: string; virtual;
+    { Return common HTML content that goes right before </body>. }
+    function MakeBodyEnd: string; virtual;
+
     function ConvertString(const s: string): string; override;
 
     { Called by @link(ConvertString) to convert a character.
@@ -309,6 +309,9 @@ type
     In the future it may be extended to include some things not needed
     for HtmlHelp generator. }
   THTMLDocGenerator = class(TGenericHTMLDocGenerator)
+  protected
+    function MakeBodyBegin: string; override;
+    function MakeBodyEnd: string; override;
   end;
 
 const
@@ -1640,71 +1643,13 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.MakeBodyBegin: string;
-
-  function MakeNavigation: string;
-
-    function LocalMakeLink(const Filename, Caption: string): string; overload;
-    begin
-      Result := '<p><a href="' + EscapeURL(Filename) + '" class="navigation">' +
-        ConvertString(Caption) + '</a></p>';
-    end;
-
-    function LocalMakeLink(const Filename: string; CaptionId: TTranslationID): string; overload;
-    begin
-      Result := LocalMakeLink(Filename, FLanguage.Translation[CaptionId]);
-    end;
-
-  var
-    Overview: TCreatedOverviewFile;
-  begin
-    Result := '';
-    
-    if Title <> '' then
-      Result := Result + '<h2>' + ConvertString(Title) + '</h2>';
-    
-    if Introduction <> nil then
-    begin
-      if Introduction.ShortTitle = '' then
-        Result := Result + LocalMakeLink(Introduction.OutputFileName, trIntroduction) else
-        Result := Result + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle);
-    end;
-
-    for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
-      Result := Result + LocalMakeLink(
-        OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
-        OverviewFilesInfo[Overview].TranslationId);
-
-    if LinkGraphVizUses <> '' then
-      Result := Result + LocalMakeLink(
-        OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
-        OverviewFilesInfo[ofGraphVizUses].TranslationId);
-
-    if LinkGraphVizClasses <> '' then
-      Result := Result + LocalMakeLink(
-        OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
-        OverviewFilesInfo[ofGraphVizClasses].TranslationId);
-
-    if Conclusion <> nil then
-    begin
-      if Conclusion.ShortTitle = '' then
-        Result := Result + LocalMakeLink(Conclusion.OutputFileName, trConclusion) else
-        Result := Result + LocalMakeLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
-    end;
-
-    if UseTipueSearch then
-      Result := Result + '<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>';
-  end;
-
 begin
-  { TODO: get rid of <table> layout, use <div> for navigation instead }
-  Result := '<table class="container"><tr><td class="navigation">' + LineEnding;
-  Result := Result + MakeNavigation;
-  Result := Result + '</td><td class="content">' + LineEnding;
+  Result := '';
 end;
 
 function TGenericHTMLDocGenerator.MakeBodyEnd: string;
 begin
-  Result := '</td></tr></table>'; // end <table class="container">
+  Result := '';
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
@@ -2557,6 +2502,76 @@ begin
       LineEnding;
   end;
   Result := Result + '</ol>' + LineEnding;
+end;
+
+{ THTMLDocGenerator ---------------------------------------------------------- }
+
+function THTMLDocGenerator.MakeBodyBegin: string;
+
+  function MakeNavigation: string;
+
+    function LocalMakeLink(const Filename, Caption: string): string; overload;
+    begin
+      Result := '<p><a href="' + EscapeURL(Filename) + '" class="navigation">' +
+        ConvertString(Caption) + '</a></p>';
+    end;
+
+    function LocalMakeLink(const Filename: string; CaptionId: TTranslationID): string; overload;
+    begin
+      Result := LocalMakeLink(Filename, FLanguage.Translation[CaptionId]);
+    end;
+
+  var
+    Overview: TCreatedOverviewFile;
+  begin
+    Result := '';
+    
+    if Title <> '' then
+      Result := Result + '<h2>' + ConvertString(Title) + '</h2>';
+    
+    if Introduction <> nil then
+    begin
+      if Introduction.ShortTitle = '' then
+        Result := Result + LocalMakeLink(Introduction.OutputFileName, trIntroduction) else
+        Result := Result + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle);
+    end;
+
+    for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+      Result := Result + LocalMakeLink(
+        OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
+        OverviewFilesInfo[Overview].TranslationId);
+
+    if LinkGraphVizUses <> '' then
+      Result := Result + LocalMakeLink(
+        OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
+        OverviewFilesInfo[ofGraphVizUses].TranslationId);
+
+    if LinkGraphVizClasses <> '' then
+      Result := Result + LocalMakeLink(
+        OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
+        OverviewFilesInfo[ofGraphVizClasses].TranslationId);
+
+    if Conclusion <> nil then
+    begin
+      if Conclusion.ShortTitle = '' then
+        Result := Result + LocalMakeLink(Conclusion.OutputFileName, trConclusion) else
+        Result := Result + LocalMakeLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
+    end;
+
+    if UseTipueSearch then
+      Result := Result + '<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>';
+  end;
+
+begin
+  { TODO: get rid of <table> layout, use <div> for navigation instead }
+  Result := '<table class="container"><tr><td class="navigation">' + LineEnding;
+  Result := Result + MakeNavigation;
+  Result := Result + '</td><td class="content">' + LineEnding;
+end;
+
+function THTMLDocGenerator.MakeBodyEnd: string;
+begin
+  Result := '</td></tr></table>'; // end <table class="container">
 end;
 
 end.
