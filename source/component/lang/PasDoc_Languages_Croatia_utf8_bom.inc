@@ -78,7 +78,7 @@
     {trValues} 'Vrijednosti', //'Values',
   //empty
     {trNone} 'Ništa',
-    {trNoCIOs} 'Datoteka ne sadrži klase, sučelja, objekte ili zapise.'
+    {trNoCIOs} 'Datoteka ne sadrži klase, sučelja, objekte ili zapise.',
     {trNoCIOsForHierarchy} 'Datoteke ne sadrže klase, sučelja, objekte ili zapise.',
     {trNoTypes} 'Datoteke ne sadrže tipove.',
     {trNoVariables} 'Datoteke ne sadrže varijable.',    
