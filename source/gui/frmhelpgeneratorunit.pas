@@ -405,9 +405,9 @@ begin
     lbNavigation.Items.Clear;
     for Index := 0 to NotebookMain.PageCount -1 do
     begin
-      page := NotebookMain.CustomPage(Index) as TPage;
+      page := NotebookMain.Page[Index];
       if page.Tag = 1 then begin
-        lbNavigation.Items.AddObject(page.Caption, page);
+        lbNavigation.Items.AddObject(page.Hint, page);
       end;
     end;
     lbNavigation.ItemIndex := 0; { otherwise it may stay -1 after program loads }
@@ -599,7 +599,7 @@ begin
   // A Tag of 1 means the page should be visible.
   for Index := NotebookMain.PageCount -1 downto 0 do
   begin
-    NotebookMain.CustomPage(Index).Tag := 1;
+    NotebookMain.Page[Index].Tag := 1;
   end;
 
   comboGenerateFormatChange(nil);
@@ -1409,12 +1409,23 @@ end;
 procedure TfrmHelpGenerator.lbNavigationClick(Sender: TObject);
 var
   Page: TPage;
+  Index: Integer;
 begin
   if lbNavigation.ItemIndex = -1 then Exit;
   
   Page := lbNavigation.Items.Objects[lbNavigation.ItemIndex] as TPage;
-    
-  NotebookMain.PageIndex := Page.PageIndex;
+
+  { We want to set NotebookMain.ActivePageComponent := Page.
+    There doesn't seem to exist a comfortable way to do this (Page.PageIndex
+    was removed, ActivePageComponent is not settable, our
+    lbNavigation.ItemIndex is not necessarily what we need...),
+    so just search NotebookMain.Page[] for the right page. }
+  for Index := 0 to NotebookMain.PageCount -1 do
+    if Page = NotebookMain.Page[Index] then
+    begin
+      NotebookMain.PageIndex := Index;
+      Break;
+    end;
 end;
 
 procedure TfrmHelpGenerator.MenuContextHelpClick(Sender: TObject);

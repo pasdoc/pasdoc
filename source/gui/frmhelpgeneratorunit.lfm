@@ -30,10 +30,9 @@ object frmHelpGenerator: TfrmHelpGenerator
     Width = 569
     Align = alClient
     PageIndex = 10
-    ShowTabs = False
     TabOrder = 0
     object pageOptions: TPage
-      Caption = 'Options'
+      Hint = 'Options'
       ClientWidth = 563
       ClientHeight = 492
       object LabelTitle: TLabel
@@ -255,7 +254,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageSourceFiles: TPage
-      Caption = 'Source Files'
+      Hint = 'Source Files'
       ClientWidth = 563
       ClientHeight = 492
       object Label8: TLabel
@@ -303,7 +302,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageIncludeDirectories: TPage
-      Caption = 'Include Directories'
+      Hint = 'Include Directories'
       ClientWidth = 563
       ClientHeight = 492
       object PanelIncludeDirectoriesTop: TPanel
@@ -360,7 +359,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageDefines: TPage
-      Caption = 'Defines'
+      Hint = 'Defines'
       ClientWidth = 563
       ClientHeight = 492
       object Label12: TLabel
@@ -391,7 +390,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object PageVisibleMembers: TPage
-      Caption = 'Visible members'
+      Hint = 'Visible members'
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
@@ -464,7 +463,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageCustomFiles: TPage
-      Caption = 'Custom Files'
+      Hint = 'Custom Files'
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.HorizontalSpacing = 10
@@ -568,7 +567,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageLatexOptions: TPage
-      Caption = 'LaTeX Options'
+      Hint = 'LaTeX Options'
       ClientWidth = 563
       ClientHeight = 492
       object LabelLatexGraphicsPackage: TLabel
@@ -658,7 +657,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageHeadFoot: TPage
-      Caption = 'Header / Footer'
+      Hint = 'Header / Footer'
       ClientWidth = 563
       ClientHeight = 492
       object PanelHeaderHidden: TPanel
@@ -742,7 +741,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageGraphs: TPage
-      Caption = 'Graphs'
+      Hint = 'Graphs'
       ClientWidth = 563
       ClientHeight = 492
       object Label22: TLabel
@@ -795,7 +794,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageSpellChecking: TPage
-      Caption = 'Spell Checking'
+      Hint = 'Spell Checking'
       ClientWidth = 563
       ClientHeight = 492
       object PanelSpellCheckingTop1: TPanel
@@ -878,7 +877,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageMarkers: TPage
-      Caption = 'Markers'
+      Hint = 'Markers'
       ClientWidth = 563
       ClientHeight = 528
       object LabelCommentMarkers: TLabel
@@ -939,7 +938,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object PageSort: TPage
-      Caption = 'Sort'
+      Hint = 'Sort'
       ClientWidth = 563
       ClientHeight = 492
       object LabelItemsToSort: TLabel
@@ -984,7 +983,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageGenerate: TPage
-      Caption = 'Generate'
+      Hint = 'Generate'
       ClientWidth = 563
       ClientHeight = 528
       object PanelGenerateTop: TPanel
@@ -1051,7 +1050,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
     end
     object pageDisplayComments: TPage
-      Caption = 'Display Comments'
+      Hint = 'Display Comments'
       ClientWidth = 563
       ClientHeight = 492
       object tvUnits: TTreeView
