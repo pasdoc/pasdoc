@@ -417,6 +417,7 @@ type
       ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean);
       
     procedure SetExternalClassHierarchy(const Value: TStrings);
+    function StoredExternalClassHierarchy: boolean;
   protected
     { the (human) output language of the documentation file(s) }
     FLanguage: TPasDocLanguages;
@@ -949,7 +950,8 @@ type
     property AutoLinkExclude: TStringList read FAutoLinkExclude;
     
     property ExternalClassHierarchy: TStrings
-      read FExternalClassHierarchy write SetExternalClassHierarchy;
+      read FExternalClassHierarchy write SetExternalClassHierarchy 
+      stored StoredExternalClassHierarchy;
   end;
 
 implementation
@@ -2545,9 +2547,10 @@ begin
   end;
 end;
 
-constructor TDocGenerator.Create(AOwner: TComponent);
 const
   DefaultExternalClassHierarchy = {$I external_class_hierarchy.txt.inc};
+
+constructor TDocGenerator.Create(AOwner: TComponent);
 begin
   inherited;
   FClassHierarchy := nil;
@@ -3913,6 +3916,12 @@ end;
 procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);
 begin
   FExternalClassHierarchy.Assign(Value);
+end;
+
+function TDocGenerator.StoredExternalClassHierarchy: boolean;
+begin
+  Result := Trim(FExternalClassHierarchy.Text) <> 
+    Trim(DefaultExternalClassHierarchy);
 end;
 
 end.
