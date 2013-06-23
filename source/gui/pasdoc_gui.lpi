@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="7"/>
+    <Version Value="9"/>
     <General>
       <Flags>
         <SaveClosedFiles Value="False"/>
         <SaveOnlyProjectUnits Value="True"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InIDEConfig"/>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
       <Title Value="pasdoc_gui"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="0"/>
     </General>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <DestinationDirectory Value="/tmp/aaa/"/>
@@ -48,21 +50,14 @@
         <Filename Value="pasdoc_gui.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="pasdoc_gui"/>
-        <CursorPos X="3" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="107"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmHelpGenerator"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmHelpGeneratorUnit"/>
-        <CursorPos X="1" Y="969"/>
-        <TopLine Value="958"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="107"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="frmaboutunit.pas"/>
@@ -70,17 +65,11 @@
         <ComponentName Value="frmAbout"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAboutUnit"/>
-        <CursorPos X="22" Y="4"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="107"/>
       </Unit2>
       <Unit3>
         <Filename Value="helpprocessor.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="HelpProcessor"/>
-        <CursorPos X="14" Y="7"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="43"/>
       </Unit3>
       <Unit4>
         <Filename Value="wwwbrowserrunnerdm.pas"/>
@@ -88,9 +77,6 @@
         <ComponentName Value="WWWBrowserRunner"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WWWBrowserRunnerDM"/>
-        <CursorPos X="57" Y="62"/>
-        <TopLine Value="51"/>
-        <UsageCount Value="43"/>
       </Unit4>
       <Unit5>
         <Filename Value="preferencesfrm.pas"/>
@@ -98,33 +84,21 @@
         <ComponentName Value="Preferences"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PreferencesFrm"/>
-        <CursorPos X="54" Y="2"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="42"/>
       </Unit5>
       <Unit6>
         <Filename Value="pasdocguisettings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="PasDocGuiSettings"/>
-        <CursorPos X="28" Y="45"/>
-        <TopLine Value="88"/>
-        <UsageCount Value="41"/>
       </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="11"/>
     <SearchPaths>
-      <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
+      <SrcPath Value="$(LazarusDir)/lcl;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)"/>
     </SearchPaths>
-    <Parsing>
-      <SyntaxOptions>
-        <UseAnsiStrings Value="True"/>
-      </SyntaxOptions>
-    </Parsing>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
         <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
@@ -135,6 +109,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
