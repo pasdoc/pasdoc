@@ -284,8 +284,8 @@ var
 
 implementation
 
-uses PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
-  WWWBrowserRunnerDM, PreferencesFrm, PasDocGuiSettings;
+uses LCLIntf, PasDoc_SortSettings, frmAboutUnit, HelpProcessor,
+  PreferencesFrm, PasDocGuiSettings;
 
 procedure TfrmHelpGenerator.PasDoc1Warning(const MessageType: TPasDocMessageType;
   const AMessage: string; const AVerbosity: Cardinal);
@@ -345,7 +345,7 @@ end;
 
 procedure TfrmHelpGenerator.ButtonURLClick(Sender: TObject);
 begin
-  WWWBrowserRunner.RunBrowser((Sender as TButton).Caption);
+  OpenURL((Sender as TButton).Caption);
 end;
 
 procedure TfrmHelpGenerator.FormDestroy(Sender: TObject);
@@ -987,8 +987,7 @@ begin
     end;
 
     if PasDoc1.Generator is TGenericHTMLDocGenerator then
-      WWWBrowserRunner.RunBrowser(
-        HtmlDocGenerator.DestinationDirectory + 'index.html');
+      OpenURL(HtmlDocGenerator.DestinationDirectory + 'index.html');
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1446,8 +1445,7 @@ begin
   if HelpControl <> nil then
   begin
     Assert(HelpControl.HelpType = htKeyword);
-    WWWBrowserRunner.RunBrowser(
-      WWWHelpServer + HelpControl.HelpKeyword);
+    OpenURL(WWWHelpServer + HelpControl.HelpKeyword);
   end;
 end;
 

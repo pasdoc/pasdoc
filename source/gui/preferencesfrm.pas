@@ -19,12 +19,8 @@ type
   TPreferences = class(TForm)
     BtnOK: TButton;
     BtnCancel: TButton;
-    BtnResetDefaults: TButton;
-    EditWWWBrowserCommand: TEdit;
     EditWWWHelpServer: TEdit;
-    LabelWWWBrowserCommand: TLabel;
     LabelWWWHelpServer: TLabel;
-    procedure BtnResetDefaultsClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -33,13 +29,7 @@ type
 
 implementation
 
-uses WWWBrowserRunnerDM, PasDocGuiSettings;
-
-procedure TPreferences.BtnResetDefaultsClick(Sender: TObject);
-begin
-  EditWWWBrowserCommand.Text := DefaultWWWBrowserCommand;
-  EditWWWHelpServer.Text := DefaultWWWHelpServer;
-end;
+uses PasDocGuiSettings;
 
 class procedure TPreferences.Execute;
 var
@@ -47,11 +37,9 @@ var
 begin
   F := TPreferences.Create(nil);
   try
-    F.EditWWWBrowserCommand.Text := WWWBrowserRunner.BrowserCommand;
     F.EditWWWHelpServer.Text := WWWHelpServer;
     if F.ShowModal = mrOK then
     begin
-      WWWBrowserRunner.BrowserCommand := F.EditWWWBrowserCommand.Text;
       WWWHelpServer := F.EditWWWHelpServer.Text;
     end;
   finally

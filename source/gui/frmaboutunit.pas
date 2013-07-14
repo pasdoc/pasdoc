@@ -56,7 +56,7 @@ var
 
 implementation
 
-uses PasDoc_Base, WWWBrowserRunnerDM, PasDoc_Versions;
+uses PasDoc_Base, LCLIntf, PasDoc_Versions;
 
 { TfrmAbout }
 
@@ -78,7 +78,7 @@ end;
 
 procedure TfrmAbout.ButtonPasDocURLClick(Sender: TObject);
 begin
-  WWWBrowserRunner.RunBrowser((Sender as TButton).Caption);
+  OpenURL((Sender as TButton).Caption);
 end;
 
 initialization

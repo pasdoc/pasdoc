@@ -10,7 +10,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   ActiveControl = PanelLeft
   AutoSize = True
   Caption = 'pasdoc gui'
-  ClientHeight = 534
+  ClientHeight = 533
   ClientWidth = 777
   Font.Height = -16
   Font.Name = 'MS Sans Serif'
@@ -22,24 +22,23 @@ object frmHelpGenerator: TfrmHelpGenerator
   OnKeyDown = FormKeyDown
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '1.0.10.0'
   object NotebookMain: TNotebook
     Left = 208
-    Height = 534
+    Height = 533
     Top = 0
     Width = 569
+    PageIndex = 0
     Align = alClient
-    PageIndex = 10
     TabOrder = 0
+    TabStop = True
     object pageOptions: TPage
       Hint = 'Options'
-      ClientWidth = 563
-      ClientHeight = 492
       object LabelTitle: TLabel
         Left = 8
-        Height = 28
+        Height = 20
         Top = 8
-        Width = 47
+        Width = 31
         HelpType = htKeyword
         Caption = 'Title'
         FocusControl = edTitle
@@ -49,9 +48,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 73
-        Width = 136
+        Height = 20
+        Top = 57
+        Width = 96
         HelpType = htKeyword
         Caption = 'Output Type'
         FocusControl = comboGenerateFormat
@@ -61,9 +60,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 204
-        Width = 548
+        Height = 20
+        Top = 165
+        Width = 387
         HelpType = htKeyword
         Caption = 'Output filename (without directory; not for HTML)'
         FocusControl = edProjectName
@@ -73,9 +72,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 269
-        Width = 108
+        Height = 20
+        Top = 214
+        Width = 77
         HelpType = htKeyword
         Caption = 'Language'
         FocusControl = comboLanguages
@@ -85,9 +84,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboGenerateFormat
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 139
-        Width = 184
+        Height = 20
+        Top = 116
+        Width = 131
         HelpType = htKeyword
         Caption = 'Output directory'
         ParentColor = False
@@ -96,10 +95,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
+        Height = 29
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 397
-        Width = 915
+        Top = 331
+        Width = 665
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
@@ -110,10 +109,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckWriteUsesList
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
+        Height = 29
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 366
-        Width = 462
+        Top = 302
+        Width = 336
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
@@ -124,9 +123,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 37
+        Height = 29
         Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
-        Top = 36
+        Top = 28
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
@@ -137,8 +136,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputType
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 38
-        Top = 101
+        Height = 39
+        Top = 77
         Width = 254
         HelpType = htKeyword
         ItemHeight = 0
@@ -156,9 +155,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 37
+        Height = 29
         Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
-        Top = 232
+        Top = 185
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
@@ -169,8 +168,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 38
-        Top = 297
+        Height = 39
+        Top = 234
         Width = 258
         HelpType = htKeyword
         HelpKeyword = 'OutputLanguage'
@@ -184,9 +183,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckAutoAbstract
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
-        Top = 428
-        Width = 799
+        Height = 29
+        Top = 360
+        Width = 580
         HelpType = htKeyword
         HelpKeyword = 'AutoLinkOption'
         Caption = 'Automatically turn identifiers into links, without the need for @link tag'
@@ -197,9 +196,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckAutoLink
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
-        Top = 459
-        Width = 506
+        Height = 29
+        Top = 389
+        Width = 369
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
         Caption = 'Recognize FPC macros syntax when parsing'
@@ -212,9 +211,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckHandleMacros
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
-        Top = 490
-        Width = 443
+        Height = 29
+        Top = 418
+        Width = 327
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
         Caption = 'Store only relative paths in project file'
@@ -227,9 +226,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 31
-        Top = 335
-        Width = 239
+        Height = 29
+        Top = 273
+        Width = 182
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
         Caption = 'Show units uses list'
@@ -240,8 +239,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 37
-        Top = 167
+        Height = 29
+        Top = 136
         Width = 483
         HelpType = htKeyword
         HelpKeyword = 'OutputOption'
@@ -249,14 +248,13 @@ object frmHelpGenerator: TfrmHelpGenerator
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
+        MaxLength = 0
         TabOrder = 10
         OnChange = SomethingChanged
       end
     end
     object pageSourceFiles: TPage
       Hint = 'Source Files'
-      ClientWidth = 563
-      ClientHeight = 492
       object Label8: TLabel
         Left = 8
         Height = 160
@@ -303,8 +301,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageIncludeDirectories: TPage
       Hint = 'Include Directories'
-      ClientWidth = 563
-      ClientHeight = 492
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
         Height = 151
@@ -360,8 +356,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageDefines: TPage
       Hint = 'Defines'
-      ClientWidth = 563
-      ClientHeight = 492
       object Label12: TLabel
         Left = 10
         Height = 325
@@ -394,8 +388,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.VerticalSpacing = 10
-      ClientWidth = 563
-      ClientHeight = 528
       object LabelVisibleMembers: TLabel
         Left = 10
         Height = 94
@@ -424,7 +416,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 33
+        ItemHeight = 19
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
         Data = {
@@ -450,7 +442,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 105
+        ClientHeight = 107
         ClientWidth = 539
         ItemIndex = 0
         Items.Strings = (
@@ -468,8 +460,6 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.TopBottomSpacing = 10
       ChildSizing.HorizontalSpacing = 10
       ChildSizing.ControlsPerLine = 1
-      ClientWidth = 563
-      ClientHeight = 528
       object LabelConclusionFile: TLabel
         AnchorSideTop.Control = EditIntroductionFileName
         AnchorSideTop.Side = asrBottom
@@ -523,6 +513,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 23
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
+        MaxLength = 0
         TabOrder = 0
         OnChange = SomethingChanged
       end
@@ -543,6 +534,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 23
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
+        MaxLength = 0
         TabOrder = 1
         OnChange = SomethingChanged
       end
@@ -562,14 +554,13 @@ object frmHelpGenerator: TfrmHelpGenerator
         HideDirectories = False
         ButtonWidth = 23
         NumGlyphs = 1
+        MaxLength = 0
         TabOrder = 2
         OnChange = SomethingChanged
       end
     end
     object pageLatexOptions: TPage
       Hint = 'LaTeX Options'
-      ClientWidth = 563
-      ClientHeight = 492
       object LabelLatexGraphicsPackage: TLabel
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
@@ -612,7 +603,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 74
+        ClientHeight = 76
         ClientWidth = 559
         ItemIndex = 0
         Items.Strings = (
@@ -658,8 +649,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageHeadFoot: TPage
       Hint = 'Header / Footer'
-      ClientWidth = 563
-      ClientHeight = 492
       object PanelHeaderHidden: TPanel
         Left = 0
         Height = 179
@@ -742,8 +731,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageGraphs: TPage
       Hint = 'Graphs'
-      ClientWidth = 563
-      ClientHeight = 492
       object Label22: TLabel
         AnchorSideTop.Control = cbVizGraphUses
         AnchorSideTop.Side = asrBottom
@@ -795,8 +782,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageSpellChecking: TPage
       Hint = 'Spell Checking'
-      ClientWidth = 563
-      ClientHeight = 492
       object PanelSpellCheckingTop1: TPanel
         Left = 0
         Height = 208
@@ -878,8 +863,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageMarkers: TPage
       Hint = 'Markers'
-      ClientWidth = 563
-      ClientHeight = 528
       object LabelCommentMarkers: TLabel
         AnchorSideTop.Control = rgCommentMarkers
         AnchorSideTop.Side = asrBottom
@@ -925,7 +908,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 105
+        ClientHeight = 107
         ClientWidth = 695
         ItemIndex = 1
         Items.Strings = (
@@ -939,8 +922,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object PageSort: TPage
       Hint = 'Sort'
-      ClientWidth = 563
-      ClientHeight = 492
       object LabelItemsToSort: TLabel
         Left = 8
         Height = 28
@@ -973,7 +954,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'methods'
           'properties'
         )
-        ItemHeight = 0
+        ItemHeight = 19
         OnClick = SomethingChanged
         TabOrder = 0
         TopIndex = -1
@@ -984,8 +965,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageGenerate: TPage
       Hint = 'Generate'
-      ClientWidth = 563
-      ClientHeight = 528
       object PanelGenerateTop: TPanel
         Left = 0
         Height = 105
@@ -1051,8 +1030,6 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageDisplayComments: TPage
       Hint = 'Display Comments'
-      ClientWidth = 563
-      ClientHeight = 492
       object tvUnits: TTreeView
         Left = 0
         Height = 268
@@ -1063,7 +1040,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 0
         OnClick = tvUnitsClick
       end
-      object seComment: TSynEdit
+      inline seComment: TSynEdit
         Left = 0
         Height = 191
         Top = 301
@@ -1076,30 +1053,19 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        Gutter.Width = 67
+        Gutter.Width = 61
         Gutter.MouseActions = <        
           item
-            Shift = []
-            ShiftMask = []
-            Button = mbLeft
             ClickCount = ccAny
             ClickDir = cdDown
-            Command = 13
-            MoveCaret = False
-            Option = 0
-            Priority = 0
+            Command = emcOnMainGutterClick
           end        
           item
-            Shift = []
-            ShiftMask = []
             Button = mbRight
-            ClickCount = ccSingle
-            ClickDir = cdUp
-            Command = 12
-            MoveCaret = False
-            Option = 0
-            Priority = 0
+            Command = emcContextMenu
           end>
+        RightGutter.Width = 0
+        RightGutter.MouseActions = <>
         Keystrokes = <        
           item
             Command = ecUp
@@ -1423,134 +1389,97 @@ object frmHelpGenerator: TfrmHelpGenerator
           end>
         MouseActions = <        
           item
-            Shift = []
             ShiftMask = [ssShift, ssAlt]
-            Button = mbLeft
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 1
+            Command = emcStartSelections
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
             Shift = [ssShift]
             ShiftMask = [ssShift, ssAlt]
-            Button = mbLeft
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 1
+            Command = emcStartSelections
             MoveCaret = True
             Option = 1
-            Priority = 0
           end        
           item
             Shift = [ssAlt]
             ShiftMask = [ssShift, ssAlt]
-            Button = mbLeft
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 3
+            Command = emcStartColumnSelections
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
             Shift = [ssShift, ssAlt]
             ShiftMask = [ssShift, ssAlt]
-            Button = mbLeft
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 3
+            Command = emcStartColumnSelections
             MoveCaret = True
             Option = 1
-            Priority = 0
           end        
           item
-            Shift = []
-            ShiftMask = []
             Button = mbRight
-            ClickCount = ccSingle
-            ClickDir = cdUp
-            Command = 12
-            MoveCaret = False
-            Option = 0
-            Priority = 0
+            Command = emcContextMenu
           end        
           item
-            Shift = []
-            ShiftMask = []
-            Button = mbLeft
             ClickCount = ccDouble
             ClickDir = cdDown
-            Command = 6
+            Command = emcSelectWord
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
-            Shift = []
-            ShiftMask = []
-            Button = mbLeft
             ClickCount = ccTriple
             ClickDir = cdDown
-            Command = 7
+            Command = emcSelectLine
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
-            Shift = []
-            ShiftMask = []
-            Button = mbLeft
             ClickCount = ccQuad
             ClickDir = cdDown
-            Command = 8
+            Command = emcSelectPara
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
-            Shift = []
-            ShiftMask = []
             Button = mbMiddle
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 10
+            Command = emcPasteSelection
             MoveCaret = True
-            Option = 0
-            Priority = 0
           end        
           item
             Shift = [ssCtrl]
             ShiftMask = [ssShift, ssAlt, ssCtrl]
-            Button = mbLeft
-            ClickCount = ccSingle
-            ClickDir = cdUp
-            Command = 11
-            MoveCaret = False
-            Option = 0
-            Priority = 0
+            Command = emcMouseLink
           end>
         MouseSelActions = <        
           item
-            Shift = []
-            ShiftMask = []
-            Button = mbLeft
-            ClickCount = ccSingle
             ClickDir = cdDown
-            Command = 9
-            MoveCaret = False
-            Option = 0
-            Priority = 0
+            Command = emcStartDragMove
           end>
+        VisibleSpecialChars = [vscSpace, vscTabAtLast]
+        SelectedColor.BackPriority = 50
+        SelectedColor.ForePriority = 50
+        SelectedColor.FramePriority = 50
+        SelectedColor.BoldPriority = 50
+        SelectedColor.ItalicPriority = 50
+        SelectedColor.UnderlinePriority = 50
         BracketHighlightStyle = sbhsBoth
-        object TSynGutterPartList
+        BracketMatchColor.Background = clNone
+        BracketMatchColor.Foreground = clNone
+        BracketMatchColor.Style = [fsBold]
+        FoldedCodeColor.Background = clNone
+        FoldedCodeColor.Foreground = clGray
+        FoldedCodeColor.FrameColor = clGray
+        MouseLinkColor.Background = clNone
+        MouseLinkColor.Foreground = clBlue
+        LineHighlightColor.Background = clNone
+        LineHighlightColor.Foreground = clNone
+        inline TSynGutterPartList
           object TSynGutterMarks
-            Width = 23
+            Width = 24
+            MouseActions = <>
           end
           object TSynGutterLineNumber
-            Width = 27
+            Width = 21
             MouseActions = <>
             MarkupInfo.Background = clBtnFace
             MarkupInfo.Foreground = clNone
@@ -1561,35 +1490,28 @@ object frmHelpGenerator: TfrmHelpGenerator
           end
           object TSynGutterChanges
             Width = 4
+            MouseActions = <>
             ModifiedColor = 59900
             SavedColor = clGreen
           end
           object TSynGutterSeparator
             Width = 2
+            MouseActions = <>
+            MarkupInfo.Background = clWhite
+            MarkupInfo.Foreground = clGray
           end
           object TSynGutterCodeFolding
             MouseActions = <            
               item
-                Shift = []
-                ShiftMask = []
                 Button = mbRight
-                ClickCount = ccSingle
-                ClickDir = cdUp
-                Command = 16
-                MoveCaret = False
-                Option = 0
-                Priority = 0
+                Command = emcCodeFoldContextMenu
               end            
               item
-                Shift = []
                 ShiftMask = [ssShift]
                 Button = mbMiddle
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 14
-                MoveCaret = False
-                Option = 0
-                Priority = 0
+                Command = emcCodeFoldCollaps
               end            
               item
                 Shift = [ssShift]
@@ -1597,58 +1519,36 @@ object frmHelpGenerator: TfrmHelpGenerator
                 Button = mbMiddle
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 14
-                MoveCaret = False
+                Command = emcCodeFoldCollaps
                 Option = 1
-                Priority = 0
               end            
               item
-                Shift = []
-                ShiftMask = []
-                Button = mbLeft
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 0
-                MoveCaret = False
-                Option = 0
-                Priority = 0
+                Command = emcNone
               end>
             MarkupInfo.Background = clNone
             MarkupInfo.Foreground = clGray
             MouseActionsExpanded = <            
               item
-                Shift = []
-                ShiftMask = []
-                Button = mbLeft
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 14
-                MoveCaret = False
-                Option = 0
-                Priority = 0
+                Command = emcCodeFoldCollaps
               end>
             MouseActionsCollapsed = <            
               item
                 Shift = [ssCtrl]
                 ShiftMask = [ssCtrl]
-                Button = mbLeft
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 15
-                MoveCaret = False
-                Option = 0
-                Priority = 0
+                Command = emcCodeFoldExpand
               end            
               item
-                Shift = []
                 ShiftMask = [ssCtrl]
-                Button = mbLeft
                 ClickCount = ccAny
                 ClickDir = cdDown
-                Command = 15
-                MoveCaret = False
+                Command = emcCodeFoldExpand
                 Option = 1
-                Priority = 0
               end>
           end
         end
@@ -1676,28 +1576,29 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 534
+    Height = 533
     Top = 0
     Width = 208
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 534
+    ClientHeight = 533
     ClientWidth = 208
     TabOrder = 1
     object lbNavigation: TListBox
       Left = 0
-      Height = 475
-      Top = 59
+      Height = 482
+      Top = 51
       Width = 208
       Align = alClient
       ItemHeight = 0
       OnClick = lbNavigationClick
+      ScrollWidth = 206
       TabOrder = 0
       TopIndex = -1
     end
     object ButtonGenerate: TBitBtn
       Left = 10
-      Height = 39
+      Height = 31
       Hint = 'Generate documentation (F9)'
       Top = 10
       Width = 188
