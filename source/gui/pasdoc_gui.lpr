@@ -8,6 +8,8 @@ uses
   { add your units here }, frmAboutUnit, frmHelpGeneratorUnit, pasdoc_package,
   HelpProcessor, PreferencesFrm, PasDocGuiSettings;
 
+{$R *.res}
+
 begin
   Application.Initialize;
   Application.CreateForm(TfrmHelpGenerator, frmHelpGenerator);

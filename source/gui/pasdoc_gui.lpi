@@ -12,6 +12,7 @@
       <MainUnit Value="0"/>
       <Title Value="pasdoc_gui"/>
       <UseAppBundle Value="False"/>
+      <UseXPManifest Value="True"/>
     </General>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>

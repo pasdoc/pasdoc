@@ -166,7 +166,9 @@ clean:
 	       source/gui/pasdoc_gui.exe \
 	       source/gui/*.o \
 	       source/gui/*.or \
-	       source/gui/*.ppu
+	       source/gui/*.ppu \
+	       source/gui/*.res
+
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
 endif
