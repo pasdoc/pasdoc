@@ -37,12 +37,6 @@ the main goals are:
   parameter. This would allow users to still use pasdoc functionality
   in batch mode, and at the same time not learn pasdoc's command-line.
 
-Notes about command to run browser:
-- For Debian users better value here would be 'sensible-browser %s'.
-  Default command under UNIXes just uses $BROWSER,
-  sensible-browser script under Debian does more sophisticated
-  things there.
-
 See HISTORY file for changes that I did while converting HelpGenerator
 to FPC/Lazarus pasdoc_gui.
 

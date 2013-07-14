@@ -38,22 +38,6 @@ Moreover, as long as you will keep ''Store relative paths in project file'' opti
   version of documentation from WWW, instead of looking at offline
   version).
 
-- Layout of controls is not controlled as good as it should be.
-  You may encounter problems if you use unusually large fonts etc.
-  This is partially because of lame (nonexistent?) Delphi positioning
-  scheme, partially because of problems with keeping such things
-  portable in Lazarus (across GTK and Win32 component sets).
-
-  It's a shame for me, but for now each time I switched between
-  GTK and Win32 I found that I have to readjust layout of some things
-  a little... Hopefully these issues are now gone and layout looks good
-  for everyone, but I'm not happy with it, really.
-
-  In the long run we should try to use auto-sizing and anchors as
-  much as possible to layout everything. Lazarus wiki has some useful
-  notes about using anchor sides
-  ([http://wiki.lazarus.freepascal.org/index.php/Anchor_Sides]).
-
 - pasdoc_gui should allow user to configure default state of "Defines".
   Actually, it should allow user to configure default state of *all* options.
   E.g. maybe someone always wants to make default language of docs = Polish ?
@@ -72,17 +56,3 @@ Moreover, as long as you will keep ''Store relative paths in project file'' opti
   Maybe also turn them into labels.
   This seems not possible now (with Lazarus 0.9.10 on GTK interface),
   for now normal buttons look best.
-
-- Bug (possibly in Lazarus LCL ?) with Lazarus 0.9.12 on GTK (Linux),
-  FPC 2.0.2 (was present with Lazarus 0.9.10 and FPC 2.0.0 too):
-
-  cd pasdoc/source/autodoc
-  pasdoc_gui
-  press Ctrl+O
-  choose file autodoc.pds with mouse double-click
-  -> you get segfault.
-
-  When I enter "Open" menu item by mouse (not Ctrl+O), things work OK.
-
-  Investigate this, make simple testcase, fix or submit to Lazarus
-  bug repository.
