@@ -11,6 +11,8 @@
     (by Michalis)
   * HTML ouput changes (no more <frameset>, so external links/bookmarks
     work naturally; tipue search input+button layout corrected) (by Michalis)
+  * Mac OS X version includes the GUI.
+  * Many other small fixes and improvements.
 
 2010-11-03 v0.12.1
 
