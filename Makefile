@@ -164,6 +164,7 @@ clean:
 	       source/gui/pasdoc_gui.compiled \
 	       source/gui/pasdoc_gui \
 	       source/gui/pasdoc_gui.exe \
+	       source/gui/pasdoc_gui.app \
 	       source/gui/*.o \
 	       source/gui/*.or \
 	       source/gui/*.ppu \
@@ -368,7 +369,16 @@ ifdef ADD_PASDOC_GUI
 	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
 	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
 	strip source/gui/pasdoc_gui$(EXE)
+ifdef PASDOC_GUI_BUNDLE
+# Lazarus by default places only a symlink inside Contents/MacOS/ .
+# For releae, we want to instead put binary directly inside Contents/MacOS/,
+# since users should always run the pasdoc_gui using the bundle.
+	rm -f source/gui/pasdoc_gui.app/Contents/MacOS/pasdoc_gui
+	cp -f source/gui/pasdoc_gui source/gui/pasdoc_gui.app/Contents/MacOS/pasdoc_gui
+	cp -R source/gui/pasdoc_gui.app $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
+else
 	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
+endif
 endif
 
 # This target archives distribution into a zip file.
@@ -428,7 +438,7 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 
 dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
