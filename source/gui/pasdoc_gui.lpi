@@ -64,6 +64,7 @@
         <Filename Value="frmaboutunit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmAbout"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAboutUnit"/>
       </Unit2>
@@ -76,6 +77,7 @@
         <Filename Value="preferencesfrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Preferences"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PreferencesFrm"/>
       </Unit4>

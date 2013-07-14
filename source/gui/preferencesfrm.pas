@@ -10,15 +10,14 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons;
+  Buttons, ButtonPanel;
 
 type
 
   { TPreferences }
 
   TPreferences = class(TForm)
-    BtnOK: TButton;
-    BtnCancel: TButton;
+    ButtonPanel1: TButtonPanel;
     EditWWWHelpServer: TEdit;
     LabelWWWHelpServer: TLabel;
   private

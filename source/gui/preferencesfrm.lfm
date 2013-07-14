@@ -1,15 +1,15 @@
 object Preferences: TPreferences
-  Left = 286
-  Height = 143
-  Top = 207
-  Width = 603
+  Left = 459
+  Height = 150
+  Top = 282
+  Width = 362
   HorzScrollBar.Page = 423
   VertScrollBar.Page = 191
   AutoSize = True
   BorderWidth = 10
   Caption = 'Preferences'
-  ClientHeight = 143
-  ClientWidth = 603
+  ClientHeight = 150
+  ClientWidth = 362
   Position = poMainFormCenter
   LCLVersion = '1.0.10.0'
   object LabelWWWHelpServer: TLabel
@@ -29,37 +29,32 @@ object Preferences: TPreferences
     Left = 8
     Height = 35
     Top = 34
-    Width = 587
+    Width = 346
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
     Text = 'EditWWWHelpServer'
   end
-  object BtnOK: TButton
-    Left = 553
-    Height = 41
-    Top = 274
-    Width = 42
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    BorderSpacing.InnerBorder = 2
-    Caption = '&OK'
-    Default = True
-    ModalResult = 1
+  object ButtonPanel1: TButtonPanel
+    AnchorSideTop.Control = EditWWWHelpServer
+    AnchorSideTop.Side = asrBottom
+    Left = 10
+    Height = 63
+    Top = 77
+    Width = 342
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
     TabOrder = 1
-  end
-  object BtnCancel: TButton
-    AnchorSideRight.Control = BtnOK
-    Left = 475
-    Height = 41
-    Top = 274
-    Width = 68
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    BorderSpacing.Right = 10
-    BorderSpacing.InnerBorder = 2
-    Cancel = True
-    Caption = '&Cancel'
-    ModalResult = 2
-    TabOrder = 2
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
   end
 end
