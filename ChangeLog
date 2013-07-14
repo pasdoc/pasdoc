@@ -1,4 +1,4 @@
-Next release:
+2013-07-14 v0.13.0
 
   * Handling of declarations nested inside classes (of other types, classes,
     constans and such) (by Arno Garrels)
