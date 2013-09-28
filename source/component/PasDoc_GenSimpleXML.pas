@@ -240,12 +240,7 @@ begin
     Exit;
   end;
 
-  case CreateStream(U.OutputFileName, true) of
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create XML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-  end;
+  if not CreateStream(U.OutputFileName) then Exit;
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteDirectLine('<unit name="' + ConvertString(U.SourceFileName) + '">');

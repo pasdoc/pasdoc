@@ -804,20 +804,13 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
       Exit;
     end;
 
-  {$IFDEF STRING_UNICODE}
-    case CreateStream(ACio.OutputFileName, true, FLanguage.CodePage) of
-  {$ELSE}
-    case CreateStream(ACio.OutputFileName, true) of
-  {$ENDIF}
-      csError: begin
-          DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
-          Exit;
-        end;
-      csCreated: begin
-          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
-          WriteCIO(HL, ACio);
-        end;
-    end;
+    {$IFDEF STRING_UNICODE}
+    if not CreateStream(ACio.OutputFileName, FLanguage.CodePage) then Exit;
+    {$ELSE}
+    if not CreateStream(ACio.OutputFileName) then Exit;
+    {$ENDIF}
+    DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
+    WriteCIO(HL, ACio);
   end;
 
   procedure LocalWriteCios(const HL: Integer; const ACios: TPasItems);
@@ -1352,18 +1345,12 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
   begin
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
 {$IFDEF STRING_UNICODE}
-    Result := CreateStream(BaseFileName + GetFileExtension, True,
-                           FLanguage.CodePage) <> csError;
+    Result := CreateStream(BaseFileName + GetFileExtension, FLanguage.CodePage);
 {$ELSE}
-    Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
+    Result := CreateStream(BaseFileName + GetFileExtension);
 {$ENDIF}
 
-    if not Result then
-    begin
-      DoMessage(1, pmtError, 'Error: Could not create output file "' +
-        BaseFileName + '".', []);
-      Exit;
-    end;
+    if not Result then Exit;
 
     DoMessage(3, pmtInformation, 'Writing overview file "' +
       BaseFileName + '" ...', []);
@@ -1879,16 +1866,12 @@ begin
       'skipped.', [U.Name]);
     Exit;
   end;
-{$IFDEF STRING_UNICODE}
-  case CreateStream(U.OutputFileName, true, FLanguage.CodePage) of
-{$ELSE}
-  case CreateStream(U.OutputFileName, true) of
-{$ENDIF}
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-  end;
+  
+  {$IFDEF STRING_UNICODE}
+  if not CreateStream(U.OutputFileName, FLanguage.CodePage) then Exit;
+  {$ELSE}
+  if not CreateStream(U.OutputFileName) then Exit;
+  {$ENDIF}
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsUses] := FLanguage.Translation[trUses];
@@ -2042,17 +2025,15 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 const
   Filename = 'legend';
 begin
-{$IFDEF STRING_UNICODE}
-  if CreateStream(Filename + GetFileextension, True,
-                  FLanguage.CodePage) = csError then
-{$ELSE}
-  if CreateStream(Filename + GetFileextension, True) = csError then
-{$ENDIF}
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".',
-        [Filename + GetFileExtension]);
-      Abort;
-    end;
+  {$IFDEF STRING_UNICODE}
+  if not CreateStream(Filename + GetFileextension, FLanguage.CodePage) then
+  {$ELSE}
+  if not CreateStream(Filename + GetFileextension) then
+  {$ENDIF}
+  begin
+    Abort;
+  end;
+  
   try
     WriteStartOfDocument(FLanguage.Translation[trLegend]);
 
@@ -2134,11 +2115,7 @@ procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 
   procedure WriteGifFile(const Img: array of byte; const Filename: string);
   begin
-    if CreateStream(Filename, True) = csError 
-      then begin
-        DoMessage(1, pmtError, 'Could not create output file "%s".', [Filename]);
-      Exit;
-    end;
+    if not CreateStream(Filename) then Exit;
     CurrentStream.Write(img[0], High(img)+1);
     CloseStream;
   end;
@@ -2280,16 +2257,10 @@ var
   HL: integer;
 begin
 {$IFDEF STRING_UNICODE}
-  case CreateStream(ExternalItem.OutputFileName, true, FLanguage.CodePage) of
+  if not CreateStream(ExternalItem.OutputFileName, FLanguage.CodePage) then Exit;
 {$ELSE}
-  case CreateStream(ExternalItem.OutputFileName, true) of
+  if not CreateStream(ExternalItem.OutputFileName) then Exit;
 {$ENDIF}
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create HTML unit doc file '
-        + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
-      Exit;
-    end;
-  end;
 
   WriteStartOfDocument(ExternalItem.ShortTitle);
 

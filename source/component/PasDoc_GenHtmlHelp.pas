@@ -425,11 +425,7 @@ begin
     Units is assigned and Units.Count > 0
     No need to test this again. }
 
-  if CreateStream(ProjectName + '.hhc', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Content file "%s.hhc' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhc') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Content file "' + ProjectName
     + '"...', []);
 
@@ -523,11 +519,7 @@ begin
     c.CopyItems(PU.FuncsProcs);
   end;
 
-  if CreateStream(ProjectName + '.hhk', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Index file "%s.hhk' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhk') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Index file "%s"...',
     [ProjectName]);
 
@@ -600,11 +592,7 @@ begin
   CloseStream;
 
   // Create a HTML Help Project File
-  if CreateStream(ProjectName + '.hhp', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Project file "%s.hhp' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhp') then Exit;
   DoMessage(3, pmtInformation, 'Writing Html Help Project file "%s"...',
     [ProjectName]);
 

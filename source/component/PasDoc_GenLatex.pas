@@ -612,15 +612,7 @@ begin
     OutputFileName := ProjectName + '.tex'
   else
     OutputFileName := 'docs.tex';
-  case CreateStream(OutputFileName, true) of
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create doc file %s',[Outputfilename]);
-      Exit;
-    end;
-    csExisted: begin
-      Exit;
-    end;
-  end;
+  if not CreateStream(OutputFileName) then Exit;
   WriteStartOfDocument('');
   WriteIntroduction;
   WriteUnits(1);
