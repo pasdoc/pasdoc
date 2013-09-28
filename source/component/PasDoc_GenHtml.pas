@@ -804,11 +804,7 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
       Exit;
     end;
 
-    {$IFDEF STRING_UNICODE}
-    if not CreateStream(ACio.OutputFileName, FLanguage.CodePage) then Exit;
-    {$ELSE}
     if not CreateStream(ACio.OutputFileName) then Exit;
-    {$ENDIF}
     DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
     WriteCIO(HL, ACio);
   end;
@@ -1344,12 +1340,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     BaseFileName, Headline: string;
   begin
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
-{$IFDEF STRING_UNICODE}
-    Result := CreateStream(BaseFileName + GetFileExtension, FLanguage.CodePage);
-{$ELSE}
     Result := CreateStream(BaseFileName + GetFileExtension);
-{$ENDIF}
-
     if not Result then Exit;
 
     DoMessage(3, pmtInformation, 'Writing overview file "' +
@@ -1867,11 +1858,7 @@ begin
     Exit;
   end;
   
-  {$IFDEF STRING_UNICODE}
-  if not CreateStream(U.OutputFileName, FLanguage.CodePage) then Exit;
-  {$ELSE}
   if not CreateStream(U.OutputFileName) then Exit;
-  {$ENDIF}
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsUses] := FLanguage.Translation[trUses];
@@ -2025,14 +2012,8 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 const
   Filename = 'legend';
 begin
-  {$IFDEF STRING_UNICODE}
-  if not CreateStream(Filename + GetFileextension, FLanguage.CodePage) then
-  {$ELSE}
   if not CreateStream(Filename + GetFileextension) then
-  {$ENDIF}
-  begin
     Abort;
-  end;
   
   try
     WriteStartOfDocument(FLanguage.Translation[trLegend]);
@@ -2112,25 +2093,13 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
-
-  procedure WriteGifFile(const Img: array of byte; const Filename: string);
-  begin
-    if not CreateStream(Filename) then Exit;
-    CurrentStream.Write(img[0], High(img)+1);
-    CloseStream;
-  end;
-
-var
-  PasdocCssFileName: string;
 begin
-  WriteGifFile(img_automated, 'automated.gif');
-  WriteGifFile(img_private, 'private.gif');
-  WriteGifFile(img_protected, 'protected.gif');
-  WriteGifFile(img_public, 'public.gif');
-  WriteGifFile(img_published, 'published.gif');
-
-  PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
-  StringToFile(PasdocCssFileName, CSS);
+  DataToFile(DestinationDirectory + 'automated.gif', img_automated);
+  DataToFile(DestinationDirectory + 'private.gif'  , img_private  ); 
+  DataToFile(DestinationDirectory + 'protected.gif', img_protected);
+  DataToFile(DestinationDirectory + 'public.gif'   , img_public   );
+  DataToFile(DestinationDirectory + 'published.gif', img_published);
+  StringToFile(DestinationDirectory + 'pasdoc.css', CSS);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteIndex;
@@ -2256,11 +2225,7 @@ procedure TGenericHTMLDocGenerator.WriteExternalCore(
 var
   HL: integer;
 begin
-{$IFDEF STRING_UNICODE}
-  if not CreateStream(ExternalItem.OutputFileName, FLanguage.CodePage) then Exit;
-{$ELSE}
   if not CreateStream(ExternalItem.OutputFileName) then Exit;
-{$ENDIF}
 
   WriteStartOfDocument(ExternalItem.ShortTitle);
 

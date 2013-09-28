@@ -485,13 +485,14 @@ type
       Then, a new output stream in the destination directory is created and
       assigned to @link(CurrentStream). The file is overwritten if exists.
       
+      Use this only for text files that you want to write using WriteXxx
+      methods of this class (like WriteConverted).
+      There's no point to use if for other files.
+      
       Returns @true if creation was successful, @false otherwise.
       When it returns @false, the error message was already shown by DoMessage. }
-    function CreateStream(const AName: string):
-      Boolean; 
-{$IFDEF STRING_UNICODE} overload;
-    function CreateStream(const AName: string; ADstCodePage: LongWord): Boolean; overload;
-{$ENDIF}
+    function CreateStream(const AName: string): Boolean; 
+    
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
@@ -1114,50 +1115,31 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{$IFDEF STRING_UNICODE}
-function TDocGenerator.CreateStream(const AName: string;
-  ADstCodePage: LongWord): Boolean;
-var
-  S: string;
-begin
-  CloseStream;
-  DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
-  Result := false;
-  S := DestinationDirectory + AName;
-  try    
-    FCurrentStream := TStreamWriter.Create(S, FALSE, FALSE, ADstCodePage);    
-    Result := true;
-  except
-    on E: Exception do
-      DoMessage(1, pmtError, 'Could not create file "%s": %s', [S, E.Message]);
-  end;
-end;
-{$ENDIF}
-{ ---------------------------------------------------------------------------- }
 
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
 begin
-{$IFDEF STRING_UNICODE}
-  Result := CreateStream(AName, 0);
-{$ELSE}
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := false;
   S := DestinationDirectory + AName;
   try
-    {$IFDEF USE_BUFFERED_STREAM}
-    FCurrentStream := TBufferedStream.Create(S, fmCreate);
-    {$ELSE}
-    FCurrentStream := TFileStream.Create(S, fmCreate);
-    {$ENDIF}
+    FCurrentStream := 
+      {$IFDEF STRING_UNICODE}
+      TStreamWriter.Create(S, false, false, FLanguage.CodePage);
+      {$ELSE}
+        {$IFDEF USE_BUFFERED_STREAM}
+        TBufferedStream.Create(S, fmCreate);
+        {$ELSE}
+        TFileStream.Create(S, fmCreate);
+        {$ENDIF}
+      {$ENDIF}
     Result := true;
   except
     on E: Exception do
       DoMessage(1, pmtError, 'Could not create file "%s": %s', [S, E.Message]);
   end;
-{$ENDIF}  
 end;
 
 { ---------------------------------------------------------------------------- }
