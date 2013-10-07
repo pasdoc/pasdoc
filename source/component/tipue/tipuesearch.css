@@ -1,141 +1,133 @@
 
 /*
-Tipue Search 1.1.1
-Tipue Search Copyright (c) 2012 Tri-State Consultants
-Tipue Search is free for both both commercial and non-commercial use and released under the MIT License.
-For the latest release, documentation and licence see http://www.tipue.com/search
+Tipue Search 3.0.1
+Copyright (c) 2013 Tipue
+Tipue Search is released under the MIT License
+http://www.tipue.com/search
 */
 
 
 #tipue_search_input
 {
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 12px;
+     font: 12px/1.7 'open sans', sans-serif;
 	color: #333;
 	padding: 7px;
-	margin-top: 1px;
-	width: 160px;
-	border: 1px solid #d3d3d3;
-	border-radius: 3px;
+	width: 150px;
+	border: 1px solid #e2e2e2;
+	border-radius: 0;
 	-moz-appearance: none;
 	-webkit-appearance: none;
-	outline: none;
+     box-shadow: none; 
+	outline: 0;
+	margin: 0;
 }
 #tipue_search_input:focus
 {
-     border-color: #c3c3c3;
-     -moz-box-shadow: 0 0 3px rgba(0,0,0,.2);
-     -webkit-box-shadow: 0 0 3px rgba(0,0,0,.2);
-     box-shadow: 0 0 3px rgba(0,0,0,.2);     
+     border: 1px solid #ccc;    
 }
 #tipue_search_button
 {
-     width: 60px;
-     height: 33px;
-     border: 1px solid #dcdcdc;
-     border-radius: 3px;
-     background: #f1f1f1 url('search.gif') no-repeat center;
+     width: 70px;
+     height: 36px;
+     border: 0;
+     border-radius: 1px;
+     /* PasDoc: load search.png from current dir, not img/ subdir. */
+     background: #5193fb url('search.png') no-repeat center;
 	outline: none;
 }
 #tipue_search_button:hover
 {
-	border: 1px solid #c3c3c3;
-	-moz-box-shadow: 1px 1px 2px #e3e3e3;
-	-webkit-box-shadow: 1px 1px 2px #e3e3e3;
-	box-shadow: 1px 1px 2px #e3e3e3;
+     background-color: #4589fb;
 }
 
 #tipue_search_content
 {
      clear: left;
-     display: none;
-     width: 650px;
+     max-width: 650px;
 	padding: 25px 0 13px 0;
 	margin: 0;
+}
+#tipue_search_loading
+{
+     padding-top: 60px;     
+     /* PasDoc: load loader.gif from current dir, not img/ subdir. */
+     background: #fff url('loader.gif') no-repeat left;
 }
 
 #tipue_search_warning_head
 {
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 16px;
+     font: 300 16px/1.6 'open sans', sans-serif;
 	color: #333;
 }
 #tipue_search_warning
 {
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #555;
-	margin: 13px 0;
+     font: 12px/1.6 'open sans', sans-serif;
+	color: #333;
+	margin: 7px 0;
 }
 #tipue_search_warning a
 {
-     color: #36c;
+     color: #3f72d8;
      text-decoration: none;
 }
 #tipue_search_warning a:hover
 {
 	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;     
+	border-bottom: 1px solid #ccc;   
 }
-
 #tipue_search_results_count
 {
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #555;
-}
-
-#tipue_search_content_title
-{
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 16px;
+     font: 13px/1.6 'open sans', sans-serif;
 	color: #333;
-	margin-top: 27px;
 }
-#tipue_search_content_title a
+.tipue_search_content_title
 {
-     color: #36c;
+     font: 300 23px/1.6 'open sans', sans-serif;
+	margin-top: 31px;
+}
+.tipue_search_content_title a
+{
+     color: #3f72d8;
      text-decoration: none;
 }
-#tipue_search_content_title a:hover
+.tipue_search_content_title a:hover
+{
+	padding-bottom: 1px;
+        /* PasDoc: don't use it, sine our standard CSS already shows an underline
+           on hover.
+	border-bottom: 1px solid #ccc;
+         */
+}
+.tipue_search_content_text
+{
+     font: 12px/1.7 'open sans', sans-serif;
+	color: #333;
+	padding: 13px 0;
+}
+.tipue_search_content_loc
+{
+     font: 300 13px/1.7 'open sans', sans-serif;
+     overflow: auto;
+}
+.tipue_search_content_loc a
+{
+     color: #555;
+     text-decoration: none;
+}
+.tipue_search_content_loc a:hover
 {
 	padding-bottom: 1px;
 	border-bottom: 1px solid #ccc;     
 }
-#tipue_search_content_text
-{
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #555;
-	line-height: 21px;
-	padding: 9px 0;
-}
-#tipue_search_content_loc
-{
-     font-family: 'Open Sans', Verdana, Helvetica, sans-serif;
-	font-size: 13px;
-}
-#tipue_search_content_loc a
-{
-     color: #777;
-     text-decoration: none;
-}
-#tipue_search_content_loc a:hover
-{
-	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;     
-}
-
 #tipue_search_foot
 {
-     margin: 43px 0 31px 0;
+     margin: 51px 0 21px 0;
 }
 #tipue_search_foot_boxes
 {
 	padding: 0;
 	margin: 0;
-	font-family: 'Lucida Grande', Verdana, Helvetica, sans-serif;
-	font-size: 11px;
+     font: 12px/1 'open sans', sans-serif;
 }
 #tipue_search_foot_boxes li
 {
@@ -146,33 +138,27 @@ For the latest release, documentation and licence see http://www.tipue.com/searc
 }
 #tipue_search_foot_boxes li a
 {
-	padding: 8px 10px 11px 10px;
-     background-color: #f5f5f5;
-     background: -webkit-linear-gradient(top, #f7f7f7, #f1f1f1);
-     background: -moz-linear-gradient(top, #f7f7f7, #f1f1f1);
-     background: -ms-linear-gradient(top, #f7f7f7, #f1f1f1);
-     background: -o-linear-gradient(top, #f7f7f7, #f1f1f1);
+	padding: 7px 13px 8px 13px;
+     background-color: #f1f1f1;
      border: 1px solid #dcdcdc;
-     border-radius: 3px;
-	color: #444;
+     border-radius: 1px;
+	color: #333;
 	margin-right: 7px;
 	text-decoration: none;
 	text-align: center;
 }
 #tipue_search_foot_boxes li.current
 {
-	padding: 8px 10px 11px 10px;
+	padding: 7px 13px 8px 13px;
      background: #fff;
      border: 1px solid #dcdcdc;
-     border-radius: 3px;
+     border-radius: 1px;
 	color: #333;
 	margin-right: 7px;
 	text-align: center;
 }
 #tipue_search_foot_boxes li a:hover
 {
-	border: 1px solid #c3c3c3;
-	-moz-box-shadow: 1px 1px 2px #e3e3e3;
-	-webkit-box-shadow: 1px 1px 2px #e3e3e3;
-	box-shadow: 1px 1px 2px #e3e3e3;
+	border: 1px solid #ccc;
+	background-color: #f3f3f3;
 }
