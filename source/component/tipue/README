@@ -1,39 +1,21 @@
-This directory contains some files from tipue,
-version 1.1.1 from http://www.tipue.com/,
-slightly modified.
+Integration with Tipue (http://www.tipue.com/search/ ), version 3.0.1.
 
-Our modifications and reasoning are marked in source with "PasDoc" comment.
-Our results page is named "_tipue_results.html" (new tipue version
-doesn't suggest any particular name for this; we pick a name to not collide with
-user unit name).
+Some of the files here are copied from Tipue sources (it's Ok to copy,
+MIT license). The tipuesearch.css needed some tiny modifications (see
+"PasDoc" comments inside).
+
+Our results page is called "_tipue_results.html" (we picked a name
+to avoid collisions with user unit name).
 
 These files are processed by programs file_to_pascal_string and
 file_to_pascal_data (in ../../tools/)
 and then their contents are included in PasDoc_Tipue unit.
-So all needed tipue data is compiled inside pasdoc binary.
-This way you don't have to download and unpack tipue to use it with pasdoc.
-As pasdoc is now able to automatically generate tipue index data,
-users do not have to do (or even know) *anything* about tipue at all
+So all the needed tipue data is compiled inside pasdoc binary.
+This way you don't have to download and unpack tipue to use it with pasdoc
+--- Tipue data is inside PasDoc sources, and compiled inside PasDoc binary.
+As pasdoc can automatically generate tipue index data,
+users do not have to do (or even know) *anything* about tipue
 to use it with pasdoc. It's just a matter of passing --use-tipue-search.
 (we can't use tipue by default, without explicit request by --use-tipue-search
 option, since it's not suitable for really large documentation,
 see [http://pasdoc.sipsolutions.net/UseTipueSearchOption]).
-
-Future notes about possible data layout (possibly outdated rambling,
-Michalis wrote it when implementing first tipue version :)
-
-    With my first try at integrating tipue with pasdoc, I made an option
-    --use-tipue-search=/path/where/tipue/was/unpacked/ and then in pasdoc
-    I was copying scripts from tipue (with some processing in the middle).
-    But it turned out that there are a few modifications to tipue files
-    that I would like to do, so, since tipue scripts are very small,
-    I realized that just including "fixed" tipue version compiled inside
-    pasdoc may be better solution.
-
-    In the future the best option would be to make some installers/packages
-    for pasdoc and put tipue files for pasdoc in some directory that pasdoc
-    knows about. This would remove the necessity to keep everything in one
-    binary file, as we could handle nicely the fact that pasdoc always
-    installs some additional external files for itself.
-    For now, embedding these files in pasdoc binary seems the simplest option
-    for users.
