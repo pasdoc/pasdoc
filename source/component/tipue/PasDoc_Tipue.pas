@@ -216,20 +216,20 @@ procedure TipueAddFiles(Units: TPasUnits;
   end;
 
 const
-  TipueSearchCss = {$I tipuesearch.css.inc};
-  TipueSearchScript = {$I tipuesearch.js.inc};
-  TipueSearchSetScript = {$I tipuesearch_set.js.inc};
-  JQueryScript = {$I jquery.min.js.inc};
-  TipueSearchImage : {$I search.png.inc};
-  TipueLoaderImage : {$I loader.gif.inc};
+  TipueSearchCss: {$I tipuesearch.css.inc};
+  TipueSearchScript: {$I tipuesearch.js.inc};
+  TipueSearchSetScript: {$I tipuesearch_set.js.inc};
+  JQueryScript: {$I jquery.min.js.inc};
+  TipueSearchImage: {$I search.png.inc};
+  TipueLoaderImage: {$I loader.gif.inc};
 var
   TipueResultsPage: string;
 begin
   CreateDir(OutputPath + 'tipuesearch');
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery.min.js', JQueryScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery.min.js', JQueryScript);
 
   TipueResultsPage := {$I _tipue_results.html.inc};
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);

@@ -1,391 +1,1235 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "tipuesearch.js" }
-'' + LineEnding +
-'/*' + LineEnding +
-'Tipue Search 3.0.1' + LineEnding +
-'Copyright (c) 2013 Tipue' + LineEnding +
-'Tipue Search is released under the MIT License' + LineEnding +
-'http://www.tipue.com/search' + LineEnding +
-'*/ ' + LineEnding +
-'' + LineEnding +
-'' + LineEnding +
-'(function($) {' + LineEnding +
-'' + LineEnding +
-'     $.fn.tipuesearch = function(options) {' + LineEnding +
-'' + LineEnding +
-'          var set = $.extend( {' + LineEnding +
-'          ' + LineEnding +
-'               ''show''                   : 7,' + LineEnding +
-'               ''newWindow''              : false,' + LineEnding +
-'               ''showURL''                : true,' + LineEnding +
-'               ''minimumLength''          : 3,' + LineEnding +
-'               ''descriptiveWords''       : 25,' + LineEnding +
-'               ''highlightTerms''         : true,' + LineEnding +
-'               ''highlightEveryTerm''     : false,' + LineEnding +
-'               ''mode''                   : ''static'',' + LineEnding +
-'               ''liveDescription''        : ''*'',' + LineEnding +
-'               ''liveContent''            : ''*'',' + LineEnding +
-'               ''contentLocation''        : ''tipuesearch/tipuesearch_content.json''' + LineEnding +
-'          ' + LineEnding +
-'          }, options);' + LineEnding +
-'          ' + LineEnding +
-'          return this.each(function() {' + LineEnding +
-'' + LineEnding +
-'               var tipuesearch_in = {' + LineEnding +
-'                    pages: []' + LineEnding +
-'               };' + LineEnding +
-'               $.ajaxSetup({' + LineEnding +
-'                    async: false' + LineEnding +
-'               });' + LineEnding +
-'' + LineEnding +
-'               if (set.mode == ''live'')' + LineEnding +
-'               {' + LineEnding +
-'                    for (var i = 0; i < tipuesearch_pages.length; i++)' + LineEnding +
-'                    {' + LineEnding +
-'                         $.get(tipuesearch_pages[i], '''',' + LineEnding +
-'                              function (html)' + LineEnding +
-'                              {' + LineEnding +
-'                                   var cont = $(set.liveContent, html).text();' + LineEnding +
-'                                   cont = cont.replace(/\s+/g, '' '');' + LineEnding +
-'                                   var desc = $(set.liveDescription, html).text();' + LineEnding +
-'                                   desc = desc.replace(/\s+/g, '' '');' + LineEnding +
-'                                                                      ' + LineEnding +
-'                                   var t_1 = html.toLowerCase().indexOf(''<title>'');' + LineEnding +
-'                                   var t_2 = html.toLowerCase().indexOf(''</title>'', t_1 + 7);' + LineEnding +
-'                                   if (t_1 != -1 && t_2 != -1)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        var tit = html.slice(t_1 + 7, t_2);' + LineEnding +
-'                                   }' + LineEnding +
-'                                   else' + LineEnding +
-'                                   {' + LineEnding +
-'                                        var tit = ''No title'';' + LineEnding +
-'                                   }' + LineEnding +
-'' + LineEnding +
-'                                   tipuesearch_in.pages.push({' + LineEnding +
-'                                        "title": tit,' + LineEnding +
-'                                        "text": desc,' + LineEnding +
-'                                        "tags": cont,' + LineEnding +
-'                                        "loc": tipuesearch_pages[i] ' + LineEnding +
-'                                   });    ' + LineEnding +
-'                              }' + LineEnding +
-'                         );' + LineEnding +
-'                    }' + LineEnding +
-'               }' + LineEnding +
-'               ' + LineEnding +
-'               if (set.mode == ''json'')' + LineEnding +
-'               {' + LineEnding +
-'                    $.getJSON(set.contentLocation,' + LineEnding +
-'                         function(json)' + LineEnding +
-'                         {' + LineEnding +
-'                              tipuesearch_in = $.extend({}, json);' + LineEnding +
-'                         }' + LineEnding +
-'                    );' + LineEnding +
-'               }' + LineEnding +
-'' + LineEnding +
-'               if (set.mode == ''static'')' + LineEnding +
-'               {' + LineEnding +
-'                    tipuesearch_in = $.extend({}, tipuesearch);' + LineEnding +
-'               }                              ' + LineEnding +
-'               ' + LineEnding +
-'               var tipue_search_w = '''';' + LineEnding +
-'               if (set.newWindow)' + LineEnding +
-'               {' + LineEnding +
-'                    tipue_search_w = '' target="_blank"'';      ' + LineEnding +
-'               }' + LineEnding +
-'' + LineEnding +
-'               function getURLP(name)' + LineEnding +
-'               {' + LineEnding +
-'                    return decodeURIComponent((new RegExp(''[?|&]'' + name + ''='' + ''([^&;]+?)(&|#|;|$)'').exec(location.search)||[,""])[1].replace(/\+/g, ''%20'')) || null;' + LineEnding +
-'               }' + LineEnding +
-'               if (getURLP(''q''))' + LineEnding +
-'               {' + LineEnding +
-'                    $(''#tipue_search_input'').val(getURLP(''q''));' + LineEnding +
-'                    getTipueSearch(0, true);' + LineEnding +
-'               }               ' + LineEnding +
-'                             ' + LineEnding +
-'               $(''#tipue_search_button'').click(function()' + LineEnding +
-'               {' + LineEnding +
-'                    getTipueSearch(0, true);' + LineEnding +
-'               });' + LineEnding +
-'               $(this).keyup(function(event)' + LineEnding +
-'               {' + LineEnding +
-'                    if(event.keyCode == ''13'')' + LineEnding +
-'                    {' + LineEnding +
-'                         getTipueSearch(0, true);' + LineEnding +
-'                    }' + LineEnding +
-'               });' + LineEnding +
-'' + LineEnding +
-'               function getTipueSearch(start, replace)' + LineEnding +
-'               {' + LineEnding +
-'                    $(''#tipue_search_content'').hide();' + LineEnding +
-'                    var out = '''';' + LineEnding +
-'                    var results = '''';' + LineEnding +
-'                    var show_replace = false;' + LineEnding +
-'                    var show_stop = false;' + LineEnding +
-'                    ' + LineEnding +
-'                    var d = $(''#tipue_search_input'').val().toLowerCase();' + LineEnding +
-'                    d = $.trim(d);' + LineEnding +
-'                    var d_w = d.split('' '');' + LineEnding +
-'                    d = '''';' + LineEnding +
-'                    for (var i = 0; i < d_w.length; i++)' + LineEnding +
-'                    {' + LineEnding +
-'                         var a_w = true;' + LineEnding +
-'                         for (var f = 0; f < tipuesearch_stop_words.length; f++)' + LineEnding +
-'                         {' + LineEnding +
-'                              if (d_w[i] == tipuesearch_stop_words[f])' + LineEnding +
-'                              {' + LineEnding +
-'                                   a_w = false;' + LineEnding +
-'                                   show_stop = true;          ' + LineEnding +
-'                              }' + LineEnding +
-'                         }' + LineEnding +
-'                         if (a_w)' + LineEnding +
-'                         {' + LineEnding +
-'                              d = d + '' '' + d_w[i];' + LineEnding +
-'                         }' + LineEnding +
-'                    }' + LineEnding +
-'                    d = $.trim(d);' + LineEnding +
-'                    d_w = d.split('' '');' + LineEnding +
-'                    ' + LineEnding +
-'                    if (d.length >= set.minimumLength)' + LineEnding +
-'                    {' + LineEnding +
-'                         if (replace)' + LineEnding +
-'                         {' + LineEnding +
-'                              var d_r = d;' + LineEnding +
-'                              for (var i = 0; i < d_w.length; i++)' + LineEnding +
-'                              {' + LineEnding +
-'                                   for (var f = 0; f < tipuesearch_replace.words.length; f++)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        if (d_w[i] == tipuesearch_replace.words[f].word)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             d = d.replace(d_w[i], tipuesearch_replace.words[f].replace_with);' + LineEnding +
-'                                             show_replace = true;' + LineEnding +
-'                                        }' + LineEnding +
-'                                   }' + LineEnding +
-'                              }' + LineEnding +
-'                              d_w = d.split('' '');' + LineEnding +
-'                         }                   ' + LineEnding +
-'                         ' + LineEnding +
-'                         var d_t = d;' + LineEnding +
-'                         for (var i = 0; i < d_w.length; i++)' + LineEnding +
-'                         {' + LineEnding +
-'                              for (var f = 0; f < tipuesearch_stem.words.length; f++)' + LineEnding +
-'                              {' + LineEnding +
-'                                   if (d_w[i] == tipuesearch_stem.words[f].word)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        d_t = d_t + '' '' + tipuesearch_stem.words[f].stem;' + LineEnding +
-'                                   }' + LineEnding +
-'                              }' + LineEnding +
-'                         }' + LineEnding +
-'                         d_w = d_t.split('' '');' + LineEnding +
-'' + LineEnding +
-'                         var c = 0;' + LineEnding +
-'                         found = new Array();' + LineEnding +
-'                         for (var i = 0; i < tipuesearch_in.pages.length; i++)' + LineEnding +
-'                         {' + LineEnding +
-'                              var score = 1000000000;' + LineEnding +
-'                              var s_t = tipuesearch_in.pages[i].text;' + LineEnding +
-'                              for (var f = 0; f < d_w.length; f++)' + LineEnding +
-'                              {' + LineEnding +
-'                                   var pat = new RegExp(d_w[f], ''i'');' + LineEnding +
-'                                   if (tipuesearch_in.pages[i].title.search(pat) != -1)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        score -= (200000 - i);' + LineEnding +
-'                                   }' + LineEnding +
-'                                   if (tipuesearch_in.pages[i].text.search(pat) != -1)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        score -= (150000 - i);' + LineEnding +
-'                                   }' + LineEnding +
-'                                   ' + LineEnding +
-'                                   if (set.highlightTerms)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        if (set.highlightEveryTerm) ' + LineEnding +
-'                                        {' + LineEnding +
-'                                             var patr = new RegExp(''('' + d_w[f] + '')'', ''gi'');' + LineEnding +
-'                                        }' + LineEnding +
-'                                        else' + LineEnding +
-'                                        {' + LineEnding +
-'                                             var patr = new RegExp(''('' + d_w[f] + '')'', ''i'');' + LineEnding +
-'                                        }' + LineEnding +
-'                                        s_t = s_t.replace(patr, "<b>$1</b>");' + LineEnding +
-'                                   }' + LineEnding +
-'                                   if (tipuesearch_in.pages[i].tags.search(pat) != -1)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        score -= (100000 - i);' + LineEnding +
-'                                   }' + LineEnding +
-'                    ' + LineEnding +
-'                              }' + LineEnding +
-'                              if (score < 1000000000)' + LineEnding +
-'                              {' + LineEnding +
-'                                   found[c++] = score + ''^'' + tipuesearch_in.pages[i].title + ''^'' + s_t + ''^'' + tipuesearch_in.pages[i].loc;                                                                   ' + LineEnding +
-'                              }' + LineEnding +
-'                         }                         ' + LineEnding +
-'                         ' + LineEnding +
-'                         if (c != 0)' + LineEnding +
-'                         {' + LineEnding +
-'                              if (show_replace == 1)' + LineEnding +
-'                              {' + LineEnding +
-'                                   out += ''<div id="tipue_search_warning_head">Showing results for '' + d + ''</div>'';' + LineEnding +
-'                                   out += ''<div id="tipue_search_warning">Search for <a href="javascript:void(0)" id="tipue_search_replaced">'' + d_r + ''</a></div>''; ' + LineEnding +
-'                              }' + LineEnding +
-'                              if (c == 1)' + LineEnding +
-'                              {' + LineEnding +
-'                                   out += ''<div id="tipue_search_results_count">1 result</div>'';' + LineEnding +
-'                              }' + LineEnding +
-'                              else' + LineEnding +
-'                              {' + LineEnding +
-'                                   c_c = c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");' + LineEnding +
-'                                   out += ''<div id="tipue_search_results_count">'' + c_c + '' results</div>'';' + LineEnding +
-'                              }' + LineEnding +
-'                              ' + LineEnding +
-'                              found.sort();' + LineEnding +
-'                              var l_o = 0;' + LineEnding +
-'                              for (var i = 0; i < found.length; i++)' + LineEnding +
-'                              {' + LineEnding +
-'                                   var fo = found[i].split(''^'');' + LineEnding +
-'                                   if (l_o >= start && l_o < set.show + start)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        out += ''<div class="tipue_search_content_title"><a href="'' + fo[3] + ''"'' + tipue_search_w + ''>'' +  fo[1] + ''</a></div>'';' + LineEnding +
-'                                                                                ' + LineEnding +
-'                                        var t = fo[2];' + LineEnding +
-'                                        var t_d = '''';' + LineEnding +
-'                                        var t_w = t.split('' '');' + LineEnding +
-'                                        if (t_w.length < set.descriptiveWords)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             t_d = t;' + LineEnding +
-'                                        }' + LineEnding +
-'                                        else' + LineEnding +
-'                                        {' + LineEnding +
-'                                             for (var f = 0; f < set.descriptiveWords; f++)' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  t_d += t_w[f] + '' ''; 	' + LineEnding +
-'                                             }' + LineEnding +
-'                                        }' + LineEnding +
-'                                        t_d = $.trim(t_d);' + LineEnding +
-'                                        if (t_d.charAt(t_d.length - 1) != ''.'')' + LineEnding +
-'                                        {' + LineEnding +
-'                                             t_d += '' ...'';' + LineEnding +
-'                                        }' + LineEnding +
-'                                        out += ''<div class="tipue_search_content_text">'' + t_d + ''</div>'';' + LineEnding +
-'                                        ' + LineEnding +
-'                                        if (set.showURL)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             t_url = fo[3];' + LineEnding +
-'                                             if (t_url.length > 45)' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  t_url = fo[3].substr(0, 45) + '' ...'';' + LineEnding +
-'                                             }    ' + LineEnding +
-'                                             out += ''<div class="tipue_search_content_loc"><a href="'' + fo[3] + ''"'' + tipue_search_w + ''>'' + t_url + ''</a></div>'';' + LineEnding +
-'                                        }' + LineEnding +
-'                                   }' + LineEnding +
-'                                   l_o++;     ' + LineEnding +
-'                              }' + LineEnding +
-'                              ' + LineEnding +
-'                              if (c > set.show)' + LineEnding +
-'                              {' + LineEnding +
-'                                   var pages = Math.ceil(c / set.show);' + LineEnding +
-'                                   var page = (start / set.show);' + LineEnding +
-'                                   out += ''<div id="tipue_search_foot"><ul id="tipue_search_foot_boxes">'';' + LineEnding +
-'                                   ' + LineEnding +
-'                                   if (start > 0)' + LineEnding +
-'                                   {' + LineEnding +
-'                                       out += ''<li><a href="javascript:void(0)" class="tipue_search_foot_box" id="'' + (start - set.show) + ''_'' + replace + ''">Prev</a></li>''; ' + LineEnding +
-'                                   }' + LineEnding +
-'                                                       ' + LineEnding +
-'                                   if (page <= 2)' + LineEnding +
-'                                   {' + LineEnding +
-'                                        var p_b = pages;' + LineEnding +
-'                                        if (pages > 3)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             p_b = 3;' + LineEnding +
-'                                        }                    ' + LineEnding +
-'                                        for (var f = 0; f < p_b; f++)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             if (f == page)' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  out += ''<li class="current">'' + (f + 1) + ''</li>'';' + LineEnding +
-'                                             }' + LineEnding +
-'                                             else' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  out += ''<li><a href="javascript:void(0)" class="tipue_search_foot_box" id="'' + (f * set.show) + ''_'' + replace + ''">'' + (f + 1) + ''</a></li>'';' + LineEnding +
-'                                             }' + LineEnding +
-'                                        }' + LineEnding +
-'                                   }' + LineEnding +
-'                                   else' + LineEnding +
-'                                   {' + LineEnding +
-'                                        var p_b = page + 3;' + LineEnding +
-'                                        if (p_b > pages)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             p_b = pages; ' + LineEnding +
-'                                        }' + LineEnding +
-'                                        for (var f = page; f < p_b; f++)' + LineEnding +
-'                                        {' + LineEnding +
-'                                             if (f == page)' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  out += ''<li class="current">'' + (f + 1) + ''</li>'';' + LineEnding +
-'                                             }' + LineEnding +
-'                                             else' + LineEnding +
-'                                             {' + LineEnding +
-'                                                  out += ''<li><a href="javascript:void(0)" class="tipue_search_foot_box" id="'' + (f * set.show) + ''_'' + replace + ''">'' + (f + 1) + ''</a></li>'';' + LineEnding +
-'                                             }' + LineEnding +
-'                                        }                         ' + LineEnding +
-'                                   }' + LineEnding +
-'                                                      ' + LineEnding +
-'                                   if (page + 1 != pages)' + LineEnding +
-'                                   {' + LineEnding +
-'                                       out += ''<li><a href="javascript:void(0)" class="tipue_search_foot_box" id="'' + (start + set.show) + ''_'' + replace + ''">Next</a></li>''; ' + LineEnding +
-'                                   }                    ' + LineEnding +
-'                                   ' + LineEnding +
-'                                   out += ''</ul></div>'';' + LineEnding +
-'                              }                        ' + LineEnding +
-'                         }' + LineEnding +
-'                         else' + LineEnding +
-'                         {' + LineEnding +
-'                              out += ''<div id="tipue_search_warning_head">Nothing found</div>''; ' + LineEnding +
-'                         }' + LineEnding +
-'                    }' + LineEnding +
-'                    else' + LineEnding +
-'                    {' + LineEnding +
-'                         if (show_stop)' + LineEnding +
-'                         {' + LineEnding +
-'                              out += ''<div id="tipue_search_warning_head">Nothing found</div><div id="tipue_search_warning">Common words are largely ignored</div>'';     ' + LineEnding +
-'                         }' + LineEnding +
-'                         else' + LineEnding +
-'                         {' + LineEnding +
-'                              out += ''<div id="tipue_search_warning_head">Search too short</div>'';' + LineEnding +
-'                              if (set.minimumLength == 1)' + LineEnding +
-'                              {' + LineEnding +
-'                                   out += ''<div id="tipue_search_warning">Should be one character or more</div>'';' + LineEnding +
-'                              }' + LineEnding +
-'                              else' + LineEnding +
-'                              {' + LineEnding +
-'                                   out += ''<div id="tipue_search_warning">Should be '' + set.minimumLength + '' characters or more</div>'';' + LineEnding +
-'                              }' + LineEnding +
-'                         }' + LineEnding +
-'                    }' + LineEnding +
-'               ' + LineEnding +
-'                    $(''#tipue_search_content'').html(out);' + LineEnding +
-'                    $(''#tipue_search_content'').slideDown(200);' + LineEnding +
-'                    ' + LineEnding +
-'                    $(''#tipue_search_replaced'').click(function()' + LineEnding +
-'                    {' + LineEnding +
-'                         getTipueSearch(0, false);' + LineEnding +
-'                    });                ' + LineEnding +
-'               ' + LineEnding +
-'                    $(''.tipue_search_foot_box'').click(function()' + LineEnding +
-'                    {' + LineEnding +
-'                         var id_v = $(this).attr(''id'');' + LineEnding +
-'                         var id_a = id_v.split(''_'');' + LineEnding +
-'                    ' + LineEnding +
-'                         getTipueSearch(parseInt(id_a[0]), id_a[1]);' + LineEnding +
-'                    });                                                       ' + LineEnding +
-'               }          ' + LineEnding +
-'          ' + LineEnding +
-'          });' + LineEnding +
-'     };' + LineEnding +
-'   ' + LineEnding +
-'})(jQuery);' + LineEnding +
-'' + LineEnding +
-'' + LineEnding +
-'' + LineEnding +
-'' + LineEnding +
-''
+array [0 .. 18465] of Byte = (
+$0A, $2F, $2A, $0A, $54, $69, $70, $75, $65, $20, $53, $65, $61, $72, $63, 
+$68, $20, $33, $2E, $30, $2E, $31, $0A, $43, $6F, $70, $79, $72, $69, $67, 
+$68, $74, $20, $28, $63, $29, $20, $32, $30, $31, $33, $20, $54, $69, $70, 
+$75, $65, $0A, $54, $69, $70, $75, $65, $20, $53, $65, $61, $72, $63, $68, 
+$20, $69, $73, $20, $72, $65, $6C, $65, $61, $73, $65, $64, $20, $75, $6E, 
+$64, $65, $72, $20, $74, $68, $65, $20, $4D, $49, $54, $20, $4C, $69, $63, 
+$65, $6E, $73, $65, $0A, $68, $74, $74, $70, $3A, $2F, $2F, $77, $77, $77, 
+$2E, $74, $69, $70, $75, $65, $2E, $63, $6F, $6D, $2F, $73, $65, $61, $72, 
+$63, $68, $0A, $2A, $2F, $20, $0A, $0A, $0A, $28, $66, $75, $6E, $63, $74, 
+$69, $6F, $6E, $28, $24, $29, $20, $7B, $0A, $0A, $20, $20, $20, $20, $20, 
+$24, $2E, $66, $6E, $2E, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, 
+$68, $20, $3D, $20, $66, $75, $6E, $63, $74, $69, $6F, $6E, $28, $6F, $70, 
+$74, $69, $6F, $6E, $73, $29, $20, $7B, $0A, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $76, $61, $72, $20, $73, $65, $74, $20, $3D, $20, 
+$24, $2E, $65, $78, $74, $65, $6E, $64, $28, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $27, $73, $68, $6F, $77, $27, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $3A, $20, $37, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $27, $6E, $65, $77, $57, $69, $6E, 
+$64, $6F, $77, $27, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $3A, $20, $66, $61, $6C, $73, $65, $2C, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $27, $73, $68, 
+$6F, $77, $55, $52, $4C, $27, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $3A, $20, $74, $72, $75, $65, $2C, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$27, $6D, $69, $6E, $69, $6D, $75, $6D, $4C, $65, $6E, $67, $74, $68, $27, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $3A, $20, $33, $2C, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$27, $64, $65, $73, $63, $72, $69, $70, $74, $69, $76, $65, $57, $6F, $72, 
+$64, $73, $27, $20, $20, $20, $20, $20, $20, $20, $3A, $20, $32, $35, $2C, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $27, $68, $69, $67, $68, $6C, $69, $67, $68, $74, $54, $65, $72, $6D, 
+$73, $27, $20, $20, $20, $20, $20, $20, $20, $20, $20, $3A, $20, $74, $72, 
+$75, $65, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $27, $68, $69, $67, $68, $6C, $69, $67, $68, $74, $45, 
+$76, $65, $72, $79, $54, $65, $72, $6D, $27, $20, $20, $20, $20, $20, $3A, 
+$20, $66, $61, $6C, $73, $65, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $27, $6D, $6F, $64, $65, $27, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $3A, $20, $27, $73, $74, $61, $74, $69, $63, $27, $2C, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$27, $6C, $69, $76, $65, $44, $65, $73, $63, $72, $69, $70, $74, $69, $6F, 
+$6E, $27, $20, $20, $20, $20, $20, $20, $20, $20, $3A, $20, $27, $2A, $27, 
+$2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $27, $6C, $69, $76, $65, $43, $6F, $6E, $74, $65, $6E, $74, $27, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $3A, $20, $27, 
+$2A, $27, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $27, $63, $6F, $6E, $74, $65, $6E, $74, $4C, $6F, $63, 
+$61, $74, $69, $6F, $6E, $27, $20, $20, $20, $20, $20, $20, $20, $20, $3A, 
+$20, $27, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $2F, $74, 
+$69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $63, $6F, $6E, $74, 
+$65, $6E, $74, $2E, $6A, $73, $6F, $6E, $27, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $2C, $20, $6F, $70, $74, $69, $6F, $6E, $73, $29, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $72, $65, $74, $75, $72, $6E, $20, $74, $68, $69, 
+$73, $2E, $65, $61, $63, $68, $28, $66, $75, $6E, $63, $74, $69, $6F, $6E, 
+$28, $29, $20, $7B, $0A, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $74, $69, $70, $75, $65, 
+$73, $65, $61, $72, $63, $68, $5F, $69, $6E, $20, $3D, $20, $7B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $70, $61, $67, $65, $73, $3A, $20, $5B, $5D, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $24, $2E, $61, $6A, $61, $78, $53, $65, $74, $75, $70, $28, $7B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $61, $73, $79, $6E, $63, $3A, $20, $66, $61, 
+$6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $29, $3B, $0A, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $73, $65, 
+$74, $2E, $6D, $6F, $64, $65, $20, $3D, $3D, $20, $27, $6C, $69, $76, $65, 
+$27, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, 
+$76, $61, $72, $20, $69, $20, $3D, $20, $30, $3B, $20, $69, $20, $3C, $20, 
+$74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $70, $61, $67, 
+$65, $73, $2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, $69, $2B, $2B, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $24, $2E, $67, $65, $74, $28, $74, $69, $70, $75, $65, $73, 
+$65, $61, $72, $63, $68, $5F, $70, $61, $67, $65, $73, $5B, $69, $5D, $2C, 
+$20, $27, $27, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $66, $75, $6E, $63, $74, $69, $6F, $6E, $20, $28, 
+$68, $74, $6D, $6C, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, 
+$72, $20, $63, $6F, $6E, $74, $20, $3D, $20, $24, $28, $73, $65, $74, $2E, 
+$6C, $69, $76, $65, $43, $6F, $6E, $74, $65, $6E, $74, $2C, $20, $68, $74, 
+$6D, $6C, $29, $2E, $74, $65, $78, $74, $28, $29, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $63, $6F, $6E, $74, $20, $3D, $20, $63, $6F, $6E, $74, $2E, $72, 
+$65, $70, $6C, $61, $63, $65, $28, $2F, $5C, $73, $2B, $2F, $67, $2C, $20, 
+$27, $20, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, 
+$64, $65, $73, $63, $20, $3D, $20, $24, $28, $73, $65, $74, $2E, $6C, $69, 
+$76, $65, $44, $65, $73, $63, $72, $69, $70, $74, $69, $6F, $6E, $2C, $20, 
+$68, $74, $6D, $6C, $29, $2E, $74, $65, $78, $74, $28, $29, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $64, $65, $73, $63, $20, $3D, $20, $64, $65, $73, $63, 
+$2E, $72, $65, $70, $6C, $61, $63, $65, $28, $2F, $5C, $73, $2B, $2F, $67, 
+$2C, $20, $27, $20, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $74, $5F, 
+$31, $20, $3D, $20, $68, $74, $6D, $6C, $2E, $74, $6F, $4C, $6F, $77, $65, 
+$72, $43, $61, $73, $65, $28, $29, $2E, $69, $6E, $64, $65, $78, $4F, $66, 
+$28, $27, $3C, $74, $69, $74, $6C, $65, $3E, $27, $29, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $76, $61, $72, $20, $74, $5F, $32, $20, $3D, $20, $68, $74, 
+$6D, $6C, $2E, $74, $6F, $4C, $6F, $77, $65, $72, $43, $61, $73, $65, $28, 
+$29, $2E, $69, $6E, $64, $65, $78, $4F, $66, $28, $27, $3C, $2F, $74, $69, 
+$74, $6C, $65, $3E, $27, $2C, $20, $74, $5F, $31, $20, $2B, $20, $37, $29, 
+$3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $74, $5F, $31, $20, 
+$21, $3D, $20, $2D, $31, $20, $26, $26, $20, $74, $5F, $32, $20, $21, $3D, 
+$20, $2D, $31, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $74, $69, $74, $20, 
+$3D, $20, $68, $74, $6D, $6C, $2E, $73, $6C, $69, $63, $65, $28, $74, $5F, 
+$31, $20, $2B, $20, $37, $2C, $20, $74, $5F, $32, $29, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $65, $6C, $73, $65, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $76, $61, $72, $20, $74, $69, $74, $20, $3D, $20, $27, $4E, $6F, 
+$20, $74, $69, $74, $6C, $65, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$0A, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $74, $69, $70, $75, $65, $73, $65, $61, 
+$72, $63, $68, $5F, $69, $6E, $2E, $70, $61, $67, $65, $73, $2E, $70, $75, 
+$73, $68, $28, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$22, $74, $69, $74, $6C, $65, $22, $3A, $20, $74, $69, $74, $2C, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $22, $74, $65, $78, $74, $22, 
+$3A, $20, $64, $65, $73, $63, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $22, $74, $61, $67, $73, $22, $3A, $20, $63, $6F, $6E, $74, 
+$2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $22, $6C, $6F, 
+$63, $22, $3A, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, 
+$5F, $70, $61, $67, $65, $73, $5B, $69, $5D, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $29, $3B, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $69, $66, $20, $28, $73, $65, $74, $2E, $6D, $6F, $64, 
+$65, $20, $3D, $3D, $20, $27, $6A, $73, $6F, $6E, $27, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $24, $2E, $67, $65, $74, $4A, $53, $4F, $4E, $28, 
+$73, $65, $74, $2E, $63, $6F, $6E, $74, $65, $6E, $74, $4C, $6F, $63, $61, 
+$74, $69, $6F, $6E, $2C, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $66, $75, $6E, $63, $74, $69, $6F, $6E, $28, $6A, $73, $6F, $6E, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $74, $69, 
+$70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, $20, $3D, $20, 
+$24, $2E, $65, $78, $74, $65, $6E, $64, $28, $7B, $7D, $2C, $20, $6A, $73, 
+$6F, $6E, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, 
+$20, $28, $73, $65, $74, $2E, $6D, $6F, $64, $65, $20, $3D, $3D, $20, $27, 
+$73, $74, $61, $74, $69, $63, $27, $29, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, 
+$20, $3D, $20, $24, $2E, $65, $78, $74, $65, $6E, $64, $28, $7B, $7D, $2C, 
+$20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $29, $3B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $76, $61, $72, $20, $74, $69, $70, $75, $65, $5F, $73, $65, 
+$61, $72, $63, $68, $5F, $77, $20, $3D, $20, $27, $27, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, 
+$20, $28, $73, $65, $74, $2E, $6E, $65, $77, $57, $69, $6E, $64, $6F, $77, 
+$29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $74, $69, $70, $75, $65, $5F, 
+$73, $65, $61, $72, $63, $68, $5F, $77, $20, $3D, $20, $27, $20, $74, $61, 
+$72, $67, $65, $74, $3D, $22, $5F, $62, $6C, $61, $6E, $6B, $22, $27, $3B, 
+$20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7D, $0A, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, $75, $6E, $63, $74, 
+$69, $6F, $6E, $20, $67, $65, $74, $55, $52, $4C, $50, $28, $6E, $61, $6D, 
+$65, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $72, $65, $74, $75, $72, 
+$6E, $20, $64, $65, $63, $6F, $64, $65, $55, $52, $49, $43, $6F, $6D, $70, 
+$6F, $6E, $65, $6E, $74, $28, $28, $6E, $65, $77, $20, $52, $65, $67, $45, 
+$78, $70, $28, $27, $5B, $3F, $7C, $26, $5D, $27, $20, $2B, $20, $6E, $61, 
+$6D, $65, $20, $2B, $20, $27, $3D, $27, $20, $2B, $20, $27, $28, $5B, $5E, 
+$26, $3B, $5D, $2B, $3F, $29, $28, $26, $7C, $23, $7C, $3B, $7C, $24, $29, 
+$27, $29, $2E, $65, $78, $65, $63, $28, $6C, $6F, $63, $61, $74, $69, $6F, 
+$6E, $2E, $73, $65, $61, $72, $63, $68, $29, $7C, $7C, $5B, $2C, $22, $22, 
+$5D, $29, $5B, $31, $5D, $2E, $72, $65, $70, $6C, $61, $63, $65, $28, $2F, 
+$5C, $2B, $2F, $67, $2C, $20, $27, $25, $32, $30, $27, $29, $29, $20, $7C, 
+$7C, $20, $6E, $75, $6C, $6C, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $67, 
+$65, $74, $55, $52, $4C, $50, $28, $27, $71, $27, $29, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $24, $28, $27, $23, $74, $69, $70, $75, $65, $5F, 
+$73, $65, $61, $72, $63, $68, $5F, $69, $6E, $70, $75, $74, $27, $29, $2E, 
+$76, $61, $6C, $28, $67, $65, $74, $55, $52, $4C, $50, $28, $27, $71, $27, 
+$29, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $67, $65, $74, $54, $69, $70, 
+$75, $65, $53, $65, $61, $72, $63, $68, $28, $30, $2C, $20, $74, $72, $75, 
+$65, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $24, $28, $27, $23, $74, $69, $70, $75, $65, 
+$5F, $73, $65, $61, $72, $63, $68, $5F, $62, $75, $74, $74, $6F, $6E, $27, 
+$29, $2E, $63, $6C, $69, $63, $6B, $28, $66, $75, $6E, $63, $74, $69, $6F, 
+$6E, $28, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $67, $65, $74, $54, 
+$69, $70, $75, $65, $53, $65, $61, $72, $63, $68, $28, $30, $2C, $20, $74, 
+$72, $75, $65, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7D, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $24, $28, $74, $68, $69, 
+$73, $29, $2E, $6B, $65, $79, $75, $70, $28, $66, $75, $6E, $63, $74, $69, 
+$6F, $6E, $28, $65, $76, $65, $6E, $74, $29, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $69, $66, $28, $65, $76, $65, $6E, $74, $2E, $6B, $65, $79, $43, 
+$6F, $64, $65, $20, $3D, $3D, $20, $27, $31, $33, $27, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$67, $65, $74, $54, $69, $70, $75, $65, $53, $65, $61, $72, $63, $68, $28, 
+$30, $2C, $20, $74, $72, $75, $65, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7D, $29, $3B, $0A, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $66, $75, $6E, $63, $74, $69, $6F, $6E, 
+$20, $67, $65, $74, $54, $69, $70, $75, $65, $53, $65, $61, $72, $63, $68, 
+$28, $73, $74, $61, $72, $74, $2C, $20, $72, $65, $70, $6C, $61, $63, $65, 
+$29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $24, $28, $27, $23, $74, $69, 
+$70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $63, $6F, $6E, $74, 
+$65, $6E, $74, $27, $29, $2E, $68, $69, $64, $65, $28, $29, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $76, $61, $72, $20, $6F, $75, $74, $20, $3D, $20, $27, 
+$27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $72, $65, $73, 
+$75, $6C, $74, $73, $20, $3D, $20, $27, $27, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $76, $61, $72, $20, $73, $68, $6F, $77, $5F, $72, $65, $70, $6C, $61, 
+$63, $65, $20, $3D, $20, $66, $61, $6C, $73, $65, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $76, $61, $72, $20, $73, $68, $6F, $77, $5F, $73, $74, $6F, $70, 
+$20, $3D, $20, $66, $61, $6C, $73, $65, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $64, $20, $3D, $20, $24, 
+$28, $27, $23, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, 
+$5F, $69, $6E, $70, $75, $74, $27, $29, $2E, $76, $61, $6C, $28, $29, $2E, 
+$74, $6F, $4C, $6F, $77, $65, $72, $43, $61, $73, $65, $28, $29, $3B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $64, $20, $3D, $20, $24, $2E, $74, $72, $69, $6D, 
+$28, $64, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $64, 
+$5F, $77, $20, $3D, $20, $64, $2E, $73, $70, $6C, $69, $74, $28, $27, $20, 
+$27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $64, $20, $3D, $20, $27, $27, 
+$3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, $76, $61, $72, 
+$20, $69, $20, $3D, $20, $30, $3B, $20, $69, $20, $3C, $20, $64, $5F, $77, 
+$2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, $69, $2B, $2B, $29, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $76, $61, $72, $20, $61, $5F, $77, $20, $3D, $20, $74, $72, $75, $65, 
+$3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, 
+$20, $28, $76, $61, $72, $20, $66, $20, $3D, $20, $30, $3B, $20, $66, $20, 
+$3C, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $73, 
+$74, $6F, $70, $5F, $77, $6F, $72, $64, $73, $2E, $6C, $65, $6E, $67, $74, 
+$68, $3B, $20, $66, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $69, $66, $20, $28, $64, $5F, $77, $5B, $69, $5D, 
+$20, $3D, $3D, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, 
+$5F, $73, $74, $6F, $70, $5F, $77, $6F, $72, $64, $73, $5B, $66, $5D, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $61, $5F, $77, $20, $3D, $20, $66, 
+$61, $6C, $73, $65, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $73, $68, $6F, $77, 
+$5F, $73, $74, $6F, $70, $20, $3D, $20, $74, $72, $75, $65, $3B, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $69, $66, $20, $28, $61, $5F, $77, $29, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $64, $20, $3D, $20, $64, $20, 
+$2B, $20, $27, $20, $27, $20, $2B, $20, $64, $5F, $77, $5B, $69, $5D, $3B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $64, $20, $3D, $20, $24, 
+$2E, $74, $72, $69, $6D, $28, $64, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$64, $5F, $77, $20, $3D, $20, $64, $2E, $73, $70, $6C, $69, $74, $28, $27, 
+$20, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $69, $66, $20, $28, $64, $2E, $6C, $65, $6E, $67, $74, $68, $20, $3E, 
+$3D, $20, $73, $65, $74, $2E, $6D, $69, $6E, $69, $6D, $75, $6D, $4C, $65, 
+$6E, $67, $74, $68, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $72, $65, $70, 
+$6C, $61, $63, $65, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $76, $61, $72, $20, $64, $5F, $72, $20, $3D, $20, $64, $3B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $66, $6F, $72, $20, $28, $76, $61, $72, $20, $69, $20, $3D, $20, $30, 
+$3B, $20, $69, $20, $3C, $20, $64, $5F, $77, $2E, $6C, $65, $6E, $67, $74, 
+$68, $3B, $20, $69, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$66, $6F, $72, $20, $28, $76, $61, $72, $20, $66, $20, $3D, $20, $30, $3B, 
+$20, $66, $20, $3C, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, 
+$68, $5F, $72, $65, $70, $6C, $61, $63, $65, $2E, $77, $6F, $72, $64, $73, 
+$2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, $66, $2B, $2B, $29, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $69, $66, $20, $28, $64, $5F, $77, $5B, $69, $5D, $20, $3D, $3D, $20, 
+$74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $72, $65, $70, 
+$6C, $61, $63, $65, $2E, $77, $6F, $72, $64, $73, $5B, $66, $5D, $2E, $77, 
+$6F, $72, $64, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $64, $20, $3D, $20, $64, $2E, $72, $65, $70, $6C, $61, $63, $65, 
+$28, $64, $5F, $77, $5B, $69, $5D, $2C, $20, $74, $69, $70, $75, $65, $73, 
+$65, $61, $72, $63, $68, $5F, $72, $65, $70, $6C, $61, $63, $65, $2E, $77, 
+$6F, $72, $64, $73, $5B, $66, $5D, $2E, $72, $65, $70, $6C, $61, $63, $65, 
+$5F, $77, $69, $74, $68, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $73, $68, $6F, $77, $5F, $72, $65, 
+$70, $6C, $61, $63, $65, $20, $3D, $20, $74, $72, $75, $65, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $64, $5F, $77, $20, $3D, $20, $64, $2E, $73, $70, 
+$6C, $69, $74, $28, $27, $20, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $76, $61, $72, $20, $64, $5F, $74, $20, $3D, $20, $64, $3B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, 
+$76, $61, $72, $20, $69, $20, $3D, $20, $30, $3B, $20, $69, $20, $3C, $20, 
+$64, $5F, $77, $2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, $69, $2B, $2B, 
+$29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, 
+$6F, $72, $20, $28, $76, $61, $72, $20, $66, $20, $3D, $20, $30, $3B, $20, 
+$66, $20, $3C, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, 
+$5F, $73, $74, $65, $6D, $2E, $77, $6F, $72, $64, $73, $2E, $6C, $65, $6E, 
+$67, $74, $68, $3B, $20, $66, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $69, $66, $20, $28, $64, $5F, $77, $5B, $69, $5D, $20, $3D, $3D, 
+$20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $73, $74, 
+$65, $6D, $2E, $77, $6F, $72, $64, $73, $5B, $66, $5D, $2E, $77, $6F, $72, 
+$64, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $64, $5F, $74, $20, $3D, $20, $64, $5F, $74, $20, 
+$2B, $20, $27, $20, $27, $20, $2B, $20, $74, $69, $70, $75, $65, $73, $65, 
+$61, $72, $63, $68, $5F, $73, $74, $65, $6D, $2E, $77, $6F, $72, $64, $73, 
+$5B, $66, $5D, $2E, $73, $74, $65, $6D, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $64, $5F, $77, $20, 
+$3D, $20, $64, $5F, $74, $2E, $73, $70, $6C, $69, $74, $28, $27, $20, $27, 
+$29, $3B, $0A, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, 
+$61, $72, $20, $63, $20, $3D, $20, $30, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $66, $6F, $75, $6E, $64, $20, $3D, $20, $6E, $65, 
+$77, $20, $41, $72, $72, $61, $79, $28, $29, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, $76, $61, $72, $20, 
+$69, $20, $3D, $20, $30, $3B, $20, $69, $20, $3C, $20, $74, $69, $70, $75, 
+$65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, $2E, $70, $61, $67, $65, 
+$73, $2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, $69, $2B, $2B, $29, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, 
+$20, $73, $63, $6F, $72, $65, $20, $3D, $20, $31, $30, $30, $30, $30, $30, 
+$30, $30, $30, $30, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $73, $5F, $74, $20, $3D, 
+$20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, 
+$2E, $70, $61, $67, $65, $73, $5B, $69, $5D, $2E, $74, $65, $78, $74, $3B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $66, $6F, $72, $20, $28, $76, $61, $72, $20, $66, $20, $3D, $20, $30, 
+$3B, $20, $66, $20, $3C, $20, $64, $5F, $77, $2E, $6C, $65, $6E, $67, $74, 
+$68, $3B, $20, $66, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$76, $61, $72, $20, $70, $61, $74, $20, $3D, $20, $6E, $65, $77, $20, $52, 
+$65, $67, $45, $78, $70, $28, $64, $5F, $77, $5B, $66, $5D, $2C, $20, $27, 
+$69, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $74, 
+$69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, $2E, $70, 
+$61, $67, $65, $73, $5B, $69, $5D, $2E, $74, $69, $74, $6C, $65, $2E, $73, 
+$65, $61, $72, $63, $68, $28, $70, $61, $74, $29, $20, $21, $3D, $20, $2D, 
+$31, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $73, $63, $6F, $72, $65, $20, $2D, $3D, $20, $28, 
+$32, $30, $30, $30, $30, $30, $20, $2D, $20, $69, $29, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $74, 
+$69, $70, $75, $65, $73, $65, $61, $72, $63, $68, $5F, $69, $6E, $2E, $70, 
+$61, $67, $65, $73, $5B, $69, $5D, $2E, $74, $65, $78, $74, $2E, $73, $65, 
+$61, $72, $63, $68, $28, $70, $61, $74, $29, $20, $21, $3D, $20, $2D, $31, 
+$29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $73, $63, $6F, $72, $65, $20, $2D, $3D, $20, $28, $31, 
+$35, $30, $30, $30, $30, $20, $2D, $20, $69, $29, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$69, $66, $20, $28, $73, $65, $74, $2E, $68, $69, $67, $68, $6C, $69, $67, 
+$68, $74, $54, $65, $72, $6D, $73, $29, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, 
+$73, $65, $74, $2E, $68, $69, $67, $68, $6C, $69, $67, $68, $74, $45, $76, 
+$65, $72, $79, $54, $65, $72, $6D, $29, $20, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $70, $61, $74, $72, 
+$20, $3D, $20, $6E, $65, $77, $20, $52, $65, $67, $45, $78, $70, $28, $27, 
+$28, $27, $20, $2B, $20, $64, $5F, $77, $5B, $66, $5D, $20, $2B, $20, $27, 
+$29, $27, $2C, $20, $27, $67, $69, $27, $29, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $76, $61, $72, $20, $70, $61, $74, $72, $20, $3D, 
+$20, $6E, $65, $77, $20, $52, $65, $67, $45, $78, $70, $28, $27, $28, $27, 
+$20, $2B, $20, $64, $5F, $77, $5B, $66, $5D, $20, $2B, $20, $27, $29, $27, 
+$2C, $20, $27, $69, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$73, $5F, $74, $20, $3D, $20, $73, $5F, $74, $2E, $72, $65, $70, $6C, $61, 
+$63, $65, $28, $70, $61, $74, $72, $2C, $20, $22, $3C, $62, $3E, $24, $31, 
+$3C, $2F, $62, $3E, $22, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $69, $66, $20, $28, $74, $69, $70, $75, $65, $73, 
+$65, $61, $72, $63, $68, $5F, $69, $6E, $2E, $70, $61, $67, $65, $73, $5B, 
+$69, $5D, $2E, $74, $61, $67, $73, $2E, $73, $65, $61, $72, $63, $68, $28, 
+$70, $61, $74, $29, $20, $21, $3D, $20, $2D, $31, $29, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $73, 
+$63, $6F, $72, $65, $20, $2D, $3D, $20, $28, $31, $30, $30, $30, $30, $30, 
+$20, $2D, $20, $69, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $73, $63, $6F, $72, 
+$65, $20, $3C, $20, $31, $30, $30, $30, $30, $30, $30, $30, $30, $30, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $66, $6F, $75, $6E, $64, $5B, $63, 
+$2B, $2B, $5D, $20, $3D, $20, $73, $63, $6F, $72, $65, $20, $2B, $20, $27, 
+$5E, $27, $20, $2B, $20, $74, $69, $70, $75, $65, $73, $65, $61, $72, $63, 
+$68, $5F, $69, $6E, $2E, $70, $61, $67, $65, $73, $5B, $69, $5D, $2E, $74, 
+$69, $74, $6C, $65, $20, $2B, $20, $27, $5E, $27, $20, $2B, $20, $73, $5F, 
+$74, $20, $2B, $20, $27, $5E, $27, $20, $2B, $20, $74, $69, $70, $75, $65, 
+$73, $65, $61, $72, $63, $68, $5F, $69, $6E, $2E, $70, $61, $67, $65, $73, 
+$5B, $69, $5D, $2E, $6C, $6F, $63, $3B, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $69, $66, $20, $28, $63, $20, $21, $3D, $20, $30, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $73, 
+$68, $6F, $77, $5F, $72, $65, $70, $6C, $61, $63, $65, $20, $3D, $3D, $20, 
+$31, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, 
+$3D, $20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, 
+$75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, 
+$6E, $67, $5F, $68, $65, $61, $64, $22, $3E, $53, $68, $6F, $77, $69, $6E, 
+$67, $20, $72, $65, $73, $75, $6C, $74, $73, $20, $66, $6F, $72, $20, $27, 
+$20, $2B, $20, $64, $20, $2B, $20, $27, $3C, $2F, $64, $69, $76, $3E, $27, 
+$3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, $27, 
+$3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, $65, $5F, 
+$73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, $6E, $67, $22, 
+$3E, $53, $65, $61, $72, $63, $68, $20, $66, $6F, $72, $20, $3C, $61, $20, 
+$68, $72, $65, $66, $3D, $22, $6A, $61, $76, $61, $73, $63, $72, $69, $70, 
+$74, $3A, $76, $6F, $69, $64, $28, $30, $29, $22, $20, $69, $64, $3D, $22, 
+$74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $72, $65, 
+$70, $6C, $61, $63, $65, $64, $22, $3E, $27, $20, $2B, $20, $64, $5F, $72, 
+$20, $2B, $20, $27, $3C, $2F, $61, $3E, $3C, $2F, $64, $69, $76, $3E, $27, 
+$3B, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $69, $66, $20, $28, $63, $20, $3D, $3D, $20, $31, 
+$29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, 
+$20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, 
+$65, $5F, $73, $65, $61, $72, $63, $68, $5F, $72, $65, $73, $75, $6C, $74, 
+$73, $5F, $63, $6F, $75, $6E, $74, $22, $3E, $31, $20, $72, $65, $73, $75, 
+$6C, $74, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $65, $6C, 
+$73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $63, $5F, $63, $20, $3D, 
+$20, $63, $2E, $74, $6F, $53, $74, $72, $69, $6E, $67, $28, $29, $2E, $72, 
+$65, $70, $6C, $61, $63, $65, $28, $2F, $5C, $42, $28, $3F, $3D, $28, $5C, 
+$64, $7B, $33, $7D, $29, $2B, $28, $3F, $21, $5C, $64, $29, $29, $2F, $67, 
+$2C, $20, $22, $2C, $22, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, 
+$74, $20, $2B, $3D, $20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, 
+$74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $72, $65, 
+$73, $75, $6C, $74, $73, $5F, $63, $6F, $75, $6E, $74, $22, $3E, $27, $20, 
+$2B, $20, $63, $5F, $63, $20, $2B, $20, $27, $20, $72, $65, $73, $75, $6C, 
+$74, $73, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, 
+$6F, $75, $6E, $64, $2E, $73, $6F, $72, $74, $28, $29, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, 
+$72, $20, $6C, $5F, $6F, $20, $3D, $20, $30, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, 
+$28, $76, $61, $72, $20, $69, $20, $3D, $20, $30, $3B, $20, $69, $20, $3C, 
+$20, $66, $6F, $75, $6E, $64, $2E, $6C, $65, $6E, $67, $74, $68, $3B, $20, 
+$69, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, 
+$20, $66, $6F, $20, $3D, $20, $66, $6F, $75, $6E, $64, $5B, $69, $5D, $2E, 
+$73, $70, $6C, $69, $74, $28, $27, $5E, $27, $29, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $69, $66, $20, $28, $6C, $5F, $6F, $20, $3E, $3D, $20, $73, $74, 
+$61, $72, $74, $20, $26, $26, $20, $6C, $5F, $6F, $20, $3C, $20, $73, $65, 
+$74, $2E, $73, $68, $6F, $77, $20, $2B, $20, $73, $74, $61, $72, $74, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, $27, $3C, $64, $69, $76, 
+$20, $63, $6C, $61, $73, $73, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, 
+$65, $61, $72, $63, $68, $5F, $63, $6F, $6E, $74, $65, $6E, $74, $5F, $74, 
+$69, $74, $6C, $65, $22, $3E, $3C, $61, $20, $68, $72, $65, $66, $3D, $22, 
+$27, $20, $2B, $20, $66, $6F, $5B, $33, $5D, $20, $2B, $20, $27, $22, $27, 
+$20, $2B, $20, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, 
+$5F, $77, $20, $2B, $20, $27, $3E, $27, $20, $2B, $20, $20, $66, $6F, $5B, 
+$31, $5D, $20, $2B, $20, $27, $3C, $2F, $61, $3E, $3C, $2F, $64, $69, $76, 
+$3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $76, $61, $72, $20, $74, $20, $3D, $20, $66, $6F, 
+$5B, $32, $5D, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$76, $61, $72, $20, $74, $5F, $64, $20, $3D, $20, $27, $27, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $74, $5F, 
+$77, $20, $3D, $20, $74, $2E, $73, $70, $6C, $69, $74, $28, $27, $20, $27, 
+$29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, 
+$20, $28, $74, $5F, $77, $2E, $6C, $65, $6E, $67, $74, $68, $20, $3C, $20, 
+$73, $65, $74, $2E, $64, $65, $73, $63, $72, $69, $70, $74, $69, $76, $65, 
+$57, $6F, $72, $64, $73, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $74, $5F, $64, $20, $3D, $20, $74, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, $76, $61, $72, 
+$20, $66, $20, $3D, $20, $30, $3B, $20, $66, $20, $3C, $20, $73, $65, $74, 
+$2E, $64, $65, $73, $63, $72, $69, $70, $74, $69, $76, $65, $57, $6F, $72, 
+$64, $73, $3B, $20, $66, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $74, $5F, $64, $20, $2B, $3D, $20, $74, $5F, $77, $5B, $66, $5D, $20, 
+$2B, $20, $27, $20, $27, $3B, $20, $09, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $74, $5F, $64, $20, $3D, $20, $24, $2E, $74, $72, $69, $6D, 
+$28, $74, $5F, $64, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $69, $66, $20, $28, $74, $5F, $64, $2E, $63, $68, $61, $72, $41, 
+$74, $28, $74, $5F, $64, $2E, $6C, $65, $6E, $67, $74, $68, $20, $2D, $20, 
+$31, $29, $20, $21, $3D, $20, $27, $2E, $27, $29, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $74, $5F, $64, $20, $2B, $3D, $20, 
+$27, $20, $2E, $2E, $2E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$6F, $75, $74, $20, $2B, $3D, $20, $27, $3C, $64, $69, $76, $20, $63, $6C, 
+$61, $73, $73, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, 
+$63, $68, $5F, $63, $6F, $6E, $74, $65, $6E, $74, $5F, $74, $65, $78, $74, 
+$22, $3E, $27, $20, $2B, $20, $74, $5F, $64, $20, $2B, $20, $27, $3C, $2F, 
+$64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, 
+$20, $28, $73, $65, $74, $2E, $73, $68, $6F, $77, $55, $52, $4C, $29, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $74, $5F, $75, 
+$72, $6C, $20, $3D, $20, $66, $6F, $5B, $33, $5D, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, 
+$28, $74, $5F, $75, $72, $6C, $2E, $6C, $65, $6E, $67, $74, $68, $20, $3E, 
+$20, $34, $35, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $74, $5F, $75, 
+$72, $6C, $20, $3D, $20, $66, $6F, $5B, $33, $5D, $2E, $73, $75, $62, $73, 
+$74, $72, $28, $30, $2C, $20, $34, $35, $29, $20, $2B, $20, $27, $20, $2E, 
+$2E, $2E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7D, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, 
+$2B, $3D, $20, $27, $3C, $64, $69, $76, $20, $63, $6C, $61, $73, $73, $3D, 
+$22, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $63, 
+$6F, $6E, $74, $65, $6E, $74, $5F, $6C, $6F, $63, $22, $3E, $3C, $61, $20, 
+$68, $72, $65, $66, $3D, $22, $27, $20, $2B, $20, $66, $6F, $5B, $33, $5D, 
+$20, $2B, $20, $27, $22, $27, $20, $2B, $20, $74, $69, $70, $75, $65, $5F, 
+$73, $65, $61, $72, $63, $68, $5F, $77, $20, $2B, $20, $27, $3E, $27, $20, 
+$2B, $20, $74, $5F, $75, $72, $6C, $20, $2B, $20, $27, $3C, $2F, $61, $3E, 
+$3C, $2F, $64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $6C, $5F, $6F, $2B, $2B, $3B, $20, $20, $20, $20, $20, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $69, $66, $20, $28, $63, $20, $3E, $20, $73, $65, $74, $2E, 
+$73, $68, $6F, $77, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, 
+$72, $20, $70, $61, $67, $65, $73, $20, $3D, $20, $4D, $61, $74, $68, $2E, 
+$63, $65, $69, $6C, $28, $63, $20, $2F, $20, $73, $65, $74, $2E, $73, $68, 
+$6F, $77, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $70, 
+$61, $67, $65, $20, $3D, $20, $28, $73, $74, $61, $72, $74, $20, $2F, $20, 
+$73, $65, $74, $2E, $73, $68, $6F, $77, $29, $3B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $6F, $75, $74, $20, $2B, $3D, $20, $27, $3C, $64, $69, $76, $20, $69, 
+$64, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, 
+$5F, $66, $6F, $6F, $74, $22, $3E, $3C, $75, $6C, $20, $69, $64, $3D, $22, 
+$74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $66, $6F, 
+$6F, $74, $5F, $62, $6F, $78, $65, $73, $22, $3E, $27, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $73, $74, 
+$61, $72, $74, $20, $3E, $20, $30, $29, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, 
+$3D, $20, $27, $3C, $6C, $69, $3E, $3C, $61, $20, $68, $72, $65, $66, $3D, 
+$22, $6A, $61, $76, $61, $73, $63, $72, $69, $70, $74, $3A, $76, $6F, $69, 
+$64, $28, $30, $29, $22, $20, $63, $6C, $61, $73, $73, $3D, $22, $74, $69, 
+$70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $66, $6F, $6F, $74, 
+$5F, $62, $6F, $78, $22, $20, $69, $64, $3D, $22, $27, $20, $2B, $20, $28, 
+$73, $74, $61, $72, $74, $20, $2D, $20, $73, $65, $74, $2E, $73, $68, $6F, 
+$77, $29, $20, $2B, $20, $27, $5F, $27, $20, $2B, $20, $72, $65, $70, $6C, 
+$61, $63, $65, $20, $2B, $20, $27, $22, $3E, $50, $72, $65, $76, $3C, $2F, 
+$61, $3E, $3C, $2F, $6C, $69, $3E, $27, $3B, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $69, $66, $20, $28, $70, $61, $67, $65, $20, $3C, $3D, 
+$20, $32, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $70, $5F, $62, $20, $3D, 
+$20, $70, $61, $67, $65, $73, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $69, $66, $20, $28, $70, $61, $67, $65, $73, $20, $3E, $20, 
+$33, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$70, $5F, $62, $20, $3D, $20, $33, $3B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $66, $6F, $72, $20, $28, $76, $61, $72, $20, 
+$66, $20, $3D, $20, $30, $3B, $20, $66, $20, $3C, $20, $70, $5F, $62, $3B, 
+$20, $66, $2B, $2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $69, $66, $20, $28, $66, $20, $3D, $3D, $20, $70, $61, $67, 
+$65, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, 
+$3D, $20, $27, $3C, $6C, $69, $20, $63, $6C, $61, $73, $73, $3D, $22, $63, 
+$75, $72, $72, $65, $6E, $74, $22, $3E, $27, $20, $2B, $20, $28, $66, $20, 
+$2B, $20, $31, $29, $20, $2B, $20, $27, $3C, $2F, $6C, $69, $3E, $27, $3B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$6F, $75, $74, $20, $2B, $3D, $20, $27, $3C, $6C, $69, $3E, $3C, $61, $20, 
+$68, $72, $65, $66, $3D, $22, $6A, $61, $76, $61, $73, $63, $72, $69, $70, 
+$74, $3A, $76, $6F, $69, $64, $28, $30, $29, $22, $20, $63, $6C, $61, $73, 
+$73, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, 
+$5F, $66, $6F, $6F, $74, $5F, $62, $6F, $78, $22, $20, $69, $64, $3D, $22, 
+$27, $20, $2B, $20, $28, $66, $20, $2A, $20, $73, $65, $74, $2E, $73, $68, 
+$6F, $77, $29, $20, $2B, $20, $27, $5F, $27, $20, $2B, $20, $72, $65, $70, 
+$6C, $61, $63, $65, $20, $2B, $20, $27, $22, $3E, $27, $20, $2B, $20, $28, 
+$66, $20, $2B, $20, $31, $29, $20, $2B, $20, $27, $3C, $2F, $61, $3E, $3C, 
+$2F, $6C, $69, $3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $70, 
+$5F, $62, $20, $3D, $20, $70, $61, $67, $65, $20, $2B, $20, $33, $3B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, $20, $28, $70, 
+$5F, $62, $20, $3E, $20, $70, $61, $67, $65, $73, $29, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $70, $5F, $62, $20, $3D, $20, 
+$70, $61, $67, $65, $73, $3B, $20, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$66, $6F, $72, $20, $28, $76, $61, $72, $20, $66, $20, $3D, $20, $70, $61, 
+$67, $65, $3B, $20, $66, $20, $3C, $20, $70, $5F, $62, $3B, $20, $66, $2B, 
+$2B, $29, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$69, $66, $20, $28, $66, $20, $3D, $3D, $20, $70, $61, $67, $65, $29, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, $27, 
+$3C, $6C, $69, $20, $63, $6C, $61, $73, $73, $3D, $22, $63, $75, $72, $72, 
+$65, $6E, $74, $22, $3E, $27, $20, $2B, $20, $28, $66, $20, $2B, $20, $31, 
+$29, $20, $2B, $20, $27, $3C, $2F, $6C, $69, $3E, $27, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, 
+$20, $2B, $3D, $20, $27, $3C, $6C, $69, $3E, $3C, $61, $20, $68, $72, $65, 
+$66, $3D, $22, $6A, $61, $76, $61, $73, $63, $72, $69, $70, $74, $3A, $76, 
+$6F, $69, $64, $28, $30, $29, $22, $20, $63, $6C, $61, $73, $73, $3D, $22, 
+$74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $66, $6F, 
+$6F, $74, $5F, $62, $6F, $78, $22, $20, $69, $64, $3D, $22, $27, $20, $2B, 
+$20, $28, $66, $20, $2A, $20, $73, $65, $74, $2E, $73, $68, $6F, $77, $29, 
+$20, $2B, $20, $27, $5F, $27, $20, $2B, $20, $72, $65, $70, $6C, $61, $63, 
+$65, $20, $2B, $20, $27, $22, $3E, $27, $20, $2B, $20, $28, $66, $20, $2B, 
+$20, $31, $29, $20, $2B, $20, $27, $3C, $2F, $61, $3E, $3C, $2F, $6C, $69, 
+$3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $69, $66, $20, $28, $70, $61, $67, $65, $20, $2B, 
+$20, $31, $20, $21, $3D, $20, $70, $61, $67, $65, $73, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, 
+$75, $74, $20, $2B, $3D, $20, $27, $3C, $6C, $69, $3E, $3C, $61, $20, $68, 
+$72, $65, $66, $3D, $22, $6A, $61, $76, $61, $73, $63, $72, $69, $70, $74, 
+$3A, $76, $6F, $69, $64, $28, $30, $29, $22, $20, $63, $6C, $61, $73, $73, 
+$3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, 
+$66, $6F, $6F, $74, $5F, $62, $6F, $78, $22, $20, $69, $64, $3D, $22, $27, 
+$20, $2B, $20, $28, $73, $74, $61, $72, $74, $20, $2B, $20, $73, $65, $74, 
+$2E, $73, $68, $6F, $77, $29, $20, $2B, $20, $27, $5F, $27, $20, $2B, $20, 
+$72, $65, $70, $6C, $61, $63, $65, $20, $2B, $20, $27, $22, $3E, $4E, $65, 
+$78, $74, $3C, $2F, $61, $3E, $3C, $2F, $6C, $69, $3E, $27, $3B, $20, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, 
+$27, $3C, $2F, $75, $6C, $3E, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, $27, $3C, $64, 
+$69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, 
+$61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, $6E, $67, $5F, $68, $65, 
+$61, $64, $22, $3E, $4E, $6F, $74, $68, $69, $6E, $67, $20, $66, $6F, $75, 
+$6E, $64, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $20, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $69, $66, 
+$20, $28, $73, $68, $6F, $77, $5F, $73, $74, $6F, $70, $29, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, 
+$3D, $20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, 
+$75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, 
+$6E, $67, $5F, $68, $65, $61, $64, $22, $3E, $4E, $6F, $74, $68, $69, $6E, 
+$67, $20, $66, $6F, $75, $6E, $64, $3C, $2F, $64, $69, $76, $3E, $3C, $64, 
+$69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, $65, $5F, $73, $65, 
+$61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, $6E, $67, $22, $3E, $43, 
+$6F, $6D, $6D, $6F, $6E, $20, $77, $6F, $72, $64, $73, $20, $61, $72, $65, 
+$20, $6C, $61, $72, $67, $65, $6C, $79, $20, $69, $67, $6E, $6F, $72, $65, 
+$64, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $20, $20, $20, $20, $20, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $65, $6C, $73, $65, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, 
+$20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, 
+$65, $5F, $73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, $6E, 
+$67, $5F, $68, $65, $61, $64, $22, $3E, $53, $65, $61, $72, $63, $68, $20, 
+$74, $6F, $6F, $20, $73, $68, $6F, $72, $74, $3C, $2F, $64, $69, $76, $3E, 
+$27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $69, $66, $20, $28, $73, $65, $74, $2E, $6D, $69, $6E, $69, 
+$6D, $75, $6D, $4C, $65, $6E, $67, $74, $68, $20, $3D, $3D, $20, $31, $29, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, $2B, $3D, $20, 
+$27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, $70, $75, $65, 
+$5F, $73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, $69, $6E, $67, 
+$22, $3E, $53, $68, $6F, $75, $6C, $64, $20, $62, $65, $20, $6F, $6E, $65, 
+$20, $63, $68, $61, $72, $61, $63, $74, $65, $72, $20, $6F, $72, $20, $6D, 
+$6F, $72, $65, $3C, $2F, $64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $65, 
+$6C, $73, $65, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $6F, $75, $74, $20, 
+$2B, $3D, $20, $27, $3C, $64, $69, $76, $20, $69, $64, $3D, $22, $74, $69, 
+$70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $77, $61, $72, $6E, 
+$69, $6E, $67, $22, $3E, $53, $68, $6F, $75, $6C, $64, $20, $62, $65, $20, 
+$27, $20, $2B, $20, $73, $65, $74, $2E, $6D, $69, $6E, $69, $6D, $75, $6D, 
+$4C, $65, $6E, $67, $74, $68, $20, $2B, $20, $27, $20, $63, $68, $61, $72, 
+$61, $63, $74, $65, $72, $73, $20, $6F, $72, $20, $6D, $6F, $72, $65, $3C, 
+$2F, $64, $69, $76, $3E, $27, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $7D, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $24, $28, $27, $23, $74, $69, $70, $75, $65, $5F, 
+$73, $65, $61, $72, $63, $68, $5F, $63, $6F, $6E, $74, $65, $6E, $74, $27, 
+$29, $2E, $68, $74, $6D, $6C, $28, $6F, $75, $74, $29, $3B, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $24, $28, $27, $23, $74, $69, $70, $75, $65, $5F, $73, $65, 
+$61, $72, $63, $68, $5F, $63, $6F, $6E, $74, $65, $6E, $74, $27, $29, $2E, 
+$73, $6C, $69, $64, $65, $44, $6F, $77, $6E, $28, $32, $30, $30, $29, $3B, 
+$0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $24, $28, $27, 
+$23, $74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $72, 
+$65, $70, $6C, $61, $63, $65, $64, $27, $29, $2E, $63, $6C, $69, $63, $6B, 
+$28, $66, $75, $6E, $63, $74, $69, $6F, $6E, $28, $29, $0A, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $67, 
+$65, $74, $54, $69, $70, $75, $65, $53, $65, $61, $72, $63, $68, $28, $30, 
+$2C, $20, $66, $61, $6C, $73, $65, $29, $3B, $0A, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$7D, $29, $3B, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $24, $28, $27, $2E, 
+$74, $69, $70, $75, $65, $5F, $73, $65, $61, $72, $63, $68, $5F, $66, $6F, 
+$6F, $74, $5F, $62, $6F, $78, $27, $29, $2E, $63, $6C, $69, $63, $6B, $28, 
+$66, $75, $6E, $63, $74, $69, $6F, $6E, $28, $29, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $7B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, 
+$72, $20, $69, $64, $5F, $76, $20, $3D, $20, $24, $28, $74, $68, $69, $73, 
+$29, $2E, $61, $74, $74, $72, $28, $27, $69, $64, $27, $29, $3B, $0A, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $76, $61, $72, $20, $69, $64, 
+$5F, $61, $20, $3D, $20, $69, $64, $5F, $76, $2E, $73, $70, $6C, $69, $74, 
+$28, $27, $5F, $27, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $67, $65, $74, $54, $69, $70, $75, 
+$65, $53, $65, $61, $72, $63, $68, $28, $70, $61, $72, $73, $65, $49, $6E, 
+$74, $28, $69, $64, $5F, $61, $5B, $30, $5D, $29, $2C, $20, $69, $64, $5F, 
+$61, $5B, $31, $5D, $29, $3B, $0A, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $29, $3B, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, $20, $20, $20, 
+$20, $20, $20, $20, $20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, 
+$20, $20, $20, $0A, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $7D, 
+$29, $3B, $0A, $20, $20, $20, $20, $20, $7D, $3B, $0A, $20, $20, $20, $0A, 
+$7D, $29, $28, $6A, $51, $75, $65, $72, $79, $29, $3B, $0A, $0A, $0A, $0A, 
+$0A)
