@@ -18,7 +18,6 @@ uses
   Classes;
 
 type
-  TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
     { This is the same thing as Items[0] }
@@ -29,7 +28,6 @@ type
     procedure RemoveAllNamesCI(const AName: string);
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
-    procedure Iterate(const AItFunc: TIterateFunc);
     function AddNotExisting(const AString: string): Integer;
 
     { Load from a stream using the binary format.
@@ -110,15 +108,6 @@ end;
 function TStringVector.IsEmpty: boolean;
 begin
   Result := Count = 0;
-end;
-
-procedure TStringVector.Iterate(const AItFunc: TIterateFunc);
-var
-  i: Integer;
-begin
-  for i := 0 to count - 1 do begin
-    Strings[i] := AItFunc(Strings[i]);
-  end;
 end;
 
 procedure TStringVector.LoadFromTextFileAdd(

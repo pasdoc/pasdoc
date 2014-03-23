@@ -520,6 +520,7 @@ var
   t1, t2: TDateTime;
   CacheDirNoDelim: string;
   UnitsCountBeforeExcluding: Cardinal;
+  I: Integer;
 begin
   if not Assigned(Generator) then begin
     DoError('No Generator present!', [], 1);
@@ -548,7 +549,8 @@ begin
   end;
 
   { Make sure all IncludeDirectories end with a Path Separator. }
-  FIncludeDirectories.Iterate( {$IFDEF FPC}@{$ENDIF} IncludeTrailingPathDelimiter);
+  for I := 0 to FIncludeDirectories.Count - 1 do
+    FIncludeDirectories[I] := IncludeTrailingPathDelimiter(FIncludeDirectories[I]);
 
   t1 := Now;
   ParseFiles;
