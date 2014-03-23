@@ -353,7 +353,7 @@ const
   aHungarian          : {$I lang\PasDoc_Languages_Hungarian_utf8_bom.inc}
   aCzech              : {$I lang\PasDoc_Languages_Czech_utf8_bom.inc}
 {$ELSE}
-  aEnglish            : {$I lang\PasDoc_Languages_English_1252.inc}
+  aEnglish            : {$I lang\PasDoc_Languages_English_utf8.inc}
   aBosnian            : {$I lang\PasDoc_Languages_Bosnia_1250.inc}
   aBrazilian_1252     : {$I lang\PasDoc_Languages_Brasilian_1252.inc}
   aBrazilian_utf8     : {$I lang\PasDoc_Languages_Brasilian_utf8.inc}
@@ -418,7 +418,7 @@ const
     (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),    
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
-    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'; AspellLanguage: ''),
+    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aFrench_ISO_8859_15; Name: 'French (iso-8859-15)'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),    
     (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
