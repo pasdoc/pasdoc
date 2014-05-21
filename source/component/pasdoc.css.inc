@@ -1,5 +1,27 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
+'/*' + LineEnding +
+'  Copyright 1998-2014 PasDoc developers.' + LineEnding +
+'' + LineEnding +
+'  This file is part of "PasDoc".' + LineEnding +
+'' + LineEnding +
+'  "PasDoc" is free software; you can redistribute it and/or modify' + LineEnding +
+'  it under the terms of the GNU General Public License as published by' + LineEnding +
+'  the Free Software Foundation; either version 2 of the License, or' + LineEnding +
+'  (at your option) any later version.' + LineEnding +
+'' + LineEnding +
+'  "PasDoc" is distributed in the hope that it will be useful,' + LineEnding +
+'  but WITHOUT ANY WARRANTY; without even the implied warranty of' + LineEnding +
+'  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the' + LineEnding +
+'  GNU General Public License for more details.' + LineEnding +
+'' + LineEnding +
+'  You should have received a copy of the GNU General Public License' + LineEnding +
+'  along with "PasDoc"; if not, write to the Free Software' + LineEnding +
+'  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA' + LineEnding +
+'' + LineEnding +
+'  ----------------------------------------------------------------------------' + LineEnding +
+'*/' + LineEnding +
+'' + LineEnding +
 'body, html, table.container {' + LineEnding +
 '  margin: 0;' + LineEnding +
 '  padding: 0;' + LineEnding +

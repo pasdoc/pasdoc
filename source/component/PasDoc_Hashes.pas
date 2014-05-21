@@ -3,7 +3,7 @@
   Before writing this unit, I've always missed Perl commands
   like @code($h{abc}='def') in Pascal.
 
-  @author(Copyright (C) 2001  Wolf Behrenhoff <wolf@behrenhoff.de>)
+  @author(Copyright (C) 2001-2014  Wolf Behrenhoff <wolf@behrenhoff.de> and PasDoc developers)
 
   Version 0.9.1 (works fine, don't know a bug, but 1.0? No,
                  error checks are missing!)

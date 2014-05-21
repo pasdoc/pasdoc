@@ -1,7 +1,29 @@
-{ This is a compatibility unit providing various utilities from
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
+{ Compatibility unit providing various utilities from
   standard StrUtils unit to Delphi 5.
 
-  So this unit should be compilable only with Delphi 5.
+  This unit should be compilable only with Delphi 5.
   When using Delphi 5, you should add this unit to your unit search
   path, and then pasdoc should compile "out of the box".
   When compiling pasdoc with newer compilers, you should just use
@@ -16,7 +38,6 @@
   implementation (but of course you should make sure that given
   implementation compiles and works with Delphi 5).
 }
-
 unit StrUtils;
 
 interface
