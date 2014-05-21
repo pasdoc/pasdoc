@@ -291,7 +291,7 @@ type
 
     { Returns the qualified name of the item.
       This is intended to return a concise and not ambigous name.
-      E.g. in case of TPasItem it is overriden to return Name qualified
+      E.g. in case of TPasItem it is overridden to return Name qualified
       by class name and unit name. 
       
       In this class this simply returns Name. }
