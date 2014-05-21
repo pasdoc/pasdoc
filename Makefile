@@ -316,6 +316,9 @@ help:
 	@echo "    a binary for given <os/arch>. So if you want to cross-compile"
 	@echo "    with FPC, make sure to adjust these variables accordingly."
 	@echo
+	@echo "  build-gui:"
+	@echo "    Compile pasdoc_gui with lazbuild (Lazarus build tool)."
+	@echo
 	@echo "  clean:"
 	@echo "    Clean files produced during compilation."
 	@echo
