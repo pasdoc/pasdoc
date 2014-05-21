@@ -22,10 +22,14 @@ INCLUDE_DIRS := ./source/component ./source/component/images
 FILE := ./source/console/pasdoc.dpr
 
 # Base directory where binaries will go
+ifndef BINDIR
 BINDIR := bin
+endif
 
 # Base directory where libs, units, objects files will go
+ifndef OUTDIR
 OUTDIR := lib
+endif
 
 # The following is for creating the final package, comment out
 # if that particular section is not used.
