@@ -268,6 +268,11 @@ build-vpc-os2: make-dirs
 build-pascal_pre_proc: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
 
+build-gui:
+	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
+	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
+	strip source/gui/pasdoc_gui$(EXE)
+
 ############################################################################
 # Help targets
 ############################################################################
@@ -370,9 +375,7 @@ ifdef DOCFILES
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef ADD_PASDOC_GUI
-	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
-	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
-	strip source/gui/pasdoc_gui$(EXE)
+	$(MAKE) build-gui
 ifdef PASDOC_GUI_BUNDLE
 # Lazarus by default places only a symlink inside Contents/MacOS/ .
 # For releae, we want to instead put binary directly inside Contents/MacOS/,
