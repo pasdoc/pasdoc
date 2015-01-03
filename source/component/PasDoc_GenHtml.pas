@@ -1255,10 +1255,16 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirect('</p>');
   end;
 
-  procedure WriteHintDirective(const S: string);
+  procedure WriteHintDirective(const S: string; const Note: string = '');
+  var
+    Text: string;
   begin
     WriteDirect('<p class="hint_directive">');
-    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.');
+    Text := FLanguage.Translation[trWarning] + ': ' + S;
+    if Note <> '' then
+      Text := Text + ': ' + Note else
+      Text := Text + '.';
+    WriteConverted(Text);
     WriteDirect('</p>');
   end;
 
@@ -1271,7 +1277,7 @@ begin
   if not Assigned(AItem) then Exit;
   
   if AItem.IsDeprecated then
-    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+    WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then

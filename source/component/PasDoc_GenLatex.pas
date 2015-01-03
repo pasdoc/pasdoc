@@ -1060,10 +1060,16 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     WriteDirect('',true);
   end;
 
-  procedure WriteHintDirective(const S: string);
+  procedure WriteHintDirective(const S: string; const Note: string = '');
+  var
+    Text: string;
   begin
-    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.'
-                     + LineEnding + LineEnding);
+    Text := FLanguage.Translation[trWarning] + ': ' + S;
+    if Note <> '' then
+      Text := Text + ': ' + Note else
+      Text := Text + '.';
+    Text := Text + LineEnding + LineEnding;
+    WriteConverted(Text);
   end;
 
 var
@@ -1075,7 +1081,7 @@ begin
   if not Assigned(AItem) then Exit;
 
   if AItem.IsDeprecated then
-    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+    WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then

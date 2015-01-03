@@ -336,6 +336,7 @@ type
     FIsDeprecated: boolean;
     FIsPlatformSpecific: boolean;
     FIsLibrarySpecific: boolean;
+    FDeprecatedNote: string;
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
     FCachedUnitRelativeQualifiedName: string; //< do not serialize
@@ -448,6 +449,11 @@ type
       This is decided by "library" hint directive after an item. }
     property IsLibrarySpecific: boolean 
       read FIsLibrarySpecific write FIsLibrarySpecific;   
+      
+    { Deprecation note, specified as a string after "deprecated" directive.
+      Empty if none, always empty if @link(IsDeprecated) is @false. }
+    property DeprecatedNote: string
+      read FDeprecatedNote write FDeprecatedNote;
       
     { This recursively sorts all items inside this item,
       and all items inside these items, etc.
@@ -1579,6 +1585,7 @@ begin
   ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
   ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  DeprecatedNote := LoadStringFromStream(ASource);
   FullDeclaration := LoadStringFromStream(ASource);
   Attributes.LoadFromBinaryStream(ASource);
   
@@ -1596,6 +1603,7 @@ begin
   ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
   ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  SaveStringToStream(DeprecatedNote, ADestination);
   SaveStringToStream(FullDeclaration, ADestination);
   FAttributes.SaveToBinaryStream(ADestination);
   

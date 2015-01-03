@@ -263,6 +263,10 @@ type
       For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
     CommentContent: string;
     
+    { Contents of the string token, that is: the value of the string literal.
+      D only when MyType is TOK_STRING. }
+    StringContent: string;
+    
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
@@ -767,7 +771,19 @@ begin
         QuoteChar:
           ReadLiteralString(Result);
         '#':
-          ReadToken(c, CharOther, TOK_STRING, Result);
+          if ReadToken(c, CharOther, TOK_STRING, Result) then
+          begin
+            try
+              { Note that StrToInt automatically handles hex characters when 
+                number starts from $. So below will automatically work for them. }
+              Result.StringContent := Chr(StrToInt(SEnding(Result.Data, 2)));
+            except 
+              { In case of EConvertError, make a warning and continue.
+                Result.StringContent will remain empty, which isn't a real problem. }
+              on E: EConvertError do
+                DoMessage(2, pmtWarning, 'Cannot convert string character code to int: %s', [Result.Data]);
+            end;
+          end;
         '{': begin
             Result := ReadCommentType1;
             CheckForDirective(Result);
@@ -1065,6 +1081,11 @@ begin
     else begin
       t.Data := t.Data + c;
     end;
+    { Note that, because of logic above, this will append only ONE apostrophe 
+      when reading two apostrophes in source code.
+      Checking Finished prevents adding the ending apostrophe. }
+    if not Finished then
+      T.StringContent := T.StringContent + c;
   until Finished;
   ReadLiteralString := True;
 end;
