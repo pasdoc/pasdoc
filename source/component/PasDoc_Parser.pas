@@ -1314,12 +1314,13 @@ begin
     ItemsForNextBackComment.ClearAndAdd(P);
   
     { Is this only a redeclaration of property from ancestor
-      (to e.g. change it's visibility) }
+      (to e.g. change it's visibility, or add a hint directive) }
     t := GetNextToken(P);
     if t.IsSymbol(SYM_SEMICOLON) then
     begin
       p.FullDeclaration := p.FullDeclaration + ';';
       FreeAndNil(t);
+      ParseHintDirectives(P, true, true);
       Exit;
     end;
 
