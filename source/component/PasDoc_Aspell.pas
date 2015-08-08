@@ -49,7 +49,7 @@ type
     FAspellMode: string;
     FAspellLanguage: string;
     FOnMessage: TPasDocMessageEvent;
-    
+
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TPasDocMessageType; const AMessage: string);
   public
@@ -63,17 +63,17 @@ type
     destructor Destroy; override;
 
     property AspellMode: string read FAspellMode;
-    
+
     property AspellLanguage: string read FAspellLanguage;
 
     procedure SetIgnoreWords(Value: TStringList);
 
     { Spellchecks AString and returns result.
       Will create an array of TSpellingError objects,
-      one entry for each misspelled word. 
+      one entry for each misspelled word.
       Offsets of TSpellingErrors will be relative to AString. }
     procedure CheckString(const AString: string; const AErrors: TObjectVector);
-    
+
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   end;
 
@@ -81,26 +81,42 @@ implementation
 
 uses PasDoc_Utils;
 
+function StringsJoin(const List: TStrings; const Glue: string): string;
+var
+  I: Integer;
+begin
+  if List.Count <> 0 then
+  begin
+    Result := List[0];
+    for I := 1 to List.Count - 1 do
+      Result := Result + Glue + List[I];
+  end else
+    Result := '';
+end;
+
 constructor TAspellProcess.Create(const AAspellMode, AAspellLanguage: string;
   AOnMessage: TPasDocMessageEvent);
 var FirstAspellLine: string;
 begin
   inherited Create;
-  
+
   FAspellMode := AAspellMode;
   FAspellLanguage := AAspellLanguage;
   FOnMessage := AOnMessage;
-  
+
   FProcess := TProcessLineTalk.Create(nil);
-  
-  { calculate FProcess.CommandLine }
-  FProcess.CommandLine := 'aspell -a';
+
+  { calculate FProcess.Executable / Parameters }
+  FProcess.Executable := 'aspell';
+  FProcess.Parameters.Add('-a');
   if AspellMode <> '' then
-    FProcess.CommandLine := FProcess.CommandLine + ' --mode=' + AspellMode;
+    FProcess.Parameters.Add(' --mode=' + AspellMode);
   if AspellLanguage <> '' then
-    FProcess.CommandLine := FProcess.CommandLine + ' --lang=' + AspellLanguage;
-    
-  DoMessage(3, pmtInformation, 'Calling aspell process: "' + FProcess.CommandLine + '"');
+    FProcess.Parameters.Add(' --lang=' + AspellLanguage);
+
+  DoMessage(3, pmtInformation, 'Calling aspell process: "' +
+    FProcess.Executable + ' ' +
+    StringsJoin(FProcess.Parameters, ' ') + '"');
 
   { execute }
   FProcess.Execute;
@@ -191,7 +207,7 @@ begin
   until false;
 end;
 
-procedure TAspellProcess.DoMessage(const AVerbosity: Cardinal; 
+procedure TAspellProcess.DoMessage(const AVerbosity: Cardinal;
   const MessageType: TPasDocMessageType;  const AMessage: string);
 begin
   if Assigned(FOnMessage) then
