@@ -150,6 +150,8 @@ begin
       if meth.returns <> '' then
         WriteDirectLine(space +
           '  <result>' + meth.returns + '</result>');
+    if item.HasDescription then
+      WriteDirectLine(space + '  ' + ItemDescription(Item));
     WriteDirectLine(space + '</function>');
   end;
 end;
@@ -168,7 +170,10 @@ begin
          '" default="' + ConvertString(booltostr(prop.default)) +
        '" defaultid="' + ConvertString(prop.defaultid) +
        '" nodefault="' + ConvertString(booltostr(prop.nodefault)) +
-        '" storedid="' + ConvertString(prop.storedid) +'"/>');
+        '" storedid="' + ConvertString(prop.storedid) +'">');
+  if item.HasDescription then
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
+  WriteDirectLine(space+'</property>');
 end;
 
 procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
@@ -271,6 +276,7 @@ begin
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));
   //global uses
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then
     for i:=0 to u.UsesUnits.count-1 do
       WriteDirectLine(space +
         '<uses name="' + ConvertString(u.UsesUnits[i]) + '"/>');
