@@ -50,7 +50,8 @@ type
     OptionSpellCheck: TBoolOption;
     OptionSpellCheckIgnoreWords: TStringOption;
     OptionStarOnly,
-    OptionGenerator,
+    OptionExcludeGenerator,
+    OptionIncludeCreationTime,
     OptionNumericFilenames,
     OptionWriteUsesList,
     OptionWriteGVUses,
@@ -163,9 +164,13 @@ begin
   OptionOutputPath.Explanation := 'Output path';
   AddOption(OptionOutputPath);
 
-  OptionGenerator := TBoolOption.Create('X', 'exclude-generator');
-  OptionGenerator.Explanation := 'Exclude generator information';
-  AddOption(OptionGenerator);
+  OptionExcludeGenerator := TBoolOption.Create('X', 'exclude-generator');
+  OptionExcludeGenerator.Explanation := 'Exclude generator information';
+  AddOption(OptionExcludeGenerator);
+  
+  OptionIncludeCreationTime := TBoolOption.Create(#0, 'include-creation-time');
+  OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
+  AddOption(OptionIncludeCreationTime);
 
   OptionLanguage := TStringOption.Create('L', 'language');
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
@@ -450,7 +455,8 @@ begin
 
   PasDoc.Verbosity := OptionVerbosity.Value;
 
-  PasDoc.Generator.NoGeneratorInfo := OptionGenerator.TurnedOn;
+  PasDoc.Generator.ExcludeGenerator := OptionExcludeGenerator.TurnedOn;
+  PasDoc.Generator.IncludeCreationTime := OptionIncludeCreationTime.TurnedOn;
   PasDoc.Generator.WriteUsesClause := OptionWriteUsesList.TurnedOn;
 
   if OptionUseTipueSearch.TurnedOn then begin
@@ -593,7 +599,7 @@ begin
 
     if OptionParser.OptionVersion.TurnedOn then begin PrintVersion; Exit; end;
 
-    if not OptionParser.OptionGenerator.TurnedOn then PrintHeader;
+    if not OptionParser.OptionExcludeGenerator.TurnedOn then PrintHeader;
 
     try
       PasDoc := TPasDoc.Create(nil);

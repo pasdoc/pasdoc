@@ -105,6 +105,7 @@ RTransTable = (
     {trWarningOverwrite} 'Varování: Tento soubor není uèený k editaci. Byl automaticky vygenerován a mùže být opìt pøepsán.',
     {trWarning} 'Varování',
     {trGeneratedBy} 'Vygenerováno pomocí',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'v',
     {trSearch} 'Hledat',
     {trSeeAlso} 'Viz také',

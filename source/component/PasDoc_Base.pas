@@ -539,7 +539,7 @@ end;
 
 procedure TPasDoc.Execute;
 var
-  t1, t2: TDateTime;
+  TimeStart: TDateTime;
   CacheDirNoDelim: string;
   UnitsCountBeforeExcluding: Cardinal;
   I: Integer;
@@ -574,7 +574,7 @@ begin
   for I := 0 to FIncludeDirectories.Count - 1 do
     FIncludeDirectories[I] := IncludeTrailingPathDelimiter(FIncludeDirectories[I]);
 
-  t1 := Now;
+  TimeStart := Now;
   ParseFiles;
   
   UnitsCountBeforeExcluding := FUnits.Count;
@@ -610,13 +610,9 @@ begin
 
   Generator.WriteDocumentation;
 
-  if Generator.NoGeneratorInfo then
-    DoMessage(1, pmtInformation, 'Done', []) else
-  begin
-    t2 := Now;
-    DoMessage(1, pmtInformation, 'Done, worked %s minutes(s)',
-      [FormatDateTime('nn:ss', (t2 - t1))]);
-  end;
+  DoMessage(3, pmtInformation, 'Worked %s minutes(s)',
+    [FormatDateTime('nn:ss', (Now - TimeStart))]);
+  DoMessage(1, pmtInformation, 'Done', []);
 end;
 
 { ---------------------------------------------------------------------------- }

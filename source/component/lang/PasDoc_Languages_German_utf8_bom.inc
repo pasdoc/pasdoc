@@ -92,6 +92,7 @@
     {trWarningOverwrite} 'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben',
     {trWarning} 'Warnung',
     {trGeneratedBy} 'Erstellt mit',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'am',
     {trSearch} 'Suchen',
     {trSeeAlso} 'Siehe auch',

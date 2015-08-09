@@ -92,6 +92,7 @@
     {trWarningOverwrite} 'Uwaga, nie modyfikuj - ten plik został wygenerowany automatycznie i może zostać nadpisany',
     {trWarning} 'Uwaga',
     {trGeneratedBy} 'Wygenerowane przez',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz także',

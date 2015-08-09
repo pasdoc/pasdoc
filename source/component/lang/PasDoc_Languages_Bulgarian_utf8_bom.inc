@@ -97,6 +97,7 @@
     {trWarningOverwrite} 'Предупреждение: Не редактирайте този файл - той е автоматично създаден и може да бъде променен без предупреждение',
     {trWarning} 'Предупреждение',
     {trGeneratedBy} 'Документацията е създадена от', // + ' '?
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'на дата', //really???
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',

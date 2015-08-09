@@ -220,7 +220,7 @@ type
     trWarning,
 
     trGeneratedBy,
-    trOnDateTime,
+    trGeneratedOn,
 
     trSearch,
     trSeeAlso,

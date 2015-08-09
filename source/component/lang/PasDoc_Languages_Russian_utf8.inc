@@ -93,6 +93,7 @@ RTransTable = (
     {trWarningOverwrite} 'Предупреждение: не редактировать - этот файл создан автоматически и может быть изменён без предупреждения',
     {trWarning} 'Предупреждение',
     {trGeneratedBy} 'Сгенерировал', // + ' '?
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'дата/время', //really???
     {trSearch} 'Найти',
     {trSeeAlso} 'Материалы по теме',

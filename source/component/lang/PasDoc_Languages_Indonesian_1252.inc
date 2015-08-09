@@ -93,6 +93,7 @@ RTransTable = (
       + 'file ini dihasilkan secara otomatis dan mungkin saja ditimpa ulang',
     {trWarning} 'Perhatian', //?
     {trGeneratedBy} 'Dihasilkan oleh',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'pada',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',

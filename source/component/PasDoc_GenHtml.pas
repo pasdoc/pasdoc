@@ -472,19 +472,27 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteAppInfo;
 begin
-  { check if user does not want a link to the pasdoc homepage }
-  if NoGeneratorInfo then
-    Exit;
-  { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-  WriteDirect('<hr noshade size="1">');
-  WriteDirect('<span class="appinfo">');
-  WriteDirect('<em>');
-  WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
-  WriteConverted(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
-    FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
-  WriteDirectLine('</em>');
-  WriteDirectLine('</span>');
+  if (not ExcludeGenerator) or IncludeCreationTime then
+  begin
+    { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
+    WriteDirect('<hr noshade size="1">');
+    WriteDirect('<span class="appinfo">');
+    WriteDirect('<em>');
+    if not ExcludeGenerator then
+    begin
+      WriteConverted(FLanguage.Translation[trGeneratedBy] + ' ');
+      WriteLink(PASDOC_HOMEPAGE, PASDOC_NAME_AND_VERSION, '');
+      WriteConverted('. ');
+    end;
+    if IncludeCreationTime then
+    begin    
+      WriteConverted(FLanguage.Translation[trGeneratedOn] + ' ' +
+        FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
+      WriteConverted('.');
+    end;
+    WriteDirectLine('</em>');
+    WriteDirectLine('</span>');
+  end;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -1634,7 +1642,7 @@ function TGenericHTMLDocGenerator.MakeHead: string;
 begin
   Result := '';
   
-  if not NoGeneratorInfo then
+  if not ExcludeGenerator then
     Result := Result + '<meta name="generator" content="'
       + PASDOC_NAME_AND_VERSION + '">' + LineEnding;
   if FLanguage.CharSet <> '' then

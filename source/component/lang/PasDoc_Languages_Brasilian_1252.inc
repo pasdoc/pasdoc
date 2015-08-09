@@ -92,6 +92,7 @@ RTransTable = (
     {trWarningOverwrite} 'Aviso, não altere - este arquivo foi gerado automaticamente e será sobrescrito',
     {trWarning} strToDo, //'Warning',
     {trGeneratedBy} 'Gerado por',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'as',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',

@@ -92,6 +92,7 @@
     {trWarningOverwrite} 'Vigyázat: Nem szerkesztendő file - ez a file automatikusan készült, valószínűleg felülírásra kerülne',
     {trWarning} 'Vigyázat',
     {trGeneratedBy} 'Készítette',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} ' ', //none in Hungarian language
     {trSearch} 'Keresés',
     {trSeeAlso} 'Lásd még',

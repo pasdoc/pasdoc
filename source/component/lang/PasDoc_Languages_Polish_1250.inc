@@ -92,6 +92,7 @@ RTransTable = (
     {trWarningOverwrite} 'Uwaga, nie modyfikuj - ten plik zosta³ wygenerowany automatycznie i mo¿e zostaæ nadpisany',
     {trWarning} 'Uwaga',
     {trGeneratedBy} 'Wygenerowane przez',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz tak¿e',

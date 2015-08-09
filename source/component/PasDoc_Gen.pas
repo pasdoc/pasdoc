@@ -261,7 +261,8 @@ type
     { if true, no link to pasdoc homepage will be included at the bottom of
       HTML files;
       default is false }
-    FNoGeneratorInfo: Boolean;
+    FExcludeGenerator: boolean;
+    FIncludeCreationTime: boolean;
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
@@ -892,16 +893,14 @@ type
     { Name of the project to create. }
     property ProjectName: string read FProjectName write FProjectName;
     
-    { "generator info" are 
+    { "Generator info" are 
       things that can change with each invocation of pasdoc,
       with different pasdoc binary etc.
       
       This includes
       @unorderedList(
-        @item(time of generating docs)
-        @item(compiler name and version used to compile pasdoc, 
-          time of compilation and such)
-        @item(pasdoc's version)
+        @item(pasdoc's compiler name and version),
+        @item(pasdoc's version and time of compilation)
       )
       See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
       Default value is false (i.e. show them),
@@ -910,8 +909,12 @@ type
       Setting this to true is useful for automatically comparing two
       versions of pasdoc's output (e.g. when trying to automate pasdoc's 
       tests). }
-    property NoGeneratorInfo: Boolean 
-      read FNoGeneratorInfo write FNoGeneratorInfo default False;
+    property ExcludeGenerator: Boolean 
+      read FExcludeGenerator write FExcludeGenerator default false;
+      
+    { Show creation time in the output. }
+    property IncludeCreationTime: Boolean 
+      read FIncludeCreationTime write FIncludeCreationTime default false;
 
     { Title of the documentation, supplied by user. May be empty.
       See @link(TPasDoc.Title). }
@@ -2547,7 +2550,8 @@ constructor TDocGenerator.Create(AOwner: TComponent);
 begin
   inherited;
   FClassHierarchy := nil;
-  FNoGeneratorInfo := False;
+  FExcludeGenerator := false;
+  FIncludeCreationTime := false;
   FLanguage := TPasDocLanguages.Create;
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;

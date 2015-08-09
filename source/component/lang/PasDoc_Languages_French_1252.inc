@@ -91,6 +91,7 @@ RTransTable = (
     {trWarningOverwrite} 'Attention, ne pas édtier - ce fichier est créé automatiquement et va être écrasé',
     {trWarning} 'Attention',
     {trGeneratedBy} 'Produit par',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'le',
     {trSearch} 'Cherche', //? 'Recherche'
     {trSeeAlso} 'Voir aussi', //?

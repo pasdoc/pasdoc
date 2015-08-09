@@ -352,14 +352,12 @@ end;
 
 procedure TTexDocGenerator.WriteAppInfo;
 begin
-  { check if user does not want a link to the pasdoc homepage }
-  if NoGeneratorInfo then Exit;
-  { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-  WriteDirect('% '+FLanguage.Translation[trGeneratedBy] + ' ');
-  WriteDirect(PASDOC_HOMEPAGE+ PASDOC_NAME_AND_VERSION);
-  WriteDirect(' ' + FLanguage.Translation[trOnDateTime] + ' ' +
-    FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
-  WriteDirectLine('');
+  if not ExcludeGenerator then 
+    WriteDirectLine('% '+ FLanguage.Translation[trGeneratedBy] + ' ' +
+      PASDOC_HOMEPAGE + PASDOC_NAME_AND_VERSION);
+  if IncludeCreationTime then
+    WriteDirectLine('% ' + FLanguage.Translation[trGeneratedOn] + ' ' +
+      FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
 end;
 
 procedure TTexDocGenerator.WriteAuthors(HL: integer; Authors: TStringVector);
@@ -593,7 +591,7 @@ procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string);
         WriteDirect('\pdfinfo{',true);
         WriteDirect(' /Author     (Pasdoc)',true);
         WriteDirect(' /Title      ('+LocalTitle+')',true);
-        if not NoGeneratorInfo then
+        if IncludeCreationTime then
           WriteDirect(' /CreationDate ('+
             FormatDateTime('yyyymmddhhmmss', Now)+')',true);
         WriteDirect('}',true);

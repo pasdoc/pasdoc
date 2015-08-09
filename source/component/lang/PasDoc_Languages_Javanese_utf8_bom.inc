@@ -93,6 +93,7 @@
       + 'file iki digawe otomatis dadi iso ilang owahanmu',
     {trWarning} 'Ati-ati', //?
     {trGeneratedBy} 'Dihasilne karo',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'ing',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',

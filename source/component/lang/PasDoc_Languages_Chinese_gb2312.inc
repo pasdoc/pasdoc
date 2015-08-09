@@ -94,6 +94,7 @@ RTransTable = (
     {trWarningOverwrite} '警告：不要编辑此文件 - 这是一个自动生成的文件，而且它很可能被覆盖掉',
     {trWarning} '警告',
     {trGeneratedBy} '由',
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} '生成于',
     {trSearch} '搜索',
     {trSeeAlso} '参见',
