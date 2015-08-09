@@ -221,6 +221,7 @@ type
 
     trGeneratedBy,
     trGeneratedOn,
+    trOnDateTime,
 
     trSearch,
     trSeeAlso,
