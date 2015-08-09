@@ -1141,7 +1141,7 @@ begin
   try
     p.Name := Name;
     p.RawDescriptionInfo^ := RawDescriptionInfo;
-    p.FullDeclaration := Name + ' = (...);';
+    p.FullDeclaration := Name + ' = (...)';
     p.SetAttributes(CurrentAttributes);
     ItemsForNextBackComment.ClearAndAdd(P);
 
@@ -1191,7 +1191,20 @@ begin
     end;
     FreeAndNil(T);
   
-    GetAndCheckNextToken(SYM_SEMICOLON);
+    { Read semicolon, as an optional token.
+      Actually, the stricter rule would be
+      - if some hint directive ("deprecated" or such) follows,
+        then semicolon here is prohibited.
+      - otherwise, semicolon here is required. }
+    T := PeekNextToken;
+    if T.IsSymbol(SYM_SEMICOLON) then
+    begin
+      P.FullDeclaration := P.FullDeclaration + ';';
+      Scanner.ConsumeToken;
+      FreeAndNil(T);
+    end;
+
+    ParseHintDirectives(P, true, true);
   except
     p.Free;
     T.Free;
