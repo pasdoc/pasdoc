@@ -1,3 +1,20 @@
+2015-08-09 v0.14.0
+
+  * Many fixes to parsing "deprecated", "platform", "library" directives.
+  * simplexml output fixes (by Denis Grinyuk)
+  * The document creation time is not printed in the docs by default. 
+    Use "--include-creation-time" to show it. 
+    --include-creation-time is orthogonal to --exclude-generator.
+  * The build duration time is not printed in the output by default. 
+    Use "--verbosity 3" to show it.
+  * Brazilian utf8 translation (by Alexsander da Rosa)
+  * Upgrade tipue to 3.0.1, update jquery to 2.0.0.
+  * Fix Delphi compilation (long generated tipue code) 
+    (thanks to Marcos Rocha for investigating)
+  * Add pasdoc_gui icon (by Karl-Michael Schindler)
+  * Copyrights and docs fixes (thanks to Paul Gevers)
+  * Various other small fixes and code cleanups.
+
 2013-07-14 v0.13.0
 
   * Handling of declarations nested inside classes (of other types, classes,
