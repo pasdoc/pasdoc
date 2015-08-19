@@ -1640,7 +1640,7 @@ end;
 
 function TGenericHTMLDocGenerator.MakeHead: string;
 begin
-  Result := '';
+  Result := '<meta name="viewport" content="width=device-width, initial-scale=1">' + LineEnding;
   
   if not ExcludeGenerator then
     Result := Result + '<meta name="generator" content="'
