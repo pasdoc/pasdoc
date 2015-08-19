@@ -899,7 +899,7 @@ type
       
       This includes
       @unorderedList(
-        @item(pasdoc's compiler name and version),
+        @item(pasdoc's compiler name and version,)
         @item(pasdoc's version and time of compilation)
       )
       See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
