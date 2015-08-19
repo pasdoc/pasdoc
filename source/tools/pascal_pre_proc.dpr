@@ -36,7 +36,7 @@
 program pascal_pre_proc;
 
 uses SysUtils, Classes, PasDoc_OptionParser, PasDoc_StringVector, PasDoc_Base,
-  PasDoc_Tokenizer, PasDoc_Scanner, PasDoc_Types;
+  PasDoc_Tokenizer, PasDoc_Scanner, PasDoc_Types, PasDoc_Versions;
 
 { TPascalPreProcessor -------------------------------------------------------- }
 

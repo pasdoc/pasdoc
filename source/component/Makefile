@@ -7,7 +7,7 @@ ALL_OUTPUT := pasdoc.css.inc external_class_hierarchy.txt.inc
 all: $(ALL_OUTPUT)
 
 %.inc: %
-	../tools/file_to_pascal_string $< $@
+	../../bin/file_to_pascal_string $< $@
 
 clean:
 	rm -f $(ALL_OUTPUT)

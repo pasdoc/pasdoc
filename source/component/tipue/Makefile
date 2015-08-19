@@ -9,14 +9,14 @@ ALL_OUTPUT := tipuesearch.css.inc tipuesearch.js.inc \
 all: $(ALL_OUTPUT)
 
 _tipue_results.html.inc: _tipue_results.html
-	../../tools/file_to_pascal_string $< $@
+	../../../bin/file_to_pascal_string $< $@
 
 # We use file_to_pascal_data even for text files, to workaround
 # Delphi problems with long strings, see
 # https://sourceforge.net/p/pasdoc/bugs/82/
 
 %.inc: %
-	../../tools/file_to_pascal_data $< $@
+	../../../bin/file_to_pascal_data $< $@
 
 clean:
 	rm -f $(ALL_OUTPUT)

@@ -35,7 +35,10 @@ endif
 # if that particular section is not used.
 # BINFILES: Files that will go into the resulting bin directory
 # DOCFILES: Files that will go into the resulting docs directory
-BINFILES := $(BINDIR)/pasdoc
+BINFILES := $(BINDIR)/pasdoc$(EXE) \
+	$(BINDIR)/pascal_pre_proc$(EXE) \
+	$(BINDIR)/file_to_pascal_string$(EXE) \
+	$(BINDIR)/file_to_pascal_data$(EXE)
 DOCFILES := LICENSE ChangeLog docs/README
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
@@ -257,16 +260,21 @@ build-delphi-win32: make-dirs
 build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
-# vpc build targets
-
+# vpc build targets - obsolete, since vpc is no longer supported
 build-vpc-win32: make-dirs
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
 
 build-vpc-os2: make-dirs
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
+# obsolete target
 build-pascal_pre_proc: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
+
+build-tools: make-dirs
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_data.dpr
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_string.dpr
 
 build-gui:
 	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
@@ -369,9 +377,10 @@ version:
 dist-prepare:
 	rm -rf $(PACKAGEDIR)
 	$(MKDIRPROG) $(PACKAGEDIR)
+	$(MAKE) build-tools
 ifdef BINFILES
 	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)bin
-	cp $(BINFILES)$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)pasdoc$(EXE)
+	cp $(BINFILES) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
 endif
 ifdef DOCFILES
 	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)docs
