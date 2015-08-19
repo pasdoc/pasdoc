@@ -1,3 +1,10 @@
+(date unknown - future release) v0.15.0
+
+  * Add our tools: pascal_pre_proc (Pascal preprocessor), file_to_pascal_data,
+    file_to_pascal_string to the binary release.
+  * Fix CSS and HTML to be a little nicer --- in particular, remove
+    ugly fixed font size in pixels in CSS, and fix HTML validity.
+
 2015-08-09 v0.14.0
 
   * Many fixes to parsing "deprecated", "platform", "library" directives.

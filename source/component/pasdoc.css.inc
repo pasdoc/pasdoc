@@ -31,7 +31,6 @@
 '  font-family: Verdana,Arial;' + LineEnding +
 '  color: black;' + LineEnding +
 '  background-color: white;' + LineEnding +
-'  font-size: 12px;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'table.container {' + LineEnding +

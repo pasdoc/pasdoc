@@ -2531,7 +2531,7 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     end;
 
     if UseTipueSearch then
-      Result := Result + '<p>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</p>';
+      Result := Result + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]);
   end;
 
 begin
