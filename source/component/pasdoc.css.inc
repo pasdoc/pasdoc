@@ -1,7 +1,7 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
 '/*' + LineEnding +
-'  Copyright 1998-2014 PasDoc developers.' + LineEnding +
+'  Copyright 1998-2015 PasDoc developers.' + LineEnding +
 '' + LineEnding +
 '  This file is part of "PasDoc".' + LineEnding +
 '' + LineEnding +
@@ -99,8 +99,13 @@
 'table.markerlegend { width:auto; }' + LineEnding +
 'table.markerlegend td.legendmarker { text-align:center; }' + LineEnding +
 '' + LineEnding +
-'table.sections { background:white; }' + LineEnding +
-'table.sections td {background:lightgray; }' + LineEnding +
+'.sections { background:white; }' + LineEnding +
+'.sections .one_section {' + LineEnding +
+'  background:lightgray;' + LineEnding +
+'  display: inline-block;' + LineEnding +
+'  margin: 0.2em;' + LineEnding +
+'  padding: 0.5em 1em;' + LineEnding +
+'}' + LineEnding +
 '' + LineEnding +
 'table.summary td.itemcode { width:100%; }' + LineEnding +
 'table.detail td.itemcode { width:100%; }' + LineEnding +

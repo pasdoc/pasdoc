@@ -707,8 +707,7 @@ begin
   WriteAnchor(CIO.Name);
   WriteHeading(HL, 'cio', s);
 
-  WriteStartOfTable('sections');
-  WriteDirectLine('<tr>');
+  WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
     begin
       { Most classes don't contain nested types so exclude this stuff
@@ -717,14 +716,14 @@ begin
         (Section in [dsEnclosingClass..dsInternalTypes]) then
         Continue;
 
-      WriteDirect('<td>');
+      WriteDirect('<div class="one_section">');
       if Section in SectionsAvailable then
         WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
       else
         WriteConverted(SectionHeads[Section]);
-      WriteDirect('</td>');
+      WriteDirect('</div>');
     end;
-  WriteDirectLine('</tr></table>');
+  WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
 
@@ -1922,18 +1921,17 @@ begin
   else
     WriteHeading(HL, 'library', FLanguage.Translation[trLibrary] + ' ' + U.Name);
 
-  WriteStartOfTable('sections');
-  WriteDirectLine('<tr>');
+  WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
     begin
-      WriteDirect('<td>');
+      WriteDirect('<div class="one_section">');
       if Section in SectionsAvailable then
         WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
       else
         WriteConverted(SectionHeads[Section]);
-      WriteDirect('</td>');
+      WriteDirect('</div>');
     end;
-  WriteDirectLine('</tr></table>');
+  WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
   WriteUnitDescription(HL + 1, U);

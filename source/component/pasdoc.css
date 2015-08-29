@@ -1,5 +1,5 @@
 /*
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2015 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -97,8 +97,13 @@ table.wide_list td { vertical-align:top; padding:4px; }
 table.markerlegend { width:auto; }
 table.markerlegend td.legendmarker { text-align:center; }
 
-table.sections { background:white; }
-table.sections td {background:lightgray; }
+.sections { background:white; }
+.sections .one_section {
+  background:lightgray;
+  display: inline-block;
+  margin: 0.2em;
+  padding: 0.5em 1em;
+}
 
 table.summary td.itemcode { width:100%; }
 table.detail td.itemcode { width:100%; }
