@@ -2374,7 +2374,8 @@ begin
 
           for i := 0 to ItemsForNextBackComment.Count - 1 do
           begin
-            if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
+            // use Trim(), see https://sourceforge.net/p/pasdoc/bugs/89/
+            if Trim(ItemsForNextBackComment.PasItemAt[i].RawDescription) <> '' then
               DoMessage(1, pmtWarning,
                 '%s: Item %s already has one description, now it''s ' +
                 'overridden by back-comment (comment starting with "<"): "%s"',
