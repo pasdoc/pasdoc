@@ -121,12 +121,18 @@ type
   TProcessLineTalk = class(TComponent)
   private
     FCommandLine: string;
+    FParameters: TStrings;
+    FExecutable: string;
   public
     procedure Execute;
     procedure WriteLine(const S: string);
     function ReadLine: string;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   published
     property CommandLine: string read FCommandLine write FCommandLine;
+    property Executable: string read FExecutable write FExecutable;
+    property Parameters: TStrings read FParameters;
   end;
 
   {$endif else HAS_PROCESS}
@@ -250,6 +256,18 @@ end;
 
 {$else HAS_PROCESS}
 
+constructor TProcessLineTalk.Create(AOwner: TComponent);
+begin
+  inherited;
+  FParameters := TStringList.Create;
+end;
+
+destructor TProcessLineTalk.Destroy;
+begin
+  FreeAndNil(FParameters);
+  inherited;
+end;
+
 procedure TProcessLineTalk.Execute;
 begin
   raise Exception.Create('TProcessLineTalk.Execute: not implemented');
@@ -263,6 +281,7 @@ end;
 function TProcessLineTalk.ReadLine: string;
 begin
   raise Exception.Create('TProcessLineTalk.ReadLine: not implemented');
+  Result := ''; // silence warnings
 end;
 
 {$endif else HAS_PROCESS}
