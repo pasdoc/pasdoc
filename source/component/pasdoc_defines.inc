@@ -67,5 +67,7 @@
   {$ifdef VER2_2} {$undef FPC_RegExpr} {$endif}
   {$ifdef VER2_4} {$undef FPC_RegExpr} {$endif}
 {$else}
-  {$define DELPHI_RegularExpressions}
+  {$IFDEF COMPILER_15_UP}
+    {$define DELPHI_RegularExpressions}
+  {$endif}
 {$endif}
