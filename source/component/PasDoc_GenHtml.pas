@@ -118,12 +118,13 @@ type
       If OpenCloseParagraph then code here will open and close paragraph
       for itself. So you shouldn't
       surround it inside WriteStart/EndOfParagraph, like
-      @longcode(#
-        { BAD EXAMPLE }
-        WriteStartOfParagraph;
-        WriteItemLongDescription(Item, true);
-        WriteEndOfParagraph;
-      #)
+      
+@longcode(#
+  { BAD EXAMPLE }
+  WriteStartOfParagraph;
+  WriteItemLongDescription(Item, true);
+  WriteEndOfParagraph;
+#)
 
       While you can pass OpenCloseParagraph = @false, do it with caution,
       and note that long description has often such large content that it
@@ -133,6 +134,11 @@ type
     *)
     procedure WriteItemLongDescription(const AItem: TPasItem;
       OpenCloseParagraph: boolean = true);
+
+    { Does WriteItemLongDescription writes anything.
+      When @false, you can avoid calling WriteItemLongDescription altogether. }
+    function HasItemLongDescription(const AItem: TPasItem): boolean;
+      
     procedure WriteOverviewFiles;
 
     procedure WriteStartOfDocument(AName: string);
@@ -1137,6 +1143,23 @@ begin
   end;
 end;
 
+function TGenericHTMLDocGenerator.HasItemLongDescription(const AItem: TPasItem): boolean;
+begin
+  Result := Assigned(AItem) and 
+    (
+      AItem.IsDeprecated or
+      AItem.IsPlatformSpecific or
+      AItem.IsLibrarySpecific or
+      (AItem.AbstractDescription <> '') or
+      (AItem.DetailedDescription <> '') or
+      (AItem is TPasCio) or
+      (not ObjectVectorIsNilOrEmpty(AItem.Attributes)) or
+      (AItem is TPasMethod) or
+      (not ObjectVectorIsNilOrEmpty(AItem.SeeAlso)) or
+      (AItem is TPasEnum)
+    );
+end;
+
 procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   const AItem: TPasItem; OpenCloseParagraph: boolean);
 
@@ -1279,6 +1302,7 @@ var
   Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
+  EnumMember: TPasItem;
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
@@ -1326,7 +1350,7 @@ begin
         begin
           WriteDirect('<div class="nodescription">');
           WriteConverted(Format(
-            'no description available, %s description follows', [AncestorName]));
+            'No description available, ancestor %s description follows', [AncestorName]));
           WriteDirect('</div>');
           WriteItemLongDescription(TPasItem(Ancestor));
         end;
@@ -1356,10 +1380,14 @@ begin
     WriteDirectLine('<ul>');
     for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
     begin
+      EnumMember := TPasEnum(AItem).Members.PasItemAt[i];
       WriteDirectLine('<li>');
-      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
-      WriteConverted(': ');
-      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
+      WriteConverted(EnumMember.FullDeclaration);
+      if HasItemLongDescription(EnumMember) then
+      begin
+        WriteConverted(': ');
+        WriteItemLongDescription(EnumMember, false);
+      end;
       WriteDirectLine('</li>');
     end;
     WriteDirectLine('</ul>');
