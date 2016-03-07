@@ -573,7 +573,8 @@ begin
       lgHungarian: result := 'hu';
     {$ELSE}
       lgBosnian: result := 'bs';
-      lgBrazilian: result := 'pt';  // Portuguese used for brazilian.
+      lgBrazilian_1252: result := 'pt'; // Portuguese used for brazilian.
+      lgBrazilian_utf8: result := 'pt';
       lgCatalan: result := 'ca';
       lgDanish: result := 'da';
       lgDutch: result := 'nl';
