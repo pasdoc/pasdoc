@@ -1,6 +1,20 @@
-# Uncomment these types if you want even more clean repository. But be careful.
-# It can make harm to an existing project source. Read explanations below.
-#
+# Output dirs and files
+bin/
+lib/
+source/autodoc/html_by_pasdoc_gui/
+source/gui/pasdoc_gui
+
+# FPC / Lazarus generated stuff
+*.o
+*.ppu
+*.compiled
+*.or
+*.lrs
+source/packages/lazarus/pasdoc_package.pas
+
+# Emacs backup
+*~
+
 # Resource files are binaries containing manifest, project icon and version info.
 # They can not be viewed as text or compared by diff-tools. Consider replacing them with .rc files.
 *.res
@@ -12,10 +26,6 @@
 # Diagram Portfolio file. Used by the diagram editor up to Delphi 7.
 # Uncomment this if you are not using diagrams or use newer Delphi version.
 *.ddp
-
-# Visual LiveBindings file. Added in Delphi XE2.
-# Uncomment this if you are not using LiveBindings Designer.
-*.vlb
 
 # Deployment Manager configuration file for your project. Added in Delphi XE2.
 # Uncomment this if it is not mobile development and you do not use remote debug feature.
@@ -52,7 +62,3 @@
 # Delphi history and backups
 __history/
 *.~*
-
-# Other
-*.ini
-
