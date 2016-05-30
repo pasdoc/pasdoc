@@ -575,6 +575,8 @@ begin
   s := DescriptionInfo.Content;
   s := ReplaceRegEx(s, '<summary[^>]*>', '@abstract(');
   s := ReplaceRegEx(s, '</summary>', ')');
+  s := ReplaceRegEx(s, '<para[^>]*>', LineEnding + LineEnding);
+  s := ReplaceRegEx(s, '</para>', LineEnding + LineEnding);
   s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1');
   s := ReplaceRegEx(s, '</param>', ')');
   s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
@@ -593,7 +595,7 @@ begin
   s := ReplaceRegEx(s, '</i>', ')');
   s := ReplaceRegEx(s, '<u>', '@underline(');  // not yet implemented
   s := ReplaceRegEx(s, '</u>', ')');
-  s := ReplaceRegEx(s, '<br>', '@br');
+  s := ReplaceRegEx(s, '<br */?>', '@br');
   s := ReplaceRegEx(s, '<ul>', '@unorderedList(');
   s := ReplaceRegEx(s, '</ul>', ')');
   s := ReplaceRegEx(s, '<ol>', '@orderedList(');
