@@ -608,6 +608,7 @@ begin
   s := ReplaceRegEx(s, '</remarks>', '');
   s := ReplaceRegEx(s, '<comment>', '');
   s := ReplaceRegEx(s, '</comment>', '');
+  s := ReplaceRegEx(s, '<exclude/>', '@exclude');  
   DescriptionInfo.Content := s;
 end;
 
