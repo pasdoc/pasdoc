@@ -140,6 +140,7 @@ type
     trObjects,
       trObject,
       trRecord,
+      trPacked,
         trHierarchy,
         trFields,
         trMethods,

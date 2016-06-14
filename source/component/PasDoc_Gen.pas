@@ -2242,13 +2242,13 @@ function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
   case MyType of
     CIO_CLASS: Result := FLanguage.Translation[trClass];
-    CIO_PACKEDCLASS: Result := 'packed ' + FLanguage.Translation[trClass]; // TODO
+    CIO_PACKEDCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trClass];
     CIO_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];
-    CIO_PACKEDOBJECT: Result := 'packed ' + FLanguage.Translation[trObject]; // TODO
-    CIO_RECORD: Result := 'record'; // TODO
-    CIO_PACKEDRECORD: Result := 'packed record'; // TODO
+    CIO_PACKEDOBJECT: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trObject];
+    CIO_RECORD: Result := FLanguage.Translation[trRecord];
+    CIO_PACKEDRECORD: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trRecord];
   else
     Result := '';
   end;

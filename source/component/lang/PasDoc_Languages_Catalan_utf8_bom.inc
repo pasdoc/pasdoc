@@ -18,6 +18,7 @@
     {trObjects} 'Objectes',
       {trObject} 'Objecte',
       {trRecord} strToDo, //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} strToDo, //'Hierarchy',
         {trFields} 'Camps',
         {trMethods} 'MŠtodes',

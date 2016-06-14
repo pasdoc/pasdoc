@@ -18,6 +18,7 @@ RTransTable = (
     {trObjects} strKeep, //'Objects',
       {trObject} strKeep, //'Object',
       {trRecord} strKeep, //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Hierarchie',
         {trFields} 'Felder',
         {trMethods} 'Methoden',

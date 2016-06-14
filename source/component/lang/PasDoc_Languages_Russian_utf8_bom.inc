@@ -18,6 +18,7 @@
     {trObjects} 'Объекты',
       {trObject} 'Объект',
       {trRecord} strToDo, //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Иерархия',
         {trFields} 'Поля',
         {trMethods} 'Методы',
