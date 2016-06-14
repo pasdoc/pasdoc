@@ -24,7 +24,6 @@
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Johannes Berg <johannes@sipsolutions.de>) 
   @author(Michalis Kamburelis)
-  @cvs($Date$)  
   
   TODO: We have some properties in TPasDoc and generators components that
   should be registered with filename editors.

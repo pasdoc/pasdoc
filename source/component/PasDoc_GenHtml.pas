@@ -35,7 +35,6 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }

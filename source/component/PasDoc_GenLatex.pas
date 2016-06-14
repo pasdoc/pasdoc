@@ -21,7 +21,6 @@
 }
 
 { @abstract(Provides Latex document generator object.)
-  @cvs($Date$)
 
   Implements an object to generate latex documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }

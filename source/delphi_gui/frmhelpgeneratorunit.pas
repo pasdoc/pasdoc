@@ -26,7 +26,6 @@
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(2004-11-28)
-  @cvs($Date: 2008-08-04 03:40:15 +0200 (Mo, 04 Aug 2008) $)
 }
 
 unit frmHelpGeneratorUnit;

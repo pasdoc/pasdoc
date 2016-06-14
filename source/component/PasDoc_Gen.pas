@@ -34,7 +34,6 @@
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(30 Aug 1998)
-  @cvs($Date$)
 
   @name contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce

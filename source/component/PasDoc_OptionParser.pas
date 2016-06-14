@@ -22,7 +22,6 @@
 
 { @abstract(The @name unit --- easing command line parsing)
   @author(Johannes Berg <johannes@sipsolutions.de>)
-  @cvs($Date$)
 
   To use this unit, create an object of @link(TOptionParser) and add options to
   it, each option descends from @link(TOption).

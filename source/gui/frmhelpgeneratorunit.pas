@@ -24,7 +24,6 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Michalis Kamburelis)
   @created(2004-11-28)
-  @cvs($Date$)
 }
 
 unit frmHelpGeneratorUnit;

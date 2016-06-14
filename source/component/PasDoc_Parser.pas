@@ -26,7 +26,6 @@
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date$)
 
   Contains the @link(TParser) object, which can parse an ObjectPascal
   code, and put the collected information into the TPasUnit instance. }

@@ -20,8 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @cvs($Date$)
-  @author(Johannes Berg <johannes@sipsolutions.de>)
+{ @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @abstract(Basic types.) }

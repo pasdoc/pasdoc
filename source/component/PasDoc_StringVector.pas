@@ -21,7 +21,6 @@
 }
 
 {
-  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @abstract(String vector based on TStringList.)
