@@ -377,6 +377,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+    procedure HandleIncludeCodeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
     procedure HandleOrderedListTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -1844,6 +1848,9 @@ procedure TDocGenerator.ExpandDescriptions;
         { @include tag works the same way in both expanding passes. }
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'includeCode',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleIncludeCodeTag,
         [toParameterRequired]);
 
       { Tags with recursive params }
@@ -3897,6 +3904,17 @@ begin
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);
+end;
+
+procedure TDocGenerator.HandleIncludeCodeTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  IncludedCode: string;
+begin
+  IncludedCode := FileToString(CombinePaths(FCurrentItem.BasePath, Trim(TagParameter)));
+  ReplaceStr := FormatPascalCode(IncludedCode);
 end;
 
 procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);
