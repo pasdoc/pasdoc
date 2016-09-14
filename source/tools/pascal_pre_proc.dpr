@@ -1,7 +1,7 @@
 { -*- compile-command: "make -C ../../ build-pascal_pre_proc" -*- }
 
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
