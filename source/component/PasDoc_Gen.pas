@@ -377,6 +377,10 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
+    procedure HandleIncludeCodeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
     procedure HandleOrderedListTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -1844,6 +1848,9 @@ procedure TDocGenerator.ExpandDescriptions;
         { @include tag works the same way in both expanding passes. }
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
+        [toParameterRequired]);
+      TTag.Create(TagManager, 'includeCode',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleIncludeCodeTag,
         [toParameterRequired]);
 
       { Tags with recursive params }
@@ -3897,6 +3904,39 @@ begin
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);
+end;
+
+procedure TDocGenerator.HandleIncludeCodeTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  I: Integer;
+  FileName: string;
+  FileNames: TStringList;
+begin
+  FileNames := TStringList.Create;
+  try
+    FileNames.Text := TagParameter;
+
+    ReplaceStr := '';
+    for I := 0 to Pred(FileNames.Count) do
+    begin
+      FileName := Trim(FileNames[I]);
+      if Length(FileName) > 0 then
+      begin
+        FileName := CombinePaths(FCurrentItem.BasePath, FileName);
+        ReplaceStr := ReplaceStr +
+          FormatPascalCode(FileToString(FileName)) + sLineBreak;
+      end;
+    end;
+
+    if ReplaceStr = '' then
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
+        'No parameters for @includeCode tag', [])
+    else
+      SetLength(ReplaceStr, Length(ReplaceStr) - Length(sLineBreak));
+  finally FileNames.Free end;
 end;
 
 procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);

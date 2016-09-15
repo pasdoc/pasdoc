@@ -51,7 +51,9 @@
 program pasdoc;
 
 {$IFNDEF VPASCAL}
-{$APPTYPE CONSOLE}
+  {$IFDEF MSWINDOWS}
+    {$APPTYPE CONSOLE}
+  {$ENDIF}
 {$ENDIF}
 
 uses
