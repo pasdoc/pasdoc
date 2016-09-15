@@ -3926,16 +3926,13 @@ begin
       if Length(FileName) > 0 then
       begin
         FileName := CombinePaths(FCurrentItem.BasePath, FileName);
-        ReplaceStr := ReplaceStr +
-          FormatPascalCode(FileToString(FileName)) + sLineBreak;
+        ReplaceStr := ReplaceStr + FormatPascalCode(FileToString(FileName));
       end;
     end;
 
     if ReplaceStr = '' then
       ThisTag.TagManager.DoMessage(1, pmtWarning,
-        'No parameters for @includeCode tag', [])
-    else
-      SetLength(ReplaceStr, Length(ReplaceStr) - Length(sLineBreak));
+        'No parameters for @includeCode tag', []);
   finally FileNames.Free end;
 end;
 
