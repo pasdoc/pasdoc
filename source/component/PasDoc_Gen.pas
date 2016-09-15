@@ -3911,10 +3911,32 @@ procedure TDocGenerator.HandleIncludeCodeTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 var
-  IncludedCode: string;
+  I: Integer;
+  FileName: string;
+  FileNames: TStringList;
 begin
-  IncludedCode := FileToString(CombinePaths(FCurrentItem.BasePath, Trim(TagParameter)));
-  ReplaceStr := FormatPascalCode(IncludedCode);
+  FileNames := TStringList.Create;
+  try
+    FileNames.Text := TagParameter;
+
+    ReplaceStr := '';
+    for I := 0 to Pred(FileNames.Count) do
+    begin
+      FileName := Trim(FileNames[I]);
+      if Length(FileName) > 0 then
+      begin
+        FileName := CombinePaths(FCurrentItem.BasePath, FileName);
+        ReplaceStr := ReplaceStr +
+          FormatPascalCode(FileToString(FileName)) + sLineBreak;
+      end;
+    end;
+
+    if ReplaceStr = '' then
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
+        'No parameters for @includeCode tag', [])
+    else
+      SetLength(ReplaceStr, Length(ReplaceStr) - Length(sLineBreak));
+  finally FileNames.Free end;
 end;
 
 procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);
