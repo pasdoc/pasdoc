@@ -93,7 +93,7 @@ RTransTable = (
     {trWarningOverwrite} 'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito',
     {trWarning} 'Atención',
     {trGeneratedBy} 'Generado por', //??? strToDo, //'Generador por',
-    {trGeneratedOn} strToDo', //'Generated on'
+    {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'a',
     {trSearch} 'Buscar',
     {trSeeAlso} 'Ver también', // ?
