@@ -1176,79 +1176,16 @@ procedure TDocGenerator.HandleLongCodeTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
-  
-  function RemoveIndentation(const Code: string): string;
-  var
-    Source: TStrings;
-    IndentationPrefix: string;
-    I, J, FirstNonEmptyLine: Integer;
-  begin
-    Source := TStringList.Create;
-    try
-      Source.Text := Code;
-      
-      // calculate FirstNonEmptyLine
-      FirstNonEmptyLine := -1;
-      for I := 0 to Source.Count - 1 do
-        if Trim(Source[I]) <> '' then
-        begin
-          FirstNonEmptyLine := I;
-          break;
-        end;
-        
-      // nothing to do if all the lines are empty
-      if FirstNonEmptyLine <> -1 then
-      begin
-        // calculate IndentationPrefix as the whitespace in FirstNonEmptyLine
-        Assert(Trim(Source[FirstNonEmptyLine]) <> '');
-        IndentationPrefix := ''; // should always be changed by loop below
-        for I := 1 to Length(Source[FirstNonEmptyLine]) - 1 do
-          if not (Source[FirstNonEmptyLine][I] in WhiteSpace) then
-          begin
-            IndentationPrefix := Copy(Source[FirstNonEmptyLine], 1, I - 1);
-            break;
-          end;
-          
-        // update the IndentationPrefix, 
-        // to be a common prefix of all the lines since FirstNonEmptyLine
-        for I := FirstNonEmptyLine + 1 to Source.Count - 1 do
-        begin
-          // Don't limit IndentationPrefix on lines that have only whitespace.
-          // This allows users to trim whitespace in their source code without 
-          // affecting the longCode look/
-          if Trim(Source[I]) <> '' then
-          begin
-            for J := 1 to Length(IndentationPrefix) do
-            begin
-              { We should never reach here the situation when
-                "J > Length(Source[I])". Because then Source[I] would be a prefix
-                of IndentationPrefix, but then Source[I] would be only whitespace,
-                and we have eliminated this case by "Trim(Source[I]) <> ''" check above. }
-              Assert(J <= Length(Source[I]));
-              // Possibly make IndentationPrefix shorter.
-              if Source[I][J] <> IndentationPrefix[J] then
-              begin
-                IndentationPrefix := Copy(IndentationPrefix, 1, J - 1);
-                break;
-              end;
-            end;
-          end;
-        end;
-        
-        // cut the IndentationPrefix from all the lines since FirstNonEmptyLine
-        for I := FirstNonEmptyLine to Source.Count - 1 do
-          Source[I] := SEnding(Source[I], Length(IndentationPrefix) + 1);
-      end;
-      
-      Result := TrimRight(Source.Text);
-    finally Source.Free; end;
-  end;
-    
 begin
   if TagParameter = '' then
     exit;
   // Trim off "marker" characters at the beginning and end of TagParameter.
-  ReplaceStr := Copy(TagParameter, 2, Length(TagParameter) - 2);
+  // Do this only if they are the same character -- this way we are backward
+  // compatible (in the past, matching characters were required), but were
+  // not insisting on them being present in new code.
+  if (Length(TagParameter) >= 2) and
+     (TagParameter[1] = TagParameter[Length(TagParameter)]) then
+    ReplaceStr := Copy(TagParameter, 2, Length(TagParameter) - 2);
   ReplaceStr := RemoveIndentation(ReplaceStr);
   // Then format pascal code.
   ReplaceStr := FormatPascalCode(ReplaceStr);
@@ -1450,7 +1387,7 @@ procedure TDocGenerator.HandlePreformattedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  ReplaceStr := FormatPreformatted(TagParameter);
+  ReplaceStr := FormatPreformatted(RemoveIndentation(TagParameter));
 end;
 
 type
