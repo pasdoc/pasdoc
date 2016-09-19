@@ -131,6 +131,7 @@
 '     is closely related to content below. In this situation' + LineEnding +
 '     (where the font size is just as a normal text), smaller bottom' + LineEnding +
 '     margin seems to look good. */' + LineEnding +
+'  margin-top: 1.4em;' + LineEnding +
 '  margin-bottom: 0em;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +

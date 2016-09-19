@@ -129,6 +129,7 @@ h6.description_section {
      is closely related to content below. In this situation
      (where the font size is just as a normal text), smaller bottom
      margin seems to look good. */
+  margin-top: 1.4em;
   margin-bottom: 0em;
 }
 
