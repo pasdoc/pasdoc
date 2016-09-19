@@ -1,21 +1,22 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Version Value="7"/>
     <General>
       <Flags>
-        <SaveClosedFiles Value="False"/>
+        <SaveOnlyProjectUnits Value="True"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
       <Title Value="pasdoc"/>
-      <ActiveEditorIndexAtStart Value="0"/>
     </General>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -34,97 +35,26 @@
         <PackageName Value="pasdoc_package"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="1">
       <Unit0>
         <Filename Value="pasdoc.dpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="42"/>
-        <TopLine Value="20"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="PasDoc_Main.pas"/>
-        <UnitName Value="PasDoc_Main"/>
-        <CursorPos X="1" Y="171"/>
-        <TopLine Value="148"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="..\component\PasDoc_Base.pas"/>
-        <UnitName Value="PasDoc_Base"/>
-        <CursorPos X="1" Y="603"/>
-        <TopLine Value="603"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit2>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
-      <Position1>
-        <Filename Value="PasDoc_Main.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="PasDoc_Main.pas"/>
-        <Caret Line="26" Column="22" TopLine="4"/>
-      </Position2>
-      <Position3>
-        <Filename Value="PasDoc_Main.pas"/>
-        <Caret Line="171" Column="1" TopLine="146"/>
-      </Position3>
-      <Position4>
-        <Filename Value="PasDoc_Main.pas"/>
-        <Caret Line="168" Column="28" TopLine="146"/>
-      </Position4>
-      <Position5>
-        <Filename Value="PasDoc_Main.pas"/>
-        <Caret Line="171" Column="1" TopLine="148"/>
-      </Position5>
-      <Position6>
-        <Filename Value="pasdoc.dpr"/>
-        <Caret Line="41" Column="1" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\component\PasDoc_Base.pas"/>
-        <Caret Line="651" Column="1" TopLine="629"/>
-      </Position7>
-      <Position8>
-        <Filename Value="pasdoc.dpr"/>
-        <Caret Line="41" Column="1" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\component\PasDoc_Base.pas"/>
-        <Caret Line="651" Column="1" TopLine="629"/>
-      </Position9>
-      <Position10>
-        <Filename Value="pasdoc.dpr"/>
-        <Caret Line="42" Column="1" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\component\PasDoc_Base.pas"/>
-        <Caret Line="651" Column="1" TopLine="629"/>
-      </Position11>
-      <Position12>
-        <Filename Value="pasdoc.dpr"/>
-        <Caret Line="42" Column="1" TopLine="22"/>
-      </Position12>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="..\component\"/>
+      <IncludeFiles Value="..\component"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
         <CStyleMacros Value="True"/>
-        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -140,15 +70,9 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Watches Count="1">
-      <Item1>
-        <Expression Value="Options"/>
-      </Item1>
-    </Watches>
     <Exceptions Count="2">
       <Item1>
         <Name Value="ECodetoolError"/>
