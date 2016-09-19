@@ -10,6 +10,7 @@
   * @includeCode tag http://pasdoc.sipsolutions.net/IncludeCodeTag
     (by Silvio Clécio)
   * Updated Spanish (Spain) translation (by Guillermo Martínez Jiménez)
+  * @longCode improved to ignore indentation
 
 2015-08-09 v0.14.0
 
