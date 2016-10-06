@@ -25,7 +25,8 @@
 uses
   SysUtils, ConsoleTestRunner,
   { specify TestXxx units below. }
-  TestPasDoc_Utils;
+  TestPasDoc_Utils,
+  TestPasdoc_GenHtml;
 
 var
   Application: TTestRunner;

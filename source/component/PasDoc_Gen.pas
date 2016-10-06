@@ -2995,7 +2995,7 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
     ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
-    ctEndComment, ctHex, ctEndHex, ctNumeric, ctEndNumeric);
+    ctHex, ctEndHex, ctNumeric, ctEndNumeric);
 var
   CharIndex: integer;
   CodeType: TCodeType;
@@ -3211,32 +3211,35 @@ begin
         end;
       ctParenComment:
         begin
-          if Line[CharIndex] = ')' then
+          if (Line[CharIndex] = ')') and (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
           begin
-            if (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
-            begin
-              CodeType := ctEndComment;
-              result := result + FormatComment(Copy(Line, CommentBegining,
-                CharIndex - CommentBegining + 1));
-            end;
+            result := result + FormatComment(Copy(Line, CommentBegining,
+              CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctBracketComment:
         begin
           if Line[CharIndex] = '}' then
           begin
-            CodeType := ctEndComment;
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctCompilerComment:
         begin
           if Line[CharIndex] = '}' then
           begin
-            CodeType := ctEndComment;
             result := result + FormatCompilerComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctSlashComment:
@@ -3247,33 +3250,6 @@ begin
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining));
             WhiteSpaceBeginning := CharIndex;
-          end;
-        end;
-      ctEndComment:
-        begin
-          if TestCommentStart then
-          begin
-            // do nothing
-          end
-          else if IsCharInSet(Line[CharIndex], Separators) then
-          begin
-            CodeType := ctWhiteSpace;
-            WhiteSpaceBeginning := CharIndex;
-          end
-          else if Line[CharIndex] = '$' Then
-          Begin
-            CodeType := ctHex;
-            HexBeginning := CharIndex;
-          End
-          else if IsCharInSet(Line[CharIndex], Numeric) then
-          begin
-            CodeType := ctNumeric;
-            NumBeginning := CharIndex;
-          end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
-          begin
-            CodeType := ctCode;
-            CodeBeginning := CharIndex;
           end;
         end;
       ctHex:
@@ -3392,27 +3368,17 @@ begin
         result := result + FormatString(Copy(Line, StringBeginning,
           CharIndex - StringBeginning));
       end;
-    ctParenComment:
-      begin
-        result := result + FormatComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining));
-      end;
+    ctParenComment,
+    ctSlashComment,
     ctBracketComment:
       begin
+        { add an unterminated comment at the end }
         result := result + FormatComment(Copy(Line, CommentBegining,
           CharIndex - CommentBegining));
       end;
     ctCompilerComment:
       begin
         result := result + FormatCompilerComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining));
-      end;
-    ctSlashComment:
-      begin
-      end;
-    ctEndComment:
-      begin
-        result := result + FormatComment(Copy(Line, CommentBegining,
           CharIndex - CommentBegining));
       end;
     ctHex:
