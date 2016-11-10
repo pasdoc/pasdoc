@@ -2540,8 +2540,8 @@ var
 begin
   t := nil;
   try
-  { This is needed to include ClassKeyWordString in
-    class methods declarations. }
+      { ClassKeyWordString is used to include 'class' in
+        class methods, properties and variables declarations. }
       ClassKeyWordString := '';
       StrictVisibility := False;
       Result := False;
@@ -2580,7 +2580,7 @@ begin
                   ClassKeyWordString := '';
                 end
                 else
-                  ClassKeyWordString := Trim(ClassKeyWordString + t.Data);
+                  ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
               end;
             KEY_CLASS: ClassKeyWordString := t.Data;
             KEY_CONSTRUCTOR,
@@ -2612,6 +2612,14 @@ begin
             KEY_PROPERTY:
               begin
                 ParseProperty(p);
+
+                { append ClassKeyWordString to property FullDeclaration,
+                  to have 'class property Foo: ...'. }
+                if ClassKeyWordString <> '' then
+                begin
+                  P.FullDeclaration := ClassKeyWordString + ' ' + P.FullDeclaration;
+                  ClassKeyWordString := '';
+                end;
 
                 if Visibility in ShowVisibilities then
                 begin
