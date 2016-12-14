@@ -607,7 +607,8 @@ begin
   s := ReplaceRegEx(s, '</remarks>', '');
   s := ReplaceRegEx(s, '<comment>', '');
   s := ReplaceRegEx(s, '</comment>', '');
-  s := ReplaceRegEx(s, '<exclude/>', '@exclude');  
+  s := ReplaceRegEx(s, '<exclude[^/]*/>', '@exclude');
+  s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@link($1)');
   DescriptionInfo.Content := s;
 end;
 
