@@ -188,7 +188,7 @@ type
     
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
-      [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
+      [https://github.com/michaliskambi/pasdoc/wiki/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
     
@@ -370,7 +370,7 @@ type
       (it will append the same number of items to 
       RawDescriptions as it appended to Names).
       The strategy how comments are assigned to item in this case is
-      described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
+      described on [https://github.com/michaliskambi/pasdoc/wiki/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
       FinalSymbol: TSymbolType; 
@@ -465,7 +465,7 @@ type
       read FShowVisibilities write FShowVisibilities;
       
     { See command-line option @--implicit-visibility documentation at
-      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
+      [https://github.com/michaliskambi/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
   end;

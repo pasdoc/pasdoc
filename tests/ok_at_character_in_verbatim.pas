@@ -1,6 +1,6 @@
 (* Test that @@( and @@) and @@@@ (see
-  http://pasdoc.sipsolutions.net/SupportedTags and
-  http://pasdoc.sipsolutions.net/TagsParametersMatching) work Ok
+  https://github.com/michaliskambi/pasdoc/wiki/SupportedTags and
+  https://github.com/michaliskambi/pasdoc/wiki/TagsParametersMatching) work Ok
   inside all @@-tags. Including tags that don't interpret other @@-tags
   inside, like @@latex or @@html.
 

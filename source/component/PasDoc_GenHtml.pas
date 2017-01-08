@@ -327,7 +327,7 @@ type
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-    { Enable Tiptue fulltext search. See [http://pasdoc.sipsolutions.net/UseTipueSearchOption] }
+    { Enable Tiptue fulltext search. See [https://github.com/michaliskambi/pasdoc/wiki/UseTipueSearchOption] }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
       default False;
   end;

@@ -96,7 +96,7 @@ const
 
         For unofficial releases (i.e. when pasdoc is simply compiled from SVN
         by anyone, or when it's packaged for
-        [http://pasdoc.sipsolutions.net/DevelopmentSnapshots]),
+        [https://github.com/michaliskambi/pasdoc/wiki/DevelopmentSnapshots]),
         PASDOC_DATE has no clear meaning. It's not the date of this
         release (since you don't update the PASDOC_VERSION constant)
         and it's not the date of last official release (since some

@@ -196,7 +196,7 @@ type
     property CacheDir: string read FCacheDir write FCacheDir; 
     
     { This determines how items inside will be sorted.
-      See [http://pasdoc.sipsolutions.net/SortOption]. }
+      See [https://github.com/michaliskambi/pasdoc/wiki/SortOption]. }
     property SortSettings: TSortSettings 
       read FSortSettings write FSortSettings default [];
       
@@ -207,7 +207,7 @@ type
       write FConclusionFileName;
       
     { See command-line option @--implicit-visibility documentation at
-      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption].
+      [https://github.com/michaliskambi/pasdoc/wiki/ImplicitVisibilityOption].
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
@@ -216,7 +216,7 @@ type
       read FHandleMacros write FHandleMacros default true;
       
     { This controls auto-linking, see
-      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
+      [https://github.com/michaliskambi/pasdoc/wiki/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
   end;

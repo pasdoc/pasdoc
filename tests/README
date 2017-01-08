@@ -168,7 +168,7 @@ Possible tests to be done:
    onsgmls program must be installed for this to work.
 
    Links how to install onsgmls may be found here
-   [http://pasdoc.sipsolutions.net/HtmlOutput].
+   [https://github.com/michaliskambi/pasdoc/wiki/HtmlOutput].
 
 3.2. make simplexml validate_simplexml
 

@@ -49,12 +49,12 @@ uses
 {$ENDIF}
   Classes, SysUtils,
   IniFiles;
-  
+
 var
   IniFile: TIniFile;
 
 const
-  DefaultWWWHelpServer = 'http://pasdoc.sipsolutions.net/';
+  DefaultWWWHelpServer = 'https://github.com/michaliskambi/pasdoc/wiki/';
 
 var
   WWWHelpServer: string;
@@ -69,10 +69,10 @@ implementation
   It has fixed GetAppConfigDir and GetAppConfigFile, so that
   1. config file is stored inside hidden dir
   2. moreover it follows base-dir spec
-  
+
   Michalis send this patch to FPC and it was applied during FPC 2.0.3
   development. So for FPC 2.0.0 and 2.0.2, we need the workaround below. }
-  
+
 Function GetHomeDir : String;
 
 begin
@@ -80,15 +80,15 @@ begin
   If (Result<>'') then
     Result:=IncludeTrailingPathDelimiter(Result);
 end;
-  
-{ Follows base-dir spec, 
+
+{ Follows base-dir spec,
   see [http://freedesktop.org/Standards/basedir-spec].
   Always ends with PathDelim. }
 Function XdgConfigHome : String;
 begin
   Result:=GetEnvironmentVariable('XDG_CONFIG_HOME');
   if (Result='') then
-    Result:=GetHomeDir + '.config/' 
+    Result:=GetHomeDir + '.config/'
   else
     Result:=IncludeTrailingPathDelimiter(Result);
 end;
@@ -205,4 +205,3 @@ finalization
     FreeAndNil(IniFile);
   end;
 end.
-
