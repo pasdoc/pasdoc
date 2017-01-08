@@ -54,7 +54,7 @@ var
   IniFile: TIniFile;
 
 const
-  DefaultWWWHelpServer = 'https://github.com/michaliskambi/pasdoc/wiki/';
+  DefaultWWWHelpServer = 'https://github.com/pasdoc/pasdoc/wiki/';
 
 var
   WWWHelpServer: string;

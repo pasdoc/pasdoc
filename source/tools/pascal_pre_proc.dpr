@@ -23,7 +23,7 @@
 }
 
 { A Pascal preprocessor.
-  See [https://github.com/michaliskambi/pasdoc/wiki/OtherTools] for
+  See [https://github.com/pasdoc/pasdoc/wiki/OtherTools] for
   documentation.
 
   TODO: should be made configurable to preserve some directives.

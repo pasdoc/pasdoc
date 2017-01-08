@@ -7,7 +7,7 @@
   Update 2005-12-05: $if is sorta handled now, and so is $ifend.
   This testcase is parsed now. There is still work remaining to be done
   with regards to $if and $elseif, this is documented on
-  [https://github.com/michaliskambi/pasdoc/wiki/ToDo].
+  [https://github.com/pasdoc/pasdoc/wiki/ToDo].
 }
 
 unit ok_if_directive;

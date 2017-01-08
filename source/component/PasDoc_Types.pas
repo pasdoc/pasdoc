@@ -93,7 +93,7 @@ function GlueNameParts(const NameParts: TNameParts): string;
 
 type
   { See command-line option @--implicit-visibility documentation at
-    [https://github.com/michaliskambi/pasdoc/wiki/ImplicitVisibilityOption] }
+    [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
   TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
 
 implementation
