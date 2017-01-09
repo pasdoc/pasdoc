@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -26,7 +26,6 @@
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date$)
 
   Contains the @link(TParser) object, which can parse an ObjectPascal
   code, and put the collected information into the TPasUnit instance. }
@@ -189,7 +188,7 @@ type
     
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
-      [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
+      [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
     
@@ -371,7 +370,7 @@ type
       (it will append the same number of items to 
       RawDescriptions as it appended to Names).
       The strategy how comments are assigned to item in this case is
-      described on [http://pasdoc.sipsolutions.net/WhereToPlaceComments]
+      described on [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
       FinalSymbol: TSymbolType; 
@@ -466,7 +465,7 @@ type
       read FShowVisibilities write FShowVisibilities;
       
     { See command-line option @--implicit-visibility documentation at
-      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption] }
+      [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
   end;
@@ -575,8 +574,10 @@ begin
   s := DescriptionInfo.Content;
   s := ReplaceRegEx(s, '<summary[^>]*>', '@abstract(');
   s := ReplaceRegEx(s, '</summary>', ')');
-  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1');
-  s := ReplaceRegEx(s, '</param>', ')');
+  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>*([^>]*)', '@param($1  $2');
+  s := ReplaceRegEx(s, '</param>', ')'+LineEnding + LineEnding);
+  s := ReplaceRegEx(s, '<para[^>]*>', LineEnding + LineEnding);
+  s := ReplaceRegEx(s, '</para>', LineEnding + LineEnding);
   s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
   s := ReplaceRegEx(s, '</returns>', ')');
   s := ReplaceRegEx(s, '<exception[ ]*([^>]*)>', '@raises($1');
@@ -593,7 +594,7 @@ begin
   s := ReplaceRegEx(s, '</i>', ')');
   s := ReplaceRegEx(s, '<u>', '@underline(');  // not yet implemented
   s := ReplaceRegEx(s, '</u>', ')');
-  s := ReplaceRegEx(s, '<br>', '@br');
+  s := ReplaceRegEx(s, '<br */?>', '@br');
   s := ReplaceRegEx(s, '<ul>', '@unorderedList(');
   s := ReplaceRegEx(s, '</ul>', ')');
   s := ReplaceRegEx(s, '<ol>', '@orderedList(');
@@ -606,6 +607,8 @@ begin
   s := ReplaceRegEx(s, '</remarks>', '');
   s := ReplaceRegEx(s, '<comment>', '');
   s := ReplaceRegEx(s, '</comment>', '');
+  s := ReplaceRegEx(s, '<exclude[^/]*/>', '@exclude');
+  s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@link($1)');
   DescriptionInfo.Content := s;
 end;
 
@@ -2538,8 +2541,8 @@ var
 begin
   t := nil;
   try
-  { This is needed to include ClassKeyWordString in
-    class methods declarations. }
+      { ClassKeyWordString is used to include 'class' in
+        class methods, properties and variables declarations. }
       ClassKeyWordString := '';
       StrictVisibility := False;
       Result := False;
@@ -2578,7 +2581,7 @@ begin
                   ClassKeyWordString := '';
                 end
                 else
-                  ClassKeyWordString := Trim(ClassKeyWordString + t.Data);
+                  ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
               end;
             KEY_CLASS: ClassKeyWordString := t.Data;
             KEY_CONSTRUCTOR,
@@ -2610,6 +2613,14 @@ begin
             KEY_PROPERTY:
               begin
                 ParseProperty(p);
+
+                { append ClassKeyWordString to property FullDeclaration,
+                  to have 'class property Foo: ...'. }
+                if ClassKeyWordString <> '' then
+                begin
+                  P.FullDeclaration := ClassKeyWordString + ' ' + P.FullDeclaration;
+                  ClassKeyWordString := '';
+                end;
 
                 if Visibility in ShowVisibilities then
                 begin
