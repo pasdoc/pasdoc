@@ -576,8 +576,8 @@ begin
   s := ReplaceRegEx(s, '</summary>', ')');
   s := ReplaceRegEx(s, '<para[^>]*>', LineEnding + LineEnding);
   s := ReplaceRegEx(s, '</para>', LineEnding + LineEnding);
-  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1');
-  s := ReplaceRegEx(s, '</param>', ')');
+  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>*([^>]*)', '@param($1  $2');
+  s := ReplaceRegEx(s, '</param>', ')'+LineEnding + LineEnding);
   s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
   s := ReplaceRegEx(s, '</returns>', ')');
   s := ReplaceRegEx(s, '<exception[ ]*([^>]*)>', '@raises($1');
