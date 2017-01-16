@@ -92,22 +92,29 @@ upload_one_format ()
   # but this requires uploading all files unpacked.
   # It's much quickier to just log to server and untar there uploaded archive.
   #
-  # After uploading, I change permission of uploaded and unpacked
+  # Old notes:
+  #
+  # After uploading, I changed permission of uploaded and unpacked
   # files so that they are writeable by pasdoc group
   # (which means pasdoc developers).
   # Note that I don't do here simple
   #   ./ssh_chmod_writeable_by_pasdoc.sh "$SF_USERNAME" "$SF_PATH"
   # because I can chmod only the files that "$SF_USERNAME" owns
   # (so I chmod only the files that I uploaded).
-  # Although this isn't really needed: since new SF username is like
+  #
+  # Later note: This needed anymore: since new SF username is like
   # "kambi,pasdoc" (not just "kambi"), so I'm logged with default
   # group "pasdoc" already.
+  #
+  # Later note: This is not possible anymore.
+  # Group is forced to be Apache, it seems.
+  # So for security we don't want to make these files writeable.
 
   ssh "$SF_USERNAME",pasdoc@shell.sourceforge.net <<EOF
   cd "$SF_PATH"
   tar xzf "$ARCHIVE_FILENAME_NONDIR"
-  chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
-  chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
+# chgrp -R pasdoc "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
+# chmod -R g+w    "$TIMESTAMP_FILENAME_NONDIR" "$ARCHIVE_FILENAME_NONDIR" "$FORMAT"/
 EOF
 
   # Clean temp dir

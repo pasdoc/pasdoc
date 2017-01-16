@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,13 +15,12 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
 
 {
-  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
@@ -210,6 +209,9 @@ function CombinePaths(BasePath, RelPath: string): string;
   this will remove only the last one.
   Will remove nothing if filename has no extension. }
 function DeleteFileExt(const FileName: string): string;
+
+{ Remove common indentation (whitespace prefix) from a multiline string. }
+function RemoveIndentation(const Code: string): string;
 
 procedure Swap16Buf(Src, Dst: PWord; WordCount: Integer);
 function IsCharInSet(C: AnsiChar; const CharSet: TCharSet): Boolean;
@@ -785,6 +787,74 @@ begin
 
   Result := FileName;
 end;
+
+function RemoveIndentation(const Code: string): string;
+var
+  Source: TStrings;
+  IndentationPrefix: string;
+  I, J, FirstNonEmptyLine: Integer;
+begin
+  Source := TStringList.Create;
+  try
+    Source.Text := Code;
+
+    // calculate FirstNonEmptyLine
+    FirstNonEmptyLine := -1;
+    for I := 0 to Source.Count - 1 do
+      if Trim(Source[I]) <> '' then
+      begin
+        FirstNonEmptyLine := I;
+        break;
+      end;
+
+    // nothing to do if all the lines are empty
+    if FirstNonEmptyLine <> -1 then
+    begin
+      // calculate IndentationPrefix as the whitespace in FirstNonEmptyLine
+      Assert(Trim(Source[FirstNonEmptyLine]) <> '');
+      IndentationPrefix := ''; // should always be changed by loop below
+      for I := 1 to Length(Source[FirstNonEmptyLine]) - 1 do
+        if not (Source[FirstNonEmptyLine][I] in WhiteSpace) then
+        begin
+          IndentationPrefix := Copy(Source[FirstNonEmptyLine], 1, I - 1);
+          break;
+        end;
+
+      // update the IndentationPrefix, 
+      // to be a common prefix of all the lines since FirstNonEmptyLine
+      for I := FirstNonEmptyLine + 1 to Source.Count - 1 do
+      begin
+        // Don't limit IndentationPrefix on lines that have only whitespace.
+        // This allows users to trim whitespace in their source code without 
+        // affecting the longCode look/
+        if Trim(Source[I]) <> '' then
+        begin
+          for J := 1 to Length(IndentationPrefix) do
+          begin
+            { We should never reach here the situation when
+              "J > Length(Source[I])". Because then Source[I] would be a prefix
+              of IndentationPrefix, but then Source[I] would be only whitespace,
+              and we have eliminated this case by "Trim(Source[I]) <> ''" check above. }
+            Assert(J <= Length(Source[I]));
+            // Possibly make IndentationPrefix shorter.
+            if Source[I][J] <> IndentationPrefix[J] then
+            begin
+              IndentationPrefix := Copy(IndentationPrefix, 1, J - 1);
+              break;
+            end;
+          end;
+        end;
+      end;
+
+      // cut the IndentationPrefix from all the lines since FirstNonEmptyLine
+      for I := FirstNonEmptyLine to Source.Count - 1 do
+        Source[I] := SEnding(Source[I], Length(IndentationPrefix) + 1);
+    end;
+
+    Result := TrimRight(Source.Text);
+  finally Source.Free; end;
+end;
+
 
 { EInternalError ------------------------------------------------------------- }
 

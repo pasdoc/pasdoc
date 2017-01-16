@@ -18,4 +18,4 @@ users do not have to do (or even know) *anything* about tipue
 to use it with pasdoc. It's just a matter of passing --use-tipue-search.
 (we can't use tipue by default, without explicit request by --use-tipue-search
 option, since it's not suitable for really large documentation,
-see [http://pasdoc.sipsolutions.net/UseTipueSearchOption]).
+see [https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption]).

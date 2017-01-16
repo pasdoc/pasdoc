@@ -8,55 +8,56 @@
     {trInternalCR} strToDo, // 'Internal Classes and Records',
     {trInternalTypes} strToDo, // 'Internal Types',
     {trIdentifiers} 'Identificadores',
-    {trGvUses} 'Gráfico de las dependencias de unidades',
-    {trGvClasses} 'Gráfico de la jerarquía de clases',
+    {trGvUses} 'Gráfico de dependencias de unidades', //
+    {trGvClasses} 'Gráfico de jerarquía de clases', //
   //tables and members
     {trClasses} 'Clases',
       {trClass} 'Clase',
       {trDispInterface} strToDo, //'DispInterface',
-      {trInterface} strToDo, //'Interface',
+      {trInterface} 'Interfaz', //'Interface',
     {trObjects} 'Objetos',
       {trObject} 'Objeto',
-      {trRecord} strToDo, //'Record',
+      {trRecord} 'Registro', //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Jerarquía',
         {trFields} 'Campos',
         {trMethods} 'Métodos',
         {trProperties} 'Propiedades',
-    {trLibrary} strToDo,  //'Library',
-    {trPackage} strToDo,  //'Package',
-    {trProgram} strToDo,  //'Program',
+    {trLibrary} 'Biblioteca',  //'Library',
+    {trPackage} 'Paquete',  //'Package',
+    {trProgram} 'Programa',  //'Program',
     {trUnit} 'Unidad',
-      {trUses} strToDo, //'Uses',
+      {trUses} 'Unidades', //'Uses', I may use "Unidades utilizadas/referenciadas" (Used/referenced units).
       {trConstants} 'Constantes',
       {trFunctionsAndProcedures} 'Funciones y procedimientos',
       {trTypes} 'Tipos',
         {trType} 'Tipo',
-      {trVariables} strKeep, //'Variables', //???
+      {trVariables} 'Variables', //'Variables',
       {trAuthors} 'Autores',
         {trAuthor} 'Autor',
       {trCreated} 'Creado',
       {trLastModified} 'Última modificación',
-    {trSubroutine} strToDo, //'Subroutine',
+    {trSubroutine} 'Subrutina', //'Subroutine',
       {trParameters} 'Parámetros',
       {trReturns} 'Retorno', //strToDo??? solo uno!
       {trExceptionsRaised} 'Excepciones lanzadas',
     {trExceptions} 'Excepciones',
-      {trException} 'Excepcion', //?
-    {trEnum} strKeep, //'Enumeration',
+      {trException} 'Excepción', //
+    {trEnum} 'Enumeración', //'Enumeration',
   //visibilities
     {trVisibility} 'Visibilidad',
-      {trPrivate} strToDo, //'Private',
-      {trStrictPrivate} strToDo, //'Strict Private',
-      {trProtected} strToDo, //'Protected',
-      {trStrictProtected} strToDo, //'Strict Protected',
-      {trPublic} strToDo, //'Public',
-      {trPublished} strToDo, //'Published',
-      {trAutomated} strToDo, //'Automated',
-      {trImplicit} strToDo, //'Implicit',
+      {trPrivate} 'Privado', //'Private',
+      {trStrictPrivate} 'Estrictamente privado', //'Strict Private',
+      {trProtected} 'Protegido', //?
+      {trStrictProtected} 'Estrictamente protegido', //'Strict Protected',
+      {trPublic} 'Público', //'Public',
+      {trPublished} strToDo, //'Published', I would keep that because "Published" is also "Público" in this context (IDE).
+      {trAutomated} 'Automático', //'Automated',
+      {trImplicit} 'Implícito', //'Implicit',
   //hints
-    {trDeprecated} 'Este símbolo está obsoleto',
+    {trDeprecated} 'Este símbolo es obsoleto', //
     {trPlatformSpecific} 'Este símbolo es específico para alguna plataforma',
-    {trLibrarySpecific} 'Este símbolo es específico para alguna librería',
+    {trLibrarySpecific} 'Este símbolo es específico para alguna biblioteca', //
   //headings
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducción',
@@ -73,19 +74,18 @@
   //column headings
     {trDeclaration} 'Declaración',
     {trDescription} 'Descripción',
-    {trDescriptions} 'Descripciónes', //? 'Descriptions', 'Detailed Descriptions'?
+    {trDescriptions} 'Descripción detallada', //? 'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nombre',
     {trValues} 'Valores',
   //empty
     {trNone} 'Ninguno',
-    {trNoCIOs} 'Las unidades no contienen ni clases ni interfaces ni objetos ni registros.',
-    {trNoCIOsForHierarchy} 'Las unidades no contienen ni clases ni interfaces ni objetos.',
-    {trNoTypes} 'Las unidades no contienen ningún tipo.',
-    {trNoVariables} 'Las unidades no contienen ningunas variables.',
-    {trNoConstants} 'Las unidades no contienen ningunas constantes.',
-    {trNoFunctions} 'Las unidades no contienen ni funciones ni procedimientos',
-      //??? strToDo, //'Las unidades no contienen ni variables ni procedimientos',
-    {trNoIdentifiers} 'Las unidades no contienen ningún Identificador.',
+    {trNoCIOs} 'Las unidades no contienen clases, interfaces, objetos ni registros.',
+    {trNoCIOsForHierarchy} 'Las unidades no contienen clases, interfaces ni objetos.',
+    {trNoTypes} 'Las unidades no contienen tipo alguno.',
+    {trNoVariables} 'Las unidades no contienen ninguna variable.', //
+    {trNoConstants} 'Las unidades no contienen ninguna constante.', //
+    {trNoFunctions} 'Las unidades no contienen funciones ni procedimientos', //
+    {trNoIdentifiers} 'Las unidades no contienen identificadores.',
   //misc
     {trHelp} 'Ayuda',
     {trLegend} 'Leyenda',
@@ -96,8 +96,8 @@
     {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'a',
     {trSearch} 'Buscar',
-    {trSeeAlso} 'Ver',
-    {trInternal} strToDo, //'internal',
-    {trAttributes} strToDo, //'Attributes',
+    {trSeeAlso} 'Ver también', // ?
+    {trInternal} 'interno', //'internal',
+    {trAttributes} 'Atributos', //'Attributes',
     ''  //dummy
   );

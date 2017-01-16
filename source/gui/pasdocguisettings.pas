@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "pasdoc_gui".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "pasdoc_gui"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -41,7 +41,7 @@ var
   IniFile: TIniFile;
 
 const
-  DefaultWWWHelpServer = 'http://pasdoc.sipsolutions.net/';
+  DefaultWWWHelpServer = 'https://github.com/pasdoc/pasdoc/wiki/';
 
 var
   WWWHelpServer: string;

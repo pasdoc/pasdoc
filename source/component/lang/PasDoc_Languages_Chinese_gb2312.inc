@@ -20,6 +20,7 @@ RTransTable = (
     {trObjects} '对象',
       {trObject} '对象',
       {trRecord} '记录',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} '层次结构',
         {trFields} '字段',
         {trMethods} '方法',

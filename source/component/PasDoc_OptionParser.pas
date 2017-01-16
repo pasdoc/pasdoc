@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,14 +15,13 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
 
 { @abstract(The @name unit --- easing command line parsing)
   @author(Johannes Berg <johannes@sipsolutions.de>)
-  @cvs($Date$)
 
   To use this unit, create an object of @link(TOptionParser) and add options to
   it, each option descends from @link(TOption).

@@ -17,7 +17,7 @@
 
   You should have received a copy of the GNU General Public License
   along with pasdoc_gui; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 }
 
 {
@@ -26,7 +26,6 @@
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(2004-11-28)
-  @cvs($Date: 2008-08-04 03:40:15 +0200 (Mo, 04 Aug 2008) $)
 }
 
 unit frmHelpGeneratorUnit;

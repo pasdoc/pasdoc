@@ -1,5 +1,5 @@
 /*
-  Copyright 1998-2015 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 */
@@ -129,6 +129,7 @@ h6.description_section {
      is closely related to content below. In this situation
      (where the font size is just as a normal text), smaller bottom
      margin seems to look good. */
+  margin-top: 1.4em;
   margin-bottom: 0em;
 }
 

@@ -1,7 +1,7 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
 '/*' + LineEnding +
-'  Copyright 1998-2015 PasDoc developers.' + LineEnding +
+'  Copyright 1998-2016 PasDoc developers.' + LineEnding +
 '' + LineEnding +
 '  This file is part of "PasDoc".' + LineEnding +
 '' + LineEnding +
@@ -17,7 +17,7 @@
 '' + LineEnding +
 '  You should have received a copy of the GNU General Public License' + LineEnding +
 '  along with "PasDoc"; if not, write to the Free Software' + LineEnding +
-'  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA' + LineEnding +
+'  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA' + LineEnding +
 '' + LineEnding +
 '  ----------------------------------------------------------------------------' + LineEnding +
 '*/' + LineEnding +
@@ -131,6 +131,7 @@
 '     is closely related to content below. In this situation' + LineEnding +
 '     (where the font size is just as a normal text), smaller bottom' + LineEnding +
 '     margin seems to look good. */' + LineEnding +
+'  margin-top: 1.4em;' + LineEnding +
 '  margin-bottom: 0em;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +

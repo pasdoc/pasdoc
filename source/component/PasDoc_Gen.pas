@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -34,7 +34,6 @@
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(30 Aug 1998)
-  @cvs($Date$)
 
   @name contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce
@@ -375,6 +374,10 @@ type
       const TagParameter: string; var ReplaceStr: string);
 
     procedure HandleIncludeTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+
+    procedure HandleIncludeCodeTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
 
@@ -902,7 +905,7 @@ type
         @item(pasdoc's compiler name and version,)
         @item(pasdoc's version and time of compilation)
       )
-      See [http://pasdoc.sipsolutions.net/ExcludeGeneratorOption].
+      See [https://github.com/pasdoc/pasdoc/wiki/ExcludeGeneratorOption].
       Default value is false (i.e. show them),
       as this information is generally considered useful.
       
@@ -951,14 +954,14 @@ type
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
     
     { This controls @link(SearchLink) behavior, as described in
-      [http://pasdoc.sipsolutions.net/LinkLookOption]. }
+      [https://github.com/pasdoc/pasdoc/wiki/LinkLookOption]. }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
     
     property WriteUsesClause: boolean 
       read FWriteUsesClause write FWriteUsesClause default false;
 
     { This controls auto-linking, see
-      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
+      [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
       
@@ -1177,9 +1180,15 @@ begin
   if TagParameter = '' then
     exit;
   // Trim off "marker" characters at the beginning and end of TagParameter.
+  // Do this only if they are the same character -- this way we are backward
+  // compatible (in the past, matching characters were required), but were
+  // not insisting on them being present in new code.
+  if (Length(TagParameter) >= 2) and
+     (TagParameter[1] = TagParameter[Length(TagParameter)]) then
+    ReplaceStr := Copy(TagParameter, 2, Length(TagParameter) - 2);
+  ReplaceStr := RemoveIndentation(ReplaceStr);
   // Then format pascal code.
-  ReplaceStr := FormatPascalCode(
-    Copy(TagParameter, 2, Length(TagParameter) - 2));
+  ReplaceStr := FormatPascalCode(ReplaceStr);
 end;
 
 procedure TDocGenerator.HandleHtmlTag(
@@ -1378,7 +1387,7 @@ procedure TDocGenerator.HandlePreformattedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  ReplaceStr := FormatPreformatted(TagParameter);
+  ReplaceStr := FormatPreformatted(RemoveIndentation(TagParameter));
 end;
 
 type
@@ -1846,6 +1855,9 @@ procedure TDocGenerator.ExpandDescriptions;
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
         {$IFDEF FPC}@{$ENDIF} HandleIncludeTag,
         [toParameterRequired]);
+      TTag.Create(TagManager, 'includeCode',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleIncludeCodeTag,
+        [toParameterRequired]);
 
       { Tags with recursive params }
       TTag.Create(TagManager, 'code',
@@ -2242,13 +2254,13 @@ function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
 begin
   case MyType of
     CIO_CLASS: Result := FLanguage.Translation[trClass];
-    CIO_PACKEDCLASS: Result := 'packed ' + FLanguage.Translation[trClass]; // TODO
+    CIO_PACKEDCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trClass];
     CIO_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];
-    CIO_PACKEDOBJECT: Result := 'packed ' + FLanguage.Translation[trObject]; // TODO
-    CIO_RECORD: Result := 'record'; // TODO
-    CIO_PACKEDRECORD: Result := 'packed record'; // TODO
+    CIO_PACKEDOBJECT: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trObject];
+    CIO_RECORD: Result := FLanguage.Translation[trRecord];
+    CIO_PACKEDRECORD: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trRecord];
   else
     Result := '';
   end;
@@ -2983,7 +2995,7 @@ function TDocGenerator.FormatPascalCode(const Line: string): string;
 type
   TCodeType = (ctWhiteSpace, ctString, ctCode, ctEndString, ctChar,
     ctParenComment, ctBracketComment, ctSlashComment, ctCompilerComment, 
-    ctEndComment, ctHex, ctEndHex, ctNumeric, ctEndNumeric);
+    ctHex, ctEndHex, ctNumeric, ctEndNumeric);
 var
   CharIndex: integer;
   CodeType: TCodeType;
@@ -3199,32 +3211,35 @@ begin
         end;
       ctParenComment:
         begin
-          if Line[CharIndex] = ')' then
+          if (Line[CharIndex] = ')') and (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
           begin
-            if (CharIndex > 1) and (Line[CharIndex - 1] = '*') then
-            begin
-              CodeType := ctEndComment;
-              result := result + FormatComment(Copy(Line, CommentBegining,
-                CharIndex - CommentBegining + 1));
-            end;
+            result := result + FormatComment(Copy(Line, CommentBegining,
+              CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctBracketComment:
         begin
           if Line[CharIndex] = '}' then
           begin
-            CodeType := ctEndComment;
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctCompilerComment:
         begin
           if Line[CharIndex] = '}' then
           begin
-            CodeType := ctEndComment;
             result := result + FormatCompilerComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining + 1));
+            // behave like whitespace starts right after the comment
+            CodeType := ctWhiteSpace;
+            WhiteSpaceBeginning := CharIndex + 1;
           end;
         end;
       ctSlashComment:
@@ -3235,33 +3250,6 @@ begin
             result := result + FormatComment(Copy(Line, CommentBegining,
               CharIndex - CommentBegining));
             WhiteSpaceBeginning := CharIndex;
-          end;
-        end;
-      ctEndComment:
-        begin
-          if TestCommentStart then
-          begin
-            // do nothing
-          end
-          else if IsCharInSet(Line[CharIndex], Separators) then
-          begin
-            CodeType := ctWhiteSpace;
-            WhiteSpaceBeginning := CharIndex;
-          end
-          else if Line[CharIndex] = '$' Then
-          Begin
-            CodeType := ctHex;
-            HexBeginning := CharIndex;
-          End
-          else if IsCharInSet(Line[CharIndex], Numeric) then
-          begin
-            CodeType := ctNumeric;
-            NumBeginning := CharIndex;
-          end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
-          begin
-            CodeType := ctCode;
-            CodeBeginning := CharIndex;
           end;
         end;
       ctHex:
@@ -3380,27 +3368,17 @@ begin
         result := result + FormatString(Copy(Line, StringBeginning,
           CharIndex - StringBeginning));
       end;
-    ctParenComment:
-      begin
-        result := result + FormatComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining));
-      end;
+    ctParenComment,
+    ctSlashComment,
     ctBracketComment:
       begin
+        { add an unterminated comment at the end }
         result := result + FormatComment(Copy(Line, CommentBegining,
           CharIndex - CommentBegining));
       end;
     ctCompilerComment:
       begin
         result := result + FormatCompilerComment(Copy(Line, CommentBegining,
-          CharIndex - CommentBegining));
-      end;
-    ctSlashComment:
-      begin
-      end;
-    ctEndComment:
-      begin
-        result := result + FormatComment(Copy(Line, CommentBegining,
           CharIndex - CommentBegining));
       end;
     ctHex:
@@ -3898,6 +3876,36 @@ begin
         @noAutoLink(@include(file.txt))
       does NOT turn auto-linking off inside file.txt. }
     AutoLink);
+end;
+
+procedure TDocGenerator.HandleIncludeCodeTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  I: Integer;
+  FileName: string;
+  FileNames: TStringList;
+begin
+  FileNames := TStringList.Create;
+  try
+    FileNames.Text := TagParameter;
+
+    ReplaceStr := '';
+    for I := 0 to Pred(FileNames.Count) do
+    begin
+      FileName := Trim(FileNames[I]);
+      if Length(FileName) > 0 then
+      begin
+        FileName := CombinePaths(FCurrentItem.BasePath, FileName);
+        ReplaceStr := ReplaceStr + FormatPascalCode(FileToString(FileName));
+      end;
+    end;
+
+    if ReplaceStr = '' then
+      ThisTag.TagManager.DoMessage(1, pmtWarning,
+        'No parameters for @includeCode tag', []);
+  finally FileNames.Free end;
 end;
 
 procedure TDocGenerator.SetExternalClassHierarchy(const Value: TStrings);

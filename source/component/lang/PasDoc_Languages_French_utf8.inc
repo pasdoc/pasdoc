@@ -2,7 +2,7 @@ RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'French',
   //map
-    {trUnits} '<<<Unités>>>',
+    {trUnits} 'Unités',
     {trClassHierarchy} 'Hiérarchie des classes',
     {trCio} 'Classes, interfaces, enregistrements et objets',
     {trInternalCR} strToDo, // 'Internal Classes and Records',
@@ -18,6 +18,7 @@ RTransTable = (
     {trObjects} 'Objets',
       {trObject} 'Objet',
       {trRecord} 'Enregistrement', //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Hiérarchie',
         {trFields} 'Champs',
         {trMethods} 'Méthodes',
@@ -63,7 +64,7 @@ RTransTable = (
     {trConclusion} strKeep, //'Conclusion',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Toutes les classes, interfaces, objets et enregistrements',
-    {trHeadlineConstants} 'Toutes les constants',
+    {trHeadlineConstants} 'Toutes les constantes',
     {trHeadlineFunctionsAndProcedures} 'Toutes les fonctions et procédures',
     {trHeadlineIdentifiers} 'Tous les identificateurs',
     {trHeadlineTypes} 'Tous les types',

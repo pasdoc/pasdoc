@@ -18,6 +18,7 @@
     {trObjects} 'Objektumok',
       {trObject} 'Objektum',
       {trRecord} strToDo, //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Hierarchia',
         {trFields} 'Mezők',
         {trMethods} 'Metódusok',

@@ -12,13 +12,19 @@ set -eu
 #   chmod -R g+w *
 # This means that every file in given directory is made writeable
 # by pasdoc group, which means pasdoc developers.
+#
+# Later note: chgrp -R pasdoc is not supported on SF anymore.
+# Group is always "apache", and for security I would not like to have
+# files writeable by apache on a shared host.
 
-SF_USERNAME="$1"
-SF_PATH="$2"
-shift 2
+echo 'ssh_chmod_writeable_by_pasdoc: Not changing permissions, as it is no longer possible on SourceForge.'
 
-ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
-  cd "$SF_PATH"
-  chgrp -R pasdoc *
-  chmod -R g+w *
-EOF
+# SF_USERNAME="$1"
+# SF_PATH="$2"
+# shift 2
+
+# ssh -l "$SF_USERNAME" shell.sourceforge.net <<EOF
+#   cd "$SF_PATH"
+#   chgrp -R pasdoc *
+#   chmod -R g+w *
+# EOF

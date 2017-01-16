@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -35,7 +35,6 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date$)
 
   Implements an object to generate HTML documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }
@@ -328,7 +327,7 @@ type
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-    { Enable Tiptue fulltext search. See [http://pasdoc.sipsolutions.net/UseTipueSearchOption] }
+    { Enable Tiptue fulltext search. See [https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption] }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
       default False;
   end;

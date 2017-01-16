@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -368,7 +368,7 @@ type
 
     { This will be inserted on each whitespace sequence (but not on 
       paragraph break). This is consistent with 
-      [http://pasdoc.sipsolutions.net/WritingDocumentation]
+      [https://github.com/pasdoc/pasdoc/wiki/WritingDocumentation]
       that clearly says that "amount of whitespace does not matter".
       
       Although in some pasdoc output formats amount of whitespace also

@@ -281,12 +281,16 @@ build-gui:
 	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
 	strip source/gui/pasdoc_gui$(EXE)
 
+.PHONY: tests
+tests:
+	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./tests/fpcunit/test_pasdoc.lpr
+	bin/test_pasdoc -a
+
 ############################################################################
 # Help targets
 ############################################################################
 
 .PHONY: help
-
 help:
 	@echo "Available targets of this Makefile:"
 	@echo

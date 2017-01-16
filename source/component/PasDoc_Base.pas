@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,13 +15,12 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
 
 { @abstract(Contains the main TPasDoc component.)
-  @cvs($Date$)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
@@ -197,7 +196,7 @@ type
     property CacheDir: string read FCacheDir write FCacheDir; 
     
     { This determines how items inside will be sorted.
-      See [http://pasdoc.sipsolutions.net/SortOption]. }
+      See [https://github.com/pasdoc/pasdoc/wiki/SortOption]. }
     property SortSettings: TSortSettings 
       read FSortSettings write FSortSettings default [];
       
@@ -208,7 +207,7 @@ type
       write FConclusionFileName;
       
     { See command-line option @--implicit-visibility documentation at
-      [http://pasdoc.sipsolutions.net/ImplicitVisibilityOption].
+      [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption].
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
@@ -217,7 +216,7 @@ type
       read FHandleMacros write FHandleMacros default true;
       
     { This controls auto-linking, see
-      [http://pasdoc.sipsolutions.net/AutoLinkOption] }
+      [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
   end;

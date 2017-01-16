@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2014 PasDoc developers.
+  Copyright 1998-2016 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
@@ -96,7 +96,7 @@ const
 
         For unofficial releases (i.e. when pasdoc is simply compiled from SVN
         by anyone, or when it's packaged for
-        [http://pasdoc.sipsolutions.net/DevelopmentSnapshots]),
+        [https://github.com/pasdoc/pasdoc/wiki/DevelopmentSnapshots]),
         PASDOC_DATE has no clear meaning. It's not the date of this
         release (since you don't update the PASDOC_VERSION constant)
         and it's not the date of last official release (since some

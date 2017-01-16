@@ -4,7 +4,7 @@
     then in all filenames we replace FilePathDelim with current PathDelim.
   - when writing we set FilePathDelim to current PathDelim
 
-  Add then to [http://pasdoc.sipsolutions.net/PasDocGui] text like
+  Add then to [https://github.com/pasdoc/pasdoc/wiki/PasDocGui] text like
 
 Moreover, as long as you will keep ''Store relative paths in project file'' option checked, you can freely open and save the same *.pds file using any OS. E.g. you can create and save {{{test.pds}}} using Linux version of pasdoc_gui, then switch to Windows and open the same {{{test.pds}}} file using Windows version of pasdoc_gui, etc.
 
@@ -28,7 +28,7 @@ Moreover, as long as you will keep ''Store relative paths in project file'' opti
 
   - Also for command-line pasdoc:
     See also requests about using client-side image map generated
-    by "dot", see [http://pasdoc.sipsolutions.net/WantedFeatures].
+    by "dot", see [https://github.com/pasdoc/pasdoc/wiki/WantedFeatures].
 
 - When we will learn how to generate nice offline documentation
   from our moinmoin wiki and we will distribute pasdoc + pasdoc_gui +

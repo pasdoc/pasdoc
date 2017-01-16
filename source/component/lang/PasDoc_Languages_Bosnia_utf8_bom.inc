@@ -18,6 +18,7 @@
     {trObjects} 'Objekti',
       {trObject} 'Objekt',
       {trRecord} strToDo, //'Record',
+      {trPacked} strToDo, //'Packed',
         {trHierarchy} 'Hijerarhija',
         {trFields} 'Polja',
         {trMethods} 'Metode',
