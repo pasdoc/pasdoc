@@ -39,7 +39,7 @@ BINFILES := $(BINDIR)/pasdoc$(EXE) \
 	$(BINDIR)/pascal_pre_proc$(EXE) \
 	$(BINDIR)/file_to_pascal_string$(EXE) \
 	$(BINDIR)/file_to_pascal_data$(EXE)
-DOCFILES := LICENSE ChangeLog docs/README
+DOCFILES := LICENSE ChangeLog README.md
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 
