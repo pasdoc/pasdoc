@@ -380,7 +380,7 @@ version:
 # thing after executing this target is to archive $(PACKAGEDIR).
 dist-prepare:
 	rm -rf $(PACKAGEDIR)
-	$(MKDIRPROG) $(PACKAGEDIR)
+	$(MKDIRPROG) -p $(PACKAGEDIR)
 	$(MAKE) build-tools
 ifdef BINFILES
 	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)bin
