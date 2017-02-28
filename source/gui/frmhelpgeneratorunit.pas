@@ -855,7 +855,7 @@ begin
         
       TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
         CheckUseTipueSearch.Checked;
-      TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageAspellCode(TLanguageID(comboLanguages.ItemIndex));
+      TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageCode(TLanguageID(comboLanguages.ItemIndex));
       TGenericHTMLDocGenerator(PasDoc1.Generator).CheckSpelling := cbCheckSpelling.Checked;
       if cbCheckSpelling.Checked then
       begin

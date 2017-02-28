@@ -501,9 +501,9 @@ begin
   PasDoc.Generator.CheckSpelling := 
     OptionASPELL.WasSpecified or OptionSpellCheck.WasSpecified;
   if OptionSpellCheck.WasSpecified then
-    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
+    PasDoc.Generator.AspellLanguage := LanguageCode(PasDoc.Generator.Language) else
   if OptionASPELL.Value = '' then
-    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
+    PasDoc.Generator.AspellLanguage := LanguageCode(PasDoc.Generator.Language) else
     PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
   if OptionSpellCheckIgnoreWords.Value <> '' then
     PasDoc.Generator.SpellCheckIgnoreWords.LoadFromFile(

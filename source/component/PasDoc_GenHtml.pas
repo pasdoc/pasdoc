@@ -363,11 +363,6 @@ const
   img_published : {$I published.gif.inc};
   img_protected : {$I protected.gif.inc};
 
-const
-  DoctypeNormal = '<!DOCTYPE HTML PUBLIC ' +
-    '"-//W3C//DTD HTML 4.01 Transitional//EN" ' +
-    '"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">';
-
 constructor TGenericHTMLDocGenerator.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1694,8 +1689,8 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
 begin
-  WriteDirectLine(DoctypeNormal);
-  WriteDirectLine('<html>');
+  WriteDirectLine('<!DOCTYPE html>');
+  WriteDirectLine('<html lang="' + LanguageCode(FLanguage.Language) + '">');
   WriteDirectLine('<head>');
   // Title
   WriteDirect('<title>');

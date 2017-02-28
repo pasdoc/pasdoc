@@ -285,14 +285,9 @@ type
   {$ENDIF}
     procedure SetLanguage(const Value: TLanguageID);
   protected
-  //the table of the selected language
-    pTable: PTransTable;
     FCharSet: string;
     { @abstract(gets a translation token) }
     function GetTranslation(ATranslationID: TTranslationID): string;
-    procedure SetTranslation(id: TTranslationID; const into: string);
-    property FTranslation[id: TTranslationID]: string
-      read GetTranslation write SetTranslation;
   public
     { Charset for current language }
     property CharSet: string read FCharSet;
@@ -329,8 +324,9 @@ function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
 //access LANGUAGE_ARRAY
 function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
 
-{ Language code suitable for Aspell. }
-function LanguageAspellCode(const Language: TLanguageID): string;
+{ Language code, using an official standardardized language names,
+  suitable for Aspell or HTML. }
+function LanguageCode(const Language: TLanguageID): string;
 
 implementation
 
@@ -467,15 +463,9 @@ const
 function TPasDocLanguages.GetTranslation(
   ATranslationID: TTranslationID): string;
 begin
-  Result := pTable^[ATranslationID];
+  Result := LANGUAGE_ARRAY[FLanguage].Table^[ATranslationID];
   if Result <= strKeep then
     Result := aEnglish[ATranslationID];
-end;
-
-procedure TPasDocLanguages.SetTranslation(id: TTranslationID;
-  const into: string);
-begin
-  pTable^[id] := into;
 end;
 
 constructor TPasDocLanguages.Create;
@@ -486,6 +476,7 @@ end;
 
 procedure TPasDocLanguages.SetLanguage(const Value: TLanguageID);
 begin
+  inherited Create;
   FLanguage := Value;
 {$IFNDEF STRING_UNICODE}
   FCharSet  := LANGUAGE_ARRAY[Value].Charset;
@@ -493,10 +484,6 @@ begin
   FCharSet  := 'UTF-8';
   FCodePage := 65001;
 {$ENDIF}
-
-//get table
-  pTable := LANGUAGE_ARRAY[Value].Table;
-  Assert(Assigned(pTable));
 end;
 
 function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
@@ -570,7 +557,7 @@ begin
   Result := tbl^[id];
 end;
 
-function LanguageAspellCode(const Language: TLanguageID): string;
+function LanguageCode(const Language: TLanguageID): string;
 var
   Dot: Integer;
 begin
