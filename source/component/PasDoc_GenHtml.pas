@@ -64,10 +64,9 @@ type
     FUseTipueSearch: boolean;
     FNumericFilenames: boolean;
     FLinkCount: Integer;
-    FFooter: string;
+    FHeader, FFooter, FHtmlBodyBegin, FHtmlBodyEnd, FHtmlHead: string;
     { The content of the CSS file. }
     FCSS: string;
-    FHeader: string;
     FOddTableRow: boolean;
 
     FImages: TStringList;
@@ -322,6 +321,9 @@ type
     property Header: string read FHeader write FHeader;
     { some HTML code to be written as footer for every page }
     property Footer: string read FFooter write FFooter;
+    property HtmlBodyBegin: string read FHtmlBodyBegin write FHtmlBodyBegin;
+    property HtmlBodyEnd: string read FHtmlBodyEnd write FHtmlBodyEnd;
+    property HtmlHead: string read FHtmlHead write FHtmlHead;
     { the content of the cascading stylesheet }
     property CSS: string read FCSS write FCSS;
     { if set to true, numeric filenames will be used rather than names with multiple dots }
@@ -1670,16 +1672,18 @@ begin
   // StyleSheet
   Result := Result + '<link rel="StyleSheet" type="text/css" href="' + 
     EscapeURL('pasdoc.css') + '">' + LineEnding;
+
+  Result := Result + FHtmlHead;
 end;
 
 function TGenericHTMLDocGenerator.MakeBodyBegin: string;
 begin
-  Result := '';
+  Result := FHtmlBodyBegin;
 end;
 
 function TGenericHTMLDocGenerator.MakeBodyEnd: string;
 begin
-  Result := '';
+  Result := FHtmlBodyEnd;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfDocument(AName: string);
@@ -2550,8 +2554,9 @@ function THTMLDocGenerator.MakeBodyBegin: string;
   end;
 
 begin
+  Result := inherited;
   { TODO: get rid of <table> layout, use <div> for navigation instead }
-  Result := '<table class="container"><tr><td class="navigation">' + LineEnding;
+  Result := Result + '<table class="container"><tr><td class="navigation">' + LineEnding;
   Result := Result + MakeNavigation;
   Result := Result + '</td><td class="content">' + LineEnding;
 end;
@@ -2559,6 +2564,7 @@ end;
 function THTMLDocGenerator.MakeBodyEnd: string;
 begin
   Result := '</td></tr></table>'; // end <table class="container">
+  Result := Result + inherited;
 end;
 
 end.

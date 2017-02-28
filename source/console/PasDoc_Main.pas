@@ -39,8 +39,11 @@ type
     OptionSourceList,
     OptionAbbrevFiles: TStringOptionList;
     OptionHtmlHelpContents,
-    OptionFooter,
     OptionHeader,
+    OptionFooter,
+    OptionHtmlHead,
+    OptionHtmlBodyBegin,
+    OptionHtmlBodyEnd,
     OptionName,
     OptionTitle,
     OptionFormat,
@@ -139,13 +142,25 @@ begin
   OptionHtmlHelpContents.Explanation := 'Read Contents for HtmlHelp from file';
   AddOption(OptionHtmlHelpContents);
 
+  OptionHeader := TStringOption.Create('H', 'header');
+  OptionHeader.Explanation := 'Include file as header for HTML output';
+  AddOption(OptionHeader);
+
   OptionFooter := TStringOption.Create('F', 'footer');
   OptionFooter.Explanation := 'Include file as footer for HTML output';
   AddOption(OptionFooter);
 
-  OptionHeader := TStringOption.Create('H', 'header');
-  OptionHeader.Explanation := 'Include file as header for HTML output';
-  AddOption(OptionHeader);
+  OptionHtmlHead := TStringOption.Create(#0, 'html-head');
+  OptionHtmlHead.Explanation := 'Include file to use inside HTML <head>';
+  AddOption(OptionHtmlHead);
+
+  OptionHtmlBodyBegin := TStringOption.Create(#0, 'html-body-begin');
+  OptionHtmlBodyBegin.Explanation := 'Include file to use right after HTML <body>';
+  AddOption(OptionHtmlBodyBegin);
+
+  OptionHtmlBodyEnd := TStringOption.Create(#0, 'html-body-end');
+  OptionHtmlBodyEnd.Explanation := 'Include file to use right before HTML </body>';
+  AddOption(OptionHtmlBodyEnd);
 
   OptionName := TStringOption.Create('N', 'name');
   OptionName.Explanation := 'Name for documentation';
@@ -341,13 +356,16 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
   { sets the html specific options and returns its parameter as TDocGenerator }
   function SetHtmlOptions(Generator: TGenericHTMLDocGenerator): TDocGenerator;
   begin
-    if OptionFooter.WasSpecified then
-      Generator.Footer := FileToString(OptionFooter.Value);
-
     if OptionHeader.WasSpecified then
       Generator.Header := FileToString(OptionHeader.Value);
-
-    { If external CSS file was specified }
+    if OptionFooter.WasSpecified then
+      Generator.Footer := FileToString(OptionFooter.Value);
+    if OptionHtmlHead.WasSpecified then
+      Generator.HtmlHead := FileToString(OptionHtmlHead.Value);
+    if OptionHtmlBodyBegin.WasSpecified then
+      Generator.HtmlBodyBegin := FileToString(OptionHtmlBodyBegin.Value);
+    if OptionHtmlBodyEnd.WasSpecified then
+      Generator.HtmlBodyEnd := FileToString(OptionHtmlBodyEnd.Value);
     if OptionCSS.WasSpecified then
       Generator.CSS := FileToString(OptionCSS.Value);
 

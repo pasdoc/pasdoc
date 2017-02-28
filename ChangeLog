@@ -1,5 +1,8 @@
 (date unknown - future release) v0.15.0
 
+  * Customize HTML output more, with your own CSS, navigation and such by
+    --html-head, --html-body-begin, --html-body-end command-line params.
+  * HTML output now results in HTML5
   * Add our tools to the binary release:
     pascal_pre_proc (Pascal preprocessor), file_to_pascal_data,
     file_to_pascal_string.
