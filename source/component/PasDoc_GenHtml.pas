@@ -475,7 +475,7 @@ begin
   if (not ExcludeGenerator) or IncludeCreationTime then
   begin
     { write a horizontal line, pasdoc version and a link to the pasdoc homepage }
-    WriteDirect('<hr noshade size="1">');
+    WriteDirect('<hr>');
     WriteDirect('<span class="appinfo">');
     WriteDirect('<em>');
     if not ExcludeGenerator then
@@ -1110,7 +1110,7 @@ begin
   
   Result := ConvertString(S);
   if AnchorName <> '' then
-    Result := '<a name="' + AnchorName + '"></a>' + Result;
+    Result := '<span id="' + AnchorName + '"></span>' + Result;
   
   Result := '<h' + c + ' class="' + CssClass + '">' + Result + 
     '</h' + c + '>' + LineEnding;
@@ -1632,7 +1632,7 @@ end;
 function TGenericHTMLDocGenerator.FormatAnAnchor(
   const AName, Caption: string): string;
 begin
-  result := Format('<a name="%s">%s</a>', [AName, Caption]);
+  result := Format('<span id="%s">%s</span>', [AName, Caption]);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName: string);
@@ -1644,11 +1644,6 @@ procedure TGenericHTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
   WriteDirect(FormatAnAnchor(AName, Caption));
 end;
-
-{ procedure TGenericHTMLDocGenerator.WriteStartOfAnchor(const AName: string);
-begin
-  WriteDirect('<a name="' + AName + '">');
-end; }
 
 { ---------------------------------------------------------------------------- }
 

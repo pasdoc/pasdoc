@@ -58,6 +58,11 @@
 '' + LineEnding +
 'img { border:0px; }' + LineEnding +
 '' + LineEnding +
+'hr {' + LineEnding +
+'    border-bottom: medium none;' + LineEnding +
+'    border-top: thin solid #888;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
 'a:link {color:#C91E0C; text-decoration: none; }' + LineEnding +
 'a:visited {color:#7E5C31; text-decoration: none; }' + LineEnding +
 'a:hover {text-decoration: underline; }' + LineEnding +

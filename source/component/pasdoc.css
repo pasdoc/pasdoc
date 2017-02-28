@@ -56,6 +56,11 @@ td.content h1 { margin-top: 0; }
 
 img { border:0px; }
 
+hr {
+    border-bottom: medium none;
+    border-top: thin solid #888;
+}
+
 a:link {color:#C91E0C; text-decoration: none; }
 a:visited {color:#7E5C31; text-decoration: none; }
 a:hover {text-decoration: underline; }
