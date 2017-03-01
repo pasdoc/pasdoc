@@ -39,6 +39,9 @@ const
   TipueSearchButton =
     '<form class="search-form" action="_tipue_results.html">' +
     '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
+    { TODO: Add a value="Search" to <input type="button" ...>
+      and hide it visually by one of the CSS tricks on
+      http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only }
     '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
     '</form>' + LineEnding +
     '<div style="clear: both"></div>' + LineEnding +
@@ -65,6 +68,7 @@ const
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
   const Head, BodyBegin, BodyEnd: string;
+  const LanguageCode: string;
   const OutputPath: string);
 
 implementation
@@ -85,6 +89,7 @@ end;
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
   const Head, BodyBegin, BodyEnd: string;
+  const LanguageCode: string;
   const OutputPath: string);
 
   procedure WriteTipueIndexData(const FileName: string);
@@ -256,6 +261,7 @@ begin
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-BEGIN-###', BodyBegin, []);
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-END-###', BodyEnd, []);
+  TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-LANGUAGE-###', LanguageCode, []);
   StringToFile(OutputPath + '_tipue_results.html', TipueResultsPage);
 
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.png', TipueSearchImage);

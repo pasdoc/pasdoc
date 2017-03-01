@@ -949,7 +949,8 @@ begin
     DoMessage(2, pmtInformation, 
       'Writing additional files for tipue search engine', []);
     TipueAddFiles(Units, Introduction, Conclusion, 
-      MakeHead, MakeBodyBegin, MakeBodyEnd, DestinationDirectory);
+      MakeHead, MakeBodyBegin, MakeBodyEnd, LanguageCode(FLanguage.Language),
+      DestinationDirectory);
   end;
   EndSpellChecking;
 end;
