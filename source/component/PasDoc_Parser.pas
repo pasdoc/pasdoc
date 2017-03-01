@@ -98,21 +98,21 @@ type
     // @classname.
     property Count: integer read FCount;
     Constructor Create;
-    // @name provides read access to the 
+    // @name provides read access to the
     // @link(TRawDescriptionInfo TRawDescriptionInfos) in @classname.
     property Items[Index: integer]: TRawDescriptionInfo read GetItems; default;
   end;
 
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
-    When creating this object constructor @link(Create) takes as an argument 
+    When creating this object constructor @link(Create) takes as an argument
     an input stream and a list of directives.
     Parsing work is done by calling @link(ParseUnitOrProgram) method.
     If no errors appear, should return a @link(TPasUnit) object with
     all information on the unit. Else exception is raised.
-    
+
     Things that parser inits in items it returns:
-    
+
     @unorderedList(
       @item(Of every TPasItem :
         Name, RawDescription, Visibility,
@@ -120,38 +120,38 @@ type
         IsPlatformSpecific, IsLibrarySpecific,
         FullDeclararation (note: for now not all items
         get sensible FullDeclararation, but the intention is to improve this
-        over time; see @link(TPasItem.FullDeclaration) to know where 
+        over time; see @link(TPasItem.FullDeclaration) to know where
         FullDeclararation is available now).
 
         Note to IsDeprecated: parser inits it basing on hint directive
-        "deprecated" presence in source file; it doesn't handle the fact 
+        "deprecated" presence in source file; it doesn't handle the fact
         that @@deprecated tag may be specified inside RawDescription.
 
         Note to RawDescription: parser inits them from user's comments
         that preceded given item in source file.
         It doesn't handle the fact that @@member and @@value tags
         may also assign RawDescription for some item.)
-      
+
       @item Of TPasCio: Ancestors, Fields, Methods, Properties, MyType.
-      
+
       @item Of TPasEnum: Members, FullDeclararation.
-      
+
       @item Of TPasMethod: What.
-      
+
       @item Of TPasVarConst: FullDeclaration.
-      
+
       @item(Of TPasProperty: IndexDecl, FullDeclaration.
         PropType (only if was specified in property declaration).
         It was intended that parser will also set Default,
-        NoDefault, StoredId, DefaultId, Reader, Writer attributes, 
+        NoDefault, StoredId, DefaultId, Reader, Writer attributes,
         but it's still not implemented.)
-      
+
       @item(Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
         FuncsProcs.)
     )
-    
-    It doesn't init other values. 
-    E.g. AbstractDescription or DetailedDescription of TPasItem 
+
+    It doesn't init other values.
+    E.g. AbstractDescription or DetailedDescription of TPasItem
     should be inited while expanding this item's tags.
     E.g. SourceFileDateTime and SourceFileName of TPasUnit must
     be set by other means. }
@@ -165,8 +165,8 @@ type
       This only takes into account normal comments, i.e. not back-comments.
       Modified by @link(GetLastComment) and @link(PeekNextToken)
       (and consequently by all @link(PeekNextToken) and @link(GetNextToken)
-      versions). 
-      
+      versions).
+
       LastCommentContent is only the comment content, with comment braces
       and markers already stripped. }
     IsLastComment: boolean;
@@ -178,26 +178,26 @@ type
 
     { The underlying scanner object. }
     Scanner: TScanner;
-    
+
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
     FMarkersOptional: boolean;
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
-    
+
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
       [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
-    
+
     { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
       If given KeyWord has no corresponding @link(TMethodType) value,
       raises @link(EInternalError). }
     function KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
 
-    procedure DoError(const AMessage: string; 
+    procedure DoError(const AMessage: string;
       const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TPasDocMessageType; const AMessage: string; const AArguments: array of const);
@@ -205,11 +205,11 @@ type
     { Checks if T.MyType is ATokenType, if not calls DoError
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; ATokenType: TTokenType); overload;
-    
+
     { Checks if T.IsSymbol(ASymbolType), if not calls DoError
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; ASymbolType: TSymbolType); overload;
-    
+
     { Checks if T.IsKeyWord(AKeyWord), if not calls DoError
       with appropriate error mesg. }
     procedure CheckToken(T: TToken; AKeyWord: TKeyWord); overload;
@@ -223,7 +223,7 @@ type
 
     { Reads tokens and throws them away as long as they are either whitespace
       or comments.
-      
+
       Sets WhitespaceCollector to all the whitespace that was skipped.
       (Does @italic(not) append them to WhitespaceCollector,
       it @italic(sets) WhitespaceCollector to them, deleting previous
@@ -234,41 +234,41 @@ type
       Remember that whitespace is always consumed --- unlike the token itself
       (which is not "eaten" by peek operation),
       whitespace is consumed, so you @italic(must) capture it here, or lose it.
-      
+
       Comments are collected to [Is]LastCommentXxx properties, so that you can
       use GetLastComment.
 
       Returns non-white token that was found.
       This token is equal to @code(Scanner.PeekToken).
       Note that this token was @italic(peeked)
-      from the stream, i.e. the caller is still responsible for doing 
+      from the stream, i.e. the caller is still responsible for doing
       @code(Scanner.ConsumeToken).
       Calling this method twice in a row will return the same thing.
-      
+
       Always returns something non-nil (will raise exception in case
       of problems, e.g. when stream ended). }
     function PeekNextToken(out WhitespaceCollector: string): TToken; overload;
     function PeekNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
-    
+
     { Same thing as PeekNextToken(Dummy) }
     function PeekNextToken: TToken; overload;
-        
+
     { Just like @link(PeekNextToken), but returned token is already consumed.
       Next call to @name will return next token. }
     function GetNextToken(out WhitespaceCollector: string): TToken; overload;
-    
+
     { Just like @link(PeekNextToken), but returned token is already consumed.
-    
+
       Moreover, whitespace collected is appended to
       WhitespaceCollectorItem.FullDeclaration
-      (does not delete previous WhitespaceCollectorItem.FullDeclaration value, 
+      (does not delete previous WhitespaceCollectorItem.FullDeclaration value,
       it only appends to it).
       Unless WhitespaceCollectorItem is @nil. }
     function GetNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
-    
+
     function GetNextToken: TToken; overload;
     function GetNextTokenNotAttribute(const WhitespaceCollectorItem: TPasItem): TToken; overload;
-    
+
     { This does @link(GetNextToken), then checks is it a ATokenType
       (using @link(CheckToken)), then frees the token.
       Returns token Data.
@@ -279,52 +279,52 @@ type
       @param AIsUnitName is a dummy parameter to allow overloading that is assumed to be true }
     function GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string; overload;
 
-    { This does @link(GetNextToken), then checks is it a symbol with 
-      ASymbolType (using @link(CheckToken)), then frees the token. 
+    { This does @link(GetNextToken), then checks is it a symbol with
+      ASymbolType (using @link(CheckToken)), then frees the token.
       Returns token Data.
       Just a comfortable routine. }
     function GetAndCheckNextToken(ASymbolType: TSymbolType): string; overload;
-    
-    { This does @link(GetNextToken), then checks is it a keyword with 
-      AKeyWord (using @link(CheckToken)), then frees the token. 
+
+    { This does @link(GetNextToken), then checks is it a keyword with
+      AKeyWord (using @link(CheckToken)), then frees the token.
       Returns token Data.
       Just a comfortable routine. }
     function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
-    
+
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
       Resulting @link(TPasMethod) item will be returned in M.
-      
+
       ClassKeywordString contains the keyword 'class'
       in the exact spelling as it was found in input,
       for class methods. Else it contains ''.
-      
-      MethodTypeString contains the keyword 'constructor', 'destructor', 
-      'function' or 'procedure' or standard directive 'operator' 
+
+      MethodTypeString contains the keyword 'constructor', 'destructor',
+      'function' or 'procedure' or standard directive 'operator'
       in the exact spelling as it was found in input.
       You can specify MethodTypeString = '', this way you avoid including
       such keyword at the beginning of returned M.FullDeclaration.
-      
-      MethodType is used for the What field of the resulting TPasMethod. 
+
+      MethodType is used for the What field of the resulting TPasMethod.
       This should correspond to MethodTypeString.
-      
+
       D may contain a description or nil. }
-    procedure ParseCDFP(out M: TPasMethod; 
+    procedure ParseCDFP(out M: TPasMethod;
       const ClassKeywordString: string;
       const MethodTypeString: string; MethodType: TMethodType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const NeedName: boolean; InitItemsForNextBackComment: boolean);
-      
+
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
       N is the name of this item.
       CIOType describes if item is class, interface or object.
       D may contain a description or nil. }
-    procedure ParseCIO(const U: TPasUnit; 
-      const CioName, CioNameWithGeneric: string; CIOType: TCIOType; 
+    procedure ParseCIO(const U: TPasUnit;
+      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
-    
+
     procedure ParseCioEx(const U: TPasUnit;
       const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
@@ -332,7 +332,7 @@ type
 
     function ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
       const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
-      
+
     { Assume that T is "<" symbol, and parse everything up to a matching ">".
       Append everything (including this "<") to Content string.
       At the end, T is freed and nil. }
@@ -348,7 +348,7 @@ type
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
-    
+
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
       returning is as P. }
@@ -356,83 +356,83 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo);
 
     procedure ParseUses(const U: TPasUnit);
-    
+
     { This parses the sequence of identifiers separated by commas
       and ended by symbol FinalSymbol. More specifically in EBNF it parses
         TOK_IDENTIFIER (SYM_COMMA TOK_IDENTIFIER)+ FinalSymbol
       FinalSymbol must be something else than SYM_COMMA.
       After executing this, next token (returned by GetNextToken and PeekNextToken)
       will point to the next token right after FinalSymbol.
-      All found identifiers will be appended to Names. 
-      
+      All found identifiers will be appended to Names.
+
       If RawDescriptions <> nil then this will also get
       all comments documenting the identifiers in Names
-      (it will append the same number of items to 
+      (it will append the same number of items to
       RawDescriptions as it appended to Names).
       The strategy how comments are assigned to item in this case is
       described on [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
-      FinalSymbol: TSymbolType; 
+      FinalSymbol: TSymbolType;
       RawDescriptions: TRawDescriptionInfoList);
-    
+
     procedure ParseVariables(const U: TPasUnit);
-    
-    { Parse one variables or fields clause 
-      ("one clause" is something like 
+
+    { Parse one variables or fields clause
+      ("one clause" is something like
         NAME1, NAME2, ... : TYPE;
       i.e. a list of variables/fields sharing one type declaration.)
-      
+
       @param(Items If Items <> nil then it adds parsed variables/fields to Items.)
-      @param(Visibility will be assigned to Visibility of 
-        each variable/field instance.) 
+      @param(Visibility will be assigned to Visibility of
+        each variable/field instance.)
       @param(IsInRecordCase indicates if we're within record's case.
         It's relevant only if OfObject is true.) }
     procedure ParseFieldsVariables(Items: TPasItems;
       OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
       const ClassKeyWordString: string = '');
-    
+
     { Read all tokens until you find a semicolon at brace-level 0 and
       end-level (between "record" and "end" keywords) also 0.
 
       Alternatively, also stops before reading "end" without beginning
       "record" (so it can handle some cases where declaration doesn't end
       with semicolon).
-      
+
       Alternatively, only if IsInRecordCase, also stops before reading
       ')' without matching '('. That's because fields' declarations
       inside record case may be terminated by just ')' indicating
       that this case clause terminates, without a semicolon.
 
-      If you pass Item <> nil then all read data will be 
+      If you pass Item <> nil then all read data will be
       appended to Item.FullDeclaration. Also hint directives
       (Item.IsLibrarySpecific, Item.IsPlatformSpecific, Item.IsDeprecated
       Item.DeprecatedNote) may be set (to true/non-empty) if appropriate
       hint directive will occur in source file. }
     procedure SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
-    
+
     procedure SetCommentMarkers(const Value: TStringList);
-    
+
     { Consume a hint directive (platform, library or deprecated) as long as you
       see one. Skips all whitespace and comments.
-      Sets appropriate property of Item (IsPlatformSpecific, 
+      Sets appropriate property of Item (IsPlatformSpecific,
       IsLibrarySpecific or IsDeprecated) to true.
-      
+
       Stops when PeekNextToken returns some token that is not a whitespace,
       comment or hint directive.
-      
+
       If ConsumeFollowingSemicolon then we will also look for, and consume,
       a semicolon following (any one of) the hint directives. This is a little
       hazy, but parsing rules for hint directives *are* hazy, the semicolon
       sometimes is optional and sometimes required, see tests/ok_hint_directives.pas
       testcase.
-      
+
       If ExtendFullDeclaration then the hint directives (and eventual semicolons,
       if ConsumeFollowingSemicolon) will also be added to the Item.FullDeclaration). }
-    procedure ParseHintDirectives(Item: TPasItem; 
+    procedure ParseHintDirectives(Item: TPasItem;
       const ConsumeFollowingSemicolon: boolean = false;
       const ExtendFullDeclaration: boolean = false);
-    
+
     procedure ParseUnit(U: TPasUnit);
     procedure ParseProgram(U: TPasUnit);
     procedure ParseProgramOrLibraryUses(U: TPasUnit);
@@ -449,10 +449,10 @@ type
       const VerbosityLevel: Cardinal;
       const AStreamName, AStreamPath: string;
       const AHandleMacros: boolean);
-      
+
     { Release all dynamically allocated memory. }
     destructor Destroy; override;
-    
+
     { This does the real parsing work, creating U unit and parsing
       InputStream and filling all U properties. }
     procedure ParseUnitOrProgram(var U: TPasUnit);
@@ -461,9 +461,9 @@ type
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
     property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
-    property ShowVisibilities: TVisibilities 
+    property ShowVisibilities: TVisibilities
       read FShowVisibilities write FShowVisibilities;
-      
+
     { See command-line option @--implicit-visibility documentation at
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
@@ -494,7 +494,7 @@ begin
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
 
-  Scanner := TScanner.Create(InputStream, OnMessageEvent, 
+  Scanner := TScanner.Create(InputStream, OnMessageEvent,
     VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
   Scanner.AddSymbols(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
@@ -532,7 +532,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.DoError(const AMessage: string; 
+procedure TParser.DoError(const AMessage: string;
   const AArguments: array of const);
 begin
   raise EPasDoc.Create(Scanner.GetStreamInfo + ': ' + AMessage, AArguments, 1);
@@ -620,22 +620,22 @@ const
 procedure TParser.CheckToken(T: TToken; ATokenType: TTokenType);
 begin
   if T.MyType <> ATokenType then
-    DoError(SExpectedButFound, 
+    DoError(SExpectedButFound,
       [TOKEN_TYPE_NAMES[ATokenType], T.Description]);
 end;
 
 procedure TParser.CheckToken(T: TToken; ASymbolType: TSymbolType);
 begin
   if not T.IsSymbol(ASymbolType) then
-    DoError(SExpectedButFound, 
+    DoError(SExpectedButFound,
       [Format('symbol "%s"', [SymbolNames[ASymbolType]]), T.Description]);
 end;
 
 procedure TParser.CheckToken(T: TToken; AKeyWord: TKeyWord);
 begin
   if not T.IsKeyWord(AKeyWord) then
-    DoError(SExpectedButFound, 
-      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]), 
+    DoError(SExpectedButFound,
+      [Format('reserved word "%s"', [LowerCase(KeyWordArray[AKeyWord])]),
       T.Description]);
 end;
 
@@ -685,7 +685,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string; 
+function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string;
 var
   T: TToken;
 begin
@@ -693,7 +693,7 @@ begin
   try
     CheckToken(T, ATokenType);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
@@ -731,7 +731,7 @@ begin
   try
     CheckToken(T, ASymbolType);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
@@ -744,21 +744,21 @@ begin
   try
     CheckToken(T, AKeyWord);
     Result := T.Data;
-  finally 
+  finally
     T.Free;
   end;
 end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCDFP(out M: TPasMethod; 
+procedure TParser.ParseCDFP(out M: TPasMethod;
   const ClassKeywordString: string;
   const MethodTypeString: string; MethodType: TMethodType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean);
-  
+
   { Reads tokens (adding them to M.FullDeclaration) until a semicolon
-    (on parenthesis level zero) is found (this final semicolon 
+    (on parenthesis level zero) is found (this final semicolon
     is also read and appended to M.FullDeclaration). }
   procedure ReadTokensUntilSemicolon;
   var
@@ -773,7 +773,7 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
         if T.MyType = TOK_WHITESPACE then
         begin
           { add exactly *one space* at the end of M.FullDeclaration }
-          if Length(M.FullDeclaration) > 0 then 
+          if Length(M.FullDeclaration) > 0 then
           begin
             if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
               M.FullDeclaration := M.FullDeclaration + ' ';
@@ -790,7 +790,7 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
       end;
     until IsSemicolon and (Level = 0);
   end;
-  
+
 var
   t: TToken;
   InvalidType, WasDeprecatedDirective: boolean;
@@ -805,7 +805,7 @@ begin
       ItemsForNextBackComment.ClearAndAdd(M);
 
     M.What := MethodType;
-  
+
     if ClassKeyWordString <> '' then
       M.FullDeclaration :=  ClassKeyWordString + ' ';
     M.FullDeclaration := M.FullDeclaration + MethodTypeString;
@@ -836,7 +836,7 @@ begin
       M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
       FreeAndNil(t);
     end;
-  
+
     ReadTokensUntilSemicolon;
 
     { first get non-WC token - if it is not an identifier in SD_SET put it back
@@ -915,9 +915,9 @@ begin
             begin
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(T);
-            
+
               ReadTokensUntilSemicolon;
-            
+
               t := GetNextToken;
             end;
         else //case
@@ -958,7 +958,7 @@ begin
         at other places (and we have to mimic compiler behavior, not only
         documented behavior, since in practice people (over)use everything
         that compiler allows).
-      
+
         So, check is current token a semicolon and append to FullDeclaration.
         Note that T may be nil now (e.g. because we used UnGetToken last). }
       if (t <> nil) and t.IsSymbol(SYM_SEMICOLON) then
@@ -977,8 +977,8 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCIO(const U: TPasUnit; 
-  const CioName, CioNameWithGeneric: string; CIOType: TCIOType; 
+procedure TParser.ParseCIO(const U: TPasUnit;
+  const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: boolean);
 begin
@@ -1165,27 +1165,27 @@ begin
       begin
         Item.FullDeclaration := Item.FullDeclaration + ' ' + T.Data + ' ';
         FreeAndNil(T);
-      
+
         { Now read tokens until comma or right paren (but only on ParenLevel = 0). }
         ParenLevel := 0;
         repeat
           T := GetNextToken;
-        
+
           if (ParenLevel = 0) and
              (T.IsSymbol(SYM_COMMA) or T.IsSymbol(SYM_RIGHT_PARENTHESIS)) then
             Break;
-          
+
           if T.MyType = TOK_SYMBOL then
             case T.Info.SymbolType of
               SYM_LEFT_PARENTHESIS, SYM_LEFT_BRACKET: Inc(ParenLevel);
               SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET: Dec(ParenLevel);
             end;
-            
+
           Item.FullDeclaration := Item.FullDeclaration + T.Data;
           FreeAndNil(T);
         until false;
       end;
-    
+
       if T.IsSymbol(SYM_COMMA) then
       begin
         FreeAndNil(T);
@@ -1193,7 +1193,7 @@ begin
       end;
     end;
     FreeAndNil(T);
-  
+
     { Read semicolon, as an optional token.
       Actually, the stricter rule would be
       - if some hint directive ("deprecated" or such) follows,
@@ -1274,9 +1274,9 @@ begin
               KEY_RESOURCESTRING,
                 KEY_CONST:
                 Mode := MODE_CONST;
-              KEY_FUNCTION, KEY_PROCEDURE: 
+              KEY_FUNCTION, KEY_PROCEDURE:
                 begin
-                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord), 
+                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
                     GetLastComment, true, true);
                   u.FuncsProcs.Add(M);
                   Mode := MODE_UNDEFINED;
@@ -1328,7 +1328,7 @@ begin
     p.RawDescriptionInfo^ := GetLastComment;
     p.SetAttributes(CurrentAttributes);
     ItemsForNextBackComment.ClearAndAdd(P);
-  
+
     { Is this only a redeclaration of property from ancestor
       (to e.g. change it's visibility, or add a hint directive) }
     t := GetNextToken(P);
@@ -1365,7 +1365,7 @@ begin
     if t.IsSymbol(SYM_COLON) then
     begin
       FreeAndNil(t);
-    
+
       { get property type }
       t := GetNextToken;
       if (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD) then
@@ -1379,10 +1379,10 @@ begin
       p.FullDeclaration := p.FullDeclaration + t.Data;
       FreeAndNil(t);
     end;
-  
+
     { read the rest of declaration }
     SkipDeclaration(P, false);
-    
+
     ParseHintDirectives(P, true, true);
   except
     p.Free;
@@ -1404,13 +1404,13 @@ begin
   t1 := GetNextToken;
   try
     CheckToken(T1, TOK_IDENTIFIER);
-    
+
     if PeekNextToken.IsSymbol(SYM_COLON) then
     begin
       { Then we have "case FieldName: FieldType of" }
-      
+
       { consume and free the colon token }
-      GetNextToken.Free; 
+      GetNextToken.Free;
 
       P := TPasFieldVariable.Create;
       p.Name := T1.Data;
@@ -1423,9 +1423,9 @@ begin
 
     FreeAndNil(t1);
 
-  
+
     GetAndCheckNextToken(KEY_OF);
-  
+
     CurrentAttributes.Clear;
     OldAttribPossible := AttributeIsPossible;
     AttributeIsPossible := False;
@@ -1463,9 +1463,9 @@ begin
       // read all identifiers before colon
 
       FreeAndNil(t1);
-    
+
       GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
-    
+
       while not PeekNextToken.IsSymbol(SYM_RIGHT_PARENTHESIS) do
       begin
         if PeekNextToken.IsKeyWord(KEY_CASE) then
@@ -1475,19 +1475,19 @@ begin
         end else
           ParseFieldsVariables(R.Fields, true, viPublic, true);
       end;
-    
+
       GetNextToken.Free; // free ')' token
-    
+
       t1 := GetNextToken;
       if t1.IsSymbol(SYM_SEMICOLON) then
       begin
         FreeAndNil(t1);
         t1 := GetNextToken;
       end;
-    
+
     until t1.IsKeyWord(KEY_END) or
       (SubCase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS));
-    
+
     AttributeIsPossible := OldAttribPossible;
 
     Scanner.UnGetToken(t1);
@@ -1529,7 +1529,7 @@ begin
   finally FreeAndNil(T) end;
 
   DoMessage(5, pmtInformation, 'Parsing type "%s"', [TypeName]);
-  
+
   RawDescriptionInfo := GetLastComment;
   AttributeIsPossible := False;
   t := GetNextToken(LCollected);
@@ -1545,7 +1545,7 @@ begin
       FreeAndNil(T);
       Exit;
     end else
-    if T.IsSymbol(SYM_EQUAL) then 
+    if T.IsSymbol(SYM_EQUAL) then
     begin
       LCollected := TypeNameWithGeneric + LCollected + T.Data;
       FreeAndNil(T);
@@ -1770,7 +1770,7 @@ procedure TParser.ParseUses(const U: TPasUnit);
 var
   T: TToken;
 begin
-  { Parsing uses clause clears the comment, otherwise 
+  { Parsing uses clause clears the comment, otherwise
     - normal comments before "uses" clause would be assigned to normal unit
       items (like a procedure), which is quite unexpected
       (see ok_comment_over_uses_clause.pas testcase).
@@ -1779,32 +1779,32 @@ begin
   }
   IsLastComment := false;
   ItemsForNextBackComment.Clear;
-  
+
   repeat
     U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
-    
+
     T := GetNextToken;
     try
       if T.IsKeyWord(KEY_IN) then
       begin
         FreeAndNil(T);
-        
+
         { Below we just ignore the value of next string token.
-        
-          We can do this -- because PasDoc (at least for now) 
-          does not recursively parse units on "uses" clause. 
+
+          We can do this -- because PasDoc (at least for now)
+          does not recursively parse units on "uses" clause.
           So we are not interested in the value of
           given string (which should be a file-name (usually relative,
           but absolute is also allowed AFAIK) with given unit.)
-          
+
           If we will ever want to implement such "recursive parsing
-          of units" in PasDoc, we will have to fix this to 
+          of units" in PasDoc, we will have to fix this to
           *not* ignore value of token below. }
         GetAndCheckNextToken(TOK_STRING);
-        
+
         T := GetNextToken;
       end;
-    
+
       if T.IsSymbol(SYM_COMMA) then Continue else
       if T.IsSymbol(SYM_SEMICOLON) then Break else
         DoError('One of "," or ";" expected', []);
@@ -1817,17 +1817,17 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCommaSeparatedIdentifiers(Names: TStrings;
-  FinalSymbol: TSymbolType; 
+  FinalSymbol: TSymbolType;
   RawDescriptions: TRawDescriptionInfoList);
 var
   T: TToken;
   FirstIdentifier: boolean;
 begin
   FirstIdentifier := true;
-  
+
   repeat
     Names.Append(GetAndCheckNextToken(TOK_IDENTIFIER));
-    
+
     { Now we modify FirstIdentifier and append item to RawDescriptions }
     if FirstIdentifier then
     begin
@@ -1841,7 +1841,7 @@ begin
         RawDescriptions.Append(GetLastComment) else
         RawDescriptions.Append(RawDescriptions[RawDescriptions.Count - 1]);
     end;
-    
+
     T := GetNextToken;
     try
       if (T.MyType <> TOK_SYMBOL) or
@@ -1866,7 +1866,7 @@ end;
 procedure TParser.ParseFieldsVariables(Items: TPasItems;
   OfObject: boolean; Visibility: TVisibility; IsInRecordCase: boolean;
   const ClassKeyWordString: string = '');
-  
+
   // Parse variable/field modifiers in FPC.
   // See: http://www.freepascal.org/docs-html/ref/refse19.html for variable
   // modifiers.
@@ -1888,16 +1888,16 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
         // If we see it, we eat it, up to the next semicolon.
         // This does not take into account the "absolute" modifier
         // (which is not preceeded by a semicolon).
-        
+
         ModifierFound :=
           (ttemp.MyType = TOK_IDENTIFIER) and
           (ttemp.Info.StandardDirective in Modifiers[OfObject]);
-          
+
         if ModifierFound then
         begin
           ItemCollector.FullDeclaration := ItemCollector.FullDeclaration +  ' ' + ttemp.Data;
           FreeAndNil(ttemp);
-        
+
           { now eat tokens up to a ";" }
           SemicolonFound := false;
           while not SemicolonFound do
@@ -1922,7 +1922,7 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
       end;
     until not ModifierFound;
   end;
-  
+
 var
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
@@ -1935,14 +1935,14 @@ var
 begin
   NewItemNames := nil;
   RawDescriptions := nil;
-  NewItems := nil;  
+  NewItems := nil;
   try
     NewItemNames := TStringList.Create;
     RawDescriptions := TRawDescriptionInfoList.Create;
     { When Items = nil, we will gather NewItems only for internal use,
       so we will free them ourselves. }
     NewItems := TPasItems.Create(Items = nil);
-    
+
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
 
     ItemCollector := TPasFieldVariable.Create;
@@ -1999,16 +1999,16 @@ begin
         ParseCIO(nil, '', '', CIO_RECORD, EmptyRawDescriptionInfo, IsInRecordCase);
       end else
       if t.IsKeyWord(KEY_PACKED) then
-      begin 
+      begin
         FreeAndNil(t);
         t := GetNextToken;
-        if t.IsKeyWord(KEY_RECORD) then 
+        if t.IsKeyWord(KEY_RECORD) then
         begin
           ParseCIO(nil, '', '', CIO_PACKEDRECORD, EmptyRawDescriptionInfo, IsInRecordCase);
-        end else 
+        end else
         begin
           SkipDeclaration(ItemCollector, IsInRecordCase);
-        end;      
+        end;
       end else
       begin
         if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
@@ -2018,14 +2018,14 @@ begin
         SkipDeclaration(ItemCollector, IsInRecordCase);
       end;
 
-      { Create and add (to Items and ItemsForNextBackComment and NewItems) 
+      { Create and add (to Items and ItemsForNextBackComment and NewItems)
         new items now.
         We must do it, because we want to init ItemsForNextBackComment *now*,
         not later (after ParseModifiers).
         Otherwise we could accidentaly "miss"
         some back-comment while searching for variable/field modifiers
         in ParseModifiers.
-        
+
         Note that we have to set ItemsForNextBackComment regardless
         of Items being nil or not. Items may be nil when caller is not interested
         in gathering them, e.g. a private fields section.
@@ -2033,7 +2033,7 @@ begin
         to private fields (that will be thrown out later), instead of accidentally
         assigning back comments to previous non-private item.
         See tests/ok_back_comment_private.pas for example when this is important.
-        
+
         Note that when parsing variable modifiers, Get/PeekNextToken
         inside may actually use ItemsForNextBackComment and clear it,
         that's why we can't count on ItemsForNextBackComment to hold
@@ -2076,7 +2076,7 @@ begin
       ItemCollector.Free;
       t.Free;
     end;
-  finally 
+  finally
     NewItemNames.Free;
     RawDescriptions.Free;
     NewItems.Free;
@@ -2195,10 +2195,10 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       if S[Index + I] <> SubS[I+1] then
         Exit;
     end;
-      
+
     Result := true;
   end;
-  
+
   { Extracts the documentation comment from T.CommentContent
     (and some other T properties needed for TRawDescriptionInfo)
     to CommentInfo. Always T.MyType must be within TokenCommentTypes.
@@ -2207,7 +2207,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
 
     The comment is intended to be a "documentation comment",
     i.e. we intend to put it inside output documentation.
-    So comment markers, if present, 
+    So comment markers, if present,
     are removed from the beginning and end of the data.
     Also, if comment markers were required but were not present,
     then CommentInfo.Content is an empty string.
@@ -2215,7 +2215,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     Also back-comment marker, the '<', is removed, if exists,
     and BackComment is set to @true. Otherwise BackComment is @false. }
   procedure ExtractDocComment(
-    const t: TToken; out CommentInfo: TRawDescriptionInfo; 
+    const t: TToken; out CommentInfo: TRawDescriptionInfo;
     out BackComment: boolean);
   const
     BackCommentMarker = '<';
@@ -2234,7 +2234,7 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     if CommentMarkers.Count <> 0 then
     begin
       WasMarker := false;
-      for i := 0 to CommentMarkers.Count - 1 do 
+      for i := 0 to CommentMarkers.Count - 1 do
       begin
         Marker := CommentMarkers[i];
         if IsPrefix(Marker, CommentInfo.Content) then
@@ -2366,7 +2366,7 @@ begin
         TIsCStyle := (t.MyType in [TOK_COMMENT_CSTYLE, TOK_COMMENT_HELPINSIGHT]);
         THelpInsight := t.MyType = TOK_COMMENT_HELPINSIGHT;
         FreeAndNil(T);
-      
+
         if TBackComment then
         begin
           if ItemsForNextBackComment.Count = 0 then
@@ -2385,10 +2385,10 @@ begin
                 [ Scanner.GetStreamInfo,
                   ItemsForNextBackComment.PasItemAt[i].QualifiedName,
                   TCommentInfo.Content]);
-              
+
             ItemsForNextBackComment.PasItemAt[i].RawDescriptionInfo^ := TCommentInfo;
           end;
-        
+
           ItemsForNextBackComment.Clear;
         end else
         if IsLastComment and LastCommentWasCStyle and TIsCStyle then
@@ -2432,8 +2432,8 @@ begin
   until False;
 end;
 
-function TParser.PeekNextToken: TToken; 
-var 
+function TParser.PeekNextToken: TToken;
+var
   Dummy: string;
 begin
   Result := PeekNextToken(Dummy);
@@ -2460,7 +2460,7 @@ begin
   repeat
     WasDeprecatedDirective := false;
     T := PeekNextToken;
-    
+
     if T.IsStandardDirective(SD_PLATFORM) then
       Item.IsPlatformSpecific := true else
     if T.IsStandardDirective(SD_DEPRECATED) then
@@ -2786,9 +2786,9 @@ begin
     FreeAndNil(T);
     T := GetNextToken;
     Content := Content + T.Data;
-    if T.IsSymbol(SYM_LESS_THAN) then 
+    if T.IsSymbol(SYM_LESS_THAN) then
       Inc(Level) else
-    if T.IsSymbol(SYM_GREATER_THAN) then 
+    if T.IsSymbol(SYM_GREATER_THAN) then
       Dec(Level);
   until Level = 0;
   FreeAndNil(T); { free last ">" }
@@ -2877,7 +2877,7 @@ begin
           begin
             AncestorFullDeclaration := t.Data;
             AncestorName := t.Data;
-            
+
             { For FPC-style generic specialization, the "specialize"
               directive is specified before generic name.
               That's easy to handle, just move to the next token. }
@@ -2889,7 +2889,7 @@ begin
               AncestorFullDeclaration := AncestorFullDeclaration + ' ' + t.Data;
               AncestorName := t.Data; { previous AncestorName was wrong }
             end;
-            
+
             { inner repeat loop: one part of the ancestor per name }
             repeat
               FreeAndNil(t);
@@ -2908,14 +2908,14 @@ begin
               AncestorFullDeclaration := AncestorFullDeclaration + '.' + T.Data;
               AncestorName            := AncestorName            + '.' + T.Data;
             until False;
-            
+
             { Dumb reading of generic specialization, just blindly consume
               (add to AncestorFullDeclaration) everything between <...>. }
             t := GetNextToken;
             if t.IsSymbol(SYM_LESS_THAN) then
               ParseGenericTypeIdentifierList(T, AncestorFullDeclaration) else
               Scanner.UnGetToken(t);
-            
+
             ACio.Ancestors.Add(TStringPair.Create(AncestorName, AncestorFullDeclaration));
           end
           else begin
@@ -3083,13 +3083,13 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         ParseGenericTypeIdentifierList(T, TypeNameWithGeneric);
         T := GetNextToken(LCollected);
       end;
-    
+
       if T.IsSymbol(SYM_SEMICOLON) then
       begin
         FreeAndNil(T);
         Exit;
       end else
-      if T.IsSymbol(SYM_EQUAL) then 
+      if T.IsSymbol(SYM_EQUAL) then
       begin
         LCollected := TypeNameWithGeneric + LCollected + T.Data;
         FreeAndNil(T);

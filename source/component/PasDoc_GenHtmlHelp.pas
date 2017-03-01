@@ -33,7 +33,7 @@ type
   THTMLHelpDocGenerator = class(TGenericHTMLDocGenerator)
   private
     FContentsFile: string;
-    
+
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
   public
@@ -46,7 +46,7 @@ type
 
 implementation
 
-uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items, 
+uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items,
   PasDoc_Languages, PasDoc_Gen, PasDoc_Versions;
 
 { HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
@@ -91,7 +91,7 @@ end;
 
 { THTMLHelpDocGenerator ------------------------------------------------------ }
 
-procedure THTMLHelpDocGenerator.WriteDocumentation; 
+procedure THTMLHelpDocGenerator.WriteDocumentation;
 begin
   inherited;
   WriteHtmlHelpProject;
@@ -231,7 +231,7 @@ var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofCios].BaseFileName + GetFileExtension;
-    
+
     // Write Classes to Contents
     if Text <> '' then
       WriteLiObject(Text, FileName) else
@@ -263,9 +263,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName + 
+    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName +
       GetFileExtension;
-    
+
     if Text <> '' then
       WriteLiObject(Text, FileName) else
       WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
@@ -320,9 +320,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + 
+    FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName +
       '.' + LinkGraphVizUses;
-      
+
     if LinkGraphVizUses <> '' then
       WriteLiObject(FLanguage.Translation[trGvUses], FileName);
   end;
@@ -333,9 +333,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName + 
+    FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName +
       '.' + LinkGraphVizClasses;
-      
+
     if LinkGraphVizClasses <> '' then
       WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
   end;
@@ -550,7 +550,7 @@ begin
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
   if not ExcludeGenerator then
-    WriteDirectLine('<meta name="GENERATOR" content="' + 
+    WriteDirectLine('<meta name="GENERATOR" content="' +
       PASDOC_NAME_AND_VERSION + '">');
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
@@ -661,9 +661,9 @@ begin
   if (LinkGraphVizClasses <> '') then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
       LinkGraphVizClasses);
-    
+
   if LinkGraphVizUses <> '' then
-    WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + 
+    WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' +
       LinkGraphVizUses);
 
   for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do

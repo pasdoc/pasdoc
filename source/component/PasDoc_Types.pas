@@ -32,7 +32,7 @@ interface
 
 uses
   SysUtils;
-  
+
 type
 {$IFNDEF COMPILER_11_UP}
   TBytes = array of Byte;
@@ -60,7 +60,7 @@ type
 
     User supplies such name by separating each part with dot,
     e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
-    converts it to TNameParts like 
+    converts it to TNameParts like
     ['UnitName', 'ClassName', 'ProcedureName'].
     Length must be @italic(always) between 1 and @link(MaxNameParts). }
   TNameParts = array of string;
@@ -109,7 +109,7 @@ end;
 
 { global routines ------------------------------------------------------------ }
 
-function SplitNameParts(S: string; 
+function SplitNameParts(S: string;
   out NameParts: TNameParts): Boolean;
 
 const
@@ -140,12 +140,12 @@ var
   t: string;
 begin
   Result := False;
-  
+
   SetLength(NameParts, 3);
 
   S := Trim(S);
-  
-  { Check that S starts with IdentifierStart and 
+
+  { Check that S starts with IdentifierStart and
     then only IdentifierOther chars follow }
   if S = '' then Exit;
 {$IFNDEF COMPILER_12_UP}
@@ -164,10 +164,10 @@ begin
   end;
 
   SplitInTwo(S, NameParts[0], NameParts[1]);
-  if NameParts[1] = '' then 
+  if NameParts[1] = '' then
   begin
     SetLength(NameParts, 1);
-  end else 
+  end else
   begin
     t := NameParts[1];
     SplitInTwo(t, NameParts[1], NameParts[2]);
@@ -194,4 +194,3 @@ begin
 end;
 
 end.
- 

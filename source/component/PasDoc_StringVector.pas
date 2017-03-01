@@ -52,7 +52,7 @@ type
     function AddNotExisting(const AString: string): Integer;
 
     { Load from a stream using the binary format.
-      
+
       The binary format is
       @unorderedList(
         @item Count
@@ -60,7 +60,7 @@ type
           @link(TSerializable.LoadStringFromStream).)
       )
 
-      Note that you should never use our Text value to load/save this object 
+      Note that you should never use our Text value to load/save this object
       from/into a stream, like
       @code(Text := TSerializable.LoadStringFromStream(Stream)).
       Using and assigning to the Text value breaks when some strings have

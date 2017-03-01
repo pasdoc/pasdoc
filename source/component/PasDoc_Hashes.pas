@@ -13,7 +13,7 @@
   modify it under the terms of the GNU Library General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.)
-  
+
   @italic(
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@
 
   Programmer's information:
   @unorderedList(
-    @item(you need Freepascal (http://www.freepascal.org) or 
+    @item(you need Freepascal (http://www.freepascal.org) or
       Delphi (http://www.borland.com)
       to compile this unit)
     @item(I recommend that you use Ansistrings {$H+} to be able to use keys

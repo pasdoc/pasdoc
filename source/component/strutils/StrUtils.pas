@@ -28,9 +28,9 @@
   path, and then pasdoc should compile "out of the box".
   When compiling pasdoc with newer compilers, you should just use
   StrUtils provided by them.
-  
+
   It seems that many people are committed to keeping Delphi 5
-  compatibility of pasdoc sources --- OK, so you will have to maintain 
+  compatibility of pasdoc sources --- OK, so you will have to maintain
   this unit and make sure that it works with Delphi 5 and allows compiling
   pasdoc with Delphi 5.
 
@@ -78,11 +78,11 @@ Function PosEx(const SubStr, S: string; Offset: Cardinal): Integer;
 var i : pchar;
 begin
   if (offset<1) or (offset>length(s)) then
-  begin 
-    Result := 0; 
-    Exit 
+  begin
+    Result := 0;
+    Exit
   end;
-  
+
   i:=strpos(@s[offset],@substr[1]);
   if i=nil then
     PosEx:=0
@@ -101,12 +101,12 @@ Function PosEx(c:char; const S: string; Offset: Cardinal): Integer;
 
 var l : longint;
 begin
-  if (offset<1) or (offset>length(s)) then 
-  begin 
-    Result := 0; 
-    Exit 
+  if (offset<1) or (offset>length(s)) then
+  begin
+    Result := 0;
+    Exit
   end;
-  
+
   l:=length(s);
 
   while (offset<=l) and (s[offset]<>c) do inc(offset);

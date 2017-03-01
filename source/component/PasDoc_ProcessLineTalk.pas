@@ -21,7 +21,7 @@
 }
 
 { @abstract(Talking with another process through pipes.)
-  @author(Michalis Kamburelis) 
+  @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)}
 
 unit PasDoc_ProcessLineTalk;
@@ -36,7 +36,7 @@ unit PasDoc_ProcessLineTalk;
   {$ifdef WIN32}
     {$define HAS_PROCESS}
   {$endif}
-{$ELSE}  
+{$ELSE}
   {$ifdef LINUX}
     {$define HAS_PROCESS}
   {$endif}
@@ -46,7 +46,7 @@ unit PasDoc_ProcessLineTalk;
   {$ifdef WIN32}
     {$define HAS_PROCESS}
   {$endif}
-{$ENDIF}  
+{$ENDIF}
 {$endif}
 
 interface
@@ -186,7 +186,7 @@ begin
    end;
   end;
 
-  if ((ReadBuf[i] = #10) and (LastNewLineChar = #13)) or 
+  if ((ReadBuf[i] = #10) and (LastNewLineChar = #13)) or
      ((ReadBuf[i] = #13) and (LastNewLineChar = #10)) then
   begin
    { We got 2nd newline character ? Ignore it. }

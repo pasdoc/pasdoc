@@ -46,7 +46,7 @@
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
   @author(Liu Da <xmacmail AT gmail.com> (Chinese gb2312 translation))
   @author(DoDi)
-  @author(René Mihula <rene.mihula@gmail.com> (Czech translation))  
+  @author(René Mihula <rene.mihula@gmail.com> (Czech translation))
   @author(Yann Merignac (French translation))
   @author(Arno Garrels <first name.name@nospamgmx.de>)
 }
@@ -91,12 +91,12 @@ type
     lgBulgarian,
     lgCatalan,
     lgChinese_gb2312,
-    lgCroatian,    
+    lgCroatian,
     lgDanish,
     lgDutch,
     lgEnglish,
     lgFrench_ISO_8859_15,
-    lgFrench_UTF_8,    
+    lgFrench_UTF_8,
     lgGerman,
     lgIndonesian,
     lgItalian,
@@ -251,17 +251,17 @@ type
     CharSet: string;
     { Name of this language as used by Aspell, see
       http://aspell.net/man-html/Supported.html .
-      
+
       Set this to empty string if it's the same as our Syntax up to a dot.
       So a Syntax = 'pl' or Syntax = 'pl.iso-8859-2' already indicates
       AspellLanguage = 'pl'.
-      
+
       TODO: In the future, it would be nice if all language names used by PasDoc
       and Aspell matched. Aspell language naming follows the standard
       http://en.wikipedia.org/wiki/ISO_639-1 as far as I see,
       and we should probably follow it too (currently, we deviate for
       some languages).
-      
+
       So in the future, we'll probably replace Syntax and AspellLanguage
       by LanguageCode and CharsetCode. LanguageCode = code (suitable for both
       PasDoc and Aspell command-line; the thing currently up to a dot in Syntax),
@@ -345,7 +345,7 @@ const
   strKeep = {$IFDEF debug} '=' {$else} '' {$endif};
   strToDo = {$IFDEF debug} '?' {$else} '' {$endif};
 
-  { NewLanguageTemplate value is not actually used. We include it just to 
+  { NewLanguageTemplate value is not actually used. We include it just to
     force developers to keep PasDoc_Languages_Template_New_Language.inc
     in compileable state. }
   NewLanguageTemplate: {$I lang\PasDoc_Languages_Template_New_Language.inc}
@@ -435,12 +435,12 @@ const
     (Table: @aBulgarian; Name: 'Bulgarian (Codepage UTF-8)'; Syntax: 'bg'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: 'windows-1252'; AspellLanguage: 'ca'),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'; AspellLanguage: 'zh'),
-    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),    
+    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aFrench_ISO_8859_15; Name: 'French (iso-8859-15)'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
-    (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),    
+    (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: 'windows-1252'; AspellLanguage: ''),
     (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
@@ -571,4 +571,3 @@ begin
 end;
 
 end.
-

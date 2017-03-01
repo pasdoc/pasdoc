@@ -25,7 +25,7 @@
 
   To use this unit, create an object of @link(TOptionParser) and add options to
   it, each option descends from @link(TOption).
-  Then, call your object's @link(TOptionParser.ParseOptions) 
+  Then, call your object's @link(TOptionParser.ParseOptions)
   method and options are parsed.
   After parsing, examine your option objects. }
 unit PasDoc_OptionParser;
@@ -69,15 +69,15 @@ type
 {$ENDIF}
   public
     { Create a new Option.
-      Set AShort to #0 in order to have no short option. 
+      Set AShort to #0 in order to have no short option.
       Technically you can set ALong to '' to have no long option,
-      but in practive *every* option should have long form. 
+      but in practive *every* option should have long form.
       Don't override this in descendants (this always simply calls
       CreateEx). Override only CreateEx. }
     constructor Create(const AShort:char; const ALong: string);
-    
-    constructor CreateEx(const AShort:char; const ALong: string; 
-      const AShortCaseSensitive, ALongCaseSensitive: boolean); virtual; 
+
+    constructor CreateEx(const AShort:char; const ALong: string;
+      const AShortCaseSensitive, ALongCaseSensitive: boolean); virtual;
 
     { returns the width of the string "-s, @--long-option" where s is the short option.
       Removes non-existant options (longoption = '' or shortoption = #0) }
@@ -385,7 +385,7 @@ begin
     if  (Options[i].LongForm = AName)
         OR (Options[i].LongCaseSensitive AND (LowerCase(Options[i].LongForm) = LowerCase(AName))) then begin
       Result := Options[i];
-      break;  
+      break;
     end;
   end;
 end;
@@ -399,7 +399,7 @@ begin
     if  (Options[i].ShortForm = AName)
         OR (Options[i].LongCaseSensitive AND (LowerCase(Options[i].ShortForm) = LowerCase(AName))) then begin
       Result := Options[i];
-      break;  
+      break;
     end;
   end;
 end;
@@ -443,7 +443,7 @@ procedure TOption.WriteExplanation(const AOptWidth: Integer);
       Write(' ');
     end;
   end;
-  
+
 var
   LLines: TStringList;
   i: Integer;
@@ -506,7 +506,7 @@ begin
       end;
     end;
   end;
-  
+
   if (not Result) and (Length(LongForm) > 0) then begin
     if AWords[0] = FParser.LongOptionStart+LongForm then begin
       Result := True;
@@ -738,7 +738,7 @@ begin
 end;
 
 constructor TSetOption.CreateEx(const AShort: Char; const ALong: String;
-  const AShortCaseSensitive, ALongCaseSensitive: Boolean); 
+  const AShortCaseSensitive, ALongCaseSensitive: Boolean);
 begin
   inherited;
   FPossibleValues := TStringList.Create;

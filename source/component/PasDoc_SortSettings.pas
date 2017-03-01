@@ -41,14 +41,14 @@ type
 
 const
   AllSortSettings: TSortSettings = [Low(TSortSetting) .. High(TSortSetting)];
-  
+
   { Must be lowercase.
     Used in @link(SortSettingsToName), @link(SortSettingFromName). }
   SortSettingNames: array[TSortSetting] of string = (
     'structures', 'constants', 'functions', 'types', 'variables', 'uses-clauses',
     'record-fields', 'non-record-fields', 'methods', 'properties' );
 
-{ @raises(EInvalidSortSetting if ASortSettingName does not match 
+{ @raises(EInvalidSortSetting if ASortSettingName does not match
   (case ignored) to any SortSettingNames.) }
 function SortSettingFromName(const SortSettingName: string): TSortSetting;
 
@@ -64,7 +64,7 @@ begin
   for Result := Low(Result) to High(Result) do
     if S = SortSettingNames[Result] then
       Exit;
-  raise EInvalidSortSetting.CreateFmt('Invalid sort specifier "%s"', 
+  raise EInvalidSortSetting.CreateFmt('Invalid sort specifier "%s"',
     [SortSettingName]);
 end;
 

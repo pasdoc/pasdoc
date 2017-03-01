@@ -573,7 +573,7 @@ begin
             raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 LE']);
         CP_UTF32Be  :
             raise EStreamReaderError.CreateFmt(S_ERR_CP_NOSUPPORT, ['UTF-32 BE']);
-        
+
         CP_ACP      :
             begin
                 FLeadBytes := SysUtils.Leadbytes;
@@ -1424,7 +1424,7 @@ begin
       if not GetCPInfo(Value, LCPInfo) then
          raise EStreamWriterError.CreateFmt(S_ERR_CP_NOSUPPORT,
           [SysErrorMessage(GetLastError)]);
-      FCodePage := FCodepage;   
+      FCodePage := FCodepage;
   end;
 end;
 

@@ -39,17 +39,17 @@ type
 
     { Init Name and Value by @link(ExtractFirstWord) from S. }
     constructor CreateExtractFirstWord(const S: string);
-    
+
     constructor Create; overload;
     constructor Create(const AName, AValue: string; AData: Pointer = nil); overload;
   end;
-  
+
   { List of string pairs.
     This class contains only non-nil objects of class TStringPair.
 
     Using this class instead of TStringList (with it's Name and Value
     properties) is often better, because this allows both Name and Value
-    of each pair to safely contain any special characters (including '=' 
+    of each pair to safely contain any special characters (including '='
     and newline markers). It's also faster, since it doesn't try to
     encode Name and Value into one string. }
   TStringPairVector = class(TObjectVector)
@@ -58,28 +58,28 @@ type
     procedure SetItems(i: Integer; Item: TStringPair);
   public
     property Items[i: Integer]: TStringPair read GetItems write SetItems; default;
-  
+
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSepapator + Value is
       constructed. Then all such strings for every items all
       concatenated with ItemSeparator.
-      
-      Remember that the very idea of @link(TStringPair) and 
+
+      Remember that the very idea of @link(TStringPair) and
       @link(TStringPairVector) is that Name and Value strings
       may contain any special characters, including things you
       give here as NameValueSepapator and ItemSeparator.
       So it's practically impossible to later convert such Text
       back to items and Names/Value pairs. }
     function Text(const NameValueSepapator, ItemSeparator: string): string;
-    
+
     { Finds a string pair with given Name.
       Returns -1 if not found. }
     function FindName(const Name: string; IgnoreCase: boolean = true): Integer;
-    
-    { Removes first string pair with given Name. 
+
+    { Removes first string pair with given Name.
       Returns if some pair was removed. }
     function DeleteName(const Name: string; IgnoreCase: boolean = true): boolean;
-    
+
     { Load from a stream using the binary format.
       For each item, it's Name and Value are saved.
       (TStringPair.Data pointers are @italic(not) saved.) }
@@ -88,21 +88,21 @@ type
     { Save to a stream, in a format readable by
       @link(LoadFromBinaryStream). }
     procedure SaveToBinaryStream(Stream: TStream);
-    
+
     { Name of first item, or '' if list empty. }
     function FirstName: string;
   end;
 
 implementation
 
-uses 
-  SysUtils { For LowerCase under Kylix 3 }, 
+uses
+  SysUtils { For LowerCase under Kylix 3 },
   PasDoc_Utils, PasDoc_Serialize;
 
 { TStringPair ---------------------------------------------------------------- }
 
 constructor TStringPair.CreateExtractFirstWord(const S: string);
-var 
+var
   FirstWord, Rest: string;
 begin
   ExtractFirstWord(S, FirstWord, Rest);
@@ -136,7 +136,7 @@ end;
 
 function TStringPairVector.Text(
   const NameValueSepapator, ItemSeparator: string): string;
-var 
+var
   i: Integer;
 begin
   if Count > 0 then
@@ -148,7 +148,7 @@ begin
   end;
 end;
 
-function TStringPairVector.FindName(const Name: string; 
+function TStringPairVector.FindName(const Name: string;
   IgnoreCase: boolean): Integer;
 var
   LowerCasedName: string;
@@ -169,7 +169,7 @@ begin
   end;
 end;
 
-function TStringPairVector.DeleteName(const Name: string; 
+function TStringPairVector.DeleteName(const Name: string;
   IgnoreCase: boolean): boolean;
 var
   i: Integer;
@@ -198,7 +198,7 @@ begin
 end;
 
 procedure TStringPairVector.SaveToBinaryStream(Stream: TStream);
-var 
+var
   I: Integer;
 begin
   TSerializable.SaveIntegerToStream(Count, Stream);

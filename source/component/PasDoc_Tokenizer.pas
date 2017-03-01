@@ -53,9 +53,9 @@ uses
 type
   { enumeration type that provides all types of tokens; each token's name
     starts with TOK_.
-    
-    TOK_DIRECTIVE is a compiler directive (like $ifdef, $define). 
-    
+
+    TOK_DIRECTIVE is a compiler directive (like $ifdef, $define).
+
     Note that tokenizer is not able to tell whether you used
     standard directive (e.g. 'Register') as an identifier
     (e.g. you're declaring procedure named 'Register')
@@ -64,9 +64,9 @@ type
     standard directives are always reported as TOK_IDENTIFIER.
     You can check TToken.Info.StandardDirective to know whether
     this identifier is @italic(maybe) used as real standard directive. }
-  TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT, 
+  TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT,
                 TOK_COMMENT_HELPINSIGHT,
-                TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER, 
+                TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER,
                 TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD,
                 TOK_ATT_ASSEMBLER_REGISTER);
 
@@ -193,15 +193,15 @@ type
 
 const
   { Names of the token types. All start with lower letter.
-    They should somehow describe (in a few short words) given 
+    They should somehow describe (in a few short words) given
     TTokenType. }
   TOKEN_TYPE_NAMES: array[TTokenType] of string =
-  ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)', 
+  ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)',
     'comment (///-style)',
-    'comment (//-style)', 'identifier', 'number', 'string', 'symbol', 
+    'comment (//-style)', 'identifier', 'number', 'string', 'symbol',
     'directive', 'reserved word', 'AT&T assembler register name');
 
-  TokenCommentTypes: set of TTokenType = 
+  TokenCommentTypes: set of TTokenType =
   [ TOK_COMMENT_PAS, TOK_COMMENT_EXT,
   TOK_COMMENT_HELPINSIGHT,
   TOK_COMMENT_CSTYLE ];
@@ -213,7 +213,7 @@ type
     SYM_LESS_THAN, SYM_LESS_THAN_EQUAL, SYM_GREATER_THAN,
     SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
     SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
-    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT, 
+    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT,
     SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER,
     { SYM_BACKSLASH may occur when writing char constant "^\",
       see ../../tests/ok_caret_character.pas }
@@ -223,9 +223,9 @@ const
   { Symbols as strings. They can be useful to have some mapping
     TSymbolType -> string, but remember that actually some symbols
     in tokenizer have multiple possible representations,
-    e.g. "right bracket" is usually given as "]" but can also 
+    e.g. "right bracket" is usually given as "]" but can also
     be written as ".)". }
-  SymbolNames: array[TSymbolType] of string = 
+  SymbolNames: array[TSymbolType] of string =
   ( '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
     '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\' );
 
@@ -240,61 +240,61 @@ type
     { the exact character representation of this token as it was found in the
       input file }
     Data: string;
-    
+
     { the type of this token as @link(TTokenType) }
     MyType: TTokenType;
-    
-    { additional information on this token as a variant record depending 
+
+    { additional information on this token as a variant record depending
       on the token's MyType }
     Info: record
       case TTokenType of
-        TOK_SYMBOL: 
+        TOK_SYMBOL:
           (SymbolType: TSymbolType);
-        TOK_KEYWORD: 
+        TOK_KEYWORD:
           (KeyWord: TKeyWord);
-        TOK_IDENTIFIER: 
+        TOK_IDENTIFIER:
           (StandardDirective: TStandardDirective);
     end;
 
     { Contents of a comment token.
       This is defined only when MyType is in TokenCommentTypes
       or is TOK_DIRECTIVE.
-      This is the text within the comment @italic(without) comment delimiters. 
+      This is the text within the comment @italic(without) comment delimiters.
       For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
     CommentContent: string;
-    
+
     { Contents of the string token, that is: the value of the string literal.
       D only when MyType is TOK_STRING. }
     StringContent: string;
-    
+
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
     function GetTypeName: string;
-    
+
     { Does @link(MyType) is TOK_SYMBOL and Info.SymbolType is ASymbolType ? }
     function IsSymbol(const ASymbolType: TSymbolType): Boolean;
-    
+
     { Does @link(MyType) is TOK_KEYWORD and Info.KeyWord is AKeyWord ? }
     function IsKeyWord(const AKeyWord: TKeyWord): Boolean;
-    
+
     { Does @link(MyType) is TOK_IDENTIFIER and Info.StandardDirective is
       AStandardDirective ? }
     function IsStandardDirective(
       const AStandardDirective: TStandardDirective): Boolean;
-      
+
     { Few words long description of this token.
       Describes MyType and Data (for those tokens that tend to have short Data).
       Starts with lower letter. }
     function Description: string;
-    
+
     // @name is the name of the TStream from which this @classname was read.
     // It is currently used to set @link(TRawDescriptionInfo.StreamName).
     property StreamName: string read FStreamName;
-    
+
     // @name is the position in the stream of the start of the token.
     // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
     property BeginPosition: Int64 read FBeginPosition;
-    
+
     // @name is the position in the stream of the character immediately
     // after the end of the token.
     // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
@@ -324,7 +324,7 @@ type
     Stream: TStream;
     FStreamName: string;
     FStreamPath: string;
-    
+
     procedure DoError(const AMessage: string; const AArguments: array of
       const; const AExitCode: Word);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -332,16 +332,16 @@ type
 
     procedure CheckForDirective(const t: TToken);
     procedure ConsumeChar;
-    
-    function CreateSymbolToken(const st: TSymbolType; const s: string): 
+
+    function CreateSymbolToken(const st: TSymbolType; const s: string):
       TToken; overload;
-      
+
     { Uses default symbol representation, from SymbolNames[st] }
     function CreateSymbolToken(const st: TSymbolType): TToken; overload;
 {$IFDEF STRING_UNICODE}
     { Returns source codepoint size in bytes on success or 0 on failure. }
     { Supports ANSI, UTF-8, UCS2 and UCS2 big endian sources.            }
-    { Note that only Unicode codepoints from the BMP are supported.      }    
+    { Note that only Unicode codepoints from the BMP are supported.      }
     function GetChar(out c: WideChar): Integer;
 {$ELSE}
     { Returns 1 on success or 0 on failure }
@@ -357,7 +357,7 @@ type
       t: TToken): Boolean;
 
   public
-    { Creates a TTokenizer and associates it with given input TStream. 
+    { Creates a TTokenizer and associates it with given input TStream.
       Note that AStream will be freed when this object will be freed. }
     constructor Create(
       const AStream: TStream;
@@ -371,20 +371,20 @@ type
     function GetToken: TToken;
     { Skips all chars until it encounters either $ELSE or $ENDIF compiler defines. }
     function SkipUntilCompilerDirective: TToken;
-    
+
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
     property StreamName: string read FStreamName;
-    
+
     { This is the path where the underlying file of this stream is located.
-    
+
       It may be an absolute path or a relative path. Relative paths
       are always resolved vs pasdoc current directory.
       This way user can give relative paths in command-line
       when writing Pascal source filenames to parse.
-    
+
       In particular, this may be '' to indicate current dir.
-      
+
       It's always specified like it was processed by
       IncludeTrailingPathDelimiter, so it has trailing PathDelim
       included (unless it was '', in which case it remains empty). }
@@ -522,7 +522,7 @@ end;
 function TToken.IsStandardDirective(
   const AStandardDirective: TStandardDirective): Boolean;
 begin
-  Result := (MyType = TOK_IDENTIFIER) and 
+  Result := (MyType = TOK_IDENTIFIER) and
     (Info.StandardDirective = AStandardDirective);
 end;
 
@@ -576,7 +576,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.CreateSymbolToken(const st: TSymbolType; 
+function TTokenizer.CreateSymbolToken(const st: TSymbolType;
   const s: string): TToken;
 begin
   Result := TToken.Create(TOK_SYMBOL);
@@ -628,12 +628,12 @@ begin
     case TStreamReader(Stream).CurrentCodePage of
         CP_UTF16    :
           begin
-            Result := Stream.Read(c, 2);            
+            Result := Stream.Read(c, 2);
             Exit;
           end;
         CP_UTF16BE  :
           begin
-            Result := Stream.Read(c, 2);            
+            Result := Stream.Read(c, 2);
             Swap16Buf(@c, @c, 1);
             Exit;
           end;
@@ -748,7 +748,7 @@ begin
     end else
     if IsCharInSet(c, IdentifierStart) then
     begin
-      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then 
+      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
       begin
         s := Result.Data;
         { check if identifier is a keyword }
@@ -774,10 +774,10 @@ begin
           if ReadToken(c, CharOther, TOK_STRING, Result) then
           begin
             try
-              { Note that StrToInt automatically handles hex characters when 
+              { Note that StrToInt automatically handles hex characters when
                 number starts from $. So below will automatically work for them. }
               Result.StringContent := Chr(StrToInt(SEnding(Result.Data, 2)));
-            except 
+            except
               { In case of EConvertError, make a warning and continue.
                 Result.StringContent will remain empty, which isn't a real problem. }
               on E: EConvertError do
@@ -946,7 +946,7 @@ begin
       if c = #10 then Inc(Row);
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
-    
+
     Data := '{' + CommentContent;
     (* Remove last '}' from CommentContent *)
     SetLength(CommentContent, Length(CommentContent) - 1);
@@ -1023,7 +1023,7 @@ var
   C: char;
 begin
   Result := TToken.Create(TOK_ATT_ASSEMBLER_REGISTER);
-  
+
   Result.Data := '%';
   repeat
     if (not HasData) or (not PeekChar(C)) then Exit;
@@ -1081,7 +1081,7 @@ begin
     else begin
       t.Data := t.Data + c;
     end;
-    { Note that, because of logic above, this will append only ONE apostrophe 
+    { Note that, because of logic above, this will append only ONE apostrophe
       when reading two apostrophes in source code.
       Checking Finished prevents adding the ending apostrophe. }
     if not Finished then

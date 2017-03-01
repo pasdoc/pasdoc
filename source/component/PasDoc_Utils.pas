@@ -128,7 +128,7 @@ procedure ExtractFirstWord(const S: string;
 
 const
   AllChars = [Low(AnsiChar)..High(AnsiChar)];
-  
+
   { Whitespace that is not any part of newline. }
   WhiteSpaceNotNL = [' ', #9];
   { Whitespace that is some part of newline. }
@@ -153,8 +153,8 @@ procedure CopyFile(const SourceFileName, DestinationFileName: string);
   This is the fixed version (actually taken from FPC sources). }
 function ExtractFilePath(const FileName: string): string;
 
-{ Just like @link(ExtractFilePath), also default Delphi (under Windows) 
-  implementation of ExtractFileName  is buggy. 
+{ Just like @link(ExtractFilePath), also default Delphi (under Windows)
+  implementation of ExtractFileName  is buggy.
   This is the fixed version (actually taken from FPC sources). }
 function ExtractFileName(const FileName: string): string;
 {$endif}
@@ -164,7 +164,7 @@ function IsPrefix(const Prefix, S: string): boolean;
 
 {$ifdef DELPHI_5}
 { BoolToStr for Delphi 5 compat.
-  According to 
+  According to
   [https://sourceforge.net/tracker/?func=detail&atid=104213&aid=1595890&group_id=4213]
   Delphi 5 RTL doesn't have this implemented. }
 function BoolToStr(Value: Boolean): string;
@@ -243,7 +243,7 @@ function CheckGetFileDate(const AFileName: string): TDateTime;
 {$ENDIF}
 
 type
-  { Raise this when some impossible situation (indicating bug in 
+  { Raise this when some impossible situation (indicating bug in
     pasdoc) occurs. }
   EInternalError = class(Exception)
     { Calls inherited with Message like
@@ -820,12 +820,12 @@ begin
           break;
         end;
 
-      // update the IndentationPrefix, 
+      // update the IndentationPrefix,
       // to be a common prefix of all the lines since FirstNonEmptyLine
       for I := FirstNonEmptyLine + 1 to Source.Count - 1 do
       begin
         // Don't limit IndentationPrefix on lines that have only whitespace.
-        // This allows users to trim whitespace in their source code without 
+        // This allows users to trim whitespace in their source code without
         // affecting the longCode look/
         if Trim(Source[I]) <> '' then
         begin

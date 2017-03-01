@@ -46,7 +46,7 @@ type
 {$ENDIF}
   end;
 
-function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean; 
+function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean;
 
 implementation
 

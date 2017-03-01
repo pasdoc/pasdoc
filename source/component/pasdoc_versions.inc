@@ -291,7 +291,7 @@
 {$ENDIF}
 
 {$IFDEF VERSION_UNKNOWN}
-  // Assume this pasdoc version builds with newer compilers as well.      
+  // Assume this pasdoc version builds with newer compilers as well.
   {$UNDEF VERSION_UNKNOWN}
   {$DEFINE DELPHI_15}
   {$DEFINE DELPHI_15_UP}

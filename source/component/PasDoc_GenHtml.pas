@@ -70,21 +70,21 @@ type
     FOddTableRow: boolean;
 
     FImages: TStringList;
-    
+
     { Makes a link.
       @param href is the link's reference
       @param caption is the link's text
       @param CssClass is the link's CSS class }
     function MakeLink(const href, caption, CssClass: string): string;
-      
+
     { Used by WriteItemsSummary and WriteItemsDetailed. }
     procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
       WriteItemLink: boolean; MakeAnchor: boolean);
-      
-    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean; 
+
+    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean;
       HeadingLevel: Integer;
       const SectionAnchor: string; SectionName: TTranslationId);
-      
+
     procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
       HeadingLevel: Integer; SectionName: TTranslationId);
 
@@ -110,13 +110,13 @@ type
     { Writes the Item's AbstractDescription. Only if AbstractDescription
       is not available, uses DetailedDescription. }
     procedure WriteItemShortDescription(const AItem: TPasItem);
-      
+
     (*Writes the Item's AbstractDescription followed by DetailedDescription.
 
       If OpenCloseParagraph then code here will open and close paragraph
       for itself. So you shouldn't
       surround it inside WriteStart/EndOfParagraph, like
-      
+
 @longcode(#
   { BAD EXAMPLE }
   WriteStartOfParagraph;
@@ -136,7 +136,7 @@ type
     { Does WriteItemLongDescription writes anything.
       When @false, you can avoid calling WriteItemLongDescription altogether. }
     function HasItemLongDescription(const AItem: TPasItem): boolean;
-      
+
     procedure WriteOverviewFiles;
 
     procedure WriteStartOfDocument(AName: string);
@@ -158,7 +158,7 @@ type
 
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
-    
+
     { output all the necessary images }
     procedure WriteBinaryFiles;
 
@@ -192,17 +192,17 @@ type
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
     procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
-    
-    { Returns HTML heading tag. You can also make the anchor 
+
+    { Returns HTML heading tag. You can also make the anchor
       at this heading by passing AnchorName <> ''. }
-    function FormatHeading(HL: integer; const CssClass: string; 
+    function FormatHeading(HL: integer; const CssClass: string;
       const s: string; const AnchorName: string): string;
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
-    
-    function FormatAnAnchor(const AName, Caption: string): string; 
+
+    function FormatAnAnchor(const AName, Caption: string): string;
 
   protected
     { Return common HTML content that goes inside <head>. }
@@ -221,10 +221,10 @@ type
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
 
-    { overrides @inherited.HtmlString to return the string verbatim 
+    { overrides @inherited.HtmlString to return the string verbatim
       (@inherited discards those strings) }
     function HtmlString(const S: string): string; override;
-    
+
     // FormatPascalCode will cause Line to be formatted in
     // the way that Pascal code is formatted in Delphi.
     function FormatPascalCode(const Line: string): string; override;
@@ -249,15 +249,15 @@ type
     // FormatKeyWord will cause AString to be formatted in
     // the way that strings are formatted in Delphi.
     function FormatString(AString: string): string; override;
-    
+
     // FormatKeyWord will cause AString to be formatted in
     // the way that reserved words are formatted in Delphi.
     function FormatKeyWord(AString: string): string; override;
-    
+
     // FormatCompilerComment will cause AString to be formatted in
     // the way that compiler directives are formatted in Delphi.
     function FormatCompilerComment(AString: string): string; override;
-    
+
     { Makes a String look like a coded String, i.e. <CODE>TheString</CODE>
       in Html. }
     function CodeString(const s: string): string; override;
@@ -287,32 +287,32 @@ type
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string;
       const LinkContext: TLinkContext): string; override;
-      
+
     function EscapeURL(const AString: string): string; virtual;
-    
+
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; override;
     function FormatAnchor(const Anchor: string): string; override;
-    
+
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
 
     function FormatPreformatted(const Text: string): string; override;
-    
+
     function FormatImage(FileNames: TStringList): string; override;
 
     function FormatList(ListData: TListData): string; override;
 
     function FormatTable(Table: TTableData): string; override;
-    
+
     function FormatTableOfContents(Sections: TStringPairVector): string; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    
+
     { Returns HTML file extension ".htm". }
     function GetFileExtension: string; override;
-    
+
     { The method that does everything - writes documentation for all units
       and creates overview files. }
     procedure WriteDocumentation; override;
@@ -358,7 +358,7 @@ uses
   PasDoc_Aspell,
   PasDoc_Versions;
 
-const 
+const
   img_automated : {$I automated.gif.inc};
   img_private   : {$I private.gif.inc};
   img_public    : {$I public.gif.inc};
@@ -438,9 +438,9 @@ function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
 
 begin
   Result := '';
-  
+
   if (not Assigned(Item)) then Exit;
-  
+
   if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then
   begin
     if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
@@ -487,7 +487,7 @@ begin
       WriteConverted('. ');
     end;
     if IncludeCreationTime then
-    begin    
+    begin
       WriteConverted(FLanguage.Translation[trGeneratedOn] + ' ' +
         FormatDateTime('yyyy-mm-dd hh:mm:ss', Now));
       WriteConverted('.');
@@ -565,7 +565,7 @@ const
 
   procedure WriteMethodsSummary;
   begin
-    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsMethods], trMethods);
   end;
 
@@ -576,7 +576,7 @@ const
 
   procedure WritePropertiesSummary;
   begin
-    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsProperties], trProperties);
   end;
 
@@ -587,7 +587,7 @@ const
 
   procedure WriteFieldsSummary;
   begin
-    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1, 
+    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsFields], trFields);
   end;
 
@@ -745,7 +745,7 @@ begin
   WriteConverted(CIO_NAMES[CIO.MyType]);
   WriteConverted(GetClassDirectiveName(CIO.ClassDirective));
 
-  if CIO.Ancestors.Count <> 0 then 
+  if CIO.Ancestors.Count <> 0 then
   begin
     WriteConverted('(');
     for i := 0 to CIO.Ancestors.Count - 1 do
@@ -906,7 +906,7 @@ begin
   WriteEndOfTable;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem;
   const Code: string; WriteItemLink: boolean);
 begin
   WriteCodeWithLinksCommon(p, Code, WriteItemLink, '<b>', '</b>');
@@ -946,9 +946,9 @@ begin
   WriteIndex;
   if UseTipueSearch then
   begin
-    DoMessage(2, pmtInformation, 
+    DoMessage(2, pmtInformation,
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(Units, Introduction, Conclusion, 
+    TipueAddFiles(Units, Introduction, Conclusion,
       MakeHead, MakeBodyBegin, MakeBodyEnd, LanguageCode(FLanguage.Language),
       DestinationDirectory);
   end;
@@ -973,7 +973,7 @@ function TGenericHTMLDocGenerator.MakeItemLink(
   const Item: TBaseItem;
   const LinkCaption: string;
   const LinkContext: TLinkContext): string;
-var 
+var
   CssClass: string;
 begin
   if LinkContext = lcNormal then
@@ -1027,7 +1027,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TGenericHTMLDocGenerator.WriteItemTableRow(
-  Item: TPasItem; ShowVisibility: boolean; 
+  Item: TPasItem; ShowVisibility: boolean;
   WriteItemLink: boolean; MakeAnchor: boolean);
 begin
   WriteStartOfTableRow('');
@@ -1048,27 +1048,27 @@ end;
 procedure TGenericHTMLDocGenerator.WriteItemsSummary(
   Items: TPasItems; ShowVisibility: boolean; HeadingLevel: Integer;
   const SectionAnchor: string; SectionName: TTranslationId);
-var 
+var
   i: Integer;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
-  
+
   WriteAnchor(SectionAnchor);
 
   WriteHeading(HeadingLevel + 1, 'summary', FLanguage.Translation[SectionName]);
-  
+
   WriteStartOfTable1Column('summary');
 
   for i := 0 to Items.Count - 1 do
     WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false);
 
-  WriteEndOfTable;  
+  WriteEndOfTable;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
   Items: TPasItems; ShowVisibility: boolean;
   HeadingLevel: Integer; SectionName: TTranslationId);
-var 
+var
   Item: TPasItem;
   i: Integer;
   ColumnsCount: Cardinal;
@@ -1076,7 +1076,7 @@ begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
   WriteHeading(HeadingLevel + 1, 'detail', FLanguage.Translation[SectionName]);
-  
+
   for i := 0 to Items.Count - 1 do
   begin
     Item := Items.PasItemAt[i];
@@ -1084,7 +1084,7 @@ begin
     { calculate ColumnsCount }
     ColumnsCount := 1;
     if ShowVisibility then Inc(ColumnsCount);
-    
+
     WriteStartOfTable('detail');
     WriteItemTableRow(Item, ShowVisibility, false, true);
 
@@ -1098,7 +1098,7 @@ begin
   end;
 end;
 
-function TGenericHTMLDocGenerator.FormatHeading(HL: integer; 
+function TGenericHTMLDocGenerator.FormatHeading(HL: integer;
   const CssClass: string; const s: string;
   const AnchorName: string): string;
 var
@@ -1110,16 +1110,16 @@ begin
     HL := 6;
   end;
   c := IntToStr(HL);
-  
+
   Result := ConvertString(S);
   if AnchorName <> '' then
     Result := '<span id="' + AnchorName + '"></span>' + Result;
-  
-  Result := '<h' + c + ' class="' + CssClass + '">' + Result + 
+
+  Result := '<h' + c + ' class="' + CssClass + '">' + Result +
     '</h' + c + '>' + LineEnding;
 end;
 
-procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer; 
+procedure TGenericHTMLDocGenerator.WriteHeading(HL: integer;
   const CssClass: string; const s: string);
 begin
   WriteDirect(FormatHeading(HL, CssClass, s, ''));
@@ -1142,7 +1142,7 @@ end;
 
 function TGenericHTMLDocGenerator.HasItemLongDescription(const AItem: TPasItem): boolean;
 begin
-  Result := Assigned(AItem) and 
+  Result := Assigned(AItem) and
     (
       AItem.IsDeprecated or
       AItem.IsPlatformSpecific or
@@ -1167,9 +1167,9 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
-    List: TStringPairVector; LinkToParamNames: boolean; 
+    List: TStringPairVector; LinkToParamNames: boolean;
     const CssListClass: string);
-    
+
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
       { Note that <dt> and <dd> below don't need any CSS class,
@@ -1182,7 +1182,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       WriteSpellChecked(Desc);
       WriteDirectLine('</dd>');
     end;
-    
+
   var
     i: integer;
     ParamName: string;
@@ -1192,13 +1192,13 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
     WriteDescriptionSectionHeading(Caption);
     WriteDirectLine('<dl class="' + CssListClass + '">');
-    for i := 0 to List.Count - 1 do 
+    for i := 0 to List.Count - 1 do
     begin
       ParamName := List[i].Name;
-      
+
       if LinkToParamNames then
        ParamName := SearchLink(ParamName, Func, '', true);
-      
+
       WriteParameter(ParamName, List[i].Value);
     end;
     WriteDirectLine('</dl>');
@@ -1217,14 +1217,14 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('<dl class="see_also">');
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
+      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
         SeeAlso[i].Value, true, SeeAlsoItem);
       WriteDirect('  <dt>');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
         WriteConverted(SeeAlso[i].Name);
       WriteDirectLine('</dt>');
-      
+
       WriteDirect('  <dd>');
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
         WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
@@ -1303,18 +1303,18 @@ var
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
-  
+
   if AItem.IsDeprecated then
     WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then
-    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);  
+    WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
 
   if AItem.AbstractDescription <> '' then
   begin
     if OpenCloseParagraph then WriteStartOfParagraph;
-    
+
     WriteSpellChecked(AItem.AbstractDescription);
 
     if AItem.DetailedDescription <> '' then
@@ -1326,20 +1326,20 @@ begin
       end;
       WriteSpellChecked(AItem.DetailedDescription);
     end;
-    
+
     if OpenCloseParagraph then WriteEndOfParagraph;
   end else begin
     if AItem.DetailedDescription <> '' then
     begin
       if OpenCloseParagraph then WriteStartOfParagraph;
-      
+
       WriteSpellChecked(AItem.DetailedDescription);
-      
+
       if OpenCloseParagraph then WriteEndOfParagraph;
-    end else 
+    end else
     begin
-      if (AItem is TPasCio) and 
-         (TPasCio(AItem).Ancestors.Count <> 0) then 
+      if (AItem is TPasCio) and
+         (TPasCio(AItem).Ancestors.Count <> 0) then
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;
@@ -1362,20 +1362,20 @@ begin
   if AItem is TPasMethod then
   begin
     AItemMethod := TPasMethod(AItem);
-    WriteParamsOrRaises(AItemMethod, trParameters, 
+    WriteParamsOrRaises(AItemMethod, trParameters,
       AItemMethod.Params, false, 'parameters');
     WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    WriteParamsOrRaises(AItemMethod, trExceptionsRaised, 
+    WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
       AItemMethod.Raises, true, 'exceptions_raised');
   end;
-  
+
   WriteSeeAlso(AItem.SeeAlso);
- 
-  if AItem is TPasEnum then 
+
+  if AItem is TPasEnum then
   begin
     WriteDescriptionSectionHeading(trValues);
     WriteDirectLine('<ul>');
-    for i := 0 to TPasEnum(AItem).Members.Count - 1 do 
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do
     begin
       EnumMember := TPasEnum(AItem).Members.PasItemAt[i];
       WriteDirectLine('<li>');
@@ -1409,7 +1409,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     Headline := FLanguage.Translation[
       OverviewFilesInfo[Overview].TranslationHeadlineId];
     WriteStartOfDocument(Headline);
-    WriteHeading(1, 'allitems', Headline);  
+    WriteHeading(1, 'allitems', Headline);
   end;
 
   { Creates an output stream that lists up all units and short descriptions. }
@@ -1508,19 +1508,19 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
 
     CloseStream;
   end;
-  
-  procedure WriteItemsOverviewFile(Overview: TCreatedOverviewFile; 
+
+  procedure WriteItemsOverviewFile(Overview: TCreatedOverviewFile;
     Items: TPasItems);
   var
     Item: TPasItem;
     j: Integer;
   begin
     if not CreateOverviewStream(Overview) then Exit;
-    
-    if not ObjectVectorIsNilOrEmpty(Items) then 
+
+    if not ObjectVectorIsNilOrEmpty(Items) then
     begin
       WriteStartOfTable3Columns('itemstable',
-        FLanguage.Translation[trName], 
+        FLanguage.Translation[trName],
         FLanguage.Translation[trUnit],
         FLanguage.Translation[trDescription]);
 
@@ -1660,7 +1660,7 @@ end;
 function TGenericHTMLDocGenerator.MakeHead: string;
 begin
   Result := '<meta name="viewport" content="width=device-width, initial-scale=1">' + LineEnding;
-  
+
   if not ExcludeGenerator then
     Result := Result + '<meta name="generator" content="'
       + PASDOC_NAME_AND_VERSION + '">' + LineEnding;
@@ -1669,9 +1669,9 @@ begin
       + FLanguage.CharSet + '">' + LineEnding;
   if UseTipueSearch then
     Result := Result + TipueSearchButtonHead + LineEnding;
-  
+
   // StyleSheet
-  Result := Result + '<link rel="StyleSheet" type="text/css" href="' + 
+  Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
     EscapeURL('pasdoc.css') + '">' + LineEnding;
 
   Result := Result + FHtmlHead;
@@ -1694,7 +1694,7 @@ begin
   WriteDirectLine('<head>');
   // Title
   WriteDirect('<title>');
-  if Title <> '' then 
+  if Title <> '' then
     WriteConverted(Title + ': ');
   WriteConverted(AName);
   WriteDirectLine('</title>');
@@ -1838,7 +1838,7 @@ const
           WriteConverted(U.UsesUnits[i]);
         end;
         WriteDirect('</li>');
-      end;   
+      end;
       WriteDirect('</ul>');
     end;
   end;
@@ -1914,7 +1914,7 @@ begin
       'skipped.', [U.Name]);
     Exit;
   end;
-  
+
   if not CreateStream(U.OutputFileName) then Exit;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
@@ -1961,7 +1961,7 @@ begin
   WriteAnchor(SectionAnchors[dsUses]);
   WriteUnitUses(HL + 1, U);
 
-  AnyItemDetailed := 
+  AnyItemDetailed :=
     (not ObjectVectorIsNilOrEmpty(U.FuncsProcs)) or
     (not ObjectVectorIsNilOrEmpty(U.Types)) or
     (not ObjectVectorIsNilOrEmpty(U.Constants)) or
@@ -1970,21 +1970,21 @@ begin
   AnyItemSummary := AnyItemDetailed or
     (not ObjectVectorIsNilOrEmpty(U.CIOs));
 
-  { AnyItemSummary/Detailed are used here to avoid writing headers 
+  { AnyItemSummary/Detailed are used here to avoid writing headers
     "Overview" and "Description" when there are no items. }
   if AnyItemSummary then
   begin
-    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);  
+    WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
     WriteCIOSummary(HL + 2, U.CIOs);
     WriteFuncsProcsSummary;
     WriteTypesSummary;
     WriteConstantsSummary;
     WriteVariablesSummary;
   end;
-  
+
   if AnyItemDetailed then
   begin
-    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);  
+    WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
     WriteFuncsProcsDetailed;
     WriteTypesDetailed;
     WriteConstantsDetailed;
@@ -2070,7 +2070,7 @@ const
 begin
   if not CreateStream(Filename + GetFileextension) then
     Abort;
-  
+
   try
     WriteStartOfDocument(FLanguage.Translation[trLegend]);
 
@@ -2107,13 +2107,13 @@ procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
   version like WriteSpellCheckedGeneric in TDocGenerator to be able
   to easily do the similar trick for other output formats like LaTeX
   and future output formats.
-  
+
   Note: don't you dare to copy&paste this code to TTexDocGenerator !
   If you want to work on it, make it generic, i.e. copy&paste this code
   to TDocGenerator and make it "generic" there. *Then* create specialized
-  version in TTexDocGenerator that calls the generic version. 
-  
-  Or maybe such generic version should be better inside PasDoc_Aspell ? 
+  version in TTexDocGenerator that calls the generic version.
+
+  Or maybe such generic version should be better inside PasDoc_Aspell ?
   This doesn't really matter. }
 
 var
@@ -2129,7 +2129,7 @@ begin
     // build s
     s := '';
     LString := AString;
-    for i := LErrors.Count-1 downto 0 do 
+    for i := LErrors.Count-1 downto 0 do
     begin
       // everything after the offending word
       temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
@@ -2151,7 +2151,7 @@ end;
 procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 begin
   DataToFile(DestinationDirectory + 'automated.gif', img_automated);
-  DataToFile(DestinationDirectory + 'private.gif'  , img_private  ); 
+  DataToFile(DestinationDirectory + 'private.gif'  , img_private  );
   DataToFile(DestinationDirectory + 'protected.gif', img_protected);
   DataToFile(DestinationDirectory + 'public.gif'   , img_public   );
   DataToFile(DestinationDirectory + 'published.gif', img_published);
@@ -2198,14 +2198,14 @@ begin
   begin
     { Kambi: It's obvious that we must escape '&'.
       I don't know why, but escaping it using '%26' does not work
-      (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2, 
+      (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
       and finally even IE, so it's certainly not a bug of some browser).
       But escaping it using '&amp;' works OK.
-      
+
       On the other hand, escaping '~' using '&tilde;' does not work.
-      (So EscapeURL function still *must* be something different than 
+      (So EscapeURL function still *must* be something different than
       ConvertString.) }
-      
+
     if AString[i] = '&' then
       Result := Result + '&amp;' else
     if IsCharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
@@ -2218,10 +2218,10 @@ function TGenericHTMLDocGenerator.FormatPascalCode(const Line: string): string;
 begin
   { Why these </p> and <p> are needed ?
     Well, basic idea is that pasdoc should always try to make closing
-    and opening tags explicit, even though they can be omitted for paragraphs 
+    and opening tags explicit, even though they can be omitted for paragraphs
     in html. And paragraph must end before <pre> and if there is any text after
     </pre> than new paragraph must be opened.
-    
+
     Besides the feeling of being "clean", specifying explicit paragraph
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
@@ -2230,13 +2230,13 @@ begin
     what it writes between <p> ... </p>
 
     This works perfectly except for the cases where @longcode
-    is at the end of description, then we have 
+    is at the end of description, then we have
       <p>Some text <pre>Some Pascal code</pre></p>
     Because there is no text between "</pre>" and "</p>" this means
     that paragraph is not implicitly opened there. This, in turn,
     means that html validator complains that we have </p> without
-    opening a paragraph. 
-    
+    opening a paragraph.
+
     So the clean solution must be to mark explicitly that paragraph
     always ends before <pre> and always begins after </pre>. }
 
@@ -2246,8 +2246,8 @@ begin
      LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.Paragraph: string; 
-begin 
+function TGenericHTMLDocGenerator.Paragraph: string;
+begin
   { LineEndings are inserted here only to make HTML sources look
     more readable (this makes life easier when looking for pasdoc's bugs,
     comparing generating two tests results etc.).
@@ -2255,17 +2255,17 @@ begin
   Result := LineEnding + LineEnding + '<p>';
 end;
 
-function TGenericHTMLDocGenerator.EnDash: string; 
+function TGenericHTMLDocGenerator.EnDash: string;
 begin
   Result := '&ndash;';
 end;
 
-function TGenericHTMLDocGenerator.EmDash: string; 
+function TGenericHTMLDocGenerator.EmDash: string;
 begin
   Result := '&mdash;';
 end;
 
-function TGenericHTMLDocGenerator.LineBreak: string; 
+function TGenericHTMLDocGenerator.LineBreak: string;
 begin
   Result := '<br>';
 end;
@@ -2360,7 +2360,7 @@ begin
   if CopyNeeded then
     ImageId := FImages.Add(ChosenFileName);
 
-  OutputImageFileName := 
+  OutputImageFileName :=
     'image_' + IntToStr(ImageId) + ExtractFileExt(ChosenFileName);
 
   if CopyNeeded then
@@ -2389,13 +2389,13 @@ begin
     This also makes empty lists (no items) be handled correctly,
     i.e. they should produce paragraph break. }
   Result := '</p>' + LineEnding + LineEnding;
-  
+
   { HTML requires that <ol> / <ul> contains at least one <li>. }
   if ListData.Count <> 0 then
   begin
-    Result := Result + Format('<%s class="%s">', 
+    Result := Result + Format('<%s class="%s">',
       [ListTag[ListData.ListType], ListClass[ListData.ItemSpacing]]) + LineEnding;
-      
+
     for i := 0 to ListData.Count - 1 do
     begin
       ListItem := ListData.Items[i] as TListItemData;
@@ -2409,9 +2409,9 @@ begin
           @itemLabel then our output HTML will not be validated
           as correct HTML. I don't see any easy way to fix this ?
           After all we don't want to "fake" <dl>, <dt> and <dd>
-          using some other tags and complex css. 
+          using some other tags and complex css.
 
-          So I guess that this should be blamed as an "unavoidable 
+          So I guess that this should be blamed as an "unavoidable
           limitation of HTML output", if someone will ask :)
 
           -- Michalis }
@@ -2429,11 +2429,11 @@ begin
           [Attributes, ListItem.Text])  + LineEnding;
       end;
     end;
-      
-    Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) + 
+
+    Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) +
       LineEnding + LineEnding;
   end;
-    
+
   Result := Result + '<p>';
 end;
 
@@ -2446,13 +2446,13 @@ var
   NormalRowOdd: boolean;
   RowClass: string;
 begin
-  Result := '</p>' + LineEnding + LineEnding + 
+  Result := '</p>' + LineEnding + LineEnding +
     '<table class="table_tag">' + LineEnding;
   NormalRowOdd := true;
   for RowNum := 0 to Table.Count - 1 do
   begin
     Row := Table.Items[RowNum] as TRowData;
-    
+
     if Row.Head then
       RowClass := 'head' else
     begin
@@ -2461,20 +2461,20 @@ begin
         RowClass := 'even';
       NormalRowOdd := not NormalRowOdd;
     end;
-    
+
     Result := Result + '  <tr class="' + RowClass + '">' + LineEnding;
-    
+
     for ColNum := 0 to Row.Cells.Count - 1 do
       Result := Result + Format('    <%s><p>%s</p></%0:s>%2:s',
         [CellTag[Row.Head], Row.Cells[ColNum], LineEnding]);
-    
+
     Result := Result + '  </tr>' + LineEnding;
   end;
   Result := Result + '</table>' + LineEnding + LineEnding + '<p>';
 end;
 
 function TGenericHTMLDocGenerator.FormatTableOfContents(
-  Sections: TStringPairVector): string; 
+  Sections: TStringPairVector): string;
 var
   i: Integer;
 begin
@@ -2483,11 +2483,11 @@ begin
     Result := '';
     Exit;
   end;
-  
+
   Result := '<ol>' + LineEnding;
   for i := 0 to Sections.Count - 1 do
   begin
-    Result := Result + 
+    Result := Result +
       '<li><a href="#' + Sections[i].Name + '">' + Sections[i].Value + '</a>' +
       LineEnding +
       FormatTableOfContents(TStringPairVector(Sections[i].Data)) + '</li>' +
@@ -2517,10 +2517,10 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     Overview: TCreatedOverviewFile;
   begin
     Result := '';
-    
+
     if Title <> '' then
       Result := Result + '<h2>' + ConvertString(Title) + '</h2>';
-    
+
     if Introduction <> nil then
     begin
       if Introduction.ShortTitle = '' then
