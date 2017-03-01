@@ -343,9 +343,10 @@ help:
 	@echo "    and then makes a release archive for given <os/arch>."
 	@echo
 	@echo "  dist-src:"
-	@echo "    This creates source archive, by exporting whole pasdoc sources"
+	@echo "    This creates source archive, by taking whole pasdoc sources"
 	@echo "    from pasdoc SVN. It exports using the tag name taken from"
 	@echo "    VERSION variable in this Makefile (currently it's "$(VERSION)")."
+	@echo "    TODO: Should be changed to use GitHub GIT repository and GIT tag."
 
 .PHONY: version
 version:
@@ -465,6 +466,7 @@ dist-darwin-x86: clean build-fpc-darwin-x86
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
+# TODO: Should be changed to use GitHub GIT repository and GIT tag
 dist-src:
 	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
 	cd $(PACKAGEBASEDIR); \
