@@ -7,6 +7,12 @@
 '' + LineEnding +
 '###-PASDOC-HEAD-###' + LineEnding +
 '' + LineEnding +
+'<!-- Note that we use a local jquery copy (not from Google Hosted Libraries), to work offline -->' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding +
+'' + LineEnding +
 '</head>' + LineEnding +
 '<body>' + LineEnding +
 '' + LineEnding +

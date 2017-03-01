@@ -77,13 +77,7 @@ uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
-  Result :=
-    // Note that we use local jquery copy, not from google, to work offline
-    '<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
-    '<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
-    '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding +
-    '<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
-    '<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding;
+  Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;
