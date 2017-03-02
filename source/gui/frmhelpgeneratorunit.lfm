@@ -10,7 +10,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   ActiveControl = PanelLeft
   AutoSize = True
   Caption = 'pasdoc gui'
-  ClientHeight = 572
+  ClientHeight = 574
   ClientWidth = 1052
   KeyPreview = True
   Menu = MainMenu1
@@ -20,10 +20,10 @@ object frmHelpGenerator: TfrmHelpGenerator
   OnKeyDown = FormKeyDown
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '1.5'
+  LCLVersion = '1.7'
   object NotebookMain: TNotebook
     Left = 208
-    Height = 572
+    Height = 574
     Top = 0
     Width = 844
     PageIndex = 0
@@ -34,9 +34,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Options'
       object LabelTitle: TLabel
         Left = 8
-        Height = 24
+        Height = 22
         Top = 8
-        Width = 43
+        Width = 40
         HelpType = htKeyword
         Caption = 'Title'
         FocusControl = edTitle
@@ -46,9 +46,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 66
-        Width = 122
+        Height = 22
+        Top = 62
+        Width = 114
         HelpType = htKeyword
         Caption = 'Output Type'
         FocusControl = comboGenerateFormat
@@ -58,9 +58,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 182
-        Width = 499
+        Height = 22
+        Top = 170
+        Width = 464
         HelpType = htKeyword
         Caption = 'Output filename (without directory; not for HTML)'
         FocusControl = edProjectName
@@ -70,9 +70,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 240
-        Width = 99
+        Height = 22
+        Top = 224
+        Width = 90
         HelpType = htKeyword
         Caption = 'Language'
         FocusControl = comboLanguages
@@ -82,9 +82,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboGenerateFormat
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 124
-        Width = 166
+        Height = 22
+        Top = 116
+        Width = 154
         HelpType = htKeyword
         Caption = 'Output directory'
         ParentColor = False
@@ -93,10 +93,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
+        Height = 26
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 358
-        Width = 838
+        Top = 334
+        Width = 765
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
@@ -107,10 +107,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckWriteUsesList
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
+        Height = 26
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 330
-        Width = 425
+        Top = 308
+        Width = 395
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
@@ -121,9 +121,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 34
+        Height = 32
         Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
-        Top = 32
+        Top = 30
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
@@ -134,8 +134,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputType
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 34
-        Top = 90
+        Height = 32
+        Top = 84
         Width = 254
         HelpType = htKeyword
         ItemHeight = 0
@@ -153,9 +153,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 34
+        Height = 32
         Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
-        Top = 206
+        Top = 192
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
@@ -166,8 +166,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 38
-        Top = 264
+        Height = 36
+        Top = 246
         Width = 533
         HelpType = htKeyword
         HelpKeyword = 'OutputLanguage'
@@ -181,9 +181,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckAutoAbstract
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 386
-        Width = 735
+        Height = 26
+        Top = 360
+        Width = 681
         HelpType = htKeyword
         HelpKeyword = 'AutoLinkOption'
         Caption = 'Automatically turn identifiers into links, without the need for @link tag'
@@ -194,9 +194,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckAutoLink
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 414
-        Width = 463
+        Height = 26
+        Top = 386
+        Width = 429
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
         Caption = 'Recognize FPC macros syntax when parsing'
@@ -209,9 +209,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckHandleMacros
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 442
-        Width = 406
+        Height = 26
+        Top = 412
+        Width = 377
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
         Caption = 'Store only relative paths in project file'
@@ -224,9 +224,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 302
-        Width = 222
+        Height = 26
+        Top = 282
+        Width = 208
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
         Caption = 'Show units uses list'
@@ -237,8 +237,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 34
-        Top = 148
+        Height = 32
+        Top = 138
         Width = 483
         HelpType = htKeyword
         HelpKeyword = 'OutputOption'
@@ -255,7 +255,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Source Files'
       object Label8: TLabel
         Left = 8
-        Height = 72
+        Height = 66
         Top = 8
         Width = 822
         HelpType = htKeyword
@@ -270,8 +270,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = btnBrowseSourceFiles
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 428
-        Top = 134
+        Height = 438
+        Top = 126
         Width = 830
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -285,8 +285,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = Label8
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 44
-        Top = 80
+        Height = 42
+        Top = 74
         Width = 822
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
@@ -356,7 +356,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Defines'
       object Label12: TLabel
         Left = 10
-        Height = 144
+        Height = 132
         Top = 10
         Width = 824
         Align = alTop
@@ -368,8 +368,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 398
-        Top = 164
+        Height = 412
+        Top = 152
         Width = 824
         HelpType = htKeyword
         HelpKeyword = 'ConditionalDefines'
@@ -388,7 +388,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       ChildSizing.VerticalSpacing = 10
       object LabelVisibleMembers: TLabel
         Left = 10
-        Height = 48
+        Height = 44
         Top = 10
         Width = 824
         HelpType = htKeyword
@@ -401,7 +401,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object CheckListVisibleMembers: TCheckListBox
         Left = 10
         Height = 130
-        Top = 68
+        Top = 64
         Width = 824
         HelpType = htKeyword
         HelpKeyword = 'IncludeByVisibility'
@@ -414,7 +414,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 30
+        ItemHeight = 28
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
         Data = {
@@ -423,8 +423,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object RadioImplicitVisibility: TRadioGroup
         Left = 10
-        Height = 122
-        Top = 208
+        Height = 114
+        Top = 204
         Width = 824
         HelpType = htKeyword
         HelpKeyword = 'ImplicitVisibilityOption'
@@ -440,7 +440,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 96
+        ClientHeight = 90
         ClientWidth = 820
         ItemIndex = 0
         Items.Strings = (
@@ -563,16 +563,16 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 94
-        Width = 240
+        Height = 22
+        Top = 88
+        Width = 218
         Caption = 'LateX graphics package'
         FocusControl = comboLatexGraphicsPackage
         ParentColor = False
       end
       object LabelHyphenatedWords: TLabel
         Left = 8
-        Height = 48
+        Height = 44
         Top = 173
         Width = 838
         HelpType = htKeyword
@@ -584,7 +584,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object rgLineBreakQuality: TRadioGroup
         Left = 0
-        Height = 94
+        Height = 88
         Top = 0
         Width = 844
         HelpType = htKeyword
@@ -601,7 +601,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 68
+        ClientHeight = 64
         ClientWidth = 840
         ItemIndex = 0
         Items.Strings = (
@@ -615,9 +615,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelLatexGraphicsPackage
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 34
+        Height = 32
         Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
-        Top = 118
+        Top = 110
         Width = 148
         Enabled = False
         ItemHeight = 0
@@ -636,8 +636,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHyphenatedWords
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 339
-        Top = 221
+        Height = 345
+        Top = 217
         Width = 824
         Align = alCustom
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -660,7 +660,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 0
         object LabelHeader: TLabel
           Left = 10
-          Height = 24
+          Height = 22
           Top = 10
           Width = 824
           HelpType = htKeyword
@@ -671,8 +671,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoHeader: TMemo
           Left = 10
-          Height = 135
-          Top = 34
+          Height = 137
+          Top = 32
           Width = 824
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
@@ -693,18 +693,18 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object PanelFooterHidden: TPanel
         Left = 0
-        Height = 384
+        Height = 386
         Top = 188
         Width = 844
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 384
+        ClientHeight = 386
         ClientWidth = 844
         TabOrder = 1
         object LabelFooter: TLabel
           Left = 10
-          Height = 24
+          Height = 22
           Top = 10
           Width = 824
           HelpType = htKeyword
@@ -715,8 +715,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoFooter: TMemo
           Left = 10
-          Height = 340
-          Top = 34
+          Height = 344
+          Top = 32
           Width = 824
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
@@ -733,9 +733,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = cbVizGraphUses
         AnchorSideTop.Side = asrBottom
         Left = 14
-        Height = 48
-        Top = 86
-        Width = 422
+        Height = 44
+        Top = 82
+        Width = 393
         BorderSpacing.Top = 20
         Caption = 'You will have to generate graphs yourself. '#10'Use the "dot" program from GraphViz:'
         ParentColor = False
@@ -744,9 +744,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = cbVizGraphClasses
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 38
-        Width = 320
+        Height = 26
+        Top = 36
+        Width = 297
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Uses graph'
@@ -755,9 +755,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object cbVizGraphClasses: TCheckBox
         Left = 8
-        Height = 28
+        Height = 26
         Top = 10
-        Width = 347
+        Width = 321
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Classes graph'
@@ -768,9 +768,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = Label22
         AnchorSideTop.Side = asrBottom
         Left = 14
-        Height = 44
-        Top = 134
-        Width = 271
+        Height = 42
+        Top = 126
+        Width = 254
         AutoSize = True
         BorderSpacing.InnerBorder = 4
         Caption = 'http://www.graphviz.org/'
@@ -782,14 +782,14 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Spell Checking'
       object PanelSpellCheckingTop1: TPanel
         Left = 0
-        Height = 212
+        Height = 198
         Top = 0
         Width = 844
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 212
+        ClientHeight = 198
         ClientWidth = 844
         FullRepaint = False
         TabOrder = 1
@@ -797,8 +797,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           AnchorSideTop.Control = ButtonAspellURL
           AnchorSideTop.Side = asrBottom
           Left = 12
-          Height = 72
-          Top = 130
+          Height = 66
+          Top = 122
           Width = 506
           HelpType = htKeyword
           Anchors = [akTop, akLeft, akRight]
@@ -811,8 +811,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           AnchorSideTop.Control = cbCheckSpelling
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 48
-          Top = 38
+          Height = 44
+          Top = 36
           Width = 506
           Anchors = [akTop, akLeft, akRight]
           Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
@@ -821,9 +821,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object cbCheckSpelling: TCheckBox
           Left = 10
-          Height = 28
+          Height = 26
           Top = 10
-          Width = 174
+          Width = 158
           HelpType = htKeyword
           HelpKeyword = 'SpellChecking'
           Caption = 'Check Spelling'
@@ -834,9 +834,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           AnchorSideTop.Control = Label23
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 44
-          Top = 86
-          Width = 312
+          Height = 42
+          Top = 80
+          Width = 285
           AutoSize = True
           BorderSpacing.InnerBorder = 4
           Caption = 'http://aspell.sourceforge.net/'
@@ -846,8 +846,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoSpellCheckingIgnore: TMemo
         Left = 10
-        Height = 340
-        Top = 222
+        Height = 356
+        Top = 208
         Width = 824
         HelpType = htKeyword
         HelpKeyword = 'SpellChecking'
@@ -864,12 +864,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = rgCommentMarkers
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 24
-        Top = 130
-        Width = 262
+        Height = 22
+        Top = 122
+        Width = 169
         HelpType = htKeyword
         BorderSpacing.Top = 8
-        Caption = 'Special comment markers'
+        Caption = 'Comment markers'
         FocusControl = memoCommentMarkers
         ParentColor = False
       end
@@ -877,8 +877,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelCommentMarkers
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 393
-        Top = 164
+        Height = 405
+        Top = 154
         Width = 818
         HelpType = htKeyword
         HelpKeyword = 'CommentMarker'
@@ -889,9 +889,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object rgCommentMarkers: TRadioGroup
         Left = 0
-        Height = 122
+        Height = 114
         Top = 0
-        Width = 642
+        Width = 718
         HelpType = htKeyword
         HelpKeyword = 'CommentMarker'
         AutoFill = True
@@ -905,13 +905,13 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 96
-        ClientWidth = 638
+        ClientHeight = 90
+        ClientWidth = 714
         ItemIndex = 1
         Items.Strings = (
-          'Ignore special comment markers'
-          'Include all comments but remove special comment markers'
-          'Include only comments with special comment markers'
+          'Include all comments'
+          'Include all comments but remove the comment markers listed below'
+          'Include only comments that start with the comment markers listed below'
         )
         OnClick = rgCommentMarkersClick
         TabOrder = 1
@@ -1042,6 +1042,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Top = 381
         Width = 844
         Align = alBottom
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Pitch = fpFixed
+        Font.Quality = fqNonAntialiased
         ParentColor = False
         ParentFont = False
         TabOrder = 1
@@ -1570,18 +1574,18 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 572
+    Height = 574
     Top = 0
     Width = 208
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 572
+    ClientHeight = 574
     ClientWidth = 208
     TabOrder = 1
     object lbNavigation: TListBox
       Left = 0
-      Height = 516
-      Top = 56
+      Height = 520
+      Top = 54
       Width = 208
       Align = alClient
       ItemHeight = 0
@@ -1592,7 +1596,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object ButtonGenerate: TBitBtn
       Left = 10
-      Height = 36
+      Height = 34
       Hint = 'Generate documentation (F9)'
       Top = 10
       Width = 188

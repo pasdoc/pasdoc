@@ -50,7 +50,6 @@
       <Unit0>
         <Filename Value="pasdoc_gui.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="pasdoc_gui"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmhelpgeneratorunit.pas"/>
@@ -108,7 +107,6 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
