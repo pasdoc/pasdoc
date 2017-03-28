@@ -371,7 +371,7 @@ begin
     if FUnits.ExistsUnit(U) then begin
       DoMessage(2, pmtWarning,
         'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
-        TPasUnit(FUnits.FindName(U.Name)).SourceFileName, SourceFileName]);
+        TPasUnit(FUnits.FindListItem(U.Name)).SourceFileName, SourceFileName]);
       U.Free;
     end else
     begin

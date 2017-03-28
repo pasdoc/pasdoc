@@ -1073,6 +1073,7 @@ var
   Ancestor: TBaseItem;
   AncestorName: string;
   AItemMethod: TPasMethod;
+  EnumMember: TPasItem;
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
@@ -1145,13 +1146,17 @@ begin
   begin
     WriteDirect('\item[\textbf{' + FLanguage.Translation[trValues] + '}]',true);
     WriteDirectLine('\begin{description}');
-    for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do
+    begin
+      EnumMember := TPasEnum(AItem).Members.PasItemAt[i];
       WriteDirect('\item[\texttt{');
-      { add the first character for enums }
-      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
-      { add the end characters for enums }
+      { Use EnumMember.FullDeclaration, not just EnumMember.Name.
+        This is important for enums with explicit numeric value, like "me1 := 1". }
+      WriteConverted(EnumMember.FullDeclaration);
       WriteDirect('}] ');
-      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
+      { We have to place anchor outside of the \item[], otherwise it doesn't work... }
+      WriteAnchor('', EnumMember.FullLink);
+      WriteItemLongDescription(EnumMember, false);
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');

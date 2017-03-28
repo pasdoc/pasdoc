@@ -105,8 +105,9 @@ type
   TPasItems = class;
   TPasMethods = class;
   TPasProperties = class;
-  TPasCios = class;
+  TPasNestedCios = class;
   TPasTypes = class;
+  TPasEnum = class;
 
   { Raw description, in other words: the contents of comment before
     given item. Besides the content, this also
@@ -200,11 +201,12 @@ type
       You can override it to add more handlers. }
     procedure RegisterTags(TagManager: TTagManager); virtual;
 
-    { This searches for item with ItemName @italic(inside this item).
-      This means that e.g. for units it checks whether
-      there is some item declared in this unit (like procedure, or class).
-      For classes this means that some item is declared within the class
-      (like method or property).
+    { Search for an item called ItemName @italic(inside this Pascal item).
+      For units, it searches for items declared
+      @italic(inside this unit) (like a procedure, or a class in this unit).
+      For classes it searches for items declared @italic(within this class)
+      (like a method or a property).
+      For an enumerated type, it searches for members of this enumerated type.
 
       All normal rules of ObjectPascal scope apply, which means that
       e.g. if this item is a unit, @name searches for a class named
@@ -236,7 +238,7 @@ type
     function FindItemMaybeInAncestors(const ItemName: string):
       TBaseItem; virtual;
 
-    { This does all it can to resolve link specified by NameParts.
+    { Do all you can to find link specified by NameParts.
 
       While searching this tries to mimic ObjectPascal identifier scope
       as much as it can. It seaches within this item,
@@ -330,6 +332,7 @@ type
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
     FVisibility: TVisibility;
+    FMyEnum: TPasEnum;
     FMyObject: TPasCio;
     FMyUnit: TPasUnit;
     FIsDeprecated: boolean;
@@ -427,12 +430,16 @@ type
     function QualifiedName: String; override;
     function UnitRelativeQualifiedName: string; virtual;
 
-    { pointer to unit this item belongs to }
+    { Unit of this item. }
     property MyUnit: TPasUnit read FMyUnit write FMyUnit;
 
-    { if this item is part of an object or class, the corresponding
-      info object is stored here, nil otherwise }
+    { If this item is part of a class (or record, object., interface...),
+      the corresponding class is stored here. @nil otherwise. }
     property MyObject: TPasCio read FMyObject write FMyObject;
+
+    { If this item is a member of an enumerated type,
+      then the enclosing enumerated type is stored here. @nil otherwise. }
+    property MyEnum: TPasEnum read FMyEnum write FMyEnum;
 
     property Visibility: TVisibility read FVisibility write FVisibility;
 
@@ -564,6 +571,9 @@ type
   public
     procedure RegisterTags(TagManager: TTagManager); override;
 
+    { Searches for a member of this enumerated type. }
+    function FindItem(const ItemName: string): TBaseItem; override;
+
     destructor Destroy; override;
     constructor Create; override;
     property Members: TPasItems read FMembers;
@@ -684,7 +694,7 @@ type
     FOutputFileName: string;
     FMyType: TCIOType;
     FHelperTypeIdentifier: string;
-    FCios: TPasCios;
+    FCios: TPasNestedCios;
     FTypes: TPasTypes;
     FNameWithGeneric: string;
 
@@ -750,8 +760,8 @@ type
       the Ancestors[0] will be set to 'TObject'. }
     property Ancestors: TStringPairVector read FAncestors;
 
-    { Internal classes and records }
-    property Cios: TPasCios read FCios;
+    { Nested classes (and records, interfaces...). }
+    property Cios: TPasNestedCios read FCios;
 
     {@name is used to indicate whether a class is sealed or abstract.}
     property ClassDirective: TClassDirective read FClassDirective
@@ -814,7 +824,7 @@ type
     { Is Visibility of items (Fields, Methods, Properties) important ? }
     function ShowVisibility: boolean;
 
-    { Simple internal types }
+    { Simple nested types (that don't fall into @link(Cios)). }
     property Types: TPasTypes read FTypes;
 
     { Name, with optional "generic" directive before (for FPC generics)
@@ -894,7 +904,7 @@ type
     deserializing this unit. }
   TPasUnit = class(TPasItem)
   protected
-    FTypes: TPasItems;
+    FTypes: TPasTypes;
     FVariables: TPasItems;
     FCIOs: TPasItems;
     FConstants: TPasItems;
@@ -915,7 +925,8 @@ type
     procedure AddConstant(const i: TPasItem);
     procedure AddType(const i: TPasItem);
     procedure AddVariable(const i: TPasItem);
-    function FindFieldMethodProperty(const S1, S2: string): TPasItem;
+    function FindInsideSomeClass(const AClassName, ItemInsideClass: string): TPasItem;
+    function FindInsideSomeEnum(const EnumName, EnumMember: string): TPasItem;
     function FindItem(const ItemName: string): TBaseItem; override;
 
     procedure Sort(const SortSettings: TSortSettings); override;
@@ -940,7 +951,7 @@ type
     property UsesUnits: TStringVector read FUsesUnits;
 
     { list of types defined in this unit }
-    property Types: TPasItems read FTypes;
+    property Types: TPasTypes read FTypes;
     { list of variables defined in this unit }
     property Variables: TPasItems read FVariables;
     { name of documentation output file
@@ -993,10 +1004,18 @@ type
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
 
-    { Compares each element's name field with Name and returns the item on
-      success, nil otherwise.
-      Name's case is not regarded. }
-    function FindName(const AName: string): TBaseItem;
+    { Find a given item name on a list.
+      In the base class (TBaseItems), this simply searches the items
+      (not recursively).
+
+      In some cases, it may look within the items (recursively),
+      when the identifiers inside the item are in same namespace as the items
+      themselves. Example: it will look also inside enumerated types
+      members, because (when "scoped enums" are off) the enumerated members
+      are in the same namespace as the enumerated type name.
+
+      Returns @nil if nothing can be found. }
+    function FindListItem(const AName: string): TBaseItem;
 
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
@@ -1021,10 +1040,10 @@ type
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
   public
-    { This is a comfortable routine that just calls inherited and
+    { A comfortable routine that just calls inherited and
       casts result to TPasItem, since every item on this list must
       be always TPasItem. }
-    function FindName(const AName: string): TPasItem;
+    function FindListItem(const AName: string): TPasItem;
 
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
@@ -1082,32 +1101,26 @@ type
     procedure SetFullDeclaration(PrefixName: boolean; const Suffix: string);
   end;
 
-  { @Name holds a collection of methods. It introduces no
-    new methods compared to @link(TPasItems), but this may be
-    implemented in a later stage. }
+  { Collection of methods. }
   TPasMethods = class(TPasItems)
   end;
 
-  { @Name holds a collection of properties. It introduces no
-    new methods compared to @link(TPasItems), but this may be
-    implemented in a later stage. }
+  { Collection of properties. }
   TPasProperties = class(TPasItems)
   end;
 
-  { @Name holds an owned collection of inner classes/records/interfaces. }
-  TPasCios = class(TPasItems)
+  { Collection of classes / records / interfaces. }
+  TPasNestedCios = class(TPasItems)
   public
     constructor Create; reintroduce;
-    function FindName(const AName: string): TPasItem;
   end;
 
-  { @Name holds a collection of nested simple types. It introduces no
-    new methods compared to @link(TPasItems), but this may be
-    implemented in a later stage. }
+  { Collection of types. }
   TPasTypes = class(TPasItems)
+    function FindListItem(const AName: string): TPasItem;
   end;
 
-  { @abstract(Holds a collection of units.) }
+  { Collection of units. }
   TPasUnits = class(TPasItems)
   private
     function GetUnitAt(const AIndex: Integer): TPasUnit;
@@ -1439,9 +1452,17 @@ begin
           end;
         end;
 
-        // RJ: To find links in Unit's objects!
-        if Assigned(MyUnit) then begin
-          p := MyUnit.FindFieldMethodProperty(NameParts[0], NameParts[1]);
+        if Assigned(MyUnit) then
+        begin
+          // To find links inside classes
+          p := MyUnit.FindInsideSomeClass(NameParts[0], NameParts[1]);
+          if Assigned(p) then begin
+            Result := p;
+            Exit;
+          end;
+
+          // To find links inside enums
+          p := MyUnit.FindInsideSomeEnum(NameParts[0], NameParts[1]);
           if Assigned(p) then begin
             Result := p;
             Exit;
@@ -1683,7 +1704,7 @@ begin
   ValueDesc := TagParameter;
   ValueName := ExtractFirstWord(ValueDesc);
 
-  Value := Members.FindName(ValueName);
+  Value := Members.FindListItem(ValueName);
   if Assigned(Value) then
   begin
     if Value.RawDescription = '' then
@@ -1694,6 +1715,11 @@ begin
   end else
     ThisTag.TagManager.DoMessage(1, pmtWarning,
       '@value tag specifies unknown value "%s"', [ValueName]);
+end;
+
+function TPasEnum.FindItem(const ItemName: string): TBaseItem;
+begin
+  Result := FMembers.FindListItem(ItemName);
 end;
 
 { TPasFieldVariable ---------------------------------------------------------- }
@@ -1734,7 +1760,7 @@ begin
   inherited Delete(AIndex);
 end;
 
-function TBaseItems.FindName(const AName: string): TBaseItem;
+function TBaseItems.FindListItem(const AName: string): TBaseItem;
 begin
   Result := nil;
   if Length(AName) > 0 then begin
@@ -1797,9 +1823,9 @@ end;
 
 { TPasItems ------------------------------------------------------------------ }
 
-function TPasItems.FindName(const AName: string): TPasItem;
+function TPasItems.FindListItem(const AName: string): TPasItem;
 begin
-  Result := TPasItem(inherited FindName(AName));
+  Result := TPasItem(inherited FindListItem(AName));
 end;
 
 procedure TPasItems.CopyItems(const c: TPasItems);
@@ -1909,28 +1935,11 @@ begin
   end;
 end;
 
-{ TPasCios ------------------------------------------------------------- }
-constructor TPasCios.Create;
+{ TPasNestedCios ------------------------------------------------------------- }
+
+constructor TPasNestedCios.Create;
 begin
   inherited Create(True);
-end;
-
-function TPasCios.FindName(const AName: string): TPasItem;
-var
-  LCio: TPasCio;
-  I: Integer;
-begin
-  Result := TPasItem(inherited FindName(AName));
-  if (Result = nil) and (Count > 0) then
-  begin
-    for I := 0 to Count -1 do
-    begin
-      LCio := TPasCio(PasItemAt[I]);
-      Result := TPasItem(LCio.FindItem(AName));
-      if Result <> nil then
-        Exit;
-    end;
-  end;
 end;
 
 { TPasCio -------------------------------------------------------------------- }
@@ -1943,7 +1952,7 @@ begin
   FMethods := TPasMethods.Create(True);
   FProperties := TPasProperties.Create(True);
   FAncestors := TStringPairVector.Create(True);
-  FCios := TPasCios.Create;
+  FCios := TPasNestedCios.Create;
   FTypes := TPasTypes.Create(True);
 end;
 
@@ -1997,27 +2006,27 @@ end;
 function TPasCio.FindItem(const ItemName: string): TBaseItem;
 begin
   if Fields <> nil then begin
-    Result := Fields.FindName(ItemName);
+    Result := Fields.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if Methods <> nil then begin
-    Result := Methods.FindName(ItemName);
+    Result := Methods.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if Properties <> nil then begin
-    Result := Properties.FindName(ItemName);
+    Result := Properties.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if FTypes <> nil then begin
-    Result := FTypes.FindName(ItemName);
+    Result := FTypes.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if FCios <> nil then begin
-    Result := FCios.FindName(ItemName);
+    Result := FCios.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
@@ -2147,7 +2156,7 @@ end;
 constructor TPasUnit.Create;
 begin
   inherited Create;
-  FTypes := TPasItems.Create(True);
+  FTypes := TPasTypes.Create(True);
   FVariables := TPasItems.Create(True);
   FCIOs := TPasItems.Create(True);
   FConstants := TPasItems.Create(True);
@@ -2186,42 +2195,54 @@ begin
   Variables.Add(i);
 end;
 
-function TPasUnit.FindFieldMethodProperty(const S1, S2: string): TPasItem;
+function TPasUnit.FindInsideSomeClass(const AClassName, ItemInsideClass: string): TPasItem;
 var
   po: TPasCio;
 begin
   Result := nil;
   if CIOs = nil then Exit;
 
-  po := TPasCio(CIOs.FindName(S1));
+  po := TPasCio(CIOs.FindListItem(AClassName));
   if Assigned(po) then
-    Result := TPasItem(po.FindItem(S2));
+    Result := TPasItem(po.FindItem(ItemInsideClass));
+end;
+
+function TPasUnit.FindInsideSomeEnum(const EnumName, EnumMember: string): TPasItem;
+var
+  TypeItem: TPasItem;
+begin
+  Result := nil;
+  if Types = nil then Exit;
+
+  TypeItem := Types.FindListItem(EnumName);
+  if Assigned(TypeItem) and (TypeItem is TPasEnum) then
+    Result := TPasItem(TPasEnum(TypeItem).FindItem(EnumMember));
 end;
 
 function TPasUnit.FindItem(const ItemName: string): TBaseItem;
 begin
   if Constants <> nil then begin
-    Result := Constants.FindName(ItemName);
+    Result := Constants.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if Types <> nil then begin
-    Result := Types.FindName(ItemName);
+    Result := Types.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if Variables <> nil then begin
-    Result := Variables.FindName(ItemName);
+    Result := Variables.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if FuncsProcs <> nil then begin
-    Result := FuncsProcs.FindName(ItemName);
+    Result := FuncsProcs.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
   if CIOs <> nil then begin
-    Result := CIOs.FindName(ItemName);
+    Result := CIOs.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 
@@ -2307,11 +2328,31 @@ begin
   Result := ExtractFilePath(ExpandFileName(SourceFileName));
 end;
 
+{ TPasTypes ------------------------------------------------------------------ }
+
+function TPasTypes.FindListItem(const AName: string): TPasItem;
+var
+  I: Integer;
+begin
+  Result := inherited;
+
+  if Result = nil then
+  begin
+    for I := 0 to Count - 1 do
+      if PasItemAt[I] is TPasEnum then
+      begin
+        Result := TPasEnum(PasItemAt[I]).FindItem(AName) as TPasItem;
+        if Result <> nil then
+          Exit;
+      end;
+  end;
+end;
+
 { TPasUnits ------------------------------------------------------------------ }
 
 function TPasUnits.ExistsUnit(const AUnit: TPasUnit): Boolean;
 begin
-  Result := FindName(AUnit.Name) <> nil;
+  Result := FindListItem(AUnit.Name) <> nil;
 end;
 
 function TPasUnits.GetUnitAt(const AIndex: Integer): TPasUnit;
@@ -2526,7 +2567,7 @@ function TExternalItem.FindItem(const ItemName: string): TBaseItem;
 begin
   result := nil;
   if FAnchors <> nil then begin
-    Result := FAnchors.FindName(ItemName);
+    Result := FAnchors.FindListItem(ItemName);
     if Result <> nil then Exit;
   end;
 end;
@@ -2614,8 +2655,6 @@ begin
       Result := Result + VisToStr(Vis);
     end;
 end;
-
-
 
 initialization
   TSerializable.Register(TPasItem);

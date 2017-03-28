@@ -769,7 +769,7 @@ var
   procedure TreeAddCio(const ALLCiosNode: TTreeNode);
   var
     LCio: TPasCio;
-    LCios: TPasCios;
+    LCios: TPasNestedCios;
     I, J: Integer;
     ClassNode: TTreeNode;
     FieldsNode: TTreeNode;
@@ -778,7 +778,7 @@ var
     TypesNode: TTreeNode;
     PasItem: TPasItem;
   begin
-    LCios := TPasCios(ALLCiosNode.Data);
+    LCios := TPasNestedCios(ALLCiosNode.Data);
     for J := 0 to LCios.Count - 1 do
     begin
       LCio := TPasCio(LCios.PasItemAt[J]);

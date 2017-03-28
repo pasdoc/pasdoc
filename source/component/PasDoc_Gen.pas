@@ -1044,17 +1044,21 @@ procedure TDocGenerator.BuildLinks;
       Cio.Ancestors[i].Data := SearchItem(Cio.Ancestors[i].Name, Cio, true);
   end;
 
-  procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio;
+  { Assign MyXxx properties (MyUnit, MyObject, MyEnum) and FullLink
+    for all items on the list. }
+  procedure AssignLinks(MyUnit: TPasUnit; MyObject: TPasCio; MyEnum: TPasEnum;
     c: TPasItems);
   var
     i: Integer;
     p: TPasItem;
   begin
     if (not Assigned(c)) or (c.Count < 1) then Exit;
-    for i := 0 to c.Count - 1 do begin
+    for i := 0 to c.Count - 1 do
+    begin
       p := c.PasItemAt[i];
       p.MyObject := MyObject;
       p.MyUnit := MyUnit;
+      p.MyEnum := MyEnum;
       p.FullLink := CreateLink(p);
     end;
   end;
@@ -1062,6 +1066,8 @@ procedure TDocGenerator.BuildLinks;
 var
   U: TPasUnit;
 
+  { Assign MyXxx properties (MyUnit, MyObject, MyEnum), FullLink, OutputFileName
+    and ansestor links for this Cio (classs / interface / object). }
   procedure CiosAssignLinks(ACios: TPasItems);
   var
     ACio : TPasCio;
@@ -1074,14 +1080,29 @@ var
       ACio.FullLink := CreateLink(ACio);
       ACio.OutputFileName := ACio.FullLink;
       AssignCioAncestorLinks(ACio);
-      AssignLinks(U, ACio, ACio.Fields);
-      AssignLinks(U, ACio, ACio.Methods);
-      AssignLinks(U, ACio, ACio.Properties);
-      AssignLinks(U, ACio, ACio.Types);
-      AssignLinks(U, ACio, ACio.Cios);
+      AssignLinks(U, ACio, nil, ACio.Fields);
+      AssignLinks(U, ACio, nil, ACio.Methods);
+      AssignLinks(U, ACio, nil, ACio.Properties);
+      AssignLinks(U, ACio, nil, ACio.Types);
+      AssignLinks(U, ACio, nil, ACio.Cios);
       if ACio.Cios.Count > 0 then
         CiosAssignLinks(ACio.Cios);
     end;
+  end;
+
+  { Assign MyXxx properties (MyUnit, MyObject, MyEnum) and FullLink
+    for all members of the enumerated types on this list. }
+  procedure EnumsAssignLinks(ATypes: TPasTypes);
+  var
+    Enum: TPasEnum;
+    I: Integer;
+  begin
+    for I := 0 to ATypes.Count - 1 do
+      if ATypes.PasItemAt[I] is TPasEnum then
+      begin
+        Enum := TPasEnum(ATypes.PasItemAt[I]);
+        AssignLinks(U, nil, Enum, Enum.Members);
+      end;
   end;
 
 var
@@ -1112,13 +1133,16 @@ begin
     begin
       { Yes, this will also set U.UsesUnits.Objects[i] to nil
         if no such unit exists in Units table. }
-      U.UsesUnits.Objects[j] := Units.FindName(U.UsesUnits[j]);
+      U.UsesUnits.Objects[j] := Units.FindListItem(U.UsesUnits[j]);
     end;
 
-    AssignLinks(U, nil, U.Constants);
-    AssignLinks(U, nil, U.Variables);
-    AssignLinks(U, nil, U.Types);
-    AssignLinks(U, nil, U.FuncsProcs);
+    AssignLinks(U, nil, nil, U.Constants);
+    AssignLinks(U, nil, nil, U.Variables);
+    AssignLinks(U, nil, nil, U.Types);
+    AssignLinks(U, nil, nil, U.FuncsProcs);
+
+    if not ObjectVectorIsNilOrEmpty(U.Types) then
+      EnumsAssignLinks(U.Types);
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then
       CiosAssignLinks(U.CIOs);
@@ -2202,18 +2226,18 @@ begin
     2: begin
          { object.field_method_property }
          for i := 0 to Units.Count - 1 do begin
-           Result := Units.UnitAt[i].FindFieldMethodProperty(NameParts[0], NameParts[1]);
+           Result := Units.UnitAt[i].FindInsideSomeClass(NameParts[0], NameParts[1]);
            if Assigned(Result) then Exit;
          end;
 
          { unit.cio_var_const_type }
-         U := TPasUnit(Units.FindName(NameParts[0]));
+         U := TPasUnit(Units.FindListItem(NameParts[0]));
          if Assigned(U) then
            Result := U.FindItem(NameParts[1]);
        end;
     3: begin
          { unit.objectorclassorinterface.fieldormethodorproperty }
-         U := TPasUnit(Units.FindName(NameParts[0]));
+         U := TPasUnit(Units.FindListItem(NameParts[0]));
          if (not Assigned(U)) then Exit;
          Item := U.FindItem(NameParts[1]);
          if (not Assigned(Item)) then Exit;
@@ -2682,7 +2706,7 @@ var
     Insert(ParentName, ParentItem, ACio.Name, ACio);
   end;
 
-  procedure CiosClassHierarchy(const ACios: TPasCios);
+  procedure CiosClassHierarchy(const ACios: TPasNestedCios);
   var
     I: Integer;
     LCio: TPasCio;

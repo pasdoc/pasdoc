@@ -270,6 +270,8 @@ type
     procedure WriteEndOfCode; override;
 
     procedure WriteAnchor(const AName: string); overload;
+    { Write an anchor. Note that the Caption is assumed to be already processed
+      with the @link(ConvertString). }
     procedure WriteAnchor(const AName, Caption: string); overload;
 
     function Paragraph: string; override;
@@ -1379,7 +1381,7 @@ begin
     begin
       EnumMember := TPasEnum(AItem).Members.PasItemAt[i];
       WriteDirectLine('<li>');
-      WriteConverted(EnumMember.FullDeclaration);
+      WriteAnchor(EnumMember.Name, ConvertString(EnumMember.FullDeclaration));
       if HasItemLongDescription(EnumMember) then
       begin
         WriteConverted(': ');
@@ -1567,7 +1569,7 @@ var
   PartialItems: TPasItems;
   Overview: TCreatedOverviewFile;
 
-  procedure CiosInsertIntoPartitialItems(const ACios: TPasCios);
+  procedure CiosInsertIntoPartialItems(const ACios: TPasNestedCios);
   var
     I: Integer;
     LCio: TPasCio;
@@ -1580,7 +1582,7 @@ var
       if Overview = ofTypes then
         PartialItems.InsertItems(LCio.Types);
       if LCio.Cios.Count > 0 then
-        CiosInsertIntoPartitialItems(LCio.Cios);
+        CiosInsertIntoPartialItems(LCio.Cios);
     end;
   end;
 
@@ -1617,7 +1619,7 @@ begin
           if (Overview in [ofCIos, ofTypes]) and
              not ObjectVectorIsNilOrEmpty(PU.CIOs) then
             for i := 0 to PU.CIOs.Count - 1 do
-              CiosInsertIntoPartitialItems(TPasCio(PU.CIOs.PasItemAt[i]).Cios);
+              CiosInsertIntoPartialItems(TPasCio(PU.CIOs.PasItemAt[i]).Cios);
         end;
 
         WriteItemsOverviewFile(Overview, PartialItems);
