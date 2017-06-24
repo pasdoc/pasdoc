@@ -4,15 +4,15 @@ set -eu
 # log messages and dates in English
 export LANG=C
 
-. /usr/local/fpclazarus/setup.sh default
-
 OUTPUT_PATH=~/public_html/pasdoc-snapshots/`date +%F`/
 mkdir -p "$OUTPUT_PATH"
 
 OUTPUT_LOG="$OUTPUT_PATH"compilation_output.log
 
+. /usr/local/fpclazarus/setup.sh default > "$OUTPUT_LOG"
+
 cd ~/sources/pasdoc/pasdoc/
-git pull --rebase > "$OUTPUT_LOG" 2>&1
+git pull --rebase >> "$OUTPUT_LOG" 2>&1
 
 PASDOC_VERSION=`make version`
 
