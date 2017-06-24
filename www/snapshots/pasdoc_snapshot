@@ -11,14 +11,17 @@ mkdir -p "$OUTPUT_PATH"
 
 OUTPUT_LOG="$OUTPUT_PATH"compilation_output.log
 
-cd ~/sources/pasdoc/trunk/
-svn up > "$OUTPUT_LOG"
+cd ~/sources/pasdoc/pasdoc/
+git pull --rebase > "$OUTPUT_LOG" 2>&1
 
 PASDOC_VERSION=`make version`
 
 # make dist-src >> "$OUTPUT_LOG"  2>&1 # Useless, it checks out stable version.
 make dist-linux-x86 >> "$OUTPUT_LOG"  2>&1
-make dist-win32 FPC_WIN32='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32' >> "$OUTPUT_LOG"  2>&1
+
+# copy the binary to ~/bin/, to be used to generate docs for CGE
+cp -f bin/pasdoc ~/bin/pasdoc
+make dist-win32 FPC_DEFAULT='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32' >> "$OUTPUT_LOG"  2>&1
 
 echo '---- Build OK.' >> "$OUTPUT_LOG"
 
@@ -48,5 +51,10 @@ find . -mindepth 1 -maxdepth 1 \
   '(' -not -iname `date --date='-7 day' +%F` ')' -and \
   -exec rm -Rf '{}' ';'
 set -e
+
+echo '---------------------------------------------------------------'    >> "$OUTPUT_LOG"
+echo 'Setting www-data permissions:'                                      >> "$OUTPUT_LOG"
+
+public_html_setup_permissions.sh
 
 echo '---- The end, everything finished Ok.' >> "$OUTPUT_LOG"
