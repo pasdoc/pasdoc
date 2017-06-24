@@ -4,7 +4,7 @@ set -eu
 # log messages and dates in English
 export LANG=C
 
-/usr/local/fpclazarus/setup.sh default
+. /usr/local/fpclazarus/setup.sh default
 
 OUTPUT_PATH=~/public_html/pasdoc-snapshots/`date +%F`/
 mkdir -p "$OUTPUT_PATH"
