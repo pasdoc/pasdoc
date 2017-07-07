@@ -55,6 +55,6 @@ set -e
 echo '---------------------------------------------------------------'    >> "$OUTPUT_LOG"
 echo 'Setting www-data permissions:'                                      >> "$OUTPUT_LOG"
 
-public_html_setup_permissions.sh
+~/bin/public_html_setup_permissions.sh
 
 echo '---- The end, everything finished Ok.' >> "$OUTPUT_LOG"
