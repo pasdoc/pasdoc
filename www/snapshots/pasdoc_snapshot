@@ -1,29 +1,29 @@
 #!/bin/bash
 set -eu
 
-# log messages and dates in English
-export LANG=C
+# Script run by Jenkins (Automatic Cloud Builds of Castle Game Engine projects) on
+# https://michalis.ii.uni.wroc.pl/jenkins/ to update PasDoc snapshots
+# visible on http://michalis.ii.uni.wroc.pl/pasdoc-snapshots/ .
+# Parts of this script are really specific to the Jenkins
+# and michalis.ii.uni.wroc.pl server configuration.
 
-OUTPUT_PATH=~/public_html/pasdoc-snapshots/`date +%F`/
+. /usr/local/fpclazarus/bin/setup.sh default
+
+OUTPUT_BASE_PATH=/var/www/pasdoc-snapshots/
+OUTPUT_PATH="${OUTPUT_BASE_PATH}"`date +%F`/
 mkdir -p "$OUTPUT_PATH"
-
-OUTPUT_LOG="$OUTPUT_PATH"compilation_output.log
-
-. /usr/local/fpclazarus/bin/setup.sh default > "$OUTPUT_LOG"
-
-cd ~/sources/pasdoc/pasdoc/
-git pull --rebase >> "$OUTPUT_LOG" 2>&1
 
 PASDOC_VERSION=`make version`
 
-# make dist-src >> "$OUTPUT_LOG"  2>&1 # Useless, it checks out stable version.
-make dist-linux-x86 >> "$OUTPUT_LOG"  2>&1
+# check that default compilation works
+make clean default build-tools
 
-# copy the binary to ~/bin/, to be used to generate docs for CGE
-cp -f bin/pasdoc ~/bin/pasdoc
-make dist-win32 FPC_DEFAULT='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32' >> "$OUTPUT_LOG"  2>&1
+# build snapshots
+# make dist-src
+make dist-linux-x86
+make dist-win32 FPC_DEFAULT='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32'
 
-echo '---- Build OK.' >> "$OUTPUT_LOG"
+echo '---- Build OK.'
 
 # Move archives to output dir
 mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
@@ -31,12 +31,12 @@ mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
       "$OUTPUT_PATH"
 
 # Create "latest" link, comfortable for users.
-rm -f ~/public_html/pasdoc-snapshots/latest
-ln -s `date +%F` ~/public_html/pasdoc-snapshots/latest
+rm -f "${OUTPUT_BASE_PATH}"latest
+ln -s `date +%F` "${OUTPUT_BASE_PATH}"latest
 
 # Clean old snapshots, to conserve disk space.
 # Keep only snapshots from last couple of days.
-cd ~/public_html/pasdoc-snapshots/
+cd "${OUTPUT_BASE_PATH}"
 set +e
 find . -mindepth 1 -maxdepth 1 \
   -type d -and \
@@ -52,9 +52,9 @@ find . -mindepth 1 -maxdepth 1 \
   -exec rm -Rf '{}' ';'
 set -e
 
-echo '---------------------------------------------------------------'    >> "$OUTPUT_LOG"
-echo 'Setting www-data permissions:'                                      >> "$OUTPUT_LOG"
+echo '---------------------------------------------------------------'
+echo 'Setting permissions:'
 
-~/bin/public_html_setup_permissions.sh
+chmod a+rX "${OUTPUT_BASE_PATH}"
 
-echo '---- The end, everything finished Ok.' >> "$OUTPUT_LOG"
+echo '---- The end, everything finished Ok.'
