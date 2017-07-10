@@ -15,15 +15,12 @@ mkdir -p "$OUTPUT_PATH"
 
 PASDOC_VERSION=`make version`
 
-# check that default compilation works
-make clean default build-tools
-
 # build snapshots
-# make dist-src
+# make dist-src # useless, checks out the stable version
 make dist-linux-x86
 make dist-win32 FPC_DEFAULT='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32'
 
-echo '---- Build OK.'
+echo '---- Snapshots build OK.'
 
 # Move archives to output dir
 mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
@@ -53,8 +50,13 @@ find . -mindepth 1 -maxdepth 1 \
 set -e
 
 echo '---------------------------------------------------------------'
-echo 'Setting permissions:'
+echo 'Setting snapshots permissions:'
 
 chmod a+rX "${OUTPUT_BASE_PATH}"
+
+echo '---------------------------------------------------------------'
+echo 'Building for current platform, to be used by dependent Jenkins jobs'
+
+make clean default build-tools
 
 echo '---- The end, everything finished Ok.'
