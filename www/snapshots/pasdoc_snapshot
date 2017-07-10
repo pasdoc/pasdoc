@@ -33,6 +33,7 @@ ln -s `date +%F` "${OUTPUT_BASE_PATH}"latest
 
 # Clean old snapshots, to conserve disk space.
 # Keep only snapshots from last couple of days.
+pushd .
 cd "${OUTPUT_BASE_PATH}"
 set +e
 find . -mindepth 1 -maxdepth 1 \
@@ -48,6 +49,7 @@ find . -mindepth 1 -maxdepth 1 \
   '(' -not -iname `date --date='-7 day' +%F` ')' -and \
   -exec rm -Rf '{}' ';'
 set -e
+popd
 
 echo '---------------------------------------------------------------'
 echo 'Setting snapshots permissions:'
