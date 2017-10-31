@@ -58,6 +58,7 @@
     {trDeprecated} 'odradza się używania tego identyfikatora',
     {trPlatformSpecific} 'ten identyfikator jest zależny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zależny od biblioteki',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',

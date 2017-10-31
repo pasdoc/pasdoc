@@ -115,9 +115,7 @@ type
 
     @unorderedList(
       @item(Of every TPasItem :
-        Name, RawDescription, Visibility,
-        IsDeprecated, DeprecatedNote,
-        IsPlatformSpecific, IsLibrarySpecific,
+        Name, RawDescription, Visibility, HintDirectives, DeprecatedNote,
         FullDeclararation (note: for now not all items
         get sensible FullDeclararation, but the intention is to improve this
         over time; see @link(TPasItem.FullDeclaration) to know where
@@ -406,8 +404,7 @@ type
 
       If you pass Item <> nil then all read data will be
       appended to Item.FullDeclaration. Also hint directives
-      (Item.IsLibrarySpecific, Item.IsPlatformSpecific, Item.IsDeprecated
-      Item.DeprecatedNote) may be set (to true/non-empty) if appropriate
+      (Item.HintDirectives, Item.DeprecatedNote) may be set (to true/non-empty) if appropriate
       hint directive will occur in source file. }
     procedure SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
 
@@ -415,8 +412,7 @@ type
 
     { Consume a hint directive (platform, library or deprecated) as long as you
       see one. Skips all whitespace and comments.
-      Sets appropriate property of Item (IsPlatformSpecific,
-      IsLibrarySpecific or IsDeprecated) to true.
+      Sets the Item.HintDirectives and Item.DeprecatedNote as necessary.
 
       Stops when PeekNextToken returns some token that is not a whitespace,
       comment or hint directive.
@@ -867,7 +863,8 @@ begin
           SD_EXTERNAL, SD_MESSAGE, SD_NAME, SD_DEPRECATED:
             begin
               WasDeprecatedDirective := t.Info.StandardDirective = SD_DEPRECATED;
-              M.IsDeprecated := M.IsDeprecated or WasDeprecatedDirective;
+              if WasDeprecatedDirective then
+                M.HintDirectives := M.HintDirectives + [hdDeprecated];
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(t);
 
@@ -887,7 +884,7 @@ begin
                     SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
                     SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
                     SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-                    SD_DEPRECATED, SD_PLATFORM:
+                    SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL:
                       begin
                         Scanner.UnGetToken(t);
                         Break;
@@ -908,7 +905,14 @@ begin
           SD_PLATFORM:
             begin
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-              M.IsPlatformSpecific := True;
+              M.HintDirectives := M.HintDirectives + [hdPlatform];
+              FreeAndNil(t);
+              t := GetNextToken;
+            end;
+          SD_EXPERIMENTAL:
+            begin
+              M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+              M.HintDirectives := M.HintDirectives + [hdExperimental];
               FreeAndNil(t);
               t := GetNextToken;
             end;
@@ -937,7 +941,7 @@ begin
           KEY_LIBRARY:
             begin
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
-              M.IsLibrarySpecific := True;
+              M.HintDirectives := M.HintDirectives + [hdLibrary];
               FreeAndNil(t);
               t := GetNextToken;
             end;
@@ -1026,7 +1030,7 @@ var
               KEY_END: Dec(EndLevel);
               KEY_RECORD: Inc(EndLevel);
               KEY_LIBRARY:
-                i.IsLibrarySpecific := true;
+                i.HintDirectives := i.HintDirectives + [hdLibrary];
               KEY_FUNCTION,
               KEY_PROCEDURE:
                 Result := True;
@@ -1034,10 +1038,12 @@ var
         TOK_IDENTIFIER:
           case t.Info.StandardDirective of
             SD_PLATFORM:
-              i.IsPlatformSpecific := true;
+              i.HintDirectives := i.HintDirectives + [hdPlatform];
+            SD_EXPERIMENTAL:
+              i.HintDirectives := i.HintDirectives + [hdExperimental];
             SD_DEPRECATED:
               begin
-                i.IsDeprecated := true;
+                i.HintDirectives := i.HintDirectives + [hdDeprecated];
                 while PeekNextToken(WhitespaceCollectorToAdd).MyType = TOK_STRING do
                 begin
                   { consume the following string as DeprecatedNote }
@@ -2067,10 +2073,8 @@ begin
             NewItem.FullDeclaration := ClassKeyWordString
               + ' ' + NewItem.FullDeclaration;
           end;
-          NewItem.IsDeprecated := ItemCollector.IsDeprecated;
+          NewItem.HintDirectives := ItemCollector.HintDirectives;
           NewItem.DeprecatedNote := ItemCollector.DeprecatedNote;
-          NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
-          NewItem.IsLibrarySpecific := ItemCollector.IsLibrarySpecific;
         end;
       end;
     finally
@@ -2116,16 +2120,21 @@ begin
             KEY_END: Dec(EndLevel);
             KEY_RECORD: Inc(EndLevel);
             KEY_LIBRARY:
-              if Assigned(Item) then Item.IsLibrarySpecific := true;
+              if Assigned(Item) then
+                Item.HintDirectives := Item.HintDirectives + [hdLibrary];
           end;
         TOK_IDENTIFIER:
           case t.Info.StandardDirective of
             SD_PLATFORM:
-              if Assigned(Item) then Item.IsPlatformSpecific := true;
+              if Assigned(Item) then
+                Item.HintDirectives := Item.HintDirectives + [hdPlatform];
+            SD_EXPERIMENTAL:
+              if Assigned(Item) then
+                Item.HintDirectives := Item.HintDirectives + [hdExperimental];
             SD_DEPRECATED:
               begin
                 if Assigned(Item) then
-                  Item.IsDeprecated := true;
+                  Item.HintDirectives := Item.HintDirectives + [hdDeprecated];
                 while PeekNextToken(WhitespaceCollectorToAdd).MyType = TOK_STRING do
                 begin
                   { consume the following string as DeprecatedNote }
@@ -2463,14 +2472,19 @@ begin
     T := PeekNextToken;
 
     if T.IsStandardDirective(SD_PLATFORM) then
-      Item.IsPlatformSpecific := true else
+      Item.HintDirectives := Item.HintDirectives + [hdPlatform]
+    else
+    if T.IsStandardDirective(SD_EXPERIMENTAL) then
+      Item.HintDirectives := Item.HintDirectives + [hdExperimental]
+    else
     if T.IsStandardDirective(SD_DEPRECATED) then
     begin
-      Item.IsDeprecated := true;
+      Item.HintDirectives := Item.HintDirectives + [hdDeprecated];
       WasDeprecatedDirective := true;
     end else
     if T.IsKeyWord(KEY_LIBRARY) then
-      Item.IsLibrarySpecific := true else
+      Item.HintDirectives := Item.HintDirectives + [hdLibrary]
+    else
       break;
 
     if ExtendFullDeclaration then

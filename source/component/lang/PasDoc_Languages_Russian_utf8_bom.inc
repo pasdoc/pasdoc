@@ -58,6 +58,7 @@
     {trDeprecated} 'этот символ больше не используется',
     {trPlatformSpecific} 'этот символ зависит от платформы',
     {trLibrarySpecific} 'этот символ зависит от библиотеки',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Обзор',
     {trIntroduction} 'Введение',

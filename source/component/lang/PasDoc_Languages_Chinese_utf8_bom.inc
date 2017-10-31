@@ -60,6 +60,7 @@ RTransTable = (
     {trDeprecated} '这个符号是不建议使用的',
     {trPlatformSpecific} '这个符号仅用于特定的平台',
     {trLibrarySpecific} '这个符号仅用于特定的库',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} '综述',
     {trIntroduction} '前言',

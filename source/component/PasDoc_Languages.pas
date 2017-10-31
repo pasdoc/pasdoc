@@ -181,6 +181,7 @@ type
     trDeprecated,
     trPlatformSpecific,
     trLibrarySpecific,
+    trExperimental,
 
   //headings
     trOverview,

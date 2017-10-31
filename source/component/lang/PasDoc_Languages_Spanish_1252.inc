@@ -58,6 +58,7 @@ RTransTable = (
     {trDeprecated} 'Este símbolo es obsoleto', //
     {trPlatformSpecific} 'Este símbolo es específico para alguna plataforma',
     {trLibrarySpecific} 'Este símbolo es específico para alguna biblioteca', //
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducción',

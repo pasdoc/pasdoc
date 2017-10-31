@@ -58,6 +58,7 @@ RTransTable = (
     {trDeprecated} 'ez az azonosító érték nélküli',
     {trPlatformSpecific} 'ez az azonosító szükséges némely platform számára',
     {trLibrarySpecific} 'ez az azonosító szükséges némely library számára',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezetõ',

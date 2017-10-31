@@ -71,6 +71,7 @@ RTransTable = (
     {trDeprecated} 'tato konstrukce je zastaralá (deprecated)',
     {trPlatformSpecific} 'tato konstrukce je závislá na platformì',
     {trLibrarySpecific} 'tato konstrukce je závislá na konkrétní knihovnì',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Pøehled',
     {trIntroduction} 'Úvod',

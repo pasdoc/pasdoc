@@ -58,6 +58,7 @@ RTransTable = (
     {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
     {trPlatformSpecific} 'ten identyfikator jest zale¿ny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zale¿ny od biblioteki',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Przegl¹d',
     {trIntroduction} 'Wstêp',

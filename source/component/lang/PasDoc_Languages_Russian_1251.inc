@@ -58,6 +58,7 @@ RTransTable = (
     {trDeprecated} 'этот символ больше не используетс€',
     {trPlatformSpecific} 'этот символ зависит от платформы',
     {trLibrarySpecific} 'этот символ зависит от библиотеки',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'ќбзор',
     {trIntroduction} '¬ведение',

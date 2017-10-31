@@ -950,7 +950,7 @@ begin
     { TPasEnum always has some description: list of it's members }
     (AItem is TPasEnum) or
     { Some hint directive ? }
-    AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
+    (AItem.HintDirectives <> []) or
     { Some TPasMethod optional info ? }
     ( (AItem is TPasMethod) and
       TPasMethod(AItem).HasMethodOptionalInfo ) or
@@ -1078,12 +1078,14 @@ var
 begin
   if not Assigned(AItem) then Exit;
 
-  if AItem.IsDeprecated then
+  if hdDeprecated in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
-  if AItem.IsPlatformSpecific then
+  if hdPlatform in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
-  if AItem.IsLibrarySpecific then
+  if hdLibrary in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
+  if hdExperimental in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trExperimental]);
 
   if AItem.AbstractDescription <> '' then
   begin

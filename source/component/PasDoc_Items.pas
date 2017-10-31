@@ -317,6 +317,9 @@ type
     function BasePath: string; virtual;
   end;
 
+  THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental);
+  THintDirectives = set of THintDirective;
+
   { This is a @link(TBaseItem) descendant that is always declared inside
     some Pascal source file.
 
@@ -335,9 +338,7 @@ type
     FMyEnum: TPasEnum;
     FMyObject: TPasCio;
     FMyUnit: TPasUnit;
-    FIsDeprecated: boolean;
-    FIsPlatformSpecific: boolean;
-    FIsLibrarySpecific: boolean;
+    FHintDirectives: THintDirectives;
     FDeprecatedNote: string;
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
@@ -443,18 +444,9 @@ type
 
     property Visibility: TVisibility read FVisibility write FVisibility;
 
-    { is this item deprecated? }
-    property IsDeprecated: boolean read FIsDeprecated write FIsDeprecated;
-
-    { Is this item platform specific?
-      This is decided by "platform" hint directive after an item. }
-    property IsPlatformSpecific: boolean
-      read FIsPlatformSpecific write FIsPlatformSpecific;
-
-    { Is this item specific to a library ?
-      This is decided by "library" hint directive after an item. }
-    property IsLibrarySpecific: boolean
-      read FIsLibrarySpecific write FIsLibrarySpecific;
+    { Hint directives specify is this item deprecated, platform-specific,
+      library-specific, or experimental. }
+    property HintDirectives: THintDirectives read FHintDirectives write FHintDirectives;
 
     { Deprecation note, specified as a string after "deprecated" directive.
       Empty if none, always empty if @link(IsDeprecated) is @false. }
@@ -1079,15 +1071,6 @@ type
       TPasCio objects) remain unsorted. }
     procedure SortShallow;
 
-    { Set IsDeprecated property of all Items to given Value }
-    procedure SetIsDeprecated(Value: boolean);
-
-    { Set IsPlatformSpecific property of all Items to given Value }
-    procedure SetIsPlatformSpecific(Value: boolean);
-
-    { Set IsLibrarySpecific property of all Items to given Value }
-    procedure SetIsLibrarySpecific(Value: boolean);
-
     { Sets FullDeclaration of every item to
       @orderedList(
         @item Name of this item (only if PrefixName)
@@ -1523,7 +1506,7 @@ procedure TPasItem.HandleDeprecatedTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  IsDeprecated := true;
+  HintDirectives := HintDirectives + [hdDeprecated];
   ReplaceStr := '';
 end;
 
@@ -1602,9 +1585,7 @@ procedure TPasItem.Deserialize(const ASource: TStream);
 begin
   inherited;
   ASource.Read(FVisibility, SizeOf(Visibility));
-  ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
-  ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
-  ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  ASource.Read(FHintDirectives, SizeOf(FHintDirectives));
   DeprecatedNote := LoadStringFromStream(ASource);
   FullDeclaration := LoadStringFromStream(ASource);
   Attributes.LoadFromBinaryStream(ASource);
@@ -1620,9 +1601,7 @@ procedure TPasItem.Serialize(const ADestination: TStream);
 begin
   inherited;
   ADestination.Write(FVisibility, SizeOf(Visibility));
-  ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
-  ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
-  ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  ADestination.Write(FHintDirectives, SizeOf(FHintDirectives));
   SaveStringToStream(DeprecatedNote, ADestination);
   SaveStringToStream(FullDeclaration, ADestination);
   FAttributes.SaveToBinaryStream(ADestination);
@@ -1898,27 +1877,6 @@ procedure TPasItems.SortDeep(const SortSettings: TSortSettings);
 begin
   SortShallow;
   SortOnlyInsideItems(SortSettings);
-end;
-
-procedure TPasItems.SetIsDeprecated(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsDeprecated := Value;
-end;
-
-procedure TPasItems.SetIsPlatformSpecific(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsPlatformSpecific := Value;
-end;
-
-procedure TPasItems.SetIsLibrarySpecific(Value: boolean);
-var i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    PasItemAt[i].IsLibrarySpecific := Value;
 end;
 
 procedure TPasItems.SetFullDeclaration(PrefixName: boolean; const Suffix: string);

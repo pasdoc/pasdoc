@@ -1146,9 +1146,7 @@ function TGenericHTMLDocGenerator.HasItemLongDescription(const AItem: TPasItem):
 begin
   Result := Assigned(AItem) and
     (
-      AItem.IsDeprecated or
-      AItem.IsPlatformSpecific or
-      AItem.IsLibrarySpecific or
+      (AItem.HintDirectives <> []) or
       (AItem.AbstractDescription <> '') or
       (AItem.DetailedDescription <> '') or
       (AItem is TPasCio) or
@@ -1306,12 +1304,14 @@ var
 begin
   if not Assigned(AItem) then Exit;
 
-  if AItem.IsDeprecated then
+  if hdDeprecated in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
-  if AItem.IsPlatformSpecific then
+  if hdPlatform in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
-  if AItem.IsLibrarySpecific then
+  if hdLibrary in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
+  if hdExperimental in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trExperimental]);
 
   if AItem.AbstractDescription <> '' then
   begin
