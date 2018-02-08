@@ -176,6 +176,8 @@ clean:
 	       source/gui/*.or \
 	       source/gui/*.ppu \
 	       source/gui/*.res
+	$(MAKE) clean -C tests/
+	$(MAKE) clean -C source/autodoc/
 
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
@@ -343,10 +345,7 @@ help:
 	@echo "    and then makes a release archive for given <os/arch>."
 	@echo
 	@echo "  dist-src:"
-	@echo "    This creates source archive, by taking whole pasdoc sources"
-	@echo "    from pasdoc SVN. It exports using the tag name taken from"
-	@echo "    VERSION variable in this Makefile (currently it's "$(VERSION)")."
-	@echo "    TODO: Should be changed to use GitHub GIT repository and GIT tag."
+	@echo "    This creates source archive for the current sources."
 
 .PHONY: version
 version:
@@ -466,13 +465,16 @@ dist-darwin-x86: clean build-fpc-darwin-x86
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
-# TODO: Should be changed to use GitHub GIT repository and GIT tag
 dist-src:
-	rm -Rf $(PACKAGEBASEDIR)$(PATHSEP)pasdoc/
-	cd $(PACKAGEBASEDIR); \
-	  svn export https://svn.code.sf.net/p/pasdoc/code/tags/$(VERSION) pasdoc
-	cd $(PACKAGEBASEDIR); tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz pasdoc/
-	mv $(PACKAGEBASEDIR)$(PATHSEP)$(SOURCE_PACKAGE_BASENAME).tar.gz .
+	$(MAKE) clean
+	cd .. && \
+	  tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz \
+	  --exclude='.git' \
+	  --exclude='*.tar.gz' \
+	  --exclude='*.zip' \
+	  --exclude='*~' \
+	  pasdoc/
+	mv ../$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
   dist-linux-x86_64 \

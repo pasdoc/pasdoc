@@ -135,7 +135,7 @@ latex2rtf/docs.rtf: latex2rtf/docs.tex latex/docs.tex
 	cd latex2rtf/; latex2rtf -a ../latex/docs.aux docs.tex
 
 clean:
-	rm -Rf html/ latex/ latex2rtf/ htmlhelp/
+	rm -Rf html/ latex/ latex2rtf/ htmlhelp/ html_by_pasdoc_gui/
 
 # ------------------------------------------------------------
 # Making and uploading autodoc for http://pasdoc.sourceforge.net/autodoc/
