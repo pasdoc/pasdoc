@@ -1,7 +1,7 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
 '/*' + LineEnding +
-'  Copyright 1998-2016 PasDoc developers.' + LineEnding +
+'  Copyright 1998-2018 PasDoc developers.' + LineEnding +
 '' + LineEnding +
 '  This file is part of "PasDoc".' + LineEnding +
 '' + LineEnding +
