@@ -1,22 +1,25 @@
-(date unknown - future release) v0.15.0
+2018-02-08 v0.15.0
 
-  * Links to enumerated type members work now.
-  * Tipue works now more efficiently -- the (potentially large) "index data"
-    is only loaded on the "Search Results" page
-  * Customize HTML output more, with your own CSS, navigation and such by
+  * @links to enumerated type members work now.
+  * New @includeCode tag https://github.com/pasdoc/pasdoc/wiki/IncludeCodeTag
+    (by Silvio Clécio)
+  * @longCode and @preformatted improved to better honor indentation.
+  * parsing "experimental" directive.
+  * Allow to customize HTML output more, with your own CSS and HTML, by
     --html-head, --html-body-begin, --html-body-end command-line params.
-  * HTML output now results in HTML5
-  * Add our tools to the binary release:
-    pascal_pre_proc (Pascal preprocessor), file_to_pascal_data,
-    file_to_pascal_string.
+  * HTML output is now HTML5.
+  * Add our tools to the binary release: pascal_pre_proc (Pascal preprocessor),
+    file_to_pascal_data, file_to_pascal_string.
   * Improve CSS and HTML, in particular for accessibility and mobile browsers.
     Among many improvements, we removed fixed font size in pixels,
     changed some tables into divs, and fixed HTML validity around Tipue search box.
   * pasdoc_gui uses now default font size on your system.
-  * @includeCode tag https://github.com/pasdoc/pasdoc/wiki/IncludeCodeTag
-    (by Silvio Clécio)
   * Updated Spanish (Spain) translation (by Guillermo Martínez Jiménez)
-  * @longCode and @preformatted improved to ignore indentation
+  * Tipue works now more efficiently -- the (potentially large) "index data"
+    is only loaded on the "Search Results" page.
+  * Automatic tests rearrangements and simplifications (see tests/run_all_tests.sh).
+
+  Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 
 2015-08-09 v0.14.0
 

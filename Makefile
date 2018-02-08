@@ -6,8 +6,8 @@ include Makefile-autodetect
 
 # The version of the package.
 # This must be changed on each version change,
-# documented at ReleaseMaking wiki page.
-VERSION := 0.14.0
+# as documented at https://github.com/pasdoc/pasdoc/wiki/ReleaseMaking .
+VERSION := 0.15.0
 
 # The name of the package / file name
 PACKAGENAME := pasdoc
