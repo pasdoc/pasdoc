@@ -351,6 +351,12 @@ help:
 version:
 	@echo $(VERSION)
 
+.PHONY: tag
+tag:
+	git log --pretty=oneline HEAD^..HEAD
+	git tag -a v$(VERSION) -m "Tagging the $(VERSION) version of PasDoc."
+	git push origin --tags
+
 ############################################################################
 # Targets to make release archives
 #
