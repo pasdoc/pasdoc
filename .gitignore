@@ -18,11 +18,7 @@ source/packages/lazarus/pasdoc_package.pas
 
 # Tests temp stuff
 tests/correct_output/
-tests/html/
-tests/htmlhelp/
-tests/latex/
-tests/latex2rtf/
-tests/simplexml/
+tests/current_output/
 
 # Resource files are binaries containing manifest, project icon and version info.
 # They can not be viewed as text or compared by diff-tools. Consider replacing them with .rc files.

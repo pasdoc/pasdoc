@@ -5,7 +5,7 @@ set -eu
 # $1 is the output format name. It's also the name of subdirectory where
 # tests output will be placed.
 #
-# This script is meant to be called only from Makefile in this directory.
+# This script is meant to be called only from ../Makefile .
 
 SORT_ALL='--sort=structures,constants,functions,types,variables,uses-clauses,record-fields,non-record-fields,methods,properties'
 SORT_OLD='--sort=functions,record-fields,non-record-fields,methods,properties'
@@ -30,7 +30,7 @@ run_echo ()
 # (including PASDOC-OUTPUT file), this is always inside "$FORMAT" subdirectory.
 mk_test ()
 {
-  OUTPUT_PATH="$FORMAT"/"$1"/
+  OUTPUT_PATH=../current_output/"$FORMAT"/"$1"/
   shift 1
 
   mkdir -p "$OUTPUT_PATH"

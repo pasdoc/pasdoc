@@ -7,6 +7,6 @@ set -eu
 #
 # See ../README for comments.
 
-find simplexml/ -iname '*.xml' \
+find current_output/simplexml/ -iname '*.xml' \
   -exec sh -c 'echo ---- Validating {}' ';' \
   -exec xmllint --noout '{}' ';'

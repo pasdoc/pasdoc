@@ -1,6 +1,13 @@
-# Tests for pasdoc
+# Tests for PasDoc
 
-Some short and difficult Pasdoc sources. Some of these are taken
+Run all the tests simply by `run_all_tests.sh`.
+This runs all relevant tests described below.
+It requires a Unix shell (on Windows, you should install Cygwin or MSys).
+
+# Testcases
+
+The subdirectory `testcases` contains
+some short and difficult Pasdoc sources. Some of these are taken
 from bugreports, to make sure we don't reintroduce an old bug again.
 Some of these are written to test new features.
 
@@ -8,8 +15,7 @@ To add a new testcase,
 
 1. first of all just add the file here
    (follow the naming conventions below, usually just ok_xxx.pas).
-2. make it used by the "make html" and such tests by adding
-   an appropriate line at the end of scripts/mk_tests.sh.
+2. add an appropriate line at the end of scripts/mk_tests.sh.
 3. after you make sure it works, you may upload new
    version of "correct tests", see below. Or just notify Michalis about it :)
 
@@ -32,7 +38,7 @@ Of course, you also need the `pasdoc` binary available on $PATH.
     for it should be generated), but some warnings should be reported
     by pasdoc.
 
-`error_*`
+- `error_*`
 
     Means that pasdoc should not be able to parse this unit,
     documentation for this unit shouldn't be possible to generate.
@@ -82,96 +88,95 @@ Notes:
 
 ## Possible tests to be done
 
-1. Generate tests output by simple
+First of all, you can just run `run_all_tests.sh` that runs all
+relevant tests described below.
 
-     make
+- Generate output like this:
 
-   Default output is html, you should also try other output
-   formats, e.g. latex or even pdf (made from latex), like
+    ```
+    cd testcases/
+    ../scripts/mk_tests.sh html
+    ```
 
-     make latex
-     make pdf
+    Tests are created in `current_output/html` subdirectory.
+    Some of our other scripts will use it.
 
-   Tests are created in subdirectories,
-   e.g. html/ok_const_1st_comment_missing/ and
-   latex/ok_const_1st_comment_missing/ will contain output for
-   ok_const_1st_comment_missing.pas unit.
+    You can just manually look at units'
+    sources and comments there to know what generated documentation should
+    look like (in case of ok_* and warning_* files) and what
+    warnings/errors should be reported (in case of warning_* and error_* files).
 
-   To automatically test this output, see below,
-   for "correct tests output", "validate_html", "validate_simplexml".
+    Of course, even briefly checking that all ok_* units generate no warnings,
+    all warning_* units generate some warnings (and produce some docs)
+    and all error_* units generate errors (and no docs)
+    is still a better test than nothing...
 
-   But you can of course just manually look at units'
-   sources and comments there to know what generated documentation should
-   look like (in case of ok_* and warning_* files) and what
-   warnings/errors should be reported (in case of warning_* and error_* files).
+    Note that pasdoc messages (printed on stdout) will not be shown
+    when you will make tests using mentioned `make ...' commands.
+    Instead they will be saved to files named PASDOC-OUTPUT
+    in appropriate subdirectories of tests output.
+    This way we treat messages printed by pasdoc as important part
+    of pasdoc's output, they are included in "correct tests output"
+    (see below) so comparing with "correct tests output" also checks
+    that pasdoc messages are correct (warnings are as they should be
+    and where they should be etc.)
 
-   Of course, even briefly checking that all ok_* units generate no warnings,
-   all warning_* units generate some warnings (and produce some docs)
-   and all error_* units generate errors (and no docs)
-   is still a better test than nothing...
+- "Correct tests output" give an automated way to verify `current_output/html`.
 
-   Note that pasdoc messages (printed on stdout) will not be shown
-   when you will make tests using mentioned `make ...' commands.
-   Instead they will be saved to files named PASDOC-OUTPUT
-   in appropriate subdirectories of tests output.
-   This way we treat messages printed by pasdoc as important part
-   of pasdoc's output, they are included in "correct tests output"
-   (see below) so comparing with "correct tests output" also checks
-   that pasdoc messages are correct (warnings are as they should be
-   and where they should be etc.)
+    We maintain on [http://pasdoc.sourceforge.net/correct_tests_output/]
+    something that we call "correct output of tests".
+    Everyone can download them simply by:
 
-2. "Correct tests output" try to give more automated way to exactly
-   check documentation of test units here.
-   We maintain on [http://pasdoc.sourceforge.net/correct_tests_output/]
-   something that we call "correct output of tests".
+    ```
+    cd scripts/
+    ./download_correct_tests_output.sh html
+    ```
 
-   Everyone can download them simply by entering scripts/ directory
-   and executing
-     ./download_correct_tests_output.sh html
-   where you can replace `html' with any pasdoc's output format name.
-   See documentation inside scripts/download_correct_tests_output.sh
-   for more detailed docs.
+    Then whenever you want you can compare current documentation generated
+    by pasdoc to downloaded "correct output" e.g. using
 
-   Then whenever you want you can compare current documentation generated
-   by pasdoc to downloaded "correct output"
-   e.g. using
+    ```
+    diff -ur correct_output/html/ current_output/html/
+    ```
 
-     diff -ur correct_output/html/ html/
+    Note that *failure* of comparison does not necessarily mean that
+    current pasdoc *has* a bug, since it's possible that current output of
+    pasdoc is different (because e.g. we improved and changed something)
+    but still correct.
+    Also *success* of comparison does not mean that current pasdoc does
+    *not* have a bug, because this "current output" was just
+    accepted at some point by human as "correct".
+    So, this is unfortunately no ultimate test.
 
-   Note that *failure* of comparison does not necessarily mean that
-   current pasdoc *has* a bug, since it's possible that current output of
-   pasdoc is different (because e.g. we improved and changed something)
-   but still correct.
-   Also *success* of comparison does not mean that current pasdoc does
-   *not* have a bug, because this "current output" was just
-   accepted at some point by human as "correct".
-   So, this is unfortunately no ultimate test.
+    But in practice it often works great, and allows us to quickly
+    check that nothing is broken :) When no output changes are expected,
+    or the changes are very local, then looking at "diff" output is a great
+    and simple way to test.
 
-   But in practice it often works great, and allows us to quickly
-   check that nothing is broken :) When no output changes are expected,
-   or the changes are very local, then looking at "diff" output is a great
-   and simple way to test.
+    If pasdoc's developer sees at any point that "current output" differs
+    from "correct output" and also he carefully checked that "current
+    output" is still correct, than he should upload his "current output"
+    as new "correct output" by entering scripts/ directory and executing
 
-   If pasdoc's developer sees at any point that "current output" differs
-   from "correct output" and also he carefully checked that "current
-   output" is still correct, than he should upload his "current output"
-   as new "correct output" by entering scripts/ directory and executing
-     ./upload_correct_tests_output.sh username html
-   See documentation inside scripts/upload_correct_tests_output.sh
-   for more detailed docs. Note that before uploading you should
-   be relatively sure that you compared against most recent version
-   of "correct output", to save yourself trouble of unnecessary
-   uploading.
+    ```
+    ./upload_correct_tests_output.sh username html
+    ```
 
-   Beware that script `upload_correct_tests_output.sh'
-   will upload everything that you will have inside subdirectory
-   of given format. This is painful in case of output like LaTeX,
-   where you can accidentally upload files like docs.pdf or docs.dvi
-   (that shouldn't be uploaded).
-   In this case you can do something like `make clean latex' before
-   uploading to be sure that you upload only "docs.tex" file.
+    See documentation inside scripts/upload_correct_tests_output.sh
+    for more detailed docs. Note that before uploading you should
+    be relatively sure that you compared against most recent version
+    of "correct output", to save yourself trouble of unnecessary
+    uploading.
 
-3.1. make html validate_html
+    Beware that script `upload_correct_tests_output.sh'
+    will upload everything that you will have inside subdirectory
+    of given format. This is painful in case of output like LaTeX,
+    where you can accidentally upload files like docs.pdf or docs.dvi
+    (that shouldn't be uploaded).
+    In this case you can do something like `make clean latex' before
+    uploading to be sure that you upload only "docs.tex" file.
+
+- `scripts/validate_html.sh`
 
    This is an automatic test that makes html docs for all test units
    and validates them using sgml validator.
@@ -180,7 +185,7 @@ Notes:
    Links how to install onsgmls may be found here
    [https://github.com/pasdoc/pasdoc/wiki/HtmlOutput].
 
-3.2. make simplexml validate_simplexml
+- `scripts/validate_simplexml.sh`
 
    This is an automatic test that makes simplexml docs for all test units
    and validates them using xmllint.
@@ -190,58 +195,66 @@ Notes:
    conform to anything. But at least it checks that they are well-formed
    (all open elements are closed and such).
 
-4. cd scripts/
+- Cache tests:
+
+    ```
+    cd scripts/
    ./check_cache.sh html
    ./check_cache.sh latex
+   ```
 
-   $1 arg for this script is required and is any valid pasdoc format
-   (as for pasdoc's --format option).
-   Rest of args are just passed to pasdoc as they are.
+    $1 arg for this script is required and is any valid pasdoc format
+    (as for pasdoc's --format option).
+    Rest of args are just passed to pasdoc as they are.
 
-   This runs pasdoc twice using the cache,
-   1st time the cache directory is empty and pasdoc writes the cache,
-   2nd time pasdoc should read everything from the cache.
-   The script then checks that pasdoc's output was identical each time
-   (comparing them with `diff -u', so you get diff on output if something
-   does not match).
+    This runs pasdoc twice using the cache,
+    1st time the cache directory is empty and pasdoc writes the cache,
+    2nd time pasdoc should read everything from the cache.
+    The script then checks that pasdoc's output was identical each time
+    (comparing them with `diff -u', so you get diff on output if something
+    does not match).
 
-   This somehow checks that writing the cache and reading the cache
-   and writing documentation basing on information obtained from the cache
-   (instead of from parsing units) works OK.
+    This somehow checks that writing the cache and reading the cache
+    and writing documentation basing on information obtained from the cache
+    (instead of from parsing units) works OK.
 
-   Everything is read/written to a temporary directory scripts/check_cache_tmp/,
-   that is removed at the beginning and at the end of the script.
-   (It's removed at the beginning, and also by `make clean', just to
-   make sure that no garbage is left there, in case script failed
-   for whatever reason.)
-   So this script is mostly independent from the rest of the tests
-   here -- it just happens to use the same test units.
+    Everything is read/written to a temporary directory scripts/check_cache_tmp/,
+    that is removed at the beginning and at the end of the script.
+    (It's removed at the beginning, and also by `make clean', just to
+    make sure that no garbage is left there, in case script failed
+    for whatever reason.)
+    So this script is mostly independent from the rest of the tests
+    here -- it just happens to use the same test units.
 
-   In case comparison between two outputs failed both outputs
-   and left in scripts/check_cache_tmp/, so developer can inspect
-   them closer.
+    In case comparison between two outputs failed both outputs
+    and left in scripts/check_cache_tmp/, so developer can inspect
+    them closer.
 
-5. cd scripts/
-   ./check_cache_format_independent.sh html latex
-   ./check_cache_format_independent.sh latex html
+- Test cache is format-independent:
 
-   Requires two arguments, two names of pasdoc output format.
-   These two formats should be different for this test to be really sensible
-   (and better than check_cache.sh), but they can also be equal and
-   test should pass anyway.
+    ```
+    cd scripts/
+    ./check_cache_format_independent.sh html latex
+    ./check_cache_format_independent.sh latex html
+    ```
 
-   This is similar to ./check_cache.sh test, but it checks
-   that cache format is independent of pasdoc's output format.
-   1st it generates output with format 1, without using any cache.
-   2nd it generates output with format 2, writing the cache.
-   3rd it generates output with format 1, this time reading the cache.
-   Then it checks that 1st and 3rd output are equal.
+    Requires two arguments, two names of pasdoc output format.
+    These two formats should be different for this test to be really sensible
+    (and better than check_cache.sh), but they can also be equal and
+    test should pass anyway.
 
-   This way it checks that cache generated while doing format 2
-   may be reused while making format 1. So it tests that cache
-   format is really independent from pasdoc's chosen output format.
+    This is similar to ./check_cache.sh test, but it checks
+    that cache format is independent of pasdoc's output format.
+    1st it generates output with format 1, without using any cache.
+    2nd it generates output with format 2, writing the cache.
+    3rd it generates output with format 1, this time reading the cache.
+    Then it checks that 1st and 3rd output are equal.
 
-## Random notes:
+    This way it checks that cache generated while doing format 2
+    may be reused while making format 1. So it tests that cache
+    format is really independent from pasdoc's chosen output format.
+
+## Various notes
 
 `make clean' will clean this directory.
 
@@ -254,7 +267,7 @@ These should be scripts that perform some additional tests
 on test units available here (like check_cache.sh),
 but also some helper scripts/files for Makefile in this directory.
 
-## Subdirectory todo/
+## Subdirectory testcases/todo/
 
 It contains units that are known to
 be incorrectly handled by pasdoc by now. "Incorrectly handled"
