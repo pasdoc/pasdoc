@@ -65,7 +65,7 @@ Units are divided into these 3 groups because:
 Notes:
 
 - Please keep prefixes "ok_", "warning_", "error_" lowercase so that
-  e.g. the file-mask `ok_*' works as expected on case-sensitive file-systems.
+  e.g. the file-mask `ok_*` works as expected on case-sensitive file-systems.
   Try to follow the convention
   "prefix_description_of_test_lowercase_with_underscores.pas".
 
@@ -103,12 +103,12 @@ relevant tests described below.
 
     You can just manually look at units'
     sources and comments there to know what generated documentation should
-    look like (in case of ok_* and warning_* files) and what
-    warnings/errors should be reported (in case of warning_* and error_* files).
+    look like (in case of `ok_*` and `warning_*` files) and what
+    warnings/errors should be reported (in case of `warning_*` and `error_*` files).
 
-    Of course, even briefly checking that all ok_* units generate no warnings,
-    all warning_* units generate some warnings (and produce some docs)
-    and all error_* units generate errors (and no docs)
+    Of course, even briefly checking that all `ok_*` units generate no warnings,
+    all `warning_*` units generate some warnings (and produce some docs)
+    and all `error_*` units generate errors (and no docs)
     is still a better test than nothing...
 
     Note that pasdoc messages (printed on stdout) will not be shown
@@ -259,7 +259,7 @@ relevant tests described below.
 `make clean` will clean this directory.
 
 Note that make used must be GNU make.
-Under Linux this is standard, under FreeBSD this is called `gmake',
+Under Linux this is standard, under FreeBSD this is called `gmake`,
 under Win32 you can get this with e.g. FPC, MinGW or Cygwin.
 
 scripts/ subdirectory contains some helpful things for running tests.
@@ -277,7 +277,7 @@ may also mean that pasdoc fails to write a proper warning/error
 in case when input (unit's sources) is obviously wrong.
 
 Files inside todo/ should follow exactly the same naming convention
-as units in this directory (ok_*, warning_*, error_*).
+as units in this directory (`ok_*`, `warning_*`, `error_*`).
 In this case, unit's name tells what pasdoc *should* do with such unit,
 even if it doesn't do it for now.
 The idea is that when developer fixes a problem with some unit
