@@ -1,10 +1,11 @@
-Test units for pasdoc.
+# Tests for pasdoc
 
 Some short and difficult Pasdoc sources. Some of these are taken
 from bugreports, to make sure we don't reintroduce an old bug again.
 Some of these are written to test new features.
 
 To add a new testcase,
+
 1. first of all just add the file here
    (follow the naming conventions below, usually just ok_xxx.pas).
 2. make it used by the "make html" and such tests by adding
@@ -19,66 +20,75 @@ And tar, scp are used for uploading correct tests by developers.
 
 Of course, you also need the `pasdoc` binary available on $PATH.
 
---------------------
-Naming of Pascal unit files in this directory:
+## Naming of Pascal unit files in this directory
 
-ok_*
-  Means that this unit should be parsed by pasdoc without any warnings.
+- `ok_*`
 
-warning_*
-  Means that this unit should be parsed by pasdoc (i.e. some documentation
-  for it should be generated), but some warnings should be reported
-  by pasdoc.
+    Means that this unit should be parsed by pasdoc without any warnings.
 
-error_*
-  Means that pasdoc should not be able to parse this unit,
-  documentation for this unit shouldn't be possible to generate.
-  pasdoc should generate proper error message for this case.
+- `warning_*`
 
-  Note that pasdoc may report errors as warnings,
-  e.g. "Warning[2]: Error EPasDoc: error_line_number.pas(26):
-  could not open include file not_existing.inc ..."
-  Pasdoc calls this a warning, since, after all, it can continue
-  it's work by simply skipping to the next unit.
-  But for the sake of this distinction, this is an *error*,
-  not merely a *warning*.
-  The precise difference between an error and a warning is:
-  "error makes impossible to generate documentation for this unit".
+    Means that this unit should be parsed by pasdoc (i.e. some documentation
+    for it should be generated), but some warnings should be reported
+    by pasdoc.
 
-Units are divided into these 3 groups because
--- These groups are precisely defined, so there shouldn't be any concern
-   about "where this test unit belongs".
--- We should be eventually able to use output messages and exit status
-   of pasdoc to automate testing as much as we can.
+`error_*`
+
+    Means that pasdoc should not be able to parse this unit,
+    documentation for this unit shouldn't be possible to generate.
+    pasdoc should generate proper error message for this case.
+
+    Note that pasdoc may report errors as warnings,
+    e.g. "Warning[2]: Error EPasDoc: error_line_number.pas(26):
+    could not open include file not_existing.inc ..."
+    Pasdoc calls this a warning, since, after all, it can continue
+    it's work by simply skipping to the next unit.
+    But for the sake of this distinction, this is an *error*,
+    not merely a *warning*.
+    The precise difference between an error and a warning is:
+    "error makes impossible to generate documentation for this unit".
+
+Units are divided into these 3 groups because:
+
+- These groups are precisely defined, so there shouldn't be any concern
+  about "where this test unit belongs".
+
+- We should be eventually able to use output messages and exit status
+  of pasdoc to automate testing as much as we can.
 
 Notes:
--- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
-   e.g. the file-mask `ok_*' works as expected on case-sensitive file-systems.
-   Try to follow the convention
-   "prefix_description_of_test_lowercase_with_underscores.pas".
--- Most of these units will have empty implementation.
-   They are not supposed to be ever compiled by anything.
--- There is no requirement here that the interface of units
-   placed here must be correct Pascal code.
-   Pasdoc should be able to handle even incorrect units.
-   Usually it should break with some parsing error on such units,
-   but it doesn't have to (after all, pasdoc is not meant to
-   exactly reimplement some part of a compiler that carefully checks
-   syntax and everything), it may try to generate some docs.
-   But even with incorrect units, it obviously shouldn't fail with some
-   miserable error (like sigsegv :) or do anything that it shouldn't,
-   like removing some files or so.
--- If you want to test unit with a special pasdoc's command-line,
-   you must add appropriate line at the end of ./mk_tests.sh script.
 
---------------------
-Possible tests to be done:
+- Please keep prefixes "ok_", "warning_", "error_" lowercase so that
+  e.g. the file-mask `ok_*' works as expected on case-sensitive file-systems.
+  Try to follow the convention
+  "prefix_description_of_test_lowercase_with_underscores.pas".
+
+- Most of these units will have empty implementation.
+  They are not supposed to be ever compiled by anything.
+
+- There is no requirement here that the interface of units
+  placed here must be correct Pascal code.
+  Pasdoc should be able to handle even incorrect units.
+  Usually it should break with some parsing error on such units,
+  but it doesn't have to (after all, pasdoc is not meant to
+  exactly reimplement some part of a compiler that carefully checks
+  syntax and everything), it may try to generate some docs.
+  But even with incorrect units, it obviously shouldn't fail with some
+  miserable error (like sigsegv :) or do anything that it shouldn't,
+  like removing some files or so.
+
+- If you want to test unit with a special pasdoc's command-line,
+  you must add appropriate line at the end of ./mk_tests.sh script.
+
+## Possible tests to be done
 
 1. Generate tests output by simple
+
      make
 
    Default output is html, you should also try other output
    formats, e.g. latex or even pdf (made from latex), like
+
      make latex
      make pdf
 
@@ -231,8 +241,7 @@ Possible tests to be done:
    may be reused while making format 1. So it tests that cache
    format is really independent from pasdoc's chosen output format.
 
---------------------
-Random notes:
+## Random notes:
 
 `make clean' will clean this directory.
 
@@ -245,8 +254,7 @@ These should be scripts that perform some additional tests
 on test units available here (like check_cache.sh),
 but also some helper scripts/files for Makefile in this directory.
 
---------------------
-Subdirectory todo/
+## Subdirectory todo/
 
 It contains units that are known to
 be incorrectly handled by pasdoc by now. "Incorrectly handled"
@@ -270,5 +278,7 @@ because *usually* we will want to test whether we did not break
 anything that previously worked, and we will not care that there
 are still some unresolved problems in pasdoc.
 
---------------------
+---
+
 And that's all for now.
+Comments are most welcome.
