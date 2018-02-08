@@ -220,7 +220,7 @@ relevant tests described below.
 
     Everything is read/written to a temporary directory scripts/check_cache_tmp/,
     that is removed at the beginning and at the end of the script.
-    (It's removed at the beginning, and also by `make clean', just to
+    (It's removed at the beginning, and also by `make clean`, just to
     make sure that no garbage is left there, in case script failed
     for whatever reason.)
     So this script is mostly independent from the rest of the tests
@@ -256,7 +256,7 @@ relevant tests described below.
 
 ## Various notes
 
-`make clean' will clean this directory.
+`make clean` will clean this directory.
 
 Note that make used must be GNU make.
 Under Linux this is standard, under FreeBSD this is called `gmake',
