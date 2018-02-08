@@ -12,7 +12,8 @@ set -eu
 run_echo ()
 {
   echo "$@"
-  scripts/find_all_tests_for_check_cache.sh | "$@"
+  scripts/find_all_tests_for_check_cache.sh | "$@" \
+    > scripts/check_cache_tmp/pasdoc_output.txt
 }
 
 pasdoc_call ()
@@ -34,6 +35,8 @@ rm -Rf check_cache_tmp/
 mkdir -p check_cache_tmp/cache/ check_cache_tmp/1/ check_cache_tmp/2/
 
 cd ..
+
+echo "Checking cache for format ${OUTPUT_FORMAT}"
 
 pasdoc_call --output=scripts/check_cache_tmp/1/
 pasdoc_call --output=scripts/check_cache_tmp/2/
