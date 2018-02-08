@@ -449,7 +449,8 @@ type
     property HintDirectives: THintDirectives read FHintDirectives write FHintDirectives;
 
     { Deprecation note, specified as a string after "deprecated" directive.
-      Empty if none, always empty if @link(IsDeprecated) is @false. }
+      Empty if none, always empty if @link(HintDirectives) does not
+      contain hdDeprecated. }
     property DeprecatedNote: string
       read FDeprecatedNote write FDeprecatedNote;
 
