@@ -11,6 +11,9 @@ set -eu
 # Fixes (to make onsgmls validate HTML 5, or use different validator
 # than onsgmls) welcome.
 
+# check if onsgmls is available and fail otherwise
+which onsgmls
+
 find current_output/html/ -iname '*.html' \
   -exec sh -c 'echo ---- Validating {}' ';' \
   -exec onsgmls -s -e -g '{}' ';'

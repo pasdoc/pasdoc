@@ -7,6 +7,9 @@ set -eu
 #
 # See ../README for comments.
 
+# check if xmllint is available and fail otherwise
+which xmllint
+
 find current_output/simplexml/ -iname '*.xml' \
   -exec sh -c 'echo ---- Validating {}' ';' \
   -exec xmllint --noout '{}' ';'

@@ -47,6 +47,9 @@ mk_test ()
 FORMAT="$1"
 shift 1
 
+# check if pasdoc is on the path and fail properly if not
+which pasdoc
+
 # Run tests ----------------------------------------
 
 # Make a test of many units with normal pasdoc command-line.
