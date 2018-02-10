@@ -16,4 +16,4 @@ clean:
 	rm -f $(ALL_OUTPUT)
 
 %.gif.inc: %.gif
-	../../tools/file_to_pascal_data $< $@
+	../../../bin/file_to_pascal_data $< $@
