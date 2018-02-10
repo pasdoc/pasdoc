@@ -26,7 +26,7 @@ And tar, scp are used for uploading correct tests by developers.
 
 Of course, you also need the `pasdoc` binary available on $PATH.
 
-## Naming of Pascal unit files in this directory
+## Naming of Pascal unit files in testcases subdirectory
 
 - `ok_*`
 
