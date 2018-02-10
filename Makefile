@@ -284,7 +284,7 @@ build-gui:
 	strip source/gui/pasdoc_gui$(EXE)
 
 .PHONY: tests
-tests:
+tests: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./tests/fpcunit/test_pasdoc.lpr
 	bin/test_pasdoc -a
 
