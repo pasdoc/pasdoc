@@ -97,7 +97,8 @@ type
     lgEnglish,
     lgFrench_ISO_8859_15,
     lgFrench_UTF_8,
-    lgGerman,
+    lgGerman_ISO_8859_15,
+    lgGerman_UTF_8,
     lgIndonesian,
     lgItalian,
     lgJavanese,
@@ -386,7 +387,8 @@ const
   aDutch              : {$I lang\PasDoc_Languages_Dutch_1252.inc}
   aFrench_ISO_8859_15 : {$I lang\PasDoc_Languages_French_ISO_8859_15.inc}
   aFrench_UTF_8       : {$I lang\PasDoc_Languages_French_utf8.inc}
-  aGerman             : {$I lang\PasDoc_Languages_German_1252.inc}
+  aGerman_ISO_8859_15 : {$I lang\PasDoc_Languages_German_ISO_8859_15.inc}
+  aGerman_UTF_8       : {$I lang\PasDoc_Languages_German_utf8.inc}
   aIndonesian         : {$I lang\PasDoc_Languages_Indonesian_1252.inc}
   aItalian            : {$I lang\PasDoc_Languages_Italian_1252.inc}
   aJavanese           : {$I lang\PasDoc_Languages_Javanese_1250.inc}
@@ -442,7 +444,8 @@ const
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aFrench_ISO_8859_15; Name: 'French (iso-8859-15)'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
-    (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aGerman_ISO_8859_15; Name: 'German (iso-8859-15)'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aGerman_UTF_8; Name: 'German (UTF-8)'; Syntax: 'de.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: 'windows-1252'; AspellLanguage: ''),
     (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aJavanese; Name: 'Javanese'; Syntax: 'jv'; CharSet: 'windows-1252'; AspellLanguage: ''),
