@@ -431,7 +431,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Align = alTop
         AutoFill = True
         AutoSize = True
-        Caption = 'Default visibility of members'
+        Caption = 'Default visibility of class members'
         ChildSizing.LeftRightSpacing = 6
         ChildSizing.TopBottomSpacing = 6
         ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
