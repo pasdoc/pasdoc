@@ -79,11 +79,17 @@ type
     EditConclusionFileName: TFileNameEdit;
     EditCssFileName: TFileNameEdit;
     EditIntroductionFileName: TFileNameEdit;
+    EditHtmlHead: TFileNameEdit;
+    EditHtmlBodyBegin: TFileNameEdit;
+    EditHtmlBodyEnd: TFileNameEdit;
     // @name is used to set the name of the project.
     edProjectName: TEdit;
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
+    LabelHtmlHead: TLabel;
+    LabelHtmlBodyBegin: TLabel;
+    LabelHtmlBodyEnd: TLabel;
     LabelProjectName: TLabel;
     LabelHeader: TLabel;
     LabelFooter: TLabel;
@@ -460,6 +466,10 @@ begin
   EditCssFileName.FileName := '';
   EditIntroductionFileName.FileName := '';
   EditConclusionFileName.FileName := '';
+  EditHtmlHead.FileName := '';
+  EditHtmlBodyBegin.FileName := '';
+  EditHtmlBodyEnd.FileName := '';
+
   CheckWriteUsesList.Checked := false;
   CheckAutoAbstract.Checked := false;
   CheckAutoLink.Checked := false;
@@ -778,6 +788,17 @@ begin
 end;
 
 procedure TfrmHelpGenerator.ButtonGenerateDocsClick(Sender: TObject);
+
+  { Load the contents of file referenced by Edit,
+    or return DefaultResult if no file chosen. }
+  function LoadFileNameEdit(const Edit: TFileNameEdit; const DefaultResult: string): string;
+  begin
+    if Edit.FileName <> '' then
+      Result := FileToString(Edit.FileName)
+    else
+      Result := DefaultResult;
+  end;
+
 var
   Files: TStringList;
   index: integer;
@@ -847,12 +868,14 @@ begin
     begin
       TGenericHTMLDocGenerator(PasDoc1.Generator).Header := memoHeader.Lines.Text;
       TGenericHTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
-      
-      if EditCssFileName.FileName <> '' then
-        TGenericHTMLDocGenerator(PasDoc1.Generator).CSS :=
-          FileToString(EditCssFileName.FileName) else
-        TGenericHTMLDocGenerator(PasDoc1.Generator).CSS := DefaultPasDocCss;
-        
+      TGenericHTMLDocGenerator(PasDoc1.Generator).CSS :=
+        LoadFileNameEdit(EditCssFileName, DefaultPasDocCss);
+      TGenericHTMLDocGenerator(PasDoc1.Generator).HtmlHead :=
+        LoadFileNameEdit(EditHtmlHead, '');
+      TGenericHTMLDocGenerator(PasDoc1.Generator).HtmlBodyBegin :=
+        LoadFileNameEdit(EditHtmlBodyBegin, '');
+      TGenericHTMLDocGenerator(PasDoc1.Generator).HtmlBodyEnd :=
+        LoadFileNameEdit(EditHtmlBodyEnd, '');
       TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
         CheckUseTipueSearch.Checked;
       TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageCode(TLanguageID(comboLanguages.ItemIndex));
@@ -1169,6 +1192,13 @@ begin
         Ini.ReadString('Main', 'IntroductionFileName', ''));
       EditConclusionFileName.FileName := ExpandNotEmptyFileName(
         Ini.ReadString('Main', 'ConclusionFileName', ''));
+      EditHtmlHead.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'HtmlHead', ''));
+      EditHtmlBodyBegin.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'HtmlBodyBegin', ''));
+      EditHtmlBodyEnd.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'HtmlBodyEnd', ''));
+
       CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
       CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
@@ -1280,6 +1310,13 @@ begin
       EditIntroductionFileName.FileName));
     Ini.WriteString('Main', 'ConclusionFileName', CorrectFileName(
       EditConclusionFileName.FileName));
+    Ini.WriteString('Main', 'HtmlHead', CorrectFileName(
+      EditHtmlHead.FileName));
+    Ini.WriteString('Main', 'HtmlBodyBegin', CorrectFileName(
+      EditHtmlBodyBegin.FileName));
+    Ini.WriteString('Main', 'HtmlBodyEnd', CorrectFileName(
+      EditHtmlBodyEnd.FileName));
+
     Ini.WriteBool('Main', 'WriteUsesList', CheckWriteUsesList.Checked);
     Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
     Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
