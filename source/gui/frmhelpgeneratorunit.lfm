@@ -27,7 +27,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Height = 577
     Top = 0
     Width = 860
-    PageIndex = 5
+    PageIndex = 9
     Align = alClient
     TabOrder = 0
     TabStop = True
@@ -304,20 +304,20 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 0
         Height = 119
         Top = 0
-        Width = 844
+        Width = 860
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
         ClientHeight = 119
-        ClientWidth = 844
+        ClientWidth = 860
         FullRepaint = False
         TabOrder = 1
         object Label9: TLabel
           Left = 10
           Height = 54
           Top = 10
-          Width = 824
+          Width = 840
           HelpType = htKeyword
           Align = alTop
           Caption = 'The directories where PasDoc can find include files.'#10'(If you use $I, $INCLUDE compiler directives.)'
@@ -329,7 +329,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Left = 10
           Height = 45
           Top = 64
-          Width = 824
+          Width = 840
           Align = alTop
           AutoSize = True
           BorderSpacing.InnerBorder = 4
@@ -340,9 +340,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoIncludeDirectories: TMemo
         Left = 10
-        Height = 434
+        Height = 438
         Top = 129
-        Width = 824
+        Width = 840
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
         Align = alClient
@@ -359,7 +359,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 162
         Top = 10
-        Width = 824
+        Width = 840
         Align = alTop
         BorderSpacing.Around = 10
         Caption = 'Put here any symbols that you want to have defined at the start, just as if they would be defined by $DEFINE at the beginning of each unit.'#10#10'Note that your compiler may define some symbols by default (for example, "FPC" by FreePascal, "VER150" by Delphi 7, target OS and architecture like "UNIX", "MSWINDOWS" etc.) --- you may want to define some of these for pasdoc too.'
@@ -369,9 +369,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoDefines: TMemo
         Left = 10
-        Height = 381
+        Height = 385
         Top = 182
-        Width = 824
+        Width = 840
         HelpType = htKeyword
         HelpKeyword = 'ConditionalDefines'
         Align = alClient
@@ -391,7 +391,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 54
         Top = 10
-        Width = 824
+        Width = 840
         HelpType = htKeyword
         Align = alTop
         Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
@@ -403,7 +403,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 130
         Top = 74
-        Width = 824
+        Width = 840
         HelpType = htKeyword
         HelpKeyword = 'IncludeByVisibility'
         Align = alTop
@@ -426,7 +426,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 10
         Height = 127
         Top = 214
-        Width = 824
+        Width = 840
         HelpType = htKeyword
         HelpKeyword = 'ImplicitVisibilityOption'
         Align = alTop
@@ -442,7 +442,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
         ClientHeight = 99
-        ClientWidth = 822
+        ClientWidth = 838
         ItemIndex = 0
         Items.Strings = (
           '"Public", unless the class is declared within {$M+} state, then it''s "published"'
@@ -664,16 +664,16 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = rgLineBreakQuality
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 22
-        Top = 88
-        Width = 218
+        Height = 27
+        Top = 98
+        Width = 214
         Caption = 'LateX graphics package'
         FocusControl = comboLatexGraphicsPackage
         ParentColor = False
       end
       object LabelHyphenatedWords: TLabel
         Left = 8
-        Height = 44
+        Height = 54
         Top = 173
         Width = 838
         HelpType = htKeyword
@@ -685,9 +685,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object rgLineBreakQuality: TRadioGroup
         Left = 0
-        Height = 88
+        Height = 98
         Top = 0
-        Width = 844
+        Width = 860
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/LatexLineBreaks'
         Align = alTop
@@ -702,8 +702,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 60
-        ClientWidth = 842
+        ClientHeight = 70
+        ClientWidth = 858
         ItemIndex = 0
         Items.Strings = (
           'strict'
@@ -716,9 +716,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelLatexGraphicsPackage
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 32
+        Height = 35
         Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
-        Top = 110
+        Top = 125
         Width = 148
         Enabled = False
         ItemHeight = 0
@@ -737,8 +737,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHyphenatedWords
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 345
-        Top = 217
+        Height = 335
+        Top = 227
         Width = 824
         Align = alCustom
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -752,18 +752,18 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 0
         Height = 179
         Top = 0
-        Width = 844
+        Width = 860
         Align = alTop
         BevelOuter = bvNone
         BorderWidth = 10
         ClientHeight = 179
-        ClientWidth = 844
+        ClientWidth = 860
         TabOrder = 0
         object LabelHeader: TLabel
           Left = 10
-          Height = 22
+          Height = 27
           Top = 10
-          Width = 824
+          Width = 840
           HelpType = htKeyword
           Align = alTop
           Caption = '&Header (Will appear at the top of every web page)'
@@ -772,9 +772,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoHeader: TMemo
           Left = 10
-          Height = 137
-          Top = 32
-          Width = 824
+          Height = 132
+          Top = 37
+          Width = 840
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
           Align = alClient
@@ -788,26 +788,26 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 0
         Height = 9
         Top = 179
-        Width = 844
+        Width = 860
         Align = alTop
         ResizeAnchor = akTop
       end
       object PanelFooterHidden: TPanel
         Left = 0
-        Height = 386
+        Height = 389
         Top = 188
-        Width = 844
+        Width = 860
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 386
-        ClientWidth = 844
+        ClientHeight = 389
+        ClientWidth = 860
         TabOrder = 1
         object LabelFooter: TLabel
           Left = 10
-          Height = 22
+          Height = 27
           Top = 10
-          Width = 824
+          Width = 840
           HelpType = htKeyword
           Align = alTop
           Caption = '&Footer (Will appear at the bottom of every page)'
@@ -816,9 +816,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object memoFooter: TMemo
           Left = 10
-          Height = 344
-          Top = 32
-          Width = 824
+          Height = 342
+          Top = 37
+          Width = 840
           HelpType = htKeyword
           HelpKeyword = 'FileAsHeaderOrFooter'
           Align = alClient
@@ -834,9 +834,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = cbVizGraphUses
         AnchorSideTop.Side = asrBottom
         Left = 14
-        Height = 44
-        Top = 82
-        Width = 393
+        Height = 54
+        Top = 88
+        Width = 388
         BorderSpacing.Top = 20
         Caption = 'You will have to generate graphs yourself. '#10'Use the "dot" program from GraphViz:'
         ParentColor = False
@@ -845,9 +845,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = cbVizGraphClasses
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 26
-        Top = 36
-        Width = 297
+        Height = 29
+        Top = 39
+        Width = 295
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Uses graph'
@@ -856,9 +856,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object cbVizGraphClasses: TCheckBox
         Left = 8
-        Height = 26
+        Height = 29
         Top = 10
-        Width = 321
+        Width = 318
         HelpType = htKeyword
         HelpKeyword = 'GraphVizSupport'
         Caption = 'Generate and use Classes graph'
@@ -869,9 +869,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = Label22
         AnchorSideTop.Side = asrBottom
         Left = 14
-        Height = 42
-        Top = 126
-        Width = 254
+        Height = 45
+        Top = 142
+        Width = 247
         AutoSize = True
         BorderSpacing.InnerBorder = 4
         Caption = 'http://www.graphviz.org/'
@@ -883,24 +883,24 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Spell Checking'
       object PanelSpellCheckingTop1: TPanel
         Left = 0
-        Height = 198
+        Height = 175
         Top = 0
-        Width = 844
+        Width = 860
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 198
-        ClientWidth = 844
+        ClientHeight = 175
+        ClientWidth = 860
         FullRepaint = False
         TabOrder = 1
         object Label20: TLabel
           AnchorSideTop.Control = ButtonAspellURL
           AnchorSideTop.Side = asrBottom
           Left = 12
-          Height = 66
-          Top = 122
-          Width = 506
+          Height = 54
+          Top = 111
+          Width = 576
           HelpType = htKeyword
           Anchors = [akTop, akLeft, akRight]
           Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
@@ -912,9 +912,9 @@ object frmHelpGenerator: TfrmHelpGenerator
           AnchorSideTop.Control = cbCheckSpelling
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 44
-          Top = 36
-          Width = 506
+          Height = 27
+          Top = 39
+          Width = 655
           Anchors = [akTop, akLeft, akRight]
           Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
           ParentColor = False
@@ -922,9 +922,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object cbCheckSpelling: TCheckBox
           Left = 10
-          Height = 26
+          Height = 29
           Top = 10
-          Width = 158
+          Width = 157
           HelpType = htKeyword
           HelpKeyword = 'SpellChecking'
           Caption = 'Check Spelling'
@@ -935,21 +935,21 @@ object frmHelpGenerator: TfrmHelpGenerator
           AnchorSideTop.Control = Label23
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 42
-          Top = 80
-          Width = 285
+          Height = 45
+          Top = 66
+          Width = 170
           AutoSize = True
           BorderSpacing.InnerBorder = 4
-          Caption = 'http://aspell.sourceforge.net/'
+          Caption = 'http://aspell.net/'
           OnClick = ButtonURLClick
           TabOrder = 1
         end
       end
       object memoSpellCheckingIgnore: TMemo
         Left = 10
-        Height = 356
-        Top = 208
-        Width = 824
+        Height = 382
+        Top = 185
+        Width = 840
         HelpType = htKeyword
         HelpKeyword = 'SpellChecking'
         Align = alClient
@@ -1149,7 +1149,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        Gutter.Width = 63
+        Gutter.Width = 57
         Gutter.MouseActions = <        
           item
             ClickCount = ccAny
@@ -1577,7 +1577,7 @@ object frmHelpGenerator: TfrmHelpGenerator
             MouseActions = <>
           end
           object TSynGutterLineNumber
-            Width = 23
+            Width = 17
             MouseActions = <>
             MarkupInfo.Background = clBtnFace
             MarkupInfo.Foreground = clNone
