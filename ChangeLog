@@ -1,3 +1,17 @@
+Next version (not released yet)
+
+  * Added de.utf8 (German with UTF-8 encoding)
+  * Automatically remove %region and %endregion from comments
+  * Show visibility (public, protected, private...) inside records too
+    (it is meanigful for advanced records)
+  * Implement in pasdoc_gui options to customize HTML head and body
+  * Rename "internal" to "nested" to describe this language feature.
+    Because that is how it's called in official docs
+    ( http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Nested_Type_Declarations,
+      https://www.freepascal.org/docs-html/ref/refse41.html )
+    and the "internal" word has traditionally different meaning
+    ("something not supposed to be visible/used from the outside").
+
 2018-02-08 v0.15.0
 
   * @links to enumerated type members work now.
