@@ -215,6 +215,10 @@ type
     { Replaces HelpInsight XML tags like <summary> with PasDoc tags }
     procedure ExpandHelpInsightDescriptions(var DescriptionInfo: TRawDescriptionInfo);
 
+    { Remove Lazarus %region declarations from a description,
+      see http://wiki.freepascal.org/IDE_Window:_Editor_Options_Code_Folding#About_.7B.25Region.7D }
+    procedure RemoveRegionDeclarations(var DescriptionInfo: TRawDescriptionInfo);
+
     { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
       otherwise returns LastCommentInfo and sets IsLastComment to false. }
     function GetLastComment: TRawDescriptionInfo;
@@ -609,6 +613,18 @@ begin
   DescriptionInfo.Content := s;
 end;
 
+procedure TParser.RemoveRegionDeclarations(var DescriptionInfo: TRawDescriptionInfo);
+begin
+  if IsPrefix('%region /fold', DescriptionInfo.Content) then
+    DescriptionInfo.Content := RemovePrefix('%region /fold', DescriptionInfo.Content)
+  else
+  if IsPrefix('%region', DescriptionInfo.Content) then
+    DescriptionInfo.Content := RemovePrefix('%region', DescriptionInfo.Content)
+  else
+  if IsPrefix('%endregion', DescriptionInfo.Content) then
+    DescriptionInfo.Content := RemovePrefix('%endregion', DescriptionInfo.Content);
+end;
+
 { ---------------------------------------------------------------------------- }
 
 const
@@ -644,6 +660,7 @@ begin
   begin
     if LastCommentHelpInsight then
       ExpandHelpInsightDescriptions(LastCommentInfo);
+    RemoveRegionDeclarations(LastCommentInfo);
     Result := LastCommentInfo;
     IsLastComment := false;
   end else

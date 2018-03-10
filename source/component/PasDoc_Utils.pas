@@ -162,6 +162,9 @@ function ExtractFileName(const FileName: string): string;
 { Checks is Prefix a prefix of S. Not case-sensitive. }
 function IsPrefix(const Prefix, S: string): boolean;
 
+{ If IsPrefix(Prefix, S), then remove the prefix, otherwise return unmodifed S. }
+function RemovePrefix(const Prefix, S: string): string;
+
 {$ifdef DELPHI_5}
 { BoolToStr for Delphi 5 compat.
   According to
@@ -716,6 +719,14 @@ end;
 function IsPrefix(const Prefix, S: string): boolean;
 begin
   Result := AnsiSameText(Copy(S, 1, Length(Prefix)), Prefix);
+end;
+
+function RemovePrefix(const Prefix, S: string): string;
+begin
+  if IsPrefix(Prefix, S) then
+    Result := SEnding(S, Length(Prefix) + 1)
+  else
+    Result := S;
 end;
 
 {$ifdef DELPHI_5}
