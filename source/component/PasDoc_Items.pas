@@ -2079,7 +2079,17 @@ end;
 
 function TPasCio.ShowVisibility: boolean;
 begin
-  Result := not (MyType in CIORecordType);
+  // Result := not (MyType in CIORecordType);
+
+  { This is always true now, because with "advanced records",
+    records have meaningful visibility sections too.
+    In the future, maybe we should auto-detect this smarter,
+    so that for records (CIORecordType) we only show visibility
+    if something is not public.
+    (But maybe not, maybe for consistency visibility should be always shown?)
+  }
+
+  Result := true;
 end;
 
 function TPasCio.FirstAncestor: TPasItem;
