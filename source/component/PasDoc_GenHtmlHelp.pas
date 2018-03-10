@@ -144,7 +144,7 @@ var
 
   { ---------- }
 
-  procedure InternalWriteCIO(const ClassItem: TPasCio);
+  procedure NestedWriteCIO(const ClassItem: TPasCio);
   var
     I: Integer;
   begin
@@ -153,19 +153,19 @@ var
 
     if ClassItem.Cios.Count > 0 then
     begin
-      WriteLiObject(FLanguage.Translation[trInternalCR], ClassItem.FullLink + '#@InternalCRs');
+      WriteLiObject(FLanguage.Translation[trNestedCR], ClassItem.FullLink + '#@NestedCRs');
       ClassItem.Cios.SortShallow;
       WriteDirectLine('<ul>');
       for I := 0 to ClassItem.Cios.Count - 1 do
       begin
         TPasCio(ClassItem.Cios.PasItemAt[I]).Sort([ssRecordFields,
           ssNonRecordFields, ssMethods, ssProperties]);
-        InternalWriteCIO(TPasCio(ClassItem.Cios.PasItemAt[I]));
+        NestedWriteCIO(TPasCio(ClassItem.Cios.PasItemAt[I]));
       end;
       WriteDirectLine('</ul>');
     end;
 
-    WriteItemHeadingCollection(fLanguage.Translation[trInternalTypes], ClassItem.FullLink, '@InternalTypes', ClassItem.Types);
+    WriteItemHeadingCollection(fLanguage.Translation[trNestedTypes], ClassItem.FullLink, '@NestedTypes', ClassItem.Types);
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
@@ -201,7 +201,7 @@ var
         WriteDirectLine('<ul>');
 
         for k := 0 to c.Count - 1 do
-          InternalWriteCIO(TPasCio(c.PasItemAt[k]));
+          NestedWriteCIO(TPasCio(c.PasItemAt[k]));
 
         WriteDirectLine('</ul>');
       end;
@@ -251,7 +251,7 @@ var
     begin
       TPasCio(c.PasItemAt[j]).Sort([ssRecordFields, ssNonRecordFields,
                                     ssMethods, ssProperties]);
-      InternalWriteCIO(TPasCio(c.PasItemAt[j]));
+      NestedWriteCIO(TPasCio(c.PasItemAt[j]));
     end;
     c.Free;
     WriteDirectLine('</ul>');

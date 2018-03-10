@@ -5,8 +5,8 @@
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Kelas, Interface, lan Objek',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -99,7 +99,7 @@
     {trOnDateTime} 'ing',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

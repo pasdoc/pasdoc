@@ -536,8 +536,8 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
-  TSections = (dsDescription, dsHierarchy, dsEnclosingClass, dsInternalCRs,
-  dsInternalTypes, dsFields, dsMethods, dsProperties);
+  TSections = (dsDescription, dsHierarchy, dsEnclosingClass, dsNestedCRs,
+  dsNestedTypes, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
   TSectionAnchors = array[TSections] of string;
 const
@@ -545,8 +545,8 @@ const
     'PasDoc-Description',
     'PasDoc-Hierarchy',
     'PasDoc-EnclosingClass',
-    'PasDoc-InternalCRs',
-    'PasDoc-InternalTypes',
+    'PasDoc-NestedCRs',
+    'PasDoc-NestedTypes',
     'PasDoc-Fields',
     'PasDoc-Methods',
     'PasDoc-Properties');
@@ -598,7 +598,7 @@ const
     WriteItemsDetailed(CIO.Fields, CIO.ShowVisibility, HL + 1, trFields);
   end;
 
-  procedure WriteInternalCioSummary;
+  procedure WriteNestedCioSummary;
   var
     I, J: Integer;
     LCio: TPasCio;
@@ -621,18 +621,18 @@ const
       end;
     end;
     WriteItemsSummary(CIO.Cios, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsInternalCRs], trInternalCR);
+      SectionAnchors[dsNestedCRs], trNestedCR);
   end;
 
-  procedure WriteInternalTypesSummary;
+  procedure WriteNestedTypesSummary;
   begin
     WriteItemsSummary(CIO.Types, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsInternalTypes], trInternalTypes);
+      SectionAnchors[dsNestedTypes], trNestedTypes);
   end;
 
-  procedure WriteInternalTypesDetailed;
+  procedure WriteNestedTypesDetailed;
   begin
-    WriteItemsDetailed(CIO.Types, CIO.ShowVisibility, HL + 1, trInternalTypes);
+    WriteItemsDetailed(CIO.Types, CIO.ShowVisibility, HL + 1, trNestedTypes);
   end;
 
   { writes all ancestors of the given item and the item itself }
@@ -673,8 +673,8 @@ begin
   SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
   SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
   SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
-  SectionHeads[dsInternalTypes]:= FLanguage.Translation[trInternalTypes];
-  SectionHeads[dsInternalCRs]:= FLanguage.Translation[trInternalCR];
+  SectionHeads[dsNestedTypes]:= FLanguage.Translation[trNestedTypes];
+  SectionHeads[dsNestedCRs]:= FLanguage.Translation[trNestedCR];
   SectionHeads[dsEnclosingClass]:= FLanguage.Translation[trEnclosingClass];
 
   SectionsAvailable := [dsDescription];
@@ -687,9 +687,9 @@ begin
   if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
     Include(SectionsAvailable, dsProperties);
   if not ObjectVectorIsNilOrEmpty(CIO.Types) then
-    Include(SectionsAvailable, dsInternalTypes);
+    Include(SectionsAvailable, dsNestedTypes);
   if not ObjectVectorIsNilOrEmpty(CIO.Cios) then
-    Include(SectionsAvailable, dsInternalCRs);
+    Include(SectionsAvailable, dsNestedCRs);
   if CIO.MyObject <> nil then
     Include(SectionsAvailable, dsEnclosingClass);
 
@@ -699,7 +699,7 @@ begin
     begin
       Fv := TPasFieldVariable(CIO.Fields.PasItemAt[I]);
       if Fv.IsConstant then
-        Fv.FullDeclaration := FLanguage.Translation[trInternal] + ' ' +
+        Fv.FullDeclaration := FLanguage.Translation[trNested] + ' ' +
           Fv.FullDeclaration;
     end;
   end;
@@ -717,7 +717,7 @@ begin
       { Most classes don't contain nested types so exclude this stuff
         if not available in order to keep it simple. }
       if (not (Section in SectionsAvailable)) and
-        (Section in [dsEnclosingClass..dsInternalTypes]) then
+        (Section in [dsEnclosingClass..dsNestedTypes]) then
         Continue;
 
       WriteDirect('<div class="one_section">');
@@ -804,14 +804,14 @@ begin
   if AnyItem then
   begin
     WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
-    WriteInternalCioSummary;
-    WriteInternalTypesSummary;
+    WriteNestedCioSummary;
+    WriteNestedTypesSummary;
     WriteFieldsSummary;
     WriteMethodsSummary;
     WritePropertiesSummary;
 
     WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
-    WriteInternalTypesDetailed;
+    WriteNestedTypesDetailed;
     WriteFieldsDetailed;
     WriteMethodsDetailed;
     WritePropertiesDetailed;

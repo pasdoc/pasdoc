@@ -3076,7 +3076,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
     otherwise modifying one of them always needs to be carefully duplicated. }
-  procedure ParseInternalType;
+  procedure ParseNestedType;
   var
     RawDescriptionInfo: TRawDescriptionInfo;
     NormalType: TPasType;
@@ -3311,7 +3311,7 @@ begin
       Exit;
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
-    begin // A Cio completed, internal or outer CIO
+    begin // A Cio completed, nested or outer CIO
       ItemsForNextBackComment.ClearAndAdd(LCio);
       if (FCioSk.Count > 0) then
       begin
@@ -3348,7 +3348,7 @@ begin
     LHlp := nil;
     LCio := nil;
 
-    ParseInternalType;
+    ParseNestedType;
 
   except
     LCio.Free;

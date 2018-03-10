@@ -5,8 +5,8 @@
     {trUnits} 'Egységek',
     {trClassHierarchy} 'Osztály hierarchia',
     {trCio} 'Osztályok, Kapcsolódási felületek és Objektumok',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Azonosítók',
     {trGvUses} 'Egység függőségi gráf',
     {trGvClasses} 'Osztály hierarchia gráf',
@@ -98,7 +98,7 @@
     {trOnDateTime} ' ', //none in Hungarian language
     {trSearch} 'Keresés',
     {trSeeAlso} 'Lásd még',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

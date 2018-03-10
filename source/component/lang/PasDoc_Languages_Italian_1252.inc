@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Classi, Interfacce ed Oggetti',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identificatori',
     {trGvUses} 'Grafico dipendenze Unit',
     {trGvClasses} 'Grafico gerarchia Classi',
@@ -98,7 +98,7 @@ RTransTable = (
     {trOnDateTime} strToDo, //'on',
     {trSearch} 'Cerca',
     {trSeeAlso} 'Vedere Anche',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

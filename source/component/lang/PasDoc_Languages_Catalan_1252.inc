@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Unitats',
     {trClassHierarchy} 'Jerarquia de classes', 
     {trCio} 'Classes, interfícies i objectes',
-    {trInternalCR} 'Registres i classes internes',
-    {trInternalTypes} 'Tipus interns',
+    {trNestedCR} strToDo, //'Nested Classes and Records',
+    {trNestedTypes} strToDo, //'Nested Types',
     {trIdentifiers} 'Identificadors',
     {trGvUses} 'Gràfic de la dependència d''unitats',
     {trGvClasses} 'Gràfic de la jerarquia de classes',
@@ -98,7 +98,7 @@ RTransTable = (
     {trOnDateTime} 'el',
     {trSearch} 'Cerca',
     {trSeeAlso} 'Veure també',
-    {trInternal} 'intern',
+    {trNested} strToDo, //'nested',
     {trAttributes} 'Atributs', 
     ''  //dummy
   );

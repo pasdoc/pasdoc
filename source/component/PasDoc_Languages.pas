@@ -128,8 +128,8 @@ type
     trUnits,
     trClassHierarchy,
     trCio,
-    trInternalCR,
-    trInternalTypes,
+    trNestedCR,
+    trNestedTypes,
     trIdentifiers,
     trGvUses,
     trGvClasses,
@@ -228,7 +228,7 @@ type
 
     trSearch,
     trSeeAlso,
-    trInternal,
+    trNested,
   //add more here
     trAttributes,
     trDummy

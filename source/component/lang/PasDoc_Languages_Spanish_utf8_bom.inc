@@ -5,8 +5,8 @@
     {trUnits} 'Unidades',
     {trClassHierarchy} 'Jerarquía de clases',
     {trCio} 'Clases, interfaces y objetos',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identificadores',
     {trGvUses} 'Gráfico de dependencias de unidades', //
     {trGvClasses} 'Gráfico de jerarquía de clases', //
@@ -98,7 +98,7 @@
     {trOnDateTime} 'a',
     {trSearch} 'Buscar',
     {trSeeAlso} 'Ver también', // ?
-    {trInternal} 'interno', //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} 'Atributos', //'Attributes',
     ''  //dummy
   );

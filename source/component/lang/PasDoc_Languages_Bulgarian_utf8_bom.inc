@@ -5,8 +5,8 @@
     {trUnits} 'Модули',
     {trClassHierarchy} 'Йерархия на класовете',
     {trCio} 'Класове, интерфейси и обекти',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Идентификатори',
     {trGvUses} 'Зависимости на модулите',
     {trGvClasses} 'Зависимости на класовете',
@@ -102,7 +102,7 @@
     {trOnDateTime} 'на дата', //really???
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

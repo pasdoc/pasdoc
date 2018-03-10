@@ -819,7 +819,7 @@ var
       if LCio.Types.Count > 0 then
       begin
         TypesNode := tvUnits.Items.AddChildObject(ClassNode,
-          Lang.Translation[trInternalTypes], LCio.Types);
+          Lang.Translation[trNestedTypes], LCio.Types);
         for I := 0 to LCio.Types.Count -1 do
         begin
           PasItem := LCio.Types.PasItemAt[I];
@@ -829,7 +829,7 @@ var
       if LCio.Cios.Count > 0 then
       begin
         ClassNode := tvUnits.Items.AddChildObject(ClassNode,
-          Lang.Translation[trInternalCR], LCio.CIOs);
+          Lang.Translation[trNestedCR], LCio.CIOs);
         TreeAddCio(ClassNode);
       end;
     end;

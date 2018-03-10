@@ -5,8 +5,8 @@
     {trUnits} 'Moduły',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zależności modułów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -98,7 +98,7 @@
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz także',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

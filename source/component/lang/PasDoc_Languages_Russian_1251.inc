@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Модули',
     {trClassHierarchy} 'Иерархия классов',
     {trCio} 'Классы, интерфейсы и объекты',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Идентификаторы',
     {trGvUses} 'График зависимости модулей',
     {trGvClasses} 'График иерархии классов',
@@ -99,7 +99,7 @@ RTransTable = (
     {trOnDateTime} 'дата/время', //really???
     {trSearch} 'Найти',
     {trSeeAlso} 'Материалы по теме',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

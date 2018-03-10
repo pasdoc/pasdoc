@@ -5,8 +5,8 @@
     {trUnits} 'Datoteke',
     {trClassHierarchy} 'Klasna hijerarhija',
     {trCio} 'Klase, Sučelja i Objekti',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identifikatori',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -98,7 +98,7 @@
     {trOnDateTime} strToDo, //'on',
     {trSearch} 'Traži', //'Search',
     {trSeeAlso} 'Vidi još',
-    {trInternal} 'interno', //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} 'Atributi', //'Attributes',
     ''  //dummy
   );

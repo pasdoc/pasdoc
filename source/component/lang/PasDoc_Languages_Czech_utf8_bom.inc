@@ -18,8 +18,8 @@ RTransTable = (
     {trUnits} 'Unity',
     {trClassHierarchy} 'Hierarchie tříd',
     {trCio} 'Třídy, rozhraní a objekty',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identifikátory',
     {trGvUses} 'Graf závislostí unit',
     {trGvClasses} 'Graf závislostí tříd',
@@ -111,7 +111,7 @@ RTransTable = (
     {trOnDateTime} 'v',
     {trSearch} 'Hledat',
     {trSeeAlso} 'Viz také',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} 'Atributy',
     '' //dummy
   );
