@@ -14,6 +14,6 @@ set -eu
 # check if onsgmls is available and fail otherwise
 which onsgmls
 
-find current_output/html/ -iname '*.html' \
+find testcases_output/html/ -iname '*.html' \
   -exec sh -c 'echo ---- Validating {}' ';' \
   -exec onsgmls -s -e -g '{}' ';'

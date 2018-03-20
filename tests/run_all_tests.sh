@@ -19,15 +19,15 @@ cd testcases/
 ../scripts/mk_tests.sh $ALL_OUTPUT_FORMATS
 cd ../
 
-git diff --exit-code
+git diff --exit-code testcases_output/
 
 # validation -----------------------------------------------------------------
 
-# Validate current_output/html, requires onsgmls installed
+# Validate testcases_output/html, requires onsgmls installed
 # This is unfortunately not working for HTML 5 now.
 # scripts/validate_html.sh
 
-# Validate current_output/simplexml, requires xmllint installed
+# Validate testcases_output/simplexml, requires xmllint installed
 scripts/validate_simplexml.sh
 
 # cache tests ----------------------------------------------------------------

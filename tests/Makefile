@@ -4,7 +4,6 @@ default:
 
 .PHONY: clean
 clean:
-	rm -Rf current_output/ \
-	  correct_output/ \
+	rm -Rf \
 	  scripts/check_cache_tmp/ \
 	  scripts/upload_correct_tests_output_tmp/

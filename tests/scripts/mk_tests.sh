@@ -54,8 +54,8 @@ all_tests_for_current_format ()
   # 2. in case of output formats that create some "index" pages
   #    (like AllClasses.html in HTML / HtmlHelp output) small
   #    changes and additions have too global impact on many parts of
-  #    documentation, so output from `diff -wur correct_output/html html/'
-  #    is harder to grok for humans.
+  #    documentation, so the differences between currect/new versions were
+  #    harder to analyze by humans.
   #
   # Instead, usually you should add new test units as new calls to
   # `mk_test ...' lower in this script.
