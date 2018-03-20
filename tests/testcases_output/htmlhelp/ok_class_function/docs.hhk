@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TDummy">
+<param name="Local" value="ok_class_function.TDummy.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyFunction">
+<param name="Local" value="ok_class_function.TDummy.html#MyFunction">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProcedure">
+<param name="Local" value="ok_class_function.TDummy.html#MyProcedure">
+</object>
+</ul>
+</body></html>

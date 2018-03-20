@@ -1,0 +1,33 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}at{\_}character{\_}in{\_}verbatim}
+\section{Description}
+Test that @( and @) and @@ (see https://github.com/pasdoc/pasdoc/wiki/SupportedTags and https://github.com/pasdoc/pasdoc/wiki/TagsParametersMatching) work Ok inside all @{-}tags. Including tags that don't interpret other @{-}tags inside, like @latex or @html.
+
+\textit{This is a closing paren ) and open ( and "at" char @ using italic font.}
+
+{\bf This is a closing paren ) and open ( and "at" char @ inside LaTeX.}
+
+
+
+\texttt{\\\nopagebreak[3]
+\textit{//~This~is~a~closing~paren~)~and~open~(~and~"at"~char~@~inside~longcode.}\\
+}
+\end{document}

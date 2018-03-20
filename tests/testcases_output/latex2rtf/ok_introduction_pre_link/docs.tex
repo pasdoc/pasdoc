@@ -1,0 +1,33 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Introduction}
+Link to my section before defining it : \begin{ttfamily}MySection\end{ttfamily}(\ref{MySection})
+
+\section{My section}
+
+
+Link to my section after defining it : \begin{ttfamily}MySection\end{ttfamily}(\ref{MySection})
+
+Link to my anchor before defining it : \begin{ttfamily}MyAnchor\end{ttfamily}(\ref{MyAnchor})
+
+ Here's my anchor.
+
+Link to my anchor after defining it : \begin{ttfamily}MyAnchor\end{ttfamily}(\ref{MyAnchor})\chapter{Unit ok{\_}introduction{\_}pre{\_}link{\_}unit}
+\end{document}

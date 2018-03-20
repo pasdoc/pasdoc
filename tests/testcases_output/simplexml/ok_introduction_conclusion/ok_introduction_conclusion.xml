@@ -1,0 +1,5 @@
+<unit name="ok_introduction_conclusion.pas">
+  <constant name="MyConstant = 1;">
+    <description><detailed>This is some constant, with a link to my introduction: ok_introduction and My conclusion. Link to second section of introduction, link to some anchor in introduction</detailed></description>
+  </constant>
+</unit>

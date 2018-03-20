@@ -1,0 +1,92 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}enum{\_}explicit{\_}values}
+\label{ok_enum_explicit_values}
+\index{ok{\_}enum{\_}explicit{\_}values}
+\section{Description}
+PasDoc fails to parse this. Bug spotted by Michalis on 2005{-}12{-}04 when trying `make htmldocs' on fpc compiler sources, in file cgbase.pas.
+
+Fixed.
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TRegister}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TRegister}
+\fi
+\label{ok_enum_explicit_values-TRegister}
+\index{TRegister}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TRegister = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{TRegisterLowEnum := Low(longint)}] \label{ok_enum_explicit_values-TRegisterLowEnum}
+\index{}
+ 
+\item[\texttt{TRegisterHighEnum := High(longint)}] \label{ok_enum_explicit_values-TRegisterHighEnum}
+\index{}
+ 
+\end{description}
+
+
+\end{list}
+\end{document}

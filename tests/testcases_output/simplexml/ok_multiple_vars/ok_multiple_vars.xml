@@ -1,0 +1,29 @@
+<unit name="ok_multiple_vars.pas">
+  <variable name="A: Integer;">
+    <description><detailed>Docs for A and B</detailed></description>
+  </variable>
+  <variable name="B: Integer;">
+    <description><detailed>Docs for A and B</detailed></description>
+  </variable>
+  <variable name="C: function(A: Integer): boolean;">
+    <description><detailed>Docs for C and D</detailed></description>
+  </variable>
+  <variable name="D: function(A: Integer): boolean;">
+    <description><detailed>Docs for C and D</detailed></description>
+  </variable>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="A: Integer;">
+      <description><detailed>Docs for A and B</detailed></description>
+    </variable>
+    <variable name="B: Integer;">
+      <description><detailed>Docs for A and B</detailed></description>
+    </variable>
+    <variable name="C: function(A: Integer): boolean;">
+      <description><detailed>Docs for C and D</detailed></description>
+    </variable>
+    <variable name="D: function(A: Integer): boolean;">
+      <description><detailed>Docs for C and D</detailed></description>
+    </variable>
+  </structure>
+</unit>

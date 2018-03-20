@@ -1,0 +1,20 @@
+<unit name="ok_no_sort.pas">
+  <type name="TMyEnum = (...);">
+    <description><detailed>Enum values are not sorted</detailed></description>
+  </type>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+    <description><detailed>Record fields are not sorted</detailed></description>
+    <variable name="ZZZ: Integer;">
+    </variable>
+    <variable name="AAA: Integer;">
+    </variable>
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><detailed>Class fields are sorted</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="AAA: Integer;">
+    </variable>
+    <variable name="ZZZ: Integer;">
+    </variable>
+  </structure>
+</unit>

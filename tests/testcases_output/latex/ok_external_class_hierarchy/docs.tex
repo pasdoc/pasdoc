@@ -1,0 +1,82 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}external{\_}class{\_}hierarchy}
+\label{ok_external_class_hierarchy}
+\index{ok{\_}external{\_}class{\_}hierarchy}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass0\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass3\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass0 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass0 Class}
+\fi
+\label{ok_external_class_hierarchy.TMyClass0}
+\index{TMyClass0}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass0 {$>$} TObject
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyClass1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass1 Class}
+\fi
+\label{ok_external_class_hierarchy.TMyClass1}
+\index{TMyClass1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass1 {$>$} TObject
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyClass3 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass3 Class}
+\fi
+\label{ok_external_class_hierarchy.TMyClass3}
+\index{TMyClass3}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass3 {$>$} TMyClass2
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+TMyClass2 is not defined in the source code. But we define in ok{\_}external{\_}class{\_}hierarchy.txt that TMyClass2 descends from TMyClass1.\end{document}

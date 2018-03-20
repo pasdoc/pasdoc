@@ -1,0 +1,11 @@
+<unit name="ok_link_explicite_name.pas">
+  <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+    <description><detailed>Some testing proc. Have you seen my method ?</detailed></description>
+  </function>
+  <structure name="TTestingClass" name_with_generic="TTestingClass" type="class">
+    <description><detailed>I'm a testing class, oh ! And don't forget to look at my method !</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+  </structure>
+</unit>

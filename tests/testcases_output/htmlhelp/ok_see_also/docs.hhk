@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_see_also.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TSomeClass">
+<param name="Local" value="ok_see_also.TSomeClass.html">
+</object>
+</ul>
+</body></html>

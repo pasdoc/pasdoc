@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord1">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseDecision">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseDecision">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoB">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#NormalField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord2">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoB">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#NormalField">
+</object>
+</ul>
+</body></html>

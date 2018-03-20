@@ -1,0 +1,6 @@
+<unit name="ok_longcode_special_chars.pas">
+  <description><abstract>Yet another test of @longcode.</abstract><detailed> 
+begin
+  Writeln('Some special HTML (&lt;, &gt;, &amp;) and LaTeX ({, }, \) chars.');
+end;</detailed></description>
+</unit>

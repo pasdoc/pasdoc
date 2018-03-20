@@ -1,0 +1,52 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}float{\_}hex}
+\label{ok_longcode_float_hex}
+\index{ok{\_}longcode{\_}float{\_}hex}
+\section{Description}
+Test of FormatFloat, FormatNumeric and FormatHex in TDocGenerator\hfill\vspace*{1ex}
+
+
+
+\texttt{}\textbf{begin}\texttt{~X~:=~1.1;~Y~:=~1;~Z~:=~{\$}FF;~}\textbf{end}\texttt{;\\
+}
+\end{document}

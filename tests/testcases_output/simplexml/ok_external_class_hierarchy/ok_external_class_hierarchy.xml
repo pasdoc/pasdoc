@@ -1,0 +1,12 @@
+<unit name="ok_external_class_hierarchy.pas">
+  <structure name="TMyClass0" name_with_generic="TMyClass0" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyClass1" name_with_generic="TMyClass1" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyClass3" name_with_generic="TMyClass3" type="class">
+    <description><detailed>TMyClass2 is not defined in the source code. But we define in ok_external_class_hierarchy.txt that TMyClass2 descends from TMyClass1.</detailed></description>
+    <ancestor name="TMyClass2" declaration="TMyClass2" />
+  </structure>
+</unit>

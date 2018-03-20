@@ -1,0 +1,17 @@
+<unit name="ok_links_2.pas">
+  <description><detailed>Helper unit for test in ok_links.</detailed></description>
+  <function name="MyOtherProc" type="procedure" declaration="procedure MyOtherProc;">
+  </function>
+  <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+  </function>
+  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+  </structure>
+  <structure name="TSomeOtherClass" name_with_generic="TSomeOtherClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+  </structure>
+</unit>

@@ -1,0 +1,8 @@
+<unit name="ok_implicit_visibility.pas">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyClassInMState" name_with_generic="TMyClassInMState" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

@@ -1,0 +1,109 @@
+<unit name="ok_lists.pas">
+  <description><abstract>Test of lists tags.</abstract><detailed> Normal lists: 
+
+<orderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</orderedlist>
+
+ 
+
+<unorderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</unorderedlist>
+
+ Empty list is accceptable: 
+
+<orderedlist>
+</orderedlist>
+
+ 
+
+<unorderedlist>
+</unorderedlist>
+
+ Whitespace inside lists is acceptable (and empty line that is not inside any @item is not a paragraph): 
+
+<orderedlist>
+<item>One</item>
+<item>Two</item>
+<item> Other tags inside the items are allowed, e.g. link to self, <code>True</code>, begin X := Y; end;, something bold, URLs: http://pasdoc.sf.net/, paragraphs: 2nd paragraph, dashes: em dash ---, en dash --, short one -, two consecutive short dashes --. </item>
+</orderedlist>
+
+ Nested lists are also freely allowed: 
+
+<orderedlist>
+<item> 1st nested unordered list: 
+
+<unorderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</unorderedlist>
+
+ </item>
+<item> 2nd nested unordered list: 
+
+<unorderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</unorderedlist>
+
+ </item>
+<item> And a couple of single-item ordered lists nested: 
+
+<orderedlist>
+<item> 
+
+<orderedlist>
+<item> </item>
+</orderedlist>
+
+</item>
+</orderedlist>
+
+ (Source code of this example begins to look like LISP :) </item>
+</orderedlist>
+
+ Definition lists tests: 
+
+<definitionlist>
+<item label="">1st item</item>
+<item label="">2nd item</item>
+</definitionlist>
+
+ 
+
+<definitionlist>
+<item label="1st item label">1st item</item>
+<item label="2nd item label">2nd item</item>
+</definitionlist>
+
+ 
+
+<definitionlist>
+<item label="1st item label"></item>
+<item label="2nd item label"></item>
+</definitionlist>
+
+ Item spacing tests: 
+
+<definitionlist>
+<item label="1st item label">1st item</item>
+<item label="2nd item label">2nd item</item>
+</definitionlist>
+
+ 
+
+<orderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</orderedlist>
+
+</detailed></description>
+</unit>

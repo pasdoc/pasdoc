@@ -1,0 +1,20 @@
+<unit name="ok_implicit_visibility.pas">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+    <variable name="MyField: Integer;">
+    </variable>
+    <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="TMyClassInMState" name_with_generic="TMyClassInMState" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+    <variable name="MyField: Integer;">
+    </variable>
+    <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+</unit>

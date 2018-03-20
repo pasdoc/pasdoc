@@ -1,0 +1,20 @@
+<unit name="ok_auto_link.pas">
+  <description><abstract>Auto-link tests.</abstract><detailed> Self name: <code>ok_auto_link</code>, simple identifiers Var1, qualified ident: ok_auto_link.Var1. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me.</detailed></description>
+  <constant name="no_auto_link_to_me = 1;">
+  </constant>
+  <variable name="Var1: Integer;">
+    <description><detailed>
+
+<definitionlist>
+<item label="Test of auto-linking:"> Self name is <code>Var1</code>, simple ident is TMyClass, qualified ident is TMyClass.Field. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me. Note that auto-linking works also inside @code: <code> Self name is <code>Var1</code>, simple ident is TMyClass, qualified ident is TMyClass.Field. </code> </item>
+<item label="Test of @noAutoLink:"> Things below should not be converted to links:  Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me. Simple ident once again TMyClass. Inside @code: <code> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.</code>  </item>
+</definitionlist>
+
+</detailed></description>
+  </variable>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="Field: Integer;">
+    </variable>
+  </structure>
+</unit>

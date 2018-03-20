@@ -1,0 +1,92 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}helpinsight{\_}comments}
+\label{ok_helpinsight_comments}
+\index{ok{\_}helpinsight{\_}comments}
+\section{Description}
+Test of handling help insight comments, in the form "/// {$<$}tag{$>$} ... {$<$}/tag{$>$}". See \href{http://delphi.wikia.com/wiki/Help_insight}{http://delphi.wikia.com/wiki/Help{\_}insight}, example snippet with \begin{ttfamily}Parse\end{ttfamily}(\ref{ok_helpinsight_comments-Parse}) function is straight from there. See \href{https://sourceforge.net/tracker/?func=detail&atid=304213&aid=3485263&group_id=4213}{https://sourceforge.net/tracker/?func=detail{\&}atid=304213{\&}aid=3485263{\&}group{\_}id=4213}.
+\section{Overview}
+\begin{description}
+\item[\texttt{Parse}]parses the commandline
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Parse}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Parse}
+\fi
+\label{ok_helpinsight_comments-Parse}
+\index{Parse}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Parse(const {\_}CmdLine: string);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+parses the commandline\hfill\vspace*{1ex}
+
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[CmdLine] is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first "parameter". If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.
+\end{description}
+
+
+\end{list}
+\end{document}

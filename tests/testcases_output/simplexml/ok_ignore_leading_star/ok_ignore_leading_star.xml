@@ -1,0 +1,5 @@
+<unit name="ok_ignore_leading_star.pas">
+  <constant name="A = 1;">
+    <description><detailed>--ignore-leading=* works with --staronly</detailed></description>
+  </constant>
+</unit>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc1">
+<param name="Local" value="ok_deprecated_directive_note.html#MyProc1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc2">
+<param name="Local" value="ok_deprecated_directive_note.html#MyProc2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc3">
+<param name="Local" value="ok_deprecated_directive_note.html#MyProc3">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestConstDeprecated1">
+<param name="Local" value="ok_deprecated_directive_note.html#TestConstDeprecated1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestConstDeprecated2">
+<param name="Local" value="ok_deprecated_directive_note.html#TestConstDeprecated2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TTestClass">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyMethod1">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#MyMethod1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyMethod2">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#MyMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestFieldDeprecated1">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#TestFieldDeprecated1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestFieldDeprecated2">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#TestFieldDeprecated2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestProperty1">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#TestProperty1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestProperty2">
+<param name="Local" value="ok_deprecated_directive_note.TTestClass.html#TestProperty2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TTestClassDeprecated1">
+<param name="Local" value="ok_deprecated_directive_note.TTestClassDeprecated1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TTestClassDeprecated2">
+<param name="Local" value="ok_deprecated_directive_note.TTestClassDeprecated2.html">
+</object>
+</ul>
+</body></html>

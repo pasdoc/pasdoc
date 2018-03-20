@@ -1,0 +1,130 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}no{\_}link{\_}inside{\_}class}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyGlobalProcedure}]
+\item[\texttt{MyOtherGlobalProcedure}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{MyOtherMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure MyOtherMethod;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be linked: \begin{ttfamily}MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}TMyClass.MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}MyGlobalProcedure\end{ttfamily}(\ref{ok_no_link_inside_class-MyGlobalProcedure}).
+
+\end{list}
+\section{Functions and Procedures}
+\subsection*{MyGlobalProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure MyGlobalProcedure;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should NOT be linked: \begin{ttfamily}MyMethod\end{ttfamily}.
+
+This should be linked: \begin{ttfamily}TMyClass.MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}MyOtherGlobalProcedure\end{ttfamily}(\ref{ok_no_link_inside_class-MyOtherGlobalProcedure}).
+
+\end{list}
+\subsection*{MyOtherGlobalProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure MyOtherGlobalProcedure;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

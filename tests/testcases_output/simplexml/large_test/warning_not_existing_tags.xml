@@ -1,0 +1,5 @@
+<unit name="warning_not_existing_tags.pas">
+  <function name="TestWarnings" type="procedure" declaration="procedure TestWarnings;">
+    <description><detailed>pasdoc should complain (display warnings) about wrong tags : @firstwarning(blah blah), <code>Wrong tag inside a @code: @secondwarning(ble ble)</code>.</detailed></description>
+  </function>
+</unit>

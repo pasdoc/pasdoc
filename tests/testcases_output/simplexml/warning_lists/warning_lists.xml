@@ -1,0 +1,59 @@
+<unit name="warning_lists.pas">
+  <description><abstract>Test various pasdoc warnings related to lists.</abstract><detailed> These should cause warnings: 
+
+<orderedlist>
+<item>One</item>
+</orderedlist>
+
+ 
+
+<unorderedlist>
+<item>One</item>
+</unorderedlist>
+
+ 
+
+<orderedlist>
+<item>One</item>
+</orderedlist>
+
+ 
+
+<unorderedlist>
+<item>One</item>
+</unorderedlist>
+
+ 
+
+<orderedlist>
+<item>One</item>
+</orderedlist>
+
+ 
+
+<orderedlist>
+<item>One</item>
+</orderedlist>
+
+ These should cause warnings, because @item must always be placed directly inside @orderedList or @unorderedList, and @orderedList and @unorderedList can contain only @item tags. 
+
+<orderedlist>
+</orderedlist>
+
+ 
+
+<unorderedlist>
+</unorderedlist>
+
+  <code>  </code> Warnings related to @definitionList and @itemLabel: 
+
+<orderedlist>
+</orderedlist>
+
+ Warnings related to @itemSpacing:  
+
+<orderedlist>
+</orderedlist>
+
+</detailed></description>
+</unit>

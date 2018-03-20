@@ -1,0 +1,417 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}back{\_}comment}
+\label{ok_back_comment}
+\index{ok{\_}back{\_}comment}
+\section{Description}
+Description of unit ok{\_}back{\_}comment.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyException1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyException2\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_back_comment.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Description of TMyClass\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyProp}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_back_comment.TMyClass-MyProp}
+\index{MyProp}
+\item[\textbf{MyProp}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyProp: Integer read MyField write MyField;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of MyProp\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_back_comment.TMyClass-MyField}
+\index{MyField}
+\item[\textbf{MyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of MyField\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyProc}\hspace*{\fill}
+
+\label{ok_back_comment.TMyClass-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of MyProc
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyException1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyException1 Class}
+\fi
+\label{ok_back_comment.TMyException1}
+\index{TMyException1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyException1 {$>$} Exception
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Description of TMyException1\ifpdf
+\subsection*{\large{\textbf{TMyException2 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyException2 Class}
+\fi
+\label{ok_back_comment.TMyException2}
+\index{TMyException2}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyException2 {$>$} Exception
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Description of TMyException2\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_back_comment-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of Foo, (\begin{ttfamily}Foo\end{ttfamily})
+
+\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyType}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyType}
+\fi
+\label{ok_back_comment-TMyType}
+\index{TMyType}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyType = Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of TMyType
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyEnum}
+\fi
+\label{ok_back_comment-TMyEnum}
+\index{TMyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of TMyEnum\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{meOne}] \label{ok_back_comment-meOne}
+\index{}
+Description of meOne
+\item[\texttt{meTwo}] \label{ok_back_comment-meTwo}
+\index{}
+Description of meTwo
+\item[\texttt{meThree}] \label{ok_back_comment-meThree}
+\index{}
+Description of meThree
+\end{description}
+
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MyConst}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyConst}
+\fi
+\label{ok_back_comment-MyConst}
+\index{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyConst = 2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of MyConst
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{V}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{V}
+\fi
+\label{ok_back_comment-V}
+\index{V}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+V: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of V
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{V1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{V1}
+\fi
+\label{ok_back_comment-V1}
+\index{V1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+V1: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of V1 and V2
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{V2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{V2}
+\fi
+\label{ok_back_comment-V2}
+\index{V2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+V2: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of V1 and V2
+
+\end{list}
+\end{document}

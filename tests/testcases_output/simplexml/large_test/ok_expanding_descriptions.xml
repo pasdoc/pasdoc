@@ -1,0 +1,56 @@
+<unit name="ok_expanding_descriptions.pas">
+  <description><abstract>This is a test of tags expanded by TPasItem handlers. Of course with @abstract tag using some recursive tag: See also TestPasMethodTags</abstract><detailed> This whole unit is actually a big test of many things related to pasdoc's @-tags.     See also TMyClass for other test of @cvs tag (with $Date, as an alternative specification of @lastmod)</detailed></description>
+  <function name="RecursiveTwoAt" type="procedure" declaration="procedure RecursiveTwoAt;">
+    <description><detailed>aa aaaaa aa aaa <code>SHGetSpecialFolderPath(0, @Path, CSIDL_APPDATA, true)</code> aaaa aaaaaa aaaaaa aaaaaaaaa aaaa At some point, this test caused the bug: final &lt;/code&gt; tag was inserted in converted form (processed with ConvertString) into html output. In effect, there was an opening &lt;code&gt; tag but there was no closing &lt;/code&gt; tag.</detailed></description>
+  </function>
+  <function name="TestHtmlAndLatexTags" type="procedure" declaration="procedure TestHtmlAndLatexTags;">
+    <description><detailed>  Note that text inside @html / @latex tags is absolutely not touched by pasdoc. Characters are not escaped (&lt; is *not* changed to &amp;lt; in the html case), @tags are not expanded, @ needs not to be doubled, paragraphs (&lt;p&gt; in the html case) are not inserted.</detailed></description>
+  </function>
+  <function name="TestLongCode" type="procedure" declaration="procedure TestLongCode;">
+    <description><detailed>Note that inside @longcode below I should be able to write singe @ char to get it in the output, no need to double it (like @@). No tags are expanded inside longcode. Also note that paragraphs are not expanded inside longcode (no &lt;p&gt; inside &lt;pre&gt;...&lt;/pre&gt; in html output). Of course html characters are still correctly escaped (&lt; changes to &amp;lt; etc.). 
+
+procedure Foo;
+begin
+  if A &lt; B then Bar; { @link(No, this is not really pasdoc tag) }
+end;
+
+procedure Bar(X: Integer);
+begin
+  CompareMem(@X, @Y);
+end;</detailed></description>
+  </function>
+  <function name="TestPasMethodTags" type="function" declaration="function TestPasMethodTags(A, B: Integer): string;">
+    <param name="A">means sthg about TestRecursiveTag</param>
+    <param name="B">also means sthg. <code>Code inside.</code></param>
+    <result>You can make tags recursion any level deep : <code>This is a code with a link to TestRecursiveTag</code></result>
+    <description><detailed>This is a test of tags expanded by TPasMethod handlers. Note that all three tags are expanded recursively.     </detailed></description>
+  </function>
+  <function name="TestRecursiveTag" type="procedure" declaration="procedure TestRecursiveTag;">
+    <description><detailed>@code and @returns (and some others) tags are recursive, you can freely put other tags inside. <code>This is link to TestHtmlAndLatexTags.</code> </detailed></description>
+  </function>
+  <function name="TwoAt" type="procedure" declaration="procedure TwoAt;">
+    <description><detailed>Write two at chars, like this @@, to get one @ in output. E.g. @ link(TSomeClass). E.g. @link(TSomeClass). E.g. @html foobar. E.g. @link .</detailed></description>
+  </function>
+  <structure name="EFoo" name_with_generic="EFoo" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+  <structure name="EBar" name_with_generic="EBar" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+  <structure name="EXyz" name_with_generic="EXyz" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+  <structure name="TMyClassAncestor" name_with_generic="TMyClassAncestor" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="inheritable" indexdecl="" type="boolean" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><abstract>This comment should be inherited.</abstract></description>
+    </property>
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><detailed>These are some tags that are not allowed to have parameters: name <code>TMyClass</code>, inherited TMyClassAncestor, nil <code>Nil</code>, true <code>True</code>, false <code>False</code>, classname <code>TMyClass</code>. Some of them are valid only within a class, but this is not important for this test. </detailed></description>
+    <ancestor name="TMyClassAncestor" declaration="TMyClassAncestor" />
+    <property name="inheritable" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>This is the detailed description.</detailed></description>
+    </property>
+  </structure>
+</unit>

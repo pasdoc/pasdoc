@@ -1,0 +1,6 @@
+<unit name="ok_enum_explicit_assign.pas">
+  <type name="TEnum1 = (...);">
+  </type>
+  <type name="TEnum2 = (...);">
+  </type>
+</unit>

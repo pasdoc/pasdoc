@@ -1,0 +1,94 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}back{\_}comment{\_}private}
+\label{ok_back_comment_private}
+\index{ok{\_}back{\_}comment{\_}private}
+\section{Description}
+Testcase for [\href{https://sourceforge.net/tracker/index.php?func=detail&aid=1596563&group_id=4213&atid=104213}{https://sourceforge.net/tracker/index.php?func=detail{\&}aid=1596563{\&}group{\_}id=4213{\&}atid=104213}].
+
+The comment "This should be ether omitted..." should not be included anywhere (if private members are omitted, and this is the default).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EPingError\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{EPingError Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{EPingError Class}
+\fi
+\label{ok_back_comment_private.EPingError}
+\index{EPingError}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EPingError {$>$} Exception
+%%%%Description
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{ActionDescription}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ActionDescription}
+\fi
+\label{ok_back_comment_private-ActionDescription}
+\index{ActionDescription}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+ActionDescription = 'blah';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

@@ -1,0 +1,31 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit warning{\_}table}
+\section{Description}
+Test of @table{-}related warnings.\hfill\vspace*{1ex}
+
+
+
+Various incorrect table tags nesting: Invalid @table: no rows Invalid table @row: no cells  
+
+Table with no rows is not allowed: Invalid @table: no rows
+
+Row with no cells is not allowed: Invalid table @row: no cells
+\end{document}

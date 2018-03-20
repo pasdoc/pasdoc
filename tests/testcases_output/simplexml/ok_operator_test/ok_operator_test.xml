@@ -1,0 +1,60 @@
+<unit name="ok_operator_test.pas">
+  <description><detailed>Operator overloads Delphi and FPC</detailed></description>
+  <function name=":=" type="operator" declaration="Operator := (C : TMyType2) z : TMyType;">
+  </function>
+  <function name="+" type="operator" declaration="Operator + (c: TMyType; c1: TMyType) c2: TMyType;">
+  </function>
+  <function name="-" type="operator" declaration="Operator - (c: TMyType; c1: TMyType) c2: TMyType;">
+  </function>
+  <function name="*" type="operator" declaration="Operator * (c: TMyType; i: integer) c2: TMyType;">
+  </function>
+  <function name="/" type="operator" declaration="Operator / (A, B: TMyType): TMyType;">
+  </function>
+  <function name="**" type="operator" declaration="Operator ** (A, B: TMyType): TMyType;">
+  </function>
+  <function name="=" type="operator" declaration="operator = (const c, d: TMyType) : boolean;">
+  </function>
+  <function name="&lt;" type="operator" declaration="operator &lt; (const c, d: TMyType) : boolean;">
+  </function>
+  <function name="&gt;" type="operator" declaration="operator &gt; (const c, d: TMyType) : boolean;">
+  </function>
+  <function name="&lt;=" type="operator" declaration="operator &lt;= (const c, d: TMyType) : boolean;">
+  </function>
+  <function name="&gt;=" type="operator" declaration="operator &gt;= (const c, d: TMyType) : boolean;">
+  </function>
+  <function name="or" type="operator" declaration="operator or (const c,d:TMyType) : TMyType;">
+  </function>
+  <function name="and" type="operator" declaration="operator and (const c,d:TMyType) : TMyType;">
+  </function>
+  <function name="xor" type="operator" declaration="operator xor (const c,d:TMyType) : TMyType;">
+  </function>
+  <structure name="TDelphiRec" name_with_generic="TDelphiRec" type="record">
+    <description><abstract>Operator overloads declared within a record (Delphi 2006+)</abstract></description>
+    <function name="Add" type="operator" declaration="class operator Add(a, b: TDelphiRec): TDelphiRec;">
+      <description><detailed>Addition of two operands of type TDelphiRec</detailed></description>
+    </function>
+    <function name="Subtract" type="operator" declaration="class operator Subtract(a, b: TDelphiRec): TDelphiRec;">
+      <description><detailed>Subtraction of type TDelphiRec</detailed></description>
+    </function>
+    <function name="Implicit" type="operator" declaration="class operator Implicit(a: Integer): TDelphiRec;">
+      <description><detailed>Implicit conversion of an Integer to type TDelphiRec</detailed></description>
+    </function>
+    <function name="Implicit" type="operator" declaration="class operator Implicit(a: TDelphiRec): Integer;">
+      <description><detailed>Implicit conversion of TDelphiRec to Integer</detailed></description>
+    </function>
+    <function name="Explicit" type="operator" declaration="class operator Explicit(a: Double): TDelphiRec;">
+      <description><detailed>Explicit conversion of a Double to TDelphiRec</detailed></description>
+    </function>
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><abstract>In this case, &quot;Operator&quot; is used as a normal Delphi identifier</abstract></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="Operator" indexdecl="" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>In this case, &quot;Operator&quot; is used as a normal Delphi identifier, not as an ObjFpc keyword. PasDoc should tolerate this, for compatibility with Delphi and with FPC in $mode delphi.</detailed></description>
+    </property>
+  </structure>
+  <structure name="TMyType" name_with_generic="TMyType" type="record">
+  </structure>
+  <structure name="TMyType2" name_with_generic="TMyType2" type="record">
+  </structure>
+</unit>

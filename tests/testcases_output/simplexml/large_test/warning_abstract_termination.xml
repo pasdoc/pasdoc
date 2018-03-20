@@ -1,0 +1,9 @@
+<unit name="warning_abstract_termination.pas">
+  <description><abstract>The abstract tag for TAbstractTerminationClass is unterminated. PasDoc should either terminate the tag itself, give a warning, or both</abstract><detailed> Submitted in thread &quot;Pasdoc tests&quot; 2004-04-10 on pasdoc-main.</detailed></description>
+  <structure name="TAbstractTerminationClass" name_with_generic="TAbstractTerminationClass" type="class">
+    <description><detailed>(This abstract tag lacks the closing parenthesis. How will PasDoc handle this error?</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="DummyField: integer;">
+    </variable>
+  </structure>
+</unit>

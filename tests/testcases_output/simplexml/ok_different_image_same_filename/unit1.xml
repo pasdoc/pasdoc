@@ -1,0 +1,3 @@
+<unit name="ok_different_image_same_filename_dir1/unit1.pas">
+  <description><detailed>/home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_different_image_same_filename_dir1/image.png This should show description main : This is description called main.  This should show description dir_1 two times: This is description called dir_1.  This is description called dir_1.  This should show description dir_2 : This is description called dir_2. </detailed></description>
+</unit>

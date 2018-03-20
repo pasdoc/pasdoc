@@ -1,0 +1,20 @@
+<unit name="ok_interface_implicit.pas">
+  <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface">
+    <ancestor name="IInterface" declaration="IInterface" />
+    <function name="PublicMethod" type="procedure" declaration="procedure PublicMethod;">
+    </function>
+  </structure>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+    <variable name="PublicField: Integer;">
+    </variable>
+  </structure>
+  <structure name="TMyPackedRecord" name_with_generic="TMyPackedRecord" type="packed record">
+    <variable name="PublicField: Integer;">
+    </variable>
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="PublicField: Integer;">
+    </variable>
+  </structure>
+</unit>

@@ -1,0 +1,5 @@
+<unit name="ok_enum_explicit_values.pas">
+  <description><detailed>PasDoc fails to parse this. Bug spotted by Michalis on 2005-12-04 when trying `make htmldocs' on fpc compiler sources, in file cgbase.pas. Fixed.</detailed></description>
+  <type name="TRegister = (...);">
+  </type>
+</unit>

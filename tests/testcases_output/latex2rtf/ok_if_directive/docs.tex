@@ -1,0 +1,125 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}if{\_}directive}
+\section{Description}
+PasDoc fails to parse this, it seems that {\$}if is not understood at all.\hfill\vspace*{1ex}
+
+
+
+Bug spotted by Michalis on 2005{-}12{-}04 when trying `make htmldocs' on fpc compiler sources, in file globals.pas.
+
+Update 2005{-}12{-}05: {\$}if is sorta handled now, and so is {\$}ifend. This testcase is parsed now. There is still work remaining to be done with regards to {\$}if and {\$}elseif, this is documented on [https://github.com/pasdoc/pasdoc/wiki/ToDo].
+\section{Constants}
+\subsection*{MathQNaN}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MathQNaN : tdoublearray = (0,0,252,255,0,0,0,0);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MathInf}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MathInf : tdoublearray = (0,0,240,127,0,0,0,0);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MathNegInf}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MathNegInf : tdoublearray = (0,0,240,255,0,0,0,0);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MathPi}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MathPi : tdoublearray =  (251,33,9,64,24,45,68,84);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Included}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+Included = 1;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

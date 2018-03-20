@@ -1,0 +1,12 @@
+<unit name="ok_const_1st_comment_missing.pas">
+  <description><detailed>See bug [ 1198381 ] &quot;Comment on 1st const does'nt work&quot;</detailed></description>
+  <constant name="ec_COPY           = 600;">
+    <description><detailed>bla bla copy.</detailed></description>
+  </constant>
+  <constant name="ec_CUT            = 601;">
+    <description><detailed>bla bla cut.</detailed></description>
+  </constant>
+  <constant name="ec_PASTE          = 602;">
+    <description><detailed>bla bla paste.</detailed></description>
+  </constant>
+</unit>

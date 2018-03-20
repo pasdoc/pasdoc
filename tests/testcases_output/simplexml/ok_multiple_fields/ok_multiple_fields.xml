@@ -1,0 +1,132 @@
+<unit name="ok_multiple_fields.pas">
+  <variable name="F1: Integer;">
+    <description><detailed>Descr of F1, F2, F3 (multiline)</detailed></description>
+  </variable>
+  <variable name="F2: Integer;">
+    <description><detailed>Descr of F1, F2, F3 (multiline)</detailed></description>
+  </variable>
+  <variable name="F3: Integer;">
+    <description><detailed>Descr of F1, F2, F3 (multiline)</detailed></description>
+  </variable>
+  <variable name="F4: Integer;">
+  </variable>
+  <variable name="F5: Integer;">
+    <description><detailed>Descr of F5 and F6 (multiline)</detailed></description>
+  </variable>
+  <variable name="F6: Integer;">
+    <description><detailed>Descr of F5 and F6 (multiline)</detailed></description>
+  </variable>
+  <variable name="F7: Integer;">
+    <description><detailed>Descr of F7 and F8 (multiline)</detailed></description>
+  </variable>
+  <variable name="F8: Integer;">
+    <description><detailed>Descr of F7 and F8 (multiline)</detailed></description>
+  </variable>
+  <variable name="F9: Integer;">
+    <description><detailed>Descr of F9 and F10 (multiline)</detailed></description>
+  </variable>
+  <variable name="F10: Integer;">
+    <description><detailed>Descr of F9 and F10 (multiline)</detailed></description>
+  </variable>
+  <variable name="F11: Integer;">
+  </variable>
+  <variable name="F12: Integer;">
+  </variable>
+  <variable name="F13: Integer;">
+    <description><detailed>Descr of F13 and F14 (multiline)</detailed></description>
+  </variable>
+  <variable name="F14: Integer;">
+    <description><detailed>Descr of F13 and F14 (multiline)</detailed></description>
+  </variable>
+  <variable name="F15: Integer;">
+    <description><detailed>Descr of F15 (multiline)</detailed></description>
+  </variable>
+  <structure name="TRec1" name_with_generic="TRec1" type="record">
+    <variable name="F1: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F2: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F3: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F4: Integer;">
+    </variable>
+    <variable name="F5: Integer;">
+      <description><detailed>Descr of F5 and F6</detailed></description>
+    </variable>
+    <variable name="F6: Integer;">
+      <description><detailed>Descr of F5 and F6</detailed></description>
+    </variable>
+    <variable name="F7: Integer;">
+      <description><detailed>Descr of F7 and F8</detailed></description>
+    </variable>
+    <variable name="F8: Integer;">
+      <description><detailed>Descr of F7 and F8</detailed></description>
+    </variable>
+    <variable name="F9: Integer;">
+      <description><detailed>Descr of F9 and F10</detailed></description>
+    </variable>
+    <variable name="F10: Integer;">
+      <description><detailed>Descr of F9 and F10</detailed></description>
+    </variable>
+    <variable name="F11: Integer;">
+    </variable>
+    <variable name="F12: Integer;">
+    </variable>
+    <variable name="F13: Integer;">
+      <description><detailed>Descr of F13 and F14</detailed></description>
+    </variable>
+    <variable name="F14: Integer;">
+      <description><detailed>Descr of F13 and F14</detailed></description>
+    </variable>
+    <variable name="F15: Integer;">
+      <description><detailed>Descr of F15</detailed></description>
+    </variable>
+  </structure>
+  <structure name="TRec2" name_with_generic="TRec2" type="record">
+    <variable name="F1: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F2: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F3: Integer;">
+      <description><detailed>Descr of F1, F2, F3</detailed></description>
+    </variable>
+    <variable name="F4: Integer;">
+    </variable>
+    <variable name="F5: Integer;">
+      <description><detailed>Descr of F5 and F6</detailed></description>
+    </variable>
+    <variable name="F6: Integer;">
+      <description><detailed>Descr of F5 and F6</detailed></description>
+    </variable>
+    <variable name="F7: Integer;">
+      <description><detailed>Descr of F7 and F8</detailed></description>
+    </variable>
+    <variable name="F8: Integer;">
+      <description><detailed>Descr of F7 and F8</detailed></description>
+    </variable>
+    <variable name="F9: Integer;">
+      <description><detailed>Descr of F9 and F10</detailed></description>
+    </variable>
+    <variable name="F10: Integer;">
+      <description><detailed>Descr of F9 and F10</detailed></description>
+    </variable>
+    <variable name="F11: Integer;">
+    </variable>
+    <variable name="F12: Integer;">
+    </variable>
+    <variable name="F13: Integer;">
+      <description><detailed>Descr of F13 and F14</detailed></description>
+    </variable>
+    <variable name="F14: Integer;">
+      <description><detailed>Descr of F13 and F14</detailed></description>
+    </variable>
+    <variable name="F15: Integer;">
+      <description><detailed>Descr of F15</detailed></description>
+    </variable>
+  </structure>
+</unit>

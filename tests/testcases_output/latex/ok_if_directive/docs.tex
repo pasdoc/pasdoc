@@ -1,0 +1,199 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}if{\_}directive}
+\label{ok_if_directive}
+\index{ok{\_}if{\_}directive}
+\section{Description}
+PasDoc fails to parse this, it seems that {\$}if is not understood at all.\hfill\vspace*{1ex}
+
+
+
+Bug spotted by Michalis on 2005{-}12{-}04 when trying `make htmldocs' on fpc compiler sources, in file globals.pas.
+
+Update 2005{-}12{-}05: {\$}if is sorta handled now, and so is {\$}ifend. This testcase is parsed now. There is still work remaining to be done with regards to {\$}if and {\$}elseif, this is documented on [\href{https://github.com/pasdoc/pasdoc/wiki/ToDo}{https://github.com/pasdoc/pasdoc/wiki/ToDo}].
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MathQNaN}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MathQNaN}
+\fi
+\label{ok_if_directive-MathQNaN}
+\index{MathQNaN}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MathQNaN : tdoublearray = (0,0,252,255,0,0,0,0);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MathInf}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MathInf}
+\fi
+\label{ok_if_directive-MathInf}
+\index{MathInf}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MathInf : tdoublearray = (0,0,240,127,0,0,0,0);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MathNegInf}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MathNegInf}
+\fi
+\label{ok_if_directive-MathNegInf}
+\index{MathNegInf}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MathNegInf : tdoublearray = (0,0,240,255,0,0,0,0);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MathPi}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MathPi}
+\fi
+\label{ok_if_directive-MathPi}
+\index{MathPi}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MathPi : tdoublearray =  (251,33,9,64,24,45,68,84);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Included}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Included}
+\fi
+\label{ok_if_directive-Included}
+\index{Included}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+Included = 1;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

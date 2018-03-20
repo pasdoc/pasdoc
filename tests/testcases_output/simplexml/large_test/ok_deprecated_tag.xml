@@ -1,0 +1,24 @@
+<unit name="ok_deprecated_tag.pas">
+  <description><abstract>Test @deprecated tag.</abstract><detailed> Everything in this unit is deprecated. Even this whole unit itself. </detailed></description>
+  <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+  </function>
+  <constant name="MyConst = 1;">
+  </constant>
+  <variable name="MyVar: Integer;">
+  </variable>
+  <type name="TMyType = Integer;">
+    <description><detailed> Normal type deprecated.</detailed></description>
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><detailed> Deprecated class.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethodLibrary" type="procedure" declaration="procedure MyMethodLibrary;">
+    </function>
+    <variable name="MyField: Integer;">
+      <description><detailed>Deprecated field. </detailed></description>
+    </variable>
+    <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</detailed></description>
+    </property>
+  </structure>
+</unit>

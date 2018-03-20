@@ -1,0 +1,72 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit warning{\_}incorrect{\_}tag{\_}nesting}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EFoo\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{TestMe}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{EFoo Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EFoo {$>$} Exception
+%%%%Description
+\section{Functions and Procedures}
+\subsection*{TestMe}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure TestMe;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Now there is control inside PasDoc what tags can be embedded inside what.
+
+pasdoc should display appropriate warnings on following input:
+
+\begin{ttfamily}This is a code .\end{ttfamily}
+
+ 
+
+
+
+\par
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{warning_incorrect_tag_nesting.EFoo})] 
+\end{description}
+
+
+\end{list}
+\end{document}

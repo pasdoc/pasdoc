@@ -1,0 +1,31 @@
+<unit name="ok_complicated_record.pas">
+  <description><abstract> This unit is used for converting to and from the BigEndian format. See http://community.borland.com/article/0,1410,28964,00.html.</abstract><detailed>Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Richard B Winston. pasdoc passes it, but the test checks many important things (line glueing single-line comments by pasdoc, record with case etc.) so it's worth adding it to test cases. </detailed></description>
+  <function name="ConvertDouble" type="function" declaration="function ConvertDouble(const Value: double): double;">
+    <param name="Value">is the value to be converted.</param>
+    <result>Value after being converted to or from the BigEndian format.</result>
+    <description><abstract><code>ConvertDouble</code> converts Value to or from the BigEndian format.</abstract><detailed>  </detailed></description>
+  </function>
+  <function name="SwapDoubleBytes" type="procedure" declaration="procedure SwapDoubleBytes(Dest, Source: PDoubleEndianCnvRec);">
+    <description><abstract><code>SwapDoubleBytes</code> copies TDoubleEndianCnvRec.Bytes in reverse order from Source^ to Dest^.</abstract><detailed> <code>SwapDoubleBytes</code> is used in ConvertDouble.</detailed></description>
+  </function>
+  <type name="BytePos = (...);">
+    <description><detailed>enumeration used in variant record</detailed></description>
+  </type>
+  <type name="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
+    <description><detailed><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</detailed></description>
+  </type>
+  <structure name="TDoubleEndianCnvRec" name_with_generic="TDoubleEndianCnvRec" type="packed record">
+    <description><abstract><code>TDoubleEndianCnvRec</code> is used in ConvertDouble to convert a double to or from the BigEndian format.</abstract><detailed> 
+TDoubleEndianCnvRec = packed record
+  case BytePos of
+    EndVal: (EndianVal: double);
+    ByteVal: (Bytes: array[0..SizeOf(double) - 1] of byte);
+end;</detailed></description>
+    <variable name="Bytes: array[0..SizeOf(double) - 1] of byte">
+      <description><detailed>Overlapping bytes of the double</detailed></description>
+    </variable>
+    <variable name="EndianVal: double">
+      <description><detailed>The value we are trying to convert</detailed></description>
+    </variable>
+  </structure>
+</unit>

@@ -1,0 +1,114 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}enum{\_}links}
+\section{Overview}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Functions and Procedures}
+\subsection*{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test of links.
+
+\begin{ttfamily}TMyEnum\end{ttfamily}(\ref{ok_enum_links-TMyEnum}), \begin{ttfamily}me1\end{ttfamily}(\ref{ok_enum_links-me1}), \begin{ttfamily}me2\end{ttfamily}(\ref{ok_enum_links-me2}), \begin{ttfamily}me3\end{ttfamily}(\ref{ok_enum_links-me3}).
+
+\begin{ttfamily}TMyScopedEnum\end{ttfamily}(\ref{ok_enum_links-TMyScopedEnum}), \begin{ttfamily}TMyScopedEnum.mse1\end{ttfamily}(\ref{ok_enum_links-mse1}), \begin{ttfamily}TMyScopedEnum.mse2\end{ttfamily}(\ref{ok_enum_links-mse2}), \begin{ttfamily}TMyScopedEnum.mse3\end{ttfamily}(\ref{ok_enum_links-mse3}).
+
+\begin{ttfamily}TMyScopedEnum\end{ttfamily}(\ref{ok_enum_links-TMyScopedEnum}), TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: \begin{ttfamily}mse1\end{ttfamily}(\ref{ok_enum_links-mse1}), \begin{ttfamily}mse2\end{ttfamily}(\ref{ok_enum_links-mse2}), \begin{ttfamily}mse3\end{ttfamily}(\ref{ok_enum_links-mse3}).
+
+\end{list}
+\section{Types}
+\subsection*{TMyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyEnum = (...);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+My enumerated type description.\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{me1}] My enumerated value 1 description.
+\item[\texttt{me2}] My enumerated value 2 description.
+\item[\texttt{me3}] My enumerated value 3 description.
+\end{description}
+
+
+\end{list}
+\subsection*{TMyScopedEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyScopedEnum = (...);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+My enumerated type description.\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{mse1}] My enumerated value 1 description.
+\item[\texttt{mse2}] My enumerated value 2 description.
+\item[\texttt{mse3}] My enumerated value 3 description.
+\end{description}
+
+
+\end{list}
+\end{document}

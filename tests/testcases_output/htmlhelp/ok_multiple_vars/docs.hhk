@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_multiple_vars.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_multiple_vars.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="C">
+<param name="Local" value="ok_multiple_vars.html#C">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="D">
+<param name="Local" value="ok_multiple_vars.html#D">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_multiple_vars.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_multiple_vars.TMyClass.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_multiple_vars.TMyClass.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="C">
+<param name="Local" value="ok_multiple_vars.TMyClass.html#C">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="D">
+<param name="Local" value="ok_multiple_vars.TMyClass.html#D">
+</object>
+</ul>
+</body></html>

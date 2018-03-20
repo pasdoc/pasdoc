@@ -1,0 +1,8 @@
+<unit name="warning_incorrect_tag_nesting.pas">
+  <function name="TestMe" type="procedure" declaration="procedure TestMe;">
+    <description><detailed>Now there is control inside PasDoc what tags can be embedded inside what. pasdoc should display appropriate warnings on following input: <code>This is a code .</code>    </detailed></description>
+  </function>
+  <structure name="EFoo" name_with_generic="EFoo" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+</unit>

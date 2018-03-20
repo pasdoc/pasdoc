@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_no_sort.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAA">
+<param name="Local" value="ok_no_sort.TMyClass.html#AAA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZ">
+<param name="Local" value="ok_no_sort.TMyClass.html#ZZZ">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyEnum">
+<param name="Local" value="ok_no_sort.html#TMyEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord">
+<param name="Local" value="ok_no_sort.TMyRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAA">
+<param name="Local" value="ok_no_sort.TMyRecord.html#AAA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZ">
+<param name="Local" value="ok_no_sort.TMyRecord.html#ZZZ">
+</object>
+</ul>
+</body></html>

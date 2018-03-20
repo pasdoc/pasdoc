@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="no_auto_link_to_me">
+<param name="Local" value="ok_auto_link.html#no_auto_link_to_me">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_auto_link.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Field">
+<param name="Local" value="ok_auto_link.TMyClass.html#Field">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Var1">
+<param name="Local" value="ok_auto_link.html#Var1">
+</object>
+</ul>
+</body></html>

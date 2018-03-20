@@ -1,0 +1,31 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}special{\_}chars}
+\section{Description}
+Yet another test of @longcode.\hfill\vspace*{1ex}
+
+
+
+\texttt{\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~Writeln('Some~special~HTML~({$<$},~{$>$},~{\&})~and~LaTeX~({\{},~{\}},~{\textbackslash})~chars.');\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+\end{document}

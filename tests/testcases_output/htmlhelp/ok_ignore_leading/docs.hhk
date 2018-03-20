@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_ignore_leading.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_ignore_leading.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="C">
+<param name="Local" value="ok_ignore_leading.html#C">
+</object>
+</ul>
+</body></html>

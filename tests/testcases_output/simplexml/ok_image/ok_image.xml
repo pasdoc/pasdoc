@@ -1,0 +1,5 @@
+<unit name="ok_image.pas">
+  <description><abstract>This is @image tag test.</abstract><detailed> Note that for dvi, eps image will be chosen (for pdf and html, jpg): /home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_image_picture.eps Note that using the same image for the 2nd time will cause the same image to be included in the output (i.e. in the output we have one copy of ok_image_picture.jpg, not two). /home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_image_picture.eps Now note that pdf format will choose pdf version of the image: /home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_image_picture.eps</detailed></description>
+  <constant name="Unimportant = 0;">
+  </constant>
+</unit>

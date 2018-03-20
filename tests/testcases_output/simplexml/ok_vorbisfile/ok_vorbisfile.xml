@@ -1,0 +1,93 @@
+<unit name="ok_vorbisfile.pas">
+  <description><detailed>API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
+  <constant name="NOTOPEN   = 0;">
+  </constant>
+  <constant name="PARTOPEN  = 1;">
+  </constant>
+  <constant name="OPENED    = 2;">
+  </constant>
+  <constant name="STREAMSET = 3;">
+  </constant>
+  <constant name="INITSET   = 4;">
+  </constant>
+  <variable name="ov_clear: function(Vf: POggVorbis_File): CInt; cdecl;">
+  </variable>
+  <variable name="VorbisFileInited: boolean;">
+  </variable>
+  <type name="TSizeT = LongWord;">
+  </type>
+  <type name="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;">
+  </type>
+  <type name="TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;">
+  </type>
+  <type name="TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;">
+  </type>
+  <type name="TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;">
+  </type>
+  <type name="Pov_callbacks = ^Tov_callbacks;">
+  </type>
+  <type name="POggVorbis_File = ^TOggVorbis_File;">
+  </type>
+  <structure name="Tov_callbacks" name_with_generic="Tov_callbacks" type="record">
+    <variable name="read_func: TVorbisFileReadFunc;">
+    </variable>
+    <variable name="seek_func: TVorbisFileSeekFunc;">
+    </variable>
+    <variable name="close_func: TVorbisFileCloseFunc;">
+    </variable>
+    <variable name="tell_func: TVorbisFileTellFunc;">
+    </variable>
+  </structure>
+  <structure name="TOggVorbis_File" name_with_generic="TOggVorbis_File" type="record">
+    <variable name="datasource: Pointer;">
+    </variable>
+    <variable name="seekable: Cint;">
+      <description><detailed>* Pointer to a FILE *, etc. *</detailed></description>
+    </variable>
+    <variable name="offset: Int64;">
+    </variable>
+    <variable name="_end: Int64;">
+    </variable>
+    <variable name="oy: Togg_sync_state;">
+    </variable>
+    <variable name="links: Cint;">
+    </variable>
+    <variable name="offsets: PInt64;">
+    </variable>
+    <variable name="dataoffsets: PInt64;">
+    </variable>
+    <variable name="serialnos: PCLong;">
+    </variable>
+    <variable name="pcmlengths: PInt64;">
+    </variable>
+    <variable name="vi: Pvorbis_info;">
+      <description><detailed>* overloaded to maintain binary compatability; x2 size, stores both beginning and end values *</detailed></description>
+    </variable>
+    <variable name="vc: Pvorbis_comment;">
+    </variable>
+    <variable name="pcm_offset: Int64;">
+      <description><detailed>* Decoding working state local storage *</detailed></description>
+    </variable>
+    <variable name="ready_state: CInt;">
+    </variable>
+    <variable name="current_serialno: Clong;">
+    </variable>
+    <variable name="current_link: CInt;">
+    </variable>
+    <variable name="bittrack: double;">
+    </variable>
+    <variable name="samptrack: double;">
+    </variable>
+    <variable name="os: Togg_stream_state;">
+    </variable>
+    <variable name="vd: Tvorbis_dsp_state;">
+      <description><detailed>* take physical pages, weld into a logical stream of packets *</detailed></description>
+    </variable>
+    <variable name="vb: Tvorbis_block;">
+      <description><detailed>* central working state for the packet-&gt;PCM decoder *</detailed></description>
+    </variable>
+    <variable name="callbacks: Tov_callbacks;">
+      <description><detailed>* local working space for packet-&gt;PCM decode *</detailed></description>
+    </variable>
+  </structure>
+</unit>

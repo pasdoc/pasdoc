@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_macros.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FourConst">
+<param name="Local" value="ok_macros.html#FourConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc1">
+<param name="Local" value="ok_macros.html#MyProc1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc2">
+<param name="Local" value="ok_macros.html#MyProc2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc3">
+<param name="Local" value="ok_macros.html#MyProc3">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="OneAndNotNothing">
+<param name="Local" value="ok_macros.html#OneAndNotNothing">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="OnlyOne">
+<param name="Local" value="ok_macros.html#OnlyOne">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TAncestor">
+<param name="Local" value="ok_macros.TAncestor.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ThisShouldBeIncluded">
+<param name="Local" value="ok_macros.html#ThisShouldBeIncluded">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ThisShouldBeIncluded2">
+<param name="Local" value="ok_macros.html#ThisShouldBeIncluded2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ThisShouldBeTrue">
+<param name="Local" value="ok_macros.html#ThisShouldBeTrue">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_macros.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Init">
+<param name="Local" value="ok_macros.TMyClass.html#Init">
+</object>
+</ul>
+</body></html>

@@ -1,0 +1,75 @@
+<unit name="ok_hint_directives.pas">
+  <description><abstract>Test parsing &quot;platform&quot;, &quot;library&quot; and &quot;deprecated&quot; directives (called collectively &quot;hint directives&quot;) by pasdoc.</abstract><detailed> Related tracker bug: [ 1196073 ] &quot;some modifiers are not parsed&quot;. We want to support all situations where these directives are allowed in modern FPC (&gt;= 2.5.1) and Delphi. Their placement in unfortunately not consistent, thanks go to Borland. Quoting Delphi help (from Kylix 3): &quot;Hint directives can be applied to type declarations, variable declarations, class and structure declarations, field declarations within classes or records, procedure, function and method declarations, and unit declarations.&quot; Summary: 
+
+<orderedlist>
+<item> Between &quot;unit UnitName&quot; and hints you mustn't put any semicolon, and you mustn't put any semicolons between hints.  Same thing for CIOs (Classes / Interfaces / Objects / Records).  Same thing for CIOs fields.  Same thing for variables.  Same thing for constants.</item>
+<item> Between &quot;procedure/function Name (...)&quot; and hints you must put a semicolon, and semicolons between hints are allowed but not required. It seems that you can't specify &quot;library&quot; directive for procedures/functions -- why? Probably because &quot;library&quot; is a keyword and Borland was unable to correctly modify it's compiler to parse such thing. But pasdoc parses library directive correctly.</item>
+<item> Between method and hints you must put a semicolon, and semicolon between hints is required. You can specify &quot;library&quot; directive for methods.</item>
+</orderedlist>
+
+ I'm unable to figure out how to specify these hints for normal (non-structural) types. If anyone can 
+
+<unorderedlist>
+<item>tell me how to specify hint directives for non-structural types or</item>
+<item>explain why parsing these directives is so weird and inconsistent in Delphi or</item>
+<item>point me to some precise documentation by Borland specifying grammar rules with these directives</item>
+</unorderedlist>
+
+ ... then please send email about this to pasdoc-main mailing list (or directly to me, Michalis Kamburelis, &lt;kambi@users.sourceforge.net&gt;, if your comments about this do not really concern pasdoc). I will be grateful. Contrary to most units in tests/, this unit is kept at compileable by Delphi/Kylix and FPC. That's because this unit is also a test whether we really specify here hint directives in the way parseable by Delphi/Kylix.</detailed></description>
+  <function name="TestFuncCombined" type="function" declaration="function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;">
+  </function>
+  <function name="TestFuncDeprecated" type="function" declaration="function TestFuncDeprecated: Integer; deprecated;">
+  </function>
+  <function name="TestFuncPlatform" type="function" declaration="function TestFuncPlatform: Integer; platform;">
+  </function>
+  <function name="TestProcCombined" type="procedure" declaration="procedure TestProcCombined(SomeParams: Integer); deprecated  platform;">
+  </function>
+  <function name="TestProcDeprecated" type="procedure" declaration="procedure TestProcDeprecated; deprecated;">
+  </function>
+  <function name="TestProcPlatform" type="procedure" declaration="procedure TestProcPlatform; platform;">
+  </function>
+  <constant name="TestConstPlatform = 1 platform;">
+  </constant>
+  <constant name="TestConstLibrary = 2 library;">
+  </constant>
+  <constant name="TestConstDeprecated = 3 deprecated;">
+  </constant>
+  <constant name="TestConstCombined = 4 deprecated library platform;">
+  </constant>
+  <variable name="TestVarPlatform: Integer platform;">
+  </variable>
+  <variable name="TestVarLibrary: Integer library;">
+  </variable>
+  <variable name="TestVarDeprecated: Integer deprecated;">
+  </variable>
+  <variable name="TestVarCombined: Integer library deprecated platform;">
+  </variable>
+  <structure name="TTestClassDeprecated" name_with_generic="TTestClassDeprecated" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="TestMethodCombined" type="procedure" declaration="procedure TestMethodCombined; library; deprecated; platform;">
+    </function>
+    <function name="TestMethodDeprecated" type="procedure" declaration="procedure TestMethodDeprecated; deprecated;">
+    </function>
+    <function name="TestMethodLibrary" type="procedure" declaration="procedure TestMethodLibrary; library;">
+    </function>
+    <function name="TestMethodPlatform" type="procedure" declaration="procedure TestMethodPlatform; platform;">
+    </function>
+    <variable name="TestFieldCombined: Integer library deprecated platform;">
+    </variable>
+    <variable name="TestFieldDeprecated: Integer deprecated;">
+    </variable>
+    <variable name="TestFieldLibrary: Integer library;">
+    </variable>
+    <variable name="TestFieldPlatform: Integer platform;">
+    </variable>
+    <property name="TestPropertyCombined" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>Testing on FPC 2.6.0: Hint directives for properties are allowed Ok. I don't know if this is Delphi-compatible or FPC extension, anyway PasDoc supports it too.</detailed></description>
+    </property>
+    <property name="TestPropertyCombined2" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="TTestRecordDeprecated" name_with_generic="TTestRecordDeprecated" type="record">
+    <variable name="TestFieldPlatform: Integer platform;">
+    </variable>
+  </structure>
+</unit>

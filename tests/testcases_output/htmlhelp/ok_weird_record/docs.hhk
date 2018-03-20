@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="byRef">
+<param name="Local" value="WeirdRecord.html#byRef">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeirdRecord">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="bVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#bVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="iVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#iVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="lVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#lVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="pbVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#pbVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="piVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#piVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="plVal">
+<param name="Local" value="WeirdRecord.TWeirdRecord.html#plVal">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="val1">
+<param name="Local" value="WeirdRecord.html#val1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="val2">
+<param name="Local" value="WeirdRecord.html#val2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="val4">
+<param name="Local" value="WeirdRecord.html#val4">
+</object>
+</ul>
+</body></html>

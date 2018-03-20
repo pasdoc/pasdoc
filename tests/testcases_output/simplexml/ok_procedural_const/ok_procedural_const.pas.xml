@@ -1,0 +1,6 @@
+<unit name="ok_procedural_const.pas">
+  <constant name="FnTest1 = function(const Foo: Integer): Integer; cdecl = nil;">
+  </constant>
+  <constant name="FnTest2 = procedure(const Foo: Integer); stdcall = nil;">
+  </constant>
+</unit>

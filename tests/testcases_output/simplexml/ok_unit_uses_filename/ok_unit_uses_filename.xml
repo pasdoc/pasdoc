@@ -1,0 +1,5 @@
+<unit name="ok_unit_uses_filename.pas">
+  <uses name="ok_auto_abstract"/>
+  <uses name="Classes"/>
+  <uses name="ok_back_comment"/>
+</unit>

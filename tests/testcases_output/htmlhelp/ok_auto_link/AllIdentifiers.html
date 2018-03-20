@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>All Identifiers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="allitems">All Identifiers</h1>
+<table class="itemstable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemunit">Unit</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a></td>
+<td class="itemunit"><a class="bold" href="ok_auto_link.html">ok_auto_link</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="ok_auto_link.TMyClass.html">TMyClass</a></td>
+<td class="itemunit"><a class="bold" href="ok_auto_link.html">ok_auto_link</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="ok_auto_link.html#Var1">Var1</a></td>
+<td class="itemunit"><a class="bold" href="ok_auto_link.html">ok_auto_link</a></td>
+<td class="itemdesc"><p></p>
+
+<dl class="paragraph_spacing">
+  <dt>Test of auto-linking:</dt>
+  <dd><p> Self name is <code>Var1</code>, simple ident is <a class="normal" href="ok_auto_link.TMyClass.html">TMyClass</a>, qualified ident is <a class="normal" href="ok_auto_link.TMyClass.html#Field">TMyClass.Field</a>.
+
+<p>Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: <a class="normal" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a>.
+
+<p>Note that auto-linking works also inside @code:
+
+<p><code> Self name is <code>Var1</code>, simple ident is <a class="normal" href="ok_auto_link.TMyClass.html">TMyClass</a>, qualified ident is <a class="normal" href="ok_auto_link.TMyClass.html#Field">TMyClass.Field</a>. </code> </p></dd>
+  <dt>Test of @noAutoLink:</dt>
+  <dd><p> Things below should <i>not</i> be converted to links:
+
+<p> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.
+
+<p>Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: <a class="normal" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a>.
+
+<p>Simple ident once again TMyClass.
+
+<p>Inside @code:
+
+<p><code> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.</code>  </p></dd>
+</dl>
+
+<p></p></td>
+</tr>
+</table>
+</body></html>

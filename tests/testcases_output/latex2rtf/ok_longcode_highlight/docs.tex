@@ -1,0 +1,35 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}highlight}
+\section{Description}
+Test of highlighting in @longCode some things.\hfill\vspace*{1ex}
+
+
+
+See [https://sourceforge.net/tracker/?func=detail{\&}atid=354213{\&}aid=1422011{\&}group{\_}id=4213]
+
+\texttt{\\\nopagebreak[3]
+TOptions~=~}\textbf{class}\texttt{(TForm)\\\nopagebreak[3]
+}\textbf{private}\texttt{\\\nopagebreak[3]
+~~}\textbf{procedure}\texttt{~WMSysCmd(}\textbf{var}\texttt{~Msg:~TWMSysCommand);~}\textbf{message}\texttt{~WM{\_}SYSCOMMAND;\\\nopagebreak[3]
+...\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+\end{document}

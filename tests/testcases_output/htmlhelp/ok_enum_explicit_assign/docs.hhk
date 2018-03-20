@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TEnum1">
+<param name="Local" value="ok_enum_explicit_assign.html#TEnum1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TEnum2">
+<param name="Local" value="ok_enum_explicit_assign.html#TEnum2">
+</object>
+</ul>
+</body></html>

@@ -1,0 +1,13 @@
+<unit name="ok_class_function.pas">
+  <description><detailed>Test for handling class functions in PasDoc</detailed></description>
+  <structure name="TDummy" name_with_generic="TDummy" type="class">
+    <description><abstract>This class is designed to see if PasDoc can parse class functions correctly.</abstract></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyFunction" type="function" declaration="Class Function MyFunction: integer;">
+      <description><detailed>Test To see if PasDoc can handle this.</detailed></description>
+    </function>
+    <function name="MyProcedure" type="procedure" declaration="class procedure MyProcedure;">
+      <description><detailed>Test To see if PasDoc can handle this.</detailed></description>
+    </function>
+  </structure>
+</unit>

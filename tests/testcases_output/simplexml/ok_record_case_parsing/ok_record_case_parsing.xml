@@ -1,0 +1,49 @@
+<unit name="ok_record_case_parsing.pas">
+  <structure name="TRec1" name_with_generic="TRec1" type="record">
+    <variable name="A: Integer">
+    </variable>
+    <variable name="B: Integer">
+    </variable>
+  </structure>
+  <structure name="TRec2" name_with_generic="TRec2" type="record">
+    <variable name="Field1: boolean">
+    </variable>
+    <variable name="A: Integer">
+    </variable>
+    <variable name="B: Integer;">
+    </variable>
+  </structure>
+  <structure name="TRec3" name_with_generic="TRec3" type="record">
+    <variable name="A: Integer;">
+      <description><detailed>Descr of A</detailed></description>
+    </variable>
+    <variable name="B: ShortString;">
+      <description><detailed>Descr of B</detailed></description>
+    </variable>
+    <variable name="C: Integer">
+      <description><detailed>Description of C</detailed></description>
+    </variable>
+    <variable name="D: Integer;">
+      <description><detailed>Descr of D, E, F</detailed></description>
+    </variable>
+    <variable name="E: Integer;">
+      <description><detailed>Descr of D, E, F</detailed></description>
+    </variable>
+    <variable name="F: Integer;">
+      <description><detailed>Descr of D, E, F</detailed></description>
+    </variable>
+    <variable name="G: ShortString;">
+    </variable>
+    <variable name="H: Integer">
+      <description><detailed>Descr of H</detailed></description>
+    </variable>
+  </structure>
+  <structure name="TRec4" name_with_generic="TRec4" type="record">
+    <variable name="A: Integer">
+    </variable>
+    <variable name="B: Integer">
+    </variable>
+    <variable name="C: Integer">
+    </variable>
+  </structure>
+</unit>

@@ -1,0 +1,122 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}auto{\_}link}
+\section{Description}
+Auto{-}link tests.\hfill\vspace*{1ex}
+
+
+
+Self name: \begin{ttfamily}ok{\_}auto{\_}link\end{ttfamily}, simple identifiers \begin{ttfamily}Var1\end{ttfamily}(\ref{ok_auto_link-Var1}), qualified ident: \begin{ttfamily}ok{\_}auto{\_}link.Var1\end{ttfamily}(\ref{ok_auto_link-Var1}).
+
+Ident that can't be auto{-}linked: no{\_}auto{\_}link{\_}to{\_}me. Explicit link to ident that can't be auto{-}linked: \begin{ttfamily}no{\_}auto{\_}link{\_}to{\_}me\end{ttfamily}(\ref{ok_auto_link-no_auto_link_to_me}).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Field}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Field: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\section{Constants}
+\subsection*{no{\_}auto{\_}link{\_}to{\_}me}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+no{\_}auto{\_}link{\_}to{\_}me = 1;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\section{Variables}
+\subsection*{Var1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+Var1: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{description}
+\item[Test of auto{-}linking:]  Self name is \begin{ttfamily}Var1\end{ttfamily}, simple ident is \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_auto_link.TMyClass}), qualified ident is \begin{ttfamily}TMyClass.Field\end{ttfamily}(\ref{ok_auto_link.TMyClass-Field}).
+
+Ident that can't be auto{-}linked: no{\_}auto{\_}link{\_}to{\_}me. Explicit link to ident that can't be auto{-}linked: \begin{ttfamily}no{\_}auto{\_}link{\_}to{\_}me\end{ttfamily}(\ref{ok_auto_link-no_auto_link_to_me}).
+
+Note that auto{-}linking works also inside @code:
+
+\begin{ttfamily} Self name is \begin{ttfamily}Var1\end{ttfamily}, simple ident is \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_auto_link.TMyClass}), qualified ident is \begin{ttfamily}TMyClass.Field\end{ttfamily}(\ref{ok_auto_link.TMyClass-Field}). \end{ttfamily} 
+\item[Test of @noAutoLink:]  Things below should \textit{not} be converted to links:
+
+ Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.
+
+Ident that can't be auto{-}linked: no{\_}auto{\_}link{\_}to{\_}me. Explicit link to ident that can't be auto{-}linked: \begin{ttfamily}no{\_}auto{\_}link{\_}to{\_}me\end{ttfamily}(\ref{ok_auto_link-no_auto_link_to_me}).
+
+Simple ident once again TMyClass.
+
+Inside @code:
+
+\begin{ttfamily} Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.\end{ttfamily}  
+\end{description}
+
+\end{list}
+\end{document}

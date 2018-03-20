@@ -1,0 +1,27 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\sloppy
+\hyphenation{anotherverylong-wordthistimeitshouldbebrokenbecauseofhyphenation}
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}latex{\_}head}
+\section{Description}
+Unit testing --latex{-}head option. Very long word: unitfortestingoflatexheadoptionveryveryveryveryverylongword.
+
+Another very long word, this time it should be broken because of {\textbackslash}hyphenation: anotherverylongwordthistimeitshouldbebrokenbecauseofhyphenation.
+\end{document}

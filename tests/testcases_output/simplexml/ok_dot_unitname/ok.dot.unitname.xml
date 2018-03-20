@@ -1,0 +1,3 @@
+<unit name="ok_dot_unitname.pas">
+  <uses name="dot.inside.unitname"/>
+</unit>

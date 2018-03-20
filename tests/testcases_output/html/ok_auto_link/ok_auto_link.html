@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_auto_link</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit ok_auto_link</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+Auto-link tests.</p>
+<p>
+
+
+<p>Self name: <code>ok_auto_link</code>, simple identifiers <a class="normal" href="ok_auto_link.html#Var1">Var1</a>, qualified ident: <a class="normal" href="ok_auto_link.html#Var1">ok_auto_link.Var1</a>.
+
+<p>Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: <a class="normal" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a>.</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_auto_link.TMyClass.html"><code>TMyClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a></b> = 1;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_auto_link.html#Var1">Var1</a></b>: Integer;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="no_auto_link_to_me"></span><code><b>no_auto_link_to_me</b> = 1;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Variables</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Var1"></span><code><b>Var1</b>: Integer;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+</p>
+
+<dl class="paragraph_spacing">
+  <dt>Test of auto-linking:</dt>
+  <dd><p> Self name is <code>Var1</code>, simple ident is <a class="normal" href="ok_auto_link.TMyClass.html">TMyClass</a>, qualified ident is <a class="normal" href="ok_auto_link.TMyClass.html#Field">TMyClass.Field</a>.
+
+<p>Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: <a class="normal" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a>.
+
+<p>Note that auto-linking works also inside @code:
+
+<p><code> Self name is <code>Var1</code>, simple ident is <a class="normal" href="ok_auto_link.TMyClass.html">TMyClass</a>, qualified ident is <a class="normal" href="ok_auto_link.TMyClass.html#Field">TMyClass.Field</a>. </code> </p></dd>
+  <dt>Test of @noAutoLink:</dt>
+  <dd><p> Things below should <i>not</i> be converted to links:
+
+<p> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.
+
+<p>Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: <a class="normal" href="ok_auto_link.html#no_auto_link_to_me">no_auto_link_to_me</a>.
+
+<p>Simple ident once again TMyClass.
+
+<p>Inside @code:
+
+<p><code> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.</code>  </p></dd>
+</dl>
+
+<p></p>
+</td></tr>
+</table>
+</td></tr></table></body></html>

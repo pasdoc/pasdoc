@@ -1,0 +1,10 @@
+<unit name="ok_see_also.pas">
+  <description><detailed>This is a testing unit for @seealso tag.  </detailed></description>
+  <function name="Foo" type="procedure" declaration="procedure Foo;">
+    <description><abstract>Abstract of Foo.</abstract><detailed> Further description of Foo. </detailed></description>
+  </function>
+  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class">
+    <description><abstract>Abstract of TSomeClass.</abstract><detailed> Further description of TSomeClass.  </detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

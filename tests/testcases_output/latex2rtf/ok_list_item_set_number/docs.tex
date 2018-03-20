@@ -1,0 +1,32 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}list{\_}item{\_}set{\_}number}
+\section{Description}
+Testcase for [https://sourceforge.net/tracker/?func=detail{\&}atid=104213{\&}aid=1533017{\&}group{\_}id=4213]\hfill\vspace*{1ex}
+
+
+
+\begin{enumerate}
+\setcounter{enumi}{-1} \setcounter{enumii}{-1} \setcounter{enumiii}{-1} \setcounter{enumiv}{-1} 
+\item foo
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item bar
+\end{enumerate}
+\end{document}

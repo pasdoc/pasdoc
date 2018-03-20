@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_property_decl.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProperty">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyProperty">
+</object>
+</ul>
+</body></html>

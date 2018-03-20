@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="GlobalConst">
+<param name="Local" value="ok_nested_types.html#GlobalConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TOuterClass">
+<param name="Local" value="ok_nested_types.TOuterClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="OuterConst1">
+<param name="Local" value="ok_nested_types.TOuterClass.html#OuterConst1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="OuterConst2">
+<param name="Local" value="ok_nested_types.TOuterClass.html#OuterConst2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="OuterPublicProc">
+<param name="Local" value="ok_nested_types.TOuterClass.html#OuterPublicProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TInnerImplicitRecord">
+<param name="Local" value="ok_nested_types.TOuterClass.TInnerImplicitRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FInnerPublicRecField">
+<param name="Local" value="ok_nested_types.TOuterClass.TInnerImplicitRecord.html#FInnerPublicRecField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InnerPublicRecProc">
+<param name="Local" value="ok_nested_types.TOuterClass.TInnerImplicitRecord.html#InnerPublicRecProc">
+</object>
+</ul>
+</body></html>

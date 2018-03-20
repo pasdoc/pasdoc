@@ -1,0 +1,96 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}param{\_}raises{\_}returns{\_}proctype}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EFoo\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{EFoo Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EFoo {$>$} Exception
+%%%%Description
+\section{Types}
+\subsection*{TMyProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyProcedure = procedure(A: integer);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] Description of param A
+\end{description}
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_param_raises_returns_proctype.EFoo})] Description when EFoo is raised
+\end{description}
+
+
+\end{list}
+\subsection*{TMyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyMethod = function(A: integer): boolean of object;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+  \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] Description of param A
+\end{description}
+\item[\textbf{Returns}]\begin{ttfamily}True\end{ttfamily} or \begin{ttfamily}False\end{ttfamily}
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_param_raises_returns_proctype.EFoo})] Description when EFoo is raised
+\end{description}
+
+
+\end{list}
+\end{document}

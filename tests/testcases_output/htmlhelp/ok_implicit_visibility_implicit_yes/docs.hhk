@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_implicit_visibility.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyField">
+<param name="Local" value="ok_implicit_visibility.TMyClass.html#MyField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyMethod">
+<param name="Local" value="ok_implicit_visibility.TMyClass.html#MyMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProperty">
+<param name="Local" value="ok_implicit_visibility.TMyClass.html#MyProperty">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClassInMState">
+<param name="Local" value="ok_implicit_visibility.TMyClassInMState.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyField">
+<param name="Local" value="ok_implicit_visibility.TMyClassInMState.html#MyField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyMethod">
+<param name="Local" value="ok_implicit_visibility.TMyClassInMState.html#MyMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProperty">
+<param name="Local" value="ok_implicit_visibility.TMyClassInMState.html#MyProperty">
+</object>
+</ul>
+</body></html>

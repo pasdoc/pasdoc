@@ -1,0 +1,144 @@
+<unit name="ok_table.pas">
+  <description><abstract>Test of @table-related features.</abstract><detailed> Example from @table doc page in wiki: 
+
+<table>
+  <rowhead>
+    <cell>Value1</cell>
+    <cell>Value2</cell>
+    <cell>Result</cell>
+  </rowhead>
+  <row>
+    <cell><code>False</code></cell>
+    <cell><code>False</code></cell>
+    <cell><code>False</code></cell>
+  </row>
+  <row>
+    <cell><code>False</code></cell>
+    <cell><code>True</code></cell>
+    <cell><code>True</code></cell>
+  </row>
+  <row>
+    <cell><code>True</code></cell>
+    <cell><code>False</code></cell>
+    <cell><code>True</code></cell>
+  </row>
+  <row>
+    <cell><code>True</code></cell>
+    <cell><code>True</code></cell>
+    <cell><code>False</code></cell>
+  </row>
+</table>
+
+ Small tables tests: 
+
+<table>
+  <row>
+    <cell>One-cell table is OK</cell>
+  </row>
+</table>
+
+ 
+
+<table>
+  <rowhead>
+    <cell>One-cell head table is OK</cell>
+  </rowhead>
+</table>
+
+ 
+
+<table>
+  <rowhead>
+    <cell>A</cell>
+    <cell> Foo </cell>
+  </rowhead>
+</table>
+
+ Test that everything within @cell tag is OK. Actually, test below is a stripped down (to be accepted by LaTeX) version of a more advanced test in ok_table_nonlatex.pas file. 
+
+<table>
+  <rowhead>
+    <cell>Dashes: ---, --, -, --</cell>
+    <cell>URLs: http://pasdoc.sourceforge.net/</cell>
+  </rowhead>
+  <row>
+    <cell>C</cell>
+    <cell>D</cell>
+  </row>
+</table>
+
+ Now nested table and other nicies are within a normal row, instead of heading row. 
+
+<table>
+  <rowhead>
+    <cell>C</cell>
+    <cell>D</cell>
+  </rowhead>
+  <row>
+    <cell>Within a cell many things are are accepted</cell>
+    <cell>including paragraphs: This is new paragraph.</cell>
+  </row>
+  <row>
+    <cell>Dashes: ---, --, -, --.</cell>
+    <cell>URLs: http://pasdoc.sourceforge.net/</cell>
+  </row>
+  <row>
+    <cell>And, last but not least, nested table: 
+
+<table>
+  <rowhead>
+    <cell>1</cell>
+    <cell>2</cell>
+  </rowhead>
+  <rowhead>
+    <cell>3</cell>
+    <cell>4</cell>
+  </rowhead>
+</table>
+
+</cell>
+    <cell>B</cell>
+  </row>
+</table>
+
+ Some 2-row table tests: 
+
+<table>
+  <rowhead>
+    <cell>A</cell>
+    <cell>B</cell>
+  </rowhead>
+  <rowhead>
+    <cell>C</cell>
+    <cell>D</cell>
+  </rowhead>
+</table>
+
+ 
+
+<table>
+  <row>
+    <cell>A</cell>
+    <cell>B</cell>
+  </row>
+  <row>
+    <cell>C</cell>
+    <cell>D</cell>
+  </row>
+</table>
+
+ 
+
+<table>
+  <row>
+    <cell>A</cell>
+    <cell>B</cell>
+  </row>
+  <rowhead>
+    <cell>C</cell>
+    <cell>D</cell>
+  </rowhead>
+</table>
+
+</detailed></description>
+</unit>

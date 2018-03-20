@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Units">
+<param name="Local" value="AllUnits.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_link_1_char">
+<param name="Local" value="ok_link_1_char.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Classes">
+<param name="Local" value="ok_link_1_char.html#@Classes">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMeasurementPointItem">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FY">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="X">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#X">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Y">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#Y">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="SetX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SetY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetY">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Class Hierarchy">
+<param name="Local" value="ClassHierarchy.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Classes">
+<param name="Local" value="AllClasses.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMeasurementPointItem">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FY">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="X">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#X">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Y">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#Y">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="SetX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SetY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetY">
+</object>
+</ul>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Overview">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="All Units">
+<param name="Local" value="AllUnits.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Class Hierarchy">
+<param name="Local" value="ClassHierarchy.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Classes, Interfaces, Objects and Records">
+<param name="Local" value="AllClasses.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Types">
+<param name="Local" value="AllTypes.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Variables">
+<param name="Local" value="AllVariables.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Constants">
+<param name="Local" value="AllConstants.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Functions and Procedures">
+<param name="Local" value="AllFunctions.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Identifiers">
+<param name="Local" value="AllIdentifiers.html">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Legend">
+<param name="Local" value="Legend.html">
+</object>
+</ul>
+</body></html>

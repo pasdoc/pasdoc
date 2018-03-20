@@ -1,0 +1,3 @@
+<unit name="ok_tag_name_case.pas">
+  <description><detailed>Trivial unit to test that tag case does not matter. <code>Foo</code> <code>Foo</code> <code>Foo</code></detailed></description>
+</unit>

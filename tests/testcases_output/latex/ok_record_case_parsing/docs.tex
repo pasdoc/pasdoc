@@ -1,0 +1,357 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}record{\_}case{\_}parsing}
+\label{ok_record_case_parsing}
+\index{ok{\_}record{\_}case{\_}parsing}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TRec1\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TRec2\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TRec3\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TRec4\end{ttfamily} Record}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TRec1 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TRec1 Record}
+\fi
+\label{ok_record_case_parsing.TRec1}
+\index{TRec1}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{A}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_case_parsing.TRec1-A}
+\index{A}
+\item[\textbf{A}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public A: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec1-B}
+\index{B}
+\item[\textbf{B}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public B: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TRec2 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TRec2 Record}
+\fi
+\label{ok_record_case_parsing.TRec2}
+\index{TRec2}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Field1}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_case_parsing.TRec2-Field1}
+\index{Field1}
+\item[\textbf{Field1}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+published Field1: boolean\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec2-A}
+\index{A}
+\item[\textbf{A}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public A: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec2-B}
+\index{B}
+\item[\textbf{B}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public B: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TRec3 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TRec3 Record}
+\fi
+\label{ok_record_case_parsing.TRec3}
+\index{TRec3}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{A}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_case_parsing.TRec3-A}
+\index{A}
+\item[\textbf{A}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public A: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of A\label{ok_record_case_parsing.TRec3-B}
+\index{B}
+\item[\textbf{B}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public B: ShortString;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of B\label{ok_record_case_parsing.TRec3-C}
+\index{C}
+\item[\textbf{C}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public C: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of C\label{ok_record_case_parsing.TRec3-D}
+\index{D}
+\item[\textbf{D}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public D: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of D, E, F\label{ok_record_case_parsing.TRec3-E}
+\index{E}
+\item[\textbf{E}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public E: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of D, E, F\label{ok_record_case_parsing.TRec3-F}
+\index{F}
+\item[\textbf{F}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public F: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of D, E, F\label{ok_record_case_parsing.TRec3-G}
+\index{G}
+\item[\textbf{G}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public G: ShortString;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec3-H}
+\index{H}
+\item[\textbf{H}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public H: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Descr of H\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TRec4 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TRec4 Record}
+\fi
+\label{ok_record_case_parsing.TRec4}
+\index{TRec4}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{A}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_case_parsing.TRec4-A}
+\index{A}
+\item[\textbf{A}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public A: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec4-B}
+\index{B}
+\item[\textbf{B}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public B: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_record_case_parsing.TRec4-C}
+\index{C}
+\item[\textbf{C}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public C: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\end{document}

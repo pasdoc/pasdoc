@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TPluginManager">
+<param name="Local" value="ok_class_var.TPluginManager.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AfterPluginLoad">
+<param name="Local" value="ok_class_var.TPluginManager.html#AfterPluginLoad">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Instance">
+<param name="Local" value="ok_class_var.TPluginManager.html#Instance">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="LoadedPlugins">
+<param name="Local" value="ok_class_var.TPluginManager.html#LoadedPlugins">
+</object>
+</ul>
+</body></html>

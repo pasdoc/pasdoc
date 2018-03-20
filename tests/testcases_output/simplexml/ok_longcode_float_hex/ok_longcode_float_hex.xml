@@ -1,0 +1,3 @@
+<unit name="ok_longcode_float_hex.pas">
+  <description><abstract>Test of FormatFloat, FormatNumeric and FormatHex in TDocGenerator</abstract><detailed> begin X := 1.1; Y := 1; Z := $FF; end;</detailed></description>
+</unit>

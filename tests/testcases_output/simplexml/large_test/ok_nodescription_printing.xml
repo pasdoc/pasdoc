@@ -1,0 +1,29 @@
+<unit name="ok_nodescription_printing.pas">
+  <description><detailed>pasdoc's LaTeX documentation of this unit omitted many things before revision 1.20 of PasDoc_GenLatex.pas. Html docs were ok. I explained why omitting docs for things that don't have any documentation comment is bad in the letter &quot;Fix for LaTeX genetator omitting some things&quot; [http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&amp;forum_id=4647] Now, all identifiers in this unit should be visible in LaTeX documentation (and in html output too, of course).</detailed></description>
+  <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+  </function>
+  <constant name="MyConst = 9;">
+  </constant>
+  <variable name="MyVariable: Integer;">
+  </variable>
+  <type name="TMySimpleType = Integer;">
+  </type>
+  <structure name="TClass1" name_with_generic="TClass1" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    </function>
+    <variable name="MyField: Integer;">
+    </variable>
+    <property name="MyProperty" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+  </structure>
+  <structure name="TMyRecord2" name_with_generic="TMyRecord2" type="record">
+    <description><detailed>This record has a description, but still LaTeX output will not list it in it's summary list (in the &quot;Overview&quot; section). (i.e. before applying my patch)</detailed></description>
+  </structure>
+  <structure name="TMyRecord3" name_with_generic="TMyRecord3" type="record">
+    <variable name="MyRecField: Integer;">
+    </variable>
+  </structure>
+</unit>

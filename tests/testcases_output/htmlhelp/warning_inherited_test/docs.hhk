@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Test">
+<param name="Local" value="warning_inherited_test.html#Test">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass0">
+<param name="Local" value="warning_inherited_test.TMyClass0.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Clear">
+<param name="Local" value="warning_inherited_test.TMyClass0.html#Clear">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass1">
+<param name="Local" value="warning_inherited_test.TMyClass1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Clear">
+<param name="Local" value="warning_inherited_test.TMyClass1.html#Clear">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass2">
+<param name="Local" value="warning_inherited_test.TMyClass2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Clear">
+<param name="Local" value="warning_inherited_test.TMyClass2.html#Clear">
+</object>
+</ul>
+</body></html>

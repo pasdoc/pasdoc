@@ -1,0 +1,5 @@
+<unit name="ok_enumeration_auto_abstract.pas">
+  <type name="TEnum = (...);">
+    <description><abstract>Enum type.</abstract></description>
+  </type>
+</unit>

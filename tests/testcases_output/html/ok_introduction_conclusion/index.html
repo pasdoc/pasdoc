@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>My introduction</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<p><a href="ok_introduction.html" class="navigation">My introduction</a></p><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p><p><a href="ok_conclusion.html" class="navigation">Conclusion</a></p></td><td class="content">
+<h1 class="externalitem">Long descriptive name of my introduction</h1>
+ 
+
+<p> 
+
+<p><h2 class=""><span id="SecFirst"></span>First section</h2>
+
+
+<p>This file is supposed to contain some introductory material about whole code included in your documentation. You can note that all rules that apply to normal pasdoc descriptions apply also here, e.g. empty line means new paragraph:
+
+<p>New paragraph.
+
+<p>3rd paragraph. URLs are automatically recognized, like this: <a  href="http://pasdoc.sourceforge.net/">http://pasdoc.sourceforge.net/</a>. You have to write the @ twice (like @@) to get one @ in the output. Also normal @-tags work: <code>This is some code.</code>
+
+<p><h2 class=""><span id="SecSecond"></span>Second section</h2>
+
+
+<p>Here you can see some hot snippet from implementation of this feature, just to test @longcode tag:
+
+<p></p>
+
+<pre class="longcode">
+<span class="pascal_keyword">procedure</span> TPasDoc.HandleExtraFile(<span class="pascal_keyword">const</span> FileName: <span class="pascal_keyword">string</span>;
+  <span class="pascal_keyword">out</span> ExtraDescription: TExtraDescription);
+<span class="pascal_keyword">begin</span>
+  ExtraDescription := TExtraDescription.Create;
+  <span class="pascal_keyword">try</span>
+    DoMessage(<span class="pascal_numeric">2</span>, mtInformation, <span class="pascal_string">'Now parsing file %s...'</span>, [FileName]);
+
+    ExtraDescription.<span class="pascal_keyword">Name</span> := SCharsReplace(
+      ChangeFileExt( ExtractFileName(FileName) , <span class="pascal_string">''</span>), [<span class="pascal_string">' '</span>], <span class="pascal_string">'_'</span>);
+
+    ExtraDescription.RawDescription := FileToString(FileName);
+  <span class="pascal_keyword">except</span>
+    FreeAndNil(ExtraDescription);
+    <span class="pascal_keyword">raise</span>;
+  <span class="pascal_keyword">end</span>;
+<span class="pascal_keyword">end</span>;</pre>
+
+<p>
+
+<p><h2 class=""><span id="ThirdSecond"></span>Third section</h2>
+
+
+<p>Normal links work : <a class="normal" href="ok_introduction_conclusion.html#MyConstant">MyConstant</a>.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p><span id="SomeAnchor"></span> Here is a paragraph with an anchor. It looks like a normal paragraph, but you can link to it with @link(SomeAnchor).
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Blah.
+
+<p>Sections with the same user-visible names are OK (example when this is useful is below):
+
+<p><h2 class=""><span id="SecStrings"></span>Routines dealing with strings</h2>
+
+
+<p><h3 class=""><span id="SecStringsOverview"></span>Overview</h3>
+
+
+<p><h3 class=""><span id="SecStringsExamples"></span>Examples</h3>
+
+
+<p><h2 class=""><span id="SecIntegers"></span>Routines dealing with integers</h2>
+
+
+<p><h3 class=""><span id="SecIntegersOverview"></span>Overview</h3>
+
+
+<p><h3 class=""><span id="SecIntegersExamples"></span>Examples</h3>
+<h2 class="authors">Author</h2>
+<ul class="authors">
+<li>Kambi</li>
+</ul>
+<h2 class="created">Created</h2>
+<p>
+On some rainy day
+</p>
+</td></tr></table></body></html>

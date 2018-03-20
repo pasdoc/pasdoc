@@ -1,0 +1,79 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit warning{\_}lists}
+\label{warning_lists}
+\index{warning{\_}lists}
+\section{Description}
+Test various pasdoc warnings related to lists.\hfill\vspace*{1ex}
+
+
+
+These should cause warnings: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\end{enumerate} \begin{itemize}
+\item One
+\end{itemize} \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\end{enumerate} \begin{itemize}
+\item One
+\end{itemize} \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\end{enumerate} \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\end{enumerate}
+
+These should cause warnings, because @item must always be placed directly inside @orderedList or @unorderedList, and @orderedList and @unorderedList can contain only @item tags.
+
+   \begin{ttfamily}  \end{ttfamily}
+
+Warnings related to @definitionList and @itemLabel:
+
+
+
+Warnings related to @itemSpacing:
+
+ 
+\end{document}

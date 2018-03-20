@@ -1,0 +1,8 @@
+<unit name="ok_back_comment_private.pas">
+  <description><detailed>Testcase for [https://sourceforge.net/tracker/index.php?func=detail&amp;aid=1596563&amp;group_id=4213&amp;atid=104213]. The comment &quot;This should be ether omitted...&quot; should not be included anywhere (if private members are omitted, and this is the default).</detailed></description>
+  <constant name="ActionDescription = 'blah';">
+  </constant>
+  <structure name="EPingError" name_with_generic="EPingError" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+</unit>

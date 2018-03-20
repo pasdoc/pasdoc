@@ -1,0 +1,12 @@
+<unit name="warning_back_comment.pas">
+  <description><detailed>Descr of unit warning_back_comment</detailed></description>
+  <variable name="V1: Integer;">
+    <description><detailed>descr of V1 and V2</detailed></description>
+  </variable>
+  <variable name="V2: Integer;">
+    <description><detailed>descr of V1 and V2</detailed></description>
+  </variable>
+  <type name="TMyEnum = (...);">
+    <description><detailed>Descr of TMyEnum</detailed></description>
+  </type>
+</unit>

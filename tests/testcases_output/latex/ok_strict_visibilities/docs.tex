@@ -1,0 +1,100 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}strict{\_}visibilities}
+\label{ok_strict_visibilities}
+\index{ok{\_}strict{\_}visibilities}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TStrictVisibility\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TStrictVisibility Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TStrictVisibility Class}
+\fi
+\label{ok_strict_visibilities.TStrictVisibility}
+\index{TStrictVisibility}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TStrictVisibility {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{StrictProtectedInteger}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_strict_visibilities.TStrictVisibility-StrictPrivateInteger}
+\index{StrictPrivateInteger}
+\item[\textbf{StrictPrivateInteger}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+strict private StrictPrivateInteger: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par the visibility of \begin{ttfamily}StrictPrivateInteger\end{ttfamily} is "strict private."\label{ok_strict_visibilities.TStrictVisibility-StrictProtectedInteger}
+\index{StrictProtectedInteger}
+\item[\textbf{StrictProtectedInteger}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+strict protected StrictProtectedInteger: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par the visibility of \begin{ttfamily}StrictProtectedInteger\end{ttfamily} is "strict protected."\end{list}
+\end{document}

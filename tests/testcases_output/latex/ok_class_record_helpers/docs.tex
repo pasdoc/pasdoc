@@ -1,0 +1,180 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}class{\_}record{\_}helpers}
+\label{ok_class_record_helpers}
+\index{ok{\_}class{\_}record{\_}helpers}
+\section{Description}
+Test case for Delphi class and record helpers
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TSimpleRecord\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TMyRecordHelper\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TAncestorClassHelper\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TDescendantClassHelper\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TSimpleRecord Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSimpleRecord Record}
+\fi
+\label{ok_class_record_helpers.TSimpleRecord}
+\index{TSimpleRecord}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+description of \begin{ttfamily}TSimpleRecord\end{ttfamily}\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{SimpleField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_class_record_helpers.TSimpleRecord-SimpleField}
+\index{SimpleField}
+\item[\textbf{SimpleField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public SimpleField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par description of \begin{ttfamily}SimpleField\end{ttfamily}\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyRecordHelper Record helper for TSimpleRecord}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecordHelper Record helper for TSimpleRecord}
+\fi
+\label{ok_class_record_helpers.TMyRecordHelper}
+\index{TMyRecordHelper}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+description of \begin{ttfamily}TMyRecordHelper\end{ttfamily}\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{HelloWorld}\hspace*{\fill}
+
+\label{ok_class_record_helpers.TMyRecordHelper-HelloWorld}
+\index{HelloWorld}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected procedure HelloWorld;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+description of \begin{ttfamily}HelloWorld\end{ttfamily}
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TAncestorClassHelper Class helper for TApplication}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TAncestorClassHelper Class helper for TApplication}
+\fi
+\label{ok_class_record_helpers.TAncestorClassHelper}
+\index{TAncestorClassHelper}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TAncestorClassHelper {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+description of \begin{ttfamily}TAncestorClassHelper\end{ttfamily}\ifpdf
+\subsection*{\large{\textbf{TDescendantClassHelper Class helper for TApplication}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TDescendantClassHelper Class helper for TApplication}
+\fi
+\label{ok_class_record_helpers.TDescendantClassHelper}
+\index{TDescendantClassHelper}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDescendantClassHelper {$>$} \begin{ttfamily}TAncestorClassHelper\end{ttfamily}(\ref{ok_class_record_helpers.TAncestorClassHelper}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+description of \begin{ttfamily}TDescendantClassHelper\end{ttfamily}\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{HelloWorld}\hspace*{\fill}
+
+\label{ok_class_record_helpers.TDescendantClassHelper-HelloWorld}
+\index{HelloWorld}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure HelloWorld;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+description of \begin{ttfamily}HelloWorld\end{ttfamily}
+
+\end{list}
+\end{document}

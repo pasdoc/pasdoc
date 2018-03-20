@@ -1,0 +1,75 @@
+[OPTIONS]
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=docs.chm
+Contents file=docs.hhc
+Default Window=Default
+Default topic=AllUnits.html
+Display compile progress=Yes
+Error log file=docs.log
+Full-text search=Yes
+Index file=docs.hhk
+Title=docs
+
+[WINDOWS]
+Default="docs","docs.hhc","docs.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0
+
+[FILES]
+Legend.html
+AllUnits.html
+ClassHierarchy.html
+AllClasses.html
+AllTypes.html
+AllVariables.html
+AllConstants.html
+AllFunctions.html
+AllIdentifiers.html
+ok_cdecl_external.html
+ok_complicated_record.html
+ok_complicated_record.TDoubleEndianCnvRec.html
+ok_deprecated_tag.html
+ok_deprecated_tag.TMyClass.html
+ok_directive_as_identifier.html
+ok_directive_as_identifier.TMyClass.html
+ok_expanding_descriptions.html
+ok_expanding_descriptions.EFoo.html
+ok_expanding_descriptions.EBar.html
+ok_expanding_descriptions.EXyz.html
+ok_expanding_descriptions.TMyClassAncestor.html
+ok_expanding_descriptions.TMyClass.html
+ok_hint_directives.html
+ok_hint_directives.TTestClassDeprecated.html
+ok_hint_directives.TTestRecordDeprecated.html
+ok_line_break.html
+ok_links.html
+ok_links.TSomeClass.html
+ok_links_2.html
+ok_links_2.TSomeClass.html
+ok_links_2.TSomeOtherClass.html
+ok_link_class_unit_level.html
+ok_link_class_unit_level.TBar.html
+ok_link_explicite_name.html
+ok_link_explicite_name.TTestingClass.html
+ok_nodescription_printing.html
+ok_nodescription_printing.TClass1.html
+ok_nodescription_printing.TMyRecord.html
+ok_nodescription_printing.TMyRecord2.html
+ok_nodescription_printing.TMyRecord3.html
+ok_paragraph_in_single_line_comment.html
+ok_tag_name_case.html
+ok_tag_params_no_parens.html
+ok_tag_params_no_parens.EFoo.html
+ok_value_member_tags.html
+ok_value_member_tags.TMyClass.html
+ok_value_member_tags.TMyRecord.html
+warning_abstract_termination.html
+warning_abstract_termination.TAbstractTerminationClass.html
+warning_abstract_twice.html
+warning_not_existing_tags.html
+warning_tags_no_parameters.html
+warning_value_member_tags.html
+warning_value_member_tags.TMyClass.html
+
+[INFOTYPES]
+
+[MERGE FILES]

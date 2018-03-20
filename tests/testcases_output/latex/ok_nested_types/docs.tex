@@ -1,0 +1,175 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}nested{\_}types}
+\label{ok_nested_types}
+\index{ok{\_}nested{\_}types}
+\section{Description}
+Test case for Delphi nested types\hfill\vspace*{1ex}
+
+ 
+
+
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TOuterClass\end{ttfamily} Class}]\begin{ttfamily}TOuterClass\end{ttfamily} contains nested classes, records, types and constants.
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TOuterClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TOuterClass Class}
+\fi
+\label{ok_nested_types.TOuterClass}
+\index{TOuterClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TOuterClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+\begin{ttfamily}TOuterClass\end{ttfamily} contains nested classes, records, types and constants.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{OuterConst1}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_nested_types.TOuterClass-OuterConst1}
+\index{OuterConst1}
+\item[\textbf{OuterConst1}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public const OuterConst1 = 'Blah1';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of \begin{ttfamily}OuterConst1\end{ttfamily}\label{ok_nested_types.TOuterClass-OuterConst2}
+\index{OuterConst2}
+\item[\textbf{OuterConst2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public const OuterConst2 = 'Blah2';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of \begin{ttfamily}OuterConst2\end{ttfamily}\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{OuterPublicProc}\hspace*{\fill}
+
+\label{ok_nested_types.TOuterClass-OuterPublicProc}
+\index{OuterPublicProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure OuterPublicProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of \begin{ttfamily}OuterPublicProc\end{ttfamily}
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{GlobalConst}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{GlobalConst}
+\fi
+\label{ok_nested_types-GlobalConst}
+\index{GlobalConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+GlobalConst = 123456;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of \begin{ttfamily}GlobalConst\end{ttfamily}
+
+\end{list}
+\section{Author}
+\par
+Arno Garrels {$<$}first name.name@nospamgmx.de{$>$}
+
+\end{document}

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TAncestorClassHelper">
+<param name="Local" value="ok_class_record_helpers.TAncestorClassHelper.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDescendantClassHelper">
+<param name="Local" value="ok_class_record_helpers.TDescendantClassHelper.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="HelloWorld">
+<param name="Local" value="ok_class_record_helpers.TDescendantClassHelper.html#HelloWorld">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecordHelper">
+<param name="Local" value="ok_class_record_helpers.TMyRecordHelper.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="HelloWorld">
+<param name="Local" value="ok_class_record_helpers.TMyRecordHelper.html#HelloWorld">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TSimpleRecord">
+<param name="Local" value="ok_class_record_helpers.TSimpleRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SimpleField">
+<param name="Local" value="ok_class_record_helpers.TSimpleRecord.html#SimpleField">
+</object>
+</ul>
+</body></html>

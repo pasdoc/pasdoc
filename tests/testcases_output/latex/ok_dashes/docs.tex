@@ -1,0 +1,57 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}dashes}
+\label{ok_dashes}
+\index{ok{\_}dashes}
+\section{Description}
+Test of various dashes.\hfill\vspace*{1ex}
+
+
+
+Triple dash produces em{-}dash, for separating parts of sentence and such, like "I know a secret --- but I won't tell".
+
+Double dash produces en{-}dash, intended to use for numbers ranges, like "10--20".
+
+Normal single dash is a short dash, for compound words, like "variable{-}width font".
+
+You can write @{-} in cases where you really want to write just 2 or more consecutive short dashes. E.g. {-}{-}long{-}option{-}name (here I escaped only the 1st "{-}", this means that the rest of dashes is also treated as a short dash), or {-}{-}long{-}option{-}name (here I escaped only the 2nd dash), or {-}{-}long{-}option{-}name (here I escaped two first dashes, which wasn't really necessary, it's sufficient to escape either 1st or the 2nd dash), {-}{-}long{-}option{-}name (here I escaped all dashes; this looks unnecessary ugly in source code, but it's correct).
+\end{document}

@@ -1,0 +1,134 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}lists}
+\label{ok_lists}
+\index{ok{\_}lists}
+\section{Description}
+Test of lists tags.\hfill\vspace*{1ex}
+
+
+
+Normal lists: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Two
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Three
+\end{enumerate} \begin{itemize}
+\item One
+\item Two
+\item Three
+\end{itemize}
+
+Empty list is accceptable:  
+
+Whitespace inside lists is acceptable (and empty line that is not inside any @item is \textit{not} a paragraph): \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Two
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item  Other tags inside the items are allowed, e.g. \begin{ttfamily}link to self\end{ttfamily}(\ref{ok_lists}), \begin{ttfamily}True\end{ttfamily}, \texttt{}\textbf{begin}\texttt{~X~:=~Y;~}\textbf{end}\texttt{;\\
+}, \textbf{something bold}, URLs: \href{http://pasdoc.sf.net/}{http://pasdoc.sf.net/}, paragraphs:
+
+2nd paragraph, dashes: em dash ---, en dash --, short one {-}, two consecutive short dashes {-}{-}. 
+\end{enumerate}
+
+Nested lists are also freely allowed: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item  1st nested unordered list: \begin{itemize}
+\item One
+\item Two
+\item Three
+\end{itemize} 
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item  2nd nested unordered list: \begin{itemize}
+\item One
+\item Two
+\item Three
+\end{itemize} 
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item  And a couple of single{-}item ordered lists nested: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item  \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item  
+\end{enumerate}
+\end{enumerate}
+
+(Source code of this example begins to look like LISP :) 
+\end{enumerate}
+
+Definition lists tests:
+
+\begin{description}
+\item[] 1st item
+\item[] 2nd item
+\end{description}
+
+\begin{description}
+\item[1st item label] 1st item
+\item[2nd item label] 2nd item
+\end{description}
+
+\begin{description}
+\item[1st item label] 
+\item[2nd item label] 
+\end{description}
+
+Item spacing tests:
+
+\begin{description}
+\item[1st item label] 1st item
+\item[2nd item label] 2nd item
+\end{description}
+
+\begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Two
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Three
+\end{enumerate}
+\end{document}

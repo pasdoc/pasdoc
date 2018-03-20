@@ -1,0 +1,26 @@
+<unit name="ok_class_record_helpers.pas">
+  <description><detailed>Test case for Delphi class and record helpers</detailed></description>
+  <structure name="TSimpleRecord" name_with_generic="TSimpleRecord" type="record">
+    <description><detailed>description of <code>TSimpleRecord</code></detailed></description>
+    <variable name="SimpleField: Integer;">
+      <description><detailed>description of <code>SimpleField</code></detailed></description>
+    </variable>
+  </structure>
+  <structure name="TMyRecordHelper" name_with_generic="TMyRecordHelper" type="record">
+    <description><detailed>description of <code>TMyRecordHelper</code></detailed></description>
+    <function name="HelloWorld" type="procedure" declaration="procedure HelloWorld;">
+      <description><detailed>description of <code>HelloWorld</code></detailed></description>
+    </function>
+  </structure>
+  <structure name="TAncestorClassHelper" name_with_generic="TAncestorClassHelper" type="class">
+    <description><detailed>description of <code>TAncestorClassHelper</code></detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TDescendantClassHelper" name_with_generic="TDescendantClassHelper" type="class">
+    <description><detailed>description of <code>TDescendantClassHelper</code></detailed></description>
+    <ancestor name="TAncestorClassHelper" declaration="TAncestorClassHelper" />
+    <function name="HelloWorld" type="procedure" declaration="procedure HelloWorld;">
+      <description><detailed>description of <code>HelloWorld</code></detailed></description>
+    </function>
+  </structure>
+</unit>
