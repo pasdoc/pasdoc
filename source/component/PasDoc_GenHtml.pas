@@ -1166,7 +1166,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   end;
 
   { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: TTranslationID;
+  procedure WriteParamsOrRaises(ItemToSearchFrom: TPasItem; const Caption: TTranslationID;
     List: TStringPairVector; LinkToParamNames: boolean;
     const CssListClass: string);
 
@@ -1197,7 +1197,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       ParamName := List[i].Name;
 
       if LinkToParamNames then
-       ParamName := SearchLink(ParamName, Func, '', true);
+       ParamName := SearchLink(ParamName, ItemToSearchFrom, '', true);
 
       WriteParameter(ParamName, List[i].Value);
     end;
@@ -1272,7 +1272,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirectLine('</dl>');
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure WriteReturnDesc(ReturnDesc: string);
   begin
     if ReturnDesc = '' then
       exit;
@@ -1298,7 +1298,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 var
   Ancestor: TBaseItem;
   AncestorName: string;
-  AItemMethod: TPasMethod;
   EnumMember: TPasItem;
   i: Integer;
 begin
@@ -1361,15 +1360,10 @@ begin
 
   WriteAttributes(AItem.Attributes);
 
+  WriteParamsOrRaises(AItem, trParameters, AItem.Params, false, 'parameters');
   if AItem is TPasMethod then
-  begin
-    AItemMethod := TPasMethod(AItem);
-    WriteParamsOrRaises(AItemMethod, trParameters,
-      AItemMethod.Params, false, 'parameters');
-    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    WriteParamsOrRaises(AItemMethod, trExceptionsRaised,
-      AItemMethod.Raises, true, 'exceptions_raised');
-  end;
+    WriteReturnDesc(TPasMethod(AItem).Returns);
+  WriteParamsOrRaises(AItem, trExceptionsRaised, AItem.Raises, true, 'exceptions_raised');
 
   WriteSeeAlso(AItem.SeeAlso);
 

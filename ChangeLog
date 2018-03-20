@@ -12,6 +12,9 @@ Next version (not released yet)
     and the "internal" word has traditionally different meaning
     ("something not supposed to be visible/used from the outside").
   * The automatic tests are now easier to run and check (see tests/README.md).
+  * @raises and @param is not supported at properties as well as methods.
+    (Actually, it's supported at everything now,
+    but it makes sense only at properties and methods now.)
 
 2018-02-08 v0.15.0
 

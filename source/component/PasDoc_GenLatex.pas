@@ -951,9 +951,7 @@ begin
     (AItem is TPasEnum) or
     { Some hint directive ? }
     (AItem.HintDirectives <> []) or
-    { Some TPasMethod optional info ? }
-    ( (AItem is TPasMethod) and
-      TPasMethod(AItem).HasMethodOptionalInfo ) or
+    AItem.HasOptionalInfo or
     { Seealso section ? }
     (AItem.SeeAlso.Count <> 0);
 
@@ -975,7 +973,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
   AlreadyWithinAList: boolean);
 
   { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+  procedure WriteParamsOrRaises(ItemToSearchFrom: TPasItem; const Caption: string;
     List: TStringPairVector; LinkToParamNames: boolean);
 
     procedure WriteParameter(const ParamName: string; const Desc: string);
@@ -1006,7 +1004,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       ParamName := List[i].Name;
 
       if LinkToParamNames then
-       ParamName := SearchLink(ParamName, Func, '', true);
+       ParamName := SearchLink(ParamName, ItemToSearchFrom, '', true);
 
       WriteParameter(ParamName, List[i].Value);
     end;
@@ -1048,7 +1046,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       WriteEndList;
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure WriteReturnDesc(ReturnDesc: string);
   begin
     if ReturnDesc = '' then
       exit;
@@ -1072,7 +1070,6 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 var
   Ancestor: TBaseItem;
   AncestorName: string;
-  AItemMethod: TPasMethod;
   EnumMember: TPasItem;
   i: Integer;
 begin
@@ -1124,13 +1121,13 @@ begin
     end;
   end;
 
-  if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then
+  if AItem.HasOptionalInfo then
   begin
     WriteStartOfParagraph;
-    AItemMethod := TPasMethod(AItem);
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters],
-      AItemMethod.Params, false);
-    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
+    WriteParamsOrRaises(AItem, FLanguage.Translation[trParameters],
+      AItem.Params, false);
+    if AItem is TPasMethod then
+      WriteReturnDesc(TPasMethod(AItem).Returns);
 
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
       because trExceptionsRaised is just too long and so everything
@@ -1138,8 +1135,8 @@ begin
       trExceptionsRaised in the future (then trExceptions can be simply
       removed from PasDoc_Languages), because trExceptionsRaised
       is just more understandable to the reader of documentation. }
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions],
-      AItemMethod.Raises, true);
+    WriteParamsOrRaises(AItem, FLanguage.Translation[trExceptions],
+      AItem.Raises, true);
   end;
 
   WriteSeeAlso(AItem.SeeAlso);

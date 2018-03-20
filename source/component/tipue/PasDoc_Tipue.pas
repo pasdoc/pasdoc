@@ -147,12 +147,12 @@ procedure TipueAddFiles(Units: TPasUnits;
         (it will only be searched by tipue), so we don't care how
         things look here. We just glue some properties of Item together. }
       LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
-        ' ' + EscapeIndexEntry(Item.Authors.Text);
+        ' ' + EscapeIndexEntry(Item.Authors.Text) +
+        ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text(' ', ' ')) +
+        ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text(' ', ' '));
       if Item is TPasMethod then
         LongDescription := LongDescription +
-          ' ' + EscapeIndexEntry(TPasMethod(Item).Params.Text(' ', ' ')) +
-          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns) +
-          ' ' + EscapeIndexEntry(TPasMethod(Item).Raises.Text(' ', ' '));
+          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns);
       if Item is TPasEnum then
       begin
         for i := 0 to TPasEnum(Item).Members.Count - 1 do

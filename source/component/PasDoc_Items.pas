@@ -344,6 +344,8 @@ type
     FSeeAlso: TStringPairVector;
     FCachedUnitRelativeQualifiedName: string; //< do not serialize
     FAttributes: TStringPairVector;
+    FParams: TStringPairVector;
+    FRaises: TStringPairVector;
 
     procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -352,6 +354,12 @@ type
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
     procedure HandleSeeAlsoTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure StoreRaisesTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure StoreParamTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
   protected
@@ -517,6 +525,38 @@ type
     procedure SetAttributes(var Value: TStringPairVector);
 
     function BasePath: string; override;
+
+    { Parameters of method or property.
+
+      Name of each item is the name of parameter (without any surrounding
+      whitespace), Value of each item is users description for this item
+      (in already-expanded form).
+
+      This is already in the form processed by
+      @link(TTagManager.Execute), i.e. with links resolved,
+      html characters escaped etc. So @italic(don't) convert them (e.g. before
+      writing to the final docs) once again (by some ExpandDescription or
+      ConvertString or anything like that). }
+    property Params: TStringPairVector read FParams;
+
+    { Exceptions raised by the method, or by property getter/setter.
+
+      Name of each item is the name of exception class (without any surrounding
+      whitespace), Value of each item is users description for this item
+      (in already-expanded form).
+
+      This is already in the form processed by
+      @link(TTagManager.Execute), i.e. with links resolved,
+      html characters escaped etc. So @italic(don't) convert them (e.g. before
+      writing to the final docs) once again (by some ExpandDescription or
+      ConvertString or anything like that). }
+    property Raises: TStringPairVector read FRaises;
+
+    { Is optional information (that may be empty for
+      after parsing unit and expanding tags) specified.
+      Currently this checks @link(Params) and @link(Raises) and
+      @link(TPasMethod.Returns). }
+    function HasOptionalInfo: boolean; virtual;
   end;
 
   { @abstract(Pascal constant.)
@@ -584,18 +624,10 @@ type
     ) }
   TPasMethod = class(TPasItem)
   protected
-    FParams: TStringPairVector;
     FReturns: string;
-    FRaises: TStringPairVector;
     FWhat: TMethodType;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-    procedure StoreRaisesTag(ThisTag: TTag; var ThisTagData: TObject;
-      EnclosingTag: TTag; var EnclosingTagData: TObject;
-      const TagParameter: string; var ReplaceStr: string);
-    procedure StoreParamTag(ThisTag: TTag; var ThisTagData: TObject;
-      EnclosingTag: TTag; var EnclosingTagData: TObject;
-      const TagParameter: string; var ReplaceStr: string);
     procedure StoreReturnsTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -603,37 +635,23 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    { In addition to inherited, this also registers @link(TTag)s
-      that init @link(Params), @link(Returns) and @link(Raises)
-      and remove according tags from description. }
+    { In addition to inherited, this also registers @link(TTag)
+      that inits @link(Returns). }
     procedure RegisterTags(TagManager: TTagManager); override;
 
     { }
     property What: TMethodType read FWhat write FWhat;
 
-    { Note that Params, Returns, Raises are already in the form processed by
+    { What does the method return.
+
+      This is already in the form processed by
       @link(TTagManager.Execute), i.e. with links resolved,
       html characters escaped etc. So @italic(don't) convert them (e.g. before
       writing to the final docs) once again (by some ExpandDescription or
       ConvertString or anything like that). }
-    { }
-
-    { Name of each item is the name of parameter (without any surrounding
-      whitespace), Value of each item is users description for this item
-      (in already-expanded form). }
-    property Params: TStringPairVector read FParams;
-
     property Returns: string read FReturns;
 
-    { Name of each item is the name of exception class (without any surrounding
-      whitespace), Value of each item is users description for this item
-      (in already-expanded form). }
-    property Raises: TStringPairVector read FRaises;
-
-    { Are some optional properties (i.e. the ones that may be empty for
-      TPasMethod after parsing unit and expanding tags --- currently this
-      means @link(Params), @link(Returns) and @link(Raises)) specified ? }
-    function HasMethodOptionalInfo: boolean;
+    function HasOptionalInfo: boolean; override;
   end;
 
   TPasProperty = class(TPasItem)
@@ -1382,10 +1400,14 @@ begin
   inherited;
   FSeeAlso := TStringPairVector.Create(true);
   FAttributes := TStringPairVector.Create(true);
+  FParams := TStringPairVector.Create(true);
+  FRaises := TStringPairVector.Create(true);
 end;
 
 destructor TPasItem.Destroy;
 begin
+  FreeAndNil(FParams);
+  FreeAndNil(FRaises);
   FreeAndNil(FSeeAlso);
   FreeAndNil(FAttributes);
   inherited;
@@ -1533,6 +1555,66 @@ begin
   ReplaceStr := '';
 end;
 
+{ TODO for StoreRaisesTag and StoreParamTag:
+  splitting TagParameter using ExtractFirstWord should be done
+  inside TTagManager.Execute, working with raw text, instead
+  of here, where the TagParameter is already expanded and converted.
+
+  Actually, current approach works for now perfectly,
+  but only because neighter html generator nor LaTeX generator
+  change text in such way that first word of the text
+  (assuming it's a normal valid Pascal identifier) is changed.
+
+  E.g. '@raises(EFoo with some link @link(Blah))'
+  is expanded to 'EFoo with some link <a href="...">Blah</a>'
+  so the 1st word ('EFoo') is preserved.
+
+  But this is obviously unclean approach. }
+
+procedure TPasItem.StoreRaisesTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  Pair: TStringPair;
+begin
+  Pair := TStringPair.CreateExtractFirstWord(TagParameter);
+
+  if Pair.Name = '' then
+  begin
+    FreeAndNil(Pair);
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
+      '@raises tag doesn''t specify exception name, skipped', []);
+  end else
+  begin
+    FRaises.Add(Pair);
+  end;
+
+  ReplaceStr := '';
+end;
+
+procedure TPasItem.StoreParamTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var
+  Pair: TStringPair;
+begin
+  Pair := TStringPair.CreateExtractFirstWord(TagParameter);
+
+  if Name = '' then
+  begin
+    FreeAndNil(Pair);
+    ThisTag.TagManager.DoMessage(2, pmtWarning,
+      '@param tag doesn''t specify parameter name, skipped', []);
+  end else
+  begin
+    FParams.Add(Pair);
+  end;
+
+  ReplaceStr := '';
+end;
+
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -1545,11 +1627,26 @@ begin
   TTopLevelTag.Create(TagManager, 'seealso',
     nil, {$ifdef FPC}@{$endif} HandleSeeAlsoTag,
     [toParameterRequired, toFirstWordVerbatim]);
+  TTopLevelTag.Create(TagManager, 'raises',
+    nil, {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+     toAllowNormalTextInside, toFirstWordVerbatim]);
+  TTopLevelTag.Create(TagManager, 'param',
+    nil, {$IFDEF FPC}@{$ENDIF} StoreParamTag,
+    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+     toAllowNormalTextInside, toFirstWordVerbatim]);
 end;
 
 function TPasItem.HasDescription: Boolean;
 begin
   HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
+end;
+
+function TPasItem.HasOptionalInfo: boolean;
+begin
+  Result :=
+    (not ObjectVectorIsNilOrEmpty(Params)) or
+    (not ObjectVectorIsNilOrEmpty(Raises));
 end;
 
 procedure TPasItem.Sort(const SortSettings: TSortSettings);
@@ -1595,7 +1692,10 @@ begin
   AbstractDescription := LoadStringFromStream(ASource);
   ASource.Read(FAbstractDescriptionWasAutomatic,
     SizeOf(FAbstractDescriptionWasAutomatic));
-  SeeAlso }
+  SeeAlso
+  Params.LoadFromBinaryStream(ASource);
+  FRaises.LoadFromBinaryStream(ASource);
+  }
 end;
 
 procedure TPasItem.Serialize(const ADestination: TStream);
@@ -1611,7 +1711,10 @@ begin
   SaveStringToStream(AbstractDescription, ADestination);
   ADestination.Write(FAbstractDescriptionWasAutomatic,
     SizeOf(FAbstractDescriptionWasAutomatic));
-  SeeAlso }
+  SeeAlso
+  Params.SaveToBinaryStream(ADestination);
+  FRaises.SaveToBinaryStream(ADestination);
+  }
 end;
 
 procedure TPasItem.SetAttributes(var Value: TStringPairVector);
@@ -2339,75 +2442,11 @@ end;
 constructor TPasMethod.Create;
 begin
   inherited;
-  FParams := TStringPairVector.Create(true);
-  FRaises := TStringPairVector.Create(true);
 end;
 
 destructor TPasMethod.Destroy;
 begin
-  FParams.Free;
-  FRaises.Free;
   inherited Destroy;
-end;
-
-{ TODO for StoreRaisesTag and StoreParamTag:
-  splitting TagParameter using ExtractFirstWord should be done
-  inside TTagManager.Execute, working with raw text, instead
-  of here, where the TagParameter is already expanded and converted.
-
-  Actually, current approach works for now perfectly,
-  but only because neighter html generator nor LaTeX generator
-  change text in such way that first word of the text
-  (assuming it's a normal valid Pascal identifier) is changed.
-
-  E.g. '@raises(EFoo with some link @link(Blah))'
-  is expanded to 'EFoo with some link <a href="...">Blah</a>'
-  so the 1st word ('EFoo') is preserved.
-
-  But this is obviously unclean approach. }
-
-procedure TPasMethod.StoreRaisesTag(
-  ThisTag: TTag; var ThisTagData: TObject;
-  EnclosingTag: TTag; var EnclosingTagData: TObject;
-  const TagParameter: string; var ReplaceStr: string);
-var
-  Pair: TStringPair;
-begin
-  Pair := TStringPair.CreateExtractFirstWord(TagParameter);
-
-  if Pair.Name = '' then
-  begin
-    FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, pmtWarning,
-      '@raises tag doesn''t specify exception name, skipped', []);
-  end else
-  begin
-    FRaises.Add(Pair);
-  end;
-
-  ReplaceStr := '';
-end;
-
-procedure TPasMethod.StoreParamTag(
-  ThisTag: TTag; var ThisTagData: TObject;
-  EnclosingTag: TTag; var EnclosingTagData: TObject;
-  const TagParameter: string; var ReplaceStr: string);
-var
-  Pair: TStringPair;
-begin
-  Pair := TStringPair.CreateExtractFirstWord(TagParameter);
-
-  if Name = '' then
-  begin
-    FreeAndNil(Pair);
-    ThisTag.TagManager.DoMessage(2, pmtWarning,
-      '@param tag doesn''t specify parameter name, skipped', []);
-  end else
-  begin
-    FParams.Add(Pair);
-  end;
-
-  ReplaceStr := '';
 end;
 
 procedure TPasMethod.StoreReturnsTag(
@@ -2420,12 +2459,11 @@ begin
   ReplaceStr := '';
 end;
 
-function TPasMethod.HasMethodOptionalInfo: boolean;
+function TPasMethod.HasOptionalInfo: boolean;
 begin
   Result :=
-    (Returns <> '') or
-    (not ObjectVectorIsNilOrEmpty(Params)) or
-    (not ObjectVectorIsNilOrEmpty(Raises));
+    (inherited HasOptionalInfo) or
+    (Returns <> '');
 end;
 
 procedure TPasMethod.Deserialize(const ASource: TStream);
@@ -2434,9 +2472,8 @@ begin
   ASource.Read(FWhat, SizeOf(FWhat));
 
   { No need to serialize, because it's not generated by parser:
-  Params.LoadFromBinaryStream(ASource);
   FReturns := LoadStringFromStream(ASource);
-  FRaises.LoadFromBinaryStream(ASource); }
+  }
 end;
 
 procedure TPasMethod.Serialize(const ADestination: TStream);
@@ -2445,22 +2482,13 @@ begin
   ADestination.Write(FWhat, SizeOf(FWhat));
 
   { No need to serialize, because it's not generated by parser:
-  Params.SaveToBinaryStream(ADestination);
   SaveStringToStream(FReturns, ADestination);
-  FRaises.SaveToBinaryStream(ADestination); }
+  }
 end;
 
 procedure TPasMethod.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
-  TTopLevelTag.Create(TagManager, 'raises',
-    nil, {$IFDEF FPC}@{$ENDIF} StoreRaisesTag,
-    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-     toAllowNormalTextInside, toFirstWordVerbatim]);
-  TTopLevelTag.Create(TagManager, 'param',
-    nil, {$IFDEF FPC}@{$ENDIF} StoreParamTag,
-    [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
-     toAllowNormalTextInside, toFirstWordVerbatim]);
   TTopLevelTag.Create(TagManager, 'returns',
     nil, {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
