@@ -1,0 +1,16 @@
+<unit name="ok_param_raises_at_property.pas">
+  <function name="Foo" type="procedure" declaration="procedure Foo(A: Integer);">
+    <param name="A">This is some parameter.</param>
+    <description><detailed> </detailed></description>
+  </function>
+  <structure name="TMyException" name_with_generic="TMyException" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="Bar" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+    <property name="Items" indexdecl="[constIndex:Integer]" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+</unit>

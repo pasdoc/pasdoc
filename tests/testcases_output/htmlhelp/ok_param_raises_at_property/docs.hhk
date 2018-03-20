@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="A.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="A.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Bar">
+<param name="Local" value="A.TMyClass.html#Bar">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Items">
+<param name="Local" value="A.TMyClass.html#Items">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyException">
+<param name="Local" value="A.TMyException.html">
+</object>
+</ul>
+</body></html>
