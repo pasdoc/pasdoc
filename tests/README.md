@@ -88,6 +88,16 @@ Notes:
 First of all, you can just run `run_all_tests.sh` that runs all
 relevant tests described below.
 
+By default `run_all_tests.sh` assumes that you are inside a GIT repository
+(cloned from https://github.com/pasdoc/pasdoc ), and uses `git diff`
+to compare. If you have sources from the tarball, then define
+environment variable `USE_DIFF_TO_COMPARE` to `true` before running, like this:
+
+```
+export USE_DIFF_TO_COMPARE=true
+./run_all_tests.sh
+```
+
 - Regenerate `testcases_output` contents:
 
     ```

@@ -17,7 +17,8 @@ run_echo ()
   OUTPUT_FILENAME="$1"
   shift 1
 
-  echo 'Running:' "$@" '>' "$OUTPUT_FILENAME"
+  # too verbose now
+  # echo 'Running:' "$@" '>' "$OUTPUT_FILENAME"
 
   # Temporary set +e, to ignore exit status from pasdoc
   set +e
