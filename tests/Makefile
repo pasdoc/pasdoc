@@ -1,3 +1,7 @@
+.PHONY: default
+default:
+	./run_all_tests.sh
+
 .PHONY: clean
 clean:
 	rm -Rf current_output/ \

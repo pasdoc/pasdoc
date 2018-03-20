@@ -11,24 +11,15 @@ cd fpcunit/
 make
 cd ../
 
-# run on testcases, compare with correct output ------------------------------
+# run all testcases, compare with correct output ------------------------------
 
 ALL_OUTPUT_FORMATS='html htmlhelp latex latex2rtf simplexml'
 
-cd scripts/
-./download_correct_tests_output.sh $ALL_OUTPUT_FORMATS
+cd testcases/
+../scripts/mk_tests.sh $ALL_OUTPUT_FORMATS
 cd ../
 
-for OUTPUT_FORMAT in $ALL_OUTPUT_FORMATS; do
-  cd testcases/
-  ../scripts/mk_tests.sh $OUTPUT_FORMAT
-  cd ../
-  diff -wur correct_output/$OUTPUT_FORMAT current_output/$OUTPUT_FORMAT
-done
-
-# If you detect any *valid* differences, i.e. the new version is more correct,
-# run this:
-# cd scripts/ && ./upload_correct_tests_output.sh $SOURCEFORGE_USERNAME $ALL_OUTPUT_FORMATS && cd ../
+git diff --exit-code
 
 # validation -----------------------------------------------------------------
 

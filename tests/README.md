@@ -13,18 +13,15 @@ Some of these are written to test new features.
 
 To add a new testcase,
 
-1. first of all just add the file here
+1. add the file to `testcases` subdirectory
    (follow the naming conventions below, usually just ok_xxx.pas).
 2. add an appropriate line at the end of scripts/mk_tests.sh.
-3. after you make sure it works, you may upload new
-   version of "correct tests", see below. Or just notify Michalis about it :)
+3. after you make sure it works, commit the new version of `testcases_output`.
 
 Using these tests fully requires having some standard Unix tools
-installed and available on $PATH. You need GNU `make`, bash, diff.
-Also wget is used for downloading correct tests for comparison.
-And tar, scp are used for uploading correct tests by developers.
+installed and available on $PATH. You need GNU `make`, `bash`, `diff`.
 
-Of course, you also need the `pasdoc` binary available on $PATH.
+And you need the `pasdoc` binary available on $PATH.
 
 ## Naming of Pascal unit files in testcases subdirectory
 
@@ -91,15 +88,16 @@ Notes:
 First of all, you can just run `run_all_tests.sh` that runs all
 relevant tests described below.
 
-- Generate output like this:
+- Regenerate `testcases_output` contents:
 
     ```
     cd testcases/
     ../scripts/mk_tests.sh html
+    # or regenerate all:
+    ../scripts/mk_tests.sh html htmlhelp latex latex2rtf simplexml
     ```
 
-    Tests are created in `current_output/html` subdirectory.
-    Some of our other scripts will use it.
+    Tests are created in `testcases_output/html` subdirectory.
 
     You can just manually look at units'
     sources and comments there to know what generated documentation should
@@ -121,60 +119,31 @@ relevant tests described below.
     that pasdoc messages are correct (warnings are as they should be
     and where they should be etc.)
 
-- "Correct tests output" give an automated way to verify `current_output/html`.
+- Since PasDoc version 0.16.0, we keep the correct state of `testcases_output`
+  inside the code repository.
 
-    We maintain on [http://pasdoc.sourceforge.net/correct_tests_output/]
-    something that we call "correct output of tests".
-    Everyone can download them simply by:
+    To make sure that nothing is broken, simply check that after regenerating
+    the `testcases_output`, their contents are not changed.
+    Use `git status`, `git diff` or any visual tool on top of them that you like.
 
-    ```
-    cd scripts/
-    ./download_correct_tests_output.sh html
-    ```
+    And if the change is desired (e.g. you added a new feature that changes
+    existing output), just commit them.
 
-    Then whenever you want you can compare current documentation generated
-    by pasdoc to downloaded "correct output" e.g. using
+    (Side discussion:
+    Why do we keep `testcases_output` inside the code repository?
+    Why not ignore them?
 
-    ```
-    diff -ur correct_output/html/ current_output/html/
-    ```
+    This is a little abuse of the version control system idea
+    (as we keep auto-generated files inside code repository),
+    but it's very useful. This way our `testcases_output`
+    are versioned (each PasDoc source code state
+    has a corresponding testcases_output state recorded),
+    and it's easy to compare them (just use `git diff`) and accept new state
+    (just commit the changes).
 
-    Note that *failure* of comparison does not necessarily mean that
-    current pasdoc *has* a bug, since it's possible that current output of
-    pasdoc is different (because e.g. we improved and changed something)
-    but still correct.
-    Also *success* of comparison does not mean that current pasdoc does
-    *not* have a bug, because this "current output" was just
-    accepted at some point by human as "correct".
-    So, this is unfortunately no ultimate test.
-
-    But in practice it often works great, and allows us to quickly
-    check that nothing is broken :) When no output changes are expected,
-    or the changes are very local, then looking at "diff" output is a great
-    and simple way to test.
-
-    If pasdoc's developer sees at any point that "current output" differs
-    from "correct output" and also he carefully checked that "current
-    output" is still correct, than he should upload his "current output"
-    as new "correct output" by entering scripts/ directory and executing
-
-    ```
-    ./upload_correct_tests_output.sh username html
-    ```
-
-    See documentation inside scripts/upload_correct_tests_output.sh
-    for more detailed docs. Note that before uploading you should
-    be relatively sure that you compared against most recent version
-    of "correct output", to save yourself trouble of unnecessary
-    uploading.
-
-    Beware that script `upload_correct_tests_output.sh'
-    will upload everything that you will have inside subdirectory
-    of given format. This is painful in case of output like LaTeX,
-    where you can accidentally upload files like docs.pdf or docs.dvi
-    (that shouldn't be uploaded).
-    In this case you can do something like `make clean latex' before
-    uploading to be sure that you upload only "docs.tex" file.
+    We used to have a complicated system of packing and uploading/downloading
+    the correct tests output, and it was more trouble than it was worth.
+    )
 
 - `scripts/validate_html.sh`
 

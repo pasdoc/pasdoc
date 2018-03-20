@@ -16,10 +16,6 @@ source/packages/lazarus/pasdoc_package.pas
 # Emacs backup
 *~
 
-# Tests temp stuff
-tests/correct_output/
-tests/current_output/
-
 # Resource files are binaries containing manifest, project icon and version info.
 # They can not be viewed as text or compared by diff-tools. Consider replacing them with .rc files.
 *.res
