@@ -11,6 +11,7 @@ Next version (not released yet)
       https://www.freepascal.org/docs-html/ref/refse41.html )
     and the "internal" word has traditionally different meaning
     ("something not supposed to be visible/used from the outside").
+  * The automatic tests are now easier to run and check (see tests/README.md).
 
 2018-02-08 v0.15.0
 
