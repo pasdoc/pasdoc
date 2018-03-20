@@ -283,10 +283,14 @@ build-gui:
 	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
 	strip source/gui/pasdoc_gui$(EXE)
 
-.PHONY: tests
-tests: make-dirs
+.PHONY: tests-fpcunit
+tests-fpcunit: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./tests/fpcunit/test_pasdoc.lpr
 	bin/test_pasdoc -a
+
+.PHONY: tests
+tests:
+	cd tests/ && ./run_all_tests.sh
 
 ############################################################################
 # Help targets
