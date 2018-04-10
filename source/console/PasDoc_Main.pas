@@ -1,6 +1,10 @@
 { @abstract(Provides the Main procedure.) }
 unit PasDoc_Main;
 
+{ Define this to see the backtrace of crashes (when compiled with FPC).
+  Easier for debugging. }
+{ $define LET_EXCEPTIONS_THROUGH}
+
 interface
 
 { This is the main procedure of PasDoc, it does everything. }
@@ -182,7 +186,7 @@ begin
   OptionExcludeGenerator := TBoolOption.Create('X', 'exclude-generator');
   OptionExcludeGenerator.Explanation := 'Exclude generator information';
   AddOption(OptionExcludeGenerator);
-  
+
   OptionIncludeCreationTime := TBoolOption.Create(#0, 'include-creation-time');
   OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
   AddOption(OptionIncludeCreationTime);
@@ -307,19 +311,19 @@ begin
   OptionImplicitVisibility.Explanation := 'How pasdoc should handle class members within default class visibility';
   OptionImplicitVisibility.Value := 'public';
   AddOption(OptionImplicitVisibility);
-  
+
   OptionNoMacro := TBoolOption.Create(#0, 'no-macro');
   OptionNoMacro.Explanation := 'Turn FPC macro support off';
   AddOption(OptionNoMacro);
-  
+
   OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
   OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
   AddOption(OptionAutoLink);
-  
+
   OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
   OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
   AddOption(OptionAutoLinkExclude);
-  
+
   OptionExternalClassHierarchy := TStringOption.Create(#0, 'external-class-hierarchy');
   OptionExternalClassHierarchy.Explanation := 'File defining hierarchy of classes not included in your source code, for more complete class tree diagrams';
   AddOption(OptionExternalClassHierarchy);
@@ -336,7 +340,7 @@ begin
 end;
 
 procedure TPasdocMain.PrintUsage(OptionParser: TOptionParser);
-begin                      
+begin
   PrintHeader;
   WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' [options] [files]');
   WriteLn('Valid options are: ');
@@ -516,7 +520,7 @@ begin
     PasDoc.Generator.ParseAbbreviationsFile(OptionAbbrevFiles.Values[i]);
   end;
 
-  PasDoc.Generator.CheckSpelling := 
+  PasDoc.Generator.CheckSpelling :=
     OptionASPELL.WasSpecified or OptionSpellCheck.WasSpecified;
   if OptionSpellCheck.WasSpecified then
     PasDoc.Generator.AspellLanguage := LanguageCode(PasDoc.Generator.Language) else
@@ -559,7 +563,7 @@ begin
         'You can only use the "latex-head" option with LaTeX output.');
     end;
   end;
-  
+
   if SameText(OptionImplicitVisibility.Value, 'public') then
     PasDoc.ImplicitVisibility := ivPublic else
   if SameText(OptionImplicitVisibility.Value, 'published') then
@@ -569,10 +573,10 @@ begin
     raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--implicit-visibility" option : "%s"',
       [OptionImplicitVisibility.Value]);
-      
+
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
   PasDoc.AutoLink := OptionAutoLink.TurnedOn;
-  
+
   if OptionAutoLinkExclude.Value <> '' then
   begin
     PasDoc.Generator.AutoLinkExclude.LoadFromFile(OptionAutoLinkExclude.Value);
@@ -582,7 +586,7 @@ begin
       large file like /usr/share/dict/american-english for this option. }
     PasDoc.Generator.AutoLinkExclude.Sorted := true;
   end;
-  
+
   if OptionExternalClassHierarchy.WasSpecified then
     PasDoc.Generator.ExternalClassHierarchy.LoadFromFile(
       OptionExternalClassHierarchy.Value);
@@ -619,7 +623,9 @@ begin
 
     if not OptionParser.OptionExcludeGenerator.TurnedOn then PrintHeader;
 
+    {$ifndef LET_EXCEPTIONS_THROUGH}
     try
+    {$endif not LET_EXCEPTIONS_THROUGH}
       PasDoc := TPasDoc.Create(nil);
       try
         PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
@@ -628,11 +634,13 @@ begin
       finally
         PasDoc.Free;
       end;
+    {$ifndef LET_EXCEPTIONS_THROUGH}
     except
       on e: Exception do
         with e do
           WriteLn('Fatal Error: ', Message);
     end;
+    {$endif not LET_EXCEPTIONS_THROUGH}
   finally
     OptionParser.Free;
   end;
@@ -649,17 +657,21 @@ begin
     {$IFEND}
   {$ENDIF}
 {$ENDIF}
+  {$ifndef LET_EXCEPTIONS_THROUGH}
   try
+  {$endif not LET_EXCEPTIONS_THROUGH}
     PasdocMain := TPasdocMain.Create;
     try
       PasdocMain.Execute;
     finally
       PasdocMain.Free;
     end;
+  {$ifndef LET_EXCEPTIONS_THROUGH}
   except
     on E: Exception do
       WriteLn(E.ClassName + ' :' + E.Message);
   end;
+  {$endif not LET_EXCEPTIONS_THROUGH}
 {$IFNDEF FPC}
   {$IFDEF CONDITIONALEXPRESSIONS}
     {$IF CompilerVersion > 14}
