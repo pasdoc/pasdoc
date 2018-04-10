@@ -146,10 +146,13 @@ procedure TipueAddFiles(Units: TPasUnits;
         Note that LongDescription will not be shown to user anywhere
         (it will only be searched by tipue), so we don't care how
         things look here. We just glue some properties of Item together. }
-      LongDescription := EscapeIndexEntry(Item.DetailedDescription) +
-        ' ' + EscapeIndexEntry(Item.Authors.Text) +
-        ' ' + EscapeIndexEntry(Item.Params.Text(' ', ' ')) +
-        ' ' + EscapeIndexEntry(Item.Raises.Text(' ', ' '));
+      LongDescription :=
+        EscapeIndexEntry(Item.DetailedDescription) +
+        ' ' + EscapeIndexEntry(Item.Authors.Text);
+      if Item is TPasItem then
+        LongDescription := LongDescription +
+          ' ' + EscapeIndexEntry(TPasItem(Item).Params.Text(' ', ' ')) +
+          ' ' + EscapeIndexEntry(TPasItem(Item).Raises.Text(' ', ' '));
       if Item is TPasMethod then
         LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TPasMethod(Item).Returns);
