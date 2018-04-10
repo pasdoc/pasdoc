@@ -623,24 +623,14 @@ begin
 
     if not OptionParser.OptionExcludeGenerator.TurnedOn then PrintHeader;
 
-    {$ifndef LET_EXCEPTIONS_THROUGH}
+    PasDoc := TPasDoc.Create(nil);
     try
-    {$endif not LET_EXCEPTIONS_THROUGH}
-      PasDoc := TPasDoc.Create(nil);
-      try
-        PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
-        OptionParser.InterpretCommandline(PasDoc);
-        PasDoc.Execute;
-      finally
-        PasDoc.Free;
-      end;
-    {$ifndef LET_EXCEPTIONS_THROUGH}
-    except
-      on e: Exception do
-        with e do
-          WriteLn('Fatal Error: ', Message);
+      PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
+      OptionParser.InterpretCommandline(PasDoc);
+      PasDoc.Execute;
+    finally
+      PasDoc.Free;
     end;
-    {$endif not LET_EXCEPTIONS_THROUGH}
   finally
     OptionParser.Free;
   end;
@@ -669,7 +659,10 @@ begin
   {$ifndef LET_EXCEPTIONS_THROUGH}
   except
     on E: Exception do
-      WriteLn(E.ClassName + ' :' + E.Message);
+    begin
+      WriteLn('Fatal Error: ' + E.ClassName + ': ' + E.Message);
+      Halt(1); // exit with non-zero status
+    end;
   end;
   {$endif not LET_EXCEPTIONS_THROUGH}
 {$IFNDEF FPC}
