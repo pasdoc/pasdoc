@@ -47,8 +47,8 @@ const
     '<div style="clear: both"></div>' + LineEnding +
     LineEnding +
     '<script type="text/javascript">' + LineEnding +
-    '$(document).ready(function() {' + LineEnding +
-    '    $(''#tipue_search_input'').tipuesearch({' + LineEnding +
+    'jQuery(document).ready(function() {' + LineEnding +
+    '    jQuery(''#tipue_search_input'').tipuesearch({' + LineEnding +
     '        /* 10 items to display seems standard */' + LineEnding +
     '        ''show'': 10,' + LineEnding +
     '        /* For PasDoc docs, showing urls is not very useful,' + LineEnding +
