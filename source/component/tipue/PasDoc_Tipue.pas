@@ -31,33 +31,11 @@ uses PasDoc_Utils, PasDoc_Items;
 { Put this in <head> of every page with search button. }
 function TipueSearchButtonHead: string;
 
-const
-  { Put this inside the page contents --- it will make a form with search button.
-    You will need to use Format to insert the localized word for "Search", e.g.:
-    Format(TipueSearchButton, ['Search'])
-    for English.}
-  TipueSearchButton =
-    '<form class="search-form" action="_tipue_results.html">' +
-    '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
-    { TODO: Add a value="Search" to <input type="button" ...>
-      and hide it visually by one of the CSS tricks on
-      http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only }
-    '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
-    '</form>' + LineEnding +
-    '<div style="clear: both"></div>' + LineEnding +
-    LineEnding +
-    '<script type="text/javascript">' + LineEnding +
-    'jQuery(document).ready(function() {' + LineEnding +
-    '    jQuery(''#tipue_search_input'').tipuesearch({' + LineEnding +
-    '        /* 10 items to display seems standard */' + LineEnding +
-    '        ''show'': 10,' + LineEnding +
-    '        /* For PasDoc docs, showing urls is not very useful,' + LineEnding +
-    '           since the page title already shows the unit and identifier. */' + LineEnding +
-    '        ''showURL'': false' + LineEnding +
-    '    });' + LineEnding +
-    '});' + LineEnding +
-    '</script>' + LineEnding;
-
+{ Put this at a place where Tipue button should appear.
+  It will make a form with search button.
+  You will need to use Format to insert the localized word for "Search", e.g.:
+  Format(TipueSearchButton, ['Search']) for English. }
+function TipueSearchButton: string;
 
 { Adds some additional files to html documentation, needed for tipue engine.
 
@@ -78,6 +56,19 @@ uses Classes, SysUtils;
 function TipueSearchButtonHead: string;
 begin
   Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
+end;
+
+function TipueSearchButton: string;
+begin
+  Result :=
+    '<form class="search-form" action="_tipue_results.html">' +
+    '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
+    { TODO: Add a value="Search" to <input type="button" ...>
+      and hide it visually by one of the CSS tricks on
+      http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only }
+    '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
+    '</form>' + LineEnding +
+    '<div style="clear: both"></div>' + LineEnding;
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;

@@ -7,12 +7,6 @@
 '' + LineEnding +
 '###-PASDOC-HEAD-###' + LineEnding +
 '' + LineEnding +
-'<!-- Note that we use a local jquery copy (not from Google Hosted Libraries), to work offline -->' + LineEnding +
-'<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
-'<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
-'<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
-'<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding +
-'' + LineEnding +
 '</head>' + LineEnding +
 '<body>' + LineEnding +
 '' + LineEnding +
@@ -23,6 +17,27 @@
 '<div id="tipue_search_content"></div>' + LineEnding +
 '' + LineEnding +
 '###-PASDOC-BODY-END-###' + LineEnding +
+'' + LineEnding +
+'<!--' + LineEnding +
+'  Note that we use a local jquery copy (not from Google Hosted Libraries),' + LineEnding +
+'  to work offline.' + LineEnding +
+'-->' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding +
+'' + LineEnding +
+'<script type="text/javascript">' + LineEnding +
+'jQuery(document).ready(function() {' + LineEnding +
+'    jQuery(''#tipue_search_input'').tipuesearch({' + LineEnding +
+'        /* 10 items to display seems standard */' + LineEnding +
+'        ''show'': 10,' + LineEnding +
+'        /* For PasDoc docs, showing urls is not very useful,' + LineEnding +
+'           since the page title already shows the unit and identifier. */' + LineEnding +
+'        ''showURL'': false' + LineEnding +
+'    });' + LineEnding +
+'});' + LineEnding +
+'</script>' + LineEnding +
 '' + LineEnding +
 '</body>' + LineEnding +
 '</html>' + LineEnding +
