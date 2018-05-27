@@ -3,6 +3,7 @@ bin/
 lib/
 source/autodoc/html_by_pasdoc_gui/
 source/autodoc/html/
+source/autodoc/latex/
 source/gui/pasdoc_gui
 
 # FPC / Lazarus generated stuff
