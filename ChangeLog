@@ -15,8 +15,7 @@ Next version (not released yet)
   * @raises and @param is not supported at properties as well as methods.
     (Actually, it's supported at everything now,
     but it makes sense only at properties and methods now.)
-  * Tipue (client-side search, see --use-tipue) code is upgraded to use Tipue 6.1
-    (better results look, with correct HTML and emphasized search term).
+  * Tipue (client-side search, see --use-tipue) code is upgraded to use Tipue 6.1.
 
 2018-02-08 v0.15.0
 
