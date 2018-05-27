@@ -23,7 +23,7 @@
 '  to work offline.' + LineEnding +
 '-->' + LineEnding +
 '<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
-'<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
+'<script type="text/javascript" src="tipuesearch/tipuesearch_content.js"></script>' + LineEnding +
 '<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
 '<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding +
 '' + LineEnding +

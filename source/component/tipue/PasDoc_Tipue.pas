@@ -99,7 +99,7 @@ procedure TipueAddFiles(Units: TPasUnits;
       Write(OutFile, '     {"title": "', Title,
         '", "text": "', LongDescription,
         '", "tags": "', { no tags for now? Or maybe use here ShortDescription? }
-        '", "loc": "', URL, '"}');
+        '", "url": "', URL, '"}');
       NeedsLeadingComma := true;
     end;
 
@@ -254,7 +254,7 @@ begin
 
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.png', TipueSearchImage);
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'loader.gif', TipueLoaderImage);
-  WriteTipueIndexData(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_data.js');
+  WriteTipueIndexData(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_content.js');
 end;
 
 end.
