@@ -261,240 +261,6 @@ implementation
 uses
   Classes, PasDoc_StreamUtils;
 
-{$IFDEF FPC}
-  {$DEFINE PUREPASCAL}
-{$ENDIF}
-
-procedure Swap16Buf(Src, Dst: PWord; WordCount: Integer);
-{$IFDEF PUREPASCAL}
-var
-    I : Integer;
-begin
-    for I := 1 to WordCount do
-    begin
-        Dst^ := (Src^ shr 8) or (Src^ shl 8);
-        Inc(Src);
-        Inc(Dst);
-    end;
-{$ELSE}
-{ Thanks to Jens Dierks for this code }
-asm
-       PUSH   ESI
-       PUSH   EBX
-       SUB    EAX,EDX
-       SUB    ECX,4
-       JS     @@2
-@@1:
-       MOV    EBX,[EAX + EDX]
-       MOV    ESI,[EAX + EDX + 4]
-       BSWAP  EBX
-       BSWAP  ESI
-       MOV    [EDX + 2],BX
-       MOV    [EDX + 6],SI
-       SHR    EBX, 16
-       SHR    ESI, 16
-       MOV    [EDX],BX
-       MOV    [EDX + 4],SI
-       ADD    EDX, 8
-       SUB    ECX, 4
-       JNS    @@1
-@@2:
-       ADD    ECX, 2
-       JS     @@3
-       MOV    EBX,[EAX + EDX]
-       BSWAP  EBX
-       MOV    [EDX + 2],BX
-       SHR    EBX, 16
-       MOV    [EDX],BX
-       ADD    EDX, 4
-       SUB    ECX, 2
-@@3:
-       INC    ECX
-       JNZ    @@4
-       MOV    BX,[EAX + EDX]
-       XCHG   BL,BH
-       MOV    [EDX],BX
-@@4:
-       POP    EBX
-       POP    ESI
-{$ENDIF}
-end;
-
-
-{---------------------------------------------------------------------------}
-function IsUtf8LeadByte(const B: Byte): Boolean;
-begin
-    Result := (B < $80) or (B in [$C2..$F4]);
-end;
-
-
-{---------------------------------------------------------------------------}
-function IsUtf8TrailByte(const B: Byte): Boolean;
-begin
-    Result := B in [$80..$BF];
-end;
-
-
-{---------------------------------------------------------------------------}
-function Utf8Size(const LeadByte: Byte): Integer;
-begin
-    case LeadByte of
-        $00..$7F : Result := 1;
-        $C2..$DF : Result := 2;
-        $E0..$EF : Result := 3;
-        $F0..$F4 : Result := 4;
-    else
-        Result := 0; // Invalid lead byte
-    end;
-end;
-
-
-{---------------------------------------------------------------------------}
-{$IFNDEF COMPILER_12_UP}
-function IsLeadChar(Ch: WideChar): Boolean;
-begin
-    Result := (Ch >= #$D800) and (Ch <= #$DFFF);
-end;
-{$ENDIF}
-
-
-{---------------------------------------------------------------------------}
-function IsCharInSet(C: AnsiChar; const CharSet: TCharSet): Boolean;
-begin
-  Result := C in CharSet;
-end;
-
-
-{---------------------------------------------------------------------------}
-function IsCharInSet(C: WideChar; const CharSet: TCharSet): Boolean;
-begin
-  Result := (C < #$0100) and (AnsiChar(C) in CharSet);
-end;
-
-
-{---------------------------------------------------------------------------}
-{$IFDEF MSWINDOWS}
-function AnsiToUnicode(const Str: RawByteString; ACodePage: LongWord): UnicodeString;
-var
-    Len, Len2 : Integer;
-begin
-    Len := Length(Str);
-    if Len > 0 then begin
-        Len := MultiByteToWideChar(ACodePage, 0, Pointer(Str),
-                                   Len, nil, 0);
-        SetLength(Result, Len);
-        if Len > 0 then
-        begin
-            Len2 := MultiByteToWideChar(ACodePage, 0, Pointer(Str), Length(Str),
-                                Pointer(Result), Len);
-            if Len2 <> Len then // May happen, very rarely
-                SetLength(Result, Len2);
-        end;
-    end
-    else
-        Result := '';
-end;
-
-
-{---------------------------------------------------------------------------}
-function AnsiToUnicode(const Str: PAnsiChar; ACodePage: LongWord): UnicodeString;
-var
-    Len, Len2 : Integer;
-begin
-    if (Str <> nil) then begin
-        Len := MultiByteToWideChar(ACodePage, 0, Str, -1, nil, 0);
-        if Len > 1 then begin // counts the null-terminator
-            SetLength(Result, Len - 1);
-            Len2 := MultiByteToWideChar(ACodePage, 0, Str, -1,
-                                Pointer(Result), Len);
-            if Len2 <> Len then  // May happen, very rarely
-            begin
-                if Len2 > 0 then
-                    SetLength(Result, Len2 - 1)
-                else
-                    Result := '';
-            end;
-        end
-        else
-            Result := '';
-    end
-    else
-        Result := '';
-end;
-
-
-{---------------------------------------------------------------------------}
-function AnsiToUnicode(const Str: RawByteString): UnicodeString;
-begin
-    Result := AnsiToUnicode(Str, CP_ACP);
-end;
-
-
-{---------------------------------------------------------------------------}
-function UnicodeToAnsi(const Str: UnicodeString; ACodePage: LongWord; SetCodePage: Boolean = False): RawByteString;
-var
-    Len, Len2 : Integer;
-begin
-    Len := Length(Str);
-    if Len > 0 then begin
-        Len := WideCharToMultiByte(ACodePage, 0, Pointer(Str), Len, nil, 0, nil, nil);
-        SetLength(Result, Len);
-        if Len > 0 then begin
-            Len2 := WideCharToMultiByte(ACodePage, 0, Pointer(Str), Length(Str),
-                                Pointer(Result), Len, nil, nil);
-            if Len2 <> Len then // May happen, very rarely
-                SetLength(Result, Len2);
-        {$IFDEF COMPILER_12_UP}
-            if SetCodePage and (ACodePage <> CP_ACP) then
-                PWord(INT_PTR(Result) - 12)^ := ACodePage;
-        {$ENDIF}
-        end;
-    end
-    else
-        Result := '';
-end;
-
-
-{---------------------------------------------------------------------------}
-function UnicodeToAnsi(const Str: PWideChar; ACodePage: LongWord;
-  SetCodePage: Boolean = False): RawByteString;
-var
-    Len, Len2 : Integer;
-begin
-    if (Str <> nil) then begin
-        Len := WideCharToMultiByte(ACodePage, 0, Str, -1, nil, 0, nil, nil);
-        if Len > 1 then begin // counts the null-terminator
-            SetLength(Result, Len - 1);
-            Len2 := WideCharToMultiByte(ACodePage, 0, Str, -1,
-                                Pointer(Result), Len,
-                                nil, nil);
-            if Len2 <> Len then // May happen, very rarely
-            begin
-                if Len2 > 0 then
-                    SetLength(Result, Len2 - 1)
-                else
-                    Result := '';
-            end;
-        {$IFDEF COMPILER_12_UP}
-            if SetCodePage and (ACodePage <> CP_ACP) then
-                PWord(INT_PTR(Result) - 12)^ := ACodePage;
-        {$ENDIF}
-        end
-        else
-            Result := '';
-    end
-    else
-        Result := '';
-end;
-
-
-{---------------------------------------------------------------------------}
-function UnicodeToAnsi(const Str: UnicodeString): RawByteString;
-begin
-    Result := UnicodeToAnsi(Str, CP_ACP);
-end;
-{$ENDIF}
-
 {---------------------------------------------------------------------------}
 
 function IsStrEmptyA(const AString: string): boolean;
@@ -687,14 +453,6 @@ begin
   finally Destination.Free end;
 end;
 
-{$IFDEF COMPILER_10_UP}
-function CheckGetFileDate(const AFileName: string): TDateTime;
-begin
-  if not FileAge(AFileName, Result) then
-    raise Exception.Create('Error on getting the file date :"' + AFileName + '"');
-end;
-{$ENDIF}
-
 {$ifdef DELPHI_1_UP}
 function ExtractFilePath(const FileName: string): string;
 var i: longint;
@@ -866,6 +624,199 @@ begin
   finally Source.Free; end;
 end;
 
+procedure Swap16Buf(Src, Dst: PWord; WordCount: Integer);
+var
+  I: Integer;
+begin
+  for I := 1 to WordCount do
+  begin
+    Dst^ := Swap(Src^);
+    Inc(Src);
+    Inc(Dst);
+  end;
+end;
+
+{---------------------------------------------------------------------------}
+function IsUtf8LeadByte(const B: Byte): Boolean;
+begin
+    Result := (B < $80) or (B in [$C2..$F4]);
+end;
+
+
+{---------------------------------------------------------------------------}
+function IsUtf8TrailByte(const B: Byte): Boolean;
+begin
+    Result := B in [$80..$BF];
+end;
+
+
+{---------------------------------------------------------------------------}
+function Utf8Size(const LeadByte: Byte): Integer;
+begin
+    case LeadByte of
+        $00..$7F : Result := 1;
+        $C2..$DF : Result := 2;
+        $E0..$EF : Result := 3;
+        $F0..$F4 : Result := 4;
+    else
+        Result := 0; // Invalid lead byte
+    end;
+end;
+
+
+{---------------------------------------------------------------------------}
+{$IFNDEF COMPILER_12_UP}
+function IsLeadChar(Ch: WideChar): Boolean;
+begin
+    Result := (Ch >= #$D800) and (Ch <= #$DFFF);
+end;
+{$ENDIF}
+
+
+{---------------------------------------------------------------------------}
+function IsCharInSet(C: AnsiChar; const CharSet: TCharSet): Boolean;
+begin
+  Result := C in CharSet;
+end;
+
+
+{---------------------------------------------------------------------------}
+function IsCharInSet(C: WideChar; const CharSet: TCharSet): Boolean;
+begin
+  Result := (C < #$0100) and (AnsiChar(C) in CharSet);
+end;
+
+
+{---------------------------------------------------------------------------}
+{$IFDEF MSWINDOWS}
+function AnsiToUnicode(const Str: RawByteString; ACodePage: LongWord): UnicodeString;
+var
+    Len, Len2 : Integer;
+begin
+    Len := Length(Str);
+    if Len > 0 then begin
+        Len := MultiByteToWideChar(ACodePage, 0, Pointer(Str),
+                                   Len, nil, 0);
+        SetLength(Result, Len);
+        if Len > 0 then
+        begin
+            Len2 := MultiByteToWideChar(ACodePage, 0, Pointer(Str), Length(Str),
+                                Pointer(Result), Len);
+            if Len2 <> Len then // May happen, very rarely
+                SetLength(Result, Len2);
+        end;
+    end
+    else
+        Result := '';
+end;
+
+
+{---------------------------------------------------------------------------}
+function AnsiToUnicode(const Str: PAnsiChar; ACodePage: LongWord): UnicodeString;
+var
+    Len, Len2 : Integer;
+begin
+    if (Str <> nil) then begin
+        Len := MultiByteToWideChar(ACodePage, 0, Str, -1, nil, 0);
+        if Len > 1 then begin // counts the null-terminator
+            SetLength(Result, Len - 1);
+            Len2 := MultiByteToWideChar(ACodePage, 0, Str, -1,
+                                Pointer(Result), Len);
+            if Len2 <> Len then  // May happen, very rarely
+            begin
+                if Len2 > 0 then
+                    SetLength(Result, Len2 - 1)
+                else
+                    Result := '';
+            end;
+        end
+        else
+            Result := '';
+    end
+    else
+        Result := '';
+end;
+
+
+{---------------------------------------------------------------------------}
+function AnsiToUnicode(const Str: RawByteString): UnicodeString;
+begin
+    Result := AnsiToUnicode(Str, CP_ACP);
+end;
+
+
+{---------------------------------------------------------------------------}
+function UnicodeToAnsi(const Str: UnicodeString; ACodePage: LongWord; SetCodePage: Boolean = False): RawByteString;
+var
+    Len, Len2 : Integer;
+begin
+    Len := Length(Str);
+    if Len > 0 then begin
+        Len := WideCharToMultiByte(ACodePage, 0, Pointer(Str), Len, nil, 0, nil, nil);
+        SetLength(Result, Len);
+        if Len > 0 then begin
+            Len2 := WideCharToMultiByte(ACodePage, 0, Pointer(Str), Length(Str),
+                                Pointer(Result), Len, nil, nil);
+            if Len2 <> Len then // May happen, very rarely
+                SetLength(Result, Len2);
+        {$IFDEF COMPILER_12_UP}
+            if SetCodePage and (ACodePage <> CP_ACP) then
+                PWord(INT_PTR(Result) - 12)^ := ACodePage;
+        {$ENDIF}
+        end;
+    end
+    else
+        Result := '';
+end;
+
+
+{---------------------------------------------------------------------------}
+function UnicodeToAnsi(const Str: PWideChar; ACodePage: LongWord;
+  SetCodePage: Boolean = False): RawByteString;
+var
+    Len, Len2 : Integer;
+begin
+    if (Str <> nil) then begin
+        Len := WideCharToMultiByte(ACodePage, 0, Str, -1, nil, 0, nil, nil);
+        if Len > 1 then begin // counts the null-terminator
+            SetLength(Result, Len - 1);
+            Len2 := WideCharToMultiByte(ACodePage, 0, Str, -1,
+                                Pointer(Result), Len,
+                                nil, nil);
+            if Len2 <> Len then // May happen, very rarely
+            begin
+                if Len2 > 0 then
+                    SetLength(Result, Len2 - 1)
+                else
+                    Result := '';
+            end;
+        {$IFDEF COMPILER_12_UP}
+            if SetCodePage and (ACodePage <> CP_ACP) then
+                PWord(INT_PTR(Result) - 12)^ := ACodePage;
+        {$ENDIF}
+        end
+        else
+            Result := '';
+    end
+    else
+        Result := '';
+end;
+
+
+{---------------------------------------------------------------------------}
+function UnicodeToAnsi(const Str: UnicodeString): RawByteString;
+begin
+    Result := UnicodeToAnsi(Str, CP_ACP);
+end;
+{$ENDIF}
+
+{$IFDEF COMPILER_10_UP}
+function CheckGetFileDate(const AFileName: string): TDateTime;
+begin
+  if not FileAge(AFileName, Result) then
+    raise Exception.Create('Error on getting the file date :"' + AFileName + '"');
+end;
+{$ENDIF}
 
 { EInternalError ------------------------------------------------------------- }
 
