@@ -245,17 +245,6 @@ function CheckGetFileDate(const AFileName: string): TDateTime;
   {$IFDEF USE_INLINE} inline; {$ENDIF}
 {$ENDIF}
 
-type
-  { Raise this when some impossible situation (indicating bug in
-    pasdoc) occurs. }
-  EInternalError = class(Exception)
-    { Calls inherited with Message like
-      'Internal error occured :' + BaseMessage,
-      so BaseMessage should only contain text relevant to this
-      particular internal error. }
-    constructor Create(const BaseMessage: string);
-  end;
-
 implementation
 
 uses
@@ -817,12 +806,5 @@ begin
     raise Exception.Create('Error on getting the file date :"' + AFileName + '"');
 end;
 {$ENDIF}
-
-{ EInternalError ------------------------------------------------------------- }
-
-constructor EInternalError.Create(const BaseMessage: string);
-begin
-  inherited Create('Internal error occured : ' + BaseMessage);
-end;
 
 end.

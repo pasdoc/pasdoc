@@ -36,9 +36,7 @@ unit PasDoc_Parser;
 
 interface
 
-uses
-  Classes,
-  Contnrs,
+uses SysUtils, Classes, Contnrs,
   PasDoc_Types,
   PasDoc_Items,
   PasDoc_Scanner,
@@ -47,6 +45,10 @@ uses
   PasDoc_StringVector;
 
 type
+  { Raised when an impossible situation (indicating bug in
+    pasdoc) occurs. }
+  EInternalParserError = class(Exception);
+
   TCioParseMode = (pmUndefined, pmConst, pmVar, pmType);
   { @name stores a CIO reference and current state. }
   TPasCioHelper = class(TObject)
@@ -191,8 +193,8 @@ type
     ItemsForNextBackComment: TPasItems;
 
     { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
-      If given KeyWord has no corresponding @link(TMethodType) value,
-      raises @link(EInternalError). }
+      @raises(EInternalParserError
+        If given KeyWord has no corresponding @link(TMethodType) value.) }
     function KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
 
     procedure DoError(const AMessage: string;
@@ -475,7 +477,7 @@ implementation
 uses
   {$ifdef FPC_RegExpr} RegExpr, {$endif}
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
-  SysUtils, PasDoc_Utils;
+  PasDoc_Utils;
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -526,7 +528,7 @@ begin
     KEY_FUNCTION:    Result := METHOD_FUNCTION;
     KEY_PROCEDURE:   Result := METHOD_PROCEDURE;
   else
-    raise EInternalError.Create('KeyWordToMethodType: invalid keyword');
+    raise EInternalParserError.Create('KeyWordToMethodType: invalid keyword');
   end;
 end;
 
@@ -3045,7 +3047,7 @@ begin
           ivImplicit:
             Visibility := viImplicit;
           else
-            raise EInternalError.Create('ImplicitVisibility = ??');
+            raise EInternalParserError.Create('ImplicitVisibility = ??');
         end;
       end
       else
