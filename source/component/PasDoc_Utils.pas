@@ -245,10 +245,20 @@ function CheckGetFileDate(const AFileName: string): TDateTime;
   {$IFDEF USE_INLINE} inline; {$ENDIF}
 {$ENDIF}
 
+{ Strip HTML elements from the string.
+
+  Assumes that the HTML content is correct (all elements are nicely closed,
+  all < > inside attributes are escaped to &lt; &gt;,
+  all < > outside elements are escaped to &lt; &gt;).
+  It doesn't try very hard to deal with incorrect HTML context (it will not
+  crash, but results are undefined).
+  It's designed to strip HTML from PasDoc-generated HTML, which should always
+  be correct. }
+function StripHtml(const S: string): string;
+
 implementation
 
-uses
-  Classes, PasDoc_StreamUtils;
+uses Classes, StrUtils, PasDoc_StreamUtils;
 
 {---------------------------------------------------------------------------}
 
@@ -806,5 +816,31 @@ begin
     raise Exception.Create('Error on getting the file date :"' + AFileName + '"');
 end;
 {$ENDIF}
+
+function StripHtml(const S: string): string;
+var
+  Done, NextTagEnd, NextTagStart: Integer;
+begin
+  Result := '';
+  Done := 0;
+  while Done < Length(S) do
+  begin
+    NextTagStart := PosEx('<', S, Done + 1);
+    if NextTagStart <> 0 then
+      NextTagEnd := PosEx('>', S, NextTagStart + 1)
+    else
+      NextTagEnd := 0; // just for safety, not really needed
+    if (NextTagStart <> 0) and (NextTagEnd <> 0) then
+    begin
+      Result := Result + Copy(S, Done + 1, NextTagStart - (Done + 1));
+      Done := NextTagEnd;
+    end else
+    begin
+      Result := Result + SEnding(S, Done + 1);
+      // Done := Length(S);
+      Break; // we know that we can break the loop now
+    end;
+  end;
+end;
 
 end.

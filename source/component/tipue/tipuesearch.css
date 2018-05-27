@@ -159,10 +159,7 @@ http://www.tipue.com/search
 	background-color: #f3f3f3;
 }
 
-/* PasDoc: style found words.
-   Later: For now, we pass 'highlightTerms': false to Tipue,
-   so this isn't really used. See _tipue_results.html for explanation
-   why we don't use highlightTerms. */
+/* PasDoc: style found words. */
 .tipue_search_content_bold {
     background-color: yellow;
 }

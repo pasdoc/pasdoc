@@ -36,30 +36,7 @@
 '' + LineEnding +
 '        /* For PasDoc docs, showing urls is not very useful,' + LineEnding +
 '           since the page title already shows the unit and identifier. */' + LineEnding +
-'        ''showURL'': false,' + LineEnding +
-'' + LineEnding +
-'        /* Unfortunately we have to turn off this feature.' + LineEnding +
-'           It looks nice when it works correctly, but...' + LineEnding +
-'' + LineEnding +
-'           But it also makes the results visibly broken sometimes.' + LineEnding +
-'           When the search term is found also inside HTML attributes' + LineEnding +
-'           inside the description, then highlighting means that Tipue' + LineEnding +
-'           adds a <span class="tipue_search_content_bold"> which may break' + LineEnding +
-'           the HTML.' + LineEnding +
-'           Consider searching for CastleWindow inside a Castle Game Engine docs.' + LineEnding +
-'           A result may have a description like this:' + LineEnding +
-'' + LineEnding +
-'           Some text <a class="normal" href="CastleWindow.TCastleWindowCustom.html#Width">Width</a> ...' + LineEnding +
-'' + LineEnding +
-'           When highlightTerms is on, every occurrence of CastleWindow' + LineEnding +
-'           above will be replaced with <span class="tipue_search_content_bold">CastleWindow</span>' + LineEnding +
-'           which will completely break the above HTML.' + LineEnding +
-'' + LineEnding +
-'           This bug can easily happen, in general, when searching for a name' + LineEnding +
-'           of class or unit in a PasDoc documentation. So it seems quite common' + LineEnding +
-'           in case of PasDoc-generated documentation.' + LineEnding +
-'        */' + LineEnding +
-'        ''highlightTerms'': false' + LineEnding +
+'        ''showURL'': false' + LineEnding +
 '    });' + LineEnding +
 '});' + LineEnding +
 '</script>' + LineEnding +

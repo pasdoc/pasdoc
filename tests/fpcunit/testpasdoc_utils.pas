@@ -33,6 +33,7 @@ type
   published
     procedure TestRemoveIndentation;
     procedure TestSwap16Buf;
+    procedure TestStripHtml;
   end;
 
 implementation
@@ -76,6 +77,14 @@ begin
   AssertEquals(2 shl 8 + 1, WordArray[1]);
   AssertEquals(4 shl 8 + 3, WordArray[2]);
   AssertEquals(6 shl 8 + 5, WordArray[3]);
+end;
+
+procedure TTestPasDocUtils.TestStripHtml;
+begin
+  AssertEquals(' blah   blah ' + LineEnding + ' foo',
+     StripHtml(' blah   blah ' + LineEnding + ' foo'));
+  AssertEquals(' blah   blah ' + LineEnding + ' foo',
+     StripHtml(' <i>blah   <b>blah</b></i> <blabla>' + LineEnding + ' <table>foo'));
 end;
 
 initialization

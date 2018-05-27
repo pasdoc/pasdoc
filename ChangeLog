@@ -15,7 +15,10 @@ Next version (not released yet)
   * @raises and @param is not supported at properties as well as methods.
     (Actually, it's supported at everything now,
     but it makes sense only at properties and methods now.)
-  * Tipue (client-side search, see --use-tipue) code is upgraded to use Tipue 6.1.
+  * Tipue (client-side search, see https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption )
+    was much improved:
+    - we have upgraded to use Tipue 6.1, which highlights the found terms
+    - we strip HTML from Tipue index, which makes the "search results" page correct
 
 2018-02-08 v0.15.0
 

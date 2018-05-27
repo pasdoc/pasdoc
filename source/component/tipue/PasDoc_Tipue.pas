@@ -116,7 +116,11 @@ procedure TipueAddFiles(Units: TPasUnits;
           (cChar: '\'; sSpec: '\\')
         );
       begin
-        Result := StringReplaceChars(S, ReplacementArray);
+        { Strip HTML tags, as Tipue results printing assumes that text contains
+          no HTML elements, otherwise they are inserted into page source
+          and break HTML rendering. }
+        Result := StripHtml(S);
+        Result := StringReplaceChars(Result, ReplacementArray);
       end;
 
     var
