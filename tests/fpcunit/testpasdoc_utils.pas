@@ -32,6 +32,7 @@ type
   TTestPasDocUtils = class(TTestCase)
   published
     procedure TestRemoveIndentation;
+    procedure TestSwap16Buf;
   end;
 
 implementation
@@ -62,6 +63,19 @@ begin
     ' '#9' xyz'));
   AssertEquals('begin Writeln(''Hello world''); end; { This works ! }',
     RemoveIndentation(' begin Writeln(''Hello world''); end; { This works ! } '));
+end;
+
+procedure TTestPasDocUtils.TestSwap16Buf;
+var
+  WordArray: array [1..3] of Word;
+begin
+  WordArray[1] := 1 shl 8 + 2;
+  WordArray[2] := 3 shl 8 + 4;
+  WordArray[3] := 5 shl 8 + 6;
+  Swap16Buf(@WordArray, @WordArray, High(WordArray));
+  AssertEquals(2 shl 8 + 1, WordArray[1]);
+  AssertEquals(4 shl 8 + 3, WordArray[2]);
+  AssertEquals(6 shl 8 + 5, WordArray[3]);
 end;
 
 initialization
