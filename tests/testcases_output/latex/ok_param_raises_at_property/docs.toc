@@ -1,4 +1,0 @@
-\contentsline {chapter}{\numberline {1}Unit A}{2}{chapter.1}
-\contentsline {section}{\numberline {1.1}Overview}{2}{section.1.1}
-\contentsline {section}{\numberline {1.2}Classes, Interfaces, Objects and Records}{2}{section.1.2}
-\contentsline {section}{\numberline {1.3}Functions and Procedures}{3}{section.1.3}
