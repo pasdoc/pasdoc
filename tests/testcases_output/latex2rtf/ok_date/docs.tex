@@ -1,0 +1,28 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}date}
+\section{Description}
+Testcase from https://github.com/pasdoc/pasdoc/issues/18 
+\section{Last Modified}
+\par
+2018-06-02 11:34:12 
+
+
+\end{document}

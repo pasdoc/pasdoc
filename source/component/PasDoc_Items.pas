@@ -1152,7 +1152,8 @@ function VisToStr(const Vis: TVisibility): string;
 
 implementation
 
-uses PasDoc_Utils, PasDoc_Tokenizer;
+uses StrUtils,
+  PasDoc_Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 begin
@@ -1268,30 +1269,44 @@ procedure TBaseItem.StoreCVSTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
+
+  function IsVersionControlTag(const S: string;
+    const VersionControlTag: string; out TagValue: string): boolean;
+  var
+    Prefix: string;
+  begin
+    Prefix := '$' + VersionControlTag + ' ';
+    Result := IsPrefix(Prefix, TagParameter);
+    if Result then
+    begin
+      { cut off -1 to cut off final '$' }
+      TagValue := Trim(Copy(S, Length(Prefix) + 1,  Length(S) - Length(Prefix) - 1));
+    end;
+  end;
+
 var
-  s: string;
+  TagValue: string;
 begin
-  if Length(TagParameter)>1 then begin
-    case TagParameter[2] of
-      'D': begin
-             if Copy(TagParameter,1,7) = '$Date: ' then begin
-               LastMod := Trim(Copy(TagParameter, 7, Length(TagParameter)-7-1)) + ' UTC';
-               ReplaceStr := '';
-             end;
-           end;
-      'A': begin
-             if Copy(TagParameter,1,9) = '$Author: ' then begin
-               s := Trim(Copy(TagParameter, 9, Length(TagParameter)-9-1));
-               if Length(s) > 0 then begin
-                 if not Assigned(Authors) then
-                   FAuthors := NewStringVector;
-                 Authors.AddNotExisting(s);
-                 ReplaceStr := '';
-               end;
-             end;
-           end;
-      else begin
-      end;
+  if IsVersionControlTag(TagParameter, 'Date:', TagValue) then
+  begin
+    LastMod := TagValue;
+    ReplaceStr := '';
+  end else
+  if IsVersionControlTag(TagParameter, 'Date::', TagValue) then
+  begin
+    LastMod := TrimRightSet(TagValue, ['#']);
+    ReplaceStr := '';
+  end else
+  { See http://svnbook.red-bean.com/en/1.7/svn.advanced.props.special.keywords.html
+    about fixed date format in SVN. }
+  if IsVersionControlTag(TagParameter, 'Author:', TagValue) then
+  begin
+    if Length(TagValue) > 0 then
+    begin
+      if not Assigned(Authors) then
+        FAuthors := NewStringVector;
+      Authors.AddNotExisting(TagValue);
+      ReplaceStr := '';
     end;
   end;
 end;

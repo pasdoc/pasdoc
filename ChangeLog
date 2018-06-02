@@ -19,6 +19,7 @@ Next version (not released yet)
     was much improved:
     - we have upgraded to use Tipue 6.1, which highlights the found terms
     - we strip HTML from Tipue index, which makes the "search results" page correct
+  * Fix handling SVN fixed-length $Date::
 
 2018-02-08 v0.15.0
 
