@@ -306,7 +306,7 @@ type
   TTokenizer = class(TObject)
   private
     FBufferedCharSize : Integer;
-    // FBufferedToken: TToken;
+    FBufferedToken: TToken;
     function StreamPosition: Int64;
   protected
     FOnMessage: TPasDocMessageEvent;
@@ -369,15 +369,14 @@ type
     destructor Destroy; override;
     function HasData: Boolean;
     function GetStreamInfo: string;
-    function GetToken: TToken;
+    function GetToken(const NilOnEnd: Boolean = false): TToken;
 
     { Makes the token T next to be returned by GetToken.
       Also sets T to @nil, to prevent you from freeing it accidentally.
 
       You cannot have more than one "unget" token.
       If you only call UnGetToken after some GetToken, you are safe. }
-    // Unused, not needed now.
-    // procedure UnGetToken(var T: TToken);
+    procedure UnGetToken(var T: TToken);
 
     { Skip all chars until it encounters some compiler directive,
       like $ELSE or $ENDIF. }
@@ -568,7 +567,7 @@ end;
 destructor TTokenizer.Destroy;
 begin
   Stream.Free;
-  // FBufferedToken.Free;
+  FBufferedToken.Free;
   inherited;
 end;
 
@@ -734,7 +733,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.GetToken: TToken;
+function TTokenizer.GetToken(const NilOnEnd: Boolean = false): TToken;
 var
   c: Char;
   MaybeKeyword: TKeyword;
@@ -742,7 +741,6 @@ var
   J: Integer;
   BeginPosition: integer;
 begin
-  (*
   if Assigned(FBufferedToken) then
   begin
     { we have a token buffered, we'll return this one }
@@ -750,13 +748,15 @@ begin
     FBufferedToken := nil;
     Exit;
   end;
-  *)
 
   Result := nil;
   BeginPosition := StreamPosition; //used in finally
   try
     if GetChar(c) = 0 then
-      DoError('Tokenizer: could not read character', []);
+      if NilOnEnd then
+        Exit(nil)
+      else
+        DoError('Tokenizer: could not read character', []);
 
     if IsCharInSet(c, Whitespace) then
     begin
@@ -1189,18 +1189,14 @@ begin
   until False;
 end;
 
-(*
 procedure TTokenizer.UnGetToken(var t: TToken);
 begin
   if Assigned(FBufferedToken) then
     DoError('%s: Cannot UnGet more than one token in TTokenizer',
       [GetStreamInfo]);
 
-  Writeln('unget on ', FBufferedToken.CommentContent);
-
   FBufferedToken := t;
   t := nil;
 end;
-*)
 
 end.

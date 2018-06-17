@@ -64,6 +64,7 @@ type
   TSwitchOptions = array[TUpperCaseLetter] of Boolean;
 
   ETokenizerStreamEnd = class(EPasDoc);
+  EInvalidIfCondition = class(EPasDoc);
 
   { All directives a scanner is going to regard. }
   TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF,
@@ -142,6 +143,9 @@ type
     procedure ResolveSwitchDirectives(const Comment: String);
 
     procedure SetIncludeFilePaths(Value: TStringVector);
+
+    { Calculate boolean condition, like the one allowed at $if and $elseif. }
+    function IfCondition(const Condition: String): Boolean;
   protected
     procedure DoError(const AMessage: string;
       const AArguments: array of const);
@@ -517,21 +521,14 @@ function TScanner.GetToken: TToken;
     end;
   end;
 
-  { This is supposed to evaluate boolean conditions allowed after
-    $if and $elseif directives. TODO: For now, this is dummy, just
-    prints a warning and returns true. }
-  function IsIfConditionTrue(const Condition: string): boolean;
-  begin
-    DoMessage(2, pmtWarning,
-      'Evaluating $if and $elseif conditions is not implemented, ' +
-      'I''m simply assuming that "%s" is true', [Condition]);
-    Result := true;
-  end;
-
   { Call this on $ifdef, $ifndef, $ifopt, $if directives.
-    @param(IsTrue says if condition is true (so we should
-      parse the section up to $else or $elseif, and then skip to
-      $endif or $ifend.))
+    This "consumes" all the tokens up to the "active" (with satisfied
+    condition) block of $ifdef / $if / $else / $elseif sequence.
+    So the outside code can just pass-through the remaining tokens,
+    and ignore everything after any $else or $elseif,
+    up to the matching $endif / $ifend.
+
+    @param(IsTrue says if condition is true.))
     @param(DirectiveName is used for debug messages.)
     @param(DirectiveParam is also used for debug messages.) }
   procedure HandleIfDirective(IsTrue: boolean;
@@ -583,7 +580,7 @@ function TScanner.GetToken: TToken;
           DT_ELSEIF:
             begin
               ElseifCondition := ExtractElseifCondition(ElseifToken);
-              if IsIfConditionTrue(ElseifCondition) then
+              if IfCondition(ElseifCondition) then
               begin
                 Inc(FDirectiveLevel);
                 Break;
@@ -683,7 +680,7 @@ begin
                 'IFNDEF', DirectiveParamBlack);
               DT_IFOPT: HandleIfDirective(IsSwitchDefined(DirectiveParamBlack),
                 'IFOPT', DirectiveParamBlack);
-              DT_IF: HandleIfDirective(IsIfConditionTrue(DirectiveParamWhite),
+              DT_IF: HandleIfDirective(IfCondition(DirectiveParamWhite),
                 'IF', DirectiveParamWhite);
               DT_INCLUDE_FILE, DT_INCLUDE_FILE_2:
                 begin
@@ -1045,6 +1042,220 @@ begin
     Inc(p);
     Dec(l);
   until False;
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+function TScanner.IfCondition(const Condition: String): Boolean;
+var
+  Tokenizer: TTokenizer;
+
+  { Get next token that is not whitespace from Tokenizer.
+    Return @nil if end of stream. }
+  function NextToken: TToken;
+  begin
+    repeat
+      Result := Tokenizer.GetToken(true);
+    until (Result = nil) or (Result.MyType <> TOK_WHITESPACE);
+  end;
+
+  (* Consume tokens after "defined.
+     We handle two forms:
+       {$IF DEFINED(MySym)}
+     or
+       {$IF DEFINED MySym}
+  *)
+  function ParseDefinedFunctionParameter: Boolean;
+  var
+    T: TToken;
+    SymbolName: string;
+  begin
+    T := NextToken;
+    if T.IsSymbol(SYM_LEFT_PARENTHESIS) then
+    begin
+      FreeAndNil(T);
+
+      T := NextToken;
+      if T.MyType <> TOK_IDENTIFIER then
+        raise EInvalidIfCondition.CreateFmt('Expected identifier (symbol name), got %s', [T.Description]);
+      SymbolName := T.Data;
+      FreeAndNil(T);
+
+      T := NextToken;
+      if not T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+        raise EInvalidIfCondition.CreateFmt('Expected ")", got %s', [T.Description]);
+      FreeAndNil(T);
+    end else
+    if T.MyType = TOK_IDENTIFIER then
+    begin
+      SymbolName := T.Data;
+      FreeAndNil(T);
+    end else
+      raise EInvalidIfCondition.CreateFmt('Expected "(" or symbol name, got %s', [T.Description]);
+
+    Result := IsSymbolDefined(SymbolName);
+  end;
+
+  function ParseOptionFunctionParameter: String;
+  var
+    T: TToken;
+  begin
+    T := NextToken;
+    if not T.IsSymbol(SYM_LEFT_PARENTHESIS) then
+      raise EInvalidIfCondition.CreateFmt('Expected "(", got %s', [T.Description]);
+    FreeAndNil(T);
+
+    T := NextToken;
+    if T.MyType <> TOK_IDENTIFIER then
+      raise EInvalidIfCondition.CreateFmt('Expected identifier (option name), got %s', [T.Description]);
+    Result := T.Data;
+    FreeAndNil(T);
+
+    T := NextToken;
+    if T.MyType <> TOK_SYMBOL then
+      raise EInvalidIfCondition.CreateFmt('Expected symbol (+ or -), got %s', [T.Description]);
+    Result := Result + T.Data;
+    FreeAndNil(T);
+
+    T := NextToken;
+    if not T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+      raise EInvalidIfCondition.CreateFmt('Expected ")", got %s', [T.Description]);
+    FreeAndNil(T);
+  end;
+
+(*
+  function ParseSimpleFunctionParameter: String;
+  var
+    T: TToken;
+  begin
+    T := NextToken;
+    if not T.IsSymbol(SYM_LEFT_PARENTHESIS) then
+      raise EInvalidIfCondition.CreateFmt('Expected "(", got %s', [T.Description]);
+    FreeAndNil(T);
+
+    T := NextToken;
+    if T.MyType <> TOK_IDENTIFIER then
+      raise EInvalidIfCondition.CreateFmt('Expected identifier (function parameter), got %s', [T.Description]);
+    Result := T.Data;
+    FreeAndNil(T);
+
+    T := NextToken;
+    if not T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+      raise EInvalidIfCondition.CreateFmt('Expected ")", got %s', [T.Description]);
+    FreeAndNil(T);
+  end;
+*)
+
+  { Consume tokens constituting a function, like "defined(xxx)".
+    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+  function ParseFunction: Boolean;
+  var
+    T: TToken;
+    Identifier: String;
+  begin
+    T := NextToken;
+    try
+      { if it's a number, than anything <> 0 results in true. }
+      if T.MyType = TOK_NUMBER then
+        Exit(StrToInt(T.Data) <> 0);
+
+      if T.MyType <> TOK_IDENTIFIER then
+        raise EInvalidIfCondition.CreateFmt('Expected identifier (function name), got %s', [T.Description]);
+      Identifier := LowerCase(T.Data);
+    finally FreeAndNil(T) end;
+
+    if Identifier = 'false' then
+      Result := false
+    else
+    if Identifier = 'true' then
+      Result := true
+    else
+    if Identifier = 'defined' then
+      Result := ParseDefinedFunctionParameter
+    else
+    if Identifier = 'undefined' then
+      // just negate the result defined(xxx) would have
+      Result := not ParseDefinedFunctionParameter
+    else
+    if Identifier = 'option' then
+      Result := IsSwitchDefined(ParseOptionFunctionParameter)
+    else
+    if Identifier = 'sizeof' then
+      raise EInvalidIfCondition.Create('Evaluating "sizeof" function for $if / $elseif not implemented', [])
+    else
+    if Identifier = 'declared' then
+      raise EInvalidIfCondition.Create('Evaluating "declared" function for $if / $elseif not implemented', [])
+    else
+      raise EInvalidIfCondition.CreateFmt('Unknown function "%s" in $if / $elseif', [Identifier]);
+  end;
+
+  { Consume tokens constituting a function
+    or a function with "not" at the beginning, like "not defined(xxx)". }
+  function ParseFunctionNegated: Boolean;
+  var
+    T: TToken;
+  begin
+    T := NextToken;
+    if T.IsKeyWord(KEY_NOT) then
+    begin
+      FreeAndNil(T);
+      Result := not ParseFunction;
+    end else
+    begin
+      Tokenizer.UnGetToken(T);
+      Result := ParseFunction;
+    end;
+  end;
+
+  { Consume tokens constituting an expression, like "defined(xxx) or defined(yyy)".
+    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+  function ParseExpression: Boolean;
+  var
+    T: TToken;
+  begin
+    Result := ParseFunctionNegated;
+    T := NextToken;
+    if T <> nil then
+    begin
+      try
+        if T.IsKeyWord(KEY_AND) then
+          Result := Result and ParseExpression
+        else
+        if T.IsKeyWord(KEY_OR) then
+          Result := Result and ParseExpression
+        else
+        if T.IsSymbol(SYM_EQUAL) then
+          Result := Result = ParseExpression
+        else
+          raise EInvalidIfCondition.Create('Cannot handle opertator function "%s" in $if / $elseif', [T.Description]);
+      finally FreeAndNil(T) end;
+    end;
+  end;
+
+begin
+  Tokenizer := TTokenizer.Create(TStringStream.Create(Condition),
+    FOnMessage, FVerbosity, '$if / $elseif condition', '');
+  try
+    try
+      Result := ParseExpression;
+    except
+      on E: EInvalidIfCondition do
+      begin
+        DoMessage(2, pmtWarning,
+          'Cannot evaluate this $if / $elseif condition, assuming that "%s" is true. Error message is: %s', [Condition, E.Message]);
+        Result := true;
+      end;
+    end;
+
+    { To test NextToken and tokenizer:
+    repeat
+      T := NextToken;
+      if T = nil then Break;
+      Writeln('Got token ', T.Description);
+      FreeAndNil(T);
+    until false;
+    }
+  finally FreeAndNil(Tokenizer) end;
 end;
 
 end.
