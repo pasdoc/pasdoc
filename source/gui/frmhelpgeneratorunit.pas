@@ -1,6 +1,6 @@
 {
   Copyright 2004-2008 Richard B. Winston, U.S. Geological Survey (USGS)
-  Copyright 2005-2010 Michalis Kamburelis
+  Copyright 2005-2018 Michalis Kamburelis
 
   This file is part of pasdoc_gui.
 
@@ -78,6 +78,7 @@ type
     comboLatexGraphicsPackage: TComboBox;
     EditConclusionFileName: TFileNameEdit;
     EditCssFileName: TFileNameEdit;
+    EditExternalDescriptions: TFileNameEdit;
     EditIntroductionFileName: TFileNameEdit;
     EditHtmlHead: TFileNameEdit;
     EditHtmlBodyBegin: TFileNameEdit;
@@ -87,6 +88,8 @@ type
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
+    LabelAutoLinkExclude: TLabel;
+    LabelExternalDescriptions: TLabel;
     LabelHtmlHead: TLabel;
     LabelHtmlBodyBegin: TLabel;
     LabelHtmlBodyEnd: TLabel;
@@ -111,6 +114,7 @@ type
     // @name holds the complete paths of all the source files
     // in the project.
     memoFiles: TMemo;
+    MemoAutoLinkExclude: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
     // The lines in @name are the paths of the files that
@@ -127,6 +131,7 @@ type
     MenuSave: TMenuItem;
     MenuPreferences: TMenuItem;
     NotebookMain: TNotebook;
+    pageAutoLink: TPage;
     PageVisibleMembers: TPage;
     pageDisplayComments: TPage;
     pageDefines: TPage;
@@ -334,9 +339,13 @@ begin
   if InsideCreateWnd then Exit;
 
   Changed := true;
-  if (memoFiles.Lines.Count > 0) and (EditOutputDirectory.Directory = '') then begin
+  if (memoFiles.Lines.Count > 0) and
+     (EditOutputDirectory.Directory = '') then
+  begin
     SetOutputDirectory(memoFiles.Lines[0]);
   end;
+
+  MemoAutoLinkExclude.Enabled := CheckAutoLink.Checked;
 end;
 
 procedure TfrmHelpGenerator.FormKeyDown(Sender: TObject; var Key: Word;
@@ -460,6 +469,7 @@ begin
   memoFiles.Clear;
   memoIncludeDirectories.Clear;
   memoMessages.Clear;
+  MemoAutoLinkExclude.Clear;
 
   memoDefines.Lines.Assign(DefaultDirectives);
 
@@ -469,6 +479,7 @@ begin
   EditHtmlHead.FileName := '';
   EditHtmlBodyBegin.FileName := '';
   EditHtmlBodyEnd.FileName := '';
+  EditExternalDescriptions.FileName := '';
 
   CheckWriteUsesList.Checked := false;
   CheckAutoAbstract.Checked := false;
@@ -896,11 +907,13 @@ begin
     PasDoc1.Generator.WriteUsesClause := CheckWriteUsesList.Checked;
     PasDoc1.Generator.AutoAbstract := CheckAutoAbstract.Checked;
     PasDoc1.AutoLink := CheckAutoLink.Checked;
+    PasDoc1.Generator.AutoLinkExclude.Assign(MemoAutoLinkExclude.Lines);
     PasDoc1.HandleMacros := CheckHandleMacros.Checked;
     
     PasDoc1.ProjectName := edProjectName.Text;
     PasDoc1.IntroductionFileName := EditIntroductionFileName.Text;
     PasDoc1.ConclusionFileName := EditConclusionFileName.Text;
+    PasDoc1.DescriptionFileNames.Text := EditExternalDescriptions.FileName;
 
     { CheckListVisibleMembersClick event *should* already
       take care of setting PasDoc1.ShowVisibilities.
@@ -1092,6 +1105,12 @@ var
       List[I] := ExpandNotEmptyFileName(List[I]);
   end;
 
+  procedure ReadFileNames(const Section: string; S: TStrings);
+  begin
+    ReadStrings(Section, S);
+    ExpandFileNames(S);
+  end;
+
 var
   i: Integer;
   SettingsFileNamePath: string;
@@ -1179,13 +1198,10 @@ begin
       ReadStrings('Defines', memoDefines.Lines);
       ReadStrings('Header', memoHeader.Lines);
       ReadStrings('Footer', memoFooter.Lines);
-      
-      ReadStrings('IncludeDirectories', memoIncludeDirectories.Lines);
-      ExpandFileNames(memoIncludeDirectories.Lines);
-      
-      ReadStrings('Files', memoFiles.Lines);
-      ExpandFileNames(memoFiles.Lines);
-      
+      ReadStrings('AutoLinkExclude', MemoAutoLinkExclude.Lines);
+      ReadFileNames('IncludeDirectories', memoIncludeDirectories.Lines);
+      ReadFileNames('Files', memoFiles.Lines);
+
       EditCssFileName.FileName := ExpandNotEmptyFileName(
         Ini.ReadString('Main', 'CssFileName', ''));
       EditIntroductionFileName.FileName := ExpandNotEmptyFileName(
@@ -1198,6 +1214,8 @@ begin
         Ini.ReadString('Main', 'HtmlBodyBegin', ''));
       EditHtmlBodyEnd.FileName := ExpandNotEmptyFileName(
         Ini.ReadString('Main', 'HtmlBodyEnd', ''));
+      EditExternalDescriptions.FileName := ExpandNotEmptyFileName(
+        Ini.ReadString('Main', 'ExternalDescriptions', ''));
 
       CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
@@ -1301,6 +1319,7 @@ begin
     WriteStrings('Defines', memoDefines.Lines);
     WriteStrings('Header', memoHeader.Lines);
     WriteStrings('Footer', memoFooter.Lines);
+    WriteStrings('AutoLinkExclude', MemoAutoLinkExclude.Lines);
     WriteFileNames('IncludeDirectories', memoIncludeDirectories.Lines);
     WriteFileNames('Files', memoFiles.Lines);
 
@@ -1316,6 +1335,8 @@ begin
       EditHtmlBodyBegin.FileName));
     Ini.WriteString('Main', 'HtmlBodyEnd', CorrectFileName(
       EditHtmlBodyEnd.FileName));
+    Ini.WriteString('Main', 'ExternalDescriptions', CorrectFileName(
+      EditExternalDescriptions.FileName));
 
     Ini.WriteBool('Main', 'WriteUsesList', CheckWriteUsesList.Checked);
     Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
