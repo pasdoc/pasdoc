@@ -1,15 +1,3 @@
-{ @abstract(PasDoc fails to parse this,
-  it seems that $if is not understood at all.)
-
-  Bug spotted by Michalis on 2005-12-04 when
-  trying `make htmldocs' on fpc compiler sources, in file globals.pas.
-
-  Update 2005-12-05: $if is sorta handled now, and so is $ifend.
-  This testcase is parsed now. There is still work remaining to be done
-  with regards to $if and $elseif, this is documented on
-  [https://github.com/pasdoc/pasdoc/wiki/ToDo].
-}
-
 unit ok_if_directive;
 
 interface
@@ -37,13 +25,13 @@ const
 {$endif}
 
 {$if defined(CPUARM) and defined(FPUFPA)}
-       Included = 1;
+       Foo1 = 1;
 {$else}
-       NotIncluded = 1;
+       Foo2 = 1;
 {$ifdef FPC_LITTLE_ENDIAN}
-       NotIncluded = 1;
+       Foo3 = 1;
 {$else FPC_LITTLE_ENDIAN}
-       NotIncluded = 1;
+       Foo4 = 1;
 {$endif FPC_LITTLE_ENDIAN}
 {$ifend}
 

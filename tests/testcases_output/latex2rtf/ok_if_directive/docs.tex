@@ -41,7 +41,7 @@ Update 2005{-}12{-}05: {\$}if is sorta handled now, and so is {\$}ifend. This te
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-MathQNaN : tdoublearray = (0,0,252,255,0,0,0,0);\end{ttfamily}
+MathQNaN : tdoublearray = (255,252,0,0,0,0,0,0);\end{ttfamily}
 
 
 \end{flushleft}
@@ -60,7 +60,7 @@ MathQNaN : tdoublearray = (0,0,252,255,0,0,0,0);\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-MathInf : tdoublearray = (0,0,240,127,0,0,0,0);\end{ttfamily}
+MathInf : tdoublearray = (127,240,0,0,0,0,0,0);\end{ttfamily}
 
 
 \end{flushleft}
@@ -79,7 +79,7 @@ MathInf : tdoublearray = (0,0,240,127,0,0,0,0);\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-MathNegInf : tdoublearray = (0,0,240,255,0,0,0,0);\end{ttfamily}
+MathNegInf : tdoublearray = (255,240,0,0,0,0,0,0);\end{ttfamily}
 
 
 \end{flushleft}
@@ -98,12 +98,12 @@ MathNegInf : tdoublearray = (0,0,240,255,0,0,0,0);\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-MathPi : tdoublearray =  (251,33,9,64,24,45,68,84);\end{ttfamily}
+MathPi : tdoublearray =  (64,9,33,251,84,68,45,24);\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Included}
+\subsection*{MathPiExtended}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -117,7 +117,45 @@ MathPi : tdoublearray =  (251,33,9,64,24,45,68,84);\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-Included = 1;\end{ttfamily}
+MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{NotIncluded}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+NotIncluded = 1;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{NotIncluded}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+NotIncluded = 1;\end{ttfamily}
 
 
 \end{flushleft}
