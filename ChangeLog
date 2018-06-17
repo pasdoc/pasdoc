@@ -4,7 +4,10 @@ Next version (not released yet)
   * Automatically remove %region and %endregion from comments
   * Show visibility (public, protected, private...) inside records too
     (it is meanigful for advanced records)
-  * Implement in pasdoc_gui options to customize HTML head and body
+  * Implement in pasdoc_gui options to
+    - customize HTML head and body
+    - set external descriptions file
+    - configure identifiers excluded from auto-linking
   * Rename "internal" to "nested" to describe this language feature.
     Because that is how it's called in official docs
     ( http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Nested_Type_Declarations,
