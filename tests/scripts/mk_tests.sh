@@ -207,6 +207,7 @@ all_tests_for_current_format ()
   mk_test ok_no_link_inside_class ok_no_link_inside_class.pas
   mk_test ok_param_raises_at_property ok_param_raises_at_property.pas
   mk_test ok_date ok_date.pas
+  mk_test ok_if_expressions ok_if_expressions.pas
 }
 
 # parse params ----------------------------------------

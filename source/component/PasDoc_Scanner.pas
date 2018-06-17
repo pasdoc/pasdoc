@@ -65,6 +65,11 @@ type
 
   ETokenizerStreamEnd = class(EPasDoc);
 
+  { All directives a scanner is going to regard. }
+  TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF,
+    DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2,
+    DT_IF, DT_ELSEIF, DT_IFEND);
+
   { This class scans one unit using one or more @link(TTokenizer) objects
     to scan the unit and all nested include files. }
   TScanner = class(TObject)
@@ -110,20 +115,30 @@ type
 
     procedure OpenIncludeFile(n: string);
 
-    { Returns @true if $else was found. If $endif or $ifend was found
-      then returns @false.
+    { Skip (discard all the tokens) until $else, $elseif, $endif, $ifend is found.
+      Returns the directive that stopped the scanning,
+      it is always one of [DT_ELSE, DT_ELSEIF, DT_ENDIF, DT_IFEND].
+
+      It consumes all the tokens from FTokenizers[FCurrentTokenizer],
+      including the final one ($ifend and so on).
+      If final token is $elseif and you used overloaded version with ElseifToken,
+      then the final token is returned.
 
       Note that for pasdoc, $endif and $ifend directives are always exactly
-      equivalent and interchangeable. For Delphi, $if/$elseif must
-      be terminated with $ifend (to be able to nest $if...$ifend
-      within $ifdef...$endif on older Delphi versions that don't
-      support $if, see Borland Delphi docs about this).
-      For FPC, $endif is valid terminator for $if.
+      equivalent and interchangeable. For Delphi, it used to be that
+      $if / $elseif had to be terminated with $ifend
+      (to be able to nest $if...$ifend within $ifdef...$endif
+      on older Delphi versions that don't support $if,
+      see Borland Delphi docs about this).
+      For FPC, $endif is valid terminator for $if. }
+    function SkipUntilElseOrEndif(out ElseifToken: TToken): TDirectiveType; overload;
+    function SkipUntilElseOrEndif: TDirectiveType; overload;
 
-      PasDoc way is, as usual, to leave the checking for compiler.
-      We treat $endif and $ifend the same and therefore we can parse
-      any valid Delphi or FPC code. }
-    function SkipUntilElseOrEndif: Boolean;
+    { Skip until $endif, $ifend.
+      Consumes all the tokens from FTokenizers[FCurrentTokenizer]
+      including the final one. }
+    procedure SkipUntilEndif;
+
     procedure ResolveSwitchDirectives(const Comment: String);
 
     procedure SetIncludeFilePaths(Value: TStringVector);
@@ -193,12 +208,6 @@ type
 implementation
 
 uses PasDoc_Utils;
-
-type
-  { all directives a scanner is going to regard }
-  TDirectiveType = (DT_UNKNOWN, DT_DEFINE, DT_ELSE, DT_ENDIF, DT_IFDEF,
-    DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2,
-    DT_IF, DT_ELSEIF, DT_IFEND);
 
 const
   DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string =
@@ -508,6 +517,16 @@ function TScanner.GetToken: TToken;
     end;
   end;
 
+  { This is supposed to evaluate boolean conditions allowed after
+    $if and $elseif directives. TODO: For now, this is dummy, just
+    prints a warning and returns true. }
+  function IsIfConditionTrue(const Condition: string): boolean;
+  begin
+    DoMessage(2, pmtWarning,
+      'Evaluating $if and $elseif conditions is not implemented, ' +
+      'I''m simply assuming that "%s" is true', [Condition]);
+    Result := true;
+  end;
 
   { Call this on $ifdef, $ifndef, $ifopt, $if directives.
     @param(IsTrue says if condition is true (so we should
@@ -517,6 +536,24 @@ function TScanner.GetToken: TToken;
     @param(DirectiveParam is also used for debug messages.) }
   procedure HandleIfDirective(IsTrue: boolean;
     const DirectiveName, DirectiveParam: string);
+
+    function ExtractElseifCondition(const ElseifToken: TToken): String;
+    var
+      DT: TDirectiveType;
+      DirectiveName, DirectiveParamBlack, DirectiveParamWhite: String;
+    begin
+      Assert(ElseifToken.MyType = TOK_DIRECTIVE);
+      if not IdentifyDirective(ElseifToken.CommentContent, DT,
+        DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then
+        DoError('IdentifyDirective returned false, but we know it should be $elseif', []);
+      Assert(DT = DT_ELSEIF);
+      Result := DirectiveParamWhite;
+    end;
+
+  var
+    ElseifToken: TToken;
+    EndingDirective: TDirectiveType;
+    ElseifCondition: String;
   begin
     DoMessage(6, pmtInformation,
       '$%s encountered (%s), condition is %s, level %d',
@@ -526,20 +563,39 @@ function TScanner.GetToken: TToken;
       Inc(FDirectiveLevel);
     end else
     begin
-      if SkipUntilElseOrEndif then
-        Inc(FDirectiveLevel);
-    end;
-  end;
+      { The implementation outside assumes that HandleIfDirective
+        always "consumes" all the tokens up to the "active" (with satisfied
+        condition) block of $ifdef / $if / $else / $elseif sequence.
+        This way the implementation outside can just pass through all tokens,
+        and "skip until endif" when it sees $else / $elseif.
 
-  { This is supposed to evaluate boolean conditions allowed after
-    $if and $elseif directives. TODO: For now, this is dummy, and just
-    prints and warning and returns true. }
-  function IsIfConditionTrue(const Condition: string): boolean;
-  begin
-    DoMessage(2, pmtWarning,
-      'Evaluating $if and $elseif conditions is not implemented, ' +
-      'I''m simply assuming that "%s" is true', [Condition]);
-    Result := true;
+        This gets complicated in case of $elseif: we must now find the first
+        $elseif that has satisfied condition, and then break. }
+
+      repeat
+        EndingDirective := SkipUntilElseOrEndif(ElseifToken);
+        case EndingDirective of
+          DT_ELSE:
+            begin
+              Inc(FDirectiveLevel);
+              Break;
+            end;
+          DT_ELSEIF:
+            begin
+              ElseifCondition := ExtractElseifCondition(ElseifToken);
+              if IsIfConditionTrue(ElseifCondition) then
+              begin
+                Inc(FDirectiveLevel);
+                Break;
+              end; // otherwise do nothing, let the loop continue
+            end;
+          else
+            { Then it ended with endif / ifend, in which case we just exit
+              the loop without touching the FDirectiveLevel. }
+            Break;
+        end;
+      until false;
+    end;
   end;
 
 var
@@ -577,13 +633,39 @@ begin
                 HandleDefineDirective(DirectiveParamBlack, DirectiveParamWhite);
               DT_ELSE:
                 begin
-                  DoMessage(5, pmtInformation, 'ELSE encountered', []);
-                  if (FDirectiveLevel > 0) then
+                  DoMessage(5, pmtInformation, '$ELSE encountered', []);
+
+                  { We encountered $else that should not be entered further
+                    (after $ifdef / $if or such with a satisfied condition).
+
+                    Note: An $else that should be entered is always consumed
+                    inside HandleIfDirective when the $ifxxx is false.
+
+                    So the only thing we can do is to skip to $endif now. }
+                  if FDirectiveLevel <= 0 then
+                    DoError(GetStreamInfo + ': unexpected $ELSE directive, without $IFDEF / $IF beginning', [])
+                  else
+                  if SkipUntilElseOrEndif in [DT_ELSE, DT_ELSEIF] then
+                    DoError(GetStreamInfo + ': unexpected $ELSE / $ELSEIF directive, expected $ENDIF / $IFEND now', [])
+                  else
+                    Dec(FDirectiveLevel);
+                end;
+              DT_ELSEIF:
+                begin
+                  DoMessage(5, pmtInformation, '$ELSEIF encountered', []);
+
+                  { We encountered $elseif that should not be entered further
+                    (after $ifdef / $if or even previous $elseif
+                    with a satisfied condition).
+                    So we skip to $endif now. }
+
+                  if FDirectiveLevel <= 0 then
+                    DoError(GetStreamInfo + ': unexpected $ELSEIF directive, without $IFDEF / $IF beginning', [])
+                  else
                   begin
-                    if not SkipUntilElseOrEndif then
-                      Dec(FDirectiveLevel);
-                  end else
-                    DoError(GetStreamInfo + ': unexpected $ELSE directive', []);
+                    SkipUntilEndif;
+                    Dec(FDirectiveLevel);
+                  end;
                 end;
               DT_ENDIF, DT_IFEND:
                 begin
@@ -703,7 +785,6 @@ procedure TScanner.OpenNewTokenizer(Stream: TStream;
 var
   Tokenizer: TTokenizer;
 begin
-
   { check if maximum number of FTokenizers has been reached }
   if FCurrentTokenizer = MAX_TOKENIZERS - 1 then
   begin
@@ -809,19 +890,20 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TScanner.SkipUntilElseOrEndif: Boolean;
+function TScanner.SkipUntilElseOrEndif(out ElseifToken: TToken): TDirectiveType;
 var
   dt: TDirectiveType;
   Level: Integer;
   DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string;
   t: TToken;
-  TT: TTokenType;
+  Stop: Boolean;
 begin
   Level := 1;
+  ElseifToken := nil;
   repeat
     t := FTokenizers[FCurrentTokenizer].SkipUntilCompilerDirective;
     if t = nil then begin
-      DoError('SkipUntilElseOrEndif GetToken', []);
+      DoError('Unexpected end of code when looking for matching $ELSE / $ELSEIF / $ENDIF / $IFEND', []);
     end;
 
     if (t.MyType = TOK_DIRECTIVE) then begin
@@ -831,7 +913,7 @@ begin
         DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
         case dt of
           DT_IFDEF, DT_IFNDEF, DT_IFOPT, DT_IF: Inc(Level);
-          DT_ELSE:
+          DT_ELSE, DT_ELSEIF:
             { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
               encountered, ignoring all $ELSEs. We must therefore not
               decrement Level at $ELSE if it is part of such a nested $IFDEF.
@@ -842,12 +924,35 @@ begin
         end;
       end;
     end;
-    TT := t.MyType;
-    t.Free;
-  until (Level = 0) and (TT = TOK_DIRECTIVE) and
-    (dt in [DT_ELSE, DT_ENDIF, DT_IFEND]);
-  Result := (dt = DT_ELSE);
+    Stop := (Level = 0) and
+      (T.MyType = TOK_DIRECTIVE) and
+      (dt in [DT_ELSE, DT_ELSEIF, DT_ENDIF, DT_IFEND]);
+    if Stop and (dt = DT_ELSEIF) then
+    begin
+      ElseifToken := T;
+      T := nil;
+    end;
+    FreeAndNil(T);
+  until Stop;
+  Result := dt;
   DoMessage(6, pmtInformation, 'Skipped code, last directive is %s', [DirectiveNames[dt]]);
+end;
+
+function TScanner.SkipUntilElseOrEndif: TDirectiveType;
+var
+  ElseifToken: TToken;
+begin
+  Result := SkipUntilElseOrEndif(ElseifToken);
+  FreeAndNil(ElseifToken);
+end;
+
+procedure TScanner.SkipUntilEndif;
+var
+  EndingDirective: TDirectiveType;
+begin
+  repeat
+    EndingDirective := SkipUntilElseOrEndif;
+  until EndingDirective in [DT_ENDIF, DT_IFEND];
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -855,7 +960,7 @@ end;
 procedure TScanner.UnGetToken(var t: TToken);
 begin
   if Assigned(FBufferedToken) then
-    DoError('%s: FATAL ERROR - CANNOT UNGET MORE THAN ONE TOKEN.',
+    DoError('%s: Cannot UnGet more than one token in TScanner.',
       [GetStreamInfo]);
 
   FBufferedToken := t;

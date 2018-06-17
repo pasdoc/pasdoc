@@ -1,0 +1,12 @@
+<unit name="ok_if_expressions.pas">
+  <function name="Windows_IFDEF" type="procedure" declaration="procedure Windows_IFDEF;">
+  </function>
+  <function name="Windows_IFDEF_ELSE" type="procedure" declaration="procedure Windows_IFDEF_ELSE;">
+  </function>
+  <function name="Windows_IF" type="procedure" declaration="procedure Windows_IF;">
+  </function>
+  <function name="Windows_IF_2" type="procedure" declaration="procedure Windows_IF_2;">
+  </function>
+  <function name="Always" type="procedure" declaration="procedure Always;">
+  </function>
+</unit>
