@@ -63,6 +63,7 @@ RTransTable = (
     {trOverview} 'Pregled',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Sve Klase, Interfejsi i Objekti',
     {trHeadlineConstants} 'Sve Konstante',

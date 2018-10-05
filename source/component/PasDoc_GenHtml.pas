@@ -945,12 +945,13 @@ begin
   WriteVisibilityLegendFile;
   WriteIntroduction;
   WriteConclusion;
+  WriteAdditionalFiles;
   WriteIndex;
   if UseTipueSearch then
   begin
     DoMessage(2, pmtInformation,
       'Writing additional files for tipue search engine', []);
-    TipueAddFiles(Units, Introduction, Conclusion,
+    TipueAddFiles(Units, Introduction, Conclusion, AdditionalFiles,
       MakeHead, MakeBodyBegin, MakeBodyEnd, LanguageCode(FLanguage.Language),
       DestinationDirectory);
   end;
@@ -2511,6 +2512,7 @@ function THTMLDocGenerator.MakeBodyBegin: string;
 
   var
     Overview: TCreatedOverviewFile;
+    i: Integer;
   begin
     Result := '';
 
@@ -2538,6 +2540,16 @@ function THTMLDocGenerator.MakeBodyBegin: string;
       Result := Result + LocalMakeLink(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
+
+    if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+    begin
+      for i := 0 to AdditionalFiles.Count - 1 do
+      begin
+        if AdditionalFiles.Get(i).ShortTitle = '' then
+          Result := Result + LocalMakeLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
+          Result := Result + LocalMakeLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
+      end;
+    end;
 
     if Conclusion <> nil then
     begin

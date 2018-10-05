@@ -63,6 +63,7 @@
     {trOverview} 'Sommario',
     {trIntroduction} 'Introduczione',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Tutte le Classi, Interfacce ed Oggetti',
     {trHeadlineConstants} 'Tutte le Costanti',

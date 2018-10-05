@@ -63,6 +63,7 @@
     {trOverview} 'Sekilas',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Semua Kelas, Interface, dan Objek',
     {trHeadlineConstants} 'Semua Konstanta',

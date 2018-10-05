@@ -63,6 +63,7 @@ RTransTable = (
     {trOverview} 'Pambuka',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Kabeh Kelas, Interface, lan Objek',
     {trHeadlineConstants} 'Kabeh Konstanta',

@@ -635,6 +635,7 @@ begin
   WriteStartOfDocument('');
   WriteIntroduction;
   WriteUnits(1);
+  WriteAdditionalFiles;
   WriteConclusion;
   WriteEndOfDocument;
   CloseStream;

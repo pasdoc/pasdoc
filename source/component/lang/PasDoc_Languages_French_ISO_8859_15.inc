@@ -63,6 +63,7 @@ RTransTable = (
     {trOverview} 'Aperçu',
     {trIntroduction} strKeep, //'Introduction',
     {trConclusion} strKeep, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Toutes les classes, interfaces, objets et enregistrements',
     {trHeadlineConstants} 'Toutes les constants',
@@ -80,13 +81,13 @@ RTransTable = (
     {trValues} 'Valeurs', //?
   //empty
     {trNone} 'Aucun(e)(s)', //'Rien'?
-    {trNoCIOs} 'L''unité ne contient ni classe, ni interface, ni objets, ni enregistrement.', 
-    {trNoCIOsForHierarchy} 'L''unité ne contient ni classe, ni interface, ni objets.', 
-    {trNoTypes} 'L''unité ne contient aucun type.', 
-    {trNoVariables} 'L''unité ne contient aucune variable.', 
-    {trNoConstants} 'L''unité ne contient aucune constante.', 
-    {trNoFunctions} 'L''unité ne contient ni fonction ni procédure.', 
-    {trNoIdentifiers} 'L''unité ne contient aucun indentificateur.', 
+    {trNoCIOs} 'L''unité ne contient ni classe, ni interface, ni objets, ni enregistrement.',
+    {trNoCIOsForHierarchy} 'L''unité ne contient ni classe, ni interface, ni objets.',
+    {trNoTypes} 'L''unité ne contient aucun type.',
+    {trNoVariables} 'L''unité ne contient aucune variable.',
+    {trNoConstants} 'L''unité ne contient aucune constante.',
+    {trNoFunctions} 'L''unité ne contient ni fonction ni procédure.',
+    {trNoIdentifiers} 'L''unité ne contient aucun indentificateur.',
   //misc
     {trHelp} 'Aide',
     {trLegend} 'Légende',

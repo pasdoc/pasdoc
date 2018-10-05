@@ -63,6 +63,7 @@
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezető',
     {trConclusion} 'Összefoglaló',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Összes Osztály, Kapcsolódási felület és Objektumok',
     {trHeadlineConstants} 'Összes Kontans',

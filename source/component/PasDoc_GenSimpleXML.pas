@@ -87,6 +87,7 @@ begin
   inherited;
   WriteUnits(1);
   WriteIntroduction;
+  WriteAdditionalFiles;
   WriteConclusion;
   EndSpellChecking;
 end;

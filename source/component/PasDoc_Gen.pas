@@ -246,6 +246,7 @@ type
     FLinkLook: TLinkLook;
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
+    FAdditionalFiles: TExternalItemList;
 
     FAbbreviations: TStringList;
     FGraphVizClasses: boolean;
@@ -776,6 +777,10 @@ type
      See @link(WriteExternal).}
     procedure WriteIntroduction;
 
+    {@name writes the other files for the project.
+     See @link(WriteExternal).}
+    procedure WriteAdditionalFiles;
+
     // @name writes a section heading and a link-anchor;
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; virtual; abstract;
@@ -880,6 +885,7 @@ type
     property Introduction: TExternalItem read FIntroduction
       write FIntroduction;
     property Conclusion: TExternalItem read FConclusion write FConclusion;
+    property AdditionalFiles: TExternalItemList read FAdditionalFiles write FAdditionalFiles;
 
     { Callback receiving messages from generator.
 
@@ -1122,6 +1128,15 @@ begin
   begin
     Conclusion.FullLink := CreateLink(Conclusion);
     Conclusion.OutputFileName := Conclusion.FullLink;
+  end;
+
+  if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+  begin
+    for i := 0 to AdditionalFiles.Count - 1 do
+    begin
+      AdditionalFiles.Get(i).FullLink := CreateLink(AdditionalFiles.Get(i));
+      AdditionalFiles.Get(i).OutputFileName := AdditionalFiles.Get(i).FullLink;
+    end;
   end;
 
   for i := 0 to Units.Count - 1 do begin
@@ -2078,6 +2093,13 @@ procedure TDocGenerator.ExpandDescriptions;
     begin
       ExpandExternalItem(PreExpand, Conclusion);
     end;
+    if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+    begin
+      for i := 0 to AdditionalFiles.Count - 1 do
+      begin
+        ExpandExternalItem(PreExpand, AdditionalFiles.Get(i));
+      end;
+    end;
 
     for i := 0 to Units.Count - 1 do begin
       U := Units.UnitAt[i];
@@ -2207,6 +2229,20 @@ begin
           end;
           Result := Conclusion.FindItem(NameParts[0]);
           if Result <> nil then Exit;
+        end;
+
+        if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+        begin
+          for i := 0 to AdditionalFiles.Count - 1 do
+          begin
+            if  SameText(AdditionalFiles.Get(i).Name, NameParts[0]) then
+            begin
+              Result := AdditionalFiles.Get(i);
+              Exit;
+            end;
+            Result := AdditionalFiles.Get(i).FindItem(NameParts[0]);
+            if Result <> nil then Exit;
+          end;
         end;
 
         for i := 0 to Units.Count - 1 do
@@ -2903,6 +2939,7 @@ end;
 procedure TDocGenerator.StartSpellChecking(const AMode: string);
 var
   WordsToIgnore: TStringList;
+  i: Integer;
 
   procedure AddSubItems(Items: TBaseItems);
   var
@@ -2990,6 +3027,14 @@ begin
       begin
         WordsToIgnore.Add(Conclusion.Name);
         AddSubItems(Conclusion.Anchors);
+      end;
+      if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+      begin
+        for i := 0 to AdditionalFiles.Count - 1 do
+        begin
+          WordsToIgnore.Add(AdditionalFiles.Get(i).Name);
+          AddSubItems(AdditionalFiles.Get(i).Anchors);
+        end;
       end;
       AddSubItems(Units);
       FAspellProcess.SetIgnoreWords(WordsToIgnore);
@@ -3681,6 +3726,16 @@ end;
 procedure TDocGenerator.WriteConclusion;
 begin
   WriteExternal(Conclusion, trConclusion);
+end;
+
+procedure TDocGenerator.WriteAdditionalFiles;
+var
+  i: Integer;
+begin
+  for i := 0 to AdditionalFiles.Count - 1 do
+  begin
+    WriteExternal(AdditionalFiles.Get(i), trAdditionalFile);
+  end;
 end;
 
 procedure TDocGenerator.PreHandleAnchorTag(

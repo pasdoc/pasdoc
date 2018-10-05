@@ -392,6 +392,23 @@ var
     end;
   end;
 
+  { ---------- }
+
+  Procedure ContentWriteAdditionalFiles;
+  var
+    i: Integer;
+  begin
+    if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+    begin
+      for i := 0 to AdditionalFiles.Count - 1 do
+      begin
+        WriteLiObject(AdditionalFiles.Get(i).ShortTitle, AdditionalFiles.Get(i).FullLink);
+      end;
+    end;
+  end;
+
+  { ---------- }
+
   procedure IndexWriteItem(const Item, PreviousItem, NextItem: TPasItem);
     { Item is guaranteed to be assigned, i.e. not to be nil. }
   begin
@@ -434,7 +451,7 @@ var
 
   { -------------------------------------------------------------------------- }
 var
-  j, k, l: Integer;
+  i, j, k, l: Integer;
   CurrentLevel, Level: Integer;
   PU: TPasUnit;
   c: TPasItems;
@@ -518,6 +535,7 @@ begin
     ContentWriteLegend('');
     ContentWriteGVClasses();
     ContentWriteGVUses();
+    ContentWriteAdditionalFiles;
     ContentWriteConclusion;
   end;
 
@@ -683,6 +701,14 @@ begin
               WriteDirectLine(Item2.OutputFilename);
             end;
       end;
+
+  If (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+  begin
+    for i := 0 to AdditionalFiles.Count - 1 do
+    begin
+      WriteDirectLine(AdditionalFiles.Get(i).FullLink);
+    end;
+  end;
 
   If Conclusion <> nil then
   begin

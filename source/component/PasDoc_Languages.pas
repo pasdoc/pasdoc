@@ -188,6 +188,7 @@ type
     trOverview,
     trIntroduction,
     trConclusion,
+    trAdditionalFile,
     trEnclosingClass,
     trHeadlineCio,
     trHeadlineConstants,
