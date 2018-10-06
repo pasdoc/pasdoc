@@ -81,10 +81,10 @@ endif
 FPC_DEFAULT := fpc
 
 FPC_WIN32        := $(FPC_DEFAULT) -Pi386    -Twin32
-FPC_WIN64        := $(FPC_DEFAULT) -Px64_64  -Twin64
+FPC_WIN64        := $(FPC_DEFAULT) -Px86_64  -Twin64
 FPC_GO32         := $(FPC_DEFAULT) -Pi386    -Tgo32v2
 FPC_LINUX_X86    := $(FPC_DEFAULT) -Pi386    -Tlinux
-FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px64_64  -Tlinux
+FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px86_64  -Tlinux
 FPC_LINUX_M68K   := $(FPC_DEFAULT) -Pm68k    -Tlinux
 FPC_LINUX_PPC    := $(FPC_DEFAULT) -Ppowerpc -Tlinux
 FPC_AMIGA        := $(FPC_DEFAULT) -Pppc     -Tamiga
@@ -416,62 +416,79 @@ dist-tar-gz: dist-prepare
 .PHONY: dist-go32
 dist-go32: clean build-fpc-go32
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=go32
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=go32 \
+	  FPC_DEFAULT='$(FPC_GO32)'
 
 .PHONY: dist-win32
 dist-win32: clean build-fpc-win32
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 ADD_PASDOC_GUI=t
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 \
+	  FPC_DEFAULT='$(FPC_WIN32)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win32 --cpu=i386'
 
 .PHONY: dist-win64
 dist-win64: clean build-fpc-win64
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win64 ADD_PASDOC_GUI=t
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win64 \
+	  FPC_DEFAULT='$(FPC_WIN64)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win64 --cpu=x86_64'
 
 .PHONY: dist-os2
 dist-os2: clean build-fpc-os2
 	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=os2
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=os2 \
+	  FPC_DEFAULT='$(FPC_OS2)'
 
 .PHONY: dist-beos
 dist-beos: clean build-fpc-beos
 	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=be-x86
+	  dist-zip PACKAGE_BASENAME_SUFFIX=be-x86 \
+	  FPC_DEFAULT='$(FPC_BEOS)'
 
 .PHONY: dist-linux-m68k
 dist-linux-m68k: clean build-fpc-linux-m68k
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-m68k
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-m68k \
+	  FPC_DEFAULT='$(FPC_LINUX_M68K)'
 
 .PHONY: dist-linux-x86
 dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 ADD_PASDOC_GUI=t
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 \
+	  FPC_DEFAULT='$(FPC_LINUX_X86)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=i386'
 
 .PHONY: dist-linux-x86_64
 dist-linux-x86_64: clean build-fpc-linux-x86_64
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64 ADD_PASDOC_GUI=t
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64 \
+	  FPC_DEFAULT='$(FPC_LINUX_X86_64)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=x86_64'
 
 .PHONY: dist-amiga
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k
+	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k \
+	  FPC_DEFAULT='$(FPC_AMIGA_M68K)'
 
 .PHONY: dist-linux-ppc
 dist-linux-ppc: clean build-fpc-linux-ppc
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-ppc
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-ppc \
+	  FPC_DEFAULT='$(FPC_LINUX_PPC)'
 
 .PHONY: dist-freebsd-x86
 dist-freebsd-x86: clean build-fpc-freebsd-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86 \
+	  FPC_DEFAULT='$(FPC_FREEBSD_X86)'
 
 .PHONY: dist-darwin-x86
 dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 \
+	  FPC_DEFAULT='$(FPC_DARWIN_X86)' \
+	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 

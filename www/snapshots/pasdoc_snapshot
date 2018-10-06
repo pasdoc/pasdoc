@@ -15,10 +15,10 @@ mkdir -p "$OUTPUT_PATH"
 
 PASDOC_VERSION=`make version`
 
-# build snapshots
-# make dist-src # useless, checks out the stable version
+make dist-src
 make dist-linux-x86_64
-make dist-win32 FPC_DEFAULT='fpc -Pi386 -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --cpu=i386 --widgetset=win32'
+make dist-win32
+make dist-win64
 
 echo '---- Snapshots build OK.'
 
