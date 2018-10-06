@@ -80,21 +80,18 @@ endif
 # calling just fpc binary on the path
 FPC_DEFAULT := fpc
 
-# By default all of below variables are set to $(FPC_DEFAULT), because
-# $(FPC_DEFAULT) is the only good default value that can possibly work
-# for everyone. You can override them at `make' command-line,
-# e.g. if you have different FPC versions and you use them to do cross-compiling.
-FPC_WIN32 := $(FPC_DEFAULT)
-FPC_GO32 := $(FPC_DEFAULT)
-FPC_LINUX_X86 := $(FPC_DEFAULT)
-FPC_LINUX_X86_64 := $(FPC_DEFAULT)
-FPC_LINUX_M68K := $(FPC_DEFAULT)
-FPC_LINUX_PPC := $(FPC_DEFAULT)
-FPC_AMIGA := $(FPC_DEFAULT)
-FPC_BEOS := $(FPC_DEFAULT)
-FPC_OS2 := $(FPC_DEFAULT)
-FPC_FREEBSD_X86 := $(FPC_DEFAULT)
-FPC_DARWIN_X86 := $(FPC_DEFAULT)
+FPC_WIN32        := $(FPC_DEFAULT) -Pi386    -Twin32
+FPC_WIN64        := $(FPC_DEFAULT) -Px64_64  -Twin64
+FPC_GO32         := $(FPC_DEFAULT) -Pi386    -Tgo32v2
+FPC_LINUX_X86    := $(FPC_DEFAULT) -Pi386    -Tlinux
+FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px64_64  -Tlinux
+FPC_LINUX_M68K   := $(FPC_DEFAULT) -Pm68k    -Tlinux
+FPC_LINUX_PPC    := $(FPC_DEFAULT) -Ppowerpc -Tlinux
+FPC_AMIGA        := $(FPC_DEFAULT) -Pppc     -Tamiga
+FPC_BEOS         := $(FPC_DEFAULT) -Pi386    -Tbeos
+FPC_OS2          := $(FPC_DEFAULT) -Pi386    -Tos2
+FPC_FREEBSD_X86  := $(FPC_DEFAULT) -Pi386    -Tfreebsd
+FPC_DARWIN_X86   := $(FPC_DEFAULT) -Pi386    -Tdarwin
 
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
@@ -152,19 +149,12 @@ VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
 # Building (and cleaning after building)
 ############################################################################
 
-.PHONY: default clean build-fpc-default-debug build-fpc-default \
-  build-fpc-win32 build-fpc-go32 \
-  build-fpc-linux-x86 build-fpc-linux-m68k build-fpc-linux-x86_64 \
-  build-fpc-amiga build-fpc-beos \
-  build-fpc-os2 build-fpc-linux-ppc build-fpc-freebsd-x86 \
-  build-fpc-darwin-x86 \
-  build-delphi-win32 build-delphi-linux-x86 \
-  build-vpc-win32 build-vpc-os2 make-dirs
-
 # Default target
+.PHONY: default
 default: build-fpc-default-debug
 
 # Clean up the output files.
+.PHONY: clean
 clean:
 	rm -Rf source/console/pasdoc.compiled \
 	       source/packages/lazarus/lib/ \
@@ -178,7 +168,6 @@ clean:
 	       source/gui/*.res
 	$(MAKE) clean -C tests/
 	$(MAKE) clean -C source/autodoc/
-
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
 endif
@@ -199,6 +188,7 @@ endif
 # anyway, so all compilers reuse the same dirs... In the future various
 # build-<compiler>-<os/arch> targets may be tweaked to use different
 # $(BINDIR) and $(OUTDIR).
+.PHONY: make-dirs
 make-dirs:
 ifdef OUTDIR
 	$(MKDIRPROG) -p $(OUTDIR)
@@ -209,42 +199,59 @@ endif
 
 # fpc- build targets
 
+.PHONY: build-fpc-default-debug
 build-fpc-default-debug: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
 
+.PHONY: build-fpc-default
 build-fpc-default: make-dirs
 	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-win32
 build-fpc-win32: make-dirs
 	$(FPC_WIN32) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-win64
+build-fpc-win64: make-dirs
+	$(FPC_WIN64) $(FPC_RELEASE_FLAGS) $(FILE)
+
+.PHONY: build-fpc-go32
 build-fpc-go32: make-dirs
 	$(FPC_GO32) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-linux-x86
 build-fpc-linux-x86: make-dirs
 	$(FPC_LINUX_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-linux-x86_64
 build-fpc-linux-x86_64: make-dirs
 	$(FPC_LINUX_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-linux-m68k
 build-fpc-linux-m68k: make-dirs
 	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-amiga
 build-fpc-amiga: make-dirs
 	$(FPC_AMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-beos
 build-fpc-beos: make-dirs
 	$(FPC_BEOS) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-os2
 build-fpc-os2: make-dirs
 	$(FPC_OS2) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-linux-ppc
 build-fpc-linux-ppc: make-dirs
 	$(FPC_LINUX_PPC) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-freebsd-x86
 build-fpc-freebsd-x86: make-dirs
 	$(FPC_FREEBSD_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-darwin-x86
 build-fpc-darwin-x86: make-dirs
 	$(FPC_DARWIN_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
@@ -256,28 +263,35 @@ build-fpc-darwin-x86: make-dirs
 # "/" because this is sensible default value for $(PATHSEP), otherwise we would
 # have to do dirty checks to guess whether we're used under Unix or Win32 in
 # this Makefile).
+.PHONY: build-delphi-win32
 build-delphi-win32: make-dirs
 	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
 
+.PHONY: build-delphi-linux-x86
 build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
 # vpc build targets - obsolete, since vpc is no longer supported
+.PHONY: build-vpc-win32
 build-vpc-win32: make-dirs
 	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
 
+.PHONY: build-vpc-os2
 build-vpc-os2: make-dirs
 	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
 
 # obsolete target
+.PHONY: build-pascal_pre_proc
 build-pascal_pre_proc: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
 
+.PHONY: build-tools
 build-tools: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_data.dpr
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_string.dpr
 
+.PHONY: build-gui
 build-gui:
 	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
 	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
@@ -316,6 +330,7 @@ help:
 	@echo "      vpc"
 	@echo "    Available values for <os/arch> are:"
 	@echo "      win32"
+	@echo "      win64"
 	@echo "      go32"
 	@echo "      linux-x86"
 	@echo "      linux-x86_64"
@@ -378,16 +393,11 @@ tag:
 # to use tar.gz under Unices.
 ############################################################################
 
-.PHONY: dist-prepare dist-zip dist-tar-gz dist-go32 dist-win32 dist-os2 \
-  dist-beos dist-linux-m68k dist-linux-x86 dist-linux-x86_64 \
-  dist-amiga dist-freebsd-x86 \
-  dist-darwin-x86 \
-  dist-src dist-all
-
 # This target creates and fills directory $(PACKAGEDIR)
 # (it's *always* the subdirectory $(PACKAGENAME) inside $(PACKAGEBASEDIR)).
 # Use this to prepare file tree before archiving --- the only remaining
 # thing after executing this target is to archive $(PACKAGEDIR).
+.PHONY: dist-prepare
 dist-prepare:
 	rm -rf $(PACKAGEDIR)
 	$(MKDIRPROG) -p $(PACKAGEDIR)
@@ -419,62 +429,81 @@ endif
 # Implementation notes: note that zip will add files to existing zip archive,
 # if it already exists, so for safety below I'm first `rm -f ...' zip archive,
 # then creating it.
+.PHONY: dist-zip
 dist-zip: dist-prepare
 	rm -f $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip
 	cd $(PACKAGEBASEDIR); zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
 
 # This target archives distribution into a tar.gz file.
+.PHONY: dist-tar-gz
 dist-tar-gz: dist-prepare
 	cd $(PACKAGEBASEDIR); tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).tar.gz .
 
+.PHONY: dist-go32
 dist-go32: clean build-fpc-go32
 	$(MAKE) --no-print-directory \
 	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=go32
 
+.PHONY: dist-win32
 dist-win32: clean build-fpc-win32
 	$(MAKE) --no-print-directory \
 	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 ADD_PASDOC_GUI=t
 
+.PHONY: dist-win64
+dist-win64: clean build-fpc-win64
+	$(MAKE) --no-print-directory \
+	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win64 ADD_PASDOC_GUI=t
+
+.PHONY: dist-os2
 dist-os2: clean build-fpc-os2
 	$(MAKE) --no-print-directory \
 	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=os2
 
+.PHONY: dist-beos
 dist-beos: clean build-fpc-beos
 	$(MAKE) --no-print-directory \
 	  dist-zip PACKAGE_BASENAME_SUFFIX=be-x86
 
+.PHONY: dist-linux-m68k
 dist-linux-m68k: clean build-fpc-linux-m68k
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-m68k
 
+.PHONY: dist-linux-x86
 dist-linux-x86: clean build-fpc-linux-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 ADD_PASDOC_GUI=t
 
+.PHONY: dist-linux-x86_64
 dist-linux-x86_64: clean build-fpc-linux-x86_64
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64 ADD_PASDOC_GUI=t
 
+.PHONY: dist-amiga
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
 	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k
 
+.PHONY: dist-linux-ppc
 dist-linux-ppc: clean build-fpc-linux-ppc
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-ppc
 
+.PHONY: dist-freebsd-x86
 dist-freebsd-x86: clean build-fpc-freebsd-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86
 
+.PHONY: dist-darwin-x86
 dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
+.PHONY: dist-src
 dist-src:
 	$(MAKE) clean
 	cd .. && \
@@ -486,6 +515,7 @@ dist-src:
 	  pasdoc/
 	mv ../$(SOURCE_PACKAGE_BASENAME).tar.gz .
 
+.PHONY: dist-all
 dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
   dist-linux-x86_64 \
   dist-amiga dist-linux-ppc dist-freebsd-x86 dist-darwin-x86 dist-src
