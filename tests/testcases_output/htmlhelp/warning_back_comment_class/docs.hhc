@@ -9,13 +9,13 @@
 </object>
 <ul>
 <li><object type="text/sitemap">
-<param name="Name" value="ok_back_comment_class">
-<param name="Local" value="ok_back_comment_class.html">
+<param name="Name" value="warning_back_comment_class">
+<param name="Local" value="warning_back_comment_class.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Classes">
-<param name="Local" value="ok_back_comment_class.html#@Classes">
+<param name="Local" value="warning_back_comment_class.html#@Classes">
 </object>
 <ul>
 </ul>

@@ -174,7 +174,7 @@ all_tests_for_current_format ()
   mk_test ok_list_item_set_number ok_list_item_set_number.pas
   mk_test ok_enum_field_var ok_enum_field_var.pas
   mk_test ok_back_comment_private ok_back_comment_private.pas
-  mk_test ok_back_comment_class ok_back_comment_class.pas
+  mk_test warning_back_comment_class warning_back_comment_class.pas
   mk_test ok_excluded_unit ok_excluded_unit.pas
   mk_test ok_comment_over_uses_clause ok_comment_over_uses_clause.pas warning_back_comment_over_uses_clause.pas
   mk_test ok_interface_implicit ok_interface_implicit.pas --implicit-visibility=implicit

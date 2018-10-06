@@ -1,4 +1,4 @@
-unit ok_back_comment_class;
+unit warning_back_comment_class;
 
 { This should report a warning that @@exclude is used twice for
   TfmHardwareControlSetup identifier.
