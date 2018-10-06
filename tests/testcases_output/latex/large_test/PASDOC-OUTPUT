@@ -62,3 +62,4 @@ Info[2]:    Writing Docs for unit "warning_not_existing_tags"
 Info[2]:    Writing Docs for unit "warning_tags_no_parameters"
 Info[2]:    Writing Docs for unit "warning_value_member_tags"
 Info[1]:    Done
+The documentation was generated, but some problems during parsing or generation occurred. (Consult the output above for details.) Therefore exiting with non-zero exit status.

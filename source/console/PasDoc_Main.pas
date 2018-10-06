@@ -659,6 +659,8 @@ begin
     PasdocMain := TPasdocMain.Create;
     try
       PasdocMain.Execute;
+      if ExitCode <> 0 then
+        WriteLn('The documentation was generated, but some problems during parsing or generation occurred. (Consult the output above for details.) Therefore exiting with non-zero exit status.');
     finally
       PasdocMain.Free;
     end;
