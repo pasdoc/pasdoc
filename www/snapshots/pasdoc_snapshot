@@ -17,8 +17,8 @@ PASDOC_VERSION=`make version`
 
 # build snapshots
 # make dist-src # useless, checks out the stable version
-make dist-linux-x86
-make dist-win32 FPC_DEFAULT='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32'
+make dist-linux-x86_64
+make dist-win32 FPC_DEFAULT='fpc -Pi386 -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --cpu=i386 --widgetset=win32'
 
 echo '---- Snapshots build OK.'
 
