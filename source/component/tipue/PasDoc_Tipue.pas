@@ -45,6 +45,7 @@ function TipueSearchButton: string;
   Units must be non-nil. It will be used to generate index data for tipue. }
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
+  const AdditionalFiles: TExternalItemList;
   const Head, BodyBegin, BodyEnd: string;
   const LanguageCode: string;
   const OutputPath: string);
@@ -73,6 +74,7 @@ end;
 
 procedure TipueAddFiles(Units: TPasUnits;
   const Introduction, Conclusion: TExternalItem;
+  const AdditionalFiles: TExternalItemList;
   const Head, BodyBegin, BodyEnd: string;
   const LanguageCode: string;
   const OutputPath: string);
@@ -81,6 +83,7 @@ procedure TipueAddFiles(Units: TPasUnits;
   var
     OutFile: TextFile;
     NeedsLeadingComma: boolean;
+    i: Integer;
 
     { Write one line of index data.
       See http://www.tipue.com/help/search/data/.
@@ -227,6 +230,13 @@ procedure TipueAddFiles(Units: TPasUnits;
         WriteItemIndexData(Introduction);
       if Conclusion <> nil then
         WriteItemIndexData(Conclusion);
+      if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+      begin
+        for i := 0 to AdditionalFiles.Count - 1 do
+        begin
+          WriteItemIndexData(AdditionalFiles.Get(i));
+        end;
+      end;
       WriteUnitsIndexData(Units);
 
       Writeln(OutFile, LineEnding + ']};');

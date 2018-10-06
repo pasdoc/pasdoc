@@ -63,6 +63,7 @@
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',
     {trConclusion} 'Podsumowanie',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie stałe',

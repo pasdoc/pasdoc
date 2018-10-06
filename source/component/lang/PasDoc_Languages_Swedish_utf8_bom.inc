@@ -63,6 +63,7 @@
     {trOverview} 'Översikt',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Alla klasser, interface och objekt',
     {trHeadlineConstants} strToDo, //'All Constants',

@@ -63,6 +63,7 @@ RTransTable = (
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducción',
     {trConclusion} 'Conclusión',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Todas las clases, interfaces y objetos',
     {trHeadlineConstants} 'Todas las constantes',

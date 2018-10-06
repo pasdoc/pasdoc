@@ -65,6 +65,7 @@ RTransTable = (
     {trOverview} '综述',
     {trIntroduction} '前言',
     {trConclusion} '后记',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} '所有的类、接口、对象和记录',
     {trHeadlineConstants} '所有常量',

@@ -3,7 +3,7 @@ RTransTable = (
     {trLanguage} 'Catalan',
   //map
     {trUnits} 'Unitats',
-    {trClassHierarchy} 'Jerarquia de classes', 
+    {trClassHierarchy} 'Jerarquia de classes',
     {trCio} 'Classes, interfícies i objectes',
     {trNestedCR} strToDo, //'Nested Classes and Records',
     {trNestedTypes} strToDo, //'Nested Types',
@@ -45,7 +45,7 @@ RTransTable = (
       {trException} strToDo, //'Exception',
     {trEnum} 'Enumeració',
   //visibilities
-    {trVisibility} 'Visibilitat', 
+    {trVisibility} 'Visibilitat',
       {trPrivate} 'Privada',
       {trStrictPrivate} 'Estrictament privada',
       {trProtected} 'Protegida',
@@ -63,6 +63,7 @@ RTransTable = (
     {trOverview} 'Resum',
     {trIntroduction} 'Introducció',
     {trConclusion} 'Conclusió',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Totes les classes, interfícies i objectes',
     {trHeadlineConstants} 'Totes les constants',
@@ -99,6 +100,6 @@ RTransTable = (
     {trSearch} 'Cerca',
     {trSeeAlso} 'Veure també',
     {trNested} strToDo, //'nested',
-    {trAttributes} 'Atributs', 
+    {trAttributes} 'Atributs',
     ''  //dummy
   );

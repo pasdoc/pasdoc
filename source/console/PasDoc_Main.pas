@@ -78,6 +78,7 @@ type
     OptionSort: TSetOption;
     OptionIntroduction: TStringOption;
     OptionConclusion: TStringOption;
+    OptionAdditionalFiles: TPathListOption;
     OptionLatexHead: TStringOption;
     OptionImplicitVisibility: TStringOption;
     OptionNoMacro: TBoolOption;
@@ -301,6 +302,10 @@ begin
   OptionConclusion.Explanation := 'The name of a text file with concluding materials for the project';
   OptionConclusion.Value := '';
   AddOption(OptionConclusion);
+
+  OptionAdditionalFiles := TPathListOption.Create('A', 'additional');
+  OptionAdditionalFiles.Explanation := 'The name of a text file with addition materials for the project';
+  AddOption(OptionAdditionalFiles);
 
   OptionLatexHead := TStringOption.Create(#0, 'latex-head');
   OptionLatexHead.Explanation := 'The name of a text file that includes lines to be inserted into the preamble of a LaTeX file';
@@ -556,6 +561,7 @@ begin
 
   PasDoc.IntroductionFileName := OptionIntroduction.Value;
   PasDoc.ConclusionFileName := OptionConclusion.Value;
+  PasDoc.AdditionalFilesNames := OptionAdditionalFiles.Values;
 
   if OptionLatexHead.Value <> '' then begin
     if not (PasDoc.Generator is TTexDocGenerator) then begin

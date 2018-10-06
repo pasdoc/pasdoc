@@ -76,6 +76,7 @@ RTransTable = (
     {trOverview} 'Přehled',
     {trIntroduction} 'Úvod',
     {trConclusion} 'Závěr',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Všechny třídy, rozhraní a objekty',
     {trHeadlineConstants} 'Seznam konstant',
