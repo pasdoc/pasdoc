@@ -495,11 +495,13 @@ SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 .PHONY: dist-src
 dist-src:
 	$(MAKE) clean
+	DIRNAME="`pwd`" && \
+	DIRNAME="`basename \"$$DIRNAME\"`" && \
 	cd .. && \
 	  tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz \
 	  --exclude='.git' \
 	  --exclude='*.tar.gz' \
 	  --exclude='*.zip' \
 	  --exclude='*~' \
-	  pasdoc/
+	  "$$DIRNAME"
 	mv ../$(SOURCE_PACKAGE_BASENAME).tar.gz .
