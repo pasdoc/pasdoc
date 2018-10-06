@@ -45,12 +45,12 @@
 <param name="Local" value="ok_if_directive.html#MathPiExtended">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="NotIncluded">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
+<param name="Name" value="Foo2">
+<param name="Local" value="ok_if_directive.html#Foo2">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="NotIncluded">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
+<param name="Name" value="Foo4">
+<param name="Local" value="ok_if_directive.html#Foo4">
 </object>
 </ul>
 </ul>

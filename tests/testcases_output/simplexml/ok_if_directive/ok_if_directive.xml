@@ -1,5 +1,4 @@
 <unit name="ok_if_directive.pas">
-  <description><abstract>PasDoc fails to parse this, it seems that $if is not understood at all.</abstract><detailed> Bug spotted by Michalis on 2005-12-04 when trying `make htmldocs' on fpc compiler sources, in file globals.pas. Update 2005-12-05: $if is sorta handled now, and so is $ifend. This testcase is parsed now. There is still work remaining to be done with regards to $if and $elseif, this is documented on [https://github.com/pasdoc/pasdoc/wiki/ToDo].</detailed></description>
   <constant name="MathQNaN : tdoublearray = (255,252,0,0,0,0,0,0);">
   </constant>
   <constant name="MathInf : tdoublearray = (127,240,0,0,0,0,0,0);">
@@ -10,8 +9,8 @@
   </constant>
   <constant name="MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);">
   </constant>
-  <constant name="NotIncluded = 1;">
+  <constant name="Foo2 = 1;">
   </constant>
-  <constant name="NotIncluded = 1;">
+  <constant name="Foo4 = 1;">
   </constant>
 </unit>

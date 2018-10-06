@@ -4,6 +4,14 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="Foo2">
+<param name="Local" value="ok_if_directive.html#Foo2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo4">
+<param name="Local" value="ok_if_directive.html#Foo4">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="MathInf">
 <param name="Local" value="ok_if_directive.html#MathInf">
 </object>
@@ -22,24 +30,6 @@
 <li><object type="text/sitemap">
 <param name="Name" value="MathQNaN">
 <param name="Local" value="ok_if_directive.html#MathQNaN">
-</object>
-<li><object type="text/sitemap">
-<param name="Name" value="NotIncluded">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
-</object>
-<ul>
-<li><object type="text/sitemap">
-<param name="Name" value="ok_if_directive Unit">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
-</object>
-<li><object type="text/sitemap">
-<param name="Name" value="ok_if_directive Unit">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
-</object>
-</ul>
-<li><object type="text/sitemap">
-<param name="Name" value="NotIncluded">
-<param name="Local" value="ok_if_directive.html#NotIncluded">
 </object>
 </ul>
 </body></html>

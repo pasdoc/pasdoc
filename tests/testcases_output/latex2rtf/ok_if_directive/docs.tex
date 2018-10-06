@@ -18,14 +18,6 @@
 % special variable used for calculating some widths.
 \newlength{\tmplength}
 \chapter{Unit ok{\_}if{\_}directive}
-\section{Description}
-PasDoc fails to parse this, it seems that {\$}if is not understood at all.\hfill\vspace*{1ex}
-
-
-
-Bug spotted by Michalis on 2005{-}12{-}04 when trying `make htmldocs' on fpc compiler sources, in file globals.pas.
-
-Update 2005{-}12{-}05: {\$}if is sorta handled now, and so is {\$}ifend. This testcase is parsed now. There is still work remaining to be done with regards to {\$}if and {\$}elseif, this is documented on [https://github.com/pasdoc/pasdoc/wiki/ToDo].
 \section{Constants}
 \subsection*{MathQNaN}
 \begin{list}{}{
@@ -122,7 +114,7 @@ MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);\end{ttfam
 
 \end{flushleft}
 \end{list}
-\subsection*{NotIncluded}
+\subsection*{Foo2}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -136,12 +128,12 @@ MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);\end{ttfam
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-NotIncluded = 1;\end{ttfamily}
+Foo2 = 1;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{NotIncluded}
+\subsection*{Foo4}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -155,7 +147,7 @@ NotIncluded = 1;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-NotIncluded = 1;\end{ttfamily}
+Foo4 = 1;\end{ttfamily}
 
 
 \end{flushleft}
