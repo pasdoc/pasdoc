@@ -128,24 +128,6 @@ DCC_DEBUG_FLAGS := -$$Q+ -$$R+ $(DCC_COMMON_FLAGS)
 DCC_RELEASE_FLAGS := -$$O+ $(DCC_COMMON_FLAGS)
 
 ############################################################################
-# Virtual Pascal configuration
-############################################################################
-
-# TODO: check this, either remove (if vpc does not work anymore),
-# or add to CompilingPasDoc as supported compiler,
-# remove hardcoded paths to vpc installation.
-
-VPC := F:\vp21\bin.w32\vpc.exe
-VPCRTLWIN32UNITDIR := F:\vp21\units.w32
-VPCRTLWIN32LIBDIR := -LF:\vp21\units.w32 -LF:\vp21\lib.w32
-VPCRTLOS2UNITDIR := F:\vp21\units.os2
-VPCRTLOS2LIBDIR := -LF:\vp21\units.os2 -LF:\vp21\lib.os2
-VPCUNITDIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
-VPCINCDIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
-VPCFLAGS := -E$(BINDIR) -M -$$J+ -$$R+ -DCPU86 -DENDIAN_LITTLE -O$(OUTDIR) \
-  $(VPCINCDIRS) -L$(OUTDIR)
-
-############################################################################
 # Building (and cleaning after building)
 ############################################################################
 
@@ -271,15 +253,6 @@ build-delphi-win32: make-dirs
 build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
-# vpc build targets - obsolete, since vpc is no longer supported
-.PHONY: build-vpc-win32
-build-vpc-win32: make-dirs
-	$(VPC) -CW $(VPCFLAGS)  $(VPCRTLWIN32LIBDIR) -U$(VPCRTLWIN32UNITDIR) $(VPCUNITDIRS) $(FILE)
-
-.PHONY: build-vpc-os2
-build-vpc-os2: make-dirs
-	$(VPC) -CO $(VPCFLAGS)  $(VPCRTLOS2LIBDIR) -U$(VPCRTLOS2UNITDIR) $(VPCUNITDIRS) $(FILE)
-
 # obsolete target
 .PHONY: build-pascal_pre_proc
 build-pascal_pre_proc: make-dirs
@@ -327,7 +300,6 @@ help:
 	@echo "    and architecture. Available values for <compiler> are:"
 	@echo "      fpc"
 	@echo "      delphi"
-	@echo "      vpc"
 	@echo "    Available values for <os/arch> are:"
 	@echo "      win32"
 	@echo "      win64"
@@ -514,8 +486,3 @@ dist-src:
 	  --exclude='*~' \
 	  pasdoc/
 	mv ../$(SOURCE_PACKAGE_BASENAME).tar.gz .
-
-.PHONY: dist-all
-dist-all: dist-go32 dist-win32 dist-beos dist-linux-m68k dist-linux-x86 \
-  dist-linux-x86_64 \
-  dist-amiga dist-linux-ppc dist-freebsd-x86 dist-darwin-x86 dist-src
