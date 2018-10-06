@@ -1,5 +1,8 @@
 Next version (not released yet)
 
+  * Possibility to specify additional files using -A or --additional
+    (just like introduction or conclusion, but you can provide any number
+    of items) (thanks to Alex Merkel)
   * Added de.utf8 (German with UTF-8 encoding)
   * Automatically remove %region and %endregion from comments
   * Show visibility (public, protected, private...) inside records too
