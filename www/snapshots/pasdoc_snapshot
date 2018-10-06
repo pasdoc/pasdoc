@@ -23,8 +23,10 @@ make dist-win64
 echo '---- Snapshots build OK.'
 
 # Move archives to output dir
-mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
+mv -f pasdoc-"$PASDOC_VERSION"-linux-x86_64.tar.gz \
       pasdoc-"$PASDOC_VERSION"-win32.zip \
+      pasdoc-"$PASDOC_VERSION"-win64.zip \
+      pasdoc-"$PASDOC_VERSION"-src.tar.gz \
       "$OUTPUT_PATH"
 
 # Create "latest" link, comfortable for users.
