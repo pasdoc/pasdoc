@@ -583,6 +583,7 @@ begin
   s := ReplaceRegEx(s, '</para>', LineEnding + LineEnding);
   s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
   s := ReplaceRegEx(s, '</returns>', ')');
+  s := ReplaceRegEx(s, '<exception[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@raises($1 ');
   s := ReplaceRegEx(s, '<exception[ ]*([^>]*)>', '@raises($1');
   s := ReplaceRegEx(s, '</exception>', ')');
   s := ReplaceRegEx(s, '<permission[ ]*([^>]*)>', '@permission($1');  //not yet implemented
@@ -612,6 +613,11 @@ begin
   s := ReplaceRegEx(s, '</comment>', '');
   s := ReplaceRegEx(s, '<exclude[^/]*/>', '@exclude');
   s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@link($1)');
+  s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@link($1 ');
+  s := ReplaceRegEx(s, '</see>', ')');
+  s := ReplaceRegEx(s, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@seealso($1)');
+  s := ReplaceRegEx(s, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@seealso($1 ');
+  s := ReplaceRegEx(s, '</seealso>', ')');
   DescriptionInfo.Content := s;
 end;
 
