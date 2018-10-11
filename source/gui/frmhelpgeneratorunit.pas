@@ -42,7 +42,7 @@ uses
 
 type
   EInvalidSpellingLanguage = class(Exception);
-  
+
   // @abstract(TfrmHelpGenerator is the class of the main form of Help
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
@@ -53,6 +53,7 @@ type
     // Click @name  to select a directory that may
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
+    BtnBrowseAdditionalFiles: TButton;
     // Click @name to generate output
     ButtonGenerateDocs: TButton;
     ButtonAspellURL: TButton;
@@ -88,6 +89,7 @@ type
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
+    LabelAdditionalFiles: TLabel;
     LabelAutoLinkExclude: TLabel;
     LabelExternalDescriptions: TLabel;
     LabelHtmlHead: TLabel;
@@ -115,6 +117,7 @@ type
     // in the project.
     memoFiles: TMemo;
     MemoAutoLinkExclude: TMemo;
+    MemoAdditionalFiles: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
     // The lines in @name are the paths of the files that
@@ -162,6 +165,7 @@ type
     rgLineBreakQuality: TRadioGroup;
     SaveDialog1: TSaveDialog;
     OpenDialog2: TOpenDialog;
+    OpenDialog3: TOpenDialog;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
     MenuOpen: TMenuItem;
@@ -203,6 +207,7 @@ type
     procedure PasDoc1Warning(const MessageType: TPasDocMessageType;
       const AMessage: string; const AVerbosity: Cardinal);
     procedure btnBrowseSourceFilesClick(Sender: TObject);
+    procedure BtnBrowseAdditionalFilesClick(Sender: TObject);
     procedure cbCheckSpellingChange(Sender: TObject);
     procedure CheckListVisibleMembersClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -228,14 +233,14 @@ type
     FSettingsFileName: string;
     MisspelledWords: TStringList;
     InsideCreateWnd: boolean;
-    
+
     { If Changed then this offers user the chance to save the project.
       Returns @false when user chose to Cancel the whole operation
       (not only file saving, but also the parent operation -- you
       should always check the result of this function and cancel
       anything further if result is false). }
     function SaveChanges: boolean;
-    
+
     procedure SetChanged(const AValue: boolean);
     procedure SetDefaults;
     procedure SetSettingsFileName(const AValue: string);
@@ -245,7 +250,7 @@ type
     // @name fills @link(tvUnits) with a heirarchical representation of the
     // TPasItems in PasDoc1.
     procedure FillTreeView;
-    
+
     { This property allows to get and set all
       CheckListVisibleMembers.Checked[] values as a simple
       TVisibilities type. }
@@ -255,10 +260,10 @@ type
 
     { Saves current settings to FileName. Additionally may
       also do some other things commonly done at saving time:
-      
+
       if UpdateSettingsFileName then sets SettingsFileName property
       to FileName.
-      
+
       if ClearChanged then sets Changed to false. }
     procedure SaveSettingsToFile(const FileName: string;
       UpdateSettingsFileName, ClearChanged: boolean);
@@ -270,18 +275,18 @@ type
     // @name is @true when the user has changed the project settings.
     // Otherwise it is @false.
     property Changed: boolean read FChanged write SetChanged;
-    
+
     { This is the settings filename (.pds file) that is currently
       opened. You can look at pasdoc_gui as a "program to edit pds files".
       It is '' if current settings are not associated with any filename
       (because user did not open any pds file, or he chose "New" menu item). }
     property SettingsFileName: string read FSettingsFileName
       write SetSettingsFileName;
-      
+
     { If SettingsFileName <> '',
       this returns ExtractFileName(SettingsFileName),
       else it returns 'Unsaved PasDoc settings'. This is good
-      when you want to nicely present the value of SettingsFileName 
+      when you want to nicely present the value of SettingsFileName
       to the user.
 
       This follows GNOME HIG standard for window caption. }
@@ -329,10 +334,10 @@ begin
     least TMemo with GTK 1 interface) generate some OnChange
     event when creating their widget (yes, I made sure: it doesn't
     happen when reading their properties.)
-    
+
     This is not good, because when we open pasdoc_gui,
     the default project should be left with Changed = false.
-    
+
     Checking ComponentState and ControlState to safeguard
     against this is not possible. I'm using InsideCreateWnd to
     safeguard against this. }
@@ -406,6 +411,44 @@ begin
   end;
 end;
 
+procedure TfrmHelpGenerator.BtnBrowseAdditionalFilesClick(Sender: TObject);
+var
+  Directory: string;
+  FileIndex: integer;
+  Files: TStringList;
+begin
+  if OpenDialog3.Execute then
+  begin
+    Files := TStringList.Create;
+    try
+
+      if EditOutputDirectory.Directory = '' then
+      begin
+        SetOutputDirectory(OpenDialog3.FileName);
+      end;
+
+      Files.Sorted := True;
+      Files.Duplicates := dupIgnore;
+
+      Files.AddStrings(MemoAdditionalFiles.Lines);
+      Files.AddStrings(OpenDialog3.Files);
+
+      MemoAdditionalFiles.Lines := Files;
+
+      for FileIndex := 0 to OpenDialog3.Files.Count - 1 do
+      begin
+        Directory := ExtractFileDir(OpenDialog3.Files[FileIndex]);
+        if memoIncludeDirectories.Lines.IndexOf(Directory) < 0 then
+        begin
+          memoIncludeDirectories.Lines.Add(Directory);
+        end;
+      end;
+    finally
+      Files.Free;
+    end;
+  end;
+end;
+
 procedure TfrmHelpGenerator.FillNavigationListBox;
 var
   Index: integer;
@@ -457,7 +500,7 @@ begin
 
   comboLanguages.ItemIndex := Ord(lgEnglish);
   comboLanguagesChange(nil);
-  
+
   comboGenerateFormat.ItemIndex := 0;
   comboGenerateFormatChange(nil);
 
@@ -541,13 +584,13 @@ begin
   Constraints.MinHeight := Height;
 
   DefaultDirectives := TStringList.Create;
-  
+
   { Original HelpGenerator did here
     DefaultDirectives.Assign(memoDefines.Lines)
     I like this solution, but unfortunately current Lazarus seems
     to sometimes "lose" value of TMemo.Lines...
     So I'm setting these values at runtime. }
-    
+
   {$IFDEF FPC}
   DefaultDirectives.Append('FPC');
   {$ENDIF}
@@ -596,7 +639,7 @@ begin
   end;
 
   SetDefaults;
-  
+
   { It's too easy to change it at design-time, so we set it at runtime. }
   NotebookMain.PageIndex := 0;
   Application.ProcessMessages;
@@ -606,7 +649,7 @@ begin
   seVerbosity.Constraints.MinWidth := 60;
   seVerbosity.Width := seVerbosity.Constraints.MinWidth;
   {$ENDIF}
-  
+
   { Workaround for Lazarus bug 0000713,
     [http://www.lazarus.freepascal.org/mantis/view.php?id=713]:
     we set menu shortcuts at runtime.
@@ -623,9 +666,9 @@ begin
   end;
 
   comboGenerateFormatChange(nil);
-  
+
   FillNavigationListBox;
-  
+
   Changed := False;
 end;
 
@@ -827,7 +870,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     memoMessages.Clear;
-    
+
     case comboGenerateFormat.ItemIndex of
       0: PasDoc1.Generator := HtmlDocGenerator;
       1: PasDoc1.Generator := HtmlHelpDocGenerator;
@@ -850,7 +893,7 @@ begin
              end;
              TexDocGenerator.LatexHead.Add('}');
            end;
-           
+
           case comboLatexGraphicsPackage.ItemIndex of
             0: // none
               begin
@@ -867,12 +910,12 @@ begin
           else Assert(False);
           end;
 
-           
+
          end;
     else
       Assert(False);
     end;
-    
+
     PasDoc1.Generator.Language := TLanguageID(comboLanguages.ItemIndex);
 
     if PasDoc1.Generator is TGenericHTMLDocGenerator then
@@ -903,13 +946,13 @@ begin
       CreateDir(EditOutputDirectory.Directory)
     end;
     PasDoc1.Generator.DestinationDirectory := EditOutputDirectory.Directory;
-    
+
     PasDoc1.Generator.WriteUsesClause := CheckWriteUsesList.Checked;
     PasDoc1.Generator.AutoAbstract := CheckAutoAbstract.Checked;
     PasDoc1.AutoLink := CheckAutoLink.Checked;
     PasDoc1.Generator.AutoLinkExclude.Assign(MemoAutoLinkExclude.Lines);
     PasDoc1.HandleMacros := CheckHandleMacros.Checked;
-    
+
     PasDoc1.ProjectName := edProjectName.Text;
     PasDoc1.IntroductionFileName := EditIntroductionFileName.Text;
     PasDoc1.ConclusionFileName := EditConclusionFileName.Text;
@@ -943,11 +986,15 @@ begin
       Files.Clear;
       Files.AddStrings(memoDefines.Lines);
       PasDoc1.Directives.Assign(Files);
+
+      Files.Clear;
+      Files.AddStrings(MemoAdditionalFiles.Lines);
+      PasDoc1.AdditionalFilesNames.Assign(Files);
     finally
       Files.Free;
     end;
     PasDoc1.Verbosity := seVerbosity.Value;
-    
+
     case rgCommentMarkers.ItemIndex of
       0:
         begin
@@ -967,14 +1014,14 @@ begin
     else
       Assert(False);
     end;
-    
+
     if edTitle.Text = '' then begin
       PasDoc1.Title := edProjectName.Text;
     end
     else begin
       PasDoc1.Title := edTitle.Text;
     end;
-    
+
     if cbVizGraphClasses.Checked then begin
       PasDoc1.Generator.OutputGraphVizClassHierarchy := True;
       PasDoc1.Generator.LinkGraphVizClasses := VizGraphImageExtension;
@@ -983,7 +1030,7 @@ begin
       PasDoc1.Generator.OutputGraphVizClassHierarchy := False;
       PasDoc1.Generator.LinkGraphVizClasses := '';
     end;
-    
+
     if cbVizGraphUses.Checked then begin
       PasDoc1.Generator.OutputGraphVizUses := True;
       PasDoc1.Generator.LinkGraphVizUses := VizGraphImageExtension;
@@ -992,7 +1039,7 @@ begin
       PasDoc1.Generator.OutputGraphVizUses := False;
       PasDoc1.Generator.LinkGraphVizUses := '';
     end;
-    
+
     Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
     PasDoc1.SortSettings := [];
     for SortIndex := Low(TSortSetting) to High(TSortSetting) do
@@ -1001,10 +1048,10 @@ begin
         PasDoc1.SortSettings := PasDoc1.SortSettings + [SortIndex];
       end;
     end;
-    
+
     MisspelledWords.Clear;
     PasDoc1.Execute;
-    
+
     if MisspelledWords.Count > 0 then
     begin
       memoMessages.Lines.Add('');
@@ -1080,10 +1127,10 @@ var
     and stores the same project within a different directory.
     So it's safest to always keep absolute filenames
     when project is loaded in pasdoc_gui.
-    
+
     Below are some helper wrappers around ExpandFileName
     that help us with this. }
-    
+
   { This returns '' if FileName is '', else returns
     ExpandFileName(FileName). It's useful because often
     FileName = '' has special meaning:
@@ -1095,7 +1142,7 @@ var
       Result := '' else
       Result := ExpandFileName(FileName);
   end;
-  
+
   { Call ExpandNotEmptyFileName on each item. }
   procedure ExpandFileNames(List: TStrings);
   var
@@ -1123,7 +1170,7 @@ begin
   begin
     SettingsFileName := OpenDialog2.FileName;
     SaveDialog1.FileName := SettingsFileName;
-    
+
     { Change current directory now to SettingsFileNamePath,
       this is needed to make all subsequent ExpandFileName
       operations work with respect to SettingsFileNamePath. }
@@ -1158,11 +1205,11 @@ begin
         in the LANGUAGE_ARRAY). So now we store language "syntax" code
         (the same thing as is used for --language command-line option),
         as this is guaranteed to stay "stable".
-        
+
         To do something mildly sensible when opening pds files from older
         versions, we set language to default (English) when language string
         is not recognized. }
-        
+
       LanguageSyntax := Ini.ReadString('Main', 'Language',
         LanguageDescriptor(DEFAULT_LANGUAGE)^.Syntax);
       if not LanguageFromStr(LanguageSyntax, LanguageId) then
@@ -1184,10 +1231,10 @@ begin
         CheckListVisibleMembers.Checked[i] := Ini.ReadBool(
           'Main', 'ClassMembers_' + IntToStr(i), true);
       CheckListVisibleMembersClick(nil);
-      
+
       RadioImplicitVisibility.ItemIndex :=
         Ini.ReadInteger('Main', 'ImplicitVisibility', 0);
-      
+
       Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
       for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
       begin
@@ -1216,6 +1263,7 @@ begin
         Ini.ReadString('Main', 'HtmlBodyEnd', ''));
       EditExternalDescriptions.FileName := ExpandNotEmptyFileName(
         Ini.ReadString('Main', 'ExternalDescriptions', ''));
+      ReadFileNames('AdditionalFiles', MemoAdditionalFiles.Lines);
 
       CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
       CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
@@ -1229,7 +1277,7 @@ begin
       edTitle.Text := Ini.ReadString('Main', 'Title', '');
       cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
       cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
-      
+
       cbCheckSpelling.Checked :=
         Ini.ReadBool('Main', 'CheckSpelling', false);
       comboLatexGraphicsPackage.ItemIndex :=
@@ -1260,7 +1308,7 @@ var
     for i := 0 to S.Count - 1 do
       Ini.WriteString(Section, 'Item_' + IntToStr(i), S[i]);
   end;
-  
+
   { If CheckStoreRelativePaths.Checked and FileNameToCorrect <> '',
     this returns relative filename (with respect to
     directory where FileName is stored), else returns just
@@ -1337,6 +1385,7 @@ begin
       EditHtmlBodyEnd.FileName));
     Ini.WriteString('Main', 'ExternalDescriptions', CorrectFileName(
       EditExternalDescriptions.FileName));
+    WriteFileNames('AdditionalFiles', MemoAdditionalFiles.Lines);
 
     Ini.WriteBool('Main', 'WriteUsesList', CheckWriteUsesList.Checked);
     Ini.WriteBool('Main', 'AutoAbstract', CheckAutoAbstract.Checked);
@@ -1358,7 +1407,7 @@ begin
 
     Ini.UpdateFile;
   finally Ini.Free end;
-  
+
   if UpdateSettingsFileName then
     SettingsFileName := FileName;
 
@@ -1450,13 +1499,13 @@ begin
   CheckUseTipueSearch.Enabled := comboGenerateFormat.ItemIndex = 0;
   PageHeadFoot.Tag := Ord(comboGenerateFormat.ItemIndex in [0,1]);
   PageLatexOptions.Tag := Ord(comboGenerateFormat.ItemIndex in [2,3]);
-  
+
   edProjectName.Enabled := comboGenerateFormat.ItemIndex <> 0;
   SetColorFromEnabled(edProjectName);
-  
+
   EditCssFileName.Enabled := comboGenerateFormat.ItemIndex in [0,1];
   SetColorFromEnabled(EditCssFileName);
-  
+
   comboLatexGraphicsPackage.Enabled := comboGenerateFormat.ItemIndex in [2,3];
   FillNavigationListBox;
   Changed := true;
@@ -1468,7 +1517,7 @@ var
   Index: Integer;
 begin
   if lbNavigation.ItemIndex = -1 then Exit;
-  
+
   Page := lbNavigation.Items.Objects[lbNavigation.ItemIndex] as TPage;
 
   { We want to set NotebookMain.ActivePageComponent := Page.
@@ -1498,7 +1547,7 @@ begin
   begin
     GetHelpControl(TControl(Sender), HelpControl);
   end;
-  
+
   if HelpControl <> nil then
   begin
     Assert(HelpControl.HelpType = htKeyword);
@@ -1511,7 +1560,7 @@ begin
   { Switch to "Generate" page }
   lbNavigation.ItemIndex := lbNavigation.Items.IndexOfObject(pageGenerate);
   lbNavigationClick(nil);
-  
+
   ButtonGenerateDocsClick(nil);
 end;
 
