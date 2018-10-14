@@ -105,6 +105,7 @@ all_tests_for_current_format ()
   mk_test ok_sorting_all "$SORT_ALL" ok_sorting.pas
   mk_test ok_sorting_none --sort= ok_sorting.pas
   mk_test ok_introduction_conclusion ok_introduction_conclusion.pas --introduction=ok_introduction.txt --conclusion=ok_conclusion.txt
+  mk_test ok_introduction_conclusion_additional ok_introduction_conclusion.pas --introduction=ok_introduction.txt --conclusion=ok_conclusion.txt --additional ok_additionalfile1.txt -A ok_additionalfile2.txt
   mk_test ok_property_decl ok_property_decl.pas
   mk_test ok_multiple_vars ok_multiple_vars.pas
   mk_test ok_class_function ok_class_function.pas
