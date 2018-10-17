@@ -210,8 +210,7 @@ type
     property ConclusionFileName: string read FConclusionFileName
       write FConclusionFileName;
 
-    property AdditionalFilesNames: TStringList read FAdditionalFilesNames
-      write FAdditionalFilesNames;
+    property AdditionalFilesNames: TStringList read FAdditionalFilesNames;
 
     { See command-line option @--implicit-visibility documentation at
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption].

@@ -561,7 +561,7 @@ begin
 
   PasDoc.IntroductionFileName := OptionIntroduction.Value;
   PasDoc.ConclusionFileName := OptionConclusion.Value;
-  PasDoc.AdditionalFilesNames := OptionAdditionalFiles.Values;
+  PasDoc.AdditionalFilesNames.Assign(OptionAdditionalFiles.Values);
 
   if OptionLatexHead.Value <> '' then begin
     if not (PasDoc.Generator is TTexDocGenerator) then begin
