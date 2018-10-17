@@ -244,6 +244,7 @@ begin
   FDirectives := NewStringVector;
   FIncludeDirectories := NewStringVector;
   FSourceFileNames := NewStringVector;
+  FAdditionalFilesNames := TStringList.Create();
 
   { Set default property values }
   FGeneratorInfo := true;
@@ -265,6 +266,7 @@ begin
   FDirectives.Free;
   FIncludeDirectories.Free;
   FSourceFileNames.Free;
+  FAdditionalFilesNames.Free;
   FUnits.Free;
   FConclusion.Free;
   FIntroduction.Free;
