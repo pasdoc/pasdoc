@@ -1,8 +1,8 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  Left = 259
-  Height = 608
-  Top = 44
-  Width = 1068
+  Left = 535
+  Height = 707
+  Top = 42
+  Width = 1095
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
   HorzScrollBar.Page = 739
@@ -10,8 +10,9 @@ object frmHelpGenerator: TfrmHelpGenerator
   ActiveControl = PanelLeft
   AutoSize = True
   Caption = 'pasdoc gui'
-  ClientHeight = 588
-  ClientWidth = 1068
+  ClientHeight = 672
+  ClientWidth = 1095
+  DesignTimePPI = 140
   KeyPreview = True
   Menu = MainMenu1
   OnClose = FormClose
@@ -20,12 +21,12 @@ object frmHelpGenerator: TfrmHelpGenerator
   OnKeyDown = FormKeyDown
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '1.8.0.6'
   object NotebookMain: TNotebook
     Left = 208
-    Height = 588
+    Height = 672
     Top = 0
-    Width = 860
+    Width = 887
     PageIndex = 5
     Align = alClient
     TabOrder = 0
@@ -34,9 +35,9 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Options'
       object LabelTitle: TLabel
         Left = 8
-        Height = 15
+        Height = 27
         Top = 8
-        Width = 23
+        Width = 39
         HelpType = htKeyword
         Caption = 'Title'
         FocusControl = edTitle
@@ -46,9 +47,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 46
-        Width = 66
+        Height = 27
+        Top = 72
+        Width = 114
         HelpType = htKeyword
         Caption = 'Output Type'
         FocusControl = comboGenerateFormat
@@ -58,9 +59,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 122
-        Width = 267
+        Height = 27
+        Top = 204
+        Width = 455
         HelpType = htKeyword
         Caption = 'Output filename (without directory; not for HTML)'
         FocusControl = edProjectName
@@ -70,9 +71,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = edProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 160
-        Width = 52
+        Height = 27
+        Top = 268
+        Width = 91
         HelpType = htKeyword
         Caption = 'Language'
         FocusControl = comboLanguages
@@ -82,9 +83,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboGenerateFormat
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 84
-        Width = 88
+        Height = 27
+        Top = 140
+        Width = 152
         HelpType = htKeyword
         Caption = 'Output directory'
         ParentColor = False
@@ -93,10 +94,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 19
+        Height = 31
         Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 236
-        Width = 447
+        Top = 398
+        Width = 758
         HelpType = htKeyword
         HelpKeyword = 'AutoAbstractOption'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
@@ -107,10 +108,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckWriteUsesList
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 19
+        Height = 31
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 217
-        Width = 233
+        Top = 367
+        Width = 390
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
@@ -121,9 +122,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelTitle
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
+        Height = 37
         Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
-        Top = 23
+        Top = 35
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
@@ -134,11 +135,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputType
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 61
+        Height = 41
+        Top = 99
         Width = 254
         HelpType = htKeyword
-        ItemHeight = 15
+        ItemHeight = 0
         Items.Strings = (
           'HTML'
           'HTML Help Workshop'
@@ -153,9 +154,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelProjectName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
+        Height = 37
         Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
-        Top = 137
+        Top = 231
         Width = 274
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
@@ -166,13 +167,13 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 175
+        Height = 41
+        Top = 295
         Width = 533
         HelpType = htKeyword
         HelpKeyword = 'OutputLanguage'
         Anchors = [akTop, akLeft, akRight]
-        ItemHeight = 15
+        ItemHeight = 0
         OnChange = comboLanguagesChange
         Style = csDropDownList
         TabOrder = 5
@@ -181,9 +182,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckAutoAbstract
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 19
-        Top = 255
-        Width = 250
+        Height = 31
+        Top = 429
+        Width = 421
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
         Caption = 'Recognize FPC macros syntax when parsing'
@@ -196,9 +197,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = CheckHandleMacros
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 19
-        Top = 274
-        Width = 218
+        Height = 31
+        Top = 460
+        Width = 370
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
         Caption = 'Store only relative paths in project file'
@@ -211,9 +212,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = comboLanguages
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 19
-        Top = 198
-        Width = 122
+        Height = 31
+        Top = 336
+        Width = 201
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
         Caption = 'Show units uses list'
@@ -224,8 +225,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelOutputDirectory
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 99
+        Height = 37
+        Top = 167
         Width = 483
         HelpType = htKeyword
         HelpKeyword = 'OutputOption'
@@ -242,7 +243,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Source Files'
       object Label8: TLabel
         Left = 8
-        Height = 30
+        Height = 81
         Top = 8
         Width = 822
         HelpType = htKeyword
@@ -257,8 +258,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = btnBrowseSourceFiles
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 483
-        Top = 81
+        Height = 403
+        Top = 146
         Width = 840
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -272,8 +273,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = Label8
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 33
-        Top = 38
+        Height = 47
+        Top = 89
         Width = 840
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
@@ -288,20 +289,20 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Include Directories'
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
-        Height = 83
+        Height = 121
         Top = 0
         Width = 860
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 83
+        ClientHeight = 121
         ClientWidth = 860
         FullRepaint = False
         TabOrder = 1
         object Label9: TLabel
           Left = 10
-          Height = 30
+          Height = 54
           Top = 10
           Width = 840
           HelpType = htKeyword
@@ -313,8 +314,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object btnBrowseIncludeDirectory: TButton
           Left = 10
-          Height = 33
-          Top = 40
+          Height = 47
+          Top = 64
           Width = 840
           Align = alTop
           AutoSize = True
@@ -326,8 +327,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object memoIncludeDirectories: TMemo
         Left = 10
-        Height = 485
-        Top = 93
+        Height = 432
+        Top = 131
         Width = 840
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
@@ -401,7 +402,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Automated'
           'Implicit'
         )
-        ItemHeight = 31
+        ItemHeight = 33
         OnClick = CheckListVisibleMembersClick
         TabOrder = 0
         Data = {
@@ -410,7 +411,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       end
       object RadioImplicitVisibility: TRadioGroup
         Left = 10
-        Height = 127
+        Height = 134
         Top = 214
         Width = 840
         HelpType = htKeyword
@@ -427,7 +428,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 98
+        ClientHeight = 105
         ClientWidth = 836
         ItemIndex = 0
         Items.Strings = (
@@ -449,9 +450,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditIntroductionFileName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 94
-        Width = 79
+        Height = 27
+        Top = 146
+        Width = 133
         HelpType = htKeyword
         Caption = 'Conclusion file'
         FocusControl = EditConclusionFileName
@@ -461,9 +462,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditCssFileName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 56
-        Width = 85
+        Height = 27
+        Top = 82
+        Width = 148
         HelpType = htKeyword
         BorderSpacing.Top = 10
         Caption = 'Introduction file'
@@ -473,10 +474,10 @@ object frmHelpGenerator: TfrmHelpGenerator
       object LabelCssFileName: TLabel
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
+        Height = 27
         Hint = 'Custom CSS file. Leave empty to use default pasdoc.css.'
         Top = 8
-        Width = 185
+        Width = 311
         HelpType = htKeyword
         Caption = 'Custom CSS file (for HTML output)'
         FocusControl = EditCssFileName
@@ -486,10 +487,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelConclusionFile
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
+        Height = 37
         Hint = 'Optional file used as a conclusion to your project.'
-        Top = 109
-        Width = 717
+        Top = 173
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
         DialogTitle = 'Choose conclusion file'
@@ -507,10 +508,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelIntroductionFile
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
+        Height = 37
         Hint = 'Optional file used as an introduction to your project.'
-        Top = 71
-        Width = 717
+        Top = 109
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
         DialogTitle = 'Choose introduction file'
@@ -528,9 +529,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelCssFileName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 23
-        Width = 717
+        Height = 37
+        Top = 35
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'CssOption'
         DialogTitle = 'Choose custom CSS file'
@@ -549,9 +550,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditConclusionFileName
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 142
-        Width = 180
+        Height = 27
+        Top = 220
+        Width = 299
         HelpType = htKeyword
         BorderSpacing.Top = 10
         Caption = 'Additional HTML <head> content'
@@ -562,9 +563,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlHead
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 157
-        Width = 717
+        Height = 37
+        Top = 247
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
         DialogTitle = 'Choose HTML file'
@@ -582,9 +583,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlHead
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 180
-        Width = 236
+        Height = 27
+        Top = 284
+        Width = 397
         HelpType = htKeyword
         Caption = 'Additional HTML content right after <body>'
         FocusControl = EditHtmlBodyBegin
@@ -594,9 +595,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlBodyBegin
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 195
-        Width = 717
+        Height = 37
+        Top = 311
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
         DialogTitle = 'Choose HTML file'
@@ -614,9 +615,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlBodyBegin
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 218
-        Width = 251
+        Height = 27
+        Top = 348
+        Width = 421
         HelpType = htKeyword
         Caption = 'Additional HTML content right  before</body>'
         FocusControl = EditHtmlBodyEnd
@@ -626,9 +627,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlBodyEnd
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
-        Top = 233
-        Width = 717
+        Height = 37
+        Top = 375
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
         DialogTitle = 'Choose HTML file'
@@ -646,10 +647,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlBodyEnd
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
+        Height = 27
         Hint = 'Additional descriptions, added to the of comments present in Pascal source files.'
-        Top = 266
-        Width = 108
+        Top = 422
+        Width = 191
         HelpType = htKeyword
         BorderSpacing.Top = 10
         Caption = 'External descriptions'
@@ -660,10 +661,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelExternalDescriptions
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 23
+        Height = 37
         Hint = 'Optional file with external descriptions'
-        Top = 281
-        Width = 717
+        Top = 449
+        Width = 744
         HelpType = htKeyword
         HelpKeyword = 'ReadDescriptionFromFile'
         DialogTitle = 'Choose introduction file'
@@ -681,10 +682,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelAdditionalFiles
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 235
+        Height = 125
         Hint = 'Path to additional files to be added to the documentation '
-        Top = 329
-        Width = 688
+        Top = 523
+        Width = 715
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight, akBottom]
         OnChange = SomethingChanged
@@ -696,24 +697,26 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditExternalDescriptions
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 15
-        Top = 314
-        Width = 79
+        Height = 27
+        Top = 496
+        Width = 135
         BorderSpacing.Top = 10
         Caption = 'Additional files'
         FocusControl = MemoAdditionalFiles
         ParentColor = False
       end
       object BtnBrowseAdditionalFiles: TButton
-        AnchorSideTop.Control = Label8
-        AnchorSideTop.Side = asrBottom
-        Left = 702
-        Height = 33
-        Top = 329
-        Width = 56
+        AnchorSideLeft.Control = MemoAdditionalFiles
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = MemoAdditionalFiles
+        Left = 733
+        Height = 47
+        Top = 523
+        Width = 78
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
         AutoSize = True
+        BorderSpacing.Left = 10
         BorderSpacing.InnerBorder = 4
         Caption = 'Browse'
         OnClick = BtnBrowseAdditionalFilesClick
@@ -1251,347 +1254,347 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
         ParentFont = False
         TabOrder = 1
-        Gutter.Width = 57
-        Gutter.MouseActions = <
+        Gutter.Width = 63
+        Gutter.MouseActions = <        
           item
             ClickCount = ccAny
             ClickDir = cdDown
             Command = emcOnMainGutterClick
-          end
+          end        
           item
             Button = mbRight
             Command = emcContextMenu
           end>
         RightGutter.Width = 0
         RightGutter.MouseActions = <>
-        Keystrokes = <
+        Keystrokes = <        
           item
             Command = ecUp
             ShortCut = 38
-          end
+          end        
           item
             Command = ecSelUp
             ShortCut = 8230
-          end
+          end        
           item
             Command = ecScrollUp
             ShortCut = 16422
-          end
+          end        
           item
             Command = ecDown
             ShortCut = 40
-          end
+          end        
           item
             Command = ecSelDown
             ShortCut = 8232
-          end
+          end        
           item
             Command = ecScrollDown
             ShortCut = 16424
-          end
+          end        
           item
             Command = ecLeft
             ShortCut = 37
-          end
+          end        
           item
             Command = ecSelLeft
             ShortCut = 8229
-          end
+          end        
           item
             Command = ecWordLeft
             ShortCut = 16421
-          end
+          end        
           item
             Command = ecSelWordLeft
             ShortCut = 24613
-          end
+          end        
           item
             Command = ecRight
             ShortCut = 39
-          end
+          end        
           item
             Command = ecSelRight
             ShortCut = 8231
-          end
+          end        
           item
             Command = ecWordRight
             ShortCut = 16423
-          end
+          end        
           item
             Command = ecSelWordRight
             ShortCut = 24615
-          end
+          end        
           item
             Command = ecPageDown
             ShortCut = 34
-          end
+          end        
           item
             Command = ecSelPageDown
             ShortCut = 8226
-          end
+          end        
           item
             Command = ecPageBottom
             ShortCut = 16418
-          end
+          end        
           item
             Command = ecSelPageBottom
             ShortCut = 24610
-          end
+          end        
           item
             Command = ecPageUp
             ShortCut = 33
-          end
+          end        
           item
             Command = ecSelPageUp
             ShortCut = 8225
-          end
+          end        
           item
             Command = ecPageTop
             ShortCut = 16417
-          end
+          end        
           item
             Command = ecSelPageTop
             ShortCut = 24609
-          end
+          end        
           item
             Command = ecLineStart
             ShortCut = 36
-          end
+          end        
           item
             Command = ecSelLineStart
             ShortCut = 8228
-          end
+          end        
           item
             Command = ecEditorTop
             ShortCut = 16420
-          end
+          end        
           item
             Command = ecSelEditorTop
             ShortCut = 24612
-          end
+          end        
           item
             Command = ecLineEnd
             ShortCut = 35
-          end
+          end        
           item
             Command = ecSelLineEnd
             ShortCut = 8227
-          end
+          end        
           item
             Command = ecEditorBottom
             ShortCut = 16419
-          end
+          end        
           item
             Command = ecSelEditorBottom
             ShortCut = 24611
-          end
+          end        
           item
             Command = ecToggleMode
             ShortCut = 45
-          end
+          end        
           item
             Command = ecCopy
             ShortCut = 16429
-          end
+          end        
           item
             Command = ecPaste
             ShortCut = 8237
-          end
+          end        
           item
             Command = ecDeleteChar
             ShortCut = 46
-          end
+          end        
           item
             Command = ecCut
             ShortCut = 8238
-          end
+          end        
           item
             Command = ecDeleteLastChar
             ShortCut = 8
-          end
+          end        
           item
             Command = ecDeleteLastChar
             ShortCut = 8200
-          end
+          end        
           item
             Command = ecDeleteLastWord
             ShortCut = 16392
-          end
+          end        
           item
             Command = ecUndo
             ShortCut = 32776
-          end
+          end        
           item
             Command = ecRedo
             ShortCut = 40968
-          end
+          end        
           item
             Command = ecLineBreak
             ShortCut = 13
-          end
+          end        
           item
             Command = ecSelectAll
             ShortCut = 16449
-          end
+          end        
           item
             Command = ecCopy
             ShortCut = 16451
-          end
+          end        
           item
             Command = ecBlockIndent
             ShortCut = 24649
-          end
+          end        
           item
             Command = ecLineBreak
             ShortCut = 16461
-          end
+          end        
           item
             Command = ecInsertLine
             ShortCut = 16462
-          end
+          end        
           item
             Command = ecDeleteWord
             ShortCut = 16468
-          end
+          end        
           item
             Command = ecBlockUnindent
             ShortCut = 24661
-          end
+          end        
           item
             Command = ecPaste
             ShortCut = 16470
-          end
+          end        
           item
             Command = ecCut
             ShortCut = 16472
-          end
+          end        
           item
             Command = ecDeleteLine
             ShortCut = 16473
-          end
+          end        
           item
             Command = ecDeleteEOL
             ShortCut = 24665
-          end
+          end        
           item
             Command = ecUndo
             ShortCut = 16474
-          end
+          end        
           item
             Command = ecRedo
             ShortCut = 24666
-          end
+          end        
           item
             Command = ecGotoMarker0
             ShortCut = 16432
-          end
+          end        
           item
             Command = ecGotoMarker1
             ShortCut = 16433
-          end
+          end        
           item
             Command = ecGotoMarker2
             ShortCut = 16434
-          end
+          end        
           item
             Command = ecGotoMarker3
             ShortCut = 16435
-          end
+          end        
           item
             Command = ecGotoMarker4
             ShortCut = 16436
-          end
+          end        
           item
             Command = ecGotoMarker5
             ShortCut = 16437
-          end
+          end        
           item
             Command = ecGotoMarker6
             ShortCut = 16438
-          end
+          end        
           item
             Command = ecGotoMarker7
             ShortCut = 16439
-          end
+          end        
           item
             Command = ecGotoMarker8
             ShortCut = 16440
-          end
+          end        
           item
             Command = ecGotoMarker9
             ShortCut = 16441
-          end
+          end        
           item
             Command = ecSetMarker0
             ShortCut = 24624
-          end
+          end        
           item
             Command = ecSetMarker1
             ShortCut = 24625
-          end
+          end        
           item
             Command = ecSetMarker2
             ShortCut = 24626
-          end
+          end        
           item
             Command = ecSetMarker3
             ShortCut = 24627
-          end
+          end        
           item
             Command = ecSetMarker4
             ShortCut = 24628
-          end
+          end        
           item
             Command = ecSetMarker5
             ShortCut = 24629
-          end
+          end        
           item
             Command = ecSetMarker6
             ShortCut = 24630
-          end
+          end        
           item
             Command = ecSetMarker7
             ShortCut = 24631
-          end
+          end        
           item
             Command = ecSetMarker8
             ShortCut = 24632
-          end
+          end        
           item
             Command = ecSetMarker9
             ShortCut = 24633
-          end
+          end        
           item
             Command = ecNormalSelect
             ShortCut = 24654
-          end
+          end        
           item
             Command = ecColumnSelect
             ShortCut = 24643
-          end
+          end        
           item
             Command = ecLineSelect
             ShortCut = 24652
-          end
+          end        
           item
             Command = ecTab
             ShortCut = 9
-          end
+          end        
           item
             Command = ecShiftTab
             ShortCut = 8201
-          end
+          end        
           item
             Command = ecMatchBracket
             ShortCut = 24642
           end>
-        MouseActions = <
+        MouseActions = <        
           item
             ShiftMask = [ssShift, ssAlt]
             ClickDir = cdDown
             Command = emcStartSelections
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssShift]
             ShiftMask = [ssShift, ssAlt]
@@ -1599,14 +1602,14 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = emcStartSelections
             MoveCaret = True
             Option = 1
-          end
+          end        
           item
             Shift = [ssAlt]
             ShiftMask = [ssShift, ssAlt]
             ClickDir = cdDown
             Command = emcStartColumnSelections
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssShift, ssAlt]
             ShiftMask = [ssShift, ssAlt]
@@ -1614,42 +1617,42 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = emcStartColumnSelections
             MoveCaret = True
             Option = 1
-          end
+          end        
           item
             Button = mbRight
             Command = emcContextMenu
-          end
+          end        
           item
             ClickCount = ccDouble
             ClickDir = cdDown
             Command = emcSelectWord
             MoveCaret = True
-          end
+          end        
           item
             ClickCount = ccTriple
             ClickDir = cdDown
             Command = emcSelectLine
             MoveCaret = True
-          end
+          end        
           item
             ClickCount = ccQuad
             ClickDir = cdDown
             Command = emcSelectPara
             MoveCaret = True
-          end
+          end        
           item
             Button = mbMiddle
             ClickDir = cdDown
             Command = emcPasteSelection
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssCtrl]
             ShiftMask = [ssShift, ssAlt, ssCtrl]
             Command = emcMouseLink
           end>
         MouseTextActions = <>
-        MouseSelActions = <
+        MouseSelActions = <        
           item
             ClickDir = cdDown
             Command = emcStartDragMove
@@ -1679,7 +1682,7 @@ object frmHelpGenerator: TfrmHelpGenerator
             MouseActions = <>
           end
           object TSynGutterLineNumber
-            Width = 17
+            Width = 23
             MouseActions = <>
             MarkupInfo.Background = clBtnFace
             MarkupInfo.Foreground = clNone
@@ -1701,18 +1704,18 @@ object frmHelpGenerator: TfrmHelpGenerator
             MarkupInfo.Foreground = clGray
           end
           object TSynGutterCodeFolding
-            MouseActions = <
+            MouseActions = <            
               item
                 Button = mbRight
                 Command = emcCodeFoldContextMenu
-              end
+              end            
               item
                 ShiftMask = [ssShift]
                 Button = mbMiddle
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
-              end
+              end            
               item
                 Shift = [ssShift]
                 ShiftMask = [ssShift]
@@ -1721,7 +1724,7 @@ object frmHelpGenerator: TfrmHelpGenerator
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
                 Option = 1
-              end
+              end            
               item
                 ClickCount = ccAny
                 ClickDir = cdDown
@@ -1729,20 +1732,20 @@ object frmHelpGenerator: TfrmHelpGenerator
               end>
             MarkupInfo.Background = clNone
             MarkupInfo.Foreground = clGray
-            MouseActionsExpanded = <
+            MouseActionsExpanded = <            
               item
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
               end>
-            MouseActionsCollapsed = <
+            MouseActionsCollapsed = <            
               item
                 Shift = [ssCtrl]
                 ShiftMask = [ssCtrl]
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldExpand
-              end
+              end            
               item
                 ShiftMask = [ssCtrl]
                 ClickCount = ccAny
@@ -1776,28 +1779,29 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 588
+    Height = 672
     Top = 0
     Width = 208
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 588
+    ClientHeight = 672
     ClientWidth = 208
     TabOrder = 1
     object lbNavigation: TListBox
       Left = 0
-      Height = 543
-      Top = 45
+      Height = 613
+      Top = 59
       Width = 208
       Align = alClient
       ItemHeight = 0
       OnClick = lbNavigationClick
       ScrollWidth = 206
       TabOrder = 0
+      TopIndex = -1
     end
     object ButtonGenerate: TBitBtn
       Left = 10
-      Height = 25
+      Height = 39
       Hint = 'Generate documentation (F9)'
       Top = 10
       Width = 188
@@ -1814,45 +1818,45 @@ object frmHelpGenerator: TfrmHelpGenerator
     MarkerOptional = True
     Generator = HtmlDocGenerator
     ShowVisibilities = []
-    left = 632
-    top = 496
+    left = 536
+    top = 584
   end
   object HtmlDocGenerator: THTMLDocGenerator
     CSS = 'body { font-family: Verdana,Arial; '#10'  color: black; background-color: white; '#10'  font-size: 12px; }'#10'body.navigationframe { font-family: Verdana,Arial; '#10'  color: white; background-color: #787878; '#10'  font-size: 12px; }'#10#10'img { border:0px; }'#10#10'a:link {color:#C91E0C; text-decoration: none; }'#10'a:visited {color:#7E5C31; text-decoration: none; }'#10'a:hover {text-decoration: underline; }'#10'a:active {text-decoration: underline; }'#10#10'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:hover { color: white; font-weight: bold; '#10'  text-decoration: none; font-size: 12px; }'#10'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}'#10#10'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'a.bold:hover {text-decoration: underline; font-weight:bold; }'#10'a.bold:active {text-decoration: underline; font-weight:bold; }'#10#10'a.section {color: green; text-decoration: none; font-weight: bold; }'#10'a.section:hover {color: green; text-decoration: underline; font-weight: bold; }'#10#10'ul.useslist a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:hover {text-decoration: underline; font-weight:bold; }'#10'ul.useslist a:active {text-decoration: underline; font-weight:bold; }'#10#10'ul.hierarchy { list-style-type:none; }'#10'ul.hierarchylevel { list-style-type:none; }'#10#10'p.unitlink a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:hover {text-decoration: underline; font-weight:bold; }'#10'p.unitlink a:active {text-decoration: underline; font-weight:bold; }'#10#10'tr.list { background: #FFBF44; }'#10'tr.list2 { background: #FFC982; }'#10'tr.listheader { background: #C91E0C; color: white; }'#10#10'table { border-spacing:2px; padding:4px; width:100%; }'#10#10'table.markerlegend { width:auto; }'#10'table.markerlegend td.legendmarker { text-align:center; }'#10#10'table.sections { background:white; }'#10'table.sections td {background:lightgray; }'#10#10'table.summary td.itemcode { width:100%; }'#10'table.detail td.itemcode { width:100%; }'#10#10'td { vertical-align:top; padding:4px; }'#10#10'td.itemname {white-space:nowrap; }'#10'td.itemunit {white-space:nowrap; }'#10'td.itemdesc { width:100%; }'#10#10'div.nodescription {color:red;}'#10'dl.parameters {;}'#10'dl.parameters dt {color:blue;}'#10'dl.parameters dd {;}'#10#10'/* Style applied to Pascal code in documentation '#10'   (e.g. produced by @longcode tag) } */'#10'span.pascal_string { color: #000080; }'#10'span.pascal_keyword { font-weight: bolder; }'#10'span.pascal_comment { color: #000080; font-style: italic; }'#10'span.pascal_compiler_comment { color: #008000; }'#10'span.pascal_numeric { }'#10'span.pascal_hex { }'#10#10'p.hint_directive { color: red; }'#10#10'input#search_text { }'#10'input#search_submit_button { }'#10#10'acronym.mispelling { background-color: #ffa; }'#10
-    left = 704
-    top = 496
+    left = 608
+    top = 584
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Delphi source files *.pas|*.pas|Free Pascal source files *.pp|*.pp|All Pascal source files *.pas, *.pp|*.pas;*.pp|All Files *.*|*.*'
     FilterIndex = 3
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    left = 344
-    top = 496
+    left = 248
+    top = 584
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.pds'
     Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
     FilterIndex = 0
-    left = 568
-    top = 496
+    left = 472
+    top = 584
   end
   object OpenDialog2: TOpenDialog
     DefaultExt = '.pds'
     Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
     FilterIndex = 0
-    left = 496
-    top = 496
+    left = 400
+    top = 584
   end
   object OpenDialog3: TOpenDialog
     Filter = 'All Files *.*|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    left = 917
-    top = 496
+    left = 821
+    top = 584
   end
   object MainMenu1: TMainMenu
-    left = 424
-    top = 496
+    left = 328
+    top = 584
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuNew: TMenuItem
@@ -1903,12 +1907,12 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
   end
   object TexDocGenerator: TTexDocGenerator
-    left = 768
-    top = 496
+    left = 672
+    top = 584
   end
   object HtmlHelpDocGenerator: THTMLHelpDocGenerator
     CSS = 'body { font-family: Verdana,Arial; '#10'  color: black; background-color: white; '#10'  font-size: 12px; }'#10'body.navigationframe { font-family: Verdana,Arial; '#10'  color: white; background-color: #787878; '#10'  font-size: 12px; }'#10#10'img { border:0px; }'#10#10'a:link {color:#C91E0C; text-decoration: none; }'#10'a:visited {color:#7E5C31; text-decoration: none; }'#10'a:hover {text-decoration: underline; }'#10'a:active {text-decoration: underline; }'#10#10'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:hover { color: white; font-weight: bold; '#10'  text-decoration: none; font-size: 12px; }'#10'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}'#10#10'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'a.bold:hover {text-decoration: underline; font-weight:bold; }'#10'a.bold:active {text-decoration: underline; font-weight:bold; }'#10#10'a.section {color: green; text-decoration: none; font-weight: bold; }'#10'a.section:hover {color: green; text-decoration: underline; font-weight: bold; }'#10#10'ul.useslist a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:hover {text-decoration: underline; font-weight:bold; }'#10'ul.useslist a:active {text-decoration: underline; font-weight:bold; }'#10#10'ul.hierarchy { list-style-type:none; }'#10'ul.hierarchylevel { list-style-type:none; }'#10#10'p.unitlink a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:hover {text-decoration: underline; font-weight:bold; }'#10'p.unitlink a:active {text-decoration: underline; font-weight:bold; }'#10#10'tr.list { background: #FFBF44; }'#10'tr.list2 { background: #FFC982; }'#10'tr.listheader { background: #C91E0C; color: white; }'#10#10'table { border-spacing:2px; padding:4px; width:100%; }'#10#10'table.markerlegend { width:auto; }'#10'table.markerlegend td.legendmarker { text-align:center; }'#10#10'table.sections { background:white; }'#10'table.sections td {background:lightgray; }'#10#10'table.summary td.itemcode { width:100%; }'#10'table.detail td.itemcode { width:100%; }'#10#10'td { vertical-align:top; padding:4px; }'#10#10'td.itemname {white-space:nowrap; }'#10'td.itemunit {white-space:nowrap; }'#10'td.itemdesc { width:100%; }'#10#10'div.nodescription {color:red;}'#10'dl.parameters {;}'#10'dl.parameters dt {color:blue;}'#10'dl.parameters dd {;}'#10#10'/* Style applied to Pascal code in documentation '#10'   (e.g. produced by @longcode tag) } */'#10'span.pascal_string { color: #000080; }'#10'span.pascal_keyword { font-weight: bolder; }'#10'span.pascal_comment { color: #000080; font-style: italic; }'#10'span.pascal_compiler_comment { color: #008000; }'#10'span.pascal_numeric { }'#10'span.pascal_hex { }'#10#10'p.hint_directive { color: red; }'#10#10'input#search_text { }'#10'input#search_submit_button { }'#10#10'acronym.mispelling { background-color: #ffa; }'#10
-    left = 848
-    top = 496
+    left = 752
+    top = 584
   end
 end
