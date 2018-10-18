@@ -42,9 +42,8 @@ fi
 
 # validation -----------------------------------------------------------------
 
-# Validate testcases_output/html, requires onsgmls installed
-# This is unfortunately not working for HTML 5 now.
-# scripts/validate_html.sh
+# Validate testcases_output/html, requires vnu installed
+#scripts/validate_html.sh
 
 # Validate testcases_output/simplexml, requires xmllint installed
 scripts/validate_simplexml.sh
