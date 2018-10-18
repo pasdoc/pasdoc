@@ -36,6 +36,9 @@ unit PasDoc_ProcessLineTalk;
   {$ifdef WIN32}
     {$define HAS_PROCESS}
   {$endif}
+  {$ifdef WIN64}
+    {$define HAS_PROCESS}
+  {$endif}
 {$ELSE}
   {$ifdef LINUX}
     {$define HAS_PROCESS}
@@ -44,6 +47,9 @@ unit PasDoc_ProcessLineTalk;
     {$define HAS_PROCESS}
   {$endif}
   {$ifdef WIN32}
+    {$define HAS_PROCESS}
+  {$endif}
+  {$ifdef WIN64}
     {$define HAS_PROCESS}
   {$endif}
 {$ENDIF}
