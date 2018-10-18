@@ -29,30 +29,12 @@ unit PasDoc_ProcessLineTalk;
 {$I pasdoc_defines.inc}
 
 {$ifdef FPC}
-{$IFNDEF VER1_0}
   {$ifdef UNIX}
     {$define HAS_PROCESS}
   {$endif}
-  {$ifdef WIN32}
+  {$ifdef MSWINDOWS}
     {$define HAS_PROCESS}
   {$endif}
-  {$ifdef WIN64}
-    {$define HAS_PROCESS}
-  {$endif}
-{$ELSE}
-  {$ifdef LINUX}
-    {$define HAS_PROCESS}
-  {$endif}
-  {$ifdef BSD}
-    {$define HAS_PROCESS}
-  {$endif}
-  {$ifdef WIN32}
-    {$define HAS_PROCESS}
-  {$endif}
-  {$ifdef WIN64}
-    {$define HAS_PROCESS}
-  {$endif}
-{$ENDIF}
 {$endif}
 
 interface
