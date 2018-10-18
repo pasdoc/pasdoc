@@ -158,11 +158,18 @@ export USE_DIFF_TO_COMPARE=true
 - `scripts/validate_html.sh`
 
    This is an automatic test that makes html docs for all test units
-   and validates them using sgml validator.
-   onsgmls program must be installed for this to work.
+   and validates them using v.Nu validator.
 
-   Links how to install onsgmls may be found here
-   [https://github.com/pasdoc/pasdoc/wiki/HtmlOutput].
+   For this to work, vnu has to be available at $PATH. This can be archieved
+   by downloading the most recent version from [here](https://github.com/validator/validator/releases)
+   and then adding the following wrapper script to your bin directory:
+
+   ```
+   #!/bin/bash
+   exec java  -jar /path/to/vnu.jar "$@"
+   ```
+
+   On macOS, v.Nu can be installed using Homebrew simply by running `brew install vnu`.
 
 - `scripts/validate_simplexml.sh`
 
