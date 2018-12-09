@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Modu³y',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zale¿no¶ci modu³ów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} 'odradza siê u¿ywania tego identyfikatora',
     {trPlatformSpecific} 'ten identyfikator jest zale¿ny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zale¿ny od biblioteki',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Przegl±d',
     {trIntroduction} 'Wstêp',
     {trConclusion} 'Podsumowanie',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie sta³e',
@@ -97,7 +99,7 @@ RTransTable = (
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz tak¿e',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

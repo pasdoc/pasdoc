@@ -1,0 +1,5 @@
+<unit name="warning_link_in_seealso.pas">
+  <constant name="rsSetValueOfEnclosedElements = 'Set values of enclosed elements';">
+    <description><detailed>) This should cause a warning (but not a crash).</detailed></description>
+  </constant>
+</unit>

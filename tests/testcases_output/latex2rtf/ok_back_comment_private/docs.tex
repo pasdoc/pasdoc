@@ -1,0 +1,54 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}back{\_}comment{\_}private}
+\section{Description}
+Testcase for [https://sourceforge.net/tracker/index.php?func=detail{\&}aid=1596563{\&}group{\_}id=4213{\&}atid=104213].
+
+The comment "This should be ether omitted..." should not be included anywhere (if private members are omitted, and this is the default).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EPingError\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{EPingError Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EPingError {$>$} Exception
+%%%%Description
+\section{Constants}
+\subsection*{ActionDescription}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+ActionDescription = 'blah';\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

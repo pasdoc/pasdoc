@@ -6,4 +6,4 @@ find ../../ '(' \
   -iname '*.inc' -or \
   -iname '*.css' -or \
   -iname '*.dpr' ')' \
-  -execdir sed --in-place -e 's|Copyright 1998-2014 PasDoc developers|Copyright 1998-2016 PasDoc developers|' '{}' ';'
+  -execdir sed --in-place -e 's|Copyright 1998-2016 PasDoc developers|Copyright 1998-2018 PasDoc developers|' '{}' ';'

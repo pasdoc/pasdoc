@@ -1,0 +1,114 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}anonymous{\_}methods}
+\label{ok_anonymous_methods}
+\index{ok{\_}anonymous{\_}methods}
+\section{Description}
+Test case for Delphi anonymous methods
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TSimpleProcedure}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSimpleProcedure}
+\fi
+\label{ok_anonymous_methods-TSimpleProcedure}
+\index{TSimpleProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TSimpleProcedure = reference to procedure;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+description of \begin{ttfamily}TSimpleProcedure\end{ttfamily}
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TSimpleFunction}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSimpleFunction}
+\fi
+\label{ok_anonymous_methods-TSimpleFunction}
+\index{TSimpleFunction}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TSimpleFunction = reference to function(x: string): Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+description of \begin{ttfamily}TSimpleFunction\end{ttfamily}
+
+\end{list}
+\end{document}

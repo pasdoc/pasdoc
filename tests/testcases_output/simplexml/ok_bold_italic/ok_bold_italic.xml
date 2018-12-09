@@ -1,0 +1,3 @@
+<unit name="ok_bold_italic.pas">
+  <description><abstract>This is a test of @bold and @italic tags.</abstract><detailed> Some bold text. Some bold and italic text. Some some bold and italic and italic and italic once again text. Some italic text. Some bold text with some tags: My name is <code>ok_bold_italic</code>, some <code>begin end</code> and a link to me: ok_bold_italic. Some bold text and some more. Some italic text and some more.</detailed></description>
+</unit>

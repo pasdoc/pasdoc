@@ -1,0 +1,27 @@
+<unit name="ok_if_expressions.pas">
+  <description><detailed>Testcase for various conditional directives, primarily $if and $elseif.</detailed></description>
+  <function name="Windows_IFDEF" type="procedure" declaration="procedure Windows_IFDEF;">
+  </function>
+  <function name="Windows_IFDEF_ELSE" type="procedure" declaration="procedure Windows_IFDEF_ELSE;">
+  </function>
+  <function name="Windows_IF" type="procedure" declaration="procedure Windows_IF;">
+  </function>
+  <function name="Windows_IF_DEFINED_ALT" type="procedure" declaration="procedure Windows_IF_DEFINED_ALT;">
+  </function>
+  <function name="OptionR_IF" type="procedure" declaration="procedure OptionR_IF;">
+  </function>
+  <function name="True_IF" type="procedure" declaration="procedure True_IF;">
+  </function>
+  <function name="SizeOf_IF" type="procedure" declaration="procedure SizeOf_IF;">
+  </function>
+  <function name="Declared_IF" type="procedure" declaration="procedure Declared_IF;">
+  </function>
+  <function name="WindowsAsUnix_IF_EQUALS" type="procedure" declaration="procedure WindowsAsUnix_IF_EQUALS;">
+  </function>
+  <function name="POSIXAsUnix_IF_EQUALS" type="procedure" declaration="procedure POSIXAsUnix_IF_EQUALS;">
+  </function>
+  <function name="FpcAndUnix_IF_2" type="procedure" declaration="procedure FpcAndUnix_IF_2;">
+  </function>
+  <function name="Always" type="procedure" declaration="procedure Always;">
+  </function>
+</unit>

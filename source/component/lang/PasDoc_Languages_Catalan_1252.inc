@@ -3,10 +3,10 @@ RTransTable = (
     {trLanguage} 'Catalan',
   //map
     {trUnits} 'Unitats',
-    {trClassHierarchy} 'Jerarquia de classes', 
+    {trClassHierarchy} 'Jerarquia de classes',
     {trCio} 'Classes, interfícies i objectes',
-    {trInternalCR} 'Registres i classes internes',
-    {trInternalTypes} 'Tipus interns',
+    {trNestedCR} strToDo, //'Nested Classes and Records',
+    {trNestedTypes} strToDo, //'Nested Types',
     {trIdentifiers} 'Identificadors',
     {trGvUses} 'Gràfic de la dependència d''unitats',
     {trGvClasses} 'Gràfic de la jerarquia de classes',
@@ -45,7 +45,7 @@ RTransTable = (
       {trException} strToDo, //'Exception',
     {trEnum} 'Enumeració',
   //visibilities
-    {trVisibility} 'Visibilitat', 
+    {trVisibility} 'Visibilitat',
       {trPrivate} 'Privada',
       {trStrictPrivate} 'Estrictament privada',
       {trProtected} 'Protegida',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} strToDo, //'this symbol is deprecated',
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Resum',
     {trIntroduction} 'Introducció',
     {trConclusion} 'Conclusió',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Totes les classes, interfícies i objectes',
     {trHeadlineConstants} 'Totes les constants',
@@ -97,7 +99,7 @@ RTransTable = (
     {trOnDateTime} 'el',
     {trSearch} 'Cerca',
     {trSeeAlso} 'Veure també',
-    {trInternal} 'intern',
-    {trAttributes} 'Atributs', 
+    {trNested} strToDo, //'nested',
+    {trAttributes} 'Atributs',
     ''  //dummy
   );

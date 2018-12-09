@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Units">
+<param name="Local" value="AllUnits.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_record_with_case">
+<param name="Local" value="ok_record_with_case.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Classes">
+<param name="Local" value="ok_record_with_case.html#@Classes">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord1">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#NormalField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseDecision">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseDecision">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoB">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord2">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#NormalField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoB">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Class Hierarchy">
+<param name="Local" value="ClassHierarchy.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Classes">
+<param name="Local" value="AllClasses.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord1">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseDecision">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseDecision">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoB">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord1.html#NormalField">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord2">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseOneSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseOneSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoA">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoA">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoB">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoB">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoInt">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoInt">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="CaseTwoSingle">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#CaseTwoSingle">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NormalField">
+<param name="Local" value="ok_record_with_case.TMyRecord2.html#NormalField">
+</object>
+</ul>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Overview">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="All Units">
+<param name="Local" value="AllUnits.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Class Hierarchy">
+<param name="Local" value="ClassHierarchy.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Classes, Interfaces, Objects and Records">
+<param name="Local" value="AllClasses.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Types">
+<param name="Local" value="AllTypes.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Variables">
+<param name="Local" value="AllVariables.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Constants">
+<param name="Local" value="AllConstants.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Functions and Procedures">
+<param name="Local" value="AllFunctions.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="All Identifiers">
+<param name="Local" value="AllIdentifiers.html">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Legend">
+<param name="Local" value="Legend.html">
+</object>
+</ul>
+</body></html>

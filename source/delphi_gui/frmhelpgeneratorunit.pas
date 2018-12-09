@@ -769,7 +769,7 @@ var
   procedure TreeAddCio(const ALLCiosNode: TTreeNode);
   var
     LCio: TPasCio;
-    LCios: TPasCios;
+    LCios: TPasNestedCios;
     I, J: Integer;
     ClassNode: TTreeNode;
     FieldsNode: TTreeNode;
@@ -778,7 +778,7 @@ var
     TypesNode: TTreeNode;
     PasItem: TPasItem;
   begin
-    LCios := TPasCios(ALLCiosNode.Data);
+    LCios := TPasNestedCios(ALLCiosNode.Data);
     for J := 0 to LCios.Count - 1 do
     begin
       LCio := TPasCio(LCios.PasItemAt[J]);
@@ -819,7 +819,7 @@ var
       if LCio.Types.Count > 0 then
       begin
         TypesNode := tvUnits.Items.AddChildObject(ClassNode,
-          Lang.Translation[trInternalTypes], LCio.Types);
+          Lang.Translation[trNestedTypes], LCio.Types);
         for I := 0 to LCio.Types.Count -1 do
         begin
           PasItem := LCio.Types.PasItemAt[I];
@@ -829,7 +829,7 @@ var
       if LCio.Cios.Count > 0 then
       begin
         ClassNode := tvUnits.Items.AddChildObject(ClassNode,
-          Lang.Translation[trInternalCR], LCio.CIOs);
+          Lang.Translation[trNestedCR], LCio.CIOs);
         TreeAddCio(ClassNode);
       end;
     end;

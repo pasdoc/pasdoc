@@ -1,0 +1,53 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}underscores}
+\label{ok_longcode_underscores}
+\index{ok{\_}longcode{\_}underscores}
+\section{Description}
+2005{-}06{-}07: Latex version of docs for this unit are wrong, because ConvertString is not called to convert {\_} char. So {\_} is not escaped and latex fails. Also, HTML version is bad, because "With" is formatted in bold, because it's treated like keyword.
+
+Fixed by adding {\_} to AlphaNumeric in PasDoc{\_}Gen in FormatPascalCode.
+
+\texttt{\\\nopagebreak[3]
+Identifier{\_}With{\_}Underscores;\\
+}
+\end{document}

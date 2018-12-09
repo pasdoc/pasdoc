@@ -1,7 +1,7 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "pasdoc.css" }
 '/*' + LineEnding +
-'  Copyright 1998-2016 PasDoc developers.' + LineEnding +
+'  Copyright 1998-2018 PasDoc developers.' + LineEnding +
 '' + LineEnding +
 '  This file is part of "PasDoc".' + LineEnding +
 '' + LineEnding +
@@ -57,6 +57,11 @@
 'td.content h1 { margin-top: 0; }' + LineEnding +
 '' + LineEnding +
 'img { border:0px; }' + LineEnding +
+'' + LineEnding +
+'hr {' + LineEnding +
+'    border-bottom: medium none;' + LineEnding +
+'    border-top: thin solid #888;' + LineEnding +
+'}' + LineEnding +
 '' + LineEnding +
 'a:link {color:#C91E0C; text-decoration: none; }' + LineEnding +
 'a:visited {color:#7E5C31; text-decoration: none; }' + LineEnding +

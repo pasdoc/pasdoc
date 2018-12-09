@@ -1,0 +1,7 @@
+<unit name="ok_helpinsight_comments.pas">
+  <description><detailed>Test of handling help insight comments, in the form &quot;/// &lt;tag&gt; ... &lt;/tag&gt;&quot;. See http://delphi.wikia.com/wiki/Help_insight, example snippet with Parse function is straight from there. See https://sourceforge.net/tracker/?func=detail&amp;atid=304213&amp;aid=3485263&amp;group_id=4213.</detailed></description>
+  <function name="Parse" type="procedure" declaration="procedure Parse(const _CmdLine: string);">
+    <param name="CmdLine">is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first &quot;parameter&quot;. If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.</param>
+    <description><abstract>parses the commandline</abstract><detailed> </detailed></description>
+  </function>
+</unit>

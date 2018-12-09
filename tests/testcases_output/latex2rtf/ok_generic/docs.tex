@@ -1,0 +1,273 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}generic}
+\section{Description}
+Tests of generics, both FPC and Delphi style.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyList\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TGeometryAttrib\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TGeometryAttribsList\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyObject\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyGenericList\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyNewGeneric\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TAnotherGenericType\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TArray\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TEnumerator\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TEnumerable\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TList\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TQueue\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TStack\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TPair\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TDictionary\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TObjectList\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TObjectQueue\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TObjectStack\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TObjectDictionary\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyList Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyList {$>$} TFPSList
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+FPC generics tests ------------------------------------------------------{-}\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Blah}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function Blah: PT;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TGeometryAttrib Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TGeometryAttrib {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Name}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Name: string;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{AType}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public AType: TGeometryAttribType;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Offset}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Offset: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TGeometryAttribsList Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TGeometryAttribsList {$>$} \begin{ttfamily}TMyList\end{ttfamily}(\ref{ok_generic.TMyList}) {$>$} 
+TFPSList
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+You can also specialize and make a descendant at the same time.\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Find}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function Find(const Name: string): TGeometryAttrib;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TMyObject Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyObject {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+A simple Test{-}Object\subsection*{TMyGenericList Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyGenericList {$>$} \begin{ttfamily}TObjectList\end{ttfamily}(\ref{ok_generic.TObjectList}) {$>$} \begin{ttfamily}TList\end{ttfamily}(\ref{ok_generic.TList}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TMyNewGeneric Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyNewGeneric {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+To Something here\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Blah}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function Blah: PT;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TAnotherGenericType Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TAnotherGenericType {$>$} \begin{ttfamily}TDictionary\end{ttfamily}(\ref{ok_generic.TDictionary}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Sample for a generic with more than one type. TPair is a Key{-}Value{-}Relation\subsection*{TArray Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TArray {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+All standard Generics:\subsection*{TEnumerator Class abstract}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TEnumerator {$>$} TObject
+%%%%Description
+\subsection*{TEnumerable Class abstract}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TEnumerable {$>$} TObject
+%%%%Description
+\subsection*{TList Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TList {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TQueue Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TQueue {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TStack Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TStack {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TDictionary Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDictionary {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TObjectList Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TObjectList {$>$} \begin{ttfamily}TList\end{ttfamily}(\ref{ok_generic.TList}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TObjectQueue Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TObjectQueue {$>$} \begin{ttfamily}TQueue\end{ttfamily}(\ref{ok_generic.TQueue}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TObjectStack Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TObjectStack {$>$} \begin{ttfamily}TStack\end{ttfamily}(\ref{ok_generic.TStack}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TObjectDictionary Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TObjectDictionary {$>$} \begin{ttfamily}TDictionary\end{ttfamily}(\ref{ok_generic.TDictionary}) {$>$} \begin{ttfamily}TEnumerable\end{ttfamily}(\ref{ok_generic.TEnumerable}) {$>$} 
+TObject
+%%%%Description
+\section{Types}
+\subsection*{TGeometryAttribsList2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TGeometryAttribsList2 = specialize TMyList{$<$}TALBuffersCache{$>$};\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

@@ -1,0 +1,4 @@
+<unit name="ok_comment_over_uses_clause.pas">
+  <function name="A" type="procedure" declaration="procedure A;">
+  </function>
+</unit>

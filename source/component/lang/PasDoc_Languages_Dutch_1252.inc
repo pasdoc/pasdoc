@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} strToDo, //'Units',
     {trClassHierarchy} strToDo, //'Class Hierarchy',
     {trCio} 'Classes, interfaces and objecten',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} strToDo, //'Identifiers',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} strToDo, //'this symbol is deprecated',
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Overzicht',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Alle classes, interfaces en objecten',
     {trHeadlineConstants} 'Alle constanten',
@@ -97,7 +99,7 @@ RTransTable = (
     {trOnDateTime} strToDo, //'on',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

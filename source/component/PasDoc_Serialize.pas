@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -36,7 +36,7 @@ uses
 type
   TSerializable = class;
   TSerializableClass = class of TSerializable;
-  
+
   EInvalidCacheFileVersion = class(Exception);
 
   TSerializable = class
@@ -158,21 +158,21 @@ begin
   LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
 {$ENDIF}
   try
-    try 
+    try
       CacheFormatVersionFromFile := LoadStringFromStream(LF);
     except
-      { Convert any exception from LoadStringToStream (maybe because 
+      { Convert any exception from LoadStringToStream (maybe because
         string length is invalid, or stream ends too soon or such)
         to EInvalidCacheFileVersion. }
-      on E: Exception do 
+      on E: Exception do
         raise EInvalidCacheFileVersion.CreateFmt(
           'Cache file version is invalid (error when reading: %s), assuming the cache file is outdated',
           [E.ClassName]);
     end;
-    
+
     if CacheFormatVersionFromFile <> CacheFormatVersion then
       raise EInvalidCacheFileVersion.Create('Cache file version is from a different PasDoc release');
-    
+
     Result := DeserializeObject(LF);
   finally
     LF.Free;

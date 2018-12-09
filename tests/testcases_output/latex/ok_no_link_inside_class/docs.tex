@@ -1,0 +1,192 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}no{\_}link{\_}inside{\_}class}
+\label{ok_no_link_inside_class}
+\index{ok{\_}no{\_}link{\_}inside{\_}class}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyGlobalProcedure}]
+\item[\texttt{MyOtherGlobalProcedure}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_no_link_inside_class.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_no_link_inside_class.TMyClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{MyOtherMethod}\hspace*{\fill}
+
+\label{ok_no_link_inside_class.TMyClass-MyOtherMethod}
+\index{MyOtherMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyOtherMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This should be linked: \begin{ttfamily}MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}TMyClass.MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}MyGlobalProcedure\end{ttfamily}(\ref{ok_no_link_inside_class-MyGlobalProcedure}).
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyGlobalProcedure}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyGlobalProcedure}
+\fi
+\label{ok_no_link_inside_class-MyGlobalProcedure}
+\index{MyGlobalProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyGlobalProcedure;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This should NOT be linked: \begin{ttfamily}MyMethod\end{ttfamily}.
+
+This should be linked: \begin{ttfamily}TMyClass.MyMethod\end{ttfamily}(\ref{ok_no_link_inside_class.TMyClass-MyMethod}).
+
+This should be linked: \begin{ttfamily}MyOtherGlobalProcedure\end{ttfamily}(\ref{ok_no_link_inside_class-MyOtherGlobalProcedure}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MyOtherGlobalProcedure}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyOtherGlobalProcedure}
+\fi
+\label{ok_no_link_inside_class-MyOtherGlobalProcedure}
+\index{MyOtherGlobalProcedure}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyOtherGlobalProcedure;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

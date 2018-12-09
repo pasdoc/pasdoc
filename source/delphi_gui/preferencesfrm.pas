@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "pasdoc_gui".
 
@@ -43,9 +43,7 @@ type
     BtnOK: TButton;
     BtnCancel: TButton;
     BtnResetDefaults: TButton;
-    EditWWWBrowserCommand: TEdit;
     EditWWWHelpServer: TEdit;
-    LabelWWWBrowserCommand: TLabel;
     LabelWWWHelpServer: TLabel;
     cbLoadLastProject: TCheckBox;
     procedure BtnResetDefaultsClick(Sender: TObject);
@@ -62,7 +60,6 @@ uses
 
 procedure TPreferences.BtnResetDefaultsClick(Sender: TObject);
 begin
-  EditWWWBrowserCommand.Text := DefaultWWWBrowserCommand;
   EditWWWHelpServer.Text := DefaultWWWHelpServer;
   cbLoadLastProject.Checked := TRUE;
 end;
@@ -73,12 +70,10 @@ var
 begin
   F := TPreferences.Create(nil);
   try
-    F.EditWWWBrowserCommand.Text := WWWBrowserRunner.BrowserCommand;
     F.EditWWWHelpServer.Text := WWWHelpServer;
     F.cbLoadLastProject.Checked := AutoLoadLastProject;
     if F.ShowModal = mrOK then
     begin
-      WWWBrowserRunner.BrowserCommand := F.EditWWWBrowserCommand.Text;
       WWWHelpServer := F.EditWWWHelpServer.Text;
       AutoLoadLastProject := F.cbLoadLastProject.Checked;
     end;

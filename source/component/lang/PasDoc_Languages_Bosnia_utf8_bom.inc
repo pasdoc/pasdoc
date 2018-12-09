@@ -5,8 +5,8 @@
     {trUnits} 'Fajlovi',
     {trClassHierarchy} 'Klasna hijerarhija',
     {trCio} 'Klase, Interfejsi i Objekti',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identifikatori',
     {trGvUses} strToDo, //'Unit dependency graph',
     {trGvClasses} strToDo, //'Classes hierarchy graph',
@@ -58,10 +58,12 @@
     {trDeprecated} strToDo, //'this symbol is deprecated',
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Pregled',
     {trIntroduction} strToDo, //'Introduction',
     {trConclusion} strToDo, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Sve Klase, Interfejsi i Objekti',
     {trHeadlineConstants} 'Sve Konstante',
@@ -97,7 +99,7 @@
     {trOnDateTime} strToDo, //'on',
     {trSearch} strToDo, //'Search',
     {trSeeAlso} strToDo, //'See also',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

@@ -1,0 +1,391 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}include{\_}environment}
+\label{ok_include_environment}
+\index{ok{\_}include{\_}environment}
+\section{Description}
+Test of handling the "\textit{{\$}I or {\$}INCLUDE : Include compiler info}" feature of FPC, see [\href{http://www.freepascal.org/docs-html/prog/progsu38.html}{http://www.freepascal.org/docs-html/prog/progsu38.html}].\hfill\vspace*{1ex}
+
+
+
+PasDoc bug spotted by Michalis on 2005{-}12{-}04 when trying `make htmldocs' on fpc compiler sources, in file version.pas.
+
+Notes about how it should be implemented in PasDoc :
+
+PasDoc will \textit{not} expand these macros. Instead PasDoc will just explicitly show that e.g. value of MacDATE is {\%}DATE{\%}, value of MacFPCTARGET is {\%}FPCTARGET{\%} etc. Reasons: \begin{itemize}
+\item For {\%}DATE{\%} and {\%}TIME{\%}, PasDoc could expand them, but it's not sensible. After all, at compilation they will be set to something different. So what PasDoc should do (and will) is to show user that the value of MacDATE is {\%}DATE{\%}.
+
+This way user will know that MacDATE's value depends on time of compilation.
+\item For {\%}FPC???{\%} macros, PasDoc couldn't expand them, even if it should. After all, we don't know what FPC version will be used to compile the given unit.
+\item For {\%}environment{-}variable{\%}: argument like with {\%}FPC???{\%} macros: PasDoc is not able to predict what value {\$}environment{-}variable will have at compilation time.
+\item Finally, for {\%}FILE{\%} and {\%}LINE{\%}: this is the only case when actually PasDoc could just expand them, just like FPC will.
+
+For now, my decision is to not expand them, for consistency with handling all other {\%}xxx{\%}.
+\end{itemize}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MacDATE}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacDATE}
+\fi
+\label{ok_include_environment-MacDATE}
+\index{MacDATE}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacDATE = {\{}{\$}I {\%}DATE{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inserts the current date.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacFPCTARGET}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacFPCTARGET}
+\fi
+\label{ok_include_environment-MacFPCTARGET}
+\index{MacFPCTARGET}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacFPCTARGET = {\{}{\$}I {\%}FPCTARGET{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inserts the target CPU name. (deprecated, use FPCTARGETCPU)
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacFPCTARGETCPU}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacFPCTARGETCPU}
+\fi
+\label{ok_include_environment-MacFPCTARGETCPU}
+\index{MacFPCTARGETCPU}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacFPCTARGETCPU = {\{}{\$}I {\%}FPCTARGETCPU{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inserts the target CPU name.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacFPCTARGETOS}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacFPCTARGETOS}
+\fi
+\label{ok_include_environment-MacFPCTARGETOS}
+\index{MacFPCTARGETOS}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacFPCTARGETOS = {\{}{\$}I {\%}FPCTARGETOS{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inserts the target OS name.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacFPCVERSION}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacFPCVERSION}
+\fi
+\label{ok_include_environment-MacFPCVERSION}
+\index{MacFPCVERSION}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacFPCVERSION = {\{}{\$}I {\%}FPCVERSION{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Current compiler version number.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacFILE}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacFILE}
+\fi
+\label{ok_include_environment-MacFILE}
+\index{MacFILE}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacFILE = {\{}{\$}I {\%}FILE{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Filename in which the directive is found.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacLINE}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacLINE}
+\fi
+\label{ok_include_environment-MacLINE}
+\index{MacLINE}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacLINE = {\{}{\$}I {\%}LINE{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Linenumer on which the directive is found.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacTIME}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacTIME}
+\fi
+\label{ok_include_environment-MacTIME}
+\index{MacTIME}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacTIME = {\{}{\$}I {\%}TIME{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Current time.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacUSEREnv}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacUSEREnv}
+\fi
+\label{ok_include_environment-MacUSEREnv}
+\index{MacUSEREnv}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacUSEREnv = {\{}{\$}I {\%}USER{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+If xxx inside {\%}xxx{\%} is none of the above, then it is assumed to be the name of an environment variable. Its value will be fetched.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MacPathEnv}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MacPathEnv}
+\fi
+\label{ok_include_environment-MacPathEnv}
+\index{MacPathEnv}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MacPathEnv = {\{}{\$}I {\%}PATH{\%}{\}};\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

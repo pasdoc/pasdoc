@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyPackedClass">
+<param name="Local" value="ok_packed_class_object.TMyPackedClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Blah">
+<param name="Local" value="ok_packed_class_object.TMyPackedClass.html#Blah">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyPackedObject">
+<param name="Local" value="ok_packed_class_object.TMyPackedObject.html">
+</object>
+</ul>
+</body></html>

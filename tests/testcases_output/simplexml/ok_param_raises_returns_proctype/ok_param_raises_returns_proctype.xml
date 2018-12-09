@@ -1,0 +1,11 @@
+<unit name="ok_param_raises_returns_proctype.pas">
+  <type name="TMyProcedure = procedure(A: integer);">
+    <description><detailed> </detailed></description>
+  </type>
+  <type name="TMyMethod = function(A: integer): boolean of object;">
+    <description><detailed>  </detailed></description>
+  </type>
+  <structure name="EFoo" name_with_generic="EFoo" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+</unit>

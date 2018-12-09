@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -32,21 +32,21 @@
   @author(Marc Weustinks (Dutch translation))
   @author(Martin Hansen <mh AT geus.dk> (Danish translation))
   @author(Michele Bersini <michele.bersini AT smartit.it> (Italian translation))
-  @author(Peter Šimkoviè <simkovic_jr AT manal.sk> (Slovak translation))
-  @author(Peter Thörnqvist <pt AT timemetrics.se> (Swedish translation))
+  @author(Peter Simkovic <simkovic_jr AT manal.sk> (Slovak translation))
+  @author(Peter Th_rnqvist <pt AT timemetrics.se> (Swedish translation))
   @author(Rodrigo Urubatan Ferreira Jardim <rodrigo AT netscape.net> (Brasilian translation))
   @author(Alexandre da Silva <simpsomboy AT gmail.com> (Brasilian translation - Update))
   @author(Alexsander da Rosa <alex AT rednaxel.com> (Brasilian translation - UTF8))
   @author(Vitaly Kovalenko <v_l_kovalenko AT alsy.by> (Russian translation))
   @author(Grzegorz Skoczylas <gskoczylas AT rekord.pl> (corrected Polish translation))
-  @author(Jónás Gergõ <jonas.gergo AT ch...> (Hungarian translation))
+  @author(Jonas Gergo <jonas.gergo AT ch...> (Hungarian translation))
   @author(Michalis Kamburelis)
   @author(Ascanio Pressato (Some Italian translation))
   @author(JBarbero Quiter (updated Spanish translation))
   @author(Liu Chuanjun <1000copy AT gmail.com> (Chinese gb2312 translation))
   @author(Liu Da <xmacmail AT gmail.com> (Chinese gb2312 translation))
   @author(DoDi)
-  @author(René Mihula <rene.mihula@gmail.com> (Czech translation))  
+  @author(Rene Mihula <rene.mihula@gmail.com> (Czech translation))
   @author(Yann Merignac (French translation))
   @author(Arno Garrels <first name.name@nospamgmx.de>)
 }
@@ -91,13 +91,14 @@ type
     lgBulgarian,
     lgCatalan,
     lgChinese_gb2312,
-    lgCroatian,    
+    lgCroatian,
     lgDanish,
     lgDutch,
     lgEnglish,
     lgFrench_ISO_8859_15,
-    lgFrench_UTF_8,    
-    lgGerman,
+    lgFrench_UTF_8,
+    lgGerman_ISO_8859_15,
+    lgGerman_UTF_8,
     lgIndonesian,
     lgItalian,
     lgJavanese,
@@ -127,8 +128,8 @@ type
     trUnits,
     trClassHierarchy,
     trCio,
-    trInternalCR,
-    trInternalTypes,
+    trNestedCR,
+    trNestedTypes,
     trIdentifiers,
     trGvUses,
     trGvClasses,
@@ -181,11 +182,13 @@ type
     trDeprecated,
     trPlatformSpecific,
     trLibrarySpecific,
+    trExperimental,
 
   //headings
     trOverview,
     trIntroduction,
     trConclusion,
+    trAdditionalFile,
     trEnclosingClass,
     trHeadlineCio,
     trHeadlineConstants,
@@ -226,7 +229,7 @@ type
 
     trSearch,
     trSeeAlso,
-    trInternal,
+    trNested,
   //add more here
     trAttributes,
     trDummy
@@ -251,17 +254,17 @@ type
     CharSet: string;
     { Name of this language as used by Aspell, see
       http://aspell.net/man-html/Supported.html .
-      
+
       Set this to empty string if it's the same as our Syntax up to a dot.
       So a Syntax = 'pl' or Syntax = 'pl.iso-8859-2' already indicates
       AspellLanguage = 'pl'.
-      
+
       TODO: In the future, it would be nice if all language names used by PasDoc
       and Aspell matched. Aspell language naming follows the standard
       http://en.wikipedia.org/wiki/ISO_639-1 as far as I see,
       and we should probably follow it too (currently, we deviate for
       some languages).
-      
+
       So in the future, we'll probably replace Syntax and AspellLanguage
       by LanguageCode and CharsetCode. LanguageCode = code (suitable for both
       PasDoc and Aspell command-line; the thing currently up to a dot in Syntax),
@@ -285,14 +288,9 @@ type
   {$ENDIF}
     procedure SetLanguage(const Value: TLanguageID);
   protected
-  //the table of the selected language
-    pTable: PTransTable;
     FCharSet: string;
     { @abstract(gets a translation token) }
     function GetTranslation(ATranslationID: TTranslationID): string;
-    procedure SetTranslation(id: TTranslationID; const into: string);
-    property FTranslation[id: TTranslationID]: string
-      read GetTranslation write SetTranslation;
   public
     { Charset for current language }
     property CharSet: string read FCharSet;
@@ -329,8 +327,9 @@ function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
 //access LANGUAGE_ARRAY
 function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
 
-{ Language code suitable for Aspell. }
-function LanguageAspellCode(const Language: TLanguageID): string;
+{ Language code, using an official standardardized language names,
+  suitable for Aspell or HTML. }
+function LanguageCode(const Language: TLanguageID): string;
 
 implementation
 
@@ -349,7 +348,7 @@ const
   strKeep = {$IFDEF debug} '=' {$else} '' {$endif};
   strToDo = {$IFDEF debug} '?' {$else} '' {$endif};
 
-  { NewLanguageTemplate value is not actually used. We include it just to 
+  { NewLanguageTemplate value is not actually used. We include it just to
     force developers to keep PasDoc_Languages_Template_New_Language.inc
     in compileable state. }
   NewLanguageTemplate: {$I lang\PasDoc_Languages_Template_New_Language.inc}
@@ -389,7 +388,8 @@ const
   aDutch              : {$I lang\PasDoc_Languages_Dutch_1252.inc}
   aFrench_ISO_8859_15 : {$I lang\PasDoc_Languages_French_ISO_8859_15.inc}
   aFrench_UTF_8       : {$I lang\PasDoc_Languages_French_utf8.inc}
-  aGerman             : {$I lang\PasDoc_Languages_German_1252.inc}
+  aGerman_ISO_8859_15 : {$I lang\PasDoc_Languages_German_ISO_8859_15.inc}
+  aGerman_UTF_8       : {$I lang\PasDoc_Languages_German_utf8.inc}
   aIndonesian         : {$I lang\PasDoc_Languages_Indonesian_1252.inc}
   aItalian            : {$I lang\PasDoc_Languages_Italian_1252.inc}
   aJavanese           : {$I lang\PasDoc_Languages_Javanese_1250.inc}
@@ -439,13 +439,14 @@ const
     (Table: @aBulgarian; Name: 'Bulgarian (Codepage UTF-8)'; Syntax: 'bg'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: 'windows-1252'; AspellLanguage: 'ca'),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'; AspellLanguage: 'zh'),
-    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),    
+    (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aFrench_ISO_8859_15; Name: 'French (iso-8859-15)'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
-    (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),    
-    (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
+    (Table: @aGerman_ISO_8859_15; Name: 'German (iso-8859-15)'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
+    (Table: @aGerman_UTF_8; Name: 'German (UTF-8)'; Syntax: 'de.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aIndonesian; Name: 'Indonesian'; Syntax: 'id'; CharSet: 'windows-1252'; AspellLanguage: ''),
     (Table: @aItalian; Name: 'Italian'; Syntax: 'it'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aJavanese; Name: 'Javanese'; Syntax: 'jv'; CharSet: 'windows-1252'; AspellLanguage: ''),
@@ -467,15 +468,9 @@ const
 function TPasDocLanguages.GetTranslation(
   ATranslationID: TTranslationID): string;
 begin
-  Result := pTable^[ATranslationID];
+  Result := LANGUAGE_ARRAY[FLanguage].Table^[ATranslationID];
   if Result <= strKeep then
     Result := aEnglish[ATranslationID];
-end;
-
-procedure TPasDocLanguages.SetTranslation(id: TTranslationID;
-  const into: string);
-begin
-  pTable^[id] := into;
 end;
 
 constructor TPasDocLanguages.Create;
@@ -486,6 +481,7 @@ end;
 
 procedure TPasDocLanguages.SetLanguage(const Value: TLanguageID);
 begin
+  inherited Create;
   FLanguage := Value;
 {$IFNDEF STRING_UNICODE}
   FCharSet  := LANGUAGE_ARRAY[Value].Charset;
@@ -493,10 +489,6 @@ begin
   FCharSet  := 'UTF-8';
   FCodePage := 65001;
 {$ENDIF}
-
-//get table
-  pTable := LANGUAGE_ARRAY[Value].Table;
-  Assert(Assigned(pTable));
 end;
 
 function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
@@ -570,7 +562,7 @@ begin
   Result := tbl^[id];
 end;
 
-function LanguageAspellCode(const Language: TLanguageID): string;
+function LanguageCode(const Language: TLanguageID): string;
 var
   Dot: Integer;
 begin
@@ -584,4 +576,3 @@ begin
 end;
 
 end.
-

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -118,13 +118,13 @@ const
       )
     )
   }
-  PASDOC_DATE = '2015-08-09';
+  PASDOC_DATE = '2018-02-08';
   { }
-  PASDOC_VERSION = '0.14.0';
+  PASDOC_VERSION = '0.15.0';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
-  PASDOC_HOMEPAGE = 'http://pasdoc.sourceforge.net/';
+  PASDOC_HOMEPAGE = 'https://github.com/pasdoc/pasdoc/wiki';
 
 { Returns pasdoc name, version, used compiler version, etc.
 

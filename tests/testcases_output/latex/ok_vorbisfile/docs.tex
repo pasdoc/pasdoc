@@ -1,0 +1,866 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}vorbisfile}
+\label{ok_vorbisfile}
+\index{ok{\_}vorbisfile}
+\section{Description}
+API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}Tov{\_}callbacks\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TOggVorbis{\_}File\end{ttfamily} Record}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{Tov{\_}callbacks Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Tov{\_}callbacks Record}
+\fi
+\label{ok_vorbisfile.Tov_callbacks}
+\index{Tov{\_}callbacks}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{close{\_}func}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_vorbisfile.Tov_callbacks-read_func}
+\index{read{\_}func}
+\item[\textbf{read{\_}func}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public read{\_}func: TVorbisFileReadFunc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.Tov_callbacks-seek_func}
+\index{seek{\_}func}
+\item[\textbf{seek{\_}func}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public seek{\_}func: TVorbisFileSeekFunc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.Tov_callbacks-close_func}
+\index{close{\_}func}
+\item[\textbf{close{\_}func}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public close{\_}func: TVorbisFileCloseFunc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.Tov_callbacks-tell_func}
+\index{tell{\_}func}
+\item[\textbf{tell{\_}func}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public tell{\_}func: TVorbisFileTellFunc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TOggVorbis{\_}File Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TOggVorbis{\_}File Record}
+\fi
+\label{ok_vorbisfile.TOggVorbis_File}
+\index{TOggVorbis{\_}File}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{current{\_}serialno}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_vorbisfile.TOggVorbis_File-datasource}
+\index{datasource}
+\item[\textbf{datasource}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public datasource: Pointer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-seekable}
+\index{seekable}
+\item[\textbf{seekable}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public seekable: Cint;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * Pointer to a FILE *, etc. *\label{ok_vorbisfile.TOggVorbis_File-offset}
+\index{offset}
+\item[\textbf{offset}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public offset: Int64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-_end}
+\index{{\_}end}
+\item[\textbf{{\_}end}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public {\_}end: Int64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-oy}
+\index{oy}
+\item[\textbf{oy}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public oy: Togg{\_}sync{\_}state;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-links}
+\index{links}
+\item[\textbf{links}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public links: Cint;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-offsets}
+\index{offsets}
+\item[\textbf{offsets}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public offsets: PInt64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-dataoffsets}
+\index{dataoffsets}
+\item[\textbf{dataoffsets}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public dataoffsets: PInt64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-serialnos}
+\index{serialnos}
+\item[\textbf{serialnos}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public serialnos: PCLong;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-pcmlengths}
+\index{pcmlengths}
+\item[\textbf{pcmlengths}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public pcmlengths: PInt64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-vi}
+\index{vi}
+\item[\textbf{vi}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public vi: Pvorbis{\_}info;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * overloaded to maintain binary compatability; x2 size, stores both beginning and end values *\label{ok_vorbisfile.TOggVorbis_File-vc}
+\index{vc}
+\item[\textbf{vc}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public vc: Pvorbis{\_}comment;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-pcm_offset}
+\index{pcm{\_}offset}
+\item[\textbf{pcm{\_}offset}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public pcm{\_}offset: Int64;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * Decoding working state local storage *\label{ok_vorbisfile.TOggVorbis_File-ready_state}
+\index{ready{\_}state}
+\item[\textbf{ready{\_}state}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public ready{\_}state: CInt;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-current_serialno}
+\index{current{\_}serialno}
+\item[\textbf{current{\_}serialno}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public current{\_}serialno: Clong;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-current_link}
+\index{current{\_}link}
+\item[\textbf{current{\_}link}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public current{\_}link: CInt;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-bittrack}
+\index{bittrack}
+\item[\textbf{bittrack}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public bittrack: double;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-samptrack}
+\index{samptrack}
+\item[\textbf{samptrack}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public samptrack: double;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-os}
+\index{os}
+\item[\textbf{os}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public os: Togg{\_}stream{\_}state;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_vorbisfile.TOggVorbis_File-vd}
+\index{vd}
+\item[\textbf{vd}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public vd: Tvorbis{\_}dsp{\_}state;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * take physical pages, weld into a logical stream of packets *\label{ok_vorbisfile.TOggVorbis_File-vb}
+\index{vb}
+\item[\textbf{vb}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public vb: Tvorbis{\_}block;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * central working state for the packet{-}{$>$}PCM decoder *\label{ok_vorbisfile.TOggVorbis_File-callbacks}
+\index{callbacks}
+\item[\textbf{callbacks}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public callbacks: Tov{\_}callbacks;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par * local working space for packet{-}{$>$}PCM decode *\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TSizeT}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSizeT}
+\fi
+\label{ok_vorbisfile-TSizeT}
+\index{TSizeT}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TSizeT = LongWord;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TVorbisFileReadFunc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TVorbisFileReadFunc}
+\fi
+\label{ok_vorbisfile-TVorbisFileReadFunc}
+\index{TVorbisFileReadFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TVorbisFileSeekFunc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TVorbisFileSeekFunc}
+\fi
+\label{ok_vorbisfile-TVorbisFileSeekFunc}
+\index{TVorbisFileSeekFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TVorbisFileCloseFunc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TVorbisFileCloseFunc}
+\fi
+\label{ok_vorbisfile-TVorbisFileCloseFunc}
+\index{TVorbisFileCloseFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TVorbisFileTellFunc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TVorbisFileTellFunc}
+\fi
+\label{ok_vorbisfile-TVorbisFileTellFunc}
+\index{TVorbisFileTellFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Pov{\_}callbacks}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Pov{\_}callbacks}
+\fi
+\label{ok_vorbisfile-Pov_callbacks}
+\index{Pov{\_}callbacks}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+Pov{\_}callbacks = {\^{}}Tov{\_}callbacks;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{POggVorbis{\_}File}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{POggVorbis{\_}File}
+\fi
+\label{ok_vorbisfile-POggVorbis_File}
+\index{POggVorbis{\_}File}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+POggVorbis{\_}File = {\^{}}TOggVorbis{\_}File;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{NOTOPEN}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{NOTOPEN}
+\fi
+\label{ok_vorbisfile-NOTOPEN}
+\index{NOTOPEN}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+NOTOPEN   = 0;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{PARTOPEN}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{PARTOPEN}
+\fi
+\label{ok_vorbisfile-PARTOPEN}
+\index{PARTOPEN}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+PARTOPEN  = 1;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{OPENED}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{OPENED}
+\fi
+\label{ok_vorbisfile-OPENED}
+\index{OPENED}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+OPENED    = 2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{STREAMSET}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{STREAMSET}
+\fi
+\label{ok_vorbisfile-STREAMSET}
+\index{STREAMSET}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+STREAMSET = 3;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{INITSET}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{INITSET}
+\fi
+\label{ok_vorbisfile-INITSET}
+\index{INITSET}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+INITSET   = 4;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{ov{\_}clear}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ov{\_}clear}
+\fi
+\label{ok_vorbisfile-ov_clear}
+\index{ov{\_}clear}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+ov{\_}clear: function(Vf: POggVorbis{\_}File): CInt; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{VorbisFileInited}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{VorbisFileInited}
+\fi
+\label{ok_vorbisfile-VorbisFileInited}
+\index{VorbisFileInited}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+VorbisFileInited: boolean;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

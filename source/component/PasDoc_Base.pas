@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -30,7 +30,7 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(24 Sep 1999)
-  
+
   Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
   to not conflict with the name of base program name @code(pasdoc.dpr).
 }
@@ -60,7 +60,7 @@ uses
 {$ENDIF}
 {$ENDIF}
   ;
-  
+
 const
   { }
   DEFAULT_VERBOSITY_LEVEL = 2;
@@ -96,8 +96,10 @@ type
     FSortSettings: TSortSettings;
     FConclusionFileName: string;
     FIntroductionFileName: string;
+    FAdditionalFilesNames: TStringList;
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
+    FAdditionalFiles: TExternalItemList;
     FImplicitVisibility: TImplicitVisibility;
     FHandleMacros: boolean;
     FAutoLink: boolean;
@@ -109,7 +111,7 @@ type
     procedure SetStarOnly(const Value: boolean);
     function GetStarOnly: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
-      
+
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(FUnits). }
     procedure HandleStream(
@@ -131,7 +133,7 @@ type
       If the collection is empty after removal of all items, it is disposed
       of and the variable is set to nil. }
     procedure RemoveExcludedItems(const c: TPasItems);
-    
+
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     { Creates object and sets fields to default values. }
@@ -142,7 +144,7 @@ type
     { Adds source filenames from a stringlist }
     procedure AddSourceFileNames(const AFileNames: TStringList);
     { Loads names of Pascal unit source code files from a text file.
-      Adds all file names to @link(SourceFileNames). 
+      Adds all file names to @link(SourceFileNames).
       If DashMeansStdin and AFileName = '-' then it will load filenames
       from stdin. }
     procedure AddSourceFileNamesFromFile(const FileName: string;
@@ -165,8 +167,10 @@ type
     property Conclusion: TExternalItem read FConclusion;
     // After @link(Execute) has been called, @name holds the introduction.
     property Introduction: TExternalItem read FIntroduction;
+    // After @link(Execute) has been called, @name holds the additional external files.
+    property AdditionalFiles: TExternalItemList read FAdditionalFiles;
   published
-    property DescriptionFileNames: TStringVector 
+    property DescriptionFileNames: TStringVector
       read FDescriptionFileNames write SetDescriptionFileNames;
     property Directives: TStringVector read FDirectives write SetDirectives;
     property IncludeDirectories: TStringVector read FIncludeDirectories write
@@ -174,16 +178,16 @@ type
 
     { This is deprecated name for @link(OnMessage) }
     property OnWarning: TPasDocMessageEvent read FOnMessage write FOnMessage stored false;
-    
+
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
-    
+
     { The name PasDoc shall give to this documentation project,
       also used to name some of the output files. }
     property ProjectName: string read FProjectName write FProjectName;
     property SourceFileNames: TStringVector read FSourceFileNames write
       SetSourceFileNames;
     property Title: string read FTitle write FTitle;
-    property Verbosity: Cardinal read FVerbosity write FVerbosity 
+    property Verbosity: Cardinal read FVerbosity write FVerbosity
       default DEFAULT_VERBOSITY_LEVEL;
     property StarOnly: boolean read GetStarOnly write SetStarOnly stored false;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
@@ -193,28 +197,30 @@ type
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
-    property CacheDir: string read FCacheDir write FCacheDir; 
-    
+    property CacheDir: string read FCacheDir write FCacheDir;
+
     { This determines how items inside will be sorted.
       See [https://github.com/pasdoc/pasdoc/wiki/SortOption]. }
-    property SortSettings: TSortSettings 
+    property SortSettings: TSortSettings
       read FSortSettings write FSortSettings default [];
-      
+
     property IntroductionFileName: string read FIntroductionFileName
       write FIntroductionFileName;
-      
+
     property ConclusionFileName: string read FConclusionFileName
       write FConclusionFileName;
-      
+
+    property AdditionalFilesNames: TStringList read FAdditionalFilesNames;
+
     { See command-line option @--implicit-visibility documentation at
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption].
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
-      
+
     property HandleMacros: boolean
       read FHandleMacros write FHandleMacros default true;
-      
+
     { This controls auto-linking, see
       [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
     property AutoLink: boolean
@@ -237,6 +243,7 @@ begin
   FDirectives := NewStringVector;
   FIncludeDirectories := NewStringVector;
   FSourceFileNames := NewStringVector;
+  FAdditionalFilesNames := TStringList.Create();
 
   { Set default property values }
   FGeneratorInfo := true;
@@ -258,9 +265,11 @@ begin
   FDirectives.Free;
   FIncludeDirectories.Free;
   FSourceFileNames.Free;
+  FAdditionalFilesNames.Free;
   FUnits.Free;
   FConclusion.Free;
   FIntroduction.Free;
+  FAdditionalFiles.Free;
   inherited;
 end;
 
@@ -271,11 +280,11 @@ var
   A : array [0..3] of Byte;
 begin
   InputStream.ReadBuffer(A, 4);
-  
+
   { See also TStreamReader.GetCodePageFromBOM for an implementation
     that actually uses UTF-x BOM. Here, we only detect BOM to make
     nice error (in case of UTF-16/32) or skip it (in case of UTF-8). }
-  
+
   if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then
   begin
     DoError('Detected UTF-32 (little endian) encoding (right now we cannot read such files)', [], 0);
@@ -327,7 +336,7 @@ begin
     p.IgnoreLeading := IgnoreLeading;
 
     LLoaded := false;
-    
+
     U := nil;
 
     if (CacheDir <> '') and FileExists(LCacheFileName) then
@@ -343,7 +352,7 @@ begin
         if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
         {$ENDIF}
         begin
-          DoMessage(2, pmtInformation, 'Cache file for %s is outdated.', 
+          DoMessage(2, pmtInformation, 'Cache file for %s is outdated.',
             [SourceFileName]);
         end else begin
           LLoaded := True;
@@ -371,9 +380,9 @@ begin
     if FUnits.ExistsUnit(U) then begin
       DoMessage(2, pmtWarning,
         'Duplicate unit name "%s" in files "%s" and "%s" (discarded)', [U.Name,
-        TPasUnit(FUnits.FindName(U.Name)).SourceFileName, SourceFileName]);
+        TPasUnit(FUnits.FindListItem(U.Name)).SourceFileName, SourceFileName]);
       U.Free;
-    end else 
+    end else
     begin
       U.SourceFileName := SourceFileName;
     {$IFDEF COMPILER_10_UP}
@@ -400,9 +409,9 @@ begin
     end;
   except
      on e: Exception do begin
-       DoMessage(2, pmtWarning, 
-         'Error %s: %s while parsing unit %s, continuing...', 
-         [e.ClassName, e.Message, ExtractFileName(SourceFileName)]); 
+       DoMessage(2, pmtWarning,
+         'Error %s: %s while parsing unit %s, continuing...',
+         [e.ClassName, e.Message, ExtractFileName(SourceFileName)]);
      end;
   end;
   p.Free;
@@ -422,7 +431,7 @@ begin
       ASV.LoadFromTextFileAdd(FileName);
 
     AddSourceFileNames(ASV);
-  finally  
+  finally
     ASV.Free;
   end;
 end;
@@ -434,7 +443,8 @@ var
   Count, i: Integer;
   p: string;
   InputStream: TStream;
-  
+  additionalFile: TExternalItem;
+
   procedure ParseExternalFile(const FileName: string;
     var ExternalItem: TExternalItem);
   begin
@@ -444,7 +454,7 @@ var
       Inc(Count);
     end;
   end;
-  
+
 begin
   FUnits.clear;
 
@@ -486,6 +496,13 @@ begin
   ParseExternalFile(IntroductionFileName, FIntroduction);
   FreeAndNil(FConclusion);
   ParseExternalFile(ConclusionFileName, FConclusion);
+  FreeAndNil(FAdditionalFiles);
+  FAdditionalFiles := TExternalItemList.Create(true);
+  for i := 0 to FAdditionalFilesNames.Count - 1 do
+  begin
+    ParseExternalFile(AdditionalFilesNames[i], additionalFile);
+    FAdditionalFiles.Add(additionalFile)
+  end;
 
   DoMessage(2, pmtInformation, '... %d Source File(s) parsed', [Count]);
 end;
@@ -501,14 +518,14 @@ begin
   i := 0;
   while (i < c.Count) do begin
     p := c.PasItemAt[i];
-    
+
     { TODO -- code below checks for @exclude tag too trivially,
       it accidentally excludes items with comments like '@@exclude'
       or '@html(@exclude)'. Checking for exclude should be
       incorporated into doing TTagManager.Execute
       in ExpandDescription. }
 
-    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then 
+    if Assigned(p) and (StrPosIA('@EXCLUDE', p.RawDescription) > 0) then
     begin
       DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
@@ -550,7 +567,7 @@ begin
   if FSourceFileNames.IsEmpty then begin
     DoError('No Source Files have been specified.', [], 1);
   end;
-  if (CacheDir <> '') then 
+  if (CacheDir <> '') then
   begin
     {$ifdef WIN32}
     { This is needed to make DirectoryExists and CreateDir work
@@ -559,7 +576,7 @@ begin
       it too) }
     CacheDir := SCharsReplace(CacheDir, ['/'], PathDelim);
     {$endif}
-    
+
     CacheDirNoDelim := ExcludeTrailingPathDelimiter(CacheDir);
     CacheDir := IncludeTrailingPathDelimiter(CacheDir);
     if not DirectoryExists(CacheDirNoDelim) then begin
@@ -575,7 +592,7 @@ begin
 
   TimeStart := Now;
   ParseFiles;
-  
+
   UnitsCountBeforeExcluding := FUnits.Count;
   RemoveExcludedItems(TPasItems(FUnits));
 
@@ -583,7 +600,7 @@ begin
   if ObjectVectorIsNilOrEmpty(FUnits) then
   begin
     if UnitsCountBeforeExcluding <> 0 then
-      DoError('%d units were successfully parsed, but they are all ' + 
+      DoError('%d units were successfully parsed, but they are all ' +
         'marked with @exclude', [UnitsCountBeforeExcluding], 1) else
       DoError('At least one unit must have been successfully parsed ' +
         'to write docs', [], 1);
@@ -599,13 +616,14 @@ begin
   Generator.Units := FUnits;
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
+  Generator.AdditionalFiles := FAdditionalFiles;
   Generator.AutoLink := AutoLink;
   Generator.BuildLinks;
 
   FUnits.SortDeep(SortSettings);
 
   Generator.LoadDescriptionFiles(FDescriptionFileNames);
-  Generator.ExpandDescriptions;  
+  Generator.ExpandDescriptions;
 
   Generator.WriteDocumentation;
 
@@ -703,7 +721,7 @@ begin
   for i := 0 to AFileNames.Count - 1 do begin
     FileMask := AFileNames[i];
     Path := ExtractFilePath(FileMask);
-    
+
     { Just ignore last empty line of AFileNames, this may often occur
       when generating text files with filenames, and is harmless. }
     if (FileMask = '') and (I = AFileNames.Count - 1) then
@@ -760,12 +778,12 @@ begin
 
     { This check tries to avoid the possibility of accidentaly
       overwriting user introduction/conclusion file
-      (in case some user would incorrectly think that 
+      (in case some user would incorrectly think that
       introduction/conclusion is in raw html, and would create file like
-      my_introduction.html -- without this check, pasdoc could 
+      my_introduction.html -- without this check, pasdoc could
       overwrite this file too easily). }
     if SameText(ExtractFileExt(FileName), Generator.GetFileExtension) then
-      raise Exception.CreateFmt('Introduction/conclusion file extension' +
+      raise Exception.CreateFmt('External file extension' +
         ' is the same as file extension of generated documentation ("%s"), ' +
         'refusing to generate documentation', [Generator.GetFileExtension]);
 
@@ -773,7 +791,7 @@ begin
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
     ExternalItem.RawDescription := FileToString(FileName);
-  except 
+  except
     FreeAndNil(ExternalItem);
     raise;
   end;

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -22,9 +22,9 @@
 
 { @abstract(Registers the PasDoc components into the IDE. )
   @author(Ralf Junker (delphi@zeitungsjunge.de))
-  @author(Johannes Berg <johannes@sipsolutions.de>) 
+  @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
-  
+
   TODO: We have some properties in TPasDoc and generators components that
   should be registered with filename editors.
 }

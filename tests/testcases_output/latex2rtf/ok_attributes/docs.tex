@@ -1,0 +1,78 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}attributes}
+\section{Description}
+Simple Delphi attributes test, from http://www.malcolmgroves.com/blog/?p=530
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TPerson\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IUIContainer\end{ttfamily} Interface}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TPerson Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TPerson {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Name}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Name : String read FName write FName;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Age}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Age : Integer read FAge write FAge;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{IUIContainer Interface}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+IUIContainer {$>$} IInterface
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Test that GUIDs are handled gracefully\end{document}

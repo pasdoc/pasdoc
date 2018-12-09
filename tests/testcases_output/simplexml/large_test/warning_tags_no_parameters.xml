@@ -1,0 +1,5 @@
+<unit name="warning_tags_no_parameters.pas">
+  <function name="Foo" type="procedure" declaration="procedure Foo;">
+    <description><detailed>Some tags are not allowed to have parameters. pasdoc should print a warning when you try to give some parameters for such tags: e.g. <code>Nil</code>, <code>True</code>.</detailed></description>
+  </function>
+</unit>

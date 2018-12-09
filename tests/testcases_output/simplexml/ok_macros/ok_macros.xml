@@ -1,0 +1,35 @@
+<unit name="ok_macros.pas">
+  <description><abstract>Test of FPC macros handling.</abstract><detailed> Parts based on [http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213]</detailed></description>
+  <function name="MyProc1" type="procedure" declaration="procedure MyProc1( a:Integer);">
+    <description><detailed>Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</detailed></description>
+  </function>
+  <function name="MyProc2" type="procedure" declaration="procedure MyProc2( b: Integer);">
+    <description><detailed>This is very stupid way to declare a procedure</detailed></description>
+  </function>
+  <function name="Foo" type="function" declaration="function Foo(c: string): Integer;">
+  </function>
+  <function name="MyProc3" type="procedure" declaration="procedure MyProc3( X: Integer = 1; Y: Integer = 2);">
+  </function>
+  <function name="ThisShouldBeIncluded" type="procedure" declaration="procedure ThisShouldBeIncluded;">
+  </function>
+  <function name="ThisShouldBeIncluded2" type="procedure" declaration="procedure ThisShouldBeIncluded2;">
+  </function>
+  <constant name="ThisShouldBeTrue = true;">
+  </constant>
+  <constant name="FourConst =  (1 + 1) * (1 + 1);">
+    <description><detailed>Test of recursive macro expansion.</detailed></description>
+  </constant>
+  <constant name="OneAndNotNothing = 1  + 1;">
+    <description><detailed>Test that symbol that is not a macro is something different than a macro that expands to nothing.</detailed></description>
+  </constant>
+  <constant name="OnlyOne = 1 ;">
+  </constant>
+  <structure name="TAncestor" name_with_generic="TAncestor" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TAncestor" declaration="TAncestor" />
+    <function name="Init" type="constructor" declaration="Constructor Init; Overload;">
+    </function>
+  </structure>
+</unit>

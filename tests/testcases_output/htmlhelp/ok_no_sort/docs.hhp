@@ -1,0 +1,33 @@
+[OPTIONS]
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=docs.chm
+Contents file=docs.hhc
+Default Window=Default
+Default topic=AllUnits.html
+Display compile progress=Yes
+Error log file=docs.log
+Full-text search=Yes
+Index file=docs.hhk
+Title=docs
+
+[WINDOWS]
+Default="docs","docs.hhc","docs.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0
+
+[FILES]
+Legend.html
+AllUnits.html
+ClassHierarchy.html
+AllClasses.html
+AllTypes.html
+AllVariables.html
+AllConstants.html
+AllFunctions.html
+AllIdentifiers.html
+ok_no_sort.html
+ok_no_sort.TMyRecord.html
+ok_no_sort.TMyClass.html
+
+[INFOTYPES]
+
+[MERGE FILES]

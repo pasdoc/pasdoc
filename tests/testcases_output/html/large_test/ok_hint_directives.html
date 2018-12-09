@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_hint_directives</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit ok_hint_directives</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="hint_directive">Warning: this symbol is specific to some library.</p><p>
+Test parsing &quot;platform&quot;, &quot;library&quot; and &quot;deprecated&quot; directives (called collectively &quot;hint directives&quot;) by pasdoc.</p>
+<p>
+
+
+<p>Related tracker bug: [ 1196073 ] &quot;some modifiers are not parsed&quot;.
+
+<p>We want to support all situations where these directives are allowed in modern FPC (&gt;= 2.5.1) and Delphi. Their placement in unfortunately not consistent, thanks go to Borland. Quoting Delphi help (from Kylix 3): &quot;Hint directives can be applied to type declarations, variable declarations, class and structure declarations, field declarations within classes or records, procedure, function and method declarations, and unit declarations.&quot;
+
+<p>Summary:
+
+<p></p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p> Between &quot;unit UnitName&quot; and hints you <i>mustn't</i> put any semicolon, and you <i>mustn't</i> put any semicolons between hints. <br> Same thing for CIOs (Classes / Interfaces / Objects / Records). <br> Same thing for CIOs fields. <br> Same thing for variables. <br> Same thing for constants.</p></li>
+  <li value="2"><p> Between &quot;procedure/function Name (...)&quot; and hints you <i>must</i> put a semicolon, and semicolons between hints are allowed but not required. It seems that you can't specify &quot;library&quot; directive for procedures/functions &ndash; why? Probably because &quot;library&quot; is a keyword and Borland was unable to correctly modify it's compiler to parse such thing. But pasdoc parses library directive correctly.</p></li>
+  <li value="3"><p> Between method and hints you <i>must</i> put a semicolon, and semicolon between hints is <i>required</i>. You can specify &quot;library&quot; directive for methods.</p></li>
+</ol>
+
+<p>
+
+<p>I'm unable to figure out how to specify these hints for normal (non-structural) types. If anyone can </p>
+
+<ul class="compact_spacing">
+  <li><p>tell me how to specify hint directives for non-structural types or</p></li>
+  <li><p>explain why parsing these directives is so weird and inconsistent in Delphi or</p></li>
+  <li><p>point me to some precise documentation by Borland specifying grammar rules with these directives</p></li>
+</ul>
+
+<p> ... then please send email about this to pasdoc-main mailing list (or directly to me, Michalis Kamburelis, &lt;kambi@users.sourceforge.net&gt;, if your comments about this do not really concern pasdoc). I will be grateful.
+
+<p>Contrary to most units in tests/, this unit <i>is</i> kept at compileable by Delphi/Kylix and FPC. That's because this unit is also a test whether we really specify here hint directives in the way parseable by Delphi/Kylix.</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_hint_directives.TTestClassDeprecated.html"><code>TTestClassDeprecated</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="ok_hint_directives.TTestRecordDeprecated.html"><code>TTestRecordDeprecated</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>function <b><a  href="ok_hint_directives.html#TestFuncCombined">TestFuncCombined</a></b>(SomeParams: Integer): Integer; deprecated; platform;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <b><a  href="ok_hint_directives.html#TestFuncDeprecated">TestFuncDeprecated</a></b>: Integer; deprecated;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <b><a  href="ok_hint_directives.html#TestFuncPlatform">TestFuncPlatform</a></b>: Integer; platform;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_hint_directives.html#TestProcCombined">TestProcCombined</a></b>(SomeParams: Integer); deprecated  platform;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_hint_directives.html#TestProcDeprecated">TestProcDeprecated</a></b>; deprecated;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_hint_directives.html#TestProcPlatform">TestProcPlatform</a></b>; platform;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestConstPlatform">TestConstPlatform</a></b> = 1 platform;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestConstLibrary">TestConstLibrary</a></b> = 2 library;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestConstDeprecated">TestConstDeprecated</a></b> = 3 deprecated;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestConstCombined">TestConstCombined</a></b> = 4 deprecated library platform;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestVarPlatform">TestVarPlatform</a></b>: Integer platform;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestVarLibrary">TestVarLibrary</a></b>: Integer library;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestVarDeprecated">TestVarDeprecated</a></b>: Integer deprecated;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_hint_directives.html#TestVarCombined">TestVarCombined</a></b>: Integer library deprecated platform;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestFuncCombined"></span><code>function <b>TestFuncCombined</b>(SomeParams: Integer): Integer; deprecated; platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestFuncDeprecated"></span><code>function <b>TestFuncDeprecated</b>: Integer; deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestFuncPlatform"></span><code>function <b>TestFuncPlatform</b>: Integer; platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestProcCombined"></span><code>procedure <b>TestProcCombined</b>(SomeParams: Integer); deprecated  platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestProcDeprecated"></span><code>procedure <b>TestProcDeprecated</b>; deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestProcPlatform"></span><code>procedure <b>TestProcPlatform</b>; platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstPlatform"></span><code><b>TestConstPlatform</b> = 1 platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstLibrary"></span><code><b>TestConstLibrary</b> = 2 library;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some library.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstDeprecated"></span><code><b>TestConstDeprecated</b> = 3 deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstCombined"></span><code><b>TestConstCombined</b> = 4 deprecated library platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="hint_directive">Warning: this symbol is specific to some library.</p>&nbsp;</td></tr>
+</table>
+<h3 class="detail">Variables</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestVarPlatform"></span><code><b>TestVarPlatform</b>: Integer platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some platform.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestVarLibrary"></span><code><b>TestVarLibrary</b>: Integer library;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is specific to some library.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestVarDeprecated"></span><code><b>TestVarDeprecated</b>: Integer deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestVarCombined"></span><code><b>TestVarCombined</b>: Integer library deprecated platform;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="hint_directive">Warning: this symbol is specific to some library.</p>&nbsp;</td></tr>
+</table>
+</td></tr></table></body></html>

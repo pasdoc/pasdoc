@@ -1,0 +1,7 @@
+<unit name="ok_final.pas">
+  <structure name="TMyObject" name_with_generic="TMyObject" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyFinalMethod" type="procedure" declaration="procedure MyFinalMethod; virtual; final;">
+    </function>
+  </structure>
+</unit>

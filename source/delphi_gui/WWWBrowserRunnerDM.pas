@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "pasdoc_gui".
 
@@ -51,16 +51,11 @@ type
   private
     { private declarations }
   public
-    BrowserCommand: string;
     procedure RunBrowser(const URL: string);
   end;
 
 var
   WWWBrowserRunner: TWWWBrowserRunner;
-
-const
-  DefaultWWWBrowserCommand =
-    {$ifdef WIN32} '' {$else} 'sh -c "$BROWSER %s"' {$endif};
 
 implementation
 
@@ -72,13 +67,10 @@ uses {$ifdef WIN32} Windows, ShellAPI, {$endif} PasDocGuiSettings;
 
 procedure TWWWBrowserRunner.DataModuleCreate(Sender: TObject);
 begin
-  BrowserCommand := IniFile.ReadString('Main', 'WWWBrowserCommand',
-    DefaultWWWBrowserCommand);
 end;
 
 procedure TWWWBrowserRunner.DataModuleDestroy(Sender: TObject);
 begin
-  IniFile.WriteString('Main', 'WWWBrowserCommand', BrowserCommand);
 end;
 
 procedure TWWWBrowserRunner.RunBrowser(const URL: string);
@@ -104,11 +96,7 @@ procedure TWWWBrowserRunner.RunBrowser(const URL: string);
 
 begin
   {$ifdef WIN32}
-  if Trim(BrowserCommand) = '' then
-  begin
-    ShellExecuteURL;
-    Exit;
-  end;
+  ShellExecuteURL;
   {$endif}
 end;
 

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -48,15 +48,15 @@ type
     ThisTag: TTag; EnclosingTag: TTag; var Allowed: boolean) of object;
 
   TStringConverter = function(const s: string): string of object;
-  
+
   TTagOption = (
-    { This means that tag expects parameters. If this is not included 
+    { This means that tag expects parameters. If this is not included
       in TagOptions then tag should not be given any parameters,
       i.e. TagParameter passed to @link(TTag.Execute) should be ''.
       We will display a warning if user will try to give
       some parameters for such tag. }
-    toParameterRequired, 
-    
+    toParameterRequired,
+
     { This means that parameters of this tag will be expanded
       before passing them to @link(TTag.Execute).
       This means that we will expand recursive tags inside
@@ -69,8 +69,8 @@ type
 
       It's useful for some tags to include toParameterRequired
       without including toRecursiveTags, e.g. @@longcode or @@html,
-      that want to get their parameters "verbatim", not processed. 
-      
+      that want to get their parameters "verbatim", not processed.
+
       @bold(If toRecursiveTags is not included in tag options:)
       Then @italic(everything) is allowed within parameter of this tag,
       but nothing is interpreted. E.g. you can freely use @@ char,
@@ -82,7 +82,7 @@ type
       specially, to allow escaping the default parenthesis matching rules.
       Unless toRecursiveTagsManually is present. }
     toRecursiveTags,
-    
+
     { Use this, instead of toRecursiveTags, if the implementation of your
       tag calls (always!) TagManager.CoreExecute on given TagParameter.
       This means that your tag is expanded recursively (it handles @-tags inside),
@@ -99,23 +99,23 @@ type
       are other tags allowed by the default implementation
       of @link(TTag.AllowedInside). }
     toAllowOtherTagsInsideByDefault,
-    
+
     { This is meaningful only if toRecursiveTags is included.
       Then @name says that normal text is allowed
       inside parameter of this tag.
       @italic("Normal text") is anything except other @@-tags:
-      normal text, paragraph breaks, various dashes, URLs, 
+      normal text, paragraph breaks, various dashes, URLs,
       and literal @@ character (expressed by @@@@ in descriptions).
 
       If @name will not be included,
       then normal text (not enclosed within other @@-tags) will
-      not be allowed inside. Only whitespace will be allowed, and 
+      not be allowed inside. Only whitespace will be allowed, and
       it will be ignored anyway (i.e. will not be passed to
       ConvertString, empty line will not produce any Paragraph etc.).
       This is useful for tags like @@orderedList that should only contain
       other @@item tags inside. }
     toAllowNormalTextInside,
-    
+
     { This is useful for tags like @@raises and @@param that treat
       1st word of their descriptions very specially
       (where "what exactly is the 1st word" is defined by the
@@ -124,10 +124,10 @@ type
       the eventual whitespace before it) as it is in the parameter.
       Don't search there for @@-tags, URLs, @-- or other special dashes,
       don't insert paragraphs, don't try to auto-link it.
-      
+
       This is meaningful only if toRecursiveTags is included
       (otherwise the whole tag parameters are always preserved "verbatim").
-      
+
       TODO: in the future TTagExecuteEvent should just get this
       "first word" as a separate parameter, separated from TagParameters.
       Also, this word should not be converted by ConvertString. }
@@ -144,7 +144,7 @@ type
     FTagManager: TTagManager;
     FOnAllowedInside: TTagAllowedInsideEvent;
   public
-    { Note that AName will be converted to lowercase before assigning 
+    { Note that AName will be converted to lowercase before assigning
       to Name. }
     constructor Create(ATagManager: TTagManager;
       const AName: string;
@@ -156,9 +156,9 @@ type
 
     { TagManager that will recognize and handle this tag.
       Note that the tag instance is owned by this tag manager
-      (i.e. it will be freed inside this tag manager). 
-      It can be nil if no tag manager currently owns this tag. 
-      
+      (i.e. it will be freed inside this tag manager).
+      It can be nil if no tag manager currently owns this tag.
+
       Note that it's very useful in @link(Execute) or
       @link(OnExecute) implementations.
 
@@ -176,22 +176,22 @@ type
 
       Scenario above is actually used in implementation of @@noAutoLink
       tag. There I call TagManager.Execute with parameter
-      @code(AutoLink) set to false thus preventing auto-linking 
+      @code(AutoLink) set to false thus preventing auto-linking
       inside text within @@noAutoLink. }
     property TagManager: TTagManager read FTagManager;
-    
+
     { Name of the tag, that must be specified by user after the "@@" sign.
       Value of this property must always be lowercase. }
     property Name: string read FName write FName;
 
-    property OnPreExecute: TTagExecuteEvent 
+    property OnPreExecute: TTagExecuteEvent
       read FOnPreExecute write FOnPreExecute;
-       
-    property OnExecute: TTagExecuteEvent 
+
+    property OnExecute: TTagExecuteEvent
       read FOnExecute write FOnExecute;
 
     { This is completely analogous to @link(Execute) but used when
-      @link(TTagManager.PreExecute) is @true. 
+      @link(TTagManager.PreExecute) is @true.
       In this class this simply calls @link(OnPreExecute). }
     procedure PreExecute(var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -206,57 +206,57 @@ type
       differently inside @@orderedList and @@unorderedList.
       EnclosingTag is nil when the tag occured at top level of the
       description.
-      
+
       ThisTagData and EnclosingTagData form a mechanism to pass
       arbitraty data between child tags enclosed within one
       parent tag. Example uses:
-      
+
       @unorderedList(
         @item(This is the way for multiple @@item tags
           inside @@orderedList tag to count themselves (to provide
           list item numbers, for pasdoc output formats that can't
           automatically number list items).)
-          
-        @item(This is the way for 
+
+        @item(This is the way for
           @@itemSpacing tag to communicate with enclosing
           @@orderedList tag to specify list style. )
-      
+
         @item(And this is the way for @@cell tags to be collected
           inside rows data and then @@rows tags to be collected
-          inside table data. Thanks to such collecting 
+          inside table data. Thanks to such collecting
           @link(TDocGenerator.FormatTable) receives at once all
           information about given table, and can use it to format
           table.)
       )
-      
+
       How does this XxxTagData mechanism work:
-      
+
       When we start parsing parameter of some tag with
-      toRecursiveTags, we create a new pointer inited to 
+      toRecursiveTags, we create a new pointer inited to
       @link(CreateOccurenceData).
-      When @@-tags occur inside this parameter, we pass them 
+      When @@-tags occur inside this parameter, we pass them
       this pointer as EnclosingTagData (this way all @@-tags
       with the same parent can use this pointer to communicate
       with each other). At the end, when parameter was parsed,
-      we call given tag's Execute method passing the resulting 
+      we call given tag's Execute method passing the resulting
       pointer as ThisTagData (this way @@-tags with the same parent
       can use this pointer to pass some data to their parent).
 
-      In this class this method simply calls @link(OnExecute) 
+      In this class this method simply calls @link(OnExecute)
       (if assigned). }
     procedure Execute(var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string); virtual;
-      
+
     property OnAllowedInside: TTagAllowedInsideEvent
       read FOnAllowedInside write FOnAllowedInside;
-      
+
     { This will be checked always when this tag occurs within description.
       Given EnclosingTag is enclosing tag, nil if we're in top level.
       If this returns false then this tag will not be allowed inside
       EnclosingTag.
-      
-      In this class this method 
+
+      In this class this method
       @orderedList(
         @item(
           Assumes that Result = true if we're at top level
@@ -265,49 +265,49 @@ type
           Else it assumes Result = false.)
         @item(
           Then it calls @link(OnAllowedInside
-            OnAllowedInside(Self, EnclosingTag, Result)) 
+            OnAllowedInside(Self, EnclosingTag, Result))
           (if OnAllowedInside is assigned).)
       ) }
     function AllowedInside(EnclosingTag: TTag): boolean; virtual;
-    
+
     { In this class this simply returns @nil. }
     function CreateOccurenceData: TObject; virtual;
-    
+
     { In this class this simply does @code(Value.Free). }
     procedure DestroyOccurenceData(Value: TObject); virtual;
   end;
-  
+
   TTopLevelTag = class(TTag)
     { This returns just @code(EnclosingTag = nil).
-    
+
       Which means that this tag is allowed only at top level of
       description, never inside parameter of some tag. }
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
-  
+
   TNonSelfTag = class(TTag)
     { This returns just @code(inherited and (EnclosingTag <> Self)).
-    
-      Which means that (assuming that @link(OnAllowedInside) 
+
+      Which means that (assuming that @link(OnAllowedInside)
       is not assigned) this tag is allowed at top level of
       description and inside parameter of any tag
-      @italic(but not within itself and not within tags 
+      @italic(but not within itself and not within tags
       without toAllowOtherTagsInsideByDefault).
-      
+
       This is currently not used by any tag. }
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
   { All Items of this list must be non-nil TTag objects. }
   TTagVector = class(TObjectVector)
-    { Case of Name does @italic(not) matter (so don't bother converting it to 
-      lowercase or something like that before using this method). 
-      Returns nil if not found. 
-      
+    { Case of Name does @italic(not) matter (so don't bother converting it to
+      lowercase or something like that before using this method).
+      Returns nil if not found.
+
       Maybe in the future it will use hashlist, for now it's not needed. }
     function FindByName(const Name: string): TTag;
   end;
-  
+
   TTryAutoLinkEvent = procedure(TagManager: TTagManager;
     const QualifiedIdentifier: TNameParts;
     out QualifiedIdentifierReplacement: string;
@@ -329,7 +329,7 @@ type
     function DoConvertString(const s: string): string;
     function DoURLLink(const s: string): string;
     procedure Unabbreviate(var s: string);
-      
+
     function TryAutoLink(const QualifiedIdentifier: TNameParts;
       out QualifiedIdentifierReplacement: string): boolean;
   public
@@ -362,36 +362,36 @@ type
       see wiki page WritingDocumentation) in the text.
       This should specify how paragraphs are marked in particular
       output format, e.g. html generator may set this to '<p>'.
-      
+
       Default value is ' ' (one space). }
     property Paragraph: string read FParagraph write FParagraph;
 
-    { This will be inserted on each whitespace sequence (but not on 
-      paragraph break). This is consistent with 
+    { This will be inserted on each whitespace sequence (but not on
+      paragraph break). This is consistent with
       [https://github.com/pasdoc/pasdoc/wiki/WritingDocumentation]
       that clearly says that "amount of whitespace does not matter".
-      
+
       Although in some pasdoc output formats amount of whitespace also
       does not matter (e.g. HTML and LaTeX) but in other (e.g. plain text)
       it matters, so such space compression is needed.
       In other output formats (no examples yet) it may need to be expressed
       by something else than simple space, that's why this property
-      is exposed. 
-      
+      is exposed.
+
       Default value is ' ' (one space). }
     property Space: string read FSpace write FSpace;
-    
+
     { This will be inserted on @code(@@@-) in description,
       and on a normal single dash in description that is not a part
       of en-dash or em-dash.
       This should produce just a short dash.
-      
-      Default value is '-'. 
-      
-      You will never get any '-' character to be converted by ConvertString. 
-      Convertion of '-' is controlled solely by XxxDash properties of 
+
+      Default value is '-'.
+
+      You will never get any '-' character to be converted by ConvertString.
+      Convertion of '-' is controlled solely by XxxDash properties of
       tag manager.
-      
+
       @seealso EnDash
       @seealso EmDash }
     property ShortDash: string read FShortDash write FShortDash;
@@ -405,11 +405,11 @@ type
       This should produce em-dash (as in LaTeX).
       Default value is '@-@--'. }
     property EmDash: string read FEmDash write FEmDash;
-    
+
     { This will be called from @link(Execute) when URL will be found
       in Description. Note that passed here URL will @italic(not) be processed by
-      @link(ConvertString). 
-      
+      @link(ConvertString).
+
       This tells what to put in result on URL.
       If this is not assigned, then ConvertString(URL) will be appended
       to Result in @link(Execute). }
@@ -418,8 +418,8 @@ type
     { This should check does QualifiedIdentifier looks like a name
       of some existing identifier. If yes, sets AutoLinked to true and
       sets QualifiedIdentifierReplacement to a link to
-      QualifiedIdentifier (QualifiedIdentifierReplacement should be 
-      ready to be put in final documentation, i.e. already in the 
+      QualifiedIdentifier (QualifiedIdentifierReplacement should be
+      ready to be put in final documentation, i.e. already in the
       final output format). By default AutoLinked is false. }
     property OnTryAutoLink: TTryAutoLinkEvent
       read FOnTryAutoLink write FOnTryAutoLink;
@@ -432,9 +432,9 @@ type
       paragraph markers, recognizing URLs in Description and
       correctly translating it, and translating rest of the "normal" text
       via ConvertString.
-      
-      If WantFirstSentenceEnd then we will look for '.' char 
-      followed by any whitespace in Description. 
+
+      If WantFirstSentenceEnd then we will look for '.' char
+      followed by any whitespace in Description.
       Moreover, this '.' must be outside of any @@-tags
       parameter. Under FirstSentenceEnd we will return the number
       of beginning characters @italic(in the output string) that will
@@ -444,27 +444,27 @@ type
       If no such character exists in Description, FirstSentenceEnd will
       be set to Length(Result), so the whole Description will be treated
       as it's first sentence.
-      
+
       If WantFirstSentenceEnd, FirstSentenceEnd will not be set. }
     function Execute(const Description: string;
       AutoLink: boolean;
       WantFirstSentenceEnd: boolean;
       out FirstSentenceEnd: Integer): string; overload;
-      
+
     { This is equivalent to Execute(Description, AutoLink, false, Dummy) }
     function Execute(const Description: string;
       AutoLink: boolean): string; overload;
 
     { This is the underlying version of Execute. Use with caution!
 
-      If EnclosingTag = nil then this is understood to be 
+      If EnclosingTag = nil then this is understood to be
       toplevel of description, which means that all tags are allowed inside.
-      
-      If EnclosingTag <> nil then this is not toplevel. 
-      
+
+      If EnclosingTag <> nil then this is not toplevel.
+
       EnclosingTagData returns collected data for given EnclosingTag.
       You should init it to EnclosingTag.CreateOccurenceData.
-      It will be passed as EnclosingTagData to each of @@-tags 
+      It will be passed as EnclosingTagData to each of @@-tags
       found inside Description. }
     function CoreExecute(const Description: string;
       AutoLink: boolean;
@@ -476,21 +476,21 @@ type
       AutoLink: boolean;
       EnclosingTag: TTag; var EnclosingTagData: TObject): string; overload;
 
-    property ConvertString: TStringConverter 
+    property ConvertString: TStringConverter
       read FConvertString write FConvertString;
     property Abbreviations: TStringList read FAbbreviations write FAbbreviations;
-    
+
     { When @name is @true, tag manager will work a little differently than usual:
-    
+
       @unorderedList(
         @item(Instead of @link(TTag.Execute),
           @link(TTag.PreExecute) will be called.)
-          
+
         @item(Various warnings will @italic(not) be reported.
-        
+
           Assumption is that you will later process the same text
           with @name set to @false to get all the warnings.)
-          
+
         @item(AutoLink will not be used (like it was always false).
           Also the result of @link(Execute) will be pretty much
           random and meaningless (so you should ignore it).
@@ -499,12 +499,12 @@ type
           something incorrect. This means that only tags
           without toRecursiveTags should actually use
           TagParameter in their OnPreExecute handlers.
-        
+
           Assumption is that you actually don't care about the
           result of @link(Execute) methods,
           and you will later process the same text
           with @name set to @false to get the proper output.
-          
+
           The goal is to make execution with PreExecute set to @true
           as fast as possible.)
       ) }
@@ -519,7 +519,7 @@ uses PasDoc_Utils, StrUtils;
 { TTag ------------------------------------------------------------  }
 
 constructor TTag.Create(ATagManager: TTagManager;
-  const AName: string; 
+  const AName: string;
   AOnPreExecute: TTagExecuteEvent;
   AOnExecute: TTagExecuteEvent;
   const ATagOptions: TTagOptions);
@@ -529,7 +529,7 @@ begin
   FOnPreExecute := AOnPreExecute;
   FOnExecute := AOnExecute;
   FTagOptions := ATagOptions;
-  
+
   FTagManager := ATagManager;
   if TagManager <> nil then
     TagManager.FTags.Add(Self);
@@ -589,12 +589,12 @@ end;
 { TTagVector ------------------------------------------------------------ }
 
 function TTagVector.FindByName(const Name: string): TTag;
-var 
+var
   i: Integer;
   NameLower: string;
 begin
   NameLower := LowerCase(Name);
-  for i := 0 to Count - 1 do 
+  for i := 0 to Count - 1 do
   begin
     Result := TTag(Items[i]);
     if Result.Name = NameLower then Exit;
@@ -669,11 +669,11 @@ function TTagManager.TryAutoLink(const QualifiedIdentifier: TNameParts;
   out QualifiedIdentifierReplacement: string): boolean;
 begin
   Result := false;
-  
+
   if Assigned(OnTryAutoLink) then
-    OnTryAutoLink(Self, QualifiedIdentifier, 
+    OnTryAutoLink(Self, QualifiedIdentifier,
       QualifiedIdentifierReplacement, Result);
-  
+
   if Result then
     DoMessage(3, pmtInformation, 'Automatically linked identifier "%s"',
       [GlueNameParts(QualifiedIdentifier)]);
@@ -731,7 +731,7 @@ var
       DoMessageNonPre(1, pmtWarning, 'Unknown tag name "%s"', [TagName]);
       Exit;
     end;
-    
+
     Result := true;
 
     { OK, we found the correct tag, Tag variable is already set.
@@ -782,11 +782,11 @@ var
     end;
   end;
 
-  { This checks whether we are looking (i.e. Description[FOffset] 
+  { This checks whether we are looking (i.e. Description[FOffset]
     starts with) at a pargraph marker
-    (i.e. newline + 
-          optional whitespace + 
-          newline + 
+    (i.e. newline +
+          optional whitespace +
+          newline +
           some more optional whitespaces and newlines)
     and if it is so, returns true and sets OffsetEnd to the next
     index in Description after this paragraph marker. }
@@ -794,7 +794,7 @@ var
   var i: Integer;
   begin
     Result := false;
-    
+
     i := FOffset;
     while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
     if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
@@ -808,7 +808,7 @@ var
       Inc(i);
     while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
     if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
-    
+
     { OK, so we found 2nd newline. So we got paragraph marker.
       Now read it to the end. }
     Result := true;
@@ -816,7 +816,7 @@ var
     OffsetEnd := i;
   end;
 
-  { This checks whether we are looking (i.e. Description[FOffset] 
+  { This checks whether we are looking (i.e. Description[FOffset]
     starts with) at some whitespace.
     If true, then it also sets OffsetEnd to next index after whitespace. }
   function FindWhitespace(out OffsetEnd: Integer): boolean;
@@ -831,10 +831,10 @@ var
 
   { Checks does Description[FOffset] may be a beginning of some URL.
     (xxx://xxxx/.../).
-      
+
     If yes, returns true and sets OffsetEnd to the next
     index in Description after this URL.
-    
+
     For your comfort, returns also URL (this is *always*
     Copy(Description, FOffset, OffsetEnd - FOffset)). }
   function FindURL(out OffsetEnd: Integer; out URL: string): boolean;
@@ -854,17 +854,17 @@ var
   const
     AlphaNum      = ['A'..'Z', 'a'..'z', '0'..'9'];
     FullLinkChars = AlphaNum + ['_', '%', '/', '#', '~', '@'];
-    HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];  
+    HalfLinkChars = ['.', ',', '-', ':', ';', '?', '=', '&'];
     URLMiddle = '://';
   var
     i: Integer;
   begin
     Result := False;
-    
-    i := FOffset;    
+
+    i := FOffset;
     while SCharIs(Description, i, AlphaNum) do Inc(i);
     if not (Copy(Description, i, Length(URLMiddle)) = URLMiddle) then Exit;
-    
+
     Result := true;
     i := i + Length(URLMiddle);
     while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
@@ -872,22 +872,22 @@ var
     while IsCharInSet(Description[i], HalfLinkChars) do Dec(i);
     Inc(i);
     OffsetEnd := i;
-    
+
     URL := Copy(Description, FOffset, OffsetEnd - FOffset);
   end;
 
-  { Checks does Description[FOffset] may be a beginning of some 
+  { Checks does Description[FOffset] may be a beginning of some
     qualified identifier (identifier is [A-Za-z_]([A-Za-z_0-9])*,
     qualified identifier is a sequence of identifiers delimited
     by dots).
 
     If yes, returns true and sets OffsetEnd to the next
     index in Description after this qualified ident.
-    
-    For your comfort, returns also QualifiedIdentifier 
+
+    For your comfort, returns also QualifiedIdentifier
     (this is *always* equal to SplitNameParts(
     Copy(Description, FOffset, OffsetEnd - FOffset))). }
-  function FindQualifiedIdentifier(out OffsetEnd: Integer; 
+  function FindQualifiedIdentifier(out OffsetEnd: Integer;
     out QualifiedIdentifier: TNameParts): boolean;
   const
     FirstIdentChar = ['a'..'z', 'A'..'Z', '_'];
@@ -896,11 +896,11 @@ var
   var
     NamePartBegin: Integer;
   begin
-    Result := 
+    Result :=
       ( (FOffset = 1) or
         not IsCharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
       SCharIs(Description, FOffset, FirstIdentChar);
-    
+
     if Result then
     begin
       NamePartBegin := FOffset;
@@ -909,9 +909,9 @@ var
 
       repeat
         { skip a sequence of NonFirstIdentChar characters }
-        while SCharIs(Description, OffsetEnd, NonFirstIdentChar) do 
+        while SCharIs(Description, OffsetEnd, NonFirstIdentChar) do
           Inc(OffsetEnd);
-          
+
         if Length(QualifiedIdentifier) = MaxNameParts then
         begin
           { I can't add new item to QualifiedIdentifier.
@@ -919,36 +919,36 @@ var
           Result := false;
           Exit;
         end;
-        
+
         { Append next part to QualifiedIdentifier }
         SetLength(QualifiedIdentifier, Length(QualifiedIdentifier) + 1);
         QualifiedIdentifier[Length(QualifiedIdentifier) - 1] :=
           Copy(Description, NamePartBegin, OffsetEnd - NamePartBegin);
-          
+
         if SCharIs(Description, OffsetEnd, '.') and
            SCharIs(Description, OffsetEnd + 1, FirstIdentChar) then
         begin
           NamePartBegin := OffsetEnd + 1;
           { skip the dot and skip FirstIdentChar character }
-          Inc(OffsetEnd, 2); 
+          Inc(OffsetEnd, 2);
         end else
           break;
       until false;
     end;
   end;
-  
+
   function FindFirstSentenceEnd: boolean;
   begin
-    Result := (Description[FOffset] = '.') and 
+    Result := (Description[FOffset] = '.') and
       SCharIs(Description, FOffset + 1, WhiteSpace);
   end;
-  
+
   function IsNormalTextAllowed: boolean;
   begin
     Result := (EnclosingTag = nil) or
       (toAllowNormalTextInside in EnclosingTag.TagOptions);
   end;
-  
+
   function CheckNormalTextAllowed(const NormalText: string): boolean;
   begin
     Result := IsNormalTextAllowed;
@@ -992,8 +992,8 @@ var
   end;
 
 var
-  { Always ConvertBeginOffset <= FOffset. 
-    Description[ConvertBeginOffset ... FOffset - 1] 
+  { Always ConvertBeginOffset <= FOffset.
+    Description[ConvertBeginOffset ... FOffset - 1]
     is the string that should be filtered by DoConvertString. }
   ConvertBeginOffset: Integer;
 
@@ -1005,7 +1005,7 @@ var
   var
     ToAppend: string;
   begin
-    ToAppend := Copy(Description, ConvertBeginOffset, 
+    ToAppend := Copy(Description, ConvertBeginOffset,
       FOffset - ConvertBeginOffset);
     if ToAppend <> '' then
     begin
@@ -1029,7 +1029,7 @@ begin
   Result := '';
   FOffset := 1;
   ConvertBeginOffset := 1;
-  
+
   if (EnclosingTag <> nil) and
      (toFirstWordVerbatim in EnclosingTag.TagOptions) then
   begin
@@ -1037,10 +1037,10 @@ begin
     while SCharIs(Description, FOffset, WhiteSpace) do Inc(FOffset);
     while SCharIs(Description, FOffset, AllChars - WhiteSpace) do Inc(FOffset);
   end;
-  
+
   if WantFirstSentenceEnd then
     FirstSentenceEnd := 0;
-  
+
   { Description[FOffset] is the next char that must be processed
     (we're "looking at it" right now). }
 
@@ -1050,19 +1050,19 @@ begin
        FindTag(FoundTag, Params, OffsetEnd) then
     begin
       DoConvert;
-      
+
       { Check is it allowed for this tag to be here }
       if not FoundTag.AllowedInside(EnclosingTag) then
       begin
         if EnclosingTag = nil then
           DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used at the ' +
-            'top level of description, it must be used within some other @-tag', 
+            'top level of description, it must be used within some other @-tag',
             [FoundTag.Name]) else
           DoMessageNonPre(1, pmtWarning, 'The tag "@%s" cannot be used inside ' +
             'parameter of tag "@%s"', [FoundTag.Name, EnclosingTag.Name]);
-            
+
         { Assign dummy value for ReplaceStr.
-        
+
           We can't proceed with normal recursive expanding and
           calling FoundTag.[Pre]Execute, because tag methods
           (and callbacks, like TTag.On[Pre]Execute) may assume that the tag
@@ -1113,57 +1113,57 @@ begin
             FoundTag.Execute(FoundTagData, EnclosingTag, EnclosingTagData,
               Params, ReplaceStr);
 
-        finally 
-          FoundTag.DestroyOccurenceData(FoundTagData) 
+        finally
+          FoundTag.DestroyOccurenceData(FoundTagData)
         end;
       end;
 
       Result := Result + ReplaceStr;
-      
+
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@(' then
     begin
       DoConvert;
-      
+
       { convert '@(' to '(' }
       if CheckNormalTextAllowed('@(') then
         Result := Result + '(';
-        
+
       FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@)' then
     begin
       DoConvert;
-      
+
       { convert '@)' to '(' }
       if CheckNormalTextAllowed('@)') then
         Result := Result + ')';
-        
+
       FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@@' then
     begin
       DoConvert;
-      
+
       { convert '@@' to '@' }
       if CheckNormalTextAllowed('@@') then
         Result := Result + '@';
-        
+
       FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '@-' then
     begin
       DoConvert;
-      
+
       { convert '@-' to ShortDash }
       if CheckNormalTextAllowed('@-') then
         Result := Result + ShortDash;
-      
+
       FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
@@ -1171,34 +1171,34 @@ begin
     if Copy(Description, FOffset, 3) = '---' then
     begin
       DoConvert;
-      
+
       { convert '---' to EmDash }
       if CheckNormalTextAllowed('---') then
         Result := Result + EmDash;
-      
-      FOffset := FOffset + 3;      
+
+      FOffset := FOffset + 3;
       ConvertBeginOffset := FOffset;
     end else
     if Copy(Description, FOffset, 2) = '--' then
     begin
       DoConvert;
-      
+
       { convert '--' to EnDash }
       if CheckNormalTextAllowed('--') then
         Result := Result + EnDash;
-      
-      FOffset := FOffset + 2;      
+
+      FOffset := FOffset + 2;
       ConvertBeginOffset := FOffset;
     end else
     if Description[FOffset] = '-' then
     begin
       DoConvert;
-      
+
       { So '-' is just a normal ShortDash }
       if CheckNormalTextAllowed('-') then
         Result := Result + ShortDash;
-        
-      FOffset := FOffset + 1;            
+
+      FOffset := FOffset + 1;
       ConvertBeginOffset := FOffset;
     end else
     if FindParagraph(OffsetEnd) then
@@ -1209,7 +1209,7 @@ begin
         Otherwise just ignore any whitespace in Description. }
       if IsNormalTextAllowed then
         Result := Result + Paragraph;
-        
+
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
@@ -1218,16 +1218,16 @@ begin
     if FindWhitespace(OffsetEnd) then
     begin
       DoConvert;
-      
+
       { If normal text is allowed then append Space to Result.
         Otherwise just ignore any whitespace in Description. }
       if IsNormalTextAllowed then
         Result := Result + Space;
-        
+
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
-    if (not PreExecute) and 
+    if (not PreExecute) and
        AutoLink and
        FindQualifiedIdentifier(OffsetEnd, QualifiedIdentifier) and
        TryAutoLink(QualifiedIdentifier, QualifiedIdentifierReplacement) then
@@ -1236,7 +1236,7 @@ begin
 
       if CheckNormalTextAllowed(GlueNameParts(QualifiedIdentifier)) then
         Result := Result + QualifiedIdentifierReplacement;
-        
+
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
@@ -1246,7 +1246,7 @@ begin
 
       if CheckNormalTextAllowed(URL) then
         Result := Result + DoURLLink(URL);
-        
+
       FOffset := OffsetEnd;
       ConvertBeginOffset := FOffset;
     end else
@@ -1255,13 +1255,13 @@ begin
        FindFirstSentenceEnd then
     begin
       DoConvert;
-      
+
       if CheckNormalTextAllowed('.') then
       begin
         Result := Result + ConvertString('.');
         FirstSentenceEnd := Length(Result);
       end;
-      
+
       Inc(FOffset);
       ConvertBeginOffset := FOffset;
     end else
@@ -1294,7 +1294,7 @@ function TTagManager.Execute(const Description: string;
   AutoLink: boolean;
   WantFirstSentenceEnd: boolean;
   out FirstSentenceEnd: Integer): string;
-var 
+var
   EnclosingTagData: TObject;
 begin
   EnclosingTagData := nil;
@@ -1305,8 +1305,8 @@ begin
 end;
 
 function TTagManager.Execute(const Description: string;
-  AutoLink: boolean): string; 
-var 
+  AutoLink: boolean): string;
+var
   Dummy: Integer;
 begin
   Result := Execute(Description, AutoLink, false, Dummy);

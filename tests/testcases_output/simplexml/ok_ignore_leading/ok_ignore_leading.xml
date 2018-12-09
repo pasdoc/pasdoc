@@ -1,0 +1,11 @@
+<unit name="ok_ignore_leading.pas">
+  <constant name="A = 1;">
+    <description><detailed>Test</detailed></description>
+  </constant>
+  <constant name="B = 1;">
+    <description><detailed>Test2</detailed></description>
+  </constant>
+  <constant name="C = 1;">
+    <description><detailed>count of preceding whitespace does not matter count of preceding whitespace does not matter consecutive characters are ignored too as in Javadoc not all lines have to start with the character paragraph works.</detailed></description>
+  </constant>
+</unit>

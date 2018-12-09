@@ -1,0 +1,180 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}enum{\_}links}
+\label{ok_enum_links}
+\index{ok{\_}enum{\_}links}
+\section{Overview}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_enum_links-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Test of links.
+
+\begin{ttfamily}TMyEnum\end{ttfamily}(\ref{ok_enum_links-TMyEnum}), \begin{ttfamily}me1\end{ttfamily}(\ref{ok_enum_links-me1}), \begin{ttfamily}me2\end{ttfamily}(\ref{ok_enum_links-me2}), \begin{ttfamily}me3\end{ttfamily}(\ref{ok_enum_links-me3}).
+
+\begin{ttfamily}TMyScopedEnum\end{ttfamily}(\ref{ok_enum_links-TMyScopedEnum}), \begin{ttfamily}TMyScopedEnum.mse1\end{ttfamily}(\ref{ok_enum_links-mse1}), \begin{ttfamily}TMyScopedEnum.mse2\end{ttfamily}(\ref{ok_enum_links-mse2}), \begin{ttfamily}TMyScopedEnum.mse3\end{ttfamily}(\ref{ok_enum_links-mse3}).
+
+\begin{ttfamily}TMyScopedEnum\end{ttfamily}(\ref{ok_enum_links-TMyScopedEnum}), TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: \begin{ttfamily}mse1\end{ttfamily}(\ref{ok_enum_links-mse1}), \begin{ttfamily}mse2\end{ttfamily}(\ref{ok_enum_links-mse2}), \begin{ttfamily}mse3\end{ttfamily}(\ref{ok_enum_links-mse3}).
+
+\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyEnum}
+\fi
+\label{ok_enum_links-TMyEnum}
+\index{TMyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+My enumerated type description.\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{me1}] \label{ok_enum_links-me1}
+\index{}
+My enumerated value 1 description.
+\item[\texttt{me2}] \label{ok_enum_links-me2}
+\index{}
+My enumerated value 2 description.
+\item[\texttt{me3}] \label{ok_enum_links-me3}
+\index{}
+My enumerated value 3 description.
+\end{description}
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyScopedEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyScopedEnum}
+\fi
+\label{ok_enum_links-TMyScopedEnum}
+\index{TMyScopedEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyScopedEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+My enumerated type description.\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{mse1}] \label{ok_enum_links-mse1}
+\index{}
+My enumerated value 1 description.
+\item[\texttt{mse2}] \label{ok_enum_links-mse2}
+\index{}
+My enumerated value 2 description.
+\item[\texttt{mse3}] \label{ok_enum_links-mse3}
+\index{}
+My enumerated value 3 description.
+\end{description}
+
+
+\end{list}
+\end{document}

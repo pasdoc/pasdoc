@@ -1,0 +1,3548 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}cdecl{\_}external}
+\label{ok_cdecl_external}
+\index{ok{\_}cdecl{\_}external}
+\section{Description}
+Bug:
+
+Parsing of this unit fails with Warning[2]: Error EPasDoc: todo/ok{\_}cdecl{\_}external.pas(5): Unexpected keyword external. parsing unit ok{\_}cdecl{\_}external.pas, continuing...
+
+Bar and Xyz added as additional tests.
+
+Update: it's fixed now, pasdoc parses it correctly.
+\section{Overview}
+\begin{description}
+\item[\texttt{Bar}]
+\item[\texttt{Foo}]
+\item[\texttt{Xyz}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Bar}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Bar}
+\fi
+\label{ok_cdecl_external-Bar}
+\index{Bar}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Bar; cdecl; external 'bar{\_}library{\_}name' name 'bar{\_}name{\_}in{\_}library';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_cdecl_external-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo; cdecl; external 'whatever';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Xyz}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Xyz}
+\fi
+\label{ok_cdecl_external-Xyz}
+\index{Xyz}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Xyz; external 'xyz{\_}library{\_}name' name 'xyz{\_}name{\_}in{\_}library'; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\chapter{Unit ok{\_}complicated{\_}record}
+\label{ok_complicated_record}
+\index{ok{\_}complicated{\_}record}
+\section{Description}
+ This unit is used for converting to and from the BigEndian format. See \href{http://community.borland.com/article/0,1410,28964,00.html}{http://community.borland.com/article/0,1410,28964,00.html}.\hfill\vspace*{1ex}
+
+Submitted in thread "Pasdoc tests" on pasdoc{-}main on 2005{-}04{-}11 by Richard B Winston. pasdoc passes it, but the test checks many important things (line glueing single{-}line comments by pasdoc, record with case etc.) so it's worth adding it to test cases.
+
+
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TDoubleEndianCnvRec\end{ttfamily} Packed Record}]\begin{ttfamily}TDoubleEndianCnvRec\end{ttfamily} is used in \begin{ttfamily}ConvertDouble\end{ttfamily}(\ref{ok_complicated_record-ConvertDouble}) to convert a double to or from the BigEndian format.
+\end{description}
+\begin{description}
+\item[\texttt{ConvertDouble}]\begin{ttfamily}ConvertDouble\end{ttfamily} converts Value to or from the BigEndian format.
+\item[\texttt{SwapDoubleBytes}]\begin{ttfamily}SwapDoubleBytes\end{ttfamily} copies \begin{ttfamily}TDoubleEndianCnvRec.Bytes\end{ttfamily}(\ref{ok_complicated_record.TDoubleEndianCnvRec-Bytes}) in reverse order from Source{\^{}} to Dest{\^{}}.
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TDoubleEndianCnvRec Packed Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TDoubleEndianCnvRec Packed Record}
+\fi
+\label{ok_complicated_record.TDoubleEndianCnvRec}
+\index{TDoubleEndianCnvRec}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+\begin{ttfamily}TDoubleEndianCnvRec\end{ttfamily} is used in \begin{ttfamily}ConvertDouble\end{ttfamily}(\ref{ok_complicated_record-ConvertDouble}) to convert a double to or from the BigEndian format.\hfill\vspace*{1ex}
+
+ \texttt{\\\nopagebreak[3]
+TDoubleEndianCnvRec~=~}\textbf{packed}\texttt{~}\textbf{record}\texttt{\\\nopagebreak[3]
+~~}\textbf{case}\texttt{~BytePos~}\textbf{of}\texttt{\\\nopagebreak[3]
+~~~~EndVal:~(EndianVal:~double);\\\nopagebreak[3]
+~~~~ByteVal:~(Bytes:~}\textbf{array}\texttt{[0..SizeOf(double)~-~1]~}\textbf{of}\texttt{~byte);\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{EndianVal}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_complicated_record.TDoubleEndianCnvRec-Bytes}
+\index{Bytes}
+\item[\textbf{Bytes}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public Bytes: array[0..SizeOf(double) - 1] of byte\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Overlapping bytes of the double\label{ok_complicated_record.TDoubleEndianCnvRec-EndianVal}
+\index{EndianVal}
+\item[\textbf{EndianVal}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public EndianVal: double\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par The value we are trying to convert\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{ConvertDouble}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ConvertDouble}
+\fi
+\label{ok_complicated_record-ConvertDouble}
+\index{ConvertDouble}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function ConvertDouble(const Value: double): double;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}ConvertDouble\end{ttfamily} converts Value to or from the BigEndian format.\hfill\vspace*{1ex}
+
+  \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[Value] is the value to be converted.
+\end{description}
+\item[\textbf{Returns}]Value after being converted to or from the BigEndian format.
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{SwapDoubleBytes}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{SwapDoubleBytes}
+\fi
+\label{ok_complicated_record-SwapDoubleBytes}
+\index{SwapDoubleBytes}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure SwapDoubleBytes(Dest, Source: PDoubleEndianCnvRec);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}SwapDoubleBytes\end{ttfamily} copies \begin{ttfamily}TDoubleEndianCnvRec.Bytes\end{ttfamily}(\ref{ok_complicated_record.TDoubleEndianCnvRec-Bytes}) in reverse order from Source{\^{}} to Dest{\^{}}.\hfill\vspace*{1ex}
+
+ \begin{ttfamily}SwapDoubleBytes\end{ttfamily} is used in \begin{ttfamily}ConvertDouble\end{ttfamily}(\ref{ok_complicated_record-ConvertDouble}).
+
+\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{BytePos}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{BytePos}
+\fi
+\label{ok_complicated_record-BytePos}
+\index{BytePos}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+BytePos = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+enumeration used in variant record\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{EndVal}] \label{ok_complicated_record-EndVal}
+\index{}
+ 
+\item[\texttt{ByteVal}] \label{ok_complicated_record-ByteVal}
+\index{}
+ 
+\end{description}
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{PDoubleEndianCnvRec}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{PDoubleEndianCnvRec}
+\fi
+\label{ok_complicated_record-PDoubleEndianCnvRec}
+\index{PDoubleEndianCnvRec}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+PDoubleEndianCnvRec = {\^{}}TDoubleEndianCnvRec;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}PDoubleEndianCnvRec\end{ttfamily} is a pointer to a \begin{ttfamily}TDoubleEndianCnvRec\end{ttfamily}(\ref{ok_complicated_record.TDoubleEndianCnvRec}).
+
+\end{list}
+\chapter{Unit ok{\_}deprecated{\_}tag}
+\label{ok_deprecated_tag}
+\index{ok{\_}deprecated{\_}tag}
+\section{Description}
+Warning: this symbol is deprecated.
+
+Test @deprecated tag.\hfill\vspace*{1ex}
+
+
+
+Everything in this unit is deprecated. Even this whole unit itself.
+
+
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_deprecated_tag.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Warning: this symbol is deprecated.
+
+ Deprecated class.\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyProperty}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_deprecated_tag.TMyClass-MyProperty}
+\index{MyProperty}
+\item[\textbf{MyProperty}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyProperty: Integer read MyField write MyField;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_deprecated_tag.TMyClass-MyField}
+\index{MyField}
+\item[\textbf{MyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+Deprecated field. \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethodLibrary}\hspace*{\fill}
+
+\label{ok_deprecated_tag.TMyClass-MyMethodLibrary}
+\index{MyMethodLibrary}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethodLibrary;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc}
+\fi
+\label{ok_deprecated_tag-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyType}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyType}
+\fi
+\label{ok_deprecated_tag-TMyType}
+\index{TMyType}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyType = Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ Normal type deprecated.
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MyConst}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyConst}
+\fi
+\label{ok_deprecated_tag-MyConst}
+\index{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyConst = 1;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{MyVar}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyVar}
+\fi
+\label{ok_deprecated_tag-MyVar}
+\index{MyVar}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyVar: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\chapter{Unit ok{\_}directive{\_}as{\_}identifier}
+\label{ok_directive_as_identifier}
+\index{ok{\_}directive{\_}as{\_}identifier}
+\section{Description}
+All calling{-}convention specifiers must *not* be made links in docs. But "Register" procedure name must be made a link. Yes, the difficulty is here that "register" is once a calling{-}convention specifier and once a procedure name.
+
+This is related to bug submitted to pasdoc{-}main list [\href{http://sourceforge.net/mailarchive/message.php?msg_id=11397611}{http://sourceforge.net/mailarchive/message.php?msg{\_}id=11397611}].
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{Bar}]
+\item[\texttt{Cdecl}]
+\item[\texttt{Foo}]
+\item[\texttt{Foo1}]
+\item[\texttt{Register}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_directive_as_identifier.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Bar}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Bar}
+\fi
+\label{ok_directive_as_identifier-Bar}
+\index{Bar}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Bar; cdecl;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Cdecl}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Cdecl}
+\fi
+\label{ok_directive_as_identifier-Cdecl}
+\index{Cdecl}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Cdecl; register;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_directive_as_identifier-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo; register;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Foo1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo1}
+\fi
+\label{ok_directive_as_identifier-Foo1}
+\index{Foo1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo1(const S: string = 'register'; MyClass: TMyClass);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it:
+
+Note that link to TMyClass should be correctly made. 'register' should be displayed as a string, of course, and not linked.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Register}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Register}
+\fi
+\label{ok_directive_as_identifier-Register}
+\index{Register}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Register; register;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\chapter{Unit ok{\_}expanding{\_}descriptions}
+\label{ok_expanding_descriptions}
+\index{ok{\_}expanding{\_}descriptions}
+\section{Description}
+This is a test of tags expanded by TPasItem handlers. Of course with @abstract tag using some recursive tag: See also \begin{ttfamily}TestPasMethodTags\end{ttfamily}(\ref{ok_expanding_descriptions-TestPasMethodTags})\hfill\vspace*{1ex}
+
+
+
+This whole unit is actually a big test of many things related to pasdoc's @{-}tags.
+
+   
+
+See also \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_expanding_descriptions.TMyClass}) for other test of @cvs tag (with {\$}Date, as an alternative specification of @lastmod)
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EFoo\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}EBar\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}EXyz\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClassAncestor\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{RecursiveTwoAt}]
+\item[\texttt{TestHtmlAndLatexTags}]
+\item[\texttt{TestLongCode}]
+\item[\texttt{TestPasMethodTags}]
+\item[\texttt{TestRecursiveTag}]
+\item[\texttt{TwoAt}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{EFoo Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{EFoo Class}
+\fi
+\label{ok_expanding_descriptions.EFoo}
+\index{EFoo}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EFoo {$>$} Exception
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{EBar Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{EBar Class}
+\fi
+\label{ok_expanding_descriptions.EBar}
+\index{EBar}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EBar {$>$} Exception
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{EXyz Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{EXyz Class}
+\fi
+\label{ok_expanding_descriptions.EXyz}
+\index{EXyz}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EXyz {$>$} Exception
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyClassAncestor Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClassAncestor Class}
+\fi
+\label{ok_expanding_descriptions.TMyClassAncestor}
+\index{TMyClassAncestor}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClassAncestor {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{inheritable}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_expanding_descriptions.TMyClassAncestor-inheritable}
+\index{inheritable}
+\item[\textbf{inheritable}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property inheritable: boolean read MyField;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This comment should be inherited.\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_expanding_descriptions.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} \begin{ttfamily}TMyClassAncestor\end{ttfamily}(\ref{ok_expanding_descriptions.TMyClassAncestor}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+These are some tags that are not allowed to have parameters: name \begin{ttfamily}TMyClass\end{ttfamily}, inherited \begin{ttfamily}TMyClassAncestor\end{ttfamily}(\ref{ok_expanding_descriptions.TMyClassAncestor}), nil \begin{ttfamily}Nil\end{ttfamily}, true \begin{ttfamily}True\end{ttfamily}, false \begin{ttfamily}False\end{ttfamily}, classname \begin{ttfamily}TMyClass\end{ttfamily}. Some of them are valid only within a class, but this is not important for this test.
+
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{inheritable}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_expanding_descriptions.TMyClass-inheritable}
+\index{inheritable}
+\item[\textbf{inheritable}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+published property inheritable;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This is the detailed description.\end{list}
+\subsubsection*{\large{\textbf{Last Modified}}\normalsize\hspace{1ex}\hfill}
+\par
+2010-04-26 04:04:35 +0200 (pon)
+
+
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{RecursiveTwoAt}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{RecursiveTwoAt}
+\fi
+\label{ok_expanding_descriptions-RecursiveTwoAt}
+\index{RecursiveTwoAt}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure RecursiveTwoAt;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+aa aaaaa aa aaa \begin{ttfamily}SHGetSpecialFolderPath(0, @Path, CSIDL{\_}APPDATA, true)\end{ttfamily} aaaa aaaaaa aaaaaa aaaaaaaaa aaaa
+
+At some point, this test caused the bug: final {$<$}/code{$>$} tag was inserted in converted form (processed with ConvertString) into html output. In effect, there was an opening {$<$}code{$>$} tag but there was no closing {$<$}/code{$>$} tag.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestHtmlAndLatexTags}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestHtmlAndLatexTags}
+\fi
+\label{ok_expanding_descriptions-TestHtmlAndLatexTags}
+\index{TestHtmlAndLatexTags}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestHtmlAndLatexTags;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+
+
+
+    This is some {\bf dummy} \LaTeX code, just to show that inside
+    @latex tag of pasdoc (note that I used single @ char in this sentence)
+    nothing is expanded by pasdoc.
+    No paragraphs are created by pasdoc. Although, in case of LaTeX output,
+    LaTeX rules for making paragraphs are the same as the pasdoc's rules
+    (one empty lines marks paragraph), so you will not notice.
+    This is brutal line-break: \\
+    I'm still in the same paragraph, after line-break.
+
+    I'm 2nd paragraph.
+    No tags work, e.g. @link(TestLongCode).
+  
+
+Note that text inside @html / @latex tags is absolutely not touched by pasdoc. Characters are not escaped ({$<$} is *not* changed to {\&}lt; in the html case), @tags are not expanded, @ needs not to be doubled, paragraphs ({$<$}p{$>$} in the html case) are not inserted.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestLongCode}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestLongCode}
+\fi
+\label{ok_expanding_descriptions-TestLongCode}
+\index{TestLongCode}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestLongCode;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Note that inside @longcode below I should be able to write singe @ char to get it in the output, no need to double it (like @@). No tags are expanded inside longcode.
+
+Also note that paragraphs are not expanded inside longcode (no {$<$}p{$>$} inside {$<$}pre{$>$}...{$<$}/pre{$>$} in html output).
+
+Of course html characters are still correctly escaped ({$<$} changes to {\&}lt; etc.).
+
+\texttt{\\\nopagebreak[3]
+\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~Foo;\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~}\textbf{if}\texttt{~A~{$<$}~B~}\textbf{then}\texttt{~Bar;~\textit{{\{}~@link(No,~this~is~not~really~pasdoc~tag)~{\}}}\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\\nopagebreak[3]
+\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~Bar(X:~Integer);\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~CompareMem(@X,~@Y);\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestPasMethodTags}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestPasMethodTags}
+\fi
+\label{ok_expanding_descriptions-TestPasMethodTags}
+\index{TestPasMethodTags}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function TestPasMethodTags(A, B: Integer): string;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This is a test of tags expanded by TPasMethod handlers. Note that all three tags are expanded recursively.
+
+ 
+
+
+
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] means sthg about \begin{ttfamily}TestRecursiveTag\end{ttfamily}(\ref{ok_expanding_descriptions-TestRecursiveTag})
+\item[B] also means sthg. \begin{ttfamily}Code inside.\end{ttfamily}
+\end{description}
+\item[\textbf{Returns}]You can make tags recursion any level deep : \begin{ttfamily}This is a code with a link to \begin{ttfamily}TestRecursiveTag\end{ttfamily}(\ref{ok_expanding_descriptions-TestRecursiveTag})\end{ttfamily}
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_expanding_descriptions.EFoo})] when you do sthg nasty, like call \begin{ttfamily}TestRecursiveTag\end{ttfamily}(\ref{ok_expanding_descriptions-TestRecursiveTag}) when you're not supposed to
+\item[\begin{ttfamily}EBar\end{ttfamily}(\ref{ok_expanding_descriptions.EBar})] when code \begin{ttfamily}if 1 = 0 then DoSomething;\end{ttfamily} will work as expected.
+\end{description}
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestRecursiveTag}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestRecursiveTag}
+\fi
+\label{ok_expanding_descriptions-TestRecursiveTag}
+\index{TestRecursiveTag}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestRecursiveTag;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+@code and @returns (and some others) tags are recursive, you can freely put other tags inside.
+
+\begin{ttfamily}This is link to \begin{ttfamily}TestHtmlAndLatexTags\end{ttfamily}(\ref{ok_expanding_descriptions-TestHtmlAndLatexTags}).\end{ttfamily}
+
+\par
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_expanding_descriptions.EFoo})] in case \begin{ttfamily}TestHtmlAndLatexTags\end{ttfamily}(\ref{ok_expanding_descriptions-TestHtmlAndLatexTags}) returns value {$>$}= 4 (actually, this is just a test text).
+\end{description}
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TwoAt}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TwoAt}
+\fi
+\label{ok_expanding_descriptions-TwoAt}
+\index{TwoAt}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TwoAt;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Write two at chars, like this @@, to get one @ in output.
+
+E.g. @ link(TSomeClass).
+
+E.g. @link(TSomeClass).
+
+E.g. @html foobar.
+
+E.g. @link .
+
+\end{list}
+\section{Authors}
+\par
+Michalis {$<$}my@email.address{$>$}
+
+\par
+kambi
+
+\section{Created}
+\par
+2005{-}03{-}30
+
+
+\section{Last Modified}
+\par
+2005{-}03{-}30
+
+
+\chapter{Unit ok{\_}hint{\_}directives}
+\label{ok_hint_directives}
+\index{ok{\_}hint{\_}directives}
+\section{Description}
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+Test parsing "platform", "library" and "deprecated" directives (called collectively "hint directives") by pasdoc.\hfill\vspace*{1ex}
+
+
+
+Related tracker bug: [ 1196073 ] "some modifiers are not parsed".
+
+We want to support all situations where these directives are allowed in modern FPC ({$>$}= 2.5.1) and Delphi. Their placement in unfortunately not consistent, thanks go to Borland. Quoting Delphi help (from Kylix 3): "Hint directives can be applied to type declarations, variable declarations, class and structure declarations, field declarations within classes or records, procedure, function and method declarations, and unit declarations."
+
+Summary:
+
+\begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item  Between "unit UnitName" and hints you \textit{mustn't} put any semicolon, and you \textit{mustn't} put any semicolons between hints. \\{} Same thing for CIOs (Classes / Interfaces / Objects / Records). \\{} Same thing for CIOs fields. \\{} Same thing for variables. \\{} Same thing for constants.
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item  Between "procedure/function Name (...)" and hints you \textit{must} put a semicolon, and semicolons between hints are allowed but not required. It seems that you can't specify "library" directive for procedures/functions -- why? Probably because "library" is a keyword and Borland was unable to correctly modify it's compiler to parse such thing. But pasdoc parses library directive correctly.
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item  Between method and hints you \textit{must} put a semicolon, and semicolon between hints is \textit{required}. You can specify "library" directive for methods.
+\end{enumerate}
+
+I'm unable to figure out how to specify these hints for normal (non{-}structural) types. If anyone can \begin{itemize}
+\item tell me how to specify hint directives for non{-}structural types or
+\item explain why parsing these directives is so weird and inconsistent in Delphi or
+\item point me to some precise documentation by Borland specifying grammar rules with these directives
+\end{itemize} ... then please send email about this to pasdoc{-}main mailing list (or directly to me, Michalis Kamburelis, {$<$}kambi@users.sourceforge.net{$>$}, if your comments about this do not really concern pasdoc). I will be grateful.
+
+Contrary to most units in tests/, this unit \textit{is} kept at compileable by Delphi/Kylix and FPC. That's because this unit is also a test whether we really specify here hint directives in the way parseable by Delphi/Kylix.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TTestClassDeprecated\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TTestRecordDeprecated\end{ttfamily} Record}]
+\end{description}
+\begin{description}
+\item[\texttt{TestFuncCombined}]
+\item[\texttt{TestFuncDeprecated}]
+\item[\texttt{TestFuncPlatform}]
+\item[\texttt{TestProcCombined}]
+\item[\texttt{TestProcDeprecated}]
+\item[\texttt{TestProcPlatform}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TTestClassDeprecated Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestClassDeprecated Class}
+\fi
+\label{ok_hint_directives.TTestClassDeprecated}
+\index{TTestClassDeprecated}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTestClassDeprecated {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some library.
+
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{TestPropertyCombined2}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_hint_directives.TTestClassDeprecated-TestPropertyCombined}
+\index{TestPropertyCombined}
+\item[\textbf{TestPropertyCombined}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property TestPropertyCombined: Integer; library deprecated platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+Testing on FPC 2.6.0: Hint directives for properties are allowed Ok. I don't know if this is Delphi{-}compatible or FPC extension, anyway PasDoc supports it too.\label{ok_hint_directives.TTestClassDeprecated-TestPropertyCombined2}
+\index{TestPropertyCombined2}
+\item[\textbf{TestPropertyCombined2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property TestPropertyCombined2: Integer; library; deprecated; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+ \end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{TestFieldDeprecated}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_hint_directives.TTestClassDeprecated-TestFieldCombined}
+\index{TestFieldCombined}
+\item[\textbf{TestFieldCombined}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldCombined: Integer library deprecated platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+ \label{ok_hint_directives.TTestClassDeprecated-TestFieldDeprecated}
+\index{TestFieldDeprecated}
+\item[\textbf{TestFieldDeprecated}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldDeprecated: Integer deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+ \label{ok_hint_directives.TTestClassDeprecated-TestFieldLibrary}
+\index{TestFieldLibrary}
+\item[\textbf{TestFieldLibrary}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldLibrary: Integer library;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is specific to some library.
+
+ \label{ok_hint_directives.TTestClassDeprecated-TestFieldPlatform}
+\index{TestFieldPlatform}
+\item[\textbf{TestFieldPlatform}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldPlatform: Integer platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is specific to some platform.
+
+ \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{TestMethodCombined}\hspace*{\fill}
+
+\label{ok_hint_directives.TTestClassDeprecated-TestMethodCombined}
+\index{TestMethodCombined}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure TestMethodCombined; library; deprecated; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\paragraph*{TestMethodDeprecated}\hspace*{\fill}
+
+\label{ok_hint_directives.TTestClassDeprecated-TestMethodDeprecated}
+\index{TestMethodDeprecated}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure TestMethodDeprecated; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\paragraph*{TestMethodLibrary}\hspace*{\fill}
+
+\label{ok_hint_directives.TTestClassDeprecated-TestMethodLibrary}
+\index{TestMethodLibrary}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure TestMethodLibrary; library;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\paragraph*{TestMethodPlatform}\hspace*{\fill}
+
+\label{ok_hint_directives.TTestClassDeprecated-TestMethodPlatform}
+\index{TestMethodPlatform}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure TestMethodPlatform; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TTestRecordDeprecated Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestRecordDeprecated Record}
+\fi
+\label{ok_hint_directives.TTestRecordDeprecated}
+\index{TTestRecordDeprecated}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Warning: this symbol is deprecated.
+
+ \subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{TestFieldPlatform}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_hint_directives.TTestRecordDeprecated-TestFieldPlatform}
+\index{TestFieldPlatform}
+\item[\textbf{TestFieldPlatform}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldPlatform: Integer platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is specific to some platform.
+
+ \end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{TestFuncCombined}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestFuncCombined}
+\fi
+\label{ok_hint_directives-TestFuncCombined}
+\index{TestFuncCombined}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestFuncDeprecated}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestFuncDeprecated}
+\fi
+\label{ok_hint_directives-TestFuncDeprecated}
+\index{TestFuncDeprecated}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function TestFuncDeprecated: Integer; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestFuncPlatform}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestFuncPlatform}
+\fi
+\label{ok_hint_directives-TestFuncPlatform}
+\index{TestFuncPlatform}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function TestFuncPlatform: Integer; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestProcCombined}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestProcCombined}
+\fi
+\label{ok_hint_directives-TestProcCombined}
+\index{TestProcCombined}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestProcCombined(SomeParams: Integer); deprecated  platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestProcDeprecated}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestProcDeprecated}
+\fi
+\label{ok_hint_directives-TestProcDeprecated}
+\index{TestProcDeprecated}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestProcDeprecated; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestProcPlatform}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestProcPlatform}
+\fi
+\label{ok_hint_directives-TestProcPlatform}
+\index{TestProcPlatform}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestProcPlatform; platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{TestConstPlatform}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstPlatform}
+\fi
+\label{ok_hint_directives-TestConstPlatform}
+\index{TestConstPlatform}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstPlatform = 1 platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestConstLibrary}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstLibrary}
+\fi
+\label{ok_hint_directives-TestConstLibrary}
+\index{TestConstLibrary}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstLibrary = 2 library;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestConstDeprecated}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstDeprecated}
+\fi
+\label{ok_hint_directives-TestConstDeprecated}
+\index{TestConstDeprecated}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstDeprecated = 3 deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestConstCombined}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstCombined}
+\fi
+\label{ok_hint_directives-TestConstCombined}
+\index{TestConstCombined}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstCombined = 4 deprecated library platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{TestVarPlatform}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestVarPlatform}
+\fi
+\label{ok_hint_directives-TestVarPlatform}
+\index{TestVarPlatform}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestVarPlatform: Integer platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestVarLibrary}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestVarLibrary}
+\fi
+\label{ok_hint_directives-TestVarLibrary}
+\index{TestVarLibrary}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestVarLibrary: Integer library;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestVarDeprecated}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestVarDeprecated}
+\fi
+\label{ok_hint_directives-TestVarDeprecated}
+\index{TestVarDeprecated}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestVarDeprecated: Integer deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestVarCombined}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestVarCombined}
+\fi
+\label{ok_hint_directives-TestVarCombined}
+\index{TestVarCombined}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestVarCombined: Integer library deprecated platform;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+Warning: this symbol is specific to some platform.
+
+Warning: this symbol is specific to some library.
+
+ 
+
+\end{list}
+\chapter{Unit ok{\_}line{\_}break}
+\label{ok_line_break}
+\index{ok{\_}line{\_}break}
+\section{Description}
+Test @br tag.
+\section{Overview}
+\begin{description}
+\item[\texttt{TestLineBreak}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{TestLineBreak}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestLineBreak}
+\fi
+\label{ok_line_break-TestLineBreak}
+\index{TestLineBreak}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestLineBreak;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+1st paragraph. \\{} Second line of 1st paragraph.
+
+2nd paragraph. Blah blah blah.
+
+3rd paragraph. \\{} Second line of 3rd paragraph.
+
+\end{list}
+\chapter{Unit ok{\_}links}
+\label{ok_links}
+\index{ok{\_}links}
+\section{Description}
+Test various things with links.\hfill\vspace*{1ex}
+
+
+
+Link to proc inside this unit : \begin{ttfamily}MyProc\end{ttfamily}(\ref{ok_links-MyProc}), and a qualified link to the same thing : \begin{ttfamily}ok{\_}links.MyProc\end{ttfamily}(\ref{ok_links-MyProc}).
+
+Link to proc inside other unit: \begin{ttfamily}ok{\_}links{\_}2.MyOtherProc\end{ttfamily}(\ref{ok_links_2-MyOtherProc}), link to proc inside other unit that has the same name as proc in this unit: \begin{ttfamily}ok{\_}links{\_}2.MyProc\end{ttfamily}(\ref{ok_links_2-MyProc}).
+
+Link to method in class in this unit: \begin{ttfamily}TSomeClass.MyMethod\end{ttfamily}(\ref{ok_links.TSomeClass-MyMethod}), and a more qualified link to the same thing : \begin{ttfamily}ok{\_}links.TSomeClass.MyMethod\end{ttfamily}(\ref{ok_links.TSomeClass-MyMethod}).
+
+Link to method in class in second unit: \begin{ttfamily}TSomeOtherClass.MyMethod\end{ttfamily}(\ref{ok_links_2.TSomeOtherClass-MyMethod}), link to method in class in second unit that has the same name as class in this unit: \begin{ttfamily}ok{\_}links{\_}2.TSomeClass.MyMethod\end{ttfamily}(\ref{ok_links_2.TSomeClass-MyMethod}).
+
+Link to this unit : \begin{ttfamily}ok{\_}links\end{ttfamily}(\ref{ok_links}), to other unit : \begin{ttfamily}ok{\_}links{\_}2\end{ttfamily}(\ref{ok_links_2}).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TSomeClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TSomeClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSomeClass Class}
+\fi
+\label{ok_links.TSomeClass}
+\index{TSomeClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TSomeClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_links.TSomeClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Two links to \begin{ttfamily}MyOtherMethod\end{ttfamily} : qualified \begin{ttfamily}TSomeClass.MyOtherMethod\end{ttfamily}(\ref{ok_links.TSomeClass-MyOtherMethod}), not qualified \begin{ttfamily}MyOtherMethod\end{ttfamily}(\ref{ok_links.TSomeClass-MyOtherMethod})
+
+\end{list}
+\paragraph*{MyOtherMethod}\hspace*{\fill}
+
+\label{ok_links.TSomeClass-MyOtherMethod}
+\index{MyOtherMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyOtherMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc}
+\fi
+\label{ok_links-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Link to self : \begin{ttfamily}MyProc\end{ttfamily}(\ref{ok_links-MyProc}), and a second one: \begin{ttfamily}ok{\_}links.MyProc\end{ttfamily}(\ref{ok_links-MyProc}), link to MyProc in other unit: \begin{ttfamily}ok{\_}links{\_}2.MyProc\end{ttfamily}(\ref{ok_links_2-MyProc}).
+
+\end{list}
+\chapter{Unit ok{\_}links{\_}2}
+\label{ok_links_2}
+\index{ok{\_}links{\_}2}
+\section{Description}
+Helper unit for test in ok{\_}links.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TSomeClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TSomeOtherClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyOtherProc}]
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TSomeClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSomeClass Class}
+\fi
+\label{ok_links_2.TSomeClass}
+\index{TSomeClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TSomeClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_links_2.TSomeClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TSomeOtherClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TSomeOtherClass Class}
+\fi
+\label{ok_links_2.TSomeOtherClass}
+\index{TSomeOtherClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TSomeOtherClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_links_2.TSomeOtherClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyOtherProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyOtherProc}
+\fi
+\label{ok_links_2-MyOtherProc}
+\index{MyOtherProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyOtherProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MyProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc}
+\fi
+\label{ok_links_2-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\chapter{Unit ok{\_}link{\_}class{\_}unit{\_}level}
+\label{ok_link_class_unit_level}
+\index{ok{\_}link{\_}class{\_}unit{\_}level}
+\section{Description}
+This is a link from unit's description to an identifier inside the same unit: some procedure \begin{ttfamily}Foo\end{ttfamily}(\ref{ok_link_class_unit_level-Foo}), some class \begin{ttfamily}TBar\end{ttfamily}(\ref{ok_link_class_unit_level.TBar}).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TBar\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{Foo}]
+\item[\texttt{Xyz}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TBar Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TBar Class}
+\fi
+\label{ok_link_class_unit_level.TBar}
+\index{TBar}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TBar {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+These are links from class' description to an identifiers inside the same class. Note that @links here first check *inside* the class, then outside (i.e. in the whole unit). That's why link to Foo below is a link to a method Foo inside this class, not to a global procedure Foo. Links inside the class: \begin{ttfamily}Foo\end{ttfamily}(\ref{ok_link_class_unit_level.TBar-Foo}), \begin{ttfamily}Sthg\end{ttfamily}(\ref{ok_link_class_unit_level.TBar-Sthg}).
+
+Links outside of the class: \begin{ttfamily}ok{\_}link{\_}class{\_}unit{\_}level.Foo\end{ttfamily}(\ref{ok_link_class_unit_level-Foo}), \begin{ttfamily}Xyz\end{ttfamily}(\ref{ok_link_class_unit_level-Xyz}). Note that I has to qualify Foo with unit's name and write "ok{\_}link{\_}class{\_}unit{\_}level.Foo" to get a link to procedure in the unit. Just like I would do in a Pascal code.\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Foo}\hspace*{\fill}
+
+\label{ok_link_class_unit_level.TBar-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{Sthg}\hspace*{\fill}
+
+\label{ok_link_class_unit_level.TBar-Sthg}
+\index{Sthg}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Sthg;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_link_class_unit_level-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Xyz}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Xyz}
+\fi
+\label{ok_link_class_unit_level-Xyz}
+\index{Xyz}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Xyz;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\chapter{Unit ok{\_}link{\_}explicite{\_}name}
+\label{ok_link_explicite_name}
+\index{ok{\_}link{\_}explicite{\_}name}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TTestingClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TTestingClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestingClass Class}
+\fi
+\label{ok_link_explicite_name.TTestingClass}
+\index{TTestingClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTestingClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+I'm a testing class, oh ! And \begin{ttfamily}don't forget to look at my method !\end{ttfamily}(\ref{ok_link_explicite_name.TTestingClass-MyMethod})\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_link_explicite_name.TTestingClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc}
+\fi
+\label{ok_link_explicite_name-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Some testing proc. \begin{ttfamily}Have you seen my method ?\end{ttfamily}(\ref{ok_link_explicite_name.TTestingClass-MyMethod})
+
+\end{list}
+\chapter{Unit ok{\_}nodescription{\_}printing}
+\label{ok_nodescription_printing}
+\index{ok{\_}nodescription{\_}printing}
+\section{Description}
+pasdoc's LaTeX documentation of this unit omitted many things before revision 1.20 of PasDoc{\_}GenLatex.pas. Html docs were ok.
+
+I explained why omitting docs for things that don't have any documentation comment is bad in the letter "Fix for LaTeX genetator omitting some things" [\href{http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&forum_id=4647}{http://sourceforge.net/mailarchive/forum.php?thread{\_}id=6948809{\&}forum{\_}id=4647}]
+
+Now, all identifiers in this unit should be visible in LaTeX documentation (and in html output too, of course).
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClass1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyRecord\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TMyRecord2\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TMyRecord3\end{ttfamily} Record}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClass1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClass1 Class}
+\fi
+\label{ok_nodescription_printing.TClass1}
+\index{TClass1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClass1 {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyProperty}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_nodescription_printing.TClass1-MyProperty}
+\index{MyProperty}
+\item[\textbf{MyProperty}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyProperty read FMyProperty;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_nodescription_printing.TClass1-MyField}
+\index{MyField}
+\item[\textbf{MyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_nodescription_printing.TClass1-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyRecord2 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecord2 Record}
+\fi
+\label{ok_nodescription_printing.TMyRecord2}
+\index{TMyRecord2}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This record has a description, but still LaTeX output will not list it in it's summary list (in the "Overview" section). (i.e. before applying my patch)\ifpdf
+\subsection*{\large{\textbf{TMyRecord3 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecord3 Record}
+\fi
+\label{ok_nodescription_printing.TMyRecord3}
+\index{TMyRecord3}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyRecField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_nodescription_printing.TMyRecord3-MyRecField}
+\index{MyRecField}
+\item[\textbf{MyRecField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyRecField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc}
+\fi
+\label{ok_nodescription_printing-MyProc}
+\index{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMySimpleType}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMySimpleType}
+\fi
+\label{ok_nodescription_printing-TMySimpleType}
+\index{TMySimpleType}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMySimpleType = Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MyConst}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyConst}
+\fi
+\label{ok_nodescription_printing-MyConst}
+\index{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyConst = 9;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{MyVariable}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyVariable}
+\fi
+\label{ok_nodescription_printing-MyVariable}
+\index{MyVariable}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyVariable: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\chapter{Unit ok{\_}paragraph{\_}in{\_}single{\_}line{\_}comment}
+\label{ok_paragraph_in_single_line_comment}
+\index{ok{\_}paragraph{\_}in{\_}single{\_}line{\_}comment}
+\section{Description}
+This is the 1st paragraph.
+
+This is the 2nd paragraph.
+
+This is the 3rd paragraph.
+
+pasdoc should create paragraphs when glueing single{-}line comments to a description, but it doesn't for now. Update: now it does.
+\section{Overview}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_paragraph_in_single_line_comment-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This is the 1st paragraph.
+
+This is the 2nd paragraph.
+
+This is the 3rd paragraph.
+
+Here paragraphs are correct.
+
+\end{list}
+\chapter{Unit ok{\_}tag{\_}name{\_}case}
+\label{ok_tag_name_case}
+\index{ok{\_}tag{\_}name{\_}case}
+\section{Description}
+Trivial unit to test that tag case does not matter.
+
+\begin{ttfamily}Foo\end{ttfamily}
+
+\begin{ttfamily}Foo\end{ttfamily}
+
+\begin{ttfamily}Foo\end{ttfamily}
+\chapter{Unit ok{\_}tag{\_}params{\_}no{\_}parens}
+\label{ok_tag_params_no_parens}
+\index{ok{\_}tag{\_}params{\_}no{\_}parens}
+\section{Description}
+This is a demo unit using tags without enclosing them in ()\hfill\vspace*{1ex}
+
+
+
+Parsing logic is simple: if a tag requires some parameters but you don't put open paren '(' char right after it, then tag parameters are understood to span to the end of line (or to the end of comment).
+
+This doesn't break compatibility with documentation that enclosed parameters in (), because tags that have parameters were *required* to have '(' char after them. So they will still be correctly seen and parsed to the matching closing paren.
+
+See \begin{ttfamily}SomeProc\end{ttfamily}(\ref{ok_tag_params_no_parens-SomeProc}) for more examples and comments.
+
+   
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}EFoo\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{SomeProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{EFoo Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{EFoo Class}
+\fi
+\label{ok_tag_params_no_parens.EFoo}
+\index{EFoo}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+EFoo {$>$} Exception
+%%%%Description
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{SomeProc}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{SomeProc}
+\fi
+\label{ok_tag_params_no_parens-SomeProc}
+\index{SomeProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function SomeProc(A: Integer): Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Note that this rule allows you to not specify () for *any* tag that has parameters. Even for @link tag: \begin{ttfamily}ok{\_}tag{\_}params{\_}no{\_}parens\end{ttfamily}(\ref{ok_tag_params_no_parens})
+
+This rule doesn't create any problems for tags without parameters, like the @name tag: here it is: \begin{ttfamily}SomeProc\end{ttfamily}. Such tags never have parameters, and on the above line you *don't* have @name tag with parameters "tag. Such tags never have parameters,". Instead, you just specified \begin{ttfamily}SomeProc\end{ttfamily} tag and "tag. Such tags never have parameters," is just a normal text.
+
+Check out this longcode: \texttt{}\textbf{begin}\texttt{~Writeln('Hello~world');~}\textbf{end}\texttt{;~\textit{{\{}~This~works~!~{\}}}\\
+}
+
+See also @html and @latex tags:  {\bf I'm bold.}
+
+And here is some code: \begin{ttfamily}begin X := Y + 1; end;\end{ttfamily}
+
+  \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] means something
+\end{description}
+\item[\textbf{Returns}]Some integer
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_tag_params_no_parens.EFoo})] when it's in bad mood
+\end{description}
+
+
+\end{list}
+\section{Authors}
+\par
+Michalis
+
+\par
+kambi
+
+\section{Created}
+\par
+2005{-}05{-}04
+
+
+\section{Last Modified}
+\par
+2005{-}05{-}04
+
+
+\chapter{Unit ok{\_}value{\_}member{\_}tags}
+\label{ok_value_member_tags}
+\index{ok{\_}value{\_}member{\_}tags}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyRecord\end{ttfamily} Record}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_value_member_tags.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+  \subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyProperty}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_value_member_tags.TMyClass-MyProperty}
+\index{MyProperty}
+\item[\textbf{MyProperty}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyProperty: Integer read MyField write MyField;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of MyProperty here, with some recursive tags inside: \begin{ttfamily}Some code with a link to \begin{ttfamily}TMyRecord\end{ttfamily}(\ref{ok_value_member_tags.TMyRecord})\end{ttfamily}.\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_value_member_tags.TMyClass-MyField}
+\index{MyField}
+\item[\textbf{MyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of MyField here.\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\label{ok_value_member_tags.TMyClass-MyMethod}
+\index{MyMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public function MyMethod(A: Integer): boolean;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Description of MyMethod here, using parenthesis.  \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] Description of param A.
+\end{description}
+\item[\textbf{Returns}]Some boolean value.
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyRecord Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecord Record}
+\fi
+\label{ok_value_member_tags.TMyRecord}
+\index{TMyRecord}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_value_member_tags.TMyRecord-MyField}
+\index{MyField}
+\item[\textbf{MyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of MyField in TMyRecord here.\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyEnum}
+\fi
+\label{ok_value_member_tags-TMyEnum}
+\index{TMyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{meOne}] \label{ok_value_member_tags-meOne}
+\index{}
+Description of meOne follows.
+\item[\texttt{meTwo}] \label{ok_value_member_tags-meTwo}
+\index{}
+ 
+\item[\texttt{meThree}] \label{ok_value_member_tags-meThree}
+\index{}
+Description of meThree, with some link: \begin{ttfamily}TMyClass.MyField\end{ttfamily}(\ref{ok_value_member_tags.TMyClass-MyField}).
+\end{description}
+
+
+\end{list}
+\chapter{Unit warning{\_}abstract{\_}termination}
+\label{warning_abstract_termination}
+\index{warning{\_}abstract{\_}termination}
+\section{Description}
+The abstract tag for \begin{ttfamily}TAbstractTerminationClass\end{ttfamily}(\ref{warning_abstract_termination.TAbstractTerminationClass}) is unterminated. PasDoc should either terminate the tag itself, give a warning, or both\hfill\vspace*{1ex}
+
+
+
+Submitted in thread "Pasdoc tests" 2004{-}04{-}10 on pasdoc{-}main.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TAbstractTerminationClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TAbstractTerminationClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TAbstractTerminationClass Class}
+\fi
+\label{warning_abstract_termination.TAbstractTerminationClass}
+\index{TAbstractTerminationClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TAbstractTerminationClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+(This abstract tag lacks the closing parenthesis. How will PasDoc handle this error?\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{DummyField}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{warning_abstract_termination.TAbstractTerminationClass-DummyField}
+\index{DummyField}
+\item[\textbf{DummyField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public DummyField: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\chapter{Unit warning{\_}abstract{\_}twice}
+\label{warning_abstract_twice}
+\index{warning{\_}abstract{\_}twice}
+\section{Description}
+Second abstract\hfill\vspace*{1ex}
+
+
+
+
+
+pasdoc should warn "You used @abstract twice in description of item ..." or something like that.
+\chapter{Unit warning{\_}not{\_}existing{\_}tags}
+\label{warning_not_existing_tags}
+\index{warning{\_}not{\_}existing{\_}tags}
+\section{Overview}
+\begin{description}
+\item[\texttt{TestWarnings}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{TestWarnings}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestWarnings}
+\fi
+\label{warning_not_existing_tags-TestWarnings}
+\index{TestWarnings}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure TestWarnings;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+pasdoc should complain (display warnings) about wrong tags : @firstwarning(blah blah), \begin{ttfamily}Wrong tag inside a @code: @secondwarning(ble ble)\end{ttfamily}.
+
+\end{list}
+\chapter{Unit warning{\_}tags{\_}no{\_}parameters}
+\label{warning_tags_no_parameters}
+\index{warning{\_}tags{\_}no{\_}parameters}
+\section{Overview}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{warning_tags_no_parameters-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Some tags are not allowed to have parameters.
+
+pasdoc should print a warning when you try to give some parameters for such tags: e.g. \begin{ttfamily}Nil\end{ttfamily}, \begin{ttfamily}True\end{ttfamily}.
+
+\end{list}
+\chapter{Unit warning{\_}value{\_}member{\_}tags}
+\label{warning_value_member_tags}
+\index{warning{\_}value{\_}member{\_}tags}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{warning_value_member_tags.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+
+
+ 
+
+
+
+This should cause 3 warnings: MyField1 has two descriptions, MyField2 has two descriptions, and NotExistsingMember does not exist.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{MyField1}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{warning_value_member_tags.TMyClass-MyField1}
+\index{MyField1}
+\item[\textbf{MyField1}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField1: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Second description of MyField1.\label{warning_value_member_tags.TMyClass-MyField2}
+\index{MyField2}
+\item[\textbf{MyField2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public MyField2: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par First description of MyField2.\end{list}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyEnum}
+\fi
+\label{warning_value_member_tags-TMyEnum}
+\index{TMyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ 
+
+
+
+
+
+This should cause 3 warnings: meOne has two descriptions, meTwo has two descriptions, and meNotExisting does not exist.\item[\textbf{Values}]
+\begin{description}
+\item[\texttt{meOne}] \label{warning_value_member_tags-meOne}
+\index{}
+First description of meOne.
+\item[\texttt{meTwo}] \label{warning_value_member_tags-meTwo}
+\index{}
+Second description of meTwo.
+\end{description}
+
+
+\end{list}
+\end{document}

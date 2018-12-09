@@ -1,0 +1,30 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}relative{\_}include{\_}1}
+\section{Description}
+This is a test unit that includes ok{\_}relative{\_}include{\_}conf.inc file two times.
+
+Note that the ok{\_}relative{\_}include{\_}conf.inc file is in the same directory as this unit, so \textbf{no matter what is current dir when running pasdoc} --- you should not need to add any {-}I option to pasdoc to find ok{\_}relative{\_}include{\_}conf.inc.
+\chapter{Unit ok{\_}relative{\_}include{\_}2}
+\section{Description}
+This is another test unit that includes ok{\_}relative{\_}include{\_}conf.inc file two times.
+
+This time note that the ok{\_}relative{\_}include{\_}conf.inc file is already in the parent directory of this unit file, so once again \textbf{no matter what is current dir when running pasdoc} --- you should not need to add any {-}I option to pasdoc to find ok{\_}relative{\_}include{\_}conf.inc.
+\end{document}

@@ -1,0 +1,55 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit StaticMember}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{StaticProcedure}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Class Procedure StaticProcedure; static;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+All methods are static unless they are virtual or dynamic. but \begin{ttfamily}StaticProcedure\end{ttfamily} is declared static. Even if 'static' did not appear after the declaration, \begin{ttfamily}StaticProcedure\end{ttfamily} would still be static. \begin{ttfamily}StaticProcedure\end{ttfamily} is also a Class procedure but that is a separate story.
+
+\end{list}
+\end{document}

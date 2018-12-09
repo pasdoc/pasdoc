@@ -1,0 +1,57 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}auto{\_}abstract}
+\section{Description}
+This is the 1st sentence, it will be turned into @abstact description of this item. This is the 2nd sentence of the description.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TTest1\end{ttfamily} Class}]This is the explicit abstract section
+\item[\texttt{\begin{ttfamily}TTest2\end{ttfamily} Class}]In this case there is no period char '.' that is followed by whitespace in this comment, so the whole comment will be treated as abstract description
+\item[\texttt{\begin{ttfamily}TTest3\end{ttfamily} Class}]Of course, 1st sentence may contain other tags, like this: \begin{ttfamily}TTest1\end{ttfamily}(\ref{ok_auto_abstract.TTest1}) and like this: \begin{ttfamily}Some code. Not really Pascal code, but oh well...\end{ttfamily} and I'm still in the 1st sentence, here the @abstract part ends.
+\item[\texttt{\begin{ttfamily}TTest4\end{ttfamily} Class}]First sentence, auto{-}abstracted, and the 1st paragraph at the same time.
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TTest1 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTest1 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This is the explicit abstract section\hfill\vspace*{1ex}
+
+This is the 1st sentence of description.
+
+This is the 2nd sentence of description.
+
+\subsection*{TTest2 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTest2 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+In this case there is no period char '.' that is followed by whitespace in this comment, so the whole comment will be treated as abstract description\subsection*{TTest3 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTest3 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Of course, 1st sentence may contain other tags, like this: \begin{ttfamily}TTest1\end{ttfamily}(\ref{ok_auto_abstract.TTest1}) and like this: \begin{ttfamily}Some code. Not really Pascal code, but oh well...\end{ttfamily} and I'm still in the 1st sentence, here the @abstract part ends. This is the 2nd sentence.
+
+Note that in this example the '.' char inside @code tag did not confuse pasdoc -- it was not treated as the end of 1st sentence, because it was part of parameters of @code tag. Even though @code tag in the example above used special syntax TagsParametersWithoutParenthesis.\subsection*{TTest4 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTest4 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+First sentence, auto{-}abstracted, and the 1st paragraph at the same time.
+
+Notice that html output will add {$<$}p{$>$} to DetailedDescription, but not to AbstractDescription. This is second paragraph.\end{document}

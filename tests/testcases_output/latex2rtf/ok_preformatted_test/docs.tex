@@ -1,0 +1,46 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}preformatted{\_}test}
+\section{Description}
+Test of @preformatted tag.\hfill\vspace*{1ex}
+
+
+
+\begin{verbatim}
+Line one ?
+1111 222 ?
+IIII WWW ?
+
+Some    long    space
+    Some    long     space
+
+Three empty lines below (*not* converted into paragraph):
+
+
+
+-------- end of three empty lines.
+
+Some html and LaTeX special chars, to make sure that ConvertString is
+called when it should be: < > & \ { }
+
+Note that @-tags inside are not expanded: @name, and consequently
+you don't have to double @ char. Just like within @html and @latex
+tags.\end{verbatim}
+\end{document}

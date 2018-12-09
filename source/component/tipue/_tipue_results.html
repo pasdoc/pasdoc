@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
-<html>
+<!DOCTYPE html>
+<html lang="###-PASDOC-LANGUAGE-###">
 <head>
 <title>Search Results</title>
 
@@ -16,6 +15,29 @@
 <div id="tipue_search_content"></div>
 
 ###-PASDOC-BODY-END-###
+
+<!--
+  Note that we use a local jquery copy (not from Google Hosted Libraries),
+  to work offline.
+-->
+<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>
+<script type="text/javascript" src="tipuesearch/tipuesearch_content.js"></script>
+<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>
+<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#tipue_search_input').tipuesearch({
+
+        /* 10 items to display seems standard */
+        'show': 10,
+
+        /* For PasDoc docs, showing urls is not very useful,
+           since the page title already shows the unit and identifier. */
+        'showURL': false
+    });
+});
+</script>
 
 </body>
 </html>

@@ -17,19 +17,6 @@ object Preferences: TPreferences
     192)
   PixelsPerInch = 96
   TextHeight = 13
-  object LabelWWWBrowserCommand: TLabel
-    Left = 8
-    Top = 6
-    Width = 345
-    Height = 39
-    Caption = 
-      'C&ommand to run WWW browser :'#10'(%s will be replaced with the URL,' +
-      ' %% with %)'#10'(under Windows you can leave this blank to use defau' +
-      'lt WWW browser)'
-    Color = clBtnFace
-    FocusControl = EditWWWBrowserCommand
-    ParentColor = False
-  end
   object LabelWWWHelpServer: TLabel
     Left = 8
     Top = 104
@@ -39,14 +26,6 @@ object Preferences: TPreferences
     Color = clBtnFace
     FocusControl = EditWWWHelpServer
     ParentColor = False
-  end
-  object EditWWWBrowserCommand: TEdit
-    Left = 8
-    Top = 46
-    Width = 392
-    Height = 21
-    TabOrder = 0
-    Text = 'EditWWWBrowserCommand'
   end
   object EditWWWHelpServer: TEdit
     Left = 8

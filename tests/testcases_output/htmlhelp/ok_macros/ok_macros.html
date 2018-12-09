@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_macros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="unit">Unit ok_macros</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+Test of FPC macros handling.</p>
+<p>
+
+
+<p>Parts based on [<a  href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213">http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213</a>]</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_macros.TAncestor.html"><code>TAncestor</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_macros.TMyClass.html"><code>TMyClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_macros.html#MyProc1">MyProc1</a></b>( a:Integer);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_macros.html#MyProc2">MyProc2</a></b>( b: Integer);</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <b><a  href="ok_macros.html#Foo">Foo</a></b>(c: string): Integer;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_macros.html#MyProc3">MyProc3</a></b>( X: Integer = 1; Y: Integer = 2);</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_macros.html#ThisShouldBeIncluded">ThisShouldBeIncluded</a></b>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_macros.html#ThisShouldBeIncluded2">ThisShouldBeIncluded2</a></b>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_macros.html#ThisShouldBeTrue">ThisShouldBeTrue</a></b> = true;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_macros.html#FourConst">FourConst</a></b> =  (1 + 1) * (1 + 1);</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_macros.html#OneAndNotNothing">OneAndNotNothing</a></b> = 1  + 1;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_macros.html#OnlyOne">OnlyOne</a></b> = 1 ;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc1"></span><code>procedure <b>MyProc1</b>( a:Integer);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc2"></span><code>procedure <b>MyProc2</b>( b: Integer);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+This is very stupid way to declare a procedure</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Foo"></span><code>function <b>Foo</b>(c: string): Integer;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc3"></span><code>procedure <b>MyProc3</b>( X: Integer = 1; Y: Integer = 2);</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ThisShouldBeIncluded"></span><code>procedure <b>ThisShouldBeIncluded</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ThisShouldBeIncluded2"></span><code>procedure <b>ThisShouldBeIncluded2</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ThisShouldBeTrue"></span><code><b>ThisShouldBeTrue</b> = true;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FourConst"></span><code><b>FourConst</b> =  (1 + 1) * (1 + 1);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Test of recursive macro expansion.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="OneAndNotNothing"></span><code><b>OneAndNotNothing</b> = 1  + 1;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Test that symbol that is not a macro is something different than a macro that expands to nothing.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="OnlyOne"></span><code><b>OnlyOne</b> = 1 ;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+</body></html>

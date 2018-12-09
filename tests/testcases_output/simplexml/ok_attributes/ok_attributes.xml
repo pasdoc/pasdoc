@@ -1,0 +1,14 @@
+<unit name="ok_attributes.pas">
+  <description><detailed>Simple Delphi attributes test, from http://www.malcolmgroves.com/blog/?p=530</detailed></description>
+  <structure name="TPerson" name_with_generic="TPerson" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="Name" indexdecl="" type="String" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+    <property name="Age" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="IUIContainer" name_with_generic="IUIContainer" type="interface">
+    <description><detailed>Test that GUIDs are handled gracefully</detailed></description>
+    <ancestor name="IInterface" declaration="IInterface" />
+  </structure>
+</unit>

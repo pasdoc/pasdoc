@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="IMyInterface">
+<param name="Local" value="ok_interface_implicit.IMyInterface.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="PublicMethod">
+<param name="Local" value="ok_interface_implicit.IMyInterface.html#PublicMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_interface_implicit.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="PublicField">
+<param name="Local" value="ok_interface_implicit.TMyClass.html#PublicField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyPackedRecord">
+<param name="Local" value="ok_interface_implicit.TMyPackedRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="PublicField">
+<param name="Local" value="ok_interface_implicit.TMyPackedRecord.html#PublicField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord">
+<param name="Local" value="ok_interface_implicit.TMyRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="PublicField">
+<param name="Local" value="ok_interface_implicit.TMyRecord.html#PublicField">
+</object>
+</ul>
+</body></html>

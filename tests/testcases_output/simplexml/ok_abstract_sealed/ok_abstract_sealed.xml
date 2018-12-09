@@ -1,0 +1,33 @@
+<unit name="ok_abstract_sealed.pas">
+  <description><detailed>description of <code>ok_abstract_sealed</code></detailed></description>
+  <structure name="TOrdinaryClass" name_with_generic="TOrdinaryClass" type="class">
+    <description><detailed>description of <code>TOrdinaryClass</code></detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+      <description><detailed>description of <code>AProcedure</code></detailed></description>
+    </function>
+    <variable name="var AVariable: integer;">
+      <description><detailed>description of <code>AVariable</code></detailed></description>
+    </variable>
+  </structure>
+  <structure name="TAbstractClass" name_with_generic="TAbstractClass" type="class">
+    <description><detailed>description of <code>TAbstractClass</code></detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+      <description><detailed>description of <code>AProcedure</code></detailed></description>
+    </function>
+    <variable name="var AVariable: integer;">
+      <description><detailed>description of <code>AVariable</code></detailed></description>
+    </variable>
+  </structure>
+  <structure name="TSealedClass" name_with_generic="TSealedClass" type="class">
+    <description><detailed>description of <code>TSealedClass</code></detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+      <description><detailed>description of <code>AProcedure</code></detailed></description>
+    </function>
+    <variable name="var AVariable: integer;">
+      <description><detailed>description of <code>AVariable</code></detailed></description>
+    </variable>
+  </structure>
+</unit>

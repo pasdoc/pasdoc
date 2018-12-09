@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -64,7 +64,7 @@ type
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string; 
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
       WriteItemLink: boolean);
 
     procedure WriteEndOfDocument;
@@ -82,14 +82,14 @@ type
 
     (*
       Writes the Item's AbstractDescription and DetailedDescription.
-      
-      TODO: this should be fixed to write 
+
+      TODO: this should be fixed to write
       @longcode(#
         WriteDirect('\item[\textbf{'+FLanguage.Translation[trDescription]+'}]',true);
       #)
       inside it, and to take care of writing paragraph markers inside it.
       Right now this is messy --- to many paragraphs may be written around
-      (which does not hurt, but is unclean) and 
+      (which does not hurt, but is unclean) and
       FLanguage.Translation[trDescription] header may be written when
       there is actually no description (only e.g. Params or Raises or Returns
       information).
@@ -116,38 +116,38 @@ type
 
     { Writes information about all Items.
       If ShowVisibility then their Visibility will also be shown. }
-    procedure WriteItemsDetailed(const HL: integer; 
-      const Items: TPasItems; ShowVisibility: boolean; 
-      SectionName: TTranslationId); 
+    procedure WriteItemsDetailed(const HL: integer;
+      const Items: TPasItems; ShowVisibility: boolean;
+      SectionName: TTranslationId);
 
-    procedure WriteFieldsProperties(HL: integer; 
-      const Items: TPasItems; ShowVisibility: boolean; 
+    procedure WriteFieldsProperties(HL: integer;
+      const Items: TPasItems; ShowVisibility: boolean;
       SectionName: TTranslationId);
 
     procedure WriteAnchor(ItemName, Link: string);
-    
+
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
-    procedure WriteCIO(HL: integer; const CIO: TPasCio); 
-    
+    procedure WriteCIO(HL: integer; const CIO: TPasCio);
+
     { Calls @link(WriteCIO) with each element in the argument collection C,
       using heading level HL. }
-    procedure WriteCIOs(HL: integer; c: TPasItems); 
-            
+    procedure WriteCIOs(HL: integer; c: TPasItems);
+
     procedure WriteSpellChecked(const AString: string);
-    
+
     { PDF Conditional support routines }
     procedure WriteStartFlushLeft;
     procedure WritePDFIfdef;
-    procedure WriteEndFlushLeft; 
-    procedure WritePDFDocInfo(LocalTitle: string); 
+    procedure WriteEndFlushLeft;
+    procedure WritePDFDocInfo(LocalTitle: string);
     procedure WriteStartList(s: string);
     procedure WriteEndList;
     function HasDescriptions(c: TPasItems):boolean;
     procedure WriteDeclarationItem(p: TPasItem; itemname: string; itemdesc: string);
     {** Returns @true if this item or its ancestor has a description, otherwise
         returns @false.
-    }    
+    }
     function HasDescription(const AItem: TPasItem): boolean;
 
     { Writes heading S to output, at heading level I.
@@ -155,7 +155,7 @@ type
       than 1 will be set to 1 and arguments larger than 6 are set to 6.
       The String S will then be enclosed in an element from H1 to H6,
       according to the level. }
-    procedure WriteHeading(HL: integer; const s: string); 
+    procedure WriteHeading(HL: integer; const s: string);
 
     { Writes dates Created and LastMod at heading level HL to output
       (if at least one the two has a value assigned). }
@@ -163,41 +163,41 @@ type
     procedure SetLatexHead(const Value: TStrings);
     function FormatHeading(HL: integer; const s: string): string;
   protected
-  
+
     function ConvertString(const s: string): string; override;
-    
+
     { Called by @link(ConvertString) to convert a character.
       Will convert special characters to their html escape sequence
       -> test }
     function ConvertChar(c: char): String; override;
 
     procedure WriteUnit(const HL: integer; const U: TPasUnit); override;
-    
+
     function LatexString(const S: string): string; override;
 
     // Makes a String look like a coded String, i.e.
     // '\begin{ttfamily}TheString\end{ttfamily}'
     //  in LaTeX. }
     function CodeString(const s: string): string; override;
-    
+
     { Returns a link to an anchor within a document. LaTeX simply concatenates
       the strings with either a "-" or "." character between them. }
     function CreateLink(const Item: TBaseItem): string; override;
-    
+
     procedure WriteStartOfCode; override;
     procedure WriteEndOfCode; override;
-    
+
     function Paragraph: string; override;
-    
+
     function ShortDash: string; override;
-    
+
     function LineBreak: string; override;
-    
+
     function URLLink(const URL: string): string; override;
-    
+
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
-      
+
 { TODO : FormatKeyWord, FormatCompilerComment, FormatComment,
 FormatString and FormatPascalCode are all closely related.
 Maybe they should be extracted into an abstract base class.  There
@@ -207,26 +207,26 @@ Latex DocGenerators.}
     // @name is called from within @link(FormatPascalCode)
     // to return AString in a bold font.
     function FormatKeyWord(AString: string): string; override;
-    
+
     // @name is called from within @link(FormatPascalCode) to
     // return AString in italics.
     function FormatCompilerComment(AString: string): string; override;
-    
+
     // @name is called from within @link(FormatPascalCode) to
     // return AString in italics.
     function FormatComment(AString: string): string; override;
 
     function FormatAnchor(const Anchor: string): string; override;
-    
+
     function MakeItemLink(const Item: TBaseItem;
       const LinkCaption: string;
       const LinkContext: TLinkContext): string; override;
-      
+
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
-    
+
     function FormatPreformatted(const Text: string): string; override;
-    
+
     function FormatImage(FileNames: TStringList): string; override;
 
     function FormatList(ListData: TListData): string; override;
@@ -247,7 +247,7 @@ Latex DocGenerators.}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function EscapeURL(const AString: string): string; virtual;
-    
+
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; override;
   published
@@ -264,7 +264,7 @@ uses
   SysUtils,
   PasDoc_Base,
   PasDoc_ObjectVector,
-  PasDoc_Utils, 
+  PasDoc_Utils,
   PasDoc_StringPairVector,
   StrUtils,
   PasDoc_Versions;
@@ -283,7 +283,7 @@ begin
   AStringList := TStringList.Create;
   try
     AStringList.Text := inherited FormatPascalCode(Line);
-    
+
     for LineIndex := 0 to AStringList.Count -1 do
     begin
       ALine := AStringList[LineIndex];
@@ -310,16 +310,16 @@ end;
 function TTexDocGenerator.CreateLink(const Item: TBaseItem): string;
 begin
   Result := '';
-  
+
   if (not Assigned(Item)) then Exit;
-  
-  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then 
+
+  if (Item is TPasItem) and Assigned(TPasItem(Item).MyUnit) then
   begin
     if Assigned(TPasItem(Item).MyObject) then begin
       { it's a method, a field or a property - only those have MyObject initialized }
       Result := TPasItem(Item).MyObject.FullLink + '-' + Item.Name;
     end else begin
-      if Item is TPasCio then 
+      if Item is TPasCio then
       begin
         { it's an object / a class }
         Result := TPasItem(Item).MyUnit.Name + '.' + Item.Name;
@@ -340,7 +340,7 @@ begin
   if LinkContext = lcCode then
     { Links inside lcCode context look bad... }
     Result := ConvertString(LinkCaption) else
-    Result :=  '\begin{ttfamily}' + ConvertString(LinkCaption) + 
+    Result :=  '\begin{ttfamily}' + ConvertString(LinkCaption) +
       '\end{ttfamily}(\ref{' + EscapeURL(Item.FullLink) + '})';
 end;
 
@@ -351,7 +351,7 @@ end;
 
 procedure TTexDocGenerator.WriteAppInfo;
 begin
-  if not ExcludeGenerator then 
+  if not ExcludeGenerator then
     WriteDirectLine('% '+ FLanguage.Translation[trGeneratedBy] + ' ' +
       PASDOC_HOMEPAGE + PASDOC_NAME_AND_VERSION);
   if IncludeCreationTime then
@@ -391,13 +391,13 @@ end;
 
 { Returns TRUE if one of the subentries has a description
   otherwise returns FALSE
-}  
+}
 function TTexDocGenerator.HasDescriptions(c: TPasItems):boolean;
 var j :integer;
     Item: TPasItem;
 begin
   HasDescriptions := false;
-  for j := 0 to c.Count - 1 do 
+  for j := 0 to c.Count - 1 do
     begin
       Item := TPasItem(c.PasItemAt[j]);
       if HasDescription(Item) then
@@ -420,7 +420,7 @@ var
   SectionHeads: array[TSections] of string;
 begin
   if not Assigned(CIO) then Exit;
-  
+
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
   SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
@@ -443,7 +443,7 @@ begin
 
   if CIO.ClassDirective = CT_HELPER then
     s := ' for ' + CIO.HelperTypeIdentifier else s := '';
-    
+
   WriteHeading(HL+1,CIO.Name+' '+ConvertString(GETCIOTypeName(CIO.MyType))
     + ConvertString(GetClassDirectiveName(CIO.ClassDirective)) + ConvertString(s));
   WriteAnchor(CIO.Name,CIO.FullLink);
@@ -451,7 +451,7 @@ begin
   if dsHierarchy in SectionsAvailable then
     begin
       { Write Hierarchy }
-      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then 
+      if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
         begin
           WriteHeading(HL + 2, SectionHeads[dsHierarchy]);
 
@@ -459,19 +459,19 @@ begin
           WriteConverted(' > ');
           s := CIO.Ancestors.FirstName;
           Item := CIO.FirstAncestor;
-          if Assigned(Item) and (Item is TPasCio) then 
+          if Assigned(Item) and (Item is TPasCio) then
             begin
               repeat
                 s := MakeItemLink(Item, Item.Name, lcNormal);
                 WriteDirect(s);
 
-                if TPasCio(Item).Ancestors.Count <> 0 then 
+                if TPasCio(Item).Ancestors.Count <> 0 then
                   begin
                     s := TPasCio(Item).Ancestors.FirstName;
                     Item := TPasCio(Item).FirstAncestor;
 
                     WriteConverted(' > ');
-                    if (Item <> nil) and (Item is TPasCio) then 
+                    if (Item <> nil) and (Item is TPasCio) then
                       begin
                         Continue;
                       end;
@@ -480,7 +480,7 @@ begin
                  Break;
                 until False;
              end;
-             if Item = nil then 
+             if Item = nil then
               begin
                 WriteDirect(s,true);
               end;
@@ -494,7 +494,7 @@ begin
     end
   else
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
-       
+
   WriteFieldsProperties(HL + 2, CIO.Properties, CIO.ShowVisibility, trProperties);
 
   WriteFieldsProperties(HL + 2, CIO.Fields, CIO.ShowVisibility, trFields);
@@ -515,7 +515,7 @@ begin
 
   WriteHeading(HL, FLanguage.Translation[trCio]);
 
-  for j := 0 to c.Count - 1 do 
+  for j := 0 to c.Count - 1 do
     begin
       CIO := TPasCio(c.PasItemAt[j]);
       WriteCIO(HL,CIO);
@@ -524,7 +524,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem; 
+procedure TTexDocGenerator.WriteCodeWithLinks(const p: TPasItem;
   const Code: string; WriteItemLink: boolean);
 begin
   WriteCodeWithLinksCommon(p, Code, WriteItemLink, '', '');
@@ -545,10 +545,10 @@ procedure TTexDocGenerator.WriteStartFlushLeft;
      else
         WriteDirect('\begin{flushleft}',true);
   end;
-  
+
 procedure TTexDocGenerator.WritePDFIfdef;
   begin
-    { PDF output support, create ifpdf macro 
+    { PDF output support, create ifpdf macro
       to be able to support extended PDF features.
     }
     if not FLatex2Rtf then
@@ -564,11 +564,11 @@ procedure TTexDocGenerator.WritePDFIfdef;
         WriteDirect('\fi',true);
         WriteDirect('',true);
       end;
-  end;    
-  
- 
- 
-procedure TTexDocGenerator.WriteEndFlushLeft; 
+  end;
+
+
+
+procedure TTexDocGenerator.WriteEndFlushLeft;
   begin
     if not FLatex2Rtf then
       begin
@@ -579,8 +579,8 @@ procedure TTexDocGenerator.WriteEndFlushLeft;
      else
         WriteDirect('\end{flushleft}',true);
 end;
- 
-procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string); 
+
+procedure TTexDocGenerator.WritePDFDocInfo(Localtitle: string);
   begin
     if not FLatex2RTF then
       begin
@@ -635,6 +635,7 @@ begin
   WriteStartOfDocument('');
   WriteIntroduction;
   WriteUnits(1);
+  WriteAdditionalFiles;
   WriteConclusion;
   WriteEndOfDocument;
   CloseStream;
@@ -736,7 +737,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TTexDocGenerator.WriteItemsDetailed(const HL: integer; 
+procedure TTexDocGenerator.WriteItemsDetailed(const HL: integer;
   const Items: TPasItems; ShowVisibility: boolean; SectionName: TTranslationId);
 var
   j: Integer;
@@ -747,7 +748,7 @@ begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
   WriteHeading(HL, FLanguage.Translation[SectionName]);
-  
+
   { Determine the longest string used.
     This is the one we will use for determining the label width.
   }
@@ -761,10 +762,10 @@ begin
   if length(s) < length(FLanguage.Translation[trExceptions])  then
      s:=FLanguage.Translation[trExceptions];
 
-  for j := 0 to Items.Count - 1 do 
+  for j := 0 to Items.Count - 1 do
   begin
     Item := Items.PasItemAt[j];
-      
+
     WriteHeading(HL+1, Item.Name);
     WriteAnchor(Item.Name, Item.FullLink);
 
@@ -799,12 +800,12 @@ begin
 
   WriteDirect('\begin{description}',true);
 
-  for i := 0 to Items.Count - 1 do 
+  for i := 0 to Items.Count - 1 do
   begin
     Item := Items.PasItemAt[i];
-    
+
     WriteDirect('\item[\texttt{');
-    
+
     if Item is TPasCio then
     begin
       WriteDirect(CodeString(ConvertString(Item.Name)));
@@ -814,11 +815,11 @@ begin
     begin
       WriteConverted(Item.Name);
     end;
-    
+
     WriteDirect('}]');
-    
+
     WriteSpellChecked(Item.AbstractDescription);
-    
+
     WriteDirectLine('');
   end;
   WriteDirect('\end{description}', true);
@@ -895,12 +896,12 @@ begin
         WriteDirect('\chapter{');
         WriteConverted(s);
         WriteDirectLine('}');
-       end; 
+       end;
     2: begin
         WriteDirect('\section{');
         WriteConverted(s);
         WriteDirectLine('}');
-       end; 
+       end;
     3: begin
           if latex2rtf then
             begin
@@ -921,7 +922,7 @@ begin
               WriteDirectLine('}');
               WriteDirect('\fi',true);
             end;
-       end; 
+       end;
     4: begin
           WriteDirect('\subsubsection*{');
           WriteDirect('\large{\textbf{'+ConvertString(s)+'}}\normalsize\hspace{1ex}'+
@@ -933,7 +934,7 @@ begin
         WriteConverted(s);
         WriteDirectLine('}\hspace*{\fill}');
         WriteDirect('',true);
-       end; 
+       end;
   end;
 end;
 
@@ -945,21 +946,19 @@ var
 begin
   Result := false;
   if not Assigned(AItem) then Exit;
-  
+
   Result := AItem.HasDescription or
     { TPasEnum always has some description: list of it's members }
     (AItem is TPasEnum) or
     { Some hint directive ? }
-    AItem.IsDeprecated or AItem.IsPlatformSpecific or AItem.IsLibrarySpecific or
-    { Some TPasMethod optional info ? }
-    ( (AItem is TPasMethod) and
-      TPasMethod(AItem).HasMethodOptionalInfo ) or
+    (AItem.HintDirectives <> []) or
+    AItem.HasOptionalInfo or
     { Seealso section ? }
     (AItem.SeeAlso.Count <> 0);
 
   if Result then Exit;
 
-  if (AItem is TPasCio) and 
+  if (AItem is TPasCio) and
      (TPasCio(AItem).Ancestors.Count <> 0) then
   begin
     Ancestor := TPasCio(AItem).FirstAncestor;
@@ -968,16 +967,16 @@ begin
       HasDescription := HasDescription(TPasItem(Ancestor));
       exit;
     end;
-  end;    
+  end;
 end;
 
 procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
   AlreadyWithinAList: boolean);
 
   { writes the parameters or exceptions list }
-  procedure WriteParamsOrRaises(Func: TPasMethod; const Caption: string;
+  procedure WriteParamsOrRaises(ItemToSearchFrom: TPasItem; const Caption: string;
     List: TStringPairVector; LinkToParamNames: boolean);
-    
+
     procedure WriteParameter(const ParamName: string; const Desc: string);
     begin
       WriteDirect('\item[');
@@ -985,8 +984,8 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       WriteDirect('] ');
       WriteSpellChecked(Desc);
       WriteDirect('',true);
-    end;    
-    
+    end;
+
   var
     i: integer;
     ParamName: string;
@@ -1006,7 +1005,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       ParamName := List[i].Name;
 
       if LinkToParamNames then
-       ParamName := SearchLink(ParamName, Func, '', true);
+       ParamName := SearchLink(ParamName, ItemToSearchFrom, '', true);
 
       WriteParameter(ParamName, List[i].Value);
     end;
@@ -1030,25 +1029,25 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 
     for i := 0 to SeeAlso.Count - 1 do
     begin
-      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem, 
+      SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
         SeeAlso[i].Value, true, SeeAlsoItem);
       WriteDirect('\item[');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
         WriteConverted(SeeAlso[i].Name);
       WriteDirectLine('] ');
-      
+
       if (SeeAlsoItem <> nil) and (SeeAlsoItem is TPasItem) then
         WriteDirect(TPasItem(SeeAlsoItem).AbstractDescription);
       WriteDirectLine('');
     end;
     WriteDirect('\end{description}',true);
-    
+
     if not AlreadyWithinAList then
       WriteEndList;
   end;
 
-  procedure WriteReturnDesc(Func: TPasMethod; ReturnDesc: string);
+  procedure WriteReturnDesc(ReturnDesc: string);
   begin
     if ReturnDesc = '' then
       exit;
@@ -1072,23 +1071,25 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
 var
   Ancestor: TBaseItem;
   AncestorName: string;
-  AItemMethod: TPasMethod;
+  EnumMember: TPasItem;
   i: Integer;
 begin
   if not Assigned(AItem) then Exit;
 
-  if AItem.IsDeprecated then
+  if hdDeprecated in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
-  if AItem.IsPlatformSpecific then
+  if hdPlatform in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
-  if AItem.IsLibrarySpecific then
+  if hdLibrary in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
+  if hdExperimental in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trExperimental]);
 
-  if AItem.AbstractDescription <> '' then 
+  if AItem.AbstractDescription <> '' then
   begin
     WriteSpellChecked(AItem.AbstractDescription);
-    
-    if AItem.DetailedDescription <> '' then 
+
+    if AItem.DetailedDescription <> '' then
       begin
         if not AItem.AbstractDescriptionWasAutomatic then
         begin
@@ -1097,15 +1098,15 @@ begin
         end;
         WriteSpellChecked(AItem.DetailedDescription);
       end;
-  end else 
+  end else
   begin
-    if AItem.DetailedDescription <> '' then 
+    if AItem.DetailedDescription <> '' then
     begin
       WriteSpellChecked(AItem.DetailedDescription);
-    end else 
+    end else
     begin
       if (AItem is TPasCio) and
-         (TPasCio(AItem).Ancestors.Count <> 0) then 
+         (TPasCio(AItem).Ancestors.Count <> 0) then
       begin
         AncestorName := TPasCio(AItem).Ancestors.FirstName;
         Ancestor := TPasCio(AItem).FirstAncestor;
@@ -1121,22 +1122,22 @@ begin
     end;
   end;
 
-  if (AItem is TPasMethod) and TPasMethod(AItem).HasMethodOptionalInfo then
+  if AItem.HasOptionalInfo then
   begin
     WriteStartOfParagraph;
-    AItemMethod := TPasMethod(AItem); 
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trParameters], 
-      AItemMethod.Params, false);
-    WriteReturnDesc(AItemMethod, AItemMethod.Returns);
-    
+    WriteParamsOrRaises(AItem, FLanguage.Translation[trParameters],
+      AItem.Params, false);
+    if AItem is TPasMethod then
+      WriteReturnDesc(TPasMethod(AItem).Returns);
+
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
-      because trExceptionsRaised is just too long and so everything 
+      because trExceptionsRaised is just too long and so everything
       would look too ugly. However it's preferred to use
       trExceptionsRaised in the future (then trExceptions can be simply
       removed from PasDoc_Languages), because trExceptionsRaised
       is just more understandable to the reader of documentation. }
-    WriteParamsOrRaises(AItemMethod, FLanguage.Translation[trExceptions], 
-      AItemMethod.Raises, true);
+    WriteParamsOrRaises(AItem, FLanguage.Translation[trExceptions],
+      AItem.Raises, true);
   end;
 
   WriteSeeAlso(AItem.SeeAlso);
@@ -1145,20 +1146,24 @@ begin
   begin
     WriteDirect('\item[\textbf{' + FLanguage.Translation[trValues] + '}]',true);
     WriteDirectLine('\begin{description}');
-    for i := 0 to TPasEnum(AItem).Members.Count - 1 do begin
+    for i := 0 to TPasEnum(AItem).Members.Count - 1 do
+    begin
+      EnumMember := TPasEnum(AItem).Members.PasItemAt[i];
       WriteDirect('\item[\texttt{');
-      { add the first character for enums }
-      WriteConverted(TPasEnum(AItem).Members.PasItemAt[i].FullDeclaration);
-      { add the end characters for enums }
+      { Use EnumMember.FullDeclaration, not just EnumMember.Name.
+        This is important for enums with explicit numeric value, like "me1 := 1". }
+      WriteConverted(EnumMember.FullDeclaration);
       WriteDirect('}] ');
-      WriteItemLongDescription(TPasEnum(AItem).Members.PasItemAt[i], false);
+      { We have to place anchor outside of the \item[], otherwise it doesn't work... }
+      WriteAnchor('', EnumMember.FullLink);
+      WriteItemLongDescription(EnumMember, false);
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');
   end;
 end;
 
-procedure TTexDocGenerator.WriteFieldsProperties(HL: integer; 
+procedure TTexDocGenerator.WriteFieldsProperties(HL: integer;
   const Items: TPasItems; ShowVisibility: boolean; SectionName: TTranslationId);
 var
   j: Integer;
@@ -1171,7 +1176,7 @@ begin
     if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
     WriteHeading(HL, FLanguage.Translation[SectionName]);
-  
+
     { Determine the longest string used.
       This is the one we will use for determining the label width.
     }
@@ -1182,38 +1187,38 @@ begin
       if length(s) < length(Item.Name) then
         s := Item.Name;
     end;
-    
+
     WriteStartList(s);
-    
-    for j := 0 to Items.Count - 1 do 
+
+    for j := 0 to Items.Count - 1 do
     begin
       Item := Items.PasItemAt[j];
       WriteAnchor(Item.Name, Item.FullLink);
-      
+
       if ShowVisibility then
         Visibility := string(VisibilityStr[Item.Visibility]) + ' ' else
         Visibility := '';
-      WriteDeclarationItem(Item, Item.Name, 
+      WriteDeclarationItem(Item, Item.Name,
         Visibility + Item.FullDeclaration);
-        
+
       WriteDirectLine('');
       WriteDirect('\par ');
       WriteItemLongDescription(Item, true);
     end;
 
-    WriteEndList; 
+    WriteEndList;
   end;
 end;
 
 { ---------------------------------------------------------------------------- }
 procedure TTexDocGenerator.WriteAnchor(ItemName, Link: string);
 begin
-  { No links in RTF documentation -- latex2rtf can't really handle them. 
+  { No links in RTF documentation -- latex2rtf can't really handle them.
     docs.aux must be generated by user using some normal latex program
     (like latex or pdflatex), and then passed to latex2rtf.
     See Latex2RtfOutput page on pasdoc wiki. }
   if FLatex2rtf then exit;
-  
+
   if Link <> '' then
      WriteDirect('\label{'+Link+'}',true)
   else
@@ -1260,7 +1265,7 @@ begin
     WriteDirect('\textwidth 16.5cm',true);
   WriteDirect('',true);
   WritePDFIfDef;
-  
+
   { Use graphicx package (for @image tag) }
   WriteDirectLine(
     '\ifpdf' + LineEnding +
@@ -1278,7 +1283,7 @@ begin
     if Title <> '' then
       begin
         WriteDirect('\title{'+Title+'}',true);
-        WriteDirect('\author{Pasdoc}',true);      
+        WriteDirect('\author{Pasdoc}',true);
         WriteDirect('\maketitle',true);
         WriteDirect('\newpage',true);
       end;
@@ -1374,11 +1379,11 @@ procedure TTexDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
         if ULink <> nil then
         begin
           WriteDirect(MakeItemLink(ULink, U.UsesUnits[i], lcNormal));
-        end else 
+        end else
         begin
-          { MakeItemLink writes link names in tt font, so we follow 
+          { MakeItemLink writes link names in tt font, so we follow
             the convention here and also use tt font. }
-          WriteDirect('\begin{ttfamily}' + 
+          WriteDirect('\begin{ttfamily}' +
             ConvertString(U.UsesUnits[i]) + '\end{ttfamily}');
         end;
       end;
@@ -1423,13 +1428,13 @@ begin
     WriteUnitDescription(HL + 1, U);
 
   WriteUnitUses(HL + 1, U);
-  
+
   if (U.CIOs.count <> 0) or (U.FuncsProcs.count <> 0) then
     WriteHeading(HL + 1, FLanguage.Translation[trOverview]);
-    
+
   WriteItemsSummary(U.CIOs);
   WriteItemsSummary(U.FuncsProcs);
-  
+
   WriteCIOs(HL + 1, U.CIOs);
 
   WriteItemsDetailed(HL + 1, U.FuncsProcs, false, trFunctionsAndProcedures);
@@ -1454,8 +1459,8 @@ begin
   try
     CheckString(AString, LErrors);
     WriteDirect(AString);
-    
-    { TODO: write here LErrors, like in 
+
+    { TODO: write here LErrors, like in
       TGenericHTMLDocGenerator.WriteSpellChecked }
   finally LErrors.Free end;
 end;
@@ -1489,7 +1494,7 @@ begin
   EscapeURL := AString;
 end;
 
-function TTexDocGenerator.Paragraph: string; 
+function TTexDocGenerator.Paragraph: string;
 begin
   Result := LineEnding + LineEnding;
 end;
@@ -1499,7 +1504,7 @@ begin
   Result := '{-}';
 end;
 
-function TTexDocGenerator.LineBreak: string; 
+function TTexDocGenerator.LineBreak: string;
 begin
   (* We add '{}' at the end. Otherwise there would be LaTeX errors
      if user will put "[" character right after @br, producing
@@ -1511,10 +1516,10 @@ begin
   Result := '\\{}';
 end;
 
-function TTexDocGenerator.URLLink(const URL: string): string; 
+function TTexDocGenerator.URLLink(const URL: string): string;
 begin
   if Latex2Rtf then
-    (* latex2rtf doesn't understand \href (well, actually it doesn't 
+    (* latex2rtf doesn't understand \href (well, actually it doesn't
        understand \usepackage{hyperref} at all) *)
     Result := ConvertString(URL) else
     Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
@@ -1622,20 +1627,20 @@ begin
   { LaTeX doesn't allow empty lists }
   if ListData.Count <> 0 then
   begin
-    Result := Format('\begin{%s}', 
+    Result := Format('\begin{%s}',
       [ListEnvironment[ListData.ListType]]) + LineEnding;
     for i := 0 to ListData.Count - 1 do
     begin
       ListItem := ListData.Items[i] as TListItemData;
-      
+
       if ListData.ListType = ltDefinition then
       begin
-        Result := Result + 
+        Result := Result +
           '\item[' + ListItem.ItemLabel + '] ' + ListItem.Text + LineEnding;
       end else
       begin
         if ListData.ListType = ltOrdered then
-          Result := Result + 
+          Result := Result +
             { We don't know here which counter we should set to Index.
               So we just set *all* four counters. Simple, and works. }
             Format(
@@ -1643,12 +1648,12 @@ begin
               '\setcounter{enumii}{%0:d} ' +
               '\setcounter{enumiii}{%0:d} ' +
               '\setcounter{enumiv}{%0:d} ' + LineEnding,
-              [ { Note that we set ListItem.Index - 1, so that resulting 
+              [ { Note that we set ListItem.Index - 1, so that resulting
                   document will correctly display ListItem.Index.
                   That's how LaTeX  works. }
                 ListItem.Index - 1 ]);
-      
-        Result := Result + 
+
+        Result := Result +
           '\item ' + ListItem.Text + LineEnding;
       end;
     end;
@@ -1661,27 +1666,27 @@ function TTexDocGenerator.FormatTable(Table: TTableData): string;
 var
   RowNum, ColNum: Integer;
   Row: TRowData;
-  
+
   function CellContent(Row: TRowData; ColNum: Integer): string;
   begin
     Result := Row.Cells[ColNum];
     if Row.Head then
       Result := FormatBold(Result);
   end;
-  
+
 begin
-  Result := Paragraph + '\begin{tabular}{' + 
-    DupeString('|l', Table.MaxCellCount) + '|}' + LineEnding + 
+  Result := Paragraph + '\begin{tabular}{' +
+    DupeString('|l', Table.MaxCellCount) + '|}' + LineEnding +
     '\hline' + LineEnding;
   for RowNum := 0 to Table.Count - 1 do
   begin
     Row := Table.Items[RowNum] as TRowData;
-    
+
     for ColNum := 0 to Row.Cells.Count - 2 do
       Result := Result + CellContent(Row, ColNum) + ' & ';
-      
+
     { No '&' after the last cell of a row. }
-    Result := Result + CellContent(Row, Row.Cells.Count - 1) + 
+    Result := Result + CellContent(Row, Row.Cells.Count - 1) +
       ' \\ \hline' + LineEnding;
   end;
   Result := Result + '\end{tabular}' + Paragraph;
@@ -1711,7 +1716,7 @@ function TTexDocGenerator.FormatImage(FileNames: TStringList): string;
     begin
       for I := 0 to FileNames.Count - 1 do
         if (LowerCase(ExtractFileExt(FileNames[I])) = '.jpg') or
-           (LowerCase(ExtractFileExt(FileNames[I])) = '.jpeg') or 
+           (LowerCase(ExtractFileExt(FileNames[I])) = '.jpeg') or
            (LowerCase(ExtractFileExt(FileNames[I])) = '.png') then
         begin
           ChosenFileName := FileNames[I];
@@ -1721,7 +1726,7 @@ function TTexDocGenerator.FormatImage(FileNames: TStringList): string;
       if ChosenFileName = '' then
         ChosenFileName := FileNames[0];
     end;
-   
+
     { Calculate ImageId and CopyNeeded }
     ImageId := FImages.IndexOf(ChosenFileName);
     CopyNeeded := ImageId = -1;
@@ -1766,13 +1771,13 @@ function TTexDocGenerator.FormatImage(FileNames: TStringList): string;
     if CopyNeeded then
       CopyFile(ChosenFileName, DestinationDirectory + Result);
   end;
-  
+
 var
   SImagePdf, SImageDvi: string;
 begin
   { I call FormatImageXxx funcs first, before calculating Result,
     to make sure that FormatImageXxx are called in determined order.
-    
+
     Otherwise e.g. FPC 2.0.4 calculated S := S1 + S2 by calling
     S2 function first, while FPC 2.1.3 (fixes_2_2 branch) and 2.3.1
     (trunk) call S1 first. The determined order is not needed for
@@ -1782,7 +1787,7 @@ begin
   SImageDvi := FormatImageDvi;
   SImagePdf := FormatImagePdf;
 
-  Result := 
+  Result :=
     '\begin{figure}' + LineEnding +
     '  \ifpdf' + LineEnding +
     '    \includegraphics{' + EscapeURL(SImagePdf) + '}' + LineEnding +

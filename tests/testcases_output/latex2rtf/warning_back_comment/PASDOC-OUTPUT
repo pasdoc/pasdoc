@@ -1,0 +1,16 @@
+Info[1]:    Starting Source File Parsing ...
+Info[2]:    Now parsing file warning_back_comment.pas...
+Warning[1]: warning_back_comment.pas(2): This is a back-comment (comment starting with "<") but there is no item declared right before it: " Back comment without anything before --- should produce a warning."
+Warning[1]: warning_back_comment.pas(7): Item warning_back_comment already has one description, now it's overridden by back-comment (comment starting with "<"): " Descr of unit warning_back_comment "
+Warning[1]: warning_back_comment.pas(15): Item meOne already has one description, now it's overridden by back-comment (comment starting with "<"): " Descr of meOne"
+Warning[1]: warning_back_comment.pas(22): Item V1 already has one description, now it's overridden by back-comment (comment starting with "<"): " descr of V1 and V2"
+Warning[1]: warning_back_comment.pas(22): Item V2 already has one description, now it's overridden by back-comment (comment starting with "<"): " descr of V1 and V2"
+Warning[1]: warning_back_comment.pas(24): This is a back-comment (comment starting with "<") but there is no item declared right before it: "Another back comment without anything before --- should produce a warning."
+Info[2]:    ... 1 Source File(s) parsed
+Info[2]:    Creating links ...
+Info[2]:    ...  links created
+Info[2]:    Expanding descriptions (pass 1) ...
+Info[2]:    Expanding descriptions (pass 2) ...
+Info[2]:    ... Descriptions expanded
+Info[2]:    Writing Docs for unit "warning_back_comment"
+Info[1]:    Done

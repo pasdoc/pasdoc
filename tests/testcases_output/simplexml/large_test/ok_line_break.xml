@@ -1,0 +1,6 @@
+<unit name="ok_line_break.pas">
+  <description><detailed>Test @br tag.</detailed></description>
+  <function name="TestLineBreak" type="procedure" declaration="procedure TestLineBreak;">
+    <description><detailed>1st paragraph.  Second line of 1st paragraph. 2nd paragraph. Blah blah blah. 3rd paragraph.  Second line of 3rd paragraph.</detailed></description>
+  </function>
+</unit>

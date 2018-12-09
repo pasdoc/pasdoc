@@ -1,0 +1,19 @@
+<unit name="ok_auto_abstract.pas">
+  <description><abstract>This is the 1st sentence, it will be turned into @abstact description of this item.</abstract><detailed> This is the 2nd sentence of the description.</detailed></description>
+  <structure name="TTest1" name_with_generic="TTest1" type="class">
+    <description><abstract>This is the explicit abstract section</abstract><detailed>This is the 1st sentence of description. This is the 2nd sentence of description. </detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TTest2" name_with_generic="TTest2" type="class">
+    <description><abstract>In this case there is no period char '.' that is followed by whitespace in this comment, so the whole comment will be treated as abstract description</abstract></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TTest3" name_with_generic="TTest3" type="class">
+    <description><abstract>Of course, 1st sentence may contain other tags, like this: TTest1 and like this: <code>Some code. Not really Pascal code, but oh well...</code> and I'm still in the 1st sentence, here the @abstract part ends.</abstract><detailed> This is the 2nd sentence. Note that in this example the '.' char inside @code tag did not confuse pasdoc -- it was not treated as the end of 1st sentence, because it was part of parameters of @code tag. Even though @code tag in the example above used special syntax TagsParametersWithoutParenthesis.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TTest4" name_with_generic="TTest4" type="class">
+    <description><abstract>First sentence, auto-abstracted, and the 1st paragraph at the same time.</abstract><detailed> Notice that html output will add &lt;p&gt; to DetailedDescription, but not to AbstractDescription. This is second paragraph.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

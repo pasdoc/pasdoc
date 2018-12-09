@@ -1,0 +1,267 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}if{\_}expressions}
+\section{Description}
+Testcase for various conditional directives, primarily {\$}if and {\$}elseif.
+\section{Overview}
+\begin{description}
+\item[\texttt{Windows{\_}IFDEF}]
+\item[\texttt{Windows{\_}IFDEF{\_}ELSE}]
+\item[\texttt{Windows{\_}IF}]
+\item[\texttt{Windows{\_}IF{\_}DEFINED{\_}ALT}]
+\item[\texttt{OptionR{\_}IF}]
+\item[\texttt{True{\_}IF}]
+\item[\texttt{SizeOf{\_}IF}]
+\item[\texttt{Declared{\_}IF}]
+\item[\texttt{WindowsAsUnix{\_}IF{\_}EQUALS}]
+\item[\texttt{POSIXAsUnix{\_}IF{\_}EQUALS}]
+\item[\texttt{FpcAndUnix{\_}IF{\_}2}]
+\item[\texttt{Always}]
+\end{description}
+\section{Functions and Procedures}
+\subsection*{Windows{\_}IFDEF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Windows{\_}IFDEF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Windows{\_}IFDEF{\_}ELSE}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Windows{\_}IFDEF{\_}ELSE;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Windows{\_}IF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Windows{\_}IF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Windows{\_}IF{\_}DEFINED{\_}ALT}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Windows{\_}IF{\_}DEFINED{\_}ALT;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{OptionR{\_}IF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure OptionR{\_}IF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{True{\_}IF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure True{\_}IF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{SizeOf{\_}IF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure SizeOf{\_}IF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Declared{\_}IF}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Declared{\_}IF;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{WindowsAsUnix{\_}IF{\_}EQUALS}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure WindowsAsUnix{\_}IF{\_}EQUALS;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{POSIXAsUnix{\_}IF{\_}EQUALS}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure POSIXAsUnix{\_}IF{\_}EQUALS;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{FpcAndUnix{\_}IF{\_}2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure FpcAndUnix{\_}IF{\_}2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Always}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Always;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

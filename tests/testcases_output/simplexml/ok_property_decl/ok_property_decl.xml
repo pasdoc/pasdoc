@@ -1,0 +1,7 @@
+<unit name="ok_property_decl.pas">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="MyProperty" indexdecl="[S:string]" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+</unit>

@@ -1,0 +1,39 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}bold{\_}italic}
+\section{Description}
+\textbf{This is a test} of @bold and @italic tags.\hfill\vspace*{1ex}
+
+
+
+Some \textbf{bold text}.
+
+Some \textbf{\textit{bold and italic text}}.
+
+Some \textbf{some bold and \textit{italic} and \textit{italic} and \textit{italic once again} text}.
+
+Some \textit{italic text}.
+
+Some \textbf{bold text with some tags: My name is \begin{ttfamily}ok{\_}bold{\_}italic\end{ttfamily}, some \begin{ttfamily}begin end\end{ttfamily} and a link to me: \begin{ttfamily}ok{\_}bold{\_}italic\end{ttfamily}(\ref{ok_bold_italic})}.
+
+Some \textbf{bold text and \textbf{some more}}.
+
+Some \textit{italic text and \textit{some more}}.
+\end{document}

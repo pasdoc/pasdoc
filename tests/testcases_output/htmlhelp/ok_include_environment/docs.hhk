@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MacDATE">
+<param name="Local" value="ok_include_environment.html#MacDATE">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacFILE">
+<param name="Local" value="ok_include_environment.html#MacFILE">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacFPCTARGET">
+<param name="Local" value="ok_include_environment.html#MacFPCTARGET">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacFPCTARGETCPU">
+<param name="Local" value="ok_include_environment.html#MacFPCTARGETCPU">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacFPCTARGETOS">
+<param name="Local" value="ok_include_environment.html#MacFPCTARGETOS">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacFPCVERSION">
+<param name="Local" value="ok_include_environment.html#MacFPCVERSION">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacLINE">
+<param name="Local" value="ok_include_environment.html#MacLINE">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacPathEnv">
+<param name="Local" value="ok_include_environment.html#MacPathEnv">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacTIME">
+<param name="Local" value="ok_include_environment.html#MacTIME">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MacUSEREnv">
+<param name="Local" value="ok_include_environment.html#MacUSEREnv">
+</object>
+</ul>
+</body></html>

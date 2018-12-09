@@ -1,0 +1,50 @@
+[OPTIONS]
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=docs.chm
+Contents file=docs.hhc
+Default Window=Default
+Default topic=AllUnits.html
+Display compile progress=Yes
+Error log file=docs.log
+Full-text search=Yes
+Index file=docs.hhk
+Title=docs
+
+[WINDOWS]
+Default="docs","docs.hhc","docs.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0
+
+[FILES]
+Legend.html
+AllUnits.html
+ClassHierarchy.html
+AllClasses.html
+AllTypes.html
+AllVariables.html
+AllConstants.html
+AllFunctions.html
+AllIdentifiers.html
+ok_generic.html
+ok_generic.TMyList.html
+ok_generic.TGeometryAttrib.html
+ok_generic.TGeometryAttribsList.html
+ok_generic.TMyObject.html
+ok_generic.TMyGenericList.html
+ok_generic.TMyNewGeneric.html
+ok_generic.TAnotherGenericType.html
+ok_generic.TArray.html
+ok_generic.TEnumerator.html
+ok_generic.TEnumerable.html
+ok_generic.TList.html
+ok_generic.TQueue.html
+ok_generic.TStack.html
+ok_generic.TPair.html
+ok_generic.TDictionary.html
+ok_generic.TObjectList.html
+ok_generic.TObjectQueue.html
+ok_generic.TObjectStack.html
+ok_generic.TObjectDictionary.html
+
+[INFOTYPES]
+
+[MERGE FILES]

@@ -1,0 +1,10 @@
+<unit name="ok_list_item_set_number.pas">
+  <description><abstract>Testcase for [https://sourceforge.net/tracker/?func=detail&amp;atid=104213&amp;aid=1533017&amp;group_id=4213]</abstract><detailed> 
+
+<orderedlist>
+<item>foo</item>
+<item>bar</item>
+</orderedlist>
+
+</detailed></description>
+</unit>

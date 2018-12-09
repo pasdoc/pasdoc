@@ -1,0 +1,22 @@
+<unit name="ok_preformatted_test.pas">
+  <description><abstract>Test of @preformatted tag.</abstract><detailed> 
+Line one ?
+1111 222 ?
+IIII WWW ?
+
+Some    long    space
+    Some    long     space
+
+Three empty lines below (*not* converted into paragraph):
+
+
+
+-------- end of three empty lines.
+
+Some html and LaTeX special chars, to make sure that ConvertString is
+called when it should be: &lt; &gt; &amp; \ { }
+
+Note that @-tags inside are not expanded: @name, and consequently
+you don't have to double @ char. Just like within @html and @latex
+tags.</detailed></description>
+</unit>

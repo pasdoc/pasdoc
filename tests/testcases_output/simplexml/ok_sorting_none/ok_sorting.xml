@@ -1,0 +1,46 @@
+<unit name="ok_sorting.pas">
+  <description><detailed>Test unit to test various --sort settings.</detailed></description>
+  <function name="ZZZProc" type="procedure" declaration="procedure ZZZProc;">
+  </function>
+  <function name="AAAProc" type="procedure" declaration="procedure AAAProc;">
+  </function>
+  <constant name="ZZZConst = 1;">
+  </constant>
+  <constant name="AAAConst = 2;">
+  </constant>
+  <variable name="ZZZVar: Integer;">
+  </variable>
+  <variable name="AAAVar: Integer;">
+  </variable>
+  <type name="ZZZType = Integer;">
+  </type>
+  <type name="AAAType = Integer;">
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;">
+    </function>
+    <function name="AAAMethod" type="procedure" declaration="procedure AAAMethod;">
+    </function>
+    <variable name="ZZZField: Integer;">
+    </variable>
+    <variable name="AAAField: Integer;">
+    </variable>
+    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+    <variable name="ZZZField: Integer;">
+    </variable>
+    <variable name="AAAField: Integer;">
+    </variable>
+  </structure>
+  <structure name="ZZZClass" name_with_generic="ZZZClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="AAAClass" name_with_generic="AAAClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

@@ -1,11 +1,12 @@
-
 /*
-Tipue Search 3.0.1
-Copyright (c) 2013 Tipue
+Based on CSS from Tipue Search 3.0.1,
+with some ideas from 6.1,
+modified by PasDoc.
+
+Copyright (c) 2013-2018 Tipue and PasDoc developers.
 Tipue Search is released under the MIT License
 http://www.tipue.com/search
 */
-
 
 #tipue_search_input
 {
@@ -16,13 +17,13 @@ http://www.tipue.com/search
 	border-radius: 0;
 	-moz-appearance: none;
 	-webkit-appearance: none;
-     box-shadow: none; 
+     box-shadow: none;
 	outline: 0;
 	margin: 0;
 }
 #tipue_search_input:focus
 {
-     border: 1px solid #ccc;    
+     border: 1px solid #ccc;
 }
 #tipue_search_button
 {
@@ -48,7 +49,7 @@ http://www.tipue.com/search
 }
 #tipue_search_loading
 {
-     padding-top: 60px;     
+     padding-top: 60px;
      /* PasDoc: load loader.gif from current dir, not img/ subdir. */
      background: #fff url('loader.gif') no-repeat left;
 }
@@ -71,7 +72,7 @@ http://www.tipue.com/search
 #tipue_search_warning a:hover
 {
 	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;   
+	border-bottom: 1px solid #ccc;
 }
 #tipue_search_results_count
 {
@@ -113,7 +114,7 @@ http://www.tipue.com/search
 .tipue_search_content_loc a:hover
 {
 	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;     
+	border-bottom: 1px solid #ccc;
 }
 #tipue_search_foot
 {
@@ -156,4 +157,9 @@ http://www.tipue.com/search
 {
 	border: 1px solid #ccc;
 	background-color: #f3f3f3;
+}
+
+/* PasDoc: style found words. */
+.tipue_search_content_bold {
+    background-color: yellow;
 }

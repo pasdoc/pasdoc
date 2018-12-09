@@ -1,0 +1,89 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}item{\_}set{\_}number}
+\label{ok_item_set_number}
+\index{ok{\_}item{\_}set{\_}number}
+\section{Description}
+Test of of @itemSetNumber tag.\hfill\vspace*{1ex}
+
+
+
+\begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item Foo
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Foo
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Foo
+\setcounter{enumi}{3} \setcounter{enumii}{3} \setcounter{enumiii}{3} \setcounter{enumiv}{3} 
+\item Foo
+\setcounter{enumi}{4} \setcounter{enumii}{4} \setcounter{enumiii}{4} \setcounter{enumiv}{4} 
+\item Foo
+\setcounter{enumi}{143} \setcounter{enumii}{143} \setcounter{enumiii}{143} \setcounter{enumiv}{143} 
+\item Foo
+\setcounter{enumi}{144} \setcounter{enumii}{144} \setcounter{enumiii}{144} \setcounter{enumiv}{144} 
+\item Foo
+\setcounter{enumi}{145} \setcounter{enumii}{145} \setcounter{enumiii}{145} \setcounter{enumiv}{145} 
+\item Foo
+\setcounter{enumi}{146} \setcounter{enumii}{146} \setcounter{enumiii}{146} \setcounter{enumiv}{146} 
+\item  \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item Bar
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Bar
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Bar
+\setcounter{enumi}{19} \setcounter{enumii}{19} \setcounter{enumiii}{19} \setcounter{enumiv}{19} 
+\item Bar
+\setcounter{enumi}{20} \setcounter{enumii}{20} \setcounter{enumiii}{20} \setcounter{enumiv}{20} 
+\item Bar
+\setcounter{enumi}{21} \setcounter{enumii}{21} \setcounter{enumiii}{21} \setcounter{enumiv}{21} 
+\item Bar
+\end{enumerate} 
+\setcounter{enumi}{147} \setcounter{enumii}{147} \setcounter{enumiii}{147} \setcounter{enumiv}{147} 
+\item Foo
+\setcounter{enumi}{148} \setcounter{enumii}{148} \setcounter{enumiii}{148} \setcounter{enumiv}{148} 
+\item Foo
+\setcounter{enumi}{149} \setcounter{enumii}{149} \setcounter{enumiii}{149} \setcounter{enumiv}{149} 
+\item Foo
+\end{enumerate}
+\end{document}

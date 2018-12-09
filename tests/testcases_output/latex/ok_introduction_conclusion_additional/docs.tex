@@ -1,0 +1,460 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Long descriptive name of my introduction}
+\label{ok_introduction}
+\index{ok{\_}introduction}
+ 
+
+ 
+
+\label{SecFirst}
+\section{First section}
+
+
+This file is supposed to contain some introductory material about whole code included in your documentation. You can note that all rules that apply to normal pasdoc descriptions apply also here, e.g. empty line means new paragraph:
+
+New paragraph.
+
+3rd paragraph. URLs are automatically recognized, like this: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}. You have to write the @ twice (like @@) to get one @ in the output. Also normal @{-}tags work: \begin{ttfamily}This is some code.\end{ttfamily}
+
+\label{SecSecond}
+\section{Second section}
+
+
+Here you can see some hot snippet from implementation of this feature, just to test @longcode tag:
+
+\texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~TPasDoc.HandleExtraFile(}\textbf{const}\texttt{~FileName:~}\textbf{string}\texttt{;\\\nopagebreak[3]
+~~}\textbf{out}\texttt{~ExtraDescription:~TExtraDescription);\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~ExtraDescription~:=~TExtraDescription.Create;\\\nopagebreak[3]
+~~}\textbf{try}\texttt{\\\nopagebreak[3]
+~~~~DoMessage(2,~mtInformation,~'Now~parsing~file~{\%}s...',~[FileName]);\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.}\textbf{Name}\texttt{~:=~SCharsReplace(\\\nopagebreak[3]
+~~~~~~ChangeFileExt(~ExtractFileName(FileName)~,~''),~['~'],~'{\_}');\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.RawDescription~:=~FileToString(FileName);\\\nopagebreak[3]
+~~}\textbf{except}\texttt{\\\nopagebreak[3]
+~~~~FreeAndNil(ExtraDescription);\\\nopagebreak[3]
+~~~~}\textbf{raise}\texttt{;\\\nopagebreak[3]
+~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+
+\label{ThirdSecond}
+\section{Third section}
+
+
+Normal links work : \begin{ttfamily}MyConstant\end{ttfamily}(\ref{ok_introduction_conclusion-MyConstant}).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+\label{SomeAnchor}
+ Here is a paragraph with an anchor. It looks like a normal paragraph, but you can link to it with @link(SomeAnchor).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Sections with the same user{-}visible names are OK (example when this is useful is below):
+
+\label{SecStrings}
+\section{Routines dealing with strings}
+
+
+\label{SecStringsOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecStringsExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+
+
+\label{SecIntegers}
+\section{Routines dealing with integers}
+
+
+\label{SecIntegersOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecIntegersExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+\section{Author}
+\par
+Kambi
+
+\section{Created}
+\par
+On some rainy day
+
+
+\chapter{Unit ok{\_}introduction{\_}conclusion}
+\label{ok_introduction_conclusion}
+\index{ok{\_}introduction{\_}conclusion}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{MyConstant}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyConstant}
+\fi
+\label{ok_introduction_conclusion-MyConstant}
+\index{MyConstant}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyConstant = 1;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This is some constant, with a link to my introduction: \begin{ttfamily}ok{\_}introduction\end{ttfamily}(\ref{ok_introduction}) and \begin{ttfamily}My conclusion\end{ttfamily}(\ref{ok_conclusion}). Link to \begin{ttfamily}second section of introduction\end{ttfamily}(\ref{SecSecond}), link to \begin{ttfamily}some anchor in introduction\end{ttfamily}(\ref{SomeAnchor})
+
+\end{list}
+\chapter{Long descriptive name of the first additional file:}
+\label{ok_additionalfile1}
+\index{ok{\_}additionalfile1}
+ 
+
+ 
+
+\label{SecFirst}
+\section{First section}
+
+
+This file is supposed to contain any additional information that you wish to include in your documentation. You can note that all rules that apply to normal pasdoc descriptions apply also here, e.g. empty line means new paragraph:
+
+New paragraph.
+
+3rd paragraph. URLs are automatically recognized, like this: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}. You have to write the @ twice (like @@) to get one @ in the output. Also normal @{-}tags work: \begin{ttfamily}This is some code.\end{ttfamily}
+
+\label{SecSecond}
+\section{Second section}
+
+
+Here you can see some hot snippet from implementation of this feature, just to test @longcode tag:
+
+\texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~TPasDoc.HandleExtraFile(}\textbf{const}\texttt{~FileName:~}\textbf{string}\texttt{;\\\nopagebreak[3]
+~~}\textbf{out}\texttt{~ExtraDescription:~TExtraDescription);\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~ExtraDescription~:=~TExtraDescription.Create;\\\nopagebreak[3]
+~~}\textbf{try}\texttt{\\\nopagebreak[3]
+~~~~DoMessage(2,~mtInformation,~'Now~parsing~file~{\%}s...',~[FileName]);\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.}\textbf{Name}\texttt{~:=~SCharsReplace(\\\nopagebreak[3]
+~~~~~~ChangeFileExt(~ExtractFileName(FileName)~,~''),~['~'],~'{\_}');\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.RawDescription~:=~FileToString(FileName);\\\nopagebreak[3]
+~~}\textbf{except}\texttt{\\\nopagebreak[3]
+~~~~FreeAndNil(ExtraDescription);\\\nopagebreak[3]
+~~~~}\textbf{raise}\texttt{;\\\nopagebreak[3]
+~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+
+\label{ThirdSecond}
+\section{Third section}
+
+
+Normal links work : \begin{ttfamily}MyConstant\end{ttfamily}(\ref{ok_introduction_conclusion-MyConstant}).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+\label{SomeAnchor}
+ Here is a paragraph with an anchor. It looks like a normal paragraph, but you can link to it with @link(SomeAnchor).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Sections with the same user{-}visible names are OK (example when this is useful is below):
+
+\label{SecStrings}
+\section{Routines dealing with strings}
+
+
+\label{SecStringsOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecStringsExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+
+
+\label{SecIntegers}
+\section{Routines dealing with integers}
+
+
+\label{SecIntegersOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecIntegersExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+\section{Author}
+\par
+Kambi
+
+\section{Created}
+\par
+On some rainy day
+
+
+\chapter{Long descriptive name of the second additional file:}
+\label{ok_additionalfile2}
+\index{ok{\_}additionalfile2}
+ 
+
+ 
+
+\label{SecFirst}
+\section{First section}
+
+
+This file is supposed to contain any additional information that you wish to include in your documentation. You can note that all rules that apply to normal pasdoc descriptions apply also here, e.g. empty line means new paragraph:
+
+New paragraph.
+
+3rd paragraph. URLs are automatically recognized, like this: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}. You have to write the @ twice (like @@) to get one @ in the output. Also normal @{-}tags work: \begin{ttfamily}This is some code.\end{ttfamily}
+
+\label{SecSecond}
+\section{Second section}
+
+
+Here you can see some hot snippet from implementation of this feature, just to test @longcode tag:
+
+\texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~TPasDoc.HandleExtraFile(}\textbf{const}\texttt{~FileName:~}\textbf{string}\texttt{;\\\nopagebreak[3]
+~~}\textbf{out}\texttt{~ExtraDescription:~TExtraDescription);\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~ExtraDescription~:=~TExtraDescription.Create;\\\nopagebreak[3]
+~~}\textbf{try}\texttt{\\\nopagebreak[3]
+~~~~DoMessage(2,~mtInformation,~'Now~parsing~file~{\%}s...',~[FileName]);\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.}\textbf{Name}\texttt{~:=~SCharsReplace(\\\nopagebreak[3]
+~~~~~~ChangeFileExt(~ExtractFileName(FileName)~,~''),~['~'],~'{\_}');\\\nopagebreak[3]
+\\\nopagebreak[3]
+~~~~ExtraDescription.RawDescription~:=~FileToString(FileName);\\\nopagebreak[3]
+~~}\textbf{except}\texttt{\\\nopagebreak[3]
+~~~~FreeAndNil(ExtraDescription);\\\nopagebreak[3]
+~~~~}\textbf{raise}\texttt{;\\\nopagebreak[3]
+~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+
+\label{ThirdSecond}
+\section{Third section}
+
+
+Normal links work : \begin{ttfamily}MyConstant\end{ttfamily}(\ref{ok_introduction_conclusion-MyConstant}).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+\label{SomeAnchor}
+ Here is a paragraph with an anchor. It looks like a normal paragraph, but you can link to it with @link(SomeAnchor).
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Blah.
+
+Sections with the same user{-}visible names are OK (example when this is useful is below):
+
+\label{SecStrings}
+\section{Routines dealing with strings}
+
+
+\label{SecStringsOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecStringsExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+
+
+\label{SecIntegers}
+\section{Routines dealing with integers}
+
+
+\label{SecIntegersOverview}
+\ifpdf
+\subsection*{\large{\textbf{Overview}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Overview}
+\fi
+
+
+\label{SecIntegersExamples}
+\ifpdf
+\subsection*{\large{\textbf{Examples}}\normalsize\hspace{1ex}\hrulefill}\else
+\subsection*{Examples}
+\fi
+\section{Author}
+\par
+Kambi
+
+\section{Created}
+\par
+On some rainy day
+
+
+\chapter{Conclusion}
+\label{ok_conclusion}
+\index{ok{\_}conclusion}
+Some conclusion text.\end{document}

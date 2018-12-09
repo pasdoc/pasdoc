@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo2">
+<param name="Local" value="ok_if_directive.html#Foo2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo4">
+<param name="Local" value="ok_if_directive.html#Foo4">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MathInf">
+<param name="Local" value="ok_if_directive.html#MathInf">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MathNegInf">
+<param name="Local" value="ok_if_directive.html#MathNegInf">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MathPi">
+<param name="Local" value="ok_if_directive.html#MathPi">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MathPiExtended">
+<param name="Local" value="ok_if_directive.html#MathPiExtended">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MathQNaN">
+<param name="Local" value="ok_if_directive.html#MathQNaN">
+</object>
+</ul>
+</body></html>

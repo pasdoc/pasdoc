@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Модули',
     {trClassHierarchy} 'Йерархия на класовете',
     {trCio} 'Класове, интерфейси и обекти',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Идентификатори',
     {trGvUses} 'Зависимости на модулите',
     {trGvClasses} 'Зависимости на класовете',
@@ -58,14 +58,15 @@ RTransTable = (
     {trDeprecated} 'Този идентификатор е изваден от употреба! Моля, потърсете алтернатива',
     {trPlatformSpecific} 'Този идентификатор е платформено зависим',
     {trLibrarySpecific} 'Този идентификатор зависи от специфични библиотеки',
-(*
     {trExperimental} 'Този идентификатор е експериментален. Използвайте го внимателно',
+(*
     {trUnimplemented} 'Тази процедура/функция все още не е реализирана',
 *)
   //headings
     {trOverview} 'Съдържание',
     {trIntroduction} 'Въведение',
     {trConclusion} 'Заключение',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Всички класове, интерфейси и обекти',
     {trHeadlineConstants} 'Всички константи',
@@ -102,7 +103,7 @@ RTransTable = (
     {trOnDateTime} 'на дата', //really???
     {trSearch} 'Търсене',
     {trSeeAlso} 'Виж още',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

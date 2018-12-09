@@ -1,0 +1,286 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}record{\_}with{\_}case}
+\label{ok_record_with_case}
+\index{ok{\_}record{\_}with{\_}case}
+\section{Description}
+Testing of parsing and making docs for records with case parts.\hfill\vspace*{1ex}
+
+
+
+It does not pass properly yet: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item Types for fields in record case are not printed (because parser does not set their FullDeclaration properties).
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Also, CaseTwoB field has no description (but it should have "Description of CaseTwoA and CaseTwoB")
+\end{enumerate}
+
+Update 2005{-}10{-}17: now this test passes OK, both problems above are solved.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyRecord1\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TMyRecord2\end{ttfamily} Record}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyRecord1 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecord1 Record}
+\fi
+\label{ok_record_with_case.TMyRecord1}
+\index{TMyRecord1}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{CaseOneSingle}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_with_case.TMyRecord1-NormalField}
+\index{NormalField}
+\item[\textbf{NormalField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public NormalField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of NormalField\label{ok_record_with_case.TMyRecord1-CaseDecision}
+\index{CaseDecision}
+\item[\textbf{CaseDecision}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+published CaseDecision: boolean\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseDecision\label{ok_record_with_case.TMyRecord1-CaseOneSingle}
+\index{CaseOneSingle}
+\item[\textbf{CaseOneSingle}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseOneSingle: Single\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseOneSingle\label{ok_record_with_case.TMyRecord1-CaseTwoSingle}
+\index{CaseTwoSingle}
+\item[\textbf{CaseTwoSingle}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoSingle: Single;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoSingle\label{ok_record_with_case.TMyRecord1-CaseTwoInt}
+\index{CaseTwoInt}
+\item[\textbf{CaseTwoInt}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoInt: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoInt\label{ok_record_with_case.TMyRecord1-CaseTwoA}
+\index{CaseTwoA}
+\item[\textbf{CaseTwoA}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoA: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoA and CaseTwoB\label{ok_record_with_case.TMyRecord1-CaseTwoB}
+\index{CaseTwoB}
+\item[\textbf{CaseTwoB}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoB: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoA and CaseTwoB\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyRecord2 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyRecord2 Record}
+\fi
+\label{ok_record_with_case.TMyRecord2}
+\index{TMyRecord2}
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{CaseOneSingle}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_record_with_case.TMyRecord2-NormalField}
+\index{NormalField}
+\item[\textbf{NormalField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public NormalField: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of NormalField\label{ok_record_with_case.TMyRecord2-CaseOneSingle}
+\index{CaseOneSingle}
+\item[\textbf{CaseOneSingle}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseOneSingle: Single\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseOneSingle\label{ok_record_with_case.TMyRecord2-CaseTwoSingle}
+\index{CaseTwoSingle}
+\item[\textbf{CaseTwoSingle}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoSingle: Single;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoSingle\label{ok_record_with_case.TMyRecord2-CaseTwoInt}
+\index{CaseTwoInt}
+\item[\textbf{CaseTwoInt}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoInt: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoInt\label{ok_record_with_case.TMyRecord2-CaseTwoA}
+\index{CaseTwoA}
+\item[\textbf{CaseTwoA}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoA: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoA and CaseTwoB\label{ok_record_with_case.TMyRecord2-CaseTwoB}
+\index{CaseTwoB}
+\item[\textbf{CaseTwoB}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public CaseTwoB: Integer\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Description of CaseTwoA and CaseTwoB\end{list}
+\end{document}

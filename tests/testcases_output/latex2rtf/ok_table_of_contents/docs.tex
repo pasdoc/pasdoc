@@ -1,0 +1,58 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Introduction}
+Full table of contents:
+
+
+
+Table of contents to level 0 (should be empty):
+
+
+
+Table of contents to level 1 (only top{-}level sections):
+
+
+
+Table of contents to level 2:
+
+
+
+Table of contents to level 3 (should be equivalent to full toc):
+
+
+
+\section{Section 1}
+
+
+\section{Section 2}
+
+
+\subsection*{Section 2.1}
+
+
+\subsection*{Section 2.2}
+
+
+\subsubsection*{\large{\textbf{Section 2.2.1}}\normalsize\hspace{1ex}\hfill}
+
+
+\section{Section 3}
+\chapter{Unit ok{\_}table{\_}of{\_}contents{\_}unit}
+\end{document}

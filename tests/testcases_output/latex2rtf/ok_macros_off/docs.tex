@@ -1,0 +1,53 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}macros{\_}off}
+\section{Description}
+This is a test that macro support can be turned off in pasdoc.\hfill\vspace*{1ex}
+
+
+
+With macro support turned on this unit would cause parsing error, because it would have brain{-}damaged declaration like \texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~}\textbf{interface}\texttt{~}\textbf{interface}\texttt{(a:~Integer);\\
+}
+\section{Overview}
+\begin{description}
+\item[\texttt{FOO}]
+\end{description}
+\section{Functions and Procedures}
+\subsection*{FOO}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure FOO(a: Integer);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

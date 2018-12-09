@@ -1,0 +1,157 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}table}
+\label{ok_table}
+\index{ok{\_}table}
+\section{Description}
+Test of @table{-}related features.\hfill\vspace*{1ex}
+
+
+
+Example from @table doc page in wiki:
+
+
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Value1} & \textbf{Value2} & \textbf{Result} \\ \hline
+\begin{ttfamily}False\end{ttfamily} & \begin{ttfamily}False\end{ttfamily} & \begin{ttfamily}False\end{ttfamily} \\ \hline
+\begin{ttfamily}False\end{ttfamily} & \begin{ttfamily}True\end{ttfamily} & \begin{ttfamily}True\end{ttfamily} \\ \hline
+\begin{ttfamily}True\end{ttfamily} & \begin{ttfamily}False\end{ttfamily} & \begin{ttfamily}True\end{ttfamily} \\ \hline
+\begin{ttfamily}True\end{ttfamily} & \begin{ttfamily}True\end{ttfamily} & \begin{ttfamily}False\end{ttfamily} \\ \hline
+\end{tabular}
+
+
+
+Small tables tests:
+
+
+
+\begin{tabular}{|l|}
+\hline
+One{-}cell table is OK \\ \hline
+\end{tabular}
+
+ 
+
+\begin{tabular}{|l|}
+\hline
+\textbf{One{-}cell head table is OK} \\ \hline
+\end{tabular}
+
+ 
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{A} & \textbf{ \textbf{Foo} } \\ \hline
+\end{tabular}
+
+
+
+Test that everything within @cell tag is OK. Actually, test below is a stripped down (to be accepted by LaTeX) version of a more advanced test in ok{\_}table{\_}nonlatex.pas file.
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Dashes: ---, --, {-}, {-}{-}} & \textbf{URLs: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}} \\ \hline
+C & D \\ \hline
+\end{tabular}
+
+
+
+Now nested table and other nicies are within a normal row, instead of heading row.
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{C} & \textbf{D} \\ \hline
+Within a cell many things are are accepted & including paragraphs:
+
+This is new paragraph. \\ \hline
+Dashes: ---, --, {-}, {-}{-}. & URLs: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/} \\ \hline
+And, last but not least, nested table: 
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{1} & \textbf{2} \\ \hline
+\textbf{3} & \textbf{4} \\ \hline
+\end{tabular}
+
+ & B \\ \hline
+\end{tabular}
+
+
+
+Some 2{-}row table tests:
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{A} & \textbf{B} \\ \hline
+\textbf{C} & \textbf{D} \\ \hline
+\end{tabular}
+
+
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+A & B \\ \hline
+C & D \\ \hline
+\end{tabular}
+
+
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+A & B \\ \hline
+\textbf{C} & \textbf{D} \\ \hline
+\end{tabular}
+
+
+\end{document}

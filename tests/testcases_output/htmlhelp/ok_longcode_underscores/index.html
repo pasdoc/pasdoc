@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>All Units</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="allitems">All Units</h1>
+<table class="unitstable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="ok_longcode_underscores.html">ok_longcode_underscores</a></td>
+<td class="itemdesc"><p>2005-06-07: Latex version of docs for this unit are wrong, because ConvertString is not called to convert _ char. So _ is not escaped and latex fails. Also, HTML version is bad, because &quot;With&quot; is formatted in bold, because it's treated like keyword.
+
+<p>Fixed by adding _ to AlphaNumeric in PasDoc_Gen in FormatPascalCode.
+
+<p></p>
+
+<pre class="longcode">
+Identifier_With_Underscores;</pre>
+
+<p></p></td>
+</tr>
+</table>
+</body></html>

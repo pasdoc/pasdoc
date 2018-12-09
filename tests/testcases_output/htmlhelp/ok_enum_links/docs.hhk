@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_enum_links.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyEnum">
+<param name="Local" value="ok_enum_links.html#TMyEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyScopedEnum">
+<param name="Local" value="ok_enum_links.html#TMyScopedEnum">
+</object>
+</ul>
+</body></html>

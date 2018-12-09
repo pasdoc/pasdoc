@@ -1,0 +1,52 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit unit1}
+\section{Description}
+\begin{figure}
+  \ifpdf
+    \includegraphics{image_0.png}
+  \else
+    \includegraphics{image_0.png}
+  \fi
+\end{figure}
+
+
+This should show description \textbf{main} :
+
+This is description called \textbf{main}. 
+
+This should show description \textbf{dir{\_}1} two times:
+
+This is description called \textbf{dir{\_}1}.  This is description called \textbf{dir{\_}1}. 
+
+This should show description \textbf{dir{\_}2} :
+
+This is description called \textbf{dir{\_}2}. 
+\chapter{Unit unit2}
+\section{Description}
+\begin{figure}
+  \ifpdf
+    \includegraphics{image_1.png}
+  \else
+    \includegraphics{image_1.png}
+  \fi
+\end{figure}
+
+\end{document}

@@ -1,0 +1,16 @@
+<unit name="ok_if_directive.pas">
+  <constant name="MathQNaN : tdoublearray = (255,252,0,0,0,0,0,0);">
+  </constant>
+  <constant name="MathInf : tdoublearray = (127,240,0,0,0,0,0,0);">
+  </constant>
+  <constant name="MathNegInf : tdoublearray = (255,240,0,0,0,0,0,0);">
+  </constant>
+  <constant name="MathPi : tdoublearray =  (64,9,33,251,84,68,45,24);">
+  </constant>
+  <constant name="MathPiExtended : textendedarray = (64,0,201,15,218,162,33,104,194,53);">
+  </constant>
+  <constant name="Foo2 = 1;">
+  </constant>
+  <constant name="Foo4 = 1;">
+  </constant>
+</unit>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_expanding_descriptions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit ok_expanding_descriptions</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+This is a test of tags expanded by TPasItem handlers. Of course with @abstract tag using some recursive tag: See also <a class="normal" href="ok_expanding_descriptions.html#TestPasMethodTags">TestPasMethodTags</a></p>
+<p>
+
+
+<p>This whole unit is actually a big test of many things related to pasdoc's @-tags.
+
+<p>   
+
+<p>See also <a class="normal" href="ok_expanding_descriptions.TMyClass.html">TMyClass</a> for other test of @cvs tag (with $Date, as an alternative specification of @lastmod)</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_expanding_descriptions.EFoo.html"><code>EFoo</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_expanding_descriptions.EBar.html"><code>EBar</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_expanding_descriptions.EXyz.html"><code>EXyz</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_expanding_descriptions.TMyClassAncestor.html"><code>TMyClassAncestor</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_expanding_descriptions.TMyClass.html"><code>TMyClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_expanding_descriptions.html#RecursiveTwoAt">RecursiveTwoAt</a></b>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_expanding_descriptions.html#TestHtmlAndLatexTags">TestHtmlAndLatexTags</a></b>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_expanding_descriptions.html#TestLongCode">TestLongCode</a></b>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <b><a  href="ok_expanding_descriptions.html#TestPasMethodTags">TestPasMethodTags</a></b>(A, B: Integer): string;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_expanding_descriptions.html#TestRecursiveTag">TestRecursiveTag</a></b>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_expanding_descriptions.html#TwoAt">TwoAt</a></b>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="RecursiveTwoAt"></span><code>procedure <b>RecursiveTwoAt</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+aa aaaaa aa aaa <code>SHGetSpecialFolderPath(0, @Path, CSIDL_APPDATA, true)</code> aaaa aaaaaa aaaaaa aaaaaaaaa aaaa
+
+<p>At some point, this test caused the bug: final &lt;/code&gt; tag was inserted in converted form (processed with ConvertString) into html output. In effect, there was an opening &lt;code&gt; tag but there was no closing &lt;/code&gt; tag.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestHtmlAndLatexTags"></span><code>procedure <b>TestHtmlAndLatexTags</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+
+    This is some <b>dummy</b> html code, just to show that inside
+    @html tag of pasdoc (note that I used single @ char in this sentence)
+    nothing is expanded by pasdoc.
+
+    No paragraphs are created by pasdoc. (This text is still in the 1st,
+    not in the 2nd, paragraph in html output)
+
+    <p>You must explicitly write &lt;p&gt; to get paragraph.
+    No tags work, e.g. @link(TestLongCode).
+  
+
+<p>
+
+<p>Note that text inside @html / @latex tags is absolutely not touched by pasdoc. Characters are not escaped (&lt; is *not* changed to &amp;lt; in the html case), @tags are not expanded, @ needs not to be doubled, paragraphs (&lt;p&gt; in the html case) are not inserted.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestLongCode"></span><code>procedure <b>TestLongCode</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Note that inside @longcode below I should be able to write singe @ char to get it in the output, no need to double it (like @@). No tags are expanded inside longcode.
+
+<p>Also note that paragraphs are not expanded inside longcode (no &lt;p&gt; inside &lt;pre&gt;...&lt;/pre&gt; in html output).
+
+<p>Of course html characters are still correctly escaped (&lt; changes to &amp;lt; etc.).
+
+<p></p>
+
+<pre class="longcode">
+
+<span class="pascal_keyword">procedure</span> Foo;
+<span class="pascal_keyword">begin</span>
+  <span class="pascal_keyword">if</span> A &lt; B <span class="pascal_keyword">then</span> Bar; <span class="pascal_comment">{ @link(No, this is not really pasdoc tag) }</span>
+<span class="pascal_keyword">end</span>;
+
+<span class="pascal_keyword">procedure</span> Bar(X: Integer);
+<span class="pascal_keyword">begin</span>
+  CompareMem(@X, @Y);
+<span class="pascal_keyword">end</span>;</pre>
+
+<p></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestPasMethodTags"></span><code>function <b>TestPasMethodTags</b>(A, B: Integer): string;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+This is a test of tags expanded by TPasMethod handlers. Note that all three tags are expanded recursively.
+
+<p> 
+
+<p>
+
+<p> </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>A</dt>
+<dd>means sthg about <a class="normal" href="ok_expanding_descriptions.html#TestRecursiveTag">TestRecursiveTag</a></dd>
+<dt>B</dt>
+<dd>also means sthg. <code>Code inside.</code></dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return">You can make tags recursion any level deep : <code>This is a code with a link to <a class="normal" href="ok_expanding_descriptions.html#TestRecursiveTag">TestRecursiveTag</a></code></p><h6 class="description_section">Exceptions raised</h6>
+<dl class="exceptions_raised">
+<dt><a class="normal" href="ok_expanding_descriptions.EFoo.html">EFoo</a></dt>
+<dd>when you do sthg nasty, like call <a class="normal" href="ok_expanding_descriptions.html#TestRecursiveTag">TestRecursiveTag</a> when you're not supposed to</dd>
+<dt><a class="normal" href="ok_expanding_descriptions.EBar.html">EBar</a></dt>
+<dd>when code <code>if 1 = 0 then DoSomething;</code> will work as expected.</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestRecursiveTag"></span><code>procedure <b>TestRecursiveTag</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+@code and @returns (and some others) tags are recursive, you can freely put other tags inside.
+
+<p><code>This is link to <a class="normal" href="ok_expanding_descriptions.html#TestHtmlAndLatexTags">TestHtmlAndLatexTags</a>.</code>
+
+<p></p>
+<h6 class="description_section">Exceptions raised</h6>
+<dl class="exceptions_raised">
+<dt><a class="normal" href="ok_expanding_descriptions.EFoo.html">EFoo</a></dt>
+<dd>in case <a class="normal" href="ok_expanding_descriptions.html#TestHtmlAndLatexTags">TestHtmlAndLatexTags</a> returns value &gt;= 4 (actually, this is just a test text).</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TwoAt"></span><code>procedure <b>TwoAt</b>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Write two at chars, like this @@, to get one @ in output.
+
+<p>E.g. @ link(TSomeClass).
+
+<p>E.g. @link(TSomeClass).
+
+<p>E.g. @html foobar.
+
+<p>E.g. @link .</p>
+</td></tr>
+</table>
+<h2 class="authors">Authors</h2>
+<ul class="authors">
+<li>Michalis &lt;<a  href="mailto:my@email.address">my@email.address</a>&gt;</li>
+<li>kambi</li>
+</ul>
+<h2 class="created">Created</h2>
+<p>
+2005-03-30
+</p>
+<h2 class="modified">Last Modified</h2>
+<p>
+2005-03-30
+</p>
+</td></tr></table></body></html>

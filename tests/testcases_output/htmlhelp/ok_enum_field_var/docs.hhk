@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="ApplicationStatus">
+<param name="Local" value="ok_enum_field_var.html#ApplicationStatus">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TServerConnController">
+<param name="Local" value="ok_enum_field_var.TServerConnController.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AutoConnectAction">
+<param name="Local" value="ok_enum_field_var.TServerConnController.html#AutoConnectAction">
+</object>
+</ul>
+</body></html>

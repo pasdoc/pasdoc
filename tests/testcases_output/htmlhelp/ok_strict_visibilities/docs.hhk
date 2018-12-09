@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TStrictVisibility">
+<param name="Local" value="ok_strict_visibilities.TStrictVisibility.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="StrictPrivateInteger">
+<param name="Local" value="ok_strict_visibilities.TStrictVisibility.html#StrictPrivateInteger">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="StrictProtectedInteger">
+<param name="Local" value="ok_strict_visibilities.TStrictVisibility.html#StrictProtectedInteger">
+</object>
+</ul>
+</body></html>

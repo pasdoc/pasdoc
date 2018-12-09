@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -21,7 +21,7 @@
 }
 
 { @abstract(Talking with another process through pipes.)
-  @author(Michalis Kamburelis) 
+  @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)}
 
 unit PasDoc_ProcessLineTalk;
@@ -29,24 +29,12 @@ unit PasDoc_ProcessLineTalk;
 {$I pasdoc_defines.inc}
 
 {$ifdef FPC}
-{$IFNDEF VER1_0}
   {$ifdef UNIX}
     {$define HAS_PROCESS}
   {$endif}
-  {$ifdef WIN32}
+  {$ifdef MSWINDOWS}
     {$define HAS_PROCESS}
   {$endif}
-{$ELSE}  
-  {$ifdef LINUX}
-    {$define HAS_PROCESS}
-  {$endif}
-  {$ifdef BSD}
-    {$define HAS_PROCESS}
-  {$endif}
-  {$ifdef WIN32}
-    {$define HAS_PROCESS}
-  {$endif}
-{$ENDIF}  
 {$endif}
 
 interface
@@ -186,7 +174,7 @@ begin
    end;
   end;
 
-  if ((ReadBuf[i] = #10) and (LastNewLineChar = #13)) or 
+  if ((ReadBuf[i] = #10) and (LastNewLineChar = #13)) or
      ((ReadBuf[i] = #13) and (LastNewLineChar = #10)) then
   begin
    { We got 2nd newline character ? Ignore it. }

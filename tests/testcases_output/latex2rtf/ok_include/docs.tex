@@ -1,0 +1,48 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Introduction}
+
+
+Demo that you can also split introduction and conclusion using @include tag:
+
+\section{First section in ok{\_}include{\_}intro.txt file}
+
+
+First section dummy text.
+
+\section{Second section in ok{\_}include{\_}intro{\_}include.txt file}
+
+
+Second section dummy text.
+
+\chapter{Unit ok{\_}include}
+\section{Description}
+This is a test of @include tag.\hfill\vspace*{1ex}
+
+
+
+Behold included file ok{\_}include{\_}1.txt: Blah blah blah. This is file \begin{ttfamily}ok{\_}include{\_}1.txt\end{ttfamily}. This is file \begin{ttfamily}ok{\_}include{\_}2.txt\end{ttfamily}. 
+
+Behold file ok{\_}include{\_}1.txt that is included for the 2nd time here: Blah blah blah. This is file \begin{ttfamily}ok{\_}include{\_}1.txt\end{ttfamily}. This is file \begin{ttfamily}ok{\_}include{\_}2.txt\end{ttfamily}. 
+
+Behold file ok{\_}include{\_}1.txt that is included for the 3rd time here, and this time it's inside @bold: \textbf{Blah blah blah. This is file \begin{ttfamily}ok{\_}include{\_}1.txt\end{ttfamily}. This is file \begin{ttfamily}ok{\_}include{\_}2.txt\end{ttfamily}. }
+
+Take a look at \begin{ttfamily}Introduction\end{ttfamily}(\ref{ok_include_intro}) too.
+\end{document}

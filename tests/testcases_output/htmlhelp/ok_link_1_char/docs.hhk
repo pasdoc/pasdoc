@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMeasurementPointItem">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#FY">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SetX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetX">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SetY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetY">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="X">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#X">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Y">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#Y">
+</object>
+</ul>
+</body></html>

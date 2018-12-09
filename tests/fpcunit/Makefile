@@ -1,3 +1,3 @@
 .PHONY: default
 default:
-	make -C ../../ tests
+	make -C ../../ tests-fpcunit

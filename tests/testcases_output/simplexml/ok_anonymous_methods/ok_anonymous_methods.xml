@@ -1,0 +1,9 @@
+<unit name="ok_anonymous_methods.pas">
+  <description><detailed>Test case for Delphi anonymous methods</detailed></description>
+  <type name="TSimpleProcedure = reference to procedure;">
+    <description><detailed>description of <code>TSimpleProcedure</code></detailed></description>
+  </type>
+  <type name="TSimpleFunction = reference to function(x: string): Integer;">
+    <description><detailed>description of <code>TSimpleFunction</code></detailed></description>
+  </type>
+</unit>

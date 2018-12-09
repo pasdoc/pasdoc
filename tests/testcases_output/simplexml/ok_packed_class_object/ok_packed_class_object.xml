@@ -1,0 +1,10 @@
+<unit name="ok_packed_class_object.pas">
+  <structure name="TMyPackedClass" name_with_generic="TMyPackedClass" type="packed class">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="Blah: Integer;">
+    </variable>
+  </structure>
+  <structure name="TMyPackedObject" name_with_generic="TMyPackedObject" type="packed object">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -46,7 +46,7 @@ type
 {$ENDIF}
   end;
 
-function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean; 
+function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean;
 
 implementation
 

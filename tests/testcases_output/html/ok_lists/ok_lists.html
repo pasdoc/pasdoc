@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_lists</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit ok_lists</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+Test of lists tags.</p>
+<p>
+
+
+<p>Normal lists: </p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p>One</p></li>
+  <li value="2"><p>Two</p></li>
+  <li value="3"><p>Three</p></li>
+</ol>
+
+<p> </p>
+
+<ul class="paragraph_spacing">
+  <li><p>One</p></li>
+  <li><p>Two</p></li>
+  <li><p>Three</p></li>
+</ul>
+
+<p>
+
+<p>Empty list is accceptable: </p>
+
+<p> </p>
+
+<p>
+
+<p>Whitespace inside lists is acceptable (and empty line that is not inside any @item is <i>not</i> a paragraph): </p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p>One</p></li>
+  <li value="2"><p>Two</p></li>
+  <li value="3"><p> Other tags inside the items are allowed, e.g. <a class="normal" href="ok_lists.html">link to self</a>, <code>True</code>, </p>
+
+<pre class="longcode"><span class="pascal_keyword">begin</span> X := Y; <span class="pascal_keyword">end</span>;</pre>
+
+<p>, <b>something bold</b>, URLs: <a  href="http://pasdoc.sf.net/">http://pasdoc.sf.net/</a>, paragraphs:
+
+<p>2nd paragraph, dashes: em dash &mdash;, en dash &ndash;, short one -, two consecutive short dashes --. </p></li>
+</ol>
+
+<p>
+
+<p>Nested lists are also freely allowed: </p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p> 1st nested unordered list: </p>
+
+<ul class="paragraph_spacing">
+  <li><p>One</p></li>
+  <li><p>Two</p></li>
+  <li><p>Three</p></li>
+</ul>
+
+<p> </p></li>
+  <li value="2"><p> 2nd nested unordered list: </p>
+
+<ul class="paragraph_spacing">
+  <li><p>One</p></li>
+  <li><p>Two</p></li>
+  <li><p>Three</p></li>
+</ul>
+
+<p> </p></li>
+  <li value="3"><p> And a couple of single-item ordered lists nested: </p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p> </p>
+
+<ol class="paragraph_spacing">
+  <li value="1"><p> </p></li>
+</ol>
+
+<p></p></li>
+</ol>
+
+<p>
+
+<p>(Source code of this example begins to look like LISP :) </p></li>
+</ol>
+
+<p>
+
+<p>Definition lists tests:
+
+<p></p>
+
+<dl class="paragraph_spacing">
+  <dt></dt>
+  <dd><p>1st item</p></dd>
+  <dt></dt>
+  <dd><p>2nd item</p></dd>
+</dl>
+
+<p>
+
+<p></p>
+
+<dl class="paragraph_spacing">
+  <dt>1st item label</dt>
+  <dd><p>1st item</p></dd>
+  <dt>2nd item label</dt>
+  <dd><p>2nd item</p></dd>
+</dl>
+
+<p>
+
+<p></p>
+
+<dl class="paragraph_spacing">
+  <dt>1st item label</dt>
+  <dd><p></p></dd>
+  <dt>2nd item label</dt>
+  <dd><p></p></dd>
+</dl>
+
+<p>
+
+<p>Item spacing tests:
+
+<p></p>
+
+<dl class="compact_spacing">
+  <dt>1st item label</dt>
+  <dd><p>1st item</p></dd>
+  <dt>2nd item label</dt>
+  <dd><p>2nd item</p></dd>
+</dl>
+
+<p>
+
+<p></p>
+
+<ol class="compact_spacing">
+  <li value="1"><p>One</p></li>
+  <li value="2"><p>Two</p></li>
+  <li value="3"><p>Three</p></li>
+</ol>
+
+<p></p>
+<span id="PasDoc-Uses"></span></td></tr></table></body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="*">
+<param name="Local" value="ok_operator_test.html#*">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="**">
+<param name="Local" value="ok_operator_test.html#**">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="+">
+<param name="Local" value="ok_operator_test.html#+">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="-">
+<param name="Local" value="ok_operator_test.html#-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="/">
+<param name="Local" value="ok_operator_test.html#/">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value=":=">
+<param name="Local" value="ok_operator_test.html#:=">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="<">
+<param name="Local" value="ok_operator_test.html#<">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="<=">
+<param name="Local" value="ok_operator_test.html#<=">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="=">
+<param name="Local" value="ok_operator_test.html#=">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value=">">
+<param name="Local" value="ok_operator_test.html#>">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value=">=">
+<param name="Local" value="ok_operator_test.html#>=">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="and">
+<param name="Local" value="ok_operator_test.html#and">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="or">
+<param name="Local" value="ok_operator_test.html#or">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDelphiRec">
+<param name="Local" value="ok_operator_test.TDelphiRec.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Add">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Add">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Explicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Explicit">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Implicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TDelphiRec - ok_operator_test Unit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDelphiRec - ok_operator_test Unit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Subtract">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Subtract">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_operator_test.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Operator">
+<param name="Local" value="ok_operator_test.TMyClass.html#Operator">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyType">
+<param name="Local" value="ok_operator_test.TMyType.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyType2">
+<param name="Local" value="ok_operator_test.TMyType2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="xor">
+<param name="Local" value="ok_operator_test.html#xor">
+</object>
+</ul>
+</body></html>

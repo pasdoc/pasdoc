@@ -1,0 +1,213 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit warning{\_}inherited{\_}test}
+\label{warning_inherited_test}
+\index{warning{\_}inherited{\_}test}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass0\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass2\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{Test}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass0 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass0 Class}
+\fi
+\label{warning_inherited_test.TMyClass0}
+\index{TMyClass0}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass0 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This is a class without ancestor name specified. Inherited is \begin{ttfamily}TObject\end{ttfamily}. Inherited class is \begin{ttfamily}TObject\end{ttfamily}.\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Clear}\hspace*{\fill}
+
+\label{warning_inherited_test.TMyClass0-Clear}
+\index{Clear}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Clear;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inherited is \begin{ttfamily}Clear\end{ttfamily}. Inherited class is \begin{ttfamily}TObject\end{ttfamily}.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass1 Class}
+\fi
+\label{warning_inherited_test.TMyClass1}
+\index{TMyClass1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass1 {$>$} TStringList
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This is a class with specified ancestor name, but ancestor (TStringList) is not parsed by PasDoc. Inherited is \begin{ttfamily}TStringList\end{ttfamily}. Inherited class is \begin{ttfamily}TStringList\end{ttfamily}.\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Clear}\hspace*{\fill}
+
+\label{warning_inherited_test.TMyClass1-Clear}
+\index{Clear}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Clear;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inherited is \begin{ttfamily}Clear\end{ttfamily}. Inherited class is \begin{ttfamily}TStringList\end{ttfamily}.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass2 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass2 Class}
+\fi
+\label{warning_inherited_test.TMyClass2}
+\index{TMyClass2}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass2 {$>$} \begin{ttfamily}TMyClass1\end{ttfamily}(\ref{warning_inherited_test.TMyClass1}) {$>$} 
+TStringList
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed by PasDoc. Inherited is \begin{ttfamily}TMyClass1\end{ttfamily}(\ref{warning_inherited_test.TMyClass1}). Inherited class is \begin{ttfamily}TMyClass1\end{ttfamily}(\ref{warning_inherited_test.TMyClass1}).\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Clear}\hspace*{\fill}
+
+\label{warning_inherited_test.TMyClass2-Clear}
+\index{Clear}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Clear;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inherited is \begin{ttfamily}TMyClass1.Clear\end{ttfamily}(\ref{warning_inherited_test.TMyClass1-Clear}). Inherited class is \begin{ttfamily}TMyClass1\end{ttfamily}(\ref{warning_inherited_test.TMyClass1}).
+
+\end{list}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Test}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Test}
+\fi
+\label{warning_inherited_test-Test}
+\index{Test}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Test;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Inherited is \begin{ttfamily}Test\end{ttfamily}. Inherited class is \begin{ttfamily}Test\end{ttfamily}.
+
+\end{list}
+\end{document}

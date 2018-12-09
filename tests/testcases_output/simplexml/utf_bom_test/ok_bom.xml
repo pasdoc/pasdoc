@@ -1,0 +1,3 @@
+<unit name="ok_bom.pas">
+  <description><detailed>UTF-8 file with BOM ($EF, $BB, $BF).</detailed></description>
+</unit>

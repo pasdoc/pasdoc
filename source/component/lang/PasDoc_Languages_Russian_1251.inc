@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Модули',
     {trClassHierarchy} 'Иерархия классов',
     {trCio} 'Классы, интерфейсы и объекты',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Идентификаторы',
     {trGvUses} 'График зависимости модулей',
     {trGvClasses} 'График иерархии классов',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} 'этот символ больше не используется',
     {trPlatformSpecific} 'этот символ зависит от платформы',
     {trLibrarySpecific} 'этот символ зависит от библиотеки',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Обзор',
     {trIntroduction} 'Введение',
     {trConclusion} 'Заключение',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Все классы, интерфейсы и объекты',
     {trHeadlineConstants} 'Все константы',
@@ -98,7 +100,7 @@ RTransTable = (
     {trOnDateTime} 'дата/время', //really???
     {trSearch} 'Найти',
     {trSeeAlso} 'Материалы по теме',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

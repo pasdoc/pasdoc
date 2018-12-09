@@ -1,0 +1,45 @@
+<unit name="ok_back_comment.pas">
+  <description><detailed>Description of unit ok_back_comment.</detailed></description>
+  <function name="Foo" type="procedure" declaration="procedure Foo;">
+    <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>
+  </function>
+  <constant name="MyConst = 2;">
+    <description><detailed>Description of MyConst</detailed></description>
+  </constant>
+  <variable name="V: Integer;">
+    <description><detailed>Description of V</detailed></description>
+  </variable>
+  <variable name="V1: Integer;">
+    <description><detailed>Description of V1 and V2</detailed></description>
+  </variable>
+  <variable name="V2: Integer;">
+    <description><detailed>Description of V1 and V2</detailed></description>
+  </variable>
+  <type name="TMyType = Integer;">
+    <description><detailed>Description of TMyType</detailed></description>
+  </type>
+  <type name="TMyEnum = (...);">
+    <description><detailed>Description of TMyEnum</detailed></description>
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><detailed>Description of TMyClass</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+      <description><detailed>Description of MyProc</detailed></description>
+    </function>
+    <variable name="MyField: Integer;">
+      <description><detailed>Description of MyField</detailed></description>
+    </variable>
+    <property name="MyProp" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>Description of MyProp</detailed></description>
+    </property>
+  </structure>
+  <structure name="TMyException1" name_with_generic="TMyException1" type="class">
+    <description><detailed>Description of TMyException1</detailed></description>
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+  <structure name="TMyException2" name_with_generic="TMyException2" type="class">
+    <description><detailed>Description of TMyException2</detailed></description>
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+</unit>

@@ -1,0 +1,3 @@
+<unit name="ok_non_matching_paren.pas">
+  <description><abstract>Test of @( and @) constructs.</abstract><detailed> This is bold, followed by two &quot;at&quot; chars and two parens. @@( )  No longer bold. This is italic, followed by one &quot;at&quot; char and one opening paren. @(  No longer italic. This is bold, followed by two parens. ( )  No longer bold. This is italic, followed by one closing paren. )  No longer italic. This is bold, followed by &quot;at&quot; char. @ No longer italic.</detailed></description>
+</unit>

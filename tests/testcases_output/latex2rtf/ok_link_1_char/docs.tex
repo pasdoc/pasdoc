@@ -1,0 +1,177 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}link{\_}1{\_}char}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMeasurementPointItem\end{ttfamily} Class}]\begin{ttfamily}TMeasurementPointItem\end{ttfamily} is used to specify the real{-}world coordinates of a pixel in a bitmap.
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMeasurementPointItem Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMeasurementPointItem {$>$} TCollectionItem
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+\begin{ttfamily}TMeasurementPointItem\end{ttfamily} is used to specify the real{-}world coordinates of a pixel in a bitmap.\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{X}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+published property X: double read FX write SetX;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}X\end{ttfamily} is the X real{-}world coordinate.
+
+\end{list}
+\paragraph*{Y}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+published property Y: double read FY write SetY;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}Y\end{ttfamily} is the Y real{-}world coordinate.
+
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{FX}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FX: double;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}FX\end{ttfamily}: double; See \begin{ttfamily}X\end{ttfamily}(\ref{ok_link_1_char.TMeasurementPointItem-X}).
+
+\end{list}
+\paragraph*{FY}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FY: double;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}FY\end{ttfamily}: double; See \begin{ttfamily}Y\end{ttfamily}(\ref{ok_link_1_char.TMeasurementPointItem-Y}).
+
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{SetX}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure SetX(const Value: double);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+See \begin{ttfamily}X\end{ttfamily}(\ref{ok_link_1_char.TMeasurementPointItem-X}).
+
+\end{list}
+\paragraph*{SetY}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure SetY(const Value: double);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+See \begin{ttfamily}Y\end{ttfamily}(\ref{ok_link_1_char.TMeasurementPointItem-Y}).
+
+\end{list}
+\end{document}

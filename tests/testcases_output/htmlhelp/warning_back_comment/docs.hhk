@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyEnum">
+<param name="Local" value="warning_back_comment.html#TMyEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V1">
+<param name="Local" value="warning_back_comment.html#V1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V2">
+<param name="Local" value="warning_back_comment.html#V2">
+</object>
+</ul>
+</body></html>

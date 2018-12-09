@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="EFoo">
+<param name="Local" value="warning_incorrect_tag_nesting.EFoo.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestMe">
+<param name="Local" value="warning_incorrect_tag_nesting.html#TestMe">
+</object>
+</ul>
+</body></html>

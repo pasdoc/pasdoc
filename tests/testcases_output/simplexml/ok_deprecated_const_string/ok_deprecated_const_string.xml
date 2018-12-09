@@ -1,0 +1,4 @@
+<unit name="ok_deprecated_const_string.pas">
+  <function name="Foo" type="procedure" declaration="procedure Foo; deprecated 'Since D2010 a const string may follow';">
+  </function>
+</unit>

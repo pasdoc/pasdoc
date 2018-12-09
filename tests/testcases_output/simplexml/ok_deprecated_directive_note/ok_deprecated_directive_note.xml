@@ -1,0 +1,35 @@
+<unit name="ok_deprecated_directive_note.pas">
+  <description><abstract>Test deprecated directive with and without note.</abstract></description>
+  <function name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';">
+  </function>
+  <function name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;">
+  </function>
+  <function name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';">
+    <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
+  </function>
+  <constant name="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';">
+  </constant>
+  <constant name="TestConstDeprecated2 = 1 deprecated;">
+  </constant>
+  <structure name="TTestClass" name_with_generic="TTestClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';">
+    </function>
+    <function name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;">
+    </function>
+    <variable name="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';">
+    </variable>
+    <variable name="TestFieldDeprecated2: Integer deprecated;">
+    </variable>
+    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    </property>
+  </structure>
+  <structure name="TTestClassDeprecated1" name_with_generic="TTestClassDeprecated1" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TTestClassDeprecated2" name_with_generic="TTestClassDeprecated2" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

@@ -1,0 +1,26 @@
+<unit name="warning_inherited_test.pas">
+  <function name="Test" type="procedure" declaration="procedure Test;">
+    <description><detailed>Inherited is <code>Test</code>. Inherited class is <code>Test</code>.</detailed></description>
+  </function>
+  <structure name="TMyClass0" name_with_generic="TMyClass0" type="class">
+    <description><detailed>This is a class without ancestor name specified. Inherited is <code>TObject</code>. Inherited class is <code>TObject</code>.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="Clear" type="procedure" declaration="procedure Clear;">
+      <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TObject</code>.</detailed></description>
+    </function>
+  </structure>
+  <structure name="TMyClass1" name_with_generic="TMyClass1" type="class">
+    <description><detailed>This is a class with specified ancestor name, but ancestor (TStringList) is not parsed by PasDoc. Inherited is <code>TStringList</code>. Inherited class is <code>TStringList</code>.</detailed></description>
+    <ancestor name="TStringList" declaration="TStringList" />
+    <function name="Clear" type="procedure" declaration="procedure Clear;">
+      <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TStringList</code>.</detailed></description>
+    </function>
+  </structure>
+  <structure name="TMyClass2" name_with_generic="TMyClass2" type="class">
+    <description><detailed>This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed by PasDoc. Inherited is TMyClass1. Inherited class is TMyClass1.</detailed></description>
+    <ancestor name="TMyClass1" declaration="TMyClass1" />
+    <function name="Clear" type="procedure" declaration="procedure Clear;">
+      <description><detailed>Inherited is TMyClass1.Clear. Inherited class is TMyClass1.</detailed></description>
+    </function>
+  </structure>
+</unit>

@@ -1,0 +1,25 @@
+<unit name="ok_value_member_tags.pas">
+  <type name="TMyEnum = (...);">
+    <description><detailed> </detailed></description>
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <description><detailed>  </detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="function" declaration="function MyMethod(A: Integer): boolean;">
+      <param name="A">Description of param A.</param>
+      <result>Some boolean value.</result>
+      <description><detailed>Description of MyMethod here, using parenthesis.  </detailed></description>
+    </function>
+    <variable name="MyField: Integer;">
+      <description><detailed>Description of MyField here.</detailed></description>
+    </variable>
+    <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</detailed></description>
+    </property>
+  </structure>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+    <variable name="MyField: Integer;">
+      <description><detailed>Description of MyField in TMyRecord here.</detailed></description>
+    </variable>
+  </structure>
+</unit>

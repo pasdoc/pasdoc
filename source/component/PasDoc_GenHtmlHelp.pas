@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -33,7 +33,7 @@ type
   THTMLHelpDocGenerator = class(TGenericHTMLDocGenerator)
   private
     FContentsFile: string;
-    
+
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
   public
@@ -46,7 +46,7 @@ type
 
 implementation
 
-uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items, 
+uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items,
   PasDoc_Languages, PasDoc_Gen, PasDoc_Versions;
 
 { HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
@@ -91,7 +91,7 @@ end;
 
 { THTMLHelpDocGenerator ------------------------------------------------------ }
 
-procedure THTMLHelpDocGenerator.WriteDocumentation; 
+procedure THTMLHelpDocGenerator.WriteDocumentation;
 begin
   inherited;
   WriteHtmlHelpProject;
@@ -144,7 +144,7 @@ var
 
   { ---------- }
 
-  procedure InternalWriteCIO(const ClassItem: TPasCio);
+  procedure NestedWriteCIO(const ClassItem: TPasCio);
   var
     I: Integer;
   begin
@@ -153,19 +153,19 @@ var
 
     if ClassItem.Cios.Count > 0 then
     begin
-      WriteLiObject(FLanguage.Translation[trInternalCR], ClassItem.FullLink + '#@InternalCRs');
+      WriteLiObject(FLanguage.Translation[trNestedCR], ClassItem.FullLink + '#@NestedCRs');
       ClassItem.Cios.SortShallow;
       WriteDirectLine('<ul>');
       for I := 0 to ClassItem.Cios.Count - 1 do
       begin
         TPasCio(ClassItem.Cios.PasItemAt[I]).Sort([ssRecordFields,
           ssNonRecordFields, ssMethods, ssProperties]);
-        InternalWriteCIO(TPasCio(ClassItem.Cios.PasItemAt[I]));
+        NestedWriteCIO(TPasCio(ClassItem.Cios.PasItemAt[I]));
       end;
       WriteDirectLine('</ul>');
     end;
 
-    WriteItemHeadingCollection(fLanguage.Translation[trInternalTypes], ClassItem.FullLink, '@InternalTypes', ClassItem.Types);
+    WriteItemHeadingCollection(fLanguage.Translation[trNestedTypes], ClassItem.FullLink, '@NestedTypes', ClassItem.Types);
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
@@ -201,7 +201,7 @@ var
         WriteDirectLine('<ul>');
 
         for k := 0 to c.Count - 1 do
-          InternalWriteCIO(TPasCio(c.PasItemAt[k]));
+          NestedWriteCIO(TPasCio(c.PasItemAt[k]));
 
         WriteDirectLine('</ul>');
       end;
@@ -231,7 +231,7 @@ var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofCios].BaseFileName + GetFileExtension;
-    
+
     // Write Classes to Contents
     if Text <> '' then
       WriteLiObject(Text, FileName) else
@@ -251,7 +251,7 @@ var
     begin
       TPasCio(c.PasItemAt[j]).Sort([ssRecordFields, ssNonRecordFields,
                                     ssMethods, ssProperties]);
-      InternalWriteCIO(TPasCio(c.PasItemAt[j]));
+      NestedWriteCIO(TPasCio(c.PasItemAt[j]));
     end;
     c.Free;
     WriteDirectLine('</ul>');
@@ -263,9 +263,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName + 
+    FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName +
       GetFileExtension;
-    
+
     if Text <> '' then
       WriteLiObject(Text, FileName) else
       WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
@@ -320,9 +320,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + 
+    FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName +
       '.' + LinkGraphVizUses;
-      
+
     if LinkGraphVizUses <> '' then
       WriteLiObject(FLanguage.Translation[trGvUses], FileName);
   end;
@@ -333,9 +333,9 @@ var
   var
     FileName: string;
   begin
-    FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName + 
+    FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName +
       '.' + LinkGraphVizClasses;
-      
+
     if LinkGraphVizClasses <> '' then
       WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
   end;
@@ -392,6 +392,23 @@ var
     end;
   end;
 
+  { ---------- }
+
+  Procedure ContentWriteAdditionalFiles;
+  var
+    i: Integer;
+  begin
+    if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+    begin
+      for i := 0 to AdditionalFiles.Count - 1 do
+      begin
+        WriteLiObject(AdditionalFiles.Get(i).ShortTitle, AdditionalFiles.Get(i).FullLink);
+      end;
+    end;
+  end;
+
+  { ---------- }
+
   procedure IndexWriteItem(const Item, PreviousItem, NextItem: TPasItem);
     { Item is guaranteed to be assigned, i.e. not to be nil. }
   begin
@@ -434,7 +451,7 @@ var
 
   { -------------------------------------------------------------------------- }
 var
-  j, k, l: Integer;
+  i, j, k, l: Integer;
   CurrentLevel, Level: Integer;
   PU: TPasUnit;
   c: TPasItems;
@@ -518,6 +535,7 @@ begin
     ContentWriteLegend('');
     ContentWriteGVClasses();
     ContentWriteGVUses();
+    ContentWriteAdditionalFiles;
     ContentWriteConclusion;
   end;
 
@@ -550,7 +568,7 @@ begin
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
   if not ExcludeGenerator then
-    WriteDirectLine('<meta name="GENERATOR" content="' + 
+    WriteDirectLine('<meta name="GENERATOR" content="' +
       PASDOC_NAME_AND_VERSION + '">');
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
@@ -661,9 +679,9 @@ begin
   if (LinkGraphVizClasses <> '') then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
       LinkGraphVizClasses);
-    
+
   if LinkGraphVizUses <> '' then
-    WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + 
+    WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' +
       LinkGraphVizUses);
 
   for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
@@ -683,6 +701,14 @@ begin
               WriteDirectLine(Item2.OutputFilename);
             end;
       end;
+
+  If (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+  begin
+    for i := 0 to AdditionalFiles.Count - 1 do
+    begin
+      WriteDirectLine(AdditionalFiles.Get(i).FullLink);
+    end;
+  end;
 
   If Conclusion <> nil then
   begin

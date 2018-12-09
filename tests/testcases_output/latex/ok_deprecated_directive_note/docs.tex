@@ -1,0 +1,425 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}deprecated{\_}directive{\_}note}
+\label{ok_deprecated_directive_note}
+\index{ok{\_}deprecated{\_}directive{\_}note}
+\section{Description}
+Warning: this symbol is deprecated: Deprecation note for unit
+
+Test deprecated directive with and without note.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TTestClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TTestClassDeprecated1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TTestClassDeprecated2\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc1}]
+\item[\texttt{MyProc2}]
+\item[\texttt{MyProc3}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TTestClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestClass Class}
+\fi
+\label{ok_deprecated_directive_note.TTestClass}
+\index{TTestClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTestClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{TestProperty1}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_deprecated_directive_note.TTestClass-TestProperty1}
+\index{TestProperty1}
+\item[\textbf{TestProperty1}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property TestProperty1: Integer; deprecated 'Deprecation note for property';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated: Deprecation note for property
+
+ \label{ok_deprecated_directive_note.TTestClass-TestProperty2}
+\index{TestProperty2}
+\item[\textbf{TestProperty2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property TestProperty2: Integer; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+ \end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{TestFieldDeprecated1}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_deprecated_directive_note.TTestClass-TestFieldDeprecated1}
+\index{TestFieldDeprecated1}
+\item[\textbf{TestFieldDeprecated1}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated: Deprecation note for field
+
+ \label{ok_deprecated_directive_note.TTestClass-TestFieldDeprecated2}
+\index{TestFieldDeprecated2}
+\item[\textbf{TestFieldDeprecated2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public TestFieldDeprecated2: Integer deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par Warning: this symbol is deprecated.
+
+ \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod1}\hspace*{\fill}
+
+\label{ok_deprecated_directive_note.TTestClass-MyMethod1}
+\index{MyMethod1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod1; deprecated 'Deprecation note for procedure';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated: Deprecation note for procedure
+
+ 
+
+\end{list}
+\paragraph*{MyMethod2}\hspace*{\fill}
+
+\label{ok_deprecated_directive_note.TTestClass-MyMethod2}
+\index{MyMethod2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure MyMethod2; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TTestClassDeprecated1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestClassDeprecated1 Class}
+\fi
+\label{ok_deprecated_directive_note.TTestClassDeprecated1}
+\index{TTestClassDeprecated1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTestClassDeprecated1 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Warning: this symbol is deprecated: Deprecation note for class
+
+\ifpdf
+\subsection*{\large{\textbf{TTestClassDeprecated2 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TTestClassDeprecated2 Class}
+\fi
+\label{ok_deprecated_directive_note.TTestClassDeprecated2}
+\index{TTestClassDeprecated2}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TTestClassDeprecated2 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Warning: this symbol is deprecated.
+
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{MyProc1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc1}
+\fi
+\label{ok_deprecated_directive_note-MyProc1}
+\index{MyProc1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated: Deprecation note for procedure with some apostrophe: ' here you go:)
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MyProc2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc2}
+\fi
+\label{ok_deprecated_directive_note-MyProc2}
+\index{MyProc2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc2; deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MyProc3}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyProc3}
+\fi
+\label{ok_deprecated_directive_note-MyProc3}
+\index{MyProc3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MyProc3; deprecated {\#}72 {\#}{\$}65 'llo';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated: Hello
+
+Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.
+
+\end{list}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{TestConstDeprecated1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstDeprecated1}
+\fi
+\label{ok_deprecated_directive_note-TestConstDeprecated1}
+\index{TestConstDeprecated1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated: Deprecation note for constant
+
+ 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TestConstDeprecated2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TestConstDeprecated2}
+\fi
+\label{ok_deprecated_directive_note-TestConstDeprecated2}
+\index{TestConstDeprecated2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TestConstDeprecated2 = 1 deprecated;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated.
+
+ 
+
+\end{list}
+\end{document}

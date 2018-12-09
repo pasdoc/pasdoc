@@ -5,8 +5,8 @@
     {trUnits} 'Egységek',
     {trClassHierarchy} 'Osztály hierarchia',
     {trCio} 'Osztályok, Kapcsolódási felületek és Objektumok',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Azonosítók',
     {trGvUses} 'Egység függőségi gráf',
     {trGvClasses} 'Osztály hierarchia gráf',
@@ -58,10 +58,12 @@
     {trDeprecated} 'ez az azonosító érték nélküli',
     {trPlatformSpecific} 'ez az azonosító szükséges némely platform számára',
     {trLibrarySpecific} 'ez az azonosító szükséges némely library számára',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezető',
     {trConclusion} 'Összefoglaló',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Összes Osztály, Kapcsolódási felület és Objektumok',
     {trHeadlineConstants} 'Összes Kontans',
@@ -97,7 +99,7 @@
     {trOnDateTime} ' ', //none in Hungarian language
     {trSearch} 'Keresés',
     {trSeeAlso} 'Lásd még',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

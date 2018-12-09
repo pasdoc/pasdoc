@@ -1,0 +1,71 @@
+<unit name="ok_table_nonlatex.pas">
+  <description><abstract>Test of @table-related features that do not work in LaTeX, only in HTML.</abstract><detailed> Test that everything within @cell tag is OK: 
+
+<table>
+  <rowhead>
+    <cell> Anything within a cell is OK, including lists: 
+
+<orderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</orderedlist>
+
+, paragraphs: This is new paragraph. Dashes: ---, --, -, --. URLs: http://pasdoc.sourceforge.net/ And, last but not least, nested table: 
+
+<table>
+  <rowhead>
+    <cell>1</cell>
+    <cell>2</cell>
+  </rowhead>
+  <rowhead>
+    <cell>3</cell>
+    <cell>4</cell>
+  </rowhead>
+</table>
+
+ </cell>
+    <cell>B</cell>
+  </rowhead>
+  <row>
+    <cell>C</cell>
+    <cell>D</cell>
+  </row>
+</table>
+
+ Now the same example table as before, but now nested table and other nicies are within a normal row, instead of heading row. 
+
+<table>
+  <rowhead>
+    <cell>C</cell>
+    <cell>D</cell>
+  </rowhead>
+  <row>
+    <cell> Anything within a cell is OK, including lists: 
+
+<orderedlist>
+<item>One</item>
+<item>Two</item>
+<item>Three</item>
+</orderedlist>
+
+, paragraphs: This is new paragraph. Dashes: ---, --, -, --. URLs: http://pasdoc.sourceforge.net/ And, last but not least, nested table: 
+
+<table>
+  <rowhead>
+    <cell>1</cell>
+    <cell>2</cell>
+  </rowhead>
+  <rowhead>
+    <cell>3</cell>
+    <cell>4</cell>
+  </rowhead>
+</table>
+
+ </cell>
+    <cell>B</cell>
+  </row>
+</table>
+
+</detailed></description>
+</unit>

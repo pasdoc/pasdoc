@@ -1,0 +1,3 @@
+<unit name="warning_abstract_twice.pas">
+  <description><abstract>Second abstract</abstract><detailed>  pasdoc should warn &quot;You used @abstract twice in description of item ...&quot; or something like that.</detailed></description>
+</unit>

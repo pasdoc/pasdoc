@@ -5,8 +5,8 @@
     {trUnits} 'Moduły',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zależności modułów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -58,10 +58,12 @@
     {trDeprecated} 'odradza się używania tego identyfikatora',
     {trPlatformSpecific} 'ten identyfikator jest zależny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zależny od biblioteki',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',
     {trConclusion} 'Podsumowanie',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie stałe',
@@ -97,7 +99,7 @@
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz także',
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

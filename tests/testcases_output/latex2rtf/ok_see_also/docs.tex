@@ -1,0 +1,104 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}see{\_}also}
+\section{Description}
+This is a testing unit for @seealso tag.  \begin{list}{}{
+\settowidth{\tmplength}{\textbf{See also}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{See also}]
+\begin{description}
+\item[\begin{ttfamily}Foo\end{ttfamily}(\ref{ok_see_also-Foo})] 
+Abstract of Foo.
+\item[\begin{ttfamily}{$<$}special display name for TSomeClass in this unit{$>$}\end{ttfamily}(\ref{ok_see_also.TSomeClass})] 
+Abstract of TSomeClass.
+\end{description}
+\end{list}
+
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TSomeClass\end{ttfamily} Class}]Abstract of TSomeClass.
+\end{description}
+\begin{description}
+\item[\texttt{Foo}]Abstract of Foo.
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TSomeClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TSomeClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Abstract of TSomeClass.\hfill\vspace*{1ex}
+
+ Further description of TSomeClass.  \begin{list}{}{
+\settowidth{\tmplength}{\textbf{See also}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{See also}]
+\begin{description}
+\item[\begin{ttfamily}Foo\end{ttfamily}(\ref{ok_see_also-Foo})] 
+Abstract of Foo.
+\item[\begin{ttfamily}ok{\_}see{\_}also unit\end{ttfamily}(\ref{ok_see_also})] 
+
+\end{description}
+\end{list}
+\section{Functions and Procedures}
+\subsection*{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Foo;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Abstract of Foo.\hfill\vspace*{1ex}
+
+ Further description of Foo. \item[\textbf{See also}]
+\begin{description}
+\item[\begin{ttfamily}TSomeClass\end{ttfamily}(\ref{ok_see_also.TSomeClass})] 
+Abstract of TSomeClass.
+\end{description}
+
+
+\end{list}
+\end{document}

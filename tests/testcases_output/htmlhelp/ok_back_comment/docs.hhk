@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_back_comment.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyConst">
+<param name="Local" value="ok_back_comment.html#MyConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_back_comment.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyField">
+<param name="Local" value="ok_back_comment.TMyClass.html#MyField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc">
+<param name="Local" value="ok_back_comment.TMyClass.html#MyProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProp">
+<param name="Local" value="ok_back_comment.TMyClass.html#MyProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyEnum">
+<param name="Local" value="ok_back_comment.html#TMyEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyException1">
+<param name="Local" value="ok_back_comment.TMyException1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyException2">
+<param name="Local" value="ok_back_comment.TMyException2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyType">
+<param name="Local" value="ok_back_comment.html#TMyType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V">
+<param name="Local" value="ok_back_comment.html#V">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V1">
+<param name="Local" value="ok_back_comment.html#V1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V2">
+<param name="Local" value="ok_back_comment.html#V2">
+</object>
+</ul>
+</body></html>

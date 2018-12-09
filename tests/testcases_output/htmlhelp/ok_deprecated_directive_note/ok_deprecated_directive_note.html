@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_deprecated_directive_note</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="unit">Unit ok_deprecated_directive_note</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p class="hint_directive">Warning: this symbol is deprecated: Deprecation note for unit</p><p>
+Test deprecated directive with and without note.</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_deprecated_directive_note.TTestClass.html"><code>TTestClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_deprecated_directive_note.TTestClassDeprecated1.html"><code>TTestClassDeprecated1</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_deprecated_directive_note.TTestClassDeprecated2.html"><code>TTestClassDeprecated2</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_deprecated_directive_note.html#MyProc1">MyProc1</a></b>; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_deprecated_directive_note.html#MyProc2">MyProc2</a></b>; deprecated;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_deprecated_directive_note.html#MyProc3">MyProc3</a></b>; deprecated #72 #$65 'llo';</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="ok_deprecated_directive_note.html#TestConstDeprecated1">TestConstDeprecated1</a></b> = 1 deprecated 'Deprecation note for constant';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><b><a  href="ok_deprecated_directive_note.html#TestConstDeprecated2">TestConstDeprecated2</a></b> = 1 deprecated;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc1"></span><code>procedure <b>MyProc1</b>; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated: Deprecation note for procedure with some apostrophe: ' here you go:)</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc2"></span><code>procedure <b>MyProc2</b>; deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MyProc3"></span><code>procedure <b>MyProc3</b>; deprecated #72 #$65 'llo';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated: Hello</p><p>
+Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</p>
+</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstDeprecated1"></span><code><b>TestConstDeprecated1</b> = 1 deprecated 'Deprecation note for constant';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated: Deprecation note for constant</p>&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TestConstDeprecated2"></span><code><b>TestConstDeprecated2</b> = 1 deprecated;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is deprecated.</p>&nbsp;</td></tr>
+</table>
+</body></html>

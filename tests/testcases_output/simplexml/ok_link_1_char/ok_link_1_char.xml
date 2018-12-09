@@ -1,0 +1,24 @@
+<unit name="ok_link_1_char.pas">
+  <structure name="TMeasurementPointItem" name_with_generic="TMeasurementPointItem" type="class">
+    <description><abstract><code>TMeasurementPointItem</code> is used to specify the real-world coordinates of a pixel in a bitmap.</abstract></description>
+    <ancestor name="TCollectionItem" declaration="TCollectionItem" />
+    <function name="SetX" type="procedure" declaration="procedure SetX(const Value: double);">
+      <description><detailed>See X.</detailed></description>
+    </function>
+    <function name="SetY" type="procedure" declaration="procedure SetY(const Value: double);">
+      <description><detailed>See Y.</detailed></description>
+    </function>
+    <variable name="FX: double;">
+      <description><detailed><code>FX</code>: double; See X.</detailed></description>
+    </variable>
+    <variable name="FY: double;">
+      <description><detailed><code>FY</code>: double; See Y.</detailed></description>
+    </variable>
+    <property name="X" indexdecl="" type="double" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed><code>X</code> is the X real-world coordinate.</detailed></description>
+    </property>
+    <property name="Y" indexdecl="" type="double" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+      <description><detailed><code>Y</code> is the Y real-world coordinate.</detailed></description>
+    </property>
+  </structure>
+</unit>

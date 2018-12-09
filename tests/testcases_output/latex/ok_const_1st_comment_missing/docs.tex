@@ -1,0 +1,147 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}const{\_}1st{\_}comment{\_}missing}
+\label{ok_const_1st_comment_missing}
+\index{ok{\_}const{\_}1st{\_}comment{\_}missing}
+\section{Description}
+See bug [ 1198381 ] "Comment on 1st const does'nt work"
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{ec{\_}COPY}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ec{\_}COPY}
+\fi
+\label{ok_const_1st_comment_missing-ec_COPY}
+\index{ec{\_}COPY}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+ec{\_}COPY           = 600;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+bla bla copy.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{ec{\_}CUT}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ec{\_}CUT}
+\fi
+\label{ok_const_1st_comment_missing-ec_CUT}
+\index{ec{\_}CUT}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+ec{\_}CUT            = 601;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+bla bla cut.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{ec{\_}PASTE}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{ec{\_}PASTE}
+\fi
+\label{ok_const_1st_comment_missing-ec_PASTE}
+\index{ec{\_}PASTE}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+ec{\_}PASTE          = 602;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+bla bla paste.
+
+\end{list}
+\end{document}

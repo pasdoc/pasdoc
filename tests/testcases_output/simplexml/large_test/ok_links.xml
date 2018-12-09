@@ -1,0 +1,14 @@
+<unit name="ok_links.pas">
+  <description><abstract>Test various things with links.</abstract><detailed> Link to proc inside this unit : MyProc, and a qualified link to the same thing : ok_links.MyProc. Link to proc inside other unit: ok_links_2.MyOtherProc, link to proc inside other unit that has the same name as proc in this unit: ok_links_2.MyProc. Link to method in class in this unit: TSomeClass.MyMethod, and a more qualified link to the same thing : ok_links.TSomeClass.MyMethod. Link to method in class in second unit: TSomeOtherClass.MyMethod, link to method in class in second unit that has the same name as class in this unit: ok_links_2.TSomeClass.MyMethod. Link to this unit : ok_links, to other unit : ok_links_2.</detailed></description>
+  <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+    <description><detailed>Link to self : MyProc, and a second one: ok_links.MyProc, link to MyProc in other unit: ok_links_2.MyProc.</detailed></description>
+  </function>
+  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+      <description><detailed>Two links to <code>MyOtherMethod</code> : qualified TSomeClass.MyOtherMethod, not qualified MyOtherMethod</detailed></description>
+    </function>
+    <function name="MyOtherMethod" type="procedure" declaration="procedure MyOtherMethod;">
+    </function>
+  </structure>
+</unit>

@@ -1,0 +1,6 @@
+<unit name="ok_macros_off.pas">
+  <description><abstract>This is a test that macro support can be turned off in pasdoc.</abstract><detailed> With macro support turned on this unit would cause parsing error, because it would have brain-damaged declaration like 
+procedure interface interface(a: Integer);</detailed></description>
+  <function name="FOO" type="procedure" declaration="procedure FOO(a: Integer);">
+  </function>
+</unit>

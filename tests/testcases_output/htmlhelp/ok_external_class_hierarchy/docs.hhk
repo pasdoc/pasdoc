@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass0">
+<param name="Local" value="ok_external_class_hierarchy.TMyClass0.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass1">
+<param name="Local" value="ok_external_class_hierarchy.TMyClass1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass3">
+<param name="Local" value="ok_external_class_hierarchy.TMyClass3.html">
+</object>
+</ul>
+</body></html>

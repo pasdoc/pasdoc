@@ -1,0 +1,31 @@
+<unit name="ok_item_set_number.pas">
+  <description><abstract>Test of of @itemSetNumber tag.</abstract><detailed> 
+
+<orderedlist>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+<item> 
+
+<orderedlist>
+<item>Bar</item>
+<item>Bar</item>
+<item>Bar</item>
+<item>Bar</item>
+<item>Bar</item>
+<item>Bar</item>
+</orderedlist>
+
+ </item>
+<item>Foo</item>
+<item>Foo</item>
+<item>Foo</item>
+</orderedlist>
+
+</detailed></description>
+</unit>

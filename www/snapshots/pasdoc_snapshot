@@ -1,40 +1,42 @@
 #!/bin/bash
 set -eu
 
-# log messages and dates in English
-export LANG=C
+# Script run by Jenkins (Automatic Cloud Builds of Castle Game Engine projects) on
+# https://michalis.ii.uni.wroc.pl/jenkins/ to update PasDoc snapshots
+# visible on http://michalis.ii.uni.wroc.pl/pasdoc-snapshots/ .
+# Parts of this script are really specific to the Jenkins
+# and michalis.ii.uni.wroc.pl server configuration.
 
-# Make sure you have fpc on $PATH
-export PATH=/usr/local/bin:"${PATH}"
+. /usr/local/fpclazarus/bin/setup.sh default
 
-OUTPUT_PATH=~/public_html/pasdoc-snapshots/`date +%F`/
+OUTPUT_BASE_PATH=/var/www/pasdoc-snapshots/
+OUTPUT_PATH="${OUTPUT_BASE_PATH}"`date +%F`/
 mkdir -p "$OUTPUT_PATH"
-
-OUTPUT_LOG="$OUTPUT_PATH"compilation_output.log
-
-cd ~/sources/pasdoc/trunk/
-svn up > "$OUTPUT_LOG"
 
 PASDOC_VERSION=`make version`
 
-# make dist-src >> "$OUTPUT_LOG"  2>&1 # Useless, it checks out stable version.
-make dist-linux-x86 >> "$OUTPUT_LOG"  2>&1
-make dist-win32 FPC_WIN32='fpc -Twin32' LAZBUILD_OPTIONS='--operating-system=win32 --widgetset=win32' >> "$OUTPUT_LOG"  2>&1
+make dist-src
+make dist-linux-x86_64
+make dist-win32
+make dist-win64
 
-echo '---- Build OK.' >> "$OUTPUT_LOG"
+echo '---- Snapshots build OK.'
 
 # Move archives to output dir
-mv -f pasdoc-"$PASDOC_VERSION"-linux-x86.tar.gz \
+mv -f pasdoc-"$PASDOC_VERSION"-linux-x86_64.tar.gz \
       pasdoc-"$PASDOC_VERSION"-win32.zip \
+      pasdoc-"$PASDOC_VERSION"-win64.zip \
+      pasdoc-"$PASDOC_VERSION"-src.tar.gz \
       "$OUTPUT_PATH"
 
 # Create "latest" link, comfortable for users.
-rm -f ~/public_html/pasdoc-snapshots/latest
-ln -s `date +%F` ~/public_html/pasdoc-snapshots/latest
+rm -f "${OUTPUT_BASE_PATH}"latest
+ln -s `date +%F` "${OUTPUT_BASE_PATH}"latest
 
 # Clean old snapshots, to conserve disk space.
 # Keep only snapshots from last couple of days.
-cd ~/public_html/pasdoc-snapshots/
+pushd .
+cd "${OUTPUT_BASE_PATH}"
 set +e
 find . -mindepth 1 -maxdepth 1 \
   -type d -and \
@@ -49,5 +51,16 @@ find . -mindepth 1 -maxdepth 1 \
   '(' -not -iname `date --date='-7 day' +%F` ')' -and \
   -exec rm -Rf '{}' ';'
 set -e
+popd
 
-echo '---- The end, everything finished Ok.' >> "$OUTPUT_LOG"
+echo '---------------------------------------------------------------'
+echo 'Setting snapshots permissions:'
+
+chmod a+rX "${OUTPUT_BASE_PATH}"
+
+echo '---------------------------------------------------------------'
+echo 'Building for current platform, to be used by dependent Jenkins jobs'
+
+make clean default build-tools
+
+echo '---- The end, everything finished Ok.'

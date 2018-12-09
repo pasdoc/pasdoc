@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TRec1">
+<param name="Local" value="ok_record_case_parsing.TRec1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_record_case_parsing.TRec1.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_record_case_parsing.TRec1.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRec2">
+<param name="Local" value="ok_record_case_parsing.TRec2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_record_case_parsing.TRec2.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_record_case_parsing.TRec2.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Field1">
+<param name="Local" value="ok_record_case_parsing.TRec2.html#Field1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRec3">
+<param name="Local" value="ok_record_case_parsing.TRec3.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="C">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#C">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="D">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#D">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="E">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#E">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="F">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#F">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="G">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#G">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="H">
+<param name="Local" value="ok_record_case_parsing.TRec3.html#H">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRec4">
+<param name="Local" value="ok_record_case_parsing.TRec4.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_record_case_parsing.TRec4.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_record_case_parsing.TRec4.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="C">
+<param name="Local" value="ok_record_case_parsing.TRec4.html#C">
+</object>
+</ul>
+</body></html>

@@ -1,0 +1,123 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}table{\_}nonlatex}
+\label{ok_table_nonlatex}
+\index{ok{\_}table{\_}nonlatex}
+\section{Description}
+Test of @table{-}related features that do not work in LaTeX, only in HTML.\hfill\vspace*{1ex}
+
+
+
+Test that everything within @cell tag is OK:
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{ Anything within a cell is OK, including lists: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Two
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Three
+\end{enumerate}, paragraphs:
+
+This is new paragraph.
+
+Dashes: ---, --, {-}, {-}{-}. URLs: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}
+
+And, last but not least, nested table:
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{1} & \textbf{2} \\ \hline
+\textbf{3} & \textbf{4} \\ \hline
+\end{tabular}
+
+
+
+} & \textbf{B} \\ \hline
+C & D \\ \hline
+\end{tabular}
+
+
+
+Now the same example table as before, but now nested table and other nicies are within a normal row, instead of heading row.
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{C} & \textbf{D} \\ \hline
+ Anything within a cell is OK, including lists: \begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item One
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item Two
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item Three
+\end{enumerate}, paragraphs:
+
+This is new paragraph.
+
+Dashes: ---, --, {-}, {-}{-}. URLs: \href{http://pasdoc.sourceforge.net/}{http://pasdoc.sourceforge.net/}
+
+And, last but not least, nested table:
+
+
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{1} & \textbf{2} \\ \hline
+\textbf{3} & \textbf{4} \\ \hline
+\end{tabular}
+
+
+
+ & B \\ \hline
+\end{tabular}
+
+
+\end{document}

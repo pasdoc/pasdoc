@@ -1,6 +1,10 @@
 { @abstract(Provides the Main procedure.) }
 unit PasDoc_Main;
 
+{ Define this to see the backtrace of crashes (when compiled with FPC).
+  Easier for debugging. }
+{ $define LET_EXCEPTIONS_THROUGH}
+
 interface
 
 { This is the main procedure of PasDoc, it does everything. }
@@ -39,8 +43,11 @@ type
     OptionSourceList,
     OptionAbbrevFiles: TStringOptionList;
     OptionHtmlHelpContents,
-    OptionFooter,
     OptionHeader,
+    OptionFooter,
+    OptionHtmlHead,
+    OptionHtmlBodyBegin,
+    OptionHtmlBodyEnd,
     OptionName,
     OptionTitle,
     OptionFormat,
@@ -71,6 +78,7 @@ type
     OptionSort: TSetOption;
     OptionIntroduction: TStringOption;
     OptionConclusion: TStringOption;
+    OptionAdditionalFiles: TPathListOption;
     OptionLatexHead: TStringOption;
     OptionImplicitVisibility: TStringOption;
     OptionNoMacro: TBoolOption;
@@ -139,13 +147,25 @@ begin
   OptionHtmlHelpContents.Explanation := 'Read Contents for HtmlHelp from file';
   AddOption(OptionHtmlHelpContents);
 
+  OptionHeader := TStringOption.Create('H', 'header');
+  OptionHeader.Explanation := 'Include file as header for HTML output';
+  AddOption(OptionHeader);
+
   OptionFooter := TStringOption.Create('F', 'footer');
   OptionFooter.Explanation := 'Include file as footer for HTML output';
   AddOption(OptionFooter);
 
-  OptionHeader := TStringOption.Create('H', 'header');
-  OptionHeader.Explanation := 'Include file as header for HTML output';
-  AddOption(OptionHeader);
+  OptionHtmlHead := TStringOption.Create(#0, 'html-head');
+  OptionHtmlHead.Explanation := 'Include file to use inside HTML <head>';
+  AddOption(OptionHtmlHead);
+
+  OptionHtmlBodyBegin := TStringOption.Create(#0, 'html-body-begin');
+  OptionHtmlBodyBegin.Explanation := 'Include file to use right after HTML <body>';
+  AddOption(OptionHtmlBodyBegin);
+
+  OptionHtmlBodyEnd := TStringOption.Create(#0, 'html-body-end');
+  OptionHtmlBodyEnd.Explanation := 'Include file to use right before HTML </body>';
+  AddOption(OptionHtmlBodyEnd);
 
   OptionName := TStringOption.Create('N', 'name');
   OptionName.Explanation := 'Name for documentation';
@@ -167,7 +187,7 @@ begin
   OptionExcludeGenerator := TBoolOption.Create('X', 'exclude-generator');
   OptionExcludeGenerator.Explanation := 'Exclude generator information';
   AddOption(OptionExcludeGenerator);
-  
+
   OptionIncludeCreationTime := TBoolOption.Create(#0, 'include-creation-time');
   OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
   AddOption(OptionIncludeCreationTime);
@@ -283,6 +303,10 @@ begin
   OptionConclusion.Value := '';
   AddOption(OptionConclusion);
 
+  OptionAdditionalFiles := TPathListOption.Create('A', 'additional');
+  OptionAdditionalFiles.Explanation := 'The name of a text file with addition materials for the project';
+  AddOption(OptionAdditionalFiles);
+
   OptionLatexHead := TStringOption.Create(#0, 'latex-head');
   OptionLatexHead.Explanation := 'The name of a text file that includes lines to be inserted into the preamble of a LaTeX file';
   OptionLatexHead.Value := '';
@@ -292,19 +316,19 @@ begin
   OptionImplicitVisibility.Explanation := 'How pasdoc should handle class members within default class visibility';
   OptionImplicitVisibility.Value := 'public';
   AddOption(OptionImplicitVisibility);
-  
+
   OptionNoMacro := TBoolOption.Create(#0, 'no-macro');
   OptionNoMacro.Explanation := 'Turn FPC macro support off';
   AddOption(OptionNoMacro);
-  
+
   OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
   OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
   AddOption(OptionAutoLink);
-  
+
   OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
   OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
   AddOption(OptionAutoLinkExclude);
-  
+
   OptionExternalClassHierarchy := TStringOption.Create(#0, 'external-class-hierarchy');
   OptionExternalClassHierarchy.Explanation := 'File defining hierarchy of classes not included in your source code, for more complete class tree diagrams';
   AddOption(OptionExternalClassHierarchy);
@@ -321,7 +345,7 @@ begin
 end;
 
 procedure TPasdocMain.PrintUsage(OptionParser: TOptionParser);
-begin                      
+begin
   PrintHeader;
   WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' [options] [files]');
   WriteLn('Valid options are: ');
@@ -341,13 +365,16 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
   { sets the html specific options and returns its parameter as TDocGenerator }
   function SetHtmlOptions(Generator: TGenericHTMLDocGenerator): TDocGenerator;
   begin
-    if OptionFooter.WasSpecified then
-      Generator.Footer := FileToString(OptionFooter.Value);
-
     if OptionHeader.WasSpecified then
       Generator.Header := FileToString(OptionHeader.Value);
-
-    { If external CSS file was specified }
+    if OptionFooter.WasSpecified then
+      Generator.Footer := FileToString(OptionFooter.Value);
+    if OptionHtmlHead.WasSpecified then
+      Generator.HtmlHead := FileToString(OptionHtmlHead.Value);
+    if OptionHtmlBodyBegin.WasSpecified then
+      Generator.HtmlBodyBegin := FileToString(OptionHtmlBodyBegin.Value);
+    if OptionHtmlBodyEnd.WasSpecified then
+      Generator.HtmlBodyEnd := FileToString(OptionHtmlBodyEnd.Value);
     if OptionCSS.WasSpecified then
       Generator.CSS := FileToString(OptionCSS.Value);
 
@@ -498,12 +525,12 @@ begin
     PasDoc.Generator.ParseAbbreviationsFile(OptionAbbrevFiles.Values[i]);
   end;
 
-  PasDoc.Generator.CheckSpelling := 
+  PasDoc.Generator.CheckSpelling :=
     OptionASPELL.WasSpecified or OptionSpellCheck.WasSpecified;
   if OptionSpellCheck.WasSpecified then
-    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
+    PasDoc.Generator.AspellLanguage := LanguageCode(PasDoc.Generator.Language) else
   if OptionASPELL.Value = '' then
-    PasDoc.Generator.AspellLanguage := LanguageAspellCode(PasDoc.Generator.Language) else
+    PasDoc.Generator.AspellLanguage := LanguageCode(PasDoc.Generator.Language) else
     PasDoc.Generator.AspellLanguage := OptionASPELL.Value;
   if OptionSpellCheckIgnoreWords.Value <> '' then
     PasDoc.Generator.SpellCheckIgnoreWords.LoadFromFile(
@@ -534,6 +561,7 @@ begin
 
   PasDoc.IntroductionFileName := OptionIntroduction.Value;
   PasDoc.ConclusionFileName := OptionConclusion.Value;
+  PasDoc.AdditionalFilesNames.Assign(OptionAdditionalFiles.Values);
 
   if OptionLatexHead.Value <> '' then begin
     if not (PasDoc.Generator is TTexDocGenerator) then begin
@@ -541,7 +569,7 @@ begin
         'You can only use the "latex-head" option with LaTeX output.');
     end;
   end;
-  
+
   if SameText(OptionImplicitVisibility.Value, 'public') then
     PasDoc.ImplicitVisibility := ivPublic else
   if SameText(OptionImplicitVisibility.Value, 'published') then
@@ -551,10 +579,10 @@ begin
     raise EInvalidCommandLine.CreateFmt(
       'Invalid argument for "--implicit-visibility" option : "%s"',
       [OptionImplicitVisibility.Value]);
-      
+
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
   PasDoc.AutoLink := OptionAutoLink.TurnedOn;
-  
+
   if OptionAutoLinkExclude.Value <> '' then
   begin
     PasDoc.Generator.AutoLinkExclude.LoadFromFile(OptionAutoLinkExclude.Value);
@@ -564,7 +592,7 @@ begin
       large file like /usr/share/dict/american-english for this option. }
     PasDoc.Generator.AutoLinkExclude.Sorted := true;
   end;
-  
+
   if OptionExternalClassHierarchy.WasSpecified then
     PasDoc.Generator.ExternalClassHierarchy.LoadFromFile(
       OptionExternalClassHierarchy.Value);
@@ -601,19 +629,13 @@ begin
 
     if not OptionParser.OptionExcludeGenerator.TurnedOn then PrintHeader;
 
+    PasDoc := TPasDoc.Create(nil);
     try
-      PasDoc := TPasDoc.Create(nil);
-      try
-        PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
-        OptionParser.InterpretCommandline(PasDoc);
-        PasDoc.Execute;
-      finally
-        PasDoc.Free;
-      end;
-    except
-      on e: Exception do
-        with e do
-          WriteLn('Fatal Error: ', Message);
+      PasDoc.OnMessage := {$ifdef FPC}@{$endif} WriteWarning;
+      OptionParser.InterpretCommandline(PasDoc);
+      PasDoc.Execute;
+    finally
+      PasDoc.Free;
     end;
   finally
     OptionParser.Free;
@@ -631,17 +653,26 @@ begin
     {$IFEND}
   {$ENDIF}
 {$ENDIF}
+  {$ifndef LET_EXCEPTIONS_THROUGH}
   try
+  {$endif not LET_EXCEPTIONS_THROUGH}
     PasdocMain := TPasdocMain.Create;
     try
       PasdocMain.Execute;
+      if ExitCode <> 0 then
+        WriteLn('The documentation was generated, but some problems during parsing or generation occurred. (Consult the output above for details.) Therefore exiting with non-zero exit status.');
     finally
       PasdocMain.Free;
     end;
+  {$ifndef LET_EXCEPTIONS_THROUGH}
   except
     on E: Exception do
-      WriteLn(E.ClassName + ' :' + E.Message);
+    begin
+      WriteLn('Fatal Error: ' + E.ClassName + ': ' + E.Message);
+      Halt(1); // exit with non-zero status
+    end;
   end;
+  {$endif not LET_EXCEPTIONS_THROUGH}
 {$IFNDEF FPC}
   {$IFDEF CONDITIONALEXPRESSIONS}
     {$IF CompilerVersion > 14}

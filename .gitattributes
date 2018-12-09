@@ -1,1 +1,5 @@
 *.inc linguist-language=Pascal
+old_docs/ linguist-documentation
+tests/testcases_output/ linguist-generated=true
+
+# See https://github.com/github/linguist about these attributes

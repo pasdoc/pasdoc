@@ -1,0 +1,27 @@
+<unit name="ok_caret_character.pas">
+  <description><abstract>Test of parsing &quot;^char&quot; constants, see [http://www.freepascal.org/docs-html/ref/refsu7.html].</abstract><detailed> Note that while FPC docs say that only ^A .. ^Z are allowed, actually both FPC 2.0.0 and Kylix 3 accept other characters after the caret, e.g. &quot;^\&quot; is accepted. See also bug report &quot;[ 1358911 ] Invalid character in input stream&quot;.</detailed></description>
+  <constant name="C2 = ^A;">
+  </constant>
+  <constant name="C3 = ^B;">
+  </constant>
+  <constant name="C4 = ^Z;">
+  </constant>
+  <constant name="SUB = ^Z;">
+    <description><detailed>SUBstitute</detailed></description>
+  </constant>
+  <constant name="ESC = ^[;">
+    <description><detailed>ESCape</detailed></description>
+  </constant>
+  <constant name="FS  = ^\;">
+    <description><detailed>File Separator</detailed></description>
+  </constant>
+  <constant name="GS  = ^];">
+    <description><detailed>Group Separator</detailed></description>
+  </constant>
+  <constant name="RS  = ^^;">
+    <description><detailed>Record Separator</detailed></description>
+  </constant>
+  <constant name="US  = ^_;">
+    <description><detailed>Unit Separator</detailed></description>
+  </constant>
+</unit>

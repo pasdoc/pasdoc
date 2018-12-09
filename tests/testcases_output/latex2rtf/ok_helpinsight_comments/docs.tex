@@ -1,0 +1,58 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}helpinsight{\_}comments}
+\section{Description}
+Test of handling help insight comments, in the form "/// {$<$}tag{$>$} ... {$<$}/tag{$>$}". See http://delphi.wikia.com/wiki/Help{\_}insight, example snippet with \begin{ttfamily}Parse\end{ttfamily}(\ref{ok_helpinsight_comments-Parse}) function is straight from there. See https://sourceforge.net/tracker/?func=detail{\&}atid=304213{\&}aid=3485263{\&}group{\_}id=4213.
+\section{Overview}
+\begin{description}
+\item[\texttt{Parse}]parses the commandline
+\end{description}
+\section{Functions and Procedures}
+\subsection*{Parse}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Parse(const {\_}CmdLine: string);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+parses the commandline\hfill\vspace*{1ex}
+
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[CmdLine] is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first "parameter". If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.
+\end{description}
+
+
+\end{list}
+\end{document}

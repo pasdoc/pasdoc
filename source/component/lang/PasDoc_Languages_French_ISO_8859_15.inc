@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Unités',
     {trClassHierarchy} 'Hiérarchie des classes',
     {trCio} 'Classes, interfaces, enregistrements et objets',
-    {trInternalCR} strToDo, // 'Internal Classes and Records',
-    {trInternalTypes} strToDo, // 'Internal Types',
+    {trNestedCR} strToDo, // 'Nested Classes and Records',
+    {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identificateurs',
     {trGvUses} 'Graphe de dépendance d''unités',
     {trGvClasses} 'Graphe de hiérarchie des classes',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} 'ce symbole est désapprouvé',
     {trPlatformSpecific} 'ce symbole est spécifique à une plateforme d''exécution',
     {trLibrarySpecific} 'ce symbole est spécifique à une certaine bibliothèque',
+    {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Aperçu',
     {trIntroduction} strKeep, //'Introduction',
     {trConclusion} strKeep, //'Conclusion',
+    {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Toutes les classes, interfaces, objets et enregistrements',
     {trHeadlineConstants} 'Toutes les constants',
@@ -79,13 +81,13 @@ RTransTable = (
     {trValues} 'Valeurs', //?
   //empty
     {trNone} 'Aucun(e)(s)', //'Rien'?
-    {trNoCIOs} 'L''unité ne contient ni classe, ni interface, ni objets, ni enregistrement.', 
-    {trNoCIOsForHierarchy} 'L''unité ne contient ni classe, ni interface, ni objets.', 
-    {trNoTypes} 'L''unité ne contient aucun type.', 
-    {trNoVariables} 'L''unité ne contient aucune variable.', 
-    {trNoConstants} 'L''unité ne contient aucune constante.', 
-    {trNoFunctions} 'L''unité ne contient ni fonction ni procédure.', 
-    {trNoIdentifiers} 'L''unité ne contient aucun indentificateur.', 
+    {trNoCIOs} 'L''unité ne contient ni classe, ni interface, ni objets, ni enregistrement.',
+    {trNoCIOsForHierarchy} 'L''unité ne contient ni classe, ni interface, ni objets.',
+    {trNoTypes} 'L''unité ne contient aucun type.',
+    {trNoVariables} 'L''unité ne contient aucune variable.',
+    {trNoConstants} 'L''unité ne contient aucune constante.',
+    {trNoFunctions} 'L''unité ne contient ni fonction ni procédure.',
+    {trNoIdentifiers} 'L''unité ne contient aucun indentificateur.',
   //misc
     {trHelp} 'Aide',
     {trLegend} 'Légende',
@@ -97,7 +99,7 @@ RTransTable = (
     {trOnDateTime} 'le',
     {trSearch} 'Cherche', //? 'Recherche'
     {trSeeAlso} 'Voir aussi', //?
-    {trInternal} strToDo, //'internal',
+    {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
     ''  //dummy
   );

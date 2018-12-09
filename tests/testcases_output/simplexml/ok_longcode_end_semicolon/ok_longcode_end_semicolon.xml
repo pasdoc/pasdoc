@@ -1,0 +1,3 @@
+<unit name="ok_longcode_end_semicolon.pas">
+  <description><detailed>Before 2008-01-17, ending semicolon was missing in the output: Progress.UserInterface := ProgressGLInterface;</detailed></description>
+</unit>

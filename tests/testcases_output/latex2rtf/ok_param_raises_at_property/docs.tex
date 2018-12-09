@@ -1,0 +1,130 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit A}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyException\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyException Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyException {$>$} TObject
+%%%%Description
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Bar: Integer read FBar write SetBar;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ \par
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}TMyException\end{ttfamily}(\ref{A.TMyException})] When setting to an invalid value.
+\end{description}
+
+
+\end{list}
+\paragraph*{Items}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Items [constIndex:Integer]: string read GetItems write SetItems;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] This is some parameter.
+\end{description}
+
+
+\end{list}
+\section{Functions and Procedures}
+\subsection*{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Foo(A: Integer);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[A] This is some parameter.
+\end{description}
+\item[\textbf{Exceptions}]
+\begin{description}
+\item[\begin{ttfamily}TMyException\end{ttfamily}(\ref{A.TMyException})] When somethig bad happens.
+\end{description}
+
+
+\end{list}
+\end{document}

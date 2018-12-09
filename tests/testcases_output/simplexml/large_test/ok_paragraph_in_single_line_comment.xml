@@ -1,0 +1,6 @@
+<unit name="ok_paragraph_in_single_line_comment.pas">
+  <description><detailed>This is the 1st paragraph. This is the 2nd paragraph. This is the 3rd paragraph. pasdoc should create paragraphs when glueing single-line comments to a description, but it doesn't for now. Update: now it does.</detailed></description>
+  <function name="Foo" type="procedure" declaration="procedure Foo;">
+    <description><detailed>This is the 1st paragraph. This is the 2nd paragraph. This is the 3rd paragraph. Here paragraphs are correct.</detailed></description>
+  </function>
+</unit>

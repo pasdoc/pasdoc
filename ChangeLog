@@ -1,16 +1,56 @@
-(date unknown - future release) v0.15.0
+Next version (not released yet)
 
-  * Add our tools to the binary release:
-    pascal_pre_proc (Pascal preprocessor), file_to_pascal_data,
-    file_to_pascal_string.
+  * Possibility to specify additional files using -A or --additional
+    (just like introduction or conclusion, but you can provide any number
+    of items) (thanks to Alex Merkel)
+  * Added de.utf8 (German with UTF-8 encoding)
+  * Automatically remove %region and %endregion from comments
+  * Show visibility (public, protected, private...) inside records too
+    (it is meanigful for advanced records)
+  * Implement in pasdoc_gui options to
+    - customize HTML head and body
+    - set external descriptions file
+    - configure identifiers excluded from auto-linking
+  * Rename "internal" to "nested" to describe this language feature.
+    Because that is how it's called in official docs
+    ( http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Nested_Type_Declarations,
+      https://www.freepascal.org/docs-html/ref/refse41.html )
+    and the "internal" word has traditionally different meaning
+    ("something not supposed to be visible/used from the outside").
+  * The automatic tests are now easier to run and check (see tests/README.md).
+  * @raises and @param is not supported at properties as well as methods.
+    (Actually, it's supported at everything now,
+    but it makes sense only at properties and methods now.)
+  * Tipue (client-side search, see https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption )
+    was much improved:
+    - we have upgraded to use Tipue 6.1, which highlights the found terms
+    - we strip HTML from Tipue index, which makes the "search results" page correct
+  * Fix handling SVN fixed-length $Date::
+  * Parsing of $if and $elseif expressions,
+    like "defined(MSWINDOWS) or defined(UNIX)"
+
+2018-02-08 v0.15.0
+
+  * @links to enumerated type members work now.
+  * New @includeCode tag https://github.com/pasdoc/pasdoc/wiki/IncludeCodeTag
+    (by Silvio Clécio)
+  * @longCode and @preformatted improved to better honor indentation.
+  * parsing "experimental" directive.
+  * Allow to customize HTML output more, with your own CSS and HTML, by
+    --html-head, --html-body-begin, --html-body-end command-line params.
+  * HTML output is now HTML5.
+  * Add our tools to the binary release: pascal_pre_proc (Pascal preprocessor),
+    file_to_pascal_data, file_to_pascal_string.
   * Improve CSS and HTML, in particular for accessibility and mobile browsers.
     Among many improvements, we removed fixed font size in pixels,
     changed some tables into divs, and fixed HTML validity around Tipue search box.
   * pasdoc_gui uses now default font size on your system.
-  * @includeCode tag https://github.com/pasdoc/pasdoc/wiki/IncludeCodeTag
-    (by Silvio Clécio)
   * Updated Spanish (Spain) translation (by Guillermo Martínez Jiménez)
-  * @longCode and @preformatted improved to ignore indentation
+  * Tipue works now more efficiently -- the (potentially large) "index data"
+    is only loaded on the "Search Results" page.
+  * Automatic tests rearrangements and simplifications (see tests/run_all_tests.sh).
+
+  Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 
 2015-08-09 v0.14.0
 

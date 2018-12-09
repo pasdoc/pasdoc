@@ -5,8 +5,8 @@ RTransTable = (
     {trUnits} 'Units',
     {trClassHierarchy} 'Class Hierarchy',
     {trCio} 'Classes, Interfaces, Objects and Records',
-    {trInternalCR} 'Internal Classes and Records',
-    {trInternalTypes} 'Internal Types',
+    {trNestedCR} 'Nested Classes and Records',
+    {trNestedTypes} 'Nested Types',
     {trIdentifiers} 'Identifiers',
     {trGvUses} 'Unit dependency graph',
     {trGvClasses} 'Classes hierarchy graph',
@@ -58,10 +58,12 @@ RTransTable = (
     {trDeprecated} 'this symbol is deprecated',
     {trPlatformSpecific} 'this symbol is specific to some platform',
     {trLibrarySpecific} 'this symbol is specific to some library',
+    {trExperimental} 'this symbol is experimental',
   //headings
     {trOverview} 'Overview',
     {trIntroduction} 'Introduction',
     {trConclusion} 'Conclusion',
+    {trAdditionalFile} 'additional file',
     {trEnclosingClass} 'Enclosing Class',
     {trHeadlineCio} 'All Classes, Interfaces, Objects and Records',
     {trHeadlineConstants} 'All Constants',
@@ -97,7 +99,7 @@ RTransTable = (
     {trOnDateTime} 'on',
     {trSearch} 'Search',
     {trSeeAlso} 'See also',
-    {trInternal} 'internal',
+    {trNested} 'nested',
     {trAttributes} 'Attributes',
     ''  //dummy
   );

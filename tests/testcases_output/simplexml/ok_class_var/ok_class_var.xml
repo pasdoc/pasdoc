@@ -1,0 +1,12 @@
+<unit name="ok_class_var.pas">
+  <description><detailed>See bug [https://sourceforge.net/tracker/?func=detail&amp;atid=104213&amp;aid=1489442&amp;group_id=4213]</detailed></description>
+  <structure name="TPluginManager" name_with_generic="TPluginManager" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="LoadedPlugins: TPluginCollection;">
+    </variable>
+    <variable name="AfterPluginLoad: TAfterPluginLoadEvent;">
+    </variable>
+    <variable name="class var Instance: TPluginManager;">
+    </variable>
+  </structure>
+</unit>

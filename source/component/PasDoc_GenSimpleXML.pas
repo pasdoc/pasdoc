@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2016 PasDoc developers.
+  Copyright 1998-2018 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -87,6 +87,7 @@ begin
   inherited;
   WriteUnits(1);
   WriteIntroduction;
+  WriteAdditionalFiles;
   WriteConclusion;
   EndSpellChecking;
 end;
@@ -234,7 +235,7 @@ begin
 
     for i:=0 to item.ancestors.count-1 do
       WriteDirectLine(space +
-        '<ancestor name="' + ConvertString(item.ancestors[i].Name) + 
+        '<ancestor name="' + ConvertString(item.ancestors[i].Name) +
          '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
 
     for i:=0 to item.Methods.count-1 do

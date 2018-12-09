@@ -1,0 +1,3 @@
+<unit name="warning_table.pas">
+  <description><abstract>Test of @table-related warnings.</abstract><detailed> Various incorrect table tags nesting: Invalid @table: no rows Invalid table @row: no cells   Table with no rows is not allowed: Invalid @table: no rows Row with no cells is not allowed: Invalid table @row: no cells</detailed></description>
+</unit>

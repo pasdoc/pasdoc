@@ -1,0 +1,5 @@
+<unit name="ok_longcode_comment.pas">
+  <description><detailed>
+{ Some multiline 
+  comment }</detailed></description>
+</unit>

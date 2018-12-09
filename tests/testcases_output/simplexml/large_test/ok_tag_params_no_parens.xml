@@ -1,0 +1,11 @@
+<unit name="ok_tag_params_no_parens.pas">
+  <description><abstract>This is a demo unit using tags without enclosing them in ()</abstract><detailed> Parsing logic is simple: if a tag requires some parameters but you don't put open paren '(' char right after it, then tag parameters are understood to span to the end of line (or to the end of comment). This doesn't break compatibility with documentation that enclosed parameters in (), because tags that have parameters were *required* to have '(' char after them. So they will still be correctly seen and parsed to the matching closing paren. See SomeProc for more examples and comments.    </detailed></description>
+  <function name="SomeProc" type="function" declaration="function SomeProc(A: Integer): Integer;">
+    <param name="A">means something</param>
+    <result>Some integer</result>
+    <description><detailed>Note that this rule allows you to not specify () for *any* tag that has parameters. Even for @link tag: ok_tag_params_no_parens This rule doesn't create any problems for tags without parameters, like the @name tag: here it is: <code>SomeProc</code>. Such tags never have parameters, and on the above line you *don't* have @name tag with parameters &quot;tag. Such tags never have parameters,&quot;. Instead, you just specified <code>SomeProc</code> tag and &quot;tag. Such tags never have parameters,&quot; is just a normal text. Check out this longcode: begin Writeln('Hello world'); end; { This works ! } See also @html and @latex tags:   And here is some code: <code>begin X := Y + 1; end;</code>   </detailed></description>
+  </function>
+  <structure name="EFoo" name_with_generic="EFoo" type="class">
+    <ancestor name="Exception" declaration="Exception" />
+  </structure>
+</unit>

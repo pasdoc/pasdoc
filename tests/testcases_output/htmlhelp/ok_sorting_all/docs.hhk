@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAClass">
+<param name="Local" value="ok_sorting.AAAClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAConst">
+<param name="Local" value="ok_sorting.html#AAAConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAProc">
+<param name="Local" value="ok_sorting.html#AAAProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAType">
+<param name="Local" value="ok_sorting.html#AAAType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAVar">
+<param name="Local" value="ok_sorting.html#AAAVar">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_sorting.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAField">
+<param name="Local" value="ok_sorting.TMyClass.html#AAAField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAMethod">
+<param name="Local" value="ok_sorting.TMyClass.html#AAAMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAProp">
+<param name="Local" value="ok_sorting.TMyClass.html#AAAProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZField">
+<param name="Local" value="ok_sorting.TMyClass.html#ZZZField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZMethod">
+<param name="Local" value="ok_sorting.TMyClass.html#ZZZMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZProp">
+<param name="Local" value="ok_sorting.TMyClass.html#ZZZProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord">
+<param name="Local" value="ok_sorting.TMyRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="AAAField">
+<param name="Local" value="ok_sorting.TMyRecord.html#AAAField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZField">
+<param name="Local" value="ok_sorting.TMyRecord.html#ZZZField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZClass">
+<param name="Local" value="ok_sorting.ZZZClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZConst">
+<param name="Local" value="ok_sorting.html#ZZZConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZProc">
+<param name="Local" value="ok_sorting.html#ZZZProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZType">
+<param name="Local" value="ok_sorting.html#ZZZType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ZZZVar">
+<param name="Local" value="ok_sorting.html#ZZZVar">
+</object>
+</ul>
+</body></html>

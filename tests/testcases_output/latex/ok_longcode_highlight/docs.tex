@@ -1,0 +1,59 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}highlight}
+\label{ok_longcode_highlight}
+\index{ok{\_}longcode{\_}highlight}
+\section{Description}
+Test of highlighting in @longCode some things.\hfill\vspace*{1ex}
+
+
+
+See [\href{https://sourceforge.net/tracker/?func=detail&atid=354213&aid=1422011&group_id=4213}{https://sourceforge.net/tracker/?func=detail{\&}atid=354213{\&}aid=1422011{\&}group{\_}id=4213}]
+
+\texttt{\\\nopagebreak[3]
+TOptions~=~}\textbf{class}\texttt{(TForm)\\\nopagebreak[3]
+}\textbf{private}\texttt{\\\nopagebreak[3]
+~~}\textbf{procedure}\texttt{~WMSysCmd(}\textbf{var}\texttt{~Msg:~TWMSysCommand);~}\textbf{message}\texttt{~WM{\_}SYSCOMMAND;\\\nopagebreak[3]
+...\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+\end{document}

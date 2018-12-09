@@ -1,0 +1,53 @@
+<unit name="ok_record_with_case.pas">
+  <description><abstract>Testing of parsing and making docs for records with case parts.</abstract><detailed> It does not pass properly yet: 
+
+<orderedlist>
+<item>Types for fields in record case are not printed (because parser does not set their FullDeclaration properties).</item>
+<item>Also, CaseTwoB field has no description (but it should have &quot;Description of CaseTwoA and CaseTwoB&quot;)</item>
+</orderedlist>
+
+ Update 2005-10-17: now this test passes OK, both problems above are solved.</detailed></description>
+  <structure name="TMyRecord1" name_with_generic="TMyRecord1" type="record">
+    <variable name="NormalField: Integer;">
+      <description><detailed>Description of NormalField</detailed></description>
+    </variable>
+    <variable name="CaseDecision: boolean">
+      <description><detailed>Description of CaseDecision</detailed></description>
+    </variable>
+    <variable name="CaseOneSingle: Single">
+      <description><detailed>Description of CaseOneSingle</detailed></description>
+    </variable>
+    <variable name="CaseTwoSingle: Single;">
+      <description><detailed>Description of CaseTwoSingle</detailed></description>
+    </variable>
+    <variable name="CaseTwoInt: Integer;">
+      <description><detailed>Description of CaseTwoInt</detailed></description>
+    </variable>
+    <variable name="CaseTwoA: Integer">
+      <description><detailed>Description of CaseTwoA and CaseTwoB</detailed></description>
+    </variable>
+    <variable name="CaseTwoB: Integer">
+      <description><detailed>Description of CaseTwoA and CaseTwoB</detailed></description>
+    </variable>
+  </structure>
+  <structure name="TMyRecord2" name_with_generic="TMyRecord2" type="record">
+    <variable name="NormalField: Integer;">
+      <description><detailed>Description of NormalField</detailed></description>
+    </variable>
+    <variable name="CaseOneSingle: Single">
+      <description><detailed>Description of CaseOneSingle</detailed></description>
+    </variable>
+    <variable name="CaseTwoSingle: Single;">
+      <description><detailed>Description of CaseTwoSingle</detailed></description>
+    </variable>
+    <variable name="CaseTwoInt: Integer;">
+      <description><detailed>Description of CaseTwoInt</detailed></description>
+    </variable>
+    <variable name="CaseTwoA: Integer">
+      <description><detailed>Description of CaseTwoA and CaseTwoB</detailed></description>
+    </variable>
+    <variable name="CaseTwoB: Integer">
+      <description><detailed>Description of CaseTwoA and CaseTwoB</detailed></description>
+    </variable>
+  </structure>
+</unit>

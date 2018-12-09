@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_directive_as_identifier</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="unit">Unit ok_directive_as_identifier</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+All calling-convention specifiers must *not* be made links in docs. But &quot;Register&quot; procedure name must be made a link. Yes, the difficulty is here that &quot;register&quot; is once a calling-convention specifier and once a procedure name.
+
+<p>This is related to bug submitted to pasdoc-main list [<a  href="http://sourceforge.net/mailarchive/message.php?msg_id=11397611">http://sourceforge.net/mailarchive/message.php?msg_id=11397611</a>].</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_directive_as_identifier.TMyClass.html"><code>TMyClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_directive_as_identifier.html#Bar">Bar</a></b>; cdecl;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_directive_as_identifier.html#Cdecl">Cdecl</a></b>; register;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_directive_as_identifier.html#Foo">Foo</a></b>; register;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>procedure <b><a  href="ok_directive_as_identifier.html#Foo1">Foo1</a></b>(const S: string = 'register'; MyClass: <a  href="ok_directive_as_identifier.TMyClass.html">TMyClass</a>);</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <b><a  href="ok_directive_as_identifier.html#Register">Register</a></b>; register;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Bar"></span><code>procedure <b>Bar</b>; cdecl;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Cdecl"></span><code>procedure <b>Cdecl</b>; register;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Foo"></span><code>procedure <b>Foo</b>; register;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Foo1"></span><code>procedure <b>Foo1</b>(const S: string = 'register'; MyClass: <a  href="ok_directive_as_identifier.TMyClass.html">TMyClass</a>);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it:
+
+<p>Note that link to TMyClass should be correctly made. 'register' should be displayed as a string, of course, and not linked.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Register"></span><code>procedure <b>Register</b>; register;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+</body></html>
