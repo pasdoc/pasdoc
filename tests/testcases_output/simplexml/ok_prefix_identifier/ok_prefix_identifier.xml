@@ -1,0 +1,21 @@
+<unit name="ok_prefix_identifier.pas">
+  <description><detailed>Test parsing identifiers declared as &amp;xxx, where &quot;xxx&quot; may be a reserved word. See 
+
+<unorderedlist>
+<item>https://github.com/pasdoc/pasdoc/issues/28</item>
+<item>http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Fundamental_Syntactic_Elements_(Delphi)#Extended_Identifiers</item>
+</unorderedlist>
+
+</detailed></description>
+  <structure name="TTest" name_with_generic="TTest" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <function name="Create" type="constructor" declaration="class constructor Create;">
+    </function>
+    <function name="end" type="function" declaration="class function end : Integer;">
+    </function>
+    <variable name="class var begin: Integer;">
+    </variable>
+    <variable name="var: Integer;">
+    </variable>
+  </structure>
+</unit>
