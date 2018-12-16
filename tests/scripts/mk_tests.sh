@@ -209,6 +209,7 @@ all_tests_for_current_format ()
   mk_test ok_param_raises_at_property ok_param_raises_at_property.pas
   mk_test ok_date ok_date.pas
   mk_test ok_if_expressions ok_if_expressions.pas
+  mk_test ok_prefix_identifier ok_prefix_identifier.pas
 }
 
 # parse params ----------------------------------------

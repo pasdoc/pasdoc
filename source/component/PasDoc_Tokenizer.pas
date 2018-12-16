@@ -910,6 +910,12 @@ begin
           end;
         '\': Result := CreateSymbolToken(SYM_BACKSLASH);
         '%': Result := ReadAttAssemblerRegister;
+        '&': begin
+               if not ((GetChar(C) > 0) and
+                       IsCharInSet(C, IdentifierStart) and
+                       ReadToken(C, IdentifierOther, TOK_IDENTIFIER, Result)) then
+                 DoError('Cannot read valid identifier after "&" prefix', []);
+             end;
       else begin
           for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
             if (c = SingleCharSymbols[J].c) then begin
@@ -917,7 +923,7 @@ begin
               exit;
             end;
           end;
-          DoError('Invalid character (code %d) in Pascal input stream', [Ord(C)]);
+          DoError('Invalid character ("%s", code %d) in Pascal input stream', [C, Ord(C)]);
         end;
       end;
   finally

@@ -1,5 +1,6 @@
 Next version (not released yet)
 
+  * Parse identifiers declared as &xxx, where "xxx" may be a reserved word.
   * Possibility to specify additional files using -A or --additional
     (just like introduction or conclusion, but you can provide any number
     of items) (thanks to Alex Merkel)
