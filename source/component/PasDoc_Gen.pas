@@ -3936,7 +3936,11 @@ end;
 
 function TDocGenerator.FormatImage(FileNames: TStringList): string;
 begin
-  Result := FileNames[0];
+  // Result := FileNames[0];
+  { Show relative path, since absolute path is
+    - unportable (doesn't make sense on other systems than current)
+    - makes our tests output not reproducible. }
+  Result := ExtractRelativePath(FCurrentItem.BasePath, FileNames[0]);
 end;
 
 procedure TDocGenerator.HandleIncludeTag(
