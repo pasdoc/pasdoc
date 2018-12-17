@@ -12,6 +12,7 @@ cp -f pasdoc-*.tar.gz pasdoc-*.zip "$OUTPUT_PATH"
 # Create "latest" link, comfortable for users.
 rm -f "${OUTPUT_BASE_PATH}"latest
 ln -s `date +%F` "${OUTPUT_BASE_PATH}"latest
+echo "Updated ${OUTPUT_BASE_PATH}latest symlink to point to" `date +%F`
 
 # Clean old snapshots, to conserve disk space.
 # Keep only snapshots from last couple of days.
@@ -34,5 +35,6 @@ ln -s `date +%F` "${OUTPUT_BASE_PATH}"latest
 # set -e
 # popd
 
-echo 'Setting snapshots permissions:'
+# Setting snapshots permissions
 chmod a+rX "${OUTPUT_BASE_PATH}"
+echo "Updated permissions of snapshots files."

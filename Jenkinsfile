@@ -18,6 +18,10 @@ pipeline {
       steps {
         sh 'www/snapshots/build.sh'
         stash name: 'snapshots-to-publish', includes: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+        /* Do not defer "archiveArtifacts" to later (like post section),
+           as this command must run in the same agent and Docker container
+           as build.sh. */
+        archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
       }
     }
     stage('Upload Snapshots') {
@@ -32,9 +36,6 @@ pipeline {
     }
   }
   post {
-    success {
-      archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
-    }
     regression {
       mail to: 'michalis.kambi@gmail.com',
         subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",
