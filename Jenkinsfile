@@ -11,9 +11,14 @@ pipeline {
   stages {
     stage('Test') {
       agent {
+        /* We need to run this on a host where "git" is installed
+           (used by "make tests"). */
+        label 'web-michalis-ii-uni-wroc-pl'
+        /*
         docker {
           image 'kambi/castle-engine-cloud-builds-tools:cge-none'
         }
+        */
       }
       steps {
         sh 'make'
