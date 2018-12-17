@@ -24,6 +24,7 @@ pipeline {
       /* This must run on michalis.ii.uni.wroc.pl, outside Docker,
          since it directly copies the files. */
       agent { label 'web-michalis-ii-uni-wroc-pl' }
+      when { branch 'master' } /* upload only the "master" branch results */
       steps {
         unstash name: 'snapshots-to-publish'
         sh 'www/snapshots/upload.sh'
