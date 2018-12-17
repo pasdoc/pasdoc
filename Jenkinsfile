@@ -9,6 +9,22 @@
 pipeline {
   agent any
   stages {
+    stage('Test') {
+      agent {
+        /* We need to run this on a host where "git" is installed
+           (used by "make tests"). */
+        label 'web-michalis-ii-uni-wroc-pl'
+        /*
+        docker {
+          image 'kambi/castle-engine-cloud-builds-tools:cge-none'
+        }
+        */
+      }
+      steps {
+        sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
+        sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
+      }
+    }
     stage('Build') {
       agent {
         docker {
@@ -22,27 +38,6 @@ pipeline {
            as this command must run in the same agent and Docker container
            as build.sh. */
         archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
-      }
-    }
-    stage('Test') {
-      agent {
-        /* We need to run this on a host where "git" is installed
-           (used by "make tests"). */
-        label 'web-michalis-ii-uni-wroc-pl'
-        // docker {
-        //   image 'kambi/castle-engine-cloud-builds-tools:cge-none'
-        // }
-      }
-      steps {
-        // Extract precompiled pasdoc binary from Build stage.
-        sh 'rm -Rf pasdoc-*.tar.gz pasdoc-*.zip'
-        unstash name: 'snapshots-to-publish'
-        sh 'mkdir -p bin/'
-        sh 'tar xzvf pasdoc-0.15.0-linux-x86_64.tar.gz --to-stdout pasdoc/bin/pasdoc > bin/pasdoc'
-        sh 'chmod +x bin/pasdoc'
-
-        // Run tests using this pasdoc binary.
-        sh 'make tests'
       }
     }
     stage('Upload Snapshots') {
