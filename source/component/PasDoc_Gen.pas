@@ -811,19 +811,18 @@ type
       ConvertString(Text). }
     function FormatPreformatted(const Text: string): string; virtual;
 
-    { This should return markup upon including specified image in description.
-      FileNames is a list of alternative filenames of an image,
-      it always contains at least one item (i.e. FileNames.Count >= 1),
+    { Return markup to show an image.
+      FileNames is a list of possible filenames of the image.
+      FileNames always contains at least one item (i.e. FileNames.Count >= 1),
       never contains empty lines (i.e. Trim(FileNames[I]) <> ''),
-      and contains only absolute filenames (already expanded to take description's
-      unit's path into account).
+      and contains only absolute filenames.
 
       E.g. HTML generator will want to choose the best format for HTML,
       then somehow copy the image from FileNames[Chosen] and wrap
       this in <img src="...">.
 
-      Implementation of this method in this class simply returns
-      @code(Result := ExpandFileName(FileNames[0])). Output generators should override this. }
+      Implementation of this method in this class simply shows
+      @code(FileNames[0]). Output generators should override this. }
     function FormatImage(FileNames: TStringList): string; virtual;
 
     { Format a list from given ListData. }
@@ -3937,7 +3936,7 @@ end;
 
 function TDocGenerator.FormatImage(FileNames: TStringList): string;
 begin
-  Result := ExpandFileName(FileNames[0]);
+  Result := FileNames[0];
 end;
 
 procedure TDocGenerator.HandleIncludeTag(
