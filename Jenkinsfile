@@ -9,6 +9,17 @@
 pipeline {
   agent any
   stages {
+    stage('Test') {
+      agent {
+        docker {
+          image 'kambi/castle-engine-cloud-builds-tools:cge-none'
+        }
+      }
+      steps {
+        sh 'make'
+        sh 'make tests'
+      }
+    }
     stage('Build') {
       agent {
         docker {
