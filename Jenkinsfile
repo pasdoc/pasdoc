@@ -17,7 +17,7 @@ pipeline {
       }
       steps {
         sh 'www/snapshots/build.sh'
-        stash name: 'snapshots-to-publish', includes: 'pasdoc-*.tar.gz,pasdoc-*zip'
+        stash name: 'snapshots-to-publish', includes: 'pasdoc-*.tar.gz,pasdoc-*.zip'
       }
     }
     stage('Upload Snapshots') {
@@ -33,7 +33,7 @@ pipeline {
   }
   post {
     success {
-      archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*zip'
+      archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
     }
     regression {
       mail to: 'michalis.kambi@gmail.com',

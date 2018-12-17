@@ -6,8 +6,8 @@ OUTPUT_BASE_PATH=/var/www/pasdoc-snapshots/
 OUTPUT_PATH="${OUTPUT_BASE_PATH}"`date +%F`/
 mkdir -p "$OUTPUT_PATH"
 
-# Move archives to output dir
-mv -f pasdoc-*.tar.gz pasdoc-*.zip "$OUTPUT_PATH"
+# Copy archives to output dir (keep them also here, to allow Jenkins archiveArtifacts)
+cp -f pasdoc-*.tar.gz pasdoc-*.zip "$OUTPUT_PATH"
 
 # Create "latest" link, comfortable for users.
 rm -f "${OUTPUT_BASE_PATH}"latest
