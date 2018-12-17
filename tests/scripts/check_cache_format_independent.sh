@@ -19,10 +19,13 @@ run_echo ()
 pasdoc_call ()
 {
   echo 'Running pasdoc:'
-  run_echo pasdoc -S - --exclude-generator "$@"
+  run_echo "${PASDOC_BIN}" -S - --exclude-generator "$@"
 }
 
 # ------------------------------------------------------------
+
+# Assume pasdoc is on $PATH, if PASDOC_BIN not set.
+PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
 
 OUTPUT_FORMAT_1="$1"
 OUTPUT_FORMAT_2="$2"

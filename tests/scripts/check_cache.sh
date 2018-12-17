@@ -19,7 +19,7 @@ run_echo ()
 pasdoc_call ()
 {
   echo 'Running pasdoc:'
-  run_echo pasdoc \
+  run_echo "${PASDOC_BIN}" \
     --format="$OUTPUT_FORMAT" -S - \
     --exclude-generator \
     --cache-dir=scripts/check_cache_tmp/cache/ \
@@ -27,6 +27,9 @@ pasdoc_call ()
 }
 
 # ------------------------------------------------------------
+
+# Assume pasdoc is on $PATH, if PASDOC_BIN not set.
+PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
 
 OUTPUT_FORMAT="$1"
 shift 1

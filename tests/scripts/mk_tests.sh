@@ -39,7 +39,7 @@ mk_test ()
   PASDOC_OUTPUT_FILENAME="$OUTPUT_PATH"PASDOC-OUTPUT
 
   run_echo "$PASDOC_OUTPUT_FILENAME" \
-    pasdoc --format "$FORMAT" --exclude-generator \
+    "${PASDOC_BIN}" --format "$FORMAT" --exclude-generator \
     --output="$OUTPUT_PATH" "$@"
 }
 
@@ -214,11 +214,8 @@ all_tests_for_current_format ()
 
 # parse params ----------------------------------------
 
-# check if pasdoc is on the path and fail properly if not
-if ! which pasdoc > /dev/null; then
-  echo 'pasdoc binary not found on $PATH'
-  exit 1
-fi
+# Assume pasdoc is on $PATH, if PASDOC_BIN not set.
+PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
 
 for FORMAT; do
   all_tests_for_current_format

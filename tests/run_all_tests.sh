@@ -11,6 +11,23 @@ cd fpcunit/
 make
 cd ../
 
+# ----------------------------------------------------------------------------
+# Find pasdoc binary, setting PASDOC_BIN to absolute exe path.
+# If not found, fail.
+
+if [ -f ../bin/pasdoc ]; then
+  export PASDOC_BIN=`pwd`/../bin/pasdoc
+elif [ -f ../bin/pasdoc.exe ]; then
+  export PASDOC_BIN=`pwd`/../bin/pasdoc.exe
+else
+  if ! which pasdoc > /dev/null; then
+    echo 'pasdoc binary not found on $PATH'
+    exit 1
+  fi
+  export PASDOC_BIN=`which pasdoc`
+fi
+echo "Detected pasdoc binary as ${PASDOC_BIN}"
+
 # run all testcases, compare with correct output ------------------------------
 
 ALL_OUTPUT_FORMATS='html htmlhelp latex latex2rtf simplexml'
