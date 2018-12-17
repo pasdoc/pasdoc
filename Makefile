@@ -494,14 +494,15 @@ SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
 .PHONY: dist-src
 dist-src:
-	$(MAKE) clean
-	DIRNAME="`pwd`" && \
-	DIRNAME="`basename \"$$DIRNAME\"`" && \
-	cd .. && \
-	  tar czvf $(SOURCE_PACKAGE_BASENAME).tar.gz \
-	  --exclude='.git' \
+	rm -Rf /tmp/pasdoc-src-temp
+	mkdir -p /tmp/pasdoc-src-temp
+	cp -R . /tmp/pasdoc-src-temp/pasdoc
+	$(MAKE) clean -C /tmp/pasdoc-src-temp/pasdoc
+	cd /tmp/pasdoc-src-temp/ && \
+	  zip -r $(SOURCE_PACKAGE_BASENAME).zip \
+	  --exclude='*/.git/*' \
 	  --exclude='*.tar.gz' \
 	  --exclude='*.zip' \
 	  --exclude='*~' \
-	  "$$DIRNAME"
-	mv ../$(SOURCE_PACKAGE_BASENAME).tar.gz .
+	  pasdoc
+	mv /tmp/pasdoc-src-temp/$(SOURCE_PACKAGE_BASENAME).zip .

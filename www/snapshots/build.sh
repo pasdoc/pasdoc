@@ -9,6 +9,7 @@ IFS=$'\n\t'
 
 rm -f pasdoc-*.tar.gz pasdoc-*.zip
 
+make clean
 make dist-src
 make dist-linux-x86_64
 make dist-win32
