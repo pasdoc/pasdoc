@@ -498,9 +498,13 @@ dist-src:
 	mkdir -p /tmp/pasdoc-src-temp
 	cp -R . /tmp/pasdoc-src-temp/pasdoc
 	$(MAKE) clean -C /tmp/pasdoc-src-temp/pasdoc
+# Exclude .cge-jenkins-lazarus and .cache that may happen because Jenkins
+# runs this with Docker container with $HOME set to pasdoc dir.
 	cd /tmp/pasdoc-src-temp/ && \
 	  zip -r $(SOURCE_PACKAGE_BASENAME).zip \
 	  --exclude='*/.git/*' \
+	  --exclude='*/.cge-jenkins-lazarus/*' \
+	  --exclude='*/.cache/*' \
 	  --exclude='*.tar.gz' \
 	  --exclude='*.zip' \
 	  --exclude='*~' \
