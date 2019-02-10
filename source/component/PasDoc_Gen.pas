@@ -2830,13 +2830,15 @@ begin
     begin
       if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then
       begin
-        WriteDirectLine('  ' + LNode.Name + ' -> '+LNode.Parent.Name);
+        { Note that LNode.Parent.Name may be a qualified name,
+          like "Classes.TThread", so it really requires quoting with "" for GraphViz. }
+        WriteDirectLine('  "' + LNode.Name + '" -> "' + LNode.Parent.Name + '"');
       end;
 
       if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
       begin
-        WriteDirectLine('  ' + LNode.Name +
-          ' [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
+        WriteDirectLine('  "' + LNode.Name +
+          '" [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
       end;
 
       LNode := FClassHierarchy.NextItem(LNode);
