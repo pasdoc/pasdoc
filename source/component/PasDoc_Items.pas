@@ -1290,6 +1290,20 @@ procedure TBaseItem.StoreCVSTag(
     end;
   end;
 
+  {$IFNDEF FPC}
+  function TrimRightSet(const AText: string; const ACharS: TSysCharSet): string;
+  var
+    Length1: Integer;
+  begin
+    Result := AText;
+    Length1 := Length(Result);
+    while (Length1 > 0) and (CharInSet(Result[Length1], ACharS)) do begin
+      Dec(Length1);
+    end;
+    SetLength(Result, Length1);
+  end;
+  {$ENDIF FPC}
+
 var
   TagValue: string;
 begin
