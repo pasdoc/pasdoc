@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DF63FB05-6EC6-4132-AEC9-852F85537353}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="packages\delphi\Tokyo\pasdoc_package_tokyo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="console\pasdoc.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="delphi_gui\pasdoc_gui.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\file_to_pascal_data.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\file_to_pascal_string.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\pascal_pre_proc.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="pasdoc_package_tokyo">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_tokyo.dproj"/>
+    </Target>
+    <Target Name="pasdoc_package_tokyo:Clean">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_tokyo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_package_tokyo:Make">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_tokyo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pasdoc">
+        <MSBuild Projects="console\pasdoc.dproj"/>
+    </Target>
+    <Target Name="pasdoc:Clean">
+        <MSBuild Projects="console\pasdoc.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc:Make">
+        <MSBuild Projects="console\pasdoc.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pasdoc_gui">
+        <MSBuild Projects="delphi_gui\pasdoc_gui.dproj"/>
+    </Target>
+    <Target Name="pasdoc_gui:Clean">
+        <MSBuild Projects="delphi_gui\pasdoc_gui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_gui:Make">
+        <MSBuild Projects="delphi_gui\pasdoc_gui.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="file_to_pascal_data">
+        <MSBuild Projects="tools\file_to_pascal_data.dproj"/>
+    </Target>
+    <Target Name="file_to_pascal_data:Clean">
+        <MSBuild Projects="tools\file_to_pascal_data.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="file_to_pascal_data:Make">
+        <MSBuild Projects="tools\file_to_pascal_data.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="file_to_pascal_string">
+        <MSBuild Projects="tools\file_to_pascal_string.dproj"/>
+    </Target>
+    <Target Name="file_to_pascal_string:Clean">
+        <MSBuild Projects="tools\file_to_pascal_string.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="file_to_pascal_string:Make">
+        <MSBuild Projects="tools\file_to_pascal_string.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pascal_pre_proc">
+        <MSBuild Projects="tools\pascal_pre_proc.dproj"/>
+    </Target>
+    <Target Name="pascal_pre_proc:Clean">
+        <MSBuild Projects="tools\pascal_pre_proc.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pascal_pre_proc:Make">
+        <MSBuild Projects="tools\pascal_pre_proc.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="pasdoc_package_tokyo;pasdoc;pasdoc_gui;file_to_pascal_data;file_to_pascal_string;pascal_pre_proc"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="pasdoc_package_tokyo:Clean;pasdoc:Clean;pasdoc_gui:Clean;file_to_pascal_data:Clean;file_to_pascal_string:Clean;pascal_pre_proc:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="pasdoc_package_tokyo:Make;pasdoc:Make;pasdoc_gui:Make;file_to_pascal_data:Make;file_to_pascal_string:Make;pascal_pre_proc:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
