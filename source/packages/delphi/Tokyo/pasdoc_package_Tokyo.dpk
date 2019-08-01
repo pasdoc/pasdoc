@@ -1,4 +1,4 @@
-package pasdoc_package_tokyo;
+package pasdoc_package_Tokyo;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
