@@ -1,5 +1,7 @@
 Next version (not released yet)
 
+  * Delphi Tokyo files, to compile all projects and packages (thanks to Carlos Feitoza Filho)
+  * Brazilian Portuguese translation updated (thanks to Carlos Feitoza Filho)
   * Parse identifiers declared as &xxx, where "xxx" may be a reserved word.
   * Possibility to specify additional files using -A or --additional
     (just like introduction or conclusion, but you can provide any number
