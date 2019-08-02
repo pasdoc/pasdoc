@@ -62,6 +62,7 @@ source/packages/lazarus/pasdoc_package.pas
 *.projdata
 *.tvsconfig
 *.dsk
+*.stat
 
 # Delphi history and backups
 __history/
