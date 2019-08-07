@@ -1,5 +1,6 @@
 Next version (not released yet)
 
+  * Catalan translation updated (thanks to Xavier Martínez)
   * Delphi Tokyo files, to compile all projects and packages (thanks to Carlos Feitoza Filho)
   * Brazilian Portuguese translation updated (thanks to Carlos Feitoza Filho)
   * Parse identifiers declared as &xxx, where "xxx" may be a reserved word.
