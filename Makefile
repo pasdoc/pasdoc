@@ -152,6 +152,8 @@ clean:
 	$(MAKE) clean -C source/autodoc/
 ifdef OUTDIR
 	rm -Rf $(OUTDIR)
+	mkdir $(OUTDIR)
+	touch $(OUTDIR)/.gitkeep
 endif
 ifdef BINDIR
 	rm -Rf $(BINDIR)
