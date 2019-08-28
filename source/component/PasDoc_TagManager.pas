@@ -325,6 +325,7 @@ type
     FURLLink: TStringConverter;
     FOnTryAutoLink: TTryAutoLinkEvent;
     FPreExecute: boolean;
+    FUseMarkdown: boolean;
 
     function DoConvertString(const s: string): string;
     function DoURLLink(const s: string): string;
@@ -510,6 +511,10 @@ type
       ) }
     property PreExecute: boolean
       read FPreExecute write FPreExecute;
+
+    { When @name is @true, Markdown syntax is considered }
+    property UseMarkdown: boolean
+      read FUseMarkdown write FUseMarkdown default false;
   end;
 
 implementation
@@ -1120,9 +1125,8 @@ begin
 
   while FOffset <= Length(Description) do
   begin
-    if ((Description[FOffset] = '@') and
-       FindTag(FoundTag, Params, OffsetEnd)) or
-      FindMarkdownTag(FoundTag, Params, OffsetEnd) then
+    if ((Description[FOffset] = '@') and FindTag(FoundTag, Params, OffsetEnd)) or
+      (UseMarkdown and FindMarkdownTag(FoundTag, Params, OffsetEnd)) then
     begin
       DoConvert;
 
