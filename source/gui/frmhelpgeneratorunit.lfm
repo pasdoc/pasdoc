@@ -1169,14 +1169,14 @@ object frmHelpGenerator: TfrmHelpGenerator
       Hint = 'Generate'
       object PanelGenerateTop: TPanel
         Left = 0
-        Height = 105
+        Height = 112
         Top = 0
         Width = 860
         Align = alTop
         Alignment = taLeftJustify
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 105
+        ClientHeight = 112
         ClientWidth = 860
         FullRepaint = False
         TabOrder = 1
@@ -1209,19 +1209,28 @@ object frmHelpGenerator: TfrmHelpGenerator
         object ButtonGenerateDocs: TButton
           Left = 10
           Height = 39
-          Top = 56
+          Top = 72
           Width = 840
           Align = alBottom
           AutoSize = True
           Caption = 'Generate documentation'
           OnClick = ButtonGenerateDocsClick
+          TabOrder = 2
+        end
+        object CheckOpenHTML: TCheckBox
+          Left = 12
+          Height = 24
+          Top = 40
+          Width = 175
+          Caption = 'Open generated HTML'
+          OnChange = SomethingChanged
           TabOrder = 1
         end
       end
       object memoMessages: TMemo
         Left = 10
-        Height = 448
-        Top = 115
+        Height = 451
+        Top = 121
         Width = 840
         HelpType = htKeyword
         Align = alClient

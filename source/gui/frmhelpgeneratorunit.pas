@@ -63,6 +63,7 @@ type
     cbVizGraphUses: TCheckBox;
     CheckAutoAbstract: TCheckBox;
     CheckAutoLink: TCheckBox;
+    CheckOpenHTML: TCheckBox;
     CheckStoreRelativePaths: TCheckBox;
     CheckHandleMacros: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
@@ -530,6 +531,7 @@ begin
   CheckAutoLink.Checked := false;
   CheckHandleMacros.Checked := true;
   CheckUseTipueSearch.Checked := false;
+  CheckOpenHTML.Checked := true;
 
   for SortIndex := Low(TSortSetting) to High(TSortSetting) do
     clbSorting.Checked[Ord(SortIndex)] := false;
@@ -1074,7 +1076,8 @@ begin
     end;
 
     if PasDoc1.Generator is TGenericHTMLDocGenerator then
-      OpenURL(HtmlDocGenerator.DestinationDirectory + 'index.html');
+      if CheckOpenHTML.Checked then
+        OpenURL(HtmlDocGenerator.DestinationDirectory + 'index.html');
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1279,6 +1282,7 @@ begin
     CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
     CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
     CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
+    CheckOpenHTML.Checked := Ini.ReadBool('Main', 'OpenHTML', true);
     rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
     ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
     rgCommentMarkers.ItemIndex := Ini.ReadInteger('Main', 'SpecialMarkerTreatment', 1);
@@ -1400,6 +1404,8 @@ begin
     Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
     Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
     Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
+    Ini.WriteBool('Main', 'OpenHTML', CheckOpenHTML.Checked);
+
     Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
     WriteStrings('HyphenatedWords', memoHyphenatedWords.Lines);
     Ini.WriteInteger('Main', 'SpecialMarkerTreatment', rgCommentMarkers.ItemIndex);
