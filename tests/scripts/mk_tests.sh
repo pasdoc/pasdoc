@@ -219,6 +219,7 @@ all_tests_for_current_format ()
     test_links_to_dot_names/test_dot.one_dot.pas \
     test_links_to_dot_names/test_dot_no_dot.pas
   mk_test ok_ignore_marker ok_ignore_marker.pas --ignore-marker ~~ --ignore-marker TODO
+  mk_test ok_markdown ok_markdown.pas --use-markdown
 }
 
 # parse params ----------------------------------------
