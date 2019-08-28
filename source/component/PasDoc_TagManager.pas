@@ -516,6 +516,62 @@ implementation
 
 uses PasDoc_Utils, StrUtils;
 
+type
+  TMarkdownBlock = record
+    Open, Close: string;
+    PasDocTag: string;
+  end;
+
+const
+  MarkdownBlocks: array [0..3] of TMarkdownBlock =
+    (
+      (Open: '```';  Close: '```';  PasDocTag: 'longcode'), // must be checked first to not mess with single `
+      (Open: '`';    Close: '`';    PasDocTag: 'code'),
+      (Open: '**';   Close: '**';   PasDocTag: 'bold'),
+      (Open: '_';    Close: '_';    PasDocTag: 'italic')
+    );
+
+{
+  This checks if a known Markdown block starts at Description[Offset].
+  If yes, it returns true and sets
+  -- Name of PasDoc tag corresponding to current Markdown block
+  -- Parameters to contents of this block
+  -- OffsetEnd to the index of *next* character in Description right
+     after this block
+
+  Note that it may also change it's out parameters even when it returns
+  false; this doesn't harm anything for now, so I don't think there's
+  a reason to correct this for now.
+}
+function CheckMarkdown(const Description: string; Offset: Integer;
+  out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
+var
+  i, MdBlockIdx: Integer;
+begin
+  Result := False;
+  Parameters := '';
+
+  // check if we have markdown block opening
+  MdBlockIdx := -1;
+  for i := Low(MarkdownBlocks) to High(MarkdownBlocks) do
+    if Copy(Description, Offset, Length(MarkdownBlocks[i].Open)) = MarkdownBlocks[i].Open then
+    begin
+      MdBlockIdx := i;
+      Break;
+    end;
+  if MdBlockIdx = -1 then Exit; { exit with false }
+
+  // now search for markdown block end
+  i := PosEx(MarkdownBlocks[MdBlockIdx].Close, Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Close));
+  if i = 0 then Exit; { exit with false }
+
+  PasDocTagName := MarkdownBlocks[MdBlockIdx].PasDocTag;
+  OffsetEnd := i + Length(MarkdownBlocks[MdBlockIdx].Close);
+  Parameters := Copy(Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Open), i - (Offset + Length(MarkdownBlocks[MdBlockIdx].Open)));
+
+  Result := true;
+end;
+
 { TTag ------------------------------------------------------------  }
 
 constructor TTag.Create(ATagManager: TTagManager;
@@ -779,6 +835,24 @@ var
         Inc(i);
       Parameters := Trim(Copy(Description, OffsetEnd, i - OffsetEnd));
       OffsetEnd := i;
+    end;
+  end;
+
+  { Wrapper to check for Markdown tag }
+  function FindMarkdownTag(out Tag: TTag;
+    out Parameters: string; out OffsetEnd: Integer): Boolean;
+  var
+    TagName: string;
+  begin
+    Result := CheckMarkdown(Description, FOffset, TagName, Parameters, OffsetEnd);
+    if not Result then Exit;
+
+    Tag := FTags.FindByName(TagName);
+    if Tag = nil then
+    begin
+      DoMessageNonPre(1, pmtWarning, 'Unknown tag name "%s"', [TagName]);
+      Result := False;
+      Exit;
     end;
   end;
 
@@ -1046,8 +1120,9 @@ begin
 
   while FOffset <= Length(Description) do
   begin
-    if (Description[FOffset] = '@') and
-       FindTag(FoundTag, Params, OffsetEnd) then
+    if ((Description[FOffset] = '@') and
+       FindTag(FoundTag, Params, OffsetEnd)) or
+      FindMarkdownTag(FoundTag, Params, OffsetEnd) then
     begin
       DoConvert;
 
