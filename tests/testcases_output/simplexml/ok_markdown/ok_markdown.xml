@@ -1,0 +1,7 @@
+<unit name="ok_markdown.pas">
+  <description><abstract>This is a test of Markdown syntax</abstract><detailed> Some bold text. Some bold and italic text. Some some bold and italic and italic and italic once again text. Some italic text. Some bold text with some tags: My name is <code>ok_markdown</code>, some <code>begin end</code> and a link to me: ok_markdown. Nested formats are not supported Some <code>inline code</code>. 
+program Foo;
+  Some long code
+  with
+  syntax highlight</detailed></description>
+</unit>
