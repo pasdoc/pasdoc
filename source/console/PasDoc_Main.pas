@@ -67,6 +67,7 @@ type
     OptionLinkGVClasses: TStringOption;
     OptionVisibleMembers: TSetOption;
     OptionCommentMarker: TStringOptionList;
+    OptionIgnoreMarker: TStringOptionList;
     OptionMarkerOptional: TBoolOption;
     OptionIgnoreLeading: TStringOption;
     OptionCacheDir: TStringOption;
@@ -206,6 +207,10 @@ begin
   OptionCommentMarker := TStringOptionList.Create(#0, 'marker');
   OptionCommentMarker.Explanation := 'Parse only {<marker>, (*<marker> and //<marker> comments. Overrides the staronly option, which is a shortcut for ''--marker=**''';
   AddOption(OptionCommentMarker);
+
+  OptionIgnoreMarker := TStringOptionList.Create(#0, 'ignore-marker');
+  OptionIgnoreMarker.Explanation := 'Skip comments starting with <marker> (that is, {<marker>, (*<marker> and //<marker> comments)';
+  AddOption(OptionIgnoreMarker);
 
   OptionMarkerOptional := TBoolOption.Create(#0, 'marker-optional');
   OptionMarkerOptional.Explanation := 'Do not require the markers given in --marker but remove them from the comment if they exist.';
@@ -502,6 +507,9 @@ begin
 
   if OptionCommentMarker.WasSpecified then begin
     PasDoc.CommentMarkers.Assign(OptionCommentMarker.Values);
+  end;
+  if OptionIgnoreMarker.WasSpecified then begin
+    PasDoc.IgnoreMarkers.Assign(OptionIgnoreMarker.Values);
   end;
   if OptionStarOnly.TurnedOn then
     PasDoc.StarOnly := true;
