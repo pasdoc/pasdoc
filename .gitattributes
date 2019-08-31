@@ -1,5 +1,26 @@
-*.inc linguist-language=Pascal
+# See https://github.com/github/linguist about the linguist attributes.
+# See https://help.github.com/en/articles/dealing-with-line-endings
+# about dealing with line endings.
+
 old_docs/* linguist-documentation
 tests/testcases_output/* linguist-generated=true
 
-# See https://github.com/github/linguist about these attributes
+# Pascal text files
+*.lpr linguist-language=Pascal text eol=auto
+*.dpr linguist-language=Pascal text eol=auto
+*.pas linguist-language=Pascal text eol=auto
+*.inc linguist-language=Pascal text eol=auto
+
+# Shell scripts.
+# Even on Windows, shell scripts line endings must be Unix, to work with Cygwin's bash.
+*.sh text eol=lf
+
+# Other text files
+Makefile text eol=auto
+*.txt text eol=auto
+*.md text eol=auto
+*.html text eol=auto
+*.css text eol=auto
+*.tex text eol=auto
+*.xml text eol=auto
+PASDOC-OUTPUT text eol=auto
