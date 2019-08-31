@@ -182,6 +182,7 @@ type
     FOnMessage: TPasDocMessageEvent;
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
+    FIgnoreMarkers: TStringList;
     FMarkersOptional: boolean;
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
@@ -416,6 +417,8 @@ type
 
     procedure SetCommentMarkers(const Value: TStringList);
 
+    procedure SetIgnoreMarkers(const Value: TStringList);
+
     { Consume a hint directive (platform, library or deprecated) as long as you
       see one. Skips all whitespace and comments.
       Sets the Item.HintDirectives and Item.DeprecatedNote as necessary.
@@ -463,6 +466,7 @@ type
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
     property MarkersOptional: boolean read fMarkersOptional write fMarkersOptional;
     property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
+    property IgnoreMarkers: TStringList read FIgnoreMarkers write SetIgnoreMarkers;
     property ShowVisibilities: TVisibilities
       read FShowVisibilities write FShowVisibilities;
 
@@ -501,6 +505,7 @@ begin
   Scanner.AddSymbols(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;
+  FIgnoreMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
   FCioSk := TPasCioHelperStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
@@ -512,6 +517,7 @@ destructor TParser.Destroy;
 begin
   CurrentAttributes.Free;
   FCommentMarkers.Free;
+  FIgnoreMarkers.Free;
   Scanner.Free;
   ItemsForNextBackComment.Free;
   FCioSk.Free;
@@ -2120,6 +2126,11 @@ begin
   FCommentMarkers.Assign(Value);
 end;
 
+procedure TParser.SetIgnoreMarkers(const Value: TStringList);
+begin
+  FIgnoreMarkers.Assign(Value);
+end;
+
 procedure TParser.SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
 var
   EndLevel: Integer;
@@ -2265,6 +2276,17 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
     CommentInfo.StreamName := T.StreamName;
     CommentInfo.BeginPosition := T.BeginPosition;
     CommentInfo.EndPosition := T.EndPosition;
+
+    // Check if comment should be ignored
+    if IgnoreMarkers.Count <> 0 then
+    begin
+      for i := 0 to IgnoreMarkers.Count - 1 do
+        if IsPrefix(IgnoreMarkers[i], CommentInfo.Content) then
+        begin
+          CommentInfo.Content := '';
+          Exit;
+        end;
+    end;
 
     if CommentMarkers.Count <> 0 then
     begin
