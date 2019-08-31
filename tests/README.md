@@ -3,7 +3,7 @@
 ## Requirements
 
   - FPC compiler. Test suite is FreePascal-only
-  - `pasdoc` binary available in `$PATH`
+  - `pasdoc` binary available in `$PATH`, or compiled inside the `bin` subdirectory of the project
   - Unix shell like `bash` to execute `*.sh` scripts
   - `make` and some other tools for building the binary
   - `git` installed or `diff` available for checking results for changes
@@ -12,13 +12,16 @@ Run all the tests simply by `run_all_tests.sh`.
 This runs all relevant tests described below.
 
 ## Running on Windows
+
 Test suite requires Unix shell and some other tools available in `%PATH%`. On Windows, you'll need:
 
   - Cygwin or MSys. If you have Git for Windows installed, it will be enough (it contains MSys).
     Just make sure `{GIT}\bin` folder is in `%PATH%`
-  - Tools like `make` could be taken from FPC folder, like `{FPC}\bin\i386-win32`
+  - Tools like `make` are distributed along with FPC. Just make sure folder like `{FPC}\bin\i386-win32`
+    is in `%PATH%`.
 
-So you can use batch file like this (set your paths):
+You can use batch file like this to set your paths and run the tests on Windows:
+
 ```batch
 @ECHO OFF
 
@@ -28,7 +31,7 @@ SETLOCAL
 SET FPCPath={Your_FPC_Path}\bin\i386-win32
 :: For bash & other Unix console tools, git for diffing
 SET GitPath={Your_Git_Path}\bin
-:: For pasdoc binary
+:: For pasdoc, if pasdoc binary is not in `bin` subdirectory of the project
 SET PasDocPath=%~dp0%\..\source\console
 
 SET PATH=%FPCPath%;%GitPath%;%PasDocPath%
