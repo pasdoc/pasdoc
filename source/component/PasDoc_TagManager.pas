@@ -1102,9 +1102,11 @@ begin
               DoMessageNonPre(1, pmtWarning,
                 'Tag "%s" is not allowed to have any parameters', [FoundTag.Name]);
             end;
-            ReplaceStr := DoConvertString('@(' + FoundTag.Name) + Params + ConvertString(')');
+            // This ReplaceStr value shoud be overridden by FoundTag.PreExecute/Execute
+            ReplaceStr := DoConvertString('PasDoc cannot expand tag @' + FoundTag.Name + '(') + Params + ConvertString(')');
           end else
-            ReplaceStr := DoConvertString('@' + FoundTag.Name);
+            // This ReplaceStr value shoud be overridden by FoundTag.PreExecute/Execute
+            ReplaceStr := DoConvertString('PasDoc cannot expand tag @' + FoundTag.Name);
 
           { execute tag handler }
           if PreExecute then
