@@ -27,17 +27,9 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Field">
-<param name="Local" value="test_dot_no_dot.TClass.html#Field">
+<param name="Local" value="test_dot.one_dot.TClass.html#Field">
 </object>
 <ul>
-<li><object type="text/sitemap">
-<param name="Name" value="TClass - test_dot_no_dot Unit">
-<param name="Local" value="test_dot_no_dot.TClass.html#Field">
-</object>
-<li><object type="text/sitemap">
-<param name="Name" value="TClass - test_dot.two.dots Unit">
-<param name="Local" value="test_dot.two.dots.TClass.html#Field">
-</object>
 <li><object type="text/sitemap">
 <param name="Name" value="TClass - test_dot.one_dot Unit">
 <param name="Local" value="test_dot.one_dot.TClass.html#Field">
@@ -46,10 +38,18 @@
 <param name="Name" value="TClass - test_dot.three.dots Unit">
 <param name="Local" value="test_dot.three.dots.TClass.html#Field">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot.two.dots Unit">
+<param name="Local" value="test_dot.two.dots.TClass.html#Field">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot_no_dot Unit">
+<param name="Local" value="test_dot_no_dot.TClass.html#Field">
+</object>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Field">
-<param name="Local" value="test_dot.three.dots.TClass.html#Field">
+<param name="Local" value="test_dot_no_dot.TClass.html#Field">
 </object>
 </ul>
 </body></html>
