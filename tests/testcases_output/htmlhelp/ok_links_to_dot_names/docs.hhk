@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass">
+<param name="Local" value="test_dot.one_dot.TClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="test_dot.one_dot Unit">
+<param name="Local" value="test_dot.one_dot.TClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="test_dot.three.dots Unit">
+<param name="Local" value="test_dot.three.dots.TClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="test_dot.two.dots Unit">
+<param name="Local" value="test_dot.two.dots.TClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="test_dot_no_dot Unit">
+<param name="Local" value="test_dot_no_dot.TClass.html">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Field">
+<param name="Local" value="test_dot_no_dot.TClass.html#Field">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot_no_dot Unit">
+<param name="Local" value="test_dot_no_dot.TClass.html#Field">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot.two.dots Unit">
+<param name="Local" value="test_dot.two.dots.TClass.html#Field">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot.one_dot Unit">
+<param name="Local" value="test_dot.one_dot.TClass.html#Field">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClass - test_dot.three.dots Unit">
+<param name="Local" value="test_dot.three.dots.TClass.html#Field">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Field">
+<param name="Local" value="test_dot.three.dots.TClass.html#Field">
+</object>
+</ul>
+</body></html>

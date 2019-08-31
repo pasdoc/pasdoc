@@ -1,0 +1,267 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}links{\_}to{\_}dot{\_}names}
+\label{ok_links_to_dot_names}
+\index{ok{\_}links{\_}to{\_}dot{\_}names}
+\section{Description}
+  
+
+  
+
+  
+
+  \begin{list}{}{
+\settowidth{\tmplength}{\textbf{See also}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{See also}]
+\begin{description}
+\item[test{\_}dot{\_}no{\_}dot.nonexist] 
+
+\item[\begin{ttfamily}test{\_}dot{\_}no{\_}dot.TClass\end{ttfamily}(\ref{test_dot_no_dot.TClass})] 
+
+\item[\begin{ttfamily}test{\_}dot{\_}no{\_}dot.TClass.Field\end{ttfamily}(\ref{test_dot_no_dot.TClass-Field})] 
+
+\item[test{\_}dot.one{\_}dot.nonexist] 
+
+\item[\begin{ttfamily}test{\_}dot.one{\_}dot.TClass\end{ttfamily}(\ref{test_dot.one_dot.TClass})] 
+
+\item[\begin{ttfamily}test{\_}dot.one{\_}dot.TClass.Field\end{ttfamily}(\ref{test_dot.one_dot.TClass-Field})] 
+
+\item[test{\_}dot.two.dots.nonexist] 
+
+\item[\begin{ttfamily}test{\_}dot.two.dots.TClass\end{ttfamily}(\ref{test_dot.two.dots.TClass})] 
+
+\item[\begin{ttfamily}test{\_}dot.two.dots.TClass.Field\end{ttfamily}(\ref{test_dot.two.dots.TClass-Field})] 
+
+\item[test{\_}dot.three.dots.nonexist] 
+
+\item[\begin{ttfamily}test{\_}dot.three.dots.TClass\end{ttfamily}(\ref{test_dot.three.dots.TClass})] 
+
+\item[\begin{ttfamily}test{\_}dot.three.dots.TClass.Field\end{ttfamily}(\ref{test_dot.three.dots.TClass-Field})] 
+
+\end{description}
+\end{list}
+
+\chapter{Unit test{\_}dot.one{\_}dot}
+\label{test_dot.one_dot}
+\index{test{\_}dot.one{\_}dot}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClass Class}
+\fi
+\label{test_dot.one_dot.TClass}
+\index{TClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Field}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{test_dot.one_dot.TClass-Field}
+\index{Field}
+\item[\textbf{Field}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public Field: byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\chapter{Unit test{\_}dot.three.dots}
+\label{test_dot.three.dots}
+\index{test{\_}dot.three.dots}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClass Class}
+\fi
+\label{test_dot.three.dots.TClass}
+\index{TClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Field}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{test_dot.three.dots.TClass-Field}
+\index{Field}
+\item[\textbf{Field}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public Field: byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\chapter{Unit test{\_}dot.two.dots}
+\label{test_dot.two.dots}
+\index{test{\_}dot.two.dots}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClass Class}
+\fi
+\label{test_dot.two.dots.TClass}
+\index{TClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Field}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{test_dot.two.dots.TClass-Field}
+\index{Field}
+\item[\textbf{Field}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public Field: byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\chapter{Unit test{\_}dot{\_}no{\_}dot}
+\label{test_dot_no_dot}
+\index{test{\_}dot{\_}no{\_}dot}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClass\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClass Class}
+\fi
+\label{test_dot_no_dot.TClass}
+\index{TClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClass {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Field}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{test_dot_no_dot.TClass-Field}
+\index{Field}
+\item[\textbf{Field}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public Field: byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\end{document}
