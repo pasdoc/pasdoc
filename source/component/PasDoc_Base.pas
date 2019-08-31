@@ -88,6 +88,7 @@ type
     FUnits: TPasUnits;
     FVerbosity: Cardinal;
     FCommentMarkers: TStringList;
+    FIgnoreMarkers: TStringList;
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
     FMarkerOptional: boolean;
@@ -111,6 +112,7 @@ type
     procedure SetStarOnly(const Value: boolean);
     function GetStarOnly: boolean;
     procedure SetCommentMarkers(const Value: TStringList);
+    procedure SetIgnoreMarkers(const Value: TStringList);
 
     { Creates a @link(TPasUnit) object from the stream and adds it to
       @link(FUnits). }
@@ -191,6 +193,7 @@ type
       default DEFAULT_VERBOSITY_LEVEL;
     property StarOnly: boolean read GetStarOnly write SetStarOnly stored false;
     property CommentMarkers: TStringList read FCommentMarkers write SetCommentMarkers;
+    property IgnoreMarkers: TStringList read FIgnoreMarkers write SetIgnoreMarkers;
     property MarkerOptional: boolean read FMarkerOptional write FMarkerOptional
       default false;
     property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
@@ -253,6 +256,7 @@ begin
 
   FGenerator := nil;
   FCommentMarkers := TStringList.Create;
+  FIgnoreMarkers := TStringList.Create;
   FUnits := TPasUnits.Create(True);
 end;
 
@@ -261,6 +265,7 @@ end;
 destructor TPasDoc.Destroy;
 begin
   FCommentMarkers.Free;
+  FIgnoreMarkers.Free;
   FDescriptionFileNames.Free;
   FDirectives.Free;
   FIncludeDirectories.Free;
@@ -332,6 +337,7 @@ begin
     p.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
     p.CommentMarkers := CommentMarkers;
+    p.IgnoreMarkers := IgnoreMarkers;
     p.MarkersOptional := MarkerOptional;
     p.IgnoreLeading := IgnoreLeading;
 
@@ -767,6 +773,11 @@ end;
 procedure TPasDoc.SetCommentMarkers(const Value: TStringList);
 begin
   FCommentMarkers.Assign(Value);
+end;
+
+procedure TPasDoc.SetIgnoreMarkers(const Value: TStringList);
+begin
+  FIgnoreMarkers.Assign(Value);
 end;
 
 procedure TPasDoc.HandleExternalFile(const FileName: string;

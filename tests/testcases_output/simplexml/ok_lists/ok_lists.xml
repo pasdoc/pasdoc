@@ -25,12 +25,12 @@
 <unorderedlist>
 </unorderedlist>
 
- Whitespace inside lists is acceptable (and empty line that is not inside any @item is not a paragraph): 
+ Whitespace inside lists is acceptable (and empty line that is not inside any @item is <italic>not</italic> a paragraph): 
 
 <orderedlist>
 <item>One</item>
 <item>Two</item>
-<item> Other tags inside the items are allowed, e.g. link to self, <code>True</code>, begin X := Y; end;, something bold, URLs: http://pasdoc.sf.net/, paragraphs: 2nd paragraph, dashes: em dash ---, en dash --, short one -, two consecutive short dashes --. </item>
+<item> Other tags inside the items are allowed, e.g. link to self, <code>True</code>, begin X := Y; end;, <bold>something bold</bold>, URLs: http://pasdoc.sf.net/, paragraphs: 2nd paragraph, dashes: em dash ---, en dash --, short one -, two consecutive short dashes --. </item>
 </orderedlist>
 
  Nested lists are also freely allowed: 

@@ -1,5 +1,7 @@
 <unit name="ok_longcode_comment.pas">
   <description><detailed>
-{ Some multiline 
-  comment }</detailed></description>
+{ Some multiline
+  comment } 
+{ Some multiline
+  comment, again } Should be empty (without error):  Should be empty (without error): </detailed></description>
 </unit>

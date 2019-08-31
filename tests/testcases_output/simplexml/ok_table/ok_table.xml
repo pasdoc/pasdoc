@@ -50,7 +50,7 @@
 <table>
   <rowhead>
     <cell>A</cell>
-    <cell> Foo </cell>
+    <cell> <bold>Foo</bold> </cell>
   </rowhead>
 </table>
 

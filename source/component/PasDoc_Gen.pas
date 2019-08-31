@@ -1215,15 +1215,17 @@ procedure TDocGenerator.HandleLongCodeTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  if TagParameter = '' then
-    exit;
+  // Always set ReplaceStr
+  ReplaceStr := TagParameter;
+
   // Trim off "marker" characters at the beginning and end of TagParameter.
   // Do this only if they are the same character -- this way we are backward
   // compatible (in the past, matching characters were required), but were
   // not insisting on them being present in new code.
-  if (Length(TagParameter) >= 2) and
-     (TagParameter[1] = TagParameter[Length(TagParameter)]) then
-    ReplaceStr := Copy(TagParameter, 2, Length(TagParameter) - 2);
+  if (Length(ReplaceStr) >= 2) and
+     (ReplaceStr[1] = ReplaceStr[Length(ReplaceStr)]) then
+    ReplaceStr := Copy(ReplaceStr, 2, Length(ReplaceStr) - 2);
+
   ReplaceStr := RemoveIndentation(ReplaceStr);
   // Then format pascal code.
   ReplaceStr := FormatPascalCode(ReplaceStr);

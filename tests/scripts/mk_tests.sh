@@ -211,6 +211,7 @@ all_tests_for_current_format ()
   mk_test ok_if_expressions ok_if_expressions.pas
   mk_test ok_prefix_identifier ok_prefix_identifier.pas
   mk_test ok_links_to_dot_names ok_links_to_dot_names.pas test_links_to_dot_names/*.pas
+  mk_test ok_ignore_marker ok_ignore_marker.pas --ignore-marker ~~ --ignore-marker TODO
 }
 
 # parse params ----------------------------------------
