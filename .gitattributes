@@ -23,4 +23,7 @@ Makefile text eol=auto
 *.css text eol=auto
 *.tex text eol=auto
 *.xml text eol=auto
+*.hhc text eol=auto
+*.hhk text eol=auto
+*.hhp text eol=auto
 PASDOC-OUTPUT text eol=auto
