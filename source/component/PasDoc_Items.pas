@@ -362,6 +362,7 @@ type
     procedure StoreParamTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+    function MyUnitName: String;
   protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -432,7 +433,7 @@ type
       read FAbstractDescriptionWasAutomatic
       write FAbstractDescriptionWasAutomatic;
 
-    { Returns true if there is a DetailledDescription or AbstractDescription
+    { Returns true if there is a DetailedDescription or AbstractDescription
       available. }
     function HasDescription: Boolean;
 
@@ -1162,22 +1163,31 @@ uses StrUtils,
   PasDoc_Utils, PasDoc_Tokenizer;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
+var
+  P1, P2: TPasItem;
 begin
-  Result := CompareText(TPasItem(PItem1).UnitRelativeQualifiedName,
-    TPasItem(PItem2).UnitRelativeQualifiedName);
-  // Sort duplicate class names by unit name if available.
-  if (Result = 0) and
-    (TObject(PItem1).ClassType = TPasCio) and
-    (TObject(PItem2).ClassType = TPasCio) then
-    if TPasCio(PItem1).MyUnit = nil then begin
-      Result := -1
-    end else begin
-      if TPasCio(PItem2).MyUnit = nil then begin
-        Result := 1
-      end else begin
-        Result := CompareText(TPasCio(PItem1).MyUnit.Name, TPasCio(PItem2).MyUnit.Name);
-      end;
-    end;
+  P1 := TPasItem(PItem1);
+  P2 := TPasItem(PItem2);
+  Result := CompareText(
+    P1.UnitRelativeQualifiedName,
+    P2.UnitRelativeQualifiedName);
+  // Sort duplicate names by unit name if available.
+  if Result = 0 then
+    Result := CompareText(
+      P1.MyUnitName,
+      P2.MyUnitName);
+  { If both name and unit are equal (so it's an overloaded routine),
+    sort by description. The goal is to make output of AllIdentifiers.html
+    and similar lists "stable", guaranteed regardless of sorting algorithm
+    used by a particular compiler version, OS etc.
+
+    In case descriptions are equal, the order is still undefined,
+    but it will not matter (since everything generated for AllIdentifiers.html
+    will be equal). }
+  if Result = 0 then
+    Result := CompareText(
+      P1.DetailedDescription,
+      P2.DetailedDescription);
 end;
 
 function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
@@ -1446,6 +1456,14 @@ begin
   FreeAndNil(FSeeAlso);
   FreeAndNil(FAttributes);
   inherited;
+end;
+
+function TPasItem.MyUnitName: String;
+begin
+  if MyUnit <> nil then
+    Result := MyUnit.Name
+  else
+    Result := '';
 end;
 
 function TPasItem.FindNameWithinUnit(const NameParts: TNameParts): TBaseItem;
