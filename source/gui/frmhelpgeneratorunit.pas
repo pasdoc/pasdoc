@@ -227,6 +227,7 @@ type
     procedure tvUnitsClick(Sender: TObject);
   private
     function GetCheckListVisibleMembersValue: TVisibilities;
+    procedure ReadSettingsFromFile(const FileName: string);
     procedure SetCheckListVisibleMembersValue(const AValue: TVisibilities);
   private
     FChanged: boolean;
@@ -638,7 +639,11 @@ begin
     CheckListVisibleMembers.Items.Add(VisibilityStr[Vis]);
   end;
 
-  SetDefaults;
+  // Have command line argument? It must be path to settings file, load it.
+  if ParamCount > 0 then
+    ReadSettingsFromFile(ExpandFileName(ParamStr(1)))
+  else
+    SetDefaults;
 
   { It's too easy to change it at design-time, so we set it at runtime. }
   NotebookMain.PageIndex := 0;
@@ -1110,6 +1115,14 @@ begin
 end;
 
 procedure TfrmHelpGenerator.btnOpenClick(Sender: TObject);
+begin
+  if not SaveChanges then Exit;
+
+  if OpenDialog2.Execute then
+    ReadSettingsFromFile(OpenDialog2.FileName);
+end;
+
+procedure TfrmHelpGenerator.ReadSettingsFromFile(const FileName: string);
 var
   Ini: TIniFile;
 
@@ -1164,130 +1177,125 @@ var
   LanguageSyntax: string;
   LanguageId: TLanguageID;
 begin
-  if not SaveChanges then Exit;
+  SettingsFileName := FileName;
+  SaveDialog1.FileName := SettingsFileName;
 
-  if OpenDialog2.Execute then
-  begin
-    SettingsFileName := OpenDialog2.FileName;
-    SaveDialog1.FileName := SettingsFileName;
+  { Change current directory now to SettingsFileNamePath,
+    this is needed to make all subsequent ExpandFileName
+    operations work with respect to SettingsFileNamePath. }
+  SettingsFileNamePath := ExtractFilePath(SettingsFileName);
+  if not SetCurrentDir(SettingsFileNamePath) then
+    raise Exception.CreateFmt('Cannot change current directory to "%s"',
+      [SettingsFileNamePath]);
 
-    { Change current directory now to SettingsFileNamePath,
-      this is needed to make all subsequent ExpandFileName
-      operations work with respect to SettingsFileNamePath. }
-    SettingsFileNamePath := ExtractFilePath(SettingsFileName);
-    if not SetCurrentDir(SettingsFileNamePath) then
-      raise Exception.CreateFmt('Cannot change current directory to "%s"',
-        [SettingsFileNamePath]);
+  Ini := TIniFile.Create(SettingsFileName);
+  try
+    { Default values for ReadXxx() methods here are not so important,
+      don't even try to set them right.
+      *Good* default values are set in SetDefaults method of this class.
+      Here we can assume that values are always present in ini file.
 
-    Ini := TIniFile.Create(SettingsFileName);
-    try
-      { Default values for ReadXxx() methods here are not so important,
-        don't even try to set them right.
-        *Good* default values are set in SetDefaults method of this class.
-        Here we can assume that values are always present in ini file.
+      Well, OK, in case user will modify settings file by hand we should
+      set here some sensible default values... also in case we will add
+      in the future some new values to this file...
+      so actually we should set here sensible "default values".
+      We can think of them as "good default values for user opening a settings
+      file written by older version of pasdoc_gui program".
+      They need not necessarily be equal to default values set by
+      SetDefaults method, and this is very good, as it may give us
+      additional possibilities. }
 
-        Well, OK, in case user will modify settings file by hand we should
-        set here some sensible default values... also in case we will add
-        in the future some new values to this file...
-        so actually we should set here sensible "default values".
-        We can think of them as "good default values for user opening a settings
-        file written by older version of pasdoc_gui program".
-        They need not necessarily be equal to default values set by
-        SetDefaults method, and this is very good, as it may give us
-        additional possibilities. }
+    CheckStoreRelativePaths.Checked :=
+      Ini.ReadBool('Main', 'StoreRelativePaths', true);
 
-      CheckStoreRelativePaths.Checked :=
-        Ini.ReadBool('Main', 'StoreRelativePaths', true);
+    { Compatibility: in version < 0.11.0, we stored only the "id" (just an
+      index to LANGUAGE_ARRAY) of the language. This was very wrong, as the
+      id can change between pasdoc releases (items can get shifted and moved
+      in the LANGUAGE_ARRAY). So now we store language "syntax" code
+      (the same thing as is used for --language command-line option),
+      as this is guaranteed to stay "stable".
 
-      { Compatibility: in version < 0.11.0, we stored only the "id" (just an
-        index to LANGUAGE_ARRAY) of the language. This was very wrong, as the
-        id can change between pasdoc releases (items can get shifted and moved
-        in the LANGUAGE_ARRAY). So now we store language "syntax" code
-        (the same thing as is used for --language command-line option),
-        as this is guaranteed to stay "stable".
+      To do something mildly sensible when opening pds files from older
+      versions, we set language to default (English) when language string
+      is not recognized. }
 
-        To do something mildly sensible when opening pds files from older
-        versions, we set language to default (English) when language string
-        is not recognized. }
+    LanguageSyntax := Ini.ReadString('Main', 'Language',
+      LanguageDescriptor(DEFAULT_LANGUAGE)^.Syntax);
+    if not LanguageFromStr(LanguageSyntax, LanguageId) then
+      LanguageId := DEFAULT_LANGUAGE;
+    comboLanguages.ItemIndex := Ord(LanguageId);
+    comboLanguagesChange(nil);
 
-      LanguageSyntax := Ini.ReadString('Main', 'Language',
-        LanguageDescriptor(DEFAULT_LANGUAGE)^.Syntax);
-      if not LanguageFromStr(LanguageSyntax, LanguageId) then
-        LanguageId := DEFAULT_LANGUAGE;
-      comboLanguages.ItemIndex := Ord(LanguageId);
-      comboLanguagesChange(nil);
+    EditOutputDirectory.Directory := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'OutputDir', ''));
 
-      EditOutputDirectory.Directory := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'OutputDir', ''));
+    comboGenerateFormat.ItemIndex := Ini.ReadInteger('Main', 'GenerateFormat', 0);
+    comboGenerateFormatChange(nil);
 
-      comboGenerateFormat.ItemIndex := Ini.ReadInteger('Main', 'GenerateFormat', 0);
-      comboGenerateFormatChange(nil);
+    edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
+    seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
 
-      edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
-      seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
+    Assert(Ord(High(TVisibility)) = CheckListVisibleMembers.Items.Count -1);
+    for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
+      CheckListVisibleMembers.Checked[i] := Ini.ReadBool(
+        'Main', 'ClassMembers_' + IntToStr(i), true);
+    CheckListVisibleMembersClick(nil);
 
-      Assert(Ord(High(TVisibility)) = CheckListVisibleMembers.Items.Count -1);
-      for i := Ord(Low(TVisibility)) to Ord(High(TVisibility)) do
-        CheckListVisibleMembers.Checked[i] := Ini.ReadBool(
-          'Main', 'ClassMembers_' + IntToStr(i), true);
-      CheckListVisibleMembersClick(nil);
+    RadioImplicitVisibility.ItemIndex :=
+      Ini.ReadInteger('Main', 'ImplicitVisibility', 0);
 
-      RadioImplicitVisibility.ItemIndex :=
-        Ini.ReadInteger('Main', 'ImplicitVisibility', 0);
+    Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
+    for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
+    begin
+      clbSorting.Checked[i] := Ini.ReadBool(
+        'Main', 'Sorting_' + IntToStr(i), True);
+    end;
 
-      Assert(Ord(High(TSortSetting)) = clbSorting.Items.Count -1);
-      for i := Ord(Low(TSortSetting)) to Ord(High(TSortSetting)) do
-      begin
-        clbSorting.Checked[i] := Ini.ReadBool(
-          'Main', 'Sorting_' + IntToStr(i), True);
-      end;
+    ReadStrings('Defines', memoDefines.Lines);
+    ReadStrings('Header', memoHeader.Lines);
+    ReadStrings('Footer', memoFooter.Lines);
+    ReadStrings('AutoLinkExclude', MemoAutoLinkExclude.Lines);
+    ReadFileNames('IncludeDirectories', memoIncludeDirectories.Lines);
+    ReadFileNames('Files', memoFiles.Lines);
 
-      ReadStrings('Defines', memoDefines.Lines);
-      ReadStrings('Header', memoHeader.Lines);
-      ReadStrings('Footer', memoFooter.Lines);
-      ReadStrings('AutoLinkExclude', MemoAutoLinkExclude.Lines);
-      ReadFileNames('IncludeDirectories', memoIncludeDirectories.Lines);
-      ReadFileNames('Files', memoFiles.Lines);
+    EditCssFileName.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'CssFileName', ''));
+    EditIntroductionFileName.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'IntroductionFileName', ''));
+    EditConclusionFileName.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'ConclusionFileName', ''));
+    EditHtmlHead.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'HtmlHead', ''));
+    EditHtmlBodyBegin.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'HtmlBodyBegin', ''));
+    EditHtmlBodyEnd.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'HtmlBodyEnd', ''));
+    EditExternalDescriptions.FileName := ExpandNotEmptyFileName(
+      Ini.ReadString('Main', 'ExternalDescriptions', ''));
+    ReadFileNames('AdditionalFiles', MemoAdditionalFiles.Lines);
 
-      EditCssFileName.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'CssFileName', ''));
-      EditIntroductionFileName.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'IntroductionFileName', ''));
-      EditConclusionFileName.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'ConclusionFileName', ''));
-      EditHtmlHead.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'HtmlHead', ''));
-      EditHtmlBodyBegin.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'HtmlBodyBegin', ''));
-      EditHtmlBodyEnd.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'HtmlBodyEnd', ''));
-      EditExternalDescriptions.FileName := ExpandNotEmptyFileName(
-        Ini.ReadString('Main', 'ExternalDescriptions', ''));
-      ReadFileNames('AdditionalFiles', MemoAdditionalFiles.Lines);
+    CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
+    CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
+    CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
+    CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
+    CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
+    rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
+    ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
+    rgCommentMarkers.ItemIndex := Ini.ReadInteger('Main', 'SpecialMarkerTreatment', 1);
+    ReadStrings('SpecialMarkers', memoCommentMarkers.Lines);
+    edTitle.Text := Ini.ReadString('Main', 'Title', '');
+    cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
+    cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
 
-      CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
-      CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
-      CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
-      CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
-      CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
-      rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
-      ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
-      rgCommentMarkers.ItemIndex := Ini.ReadInteger('Main', 'SpecialMarkerTreatment', 1);
-      ReadStrings('SpecialMarkers', memoCommentMarkers.Lines);
-      edTitle.Text := Ini.ReadString('Main', 'Title', '');
-      cbVizGraphClasses.Checked := Ini.ReadBool('Main', 'VizGraphClasses', false);
-      cbVizGraphUses.Checked := Ini.ReadBool('Main', 'VizGraphUses', false);
+    cbCheckSpelling.Checked :=
+      Ini.ReadBool('Main', 'CheckSpelling', false);
+    comboLatexGraphicsPackage.ItemIndex :=
+      Ini.ReadInteger('Main', 'LatexGraphicsPackage', 0);
 
-      cbCheckSpelling.Checked :=
-        Ini.ReadBool('Main', 'CheckSpelling', false);
-      comboLatexGraphicsPackage.ItemIndex :=
-        Ini.ReadInteger('Main', 'LatexGraphicsPackage', 0);
+    ReadStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
+  finally Ini.Free end;
 
-      ReadStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
-    finally Ini.Free end;
-
-    Changed := False;
-  end;
+  Changed := False;
 end;
 
 procedure TfrmHelpGenerator.SaveSettingsToFile(const FileName: string;
