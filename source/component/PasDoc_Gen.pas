@@ -2200,35 +2200,69 @@ end;
 function TDocGenerator.FindGlobal(
   const NameParts: TNameParts): TBaseItem;
 var
-  i: Integer;
+  i, UnitNamePartIdx: Integer;
   Item: TBaseItem;
   U: TPasUnit;
+  NewNameParts: TNameParts;
+  FullUnitName: string;
 begin
   Result := nil;
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
-  case Length(NameParts) of
+  { Units could have multipart names with dots (a-la namespace).
+    So we first must check whether NameParts contains multiple parts of a unit name
+    and correct the array accordingly.
+    There's no sense in check if NameParts hold a single item. Similarily we start
+    check starting from two-part name as one-part name is default. }
+  if Length(NameParts) > 1 then
+  begin
+    FullUnitName := NameParts[0];
+    UnitNamePartIdx := 1; // start check from two-part name
+    repeat
+      FullUnitName := FullUnitName + '.' + NameParts[UnitNamePartIdx];
+      U := TPasUnit(Units.FindListItem(FullUnitName));
+      if U = nil then
+        Inc(UnitNamePartIdx)
+      else
+        Break;
+    until UnitNamePartIdx >= High(NameParts);
+    { So now we have full unit name and index until which unit name is spread.
+      Construct new nameparts array with unit name glued together. }
+    if (U <> nil) and (UnitNamePartIdx >= 1) then // Skip simple case of single-part unit name
+    begin
+      SetLength(NewNameParts, Length(NameParts) - UnitNamePartIdx);
+      NewNameParts[0] := FullUnitName;
+      for i := 1 to High(NewNameParts) do
+        NewNameParts[i] := NameParts[UnitNamePartIdx + i];
+    end
+    else
+      NewNameParts := NameParts;
+  end
+  else
+    NewNameParts := NameParts;
+
+  case Length(NewNameParts) of
     1: begin
         if (Introduction <> nil) then
         begin
-          if  SameText(Introduction.Name, NameParts[0]) then
+          if  SameText(Introduction.Name, NewNameParts[0]) then
           begin
             Result := Introduction;
             Exit;
           end;
-          Result := Introduction.FindItem(NameParts[0]);
+          Result := Introduction.FindItem(NewNameParts[0]);
           if Result <> nil then Exit;
         end;
 
         if (Conclusion <> nil) then
         begin
-          if  SameText(Conclusion.Name, NameParts[0]) then
+          if  SameText(Conclusion.Name, NewNameParts[0]) then
           begin
             Result := Conclusion;
             Exit;
           end;
-          Result := Conclusion.FindItem(NameParts[0]);
+          Result := Conclusion.FindItem(NewNameParts[0]);
           if Result <> nil then Exit;
         end;
 
@@ -2236,12 +2270,12 @@ begin
         begin
           for i := 0 to AdditionalFiles.Count - 1 do
           begin
-            if  SameText(AdditionalFiles.Get(i).Name, NameParts[0]) then
+            if  SameText(AdditionalFiles.Get(i).Name, NewNameParts[0]) then
             begin
               Result := AdditionalFiles.Get(i);
               Exit;
             end;
-            Result := AdditionalFiles.Get(i).FindItem(NameParts[0]);
+            Result := AdditionalFiles.Get(i).FindItem(NewNameParts[0]);
             if Result <> nil then Exit;
           end;
         end;
@@ -2250,35 +2284,35 @@ begin
          begin
            U := Units.UnitAt[i];
 
-           if SameText(U.Name, NameParts[0]) then
+           if SameText(U.Name, NewNameParts[0]) then
            begin
              Result := U;
              Exit;
            end;
 
-           Result := U.FindItem(NameParts[0]);
+           Result := U.FindItem(NewNameParts[0]);
            if Result <> nil then Exit;
          end;
        end;
     2: begin
          { object.field_method_property }
          for i := 0 to Units.Count - 1 do begin
-           Result := Units.UnitAt[i].FindInsideSomeClass(NameParts[0], NameParts[1]);
+           Result := Units.UnitAt[i].FindInsideSomeClass(NewNameParts[0], NewNameParts[1]);
            if Assigned(Result) then Exit;
          end;
 
          { unit.cio_var_const_type }
-         U := TPasUnit(Units.FindListItem(NameParts[0]));
+         U := TPasUnit(Units.FindListItem(NewNameParts[0]));
          if Assigned(U) then
-           Result := U.FindItem(NameParts[1]);
+           Result := U.FindItem(NewNameParts[1]);
        end;
     3: begin
          { unit.objectorclassorinterface.fieldormethodorproperty }
-         U := TPasUnit(Units.FindListItem(NameParts[0]));
+         U := TPasUnit(Units.FindListItem(NewNameParts[0]));
          if (not Assigned(U)) then Exit;
-         Item := U.FindItem(NameParts[1]);
+         Item := U.FindItem(NewNameParts[1]);
          if (not Assigned(Item)) then Exit;
-         Item := Item.FindItem(NameParts[2]);
+         Item := Item.FindItem(NewNameParts[2]);
          if (not Assigned(Item)) then Exit;
          Result := Item;
          Exit;
