@@ -210,7 +210,14 @@ all_tests_for_current_format ()
   mk_test ok_date ok_date.pas
   mk_test ok_if_expressions ok_if_expressions.pas
   mk_test ok_prefix_identifier ok_prefix_identifier.pas
-  mk_test ok_links_to_dot_names ok_links_to_dot_names.pas test_links_to_dot_names/*.pas
+  # Note: do not use test_links_to_dot_names/*.pas,
+  # as the order of files is then not guaranteed by the shell
+  # (and it may differ e.g. between Linux and Cygwin)
+  mk_test ok_links_to_dot_names ok_links_to_dot_names.pas \
+    test_links_to_dot_names/test_dot.three.dots.pas \
+    test_links_to_dot_names/test_dot.two.dots.pas \
+    test_links_to_dot_names/test_dot.one_dot.pas \
+    test_links_to_dot_names/test_dot_no_dot.pas
   mk_test ok_ignore_marker ok_ignore_marker.pas --ignore-marker ~~ --ignore-marker TODO
 }
 
