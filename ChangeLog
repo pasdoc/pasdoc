@@ -1,5 +1,12 @@
 Next version (not released yet)
 
+  * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
+    (thanks to Fr0sT-Brutal)
+  * @longCode without markers fixed
+  * Support for namespaces in units in @links (thanks to Fr0sT-Brutal)
+  * --ignore-marker option ( https://github.com/pasdoc/pasdoc/wiki/IgnoreMarkerOption )
+    (thanks to Fr0sT-Brutal)
+  * Test suite fixes and better documentation, in particular for Windows users
   * Catalan translation updated (thanks to Xavier Martínez)
   * Delphi Tokyo files, to compile all projects and packages (thanks to Carlos Feitoza Filho)
   * Brazilian Portuguese translation updated (thanks to Carlos Feitoza Filho)
