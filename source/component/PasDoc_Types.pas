@@ -41,9 +41,6 @@ type
   UnicodeString = WideString;
   RawByteString = AnsiString;
 {$ENDIF}
-{$IF NOT DECLARED(TStringArray)}
-  TStringArray = array of string;
-{$IFEND}
 
   { }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
@@ -83,10 +80,6 @@ const
 {$ENDIF}
 {$ENDIF}
 
-{$IF NOT DECLARED(SplitString)}
-function SplitString(const S, Delimiters: string): TStringArray;
-{$IFEND}
-
 { Splits S, which can be made of any number of parts, separated by dots
   (Delphi namespaces, like PasDoc.Output.HTML.TWriter.Write).
   If S is not a valid identifier, @false is returned, otherwise @true is returned
@@ -106,6 +99,8 @@ type
 
 implementation
 
+{$IFDEF FPC} uses Types; {$endif} { For TStringDynArray type }
+
 { EPasDoc -------------------------------------------------------------------- }
 
 constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
@@ -116,6 +111,15 @@ begin
 end;
 
 { global routines ------------------------------------------------------------ }
+
+{$IFDEF FPC}
+type
+  TStringArray = TStringDynArray;
+{$ENDIF}
+{$IF NOT DECLARED(TStringArray)}
+type
+  TStringArray = array of string;
+{$IFEND}
 
 {$IF NOT DECLARED(SplitString)}
 // Primitive implementation for ancient compilers, uses only 1st char of Delimiters
@@ -143,7 +147,7 @@ begin
   PrevDelimPos := 1;
   for i := 0 to High(Result) do
   begin
-    DelimPos := Pos(Delimiters[1], s, PrevDelimPos);
+    DelimPos := PosEx(Delimiters[1], s, PrevDelimPos);
     if DelimPos = 0 then // last delim in the string
     begin
       Result[i] := Copy(s, PrevDelimPos, MaxInt);
@@ -167,7 +171,6 @@ const
   IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
 var
   i: Integer;
-  t: string;
 begin
   Result := False;
 
