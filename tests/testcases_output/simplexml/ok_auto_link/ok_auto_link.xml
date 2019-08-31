@@ -7,7 +7,7 @@
 
 <definitionlist>
 <item label="Test of auto-linking:"> Self name is <code>Var1</code>, simple ident is TMyClass, qualified ident is TMyClass.Field. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me. Note that auto-linking works also inside @code: <code> Self name is <code>Var1</code>, simple ident is TMyClass, qualified ident is TMyClass.Field. </code> </item>
-<item label="Test of @noAutoLink:"> Things below should not be converted to links:  Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me. Simple ident once again TMyClass. Inside @code: <code> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.</code>  </item>
+<item label="Test of @noAutoLink:"> Things below should <italic>not</italic> be converted to links:  Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me. Simple ident once again TMyClass. Inside @code: <code> Self name is Var1, simple ident is TMyClass, qualified ident is TMyClass.Field.</code>  </item>
 </definitionlist>
 
 </detailed></description>
