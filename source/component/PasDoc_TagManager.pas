@@ -536,17 +536,90 @@ const
       (Open: '_';    Close: '_';    PasDocTag: 'italic')
     );
 
+  MarkdownUListMarkers = ['-', '*'];
+  MarkdownOListMarkers = ['0'..'9'];
+  // Set of chars markdown lists could start with. To speedup checking
+  MarkdownListStartChars = MarkdownUListMarkers + MarkdownOListMarkers + WhiteSpaceNotNL;
+  MarkdownOListCloseChars = ['.', ')'];
+  PasDocListTags: array[boolean] of string =
+    ('unorderedlist', 'orderedlist');
+
+{ This checks whether we are looking (i.e. Description[FOffset]
+  starts with) at a paragraph marker
+  (i.e. newline +
+        optional whitespace +
+        newline +
+        some more optional whitespaces and newlines)
+  and if it is so, returns true and sets OffsetEnd to the next
+  index in Description after this paragraph marker. }
+function FindParagraph(const Description: string; Offset: Integer;
+  out OffsetEnd: Integer): boolean;
+var i: Integer;
+begin
+  Result := false;
+
+  i := Offset;
+  while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
+  if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
+  { In case newline is two-characters wide, read it to the end
+    (to not accidentally take #13#10 as two newlines.) }
+  Inc(i);
+  if (i <= Length(Description)) and
+     ( ((Description[i-1] = #10) and (Description[i] = #13)) or
+       ((Description[i-1] = #13) and (Description[i] = #10))
+     ) then
+    Inc(i);
+  while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
+  if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
+
+  { OK, so we found 2nd newline. So we got paragraph marker.
+    Now read it to the end. }
+  Result := true;
+  while SCharIs(Description, i, WhiteSpace) do Inc(i);
+  OffsetEnd := i;
+end;
+
+{ This checks whether we are looking (i.e. Description[FOffset]
+  starts with) at some char from Chars set.
+  If true, then it also sets OffsetEnd to next index after all chars from set. }
+function FindChars(const Description: string; Offset: Integer;
+  const Chars: TCharSet; out OffsetEnd: Integer): boolean;
+begin
+  Result := SCharIs(Description, Offset, Chars);
+  if Result then
+  begin
+    OffsetEnd := Offset + 1;
+    while SCharIs(Description, OffsetEnd, Chars) do Inc(OffsetEnd);
+  end;
+end;
+
+{ This reads from Description starting at index Offset until it reaches
+  double new line probably mixed with whitespaces. Sets OffsetEnd to next index
+  after double new line }
+procedure ReadUntilDoubleNL(const Description: string; Offset: Integer;
+  out OffsetEnd: Integer);
+var StrLen: Integer;
+begin
+  StrLen := Length(Description);
+  repeat
+    while (Offset <= StrLen) and not SCharIs(Description, Offset, WhiteSpaceNL) do Inc(Offset);
+    if FindParagraph(Description, Offset, OffsetEnd) then
+      Exit;
+    if Offset >= StrLen then
+      Break;
+    Inc(Offset);
+  until False;
+
+  OffsetEnd := Offset;
+end;
+
 {
   This checks if a known Markdown block starts at Description[Offset].
   If yes, it returns true and sets
-  -- Name of PasDoc tag corresponding to current Markdown block
+  -- PasDocTagName to name of PasDoc tag corresponding to current Markdown block
   -- Parameters to contents of this block
   -- OffsetEnd to the index of *next* character in Description right
      after this block
-
-  Note that it may also change it's out parameters even when it returns
-  false; this doesn't harm anything for now, so I don't think there's
-  a reason to correct this for now.
 }
 function CheckMarkdown(const Description: string; Offset: Integer;
   out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
@@ -574,7 +647,141 @@ begin
   OffsetEnd := i + Length(MarkdownBlocks[MdBlockIdx].Close);
   Parameters := Copy(Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Open), i - (Offset + Length(MarkdownBlocks[MdBlockIdx].Open)));
 
-  Result := true;
+  Result := True;
+end;
+
+{
+  This checks if Markdown list item starts at Description[Offset].
+  Whitespaces are the part of list so Offset could point at one or more whitespaces.
+  If yes, it returns true and sets
+  -- Ordered to true of list is ordered, false otherwise
+  -- OffsetEnd to the index of *next* non-whitespace character in Description right
+     after list marker
+  -- IndentLen to count of whitespace chars between new line and list marker
+     (for tracking nested lists).
+
+  Markdown list items have the following pattern:
+  [WSP]MARKER[contents]
+  MARKER is:
+    '*'|'-'WSP for ordered lists
+    DIGIT*N'.'|')'WSP for ordered lists
+  where
+    WSP = tab #9 or space #32
+    DIGIT = 0..9
+}
+function CheckMarkdownListItemStart(const Description: string; Offset: Integer;
+  out Ordered: boolean; out OffsetEnd: Integer; out IndentLen: Integer): boolean;
+var SaveOffset, i: Integer;
+begin
+  Result := False;
+  // List item must start from new line
+  if (Offset > 1) and not SCharIs(Description, Offset - 1, WhiteSpaceNL) then Exit;
+
+  // Skip whitespaces also getting indent length
+  SaveOffset := Offset;
+  FindChars(Description, SaveOffset, WhiteSpaceNotNL, Offset);
+
+  // Unordered list - "* item"
+  if SCharIs(Description, Offset, MarkdownUListMarkers) then
+  begin
+    // Whitespace is obligatory
+    i := Offset + 1;
+    if not FindChars(Description, i, WhiteSpaceNotNL, i) then
+      Exit;
+    Ordered := False;
+    OffsetEnd := i;
+    IndentLen := Offset - SaveOffset;
+    Result := True;
+  end
+  // Ordered list - "1. item"
+  else if SCharIs(Description, Offset, MarkdownOListMarkers) then
+  begin
+    // Skip probably multiple digits
+    FindChars(Description, Offset, MarkdownOListMarkers, i);
+    // Closing char and Whitespace are obligatory
+    if not SCharIs(Description, i, MarkdownOListCloseChars) then
+      Exit;
+    Inc(i);
+    if not FindChars(Description, i, WhiteSpaceNotNL, i) then
+      Exit;
+    Ordered := True;
+    OffsetEnd := i;
+    IndentLen := Offset - SaveOffset;
+    Result := True;
+  end;
+end;
+
+{
+  This checks if Markdown list item starts at Description[Offset].
+  Whitespaces are the part of list so Offset could point at one or more whitespaces.
+  If yes, it returns true and sets
+  -- PasDocTagName to name of PasDoc tag corresponding to current Markdown block
+  -- Parameters to contents of this block
+  -- OffsetEnd to the index of *next* character in Description right
+     after this block
+}
+function CheckMarkdownListItem(const Description: string; Offset: Integer;
+  out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): boolean;
+var
+  Dummy: boolean;
+  StrLen, i, IndentLen, OtherIndentLen: Integer;
+begin
+  Result := CheckMarkdownListItemStart(Description, Offset, Dummy, OffsetEnd, IndentLen);
+  if not Result then Exit;
+
+  PasDocTagName := 'item';
+  Offset := OffsetEnd; // start index of item contents
+
+  // now search for end of item content - it must be signature
+  // of a next list item with the same indent or end of string
+  StrLen := Length(Description);
+  repeat
+    // search for first char after NL
+    while (OffsetEnd <= StrLen) and not SCharIs(Description, OffsetEnd, WhiteSpaceNL) do Inc(OffsetEnd);
+    if OffsetEnd > StrLen then
+      Break;
+    if not FindChars(Description, OffsetEnd, WhiteSpaceNL, OffsetEnd) then
+      Break;
+    // check for list item start and ensure it has the same indent
+    if CheckMarkdownListItemStart(Description, OffsetEnd, Dummy, i, OtherIndentLen) then
+      if IndentLen >= OtherIndentLen then
+        Break
+      else
+        OffsetEnd := i;
+  until False;
+
+  // OffsetEnd includes newlines after item content so trim them
+  Parameters := TrimRight(Copy(Description, Offset, OffsetEnd - Offset));
+end;
+
+{
+  This checks if Markdown list starts at Description[Offset].
+  Whitespaces are the part of list so Offset could point at one or more whitespaces.
+  If yes, it returns true and sets
+  -- PasDocTagName to name of PasDoc tag corresponding to current Markdown block
+  -- Parameters to contents of this block
+  -- OffsetEnd to the index of *next* character in Description right
+     after this block
+}
+function CheckMarkdownList(const Description: string; Offset: Integer;
+  out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): boolean;
+var
+  Ordered: boolean;
+  Dummy: Integer;
+begin
+  // Quick check
+  Result := False;
+  if not SCharIs(Description, Offset, MarkdownListStartChars) then Exit;
+
+  // Parser eats whitespaces after newline so we've to take them back
+  while (Offset > 1) and SCharIs(Description, Offset - 1, WhiteSpaceNotNL) do
+    Dec(Offset);
+  Result := CheckMarkdownListItemStart(Description, Offset, Ordered, OffsetEnd, Dummy);
+  if not Result then Exit;
+
+  PasDocTagName := PasDocListTags[Ordered];
+  ReadUntilDoubleNL(Description, Offset, OffsetEnd);
+  Parameters := TrimRight(Copy(Description, Offset, OffsetEnd - Offset));
 end;
 
 { TTag ------------------------------------------------------------  }
@@ -849,7 +1056,15 @@ var
   var
     TagName: string;
   begin
-    Result := CheckMarkdown(Description, FOffset, TagName, Parameters, OffsetEnd);
+    // Check for markdown list
+    if (EnclosingTag <> nil) and (IndexText(EnclosingTag.Name, PasDocListTags) <> -1) then
+      Result := CheckMarkdownListItem(Description, FOffset, TagName, Parameters, OffsetEnd)
+    else
+      Result := CheckMarkdownList(Description, FOffset, TagName, Parameters, OffsetEnd);
+    // Check for simple markdown block
+    if not Result then
+      Result := CheckMarkdown(Description, FOffset, TagName, Parameters, OffsetEnd);
+
     if not Result then Exit;
 
     Tag := FTags.FindByName(TagName);
@@ -858,53 +1073,6 @@ var
       DoMessageNonPre(1, pmtWarning, 'Unknown tag name "%s"', [TagName]);
       Result := False;
       Exit;
-    end;
-  end;
-
-  { This checks whether we are looking (i.e. Description[FOffset]
-    starts with) at a pargraph marker
-    (i.e. newline +
-          optional whitespace +
-          newline +
-          some more optional whitespaces and newlines)
-    and if it is so, returns true and sets OffsetEnd to the next
-    index in Description after this paragraph marker. }
-  function FindParagraph(out OffsetEnd: Integer): boolean;
-  var i: Integer;
-  begin
-    Result := false;
-
-    i := FOffset;
-    while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
-    if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
-    { In case newline is two-characters wide, read it to the end
-      (to not accidentally take #13#10 as two newlines.) }
-    Inc(i);
-    if (i <= Length(Description)) and
-       ( ((Description[i-1] = #10) and (Description[i] = #13)) or
-         ((Description[i-1] = #13) and (Description[i] = #10))
-       ) then
-      Inc(i);
-    while SCharIs(Description, i, WhiteSpaceNotNL) do Inc(i);
-    if not SCharIs(Description, i, WhiteSpaceNL) then Exit;
-
-    { OK, so we found 2nd newline. So we got paragraph marker.
-      Now read it to the end. }
-    Result := true;
-    while SCharIs(Description, i, WhiteSpace) do Inc(i);
-    OffsetEnd := i;
-  end;
-
-  { This checks whether we are looking (i.e. Description[FOffset]
-    starts with) at some whitespace.
-    If true, then it also sets OffsetEnd to next index after whitespace. }
-  function FindWhitespace(out OffsetEnd: Integer): boolean;
-  begin
-    Result := SCharIs(Description, FOffset, WhiteSpace);
-    if Result then
-    begin
-      OffsetEnd := FOffset + 1;
-      while SCharIs(Description, OffsetEnd, WhiteSpace) do Inc(OffsetEnd);
     end;
   end;
 
@@ -1282,7 +1450,7 @@ begin
       FOffset := FOffset + 1;
       ConvertBeginOffset := FOffset;
     end else
-    if FindParagraph(OffsetEnd) then
+    if FindParagraph(Description, FOffset, OffsetEnd) then
     begin
       DoConvert;
 
@@ -1296,7 +1464,7 @@ begin
     end else
     { FindWhitespace must be checked after FindParagraph,
       otherwise we would take paragraph as just some whitespace. }
-    if FindWhitespace(OffsetEnd) then
+    if FindChars(Description, FOffset, WhiteSpace, OffsetEnd) then
     begin
       DoConvert;
 

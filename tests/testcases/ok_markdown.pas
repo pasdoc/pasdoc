@@ -1,4 +1,42 @@
 { @abstract(**This is a test of Markdown syntax**)
+Correct lists
+- list item #1.1
+- list item #1.2
+
+  - list item #2.1
+  - list item #2.2
+  
+  * list item #3
+  
+  - list item #4
+
+1. list item #5.1
+2. list item #5.2
+10. list item #5.10
+
+ - list item #7.1
+   - nested list item #7.1.1
+     - nested list item #7.1.1.1
+
+You can even mix markdown and PasDoc tags
+
+@unorderedList(
+- list
+ item #8.1
+- list
+ item #8.2
+)
+
+Incorrect lists
+
+*not a list
+
+1not a list
+
+1 not a list
+
+1.not a list
+
 
   Some **bold text**.
 
@@ -16,12 +54,12 @@
 
   Some `inline code`.
   
-  ```~
+  ```
   program Foo;
     Some long code
     with
     syntax highlight
-  ~```
+  ```
 }
 unit ok_markdown;
 
