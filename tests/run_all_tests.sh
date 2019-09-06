@@ -7,9 +7,15 @@ make clean
 
 # fpcunit tests --------------------------------------------------------------
 
-cd fpcunit/
+pushd fpcunit
 make
-cd ../
+popd
+
+# build pasdoc --------------------------------------------------------------
+
+pushd ../
+make
+popd
 
 # ----------------------------------------------------------------------------
 # Find pasdoc binary, setting PASDOC_BIN to absolute exe path.
@@ -44,9 +50,9 @@ fi
 echo 'Regenerating "testcases_output".'
 rm -Rf testcases_output/
 
-cd testcases/
+pushd testcases
 ../scripts/mk_tests.sh $ALL_OUTPUT_FORMATS
-cd ../
+popd
 
 if [ "${USE_DIFF_TO_COMPARE:-false}" = 'true' ]; then
   echo 'Comparing "testcases_output" with "current_output".'
