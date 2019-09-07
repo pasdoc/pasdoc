@@ -600,8 +600,12 @@ begin
   s := ReplaceRegEx(s, '</code>', ')');
   s := ReplaceRegEx(s, '<b>', '@bold(');
   s := ReplaceRegEx(s, '</b>', ')');
+  s := ReplaceRegEx(s, '<strong>', '@bold(');
+  s := ReplaceRegEx(s, '</strong>', ')');
   s := ReplaceRegEx(s, '<i>', '@italic(');
   s := ReplaceRegEx(s, '</i>', ')');
+  s := ReplaceRegEx(s, '<em>', '@italic(');
+  s := ReplaceRegEx(s, '</em>', ')');
   s := ReplaceRegEx(s, '<u>', '@underline(');  // not yet implemented
   s := ReplaceRegEx(s, '</u>', ')');
   s := ReplaceRegEx(s, '<br */?>', '@br');
