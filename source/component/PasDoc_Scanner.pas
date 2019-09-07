@@ -899,28 +899,30 @@ begin
   ElseifToken := nil;
   repeat
     t := FTokenizers[FCurrentTokenizer].SkipUntilCompilerDirective;
-    if t = nil then begin
+    if t = nil then
       DoError('Unexpected end of code when looking for matching $ELSE / $ELSEIF / $ENDIF / $IFEND', []);
-    end;
 
-    if (t.MyType = TOK_DIRECTIVE) then begin
-      if IdentifyDirective(t.CommentContent,
-        dt, DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then
-      begin
-        DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
-        case dt of
-          DT_IFDEF, DT_IFNDEF, DT_IFOPT, DT_IF: Inc(Level);
-          DT_ELSE, DT_ELSEIF:
-            { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
-              encountered, ignoring all $ELSEs. We must therefore not
-              decrement Level at $ELSE if it is part of such a nested $IFDEF.
-              $ELSE must decrement Level only for the initial $IFDEF.
-              That's why we test Level for 1 (initial $IFDEF) here. }
-            if Level = 1 then Dec(Level);
-          DT_ENDIF, DT_IFEND: Dec(Level);
-        end;
+    Assert(T <> nil);
+    Assert(T.MyType = TOK_DIRECTIVE);
+
+    if IdentifyDirective(t.CommentContent,
+      dt, DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then
+    begin
+      DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
+      case dt of
+        DT_IFDEF, DT_IFNDEF, DT_IFOPT, DT_IF: Inc(Level);
+        DT_ELSE, DT_ELSEIF:
+          { RJ: We must jump over all nested $IFDEFs until its $ENDIF is
+            encountered, ignoring all $ELSEs. We must therefore not
+            decrement Level at $ELSE if it is part of such a nested $IFDEF.
+            $ELSE must decrement Level only for the initial $IFDEF.
+            That's why we test Level for 1 (initial $IFDEF) here. }
+          if Level = 1 then Dec(Level);
+        DT_ENDIF, DT_IFEND: Dec(Level);
       end;
-    end;
+    end else
+      DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered unknown directive %s', [t.CommentContent]);
+
     Stop := (Level = 0) and
       (T.MyType = TOK_DIRECTIVE) and
       (dt in [DT_ELSE, DT_ELSEIF, DT_ENDIF, DT_IFEND]);
