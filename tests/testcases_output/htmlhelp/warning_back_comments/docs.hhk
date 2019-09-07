@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MyEnum">
+<param name="Local" value="test.html#MyEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="v1">
+<param name="Local" value="test.html#v1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="v2">
+<param name="Local" value="test.html#v2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="v3">
+<param name="Local" value="test.html#v3">
+</object>
+</ul>
+</body></html>

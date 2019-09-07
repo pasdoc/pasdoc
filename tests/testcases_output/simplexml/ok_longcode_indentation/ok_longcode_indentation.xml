@@ -1,0 +1,45 @@
+<unit name="ok_longcode_indentation.pas">
+  <function name="Foo1" type="procedure" declaration="procedure Foo1;">
+    <description><detailed>Should cut nothing: one
+  two
+    three</detailed></description>
+  </function>
+  <function name="Foo2" type="procedure" declaration="procedure Foo2;">
+    <description><detailed>Should cut 4 spaces: 
+one
+two
+three</detailed></description>
+  </function>
+  <function name="Foo3" type="procedure" declaration="procedure Foo3;">
+    <description><detailed>Should cut 2 spaces: 
+  one
+two
+  three</detailed></description>
+  </function>
+  <function name="Foo4" type="procedure" declaration="procedure Foo4;">
+    <description><detailed>Should cut nothing (there's a tab here): 
+    one
+	two
+    three</detailed></description>
+  </function>
+  <function name="Foo5" type="procedure" declaration="procedure Foo5;">
+    <description><detailed>Should cut tab + 2 spaces: 
+one
+  two
+three</detailed></description>
+  </function>
+  <function name="Foo6" type="procedure" declaration="procedure Foo6;">
+    <description><detailed>Should cut 4 spaces (there's trailing whitespace in 1st lines here, that should be ignored): 
+                 
+                  
+one</detailed></description>
+  </function>
+  <function name="Foo7" type="procedure" declaration="procedure Foo7;">
+    <description><detailed>Should cut 4 spaces (empty line doesn't shorten IndentationPrefix): 
+if something then
+begin
+  // empty line below
+
+end;</detailed></description>
+  </function>
+</unit>

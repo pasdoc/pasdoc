@@ -1,0 +1,188 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit test}
+\label{test}
+\index{test}
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{MyEnum}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MyEnum}
+\fi
+\label{test-MyEnum}
+\index{MyEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+MyEnum = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{me1}] \label{test-me1}
+\index{}
+this is me1
+\item[\texttt{me2}] \label{test-me2}
+\index{}
+this is me2
+\end{description}
+
+
+\end{list}
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{v1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{v1}
+\fi
+\label{test-v1}
+\index{v1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+v1: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is v2, v3
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{v2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{v2}
+\fi
+\label{test-v2}
+\index{v2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+v2: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is v2, v3
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{v3}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{v3}
+\fi
+\label{test-v3}
+\index{v3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+v3: integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is v2, v3
+
+\end{list}
+\end{document}
