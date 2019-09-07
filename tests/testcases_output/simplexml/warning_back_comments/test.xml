@@ -1,0 +1,13 @@
+<unit name="warning_back_comments.pas">
+  <variable name="v1: integer;">
+    <description><detailed>this is v2, v3</detailed></description>
+  </variable>
+  <variable name="v2: integer;">
+    <description><detailed>this is v2, v3</detailed></description>
+  </variable>
+  <variable name="v3: integer;">
+    <description><detailed>this is v2, v3</detailed></description>
+  </variable>
+  <type name="MyEnum = (...);">
+  </type>
+</unit>

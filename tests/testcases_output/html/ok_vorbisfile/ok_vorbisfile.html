@@ -34,101 +34,101 @@ API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.d
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#TSizeT">TSizeT</a></b> = LongWord;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#TSizeT">TSizeT</a></strong> = LongWord;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#TVorbisFileReadFunc">TVorbisFileReadFunc</a></b> = function (ptr: Pointer; Size: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#TVorbisFileReadFunc">TVorbisFileReadFunc</a></strong> = function (ptr: Pointer; Size: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#TVorbisFileSeekFunc">TVorbisFileSeekFunc</a></b> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#TVorbisFileSeekFunc">TVorbisFileSeekFunc</a></strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#TVorbisFileCloseFunc">TVorbisFileCloseFunc</a></b> = function (DataSource: Pointer): CInt; cdecl;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#TVorbisFileCloseFunc">TVorbisFileCloseFunc</a></strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#TVorbisFileTellFunc">TVorbisFileTellFunc</a></b> = function (DataSource: Pointer): CLong; cdecl;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#TVorbisFileTellFunc">TVorbisFileTellFunc</a></strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#Pov_callbacks">Pov_callbacks</a></b> = &circ;<a  href="ok_vorbisfile.Tov_callbacks.html">Tov_callbacks</a>;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#Pov_callbacks">Pov_callbacks</a></strong> = &circ;<a  href="ok_vorbisfile.Tov_callbacks.html">Tov_callbacks</a>;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a></b> = &circ;<a  href="ok_vorbisfile.TOggVorbis_File.html">TOggVorbis_File</a>;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a></strong> = &circ;<a  href="ok_vorbisfile.TOggVorbis_File.html">TOggVorbis_File</a>;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#NOTOPEN">NOTOPEN</a></b>   = 0;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#NOTOPEN">NOTOPEN</a></strong>   = 0;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#PARTOPEN">PARTOPEN</a></b>  = 1;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#PARTOPEN">PARTOPEN</a></strong>  = 1;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#OPENED">OPENED</a></b>    = 2;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#OPENED">OPENED</a></strong>    = 2;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#STREAMSET">STREAMSET</a></b> = 3;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#STREAMSET">STREAMSET</a></strong> = 3;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#INITSET">INITSET</a></b>   = 4;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#INITSET">INITSET</a></strong>   = 4;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#ov_clear">ov_clear</a></b>: function(Vf: <a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a>): CInt; cdecl;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#ov_clear">ov_clear</a></strong>: function(Vf: <a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a>): CInt; cdecl;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><b><a  href="ok_vorbisfile.html#VorbisFileInited">VorbisFileInited</a></b>: boolean;</code></td>
+<td class="itemcode"><code><strong><a  href="ok_vorbisfile.html#VorbisFileInited">VorbisFileInited</a></strong>: boolean;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Types</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TSizeT"></span><code><b>TSizeT</b> = LongWord;</code></td>
+<td class="itemcode"><span id="TSizeT"></span><code><strong>TSizeT</strong> = LongWord;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileReadFunc"></span><code><b>TVorbisFileReadFunc</b> = function (ptr: Pointer; Size: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileReadFunc"></span><code><strong>TVorbisFileReadFunc</strong> = function (ptr: Pointer; Size: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a  href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileSeekFunc"></span><code><b>TVorbisFileSeekFunc</b> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileSeekFunc"></span><code><strong>TVorbisFileSeekFunc</strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileCloseFunc"></span><code><b>TVorbisFileCloseFunc</b> = function (DataSource: Pointer): CInt; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileCloseFunc"></span><code><strong>TVorbisFileCloseFunc</strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileTellFunc"></span><code><b>TVorbisFileTellFunc</b> = function (DataSource: Pointer): CLong; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileTellFunc"></span><code><strong>TVorbisFileTellFunc</strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="Pov_callbacks"></span><code><b>Pov_callbacks</b> = &circ;<a  href="ok_vorbisfile.Tov_callbacks.html">Tov_callbacks</a>;</code></td>
+<td class="itemcode"><span id="Pov_callbacks"></span><code><strong>Pov_callbacks</strong> = &circ;<a  href="ok_vorbisfile.Tov_callbacks.html">Tov_callbacks</a>;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="POggVorbis_File"></span><code><b>POggVorbis_File</b> = &circ;<a  href="ok_vorbisfile.TOggVorbis_File.html">TOggVorbis_File</a>;</code></td>
+<td class="itemcode"><span id="POggVorbis_File"></span><code><strong>POggVorbis_File</strong> = &circ;<a  href="ok_vorbisfile.TOggVorbis_File.html">TOggVorbis_File</a>;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
@@ -136,35 +136,35 @@ API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.d
 <h3 class="detail">Constants</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="NOTOPEN"></span><code><b>NOTOPEN</b>   = 0;</code></td>
+<td class="itemcode"><span id="NOTOPEN"></span><code><strong>NOTOPEN</strong>   = 0;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="PARTOPEN"></span><code><b>PARTOPEN</b>  = 1;</code></td>
+<td class="itemcode"><span id="PARTOPEN"></span><code><strong>PARTOPEN</strong>  = 1;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="OPENED"></span><code><b>OPENED</b>    = 2;</code></td>
+<td class="itemcode"><span id="OPENED"></span><code><strong>OPENED</strong>    = 2;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="STREAMSET"></span><code><b>STREAMSET</b> = 3;</code></td>
+<td class="itemcode"><span id="STREAMSET"></span><code><strong>STREAMSET</strong> = 3;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="INITSET"></span><code><b>INITSET</b>   = 4;</code></td>
+<td class="itemcode"><span id="INITSET"></span><code><strong>INITSET</strong>   = 4;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
@@ -172,14 +172,14 @@ API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.d
 <h3 class="detail">Variables</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ov_clear"></span><code><b>ov_clear</b>: function(Vf: <a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a>): CInt; cdecl;</code></td>
+<td class="itemcode"><span id="ov_clear"></span><code><strong>ov_clear</strong>: function(Vf: <a  href="ok_vorbisfile.html#POggVorbis_File">POggVorbis_File</a>): CInt; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="VorbisFileInited"></span><code><b>VorbisFileInited</b>: boolean;</code></td>
+<td class="itemcode"><span id="VorbisFileInited"></span><code><strong>VorbisFileInited</strong>: boolean;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>

@@ -379,7 +379,8 @@ type
     procedure UnGetToken(var T: TToken);
 
     { Skip all chars until it encounters some compiler directive,
-      like $ELSE or $ENDIF. }
+      like $ELSE or $ENDIF.
+      Returns either @nil or a token with MyType = TOK_DIRECTIVE. }
     function SkipUntilCompilerDirective: TToken;
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
@@ -1014,7 +1015,7 @@ end;
 
 function TTokenizer.ReadCommentType3: TToken;
 var
-  c: Char;
+  C: Char;
   pos: Integer;
   Prefix: string;
 begin
@@ -1025,17 +1026,22 @@ begin
     pos := 0;
 
     Prefix := '//';
-    while HasData and (GetChar(c) > 0) do
+    while HasData and PeekChar(C) do
     begin
       case c of
-        #10: begin Inc(Row); break end;
-        #13: break;
-        else if (c = '/') and (pos = 0) then
+        { break without consuming newline characters.
+          This way line numbers about back comments will indicate the correct line. }
+        #10, #13: Break;
+        else
+        begin
+          if (c = '/') and (pos = 0) then
           begin
             MyType := TOK_COMMENT_HELPINSIGHT;
             Prefix := '///';
           end else
             CommentContent := CommentContent + c;
+          ConsumeChar;
+        end;
       end;
       Inc(pos);
     end;
@@ -1154,45 +1160,13 @@ begin
 end;
 
 function TTokenizer.SkipUntilCompilerDirective: TToken;
-var
-  c: Char;
 begin
   Result := nil;
   repeat
-    if GetChar(c) > 0 then
-      case c of
-        '{':
-          begin
-            Result := ReadCommentType1;
-            CheckForDirective(Result);
-            if Result.MyType = TOK_DIRECTIVE then break;
-            FreeAndNil(Result);
-          end;
-        '(':
-          begin
-            if PeekChar(c) and (c = '*') then
-            begin
-              ConsumeChar;
-              Result := ReadCommentType2;
-              CheckForDirective(Result);
-              if Result.MyType = TOK_DIRECTIVE then break;
-              FreeAndNil(Result);
-            end;
-
-            (* If C was not a '*', then we don't consume it here.
-               This is important, because C could be #10 (indicates
-               newline, so we must Inc(Row)) or even '{' (which could
-               indicate compiler directive). And sequences like
-               '('#10 and '({$ifdef ...' should work, see
-               ../../tests/error_line_number_3.pas and
-               ../../tests/ok_not_defined_omit.pas *)
-
-          end;
-        #10: Inc(Row);
-      end
-    else
-      DoError('Unexpected end of stream (while skipping to the next compiler directive)', []);
-  until False;
+    Result := GetToken(true);
+    CheckForDirective(Result);
+    if Result.MyType = TOK_DIRECTIVE then break;
+  until false;
 end;
 
 procedure TTokenizer.UnGetToken(var t: TToken);

@@ -911,7 +911,7 @@ end;
 procedure TGenericHTMLDocGenerator.WriteCodeWithLinks(const p: TPasItem;
   const Code: string; WriteItemLink: boolean);
 begin
-  WriteCodeWithLinksCommon(p, Code, WriteItemLink, '<b>', '</b>');
+  WriteCodeWithLinksCommon(p, Code, WriteItemLink, '<strong>', '</strong>');
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2312,12 +2312,12 @@ end;
 
 function TGenericHTMLDocGenerator.FormatBold(const Text: string): string;
 begin
-  Result := '<b>' + Text + '</b>';
+  Result := '<strong>' + Text + '</strong>';
 end;
 
 function TGenericHTMLDocGenerator.FormatItalic(const Text: string): string;
 begin
-  Result := '<i>' + Text + '</i>';
+  Result := '<em>' + Text + '</em>';
 end;
 
 function TGenericHTMLDocGenerator.FormatPreformatted(
