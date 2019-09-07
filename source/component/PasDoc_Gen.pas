@@ -255,6 +255,7 @@ type
     FWriteUsesClause: boolean;
     FAutoLink: boolean;
     FAutoLinkExclude: TStringList;
+    FMarkdown: boolean;
 
     { Name of the project to create. }
     FProjectName: string;
@@ -975,6 +976,9 @@ type
     property ExternalClassHierarchy: TStrings
       read FExternalClassHierarchy write SetExternalClassHierarchy
       stored StoredExternalClassHierarchy;
+
+    property Markdown: boolean
+      read FMarkdown write FMarkdown default false;
   end;
 
 implementation
@@ -1846,6 +1850,7 @@ procedure TDocGenerator.ExpandDescriptions;
       TagManager.ShortDash := ShortDash;
       TagManager.EnDash := EnDash;
       TagManager.EmDash := EmDash;
+      TagManager.Markdown := Markdown;
 
       Item.RegisterTags(TagManager);
 

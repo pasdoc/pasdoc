@@ -1,0 +1,66 @@
+<unit name="ok_markdown.pas">
+  <description><abstract><bold>This is a test of Markdown syntax</bold></abstract><detailed> Correct lists 
+
+<unorderedlist>
+<item>list item #1.1</item>
+<item>list item #1.2</item>
+</unorderedlist>
+
+
+
+<unorderedlist>
+<item>list item #2.1</item>
+<item>list item #2.2</item>
+</unorderedlist>
+
+
+
+<unorderedlist>
+<item>list item #3</item>
+</unorderedlist>
+
+
+
+<unorderedlist>
+<item>list item #4</item>
+</unorderedlist>
+
+
+
+<orderedlist>
+<item>list item #5.1</item>
+<item>list item #5.2</item>
+<item>list item #5.10</item>
+</orderedlist>
+
+
+
+<unorderedlist>
+<item>list item #7.1 
+
+<unorderedlist>
+<item>nested list item #7.1.1 
+
+<unorderedlist>
+<item>nested list item #7.1.1.1</item>
+</unorderedlist>
+
+</item>
+</unorderedlist>
+
+</item>
+</unorderedlist>
+
+You can even mix markdown and PasDoc tags 
+
+<unorderedlist>
+<item>list item #8.1</item>
+<item>list item #8.2</item>
+</unorderedlist>
+
+ Incorrect lists *not a list 1not a list 1 not a list 1.not a list Some <bold>bold text</bold>. Some <bold><italic>bold and italic text</italic></bold>. Some <bold>some bold and <italic>italic</italic> and <italic>italic</italic> and <italic>italic once again</italic> text</bold>. Some <italic>italic text</italic>. Some <bold>bold text with some tags: My name is <code>ok_markdown</code>, some <code>begin end</code> and a link to me: ok_markdown</bold>. <bold>Nested formats are </bold>not<bold> supported</bold> Some <code>inline code</code>. 
+program Foo;
+  Some long code
+  with
+  syntax highlight</detailed></description>
+</unit>

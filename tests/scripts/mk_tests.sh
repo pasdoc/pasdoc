@@ -226,6 +226,7 @@ all_tests_for_current_format ()
   mk_test warning_back_comments warning_back_comments.pas
   mk_test ok_longcode_indentation ok_longcode_indentation.pas
   mk_test ok_utf8_failchar ok_utf8_failchar.pas
+  mk_test ok_markdown ok_markdown.pas --markdown
 }
 
 # parse params ----------------------------------------

@@ -1,0 +1,84 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}markdown}
+\section{Description}
+\textbf{This is a test of Markdown syntax}\hfill\vspace*{1ex}
+
+ Correct lists \begin{itemize}
+\item list item {\#}1.1
+\item list item {\#}1.2
+\end{itemize}\begin{itemize}
+\item list item {\#}2.1
+\item list item {\#}2.2
+\end{itemize}\begin{itemize}
+\item list item {\#}3
+\end{itemize}\begin{itemize}
+\item list item {\#}4
+\end{itemize}\begin{enumerate}
+\setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
+\item list item {\#}5.1
+\setcounter{enumi}{1} \setcounter{enumii}{1} \setcounter{enumiii}{1} \setcounter{enumiv}{1} 
+\item list item {\#}5.2
+\setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
+\item list item {\#}5.10
+\end{enumerate}\begin{itemize}
+\item list item {\#}7.1 \begin{itemize}
+\item nested list item {\#}7.1.1 \begin{itemize}
+\item nested list item {\#}7.1.1.1
+\end{itemize}
+\end{itemize}
+\end{itemize}You can even mix markdown and PasDoc tags
+
+\begin{itemize}
+\item list item {\#}8.1
+\item list item {\#}8.2
+\end{itemize}
+
+Incorrect lists
+
+*not a list
+
+1not a list
+
+1 not a list
+
+1.not a list
+
+Some \textbf{bold text}.
+
+Some \textbf{\textit{bold and italic text}}.
+
+Some \textbf{some bold and \textit{italic} and \textit{italic} and \textit{italic once again} text}.
+
+Some \textit{italic text}.
+
+Some \textbf{bold text with some tags: My name is \begin{ttfamily}ok{\_}markdown\end{ttfamily}, some \begin{ttfamily}begin end\end{ttfamily} and a link to me: \begin{ttfamily}ok{\_}markdown\end{ttfamily}(\ref{ok_markdown})}.
+
+\textbf{Nested formats are }not\textbf{ supported}
+
+Some \begin{ttfamily}inline code\end{ttfamily}.
+
+\texttt{\\\nopagebreak[3]
+}\textbf{program}\texttt{~Foo;\\\nopagebreak[3]
+~~Some~long~code\\\nopagebreak[3]
+~~}\textbf{with}\texttt{\\\nopagebreak[3]
+~~syntax~highlight\\
+}
+\end{document}

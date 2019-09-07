@@ -86,6 +86,7 @@ type
     OptionAutoLink: TBoolOption;
     OptionAutoLinkExclude: TStringOption;
     OptionExternalClassHierarchy: TStringOption;
+    OptionMarkdown: TBoolOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -337,6 +338,10 @@ begin
   OptionExternalClassHierarchy := TStringOption.Create(#0, 'external-class-hierarchy');
   OptionExternalClassHierarchy.Explanation := 'File defining hierarchy of classes not included in your source code, for more complete class tree diagrams';
   AddOption(OptionExternalClassHierarchy);
+
+  OptionMarkdown := TBoolOption.Create(#0, 'markdown');
+  OptionMarkdown.Explanation := 'Decode Markdown syntax';
+  AddOption(OptionMarkdown);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -604,6 +609,8 @@ begin
   if OptionExternalClassHierarchy.WasSpecified then
     PasDoc.Generator.ExternalClassHierarchy.LoadFromFile(
       OptionExternalClassHierarchy.Value);
+
+  PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
 end;
 
 { ---------------------------------------------------------------------------- }
