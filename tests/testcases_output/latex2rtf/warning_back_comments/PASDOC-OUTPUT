@@ -1,7 +1,7 @@
 Info[1]:    Starting Source File Parsing ...
 Info[2]:    Now parsing file warning_back_comments.pas...
-Warning[1]: warning_back_comments.pas(10): This is a back-comment (comment starting with "<") but there is no item declared right before it: "this is MyEnum - missing!"
-Warning[1]: warning_back_comments.pas(13): This is a back-comment (comment starting with "<") but there is no item declared right before it: "this is v1 - missing!"
+Warning[1]: warning_back_comments.pas(9): This is a back-comment (comment starting with "<") but there is no item declared right before it: "this is MyEnum - missing!"
+Warning[1]: warning_back_comments.pas(12): This is a back-comment (comment starting with "<") but there is no item declared right before it: "this is v1 - missing!"
 Info[2]:    ... 1 Source File(s) parsed
 Info[2]:    Creating links ...
 Info[2]:    ...  links created

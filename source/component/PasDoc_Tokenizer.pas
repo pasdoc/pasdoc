@@ -1015,7 +1015,7 @@ end;
 
 function TTokenizer.ReadCommentType3: TToken;
 var
-  c: Char;
+  C: Char;
   pos: Integer;
   Prefix: string;
 begin
@@ -1026,17 +1026,22 @@ begin
     pos := 0;
 
     Prefix := '//';
-    while HasData and (GetChar(c) > 0) do
+    while HasData and PeekChar(C) do
     begin
       case c of
-        #10: begin Inc(Row); break end;
-        #13: break;
-        else if (c = '/') and (pos = 0) then
+        { break without consuming newline characters.
+          This way line numbers about back comments will indicate the correct line. }
+        #10, #13: Break;
+        else
+        begin
+          if (c = '/') and (pos = 0) then
           begin
             MyType := TOK_COMMENT_HELPINSIGHT;
             Prefix := '///';
           end else
             CommentContent := CommentContent + c;
+          ConsumeChar;
+        end;
       end;
       Inc(pos);
     end;
