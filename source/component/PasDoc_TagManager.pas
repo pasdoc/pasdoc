@@ -528,11 +528,14 @@ type
   end;
 
 const
-  MarkdownBlocks: array [0..3] of TMarkdownBlock =
+  MarkdownBlocks: array [0..6] of TMarkdownBlock =
     (
-      (Open: '```';  Close: '```';  PasDocTag: 'longcode'), // must be checked first to not mess with single `
+      (Open: '```pascal';  Close: '```';  PasDocTag: 'longcode'), // must be checked first to not mess with ``` or single `
+      (Open: '```';  Close: '```';  PasDocTag: 'preformatted'), // must be checked first to not mess with single `
       (Open: '`';    Close: '`';    PasDocTag: 'code'),
       (Open: '**';   Close: '**';   PasDocTag: 'bold'),
+      (Open: '__';   Close: '__';   PasDocTag: 'bold'),
+      (Open: '*';    Close: '*';    PasDocTag: 'italic'),
       (Open: '_';    Close: '_';    PasDocTag: 'italic')
     );
 

@@ -5,9 +5,9 @@ Correct lists
 
   - list item #2.1
   - list item #2.2
-  
+
   * list item #3
-  
+
   - list item #4
 
 1. list item #5.1
@@ -29,7 +29,7 @@ You can even mix markdown and PasDoc tags
 
 Incorrect lists
 
-*not a list
+*not a list*
 
 1not a list
 
@@ -37,6 +37,10 @@ Incorrect lists
 
 1.not a list
 
+
+  Emphasis, aka italics, with *asterisks* or _underscores_.
+
+  Strong emphasis, aka bold, with **asterisks** or __underscores__.
 
   Some **bold text**.
 
@@ -53,8 +57,19 @@ Incorrect lists
   **Nested formats are **not** supported**
 
   Some `inline code`.
-  
+
+  Some preformatted code:
+
   ```
+  program Foo;
+    Some long code
+    with
+    syntax highlight
+  ```
+
+  Some Pascal code:
+
+  ```pascal
   program Foo;
     Some long code
     with

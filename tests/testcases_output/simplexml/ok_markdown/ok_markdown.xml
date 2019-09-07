@@ -58,7 +58,11 @@ You can even mix markdown and PasDoc tags
 <item>list item #8.2</item>
 </unorderedlist>
 
- Incorrect lists *not a list 1not a list 1 not a list 1.not a list Some <bold>bold text</bold>. Some <bold><italic>bold and italic text</italic></bold>. Some <bold>some bold and <italic>italic</italic> and <italic>italic</italic> and <italic>italic once again</italic> text</bold>. Some <italic>italic text</italic>. Some <bold>bold text with some tags: My name is <code>ok_markdown</code>, some <code>begin end</code> and a link to me: ok_markdown</bold>. <bold>Nested formats are </bold>not<bold> supported</bold> Some <code>inline code</code>. 
+ Incorrect lists <italic>not a list</italic> 1not a list 1 not a list 1.not a list Emphasis, aka italics, with <italic>asterisks</italic> or <italic>underscores</italic>. Strong emphasis, aka bold, with <bold>asterisks</bold> or <bold>underscores</bold>. Some <bold>bold text</bold>. Some <bold><italic>bold and italic text</italic></bold>. Some <bold>some bold and <italic>italic</italic> and <italic>italic</italic> and <italic>italic once again</italic> text</bold>. Some <italic>italic text</italic>. Some <bold>bold text with some tags: My name is <code>ok_markdown</code>, some <code>begin end</code> and a link to me: ok_markdown</bold>. <bold>Nested formats are </bold>not<bold> supported</bold> Some <code>inline code</code>. Some preformatted code: 
+program Foo;
+  Some long code
+  with
+  syntax highlight Some Pascal code: 
 program Foo;
   Some long code
   with
