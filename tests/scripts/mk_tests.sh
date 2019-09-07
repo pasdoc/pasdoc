@@ -46,6 +46,9 @@ mk_test ()
 # Run all the test for current $FORMAT.
 all_tests_for_current_format ()
 {
+  now="$(date +'%H.%M.%S')"
+  echo $now Running tests for format $FORMAT
+
   # Make a test of many units with normal pasdoc command-line.
   #
   # Note: most new tests should not be added here.
