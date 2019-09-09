@@ -418,7 +418,7 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
       on E: Exception do
       begin
         E.Message :=
-          'Error when opening file for "--latex-head" option: ' + E.Message;
+          'Error when opening file for "--'+OptionLatexHead.LongForm+'" option: ' + E.Message;
         raise;
       end;
     end;
@@ -499,13 +499,13 @@ begin
   if OptionUseTipueSearch.TurnedOn then begin
     if not (PasDoc.Generator is TGenericHTMLDocGenerator) then begin
       raise EInvalidCommandLine.Create(
-        'You can''t specify --use-tipue-search option for non-html output formats');
+        'You can''t specify "--'+OptionUseTipueSearch.LongForm+'" option for non-html output formats');
     end;
   end;
 
   if OptionHtmlHelpContents.Value <> '' then begin
     if not (PasDoc.Generator is THTMLHelpDocGenerator) then begin
-      raise EInvalidCommandLine.Create('You can specify --html-help-contents' +
+      raise EInvalidCommandLine.Create('You can specify "--'+OptionHtmlHelpContents.LongForm+'"' +
         ' option only for HTMLHelp output format');
     end;
   end;
@@ -560,7 +560,7 @@ begin
   if SameText(OptionLinkLook.Value, 'stripped') then
     PasDoc.Generator.LinkLook := llStripped else
     raise EInvalidCommandLine.CreateFmt(
-      'Invalid argument for "--link-look" option : "%s"',
+      'Invalid argument for "--'+OptionLinkLook.LongForm+'" option : "%s"',
       [OptionLinkLook.Value]);
 
   if OptionFullLink.TurnedOn then
@@ -579,7 +579,7 @@ begin
   if OptionLatexHead.Value <> '' then begin
     if not (PasDoc.Generator is TTexDocGenerator) then begin
       raise EInvalidCommandLine.Create(
-        'You can only use the "latex-head" option with LaTeX output.');
+        'You can only use the "--'+OptionLatexHead.LongForm+'" option with LaTeX output.');
     end;
   end;
 
@@ -590,7 +590,7 @@ begin
   if SameText(OptionImplicitVisibility.Value, 'implicit') then
     PasDoc.ImplicitVisibility := ivImplicit else
     raise EInvalidCommandLine.CreateFmt(
-      'Invalid argument for "--implicit-visibility" option : "%s"',
+      'Invalid argument for "--'+OptionImplicitVisibility.LongForm+'" option : "%s"',
       [OptionImplicitVisibility.Value]);
 
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
