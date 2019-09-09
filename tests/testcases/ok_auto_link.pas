@@ -16,6 +16,9 @@ const
 
 type
   TMyClass = class
+  { Common word used as identifier must be ignored when auto-linking 
+    thanks to auto-link-exclude list:
+    Little brown fox runs over a field }
     Field: Integer;
   end;
 
