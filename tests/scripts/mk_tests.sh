@@ -221,7 +221,7 @@ all_tests_for_current_format ()
     test_links_to_dot_names/test_dot.two.dots.pas \
     test_links_to_dot_names/test_dot.one_dot.pas \
     test_links_to_dot_names/test_dot_no_dot.pas
-  mk_test ok_ignore_marker ok_ignore_marker.pas --ignore-marker ~~ --ignore-marker TODO
+  mk_test ok_ignore_marker ok_ignore_marker.pas --ignore-marker=~~ --ignore-marker=TODO
   mk_test ok_skip_ifdefed_out ok_skip_ifdefed_out.pas
   mk_test warning_back_comments warning_back_comments.pas
   mk_test ok_longcode_indentation ok_longcode_indentation.pas
