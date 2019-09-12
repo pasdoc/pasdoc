@@ -2341,10 +2341,10 @@ var
   AttribPair: TStringPair;
   innerBrackets: Integer;
   parenthesis: Integer;
-  firstToken: Boolean;
+  firstToken, WasLineFeed: Boolean;
 begin
   Result := nil;
-  WhitespaceCollector := '';
+  WhitespaceCollector := ''; WasLineFeed := False;
   repeat
     t := Scanner.PeekToken;
     try
@@ -2366,19 +2366,19 @@ begin
             { first token is the attribute class, at this moment unevaluated }
             if firstToken then begin
               case t.MyType of
-                TOK_IDENTIFIER:
-                  begin
-                    name := t.Data;
-                    firstToken := False;
-                  end;
-                TOK_STRING:
-                  begin
-                    { this is GUID, belongs to the interface, but no check for
-                    interface only is performed }
-                    name := 'GUID';
-                    value := '[' + t.Data + ']';
-                    firstToken := False;
-                  end;
+              TOK_IDENTIFIER:
+                begin
+                  name := t.Data;
+                  firstToken := False;
+                end;
+              TOK_STRING:
+                begin
+                  { this is GUID, belongs to the interface, but no check for
+                  interface only is performed }
+                  name := 'GUID';
+                  value := '[' + t.Data + ']';
+                  firstToken := False;
+                end;
               end;
               continue;
             end;
@@ -2429,6 +2429,19 @@ begin
         ExtractDocComment(T, TCommentInfo, TBackComment);
         TIsCStyle := (t.MyType in [TOK_COMMENT_CSTYLE, TOK_COMMENT_HELPINSIGHT]);
         THelpInsight := t.MyType = TOK_COMMENT_HELPINSIGHT;
+
+        { Automatic back-comments.
+          The logic behind is following: this function stops at an identifier and
+          in the next call it will start from a whitespace if it's present and the
+          next token after a whitespace will be peeked inside the same loop.
+          So when we encounter //-style comment, we check if there was a whitespace
+          containing line feed. If yes, proceed as usual (comment is at a new line).
+          If no, the comment probably should be auto-back-ed. We check if there's
+          any items saved for next back comment and if they are, that's our case. }
+        if (t.MyType = TOK_COMMENT_CSTYLE) and not WasLineFeed and
+          (ItemsForNextBackComment.Count > 0) then
+          TBackComment := True;
+
         FreeAndNil(T);
 
         if TBackComment then
@@ -2477,6 +2490,7 @@ begin
       if t.MyType = TOK_WHITESPACE then
       begin
         Scanner.ConsumeToken;
+        WasLineFeed := (Pos(#10, t.Data) <> 0) or (Pos(#13, t.Data) <> 0);
         WhitespaceCollector := WhitespaceCollector + t.Data;
         FreeAndNil(t);
       end else
