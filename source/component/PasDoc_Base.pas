@@ -104,6 +104,7 @@ type
     FImplicitVisibility: TImplicitVisibility;
     FHandleMacros: boolean;
     FAutoLink: boolean;
+    FAutoBackComments: boolean;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -228,6 +229,8 @@ type
       [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
+    property AutoBackComments: boolean
+      read FAutoBackComments write FAutoBackComments default false;
   end;
 
 implementation
@@ -340,6 +343,7 @@ begin
     p.IgnoreMarkers := IgnoreMarkers;
     p.MarkersOptional := MarkerOptional;
     p.IgnoreLeading := IgnoreLeading;
+    p.AutoBackComments := AutoBackComments;
 
     LLoaded := false;
 

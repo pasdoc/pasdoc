@@ -186,6 +186,7 @@ type
     FMarkersOptional: boolean;
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
+    FAutoBackComments: boolean;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
@@ -474,6 +475,7 @@ type
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
+    property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
   end;
 
 implementation
@@ -2438,9 +2440,10 @@ begin
           containing line feed. If yes, proceed as usual (comment is at a new line).
           If no, the comment probably should be auto-back-ed. We check if there's
           any items saved for next back comment and if they are, that's our case. }
-        if (t.MyType = TOK_COMMENT_CSTYLE) and not WasLineFeed and
-          (ItemsForNextBackComment.Count > 0) then
-          TBackComment := True;
+        if AutoBackComments then
+          if (t.MyType = TOK_COMMENT_CSTYLE) and not WasLineFeed and
+            (ItemsForNextBackComment.Count > 0) then
+            TBackComment := True;
 
         FreeAndNil(T);
 
