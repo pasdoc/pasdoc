@@ -1313,8 +1313,7 @@ begin
           end;
         TOK_KEYWORD: begin
             case t.Info.KeyWord of
-              KEY_RESOURCESTRING,
-                KEY_CONST:
+              KEY_RESOURCESTRING, KEY_CONST:
                 Mode := MODE_CONST;
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin
@@ -2342,7 +2341,6 @@ var
   AttribPair: TStringPair;
   innerBrackets: Integer;
   parenthesis: Integer;
-  finish: Boolean;
   firstToken: Boolean;
 begin
   Result := nil;
@@ -2353,70 +2351,75 @@ begin
       { when identifier is found, it cannot be attribute until next semicolon }
       if T.MyType = TOK_IDENTIFIER then AttributeIsPossible := False;
 
-      if AttributeIsPossible and T.IsSymbol(SYM_LEFT_BRACKET) then begin
-        name := '';
-        value := '';
-        innerBrackets := 0;
-        parenthesis := 0;
-        finish := False;
-        firstToken := True;
-        repeat
+      if t.MyType = TOK_SYMBOL then
+      begin
+        if AttributeIsPossible and T.IsSymbol(SYM_LEFT_BRACKET) then begin
+          name := '';
+          value := '';
+          innerBrackets := 0;
+          parenthesis := 0;
+          firstToken := True;
+          repeat
+            Scanner.ConsumeToken;
+            FreeAndNil(T);
+            t := Scanner.PeekToken;
+            { first token is the attribute class, at this moment unevaluated }
+            if firstToken then begin
+              case t.MyType of
+                TOK_IDENTIFIER:
+                  begin
+                    name := t.Data;
+                    firstToken := False;
+                  end;
+                TOK_STRING:
+                  begin
+                    { this is GUID, belongs to the interface, but no check for
+                    interface only is performed }
+                    name := 'GUID';
+                    value := '[' + t.Data + ']';
+                    firstToken := False;
+                  end;
+              end;
+              continue;
+            end;
+
+            { check for start of attribute parameters }
+            { there might be more nested parenthesis }
+            if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(parenthesis);
+            if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
+              if parenthesis = 0 then DoError('parenthesis do not match.', []);
+              Dec(parenthesis);
+            end;
+
+            {there might be some square brackets used in attributes parameters,
+            ignore them, but count them (example: param is set)}
+            if T.IsSymbol(SYM_LEFT_BRACKET) then Inc(innerBrackets);
+            if T.IsSymbol(SYM_RIGHT_BRACKET) then begin
+              if innerBrackets > 0 then begin
+                Dec(innerBrackets);
+                value := value + t.Data;
+              end else Break;
+            end else begin
+              { there is list of attributes separated by coma }
+              if t.IsSymbol(SYM_COMMA) and (parenthesis = 0) then begin
+                AttribPair := TStringPair.Create(name, value);
+                CurrentAttributes.Add(AttribPair);
+                firstToken := True;
+                name := '';
+                value := '';
+              end else value := value + t.Data;  // anything other
+            end;
+          until False;
+
           Scanner.ConsumeToken;
           FreeAndNil(T);
-          t := Scanner.PeekToken;
-          { first token is the attribute class, at this moment unevaluated }
-          if firstToken then begin
-            case t.MyType of
-            TOK_IDENTIFIER:
-              begin
-                name := t.Data;
-                firstToken := False;
-              end;
-            TOK_STRING:
-              begin
-                { this is GUID, belongs to the interface, but no check for
-                interface only is performed }
-                name := 'GUID';
-                value := '[' + t.Data + ']';
-                firstToken := False;
-              end;
-            end;
-            continue;
-          end;
-
-          { check for start of attribute parameters }
-          { there might be more nested parenthesis }
-          if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(parenthesis);
-          if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
-            if parenthesis = 0 then DoError('parenthesis do not match.', []);
-
-            Dec(parenthesis);
-          end;
-
-          {there might be some square brackets used in attributes parameters,
-          ignore them, but count them (example: param is set)}
-          if T.IsSymbol(SYM_LEFT_BRACKET) then Inc(innerBrackets);
-          if T.IsSymbol(SYM_RIGHT_BRACKET) then begin
-            if innerBrackets > 0 then begin
-              Dec(innerBrackets);
-              value := value + t.Data;
-            end else finish := True;
-          end else begin
-            { there is list of attributes separated by coma }
-            if t.IsSymbol(SYM_COMMA) and (parenthesis = 0) then begin
-              AttribPair := TStringPair.Create(name, value);
-              CurrentAttributes.Add(AttribPair);
-              firstToken := True;
-              name := '';
-              value := '';
-            end else value := value + t.Data;  // anything other
-          end;
-        until finish;
-
-        Scanner.ConsumeToken;
-        FreeAndNil(T);
-        AttribPair := TStringPair.Create(name, value);
-        CurrentAttributes.Add(AttribPair);
+          AttribPair := TStringPair.Create(name, value);
+          CurrentAttributes.Add(AttribPair);
+        end else
+        begin
+          Result := t;
+          break;
+        end;
       end else
       if t.MyType in TokenCommentTypes then
       begin
@@ -2471,20 +2474,15 @@ begin
           LastCommentInfo := TCommentInfo;
         end;
       end else
+      if t.MyType = TOK_WHITESPACE then
       begin
-        case t.MyType of
-          TOK_WHITESPACE:
-            begin
-              Scanner.ConsumeToken;
-              WhitespaceCollector := WhitespaceCollector + t.Data;
-              FreeAndNil(t);
-            end;
-          else
-            begin
-              Result := t;
-              break;
-            end;
-        end; // case
+        Scanner.ConsumeToken;
+        WhitespaceCollector := WhitespaceCollector + t.Data;
+        FreeAndNil(t);
+      end else
+      begin
+        Result := t;
+        break;
       end;
     except
       t.Free;
