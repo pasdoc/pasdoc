@@ -146,7 +146,7 @@ all_tests_for_current_format ()
   mk_test ok_multiple_fields ok_multiple_fields.pas
   mk_test ok_back_comment ok_back_comment.pas
   mk_test warning_back_comment warning_back_comment.pas
-  mk_test ok_auto_link --auto-link ok_auto_link.pas
+  mk_test ok_auto_link --auto-link --auto-link-exclude ok_auto_link.txt ok_auto_link.pas
   mk_test ok_introduction_pre_link ok_introduction_pre_link_unit.pas --introduction=ok_introduction_pre_link.txt
   mk_test ok_table_of_contents ok_table_of_contents_unit.pas --introduction=ok_table_of_contents.txt
   mk_test warning_link_in_seealso warning_link_in_seealso.pas
