@@ -538,7 +538,10 @@ const
       (Open: '*';    Close: '*';    PasDocTag: 'italic'),
       (Open: '_';    Close: '_';    PasDocTag: 'italic')
     );
-
+  // Set of chars markdown blocks could start with. To speedup checking
+  // All first chars of MarkdownBlocks[x].Open must be here. This could be automated
+  // but it's not so complicated to keep this set actual
+  MarkdownBlockStartChars = ['`', '*', '_'];
   MarkdownUListMarkers = ['-', '*'];
   MarkdownOListMarkers = ['0'..'9'];
   // Set of chars markdown lists could start with. To speedup checking
@@ -630,9 +633,9 @@ var
   i, MdBlockIdx: Integer;
 begin
   Result := False;
-  Parameters := '';
 
   // check if we have markdown block opening
+  if not SCharIs(Description, Offset, MarkdownBlockStartChars) then Exit;  // Fast check
   MdBlockIdx := -1;
   for i := Low(MarkdownBlocks) to High(MarkdownBlocks) do
     if Copy(Description, Offset, Length(MarkdownBlocks[i].Open)) = MarkdownBlocks[i].Open then
