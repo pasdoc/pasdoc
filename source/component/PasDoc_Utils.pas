@@ -256,6 +256,12 @@ function CheckGetFileDate(const AFileName: string): TDateTime;
   be correct. }
 function StripHtml(const S: string): string;
 
+{$ifdef VER3_0}
+{ Index of AText within AValues, -1 if none.
+  Missing from FPC 3.0.4 StrUtils. }
+function IndexText(const AText: string; const AValues: array of string): Integer;
+{$endif}
+
 implementation
 
 uses Classes, StrUtils, PasDoc_StreamUtils;
@@ -842,5 +848,15 @@ begin
     end;
   end;
 end;
+
+{$ifdef VER3_0}
+function IndexText(const AText: string; const AValues: array of string): Integer;
+begin
+  for Result := Low(AValues) to High(AValues) do
+    if AnsiSameText(AValues[Result], AText) then
+      Exit;
+  Result := -1;
+end;
+{$endif}
 
 end.
