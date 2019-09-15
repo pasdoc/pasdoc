@@ -1,5 +1,6 @@
 Next version (not released yet)
 
+  * --auto-back-comments command-line option (thanks to Fr0sT-Brutal)
   * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
     (thanks to Fr0sT-Brutal)
   * @longCode without markers fixed
