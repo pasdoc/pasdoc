@@ -87,6 +87,7 @@ type
     OptionAutoLinkExclude: TStringOption;
     OptionExternalClassHierarchy: TStringOption;
     OptionMarkdown: TBoolOption;
+    OptionAutoBackComments: TBoolOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -330,6 +331,10 @@ begin
   OptionAutoLink := TBoolOption.Create(#0, 'auto-link');
   OptionAutoLink.Explanation := 'Automatically create links, without the need to explicitly use @link tags';
   AddOption(OptionAutoLink);
+
+  OptionAutoBackComments := TBoolOption.Create(#0, 'auto-back-comments');
+  OptionAutoBackComments.Explanation := 'Consider //-style comments after an identifier in the same line as description of that identifier.';
+  AddOption(OptionAutoBackComments);
 
   OptionAutoLinkExclude := TStringOption.Create(#0, 'auto-link-exclude');
   OptionAutoLinkExclude.Explanation := 'Even when --auto-link is on, never automatically create links to identifiers in the specified file. The file should contain one identifier on every line';
@@ -611,6 +616,7 @@ begin
       OptionExternalClassHierarchy.Value);
 
   PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
+  PasDoc.AutoBackComments := OptionAutoBackComments.TurnedOn;
 end;
 
 { ---------------------------------------------------------------------------- }

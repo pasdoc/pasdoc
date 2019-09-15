@@ -1,0 +1,176 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}auto{\_}back{\_}comments}
+\label{ok_auto_back_comments}
+\index{ok{\_}auto{\_}back{\_}comments}
+\section{Description}
+Test auto back comments
+\section{Variables}
+\ifpdf
+\subsection*{\large{\textbf{var1}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{var1}
+\fi
+\label{ok_auto_back_comments-var1}
+\index{var1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+var1: Byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is var1 (usual comment)
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{var2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{var2}
+\fi
+\label{ok_auto_back_comments-var2}
+\index{var2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+var2: Byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is var2 (no whitespace after ident)
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{var3}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{var3}
+\fi
+\label{ok_auto_back_comments-var3}
+\index{var3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+var3: Byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{var4}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{var4}
+\fi
+\label{ok_auto_back_comments-var4}
+\index{var4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+var4: Byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is var4 (must not be considered as back{-}comment)
+
+\end{list}
+\end{document}

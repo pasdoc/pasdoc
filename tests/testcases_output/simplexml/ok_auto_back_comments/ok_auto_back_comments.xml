@@ -1,0 +1,14 @@
+<unit name="ok_auto_back_comments.pas">
+  <description><detailed>Test auto back comments</detailed></description>
+  <variable name="var1: Byte;">
+    <description><detailed>this is var1 (usual comment)</detailed></description>
+  </variable>
+  <variable name="var2: Byte;">
+    <description><detailed>this is var2 (no whitespace after ident)</detailed></description>
+  </variable>
+  <variable name="var3: Byte;">
+  </variable>
+  <variable name="var4: Byte;">
+    <description><detailed>this is var4 (must not be considered as back-comment)</detailed></description>
+  </variable>
+</unit>

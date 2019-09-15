@@ -1,0 +1,112 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}auto{\_}back{\_}comments}
+\section{Description}
+Test auto back comments
+\section{Variables}
+\subsection*{var1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+var1: Byte;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+this is var1 (usual comment)
+
+\end{list}
+\subsection*{var2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+var2: Byte;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+this is var2 (no whitespace after ident)
+
+\end{list}
+\subsection*{var3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+var3: Byte;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{var4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+var4: Byte;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+this is var4 (must not be considered as back{-}comment)
+
+\end{list}
+\end{document}

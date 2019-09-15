@@ -186,6 +186,7 @@ type
     FMarkersOptional: boolean;
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
+    FAutoBackComments: boolean;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
@@ -474,6 +475,7 @@ type
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
+    property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
   end;
 
 implementation
@@ -1313,8 +1315,7 @@ begin
           end;
         TOK_KEYWORD: begin
             case t.Info.KeyWord of
-              KEY_RESOURCESTRING,
-                KEY_CONST:
+              KEY_RESOURCESTRING, KEY_CONST:
                 Mode := MODE_CONST;
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin
@@ -2342,81 +2343,85 @@ var
   AttribPair: TStringPair;
   innerBrackets: Integer;
   parenthesis: Integer;
-  finish: Boolean;
-  firstToken: Boolean;
+  firstToken, WasLineFeed: Boolean;
 begin
   Result := nil;
-  WhitespaceCollector := '';
+  WhitespaceCollector := ''; WasLineFeed := False;
   repeat
     t := Scanner.PeekToken;
     try
       { when identifier is found, it cannot be attribute until next semicolon }
       if T.MyType = TOK_IDENTIFIER then AttributeIsPossible := False;
 
-      if AttributeIsPossible and T.IsSymbol(SYM_LEFT_BRACKET) then begin
-        name := '';
-        value := '';
-        innerBrackets := 0;
-        parenthesis := 0;
-        finish := False;
-        firstToken := True;
-        repeat
+      if t.MyType = TOK_SYMBOL then
+      begin
+        if AttributeIsPossible and T.IsSymbol(SYM_LEFT_BRACKET) then begin
+          name := '';
+          value := '';
+          innerBrackets := 0;
+          parenthesis := 0;
+          firstToken := True;
+          repeat
+            Scanner.ConsumeToken;
+            FreeAndNil(T);
+            t := Scanner.PeekToken;
+            { first token is the attribute class, at this moment unevaluated }
+            if firstToken then begin
+              case t.MyType of
+              TOK_IDENTIFIER:
+                begin
+                  name := t.Data;
+                  firstToken := False;
+                end;
+              TOK_STRING:
+                begin
+                  { this is GUID, belongs to the interface, but no check for
+                  interface only is performed }
+                  name := 'GUID';
+                  value := '[' + t.Data + ']';
+                  firstToken := False;
+                end;
+              end;
+              continue;
+            end;
+
+            { check for start of attribute parameters }
+            { there might be more nested parenthesis }
+            if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(parenthesis);
+            if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
+              if parenthesis = 0 then DoError('parenthesis do not match.', []);
+              Dec(parenthesis);
+            end;
+
+            {there might be some square brackets used in attributes parameters,
+            ignore them, but count them (example: param is set)}
+            if T.IsSymbol(SYM_LEFT_BRACKET) then Inc(innerBrackets);
+            if T.IsSymbol(SYM_RIGHT_BRACKET) then begin
+              if innerBrackets > 0 then begin
+                Dec(innerBrackets);
+                value := value + t.Data;
+              end else Break;
+            end else begin
+              { there is list of attributes separated by coma }
+              if t.IsSymbol(SYM_COMMA) and (parenthesis = 0) then begin
+                AttribPair := TStringPair.Create(name, value);
+                CurrentAttributes.Add(AttribPair);
+                firstToken := True;
+                name := '';
+                value := '';
+              end else value := value + t.Data;  // anything other
+            end;
+          until False;
+
           Scanner.ConsumeToken;
           FreeAndNil(T);
-          t := Scanner.PeekToken;
-          { first token is the attribute class, at this moment unevaluated }
-          if firstToken then begin
-            case t.MyType of
-            TOK_IDENTIFIER:
-              begin
-                name := t.Data;
-                firstToken := False;
-              end;
-            TOK_STRING:
-              begin
-                { this is GUID, belongs to the interface, but no check for
-                interface only is performed }
-                name := 'GUID';
-                value := '[' + t.Data + ']';
-                firstToken := False;
-              end;
-            end;
-            continue;
-          end;
-
-          { check for start of attribute parameters }
-          { there might be more nested parenthesis }
-          if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(parenthesis);
-          if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then begin
-            if parenthesis = 0 then DoError('parenthesis do not match.', []);
-
-            Dec(parenthesis);
-          end;
-
-          {there might be some square brackets used in attributes parameters,
-          ignore them, but count them (example: param is set)}
-          if T.IsSymbol(SYM_LEFT_BRACKET) then Inc(innerBrackets);
-          if T.IsSymbol(SYM_RIGHT_BRACKET) then begin
-            if innerBrackets > 0 then begin
-              Dec(innerBrackets);
-              value := value + t.Data;
-            end else finish := True;
-          end else begin
-            { there is list of attributes separated by coma }
-            if t.IsSymbol(SYM_COMMA) and (parenthesis = 0) then begin
-              AttribPair := TStringPair.Create(name, value);
-              CurrentAttributes.Add(AttribPair);
-              firstToken := True;
-              name := '';
-              value := '';
-            end else value := value + t.Data;  // anything other
-          end;
-        until finish;
-
-        Scanner.ConsumeToken;
-        FreeAndNil(T);
-        AttribPair := TStringPair.Create(name, value);
-        CurrentAttributes.Add(AttribPair);
+          AttribPair := TStringPair.Create(name, value);
+          CurrentAttributes.Add(AttribPair);
+        end else
+        begin
+          Result := t;
+          break;
+        end;
       end else
       if t.MyType in TokenCommentTypes then
       begin
@@ -2426,6 +2431,20 @@ begin
         ExtractDocComment(T, TCommentInfo, TBackComment);
         TIsCStyle := (t.MyType in [TOK_COMMENT_CSTYLE, TOK_COMMENT_HELPINSIGHT]);
         THelpInsight := t.MyType = TOK_COMMENT_HELPINSIGHT;
+
+        { Automatic back-comments.
+          The logic behind is following: this function stops at an identifier and
+          in the next call it will start from a whitespace if it's present and the
+          next token after a whitespace will be peeked inside the same loop.
+          So when we encounter //-style comment, we check if there was a whitespace
+          containing line feed. If yes, proceed as usual (comment is at a new line).
+          If no, the comment probably should be auto-back-ed. We check if there's
+          any items saved for next back comment and if they are, that's our case. }
+        if AutoBackComments then
+          if (t.MyType = TOK_COMMENT_CSTYLE) and not WasLineFeed and
+            (ItemsForNextBackComment.Count > 0) then
+            TBackComment := True;
+
         FreeAndNil(T);
 
         if TBackComment then
@@ -2471,20 +2490,16 @@ begin
           LastCommentInfo := TCommentInfo;
         end;
       end else
+      if t.MyType = TOK_WHITESPACE then
       begin
-        case t.MyType of
-          TOK_WHITESPACE:
-            begin
-              Scanner.ConsumeToken;
-              WhitespaceCollector := WhitespaceCollector + t.Data;
-              FreeAndNil(t);
-            end;
-          else
-            begin
-              Result := t;
-              break;
-            end;
-        end; // case
+        Scanner.ConsumeToken;
+        WasLineFeed := (Pos(#10, t.Data) <> 0) or (Pos(#13, t.Data) <> 0);
+        WhitespaceCollector := WhitespaceCollector + t.Data;
+        FreeAndNil(t);
+      end else
+      begin
+        Result := t;
+        break;
       end;
     except
       t.Free;

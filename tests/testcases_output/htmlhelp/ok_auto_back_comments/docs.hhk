@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="var1">
+<param name="Local" value="ok_auto_back_comments.html#var1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="var2">
+<param name="Local" value="ok_auto_back_comments.html#var2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="var3">
+<param name="Local" value="ok_auto_back_comments.html#var3">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="var4">
+<param name="Local" value="ok_auto_back_comments.html#var4">
+</object>
+</ul>
+</body></html>
