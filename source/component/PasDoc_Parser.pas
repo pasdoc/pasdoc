@@ -106,6 +106,8 @@ type
     property Items[Index: integer]: TRawDescriptionInfo read GetItems; default;
   end;
 
+  TOwnerItemType = (otUnit, otCio);
+
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
     When creating this object constructor @link(Create) takes as an argument
@@ -350,8 +352,7 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
-    procedure ParseConstant(const Item: TPasItem;
-      const Visibility: TVisibility = viPublished);
+    procedure ParseConstant(OwnerItemType: TOwnerItemType; out Constant: TPasItem);
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
@@ -1034,10 +1035,8 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-procedure TParser.ParseConstant(const Item: TPasItem;
-  const Visibility: TVisibility = viPublished);
+procedure TParser.ParseConstant(OwnerItemType: TOwnerItemType; out Constant: TPasItem);
 var
-  i: TPasItem;
   t: TToken;
   WhitespaceCollector: string;
 
@@ -1054,7 +1053,7 @@ var
     Result := False;
     {AG}
     repeat
-      t := GetNextToken(i);
+      t := GetNextToken(Constant);
       WhitespaceCollectorToAdd := '';
       try
         case t.MyType of
@@ -1068,7 +1067,7 @@ var
               KEY_END: Dec(EndLevel);
               KEY_RECORD: Inc(EndLevel);
               KEY_LIBRARY:
-                i.HintDirectives := i.HintDirectives + [hdLibrary];
+                Constant.HintDirectives := Constant.HintDirectives + [hdLibrary];
               KEY_FUNCTION,
               KEY_PROCEDURE:
                 Result := True;
@@ -1076,20 +1075,20 @@ var
         TOK_IDENTIFIER:
           case t.Info.StandardDirective of
             SD_PLATFORM:
-              i.HintDirectives := i.HintDirectives + [hdPlatform];
+              Constant.HintDirectives := Constant.HintDirectives + [hdPlatform];
             SD_EXPERIMENTAL:
-              i.HintDirectives := i.HintDirectives + [hdExperimental];
+              Constant.HintDirectives := Constant.HintDirectives + [hdExperimental];
             SD_DEPRECATED:
               begin
-                i.HintDirectives := i.HintDirectives + [hdDeprecated];
+                Constant.HintDirectives := Constant.HintDirectives + [hdDeprecated];
                 while PeekNextToken(WhitespaceCollectorToAdd).MyType = TOK_STRING do
                 begin
                   { consume the following string as DeprecatedNote }
-                  i.FullDeclaration := i.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
+                  Constant.FullDeclaration := Constant.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
                   FreeAndNil(t);
-                  t := GetNextToken(i);
+                  t := GetNextToken(Constant);
                   Assert(T.MyType = TOK_STRING); // T is now the same thing we saw with PeekNextToken
-                  i.DeprecatedNote := i.DeprecatedNote + t.StringContent;
+                  Constant.DeprecatedNote := Constant.DeprecatedNote + t.StringContent;
                 end;
                 { otherwise WhitespaceCollectorToAdd will be added later }
               end;
@@ -1107,7 +1106,7 @@ var
           Scanner.UnGetToken(t);
           Exit;
         end;
-        i.FullDeclaration := i.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
+        Constant.FullDeclaration := Constant.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
         t.Free;
       except
         t.Free;
@@ -1118,18 +1117,18 @@ var
   {/AG}
 
 begin
-  Assert((Item is TPasUnit) or (Item is TPasCio));
   { When in CIO treat this constant as a constant field }
-  if Item is TPasCio then
-    i := TPasFieldVariable.Create
-  else
-    i := TPasConstant.Create;
+  case OwnerItemType of
+    otUnit: Constant := TPasConstant.Create;
+    otCio:  Constant := TPasFieldVariable.Create;
+  end;
+
   try
-    i.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
-    DoMessage(5, pmtInformation, 'Parsing constant %s', [i.Name]);
-    i.RawDescriptionInfo^ := GetLastComment;
-    i.FullDeclaration := i.Name;
-    i.SetAttributes(CurrentAttributes);
+    Constant.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+    DoMessage(5, pmtInformation, 'Parsing constant %s', [Constant.Name]);
+    Constant.RawDescriptionInfo^ := GetLastComment;
+    Constant.FullDeclaration := Constant.Name;
+    Constant.SetAttributes(CurrentAttributes);
     {AG}
     if LocalSkipDeclaration then
     begin
@@ -1139,10 +1138,10 @@ begin
         case t.Info.StandardDirective of
           SD_CDECL, SD_STDCALL, SD_PASCAL, SD_REGISTER, SD_SAFECALL:
             begin
-              i.FullDeclaration := i.FullDeclaration + WhitespaceCollector;
-              i.FullDeclaration := i.FullDeclaration + t.Data;
+              Constant.FullDeclaration := Constant.FullDeclaration + WhitespaceCollector;
+              Constant.FullDeclaration := Constant.FullDeclaration + t.Data;
               FreeAndNil(t);
-              SkipDeclaration(i, false);
+              SkipDeclaration(Constant, false);
             end;
         else
           Scanner.UnGetToken(t);
@@ -1155,24 +1154,14 @@ begin
     //SkipDeclaration(i, false);
     {/AG}
 
-    ItemsForNextBackComment.ClearAndAdd(i);
-    if Item is TPasCio then
+    ItemsForNextBackComment.ClearAndAdd(Constant);
+    if OwnerItemType = otCio then
     begin
-      if Visibility in ShowVisibilities then
-      begin
-        i.Visibility := Visibility;
-        i.FullDeclaration := 'const ' + i.FullDeclaration;
-        TPasFieldVariable(i).IsConstant := True;
-        TPasCio(Item).Fields.Add(i);
-      end
-      else
-        i.Free;
-    end
-    else
-      TPasUnit(Item).AddConstant(i); // This is the last line here since "U" owns the objects,
-                        // bad luck if adding the item raised an exception.
+      Constant.FullDeclaration := 'const ' + Constant.FullDeclaration;
+      TPasFieldVariable(Constant).IsConstant := True;
+    end;
   except
-    i.Free;
+    FreeAndNil(Constant);
     raise;
   end;
 end;
@@ -1267,6 +1256,7 @@ var
   Mode: TItemParseMode;
   M: TPasMethod;
   t: TToken;
+  ConstantParsed: TPasItem;
   PropertyParsed: TPasProperty;
 begin
   DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
@@ -1292,7 +1282,8 @@ begin
               pmConst:
                 begin
                   Scanner.UnGetToken(t);
-                  ParseConstant(U);
+                  ParseConstant(otUnit, ConstantParsed);
+                  U.AddConstant(ConstantParsed);
                 end;
               pmType:
                 begin
@@ -2607,9 +2598,25 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
     ParseFieldsVariables(Items, True, Visibility, False, ClassKeyWordString);
   end;
 
+  // Adds `Item` to `Items` if it should be visible according to `Visibility`
+  // Clears back comments and frees the item otherwise
+  procedure AddItemIfVisible(var Item: TPasItem; Items: TPasItems; Visibility: TVisibility);
+  begin
+    if Visibility in ShowVisibilities then
+    begin
+      Item.Visibility := Visibility;
+      Items.Add(Item);
+    end
+    else begin
+      ItemsForNextBackComment.Clear;
+      FreeAndNil(Item);
+    end;
+  end;
+
 var
   ClassKeyWordString: string;
   M: TPasMethod;
+  ConstantParsed: TPasItem;
   p: TPasProperty;
   StrictVisibility: Boolean;
   t: TToken;
@@ -2649,7 +2656,7 @@ begin
                 Mode := pmVar;
                 ClassKeyWordString := t.Data;
                 ParseFields(Visibility in ShowVisibilities, Visibility,
-                ClassKeyWordString);
+                  ClassKeyWordString);
                 if not (Visibility in ShowVisibilities) then
                   ItemsForNextBackComment.Clear;
                 ClassKeyWordString := '';
@@ -2668,16 +2675,7 @@ begin
                 GetLastComment, true, true);
 
               ClassKeyWordString := '';
-
-              if Visibility in ShowVisibilities then
-              begin
-                M.Visibility := Visibility;
-                ACio.Methods.Add(M);
-              end
-              else begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(M);
-              end;
+              AddItemIfVisible(TPasItem(M), ACio.Methods, Visibility);
             end;
           KEY_END:
             begin
@@ -2697,15 +2695,7 @@ begin
                 ClassKeyWordString := '';
               end;
 
-              if Visibility in ShowVisibilities then
-              begin
-                p.Visibility := Visibility;
-                ACio.Properties.Add(p);
-              end
-              else begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(p);
-              end;
+              AddItemIfVisible(TPasItem(p), ACio.Properties, Visibility);
             end;
           KEY_CASE:
             ParseRecordCase(ACio, False);
@@ -2719,7 +2709,8 @@ begin
             begin
               Mode := pmConst;
               FreeAndNil(t);
-                ParseConstant(ACio, Visibility);
+              ParseConstant(otCio, ConstantParsed);
+              AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
             end;
            else
              DoError('Unexpected %s', [T.Description]);
@@ -2737,15 +2728,7 @@ begin
                 GetLastComment, true, true);
               ClassKeyWordString := '';
 
-              if Visibility in ShowVisibilities then
-              begin
-                M.Visibility := Visibility;
-                ACio.Methods.Add(M);
-              end
-              else begin
-                ItemsForNextBackComment.Clear;
-                FreeAndNil(M);
-              end;
+              AddItemIfVisible(TPasItem(M), ACio.Methods, Visibility);
             end;
           SD_DEFAULT:
             begin
@@ -2814,7 +2797,10 @@ begin
             if Mode = pmType then
               Exit;
             if Mode = pmConst then
-              ParseConstant(ACio, Visibility)
+            begin
+              ParseConstant(otCio, ConstantParsed);
+              AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
+            end
             else begin
               ParseFields(Visibility in ShowVisibilities, Visibility,
                 ClassKeyWordString);
