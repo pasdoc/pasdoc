@@ -9,6 +9,10 @@ var
   var3: Byte;
   // this is var4 (must not be considered as back-comment)
   var4: Byte;
+  
+  // this is var5
+  var5: Byte;
+  // bugfix - linebreak+whitespace wasn't clearing backcomment flag
 
 implementation
 

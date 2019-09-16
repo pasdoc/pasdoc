@@ -2493,7 +2493,8 @@ begin
       if t.MyType = TOK_WHITESPACE then
       begin
         Scanner.ConsumeToken;
-        WasLineFeed := (Pos(#10, t.Data) <> 0) or (Pos(#13, t.Data) <> 0);
+        if (Pos(#10, t.Data) <> 0) or (Pos(#13, t.Data) <> 0) then
+          WasLineFeed := True;
         WhitespaceCollector := WhitespaceCollector + t.Data;
         FreeAndNil(t);
       end else

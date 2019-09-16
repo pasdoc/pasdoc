@@ -173,4 +173,37 @@ var4: Byte;\end{ttfamily}
 this is var4 (must not be considered as back{-}comment)
 
 \end{list}
+\ifpdf
+\subsection*{\large{\textbf{var5}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{var5}
+\fi
+\label{ok_auto_back_comments-var5}
+\index{var5}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+var5: Byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+this is var5
+
+\end{list}
 \end{document}
