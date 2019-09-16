@@ -49,13 +49,14 @@ type
     pasdoc) occurs. }
   EInternalParserError = class(Exception);
 
-  TCioParseMode = (pmUndefined, pmConst, pmVar, pmType);
+  TItemParseMode = (pmUndefined, pmConst, pmVar, pmType);
+
   { @name stores a CIO reference and current state. }
   TPasCioHelper = class(TObject)
   private
     FCio: TPasCio;
     FCurVisibility: TVisibility;
-    FMode: TCioParseMode;
+    FMode: TItemParseMode;
     FSkipCioDecl: Boolean;
   public
     { Frees included objects and calls its own destructor. Objects are not
@@ -63,7 +64,7 @@ type
     procedure FreeAll;
     property Cio: TPasCio read FCio write FCio;
     property CurVisibility: TVisibility read FCurVisibility write FCurVisibility;
-    property Mode: TCioParseMode read FMode write FMode;
+    property Mode: TItemParseMode read FMode write FMode;
     property SkipCioDecl: Boolean read FSkipCioDecl write FSkipCioDecl;
   end;
 
@@ -336,7 +337,7 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
-    function ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
+    function ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
       const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
 
     { Assume that T is "<" symbol, and parse everything up to a matching ">".
@@ -1262,21 +1263,14 @@ begin
 end;
 
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
-const
-  MODE_UNDEFINED = 0;
-  MODE_CONST = 1;
-  MODE_TYPE = 2;
-  MODE_VAR = 3;
 var
-  Finished: Boolean;
-  Mode: Integer;
+  Mode: TItemParseMode;
   M: TPasMethod;
   t: TToken;
   PropertyParsed: TPasProperty;
 begin
   DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
-  Finished := False;
-  Mode := MODE_UNDEFINED;
+  Mode := pmUndefined;
 
   AttributeIsPossible := False;
 
@@ -1291,22 +1285,22 @@ begin
             ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
               GetLastComment, true, true);
             u.FuncsProcs.Add(M);
-            Mode := MODE_UNDEFINED;
+            Mode := pmUndefined;
           end else
           begin
             case Mode of
-              MODE_CONST:
+              pmConst:
                 begin
                   Scanner.UnGetToken(T);
                   ParseConstant(U);
                 end;
-              MODE_TYPE:
+              pmType:
                 begin
                   Scanner.UnGetToken(T);
                   ParseType(U);
                   AttributeIsPossible := True;
                 end;
-              MODE_VAR:
+              pmVar:
                 begin
                   Scanner.UnGetToken(T);
                   ParseVariables(U);
@@ -1318,31 +1312,31 @@ begin
         TOK_KEYWORD: begin
             case t.Info.KeyWord of
               KEY_RESOURCESTRING, KEY_CONST:
-                Mode := MODE_CONST;
+                Mode := pmConst;
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin
                   ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
                     GetLastComment, true, true);
                   u.FuncsProcs.Add(M);
-                  Mode := MODE_UNDEFINED;
+                  Mode := pmUndefined;
                 end;
               KEY_IMPLEMENTATION:
-                Finished := True;
+                Break;
               KEY_TYPE:
                 begin
-                  Mode := MODE_TYPE;
+                  Mode := pmType;
                   AttributeIsPossible := True;
                 end;
               KEY_USES:
                 ParseUses(U);
               KEY_THREADVAR,
                 KEY_VAR:
-                Mode := MODE_VAR;
+                Mode := pmVar;
               KEY_PROPERTY:
                 begin
                   ParseProperty(PropertyParsed);
                   U.Variables.Add(PropertyParsed);
-                  Mode := MODE_UNDEFINED;
+                  Mode := pmUndefined;
                 end;
             else
               DoError('Unexpected %s', [T.Description]);
@@ -1352,7 +1346,7 @@ begin
     finally
       FreeAndNil(t);
     end;
-  until Finished;
+  until False;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2590,7 +2584,7 @@ end;
 
 { ------------------------------------------------------------ }
 
-function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TCioParseMode;
+function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
   const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
 
   { Parse fields clause, i.e. something like
@@ -3331,7 +3325,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
 var
   LCio         : TPasCio;
   LHlp         : TPasCioHelper;
-  LMode        : TCioParseMode;
+  LMode        : TItemParseMode;
   LVisibility  : TVisibility;
 
 begin
