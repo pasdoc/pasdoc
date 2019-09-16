@@ -1280,33 +1280,33 @@ begin
     try
       case t.MyType of
         TOK_IDENTIFIER:
-          if T.Info.StandardDirective = SD_OPERATOR then
+          if t.Info.StandardDirective = SD_OPERATOR then
           begin
             ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
               GetLastComment, true, true);
-            u.FuncsProcs.Add(M);
+            U.FuncsProcs.Add(M);
             Mode := pmUndefined;
           end else
           begin
             case Mode of
               pmConst:
                 begin
-                  Scanner.UnGetToken(T);
+                  Scanner.UnGetToken(t);
                   ParseConstant(U);
                 end;
               pmType:
                 begin
-                  Scanner.UnGetToken(T);
+                  Scanner.UnGetToken(t);
                   ParseType(U);
                   AttributeIsPossible := True;
                 end;
               pmVar:
                 begin
-                  Scanner.UnGetToken(T);
+                  Scanner.UnGetToken(t);
                   ParseVariables(U);
                 end;
             else
-              DoError('Unexpected %s', [T.Description]);
+              DoError('Unexpected %s', [t.Description]);
             end;
           end;
         TOK_KEYWORD: begin
@@ -1317,7 +1317,7 @@ begin
                 begin
                   ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
                     GetLastComment, true, true);
-                  u.FuncsProcs.Add(M);
+                  U.FuncsProcs.Add(M);
                   Mode := pmUndefined;
                 end;
               KEY_IMPLEMENTATION:
@@ -1329,8 +1329,7 @@ begin
                 end;
               KEY_USES:
                 ParseUses(U);
-              KEY_THREADVAR,
-                KEY_VAR:
+              KEY_THREADVAR, KEY_VAR:
                 Mode := pmVar;
               KEY_PROPERTY:
                 begin
@@ -1339,7 +1338,7 @@ begin
                   Mode := pmUndefined;
                 end;
             else
-              DoError('Unexpected %s', [T.Description]);
+              DoError('Unexpected %s', [t.Description]);
             end;
           end;
       end;
@@ -1461,7 +1460,6 @@ begin
     end;
 
     FreeAndNil(t1);
-
 
     GetAndCheckNextToken(KEY_OF);
 
@@ -2611,7 +2609,6 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
 
 var
   ClassKeyWordString: string;
-  Finished: Boolean;
   M: TPasMethod;
   p: TPasProperty;
   StrictVisibility: Boolean;
@@ -2619,234 +2616,234 @@ var
 begin
   t := nil;
   try
-      { ClassKeyWordString is used to include 'class' in
-        class methods, properties and variables declarations. }
-      ClassKeyWordString := '';
-      StrictVisibility := False;
-      Result := False;
-      Finished := False;
-      repeat
-        FreeAndNil(t);
-        { Attribute can be just in front of keyword or identifier }
-        AttributeIsPossible := True;
-        t := GetNextToken;
-        AttributeIsPossible := False;
+    { ClassKeyWordString is used to include 'class' in
+      class methods, properties and variables declarations. }
+    ClassKeyWordString := '';
+    StrictVisibility := False;
+    Result := False;
+    repeat
+      FreeAndNil(t);
+      { Attribute can be just in front of keyword or identifier }
+      AttributeIsPossible := True;
+      t := GetNextToken;
+      AttributeIsPossible := False;
 
-        if (t.IsSymbol(SYM_SEMICOLON)) then
-        begin
-          { A declaration of type "name = class(ancestor);" }
-          Scanner.UnGetToken(T);
-          Finished := True;
-          Result := TRUE;
-        end
-        else if (t.MyType = TOK_KEYWORD) then
-        begin
-          Mode := pmUndefined;
-          if StrictVisibility then
-            DoError('"strict" found in an unexpected location', []);
+      if (t.IsSymbol(SYM_SEMICOLON)) then
+      begin
+        { A declaration of type "name = class(ancestor);" }
+        Scanner.UnGetToken(T);
+        Result := TRUE;
+        Break;
+      end
+      else if (t.MyType = TOK_KEYWORD) then
+      begin
+        Mode := pmUndefined;
+        if StrictVisibility then
+          DoError('"strict" found in an unexpected location', []);
 
-          case t.Info.KeyWord of
-            KEY_VAR:
+        case t.Info.KeyWord of
+          KEY_VAR:
+            begin
+              if ClassKeyWordString = '' then
               begin
-                if ClassKeyWordString = '' then
-                begin
-                  Mode := pmVar;
-                  ClassKeyWordString := t.Data;
-                  ParseFields(Visibility in ShowVisibilities, Visibility,
-                  ClassKeyWordString);
-                  if not (Visibility in ShowVisibilities) then
-                    ItemsForNextBackComment.Clear;
-                  ClassKeyWordString := '';
-                end
-                else
-                  ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
-              end;
-            KEY_CLASS: ClassKeyWordString := t.Data;
-            KEY_CONSTRUCTOR,
-            KEY_DESTRUCTOR,
-            KEY_FUNCTION,
-            KEY_PROCEDURE:
-              begin
-                ParseCDFP(M, ClassKeyWordString,
-                  t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                  GetLastComment, true, true);
-
-                ClassKeyWordString := '';
-
-                if Visibility in ShowVisibilities then
-                begin
-                  M.Visibility := Visibility;
-                  ACio.Methods.Add(M);
-                end
-                else begin
-                  ItemsForNextBackComment.Clear;
-                  FreeAndNil(M);
-                end;
-              end;
-            KEY_END:
-              begin
-                Finished := True;
-                Result := TRUE;
-              end;
-            KEY_PROPERTY:
-              begin
-                ParseProperty(p);
-
-                { append ClassKeyWordString to property FullDeclaration,
-                  to have 'class property Foo: ...'. }
-                if ClassKeyWordString <> '' then
-                begin
-                  P.FullDeclaration := ClassKeyWordString + ' ' + P.FullDeclaration;
-                  ClassKeyWordString := '';
-                end;
-
-                if Visibility in ShowVisibilities then
-                begin
-                  p.Visibility := Visibility;
-                  ACio.Properties.Add(p);
-                end
-                else begin
-                  ItemsForNextBackComment.Clear;
-                  FreeAndNil(p);
-                end;
-              end;
-            KEY_CASE: ParseRecordCase(ACio, False);
-
-            KEY_TYPE:
-              begin
-                Mode := pmType;
-                FreeAndNil(t);
-                Exit;
-              end;
-            KEY_CONST:
-              begin
-                Mode := pmConst;
-                FreeAndNil(t);
-                ParseConstant(ACio, Visibility);
-              end;
-             else
-               DoError('Unexpected %s', [T.Description]);
-            end; // case
-        end
-        else if (t.MyType = TOK_IDENTIFIER) then
-        begin
-          case t.Info.StandardDirective of
-            SD_OPERATOR:
-              begin
-                { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
-                KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
-                Mode := pmUndefined;
-                ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
-                  GetLastComment, true, true);
-                ClassKeyWordString := '';
-
-                if Visibility in ShowVisibilities then
-                begin
-                  M.Visibility := Visibility;
-                  ACio.Methods.Add(M);
-                end
-                else begin
-                  ItemsForNextBackComment.Clear;
-                  FreeAndNil(M);
-                end;
-              end;
-            SD_DEFAULT:
-              begin
-                if StrictVisibility then
-                  DoError('"strict" found in an unexpected location', []);
-
-                { Note: 2nd arg for SkipDeclaration is always "false",
-                  not "IsInRecordCase". That's because even if declaration
-                  of this CIO is within a record case, then we want to
-                  see record's terminating "end" keyword anyway.
-                  So it doesn't matter here whether our IsInRecordCase
-                  parameter is true. }
-                SkipDeclaration(nil, false);
-                DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
-              end;
-            SD_PUBLIC:
-              begin
-                if StrictVisibility then
-                  DoError('"strict" found in an unexpected location', []);
-
-                Visibility := viPublic;
-                Mode := pmUndefined;
-              end;
-            SD_PUBLISHED:
-              begin
-                if StrictVisibility then
-                  DoError('"strict" found in an unexpected location', []);
-
-                Visibility := viPublished;
-                Mode := pmUndefined;
-              end;
-            SD_PRIVATE:
-              begin
-                if StrictVisibility then
-                begin
-                  StrictVisibility := False;
-                  Visibility := viStrictPrivate;
-                end
-                else
-                  Visibility := viPrivate;
-                Mode := pmUndefined;
-              end;
-            SD_PROTECTED:
-              begin
-                if StrictVisibility then
-                begin
-                  StrictVisibility := False;
-                  Visibility := viStrictProtected;
-                end
-                else
-                  Visibility := viProtected;
-                Mode := pmUndefined;
-              end;
-            SD_AUTOMATED:
-              begin
-                Visibility := viAutomated;
-                Mode := pmUndefined;
-              end;
-            SD_STRICT:
-              begin
-                StrictVisibility := True;
-                Mode := pmUndefined;
-              end
-          else // case
-              Scanner.UnGetToken(T);
-              if Mode = pmType then
-                Exit;
-              if Mode = pmConst then
-                ParseConstant(ACio, Visibility)
-              else begin
+                Mode := pmVar;
+                ClassKeyWordString := t.Data;
                 ParseFields(Visibility in ShowVisibilities, Visibility,
-                  ClassKeyWordString);
+                ClassKeyWordString);
                 if not (Visibility in ShowVisibilities) then
                   ItemsForNextBackComment.Clear;
                 ClassKeyWordString := '';
+              end
+              else
+                ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
+            end;
+          KEY_CLASS: ClassKeyWordString := t.Data;
+          KEY_CONSTRUCTOR,
+          KEY_DESTRUCTOR,
+          KEY_FUNCTION,
+          KEY_PROCEDURE:
+            begin
+              ParseCDFP(M, ClassKeyWordString,
+                t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                GetLastComment, true, true);
+
+              ClassKeyWordString := '';
+
+              if Visibility in ShowVisibilities then
+              begin
+                M.Visibility := Visibility;
+                ACio.Methods.Add(M);
+              end
+              else begin
+                ItemsForNextBackComment.Clear;
+                FreeAndNil(M);
               end;
+            end;
+          KEY_END:
+            begin
+              Result := TRUE;
+              FreeAndNil(t);
+              Break;
+            end;
+          KEY_PROPERTY:
+            begin
+              ParseProperty(p);
+
+              { append ClassKeyWordString to property FullDeclaration,
+                to have 'class property Foo: ...'. }
+              if ClassKeyWordString <> '' then
+              begin
+                P.FullDeclaration := ClassKeyWordString + ' ' + P.FullDeclaration;
+                ClassKeyWordString := '';
+              end;
+
+              if Visibility in ShowVisibilities then
+              begin
+                p.Visibility := Visibility;
+                ACio.Properties.Add(p);
+              end
+              else begin
+                ItemsForNextBackComment.Clear;
+                FreeAndNil(p);
+              end;
+            end;
+          KEY_CASE:
+            ParseRecordCase(ACio, False);
+          KEY_TYPE:
+            begin
+              Mode := pmType;
+              FreeAndNil(t);
+              Exit;
+            end;
+          KEY_CONST:
+            begin
+              Mode := pmConst;
+              FreeAndNil(t);
+                ParseConstant(ACio, Visibility);
+            end;
+           else
+             DoError('Unexpected %s', [T.Description]);
           end; // case
-        end;
-        FreeAndNil(t);
-      until Finished;
-      CurrentAttributes.Clear;
-
-      ParseHintDirectives(ACio);
-
-      t := GetNextToken;
-      if not t.IsSymbol(SYM_SEMICOLON) then
+      end
+      else if (t.MyType = TOK_IDENTIFIER) then
       begin
-        if IsInRecordCase then
-        begin
-          if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
-            Scanner.UnGetToken(t)
-          else
-            DoError('Unexpected symbol at end of sub-record', []);
-        end
-        else
-          DoError('Semicolon at the end of Class / Object / Interface' +
-            ' / Record expected', []);
+        case t.Info.StandardDirective of
+          SD_OPERATOR:
+            begin
+              { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
+              KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
+              Mode := pmUndefined;
+              ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
+                GetLastComment, true, true);
+              ClassKeyWordString := '';
+
+              if Visibility in ShowVisibilities then
+              begin
+                M.Visibility := Visibility;
+                ACio.Methods.Add(M);
+              end
+              else begin
+                ItemsForNextBackComment.Clear;
+                FreeAndNil(M);
+              end;
+            end;
+          SD_DEFAULT:
+            begin
+              if StrictVisibility then
+                DoError('"strict" found in an unexpected location', []);
+
+              { Note: 2nd arg for SkipDeclaration is always "false",
+                not "IsInRecordCase". That's because even if declaration
+                of this CIO is within a record case, then we want to
+                see record's terminating "end" keyword anyway.
+                So it doesn't matter here whether our IsInRecordCase
+                parameter is true. }
+              SkipDeclaration(nil, false);
+              DoMessage(5, pmtInformation, 'Skipped default property keyword.', []);
+            end;
+          SD_PUBLIC:
+            begin
+              if StrictVisibility then
+                DoError('"strict" found in an unexpected location', []);
+
+              Visibility := viPublic;
+              Mode := pmUndefined;
+            end;
+          SD_PUBLISHED:
+            begin
+              if StrictVisibility then
+                DoError('"strict" found in an unexpected location', []);
+
+              Visibility := viPublished;
+              Mode := pmUndefined;
+            end;
+          SD_PRIVATE:
+            begin
+              if StrictVisibility then
+              begin
+                StrictVisibility := False;
+                Visibility := viStrictPrivate;
+              end
+              else
+                Visibility := viPrivate;
+              Mode := pmUndefined;
+            end;
+          SD_PROTECTED:
+            begin
+              if StrictVisibility then
+              begin
+                StrictVisibility := False;
+                Visibility := viStrictProtected;
+              end
+              else
+                Visibility := viProtected;
+              Mode := pmUndefined;
+            end;
+          SD_AUTOMATED:
+            begin
+              Visibility := viAutomated;
+              Mode := pmUndefined;
+            end;
+          SD_STRICT:
+            begin
+              StrictVisibility := True;
+              Mode := pmUndefined;
+            end
+          else // case
+            Scanner.UnGetToken(T);
+            if Mode = pmType then
+              Exit;
+            if Mode = pmConst then
+              ParseConstant(ACio, Visibility)
+            else begin
+              ParseFields(Visibility in ShowVisibilities, Visibility,
+                ClassKeyWordString);
+              if not (Visibility in ShowVisibilities) then
+                ItemsForNextBackComment.Clear;
+              ClassKeyWordString := '';
+            end;
+        end; // case
       end;
+      FreeAndNil(t);
+    until False;
+    CurrentAttributes.Clear;
+
+    ParseHintDirectives(ACio);
+
+    t := GetNextToken;
+    if not t.IsSymbol(SYM_SEMICOLON) then
+    begin
+      if IsInRecordCase then
+      begin
+        if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+          Scanner.UnGetToken(t)
+        else
+          DoError('Unexpected symbol at end of sub-record', []);
+      end
+      else
+        DoError('Semicolon at the end of Class / Object / Interface' +
+          ' / Record expected', []);
+    end;
   finally
     t.Free;
   end;
