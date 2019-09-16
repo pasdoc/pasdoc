@@ -190,6 +190,7 @@ type
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
     FAutoBackComments: boolean;
+    FInfoMergeType: TInfoMergeType;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
@@ -365,6 +366,7 @@ type
     procedure ParseTVCSection(U: TPasUnit);
 
     procedure ParseInterfaceSection(const U: TPasUnit);
+    procedure ParseImplementationSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
 
@@ -488,7 +490,11 @@ type
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
+    { See command-line option @--auto-back-comments documentation at
+      [https://github.com/pasdoc/pasdoc/wiki/AutoBackComments] }
     property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
+    { TODO comment }
+    property InfoMergeType: TInfoMergeType read FInfoMergeType write FInfoMergeType;
   end;
 
 implementation
@@ -524,6 +530,8 @@ begin
   ItemsForNextBackComment := TPasItems.Create(false);
   FCioSk := TPasCioHelperStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
+  {}// tmp - must be set according to options
+  FInfoMergeType := imtJoin;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1412,7 +1420,10 @@ begin
                   U.FuncsProcs.Add(M);
                 end;
               KEY_IMPLEMENTATION:
-                Break;
+                begin
+                  Scanner.UnGetToken(t);
+                  Break;
+                end;
               KEY_USES:
                 ParseUses(U);
               KEY_PROPERTY:
@@ -1429,6 +1440,13 @@ begin
       FreeAndNil(t);
     end;
   until False;
+end;
+
+procedure TParser.ParseImplementationSection(const U: TPasUnit);
+begin
+  if FInfoMergeType = imtNone then Exit;
+
+  DoMessage(4, pmtInformation, 'Entering implementation section of unit %s',[U.Name]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1818,6 +1836,12 @@ begin
 
   { now parse the interface section of that unit }
   ParseInterfaceSection(U);
+
+  { get 'implementation' keyword }
+  GetAndCheckNextToken(KEY_IMPLEMENTATION);
+
+  { now parse the implementation section of that unit }
+  ParseImplementationSection(U);
 end;
 
 { ---------------------------------------------------------------------------- }

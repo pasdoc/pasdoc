@@ -96,6 +96,19 @@ const
     [viProtected, viPublic, viPublished, viAutomated];
 
 type
+  { Type of merging intf section and impl section metadata of an item }
+  TInfoMergeType = (
+    { impl section is not scanned - default behavior }
+    imtNone,
+    { data is taken from intf, if it's empty - from impl }
+    imtFirstNotEmpty,
+    { data is concatenated }
+    imtJoin,
+    { data is taken from impl, if it's empty - from intf }
+    imtPreferImpl
+  );
+
+type
   TPasCio = class;
   TPasMethod = class;
   TPasProperty = class;
