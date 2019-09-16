@@ -113,6 +113,10 @@ var
 begin
   inherited;
 
+  Self.IncludeFileOptionName := '@<path to config file>';
+  Self.IncludeFileOptionExpl := 'Read options from specified file and insert them at current position. File must contain one option per line.'+LineEnding+
+    'Format is "name[=value]", options are named just like in the command line but without leading dashes. Option values with spaces must NOT be quoted';
+
   OptionHelp := TBoolOption.Create('?', 'help');
   OptionHelp.Explanation := 'Show this help';
   AddOption(OptionHelp);
