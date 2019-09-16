@@ -1283,7 +1283,10 @@ begin
                 begin
                   Scanner.UnGetToken(t);
                   ParseConstant(otUnit, ConstantParsed);
-                  U.AddConstant(ConstantParsed);
+                  if U <> nil then
+                    U.AddConstant(ConstantParsed)
+                  else
+                    FreeAndNil(ConstantParsed);
                 end;
               pmType:
                 begin
@@ -1425,14 +1428,14 @@ end;
 procedure TParser.ParseRecordCase(const R: TPasCio;
   const SubCase: boolean);
 var
-  t1: TToken;
+  t: TToken;
   LNeedId: boolean;
   P: TPasFieldVariable;
   OldAttribPossible: Boolean;
 begin
-  t1 := GetNextToken;
+  t := GetNextToken;
   try
-    CheckToken(T1, TOK_IDENTIFIER);
+    CheckToken(t, TOK_IDENTIFIER);
 
     if PeekNextToken.IsSymbol(SYM_COLON) then
     begin
@@ -1442,7 +1445,7 @@ begin
       GetNextToken.Free;
 
       P := TPasFieldVariable.Create;
-      p.Name := T1.Data;
+      p.Name := t.Data;
       p.RawDescriptionInfo^ := GetLastComment;
       p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);
       p.SetAttributes(CurrentAttributes);
@@ -1450,7 +1453,7 @@ begin
       R.Fields.Add(p);
     end;
 
-    FreeAndNil(t1);
+    FreeAndNil(t);
 
     GetAndCheckNextToken(KEY_OF);
 
@@ -1459,15 +1462,15 @@ begin
     AttributeIsPossible := False;
 
     { no support for attributes in case record, if found, unexpected behaviour }
-    t1 := GetNextToken;
+    t := GetNextToken;
     LNeedId := True;
     repeat
       while true do
       begin
-        case t1.MyType of
+        case t.MyType of
           TOK_SYMBOL:
             begin
-              case t1.Info.SymbolType of
+              case t.Info.SymbolType of
                 SYM_COLON: break;
                 SYM_COMMA: LNeedId := True;
               end;
@@ -1475,22 +1478,22 @@ begin
           TOK_IDENTIFIER,
           TOK_NUMBER:
             if not LNeedId then
-              DoError('Unexpected %s', [T1.Description]);
+              DoError('Unexpected %s', [t.Description]);
 
           TOK_KEYWORD:
             begin
-              if not (t1.Info.KeyWord in [KEY_OR, KEY_AND]) then
-                DoError('Unexpected %s', [T1.Description]);
+              if not (t.Info.KeyWord in [KEY_OR, KEY_AND]) then
+                DoError('Unexpected %s', [t.Description]);
             end;
           else // case
-            DoError('Unexpected %s', [T1.Description]);
+            DoError('Unexpected %s', [t.Description]);
         end; // case
-        FreeAndNil(t1);
-        t1 := GetNextToken;
+        FreeAndNil(t);
+        t := GetNextToken;
       end;
       // read all identifiers before colon
 
-      FreeAndNil(t1);
+      FreeAndNil(t);
 
       GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
 
@@ -1506,26 +1509,47 @@ begin
 
       GetNextToken.Free; // free ')' token
 
-      t1 := GetNextToken;
-      if t1.IsSymbol(SYM_SEMICOLON) then
+      t := GetNextToken;
+      if t.IsSymbol(SYM_SEMICOLON) then
       begin
-        FreeAndNil(t1);
-        t1 := GetNextToken;
+        FreeAndNil(t);
+        t := GetNextToken;
       end;
 
-    until t1.IsKeyWord(KEY_END) or
-      (SubCase and t1.IsSymbol(SYM_RIGHT_PARENTHESIS));
+    until t.IsKeyWord(KEY_END) or
+      (SubCase and t.IsSymbol(SYM_RIGHT_PARENTHESIS));
 
     AttributeIsPossible := OldAttribPossible;
 
-    Scanner.UnGetToken(t1);
+    Scanner.UnGetToken(t);
   except
-    t1.Free;
+    t.Free;
     raise;
   end;
 end;
 
 procedure TParser.ParseType(const U: TPasUnit);
+
+  function KeyWordToCioType(KeyWord: TKeyword; IsPacked: Boolean): TCIOType;
+  begin
+    if not IsPacked then
+      case KeyWord of
+        KEY_CLASS:         Result := CIO_CLASS;
+        KEY_DISPINTERFACE: Result := CIO_DISPINTERFACE;
+        KEY_INTERFACE:     Result := CIO_INTERFACE;
+        KEY_OBJECT:        Result := CIO_OBJECT;
+        KEY_RECORD:        Result := CIO_RECORD;
+        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
+      end
+    else
+      case KeyWord of
+        KEY_CLASS:         Result := CIO_PACKEDCLASS;
+        KEY_OBJECT:        Result := CIO_PACKEDOBJECT;
+        KEY_RECORD:        Result := CIO_PACKEDRECORD;
+        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
+      end;
+  end;
+
 var
   RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
@@ -1602,52 +1626,25 @@ begin
               Exit;
             end;
           end;
-        KEY_DISPINTERFACE: begin
-            FreeAndNil(t);
-            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
-              RawDescriptionInfo, False);
-            Exit;
-          end;
-        KEY_INTERFACE: begin
-            FreeAndNil(t);
-            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
-              RawDescriptionInfo, False);
-            Exit;
-          end;
-        KEY_OBJECT: begin
-            FreeAndNil(t);
-            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_OBJECT,
-              RawDescriptionInfo, False);
-            Exit;
-          end;
+        KEY_DISPINTERFACE,
+        KEY_INTERFACE,
+        KEY_OBJECT,
         KEY_RECORD: begin
-            FreeAndNil(t);
-            ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
+            ParseCIO(U, TypeName, TypeNameWithGeneric, KeyWordToCioType(t.Info.KeyWord, False),
               RawDescriptionInfo, False);
+            FreeAndNil(t);
             Exit;
           end;
         KEY_PACKED: begin
             FreeAndNil(t);
             t := GetNextToken(LTemp);
             LCollected := LCollected + LTemp + t.Data;
-            if t.IsKeyWord(KEY_RECORD) then
+            if t.Info.KeyWord in [KEY_RECORD, KEY_OBJECT, KEY_CLASS] then
             begin
-              FreeAndNil(t);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
+              // for class - no check for "of", no packed classpointers allowed
+              ParseCIO(U, TypeName, TypeNameWithGeneric, KeyWordToCioType(t.Info.KeyWord, True),
                 RawDescriptionInfo, False);
-              exit;
-            end else if t.IsKeyWord(KEY_OBJECT) then
-            begin
               FreeAndNil(t);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDOBJECT,
-                RawDescriptionInfo, False);
-              Exit;
-            end else if t.IsKeyWord(KEY_CLASS) then
-            begin
-              // no check for "of", no packed classpointers allowed
-              FreeAndNil(t);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_PACKEDCLASS,
-                RawDescriptionInfo, False);
               Exit;
             end;
           end;
@@ -1661,15 +1658,21 @@ begin
           MethodType.Name := TypeName;
           MethodType.FullDeclaration :=
             TypeName + ' = ' + MethodType.FullDeclaration;
-          U.AddType(MethodType);
+          if U <> nil then
+            U.AddType(MethodType)
+          else
+            FreeAndNil(MethodType);
           FreeAndNil(t);
-          exit;
+          Exit;
         end;
       end;
       if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
       begin
         ParseEnum(EnumType, TypeName, RawDescriptionInfo);
-        U.AddType(EnumType);
+        if U <> nil then
+          U.AddType(EnumType)
+        else
+          FreeAndNil(EnumType);
         FreeAndNil(t);
         Exit;
       end;
@@ -1688,15 +1691,18 @@ begin
       NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
       NormalType.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(NormalType);
-      U.AddType(NormalType); { This is the last line here since "U" owns the
-                               objects, bad luck if adding the item raised an
-                               exception. }
+      if U <> nil then
+        U.AddType(NormalType)  { This is the last line here since "U" owns the
+                                 objects, bad luck if adding the item raised an
+                                 exception. }
+      else
+        FreeAndNil(NormalType);
     except
-      NormalType.Free;
+      FreeAndNil(NormalType);
       raise;
     end;
   except
-    t.Free;
+    FreeAndNil(t);
     raise;
   end;
 end;
@@ -1888,7 +1894,10 @@ end;
 
 procedure TParser.ParseVariables(const U: TPasUnit);
 begin
-  ParseFieldsVariables(U.Variables, false, viPublished, false);
+  if U <> nil then
+    ParseFieldsVariables(U.Variables, false, viPublished, false)
+  else
+    ParseFieldsVariables(nil, false, viPublished, false);
 end;
 
 procedure TParser.ParseFieldsVariables(Items: TPasItems;
@@ -3178,7 +3187,6 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
               end
               else begin
                 Scanner.UnGetToken(t);
-                t := nil;
                 ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_CLASS,
                   RawDescriptionInfo, False);
                 Exit;
@@ -3294,7 +3302,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
       FCioSk.Peek.SkipCioDecl := TRUE;
       ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
     except
-      t.Free;
+      FreeAndNil(t);
       raise;
     end;
   end;
