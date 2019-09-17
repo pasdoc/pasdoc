@@ -404,7 +404,7 @@ begin
   try
     // Pre-process config files ("@<path-to-file>" parameters)
     for i := LCopyList.Count - 1 downto 0 do
-      if LCopyList[i][1] = OptionFileChar then
+      if SCharIs(LCopyList[i], 1, OptionFileChar) then
       begin
         // read config file
         OptsFromFile := TStringList.Create;
