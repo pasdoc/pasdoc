@@ -67,3 +67,4 @@ procedure Foo6;
 procedure Foo7;
 
 implementation
+end.
