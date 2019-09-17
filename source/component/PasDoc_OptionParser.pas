@@ -44,6 +44,14 @@ const
   DefShortOptionChar = '-';
   { default long option string used }
   DefLongOptionString = '--';
+  { Marks "include config file" option }
+  OptionFileChar = '@';
+  { Indentation of option's name from the start of console line }
+  OptionIndent = '  ';
+  { Separator between option's name and explanation }
+  OptionSep = '  ';
+  { Width of console }
+  ConsoleWidth = 80;
 
 type
   TOptionParser = class;
@@ -220,6 +228,8 @@ type
     FLeftList: TStringList;
     FShortOptionChar: Char;
     FLongOptionString: string;
+    FIncludeFileOptionName: string;
+    FIncludeFileOptionExpl: string;
     function GetOption(const AIndex: Integer): TOption;
     function GetOptionsCount: Integer;
     function GetOptionByLongName(const AName: string): TOption;
@@ -257,11 +267,16 @@ type
     property ShortOptionStart: Char read FShortOptionChar write FShortOptionChar default DefShortOptionChar;
     { introductory string to be used for long options }
     property LongOptionStart: String read FLongOptionString write FLongOptionString;
+    { name of an option to include config file }
+    property IncludeFileOptionName: string read FIncludeFileOptionName write FIncludeFileOptionName;
+    { explanation of an option to include config file }
+    property IncludeFileOptionExpl: string read FIncludeFileOptionExpl write FIncludeFileOptionExpl;
   end;
 
 implementation
 uses
-  SysUtils;
+  SysUtils,
+  PasDoc_Utils, PasDoc_Types;
 
 function TryStrToInt(const AString: string; var AValue: Integer): Boolean;
 var
@@ -269,6 +284,63 @@ var
 begin
   Val(AString, AValue, LError);
   Result := LError = 0;
+end;
+
+// Text wrapping done right. RTL versions in both Delphi and FPC wrap at first
+// wordwrap symbol AFTER MaxCol (so most of sublines are longer than MaxCol) -
+// and that is quite useless. This function ensures no subline is longer than
+// MaxCol except for those which do not have a wordbreak inside.
+function CorrectWrapText(const Line: string; MaxCol: Integer): string;
+const
+  WordBreaks: TCharSet = [' ', '-', #9];
+  LineBreaks: TCharSet = [#13, #10];
+  LineBreak = LineEnding;
+var
+  WBPos, SubLineStartPos, NextMaxPos, i: Integer;
+begin
+  Result := ''; WBPos := 1; SubLineStartPos := 1; NextMaxPos := MaxCol;
+
+  for i := 1 to Length(Line) do
+  begin
+    if IsCharInSet(Line[i], WordBreaks) then
+      WBPos := i
+    else
+    if IsCharInSet(Line[i], LineBreaks) then // leave line breaks that are already there
+    begin
+      NextMaxPos := i + MaxCol;
+      Continue;
+    end;
+    if i <= NextMaxPos then Continue;
+    if WBPos = 0 then Continue;   // no word breaks in the current subline - wait for the first one
+    Result := Result + Copy(Line, SubLineStartPos, WBPos - SubLineStartPos) + LineBreak;
+    SubLineStartPos := WBPos + 1; // do not include the word break we broke at
+    NextMaxPos := WBPos + MaxCol; // limit the next subline
+    WBPos := 0;
+  end;
+  Result := Result + Copy(Line, SubLineStartPos, MaxInt);
+end;
+
+// Write option name and explanation to console in two columns.
+// NameColWidth is width of the first column not including indent and separator
+procedure WriteOptionInfo(const Name, Explanation: string; NameColWidth: Integer);
+var
+  i, LWritten, ExplWidth: Integer;
+  LLines: TStringList;
+begin
+  Write(OptionIndent, Name);
+  LWritten := Length(OptionIndent) + Length(Name);
+  // 1 here comes from a glitch: if a line to be written finishes exactly at the
+  // right edge of console, an extra line feed is written after it. So we keep
+  // 1-char margin from the right edge.
+  ExplWidth := ConsoleWidth - Length(OptionIndent) - NameColWidth - Length(OptionSep) - 1;
+  LLines := TStringList.Create;
+  LLines.Text := CorrectWrapText(Explanation, ExplWidth);
+  for i := 0 to LLines.Count-1 do
+  begin
+    WriteLn(StringOfChar(' ', NameColWidth + Length(OptionIndent) - LWritten), OptionSep, LLines[i]);
+    LWritten := 0; // this value was needed for the 1st iteration only
+  end;
+  LLines.Free;
 end;
 
 { TOptionParser }
@@ -321,14 +393,33 @@ end;
 
 procedure TOptionParser.ParseOptions;
 var
-  LCopyList: TStringList;
-  i: Integer;
+  LCopyList, OptsFromFile: TStringList;
+  i, j: Integer;
   LFoundSomething: boolean;
 begin
   LCopyList := TStringList.Create;
   LCopyList.Assign(FParams);
   FLeftList.Clear;
+
   try
+    // Pre-process config files ("@<path-to-file>" parameters)
+    for i := LCopyList.Count - 1 downto 0 do
+      if SCharIs(LCopyList[i], 1, OptionFileChar) then
+      begin
+        // read config file
+        OptsFromFile := TStringList.Create;
+        try
+          OptsFromFile.LoadFromFile(Copy(LCopyList[i], 2, MaxInt));
+          // add to the list at current position
+          for j := OptsFromFile.Count - 1 downto 0 do
+            LCopyList.Insert(i + 1, LongOptionStart + OptsFromFile[j]);
+        finally
+          FreeAndNil(OptsFromFile);
+          // remove the option with file path
+          LCopyList.Delete(i);
+        end;
+      end;
+
     while LCopyList.Count > 0 do begin
       LFoundSomething := false;
       for i := 0 to FOptions.Count-1 do begin
@@ -364,13 +455,15 @@ procedure TOptionParser.WriteExplanations;
   end;
 
 var
-  i: Integer;
-  LMaxWidth: Integer;
+  i, LMaxWidth: Integer;
 begin
   LMaxWidth := 0;
-  for i := 0 to OptionsCount-1 do begin
+  for i := 0 to OptionsCount-1 do
     LMaxWidth := Max(LMaxWidth, Options[i].GetOptionWidth);
-  end;
+
+  // first write explanation for config file
+  WriteOptionInfo(FIncludeFileOptionName, FIncludeFileOptionExpl, LMaxWidth);
+
   for i := 0 to OptionsCount-1 do begin
     Options[i].WriteExplanation(LMaxWidth);
   end;
@@ -435,50 +528,18 @@ begin
 end;
 
 procedure TOption.WriteExplanation(const AOptWidth: Integer);
-  procedure WriteBlank(const ANumber: Integer);
-  var
-    j: Integer;
-  begin
-    for j := ANumber-1 downto 0 do begin
-      Write(' ');
-    end;
-  end;
-
 var
-  LLines: TStringList;
-  i: Integer;
-  LWritten: Integer;
+  Name: string;
 begin
-  Write('  ');
-  LWritten := 2;
+  Name := '';
   if ShortForm <> #0 then begin
-    Write(FParser.ShortOptionStart, ShortForm);
-    Inc(LWritten, 2);
-    if Length(LongForm)>0  then begin
-      Write(', ');
-      Inc(LWritten, 2);
-    end;
+    Name := FParser.ShortOptionStart + ShortForm;
+    if Length(LongForm) > 0 then
+      Name := Name + ', ';
   end;
-  if Length(LongForm)>0 then begin
-    Write(FParser.LongOptionStart, LongForm);
-    Inc(LWritten, Length(FParser.LongOptionStart) + Length(LongForm));
-  end;
-  Write(' ');
-  Inc(LWritten, 1);
-  LLines := TStringList.Create;
-  LLines.Text := WrapText(Explanation, 77 - AOptWidth);
-  for i := 0 to LLines.Count-1 do begin
-    if Length(LLines[i]) > 0 then begin
-      // WrapText has a bug...
-      if i = 0 then begin
-        WriteBlank(AOptWidth + 4 - LWritten);
-      end else begin
-        WriteBlank(AOptWidth + 4);
-      end;
-      WriteLn(LLines[i]);
-    end;
-  end;
-  LLines.Free;
+  if Length(LongForm) > 0 then
+    Name := Name + FParser.LongOptionStart + LongForm;
+  WriteOptionInfo(Name, Explanation, AOptWidth);
 end;
 
 { TBoolOption }
