@@ -18,6 +18,9 @@ implementation
 
 { TDummy }
 
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
+
 class function TDummy.MyFunction: integer;
 begin
 

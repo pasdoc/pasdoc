@@ -15,6 +15,9 @@ implementation
 
 { TMyClass }
 
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
+
 class procedure TMyClass.StaticProcedure;
 begin
 
