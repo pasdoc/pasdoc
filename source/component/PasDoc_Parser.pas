@@ -793,6 +793,27 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean);
 
+  procedure ReadNestedName;
+  var t: TToken;
+  begin
+    t := nil;
+    repeat
+      FreeAndNil(t);
+      t := GetNextToken;
+      if (t.MyType = TOK_IDENTIFIER) or t.IsSymbol(SYM_PERIOD) then
+        M.Name := M.Name + t.Data
+      else
+      // Whitespaces are allowed ("function TClass . Foo"), just skip them
+      if t.MyType = TOK_WHITESPACE then
+        // skip
+      else
+      begin
+        Scanner.UnGetToken(t);
+        Break;
+      end;
+    until False;
+  end;
+
   { Reads tokens (adding them to M.FullDeclaration) until a semicolon
     (on parenthesis level zero) is found (this final semicolon
     is also read and appended to M.FullDeclaration). }
@@ -866,7 +887,18 @@ begin
       if InvalidType then
         DoError('Unexpected token %s', [T.Description]);
 
-      M.Name := t.Data;
+      { Consume all following period-delimited identifiers as a single name.
+        Actual only when reading impl section. Resulting name requires additional
+        processing (splitting to class and method names).
+        Not used for FPC keyword and symbol operators }
+      if (MethodType = METHOD_OPERATOR) and (t.MyType <> TOK_IDENTIFIER) then
+        M.Name := t.Data
+      else
+      begin
+        Scanner.UnGetToken(t);
+        ReadNestedName;
+      end;
+
       DoMessage(5, pmtInformation, 'Parsing %s "%s"',
         [MethodTypeToString(MethodType), M.Name]);
       M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
