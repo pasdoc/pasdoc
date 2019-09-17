@@ -353,6 +353,17 @@ type
 
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
     procedure ParseConstant(OwnerItemType: TOwnerItemType; out Constant: TPasItem);
+
+    { This parses type, var or const section that doesn't belong to a CIO
+      (unit intf section, unit impl section, inside a standalone routine).
+      This assumes that next token is a keyword starting the section.
+      Method stops when it encounters a keyword that is not part of
+      type/variable/constant declaration.
+      U is optional unit object. If it's assigned, parsed items will be added
+      to corresponding list. If it's @nil, items will be just parsed and
+      immediately disposed. }
+    procedure ParseTVCSection(U: TPasUnit);
+
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
@@ -1283,33 +1294,26 @@ begin
   end;
 end;
 
-procedure TParser.ParseInterfaceSection(const U: TPasUnit);
+procedure TParser.ParseTVCSection(U: TPasUnit);
 var
   Mode: TItemParseMode;
-  M: TPasMethod;
   t: TToken;
   ConstantParsed: TPasItem;
-  PropertyParsed: TPasProperty;
 begin
-  DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
   Mode := pmUndefined;
-
-  AttributeIsPossible := False;
 
   repeat
     t := GetNextToken;
-
     try
       case t.MyType of
         TOK_IDENTIFIER:
-          if t.Info.StandardDirective = SD_OPERATOR then
           begin
-            ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
-              GetLastComment, true, true);
-            U.FuncsProcs.Add(M);
-            Mode := pmUndefined;
-          end else
-          begin
+            if t.Info.StandardDirective = SD_OPERATOR then
+            begin
+              Scanner.UnGetToken(t);
+              Break;
+            end;
+
             case Mode of
               pmConst:
                 begin
@@ -1335,33 +1339,80 @@ begin
               DoError('Unexpected %s', [t.Description]);
             end;
           end;
-        TOK_KEYWORD: begin
+        TOK_KEYWORD:
+          begin
             case t.Info.KeyWord of
               KEY_RESOURCESTRING, KEY_CONST:
                 Mode := pmConst;
-              KEY_FUNCTION, KEY_PROCEDURE:
-                begin
-                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                    GetLastComment, true, true);
-                  U.FuncsProcs.Add(M);
-                  Mode := pmUndefined;
-                end;
-              KEY_IMPLEMENTATION:
-                Break;
+              KEY_THREADVAR, KEY_VAR:
+                Mode := pmVar;
               KEY_TYPE:
                 begin
                   Mode := pmType;
                   AttributeIsPossible := True;
                 end;
+              else
+                begin
+                  Scanner.UnGetToken(t);
+                  Break;
+                end;
+            end;
+          end;
+      end;
+    finally
+      FreeAndNil(t);
+    end;
+  until False;
+end;
+
+procedure TParser.ParseInterfaceSection(const U: TPasUnit);
+var
+  M: TPasMethod;
+  t: TToken;
+  PropertyParsed: TPasProperty;
+begin
+  DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
+
+  AttributeIsPossible := False;
+
+  repeat
+    t := GetNextToken;
+
+    try
+      case t.MyType of
+        TOK_IDENTIFIER:
+          if t.Info.StandardDirective = SD_OPERATOR then
+          begin
+            ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
+              GetLastComment, true, true);
+            U.FuncsProcs.Add(M);
+          end
+          else
+            DoError('Unexpected %s', [t.Description]);
+        TOK_KEYWORD:
+          begin
+            case t.Info.KeyWord of
+              KEY_RESOURCESTRING, KEY_CONST,
+              KEY_TYPE,
+              KEY_THREADVAR, KEY_VAR:
+                begin
+                  Scanner.UnGetToken(t);
+                  ParseTVCSection(U);
+                end;
+              KEY_FUNCTION, KEY_PROCEDURE:
+                begin
+                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                    GetLastComment, true, true);
+                  U.FuncsProcs.Add(M);
+                end;
+              KEY_IMPLEMENTATION:
+                Break;
               KEY_USES:
                 ParseUses(U);
-              KEY_THREADVAR, KEY_VAR:
-                Mode := pmVar;
               KEY_PROPERTY:
                 begin
                   ParseProperty(PropertyParsed);
                   U.Variables.Add(PropertyParsed);
-                  Mode := pmUndefined;
                 end;
             else
               DoError('Unexpected %s', [t.Description]);
