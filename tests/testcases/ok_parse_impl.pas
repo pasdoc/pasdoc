@@ -13,6 +13,11 @@ procedure Laz;
 // @exclude
 procedure Ignored;
 
+procedure Overloaded; overload;
+// @exclude
+procedure Overloaded(b: Char); overload;
+procedure Overloaded(a: Byte); overload;
+
 type
   TClass = class
   type
@@ -163,18 +168,31 @@ procedure Ignored;
 begin
 end;
 
+// This is overloaded proc #1
+procedure Overloaded;
+begin
+end;
+
+// This is overloaded proc #3 that must be ignored
+procedure Overloaded(b: Char);
+begin
+end;
+
+// This is overloaded proc #2
+procedure Overloaded(a: Byte);
+begin
+end;
+
 { TClass }
 
 // Creates instance of TClass
 constructor TClass . Create; // whitespace is intentional
 begin
-
 end;
 
 // Static factory
 class function TClass.Create(const S: string): TClass;
 begin
-
 end;
 
 // Destroys instance of TClass
@@ -187,13 +205,11 @@ type
     // must be ignored
   end;
 begin
-
 end;
 
 // Does something
 procedure TClass.Method;
 begin
-
 end;
 
 // Assignment operator
@@ -206,13 +222,11 @@ end;
 // Method of an inner class
 procedure TClass.TInnerClass.Method;
 begin
-
 end;
 
 // Hidden method of an inner class
 procedure TClass.TInnerClass.Hidden;
 begin
-
 end;
 
 {$ifdef FPC}

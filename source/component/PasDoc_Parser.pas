@@ -502,7 +502,7 @@ implementation
 uses
   {$ifdef FPC_RegExpr} RegExpr, {$endif}
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
-  PasDoc_Utils;
+  PasDoc_Utils, PasDoc_Hashes;
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -1528,7 +1528,10 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
               // if InsideMethodBody - it's a lambda without name
               // otherwise it's a nested subroutine that requires name
               if not InsideMethodBody then
+              begin
                 ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False);
+                FreeAndNil(M);
+              end;
               SkipMethodBody;
             end;
           KEY_END:
@@ -1554,8 +1557,15 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
     Method could be standalone routine, FPC operator or CIO member.
     In the latter case it will have fully specified name (TClass.TNestedClass.Proc).
     Corresponding method likely could not exist in lists from intf section because
-    of ignoring or visibility settings. }
-  function FindExistingMethod(U: TPasUnit; Method: TPasMethod): TPasMethod;
+    of ignoring or visibility settings.
+      @param U - unit to search in
+      @param MethodName - full method name to search for
+      @param Index - 0-based index of a method overload to search for. Currently
+        method lists could contain multiple entries with identical names because
+        of overload feature. Specifying Index allows to search for a concrete item.
+        Of course this will work correctly only if methods were declared in the
+        same order as they appear in impl section }
+  function FindExistingMethod(U: TPasUnit; const MethodName: string; Index: Integer): TPasMethod;
   var
     NameParts: TNameParts;
     i: Integer;
@@ -1564,16 +1574,16 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
     Result := nil;
     // Check if we got a standalone routine or a class/record method
     // NB: method could be FPC operator with symbolic name so just check for dot inside
-    if Pos('.', Method.Name) = 0 then
+    if Pos('.', MethodName) = 0 then
     begin
-      item := U.FuncsProcs.FindListItem(Method.Name);
+      item := U.FuncsProcs.FindListItem(MethodName, Index);
       if item <> nil then
         Result := item as TPasMethod;
     end
     else
     begin
-      if not SplitNameParts(Method.Name, NameParts) then
-        DoError('Method name %s is invalid', [Method.Name]);
+      if not SplitNameParts(MethodName, NameParts) then
+        DoError('Method name %s is invalid', [MethodName]);
       // Search for method owner
       item := U.CIOs.FindListItem(NameParts[0]);
       // Also in nested classes
@@ -1585,25 +1595,35 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
             Break;
         end;
       if item <> nil then
-        item := (item as TPasCio).FindItem(NameParts[High(NameParts)]);
-      if item <> nil then
-        Result := item as TPasMethod;
+        Result := (item as TPasCio).Methods.FindListItem(NameParts[High(NameParts)], Index);
     end;
     // print message for debug purposes
     if Result = nil then
-      DoMessage(5, pmtInformation, 'No definition of method "%s" found - probably internal or ignored', [Method.Name])
+      DoMessage(5, pmtInformation, 'No definition of %d-th method "%s" found - probably internal or ignored', [Index, MethodName])
   end;
 
   { Read proc/func/class method/operator header and merge its description with
     existing item }
-  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType;
+  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType; MethodCounts: THash = nil;
     const ClassKeyWordString: string = '');
   var
     M, ExistingMethod: TPasMethod;
+    Count: NativeUInt;
   begin
     ParseCDFP(M, ClassKeyWordString, MethodTypeToString(MethodType), MethodType,
       GetLastComment, True, True);
-    ExistingMethod := FindExistingMethod(U, M);
+    // If a method counter is given, search for method inside it. Otherwise
+    // assume Count is 1.
+    if MethodCounts <> nil then
+    begin
+      Count := NativeUInt(MethodCounts.GetObject(M.Name));
+      Inc(Count);
+      MethodCounts.SetObject(M.Name, Pointer(Count));
+    end
+    else
+      Count := 1;
+
+    ExistingMethod := FindExistingMethod(U, M.Name, Count - 1);
     // NB: Currently we don't add methods not declared in intf section
     if ExistingMethod <> nil then
       MergeMethodData(FInfoMergeType, ExistingMethod, M.RawDescriptionInfo^);
@@ -1611,10 +1631,10 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
   end;
 
 var
-  M: TPasMethod;
   ClassKeyWordString: string;
   t: TToken;
   PropertyParsed: TPasProperty;
+  MethodCounts: THash;
 begin
   if FInfoMergeType = imtNone then Exit;
 
@@ -1624,69 +1644,77 @@ begin
   { ClassKeyWordString is used to include 'class' in
     class methods, properties and variables declarations. }
   ClassKeyWordString := '';
+  MethodCounts := THash.Create; // "[method name]=>count" hash map
 
-  repeat
-    t := GetNextToken;
-    try
-      case t.MyType of
-        TOK_IDENTIFIER:
-          if t.Info.StandardDirective = SD_OPERATOR then
-          begin
-            HandleMethod(U, METHOD_OPERATOR);
-            ClassKeyWordString := '';
-            SkipMethodBody;
-          end
-          else
-            DoError('Unexpected %s', [t.Description]);
-
-        TOK_KEYWORD:
-          begin
-            case t.Info.KeyWord of
-              KEY_RESOURCESTRING, KEY_CONST,
-              KEY_TYPE,
-              KEY_THREADVAR, KEY_VAR:
-                begin
-                  Scanner.UnGetToken(t);
-                  ParseTVCSection(nil); // parse section but don't add to any list
-                end;
-              KEY_CLASS:
-                ClassKeyWordString := t.Data;
-              KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
-                begin
-                  HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord));
-                  ClassKeyWordString := '';
-                  SkipMethodBody;
-                end;
-              KEY_USES:
-                ParseUses(U);
-              KEY_PROPERTY:
-                ParseProperty(PropertyParsed);
-              // Stop parsing on "initialization", "finalization"
-              KEY_INITIALIZATION, KEY_FINALIZATION:
-                Break;
-              // Stop parsing on "end.". Must come here only on final "end" so
-              // don't care about other cases
-              KEY_END:
-                begin
-                  // skip possible whitespaces
-                  repeat
-                    FreeAndNil(t);
-                    t := GetNextToken;
-                  until not (t.MyType = TOK_WHITESPACE);
-                  // token must be period
-                  if t.IsSymbol(SYM_PERIOD) then
-                    Break;
-                  DoError('Unexpected %s', [t.Description]);
-                end;
+  try
+    repeat
+      t := GetNextToken;
+      try
+        case t.MyType of
+          TOK_IDENTIFIER:
+            if t.Info.StandardDirective = SD_OPERATOR then
+            begin
+              HandleMethod(U, METHOD_OPERATOR);
+              ClassKeyWordString := '';
+              SkipMethodBody;
+            end
             else
               DoError('Unexpected %s', [t.Description]);
+
+          TOK_KEYWORD:
+            begin
+              case t.Info.KeyWord of
+                KEY_RESOURCESTRING, KEY_CONST,
+                KEY_TYPE,
+                KEY_THREADVAR, KEY_VAR:
+                  begin
+                    Scanner.UnGetToken(t);
+                    ParseTVCSection(nil); // parse section but don't add to any list
+                  end;
+                KEY_CLASS:
+                  ClassKeyWordString := t.Data;
+                KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
+                  begin
+                    HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), MethodCounts);
+                    ClassKeyWordString := '';
+                    SkipMethodBody;
+                  end;
+                KEY_USES:
+                  ParseUses(U);
+                KEY_PROPERTY:
+                  begin
+                    ParseProperty(PropertyParsed);
+                    FreeAndNil(PropertyParsed);
+                  end;
+                // Stop parsing on "initialization", "finalization"
+                KEY_INITIALIZATION, KEY_FINALIZATION:
+                  Break;
+                // Stop parsing on "end.". Must come here only on final "end" so
+                // don't care about other cases
+                KEY_END:
+                  begin
+                    // skip possible whitespaces
+                    repeat
+                      FreeAndNil(t);
+                      t := GetNextToken;
+                    until not (t.MyType = TOK_WHITESPACE);
+                    // token must be period
+                    if t.IsSymbol(SYM_PERIOD) then
+                      Break;
+                    DoError('Unexpected %s', [t.Description]);
+                  end;
+              else
+                DoError('Unexpected %s', [t.Description]);
+              end;
             end;
-          end;
+        end;
+      finally
+        FreeAndNil(t);
       end;
-    finally
-      FreeAndNil(t);
-    end;
-  until False;
+    until False;
+  finally
+    FreeAndNil(MethodCounts);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
