@@ -694,7 +694,8 @@ begin
     on E: Exception do
     begin
       WriteLn('Fatal Error: ' + E.ClassName + ': ' + E.Message);
-      Halt(1); // exit with non-zero status
+      ExitCode := 1; // exit with non-zero status
+      Exit;
     end;
   end;
   {$endif not LET_EXCEPTIONS_THROUGH}
