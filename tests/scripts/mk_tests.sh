@@ -37,7 +37,7 @@ run_echo ()
       echo $STDERR > "$OUTPUT_FILENAME.heaptrc"
     fi
   else
-    "$@" > "$OUTPUT_FILENAME" 2> NUL
+    "$@" > "$OUTPUT_FILENAME" 2> /dev/null
   fi
   
   set -e
