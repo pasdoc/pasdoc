@@ -1130,6 +1130,12 @@ type
 
   { Collection of methods. }
   TPasMethods = class(TPasItems)
+    { Find an Index-th item with given name on a list. Index is 0-based.
+      There could be multiple items sharing the same name (overloads) while
+      method of base class returns only the one most recently added item.
+
+      Returns @nil if nothing can be found. }
+    function FindListItem(const AName: string; Index: Integer): TPasMethod; overload;
   end;
 
   { Collection of properties. }
@@ -2066,6 +2072,25 @@ begin
     for i := 0 to Count - 1 do
       PasItemAt[i].FullDeclaration := Suffix;
   end;
+end;
+
+{ TPasMethods ----------------------------------------------------------------- }
+
+function TPasMethods.FindListItem(const AName: string; Index: Integer): TPasMethod;
+var i, Counter: Integer;
+begin
+  Counter := -1;
+  for i := 0 to Count - 1 do
+    if AnsiSameText(PasItemAt[i].Name, AName) then
+    begin
+      Inc(Counter);
+      if Counter = Index then
+      begin
+        Result := PasItemAt[i] as TPasMethod;
+        Exit;
+      end;
+    end;
+  Result := nil;
 end;
 
 { TPasNestedCios ------------------------------------------------------------- }
