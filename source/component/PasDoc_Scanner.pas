@@ -554,7 +554,7 @@ function TScanner.GetToken: TToken;
   begin
     DoMessage(6, pmtInformation,
       '$%s encountered (%s), condition is %s, level %d',
-      [DirectiveName, DirectiveParam, BoolToStr(IsTrue), FDirectiveLevel]);
+      [DirectiveName, DirectiveParam, BoolToStr(IsTrue, True), FDirectiveLevel]);
     if IsTrue then
     begin
       Inc(FDirectiveLevel);
@@ -591,7 +591,9 @@ function TScanner.GetToken: TToken;
               the loop without touching the FDirectiveLevel. }
             Break;
         end;
+        FreeAndNil(ElseifToken);
       until false;
+      FreeAndNil(ElseifToken);
     end;
   end;
 
