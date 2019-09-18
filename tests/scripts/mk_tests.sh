@@ -22,7 +22,24 @@ run_echo ()
 
   # Temporary set +e, to ignore exit status from pasdoc
   set +e
-  "$@" > "$OUTPUT_FILENAME"
+  # Checking mem leaks - gather STDERR output (heaptrc writes it there)
+  # and search for key phrase inside ("N unfreed memory blocks" where N <> 0).
+  # If key phrase is found, print output to special file.
+  if [ "${CHECK_MEM_LEAK:-false}" = 'true' ]
+  then
+    STDERR=$( { "$@" > "$OUTPUT_FILENAME"; } 2>&1)
+    MEMLEAKED=$(echo $STDERR | grep -P "(\d{2,}|[^0]) unfreed memory blocks")
+    if [ -n "$MEMLEAKED" ]
+    then
+      DIR=$(dirname "$OUTPUT_FILENAME")
+      DIR=$(basename "$DIR")
+      echo Test $DIR: mem leak found, check .heaptrc file
+      echo $STDERR > "$OUTPUT_FILENAME.heaptrc"
+    fi
+  else
+    "$@" > "$OUTPUT_FILENAME" 2> NUL
+  fi
+  
   set -e
 }
 
