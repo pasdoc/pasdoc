@@ -1163,7 +1163,9 @@ begin
         i.FullDeclaration := 'const ' + i.FullDeclaration;
         TPasFieldVariable(i).IsConstant := True;
         TPasCio(Item).Fields.Add(i);
-      end;
+      end
+      else
+        i.Free;
     end
     else
       TPasUnit(Item).AddConstant(i); // This is the last line here since "U" owns the objects,
