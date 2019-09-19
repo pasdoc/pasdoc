@@ -101,11 +101,20 @@ type
     { impl section is not scanned - default behavior }
     imtNone,
     { data is taken from intf, if it's empty - from impl }
-    imtFirstNotEmpty,
+    imtPreferIntf,
     { data is concatenated }
     imtJoin,
     { data is taken from impl, if it's empty - from intf }
     imtPreferImpl
+  );
+
+const
+  InfoMergeTypeStr: array[TInfoMergeType] of string =
+  (
+    '',
+    'prefer-interface',
+    'join',
+    'prefer-implementation'
   );
 
 type

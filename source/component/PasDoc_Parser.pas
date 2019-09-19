@@ -530,8 +530,6 @@ begin
   ItemsForNextBackComment := TPasItems.Create(false);
   FCioSk := TPasCioHelperStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
-  {}// tmp - must be set according to options
-  FInfoMergeType := imtJoin;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1448,7 +1446,7 @@ begin
   case MergeType of
     imtNone:
       Result := OldValue;
-    imtFirstNotEmpty:
+    imtPreferIntf:
       Result := IfThen(OldValue <> '', OldValue, NewValue);
     // Also process case when OldValue is fully contained in NewValue.
     // This allows specifying short abstract in intf section and full description
@@ -1679,8 +1677,9 @@ begin
                     ClassKeyWordString := '';
                     SkipMethodBody;
                   end;
+                // Do not read unit used internally for now - maybe will do in the future
                 KEY_USES:
-                  ParseUses(U);
+                  ParseUses(nil);
                 KEY_PROPERTY:
                   begin
                     ParseProperty(PropertyParsed);
@@ -2190,6 +2189,7 @@ end;
 procedure TParser.ParseUses(const U: TPasUnit);
 var
   T: TToken;
+  UsedUnit: string;
 begin
   { Parsing uses clause clears the comment, otherwise
     - normal comments before "uses" clause would be assigned to normal unit
@@ -2202,7 +2202,9 @@ begin
   ItemsForNextBackComment.Clear;
 
   repeat
-    U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
+    UsedUnit := GetAndCheckNextToken(TOK_IDENTIFIER, true);
+    if U <> nil then
+      U.UsesUnits.Append(UsedUnit);
 
     T := GetNextToken;
     try
