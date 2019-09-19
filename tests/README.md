@@ -3,9 +3,9 @@
 ## Requirements
 
   - FPC compiler. Test suite is FreePascal-only
-  - `pasdoc` binary available in `$PATH`, or compiled inside the `bin` subdirectory of the project
   - Unix shell like `bash` to execute `*.sh` scripts
-  - `make` and some other tools for building the binary
+  - `make` and some other tools for building the binaries
+  - Sources of pasdoc console application in `..\source\console` for building the required binary
   - `git` installed or `diff` available for checking results for changes
 
 Run all the tests simply by `run_all_tests.sh`.
@@ -31,13 +31,23 @@ SETLOCAL
 SET FPCPath={Your_FPC_Path}\bin\i386-win32
 :: For bash & other Unix console tools, git for diffing
 SET GitPath={Your_Git_Path}\bin
-:: For pasdoc, if pasdoc binary is not in `bin` subdirectory of the project
-SET PasDocPath=%~dp0%\..\source\console
 
-SET PATH=%FPCPath%;%GitPath%;%PasDocPath%
+SET PATH=%FPCPath%;%GitPath%
+
+SET CHECK_MEM_LEAK=true
 
 call bash run_all_tests.sh
 ```
+
+## Check for memory leaks
+
+Tests could be built and run with memory leaks checking. This mode is enabled by setting environment
+variable `CHECK_MEM_LEAK` to `true`. In this mode pasdoc binary is built with `-gh` parameter that
+enables heap trace output on exit and script that executes the binary catches and handles this data.
+If there's no memory leaks, nothing changes but if they are, full reports will be saved to files named
+`PASDOC-OUTPUT.heaptrc` in appropriate subdirectories of tests output. Moreover, short message about
+memory leak will be written to console.
+
 
 # Testcases
 
@@ -49,14 +59,12 @@ Some of these are written to test new features.
 To add a new testcase,
 
 1. add the file to `testcases` subdirectory
-   (follow the naming conventions below, usually just ok_xxx.pas).
-2. add an appropriate line at the end of scripts/mk_tests.sh.
+   (follow the naming conventions below, usually just `ok_xxx.pas`).
+2. add an appropriate line at the end of `scripts/mk_tests.sh`.
 3. after you make sure it works, commit the new version of `testcases_output`.
 
 Using these tests fully requires having some standard Unix tools
 installed and available on $PATH. You need GNU `make`, `bash`, `diff`.
-
-And you need the `pasdoc` binary available on $PATH.
 
 ## Naming of Pascal unit files in testcases subdirectory
 
@@ -77,8 +85,8 @@ And you need the `pasdoc` binary available on $PATH.
     pasdoc should generate proper error message for this case.
 
     Note that pasdoc may report errors as warnings,
-    e.g. "Warning[2]: Error EPasDoc: error_line_number.pas(26):
-    could not open include file not_existing.inc ..."
+    e.g. `Warning[2]: Error EPasDoc: error_line_number.pas(26):
+    could not open include file not_existing.inc ...`
     Pasdoc calls this a warning, since, after all, it can continue
     it's work by simply skipping to the next unit.
     But for the sake of this distinction, this is an *error*,
@@ -99,7 +107,7 @@ Notes:
 - Please keep prefixes "ok_", "warning_", "error_" lowercase so that
   e.g. the file-mask `ok_*` works as expected on case-sensitive file-systems.
   Try to follow the convention
-  "prefix_description_of_test_lowercase_with_underscores.pas".
+  `prefix_description_of_test_lowercase_with_underscores.pas`.
 
 - Most of these units will have empty implementation.
   They are not supposed to be ever compiled by anything.
@@ -116,7 +124,7 @@ Notes:
   like removing some files or so.
 
 - If you want to test unit with a special pasdoc's command-line,
-  you must add appropriate line at the end of ./mk_tests.sh script.
+  you must add appropriate line at the end of `scripts/mk_tests.sh` script.
 
 ## Possible tests to be done
 
@@ -155,8 +163,8 @@ export USE_DIFF_TO_COMPARE=true
     is still a better test than nothing...
 
     Note that pasdoc messages (printed on stdout) will not be shown
-    when you will make tests using mentioned `make ...' commands.
-    Instead they will be saved to files named PASDOC-OUTPUT
+    when you will make tests using mentioned `make ...` commands.
+    Instead they will be saved to files named `PASDOC-OUTPUT`
     in appropriate subdirectories of tests output.
     This way we treat messages printed by pasdoc as important part
     of pasdoc's output, they are included in "correct tests output"
@@ -195,7 +203,7 @@ export USE_DIFF_TO_COMPARE=true
    This is an automatic test that makes html docs for all test units
    and validates them using v.Nu validator.
 
-   For this to work, vnu has to be available at $PATH. This can be archieved
+   For this to work, `vnu` has to be available at $PATH. This can be archieved
    by downloading the most recent version from [here](https://github.com/validator/validator/releases)
    and then adding the following wrapper script to your bin directory:
 
@@ -209,8 +217,8 @@ export USE_DIFF_TO_COMPARE=true
 - `scripts/validate_simplexml.sh`
 
    This is an automatic test that makes simplexml docs for all test units
-   and validates them using xmllint.
-   xmllint must be installed for this to work.
+   and validates them using `xmllint`.
+   `xmllint` must be installed for this to work.
 
    We do not have any DTD, so it doesn't check that our XML files
    conform to anything. But at least it checks that they are well-formed
@@ -232,14 +240,14 @@ export USE_DIFF_TO_COMPARE=true
     1st time the cache directory is empty and pasdoc writes the cache,
     2nd time pasdoc should read everything from the cache.
     The script then checks that pasdoc's output was identical each time
-    (comparing them with `diff -u', so you get diff on output if something
+    (comparing them with `diff -u`, so you get diff on output if something
     does not match).
 
     This somehow checks that writing the cache and reading the cache
     and writing documentation basing on information obtained from the cache
     (instead of from parsing units) works OK.
 
-    Everything is read/written to a temporary directory scripts/check_cache_tmp/,
+    Everything is read/written to a temporary directory `scripts/check_cache_tmp/`,
     that is removed at the beginning and at the end of the script.
     (It's removed at the beginning, and also by `make clean`, just to
     make sure that no garbage is left there, in case script failed
@@ -248,7 +256,7 @@ export USE_DIFF_TO_COMPARE=true
     here -- it just happens to use the same test units.
 
     In case comparison between two outputs failed both outputs
-    and left in scripts/check_cache_tmp/, so developer can inspect
+    and left in `scripts/check_cache_tmp/`, so developer can inspect
     them closer.
 
 - Test cache is format-independent:
@@ -261,15 +269,15 @@ export USE_DIFF_TO_COMPARE=true
 
     Requires two arguments, two names of pasdoc output format.
     These two formats should be different for this test to be really sensible
-    (and better than check_cache.sh), but they can also be equal and
+    (and better than `check_cache.sh`), but they can also be equal and
     test should pass anyway.
 
-    This is similar to ./check_cache.sh test, but it checks
+    This is similar to `./check_cache.sh` test, but it checks
     that cache format is independent of pasdoc's output format.
-    1st it generates output with format 1, without using any cache.
-    2nd it generates output with format 2, writing the cache.
-    3rd it generates output with format 1, this time reading the cache.
-    Then it checks that 1st and 3rd output are equal.
+    - 1st it generates output with format 1, without using any cache.
+    - 2nd it generates output with format 2, writing the cache.
+    - 3rd it generates output with format 1, this time reading the cache.
+    - Then it checks that 1st and 3rd output are equal.
 
     This way it checks that cache generated while doing format 2
     may be reused while making format 1. So it tests that cache
@@ -279,13 +287,13 @@ export USE_DIFF_TO_COMPARE=true
 
 `make clean` will clean this directory.
 
-Note that make used must be GNU make.
+Note that `make` used must be GNU make.
 Under Linux this is standard, under FreeBSD this is called `gmake`,
 under Win32 you can get this with e.g. FPC, MinGW or Cygwin.
 
-scripts/ subdirectory contains some helpful things for running tests.
+`scripts/` subdirectory contains some helpful things for running tests.
 These should be scripts that perform some additional tests
-on test units available here (like check_cache.sh),
+on test units available here (like `check_cache.sh`),
 but also some helper scripts/files for Makefile in this directory.
 
 ## Subdirectory testcases/todo/
@@ -297,14 +305,14 @@ fails with some error on correct input, but "incorrectly handled"
 may also mean that pasdoc fails to write a proper warning/error
 in case when input (unit's sources) is obviously wrong.
 
-Files inside todo/ should follow exactly the same naming convention
+Files inside `todo/` should follow exactly the same naming convention
 as units in this directory (`ok_*`, `warning_*`, `error_*`).
 In this case, unit's name tells what pasdoc *should* do with such unit,
 even if it doesn't do it for now.
 The idea is that when developer fixes a problem with some unit
-in tests/todo/ directory, he can simply move this unit to tests/.
+in `tests/todo/` directory, he can simply move this unit to `tests/`.
 
-These files are in separate todo/ subdirectory, because otherwise
+These files are in separate `todo/` subdirectory, because otherwise
 every time we would like to check our tests we would have to
 remember "oh, such-and-such test fails but it's a known problem,
 so I can ignore it". This would be troublesome,
