@@ -1163,6 +1163,7 @@ function TTokenizer.SkipUntilCompilerDirective: TToken;
 begin
   Result := nil;
   repeat
+    FreeAndNil(Result);
     Result := GetToken(true);
     CheckForDirective(Result);
     if Result.MyType = TOK_DIRECTIVE then break;
