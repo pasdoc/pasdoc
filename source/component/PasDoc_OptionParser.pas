@@ -46,6 +46,9 @@ const
   DefLongOptionString = '--';
   { Marks "include config file" option }
   OptionFileChar = '@';
+  { Special substitution that, if found inside a config file, will be replaced
+    with actual path of the file }
+  CfgMacroCfgPath = '$CFG_PATH';
   { Indentation of option's name from the start of console line }
   OptionIndent = '  ';
   { Separator between option's name and explanation }
@@ -392,9 +395,24 @@ begin
 end;
 
 procedure TOptionParser.ParseOptions;
+
+  procedure ExpandCfgFileMacros(List: TStringList; const CfgFile: string);
+  var
+    i: Integer;
+    CfgFilePath: string;
+  begin
+    // Prepare macros data
+    CfgFilePath := ExtractFileDir(ExpandFileName(CfgFile));
+
+    // Do the replace. This might be optimized if the number of macros grows
+    for i := 0 to List.Count - 1 do
+      List[i] := StringReplace(List[i], CfgMacroCfgPath, CfgFilePath, [rfReplaceAll]);
+  end;
+
 var
   LCopyList, OptsFromFile: TStringList;
   i, j: Integer;
+  CfgFile: string;
   LFoundSomething: boolean;
 begin
   LCopyList := TStringList.Create;
@@ -409,7 +427,9 @@ begin
         // read config file
         OptsFromFile := TStringList.Create;
         try
-          OptsFromFile.LoadFromFile(Copy(LCopyList[i], 2, MaxInt));
+          CfgFile := Copy(LCopyList[i], 2, MaxInt);
+          OptsFromFile.LoadFromFile(CfgFile);
+          ExpandCfgFileMacros(OptsFromFile, CfgFile);
           // add to the list at current position
           for j := OptsFromFile.Count - 1 downto 0 do
             LCopyList.Insert(i + 1, LongOptionStart + OptsFromFile[j]);
