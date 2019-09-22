@@ -1,6 +1,9 @@
 Next version (not released yet)
 
-  * --auto-back-comments command-line option (thanks to Fr0sT-Brutal)
+  * Read additional command-line options from file (thanks to Fr0sT-Brutal),
+    see https://github.com/pasdoc/pasdoc/wiki/ConfigFileOption
+  * --auto-back-comments command-line option (thanks to Fr0sT-Brutal),
+    see https://github.com/pasdoc/pasdoc/wiki/AutoBackComments
   * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
     (thanks to Fr0sT-Brutal)
   * @longCode without markers fixed
