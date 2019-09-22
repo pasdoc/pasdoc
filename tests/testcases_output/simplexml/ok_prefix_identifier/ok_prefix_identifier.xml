@@ -11,7 +11,7 @@
     <ancestor name="TObject" declaration="TObject" />
     <function name="Create" type="constructor" declaration="class constructor Create;">
     </function>
-    <function name="end" type="function" declaration="class function end : Integer;">
+    <function name="end" type="function" declaration="class function end: Integer;">
     </function>
     <variable name="class var begin: Integer;">
     </variable>

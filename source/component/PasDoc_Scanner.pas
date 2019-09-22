@@ -1058,7 +1058,9 @@ var
     Return @nil if end of stream. }
   function NextToken: TToken;
   begin
+    Result := nil;
     repeat
+      FreeAndNil(Result);
       Result := Tokenizer.GetToken(true);
     until (Result = nil) or (Result.MyType <> TOK_WHITESPACE);
   end;

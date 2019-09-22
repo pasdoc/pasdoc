@@ -17,3 +17,4 @@ interface
 {$endif read_implementation}
 
 implementation
+end.

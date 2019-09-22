@@ -84,6 +84,9 @@ implementation
 
 { TOuterClass }
 
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
+
 procedure TOuterClass.OuterPublicProc;
 begin
 
@@ -111,6 +114,9 @@ begin
 end;
 
 { TOuterClass.TInnerImplicitRecord }
+
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
 
 procedure TOuterClass.TInnerImplicitRecord.InnerPublicRecProc;
 begin

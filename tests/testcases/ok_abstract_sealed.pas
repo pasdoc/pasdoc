@@ -34,6 +34,9 @@ implementation
 
 { TAbstractClass }
 
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
+
 procedure TAbstractClass.AProcedure;
 begin
 
@@ -41,12 +44,18 @@ end;
 
 { TOrdinaryClass }
 
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
+
 procedure TOrdinaryClass.AProcedure;
 begin
 
 end;
 
 { TSealedClass }
+
+// Override comment above so that "parse implementation section" mode wouldn't change a thing
+{ }
 
 procedure TSealedClass.AProcedure;
 begin
