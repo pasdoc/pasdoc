@@ -402,7 +402,7 @@ procedure TOptionParser.ParseOptions;
     CfgFilePath: string;
   begin
     // Prepare macros data
-    CfgFilePath := ExcludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(CfgFile)));
+    CfgFilePath := ExtractFileDir(ExpandFileName(CfgFile));
 
     // Do the replace. This might be optimized if the number of macros grows
     for i := 0 to List.Count - 1 do
