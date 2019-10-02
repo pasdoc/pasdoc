@@ -1861,20 +1861,26 @@ begin
   U := TPasUnit.Create;
   try
     t := PeekNextToken;
-    U.IsUnit := t.IsKeyWord(KEY_UNIT);
-    if U.IsUnit then
-      ParseUnit(U) else
-      begin
-        U.IsProgram := t.IsKeyWord(KEY_PROGRAM);
-        if U.IsProgram  then
+    CheckToken(t, TOK_KEYWORD);
+    case t.Info.KeyWord of
+      KEY_UNIT:
         begin
-          ParseProgram(U);
-        end
-        else
-        begin
-          ParseLibrary(U);
+          U.IsUnit := True;
+          ParseUnit(U);
         end;
-      end;
+      KEY_PROGRAM:
+        begin
+          U.IsProgram := True;
+          ParseProgram(U);
+        end;
+      KEY_LIBRARY:
+        ParseLibrary(U);
+      else
+        DoError(SExpectedButFound,
+          [Format('one of reserved words "%s", "%s" or "%s"',
+            [LowerCase(KeyWordArray[KEY_UNIT]), LowerCase(KeyWordArray[KEY_LIBRARY]), LowerCase(KeyWordArray[KEY_PROGRAM])]),
+          T.Description]);
+    end;
   except
     FreeAndNil(U);
     raise;
