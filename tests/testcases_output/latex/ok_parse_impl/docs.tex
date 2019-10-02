@@ -43,7 +43,7 @@
 \label{ok_parse_impl}
 \index{ok{\_}parse{\_}impl}
 \section{Description}
-Parse implementation section
+Parse implementation section. Must be tested with --implementation{-}comments=join --define PASDOC
 \section{Overview}
 \begin{description}
 \item[\texttt{\begin{ttfamily}TClass\end{ttfamily} Class}]
@@ -53,6 +53,7 @@ Parse implementation section
 \item[\texttt{Foo}]
 \item[\texttt{Bar}]
 \item[\texttt{Laz}]
+\item[\texttt{NoDescr}]
 \item[\texttt{Overloaded}]
 \item[\texttt{Overloaded}]
 \item[\texttt{:=}]
@@ -250,7 +251,7 @@ procedure Foo;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-This is Foo (intf) This is Foo (impl)
+{\{}{\$}define DCC{\}} This is Foo (intf) This is Foo (impl)
 
 \end{list}
 \ifpdf
@@ -317,6 +318,35 @@ procedure Laz;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 This is Laz And it must not be doubled
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{NoDescr}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{NoDescr}
+\fi
+\label{ok_parse_impl-NoDescr}
+\index{NoDescr}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure NoDescr;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
 
 \end{list}
 \ifpdf

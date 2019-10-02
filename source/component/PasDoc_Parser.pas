@@ -1634,6 +1634,10 @@ var
   PropertyParsed: TPasProperty;
   MethodCounts: THash;
 begin
+  { Parsing impl section clears the comment otherwise comment before "implementation"
+    keyword would descend to first item of impl section }
+  ClearComments;
+
   if FInfoMergeType = imtNone then Exit;
 
   DoMessage(4, pmtInformation, 'Entering implementation section of unit %s',[U.Name]);

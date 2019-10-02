@@ -257,6 +257,8 @@ all_tests_for_current_format ()
   mk_test error_missing_quote_in_literal error_missing_quote_in_literal.pas
   # Global operator is ifdef-ed with FPC
   mk_test ok_parse_impl ok_parse_impl.pas --define=FPC
+  # Some regions are ifdef-ed, show them all with PASDOC define
+  mk_test ok_parse_impl ok_parse_impl.pas --define=PASDOC
 }
 
 # parse params ----------------------------------------

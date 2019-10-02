@@ -1,15 +1,22 @@
-{ Parse implementation section }
+{ Parse implementation section.
+  Must be tested with --implementation-comments=join --define PASDOC }
 unit ok_parse_impl;
 
 interface
 
 uses IntfUnit;
 
+{$ifdef PASDOC}
+  {$define FPC}
+  // {$define DCC}
+{$endif}
+
 // This is Foo (intf)
 procedure Foo;
 procedure Bar;
 // This is Laz
 procedure Laz;
+procedure NoDescr;
 // @exclude
 procedure Ignored;
 
@@ -40,7 +47,14 @@ type
 Operator := (C : TMyType) z : TMyType;
 {$endif}
 
+// bugfix: this comment must not descend to "NoDescr"
+
 implementation
+
+{$ifdef PASDOC}
+procedure NoDescr; // place it before "uses" because ParseUses clears comment too
+begin end;
+{$endif}
 
 uses ImplUnit;
 
