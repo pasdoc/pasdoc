@@ -12,6 +12,10 @@
 <param name="Local" value="ok_parse_impl.html#Bar">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="Dex">
+<param name="Local" value="ok_parse_impl.html#Dex">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Foo">
 <param name="Local" value="ok_parse_impl.html#Foo">
 </object>

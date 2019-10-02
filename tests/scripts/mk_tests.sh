@@ -259,6 +259,7 @@ all_tests_for_current_format ()
   mk_test ok_parse_impl ok_parse_impl.pas --define=FPC
   # Some regions are ifdef-ed, show them all with PASDOC define
   mk_test ok_parse_impl ok_parse_impl.pas --define=PASDOC
+  mk_test ok_parse_impl_back_comments ok_parse_impl_back_comments.pas --implementation-comments=join --auto-back-comments
 }
 
 # parse params ----------------------------------------

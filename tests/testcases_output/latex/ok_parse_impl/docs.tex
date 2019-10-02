@@ -53,6 +53,7 @@ Parse implementation section. Must be tested with --implementation{-}comments=jo
 \item[\texttt{Foo}]
 \item[\texttt{Bar}]
 \item[\texttt{Laz}]
+\item[\texttt{Dex}]
 \item[\texttt{NoDescr}]
 \item[\texttt{Overloaded}]
 \item[\texttt{Overloaded}]
@@ -251,7 +252,7 @@ procedure Foo;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-{\{}{\$}define DCC{\}} This is Foo (intf) This is Foo (impl)
+This is Foo (intf) This is Foo (impl)
 
 \end{list}
 \ifpdf
@@ -318,6 +319,39 @@ procedure Laz;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 This is Laz And it must not be doubled
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Dex}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Dex}
+\fi
+\label{ok_parse_impl-Dex}
+\index{Dex}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Dex;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This is Dex described inside method body
 
 \end{list}
 \ifpdf

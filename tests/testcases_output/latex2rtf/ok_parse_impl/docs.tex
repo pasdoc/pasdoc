@@ -29,6 +29,7 @@ Parse implementation section. Must be tested with --implementation{-}comments=jo
 \item[\texttt{Foo}]
 \item[\texttt{Bar}]
 \item[\texttt{Laz}]
+\item[\texttt{Dex}]
 \item[\texttt{NoDescr}]
 \item[\texttt{Overloaded}]
 \item[\texttt{Overloaded}]
@@ -181,7 +182,7 @@ procedure Foo;\end{ttfamily}
 \end{flushleft}
 \par
 \item[\textbf{Description}]
-{\{}{\$}define DCC{\}} This is Foo (intf) This is Foo (impl)
+This is Foo (intf) This is Foo (impl)
 
 \end{list}
 \subsection*{Bar}
@@ -228,6 +229,29 @@ procedure Laz;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 This is Laz And it must not be doubled
+
+\end{list}
+\subsection*{Dex}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure Dex;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This is Dex described inside method body
 
 \end{list}
 \subsection*{NoDescr}

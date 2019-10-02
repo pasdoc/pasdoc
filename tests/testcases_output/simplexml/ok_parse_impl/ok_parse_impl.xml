@@ -1,13 +1,16 @@
 <unit name="ok_parse_impl.pas">
   <description><detailed>Parse implementation section. Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
   <function name="Foo" type="procedure" declaration="procedure Foo;">
-    <description><detailed>{$define DCC} This is Foo (intf) This is Foo (impl)</detailed></description>
+    <description><detailed>This is Foo (intf) This is Foo (impl)</detailed></description>
   </function>
   <function name="Bar" type="procedure" declaration="procedure Bar;">
     <description><detailed>This is Bar (impl)</detailed></description>
   </function>
   <function name="Laz" type="procedure" declaration="procedure Laz;">
     <description><detailed>This is Laz And it must not be doubled</detailed></description>
+  </function>
+  <function name="Dex" type="procedure" declaration="procedure Dex;">
+    <description><detailed>This is Dex described inside method body</detailed></description>
   </function>
   <function name="NoDescr" type="procedure" declaration="procedure NoDescr;">
   </function>

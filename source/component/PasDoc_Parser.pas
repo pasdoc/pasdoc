@@ -1474,6 +1474,10 @@ end;
 
 procedure TParser.ParseImplementationSection(const U: TPasUnit);
 
+var
+  // Collector of all ignored items that won't go to `U`
+  DummyUnit: TPasUnit;
+
   // Clear all comment data that was accumulated by PeekNextToken
   procedure ClearComments;
   begin
@@ -1483,9 +1487,13 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
     LastCommentInfo := EmptyRawDescriptionInfo;
   end;
 
-  { Here we stand at the beginning of a routine's
-    (function/procedure/constructor/destructor) inner contents or at its name.
-    Skip everything until its "end;" }
+  { Here we stand:
+      - at the beginning of a routine's (function/procedure/constructor/destructor)
+        valuable (non-comment) inner contents (after ParseCDFP invokation)
+      or
+      - right after function/procedure keyword (lambda assignment, parameters
+        or comment or contents following)
+    Skip everything until "end;" }
   procedure SkipMethodBody;
   var
     t: TToken;
@@ -1494,6 +1502,7 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
     M: TPasMethod;
   begin
     EndLevel := 0; InsideMethodBody := False; t := nil;
+
     repeat
       if t = nil then
         t := GetNextToken;
@@ -1507,7 +1516,7 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
           KEY_THREADVAR, KEY_VAR:
             begin
               Scanner.UnGetToken(t);
-              ParseTVCSection(nil); // parse section but don't add to any list
+              ParseTVCSection(DummyUnit); // ignore section contents
             end;
           // If we encounter BEGIN - check that current nesting level is 0,
           // this means we've started the entrypoint of this method
@@ -1610,6 +1619,11 @@ procedure TParser.ParseImplementationSection(const U: TPasUnit);
   begin
     ParseCDFP(M, ClassKeyWordString, MethodTypeToString(MethodType), MethodType,
       GetLastComment, True, True);
+    // ParseCDFP was called with InitItemsForNextBackComment so it added M to
+    // ItemsForNextBackComment list. We must clear it so that following comments
+    // in AutoBackComments mode won't glue to method object which is already disposed
+    ItemsForNextBackComment.Clear;
+
     // If a method counter is given, search for method inside it. Otherwise
     // assume Count is 1.
     if MethodCounts <> nil then
@@ -1647,6 +1661,9 @@ begin
     class methods, properties and variables declarations. }
   ClassKeyWordString := '';
   MethodCounts := THash.Create; // "[method name]=>count" hash map
+  { We can't immediately dispose parsed items because we've got to handle back
+    comments. So we create dummy container that will gather all ignored items. }
+  DummyUnit := TPasUnit.Create;
 
   try
     repeat
@@ -1671,7 +1688,7 @@ begin
                 KEY_THREADVAR, KEY_VAR:
                   begin
                     Scanner.UnGetToken(t);
-                    ParseTVCSection(nil); // parse section but don't add to any list
+                    ParseTVCSection(DummyUnit); // parse section but don't add to resulting unit
                   end;
                 KEY_CLASS:
                   ClassKeyWordString := t.Data;
@@ -1717,6 +1734,7 @@ begin
     until False;
   finally
     FreeAndNil(MethodCounts);
+    FreeAndNil(DummyUnit);
   end;
 end;
 

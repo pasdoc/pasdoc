@@ -43,15 +43,18 @@ Parse implementation section. Must be tested with &ndash;implementation-comments
 <td class="itemcode"><code>procedure <strong><a  href="ok_parse_impl.html#Laz">Laz</a></strong>;</code></td>
 </tr>
 <tr class="list2">
+<td class="itemcode"><code>procedure <strong><a  href="ok_parse_impl.html#Dex">Dex</a></strong>;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code>procedure <strong><a  href="ok_parse_impl.html#NoDescr">NoDescr</a></strong>;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>procedure <strong><a  href="ok_parse_impl.html#Overloaded">Overloaded</a></strong>; overload;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>procedure <strong><a  href="ok_parse_impl.html#Overloaded">Overloaded</a></strong>(a: Byte); overload;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>Operator := (C : <a  href="ok_parse_impl.TMyType.html">TMyType</a>) z : <a  href="ok_parse_impl.TMyType.html">TMyType</a>;</code></td>
 </tr>
 </table>
@@ -63,7 +66,7 @@ Parse implementation section. Must be tested with &ndash;implementation-comments
 </tr>
 <tr><td colspan="1">
 <p>
-{$define DCC} This is Foo (intf) This is Foo (impl)</p>
+This is Foo (intf) This is Foo (impl)</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -82,6 +85,15 @@ This is Bar (impl)</p>
 <tr><td colspan="1">
 <p>
 This is Laz And it must not be doubled</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Dex"></span><code>procedure <strong>Dex</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+This is Dex described inside method body</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

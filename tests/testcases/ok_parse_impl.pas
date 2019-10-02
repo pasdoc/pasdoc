@@ -8,7 +8,7 @@ uses IntfUnit;
 
 {$ifdef PASDOC}
   {$define FPC}
-  // {$define DCC}
+  {$define DCC}
 {$endif}
 
 // This is Foo (intf)
@@ -16,6 +16,7 @@ procedure Foo;
 procedure Bar;
 // This is Laz
 procedure Laz;
+procedure Dex;
 procedure NoDescr;
 // @exclude
 procedure Ignored;
@@ -171,6 +172,11 @@ end;
 // This is Laz
 // And it must not be doubled
 procedure Laz;
+begin
+end;
+
+procedure Dex;
+{< This is Dex described inside method body }
 begin
 end;
 
