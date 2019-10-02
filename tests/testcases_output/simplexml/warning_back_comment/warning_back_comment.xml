@@ -6,6 +6,11 @@
   <variable name="V2: Integer;">
     <description><detailed>descr of V1 and V2</detailed></description>
   </variable>
+  <variable name="V4: string;">
+    <description><detailed>descr of V4 after a keyword</detailed></description>
+  </variable>
+  <type name="T = byte;">
+  </type>
   <type name="TMyEnum = (...);">
     <description><detailed>Descr of TMyEnum</detailed></description>
   </type>

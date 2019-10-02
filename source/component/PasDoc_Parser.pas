@@ -1341,6 +1341,8 @@ begin
           end;
         TOK_KEYWORD:
           begin
+            // Back comments after a keyword are senseless
+            ItemsForNextBackComment.Clear;
             case t.Info.KeyWord of
               KEY_RESOURCESTRING, KEY_CONST:
                 Mode := pmConst;

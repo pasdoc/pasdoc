@@ -46,6 +46,35 @@
 Descr of unit warning{\_}back{\_}comment
 \section{Types}
 \ifpdf
+\subsection*{\large{\textbf{T}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{T}
+\fi
+\label{warning_back_comment-T}
+\index{T}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+T = byte;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
 \subsection*{\large{\textbf{TMyEnum}}\normalsize\hspace{1ex}\hrulefill}
 \else
 \subsection*{TMyEnum}
@@ -149,6 +178,39 @@ V2: Integer;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 descr of V1 and V2
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{V4}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{V4}
+\fi
+\label{warning_back_comment-V4}
+\index{V4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+V4: string;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+descr of V4 after a keyword
 
 \end{list}
 \end{document}
