@@ -1335,8 +1335,8 @@ begin
                   Scanner.UnGetToken(t);
                   ParseVariables(U);
                 end;
-            else
-              DoError('Unexpected %s', [t.Description]);
+              else
+                DoError('Unexpected %s', [t.Description]);
             end;
           end;
         TOK_KEYWORD:
@@ -3440,6 +3440,8 @@ begin
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
     begin // A Cio completed, nested or outer CIO
+      { Clear any orthan comments - do not let them break away from the CIO }
+      IsLastComment := false;
       ItemsForNextBackComment.ClearAndAdd(LCio);
       if (FCioSk.Count > 0) then
       begin

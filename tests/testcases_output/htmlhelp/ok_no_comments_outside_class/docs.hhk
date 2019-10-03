@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TEmptyCl">
+<param name="Local" value="ok_no_comments_outside_class.TEmptyCl.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TEmptyClWithNested">
+<param name="Local" value="ok_no_comments_outside_class.TEmptyClWithNested.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedEmptyCl">
+<param name="Local" value="ok_no_comments_outside_class.TEmptyClWithNested.TNestedEmptyCl.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TEmptyRec">
+<param name="Local" value="ok_no_comments_outside_class.TEmptyRec.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNoDescr1">
+<param name="Local" value="ok_no_comments_outside_class.html#TNoDescr1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNoDescr2">
+<param name="Local" value="ok_no_comments_outside_class.html#TNoDescr2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNoDescr3">
+<param name="Local" value="ok_no_comments_outside_class.html#TNoDescr3">
+</object>
+</ul>
+</body></html>

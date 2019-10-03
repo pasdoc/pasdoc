@@ -247,6 +247,7 @@ all_tests_for_current_format ()
   mk_test ok_auto_back_comments ok_auto_back_comments.pas --auto-back-comments
   mk_test error_file_not_supported_dpk error_file_not_supported.dpk
   mk_test error_file_not_supported_inc error_file_not_supported.inc
+  mk_test ok_no_comments_outside_class ok_no_comments_outside_class.pas
 }
 
 # parse params ----------------------------------------
