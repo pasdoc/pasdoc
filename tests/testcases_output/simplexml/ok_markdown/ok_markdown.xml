@@ -6,20 +6,20 @@
 <item>list item #1.2</item>
 </unorderedlist>
 
-
+end list 
 
 <unorderedlist>
 <item>list item #2.1</item>
 <item>list item #2.2</item>
 </unorderedlist>
 
-
+end list 
 
 <unorderedlist>
 <item>list item #3</item>
 </unorderedlist>
 
-
+end list 
 
 <unorderedlist>
 <item>list item #4</item>
@@ -33,25 +33,51 @@
 <item>list item #5.10</item>
 </orderedlist>
 
-
-
-<unorderedlist>
-<item>list item #7.1 
+Simple list with multiline text 
 
 <unorderedlist>
-<item>nested list item #7.1.1 
+<item>item 6.1 text text text</item>
+<item>item 6.2 item text</item>
+</unorderedlist>
+
+end list List with nested list 
 
 <unorderedlist>
-<item>nested list item #7.1.1.1</item>
+<item>item 7.1 text 
+
+<unorderedlist>
+<item>item 7.1.1 text</item>
+</unorderedlist>
+
+ text2</item>
+</unorderedlist>
+
+List with more nesting 
+
+<unorderedlist>
+<item>item 8.1 
+
+<unorderedlist>
+<item>item 8.1.1 
+
+<unorderedlist>
+<item>item 8.1.1.1</item>
+</unorderedlist>
+
+ text 8.1.1</item>
+<item>item 8.1.2 
+
+<unorderedlist>
+<item>item 8.1.2.1</item>
 </unorderedlist>
 
 </item>
 </unorderedlist>
 
-</item>
+ text 8.1</item>
 </unorderedlist>
 
-You can even mix markdown and PasDoc tags 
+end list You can even mix markdown and PasDoc tags 
 
 <unorderedlist>
 <item>list item #8.1</item>
