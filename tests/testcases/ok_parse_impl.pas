@@ -45,6 +45,7 @@ implementation
 uses ImplUnit;
 
 // type/var/const sections inside implementation section - they all must be ignored
+{ }
 type
   TInnerRec = record
     // must be ignored
@@ -75,6 +76,7 @@ procedure Foo;
 // must be ignored
 
 // lots of stuff inside proc...
+{ }
 
 type
   TRec = record

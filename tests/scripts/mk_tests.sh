@@ -55,9 +55,12 @@ mk_test ()
 
   PASDOC_OUTPUT_FILENAME="$OUTPUT_PATH"PASDOC-OUTPUT
 
+  # Note: "implementation-comments" is always added to check that parsing impl section is capable
+  # of parsing all units and that it won't change output on files with empty or
+  # fully private impl sections
   run_echo "$PASDOC_OUTPUT_FILENAME" \
     "${PASDOC_BIN}" --format "$FORMAT" --exclude-generator \
-    --output="$OUTPUT_PATH" "$@"
+    --implementation-comments=join --output="$OUTPUT_PATH" "$@"
 }
 
 # Run all the test for current $FORMAT.
@@ -252,6 +255,8 @@ all_tests_for_current_format ()
   mk_test ok_read_char_code ok_read_char_code.pas
   mk_test error_line_number_4 error_line_number_4.pas
   mk_test error_missing_quote_in_literal error_missing_quote_in_literal.pas
+  # Global operator is ifdef-ed with FPC
+  mk_test ok_parse_impl ok_parse_impl.pas --define=FPC
 }
 
 # parse params ----------------------------------------
