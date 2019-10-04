@@ -4,6 +4,10 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="T">
+<param name="Local" value="warning_back_comment.html#T">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TMyEnum">
 <param name="Local" value="warning_back_comment.html#TMyEnum">
 </object>
@@ -14,6 +18,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="V2">
 <param name="Local" value="warning_back_comment.html#V2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="V4">
+<param name="Local" value="warning_back_comment.html#V4">
 </object>
 </ul>
 </body></html>

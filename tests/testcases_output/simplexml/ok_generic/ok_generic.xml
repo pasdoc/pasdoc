@@ -31,7 +31,6 @@
     <ancestor name="TObjectList" declaration="TObjectList&lt;TMyObject&gt;" />
   </structure>
   <structure name="TMyNewGeneric" name_with_generic="TMyNewGeneric&lt;T1,T2&gt;" type="class">
-    <description><detailed>To Something here</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <function name="Blah" type="function" declaration="function Blah: PT;">
     </function>

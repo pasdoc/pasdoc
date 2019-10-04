@@ -10,6 +10,9 @@
   *required* to have '(' char after them. So they will still be
   correctly seen and parsed to the matching closing paren.
 
+  You can even have multiline params without parens with the help of "line feed" char \
+  (just like shell scripts, C lang etc.)
+
   See @link(SomeProc) for more examples and comments.
 
   @author Michalis
@@ -44,9 +47,13 @@ type
 
   And here is some code: @code begin X := Y + 1; end;
 
-  @raises EFoo when it's in bad mood
-  @param A means something
-  @returns Some integer *)
+  @raises EBar when it's in bad mood.\
+    But don't worry it won't happen too often.\
+    At least we hope so...
+  @param A means something\
+    or maybe nothing
+  @returns Some integer\
+    and good wishes *)
 function SomeProc(A: Integer): Integer;
 
 implementation

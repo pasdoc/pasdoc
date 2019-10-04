@@ -21,15 +21,23 @@
 \section{Description}
 \textbf{This is a test of Markdown syntax}\hfill\vspace*{1ex}
 
- Correct lists \begin{itemize}
+ Correct lists
+
+\begin{itemize}
 \item list item {\#}1.1
 \item list item {\#}1.2
-\end{itemize}\begin{itemize}
+\end{itemize}end list
+
+\begin{itemize}
 \item list item {\#}2.1
 \item list item {\#}2.2
-\end{itemize}\begin{itemize}
+\end{itemize}end list
+
+\begin{itemize}
 \item list item {\#}3
-\end{itemize}\begin{itemize}
+\end{itemize}end list
+
+\begin{itemize}
 \item list item {\#}4
 \end{itemize}\begin{enumerate}
 \setcounter{enumi}{0} \setcounter{enumii}{0} \setcounter{enumiii}{0} \setcounter{enumiv}{0} 
@@ -38,13 +46,35 @@
 \item list item {\#}5.2
 \setcounter{enumi}{2} \setcounter{enumii}{2} \setcounter{enumiii}{2} \setcounter{enumiv}{2} 
 \item list item {\#}5.10
-\end{enumerate}\begin{itemize}
-\item list item {\#}7.1 \begin{itemize}
-\item nested list item {\#}7.1.1 \begin{itemize}
-\item nested list item {\#}7.1.1.1
+\end{enumerate}Simple list with multiline text
+
+\begin{itemize}
+\item item 6.1 text text text
+\item item 6.2
+
+item text
+\end{itemize}end list
+
+List with nested list
+
+\begin{itemize}
+\item item 7.1 text \begin{itemize}
+\item item 7.1.1 text
+\end{itemize} text2
+\end{itemize}List with more nesting
+
+\begin{itemize}
+\item item 8.1 \begin{itemize}
+\item item 8.1.1 \begin{itemize}
+\item item 8.1.1.1
+\end{itemize} text 8.1.1
+\item item 8.1.2 \begin{itemize}
+\item item 8.1.2.1
 \end{itemize}
-\end{itemize}
-\end{itemize}You can even mix markdown and PasDoc tags
+\end{itemize} text 8.1
+\end{itemize}end list
+
+You can even mix markdown and PasDoc tags
 
 \begin{itemize}
 \item list item {\#}8.1

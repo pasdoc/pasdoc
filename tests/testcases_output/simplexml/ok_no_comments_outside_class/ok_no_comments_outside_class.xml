@@ -1,0 +1,20 @@
+<unit name="ok_no_comments_outside_class.pas">
+  <description><detailed>Test that orthan comments do not break away from the class definition</detailed></description>
+  <type name="TNoDescr1 = byte;">
+  </type>
+  <type name="TNoDescr2 = byte;">
+  </type>
+  <type name="TNoDescr3 = byte;">
+  </type>
+  <structure name="TEmptyCl" name_with_generic="TEmptyCl" type="class">
+    <description><detailed>Empty class with a comment inside</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TEmptyRec" name_with_generic="TEmptyRec" type="record">
+    <description><detailed>Empty record with a comment inside</detailed></description>
+  </structure>
+  <structure name="TEmptyClWithNested" name_with_generic="TEmptyClWithNested" type="class">
+    <description><detailed>Empty class with nested empty class with a comment inside</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+</unit>

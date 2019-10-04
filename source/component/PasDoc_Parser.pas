@@ -1335,12 +1335,14 @@ begin
                   Scanner.UnGetToken(t);
                   ParseVariables(U);
                 end;
-            else
-              DoError('Unexpected %s', [t.Description]);
+              else
+                DoError('Unexpected %s', [t.Description]);
             end;
           end;
         TOK_KEYWORD:
           begin
+            // Back comments after a keyword are senseless
+            ItemsForNextBackComment.Clear;
             case t.Info.KeyWord of
               KEY_RESOURCESTRING, KEY_CONST:
                 Mode := pmConst;
@@ -1861,20 +1863,26 @@ begin
   U := TPasUnit.Create;
   try
     t := PeekNextToken;
-    U.IsUnit := t.IsKeyWord(KEY_UNIT);
-    if U.IsUnit then
-      ParseUnit(U) else
-      begin
-        U.IsProgram := t.IsKeyWord(KEY_PROGRAM);
-        if U.IsProgram  then
+    CheckToken(t, TOK_KEYWORD);
+    case t.Info.KeyWord of
+      KEY_UNIT:
         begin
-          ParseProgram(U);
-        end
-        else
-        begin
-          ParseLibrary(U);
+          U.IsUnit := True;
+          ParseUnit(U);
         end;
-      end;
+      KEY_PROGRAM:
+        begin
+          U.IsProgram := True;
+          ParseProgram(U);
+        end;
+      KEY_LIBRARY:
+        ParseLibrary(U);
+      else
+        DoError(SExpectedButFound,
+          [Format('one of reserved words "%s", "%s" or "%s"',
+            [LowerCase(KeyWordArray[KEY_UNIT]), LowerCase(KeyWordArray[KEY_LIBRARY]), LowerCase(KeyWordArray[KEY_PROGRAM])]),
+          T.Description]);
+    end;
   except
     FreeAndNil(U);
     raise;
@@ -3432,6 +3440,8 @@ begin
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
     begin // A Cio completed, nested or outer CIO
+      { Clear any orthan comments - do not let them break away from the CIO }
+      IsLastComment := false;
       ItemsForNextBackComment.ClearAndAdd(LCio);
       if (FCioSk.Count > 0) then
       begin

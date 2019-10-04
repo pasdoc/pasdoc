@@ -1,0 +1,10 @@
+// Should generate error as Pasdoc expects 'unit', 'program' or 'library' as the first non-comment token in the file
+package error_file_not_supported;
+
+{$R *.res}
+
+requires
+  rtl,
+  vcl;
+
+end.

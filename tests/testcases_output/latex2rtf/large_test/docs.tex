@@ -2311,6 +2311,8 @@ Parsing logic is simple: if a tag requires some parameters but you don't put ope
 
 This doesn't break compatibility with documentation that enclosed parameters in (), because tags that have parameters were *required* to have '(' char after them. So they will still be correctly seen and parsed to the matching closing paren.
 
+You can even have multiline params without parens with the help of "line feed" char {\textbackslash} (just like shell scripts, C lang etc.)
+
 See \begin{ttfamily}SomeProc\end{ttfamily}(\ref{ok_tag_params_no_parens-SomeProc}) for more examples and comments.
 
    
@@ -2361,12 +2363,12 @@ And here is some code: \begin{ttfamily}begin X := Y + 1; end;\end{ttfamily}
   \par
 \item[\textbf{Parameters}]
 \begin{description}
-\item[A] means something
+\item[A] means something or maybe nothing
 \end{description}
-\item[\textbf{Returns}]Some integer
+\item[\textbf{Returns}]Some integer and good wishes
 \item[\textbf{Exceptions}]
 \begin{description}
-\item[\begin{ttfamily}EFoo\end{ttfamily}(\ref{ok_tag_params_no_parens.EFoo})] when it's in bad mood
+\item[\begin{ttfamily}EBar\end{ttfamily}(\ref{ok_expanding_descriptions.EBar})] when it's in bad mood. But don't worry it won't happen too often. At least we hope so...
 \end{description}
 
 
