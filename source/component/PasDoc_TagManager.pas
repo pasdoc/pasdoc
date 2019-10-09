@@ -528,6 +528,17 @@ type
   end;
 
 const
+  MarkDownEscapeChar = '\';
+  // Markdown blocks are rendered only when:
+  //   - Opening tag is preceded by ASCII whitespace or ASCII punctuation
+  //   - Closing tag is followed by ASCII whitespace or ASCII punctuation
+  // One-char Markdown blocks (italic *, italic _, code `) must meet additional condition:
+  //   - Opening tag is followed by non-ASCII whitespace
+  // to minimize false positives when block characters are used not for Markdown
+  // ( 'X = Y * Z', 'underscore _ is used to name some deprecated thing: something_').
+  // Logic beneath follows Occam's razor principle - as these blocks add styling to
+  // some content, this content shouldn't start and end with whitespaces.
+  // No Unicode categories used, just plain ASCII.
   MarkdownBlocks: array [0..6] of TMarkdownBlock =
     (
       (Open: '```pascal';  Close: '```';  PasDocTag: 'longcode'), // must be checked first to not mess with ``` or single `
@@ -538,6 +549,10 @@ const
       (Open: '*';    Close: '*';    PasDocTag: 'italic'),
       (Open: '_';    Close: '_';    PasDocTag: 'italic')
     );
+  ASCIIPunctuation = ['!', '"', '#', '$', '%', '&', '''', '(', ')', '*', '+', ',',
+    '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\', ']', '^', '_',
+    '`', '{', '|', '}', '~'];
+  MarkdownBlockBoundaries = WhiteSpace + ASCIIPunctuation;
   // Set of chars markdown blocks could start with. To speedup checking
   // All first chars of MarkdownBlocks[x].Open must be here. This could be automated
   // but it's not so complicated to keep this set actual
@@ -628,28 +643,55 @@ end;
 function CheckMarkdown(const Description: string; Offset: Integer;
   out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
 var
-  i, MdBlockIdx: Integer;
+  CurrOffset, BlockEndPos, MdBlockIdx: Integer;
 begin
   Result := False;
 
-  // check if we have markdown block opening
-  if not SCharIs(Description, Offset, MarkdownBlockStartChars) then Exit;  // Fast check
+  // Fast check if we have markdown block opening
+  if not SCharIs(Description, Offset, MarkdownBlockStartChars) then Exit;
+  if (Offset > 1) and SCharIs(Description, Offset - 1, MarkDownEscapeChar) then Exit; // skip escaped chars
+  if (Offset > 1) and not SCharIs(Description, Offset - 1, MarkdownBlockBoundaries) then Exit; // opening block must be preceded by a block delimiter char
+
   MdBlockIdx := -1;
-  for i := Low(MarkdownBlocks) to High(MarkdownBlocks) do
-    if Copy(Description, Offset, Length(MarkdownBlocks[i].Open)) = MarkdownBlocks[i].Open then
+  for BlockEndPos := Low(MarkdownBlocks) to High(MarkdownBlocks) do
+    if Copy(Description, Offset, Length(MarkdownBlocks[BlockEndPos].Open)) = MarkdownBlocks[BlockEndPos].Open then
     begin
-      MdBlockIdx := i;
+      MdBlockIdx := BlockEndPos;
       Break;
     end;
   if MdBlockIdx = -1 then Exit; { exit with false }
 
+  CurrOffset := Offset + Length(MarkdownBlocks[MdBlockIdx].Open);
+
+  // Check if this is one-char block and a whitespace follows - skip these cases
+  if (Length(MarkdownBlocks[MdBlockIdx].Open) = 1) and
+    SCharIs(Description, CurrOffset, WhiteSpace) then
+    Exit; { exit with false }
+
   // now search for markdown block end
-  i := PosEx(MarkdownBlocks[MdBlockIdx].Close, Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Close));
-  if i = 0 then Exit; { exit with false }
+  repeat
+    BlockEndPos := PosEx(MarkdownBlocks[MdBlockIdx].Close, Description, CurrOffset);
+    if BlockEndPos = 0 then Exit; { exit with false }
+    // skip escaped chars
+    if SCharIs(Description, BlockEndPos - 1, MarkDownEscapeChar) then
+    begin
+      CurrOffset := BlockEndPos + 1;
+      Continue;
+    end;
+    // block must close with a block delimiter char or end of string
+    if BlockEndPos + Length(MarkdownBlocks[MdBlockIdx].Close) - 1 = Length(Description) then
+      Break;
+    if not SCharIs(Description, BlockEndPos + Length(MarkdownBlocks[MdBlockIdx].Close), MarkdownBlockBoundaries) then
+    begin
+      CurrOffset := BlockEndPos + 1;
+      Continue;
+    end;
+    Break;
+  until False;
 
   PasDocTagName := MarkdownBlocks[MdBlockIdx].PasDocTag;
-  OffsetEnd := i + Length(MarkdownBlocks[MdBlockIdx].Close);
-  Parameters := Copy(Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Open), i - (Offset + Length(MarkdownBlocks[MdBlockIdx].Open)));
+  OffsetEnd := BlockEndPos + Length(MarkdownBlocks[MdBlockIdx].Close);
+  Parameters := Copy(Description, Offset + Length(MarkdownBlocks[MdBlockIdx].Open), BlockEndPos - (Offset + Length(MarkdownBlocks[MdBlockIdx].Open)));
 
   Result := True;
 end;

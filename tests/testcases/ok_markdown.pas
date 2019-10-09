@@ -93,9 +93,18 @@ Incorrect lists
   Some **bold text with some tags: My name is @name,
     some @code(begin end) and a link to me: @link(ok_markdown)**.
 
-  **Nested formats are **not** supported**
+  \*markers could be escaped
+  
+  *and also escaped at end\*
+  of a word*
+  
+  or placed inside_word or placed_inside_word_multiple_times or at the end_
+  
+  Multiplications are OK: A*B*C*D and with spaces too: A * B * C * D
+  
+  underscore _ is used to name some deprecated thing: something_
 
-  Some `inline code`.
+  Some `inline code`, some `**formatting** _inside_ code`
 
   Some preformatted code:
 
