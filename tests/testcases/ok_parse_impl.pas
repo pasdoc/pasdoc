@@ -129,6 +129,11 @@ var
   lambda2: TProc2;
   proc: procedure;  
 begin
+  Func :=
+    procedure(var Res: NativeInt)
+    begin
+      Res := form.ShowModal;
+    end;
   // must be ignored
   writeln(0);
   // many nested blocks...
@@ -161,6 +166,10 @@ begin
     begin
       // must be ignored
     end;
+  
+  RunLambda( procedure begin writeln(0); end );
+  
+  RunLambdas( [ procedure begin writeln(0); end, procedure begin writeln(0); end ] );
   {$endif}
 end;
 

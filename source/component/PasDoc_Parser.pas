@@ -1487,14 +1487,30 @@ var
     LastCommentInfo := EmptyRawDescriptionInfo;
   end;
 
+  { Function to skip header (parameters declarations) of anon method aka lambda.
+    Just read until "begin" }
+  procedure SkipLambdaHeader;
+  var t: TToken;
+  begin
+    t := nil;
+    repeat
+      t := PeekNextToken;
+      if t.IsKeyWord(KEY_BEGIN) then
+        Break;
+
+      Scanner.ConsumeToken;
+      FreeAndNil(t);
+    until False;
+  end;
+
   { Here we stand:
       - at the beginning of a routine's (function/procedure/constructor/destructor)
         valuable (non-comment) inner contents (after ParseCDFP invokation)
       or
-      - right after function/procedure keyword (lambda assignment, parameters
+      - right after function/procedure keyword (lambda assignment/declaration; parameters
         or comment or contents following)
     Skip everything until "end;" }
-  procedure SkipMethodBody;
+  procedure SkipMethodBody(IsLambda: Boolean = False);
   var
     t: TToken;
     EndLevel: Integer;
@@ -1538,16 +1554,37 @@ var
               begin
                 ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False);
                 FreeAndNil(M);
-              end;
-              SkipMethodBody;
+              end
+              else
+                SkipLambdaHeader;
+              SkipMethodBody(InsideMethodBody);
             end;
           KEY_END:
             begin
               Dec(EndLevel);
               if InsideMethodBody and (EndLevel = 0) then
               begin
-                // ";" after subroutine "end" is obligatory
-                GetAndCheckNextToken(SYM_SEMICOLON);
+                // for subroutines ";" after "end" is obligatory
+                if not IsLambda then
+                  GetAndCheckNextToken(SYM_SEMICOLON)
+                // lambdas could end with
+                //   ";" (var assignment),
+                //   ")" (as parameter in method),
+                //   "," (as one of parameters in method, item of array etc),
+                //   "]" (last item in array)
+                // ...
+                else
+                  try
+                    FreeAndNil(t);
+                    t := GetNextToken;
+                    if not ((t.MyType = TOK_SYMBOL) and
+                      (t.Info.SymbolType in [SYM_SEMICOLON, SYM_COMMA,
+                        SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET])) then
+                      DoError(SExpectedButFound,
+                        ['one of ";", ")", ",", "]" symbols', T.Description]);
+                  finally
+                    FreeAndNil(t);
+                  end;
                 Break;
               end;
             end;
