@@ -248,6 +248,7 @@ all_tests_for_current_format ()
   mk_test error_file_not_supported_dpk error_file_not_supported.dpk
   mk_test error_file_not_supported_inc error_file_not_supported.inc
   mk_test ok_no_comments_outside_class ok_no_comments_outside_class.pas
+  mk_test ok_threadvar ok_threadvar.pas
 }
 
 # parse params ----------------------------------------

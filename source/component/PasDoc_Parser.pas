@@ -2749,6 +2749,7 @@ begin
           DoError('"strict" found in an unexpected location', []);
 
         case t.Info.KeyWord of
+          KEY_THREADVAR,
           KEY_VAR:
             begin
               if ClassKeyWordString = '' then
