@@ -1534,16 +1534,16 @@ var
               Scanner.UnGetToken(t);
               ParseTVCSection(DummyUnit); // ignore section contents
             end;
-          // If we encounter BEGIN - check that current nesting level is 0,
+          // If we encounter BEGIN or ASM - check that current nesting level is 0,
           // this means we've started the entrypoint of this method
-          KEY_BEGIN:
+          KEY_BEGIN, KEY_ASM:
             begin
               if EndLevel = 0 then
                 InsideMethodBody := True;
               Inc(EndLevel);
             end;
-          // Constructions in the code section that must end with END keyword
-          KEY_ASM, KEY_CASE, KEY_TRY:
+          // Other constructions in the code section that must end with END keyword
+          KEY_CASE, KEY_TRY:
             Inc(EndLevel);
           // Nested subroutine / lambda. Run the skip recursively.
           KEY_PROCEDURE, KEY_FUNCTION:

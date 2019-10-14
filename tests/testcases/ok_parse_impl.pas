@@ -88,6 +88,12 @@ var
 
 function ExternalFn: BOOL; stdcall; external kernel32; //< bugfix: external functions break parsing
 
+// Fully asm inner proc
+procedure AsmProc;
+asm
+  MOV AX,BX;
+end;
+
 // This is Foo (impl)
 procedure Foo;
 // must be ignored
