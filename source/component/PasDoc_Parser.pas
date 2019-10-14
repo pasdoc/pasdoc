@@ -1557,6 +1557,7 @@ var
               end
               else
                 SkipLambdaHeader;
+              // There could not be external methods inside a method so skip body unconditionally
               SkipMethodBody(InsideMethodBody);
             end;
           KEY_END:
@@ -1676,6 +1677,13 @@ var
     // NB: Currently we don't add methods not declared in intf section
     if ExistingMethod <> nil then
       MergeMethodData(FInfoMergeType, ExistingMethod, M.RawDescriptionInfo^);
+    // External and forward methods have no body
+    if [SD_FORWARD, SD_EXTERNAL]*M.Directives = [] then
+    begin
+      SkipMethodBody;
+      DoMessage(5, pmtInformation, 'Skipped body of %s "%s"',
+        [MethodTypeToString(MethodType), M.Name]);
+    end;
     FreeAndNil(M);
   end;
 
@@ -1712,7 +1720,6 @@ begin
             begin
               HandleMethod(U, METHOD_OPERATOR);
               ClassKeyWordString := '';
-              SkipMethodBody;
             end
             else
               DoError('Unexpected %s', [t.Description]);
@@ -1733,7 +1740,6 @@ begin
                   begin
                     HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), MethodCounts);
                     ClassKeyWordString := '';
-                    SkipMethodBody;
                   end;
                 // Do not read unit used internally for now - maybe will do in the future
                 KEY_USES:

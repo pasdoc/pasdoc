@@ -86,6 +86,8 @@ var
   end;
   proc: procedure;  //< proc keyword in var section
 
+function ExternalFn: BOOL; stdcall; external kernel32; //< bugfix: external functions break parsing
+
 // This is Foo (impl)
 procedure Foo;
 // must be ignored
@@ -266,6 +268,12 @@ Operator := (C : TMyType2) z : TMyType;
 begin
 end;
 {$endif}
+
+procedure ForwardFn; forward; //< bugfix: forward functions break parsing
+
+procedure ForwardFn;
+begin
+end;
 
 end     . // whitespace is intentional
 
