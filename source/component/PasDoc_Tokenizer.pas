@@ -192,6 +192,8 @@ type
     SD_VARARGS,
     SD_FINAL);
 
+  TStandardDirectives = set of TStandardDirective;
+
 const
   { Names of the token types. All start with lower letter.
     They should somehow describe (in a few short words) given

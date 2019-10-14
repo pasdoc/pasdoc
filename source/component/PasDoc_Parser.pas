@@ -933,6 +933,7 @@ begin
           SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
           SD_VARARGS, SD_FINAL:
             begin
+              M.Directives := M.Directives + [t.Info.StandardDirective];
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(t);
               t := GetNextToken;
@@ -944,6 +945,8 @@ begin
             * Deprecated might be followed by a string constant since D2010. }
           SD_EXTERNAL, SD_MESSAGE, SD_NAME, SD_DEPRECATED:
             begin
+              M.Directives := M.Directives + [t.Info.StandardDirective];
+
               WasDeprecatedDirective := t.Info.StandardDirective = SD_DEPRECATED;
               if WasDeprecatedDirective then
                 M.HintDirectives := M.HintDirectives + [hdDeprecated];
@@ -968,6 +971,7 @@ begin
                     SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
                     SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL:
                       begin
+                        M.Directives := M.Directives + [t.Info.StandardDirective];
                         Scanner.UnGetToken(t);
                         Break;
                       end;
