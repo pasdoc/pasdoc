@@ -864,9 +864,19 @@ var
     Result := false;
   end;
 
+  function ExtractFileNameNoExt(const FileName: string): string;
+  begin
+    Result := ChangeFileExt(ExtractFileName(FileName), '');
+  end;
+
 begin
+  // Dequote name if necessary
   if (Length(N) > 2) and (N[1] = '''') and (N[Length(N)] = '''') then
     N := Copy(N, 2, Length(N) - 2);
+  // "*.inc" is possible - substitute name of container file
+  if ExtractFileNameNoExt(N) = '*' then
+    N := ExtractFilePath(N) + ExtractFileNameNoExt(FTokenizers[FCurrentTokenizer].StreamName) +
+      ExtractFileExt(N);
 
   NLowerCase := LowerCase(N);
   { If NLowerCase = N, avoid calling FileExists twice (as FileExists
