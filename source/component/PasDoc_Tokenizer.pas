@@ -801,7 +801,7 @@ begin
             try
               { Note that StrToInt automatically handles hex characters when
                 number starts from $. So below will automatically work for them. }
-              Result.StringContent := Chr(StrToInt(SEnding(Result.Data, 2)));
+              Result.StringContent := WideChar(StrToInt(SEnding(Result.Data, 2)));
             except
               { In case of EConvertError, make a warning and continue.
                 Result.StringContent will remain empty, which isn't a real problem. }
