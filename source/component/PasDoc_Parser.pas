@@ -1514,16 +1514,16 @@ var
   var
     t: TToken;
     EndLevel: Integer;
-    InsideMethodBody: Boolean;
+    InsideMethodBody, AsmBlock: Boolean;
     M: TPasMethod;
   begin
-    EndLevel := 0; InsideMethodBody := False; t := nil;
-
+    EndLevel := 0; InsideMethodBody := False; AsmBlock := False; t := nil;
     repeat
       if t = nil then
         t := GetNextToken;
 
-      if t.MyType = TOK_KEYWORD then
+      // Check only keywords; skip all keywords inside ASM blocks except "end"
+      if (t.MyType = TOK_KEYWORD) and (not AsmBlock or (t.Info.KeyWord = KEY_END)) then
         case t.Info.KeyWord of
           // nested var/const/type section
           // KEY_RESOURCESTRING and KEY_THREADVAR are not allowed here but let them remain
@@ -1540,6 +1540,9 @@ var
             begin
               if EndLevel = 0 then
                 InsideMethodBody := True;
+              // Asm blocks have different syntax that allows any Pascal keyword, even "end"
+              // so handle them specially
+              AsmBlock := (t.Info.KeyWord = KEY_ASM);
               Inc(EndLevel);
             end;
           // Other constructions in the code section that must end with END keyword
@@ -1562,6 +1565,18 @@ var
             end;
           KEY_END:
             begin
+              // ASM blocks can contain labels or identifiers named "end" so check
+              // whether the "end" is followed by ";". Skip if not
+              if AsmBlock then
+              begin
+                if not PeekNextToken.IsSymbol(SYM_SEMICOLON) then
+                begin
+                  FreeAndNil(t);
+                  t := GetNextToken;
+                  Continue;
+                end;
+              end;
+              AsmBlock := False;
               Dec(EndLevel);
               if InsideMethodBody and (EndLevel = 0) then
               begin
