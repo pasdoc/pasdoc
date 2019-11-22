@@ -1091,13 +1091,6 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.ReadLiteralString(var t: TToken): Boolean;
-
-  procedure ReleaseToken;
-  begin
-    t.Free;
-    t := nil;
-  end;
-
 var
   c: Char;
   Finished: Boolean;
@@ -1109,16 +1102,16 @@ begin
 
   repeat
     if not (Stream.Position < Stream.Size) then begin
-      ReleaseToken;
+      FreeAndNil(t);
       DoError('Tokenizer: unexpected end of stream', []);
     end;
     if GetChar(c) = 0 then begin
-      ReleaseToken;
+      FreeAndNil(t);
       DoError('Tokenizer: could not read character', []);
     end;
     if c = QuoteChar then begin
       if not PeekChar(c) then begin
-        ReleaseToken;
+        FreeAndNil(t);
         DoError('Tokenizer: could not peek character', [])
       end;
       if c = QuoteChar then { escaped single quote within string } begin
@@ -1130,6 +1123,11 @@ begin
       end;
       t.Data := t.Data + QuoteChar;
     end
+    else
+    if CharInSet(c, [#10, #13]) then begin
+      FreeAndNil(t);
+      DoError('Invalid char #%d encountered when reading literal string', [Ord(c)]);
+    end
     else begin
       t.Data := t.Data + c;
     end;
@@ -1139,7 +1137,7 @@ begin
     if not Finished then
       T.StringContent := T.StringContent + c;
   until Finished;
-  ReadLiteralString := True;
+  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1191,8 +1189,7 @@ end;
 procedure TTokenizer.UnGetToken(var t: TToken);
 begin
   if Assigned(FBufferedToken) then
-    DoError('%s: Cannot UnGet more than one token in TTokenizer',
-      [GetStreamInfo]);
+    DoError('Cannot UnGet more than one token in TTokenizer', []);
 
   FBufferedToken := t;
   t := nil;
