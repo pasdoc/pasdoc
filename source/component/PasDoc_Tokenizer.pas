@@ -765,9 +765,9 @@ begin
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
-            internal row counter to be able to state current row on errors;
-            TODO: will fail on Mac files (row is 13) }
-        Inc(Row, StrCountCharA(Result.Data, #10))
+            internal row counter to be able to state current row on errors.
+            Count both types of possible EOLs and select the max one }
+        Inc(Row, Max(StrCountCharA(Result.Data, #10), StrCountCharA(Result.Data, #13)))
       else
         DoError('Tokenizer: could not read character', []);
     end else
@@ -964,17 +964,32 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+// Check if current char is EOL and increases `Row` counter. `PrevCh` is previously
+// taken char to not increase counter on CR-LF
+procedure HandleEOL(PrevCh, CurrCh: Char; var Row: Integer);
+begin
+  case CurrCh of
+    #10:
+      // handle #13#10 case
+      if PrevCh <> #13 then
+        Inc(Row);
+    #13:
+      Inc(Row);
+  end;
+end;
+
 function TTokenizer.ReadCommentType1: TToken;
 var
-  c: Char;
+  c, prevC: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_EXT);
   with Result do
   begin
-    CommentContent := '';
+    CommentContent := ''; prevC := #0;
     repeat
       if not HasData or (GetChar(c) = 0) then Exit;
-      if c = #10 then Inc(Row);
+      HandleEOL(prevC, c, Row);
+      prevC := c;
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
 
@@ -988,16 +1003,17 @@ end;
 
 function TTokenizer.ReadCommentType2: TToken;
 var
-  c: Char;
+  c, prevC: Char;
 begin
   Result := TToken.Create(TOK_COMMENT_PAS);
-  Result.CommentContent := '';
+  Result.CommentContent := ''; prevC := #0;
   if not HasData or (GetChar(c) = 0) then Exit;
   repeat
     Result.CommentContent := Result.CommentContent + c;
 
     if c <> '*' then begin
-      if c = #10 then Inc(Row);
+      HandleEOL(prevC, c, Row);
+      prevC := c;
       if not HasData or (GetChar(c) = 0) then Exit;
     end else begin
       if not HasData or (GetChar(c) = 0) then Exit;

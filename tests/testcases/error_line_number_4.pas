@@ -1,0 +1,1 @@
+{ pasdoc should fail on parsing this unit, because the file "not_existing.inc"  does not exist.  The important thing is that failure message should indicate correct  line number in this unit.  Note this unit should have Mac line endings (#13)}{$ifdef NOT_DEFINED}A few lines here, please12345678910{$endif}{$I not_existing.inc}

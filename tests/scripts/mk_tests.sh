@@ -250,6 +250,7 @@ all_tests_for_current_format ()
   mk_test ok_no_comments_outside_class ok_no_comments_outside_class.pas
   mk_test ok_threadvar ok_threadvar.pas
   mk_test ok_read_char_code ok_read_char_code.pas
+  mk_test error_line_number_4 error_line_number_4.pas
 }
 
 # parse params ----------------------------------------
