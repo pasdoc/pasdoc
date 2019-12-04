@@ -443,7 +443,7 @@ function KeyWordByName(const Name: string): TKeyword;
 implementation
 
 uses
-  SysUtils;
+  SysUtils, Math;
 
 function KeyWordByName(const Name: string): TKeyword;
 var
