@@ -51,7 +51,8 @@ uses
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  PasDoc_Tokenizer;
 
 type
   { Visibility of a field/method. }
@@ -627,6 +628,7 @@ type
   protected
     FReturns: string;
     FWhat: TMethodType;
+    FDirectives: TStandardDirectives;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure StoreReturnsTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -651,6 +653,9 @@ type
       writing to the final docs) once again (by some ExpandDescription or
       ConvertString or anything like that). }
     property Returns: string read FReturns;
+
+    { Set of method directive flags }
+    property Directives: TStandardDirectives read FDirectives write FDirectives;
 
     function HasOptionalInfo: boolean; override;
   end;
@@ -1160,7 +1165,7 @@ function VisToStr(const Vis: TVisibility): string;
 implementation
 
 uses StrUtils,
-  PasDoc_Utils, PasDoc_Tokenizer;
+  PasDoc_Utils;
 
 function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
 var

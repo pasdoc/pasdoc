@@ -864,9 +864,19 @@ var
     Result := false;
   end;
 
+  function ExtractFileNameNoExt(const FileName: string): string;
+  begin
+    Result := ChangeFileExt(ExtractFileName(FileName), '');
+  end;
+
 begin
+  // Dequote name if necessary
   if (Length(N) > 2) and (N[1] = '''') and (N[Length(N)] = '''') then
     N := Copy(N, 2, Length(N) - 2);
+  // "*.inc" is possible - substitute name of container file
+  if ExtractFileNameNoExt(N) = '*' then
+    N := ExtractFilePath(N) + ExtractFileNameNoExt(FTokenizers[FCurrentTokenizer].StreamName) +
+      ExtractFileExt(N);
 
   NLowerCase := LowerCase(N);
   { If NLowerCase = N, avoid calling FileExists twice (as FileExists
@@ -910,7 +920,11 @@ begin
     if IdentifyDirective(t.CommentContent,
       dt, DirectiveName, DirectiveParamBlack, DirectiveParamWhite) then
     begin
-      DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered directive %s', [DirectiveNames[dt]]);
+      // We don't need it actually so can modify freely
+      if DirectiveParamBlack <> '' then
+        DirectiveParamBlack := ' "'+DirectiveParamBlack+'"';
+      DoMessage(6, pmtInformation, 'SkipUntilElseOrEndif: encountered directive %s%s',
+        [DirectiveNames[dt], DirectiveParamBlack]);
       case dt of
         DT_IFDEF, DT_IFNDEF, DT_IFOPT, DT_IF: Inc(Level);
         DT_ELSE, DT_ELSEIF:
@@ -923,7 +937,7 @@ begin
         DT_ENDIF, DT_IFEND: Dec(Level);
       end;
     end else
-      DoMessage(6, pmtInformation, 'SkipUntilElseOrFound: encountered unknown directive %s', [t.CommentContent]);
+      DoMessage(6, pmtInformation, 'SkipUntilElseOrEndif: encountered unknown directive %s', [t.CommentContent]);
 
     Stop := (Level = 0) and
       (T.MyType = TOK_DIRECTIVE) and
