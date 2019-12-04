@@ -105,6 +105,7 @@ type
     FHandleMacros: boolean;
     FAutoLink: boolean;
     FAutoBackComments: boolean;
+    FInfoMergeType: TInfoMergeType;
     procedure SetDescriptionFileNames(const ADescriptionFileNames: TStringVector);
     procedure SetDirectives(const ADirectives: TStringVector);
     procedure SetIncludeDirectories(const AIncludeDirectores: TStringVector);
@@ -231,6 +232,8 @@ type
       read FAutoLink write FAutoLink default false;
     property AutoBackComments: boolean
       read FAutoBackComments write FAutoBackComments default false;
+    property InfoMergeType: TInfoMergeType
+      read FInfoMergeType write FInfoMergeType;
   end;
 
 implementation
@@ -344,6 +347,7 @@ begin
     p.MarkersOptional := MarkerOptional;
     p.IgnoreLeading := IgnoreLeading;
     p.AutoBackComments := AutoBackComments;
+    p.InfoMergeType := InfoMergeType;
 
     LLoaded := false;
 

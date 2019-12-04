@@ -36,7 +36,7 @@ unit PasDoc_Parser;
 
 interface
 
-uses SysUtils, Classes, Contnrs,
+uses SysUtils, Classes, Contnrs, StrUtils,
   PasDoc_Types,
   PasDoc_Items,
   PasDoc_Scanner,
@@ -190,6 +190,7 @@ type
     FIgnoreLeading: string;
     FShowVisibilities: TVisibilities;
     FAutoBackComments: boolean;
+    FInfoMergeType: TInfoMergeType;
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
@@ -365,6 +366,7 @@ type
     procedure ParseTVCSection(U: TPasUnit);
 
     procedure ParseInterfaceSection(const U: TPasUnit);
+    procedure ParseImplementationSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
     procedure ParseType(const U: TPasUnit);
 
@@ -488,7 +490,11 @@ type
       [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
+    { See command-line option @--auto-back-comments documentation at
+      [https://github.com/pasdoc/pasdoc/wiki/AutoBackComments] }
     property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
+    {}{ TODO comment }
+    property InfoMergeType: TInfoMergeType read FInfoMergeType write FInfoMergeType;
   end;
 
 implementation
@@ -496,7 +502,7 @@ implementation
 uses
   {$ifdef FPC_RegExpr} RegExpr, {$endif}
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
-  PasDoc_Utils;
+  PasDoc_Utils, PasDoc_Hashes;
 
 { ---------------------------------------------------------------------------- }
 { TParser }
@@ -1412,7 +1418,10 @@ begin
                   U.FuncsProcs.Add(M);
                 end;
               KEY_IMPLEMENTATION:
-                Break;
+                begin
+                  Scanner.UnGetToken(t);
+                  Break;
+                end;
               KEY_USES:
                 ParseUses(U);
               KEY_PROPERTY:
@@ -1429,6 +1438,362 @@ begin
       FreeAndNil(t);
     end;
   until False;
+end;
+
+{ Return string value calculated from old and new values according to merge method }
+function MergeStringValues(MergeType: TInfoMergeType; const OldValue, NewValue: string): string;
+begin
+  case MergeType of
+    imtNone:
+      Result := OldValue;
+    imtPreferIntf:
+      Result := IfThen(OldValue <> '', OldValue, NewValue);
+    // Also process case when OldValue is fully contained in NewValue.
+    // This allows specifying short abstract in intf section and full description
+    // in impl section.
+    imtJoin:
+      Result :=
+        IfThen((OldValue <> '') and (OldValue <> Copy(NewValue, 1, Length(OldValue))),
+          OldValue + LineEnding) + NewValue;
+    imtPreferImpl:
+      Result := IfThen(NewValue <> '', NewValue, OldValue);
+  end;
+end;
+
+{ Merge metadata of Source and Dest method items.
+  At the stage of parsing impl section these items only have RawDescriptionInfo
+  so that's the only data we've to merge.
+
+  NB: this merge is only correct if method items haven't been processed yet so
+  there's no sense in moving it to common util unit or TPasMethod members }
+procedure MergeMethodData(MergeType: TInfoMergeType; Dest: TPasMethod; const SourceData: TRawDescriptionInfo);
+begin
+  Dest.RawDescriptionInfo^.Content :=
+    MergeStringValues(MergeType, Dest.RawDescriptionInfo^.Content, SourceData.Content);
+end;
+
+procedure TParser.ParseImplementationSection(const U: TPasUnit);
+
+var
+  // Collector of all ignored items that won't go to `U`
+  DummyUnit: TPasUnit;
+
+  // Clear all comment data that was accumulated by PeekNextToken
+  procedure ClearComments;
+  begin
+    IsLastComment := False;
+    LastCommentWasCStyle := False;
+    LastCommentHelpInsight := False;
+    LastCommentInfo := EmptyRawDescriptionInfo;
+  end;
+
+  { Function to skip header (parameters declarations) of anon method aka lambda.
+    Just read until "begin" }
+  procedure SkipLambdaHeader;
+  var t: TToken;
+  begin
+    t := nil;
+    repeat
+      t := PeekNextToken;
+      if t.IsKeyWord(KEY_BEGIN) then
+        Break;
+
+      Scanner.ConsumeToken;
+      FreeAndNil(t);
+    until False;
+  end;
+
+  { Here we stand:
+      - at the beginning of a routine's (function/procedure/constructor/destructor)
+        valuable (non-comment) inner contents (after ParseCDFP invokation)
+      or
+      - right after function/procedure keyword (lambda assignment/declaration; parameters
+        or comment or contents following)
+    Skip everything until "end;" }
+  procedure SkipMethodBody(IsLambda: Boolean = False);
+  var
+    t: TToken;
+    EndLevel: Integer;
+    InsideMethodBody, AsmBlock: Boolean;
+    M: TPasMethod;
+  begin
+    EndLevel := 0; InsideMethodBody := False; AsmBlock := False; t := nil;
+    repeat
+      if t = nil then
+        t := GetNextToken;
+
+      // Check only keywords; skip all keywords inside ASM blocks except "end"
+      if (t.MyType = TOK_KEYWORD) and (not AsmBlock or (t.Info.KeyWord = KEY_END)) then
+        case t.Info.KeyWord of
+          // nested var/const/type section
+          // KEY_RESOURCESTRING and KEY_THREADVAR are not allowed here but let them remain
+          KEY_RESOURCESTRING, KEY_CONST,
+          KEY_TYPE,
+          KEY_THREADVAR, KEY_VAR:
+            begin
+              Scanner.UnGetToken(t);
+              ParseTVCSection(DummyUnit); // ignore section contents
+            end;
+          // If we encounter BEGIN or ASM - check that current nesting level is 0,
+          // this means we've started the entrypoint of this method
+          KEY_BEGIN, KEY_ASM:
+            begin
+              if EndLevel = 0 then
+                InsideMethodBody := True;
+              // Asm blocks have different syntax that allows any Pascal keyword, even "end"
+              // so handle them specially
+              AsmBlock := (t.Info.KeyWord = KEY_ASM);
+              Inc(EndLevel);
+            end;
+          // Other constructions in the code section that must end with END keyword
+          KEY_CASE, KEY_TRY:
+            Inc(EndLevel);
+          // Nested subroutine / lambda. Run the skip recursively.
+          KEY_PROCEDURE, KEY_FUNCTION:
+            begin
+              // if InsideMethodBody - it's a lambda without name
+              // otherwise it's a nested subroutine that requires name
+              if not InsideMethodBody then
+              begin
+                ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False);
+                FreeAndNil(M);
+              end
+              else
+                SkipLambdaHeader;
+              // There could not be external methods inside a method so skip body unconditionally
+              SkipMethodBody(InsideMethodBody);
+            end;
+          KEY_END:
+            begin
+              // ASM blocks can contain labels or identifiers named "end" so check
+              // whether the "end" is followed by ";". Skip if not
+              if AsmBlock then
+              begin
+                if not PeekNextToken.IsSymbol(SYM_SEMICOLON) then
+                begin
+                  FreeAndNil(t);
+                  t := GetNextToken;
+                  Continue;
+                end;
+              end;
+              AsmBlock := False;
+              Dec(EndLevel);
+              if InsideMethodBody and (EndLevel = 0) then
+              begin
+                // for subroutines ";" after "end" is obligatory
+                if not IsLambda then
+                  GetAndCheckNextToken(SYM_SEMICOLON)
+                // lambdas could end with
+                //   ";" (var assignment),
+                //   ")" (as parameter in method),
+                //   "," (as one of parameters in method, item of array etc),
+                //   "]" (last item in array)
+                // ...
+                else
+                  try
+                    FreeAndNil(t);
+                    t := GetNextToken;
+                    if not ((t.MyType = TOK_SYMBOL) and
+                      (t.Info.SymbolType in [SYM_SEMICOLON, SYM_COMMA,
+                        SYM_RIGHT_PARENTHESIS, SYM_RIGHT_BRACKET])) then
+                      DoError(SExpectedButFound,
+                        ['one of ";", ")", ",", "]" symbols', T.Description]);
+                  finally
+                    FreeAndNil(t);
+                  end;
+                Break;
+              end;
+            end;
+        end;
+      FreeAndNil(t);
+    until False;
+    FreeAndNil(t);
+    // Empty all comments accumulated inside method body by PeekNextToken
+    // Otherwise they will go to a next item
+    ClearComments;
+  end;
+
+  { Search for method object added by parsing intf section.
+    Method could be standalone routine, FPC operator or CIO member.
+    In the latter case it will have fully specified name (TClass.TNestedClass.Proc).
+    Corresponding method likely could not exist in lists from intf section because
+    of ignoring or visibility settings.
+      @param U - unit to search in
+      @param MethodName - full method name to search for
+      @param Index - 0-based index of a method overload to search for. Currently
+        method lists could contain multiple entries with identical names because
+        of overload feature. Specifying Index allows to search for a concrete item.
+        Of course this will work correctly only if methods were declared in the
+        same order as they appear in impl section }
+  function FindExistingMethod(U: TPasUnit; const MethodName: string; Index: Integer): TPasMethod;
+  var
+    NameParts: TNameParts;
+    i: Integer;
+    item: TBaseItem;
+  begin
+    Result := nil;
+    // Check if we got a standalone routine or a class/record method
+    // NB: method could be FPC operator with symbolic name so just check for dot inside
+    if Pos('.', MethodName) = 0 then
+    begin
+      item := U.FuncsProcs.FindListItem(MethodName, Index);
+      if item <> nil then
+        Result := item as TPasMethod;
+    end
+    else
+    begin
+      if not SplitNameParts(MethodName, NameParts) then
+        DoError('Method name %s is invalid', [MethodName]);
+      // Search for method owner
+      item := U.CIOs.FindListItem(NameParts[0]);
+      // Also in nested classes
+      if item <> nil then
+        for i := Low(NameParts) + 1 to High(NameParts) - 1 do
+        begin
+          item := (item as TPasCio).CIOs.FindListItem(NameParts[i]);
+          if item = nil then
+            Break;
+        end;
+      if item <> nil then
+        Result := (item as TPasCio).Methods.FindListItem(NameParts[High(NameParts)], Index);
+    end;
+    // print message for debug purposes
+    if Result = nil then
+      DoMessage(5, pmtInformation, 'No definition of %d-th method "%s" found - probably internal or ignored', [Index, MethodName])
+  end;
+
+  { Read proc/func/class method/operator header and merge its description with
+    existing item }
+  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType; MethodCounts: THash = nil;
+    const ClassKeyWordString: string = '');
+  var
+    M, ExistingMethod: TPasMethod;
+    Count: NativeUInt;
+  begin
+    ParseCDFP(M, ClassKeyWordString, MethodTypeToString(MethodType), MethodType,
+      GetLastComment, True, True);
+    // ParseCDFP was called with InitItemsForNextBackComment so it added M to
+    // ItemsForNextBackComment list. We must clear it so that following comments
+    // in AutoBackComments mode won't glue to method object which is already disposed
+    ItemsForNextBackComment.Clear;
+
+    // If a method counter is given, search for method inside it. Otherwise
+    // assume Count is 1.
+    if MethodCounts <> nil then
+    begin
+      Count := NativeUInt(MethodCounts.GetObject(M.Name));
+      Inc(Count);
+      MethodCounts.SetObject(M.Name, Pointer(Count));
+    end
+    else
+      Count := 1;
+
+    ExistingMethod := FindExistingMethod(U, M.Name, Count - 1);
+    // NB: Currently we don't add methods not declared in intf section
+    if ExistingMethod <> nil then
+      MergeMethodData(FInfoMergeType, ExistingMethod, M.RawDescriptionInfo^);
+    // External and forward methods have no body
+    if [SD_FORWARD, SD_EXTERNAL]*M.Directives = [] then
+    begin
+      SkipMethodBody;
+      DoMessage(5, pmtInformation, 'Skipped body of %s "%s"',
+        [MethodTypeToString(MethodType), M.Name]);
+    end;
+    FreeAndNil(M);
+  end;
+
+var
+  ClassKeyWordString: string;
+  t: TToken;
+  PropertyParsed: TPasProperty;
+  MethodCounts: THash;
+begin
+  { Parsing impl section clears the comment otherwise comment before "implementation"
+    keyword would descend to first item of impl section }
+  ClearComments;
+
+  if FInfoMergeType = imtNone then Exit;
+
+  DoMessage(4, pmtInformation, 'Entering implementation section of unit %s',[U.Name]);
+
+  AttributeIsPossible := False;
+  { ClassKeyWordString is used to include 'class' in
+    class methods, properties and variables declarations. }
+  ClassKeyWordString := '';
+  MethodCounts := THash.Create; // "[method name]=>count" hash map
+  { We can't immediately dispose parsed items because we've got to handle back
+    comments. So we create dummy container that will gather all ignored items. }
+  DummyUnit := TPasUnit.Create;
+
+  try
+    repeat
+      t := GetNextToken;
+      try
+        case t.MyType of
+          TOK_IDENTIFIER:
+            if t.Info.StandardDirective = SD_OPERATOR then
+            begin
+              HandleMethod(U, METHOD_OPERATOR);
+              ClassKeyWordString := '';
+            end
+            else
+              DoError('Unexpected %s', [t.Description]);
+
+          TOK_KEYWORD:
+            begin
+              case t.Info.KeyWord of
+                KEY_RESOURCESTRING, KEY_CONST,
+                KEY_TYPE,
+                KEY_THREADVAR, KEY_VAR:
+                  begin
+                    Scanner.UnGetToken(t);
+                    ParseTVCSection(DummyUnit); // parse section but don't add to resulting unit
+                  end;
+                KEY_CLASS:
+                  ClassKeyWordString := t.Data;
+                KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
+                  begin
+                    HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), MethodCounts);
+                    ClassKeyWordString := '';
+                  end;
+                // Do not read unit used internally for now - maybe will do in the future
+                KEY_USES:
+                  ParseUses(nil);
+                KEY_PROPERTY:
+                  begin
+                    ParseProperty(PropertyParsed);
+                    FreeAndNil(PropertyParsed);
+                  end;
+                // Stop parsing on "initialization", "finalization"
+                KEY_INITIALIZATION, KEY_FINALIZATION:
+                  Break;
+                // Stop parsing on "end.". Must come here only on final "end" so
+                // don't care about other cases
+                KEY_END:
+                  begin
+                    // skip possible whitespaces
+                    repeat
+                      FreeAndNil(t);
+                      t := GetNextToken;
+                    until not (t.MyType = TOK_WHITESPACE);
+                    // token must be period
+                    if t.IsSymbol(SYM_PERIOD) then
+                      Break;
+                    DoError('Unexpected %s', [t.Description]);
+                  end;
+              else
+                DoError('Unexpected %s', [t.Description]);
+              end;
+            end;
+        end;
+      finally
+        FreeAndNil(t);
+      end;
+    until False;
+  finally
+    FreeAndNil(MethodCounts);
+    FreeAndNil(DummyUnit);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1818,6 +2183,12 @@ begin
 
   { now parse the interface section of that unit }
   ParseInterfaceSection(U);
+
+  { get 'implementation' keyword }
+  GetAndCheckNextToken(KEY_IMPLEMENTATION);
+
+  { now parse the implementation section of that unit }
+  ParseImplementationSection(U);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1898,6 +2269,7 @@ end;
 procedure TParser.ParseUses(const U: TPasUnit);
 var
   T: TToken;
+  UsedUnit: string;
 begin
   { Parsing uses clause clears the comment, otherwise
     - normal comments before "uses" clause would be assigned to normal unit
@@ -1910,7 +2282,9 @@ begin
   ItemsForNextBackComment.Clear;
 
   repeat
-    U.UsesUnits.Append(GetAndCheckNextToken(TOK_IDENTIFIER, true));
+    UsedUnit := GetAndCheckNextToken(TOK_IDENTIFIER, true);
+    if U <> nil then
+      U.UsesUnits.Append(UsedUnit);
 
     T := GetNextToken;
     try
