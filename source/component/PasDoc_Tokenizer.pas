@@ -1124,9 +1124,12 @@ begin
       t.Data := t.Data + QuoteChar;
     end
     else
-    if CharInSet(c, [#10, #13]) then begin
+    if CharInSet(c, [#10, #13]) then
+    begin
       FreeAndNil(t);
-      DoError('Invalid char #%d encountered when reading literal string', [Ord(c)]);
+      { Note: Do not show here exact code (#13 or #10) to make auto tests succeed,
+        regardless of line endings in cloned repo (Windows or Linux). }
+      DoError('Newline inside a literal string is not allowed', []);
     end
     else begin
       t.Data := t.Data + c;
