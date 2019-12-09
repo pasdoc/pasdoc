@@ -1,5 +1,12 @@
 Next version (not released yet)
 
+  * Scan implementation section of a unit in addition to default interface section
+    https://github.com/pasdoc/pasdoc/wiki/ImplementationCommentsOption (Fr0sT-Brutal)
+  * Parser improvements to correctly handle some special cases: reading chars > $FF,
+    "*.inc" includes, files with Mac-style line endings (Fr0sT-Brutal)
+  * Mem leaks fixed (Fr0sT-Brutal)
+  * Tag parameters now could be multiline without enclosing parens by means of "line feed"
+    character "\" (Fr0sT-Brutal)
   * Read additional command-line options from file (thanks to Fr0sT-Brutal),
     see https://github.com/pasdoc/pasdoc/wiki/ConfigFileOption
   * --auto-back-comments command-line option (thanks to Fr0sT-Brutal),
