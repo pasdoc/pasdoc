@@ -136,6 +136,10 @@ const
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
+  { Tag Start- and Endsign (https://github.com/pasdoc/pasdoc/issues/8) }
+  TagStartSign = '[';
+  TagEndSign = ']';
+
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);
@@ -360,6 +364,8 @@ var
   Len: Integer;
   StartPos: Integer;
   EndPos: Integer;
+  TagStartPos: Integer;
+  TagEndPos: Integer;
 begin
   StartPos := 1;
   Len := Length(S);
@@ -372,6 +378,22 @@ begin
     EndPos := StartPos + 1;
     while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
       Inc(EndPos);
+
+    { Searching for Tag [in], [out] etc. in Param (see https://github.com/pasdoc/pasdoc/issues/8) }
+    TagStartPos := EndPos + 1;
+    while (TagStartPos <= Len) and not IsCharInSet(S[TagStartPos], TagStartSign) do
+      Inc(TagStartPos);
+
+    if TagStartPos <= Len then
+    begin
+      TagEndPos := TagStartPos + 1;
+      while (TagEndPos <= Len) and not IsCharInset(S[TagEndPos], TagEndSign) do
+        Inc(TagEndPos);
+    end;
+
+    if TagEndPos <= Len then
+      EndPos := TagEndPos;
+    { End of Tagsearch issue#8}
 
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
