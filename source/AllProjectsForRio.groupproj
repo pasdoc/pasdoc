@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DF63FB05-6EC6-4132-AEC9-852F85537353}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="packages\delphi\Tokyo\pasdoc_package_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="console\pasdoc_Tokyo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\file_to_pascal_string_Tokyo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\pascal_pre_proc_Tokyo.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="pasdoc_package_Rio">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj"/>
+    </Target>
+    <Target Name="pasdoc_package_Rio:Clean">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_package_Rio:Make">
+        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pasdoc_Tokyo">
+        <MSBuild Projects="console\pasdoc_Tokyo.dproj"/>
+    </Target>
+    <Target Name="pasdoc_Tokyo:Clean">
+        <MSBuild Projects="console\pasdoc_Tokyo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_Tokyo:Make">
+        <MSBuild Projects="console\pasdoc_Tokyo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Tokyo">
+        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Tokyo:Clean">
+        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Tokyo:Make">
+        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pascal_pre_proc_Tokyo">
+        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj"/>
+    </Target>
+    <Target Name="pascal_pre_proc_Tokyo:Clean">
+        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pascal_pre_proc_Tokyo:Make">
+        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="pasdoc_package_Rio;pasdoc_Tokyo;file_to_pascal_string_Tokyo;pascal_pre_proc_Tokyo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="pasdoc_package_Rio:Clean;pasdoc_Tokyo:Clean;file_to_pascal_string_Tokyo:Clean;pascal_pre_proc_Tokyo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="pasdoc_package_Rio:Make;pasdoc_Tokyo:Make;file_to_pascal_string_Tokyo:Make;pascal_pre_proc_Tokyo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

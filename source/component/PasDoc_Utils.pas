@@ -113,7 +113,16 @@ function SCharIs(const S: string; Index: integer;
   then the whole S is regarded as it's first word.
 
   Both S and result are trimmed, i.e. they don't have any
-  excessive white-space at the beginning or end. }
+  excessive white-space at the beginning or end.
+
+ Reads a zero-terminated value from string handle @p str.
+ @param[in] str String handle.
+ @param[out] val Value to be read.
+ @param[in,out] len Pointer to specify then store the value length including the terminating null byte (<tt>`\0`</tt>).
+ @retval 0 - Success.
+ @retval -EINVAL - Invalid argument.
+ @retval -ENOBUFS - No buffer space available.
+}
 function ExtractFirstWord(var s: string): string; overload;
 
 { Another version of ExtractFirstWord.
@@ -137,8 +146,8 @@ const
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
   { Tag Start- and Endsign (https://github.com/pasdoc/pasdoc/issues/8) }
-  TagStartSign = '[';
-  TagEndSign = ']';
+  TagStartSign = ['['];
+  TagEndSign = [']'];
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);

@@ -196,7 +196,7 @@ begin
     Inc(i);
   end;
 
-  NameParts := SplitString(s, '.');
+  NameParts := TNameParts(SplitString(s, '.'));
   Result := True;
 end;
 
