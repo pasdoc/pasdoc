@@ -30,7 +30,7 @@
   Note it treats $1 as text file, so difference between various line endings
   is lost in $2 (line endings are always encoded using LineEnding constant). }
 
-program file_to_pascal_string;
+program file_to_pascal_string_Rio;
 
 {$apptype CONSOLE}
 {$ifdef FPC} {$mode objfpc} {$endif}

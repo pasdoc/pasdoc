@@ -3,16 +3,22 @@
         <ProjectGuid>{DF63FB05-6EC6-4132-AEC9-852F85537353}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="packages\delphi\Tokyo\pasdoc_package_Rio.dproj">
+        <Projects Include="packages\delphi\Rio\pasdoc_package_Rio.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="console\pasdoc_Tokyo.dproj">
+        <Projects Include="console\pasdoc_Rio.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="tools\file_to_pascal_string_Tokyo.dproj">
+        <Projects Include="tools\pascal_pre_proc_Rio.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="tools\pascal_pre_proc_Tokyo.dproj">
+        <Projects Include="tools\file_to_pascal_data_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tools\file_to_pascal_string_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="delphi_gui\pasdoc_gui_Rio.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -24,49 +30,67 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="pasdoc_package_Rio">
-        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj"/>
+        <MSBuild Projects="packages\delphi\Rio\pasdoc_package_Rio.dproj"/>
     </Target>
     <Target Name="pasdoc_package_Rio:Clean">
-        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj" Targets="Clean"/>
+        <MSBuild Projects="packages\delphi\Rio\pasdoc_package_Rio.dproj" Targets="Clean"/>
     </Target>
     <Target Name="pasdoc_package_Rio:Make">
-        <MSBuild Projects="packages\delphi\Tokyo\pasdoc_package_Rio.dproj" Targets="Make"/>
+        <MSBuild Projects="packages\delphi\Rio\pasdoc_package_Rio.dproj" Targets="Make"/>
     </Target>
-    <Target Name="pasdoc_Tokyo">
-        <MSBuild Projects="console\pasdoc_Tokyo.dproj"/>
+    <Target Name="pasdoc_Rio">
+        <MSBuild Projects="console\pasdoc_Rio.dproj"/>
     </Target>
-    <Target Name="pasdoc_Tokyo:Clean">
-        <MSBuild Projects="console\pasdoc_Tokyo.dproj" Targets="Clean"/>
+    <Target Name="pasdoc_Rio:Clean">
+        <MSBuild Projects="console\pasdoc_Rio.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="pasdoc_Tokyo:Make">
-        <MSBuild Projects="console\pasdoc_Tokyo.dproj" Targets="Make"/>
+    <Target Name="pasdoc_Rio:Make">
+        <MSBuild Projects="console\pasdoc_Rio.dproj" Targets="Make"/>
     </Target>
-    <Target Name="file_to_pascal_string_Tokyo">
-        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj"/>
+    <Target Name="pascal_pre_proc_Rio">
+        <MSBuild Projects="tools\pascal_pre_proc_Rio.dproj"/>
     </Target>
-    <Target Name="file_to_pascal_string_Tokyo:Clean">
-        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj" Targets="Clean"/>
+    <Target Name="pascal_pre_proc_Rio:Clean">
+        <MSBuild Projects="tools\pascal_pre_proc_Rio.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="file_to_pascal_string_Tokyo:Make">
-        <MSBuild Projects="tools\file_to_pascal_string_Tokyo.dproj" Targets="Make"/>
+    <Target Name="pascal_pre_proc_Rio:Make">
+        <MSBuild Projects="tools\pascal_pre_proc_Rio.dproj" Targets="Make"/>
     </Target>
-    <Target Name="pascal_pre_proc_Tokyo">
-        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj"/>
+    <Target Name="file_to_pascal_data_Rio">
+        <MSBuild Projects="tools\file_to_pascal_data_Rio.dproj"/>
     </Target>
-    <Target Name="pascal_pre_proc_Tokyo:Clean">
-        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj" Targets="Clean"/>
+    <Target Name="file_to_pascal_data_Rio:Clean">
+        <MSBuild Projects="tools\file_to_pascal_data_Rio.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="pascal_pre_proc_Tokyo:Make">
-        <MSBuild Projects="tools\pascal_pre_proc_Tokyo.dproj" Targets="Make"/>
+    <Target Name="file_to_pascal_data_Rio:Make">
+        <MSBuild Projects="tools\file_to_pascal_data_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Rio">
+        <MSBuild Projects="tools\file_to_pascal_string_Rio.dproj"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Rio:Clean">
+        <MSBuild Projects="tools\file_to_pascal_string_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="file_to_pascal_string_Rio:Make">
+        <MSBuild Projects="tools\file_to_pascal_string_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pasdoc_gui_Rio">
+        <MSBuild Projects="delphi_gui\pasdoc_gui_Rio.dproj"/>
+    </Target>
+    <Target Name="pasdoc_gui_Rio:Clean">
+        <MSBuild Projects="delphi_gui\pasdoc_gui_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_gui_Rio:Make">
+        <MSBuild Projects="delphi_gui\pasdoc_gui_Rio.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="pasdoc_package_Rio;pasdoc_Tokyo;file_to_pascal_string_Tokyo;pascal_pre_proc_Tokyo"/>
+        <CallTarget Targets="pasdoc_package_Rio;pasdoc_Rio;pascal_pre_proc_Rio;file_to_pascal_data_Rio;file_to_pascal_string_Rio;pasdoc_gui_Rio"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="pasdoc_package_Rio:Clean;pasdoc_Tokyo:Clean;file_to_pascal_string_Tokyo:Clean;pascal_pre_proc_Tokyo:Clean"/>
+        <CallTarget Targets="pasdoc_package_Rio:Clean;pasdoc_Rio:Clean;pascal_pre_proc_Rio:Clean;file_to_pascal_data_Rio:Clean;file_to_pascal_string_Rio:Clean;pasdoc_gui_Rio:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="pasdoc_package_Rio:Make;pasdoc_Tokyo:Make;file_to_pascal_string_Tokyo:Make;pascal_pre_proc_Tokyo:Make"/>
+        <CallTarget Targets="pasdoc_package_Rio:Make;pasdoc_Rio:Make;pascal_pre_proc_Rio:Make;file_to_pascal_data_Rio:Make;file_to_pascal_string_Rio:Make;pasdoc_gui_Rio:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

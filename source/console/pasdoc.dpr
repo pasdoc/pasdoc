@@ -48,7 +48,7 @@
 
 ------------------------------------------------------------------------------ }
 
-program pasdoc;
+program pasdoc_Rio;
 
 {$IFNDEF VPASCAL}
   {$IFDEF MSWINDOWS}

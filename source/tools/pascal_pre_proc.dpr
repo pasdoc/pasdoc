@@ -33,7 +33,7 @@
   Things like $mode, or $H+.
 }
 
-program pascal_pre_proc;
+program pascal_pre_proc_Rio;
 
 uses SysUtils, Classes, PasDoc_OptionParser, PasDoc_StringVector, PasDoc_Base,
   PasDoc_Tokenizer, PasDoc_Scanner, PasDoc_Types, PasDoc_Versions;

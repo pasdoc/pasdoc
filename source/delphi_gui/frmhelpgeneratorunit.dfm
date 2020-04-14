@@ -1,11 +1,11 @@
 object frmHelpGenerator: TfrmHelpGenerator
   Left = 691
   Top = 277
-  Width = 674
-  Height = 470
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
   Caption = 'pasdoc gui'
+  ClientHeight = 411
+  ClientWidth = 658
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -27,7 +27,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Left = 0
     Top = 0
     Width = 165
-    Height = 416
+    Height = 411
     Align = alLeft
     BevelOuter = bvNone
     Caption = 'PanelLeft'
@@ -36,7 +36,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 38
       Width = 165
-      Height = 378
+      Height = 373
       Align = alClient
       ItemHeight = 13
       TabOrder = 0
@@ -64,8 +64,8 @@ object frmHelpGenerator: TfrmHelpGenerator
   object NotebookMain: TNotebook
     Left = 165
     Top = 0
-    Width = 501
-    Height = 416
+    Width = 493
+    Height = 411
     Align = alClient
     PageIndex = 7
     TabOrder = 1
@@ -73,9 +73,11 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Options'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
-        501
-        416)
+        493
+        411)
       object Label2: TLabel
         Left = 10
         Top = 14
@@ -183,7 +185,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
         TabOrder = 2
         OnChange = comboGenerateFormatChange
         Items.Strings = (
@@ -234,7 +235,6 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpKeyword = 'OutputLanguage'
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
         TabOrder = 3
         OnChange = comboLanguagesChange
       end
@@ -289,6 +289,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Source Files'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelSourceFilesTop: TPanel
         Left = 0
         Top = 0
@@ -300,12 +302,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         FullRepaint = False
         TabOrder = 0
         DesignSize = (
-          501
-          416)
+          493
+          411)
         object Label8: TLabel
           Left = 10
           Top = 10
-          Width = 481
+          Width = 473
           Height = 39
           HelpType = htKeyword
           Align = alTop
@@ -317,22 +319,24 @@ object frmHelpGenerator: TfrmHelpGenerator
           Color = clBtnFace
           ParentColor = False
           WordWrap = True
+          ExplicitWidth = 481
         end
         object btnBrowseSourceFiles: TButton
           Left = 10
           Top = 54
-          Width = 481
+          Width = 473
           Height = 25
           Anchors = [akLeft, akTop, akRight]
           Caption = 'Browse'
           TabOrder = 0
           OnClick = btnBrowseSourceFilesClick
+          ExplicitWidth = 481
         end
         object memoFiles: TMemo
           Left = 10
           Top = 86
-          Width = 481
-          Height = 320
+          Width = 473
+          Height = 315
           HelpType = htKeyword
           Align = alBottom
           Anchors = [akLeft, akTop, akRight, akBottom]
@@ -340,6 +344,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           TabOrder = 1
           WordWrap = False
           OnChange = SomethingChanged
+          ExplicitWidth = 481
+          ExplicitHeight = 320
         end
       end
     end
@@ -347,6 +353,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Include Directories'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
         Top = 0
@@ -358,12 +366,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         FullRepaint = False
         TabOrder = 0
         DesignSize = (
-          501
-          416)
+          493
+          411)
         object Label9: TLabel
           Left = 10
           Top = 10
-          Width = 481
+          Width = 473
           Height = 26
           HelpType = htKeyword
           Align = alTop
@@ -373,22 +381,24 @@ object frmHelpGenerator: TfrmHelpGenerator
           Color = clBtnFace
           ParentColor = False
           WordWrap = True
+          ExplicitWidth = 245
         end
         object btnBrowseIncludeDirectory: TButton
           Left = 10
           Top = 41
-          Width = 481
+          Width = 473
           Height = 25
           Anchors = [akLeft, akTop, akRight]
           Caption = 'Browse'
           TabOrder = 0
           OnClick = btnBrowseIncludeDirectoryClick
+          ExplicitWidth = 481
         end
         object memoIncludeDirectories: TMemo
           Left = 10
           Top = 72
-          Width = 481
-          Height = 334
+          Width = 473
+          Height = 329
           HelpType = htKeyword
           HelpKeyword = 'IncludeInSearchPath'
           Anchors = [akLeft, akTop, akRight, akBottom]
@@ -396,6 +406,8 @@ object frmHelpGenerator: TfrmHelpGenerator
           TabOrder = 1
           WordWrap = False
           OnChange = SomethingChanged
+          ExplicitWidth = 481
+          ExplicitHeight = 334
         end
       end
     end
@@ -403,6 +415,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Defines'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelDefinesTop: TPanel
         Left = 0
         Top = 0
@@ -456,6 +470,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Visible members'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelImplicitVisibility: TLabel
         Left = 8
         Top = 211
@@ -467,17 +483,19 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelVisibleMembers: TPanel
         Left = 0
         Top = 0
-        Width = 501
-        Height = 416
+        Width = 493
+        Height = 431
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 0
+        ExplicitWidth = 501
+        ExplicitHeight = 416
         object LabelVisibleMembers: TLabel
           Left = 10
           Top = 10
-          Width = 481
-          Height = 13
+          Width = 473
+          Height = 26
           HelpType = htKeyword
           Align = alTop
           Caption = 
@@ -487,11 +505,12 @@ object frmHelpGenerator: TfrmHelpGenerator
           FocusControl = CheckListVisibleMembers
           ParentColor = False
           WordWrap = True
+          ExplicitWidth = 472
         end
         object RadioImplicitVisibility: TRadioGroup
           Left = 10
-          Top = 139
-          Width = 481
+          Top = 152
+          Width = 473
           Height = 73
           HelpType = htKeyword
           HelpKeyword = 'ImplicitVisibilityOption'
@@ -506,11 +525,13 @@ object frmHelpGenerator: TfrmHelpGenerator
             'Always "implicit"')
           TabOrder = 0
           OnClick = SomethingChanged
+          ExplicitTop = 139
+          ExplicitWidth = 481
         end
         object CheckListVisibleMembers: TCheckListBox
           Left = 10
-          Top = 23
-          Width = 481
+          Top = 36
+          Width = 473
           Height = 116
           HelpType = htKeyword
           HelpKeyword = 'IncludeByVisibility'
@@ -532,19 +553,23 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Sort'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelSort: TPanel
         Left = 0
         Top = 0
-        Width = 501
-        Height = 416
+        Width = 493
+        Height = 431
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 0
+        ExplicitWidth = 501
+        ExplicitHeight = 416
         object Label1: TLabel
           Left = 10
           Top = 10
-          Width = 481
+          Width = 473
           Height = 13
           HelpType = htKeyword
           Align = alTop
@@ -552,11 +577,12 @@ object frmHelpGenerator: TfrmHelpGenerator
           Color = clBtnFace
           FocusControl = clbSorting
           ParentColor = False
+          ExplicitWidth = 130
         end
         object clbSorting: TCheckListBox
           Left = 10
           Top = 23
-          Width = 481
+          Width = 473
           Height = 146
           Hint = 
             'Which items will be sorted alphabetically '#10'and which will be dis' +
@@ -585,6 +611,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Markers'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelMarkers: TPanel
         Left = 0
         Top = 0
@@ -598,7 +626,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         object Label18: TLabel
           Left = 10
           Top = 97
-          Width = 481
+          Width = 120
           Height = 13
           HelpType = htKeyword
           Align = alTop
@@ -642,8 +670,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Top = 0
       Caption = 'CustomFiles'
       DesignSize = (
-        501
-        416)
+        493
+        411)
       object Label14: TLabel
         Left = 8
         Top = 121
@@ -743,6 +771,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Header / Footer'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Splitter2: TSplitter
         Left = 0
         Top = 179
@@ -824,6 +854,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'LaTeX Options'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label24: TLabel
         Left = 12
         Top = 110
@@ -860,7 +892,6 @@ object frmHelpGenerator: TfrmHelpGenerator
           ' to specify which one to use.'
         Style = csDropDownList
         Enabled = False
-        ItemHeight = 13
         ItemIndex = 0
         TabOrder = 0
         Text = 'None'
@@ -871,14 +902,16 @@ object frmHelpGenerator: TfrmHelpGenerator
           'DVI')
       end
       object PanelLatexHyphenation: TPanel
-        Left = 154
+        Left = 146
         Top = 0
         Width = 347
-        Height = 416
+        Height = 411
         Align = alRight
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 2
+        ExplicitLeft = 154
+        ExplicitHeight = 416
         object Label17: TLabel
           Left = 10
           Top = 10
@@ -909,6 +942,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Graphs'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label22: TLabel
         Left = 14
         Top = 70
@@ -954,6 +989,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Spell Checking'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelSpellCheckingTop1: TPanel
         Left = 0
         Top = 0
@@ -1034,6 +1071,8 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Generate'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelGenerateTop: TPanel
         Left = 0
         Top = 0
@@ -1046,12 +1085,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         FullRepaint = False
         TabOrder = 0
         DesignSize = (
-          501
+          493
           103)
         object Label10: TLabel
           Left = 10
           Top = 10
-          Width = 481
+          Width = 473
           Height = 26
           HelpType = htKeyword
           Align = alTop
@@ -1061,6 +1100,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           Color = clBtnFace
           ParentColor = False
           WordWrap = True
+          ExplicitWidth = 462
         end
         object Label7: TLabel
           Left = 80
@@ -1088,23 +1128,26 @@ object frmHelpGenerator: TfrmHelpGenerator
         object ButtonGenerateDocs: TButton
           Left = 10
           Top = 75
-          Width = 481
+          Width = 473
           Height = 25
           Anchors = [akLeft, akRight]
           Caption = 'Generate documentation'
           TabOrder = 1
           OnClick = ButtonGenerateDocsClick
+          ExplicitWidth = 481
         end
       end
       object PanelGenerateBottom: TPanel
         Left = 0
         Top = 103
-        Width = 501
-        Height = 313
+        Width = 493
+        Height = 308
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 1
+        ExplicitWidth = 501
+        ExplicitHeight = 313
         object memoMessages: TMemo
           Left = 10
           Top = 10
@@ -1121,38 +1164,43 @@ object frmHelpGenerator: TfrmHelpGenerator
       Left = 0
       Top = 0
       Caption = 'Display Comments'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Splitter1: TSplitter
         Left = 0
         Top = 187
-        Width = 501
+        Width = 493
         Height = 5
         Cursor = crVSplit
         Align = alTop
+        ExplicitWidth = 501
       end
       object pnlEditCommentInstructions: TPanel
         Left = 0
         Top = 0
-        Width = 501
+        Width = 493
         Height = 28
         Align = alTop
         BevelOuter = bvNone
         Caption = 'Click on an item in the tree view to see its comment.'
         FullRepaint = False
         TabOrder = 0
+        ExplicitWidth = 501
       end
       object PanelDisplayCommentsMid: TPanel
         Left = 0
         Top = 28
-        Width = 501
+        Width = 493
         Height = 159
         Align = alTop
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 1
+        ExplicitWidth = 501
         object tvUnits: TTreeView
           Left = 10
           Top = 10
-          Width = 481
+          Width = 473
           Height = 139
           Align = alClient
           Indent = 19
@@ -1163,17 +1211,19 @@ object frmHelpGenerator: TfrmHelpGenerator
       object PanelDisplayCommentsBottom: TPanel
         Left = 0
         Top = 192
-        Width = 501
-        Height = 224
+        Width = 493
+        Height = 219
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 10
         TabOrder = 2
+        ExplicitWidth = 501
+        ExplicitHeight = 224
         object seComment: TMemo
           Left = 10
           Top = 10
-          Width = 481
-          Height = 204
+          Width = 473
+          Height = 219
           Align = alClient
           Lines.Strings = (
             '')
@@ -1266,188 +1316,5 @@ object frmHelpGenerator: TfrmHelpGenerator
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 48
     Top = 288
-  end
-  object PasDoc1: TPasDoc
-    ShowVisibilities = []
-    Left = 48
-    Top = 100
-  end
-  object HTMLDocGenerator: THTMLDocGenerator
-    CSS = 
-      'body { font-family: Verdana,Arial; '#13#10'  color: black; background-' +
-      'color: white; '#13#10'  font-size: 12px; }'#13#10'body.navigationframe { fon' +
-      't-family: Verdana,Arial; '#13#10'  color: white; background-color: #78' +
-      '7878; '#13#10'  font-size: 12px; }'#13#10#13#10'img { border:0px; }'#13#10#13#10'a:link {c' +
-      'olor:#C91E0C; text-decoration: none; }'#13#10'a:visited {color:#7E5C31' +
-      '; text-decoration: none; }'#13#10'a:hover {text-decoration: underline;' +
-      ' }'#13#10'a:active {text-decoration: underline; }'#13#10#13#10'a.navigation:link' +
-      ' { color: white; text-decoration: none; font-size: 12px;}'#13#10'a.nav' +
-      'igation:visited { color: white; text-decoration: none; font-size' +
-      ': 12px;}'#13#10'a.navigation:hover { color: white; font-weight: bold; ' +
-      #13#10'  text-decoration: none; font-size: 12px; }'#13#10'a.navigation:acti' +
-      've { color: white; text-decoration: none; font-size: 12px;}'#13#10#13#10'a' +
-      '.bold:link {color:#C91E0C; text-decoration: none; font-weight:bo' +
-      'ld; }'#13#10'a.bold:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'a.bold:hover {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10'a.bold:active {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10#13#10'a.section {color: green; text-decoration: non' +
-      'e; font-weight: bold; }'#13#10'a.section:hover {color: green; text-dec' +
-      'oration: underline; font-weight: bold; }'#13#10#13#10'ul.useslist a:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }'#13#10'ul.us' +
-      'eslist a:visited {color:#7E5C31; text-decoration: none; font-wei' +
-      'ght:bold; }'#13#10'ul.useslist a:hover {text-decoration: underline; fo' +
-      'nt-weight:bold; }'#13#10'ul.useslist a:active {text-decoration: underl' +
-      'ine; font-weight:bold; }'#13#10#13#10'ul.hierarchy { list-style-type:none;' +
-      ' }'#13#10'ul.hierarchylevel { list-style-type:none; }'#13#10#13#10'p.unitlink a:' +
-      'link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#13 +
-      #10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'p.unitlink a:hover {text-decoration: underline' +
-      '; font-weight:bold; }'#13#10'p.unitlink a:active {text-decoration: und' +
-      'erline; font-weight:bold; }'#13#10#13#10'tr.list { background: #FFBF44; }'#13 +
-      #10'tr.list2 { background: #FFC982; }'#13#10'tr.listheader { background: ' +
-      '#C91E0C; color: white; }'#13#10#13#10'table.wide_list { border-spacing:2px' +
-      '; width:100%; }'#13#10'table.wide_list td { vertical-align:top; paddin' +
-      'g:4px; }'#13#10#13#10'table.markerlegend { width:auto; }'#13#10'table.markerlege' +
-      'nd td.legendmarker { text-align:center; }'#13#10#13#10'table.sections { ba' +
-      'ckground:white; }'#13#10'table.sections td {background:lightgray; }'#13#10#13 +
-      #10'table.summary td.itemcode { width:100%; }'#13#10'table.detail td.item' +
-      'code { width:100%; }'#13#10#13#10'td.itemname {white-space:nowrap; }'#13#10'td.i' +
-      'temunit {white-space:nowrap; }'#13#10'td.itemdesc { width:100%; }'#13#10#13#10'd' +
-      'iv.nodescription { color:red; }'#13#10'dl.parameters dt { color:blue; ' +
-      '}'#13#10#13#10'/* Various browsers have various default styles for <h6>,'#13#10 +
-      '   sometimes ugly for our purposes, so it'#39's best to set things'#13#10 +
-      '   like font-size and font-weight in out pasdoc.css explicitly. ' +
-      '*/'#13#10'h6.description_section { '#13#10'  /* font-size 100% means that it' +
-      ' has the same font size as the '#13#10'     parent element, i.e. norma' +
-      'l description text */'#13#10'  font-size: 100%;'#13#10'  font-weight: bold; ' +
-      #13#10'  /* By default browsers usually have some large margin-bottom' +
-      ' and '#13#10'     margin-top for <h1-6> tags. In our case, margin-bott' +
-      'om is'#13#10'     unnecessary, we want to visually show that descripti' +
-      'on_section'#13#10'     is closely related to content below. In this si' +
-      'tuation'#13#10'     (where the font size is just as a normal text), sm' +
-      'aller bottom'#13#10'     margin seems to look good. */'#13#10'  margin-botto' +
-      'm: 0em;'#13#10'}'#13#10#13#10'/* Style applied to Pascal code in documentation '#13 +
-      #10'   (e.g. produced by @longcode tag) } */'#13#10'span.pascal_string { ' +
-      'color: #000080; }'#13#10'span.pascal_keyword { font-weight: bolder; }'#13 +
-      #10'span.pascal_comment { color: #000080; font-style: italic; }'#13#10'sp' +
-      'an.pascal_compiler_comment { color: #008000; }'#13#10'span.pascal_nume' +
-      'ric { }'#13#10'span.pascal_hex { }'#13#10#13#10'p.hint_directive { color: red; }' +
-      #13#10#13#10'input#search_text { }'#13#10'input#search_submit_button { }'#13#10#13#10'acr' +
-      'onym.mispelling { background-color: #ffa; }'#13#10#13#10'/* Actually this ' +
-      'reduces vertical space between *every* paragraph'#13#10'   inside list' +
-      ' with @itemSpacing(compact). '#13#10'   While we would like to reduce ' +
-      'this space only for the'#13#10'   top of 1st and bottom of last paragr' +
-      'aph within each list item.'#13#10'   But, well, user probably will not' +
-      ' do any paragraph breaks'#13#10'   within a list with @itemSpacing(com' +
-      'pact) anyway, so it'#39's'#13#10'   acceptable solution. */'#13#10'ul.compact_sp' +
-      'acing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'ol.compact_spa' +
-      'cing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'dl.compact_spac' +
-      'ing p { margin-top: 0em; margin-bottom: 0em; }'#13#10#13#10'/* Style for t' +
-      'able created by @table tags:'#13#10'   just some thin border.'#13#10'   '#13#10'  ' +
-      ' This way we have some borders around the cells'#13#10'   (so cells ar' +
-      'e visibly separated), but the border '#13#10'   "blends with the backg' +
-      'round" so it doesn'#39't look too ugly.'#13#10'   Hopefully it looks satis' +
-      'factory in most cases and for most'#13#10'   people. '#13#10'   '#13#10'   We add ' +
-      'padding for cells, otherwise they look too close.'#13#10'   This is no' +
-      'rmal thing to do when border-collapse is set to'#13#10'   collapse (be' +
-      'cause this eliminates spacing between cells). '#13#10'*/'#13#10'table.table_' +
-      'tag { border-collapse: collapse; }'#13#10'table.table_tag td { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10'table.table_tag th { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
-      '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
-      '}'#13#10
-    Left = 48
-    Top = 148
-  end
-  object TexDocGenerator: TTexDocGenerator
-    Left = 48
-    Top = 190
-  end
-  object HTMLHelpDocGenerator: THTMLHelpDocGenerator
-    CSS = 
-      'body { font-family: Verdana,Arial; '#13#10'  color: black; background-' +
-      'color: white; '#13#10'  font-size: 12px; }'#13#10'body.navigationframe { fon' +
-      't-family: Verdana,Arial; '#13#10'  color: white; background-color: #78' +
-      '7878; '#13#10'  font-size: 12px; }'#13#10#13#10'img { border:0px; }'#13#10#13#10'a:link {c' +
-      'olor:#C91E0C; text-decoration: none; }'#13#10'a:visited {color:#7E5C31' +
-      '; text-decoration: none; }'#13#10'a:hover {text-decoration: underline;' +
-      ' }'#13#10'a:active {text-decoration: underline; }'#13#10#13#10'a.navigation:link' +
-      ' { color: white; text-decoration: none; font-size: 12px;}'#13#10'a.nav' +
-      'igation:visited { color: white; text-decoration: none; font-size' +
-      ': 12px;}'#13#10'a.navigation:hover { color: white; font-weight: bold; ' +
-      #13#10'  text-decoration: none; font-size: 12px; }'#13#10'a.navigation:acti' +
-      've { color: white; text-decoration: none; font-size: 12px;}'#13#10#13#10'a' +
-      '.bold:link {color:#C91E0C; text-decoration: none; font-weight:bo' +
-      'ld; }'#13#10'a.bold:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'a.bold:hover {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10'a.bold:active {text-decoration: underline; font' +
-      '-weight:bold; }'#13#10#13#10'a.section {color: green; text-decoration: non' +
-      'e; font-weight: bold; }'#13#10'a.section:hover {color: green; text-dec' +
-      'oration: underline; font-weight: bold; }'#13#10#13#10'ul.useslist a:link {' +
-      'color:#C91E0C; text-decoration: none; font-weight:bold; }'#13#10'ul.us' +
-      'eslist a:visited {color:#7E5C31; text-decoration: none; font-wei' +
-      'ght:bold; }'#13#10'ul.useslist a:hover {text-decoration: underline; fo' +
-      'nt-weight:bold; }'#13#10'ul.useslist a:active {text-decoration: underl' +
-      'ine; font-weight:bold; }'#13#10#13#10'ul.hierarchy { list-style-type:none;' +
-      ' }'#13#10'ul.hierarchylevel { list-style-type:none; }'#13#10#13#10'p.unitlink a:' +
-      'link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#13 +
-      #10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; fon' +
-      't-weight:bold; }'#13#10'p.unitlink a:hover {text-decoration: underline' +
-      '; font-weight:bold; }'#13#10'p.unitlink a:active {text-decoration: und' +
-      'erline; font-weight:bold; }'#13#10#13#10'tr.list { background: #FFBF44; }'#13 +
-      #10'tr.list2 { background: #FFC982; }'#13#10'tr.listheader { background: ' +
-      '#C91E0C; color: white; }'#13#10#13#10'table.wide_list { border-spacing:2px' +
-      '; width:100%; }'#13#10'table.wide_list td { vertical-align:top; paddin' +
-      'g:4px; }'#13#10#13#10'table.markerlegend { width:auto; }'#13#10'table.markerlege' +
-      'nd td.legendmarker { text-align:center; }'#13#10#13#10'table.sections { ba' +
-      'ckground:white; }'#13#10'table.sections td {background:lightgray; }'#13#10#13 +
-      #10'table.summary td.itemcode { width:100%; }'#13#10'table.detail td.item' +
-      'code { width:100%; }'#13#10#13#10'td.itemname {white-space:nowrap; }'#13#10'td.i' +
-      'temunit {white-space:nowrap; }'#13#10'td.itemdesc { width:100%; }'#13#10#13#10'd' +
-      'iv.nodescription { color:red; }'#13#10'dl.parameters dt { color:blue; ' +
-      '}'#13#10#13#10'/* Various browsers have various default styles for <h6>,'#13#10 +
-      '   sometimes ugly for our purposes, so it'#39's best to set things'#13#10 +
-      '   like font-size and font-weight in out pasdoc.css explicitly. ' +
-      '*/'#13#10'h6.description_section { '#13#10'  /* font-size 100% means that it' +
-      ' has the same font size as the '#13#10'     parent element, i.e. norma' +
-      'l description text */'#13#10'  font-size: 100%;'#13#10'  font-weight: bold; ' +
-      #13#10'  /* By default browsers usually have some large margin-bottom' +
-      ' and '#13#10'     margin-top for <h1-6> tags. In our case, margin-bott' +
-      'om is'#13#10'     unnecessary, we want to visually show that descripti' +
-      'on_section'#13#10'     is closely related to content below. In this si' +
-      'tuation'#13#10'     (where the font size is just as a normal text), sm' +
-      'aller bottom'#13#10'     margin seems to look good. */'#13#10'  margin-botto' +
-      'm: 0em;'#13#10'}'#13#10#13#10'/* Style applied to Pascal code in documentation '#13 +
-      #10'   (e.g. produced by @longcode tag) } */'#13#10'span.pascal_string { ' +
-      'color: #000080; }'#13#10'span.pascal_keyword { font-weight: bolder; }'#13 +
-      #10'span.pascal_comment { color: #000080; font-style: italic; }'#13#10'sp' +
-      'an.pascal_compiler_comment { color: #008000; }'#13#10'span.pascal_nume' +
-      'ric { }'#13#10'span.pascal_hex { }'#13#10#13#10'p.hint_directive { color: red; }' +
-      #13#10#13#10'input#search_text { }'#13#10'input#search_submit_button { }'#13#10#13#10'acr' +
-      'onym.mispelling { background-color: #ffa; }'#13#10#13#10'/* Actually this ' +
-      'reduces vertical space between *every* paragraph'#13#10'   inside list' +
-      ' with @itemSpacing(compact). '#13#10'   While we would like to reduce ' +
-      'this space only for the'#13#10'   top of 1st and bottom of last paragr' +
-      'aph within each list item.'#13#10'   But, well, user probably will not' +
-      ' do any paragraph breaks'#13#10'   within a list with @itemSpacing(com' +
-      'pact) anyway, so it'#39's'#13#10'   acceptable solution. */'#13#10'ul.compact_sp' +
-      'acing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'ol.compact_spa' +
-      'cing p { margin-top: 0em; margin-bottom: 0em; }'#13#10'dl.compact_spac' +
-      'ing p { margin-top: 0em; margin-bottom: 0em; }'#13#10#13#10'/* Style for t' +
-      'able created by @table tags:'#13#10'   just some thin border.'#13#10'   '#13#10'  ' +
-      ' This way we have some borders around the cells'#13#10'   (so cells ar' +
-      'e visibly separated), but the border '#13#10'   "blends with the backg' +
-      'round" so it doesn'#39't look too ugly.'#13#10'   Hopefully it looks satis' +
-      'factory in most cases and for most'#13#10'   people. '#13#10'   '#13#10'   We add ' +
-      'padding for cells, otherwise they look too close.'#13#10'   This is no' +
-      'rmal thing to do when border-collapse is set to'#13#10'   collapse (be' +
-      'cause this eliminates spacing between cells). '#13#10'*/'#13#10'table.table_' +
-      'tag { border-collapse: collapse; }'#13#10'table.table_tag td { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10'table.table_tag th { border:' +
-      ' 1pt solid gray; padding: 0.3em; }'#13#10#13#10'table.detail {'#13#10'  border: ' +
-      '1pt solid gray;'#13#10'  margin-top: 0.3em;'#13#10'  margin-bottom: 0.3em;'#13#10 +
-      '}'#13#10
-    Left = 48
-    Top = 242
   end
 end

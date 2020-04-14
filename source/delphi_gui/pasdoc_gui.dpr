@@ -1,4 +1,4 @@
-program pasdoc_gui;
+program pasdoc_gui_Rio;
 
 {$R 'pasdoc_gui_manifest.res' 'pasdoc_gui_manifest.rc'}
 

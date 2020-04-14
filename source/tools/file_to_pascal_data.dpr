@@ -31,7 +31,7 @@
   Useful if you want to "embed" some binary file inside compiled
   Pascal program. }
 
-program file_to_pascal_data;
+program file_to_pascal_data_Rio;
 
 {$apptype CONSOLE}
 {$ifdef FPC} {$mode objfpc} {$endif}
