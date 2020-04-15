@@ -136,9 +136,10 @@ const
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
-  { Tag Start- and Endsign (https://github.com/pasdoc/pasdoc/issues/8) }
-  TagStartSign = ['['];
-  TagEndSign = [']'];
+  { Flag Start- and Endsigns for parameters
+  (Feature request "direction of parameter": https://github.com/pasdoc/pasdoc/issues/8) }
+  FlagStartSigns = ['['];
+  FlagEndSigns = [']'];
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
@@ -364,8 +365,8 @@ var
   Len: Integer;
   StartPos: Integer;
   EndPos: Integer;
-  TagStartPos: Integer;
-  TagEndPos: Integer;
+  FlagStartPos: Integer;
+  FlagEndPos: Integer;
 begin
   StartPos := 1;
   Len := Length(S);
@@ -380,19 +381,19 @@ begin
       Inc(EndPos);
 
     { Searching for Tag [in], [out] etc. in Param (see https://github.com/pasdoc/pasdoc/issues/8) }
-    TagStartPos := EndPos + 1;
-    while (TagStartPos <= Len) and not IsCharInSet(S[TagStartPos], TagStartSign) do
-      Inc(TagStartPos);
+    FlagStartPos := EndPos + 1;
+    while (FlagStartPos <= Len) and not IsCharInSet(S[FlagStartPos], FlagStartSigns) do
+      Inc(FlagStartPos);
 
-    if TagStartPos <= Len then
+    if FlagStartPos <= Len then
     begin
-      TagEndPos := TagStartPos + 1;
-      while (TagEndPos <= Len) and not IsCharInset(S[TagEndPos], TagEndSign) do
-        Inc(TagEndPos);
+      FlagEndPos := FlagStartPos + 1;
+      while (FlagEndPos <= Len) and not IsCharInset(S[FlagEndPos], FlagEndSigns) do
+        Inc(FlagEndPos);
     end;
 
-    if TagEndPos <= Len then
-      EndPos := TagEndPos;
+    if FlagEndPos <= Len then
+      EndPos := FlagEndPos;
     { End of Tagsearch issue#8}
 
     Result := Copy(S, StartPos, EndPos - StartPos);
