@@ -392,7 +392,7 @@ begin
         Inc(FlagEndPos);
 
       if FlagEndPos <= Len then
-        EndPos := FlagEndPos;
+        EndPos := FlagEndPos + 1;
     end;
     { End of searching for flag }
 
