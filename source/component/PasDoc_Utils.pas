@@ -380,21 +380,21 @@ begin
     while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
       Inc(EndPos);
 
-    { Searching for Tag [in], [out] etc. in Param (see https://github.com/pasdoc/pasdoc/issues/8) }
+    { Searching for flag like [in], [out] in S (see https://github.com/pasdoc/pasdoc/issues/8) }
     FlagStartPos := EndPos + 1;
     while (FlagStartPos <= Len) and not IsCharInSet(S[FlagStartPos], FlagStartSigns) do
       Inc(FlagStartPos);
 
-    if FlagStartPos <= Len then
+    if FlagStartPos <= Len then // otherwise, no [xxx] found
     begin
       FlagEndPos := FlagStartPos + 1;
       while (FlagEndPos <= Len) and not IsCharInset(S[FlagEndPos], FlagEndSigns) do
         Inc(FlagEndPos);
-    end;
 
-    if FlagEndPos <= Len then
-      EndPos := FlagEndPos;
-    { End of Tagsearch issue#8}
+      if FlagEndPos <= Len then
+        EndPos := FlagEndPos;
+    end;
+    { End of searching for flag }
 
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
