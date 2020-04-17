@@ -42,6 +42,13 @@ type
   RawByteString = AnsiString;
 {$ENDIF}
 
+{$IFDEF FPC}
+  TStringArray = TStringDynArray;
+{$ENDIF}
+{$IF NOT DECLARED(TStringArray)}
+  TStringArray = array of string;
+{$ENDIF}
+
   { }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
   { }
@@ -56,7 +63,6 @@ type
     constructor Create(const AMessage: string;
       const AArguments: array of const; const AExitCode: Word = 3);
   end;
-
   { This represents parts of a qualified name of some item.
 
     User supplies such name by separating each part with dot,
@@ -64,7 +70,8 @@ type
     converts it to TNameParts like
     ['UnitName', 'ClassName', 'ProcedureName'].
     Length must be @italic(always) between 1 and @link(MaxNameParts). }
-  TNameParts = array of string;
+  TNameParts = TStringArray;
+
 
 const
   MaxNameParts = 3;
@@ -111,15 +118,6 @@ begin
 end;
 
 { global routines ------------------------------------------------------------ }
-
-{$IFDEF FPC}
-type
-  TStringArray = TStringDynArray;
-{$ENDIF}
-{$IF NOT DECLARED(TStringArray)}
-type
-  TStringArray = array of string;
-{$IFEND}
 
 {$IF NOT DECLARED(SplitString)}
 // Primitive implementation for ancient compilers, uses only 1st char of Delimiters
