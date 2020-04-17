@@ -31,7 +31,7 @@ unit PasDoc_Types;
 interface
 
 uses
-  SysUtils, StrUtils;
+  SysUtils, StrUtils, Types;
 
 type
 {$IFNDEF COMPILER_11_UP}
@@ -41,6 +41,19 @@ type
   UnicodeString = WideString;
   RawByteString = AnsiString;
 {$ENDIF}
+
+{$IF NOT DECLARED(TStringDynArray)}
+  TStringDynArray = array of string;
+{$ENDIF}
+  TStringArray = TStringDynArray;
+  { This represents parts of a qualified name of some item.
+
+    User supplies such name by separating each part with dot,
+    e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
+    converts it to TNameParts like
+    ['UnitName', 'ClassName', 'ProcedureName'].
+    Length must be @italic(always) between 1 and @link(MaxNameParts). }
+  TNameParts = TStringArray;
 
   { }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
@@ -57,14 +70,6 @@ type
       const AArguments: array of const; const AExitCode: Word = 3);
   end;
 
-  { This represents parts of a qualified name of some item.
-
-    User supplies such name by separating each part with dot,
-    e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
-    converts it to TNameParts like
-    ['UnitName', 'ClassName', 'ProcedureName'].
-    Length must be @italic(always) between 1 and @link(MaxNameParts). }
-  TNameParts = array of string;
 
 const
   MaxNameParts = 3;
@@ -112,15 +117,6 @@ end;
 
 { global routines ------------------------------------------------------------ }
 
-{$IFDEF FPC}
-type
-  TStringArray = TStringDynArray;
-{$ENDIF}
-{$IF NOT DECLARED(TStringArray)}
-type
-  TStringArray = array of string;
-{$IFEND}
-
 {$IF NOT DECLARED(SplitString)}
 // Primitive implementation for ancient compilers, uses only 1st char of Delimiters
 function SplitString(const S, Delimiters: string): TStringArray;
@@ -157,7 +153,7 @@ begin
     PrevDelimPos := DelimPos + 1;
   end;
 end;
-{$IFEND}
+{$ENDIF}
 
 function SplitNameParts(S: string;
   out NameParts: TNameParts): Boolean;

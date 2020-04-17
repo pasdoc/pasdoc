@@ -117,7 +117,7 @@ const
   (
     '',
     'Read both interface and implementation comments. Use whichever comment is non-empty. If they are both non-empty, use the interface comment.',
-    'Read both interface and implementation comments, and concatenate them. The concatenation process is smart: if the interface comment is also present (repeated) at the beginning of the implementation comment, then it will be ignored (to not repeat 2x the same text in the concatenated result)',
+    'Read both interface and implementation comments and concatenate them. If the interface comment is also present (repeated) at the beginning of the implementation comment, it will be ignored (to not repeat 2x the same text in the concatenated result)',
     'Just like "prefer-interface", but if both comments are non-empty, use the implementation comment'
   );
 begin

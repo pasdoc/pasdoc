@@ -113,7 +113,7 @@ function SCharIs(const S: string; Index: integer;
   then the whole S is regarded as it's first word.
 
   Both S and result are trimmed, i.e. they don't have any
-  excessive white-space at the beginning or end. }
+  excessive white-space at the beginning or end.}
 function ExtractFirstWord(var s: string): string; overload;
 
 { Another version of ExtractFirstWord.
@@ -135,6 +135,11 @@ const
   WhiteSpaceNL = [#10, #13];
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
+
+  { Flag Start- and Endsigns for parameters
+  (Feature request "direction of parameter": https://github.com/pasdoc/pasdoc/issues/8) }
+  FlagStartSigns = ['['];
+  FlagEndSigns = [']'];
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
@@ -360,6 +365,8 @@ var
   Len: Integer;
   StartPos: Integer;
   EndPos: Integer;
+  FlagStartPos: Integer;
+  FlagEndPos: Integer;
 begin
   StartPos := 1;
   Len := Length(S);
@@ -372,6 +379,22 @@ begin
     EndPos := StartPos + 1;
     while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
       Inc(EndPos);
+
+    { Searching for Tag [in], [out] etc. in Param (see https://github.com/pasdoc/pasdoc/issues/8) }
+    FlagStartPos := EndPos + 1;
+    while (FlagStartPos <= Len) and not IsCharInSet(S[FlagStartPos], FlagStartSigns) do
+      Inc(FlagStartPos);
+
+    if FlagStartPos <= Len then
+    begin
+      FlagEndPos := FlagStartPos + 1;
+      while (FlagEndPos <= Len) and not IsCharInset(S[FlagEndPos], FlagEndSigns) do
+        Inc(FlagEndPos);
+    end;
+
+    if FlagEndPos <= Len then
+      EndPos := FlagEndPos;
+    { End of Tagsearch issue#8}
 
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
