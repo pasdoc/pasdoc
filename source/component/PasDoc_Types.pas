@@ -104,8 +104,6 @@ type
 
 implementation
 
-{$IFDEF FPC} uses Types; {$endif} { For TStringDynArray type }
-
 { EPasDoc -------------------------------------------------------------------- }
 
 constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
