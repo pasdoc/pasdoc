@@ -1,0 +1,11 @@
+<unit name="ok_flag_parameter.pas">
+  <function name="Foo" type="procedure" declaration="procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy2: Integer; const Xxx3: TObject; const Xxx4: TObject);">
+    <param name="Xxx [in]">Some input param.</param>
+    <param name="Yyy [out]">Some output param.</param>
+    <param name="Xxx1 [in]">Some input param.</param>
+    <param name="Yyy1 [out]">Some output param.</param>
+    <param name="Xxx3 [in, nil allowed]">Some output param.</param>
+    <param name="Xxx4 [out, always non-nil on exit]">Some output param.</param>
+    <description><detailed>My proc.      </detailed></description>
+  </function>
+</unit>

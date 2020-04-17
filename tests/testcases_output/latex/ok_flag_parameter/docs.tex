@@ -1,0 +1,93 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}flag{\_}parameter}
+\label{ok_flag_parameter}
+\index{ok{\_}flag{\_}parameter}
+\section{Overview}
+\begin{description}
+\item[\texttt{Foo}]
+\end{description}
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Foo}
+\fi
+\label{ok_flag_parameter-Foo}
+\index{Foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy2: Integer; const Xxx3: TObject; const Xxx4: TObject);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+My proc.      \par
+\item[\textbf{Parameters}]
+\begin{description}
+\item[Xxx [in]] Some input param.
+\item[Yyy [out]] Some output param.
+\item[Xxx1 [in]] Some input param.
+\item[Yyy1 [out]] Some output param.
+\item[Xxx3 [in, nil allowed]] Some output param.
+\item[Xxx4 [out, always non{-}nil on exit]] Some output param.
+\end{description}
+
+
+\end{list}
+\end{document}
