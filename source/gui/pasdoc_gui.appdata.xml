@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+    <id>pasdoc_gui.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-2.0</project_license>
+    <name>PasDoc</name>
+    <summary>Documentation tool for ObjectPascal (Free Pascal, Lazarus, Delphi) source code.</summary>
+    <description>
+        <p>
+            PasDoc is a documentation tool for Pascal and Object Pascal source code. 
+            Documentation is generated from comments found in the source code or from external 
+            files. Many formatting @-tags are supported. Many output formats are supported, 
+            including HTML and LaTeX.
+        </p>
+    </description>
+    <url type="homepage">https://github.com/pasdoc/pasdoc</url>
+    <url type="bugtracker">https://github.com/pasdoc/pasdoc/issues</url>
+    <url type="faq">https://github.com/pasdoc/pasdoc/wiki</url>
+    <url type="help">https://github.com/pasdoc/pasdoc/wiki/PasDocGui</url>
+    <url type="donation">https://github.com/sponsors/michaliskambi</url>
+    <screenshots>
+        <screenshot type="default">
+            <image type="source">https://raw.githubusercontent.com/pasdoc/pasdoc/master/www/screenshots/gui.png</image>
+        </screenshot>
+    </screenshots>
+</component>
