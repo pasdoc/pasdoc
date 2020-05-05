@@ -18,6 +18,22 @@
 <param name="Local" value="ok_flag_parameter.html#@Classes">
 </object>
 <ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TCastleTheme">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Items">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html#Items">
+</object>
+</ul>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Functions and Procedures">
@@ -27,6 +43,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="Foo">
 <param name="Local" value="ok_flag_parameter.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Bar">
+<param name="Local" value="ok_flag_parameter.html#Bar">
 </object>
 </ul>
 </ul>
@@ -40,6 +60,22 @@
 <param name="Local" value="AllClasses.html">
 </object>
 <ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TCastleTheme">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Items">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html#Items">
+</object>
+</ul>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Overview">

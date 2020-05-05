@@ -44,8 +44,49 @@
 \index{ok{\_}flag{\_}parameter}
 \section{Overview}
 \begin{description}
-\item[\texttt{Foo}]
+\item[\texttt{\begin{ttfamily}TCastleTheme\end{ttfamily} Class}]
 \end{description}
+\begin{description}
+\item[\texttt{Foo}]
+\item[\texttt{Bar}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TCastleTheme Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TCastleTheme Class}
+\fi
+\label{ok_flag_parameter.TCastleTheme}
+\index{TCastleTheme}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TCastleTheme {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Items}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_flag_parameter.TCastleTheme-Items}
+\index{Items}
+\item[\textbf{Items}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Items[constI:Integer]: String read GetItems;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
 \section{Functions and Procedures}
 \ifpdf
 \subsection*{\large{\textbf{Foo}}\normalsize\hspace{1ex}\hrulefill}
@@ -77,7 +118,11 @@ procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy
 
 \par
 \item[\textbf{Description}]
-My proc.      \par
+My proc.        
+
+This link should work \begin{ttfamily}Theme.Items[tiLoading]\end{ttfamily}(\ref{ok_flag_parameter.TCastleTheme-Items}).
+
+This link should work too \begin{ttfamily}Blah blah (blah blah Items[Index])\end{ttfamily}(\ref{ok_flag_parameter.TCastleTheme}).\par
 \item[\textbf{Parameters}]
 \begin{description}
 \item[Xxx [in]] Some input param.
@@ -86,8 +131,39 @@ My proc.      \par
 \item[Yyy1 [out]] Some output param.
 \item[Xxx3 [in, nil allowed]] Some output param.
 \item[Xxx4 [out, always non{-}nil on exit]] Some output param.
+\item[Xxx4] thisShouldNotBeFlag[out] Some output param.
+\item[Xxx4] this should not be flag either[out] Some output param.
 \end{description}
 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Bar}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Bar}
+\fi
+\label{ok_flag_parameter-Bar}
+\index{Bar}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Bar;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
 
 \end{list}
 \end{document}

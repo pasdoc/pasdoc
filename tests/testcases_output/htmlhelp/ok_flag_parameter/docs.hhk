@@ -4,8 +4,20 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="Bar">
+<param name="Local" value="ok_flag_parameter.html#Bar">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Foo">
 <param name="Local" value="ok_flag_parameter.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TCastleTheme">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Items">
+<param name="Local" value="ok_flag_parameter.TCastleTheme.html#Items">
 </object>
 </ul>
 </body></html>

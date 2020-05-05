@@ -361,12 +361,36 @@ begin
 end;
 
 function ExtractFirstWord(var S: String): String;
+
+  { Look for "[xxx]" inside S right after CurrentPos.
+    Assumes that CurrentPos points to whitespace in S, or CurrentPos is > Length(S).
+    If flag is found, this increases CurrentPos to point to flag end
+    (to the index right after final ']'),
+    otherwise CurrentPos remains unchanged.
+    See https://github.com/pasdoc/pasdoc/issues/8 . }
+  procedure FindFlag(var CurrentPos: Integer);
+  var
+    P: Integer;
+  begin
+    P := CurrentPos;
+    while SCharIs(S, P, Whitespace) do // skip whitespace
+      Inc(P);
+    if SCharIs(S, P, '[') then // check it starts with [
+    begin
+      while not SCharIs(S, P, ']') do // skip flag contents
+        Inc(P);
+      if SCharIs(S, P, ']') then // check it ends with ]
+      begin
+        Inc(P);
+        CurrentPos := P; // success, modify CurrentPos
+      end;
+    end;
+  end;
+
 var
   Len: Integer;
   StartPos: Integer;
   EndPos: Integer;
-  FlagStartPos: Integer;
-  FlagEndPos: Integer;
 begin
   StartPos := 1;
   Len := Length(S);
@@ -379,23 +403,7 @@ begin
     EndPos := StartPos + 1;
     while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
       Inc(EndPos);
-
-    { Searching for flag like [in], [out] in S (see https://github.com/pasdoc/pasdoc/issues/8) }
-    FlagStartPos := EndPos + 1;
-    while (FlagStartPos <= Len) and not IsCharInSet(S[FlagStartPos], FlagStartSigns) do
-      Inc(FlagStartPos);
-
-    if FlagStartPos <= Len then // otherwise, no [xxx] found
-    begin
-      FlagEndPos := FlagStartPos + 1;
-      while (FlagEndPos <= Len) and not IsCharInset(S[FlagEndPos], FlagEndSigns) do
-        Inc(FlagEndPos);
-
-      if FlagEndPos <= Len then
-        EndPos := FlagEndPos + 1;
-    end;
-    { End of searching for flag }
-
+    FindFlag(EndPos);
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
   end else
