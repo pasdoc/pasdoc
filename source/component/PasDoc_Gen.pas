@@ -264,6 +264,12 @@ type
       default is false }
     FExcludeGenerator: boolean;
     FIncludeCreationTime: boolean;
+
+    { If false, the first character of literal tags like 'false' and 'nil' will be upcased.
+      Otherwise all characters will be lowercased.
+      default is false }
+    FUseLowercaseKeywords: boolean;
+
     { the output stream that is currently written to; depending on the
       output format, more than one output stream will be necessary to
       store all documentation }
@@ -925,6 +931,10 @@ type
     property IncludeCreationTime: Boolean
       read FIncludeCreationTime write FIncludeCreationTime default false;
 
+    { Setting to define how literal tag keywords should appear in documentaion. }
+    property UseLowercaseKeywords: Boolean
+      read FUseLowercaseKeywords write FUseLowercaseKeywords default false;
+
     { Title of the documentation, supplied by user. May be empty.
       See @link(TPasDoc.Title). }
     property Title: string read FTitle write FTitle;
@@ -1289,8 +1299,11 @@ procedure TDocGenerator.HandleLiteralTag(
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
 begin
-  ReplaceStr := CodeString(UpCase(ThisTag.Name[1]) +
-    Copy(ThisTag.Name, 2, MaxInt));
+  if UseLowercaseKeywords then
+    ReplaceStr := CodeString(ThisTag.Name)
+  else
+    ReplaceStr := CodeString(UpCase(ThisTag.Name[1]) +
+      Copy(ThisTag.Name, 2, MaxInt));
 end;
 
 procedure TDocGenerator.HandleInheritedClassTag(
@@ -2664,6 +2677,7 @@ begin
   FClassHierarchy := nil;
   FExcludeGenerator := false;
   FIncludeCreationTime := false;
+  FUseLowercaseKeywords := false;
   FLanguage := TPasDocLanguages.Create;
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;
