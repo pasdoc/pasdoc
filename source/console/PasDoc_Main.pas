@@ -59,6 +59,7 @@ type
     OptionStarOnly,
     OptionExcludeGenerator,
     OptionIncludeCreationTime,
+    OptionUseLowercaseKeywords,
     OptionNumericFilenames,
     OptionWriteUsesList,
     OptionWriteGVUses,
@@ -208,6 +209,10 @@ begin
   OptionIncludeCreationTime := TBoolOption.Create(#0, 'include-creation-time');
   OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
   AddOption(OptionIncludeCreationTime);
+
+  OptionUseLowercaseKeywords := TBoolOption.Create('k', 'lowercase-keywords');
+  OptionUseLowercaseKeywords.Explanation := 'Lowercase all literal tag keywords';
+  AddOption(OptionUseLowercaseKeywords);
 
   OptionLanguage := TStringOption.Create('L', 'language');
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
@@ -520,6 +525,7 @@ begin
 
   PasDoc.Generator.ExcludeGenerator := OptionExcludeGenerator.TurnedOn;
   PasDoc.Generator.IncludeCreationTime := OptionIncludeCreationTime.TurnedOn;
+  PasDoc.Generator.UseLowercaseKeywords := OptionUseLowercaseKeywords.TurnedOn;
   PasDoc.Generator.WriteUsesClause := OptionWriteUsesList.TurnedOn;
 
   if OptionUseTipueSearch.TurnedOn then begin
