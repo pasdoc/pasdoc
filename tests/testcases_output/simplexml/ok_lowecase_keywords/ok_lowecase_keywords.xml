@@ -1,0 +1,3 @@
+<unit name="ok_lowecase_keywords.pas">
+  <description><detailed>Test unit with <code>nil</code> and <code>true</code> and <code>false</code>. Note that case of tag doesn't matter: <code>nil</code> and <code>true</code> and <code>false</code> , <code>nil</code> and <code>true</code> and <code>false</code> .</detailed></description>
+</unit>
