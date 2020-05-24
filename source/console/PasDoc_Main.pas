@@ -210,8 +210,8 @@ begin
   OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
   AddOption(OptionIncludeCreationTime);
 
-  OptionUseLowercaseKeywords := TBoolOption.Create('k', 'lowercase-keywords');
-  OptionUseLowercaseKeywords.Explanation := 'Lowercase all literal tag keywords';
+  OptionUseLowercaseKeywords := TBoolOption.Create(#0, 'lowercase-keywords');
+  OptionUseLowercaseKeywords.Explanation := 'Lowercase all literal tag keywords (@nil, @false, @true)';
   AddOption(OptionUseLowercaseKeywords);
 
   OptionLanguage := TStringOption.Create('L', 'language');
