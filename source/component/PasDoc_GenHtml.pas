@@ -2523,10 +2523,7 @@ function THTMLDocGenerator.MakeBodyBegin: string;
 
     if Title <> '' then
     begin
-      if Introduction <> nil then
-        Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Title) + '</h2>'
-      else
-        Result := Result + '<h2>' + LocalMakeLink('AllUnits.html', Title) + '</h2>';
+      Result := Result + '<h2>' + LocalMakeLink('index.html', Title) + '</h2>';
     end;
 
     if Introduction <> nil then
