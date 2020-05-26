@@ -53,7 +53,6 @@ type
     // Click @name  to select a directory that may
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
-    BtnBrowseAdditionalFiles: TButton;
     // Click @name to generate output
     ButtonGenerateDocs: TButton;
     ButtonAspellURL: TButton;
@@ -118,7 +117,6 @@ type
     // in the project.
     memoFiles: TMemo;
     MemoAutoLinkExclude: TMemo;
-    MemoAdditionalFiles: TMemo;
     memoFooter: TMemo;
     memoHeader: TMemo;
     // The lines in @name are the paths of the files that
@@ -196,6 +194,8 @@ type
     memoHyphenatedWords: TMemo;
     LabelCommentMarkers: TLabel;
     rgCommentMarkers: TRadioGroup;
+    BtnBrowseAdditionalFiles : TButton;
+    MemoAdditionalFiles : TMemo;
     procedure ButtonURLClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1418,7 +1418,7 @@ begin
     Ini.WriteBool('Main', 'CheckSpelling', cbCheckSpelling.Checked);
     Ini.WriteInteger('Main', 'LatexGraphicsPackage', comboLatexGraphicsPackage.ItemIndex);
     WriteStrings('IgnoreWords', memoSpellCheckingIgnore.Lines);
-
+    
     Ini.UpdateFile;
   finally Ini.Free end;
 
@@ -1574,7 +1574,8 @@ begin
   { Switch to "Generate" page }
   lbNavigation.ItemIndex := lbNavigation.Items.IndexOfObject(pageGenerate);
   lbNavigationClick(nil);
-
+  Application.ProcessMessages;
+  Sleep(500);
   ButtonGenerateDocsClick(nil);
 end;
 
@@ -1622,6 +1623,7 @@ begin
     end;
   end;
 end;
+
 
 function TfrmHelpGenerator.GetCheckListVisibleMembersValue: TVisibilities;
 var
