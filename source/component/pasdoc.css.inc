@@ -25,6 +25,7 @@
 'body, html, table.container {' + LineEnding +
 '  margin: 0;' + LineEnding +
 '  padding: 0;' + LineEnding +
+'  height: 100%;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'body {' + LineEnding +
@@ -33,10 +34,33 @@
 '  background-color: white;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
-'table.container {' + LineEnding +
-'  width: 100%;' + LineEnding +
+'.container {' + LineEnding +
+'  height: 100%;  ;' + LineEnding +
 '  border-spacing: 0;' + LineEnding +
 '}' + LineEnding +
+'.navigation {' + LineEnding +
+'  width: 40%;' + LineEnding +
+'  height: 100%; ' + LineEnding +
+'  color: white;' + LineEnding +
+'  background-color: #787878;' + LineEnding +
+'  margin: 0;' + LineEnding +
+'  /* padding-bottom is a little larger, to make navigation column have some' + LineEnding +
+'     nice height even when td.content column is very small. */' + LineEnding +
+'  padding: 0em 0em 0em 0em;' + LineEnding +
+'  float: left;'+ LineEnding +
+'}' + LineEnding +
+'.navigation ul { margin : 0em; padding:0em;}' + LineEnding +
+'.navigation li { ' + LineEnding +
+'  margin: 0em 0em 0em 0em;' + LineEnding +
+'  padding: 0em 1em 0em 1em;  }' + LineEnding +
+'.navigation h2 { '+ LineEnding +
+'   text-align : center;'+ LineEnding +
+'   margin: 0em;' + LineEnding +
+'   padding: 0.5em;}' + LineEnding +
+'' + LineEnding +
+'.content { padding: 0.5em; float: right; width: 55%;}' + LineEnding +
+'.content h1 { margin-top: 0; }' + LineEnding +
+'.appinfo { float: right; text-align: right; margin-bottom: 1em; }'  + LineEnding +
 'table.container td {' + LineEnding +
 '  vertical-align: top;' + LineEnding +
 '}' + LineEnding +
@@ -68,10 +92,14 @@
 'a:hover {text-decoration: underline; }' + LineEnding +
 'a:active {text-decoration: underline; }' + LineEnding +
 '' + LineEnding +
-'a.navigation:link { color: white; text-decoration: none; }' + LineEnding +
-'a.navigation:visited { color: white; text-decoration: none; }' + LineEnding +
-'a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding +
-'a.navigation:active { color: white; text-decoration: none; }' + LineEnding +
+//'a.navigation:link { color: white; text-decoration: none; }' + LineEnding +
+//'a.navigation:visited { color: white; text-decoration: none; }' + LineEnding +
+//'a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding +
+//'a.navigation:active { color: white; text-decoration: none; }' + LineEnding +
+'.navigation a:link { color: white; text-decoration: none; }' + LineEnding +
+'.navigation a:visited { color: white; text-decoration: none; }' + LineEnding +
+'.navigation a:hover { color: #000080; font-weight: none; text-decoration: none; }' + LineEnding +
+'.navigation a:active { color: white; text-decoration: none; }' + LineEnding +
 '' + LineEnding +
 'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }' + LineEnding +
 'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }' + LineEnding +
@@ -118,9 +146,37 @@
 'td.itemname {white-space:nowrap; }' + LineEnding +
 'td.itemunit {white-space:nowrap; }' + LineEnding +
 'td.itemdesc { width:100%; }' + LineEnding +
+'td.itemcode > code { color:#ffa;}' + LineEnding +
+'td.itemcode a { color:#C91E0C;}' + LineEnding +
+'td.itemcode code>a { color:#C91E0C;}' + LineEnding +
 '' + LineEnding +
 'div.nodescription { color:red; }' + LineEnding +
 'dl.parameters dt { color:blue; }' + LineEnding +
+'dl.parameters dd {' + LineEnding +
+'  display: inline;' + LineEnding +
+'  margin: 0;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'dl.parameters dd:after{' + LineEnding +
+'  display: block;' + LineEnding +
+'  content: '';' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'dl.parameters dt{' + LineEnding +
+'  display: inline-block;' + LineEnding +
+'  /* min-width: 100px; */' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'code {' + LineEnding +
+'  font-family: monospace;' + LineEnding +
+'  font-size:1.2em;' + LineEnding +
+'  font-style:  italic;' + LineEnding +
+'  color:  chocolate;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'div.nodescription { color:red; }' + LineEnding +
+'dl.parameters dt { color:#ffa636; }' + LineEnding +
+'' + LineEnding +
 '' + LineEnding +
 '/* Various browsers have various default styles for <h6>,' + LineEnding +
 '   sometimes ugly for our purposes, so it''s best to set things' + LineEnding +
@@ -190,7 +246,7 @@
 '  margin-bottom: 0.3em;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
-'.search-form { white-space: nowrap; }' + LineEnding +
+'.search-form { white-space: nowrap; padding: 0em 1em 0em 1em;  }' + LineEnding +
 '.search-input, .search-button { display: inline-block; vertical-align: middle; }' + LineEnding +
 '' + LineEnding +
 '/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding +
@@ -204,3 +260,4 @@
 'table.table_tag th > p:last-child,' + LineEnding +
 '       td.itemdesc > p:last-child { margin-bottom: 0em; }' + LineEnding +
 ''
+
