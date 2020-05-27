@@ -113,7 +113,7 @@ function SCharIs(const S: string; Index: integer;
   then the whole S is regarded as it's first word.
 
   Both S and result are trimmed, i.e. they don't have any
-  excessive white-space at the beginning or end. }
+  excessive white-space at the beginning or end.}
 function ExtractFirstWord(var s: string): string; overload;
 
 { Another version of ExtractFirstWord.
@@ -135,6 +135,11 @@ const
   WhiteSpaceNL = [#10, #13];
   { Any whitespace (that may indicate newline or not) }
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
+
+  { Flag Start- and Endsigns for parameters
+  (Feature request "direction of parameter": https://github.com/pasdoc/pasdoc/issues/8) }
+  FlagStartSigns = ['['];
+  FlagEndSigns = [']'];
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
@@ -356,6 +361,32 @@ begin
 end;
 
 function ExtractFirstWord(var S: String): String;
+
+  { Look for "[xxx]" inside S right after CurrentPos.
+    Assumes that CurrentPos points to whitespace in S, or CurrentPos is > Length(S).
+    If flag is found, this increases CurrentPos to point to flag end
+    (to the index right after final ']'),
+    otherwise CurrentPos remains unchanged.
+    See https://github.com/pasdoc/pasdoc/issues/8 . }
+  procedure FindFlag(var CurrentPos: Integer);
+  var
+    P: Integer;
+  begin
+    P := CurrentPos;
+    while SCharIs(S, P, Whitespace) do // skip whitespace
+      Inc(P);
+    if SCharIs(S, P, '[') then // check it starts with [
+    begin
+      while not SCharIs(S, P, ']') do // skip flag contents
+        Inc(P);
+      if SCharIs(S, P, ']') then // check it ends with ]
+      begin
+        Inc(P);
+        CurrentPos := P; // success, modify CurrentPos
+      end;
+    end;
+  end;
+
 var
   Len: Integer;
   StartPos: Integer;
@@ -372,7 +403,7 @@ begin
     EndPos := StartPos + 1;
     while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
       Inc(EndPos);
-
+    FindFlag(EndPos);
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
   end else

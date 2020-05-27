@@ -59,6 +59,7 @@ type
     OptionStarOnly,
     OptionExcludeGenerator,
     OptionIncludeCreationTime,
+    OptionUseLowercaseKeywords,
     OptionNumericFilenames,
     OptionWriteUsesList,
     OptionWriteGVUses,
@@ -117,7 +118,7 @@ const
   (
     '',
     'Read both interface and implementation comments. Use whichever comment is non-empty. If they are both non-empty, use the interface comment.',
-    'Read both interface and implementation comments, and concatenate them. The concatenation process is smart: if the interface comment is also present (repeated) at the beginning of the implementation comment, then it will be ignored (to not repeat 2x the same text in the concatenated result)',
+    'Read both interface and implementation comments and concatenate them. If the interface comment is also present (repeated) at the beginning of the implementation comment, it will be ignored (to not repeat 2x the same text in the concatenated result)',
     'Just like "prefer-interface", but if both comments are non-empty, use the implementation comment'
   );
 begin
@@ -208,6 +209,10 @@ begin
   OptionIncludeCreationTime := TBoolOption.Create(#0, 'include-creation-time');
   OptionIncludeCreationTime.Explanation := 'Include creation time in the docs';
   AddOption(OptionIncludeCreationTime);
+
+  OptionUseLowercaseKeywords := TBoolOption.Create(#0, 'lowercase-keywords');
+  OptionUseLowercaseKeywords.Explanation := 'Lowercase all literal tag keywords (@nil, @false, @true)';
+  AddOption(OptionUseLowercaseKeywords);
 
   OptionLanguage := TStringOption.Create('L', 'language');
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
@@ -520,6 +525,7 @@ begin
 
   PasDoc.Generator.ExcludeGenerator := OptionExcludeGenerator.TurnedOn;
   PasDoc.Generator.IncludeCreationTime := OptionIncludeCreationTime.TurnedOn;
+  PasDoc.Generator.UseLowercaseKeywords := OptionUseLowercaseKeywords.TurnedOn;
   PasDoc.Generator.WriteUsesClause := OptionWriteUsesList.TurnedOn;
 
   if OptionUseTipueSearch.TurnedOn then begin

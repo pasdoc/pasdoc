@@ -2509,15 +2509,19 @@ Var
 
   function MakeNavigation: string;
 
-    function LocalMakeLink(const Filename, Caption: string): string; overload;
+    function LocalMakeLink(const Filename, Caption: string): string;
     begin
-    //+ '" class="navigation">' +
       Result := '<li><a href="' + EscapeURL(Filename) +'">'+ ConvertString(Caption) + '</a></li>';
     end;
 
-    function LocalMakeLink(const Filename: string; CaptionId: TTranslationID): string; overload;
+    function LocalMakeParagraphLink(const Filename, Caption: string): string; overload;
     begin
-      Result := LocalMakeLink(Filename, FLanguage.Translation[CaptionId]);
+      Result := '<p>' + LocalMakeLink(Filename, Caption) + '</p>';
+    end;
+
+    function LocalMakeParagraphLink(const Filename: string; CaptionId: TTranslationID): string; overload;
+    begin
+      Result := LocalMakeParagraphLink(Filename, FLanguage.Translation[CaptionId]);
     end;
 
   var
@@ -2525,6 +2529,7 @@ Var
     i: Integer;
   begin
     Result := '';
+
 
     Skip := False;
     if Introduction <> nil then
@@ -2550,19 +2555,20 @@ Var
           Result := Result + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle);
       end;
     end;
+    
 
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
-      Result := Result + LocalMakeLink(
+      Result := Result + LocalMakeParagraphLink(
         OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
         OverviewFilesInfo[Overview].TranslationId);
 
     if LinkGraphVizUses <> '' then
-      Result := Result + LocalMakeLink(
+      Result := Result + LocalMakeParagraphLink(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
 
     if LinkGraphVizClasses <> '' then
-      Result := Result + LocalMakeLink(
+      Result := Result + LocalMakeParagraphLink(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
 
@@ -2571,16 +2577,16 @@ Var
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
         if AdditionalFiles.Get(i).ShortTitle = '' then
-          Result := Result + LocalMakeLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
-          Result := Result + LocalMakeLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
+          Result := Result + LocalMakeParagraphLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
+          Result := Result + LocalMakeParagraphLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
       end;
     end;
 
     if Conclusion <> nil then
     begin
       if Conclusion.ShortTitle = '' then
-        Result := Result + LocalMakeLink(Conclusion.OutputFileName, trConclusion) else
-        Result := Result + LocalMakeLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
+        Result := Result + LocalMakeParagraphLink(Conclusion.OutputFileName, trConclusion) else
+        Result := Result + LocalMakeParagraphLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
     end;
 
     if UseTipueSearch then

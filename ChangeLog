@@ -1,5 +1,9 @@
 Next version (not released yet)
 
+  * Allow to lowercase output of @nil, @false, @true by --lowercase-keywords (Bi0T1N)
+  * Automatically detect flag like [xxx] at @param description.
+    See https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_flag_parameter.pas
+    for example. (PifPof)
   * Scan implementation section of a unit in addition to default interface section
     https://github.com/pasdoc/pasdoc/wiki/ImplementationCommentsOption (Fr0sT-Brutal)
   * Parser improvements to correctly handle some special cases: reading chars > $FF,

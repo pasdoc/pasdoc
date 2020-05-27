@@ -1,6 +1,7 @@
 program pasdoc_gui;
 
 {$R 'pasdoc_gui_manifest.res' 'pasdoc_gui_manifest.rc'}
+{$R 'pasdoc_gui_Tokyo.res'}
 
 uses
   Forms,
