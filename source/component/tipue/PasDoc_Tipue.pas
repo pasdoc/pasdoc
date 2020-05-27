@@ -253,12 +253,12 @@ procedure TipueAddFiles(Units: TPasUnits;
   end;
 
 const
-  TipueSearchCss : {$I tipuesearch.css.inc};
-  TipueSearchScript : {$I tipuesearch.js.inc};
-  TipueSearchSetScript :{$I tipuesearch_set.js.inc};
-  JQueryScript : {$I jquery.min.js.inc};
-  TipueSearchImage : {$I search.png.inc};
-  TipueLoaderImage : {$I loader.gif.inc};
+  TipueSearchCss: {$I tipuesearch.css.inc};
+  TipueSearchScript: {$I tipuesearch.js.inc};
+  TipueSearchSetScript:{$I tipuesearch_set.js.inc};
+  JQueryScript: {$I jquery.min.js.inc};
+  TipueSearchImage: {$I search.png.inc};
+  TipueLoaderImage: {$I loader.gif.inc};
 var
   TipueResultsPage: string;
 begin

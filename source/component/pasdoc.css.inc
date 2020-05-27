@@ -121,11 +121,6 @@
 '.navigation a:hover {text-decoration: underline; }' + LineEnding +
 '.navigation a:active {text-decoration: underline; }' + LineEnding +
 '' + LineEnding +
-'/*a.navigation:link { color: white; text-decoration: none; }' + LineEnding +
-'a.navigation:visited { color: white; text-decoration: none; }' + LineEnding +
-'a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding +
-'a.navigation:active { color: white; text-decoration: none; }*/' + LineEnding +
-'' + LineEnding +
 'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }' + LineEnding +
 'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }' + LineEnding +
 'a.bold:hover {text-decoration: underline; font-weight:bold; }' + LineEnding +
@@ -196,9 +191,7 @@
 'code {' + LineEnding +
 '  font-family: monospace;' + LineEnding +
 '  font-size:1.2em;' + LineEnding +
-'  font-style:  italic;' + LineEnding +
 '}' + LineEnding +
-'' + LineEnding +
 '' + LineEnding +
 '/* Various browsers have various default styles for <h6>,' + LineEnding +
 '   sometimes ugly for our purposes, so it''s best to set things' + LineEnding +
@@ -221,6 +214,8 @@
 '/* Style applied to Pascal code in documentation' + LineEnding +
 '   (e.g. produced by @longcode tag) } */' + LineEnding +
 '.longcode {' + LineEnding +
+'  font-family: monospace;' + LineEnding +
+'  font-size:1.2em;    ' + LineEnding +
 '  background-color:#ccc;' + LineEnding +
 '}' + LineEnding +
 'span.pascal_string { color: #000080; }' + LineEnding +

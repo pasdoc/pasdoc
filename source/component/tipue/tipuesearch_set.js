@@ -18,40 +18,39 @@ var tipuesearch_stop_words = ["a", "above", "after", "again", "against", "all", 
 // Word replace
 
 var tipuesearch_replace = {'words': [
-     {'word': 'tip', 'replace_with': 'tipue'},
-     {'word': 'javscript', 'replace_with': 'javascript'},
-     {'word': 'jqeury', 'replace_with': 'jquery'}
+     // Not relevant for PasDoc docs: {'word': 'tip', 'replace_with': 'tipue'},
+     // Not relevant for PasDoc docs: {'word': 'javscript', 'replace_with': 'javascript'},
+     // Not relevant for PasDoc docs: {'word': 'jqeury', 'replace_with': 'jquery'}
 ]};
 
 
 // Weighting
 
 var tipuesearch_weight = {'weight': [
-     {'url': 'http://www.tipue.com', 'score': 60},
-     {'url': 'http://www.tipue.com/search', 'score': 60},
-     {'url': 'http://www.tipue.com/tipr', 'score': 30},
-     {'url': 'http://www.tipue.com/support', 'score': 20}
+     // Not relevant for PasDoc docs: {'url': 'http://www.tipue.com', 'score': 60},
+     // Not relevant for PasDoc docs: {'url': 'http://www.tipue.com/search', 'score': 60},
+     // Not relevant for PasDoc docs: {'url': 'http://www.tipue.com/tipr', 'score': 30},
+     // Not relevant for PasDoc docs: {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
 
 
 // Illogical stemming
 
 var tipuesearch_stem = {'words': [
-     {'word': 'e-mail', 'stem': 'email'},
-     {'word': 'javascript', 'stem': 'jquery'},
-     {'word': 'javascript', 'stem': 'js'}
+     // Not relevant for PasDoc docs: {'word': 'e-mail', 'stem': 'email'},
+     // Not relevant for PasDoc docs: {'word': 'javascript', 'stem': 'jquery'},
+     // Not relevant for PasDoc docs: {'word': 'javascript', 'stem': 'js'}
 ]};
 
 
 // Related
-
 var tipuesearch_related = {'Related': [
-     {'search': 'tipue', 'related': 'Search', 'include': 1},
-     {'search': 'tipue', 'related': 'jQuery'},
-     {'search': 'tipue', 'related': 'Blog'},
-     {'search': 'tipue', 'related': 'Support'},
-     {'search': 'tipue search', 'related': 'Demo', 'include': 1},
-     {'search': 'tipue search', 'related': 'Support'}
+     // Not relevant for PasDoc docs: {'search': 'tipue', 'related': 'Search', 'include': 1},
+     // Not relevant for PasDoc docs: {'search': 'tipue', 'related': 'jQuery'},
+     // Not relevant for PasDoc docs: {'search': 'tipue', 'related': 'Blog'},
+     // Not relevant for PasDoc docs: {'search': 'tipue', 'related': 'Support'},
+     // Not relevant for PasDoc docs: {'search': 'tipue search', 'related': 'Demo', 'include': 1},
+     // Not relevant for PasDoc docs: {'search': 'tipue search', 'related': 'Support'}
 ]};
 
 

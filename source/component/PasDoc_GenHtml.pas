@@ -2496,9 +2496,7 @@ end;
 { THTMLDocGenerator ---------------------------------------------------------- }
 
 function THTMLDocGenerator.MakeBodyBegin: string;
-Var
-  Skip : Boolean;
-  
+
   function MakeNavigation: string;
 
     function LocalMakeLink(const Filename, Caption: string): string;
@@ -2506,14 +2504,14 @@ Var
       Result := '<a href="' + EscapeURL(Filename) + '">' + ConvertString(Caption) + '</a>';
     end;
 
-    function LocalMakeParagraphLink(const Filename, Caption: string): string; overload;
+    function LocalMakeListItemLink(const Filename, Caption: string): string; overload;
     begin
       Result := '<li>' + LocalMakeLink(Filename, Caption) + '</li>';
     end;
 
-    function LocalMakeParagraphLink(const Filename: string; CaptionId: TTranslationID): string; overload;
+    function LocalMakeListItemLink(const Filename: string; CaptionId: TTranslationID): string; overload;
     begin
-      Result := LocalMakeParagraphLink(Filename, FLanguage.Translation[CaptionId]);
+      Result := LocalMakeListItemLink(Filename, FLanguage.Translation[CaptionId]);
     end;
 
   var
@@ -2521,46 +2519,41 @@ Var
     i: Integer;
   begin
     Result := '';
-    Skip := false;
 
-    if Introduction <> nil then
-    begin
-      Skip := true;
-      Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Title) + '</h2>';
-    end;
-
-    if not(skip) and (Title <> '') then
+    if Title <> ''  then
     begin
       Result := Result + '<h2>' + LocalMakeLink('index.html', Title) + '</h2>';
+    end
+    else
+    begin
+      if Introduction <> nil then
+      begin
+        if Introduction.ShortTitle = '' then
+          Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Introduction.Title) + '</h2>'
+        else
+          Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle) + '</h2>';
+      end;
     end;
 
     Result := Result + '<ul>';
 
-    if not(Skip) and (Introduction <> nil) then
-    begin
-      if Introduction.ShortTitle='' then
-        Result := Result + LocalMakeParagraphLink(Introduction.OutputFileName, trIntroduction)
-      else
-        Result := Result + LocalMakeParagraphLink(Introduction.OutputFileName, Introduction.ShortTitle);
-    end;
-
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     begin
-      Result := Result + LocalMakeParagraphLink(
+      Result := Result + LocalMakeListItemLink(
       OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
       OverviewFilesInfo[Overview].TranslationId);
     end;
 
     if LinkGraphVizUses <> '' then
     begin
-      Result := Result + LocalMakeParagraphLink(
+      Result := Result + LocalMakeListItemLink(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
     end;
 
     if LinkGraphVizClasses <> '' then
     begin
-      Result := Result + LocalMakeParagraphLink(
+      Result := Result + LocalMakeListItemLink(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
     end;
@@ -2570,16 +2563,16 @@ Var
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
         if AdditionalFiles.Get(i).ShortTitle = '' then
-          Result := Result + LocalMakeParagraphLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
-          Result := Result + LocalMakeParagraphLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
+          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
+          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
       end;
     end;
 
     if Conclusion <> nil then
     begin
       if Conclusion.ShortTitle = '' then
-        Result := Result + LocalMakeParagraphLink(Conclusion.OutputFileName, trConclusion) else
-        Result := Result + LocalMakeParagraphLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
+        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, trConclusion) else
+        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
     end;
 
     if UseTipueSearch then

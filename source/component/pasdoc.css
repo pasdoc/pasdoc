@@ -119,11 +119,6 @@ a:active {text-decoration: underline; }
 .navigation a:hover {text-decoration: underline; }
 .navigation a:active {text-decoration: underline; }
 
-/*a.navigation:link { color: white; text-decoration: none; }
-a.navigation:visited { color: white; text-decoration: none; }
-a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }
-a.navigation:active { color: white; text-decoration: none; }*/
-
 a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
 a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
 a.bold:hover {text-decoration: underline; font-weight:bold; }
@@ -194,9 +189,7 @@ dl.parameters dd:after{
 code {
   font-family: monospace;
   font-size:1.2em;
-  font-style:  italic;
 }
-
 
 /* Various browsers have various default styles for <h6>,
    sometimes ugly for our purposes, so it's best to set things
@@ -219,6 +212,8 @@ h6.description_section {
 /* Style applied to Pascal code in documentation
    (e.g. produced by @longcode tag) } */
 .longcode {
+  font-family: monospace;
+  font-size:1.2em;    
   background-color:#ccc;
 }
 span.pascal_string { color: #000080; }
