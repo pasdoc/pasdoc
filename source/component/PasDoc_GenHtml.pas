@@ -282,6 +282,7 @@ type
     function LineBreak: string; override;
 
     function URLLink(const URL: string): string; override;
+    function URLLink(const URL, LinkDisplay: string): string; override;
 
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
@@ -2270,6 +2271,18 @@ end;
 function TGenericHTMLDocGenerator.URLLink(const URL: string): string;
 begin
   Result := MakeLink(URL, ConvertString(URL), '');
+end;
+
+function TGenericHTMLDocGenerator.URLLink(const URL, LinkDisplay: string): string;
+var
+  Link: String;
+begin
+  Link := FixEmailaddressWithoutMailTo(URL);
+
+  if LinkDisplay <> '' then
+    Result := MakeLink(Link, ConvertString(LinkDisplay), '')
+  else
+    Result := MakeLink(Link, ConvertString(URL), '');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteExternalCore(
