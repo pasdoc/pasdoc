@@ -22,18 +22,61 @@
 '  ----------------------------------------------------------------------------' + LineEnding +
 '*/' + LineEnding +
 '' + LineEnding +
-'body, html, table.container {' + LineEnding +
+'body, html {' + LineEnding +
 '  margin: 0;' + LineEnding +
 '  padding: 0;' + LineEnding +
+'  height : 100%;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'body {' + LineEnding +
 '  font-family: Verdana,Arial;' + LineEnding +
 '  color: black;' + LineEnding +
 '  background-color: white;' + LineEnding +
+'' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
+'.container {' + LineEnding +
+'  width: 100%;' + LineEnding +
+'  height : 100%;' + LineEnding +
+'  border-spacing: 0;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'.navigation {' + LineEnding +
+'  float : left;' + LineEnding +
+'  width: 32%;' + LineEnding +
+'  height : 100%;' + LineEnding +
+'  background-color: #111;' + LineEnding +
+'  position: fixed;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'.navigation ul { margin : 0em; padding:0em;}' + LineEnding +
+'.navigation li { ' + LineEnding +
+'  list-style-type:none;' + LineEnding +
+'  margin: 0.2em 0em 0em 0em;' + LineEnding +
+'  padding: 0em 1em 0em 1em;  }' + LineEnding +
+'.navigation h2 { ' + LineEnding +
+'   text-align : center;' + LineEnding +
+'   margin: 0em;' + LineEnding +
+'   padding: 0.5em;}' + LineEnding +
+'' + LineEnding +
+'.content { padding: 1em; }' + LineEnding +
+'.content h1 { margin-top: 0; }' + LineEnding +
+'' + LineEnding +
+'.appinfo {' + LineEnding +
+'    float: right;' + LineEnding +
+'    text-align: right;' + LineEnding +
+'    margin-bottom: 1em;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'.content {' + LineEnding +
+'  float:right;' + LineEnding +
+'  width: 65%;' + LineEnding +
+'  padding: 1em;' + LineEnding +
+' }' + LineEnding +
+'' + LineEnding +
 'table.container {' + LineEnding +
+'  margin: 0;' + LineEnding +
+'  padding: 0;' + LineEnding +
 '  width: 100%;' + LineEnding +
 '  border-spacing: 0;' + LineEnding +
 '}' + LineEnding +
@@ -68,10 +111,20 @@
 'a:hover {text-decoration: underline; }' + LineEnding +
 'a:active {text-decoration: underline; }' + LineEnding +
 '' + LineEnding +
-'a.navigation:link { color: white; text-decoration: none; }' + LineEnding +
+'.navigation h2 a:link {color:#e2e2e2; text-decoration: none; }' + LineEnding +
+'.navigation h2 a:visited {color:#e2e2e2; text-decoration: none; }' + LineEnding +
+'.navigation h2 a:hover {text-decoration: underline; }' + LineEnding +
+'.navigation h2 a:active {text-decoration: underline; }' + LineEnding +
+'' + LineEnding +
+'.navigation a:link {color:#4589fb; text-decoration: none; }' + LineEnding +
+'.navigation a:visited {color:#4589fb; text-decoration: none; }' + LineEnding +
+'.navigation a:hover {text-decoration: underline; }' + LineEnding +
+'.navigation a:active {text-decoration: underline; }' + LineEnding +
+'' + LineEnding +
+'/*a.navigation:link { color: white; text-decoration: none; }' + LineEnding +
 'a.navigation:visited { color: white; text-decoration: none; }' + LineEnding +
 'a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding +
-'a.navigation:active { color: white; text-decoration: none; }' + LineEnding +
+'a.navigation:active { color: white; text-decoration: none; }*/' + LineEnding +
 '' + LineEnding +
 'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }' + LineEnding +
 'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }' + LineEnding +
@@ -118,9 +171,34 @@
 'td.itemname {white-space:nowrap; }' + LineEnding +
 'td.itemunit {white-space:nowrap; }' + LineEnding +
 'td.itemdesc { width:100%; }' + LineEnding +
+'td.itemcode > code { color:#252525;}' + LineEnding +
+'td.itemcode a {color: #000000;}' + LineEnding +
+'td.itemcode a:hover {color: #f00;}' + LineEnding +
+'td.itemcode code>a {color: #c91e0c;}' + LineEnding +
+'td.itemcode code>a:hover {color: #f00;}' + LineEnding +
 '' + LineEnding +
 'div.nodescription { color:red; }' + LineEnding +
-'dl.parameters dt { color:blue; }' + LineEnding +
+'dl.parameters dt { ' + LineEnding +
+'  display: inline-block;' + LineEnding +
+'  color:blue; ' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'dl.parameters dd {' + LineEnding +
+'  display: inline;' + LineEnding +
+'  margin: 0;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'dl.parameters dd:after{' + LineEnding +
+'  display: block;' + LineEnding +
+'  content: '';' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'code {' + LineEnding +
+'  font-family: monospace;' + LineEnding +
+'  font-size:1.2em;' + LineEnding +
+'  font-style:  italic;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
 '' + LineEnding +
 '/* Various browsers have various default styles for <h6>,' + LineEnding +
 '   sometimes ugly for our purposes, so it''s best to set things' + LineEnding +
@@ -142,6 +220,9 @@
 '' + LineEnding +
 '/* Style applied to Pascal code in documentation' + LineEnding +
 '   (e.g. produced by @longcode tag) } */' + LineEnding +
+'.longcode {' + LineEnding +
+'  background-color:#ccc;' + LineEnding +
+'}' + LineEnding +
 'span.pascal_string { color: #000080; }' + LineEnding +
 'span.pascal_keyword { font-weight: bolder; }' + LineEnding +
 'span.pascal_comment { color: #000080; font-style: italic; }' + LineEnding +
@@ -154,7 +235,7 @@
 'input#search_text { }' + LineEnding +
 'input#search_submit_button { }' + LineEnding +
 '' + LineEnding +
-'acronym.mispelling { background-color: #ffa; }' + LineEnding +
+'acronym.mispelling { background-color: #f00; }' + LineEnding +
 '' + LineEnding +
 '/* Actually this reduces vertical space between *every* paragraph' + LineEnding +
 '   inside list with @itemSpacing(compact).' + LineEnding +
@@ -191,7 +272,7 @@
 '}' + LineEnding +
 '' + LineEnding +
 '.search-form { white-space: nowrap; }' + LineEnding +
-'.search-input, .search-button { display: inline-block; vertical-align: middle; }' + LineEnding +
+'.search-input, .search-button {display: inline-block;/* vertical-align: middle; */margin-top: 0.5em;}' + LineEnding +
 '' + LineEnding +
 '/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding +
 '   We need ">" selector, to not change paragraphs inside lists inside' + LineEnding +

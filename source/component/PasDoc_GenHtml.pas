@@ -2496,18 +2496,19 @@ end;
 { THTMLDocGenerator ---------------------------------------------------------- }
 
 function THTMLDocGenerator.MakeBodyBegin: string;
-
+Var
+  Skip : Boolean;
+  
   function MakeNavigation: string;
 
     function LocalMakeLink(const Filename, Caption: string): string;
     begin
-      Result := '<a href="' + EscapeURL(Filename) + '" class="navigation">' +
-        ConvertString(Caption) + '</a>';
+      Result := '<a href="' + EscapeURL(Filename) + '">' + ConvertString(Caption) + '</a>';
     end;
 
     function LocalMakeParagraphLink(const Filename, Caption: string): string; overload;
     begin
-      Result := '<p>' + LocalMakeLink(Filename, Caption) + '</p>';
+      Result := '<li>' + LocalMakeLink(Filename, Caption) + '</li>';
     end;
 
     function LocalMakeParagraphLink(const Filename: string; CaptionId: TTranslationID): string; overload;
@@ -2520,33 +2521,49 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     i: Integer;
   begin
     Result := '';
+    Skip := false;
 
-    if Title <> '' then
+    if Introduction <> nil then
+    begin
+      Skip := true;
+      Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Title) + '</h2>';
+    end;
+
+    if not(skip) and (Title <> '') then
     begin
       Result := Result + '<h2>' + LocalMakeLink('index.html', Title) + '</h2>';
     end;
 
-    if Introduction <> nil then
+    Result := Result + '<ul>';
+
+    if not(Skip) and (Introduction <> nil) then
     begin
-      if Introduction.ShortTitle = '' then
-        Result := Result + LocalMakeParagraphLink(Introduction.OutputFileName, trIntroduction) else
+      if Introduction.ShortTitle='' then
+        Result := Result + LocalMakeParagraphLink(Introduction.OutputFileName, trIntroduction)
+      else
         Result := Result + LocalMakeParagraphLink(Introduction.OutputFileName, Introduction.ShortTitle);
     end;
 
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
+    begin
       Result := Result + LocalMakeParagraphLink(
-        OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
-        OverviewFilesInfo[Overview].TranslationId);
+      OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
+      OverviewFilesInfo[Overview].TranslationId);
+    end;
 
     if LinkGraphVizUses <> '' then
+    begin
       Result := Result + LocalMakeParagraphLink(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
+    end;
 
     if LinkGraphVizClasses <> '' then
+    begin
       Result := Result + LocalMakeParagraphLink(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
+    end;
 
     if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
     begin
@@ -2566,20 +2583,20 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     end;
 
     if UseTipueSearch then
-      Result := Result + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]);
+      Result := Result + '<li>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</li>';
   end;
 
 begin
   Result := inherited;
   { TODO: get rid of <table> layout, use <div> for navigation instead }
-  Result := Result + '<table class="container"><tr><td class="navigation">' + LineEnding;
+  Result := Result + '<div class="container"><div class="navigation">' + LineEnding;
   Result := Result + MakeNavigation;
-  Result := Result + '</td><td class="content">' + LineEnding;
+  Result := Result + '</ul></div><div class="content">' + LineEnding;
 end;
 
 function THTMLDocGenerator.MakeBodyEnd: string;
 begin
-  Result := '</td></tr></table>'; // end <table class="container">
+  Result := '</div></div>'; // end <table class="container">
   Result := Result + inherited;
 end;
 
