@@ -1,9 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Merriweather:300,400|Open+Sans|Source+Code+Pro');
 
-
 /*
-Tipue Search 7.1
-Copyright (c) 2019 Tipue
+Based on CSS from Tipue Search 7.1,
+with some ideas from 6.1,
+modified by PasDoc.
+
+Copyright (c) 2013-2018 Tipue and PasDoc developers.
 Tipue Search is released under the MIT License
 http://www.tipue.com/search
 */
@@ -14,30 +16,48 @@ http://www.tipue.com/search
 
 #tipue_search_input
 {
-     float: left;
-     font: 15px 'Open Sans', sans-serif;
-     color: #333;     
-     -webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-     width: 230px;
-     background-color: #f3f3f3;
-     border: none;
-     padding: 9px 0 10px 18px;
-     height: 56px;
-     border-radius: 3px;
+	color: #333;
+	/* padding: 0.65em; */
+	width: 100%;
+	height: 32px;
+	border: 1px solid #e2e2e2;
+	border-radius: 0;
 	-moz-appearance: none;
 	-webkit-appearance: none;
-	box-sizing: border-box;
-     box-shadow: none;
+	box-shadow: none;
 	outline: 0;
 	margin: 0;
 }
+
+#tipue_search_input:focus
+{
+     border: 1px solid #ccc;
+}
+
 #tipue_search_input:-webkit-autofill,
 #tipue_search_input:-webkit-autofill:hover, 
 #tipue_search_input:-webkit-autofill:focus
 {
      -webkit-box-shadow: 0 0 0px 1000px #f3f3f3 inset;
 }
+
+
+#tipue_search_button
+{
+     width: 70px;
+     height: 36px;
+     border: 0;
+     border-radius: 1px;
+     /* PasDoc: load search.png from current dir, not img/ subdir. */
+     background: #5193fb url('search.png') no-repeat center;
+     outline: none;
+     vertical-align: middle;
+}
+#tipue_search_button:hover
+{
+     background-color: #4589fb;
+}
+
 .tipue_search_button
 {
      position: relative;
@@ -47,12 +67,19 @@ http://www.tipue.com/search
      margin-left: -3px;
      background-color: #f3f3f3;
      border: none;
-     border-top-right-radius: 3px;
-     border-bottom-right-radius: 3px;
+     border-radius: 1px;
+     /* PasDoc: load search.png from current dir, not img/ subdir. */
+     background: #5193fb url('search.png') no-repeat center;
+	 outline: none;
      box-sizing: border-box;
-     cursor: pointer;
-	outline: 0;
+     cursor: pointer;	
 }
+
+.tipue_search_button:hover
+{
+     background-color: #4589fb;
+}
+
 .tipue_search_icon
 {
      float: left;
@@ -290,4 +317,10 @@ http://www.tipue.com/search
      background: #252525;
      color: #ccc;
 }
+
+/* PasDoc: style found words. */
+.tipue_search_content_bold {
+    background-color: yellow;
+}
+
 

@@ -56,19 +56,28 @@ uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
-  Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
+  Result := '<script src="tipuesearch/jquery.min.js"></script>' + LineEnding;
+  Result := Result + '<script src="tipuesearch/tipuesearch_content.js"></script>' + LineEnding;
+  Result := Result + '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
+  Result := Result + '<script src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding;
+  Result := Result + '<script src="tipuesearch/tipuesearch.js"></script>' + LineEnding;
 end;
 
 function TipueSearchButton: string;
 begin
   Result :=
     '<form class="search-form" action="_tipue_results.html">' +
-    '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
+    //'<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
+    '<div class="search-input">'+
+    '<input type="text" name="q" id="tipue_search_input" pattern=".{3,}" title="At least 3 characters" required>' +
+
+    //<button type="submit" class="tipue_search_button"><div class="tipue_search_icon">&#9906;</div></button>'+
+
     { TODO: Add a value="Search" to <input type="button" ...>
       and hide it visually by one of the CSS tricks on
       http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only }
     '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
-    '</form>' + LineEnding +
+    '</div></form>' + LineEnding +
     '<div style="clear: both"></div>' + LineEnding;
 end;
 
@@ -244,12 +253,12 @@ procedure TipueAddFiles(Units: TPasUnits;
   end;
 
 const
-  TipueSearchCss: {$I tipuesearch.css.inc};
-  TipueSearchScript: {$I tipuesearch.js.inc};
-  TipueSearchSetScript: {$I tipuesearch_set.js.inc};
-  JQueryScript: {$I jquery.min.js.inc};
-  TipueSearchImage: {$I search.png.inc};
-  TipueLoaderImage: {$I loader.gif.inc};
+  TipueSearchCss : {$I tipuesearch.css.inc};
+  TipueSearchScript : {$I tipuesearch.js.inc};
+  TipueSearchSetScript :{$I tipuesearch_set.js.inc};
+  JQueryScript : {$I jquery.min.js.inc};
+  TipueSearchImage : {$I search.png.inc};
+  TipueLoaderImage : {$I loader.gif.inc};
 var
   TipueResultsPage: string;
 begin
