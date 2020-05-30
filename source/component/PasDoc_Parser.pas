@@ -1703,7 +1703,6 @@ var
   end;
 
 var
-  ClassKeyWordString: string;
   t: TToken;
   PropertyParsed: TPasProperty;
   MethodCounts: THash;
@@ -1717,9 +1716,6 @@ begin
   DoMessage(4, pmtInformation, 'Entering implementation section of unit %s',[U.Name]);
 
   AttributeIsPossible := False;
-  { ClassKeyWordString is used to include 'class' in
-    class methods, properties and variables declarations. }
-  ClassKeyWordString := '';
   MethodCounts := THash.Create; // "[method name]=>count" hash map
   { We can't immediately dispose parsed items because we've got to handle back
     comments. So we create dummy container that will gather all ignored items. }
@@ -1734,7 +1730,6 @@ begin
             if t.Info.StandardDirective = SD_OPERATOR then
             begin
               HandleMethod(U, METHOD_OPERATOR);
-              ClassKeyWordString := '';
             end
             else
               DoError('Unexpected %s', [t.Description]);
@@ -1750,11 +1745,11 @@ begin
                     ParseTVCSection(DummyUnit); // parse section but don't add to resulting unit
                   end;
                 KEY_CLASS:
-                  ClassKeyWordString := t.Data;
+                  //ClassKeyWordString := t.Data; // not needed after all
+                  ;
                 KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
                   begin
                     HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), MethodCounts);
-                    ClassKeyWordString := '';
                   end;
                 // Do not read unit used internally for now - maybe will do in the future
                 KEY_USES:

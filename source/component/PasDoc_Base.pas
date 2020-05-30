@@ -741,8 +741,11 @@ begin
     if (FileMask = '') and (I = AFileNames.Count - 1) then
       Continue;
 
+    {$warnings off}
+    { don't warn that faXxx are unportable }
     SearchResult := SysUtils.FindFirst(FileMask,
       faArchive or faSysFile or faHidden or faReadOnly, SR);
+    {$warnings on}
     if SearchResult <> 0 then begin
       DoMessage(1, pmtWarning, 'No regular files found for "%s", skipping', [FileMask]);
     end else begin

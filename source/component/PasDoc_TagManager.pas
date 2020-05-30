@@ -771,7 +771,6 @@ function CheckMarkdownListItem(const Description: string; Offset: Integer;
   out LastItemInList: boolean): boolean;
 var
   BDummy, WasDoubleNL: boolean;
-  SDummy: string;
   StrLen, NewOffsetEnd, IndentLen, IndentWithMarkerLen, OtherIndentLen: Integer;
 begin
   Result := CheckMarkdownListItemStart(Description, Offset, BDummy, OffsetEnd, IndentLen);
