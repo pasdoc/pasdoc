@@ -194,6 +194,7 @@ type
     function LineBreak: string; override;
 
     function URLLink(const URL: string): string; override;
+    function URLLink(const URL, LinkDisplay: string): string; override;
 
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); override;
@@ -1523,6 +1524,31 @@ begin
        understand \usepackage{hyperref} at all) *)
     Result := ConvertString(URL) else
     Result := '\href{' + EscapeURL(URL) + '}{' + ConvertString(URL) + '}';
+end;
+
+function TTexDocGenerator.URLLink(const URL, LinkDisplay: string): string;
+var
+  Link: String;
+begin
+  Link := FixEmailaddressWithoutMailTo(URL);
+
+  if LinkDisplay <> '' then
+  begin
+    if Latex2Rtf then
+      (* latex2rtf doesn't understand \href (well, actually it doesn't
+        understand \usepackage{hyperref} at all) *)
+      Result := ConvertString(Link + ' (' + LinkDisplay + ')') else
+      Result := '\href{' + EscapeURL(Link) + '}{' + ConvertString(LinkDisplay) + '}';
+  end
+  else
+  begin
+    if Latex2Rtf then
+    (* latex2rtf doesn't understand \href (well, actually it doesn't
+       understand \usepackage{hyperref} at all) *)
+    Result := ConvertString(Link) else
+    Result := '\href{' + EscapeURL(Link) + '}{' + ConvertString(URL) + '}';
+  end;
+
 end;
 
 procedure TTexDocGenerator.WriteExternalCore(

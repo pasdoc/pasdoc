@@ -319,6 +319,9 @@ type
     procedure HandleLinkTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleUrlTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
     procedure HandleLongCodeTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -530,6 +533,13 @@ type
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
+
+    { Searches for an email address in PossibleEmailAddress and appends mailto:
+      if it's an email address and mailto: wasn't provided.
+      Otherwise it simply returns the input.
+
+      Needed to link email addresses properly which doesn't start with mailto: }
+    function FixEmailaddressWithoutMailTo(const PossibleEmailAddress: String): String;
 
     { Searches for a web address in String S. It must either contain a http:// or
       start with www. }
@@ -759,6 +769,12 @@ type
       This is good if your documentation format does not support
       anything like URL links. }
     function URLLink(const URL: string): string; virtual;
+
+    { This returns the Text which will be shown for an URL tag.
+
+      URL is a link to a website or e-mail address.
+      LinkDisplay is an optional parameter which will be used as the display name of the URL. }
+    function URLLink(const URL, LinkDisplay: string): string; virtual; overload;
 
     {@name is used to write the introduction and conclusion
      of the project.}
@@ -995,6 +1011,7 @@ implementation
 
 uses
   SysUtils,
+  StrUtils,
   PasDoc_Utils,
   PasDoc_Tokenizer;
 
@@ -1395,6 +1412,16 @@ var LinkTarget, LinkDisplay: string;
 begin
   ExtractFirstWord(TagParameter, LinkTarget, LinkDisplay);
   ReplaceStr := SearchLink(LinkTarget, FCurrentItem, LinkDisplay, true);
+end;
+
+procedure TDocGenerator.HandleUrlTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+var LinkTarget, LinkDisplay: string;
+begin
+  ExtractFirstWord(TagParameter, LinkTarget, LinkDisplay);
+  ReplaceStr := URLLink(LinkTarget, LinkDisplay);
 end;
 
 procedure TDocGenerator.HandleCodeTag(
@@ -1902,6 +1929,11 @@ procedure TDocGenerator.ExpandDescriptions;
       TTag.Create(TagManager, 'link',
         nil, {$IFDEF FPC}@{$ENDIF} HandleLinkTag,
         [toParameterRequired]);
+
+      TTag.Create(TagManager, 'url',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleUrlTag,
+        [toParameterRequired]);
+
       TTag.Create(TagManager, 'preformatted',
         nil, {$IFDEF FPC}@{$ENDIF} HandlePreformattedTag,
         [toParameterRequired]);
@@ -2175,6 +2207,21 @@ begin
   S2 := '';
   if (i <= Length(s)) then S2 := System.Copy(s, i, Length(s) - i + 1);
   Result := True;
+end;
+
+function TDocGenerator.FixEmailaddressWithoutMailTo(const PossibleEmailAddress: String): String;
+const
+  EMailAddressPrefix = 'mailto:';
+var
+  a, b, Email: String;
+begin
+  if ExtractEmailAddress(PossibleEmailAddress, a, b, Email) then
+  begin
+    if not AnsiStartsText(EMailAddressPrefix, Email) then
+      Result := EMailAddressPrefix + Email;
+  end
+  else
+    Result := PossibleEmailAddress;
 end;
 
 function TDocGenerator.ExtractWebAddress(s: string; out S1, S2,
@@ -3600,6 +3647,18 @@ end;
 function TDocGenerator.URLLink(const URL: string): string;
 begin
   Result := ConvertString(URL);
+end;
+
+function TDocGenerator.URLLink(const URL, LinkDisplay: string): string;
+var
+  Link: String;
+begin
+  Link := FixEmailaddressWithoutMailTo(URL);
+
+  if LinkDisplay <> '' then
+    Result := Format('%s (%s)', [ConvertString(Link), ConvertString(LinkDisplay)])
+  else
+    Result := URLLink(Link);
 end;
 
 function TDocGenerator.FormatBold(const Text: string): string;
