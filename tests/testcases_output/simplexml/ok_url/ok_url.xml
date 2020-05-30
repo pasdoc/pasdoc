@@ -1,0 +1,3 @@
+<unit name="ok_url.pas">
+  <description><detailed>Tests of @url tag. HTTPS URLs: https://github.com/pasdoc/pasdoc/issues/36 (this issue is urgent) https://github.com/pasdoc/pasdoc/issues/55 https://www.gnutls.org (GnuTLS library) Mails (without explicit <code>mailto:</code> protocol): mailto:admin@github.com mailto:fpc-devel@lists.freepascal.org (FPC Mailing List) Mails (with explicit <code>mailto:</code> protocol): mailto:admin@github.com mailto:fpc-devel@lists.freepascal.org (FPC Mailing List)</detailed></description>
+</unit>

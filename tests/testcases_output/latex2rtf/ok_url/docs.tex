@@ -1,0 +1,43 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}url}
+\section{Description}
+Tests of @url tag.
+
+HTTPS URLs:
+
+https://github.com/pasdoc/pasdoc/issues/36 (this issue is urgent)
+
+https://github.com/pasdoc/pasdoc/issues/55
+
+https://www.gnutls.org (GnuTLS library)
+
+Mails (without explicit \begin{ttfamily}mailto:\end{ttfamily} protocol):
+
+mailto:admin@github.com
+
+mailto:fpc-devel@lists.freepascal.org (FPC Mailing List)
+
+Mails (with explicit \begin{ttfamily}mailto:\end{ttfamily} protocol):
+
+mailto:admin@github.com
+
+mailto:fpc-devel@lists.freepascal.org (FPC Mailing List)
+\end{document}
