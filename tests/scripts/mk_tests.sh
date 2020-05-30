@@ -262,6 +262,7 @@ all_tests_for_current_format ()
   mk_test ok_parse_impl_back_comments ok_parse_impl_back_comments.pas --implementation-comments=join --auto-back-comments
   mk_test ok_flag_parameter ok_flag_parameter.pas
   mk_test ok_lowecase_keywords --lowercase-keywords ok_lowecase_keywords.pas
+  mk_test ok_url ok_url.pas
 }
 
 # parse params ----------------------------------------
