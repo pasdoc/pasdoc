@@ -346,6 +346,12 @@ type
     procedure HandleCodeTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
+    procedure HandleWarningTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
+    procedure HandleNoteTag(ThisTag: TTag; var ThisTagData: TObject;
+      EnclosingTag: TTag; var EnclosingTagData: TObject;
+      const TagParameter: string; var ReplaceStr: string);
     procedure HandleLiteralTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -827,6 +833,12 @@ type
     { This returns Text formatted using italic font.
       Analogous to @link(FormatBold). }
     function FormatItalic(const Text: string): string; virtual;
+
+    { This returns Text using bold font by calling FormatBold(Text). }
+    function FormatWarning(const Text: string): string; virtual;
+
+    { This returns Text using italic font by calling FormatItalic(Text). }
+    function FormatNote(const Text: string): string; virtual;
 
     { This returns Text preserving spaces and line breaks.
       Note that Text passed here is not yet converted with ConvertString.
@@ -1432,6 +1444,22 @@ begin
   ReplaceStr := CodeString(TagParameter);
 end;
 
+procedure TDocGenerator.HandleWarningTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatWarning(TagParameter);
+end;
+
+procedure TDocGenerator.HandleNoteTag(
+  ThisTag: TTag; var ThisTagData: TObject;
+  EnclosingTag: TTag; var EnclosingTagData: TObject;
+  const TagParameter: string; var ReplaceStr: string);
+begin
+  ReplaceStr := FormatNote(TagParameter);
+end;
+
 procedure TDocGenerator.HandleBrTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
@@ -1960,6 +1988,15 @@ procedure TDocGenerator.ExpandDescriptions;
          toAllowNormalTextInside]);
       TTag.Create(TagManager, 'italic',
         nil, {$IFDEF FPC}@{$ENDIF} HandleItalicTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+
+      TTag.Create(TagManager, 'warning',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleWarningTag,
+        [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
+         toAllowNormalTextInside]);
+      TTag.Create(TagManager, 'note',
+        nil, {$IFDEF FPC}@{$ENDIF} HandleNoteTag,
         [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
          toAllowNormalTextInside]);
 
@@ -3669,6 +3706,16 @@ end;
 function TDocGenerator.FormatItalic(const Text: string): string;
 begin
   Result := Text;
+end;
+
+function TDocGenerator.FormatWarning(const Text: string): string;
+begin
+  Result := FormatBold(Text);
+end;
+
+function TDocGenerator.FormatNote(const Text: string): string;
+begin
+  Result := FormatItalic(Text);
 end;
 
 function TDocGenerator.FormatPreformatted(const Text: string): string;
