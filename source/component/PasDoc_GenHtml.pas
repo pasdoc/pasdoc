@@ -300,6 +300,8 @@ type
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
 
+    function FormatWarning(const Text: string): string; override;
+    function FormatNote(const Text: string): string; override;
     function FormatPreformatted(const Text: string): string; override;
 
     function FormatImage(FileNames: TStringList): string; override;
@@ -2331,6 +2333,20 @@ end;
 function TGenericHTMLDocGenerator.FormatItalic(const Text: string): string;
 begin
   Result := '<em>' + Text + '</em>';
+end;
+
+function TGenericHTMLDocGenerator.FormatWarning(const Text: string): string;
+begin
+  Result := '<dl class="tag warning"><dt>' + FormatBold('Warning') + '</dt><dd>';
+  Result := Result + Text;
+  Result := Result + '</dd></dl>';
+end;
+
+function TGenericHTMLDocGenerator.FormatNote(const Text: string): string;
+begin
+  Result := '<dl class="tag note"><dt>' + FormatBold('Note') + '</dt><dd>';
+  Result := Result + Text;
+  Result := Result + '</dd></dl>';
 end;
 
 function TGenericHTMLDocGenerator.FormatPreformatted(

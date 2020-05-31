@@ -122,6 +122,20 @@
 'div.nodescription { color:red; }' + LineEnding +
 'dl.parameters dt { color:blue; }' + LineEnding +
 '' + LineEnding +
+'/* style for warning and note tag */' + LineEnding +
+'dl.tag.warning {' + LineEnding +
+'  margin-left:-2px;' + LineEnding +
+'  padding-left: 3px;' + LineEnding +
+'  border-left:4px solid;' + LineEnding +
+'  border-color: #FF0000;' + LineEnding +
+'}' + LineEnding +
+'dl.tag.note {' + LineEnding +
+'  margin-left:-2px;' + LineEnding +
+'  padding-left: 3px;' + LineEnding +
+'  border-left:4px solid;' + LineEnding +
+'  border-color: #D0C000;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
 '/* Various browsers have various default styles for <h6>,' + LineEnding +
 '   sometimes ugly for our purposes, so it''s best to set things' + LineEnding +
 '   like font-size and font-weight in out pasdoc.css explicitly. */' + LineEnding +
