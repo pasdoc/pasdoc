@@ -768,13 +768,13 @@ type
       Default implementation in this class simply returns ConvertString(URL).
       This is good if your documentation format does not support
       anything like URL links. }
-    function URLLink(const URL: string): string; virtual;
+    function URLLink(const URL: string): string; overload; virtual;
 
     { This returns the Text which will be shown for an URL tag.
 
       URL is a link to a website or e-mail address.
       LinkDisplay is an optional parameter which will be used as the display name of the URL. }
-    function URLLink(const URL, LinkDisplay: string): string; virtual; overload;
+    function URLLink(const URL, LinkDisplay: string): string; overload; virtual;
 
     {@name is used to write the introduction and conclusion
      of the project.}
