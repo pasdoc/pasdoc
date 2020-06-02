@@ -157,4 +157,21 @@ Some Pascal code:
 ~~}\textbf{with}\texttt{\\\nopagebreak[3]
 ~~syntax~highlight\\
 }
+
+Correct URLs:
+
+\href{http://example}{Some one-line descr}
+
+\href{http://example}{Some multi-line
+   descr}
+
+\href{http://example}{Escaped {\textbackslash}[{\textbackslash}] descr}
+
+Incorrect URLs:
+
+(\href{http://example}{http://example})
+
+[Some descr] (\href{http://example}{http://example})
+
+[Some descr](\href{http://example}{http://example}
 \end{document}
