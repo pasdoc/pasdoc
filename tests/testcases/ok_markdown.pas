@@ -123,6 +123,24 @@ Incorrect lists
     with
     syntax highlight
   ```
+  
+  Correct URLs:
+  
+  [Some one-line descr](http://example)
+  
+  [Some multi-line
+   descr](http://example)
+   
+  [Escaped \[\] descr](http://example)
+   
+  Incorrect URLs:
+  
+  (http://example)
+  
+  [Some descr] (http://example)
+  
+  [Some descr](http://example
+   
 }
 unit ok_markdown;
 
