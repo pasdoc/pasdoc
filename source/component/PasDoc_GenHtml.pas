@@ -990,9 +990,11 @@ end;
 function TGenericHTMLDocGenerator.MakeLink(
   const href, caption, CssClass: string): string;
 begin
-  Result := Format('<a %s href="%s">%s</a>',
-    [ifthen(CssClass = '', '', 'class="' + CssClass + '"'),
-     EscapeURL(href), caption]);
+  Result := Format('<a %shref="%s">%s</a>', [
+    IfThen(CssClass = '', '', 'class="' + CssClass + '" '),
+    EscapeURL(href),
+    Caption
+  ]);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteLink(
