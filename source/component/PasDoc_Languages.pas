@@ -204,6 +204,9 @@ type
     trDescriptions, //<section heading for detailed descriptions
     trName,
     trValues,
+//tags with inbuilt heading
+    trWarningTag,
+    trNoteTag,
 
   //empty tables
     trNone,

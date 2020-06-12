@@ -79,6 +79,9 @@
     {trDescriptions} 'Descripció detallada', //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nom', //'Nom',
     {trValues} 'Valors', //'Values',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Cap',
     {trNoCIOs} 'Les unitats no contenen classes, interfaces, objectes ni registres.', //'The units do not contain any classes, interfaces, objects or records.',

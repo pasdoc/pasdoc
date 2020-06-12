@@ -79,6 +79,9 @@
     {trDescriptions} 'Szczegóły', //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Wartości',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Brak',
     {trNoCIOs} 'Moduł nie zawiera żadnych klas, interfejsów, obiektów ani rekordów.',

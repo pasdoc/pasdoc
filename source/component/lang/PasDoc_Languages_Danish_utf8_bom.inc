@@ -79,6 +79,9 @@
     {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Navn',
     {trValues} strToDo, //'Values',
+  //tags with inbuilt heading
+    {trWarningTag} 'Advarsel',
+    {trNoteTag} 'Bemærk',
   //empty
     {trNone} 'Ingen',
     {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',

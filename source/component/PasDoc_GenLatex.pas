@@ -651,8 +651,8 @@ procedure TTexDocGenerator.WriteWarningAndNoteTagDefinition;
 begin
   WriteDirect('% definitons for warning and note tag',true);
   WriteDirect('\usepackage[most]{tcolorbox}',true);
-  WriteBoxDefinition('tcbwarning', 'Warning', 'red');
-  WriteBoxDefinition('tcbnote', 'Note', 'yellow');
+  WriteBoxDefinition('tcbwarning', FLanguage.Translation[trWarningTag], 'red');
+  WriteBoxDefinition('tcbnote', FLanguage.Translation[trNoteTag], 'yellow');
 end;
 
 { ---------------------------------------------------------------------------- }

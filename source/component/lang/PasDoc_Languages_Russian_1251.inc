@@ -79,6 +79,9 @@ RTransTable = (
     {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Имя',
     {trValues} 'Значение',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Нет',
     {trNoCIOs} 'Модули не содержат классов, интерфейсов, объектов и записей.',

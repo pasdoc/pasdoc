@@ -79,6 +79,9 @@ RTransTable = (
     {trDescriptions} 'Descrição detalhada',
     {trName} 'Nome',
     {trValues} 'Valores',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Nenhum',
     {trNoCIOs} 'A unit não contém quaisquer classes, interfaces, objetos ou registros',

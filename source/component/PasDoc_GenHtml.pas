@@ -2337,14 +2337,14 @@ end;
 
 function TGenericHTMLDocGenerator.FormatWarning(const Text: string): string;
 begin
-  Result := '<dl class="tag warning"><dt>' + FormatBold('Warning') + '</dt><dd>';
+  Result := '<dl class="tag warning"><dt>' + FormatBold(FLanguage.Translation[trWarningTag]) + '</dt><dd>';
   Result := Result + Text;
   Result := Result + '</dd></dl>';
 end;
 
 function TGenericHTMLDocGenerator.FormatNote(const Text: string): string;
 begin
-  Result := '<dl class="tag note"><dt>' + FormatBold('Note') + '</dt><dd>';
+  Result := '<dl class="tag note"><dt>' + FormatBold(FLanguage.Translation[trNoteTag]) + '</dt><dd>';
   Result := Result + Text;
   Result := Result + '</dd></dl>';
 end;

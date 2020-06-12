@@ -79,6 +79,9 @@
     {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Név',
     {trValues} 'Értékek',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Nincs',
     {trNoCIOs} 'Az egység nem tartalmaz osztályt, interfészt, objektumot, vagy rekordot.',
