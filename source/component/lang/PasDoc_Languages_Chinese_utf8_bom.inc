@@ -81,6 +81,9 @@ RTransTable = (
     {trDescriptions} '描述',
     {trName} '名称',
     {trValues} '值',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} '无',
     {trNoCIOs} '不包含任何类、接口、对象和记录的单元.',

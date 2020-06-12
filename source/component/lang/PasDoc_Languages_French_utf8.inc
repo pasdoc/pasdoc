@@ -79,6 +79,9 @@ RTransTable = (
     {trDescriptions} strKeep, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nom',
     {trValues} 'Valeurs', //?
+  //tags with inbuilt heading
+    {trWarningTag} 'Attention',
+    {trNoteTag} 'Remarque',
   //empty
     {trNone} 'Aucun(e)(s)', //'Rien'?
     {trNoCIOs} 'L''unité ne contient ni classe, ni interface, ni objets, ni enregistrement.',

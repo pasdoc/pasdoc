@@ -79,6 +79,9 @@ RTransTable = (
     {trDescriptions} 'Szczegó³y', //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nazwa',
     {trValues} 'Warto¶ci',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Brak',
     {trNoCIOs} 'Modu³ nie zawiera ¿adnych klas, interfejsów, obiektów ani rekordów.',

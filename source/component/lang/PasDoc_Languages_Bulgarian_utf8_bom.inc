@@ -82,6 +82,9 @@
     {trDescriptions} strToDo, //'Descriptions', 'Detailed Descriptions'?
     {trName} 'Име',
     {trValues} 'Стойност(и)',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Няма',
     {trNoCIOs} 'Модулите не съдържат класове, интерфейси, обекти и записи',

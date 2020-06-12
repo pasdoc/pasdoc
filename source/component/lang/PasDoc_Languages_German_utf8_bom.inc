@@ -79,6 +79,9 @@
     {trDescriptions} 'Ausführliche Beschreibungen',
     {trName} strKeep, //'Name',
     {trValues} 'Werte',
+  //tags with inbuilt heading
+    {trWarningTag} 'Warnung',
+    {trNoteTag} 'Hinweis',
   //empty
     {trNone} 'Keine',
     {trNoCIOs} 'Die Units enthalten keine Klassen, Interfaces, Objects oder Records.',

@@ -92,6 +92,9 @@ RTransTable = (
     {trDescriptions} strToDo,
     {trName} 'Název',
     {trValues} 'Hodnoty',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Nic',
     {trNoCIOs} 'Unity neobsahují žádné třídy, rozhraní, objekty nebo recordy.',

@@ -79,6 +79,9 @@ RTransTable = (
     {trDescriptions} 'Detaljni opis',
     {trName} 'Ime',
     {trValues} 'Vrijednosti', //'Values',
+  //tags with inbuilt heading
+    {trWarningTag} strToDo,
+    {trNoteTag} strToDo,
   //empty
     {trNone} 'Ništa',
     {trNoCIOs} 'Datoteka ne sadrži klase, suèelja, objekte ili zapise.',
