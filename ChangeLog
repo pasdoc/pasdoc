@@ -1,5 +1,6 @@
 Next version (not released yet)
 
+  * @note and @warning tags, see https://github.com/pasdoc/pasdoc/wiki/NoteAndWarningTags (Bi0T1N)
   * @url tag, see https://github.com/pasdoc/pasdoc/wiki/UrlTag (Bi0T1N)
   * Allow to lowercase output of @nil, @false, @true by --lowercase-keywords (Bi0T1N)
     See https://github.com/pasdoc/pasdoc/wiki/TrueFalseNilTag .
