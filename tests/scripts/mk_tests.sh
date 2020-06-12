@@ -263,6 +263,7 @@ all_tests_for_current_format ()
   mk_test ok_flag_parameter ok_flag_parameter.pas
   mk_test ok_lowecase_keywords --lowercase-keywords ok_lowecase_keywords.pas
   mk_test ok_url ok_url.pas
+  mk_test ok_warning_note ok_warning_note.pas
 }
 
 # parse params ----------------------------------------
