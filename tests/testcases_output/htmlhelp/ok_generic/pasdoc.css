@@ -120,6 +120,20 @@ td.itemdesc { width:100%; }
 div.nodescription { color:red; }
 dl.parameters dt { color:blue; }
 
+/* style for warning and note tag */
+dl.tag.warning {
+  margin-left:-2px;
+  padding-left: 3px;
+  border-left:4px solid;
+  border-color: #FF0000;
+}
+dl.tag.note {
+  margin-left:-2px;
+  padding-left: 3px;
+  border-left:4px solid;
+  border-color: #D0C000;
+}
+
 /* Various browsers have various default styles for <h6>,
    sometimes ugly for our purposes, so it's best to set things
    like font-size and font-weight in out pasdoc.css explicitly. */
