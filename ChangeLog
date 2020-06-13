@@ -1,5 +1,7 @@
 Next version (not released yet)
 
+  * Markdown support, see https://github.com/pasdoc/pasdoc/wiki/MarkdownOption (Fr0sT-Brutal)
+    Supporting bold, italic, inline code, multi-line code, URLs, lists.
   * @note and @warning tags, see https://github.com/pasdoc/pasdoc/wiki/NoteAndWarningTags (Bi0T1N)
   * @url tag, see https://github.com/pasdoc/pasdoc/wiki/UrlTag (Bi0T1N)
   * Allow to lowercase output of @nil, @false, @true by --lowercase-keywords (Bi0T1N)
