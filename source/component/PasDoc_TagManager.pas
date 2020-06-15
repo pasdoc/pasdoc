@@ -665,15 +665,24 @@ function FindMarkdownSpecialSign(const Description: string; Offset: Integer;
   // Check if special sign in Description at Offset is escaped
   // (has strictly single `\` before)
   function IsEscaped(const Description: string; Offset: Integer): Boolean;
+  var EscapesCount: Integer;
   begin
     case Offset of
       1: Result := False; // 1st char
       2: Result := Description[Offset - 1] = MarkDownEscapeChar; // 2nd char
       else // 3rd char and further - check for escaped escape
       begin
-        Result :=
-          (Description[Offset - 1] = MarkDownEscapeChar) and
-          (Description[Offset - 2] <> MarkDownEscapeChar);
+        // Count consecutive escape chars. Each two mean '\' char
+        EscapesCount := 0;
+        while Offset > 1 do
+        begin
+          if Description[Offset - 1] = MarkDownEscapeChar then
+            Inc(EscapesCount)
+          else
+            Break;
+          Dec(Offset);
+        end;
+        Result := Odd(EscapesCount);
       end;
     end;
   end;
