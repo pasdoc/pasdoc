@@ -137,6 +137,8 @@ Incorrect lists
   
   [a\\](http://example)
    
+  [Bracket URL](http://example/(foo))
+   
   Incorrect URLs:
   
   (http://example)

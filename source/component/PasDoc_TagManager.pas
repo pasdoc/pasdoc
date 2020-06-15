@@ -805,8 +805,9 @@ end;
 function CheckMarkdownURL(const Description: string; Offset: Integer;
   out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
 var
-  CurrOffset, BlockEndPos, MdBlockIdx: Integer;
+  CurrOffset, BlockEndPos, MdBlockIdx, Level: Integer;
   URLDescr, URL: string;
+  Found: Boolean;
 const
   DescrEnd = MarkdownURLDescrClose + MarkdownURLOpen;
 begin
@@ -823,8 +824,33 @@ begin
       Exit; { exit with false }
     URLDescr := Copy(Description, CurrOffset + 1, BlockEndPos - Offset - 1);
     CurrOffset := BlockEndPos + Length(DescrEnd);
-    // Scan for end of URL
-    if not FindMarkdownSpecialSign(Description, CurrOffset, MarkdownURLClose, BlockEndPos) then
+    // Scan for end of URL i.e. closing bracket. If opening bracket is encountered, skip to next
+    // closing bracket as it's part of an URL
+    Level := 0; Found := False; BlockEndPos := CurrOffset;
+    while BlockEndPos < Length(Description) do
+      case Description[BlockEndPos] of
+        MarkdownURLOpen:
+          begin
+            Inc(Level);
+            Inc(BlockEndPos);
+            Continue;
+          end;
+        MarkdownURLClose:
+          if Level = 0 then
+          begin
+            Found := True;
+            Break;
+          end
+          else
+          begin
+            Dec(Level);
+            Inc(BlockEndPos);
+            Continue;
+          end;
+        else
+          Inc(BlockEndPos);
+      end;
+    if not Found then
       Exit; { exit with false }
     URL := Copy(Description, CurrOffset, BlockEndPos - CurrOffset);
     Break;
