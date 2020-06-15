@@ -132,6 +132,12 @@ Incorrect lists
    descr](http://example)
    
   [Escaped \[\] descr](http://example)
+
+  [\\](http://example)
+  
+  [a\\](http://example)
+   
+  [Bracket URL](http://example/(foo))
    
   Incorrect URLs:
   
