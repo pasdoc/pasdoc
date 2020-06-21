@@ -196,6 +196,7 @@ end;
 
 function OneNamePart(const S: string): TNameParts;
 begin
+  Initialize(Result);
   SetLength(Result, 1);
   Result[0] := S;
 end;

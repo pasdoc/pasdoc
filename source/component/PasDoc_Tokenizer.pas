@@ -800,8 +800,13 @@ begin
           begin
             try
               { Note that StrToInt automatically handles hex characters when
-                number starts from $. So below will automatically work for them. }
-              Result.StringContent := WideChar(StrToInt(SEnding(Result.Data, 2)));
+                number starts from $. So below will automatically work for them.
+
+                Using typecast AnsiString explicitly, to avoid warning with FPC.
+                Yes, we deliberately convert WideChar to AnsiString,
+                and let it fail if it cannot be handled in current encoding. }
+              Result.StringContent := {$ifndef STRING_UNICODE} AnsiString {$endif}
+                (WideChar(StrToInt(SEnding(Result.Data, 2))));
             except
               { In case of EConvertError, make a warning and continue.
                 Result.StringContent will remain empty, which isn't a real problem. }

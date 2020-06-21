@@ -814,7 +814,7 @@ end;
 function CheckMarkdownURL(const Description: string; Offset: Integer;
   out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
 var
-  CurrOffset, BlockEndPos, MdBlockIdx, Level: Integer;
+  CurrOffset, BlockEndPos, Level: Integer;
   URLDescr, URL: string;
   Found: Boolean;
 const
