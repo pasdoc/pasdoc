@@ -158,6 +158,7 @@ type
     should be inited while expanding this item's tags.
     E.g. SourceFileDateTime and SourceFileName of TPasUnit must
     be set by other means. }
+
   TParser = class
   private
     FImplicitVisibility: TImplicitVisibility;
@@ -368,7 +369,7 @@ type
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseImplementationSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
-    procedure ParseType(const U: TPasUnit);
+    procedure ParseType(const U: TPasUnit; IsGeneric: String);
 
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
@@ -1307,7 +1308,7 @@ end;
 procedure TParser.ParseTVCSection(U: TPasUnit);
 var
   Mode: TItemParseMode;
-  t: TToken;
+  t, t2: TToken;
   ConstantParsed: TPasItem;
 begin
   Mode := pmUndefined;
@@ -1336,8 +1337,20 @@ begin
                 end;
               pmType:
                 begin
-                  Scanner.UnGetToken(t);
-                  ParseType(U);
+                  //In latest FPC version it is posible to define generic functions and procedures
+                  if t.IsStandardDirective(SD_GENERIC) then
+                  begin
+                    t2 := PeekNextToken;
+                    if t2.IsKeyWord(KEY_FUNCTION) or t2.IsKeyWord(KEY_PROCEDURE) then
+                      Break
+                    else
+                      ParseType(U, t.Data)
+                  end
+                  else
+                  begin
+                    Scanner.UnGetToken(t);
+                    ParseType(U, EmptyStr)
+                  end;
                   AttributeIsPossible := True;
                 end;
               pmVar:
@@ -1380,7 +1393,7 @@ end;
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
 var
   M: TPasMethod;
-  t: TToken;
+  t, t2: TToken;
   PropertyParsed: TPasProperty;
 begin
   DoMessage(4, pmtInformation, 'Entering interface section of unit %s',[U.Name]);
@@ -1398,6 +1411,25 @@ begin
             ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
               GetLastComment, true, true);
             U.FuncsProcs.Add(M);
+          end
+          //Generics functions and procedures
+          else if t.IsStandardDirective(SD_GENERIC) then
+          begin
+            //Skip generics directive because delphi do not have and we can't return two tokens
+            t2 := PeekNextToken();
+            if t2.IsKeyWord(KEY_FUNCTION) or t2.IsKeyWord(KEY_PROCEDURE) then
+            begin
+              t := GetNextToken;
+              try
+                ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                  GetLastComment, true, true);
+                U.FuncsProcs.Add(M)
+              finally
+                FreeAndNil(t)
+              end;
+            end
+            else
+              DoError('Unexpected %s', [t2.Description]);
           end
           else
             DoError('Unexpected %s', [t.Description]);
@@ -1977,7 +2009,7 @@ begin
   end;
 end;
 
-procedure TParser.ParseType(const U: TPasUnit);
+procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
 
   function KeyWordToCioType(KeyWord: TKeyword; IsPacked: Boolean): TCIOType;
   begin
@@ -2007,7 +2039,6 @@ var
   MethodType: TPasMethod;
   EnumType: TPasEnum;
   T: TToken;
-  IsGeneric: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2015,17 +2046,13 @@ begin
     so it's just optional for us (serves for some checks later). }
   T := GetNextToken;
   try
-    TypeNameWithGeneric := '';
-    IsGeneric := T.IsStandardDirective(SD_GENERIC);
-    if IsGeneric then
-    begin
-      TypeNameWithGeneric := T.Data + ' ';
-      TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
-    end else
-    begin
-      CheckToken(T, TOK_IDENTIFIER);
-      TypeName := T.Data;
-    end;
+    if IsGeneric.IsEmpty then
+      TypeNameWithGeneric := EmptyStr
+    else
+      TypeNameWithGeneric := IsGeneric + ' ';
+
+    CheckToken(T, TOK_IDENTIFIER);
+    TypeName := T.Data;
     TypeNameWithGeneric := TypeNameWithGeneric + TypeName;
   finally FreeAndNil(T) end;
 
@@ -2987,7 +3014,7 @@ end;
 { ------------------------------------------------------------ }
 
 procedure TParser.ParseHintDirectives(Item: TPasItem;
-  const ConsumeFollowingSemicolon, ExtendFullDeclaration: boolean);
+  const ConsumeFollowingSemicolon: boolean; const ExtendFullDeclaration: boolean);
 var
   T: TToken;
   WasDeprecatedDirective: boolean;
