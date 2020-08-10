@@ -490,6 +490,7 @@ begin
              if Item = nil then
               begin
                 WriteDirect(s,true);
+                // TODO: Fix this to look at ExternalClassHierarchy, like WriteHierarchy in PasDoc_GenHtml
               end;
           end;
       end;

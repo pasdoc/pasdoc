@@ -639,15 +639,31 @@ const
   end;
 
   { writes all ancestors of the given item and the item itself }
-  procedure WriteHierarchy(Name: string; Item: TBaseItem);
+  procedure WriteHierarchy(const Name: string; const Item: TBaseItem);
   var
     CIO: TPasCio;
+    ParentName: String;
+    ParentItem: TBaseItem;
   begin
-    if not Assigned(Item) then begin
+    if not Assigned(Item) then
+    begin
+      { First, write the ancestors.
+        In case Item = nil, look for parent using ExternalClassHierarchy. }
+      ParentName := ExternalClassHierarchy.Values[Name];
+      if ParentName <> '' then
+      begin
+        { Although we found ParentName using ExternalClassHierarchy,
+          it's possible that it's actually present in parsed files.
+          This may happen when you have classes A -> B -> C (descending like
+          this), and your source code includes classes A and C, but not B.
+          So we have to use here FindGlobalPasItem. }
+        ParentItem := FindGlobalPasItem(ParentName);
+        WriteHierarchy(ParentName, ParentItem);
+      end;
+
       WriteDirectLine('<li class="ancestor">' + Name + '</li>');
-      { recursion ends here, when the item is an external class }
-    end
-    else if Item is TPasCio then
+    end else
+    if Item is TPasCio then
     begin
       CIO := TPasCio(Item);
       { first, write the ancestors }
@@ -658,7 +674,6 @@ const
     end;
     { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
   end;
-
 
 var
   i: Integer;

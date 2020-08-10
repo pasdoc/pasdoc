@@ -556,6 +556,15 @@ type
       Returns a pointer to the item on success, nil otherwise. }
     function FindGlobal(const NameParts: TNameParts): TBaseItem;
 
+    { Find a Pascal item, searching global namespace.
+      Returns @nil if not found. }
+    function FindGlobalPasItem(const NameParts: TNameParts): TPasItem; overload;
+
+    { Find a Pascal item, searching global namespace.
+      Assumes that Name is only one component (not something with dots inside).
+      Returns @nil if not found. }
+    function FindGlobalPasItem(const ItemName: String): TPasItem; overload;
+
     {@name returns ' abstract', or ' sealed' for classes that abstract
      or sealed respectively.  @name is used by @link(TTexDocGenerator) and
      @link(TGenericHTMLDocGenerator) in writing the declaration of the class.}
@@ -2422,6 +2431,22 @@ begin
   end;
 end;
 
+function TDocGenerator.FindGlobalPasItem(const NameParts: TNameParts): TPasItem;
+var
+  BaseResult: TBaseItem;
+begin
+  BaseResult := FindGlobal(NameParts);
+  if BaseResult is TPasItem then
+    Result := TPasItem(BaseResult)
+  else
+    Result := nil;
+end;
+
+function TDocGenerator.FindGlobalPasItem(const ItemName: String): TPasItem;
+begin
+  Result := FindGlobalPasItem(OneNamePart(ItemName));
+end;
+
 { ---------------------------------------------------------------------------- }
 function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
 begin
@@ -2790,15 +2815,6 @@ end;
 
 procedure TDocGenerator.CreateClassHierarchy;
 
-  function FindGlobalPasItem(const NameParts: TNameParts): TPasItem;
-  var BaseResult: TBaseItem;
-  begin
-    BaseResult := FindGlobal(NameParts);
-    if (BaseResult <> nil) and (BaseResult is TPasItem) then
-      Result := TPasItem(BaseResult) else
-      Result := nil;
-  end;
-
   { Insert a parent->child relation into the tree.
 
     ParentItem may be nil, then only ParentName (not linked) will be used.
@@ -2838,7 +2854,7 @@ procedure TDocGenerator.CreateClassHierarchy;
             This may happen when you have classes A -> B -> C (descending like
             this), and your source code includes classes A and C, but not B.
             So we have to use here FindGlobalPasItem. }
-          GrandParentItem := FindGlobalPasItem(OneNamePart(GrandParentName));
+          GrandParentItem := FindGlobalPasItem(GrandParentName);
 
           Insert(GrandParentName, GrandParentItem, ParentName, nil);
         end;
@@ -2871,7 +2887,7 @@ var
     if Assigned(ACio.Ancestors) and (ACio.Ancestors.Count > 0) then
     begin
       ParentName := ACio.Ancestors.FirstName;
-      ParentItem := FindGlobalPasItem(OneNamePart(ParentName));
+      ParentItem := FindGlobalPasItem(ParentName);
     end
     else begin
       ParentName := '';
