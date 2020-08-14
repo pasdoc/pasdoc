@@ -1349,7 +1349,7 @@ begin
                   else
                   begin
                     Scanner.UnGetToken(t);
-                    ParseType(U, EmptyStr)
+                    ParseType(U, '')
                   end;
                   AttributeIsPossible := True;
                 end;
@@ -2046,8 +2046,8 @@ begin
     so it's just optional for us (serves for some checks later). }
   T := GetNextToken;
   try
-    if IsGeneric.IsEmpty then
-      TypeNameWithGeneric := EmptyStr
+    if IsGeneric = '' then
+      TypeNameWithGeneric := ''
     else
       TypeNameWithGeneric := IsGeneric + ' ';
 
