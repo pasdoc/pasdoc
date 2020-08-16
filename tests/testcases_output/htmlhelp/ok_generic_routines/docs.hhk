@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething">
+<param name="Local" value="ok_generic_routines.html#DoSomething">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething2">
+<param name="Local" value="ok_generic_routines.html#DoSomething2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TTestClass">
+<param name="Local" value="ok_generic_routines.TTestClass.html">
+</object>
+</ul>
+</body></html>
