@@ -114,9 +114,8 @@ var
   l: TLanguageID;
   mt: TInfoMergeType;
 const
-  InfoMergeTypeExpl: array[TInfoMergeType] of string =
-  (
-    '',
+  InfoMergeTypeExplanation: array[TInfoMergeType] of string = (
+    'Do not read implementation comments.',
     'Read both interface and implementation comments. Use whichever comment is non-empty. If they are both non-empty, use the interface comment.',
     'Read both interface and implementation comments and concatenate them. If the interface comment is also present (repeated) at the beginning of the implementation comment, it will be ignored (to not repeat 2x the same text in the concatenated result)',
     'Just like "prefer-interface", but if both comments are non-empty, use the implementation comment'
@@ -368,10 +367,10 @@ begin
   AddOption(OptionMarkdown);
 
   OptionInfoMergeMode := TStringOption.Create(#0, 'implementation-comments');
-  OptionInfoMergeMode.Explanation := 'Read implementation section of units and merge info to that taken from interface section. Option value determines how info is merged:'+LineEnding;
-  for mt := Succ(Low(TInfoMergeType)) to High(TInfoMergeType) do
-    OptionInfoMergeMode.Explanation := OptionInfoMergeMode.Explanation +
-      '  ' + InfoMergeTypeStr[mt] + ' - ' + InfoMergeTypeExpl[mt] + LineEnding;
+  OptionInfoMergeMode.Explanation := 'Read implementation section of units and merge info to that taken from interface section. Option value determines how info is merged:' + LineEnding;
+  for mt := Low(TInfoMergeType) to High(TInfoMergeType) do
+    OptionInfoMergeMode.Explanation := OptionInfoMergeMode.Explanation + LineEnding +
+      '  ' + InfoMergeTypeStr[mt] + ' - ' + InfoMergeTypeExplanation[mt] + LineEnding;
   AddOption(OptionInfoMergeMode);
 end;
 
@@ -644,10 +643,8 @@ begin
 
   PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
   PasDoc.AutoBackComments := OptionAutoBackComments.TurnedOn;
-
-  i := IndexText(OptionInfoMergeMode.Value, InfoMergeTypeStr);
-  if i > Ord(imtNone) then
-    PasDoc.InfoMergeType := TInfoMergeType(i);
+  if OptionInfoMergeMode.Value <> '' then
+    PasDoc.InfoMergeType := TInfoMergeType(IndexText(OptionInfoMergeMode.Value, InfoMergeTypeStr));
 end;
 
 { ---------------------------------------------------------------------------- }

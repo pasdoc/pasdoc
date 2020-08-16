@@ -109,9 +109,8 @@ type
   );
 
 const
-  InfoMergeTypeStr: array[TInfoMergeType] of string =
-  (
-    '',
+  InfoMergeTypeStr: array[TInfoMergeType] of string = (
+    'none',
     'prefer-interface',
     'join',
     'prefer-implementation'
