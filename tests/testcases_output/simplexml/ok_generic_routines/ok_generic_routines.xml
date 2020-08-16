@@ -1,7 +1,7 @@
 <unit name="ok_generic_routines.pas">
-  <function name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(Input: String): T;">
+  <function name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;">
   </function>
-  <function name="DoSomething2" type="procedure" declaration="procedure DoSomething2&lt;T&gt;(Input: T);">
+  <function name="DoSomething2" type="procedure" declaration="procedure DoSomething2&lt;T&gt;(const Input: T);">
   </function>
   <structure name="TTestClass" name_with_generic="TTestClass" type="class">
     <ancestor name="TObject" declaration="TObject" />

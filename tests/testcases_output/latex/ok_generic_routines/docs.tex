@@ -125,7 +125,7 @@ TTestClass {$>$} TObject
 \begin{flushleft}
 \fi
 \begin{ttfamily}
-function DoSomething{$<$}T{$>$}(Input: String): T;\end{ttfamily}
+function DoSomething{$<$}T{$>$}(const Caption: String; const Input: T): T;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -154,7 +154,7 @@ function DoSomething{$<$}T{$>$}(Input: String): T;\end{ttfamily}
 \begin{flushleft}
 \fi
 \begin{ttfamily}
-procedure DoSomething2{$<$}T{$>$}(Input: T);\end{ttfamily}
+procedure DoSomething2{$<$}T{$>$}(const Input: T);\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
