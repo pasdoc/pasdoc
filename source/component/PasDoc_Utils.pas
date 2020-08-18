@@ -267,6 +267,9 @@ function StripHtml(const S: string): string;
 function IndexText(const AText: string; const AValues: array of string): Integer;
 {$endif}
 
+{ If S = '' then returns NextPart, else returns S + PartSeparator + NextPart. }
+function SAppendPart(const s, PartSeparator, NextPart: String): String;
+
 implementation
 
 uses Classes, StrUtils, PasDoc_StreamUtils;
@@ -889,5 +892,13 @@ begin
   Result := -1;
 end;
 {$endif}
+
+function SAppendPart(const S, PartSeparator, NextPart: String): String;
+begin
+  if S = '' then
+    Result := NextPart
+  else
+    Result := S + PartSeparator + NextPart;
+end;
 
 end.

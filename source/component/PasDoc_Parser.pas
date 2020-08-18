@@ -884,10 +884,10 @@ begin
     M.What := MethodType;
 
     if IsGeneric <> '' then
-      M.FullDeclaration :=  IsGeneric + ' ';
+      M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', IsGeneric);
     if ClassKeyWordString <> '' then
-      M.FullDeclaration := M.FullDeclaration + ' ' + ClassKeyWordString + ' ';
-    M.FullDeclaration := M.FullDeclaration + MethodTypeString;
+      M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', ClassKeyWordString);
+    M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', MethodTypeString);
 
     { next non-wc token must be the name }
     if NeedName then

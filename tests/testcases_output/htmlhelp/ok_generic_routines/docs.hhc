@@ -23,6 +23,20 @@
 <param name="Local" value="ok_generic_routines.TTestClass.html">
 </object>
 <ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_generic_routines.TTestClass.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething2">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething2">
+</object>
+</ul>
 </ul>
 </ul>
 <li><object type="text/sitemap">
@@ -55,6 +69,20 @@
 <param name="Local" value="ok_generic_routines.TTestClass.html">
 </object>
 <ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_generic_routines.TTestClass.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething2">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething2">
+</object>
+</ul>
 </ul>
 </ul>
 <li><object type="text/sitemap">

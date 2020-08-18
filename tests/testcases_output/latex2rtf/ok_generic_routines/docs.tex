@@ -71,7 +71,56 @@
 \subsection*{TTestClass Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TTestClass {$>$} TObject
-%%%%Description
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+TTestClass\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DoSomething}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public generic function DoSomething{$<$}T{$>$}(const Caption: String; const Input: T): T;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test documentation for class function DoSomething
+
+\end{list}
+\paragraph*{DoSomething2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public generic procedure DoSomething2{$<$}T{$>$}(const Input: T);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test documentation for class procedure DoSomething2
+
+\end{list}
 \section{Functions and Procedures}
 \subsection*{DoSomething}
 \begin{list}{}{
@@ -91,6 +140,10 @@ function DoSomething{$<$}T{$>$}(const Caption: String; const Input: T): T;\end{t
 
 
 \end{flushleft}
+\par
+\item[\textbf{Description}]
+Test documentation for function DoSomething
+
 \end{list}
 \subsection*{DoSomething2}
 \begin{list}{}{
@@ -110,5 +163,9 @@ procedure DoSomething2{$<$}T{$>$}(const Input: T);\end{ttfamily}
 
 
 \end{flushleft}
+\par
+\item[\textbf{Description}]
+Test documentation for procedure DoSomething2
+
 \end{list}
 \end{document}

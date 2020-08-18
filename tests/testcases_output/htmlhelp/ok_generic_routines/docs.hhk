@@ -15,5 +15,13 @@
 <param name="Name" value="TTestClass">
 <param name="Local" value="ok_generic_routines.TTestClass.html">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DoSomething2">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething2">
+</object>
 </ul>
 </body></html>
