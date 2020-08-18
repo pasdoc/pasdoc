@@ -324,7 +324,8 @@ type
       const ClassKeywordString: string;
       const MethodTypeString: string; MethodType: TMethodType;
       const RawDescriptionInfo: TRawDescriptionInfo;
-      const NeedName: boolean; InitItemsForNextBackComment: boolean);
+      const NeedName: boolean; InitItemsForNextBackComment: boolean;
+      const IsGeneric: String);
 
     { Parses a class, an interface or an object.
       U is the unit this item will be added to on success.
@@ -809,7 +810,8 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
   const ClassKeywordString: string;
   const MethodTypeString: string; MethodType: TMethodType;
   const RawDescriptionInfo: TRawDescriptionInfo;
-  const NeedName: boolean; InitItemsForNextBackComment: boolean);
+  const NeedName: boolean; InitItemsForNextBackComment: boolean;
+  const IsGeneric: String);
 
   procedure ReadNestedName;
   var t: TToken;
@@ -881,8 +883,10 @@ begin
 
     M.What := MethodType;
 
+    if IsGeneric <> '' then
+      M.FullDeclaration :=  IsGeneric + ' ';
     if ClassKeyWordString <> '' then
-      M.FullDeclaration :=  ClassKeyWordString + ' ';
+      M.FullDeclaration := M.FullDeclaration + ' ' + ClassKeyWordString + ' ';
     M.FullDeclaration := M.FullDeclaration + MethodTypeString;
 
     { next non-wc token must be the name }
@@ -1409,7 +1413,7 @@ begin
           if t.Info.StandardDirective = SD_OPERATOR then
           begin
             ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
-              GetLastComment, true, true);
+              GetLastComment, true, true, '');
             U.FuncsProcs.Add(M);
           end
           //Generics functions and procedures
@@ -1422,7 +1426,7 @@ begin
               t := GetNextToken;
               try
                 ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                  GetLastComment, true, true);
+                  GetLastComment, true, true, '');
                 U.FuncsProcs.Add(M)
               finally
                 FreeAndNil(t)
@@ -1446,7 +1450,7 @@ begin
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin
                   ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                    GetLastComment, true, true);
+                    GetLastComment, true, true, '');
                   U.FuncsProcs.Add(M);
                 end;
               KEY_IMPLEMENTATION:
@@ -1587,7 +1591,7 @@ var
               // otherwise it's a nested subroutine that requires name
               if not InsideMethodBody then
               begin
-                ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False);
+                ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False, '');
                 FreeAndNil(M);
               end
               else
@@ -1696,14 +1700,14 @@ var
 
   { Read proc/func/class method/operator header and merge its description with
     existing item }
-  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType; MethodCounts: THash = nil;
+  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType; IsGeneric: String; MethodCounts: THash = nil;
     const ClassKeyWordString: string = '');
   var
     M, ExistingMethod: TPasMethod;
     Count: NativeUInt;
   begin
     ParseCDFP(M, ClassKeyWordString, MethodTypeToString(MethodType), MethodType,
-      GetLastComment, True, True);
+      GetLastComment, True, True, IsGeneric);
     // ParseCDFP was called with InitItemsForNextBackComment so it added M to
     // ItemsForNextBackComment list. We must clear it so that following comments
     // in AutoBackComments mode won't glue to method object which is already disposed
@@ -1735,7 +1739,7 @@ var
   end;
 
 var
-  t: TToken;
+  t, t2: TToken;
   PropertyParsed: TPasProperty;
   MethodCounts: THash;
 begin
@@ -1761,7 +1765,22 @@ begin
           TOK_IDENTIFIER:
             if t.Info.StandardDirective = SD_OPERATOR then
             begin
-              HandleMethod(U, METHOD_OPERATOR);
+              HandleMethod(U, METHOD_OPERATOR, '');
+            end
+            else if t.IsStandardDirective(SD_GENERIC) then
+            begin
+              t2 := PeekNextToken;
+              if t2.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
+              begin
+                 t2 := GetNextToken;
+                 try
+                   HandleMethod(U, KeyWordToMethodType(t2.Info.KeyWord), t.Data, MethodCounts)
+                 finally
+                   FreeAndNil(t2)
+                 end
+              end
+              else
+                 DoError('Unexpected %s', [t2.Description])
             end
             else
               DoError('Unexpected %s', [t.Description]);
@@ -1781,7 +1800,7 @@ begin
                   ;
                 KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
                   begin
-                    HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), MethodCounts);
+                    HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), '', MethodCounts);
                   end;
                 // Do not read unit used internally for now - maybe will do in the future
                 KEY_USES:
@@ -2130,7 +2149,7 @@ begin
         if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
         begin
           ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
-            RawDescriptionInfo, false, true);
+            RawDescriptionInfo, false, true, '');
           MethodType.Name := TypeName;
           MethodType.FullDeclaration :=
             TypeName + ' = ' + MethodType.FullDeclaration;
@@ -2502,7 +2521,7 @@ begin
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
         ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord),
-          EmptyRawDescriptionInfo, false, false);
+          EmptyRawDescriptionInfo, false, false, '');
         try
           ItemCollector.FullDeclaration :=
             ItemCollector.FullDeclaration + M.FullDeclaration;
@@ -3114,12 +3133,12 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
   end;
 
 var
-  ClassKeyWordString: string;
+  ClassKeyWordString, GenericString: string;
   M: TPasMethod;
   ConstantParsed: TPasItem;
   p: TPasProperty;
   StrictVisibility: Boolean;
-  t: TToken;
+  t, t2: TToken;
 begin
   t := nil;
   try
@@ -3173,7 +3192,7 @@ begin
             begin
               ParseCDFP(M, ClassKeyWordString,
                 t.Data, KeyWordToMethodType(t.Info.KeyWord),
-                GetLastComment, true, true);
+                GetLastComment, true, true, '');
 
               ClassKeyWordString := '';
               AddItemIfVisible(TPasItem(M), ACio.Methods, Visibility);
@@ -3226,7 +3245,7 @@ begin
               KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
               Mode := pmUndefined;
               ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
-                GetLastComment, true, true);
+                GetLastComment, true, true, '');
               ClassKeyWordString := '';
 
               AddItemIfVisible(TPasItem(M), ACio.Methods, Visibility);
@@ -3292,6 +3311,26 @@ begin
             begin
               StrictVisibility := True;
               Mode := pmUndefined;
+            end;
+          SD_GENERIC:
+            begin
+              t2 := PeekNextToken;
+              if t2.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
+              begin      
+                 t2 := GetNextToken;
+                 try
+                   ParseCDFP(M, ClassKeyWordString,
+                     t2.Data, KeyWordToMethodType(t2.Info.KeyWord),
+                     GetLastComment, true, true, t.Data);
+
+                   ClassKeyWordString := '';
+                   AddItemIfVisible(TPasItem(M), ACio.Methods, Visibility)
+                 finally
+                   FreeAndNil(t2)
+                 end
+              end
+              else
+                 DoError('Unexpected %s', [t2.Description])
             end
           else // case
             Scanner.UnGetToken(T);
@@ -3749,7 +3788,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
           if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
           begin
             ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
-            RawDescriptionInfo, false, true);
+            RawDescriptionInfo, false, true, '');
             MethodType.Name := TypeName;
             MethodType.FullDeclaration :=
               TypeName + ' = ' + MethodType.FullDeclaration;
