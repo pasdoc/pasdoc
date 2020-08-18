@@ -1,18 +1,18 @@
 <unit name="ok_generic_routines.pas">
   <function name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;">
-    <description><detailed>Test documentation for function DoSomething</detailed></description>
+    <description><detailed>Test documentation for function DoSomething implementation</detailed></description>
   </function>
   <function name="DoSomething2" type="procedure" declaration="procedure DoSomething2&lt;T&gt;(const Input: T);">
-    <description><detailed>Test documentation for procedure DoSomething2</detailed></description>
+    <description><detailed>Test documentation for procedure DoSomething2 implementation</detailed></description>
   </function>
   <structure name="TTestClass" name_with_generic="TTestClass" type="class">
     <description><detailed>TTestClass</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <function name="DoSomething" type="function" declaration="generic function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;">
-      <description><detailed>Test documentation for class function DoSomething</detailed></description>
+      <description><detailed>Test documentation for class function DoSomething implementation</detailed></description>
     </function>
     <function name="DoSomething2" type="procedure" declaration="generic procedure DoSomething2&lt;T&gt;(const Input: T);">
-      <description><detailed>Test documentation for class procedure DoSomething2</detailed></description>
+      <description><detailed>Test documentation for class procedure DoSomething2 implementation</detailed></description>
     </function>
   </structure>
 </unit>
