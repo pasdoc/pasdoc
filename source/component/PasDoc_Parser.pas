@@ -1487,10 +1487,15 @@ begin
     // Also process case when OldValue is fully contained in NewValue.
     // This allows specifying short abstract in intf section and full description
     // in impl section.
+    // At this stage values are raw, that is, could contain multiple whitespaces.
+    // We must exclude whitespaces from check.
     imtJoin:
-      Result :=
-        IfThen((OldValue <> '') and (OldValue <> Copy(NewValue, 1, Length(OldValue))),
-          OldValue + LineEnding) + NewValue;
+      // Note: this could be optimized to not use 2nd Trim or even check in-place without
+      // creation of new string variables.
+      if (Trim(OldValue) <> '') and not AnsiStartsStr(Trim(OldValue), Trim(NewValue)) then
+        Result := OldValue + LineEnding + NewValue
+      else
+        Result := NewValue;
     imtPreferImpl:
       Result := IfThen(NewValue <> '', NewValue, OldValue);
   end;

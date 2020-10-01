@@ -186,8 +186,10 @@ procedure Bar;
 begin
 end;
 
-// This is Laz
-// And it must not be doubled
+{
+  This is Laz
+  And it must not be doubled
+}
 procedure Laz;
 begin
 end;
