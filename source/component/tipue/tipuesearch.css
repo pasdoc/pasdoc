@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather:300,400|Open+Sans|Source+Code+Pro');
+
 /*
-Based on CSS from Tipue Search 3.0.1,
+Based on CSS from Tipue Search 7.1,
 with some ideas from 6.1,
 modified by PasDoc.
 
@@ -8,23 +10,38 @@ Tipue Search is released under the MIT License
 http://www.tipue.com/search
 */
 
+
+/* search box */
+
+
 #tipue_search_input
 {
 	color: #333;
-	padding: 7px;
-	width: 150px;
+	/* padding: 0.65em; */
+	width: 100%;
+	height: 32px;
 	border: 1px solid #e2e2e2;
 	border-radius: 0;
 	-moz-appearance: none;
 	-webkit-appearance: none;
-     box-shadow: none;
+	box-shadow: none;
 	outline: 0;
 	margin: 0;
 }
+
 #tipue_search_input:focus
 {
      border: 1px solid #ccc;
 }
+
+#tipue_search_input:-webkit-autofill,
+#tipue_search_input:-webkit-autofill:hover, 
+#tipue_search_input:-webkit-autofill:focus
+{
+     -webkit-box-shadow: 0 0 0px 1000px #f3f3f3 inset;
+}
+
+
 #tipue_search_button
 {
      width: 70px;
@@ -33,133 +50,277 @@ http://www.tipue.com/search
      border-radius: 1px;
      /* PasDoc: load search.png from current dir, not img/ subdir. */
      background: #5193fb url('search.png') no-repeat center;
-	outline: none;
+     outline: none;
+     vertical-align: middle;
 }
 #tipue_search_button:hover
 {
      background-color: #4589fb;
 }
 
-#tipue_search_content
+.tipue_search_button
 {
-     clear: left;
-     max-width: 650px;
-	padding: 25px 0 13px 0;
-	margin: 0;
-}
-#tipue_search_loading
-{
-     padding-top: 60px;
-     /* PasDoc: load loader.gif from current dir, not img/ subdir. */
-     background: #fff url('loader.gif') no-repeat left;
+     position: relative;
+     float: left;
+     width: 49px;
+     height: 56px;
+     margin-left: -3px;
+     background-color: #f3f3f3;
+     border: none;
+     border-radius: 1px;
+     /* PasDoc: load search.png from current dir, not img/ subdir. */
+     background: #5193fb url('search.png') no-repeat center;
+	 outline: none;
+     box-sizing: border-box;
+     cursor: pointer;	
 }
 
-#tipue_search_warning_head
+.tipue_search_button:hover
 {
-     font-size: large;
-	color: #333;
+     background-color: #4589fb;
 }
-#tipue_search_warning
+
+.tipue_search_icon
 {
-	color: #333;
-	margin: 7px 0;
+     float: left;
+     font: 24px/1 'Open Sans', sans-serif;
+     -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+     color: #333;
+     transform: rotate(-45deg);
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	box-sizing: border-box;
+     box-shadow: none;
+	outline: 0;	
+	margin: -1px 0 0 16px;
 }
-#tipue_search_warning a
+.tipue_search_group:after
 {
-     color: #3f72d8;
-     text-decoration: none;
+     content: "";
+     display: table;
+     clear: both;
 }
-#tipue_search_warning a:hover
+
+
+/* search results */
+
+
+#tipue_search_content
 {
-	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;
-}
-#tipue_search_results_count
-{
-	color: #333;
+     max-width: 100%;
+	margin: 0;
 }
 .tipue_search_content_title
 {
-     font-size: large;
-	margin-top: 31px;
+     font: 300 32px/1.4 Merriweather, serif;
+	color: #111;
 }
 .tipue_search_content_title a
 {
-     color: #3f72d8;
+     color: #111;
      text-decoration: none;
 }
 .tipue_search_content_title a:hover
 {
-	padding-bottom: 1px;
-        /* PasDoc: don't use it, sine our standard CSS already shows an underline
-           on hover.
-	border-bottom: 1px solid #ccc;
-         */
+     border-bottom: 1px solid #333;
+}
+.tipue_search_result
+{
+     padding-top: 27px;
+}
+#tipue_search_results_count, .tipue_search_content_debug
+{
+     font: 13px/1.5 'Source Code Pro', monospace;
+	text-transform: uppercase;
+	color: #999;
+     -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+#tipue_search_results_count
+{
+     padding-top: 9px;
+}
+.tipue_search_content_url, .tipue_search_note, .tipue_search_related, #tipue_search_error, #tipue_search_replace
+{
+     font: 300 16px/1.4 Merriweather, serif;
+     color: #666;
+     padding-top: 7px;
+     word-wrap: break-word;
+     hyphens: auto;
+}
+.tipue_search_content_url a, .tipue_search_note a, .tipue_search_related a, #tipue_search_replace a, #tipue_search_replace a:hover
+{
+     color: #339e41;
+     text-decoration: none;
+}
+.tipue_search_content_url a:hover, .tipue_search_note a:hover, .tipue_search_related a:hover
+{
+     color: #666;
+}
+#tipue_search_replace, .tipue_search_related
+{
+     margin-top: 7px;
+}
+#tipue_search_error
+{
+     color: #333;
+     margin-top: 17px;
 }
 .tipue_search_content_text
 {
+     font: 300 18px/1.6 Merriweather, serif;
 	color: #333;
-	padding: 13px 0;
+     word-wrap: break-word;
+     hyphens: auto;
+     margin-top: 9px;
 }
-.tipue_search_content_loc
+.tipue_search_content_bold
 {
-    font-size: large;
-     overflow: auto;
+     font-weight: 400;
+     color: #333;
 }
-.tipue_search_content_loc a
+.tipue_search_content_debug
 {
-     color: #555;
+     margin: 7px 0 2px 0;
+}
+
+
+/* images */
+
+
+.tipue_search_image
+{
+     padding: 17px 0 6px 0;
+}
+.tipue_search_img
+{
+     width: 100%;
+     max-width: 330px;
+     height: auto;
+     transition: 0.5s;
+     border-radius: 2px;
+}
+.tipue_search_img:hover
+{
+     opacity: 0.9;
+}
+#tipue_search_zoom_text
+{
+     font: 12px/1.7 'Source Code Pro', monospace;
+	color: #ccc;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	padding-top: 9px;
+}
+#tipue_search_zoom_text a
+{
+     color: #ccc;
      text-decoration: none;
+     border-bottom: 2px solid #f7f7f7;
 }
-.tipue_search_content_loc a:hover
+#tipue_search_zoom_text a:hover
 {
-	padding-bottom: 1px;
-	border-bottom: 1px solid #ccc;
+     border: 0;
 }
+.tipue_search_image_zoom
+{
+     cursor: pointer;     
+}
+#tipue_search_image_modal
+{
+     display: none;
+     position: fixed;
+     z-index: 1000;
+     left: 0;
+     top: 0;
+     width: 100%;
+     height: 100%;
+     overflow: auto;
+     background-color: rgba(0, 0, 0, 0.9);
+}
+.tipue_search_image_close
+{
+     position: absolute;
+     top: 0;
+     right: 0;
+     font: 22px/1 'Source Code Pro', monospace;
+	color: #ccc;
+     padding: 25px 30px;
+     cursor: pointer;
+}
+.tipue_search_image_block
+{
+     margin: 0 auto;
+     max-width: 900px;
+     padding: 73px 30px 30px 30px;
+     box-sizing: border-box;
+     color: #fff;
+}
+#tipue_search_zoom_img
+{
+     max-width: 100%;
+     height: auto;
+}
+
+#tipue_search_zoom_text, .tipue_search_zoom_options
+{
+     padding-top: 9px;
+}
+
+
+/* footer */
+
+
 #tipue_search_foot
 {
      margin: 51px 0 21px 0;
 }
 #tipue_search_foot_boxes
 {
+     font: 14px 'Source Code Pro', sans-serif;
+	text-transform: uppercase;
+	color: #333;
 	padding: 0;
 	margin: 0;
+	cursor: pointer;
 }
 #tipue_search_foot_boxes li
 {
+     display: inline;
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	display: inline;
 }
 #tipue_search_foot_boxes li a
 {
-	padding: 7px 13px 8px 13px;
-     background-color: #f1f1f1;
-     border: 1px solid #dcdcdc;
-     border-radius: 1px;
-	color: #333;
+     background-color: #f7f7f7;
+	color: #666;
+	padding: 10px 17px 11px 17px;
+     border-radius: 3px;
 	margin-right: 7px;
 	text-decoration: none;
 	text-align: center;
+	transition: 0.3s;
 }
 #tipue_search_foot_boxes li.current
 {
-	padding: 7px 13px 8px 13px;
-     background: #fff;
-     border: 1px solid #dcdcdc;
-     border-radius: 1px;
-	color: #333;
+     background: #252525;
+	color: #ccc;
+	padding: 10px 17px 11px 17px;
+     border-radius: 3px;
 	margin-right: 7px;
 	text-align: center;
 }
 #tipue_search_foot_boxes li a:hover
 {
-	border: 1px solid #ccc;
-	background-color: #f3f3f3;
+     background: #252525;
+     color: #ccc;
 }
 
 /* PasDoc: style found words. */
 .tipue_search_content_bold {
     background-color: yellow;
 }
+
+
