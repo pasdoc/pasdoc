@@ -146,7 +146,10 @@ http://www.tipue.com/search
 }
 .tipue_search_content_url, .tipue_search_note, .tipue_search_related, #tipue_search_error, #tipue_search_replace
 {
+     /* Commented out in PasDoc, keep text and link style consistent with other pages */
+     /*
      font: 300 16px/1.4 Merriweather, serif;
+     */
      color: #666;
      padding-top: 7px;
      word-wrap: break-word;
