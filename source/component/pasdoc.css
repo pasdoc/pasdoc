@@ -23,85 +23,68 @@
 body, html {
   margin: 0;
   padding: 0;
-  height : 100%;
 }
 
 body {
   font-family: Verdana,Arial;
   color: black;
   background-color: white;
-
 }
 
 .container {
   width: 100%;
-  height : 100%;
+  height: 100%;
   border-spacing: 0;
 }
 
 .navigation {
-  float : left;
+  float: left;
   width: 32%;
-  height : 100%;
-  background-color: #111;
+  height: 100%;
+  color: white;
+  background-color: #787878;
   position: fixed;
+  margin: 0;
+  padding: 1em;
 }
-
-.navigation ul { margin : 0em; padding:0em;}
-.navigation li { 
-  list-style-type:none;
+.navigation ul {
+  margin: 0em;
+  padding: 0em;
+}
+.navigation li {
+  list-style-type: none;
   margin: 0.2em 0em 0em 0em;
-  padding: 0em 1em 0em 1em;  }
-.navigation h2 { 
-   text-align : center;
-   margin: 0em;
-   padding: 0.5em;}
-
-.content { padding: 1em; }
-.content h1 { margin-top: 0; }
-
-.appinfo {
-    float: right;
-    text-align: right;
-    margin-bottom: 1em;
+  padding: 0em 1em 0em 1em;
+}
+.navigation h2 {
+  text-align: center;
+  margin: 0em;
+  padding: 0.5em;
+}
+.navigation p {
+  padding: 0;
 }
 
 .content {
   float:right;
   width: 65%;
   padding: 1em;
- }
-
-table.container {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  border-spacing: 0;
 }
-table.container td {
-  vertical-align: top;
+.content h1 {
+  margin-top: 0;
 }
 
-td.navigation {
-  width: 200px;
-  color: white;
-  background-color: #787878;
-  margin: 0;
-  /* padding-bottom is a little larger, to make navigation column have some
-     nice height even when td.content column is very small. */
-  padding: 1em 1em 100px 1em;
+.appinfo {
+  float: right;
+  text-align: right;
+  margin-bottom: 1em;
 }
-td.navigation p { padding: 0; }
-td.navigation h2 { margin-top: 0; }
-
-td.content { padding: 1em; }
-td.content h1 { margin-top: 0; }
 
 img { border:0px; }
 
 hr {
-    border-bottom: medium none;
-    border-top: thin solid #888;
+  border-bottom: medium none;
+  border-top: thin solid #888;
 }
 
 a:link {color:#C91E0C; text-decoration: none; }
@@ -109,15 +92,10 @@ a:visited {color:#7E5C31; text-decoration: none; }
 a:hover {text-decoration: underline; }
 a:active {text-decoration: underline; }
 
-.navigation h2 a:link {color:#e2e2e2; text-decoration: none; }
-.navigation h2 a:visited {color:#e2e2e2; text-decoration: none; }
-.navigation h2 a:hover {text-decoration: underline; }
-.navigation h2 a:active {text-decoration: underline; }
-
-.navigation a:link {color:#4589fb; text-decoration: none; }
-.navigation a:visited {color:#4589fb; text-decoration: none; }
-.navigation a:hover {text-decoration: underline; }
-.navigation a:active {text-decoration: underline; }
+.navigation a:link { color: white; text-decoration: none; }
+.navigation a:visited { color: white; text-decoration: none; }
+.navigation a:hover { color: white; font-weight: bold; text-decoration: none; }
+.navigation a:active { color: white; text-decoration: none; }
 
 a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
 a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
@@ -171,9 +149,9 @@ td.itemcode code>a {color: #c91e0c;}
 td.itemcode code>a:hover {color: #f00;}
 
 div.nodescription { color:red; }
-dl.parameters dt { 
+dl.parameters dt {
   display: inline-block;
-  color:blue; 
+  color:blue;
 }
 
 dl.parameters dd {
@@ -227,7 +205,7 @@ h6.description_section {
    (e.g. produced by @longcode tag) } */
 .longcode {
   font-family: monospace;
-  font-size:1.2em;    
+  font-size:1.2em;
   background-color:#ccc;
 }
 span.pascal_string { color: #000080; }

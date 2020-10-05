@@ -25,85 +25,68 @@
 'body, html {' + LineEnding +
 '  margin: 0;' + LineEnding +
 '  padding: 0;' + LineEnding +
-'  height : 100%;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'body {' + LineEnding +
 '  font-family: Verdana,Arial;' + LineEnding +
 '  color: black;' + LineEnding +
 '  background-color: white;' + LineEnding +
-'' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 '.container {' + LineEnding +
 '  width: 100%;' + LineEnding +
-'  height : 100%;' + LineEnding +
+'  height: 100%;' + LineEnding +
 '  border-spacing: 0;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 '.navigation {' + LineEnding +
-'  float : left;' + LineEnding +
+'  float: left;' + LineEnding +
 '  width: 32%;' + LineEnding +
-'  height : 100%;' + LineEnding +
-'  background-color: #111;' + LineEnding +
+'  height: 100%;' + LineEnding +
+'  color: white;' + LineEnding +
+'  background-color: #787878;' + LineEnding +
 '  position: fixed;' + LineEnding +
+'  margin: 0;' + LineEnding +
+'  padding: 1em;' + LineEnding +
 '}' + LineEnding +
-'' + LineEnding +
-'.navigation ul { margin : 0em; padding:0em;}' + LineEnding +
-'.navigation li { ' + LineEnding +
-'  list-style-type:none;' + LineEnding +
+'.navigation ul {' + LineEnding +
+'  margin: 0em;' + LineEnding +
+'  padding: 0em;' + LineEnding +
+'}' + LineEnding +
+'.navigation li {' + LineEnding +
+'  list-style-type: none;' + LineEnding +
 '  margin: 0.2em 0em 0em 0em;' + LineEnding +
-'  padding: 0em 1em 0em 1em;  }' + LineEnding +
-'.navigation h2 { ' + LineEnding +
-'   text-align : center;' + LineEnding +
-'   margin: 0em;' + LineEnding +
-'   padding: 0.5em;}' + LineEnding +
-'' + LineEnding +
-'.content { padding: 1em; }' + LineEnding +
-'.content h1 { margin-top: 0; }' + LineEnding +
-'' + LineEnding +
-'.appinfo {' + LineEnding +
-'    float: right;' + LineEnding +
-'    text-align: right;' + LineEnding +
-'    margin-bottom: 1em;' + LineEnding +
+'  padding: 0em 1em 0em 1em;' + LineEnding +
+'}' + LineEnding +
+'.navigation h2 {' + LineEnding +
+'  text-align: center;' + LineEnding +
+'  margin: 0em;' + LineEnding +
+'  padding: 0.5em;' + LineEnding +
+'}' + LineEnding +
+'.navigation p {' + LineEnding +
+'  padding: 0;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 '.content {' + LineEnding +
 '  float:right;' + LineEnding +
 '  width: 65%;' + LineEnding +
 '  padding: 1em;' + LineEnding +
-' }' + LineEnding +
-'' + LineEnding +
-'table.container {' + LineEnding +
-'  margin: 0;' + LineEnding +
-'  padding: 0;' + LineEnding +
-'  width: 100%;' + LineEnding +
-'  border-spacing: 0;' + LineEnding +
 '}' + LineEnding +
-'table.container td {' + LineEnding +
-'  vertical-align: top;' + LineEnding +
+'.content h1 {' + LineEnding +
+'  margin-top: 0;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
-'td.navigation {' + LineEnding +
-'  width: 200px;' + LineEnding +
-'  color: white;' + LineEnding +
-'  background-color: #787878;' + LineEnding +
-'  margin: 0;' + LineEnding +
-'  /* padding-bottom is a little larger, to make navigation column have some' + LineEnding +
-'     nice height even when td.content column is very small. */' + LineEnding +
-'  padding: 1em 1em 100px 1em;' + LineEnding +
+'.appinfo {' + LineEnding +
+'  float: right;' + LineEnding +
+'  text-align: right;' + LineEnding +
+'  margin-bottom: 1em;' + LineEnding +
 '}' + LineEnding +
-'td.navigation p { padding: 0; }' + LineEnding +
-'td.navigation h2 { margin-top: 0; }' + LineEnding +
-'' + LineEnding +
-'td.content { padding: 1em; }' + LineEnding +
-'td.content h1 { margin-top: 0; }' + LineEnding +
 '' + LineEnding +
 'img { border:0px; }' + LineEnding +
 '' + LineEnding +
 'hr {' + LineEnding +
-'    border-bottom: medium none;' + LineEnding +
-'    border-top: thin solid #888;' + LineEnding +
+'  border-bottom: medium none;' + LineEnding +
+'  border-top: thin solid #888;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'a:link {color:#C91E0C; text-decoration: none; }' + LineEnding +
@@ -111,15 +94,10 @@
 'a:hover {text-decoration: underline; }' + LineEnding +
 'a:active {text-decoration: underline; }' + LineEnding +
 '' + LineEnding +
-'.navigation h2 a:link {color:#e2e2e2; text-decoration: none; }' + LineEnding +
-'.navigation h2 a:visited {color:#e2e2e2; text-decoration: none; }' + LineEnding +
-'.navigation h2 a:hover {text-decoration: underline; }' + LineEnding +
-'.navigation h2 a:active {text-decoration: underline; }' + LineEnding +
-'' + LineEnding +
-'.navigation a:link {color:#4589fb; text-decoration: none; }' + LineEnding +
-'.navigation a:visited {color:#4589fb; text-decoration: none; }' + LineEnding +
-'.navigation a:hover {text-decoration: underline; }' + LineEnding +
-'.navigation a:active {text-decoration: underline; }' + LineEnding +
+'.navigation a:link { color: white; text-decoration: none; }' + LineEnding +
+'.navigation a:visited { color: white; text-decoration: none; }' + LineEnding +
+'.navigation a:hover { color: white; font-weight: bold; text-decoration: none; }' + LineEnding +
+'.navigation a:active { color: white; text-decoration: none; }' + LineEnding +
 '' + LineEnding +
 'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }' + LineEnding +
 'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }' + LineEnding +
@@ -173,9 +151,9 @@
 'td.itemcode code>a:hover {color: #f00;}' + LineEnding +
 '' + LineEnding +
 'div.nodescription { color:red; }' + LineEnding +
-'dl.parameters dt { ' + LineEnding +
+'dl.parameters dt {' + LineEnding +
 '  display: inline-block;' + LineEnding +
-'  color:blue; ' + LineEnding +
+'  color:blue;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'dl.parameters dd {' + LineEnding +
@@ -229,7 +207,7 @@
 '   (e.g. produced by @longcode tag) } */' + LineEnding +
 '.longcode {' + LineEnding +
 '  font-family: monospace;' + LineEnding +
-'  font-size:1.2em;    ' + LineEnding +
+'  font-size:1.2em;' + LineEnding +
 '  background-color:#ccc;' + LineEnding +
 '}' + LineEnding +
 'span.pascal_string { color: #000080; }' + LineEnding +
