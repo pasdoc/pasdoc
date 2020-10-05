@@ -2520,7 +2520,7 @@ function THTMLDocGenerator.MakeBodyBegin: string;
   begin
     Result := '';
 
-    if Title <> ''  then
+    if Title <> '' then
     begin
       Result := Result + '<h2>' + LocalMakeLink('index.html', Title) + '</h2>';
     end
@@ -2540,8 +2540,8 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     begin
       Result := Result + LocalMakeListItemLink(
-      OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
-      OverviewFilesInfo[Overview].TranslationId);
+        OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
+        OverviewFilesInfo[Overview].TranslationId);
     end;
 
     if LinkGraphVizUses <> '' then
