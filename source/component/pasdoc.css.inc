@@ -47,6 +47,7 @@
 '  background-color: #787878;' + LineEnding +
 '  position: fixed;' + LineEnding +
 '  margin: 0;' + LineEnding +
+'  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .content, causing errors on narrow screens */' + LineEnding +
 '  padding: 1em;' + LineEnding +
 '}' + LineEnding +
 '.navigation ul {' + LineEnding +
@@ -56,20 +57,18 @@
 '.navigation li {' + LineEnding +
 '  list-style-type: none;' + LineEnding +
 '  margin: 0.2em 0em 0em 0em;' + LineEnding +
-'  padding: 0em 1em 0em 1em;' + LineEnding +
+'  padding: 0.5em;' + LineEnding +
 '}' + LineEnding +
 '.navigation h2 {' + LineEnding +
 '  text-align: center;' + LineEnding +
 '  margin: 0em;' + LineEnding +
 '  padding: 0.5em;' + LineEnding +
 '}' + LineEnding +
-'.navigation p {' + LineEnding +
-'  padding: 0;' + LineEnding +
-'}' + LineEnding +
 '' + LineEnding +
 '.content {' + LineEnding +
 '  float:right;' + LineEnding +
-'  width: 65%;' + LineEnding +
+'  width: 68%;' + LineEnding +
+'  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .navigation, causing errors on narrow screens */' + LineEnding +
 '  padding: 1em;' + LineEnding +
 '}' + LineEnding +
 '.content h1 {' + LineEnding +

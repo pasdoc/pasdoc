@@ -45,6 +45,7 @@ body {
   background-color: #787878;
   position: fixed;
   margin: 0;
+  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .content, causing errors on narrow screens */
   padding: 1em;
 }
 .navigation ul {
@@ -54,20 +55,18 @@ body {
 .navigation li {
   list-style-type: none;
   margin: 0.2em 0em 0em 0em;
-  padding: 0em 1em 0em 1em;
+  padding: 0.5em;
 }
 .navigation h2 {
   text-align: center;
   margin: 0em;
   padding: 0.5em;
 }
-.navigation p {
-  padding: 0;
-}
 
 .content {
   float:right;
-  width: 65%;
+  width: 68%;
+  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .navigation, causing errors on narrow screens */
   padding: 1em;
 }
 .content h1 {
