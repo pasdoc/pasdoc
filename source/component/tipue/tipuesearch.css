@@ -106,6 +106,8 @@ http://www.tipue.com/search
 /* search results */
 
 
+/* Commented out in PasDoc, keep text and link style consistent with other pages */
+/*
 #tipue_search_content
 {
      max-width: 100%;
@@ -125,6 +127,7 @@ http://www.tipue.com/search
 {
      border-bottom: 1px solid #333;
 }
+*/
 .tipue_search_result
 {
      padding-top: 27px;
@@ -169,11 +172,16 @@ http://www.tipue.com/search
 }
 .tipue_search_content_text
 {
+     /* Commented out in PasDoc, keep text and link style consistent with other pages */
+     /*
      font: 300 18px/1.6 Merriweather, serif;
 	color: #333;
      word-wrap: break-word;
      hyphens: auto;
-     margin-top: 9px;
+     */
+     /* Changed in PasDoc, do not use explicit pixels */
+     /* margin-top: 9px; */
+     margin-top: 1em;
 }
 .tipue_search_content_bold
 {
