@@ -204,8 +204,10 @@ h6.description_section {
    (e.g. produced by @longcode tag) } */
 .longcode {
   font-family: monospace;
-  font-size:1.2em;
-  background-color:#ccc;
+  font-size: 1.2em;
+  background-color: #eee;
+  padding: 0.5em;
+  border: thin solid #ccc;
 }
 span.pascal_string { color: #000080; }
 span.pascal_keyword { font-weight: bolder; }
@@ -256,7 +258,9 @@ table.detail {
 }
 
 .search-form { white-space: nowrap; }
-.search-input, .search-button {display: inline-block;/* vertical-align: middle; */margin-top: 0.5em;}
+.search-input input { max-width: 80%; } /* this provides some safe space to always fit even on very narrow screens */
+.search-input input, .search-button { display: inline-block; vertical-align: middle; }
+.search-input { display: inline-block; }
 
 /* Do not make extra vertical space at the beginning/end of table cells.
    We need ">" selector, to not change paragraphs inside lists inside

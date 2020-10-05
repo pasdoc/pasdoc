@@ -206,8 +206,10 @@
 '   (e.g. produced by @longcode tag) } */' + LineEnding +
 '.longcode {' + LineEnding +
 '  font-family: monospace;' + LineEnding +
-'  font-size:1.2em;' + LineEnding +
-'  background-color:#ccc;' + LineEnding +
+'  font-size: 1.2em;' + LineEnding +
+'  background-color: #eee;' + LineEnding +
+'  padding: 0.5em;' + LineEnding +
+'  border: thin solid #ccc;' + LineEnding +
 '}' + LineEnding +
 'span.pascal_string { color: #000080; }' + LineEnding +
 'span.pascal_keyword { font-weight: bolder; }' + LineEnding +
@@ -258,7 +260,9 @@
 '}' + LineEnding +
 '' + LineEnding +
 '.search-form { white-space: nowrap; }' + LineEnding +
-'.search-input, .search-button {display: inline-block;/* vertical-align: middle; */margin-top: 0.5em;}' + LineEnding +
+'.search-input input { max-width: 80%; } /* this provides some safe space to always fit even on very narrow screens */' + LineEnding +
+'.search-input input, .search-button { display: inline-block; vertical-align: middle; }' + LineEnding +
+'.search-input { display: inline-block; }' + LineEnding +
 '' + LineEnding +
 '/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding +
 '   We need ">" selector, to not change paragraphs inside lists inside' + LineEnding +
