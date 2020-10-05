@@ -143,26 +143,10 @@
 'td.itemname {white-space:nowrap; }' + LineEnding +
 'td.itemunit {white-space:nowrap; }' + LineEnding +
 'td.itemdesc { width:100%; }' + LineEnding +
-'td.itemcode > code { color:#252525;}' + LineEnding +
-'td.itemcode a {color: #000000;}' + LineEnding +
-'td.itemcode a:hover {color: #f00;}' + LineEnding +
-'td.itemcode code>a {color: #c91e0c;}' + LineEnding +
-'td.itemcode code>a:hover {color: #f00;}' + LineEnding +
 '' + LineEnding +
 'div.nodescription { color:red; }' + LineEnding +
 'dl.parameters dt {' + LineEnding +
-'  display: inline-block;' + LineEnding +
 '  color:blue;' + LineEnding +
-'}' + LineEnding +
-'' + LineEnding +
-'dl.parameters dd {' + LineEnding +
-'  display: inline;' + LineEnding +
-'  margin: 0;' + LineEnding +
-'}' + LineEnding +
-'' + LineEnding +
-'dl.parameters dd:after{' + LineEnding +
-'  display: block;' + LineEnding +
-'  content: '';' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 'code {' + LineEnding +

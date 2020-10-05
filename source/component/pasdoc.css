@@ -141,26 +141,10 @@ table.detail td.itemcode { width:100%; }
 td.itemname {white-space:nowrap; }
 td.itemunit {white-space:nowrap; }
 td.itemdesc { width:100%; }
-td.itemcode > code { color:#252525;}
-td.itemcode a {color: #000000;}
-td.itemcode a:hover {color: #f00;}
-td.itemcode code>a {color: #c91e0c;}
-td.itemcode code>a:hover {color: #f00;}
 
 div.nodescription { color:red; }
 dl.parameters dt {
-  display: inline-block;
   color:blue;
-}
-
-dl.parameters dd {
-  display: inline;
-  margin: 0;
-}
-
-dl.parameters dd:after{
-  display: block;
-  content: ';
 }
 
 code {
