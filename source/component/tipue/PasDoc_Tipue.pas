@@ -56,11 +56,9 @@ uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
-  Result := '<script src="tipuesearch/jquery.min.js"></script>' + LineEnding;
-  Result := Result + '<script src="tipuesearch/tipuesearch_content.js"></script>' + LineEnding;
-  Result := Result + '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
-  Result := Result + '<script src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding;
-  Result := Result + '<script src="tipuesearch/tipuesearch.js"></script>' + LineEnding;
+  { Note that this deliberately doesn't contain various Tipue JavaScript files.
+    They are only needed on Tipue results page, and are included by _tipue_results.html . }
+  Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
 end;
 
 function TipueSearchButton: string;
