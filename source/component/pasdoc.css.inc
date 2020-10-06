@@ -57,7 +57,7 @@
 '.navigation li {' + LineEnding +
 '  list-style-type: none;' + LineEnding +
 '  margin: 0.2em 0em 0em 0em;' + LineEnding +
-'  padding: 0.5em;' + LineEnding +
+'  padding: 0.25em;' + LineEnding +
 '}' + LineEnding +
 '.navigation h2 {' + LineEnding +
 '  text-align: center;' + LineEnding +
