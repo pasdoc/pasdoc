@@ -41,7 +41,7 @@
 '' + LineEnding +
 '.navigation {' + LineEnding +
 '  float: left;' + LineEnding +
-'  width: 32%;' + LineEnding +
+'  width: 20em; /* must match .content margin-left */' + LineEnding +
 '  height: 100%;' + LineEnding +
 '  color: white;' + LineEnding +
 '  background-color: #787878;' + LineEnding +
@@ -66,8 +66,7 @@
 '}' + LineEnding +
 '' + LineEnding +
 '.content {' + LineEnding +
-'  float:right;' + LineEnding +
-'  width: 68%;' + LineEnding +
+'  margin-left: 20em; /* must match .navigation width */' + LineEnding +
 '  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .navigation, causing errors on narrow screens */' + LineEnding +
 '  padding: 1em;' + LineEnding +
 '}' + LineEnding +
