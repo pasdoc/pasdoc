@@ -39,7 +39,7 @@ body {
 
 .navigation {
   float: left;
-  width: 32%;
+  width: 20em; /* must match .content margin-left */
   height: 100%;
   color: white;
   background-color: #787878;
@@ -64,8 +64,7 @@ body {
 }
 
 .content {
-  float:right;
-  width: 68%;
+  margin-left: 20em; /* must match .navigation width */
   box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .navigation, causing errors on narrow screens */
   padding: 1em;
 }
