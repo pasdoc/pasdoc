@@ -16,6 +16,7 @@ pipeline {
     stage('Test') {
       steps {
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
+        sh 'apt-get update && apt-get install git'
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
       }
     }
