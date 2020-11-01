@@ -7,40 +7,28 @@
 */
 
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'kambi/castle-engine-cloud-builds-tools:cge-none'
+    }
+  }
   stages {
     stage('Test') {
-      agent {
-        /* We need to run this on a host where "git" is installed
-           (used by "make tests"). */
-        label 'web-jenkins'
-        /*
-        docker {
-          image 'kambi/castle-engine-cloud-builds-tools:cge-none'
-        }
-        */
-      }
       steps {
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
       }
     }
     stage('Build') {
-      agent {
-        docker {
-          image 'kambi/castle-engine-cloud-builds-tools:cge-none'
-        }
-      }
       steps {
         sh 'www/snapshots/build.sh'
-        /* Do not defer "archiveArtifacts" to later (like post section),
-           as this command must run in the same agent and Docker container
-           as build.sh. */
-        archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
       }
     }
   }
   post {
+    success {
+      archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+    }
     regression {
       mail to: 'michalis@castle-engine.io',
         subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",
