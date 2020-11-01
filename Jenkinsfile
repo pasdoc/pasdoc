@@ -13,7 +13,7 @@ pipeline {
       agent {
         /* We need to run this on a host where "git" is installed
            (used by "make tests"). */
-        label 'web-michalis-ii-uni-wroc-pl'
+        label 'web-jenkins'
         /*
         docker {
           image 'kambi/castle-engine-cloud-builds-tools:cge-none'
@@ -33,37 +33,26 @@ pipeline {
       }
       steps {
         sh 'www/snapshots/build.sh'
-        stash name: 'snapshots-to-publish', includes: 'pasdoc-*.tar.gz,pasdoc-*.zip'
         /* Do not defer "archiveArtifacts" to later (like post section),
            as this command must run in the same agent and Docker container
            as build.sh. */
         archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
       }
     }
-    stage('Upload Snapshots') {
-      /* This must run on michalis.ii.uni.wroc.pl, outside Docker,
-         since it directly copies the files. */
-      agent { label 'web-michalis-ii-uni-wroc-pl' }
-      when { branch 'master' } /* upload only the "master" branch results */
-      steps {
-        unstash name: 'snapshots-to-publish'
-        sh 'www/snapshots/upload.sh'
-      }
-    }
   }
   post {
     regression {
-      mail to: 'michalis.kambi@gmail.com',
+      mail to: 'michalis@castle-engine.io',
         subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",
         body: "See the build details on ${env.BUILD_URL}"
     }
     failure {
-      mail to: 'michalis.kambi@gmail.com',
+      mail to: 'michalis@castle-engine.io',
         subject: "[jenkins] Build failed: ${currentBuild.fullDisplayName}",
         body: "See the build details on ${env.BUILD_URL}"
     }
     fixed {
-      mail to: 'michalis.kambi@gmail.com',
+      mail to: 'michalis@castle-engine.io',
         subject: "[jenkins] Build is again successfull: ${currentBuild.fullDisplayName}",
         body: "See the build details on ${env.BUILD_URL}"
     }
