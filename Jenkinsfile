@@ -16,8 +16,7 @@ pipeline {
     stage('Test') {
       steps {
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
-        // TODO: kambi/castle-engine-cloud-builds-tools Docker needs git to make this possible
-        // sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
+        sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
       }
     }
     stage('Build') {
