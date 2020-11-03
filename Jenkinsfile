@@ -2,7 +2,7 @@
   Confgure how to run our job in Jenkins.
   See https://github.com/castle-engine/castle-engine/wiki/Cloud-Builds-(Jenkins) .
   While PasDoc doesn't use Castle Game Engine,
-  but it uses CGE Jenkins infrastructure on http://jenkins.castle-engine.io/ ,
+  but it uses CGE Jenkins infrastructure on https://jenkins.castle-engine.io/ ,
   including a Docker image that contains various versions of FPC.
 */
 
