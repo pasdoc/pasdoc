@@ -1242,10 +1242,22 @@ var
           Result := Result and ParseExpression
         else
         if T.IsKeyWord(KEY_OR) then
-          Result := Result and ParseExpression
+          Result := Result or ParseExpression
         else
         if T.IsSymbol(SYM_EQUAL) then
           Result := Result = ParseExpression
+        else
+        if T.IsSymbol(SYM_LESS_THAN) then
+          Result := Result < ParseExpression
+        else
+        if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
+          Result := Result <= ParseExpression
+        else
+        if T.IsSymbol(SYM_GREATER_THAN) then
+          Result := Result > ParseExpression
+        else
+        if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
+          Result := Result >= ParseExpression
         else
           raise EInvalidIfCondition.Create('Cannot handle opertator function "%s" in $if / $elseif', [T.Description]);
       finally FreeAndNil(T) end;
