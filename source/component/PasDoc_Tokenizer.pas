@@ -216,7 +216,7 @@ type
     SYM_LESS_THAN, SYM_LESS_THAN_EQUAL, SYM_GREATER_THAN,
     SYM_GREATER_THAN_EQUAL, SYM_LEFT_BRACKET, SYM_RIGHT_BRACKET,
     SYM_COMMA, SYM_LEFT_PARENTHESIS, SYM_RIGHT_PARENTHESIS, SYM_COLON,
-    SYM_SEMICOLON, SYM_ROOF, SYM_PERIOD, SYM_AT,
+    SYM_SEMICOLON, SYM_DEREFERENCE, SYM_PERIOD, SYM_AT,
     SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER,
     { SYM_BACKSLASH may occur when writing char constant "^\",
       see ../../tests/ok_caret_character.pas }
@@ -500,7 +500,7 @@ const
     (c: '-'; s: SYM_MINUS),
     (c: '*'; s: SYM_ASTERISK),
     (c: '='; s: SYM_EQUAL),
-    (c: '^'; s: SYM_ROOF),
+    (c: '^'; s: SYM_DEREFERENCE),
     (c: '@'; s: SYM_AT));
 
 { ---------------------------------------------------------------------------- }
