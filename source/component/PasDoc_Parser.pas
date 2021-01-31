@@ -3138,7 +3138,7 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
   end;
 
 var
-  ClassKeyWordString, GenericString: string;
+  ClassKeyWordString: string;
   M: TPasMethod;
   ConstantParsed: TPasItem;
   p: TPasProperty;
