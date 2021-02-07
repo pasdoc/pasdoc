@@ -4,31 +4,31 @@
 
 * [New website](https://pasdoc.github.io/), using Jekyll, generated from our wiki, see https://github.com/pasdoc/pasdoc.github.io (Michalis)
 * [Moved everything to GitHub](https://github.com/pasdoc/pasdoc)
-* [Ancestors list is now affected by external class hierarchy](https://github.com/pasdoc/pasdoc/wiki/ExternalClassHierarchy) (Michalis)
-* [Markdown support](https://github.com/pasdoc/pasdoc/wiki/MarkdownOption) (Fr0sT-Brutal)
+* [Ancestors list is now affected by external class hierarchy](https://pasdoc.github.io/ExternalClassHierarchy) (Michalis)
+* [Markdown support](https://pasdoc.github.io/MarkdownOption) (Fr0sT-Brutal)
   Supporting bold, italic, inline code, multi-line code, URLs, lists.
-* [@note and @warning tags](https://github.com/pasdoc/pasdoc/wiki/NoteAndWarningTags) (Bi0T1N)
-* [@url tag](https://github.com/pasdoc/pasdoc/wiki/UrlTag) (Bi0T1N)
-* [Allow to lowercase output of @nil, @false, @true by --lowercase-keywords](https://github.com/pasdoc/pasdoc/wiki/TrueFalseNilTag) (Bi0T1N)
+* [@note and @warning tags](https://pasdoc.github.io/NoteAndWarningTags) (Bi0T1N)
+* [@url tag](https://pasdoc.github.io/UrlTag) (Bi0T1N)
+* [Allow to lowercase output of @nil, @false, @true by \--lowercase-keywords](https://pasdoc.github.io/TrueFalseNilTag) (Bi0T1N)
 * Automatically detect flag like [xxx] at @param description.
   [See here for example](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_flag_parameter.pas). (PifPof)
-* [Scan implementation section of a unit in addition to the interface section](https://github.com/pasdoc/pasdoc/wiki/ImplementationCommentsOption) (Fr0sT-Brutal)
+* [Scan implementation section of a unit in addition to the interface section](https://pasdoc.github.io/ImplementationCommentsOption) (Fr0sT-Brutal)
 * Parser improvements to correctly handle some special cases: reading chars > $FF, "*.inc" includes, files with Mac-style line endings (Fr0sT-Brutal)
 * Mem leaks fixed (Fr0sT-Brutal)
 * Tag parameters now could be multiline without enclosing parens by means of "line feed" character "\" (Fr0sT-Brutal)
-* [Read additional command-line options from file](https://github.com/pasdoc/pasdoc/wiki/ConfigFileOption) (Fr0sT-Brutal)
-* [--auto-back-comments command-line option](https://github.com/pasdoc/pasdoc/wiki/AutoBackComments) (Fr0sT-Brutal)
+* [Read additional command-line options from file](https://pasdoc.github.io/ConfigFileOption) (Fr0sT-Brutal)
+* [\--auto-back-comments command-line option](https://pasdoc.github.io/AutoBackComments) (Fr0sT-Brutal)
 * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
   (Fr0sT-Brutal)
 * @longCode without markers fixed (Michalis)
 * Support for namespaces in units in @links (Fr0sT-Brutal)
-* [--ignore-marker option](https://github.com/pasdoc/pasdoc/wiki/IgnoreMarkerOption) (Fr0sT-Brutal)
+* [\--ignore-marker option](https://pasdoc.github.io/IgnoreMarkerOption) (Fr0sT-Brutal)
 * Test suite fixes and better documentation, in particular for Windows users
 * Catalan translation updated (Xavier Martínez)
 * Delphi Tokyo files, to compile all projects and packages (Carlos Feitoza Filho)
 * Brazilian Portuguese translation updated (Carlos Feitoza Filho)
 * Parse identifiers declared as &xxx, where "xxx" may be a reserved word.
-* Possibility to specify additional files using -A or --additional
+* Possibility to specify additional files using -A or \--additional
   (just like introduction or conclusion, but you can provide any number
   of items) (Alex Merkel)
 * Added de.utf8 (German with UTF-8 encoding)
@@ -49,7 +49,7 @@
 * `@raises` and `@param` is now supported at properties as well as methods.
   Actually, it's supported everywhere now, but it makes sense only at properties and methods now.
   (Michalis)
-* [Tipue (client-side search)](https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption) improvements:
+* [Tipue (client-side search)](https://pasdoc.github.io/UseTipueSearchOption) improvements:
   - we have upgraded to use Tipue 6.1, which highlights the found terms
   - we strip HTML from Tipue index, which makes the "search results" page correct
 * Fix handling SVN fixed-length $Date::
@@ -58,12 +58,12 @@
 ## Version 0.15.0 (2018-02-08)
 
 * @links to enumerated type members work now.
-* New @includeCode tag https://github.com/pasdoc/pasdoc/wiki/IncludeCodeTag
+* New @includeCode tag https://pasdoc.github.io/IncludeCodeTag
   (by Silvio Clécio)
 * @longCode and @preformatted improved to better honor indentation.
 * parsing "experimental" directive.
 * Allow to customize HTML output more, with your own CSS and HTML, by
-  --html-head, --html-body-begin, --html-body-end command-line params.
+  \--html-head, \--html-body-begin, \--html-body-end command-line params.
 * HTML output is now HTML5.
 * Add our tools to the binary release: pascal_pre_proc (Pascal preprocessor),
   file_to_pascal_data, file_to_pascal_string.
@@ -72,7 +72,7 @@
   changed some tables into divs, and fixed HTML validity around Tipue search box.
 * pasdoc_gui uses now default font size on your system.
 * Updated Spanish (Spain) translation (by Guillermo Martínez Jiménez)
-* Tipue works now more efficiently -- the (potentially large) "index data"
+* Tipue works now more efficiently \-- the (potentially large) "index data"
   is only loaded on the "Search Results" page.
 * Automatic tests rearrangements and simplifications (see tests/run_all_tests.sh).
 
@@ -83,10 +83,10 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 * Many fixes to parsing "deprecated", "platform", "library" directives.
 * simplexml output fixes (by Denis Grinyuk)
 * The document creation time is not printed in the docs by default.
-  Use "--include-creation-time" to show it.
-  --include-creation-time is orthogonal to --exclude-generator.
+  Use `\--include-creation-time` to show it.
+  \--include-creation-time is orthogonal to \--exclude-generator.
 * The build duration time is not printed in the output by default.
-  Use "--verbosity 3" to show it.
+  Use `\--verbosity 3` to show it.
 * Brazilian utf8 translation (by Alexsander da Rosa)
 * Upgrade tipue to 3.0.1, update jquery to 2.0.0.
 * Fix Delphi compilation (long generated tipue code)
@@ -124,8 +124,8 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 
 * Class Hierarchy diagrams are more complete, because PasDoc knows
   about hierarchy of the standard ObjectPascal classes.
-  You can also extend this by --external-class-hierarchy= option.
-  See [https://github.com/pasdoc/pasdoc/wiki/ExternalClassHierarchy] (by Michalis)
+  You can also extend this by `--external-class-hierarchy` option.
+  See [https://pasdoc.github.io/ExternalClassHierarchy] (by Michalis)
 * Support for Delphi Unicode compilers,
   improve processing speed by using TBufferedStream,
   parsing some new Delphi features (like "deprecated 'string'")
@@ -137,9 +137,7 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
     with temp directory, and more.
   * xdg-open is used on Unix now.
   (by Michalis Kamburelis)
-+ --ignore-leading= option,
-  see [https://github.com/pasdoc/pasdoc/wiki/IgnoreLeadingOption]
-  (by <tobigun at users.sourceforge.net>)
++ [--ignore-leading= option](https://pasdoc.github.io/IgnoreLeadingOption) (by <tobigun at users.sourceforge.net>)
 * Translations:
   * Russian localization updated by <werewolf_ at users.sourceforge.net>
   * Simplified Chinese Translation updated by Liu Da
@@ -147,7 +145,7 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
   * Polish translation updated (by anonymous)
   * Bulgarian translation by Andrew Andreev
   * French translation updated (and utf-8 version added) by Yann Merignac
-  (see [https://github.com/pasdoc/pasdoc/wiki/OutputLanguage])
+  (see [https://pasdoc.github.io/OutputLanguage])
 
 ## Version 0.11.0 (2008-06-22)
 
@@ -160,17 +158,17 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
   * "Store relative paths" option
   * Proper "Save" command on Ctrl+S (doesn't always display SaveDialog)
 + @image tag (by Grzegorz Skoczylas and Michalis)
-  (see [https://github.com/pasdoc/pasdoc/wiki/ImageTag])
+  (see [https://pasdoc.github.io/ImageTag])
 + @include tag
-  (see [https://github.com/pasdoc/pasdoc/wiki/IncludeTag])
+  (see [https://pasdoc.github.io/IncludeTag])
 * program files are now parsed (their "uses" clauses are shown in output)
   (by Mark de Wever)
 * @( and @) construct
-  (see [https://github.com/pasdoc/pasdoc/wiki/TagsParametersMatching])
+  (see [https://pasdoc.github.io/TagsParametersMatching])
 + pascal_pre_proc tool (using PasDoc scanner)
 + simplexml output format (by MfG TAK2004 and Michalis)
 + --auto-link-exclude option
-  (see [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption])
+  (see [https://pasdoc.github.io/AutoLinkOption])
 * Translations:
   + Chinese gb2312 translation by Liu Chuanjun
   * Polish translation updated by Grzegorz Skoczylas
@@ -185,40 +183,28 @@ done by Michalis Kamburelis.
 ## Version 0.10.0 (2005-11-26)
 
 + New command-line options:
-  --auto-link
-    (see [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption])
-  --implicit-visibility
-    (see [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption])
-  --no-macro
-    (see [https://github.com/pasdoc/pasdoc/wiki/NoMacroOption])
+    * [\--auto-link](https://pasdoc.github.io/AutoLinkOption)
+    * [\--implicit-visibility](https://pasdoc.github.io/ImplicitVisibilityOption)
+    * [\--no-macro](https://pasdoc.github.io/NoMacroOption)
+
 + New @-tags:
-  @bold and @italic
-    (see [https://github.com/pasdoc/pasdoc/wiki/BoldAndItalicTags])
-  @seealso
-    (see [https://github.com/pasdoc/pasdoc/wiki/SeeAlsoTag])
-  @inheritedClass
-    (see [https://github.com/pasdoc/pasdoc/wiki/InheritedClassnameNameTag])
-  @preformatted (by Ascanio Pressato)
-    (see [https://github.com/pasdoc/pasdoc/wiki/PreformattedTag])
-  @orderedList, @unorderedList, @definitionList,
-    @item, @itemLabel, @itemSpacing, @itemSetNumber
-    (see [https://github.com/pasdoc/pasdoc/wiki/ListTags])
-  @table, @row, @rowHead, @cell
-    (see [https://github.com/pasdoc/pasdoc/wiki/TableTags])
-  @noAutoLinkHere, @noAutoLink
-    (see [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption])
-  @tableOfContents
-    (see [https://github.com/pasdoc/pasdoc/wiki/TableOfContentsTag])
-* Dashes rules: em-dash, en-dash, short dash, "@-"
-  (see [https://github.com/pasdoc/pasdoc/wiki/WritingDocumentation])
+    * [@bold and @italic](https://pasdoc.github.io/BoldAndItalicTags)
+    * [@seealso](https://pasdoc.github.io/SeeAlsoTag)
+    * [@inheritedClass](https://pasdoc.github.io/InheritedClassnameNameTag)
+    * [@preformatted (by Ascanio Pressato)](https://pasdoc.github.io/PreformattedTag)
+    * [@orderedList, @unorderedList, @definitionList, @item, @itemLabel, @itemSpacing, @itemSetNumber](https://pasdoc.github.io/ListTags)
+    * [@table, @row, @rowHead, @cell](https://pasdoc.github.io/TableTags)
+    * [@noAutoLinkHere, @noAutoLink](https://pasdoc.github.io/AutoLinkOption)
+    * [@tableOfContents](https://pasdoc.github.io/TableOfContentsTag)
+
+* [Dashes rules: em-dash, en-dash, short dash, "@-"](https://pasdoc.github.io/WritingDocumentation)
 * FPC macros are now correctly parsed by pasdoc.
 * Each detailed description in HTML output is enclosed within gray frame
 * Various fixes. E.g.
   * --spell-check-ignore-words works now.
   * @links to @anchors and @sections work always now.
 * Many improvements to pasdoc_gui (by Richard B. Winston and Michalis)
-* back-comments
-  (see [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments#head-7ce7157fefbd0d84d3577aa636f758baa813e201])
+* [Back comments](https://pasdoc.github.io/WhereToPlaceComments)
 
 Some compatibility had to be broken:
 * New dashes rules break compatibility. But actually previous
@@ -241,38 +227,27 @@ done by Michalis Kamburelis.
 ## Version 0.9.0 (2005-07-09)
 
 End-user visible changes:
+
 + New command-line options:
-  --auto-abstract
-    (see [https://github.com/pasdoc/pasdoc/wiki/AutoAbstractOption])
-  --introduction and --conclusion
-    (see [https://github.com/pasdoc/pasdoc/wiki/IntroductionAndConclusion])
-  --latex-head
-    (see appropriate part of [https://github.com/pasdoc/pasdoc/wiki/CommandLine])
-  --link-gv-uses and --link-gv-classes
-    (see [https://github.com/pasdoc/pasdoc/wiki/GraphVizSupport])
-  --link-look
-    (see [https://github.com/pasdoc/pasdoc/wiki/LinkLookOption])
-  --sort
-    (see [https://github.com/pasdoc/pasdoc/wiki/SortOption])
-  --use-tipue-search
-    (see [https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption])
-  --version
-    (see appropriate part of [https://github.com/pasdoc/pasdoc/wiki/CommandLine])
+    * [\--auto-abstract](https://pasdoc.github.io/AutoAbstractOption)
+    * [\--introduction and \--conclusion](https://pasdoc.github.io/IntroductionAndConclusion)
+    * [\--latex-head](https://pasdoc.github.io/CommandLine)
+    * [\--link-gv-uses and \--link-gv-classes](https://pasdoc.github.io/GraphVizSupport)
+    * [\--link-look](https://pasdoc.github.io/LinkLookOption)
+    * [\--sort](https://pasdoc.github.io/SortOption)
+    * [\--use-tipue-search](https://pasdoc.github.io/UseTipueSearchOption)
+    * [\--version](https://pasdoc.github.io/CommandLine)
+
 + New @-tags:
-  @br
-    (see [https://github.com/pasdoc/pasdoc/wiki/BrTag])
-  @latex
-    (see [https://github.com/pasdoc/pasdoc/wiki/LatexTag])
-  @section, @anchor, @title, @shorttitle tags in introduction/conclusion
-    (see [https://github.com/pasdoc/pasdoc/wiki/IntroductionAndConclusion])
-  @deprecated
-    (see [https://github.com/pasdoc/pasdoc/wiki/DeprecatedTag])
-  @value and @member
-    (see [https://github.com/pasdoc/pasdoc/wiki/MemberValueTag])
+    * [@br](https://pasdoc.github.io/BrTag)
+    * [@latex](https://pasdoc.github.io/LatexTag)
+    * [@section, @anchor, @title, @shorttitle tags in introduction/conclusion](https://pasdoc.github.io/IntroductionAndConclusion)
+    * [@deprecated](https://pasdoc.github.io/DeprecatedTag)
+    * [@value and @member](https://pasdoc.github.io/MemberValueTag)
+
 + pasdoc_gui, a GUI alternative to console pasdoc version.
-+ Spell checking (see [https://github.com/pasdoc/pasdoc/wiki/SpellChecking])
-* Cache is now independent from output format
-  (see [https://github.com/pasdoc/pasdoc/wiki/CacheOption])
++ [Spell checking](https://pasdoc.github.io/SpellChecking)
+* [Cache is now independent from output format](https://pasdoc.github.io/CacheOption)
 * Many fixes and improvements to HTML output,
   it's now structured a little more consistently,
   it's more configurable by CSS,
@@ -280,7 +255,7 @@ End-user visible changes:
 * Many fixes and improvements to LaTeX output,
   it's also structured more consistently,
   and it doesn't omit undocumented items
-  (see the bottom of [https://github.com/pasdoc/pasdoc/wiki/WritingDocumentation]).
+  (see the bottom of [https://pasdoc.github.io/WritingDocumentation]).
 * @longcode improvements:
   it's now formatted in LaTeX output,
   the look of float and hex values inside @longcode in HTML output
@@ -289,15 +264,14 @@ End-user visible changes:
   * Better full declaration of items is now displayed in documentation
   * FPC overloaded operators are now parsed
   * Delphi hint directives (deprecated, platform, library) are now parsed
-* You don't have to enclose tag parameters in parenthesis
-  (see [https://github.com/pasdoc/pasdoc/wiki/TagsParametersWithoutParenthesis])
+* [You don't have to enclose tag parameters in parenthesis](https://pasdoc.github.io/TagsParametersWithoutParenthesis)
 * Many many other small fixes and improvements.
 
 Many internal improvements, like:
 + We maintain a large set of tests (regression tests,
   conformance tests etc.) in pasdoc sources
   (see tests/README file in pasdoc sources and
-  [https://github.com/pasdoc/pasdoc/wiki/RegressionTesting]).
+  [https://pasdoc.github.io/RegressionTesting]).
 
 Documentation:
   You can find the most complete and up-to-date documentation
@@ -305,20 +279,18 @@ Documentation:
   Unfortunately, with pasdoc 0.9.0, offline documentation
   (previously in docs/ directory of released archives) is no longer
   provided, this is intended to be fixed in future releases
-  (see [https://github.com/pasdoc/pasdoc/wiki/ToDoOfflineDocs]).
+  (see [https://pasdoc.github.io/ToDoOfflineDocs]).
 
 Some compatibility had to be broken:
 * pasdoc.css will be always overwritten when you generate HTML documentation.
-  You must use --css command-line option
-  (see [https://github.com/pasdoc/pasdoc/wiki/CssOption])
+  [You must use --css command-line option](https://pasdoc.github.io/CssOption)
   if you want to use your custom css.
 * By default no items are sorted.
-  You must use --sort command-line option
-  (see [https://github.com/pasdoc/pasdoc/wiki/SortOption])
+  [You must use --sort command-line option](https://pasdoc.github.io/SortOption)
   if you want to change this.
 * @links look now a little different, see
-  [https://github.com/pasdoc/pasdoc/wiki/LinkLookOption] and
-  [https://github.com/pasdoc/pasdoc/wiki/LinkTag],
+  [https://pasdoc.github.io/LinkLookOption] and
+  [https://pasdoc.github.io/LinkTag],
   use --link-look=stripped if you really need old behavior.
 
 Authors: many. See @author tags at the beginning of pasdoc 0.9.0 units.
