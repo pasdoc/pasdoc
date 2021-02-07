@@ -118,13 +118,13 @@ const
       )
     )
   }
-  PASDOC_DATE = '2018-02-08';
+  PASDOC_DATE = '2021-02-07';
   { }
-  PASDOC_VERSION = '0.15.0';
+  PASDOC_VERSION = '0.16.0';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
-  PASDOC_HOMEPAGE = 'https://github.com/pasdoc/pasdoc/wiki';
+  PASDOC_HOMEPAGE = 'https://pasdoc.github.io/';
 
 { Returns pasdoc name, version, used compiler version, etc.
 

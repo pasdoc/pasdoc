@@ -7,7 +7,7 @@ include Makefile-autodetect
 # The version of the package.
 # This must be changed on each version change,
 # as documented at https://github.com/pasdoc/pasdoc/wiki/ReleaseMaking .
-VERSION := 0.15.0
+VERSION := 0.16.0
 
 # The name of the package / file name
 PACKAGENAME := pasdoc
@@ -39,7 +39,7 @@ BINFILES := $(BINDIR)/pasdoc$(EXE) \
 	$(BINDIR)/pascal_pre_proc$(EXE) \
 	$(BINDIR)/file_to_pascal_string$(EXE) \
 	$(BINDIR)/file_to_pascal_data$(EXE)
-DOCFILES := LICENSE ChangeLog README.md
+DOCFILES := LICENSE ChangeLog.md README.md
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 

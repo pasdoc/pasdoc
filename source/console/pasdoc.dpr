@@ -32,8 +32,8 @@
   * copyright (C) 1998-2000 by Marco Schmidt
   * copyright (C) 2001-2003 by Ralf Junker <delphi@zeitungsjunge.de>
   * Copyright (C) 2003 by Johannes Berg <johannes@sipsolutions.de>
-  * Copyright 2005-2010 by Michalis Kamburelis, Richard B. Winston
-    and other contributors, see ../../ChangeLog file
+  * Copyright 2005-2021 by Michalis Kamburelis, Richard B. Winston
+    and other contributors, see ../../ChangeLog.md file
 
   Hint:
 

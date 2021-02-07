@@ -34,11 +34,11 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="PasDoc - generates documentation for Pascal units by parsing units interface, extracting identifiers and associated comments. See http://pasdoc.sourceforge.net/
+    <Description Value="PasDoc generates documentation for Pascal code. It can use descriptions from units interface or external files. It supports a number of tags to format the output. Can generate documentation in HTML, LaTeX and other formats. See https://pasdoc.github.io/
 "/>
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
-    <Version Minor="15"/>
+    <Version Minor="16"/>
     <Files Count="28">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
