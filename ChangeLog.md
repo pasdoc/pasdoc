@@ -58,8 +58,7 @@
 ## Version 0.15.0 (2018-02-08)
 
 * @links to enumerated type members work now.
-* New @includeCode tag https://pasdoc.github.io/IncludeCodeTag
-  (by Silvio Clécio)
+* [New @includeCode tag](https://pasdoc.github.io/IncludeCodeTag) (by Silvio Clécio)
 * @longCode and @preformatted improved to better honor indentation.
 * parsing "experimental" directive.
 * Allow to customize HTML output more, with your own CSS and HTML, by
@@ -83,10 +82,10 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 * Many fixes to parsing "deprecated", "platform", "library" directives.
 * simplexml output fixes (by Denis Grinyuk)
 * The document creation time is not printed in the docs by default.
-  Use `\--include-creation-time` to show it.
+  Use `--include-creation-time` to show it.
   \--include-creation-time is orthogonal to \--exclude-generator.
 * The build duration time is not printed in the output by default.
-  Use `\--verbosity 3` to show it.
+  Use `--verbosity 3` to show it.
 * Brazilian utf8 translation (by Alexsander da Rosa)
 * Upgrade tipue to 3.0.1, update jquery to 2.0.0.
 * Fix Delphi compilation (long generated tipue code)
@@ -124,8 +123,7 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
 
 * Class Hierarchy diagrams are more complete, because PasDoc knows
   about hierarchy of the standard ObjectPascal classes.
-  You can also extend this by `--external-class-hierarchy` option.
-  See [https://pasdoc.github.io/ExternalClassHierarchy] (by Michalis)
+  [You can also extend this by `--external-class-hierarchy` option](https://pasdoc.github.io/ExternalClassHierarchy) (Michalis)
 * Support for Delphi Unicode compilers,
   improve processing speed by using TBufferedStream,
   parsing some new Delphi features (like "deprecated 'string'")
@@ -137,15 +135,14 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
     with temp directory, and more.
   * xdg-open is used on Unix now.
   (by Michalis Kamburelis)
-+ [--ignore-leading= option](https://pasdoc.github.io/IgnoreLeadingOption) (by <tobigun at users.sourceforge.net>)
-* Translations:
++ [--ignore-leading= option](https://pasdoc.github.io/IgnoreLeadingOption) (by `<tobigun at users.sourceforge.net>`)
+* [Translations](https://pasdoc.github.io/OutputLanguage):
   * Russian localization updated by <werewolf_ at users.sourceforge.net>
   * Simplified Chinese Translation updated by Liu Da
   * Czech translation by Rene Mihula
   * Polish translation updated (by anonymous)
   * Bulgarian translation by Andrew Andreev
   * French translation updated (and utf-8 version added) by Yann Merignac
-  (see [https://pasdoc.github.io/OutputLanguage])
 
 ## Version 0.11.0 (2008-06-22)
 
@@ -157,18 +154,14 @@ Authors: Michalis Kamburelis and contributors mentioned above (thank you!).
   * Many options already available in command-line pasdoc are now in pasdoc_gui too
   * "Store relative paths" option
   * Proper "Save" command on Ctrl+S (doesn't always display SaveDialog)
-+ @image tag (by Grzegorz Skoczylas and Michalis)
-  (see [https://pasdoc.github.io/ImageTag])
-+ @include tag
-  (see [https://pasdoc.github.io/IncludeTag])
++ [@image tag](https://pasdoc.github.io/ImageTag) (by Grzegorz Skoczylas and Michalis)
++ [@include tag](https://pasdoc.github.io/IncludeTag)
 * program files are now parsed (their "uses" clauses are shown in output)
   (by Mark de Wever)
-* @( and @) construct
-  (see [https://pasdoc.github.io/TagsParametersMatching])
+* [@( and @) construct](https://pasdoc.github.io/TagsParametersMatching)
 + pascal_pre_proc tool (using PasDoc scanner)
 + simplexml output format (by MfG TAK2004 and Michalis)
-+ --auto-link-exclude option
-  (see [https://pasdoc.github.io/AutoLinkOption])
++ [--auto-link-exclude option](https://pasdoc.github.io/AutoLinkOption)
 * Translations:
   + Chinese gb2312 translation by Liu Chuanjun
   * Polish translation updated by Grzegorz Skoczylas
@@ -275,7 +268,7 @@ Many internal improvements, like:
 
 Documentation:
   You can find the most complete and up-to-date documentation
-  of pasdoc features in our wiki, [http://pasdoc.sourceforge.net/].
+  of pasdoc features in [our wiki](https://github.com/pasdoc/pasdoc/wiki).
   Unfortunately, with pasdoc 0.9.0, offline documentation
   (previously in docs/ directory of released archives) is no longer
   provided, this is intended to be fixed in future releases
