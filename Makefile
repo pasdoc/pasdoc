@@ -402,10 +402,8 @@ endif
 ifdef ADD_PASDOC_GUI
 	$(MAKE) build-gui
 ifdef PASDOC_GUI_BUNDLE
-# Lazarus by default places only a symlink inside Contents/MacOS/ .
-# For releae, we want to instead put binary directly inside Contents/MacOS/,
-# since users should always run the pasdoc_gui using the bundle.
-	rm -f source/gui/pasdoc_gui.app/Contents/MacOS/pasdoc_gui
+	rm -Rf source/gui/pasdoc_gui.app/
+	cd source/gui/ && macos/create_bundle.sh $(VERSION)
 	cp -f source/gui/pasdoc_gui source/gui/pasdoc_gui.app/Contents/MacOS/pasdoc_gui
 	cp -R source/gui/pasdoc_gui.app $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
 else
