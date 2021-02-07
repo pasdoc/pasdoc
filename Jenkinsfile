@@ -18,44 +18,46 @@ pipeline {
           image 'kambi/castle-engine-cloud-builds-tools:cge-none'
         }
       }
-      stage('Test') {
-        steps {
-          sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
-          sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
+      stages {
+        stage('Test') {
+          steps {
+            sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
+            sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
+          }
         }
-      }
-      stage('Clean') {
-        steps {
-          sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
-          sh 'make clean'
+        stage('Clean') {
+          steps {
+            sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+            sh 'make clean'
+          }
         }
-      }
-      /* We don't need to package sources anymore.
-         GIT tag is enough, and GitHub makes a zip from it anyway.
-      stage('Package sources') {
-        steps {
-          sh 'make dist-src'
+        /* We don't need to package sources anymore.
+           GIT tag is enough, and GitHub makes a zip from it anyway.
+        stage('Package sources') {
+          steps {
+            sh 'make dist-src'
+          }
         }
-      }
-      */
-      stage('Build Linux/x86_64') {
-        steps {
-          sh 'make dist-linux-x86_64'
+        */
+        stage('Build Linux/x86_64') {
+          steps {
+            sh 'make dist-linux-x86_64'
+          }
         }
-      }
-      stage('Build Windows/i386') {
-        steps {
-          sh 'make dist-win32'
+        stage('Build Windows/i386') {
+          steps {
+            sh 'make dist-win32'
+          }
         }
-      }
-      stage('Build Windows/x86_64') {
-        steps {
-          sh 'make dist-win64'
+        stage('Build Windows/x86_64') {
+          steps {
+            sh 'make dist-win64'
+          }
         }
-      }
-      stage('Archiving') {
-        steps {
-          archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+        stage('Archiving') {
+          steps {
+            archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+          }
         }
       }
     }
@@ -63,26 +65,28 @@ pipeline {
       agent {
         label 'raspberry-pi-cge-builder'
       }
-      stage('Clean RaspberryPi') {
-        steps {
-          sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
-          sh 'make clean'
+      stages {
+        stage('Clean RaspberryPi') {
+          steps {
+            sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+            sh 'make clean'
+          }
         }
-      }
-      stage('Test RaspberryPi') {
-        steps {
-          sh 'make'
-          sh 'make tests'
+        stage('Test RaspberryPi') {
+          steps {
+            sh 'make'
+            sh 'make tests'
+          }
         }
-      }
-      stage('Build RaspberryPi') {
-        steps {
-          sh 'make dist-linux-arm'
+        stage('Build RaspberryPi') {
+          steps {
+            sh 'make dist-linux-arm'
+          }
         }
-      }
-      stage('Archiving RaspberryPi') {
-        steps {
-          archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+        stage('Archiving RaspberryPi') {
+          steps {
+            archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+          }
         }
       }
     }
@@ -90,26 +94,28 @@ pipeline {
       agent {
         label 'ios-cge-builder'
       }
-      stage('Clean macOS') {
-        steps {
-          sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
-          sh 'make clean'
+      stages {
+        stage('Clean macOS') {
+          steps {
+            sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+            sh 'make clean'
+          }
         }
-      }
-      stage('Test macOS') {
-        steps {
-          sh 'make'
-          sh 'make tests'
+        stage('Test macOS') {
+          steps {
+            sh 'make'
+            sh 'make tests'
+          }
         }
-      }
-      stage('Build macOS') {
-        steps {
-          sh 'make dist-darwin-x86_64'
+        stage('Build macOS') {
+          steps {
+            sh 'make dist-darwin-x86_64'
+          }
         }
-      }
-      stage('Archiving macOS') {
-        steps {
-          archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+        stage('Archiving macOS') {
+          steps {
+            archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+          }
         }
       }
     }
