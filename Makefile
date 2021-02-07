@@ -486,7 +486,7 @@ dist-linux-x86_64: clean build-fpc-linux-x86_64
 dist-linux-arm: clean build-fpc-linux-arm
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-arm \
-	  FPC_DEFAULT='$(FPC_LINUX_arm)' \
+	  FPC_DEFAULT='$(FPC_LINUX_ARM)' \
 	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=arm'
 
 .PHONY: dist-amiga
