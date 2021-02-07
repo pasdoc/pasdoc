@@ -404,7 +404,6 @@ ifdef ADD_PASDOC_GUI
 ifdef PASDOC_GUI_BUNDLE
 	rm -Rf source/gui/pasdoc_gui.app/
 	cd source/gui/ && macos/create_bundle.sh $(VERSION)
-	cp -f source/gui/pasdoc_gui source/gui/pasdoc_gui.app/Contents/MacOS/pasdoc_gui
 	cp -R source/gui/pasdoc_gui.app $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
 else
 	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)

@@ -14,7 +14,7 @@ set -eux
 
 # Configurable variables -----------------------------------------------------
 
-BUNDLE_NAME='PasDoc'
+BUNDLE_NAME='pasdoc_gui'
 BUNDLE_DIR="${BUNDLE_NAME}.app"
 EXE_NAME='pasdoc_gui'
 APP_VERSION="$1" # will be passed from Makefile
