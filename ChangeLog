@@ -1,4 +1,4 @@
-Next version (not released yet)
+2021-02-07 v0.16.0
 
   * Improved ancestors list (it is now affected by https://github.com/pasdoc/pasdoc/wiki/ExternalClassHierarchy) (Michalis)
   * Markdown support, see https://github.com/pasdoc/pasdoc/wiki/MarkdownOption (Fr0sT-Brutal)
@@ -23,7 +23,7 @@ Next version (not released yet)
     see https://github.com/pasdoc/pasdoc/wiki/AutoBackComments
   * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
     (thanks to Fr0sT-Brutal)
-  * @longCode without markers fixed
+  * @longCode without markers fixed (Michalis)
   * Support for namespaces in units in @links (thanks to Fr0sT-Brutal)
   * --ignore-marker option ( https://github.com/pasdoc/pasdoc/wiki/IgnoreMarkerOption )
     (thanks to Fr0sT-Brutal)
@@ -39,7 +39,7 @@ Next version (not released yet)
   * Automatically remove %region and %endregion from comments
   * Show visibility (public, protected, private...) inside records too
     (it is meanigful for advanced records)
-  * Implement in pasdoc_gui options to
+  * Implement in pasdoc_gui options to (Michalis)
     - customize HTML head and body
     - set external descriptions file
     - configure identifiers excluded from auto-linking
@@ -48,18 +48,17 @@ Next version (not released yet)
     ( http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Nested_Type_Declarations,
       https://www.freepascal.org/docs-html/ref/refse41.html )
     and the "internal" word has traditionally different meaning
-    ("something not supposed to be visible/used from the outside").
-  * The automatic tests are now easier to run and check (see tests/README.md).
-  * @raises and @param is not supported at properties as well as methods.
-    (Actually, it's supported at everything now,
-    but it makes sense only at properties and methods now.)
+    ("something not supposed to be visible/used from the outside"). (Michalis)
+  * The automatic tests are now easier to run and check (see tests/README.md) (Michalis)
+  * @raises and @param is now supported at properties as well as methods.
+    (Actually, it's supported everywhere now, but it makes sense only at properties and methods now.)
+    (Michalis)
   * Tipue (client-side search, see https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption )
     was much improved:
     - we have upgraded to use Tipue 6.1, which highlights the found terms
     - we strip HTML from Tipue index, which makes the "search results" page correct
   * Fix handling SVN fixed-length $Date::
-  * Parsing of $if and $elseif expressions,
-    like "defined(MSWINDOWS) or defined(UNIX)"
+  * Parsing of $if and $elseif expressions, like "defined(MSWINDOWS) or defined(UNIX)" (Michalis)
 
 2018-02-08 v0.15.0
 
