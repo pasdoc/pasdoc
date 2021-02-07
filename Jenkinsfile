@@ -11,6 +11,7 @@
 */
 
 pipeline {
+  agent any
   stages {
     stage('Linux stage') {
       agent {
