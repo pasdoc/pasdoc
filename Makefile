@@ -510,14 +510,14 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 .PHONY: dist-darwin-x86
 dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 \
+	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86 \
 	  FPC_DEFAULT='$(FPC_DARWIN_X86)' \
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
 .PHONY: dist-darwin-x86_64
 dist-darwin-x86_64: clean build-fpc-darwin-x86_64
 	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
+	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
 	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)' \
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
