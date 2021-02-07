@@ -261,10 +261,7 @@ End-user visible changes:
 * Many many other small fixes and improvements.
 
 Many internal improvements, like:
-+ We maintain a large set of tests (regression tests,
-  conformance tests etc.) in pasdoc sources
-  (see tests/README file in pasdoc sources and
-  [https://pasdoc.github.io/RegressionTesting]).
++ We maintain a large set of tests (regression tests, conformance tests etc.), see [tests/README.md](https://github.com/pasdoc/pasdoc/blob/master/tests/README.md)
 
 Documentation:
   You can find the most complete and up-to-date documentation
