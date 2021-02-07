@@ -1,9 +1,13 @@
 /* -*- mode: groovy -*-
+
   Confgure how to run our job in Jenkins.
   See https://github.com/castle-engine/castle-engine/wiki/Cloud-Builds-(Jenkins) .
   While PasDoc doesn't use Castle Game Engine,
   but it uses CGE Jenkins infrastructure on https://jenkins.castle-engine.io/ ,
   including a Docker image that contains various versions of FPC.
+
+  The resulting binaries are available on
+  https://pasdoc.github.io/DevelopmentSnapshots .
 */
 
 pipeline {
@@ -19,9 +23,33 @@ pipeline {
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make tests'
       }
     }
-    stage('Build') {
+    stage('Clean') {
       steps {
-        sh 'www/snapshots/build.sh'
+        sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+        sh 'make clean'
+      }
+    }
+    /* We don't need to package sources anymore.
+       GIT tag is enough, and GitHub makes a zip from it anyway.
+    stage('Package sources') {
+      steps {
+        sh 'make dist-src'
+      }
+    }
+    */
+    stage('Build Linux/x86_64') {
+      steps {
+        sh 'make dist-linux-x86_64'
+      }
+    }
+    stage('Build Windows/i386') {
+      steps {
+        sh 'make dist-win32'
+      }
+    }
+    stage('Build Windows/x86_64') {
+      steps {
+        sh 'make dist-win64'
       }
     }
   }
@@ -44,8 +72,5 @@ pipeline {
         subject: "[jenkins] Build is again successfull: ${currentBuild.fullDisplayName}",
         body: "See the build details on ${env.BUILD_URL}"
     }
-    /* TODO: In the future this should kick rebuild of
-       kambi/castle-engine-cloud-builds-tools:cge-none
-       since it may include latest PasDoc. */
   }
 }
