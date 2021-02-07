@@ -85,6 +85,7 @@ FPC_WIN64        := $(FPC_DEFAULT) -Px86_64  -Twin64
 FPC_GO32         := $(FPC_DEFAULT) -Pi386    -Tgo32v2
 FPC_LINUX_X86    := $(FPC_DEFAULT) -Pi386    -Tlinux
 FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px86_64  -Tlinux
+FPC_LINUX_ARM    := $(FPC_DEFAULT) -Parm     -Tlinux
 FPC_LINUX_M68K   := $(FPC_DEFAULT) -Pm68k    -Tlinux
 FPC_LINUX_PPC    := $(FPC_DEFAULT) -Ppowerpc -Tlinux
 FPC_AMIGA        := $(FPC_DEFAULT) -Pppc     -Tamiga
@@ -92,6 +93,7 @@ FPC_BEOS         := $(FPC_DEFAULT) -Pi386    -Tbeos
 FPC_OS2          := $(FPC_DEFAULT) -Pi386    -Tos2
 FPC_FREEBSD_X86  := $(FPC_DEFAULT) -Pi386    -Tfreebsd
 FPC_DARWIN_X86   := $(FPC_DEFAULT) -Pi386    -Tdarwin
+FPC_DARWIN_X86_64:= $(FPC_DEFAULT) -Px86_64  -Tdarwin
 
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
@@ -214,6 +216,10 @@ build-fpc-linux-x86: make-dirs
 build-fpc-linux-x86_64: make-dirs
 	$(FPC_LINUX_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-linux-arm
+build-fpc-linux-arm: make-dirs
+	$(FPC_LINUX_ARM) $(FPC_RELEASE_FLAGS) $(FILE)
+
 .PHONY: build-fpc-linux-m68k
 build-fpc-linux-m68k: make-dirs
 	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
@@ -241,6 +247,10 @@ build-fpc-freebsd-x86: make-dirs
 .PHONY: build-fpc-darwin-x86
 build-fpc-darwin-x86: make-dirs
 	$(FPC_DARWIN_X86) $(FPC_RELEASE_FLAGS) $(FILE)
+
+.PHONY: build-fpc-darwin-x86_64
+build-fpc-darwin-x86_64: make-dirs
+	$(FPC_DARWIN_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Delphi/Kylix build targets
 
@@ -312,12 +322,14 @@ help:
 	@echo "      linux-x86"
 	@echo "      linux-x86_64"
 	@echo "      linux-m68k"
+	@echo "      linux-arm"
 	@echo "      amiga"
 	@echo "      beos"
 	@echo "      os2"
 	@echo "      linux-ppc"
 	@echo "      freebsd-x86"
 	@echo "      darwin-x86"
+	@echo "      darwin-x86_64"
 	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
 	@echo "    are available..."
 	@echo
@@ -470,6 +482,13 @@ dist-linux-x86_64: clean build-fpc-linux-x86_64
 	  FPC_DEFAULT='$(FPC_LINUX_X86_64)' \
 	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=x86_64'
 
+.PHONY: dist-linux-arm
+dist-linux-arm: clean build-fpc-linux-arm
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-arm \
+	  FPC_DEFAULT='$(FPC_LINUX_arm)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=arm'
+
 .PHONY: dist-amiga
 dist-amiga: clean build-fpc-amiga
 	$(MAKE) --no-print-directory \
@@ -493,6 +512,13 @@ dist-darwin-x86: clean build-fpc-darwin-x86
 	$(MAKE) --no-print-directory \
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86 \
 	  FPC_DEFAULT='$(FPC_DARWIN_X86)' \
+	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
+
+.PHONY: dist-darwin-x86_64
+dist-darwin-x86_64: clean build-fpc-darwin-x86_64
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
+	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)' \
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src

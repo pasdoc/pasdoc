@@ -11,12 +11,12 @@
 */
 
 pipeline {
-  agent {
-    docker {
-      image 'kambi/castle-engine-cloud-builds-tools:cge-none'
-    }
-  }
   stages {
+    agent {
+      docker {
+        image 'kambi/castle-engine-cloud-builds-tools:cge-none'
+      }
+    }
     stage('Test') {
       steps {
         sh 'source /usr/local/fpclazarus/bin/setup.sh default && make'
@@ -50,6 +50,65 @@ pipeline {
     stage('Build Windows/x86_64') {
       steps {
         sh 'make dist-win64'
+      }
+    }
+    stage('Archiving') {
+      steps {
+        archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+      }
+    }
+  }
+  stages {
+    agent {
+      label 'raspberry-pi-cge-builder'
+    }
+    stage('Clean RaspberryPi') {
+      steps {
+        sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+        sh 'make clean'
+      }
+    }
+    stage('Test RaspberryPi') {
+      steps {
+        sh 'make'
+        sh 'make tests'
+      }
+    }
+    stage('Build RaspberryPi') {
+      steps {
+        sh 'make dist-linux-arm'
+      }
+    }
+    stage('Archiving RaspberryPi') {
+      steps {
+        archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
+      }
+    }
+  }
+  stages {
+    agent {
+      label 'ios-cge-builder'
+    }
+    stage('Clean macOS') {
+      steps {
+        sh 'rm -f pasdoc-*.tar.gz pasdoc-*.zip'
+        sh 'make clean'
+      }
+    }
+    stage('Test macOS') {
+      steps {
+        sh 'make'
+        sh 'make tests'
+      }
+    }
+    stage('Build macOS') {
+      steps {
+        sh 'make dist-darwin-x86_64'
+      }
+    }
+    stage('Archiving macOS') {
+      steps {
+        archiveArtifacts artifacts: 'pasdoc-*.tar.gz,pasdoc-*.zip'
       }
     }
   }
