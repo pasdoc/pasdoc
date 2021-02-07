@@ -2,43 +2,35 @@
 
 ## Version 0.16.0 (2021-02-07)
 
-* New website on https://pasdoc.github.io/, using Jekyll, generated from our wiki, see https://github.com/pasdoc/pasdoc.github.io (Michalis)
-* Moved everything to GitHub, https://github.com/pasdoc/pasdoc
-* Improved ancestors list (it is now affected by https://github.com/pasdoc/pasdoc/wiki/ExternalClassHierarchy) (Michalis)
-* Markdown support, see https://github.com/pasdoc/pasdoc/wiki/MarkdownOption (Fr0sT-Brutal)
+* [New website](https://pasdoc.github.io/), using Jekyll, generated from our wiki, see https://github.com/pasdoc/pasdoc.github.io (Michalis)
+* [Moved everything to GitHub](https://github.com/pasdoc/pasdoc)
+* [Ancestors list is now affected by external class hierarchy](https://github.com/pasdoc/pasdoc/wiki/ExternalClassHierarchy) (Michalis)
+* [Markdown support](https://github.com/pasdoc/pasdoc/wiki/MarkdownOption) (Fr0sT-Brutal)
   Supporting bold, italic, inline code, multi-line code, URLs, lists.
-* @note and @warning tags, see https://github.com/pasdoc/pasdoc/wiki/NoteAndWarningTags (Bi0T1N)
-* @url tag, see https://github.com/pasdoc/pasdoc/wiki/UrlTag (Bi0T1N)
-* Allow to lowercase output of @nil, @false, @true by --lowercase-keywords (Bi0T1N)
-  See https://github.com/pasdoc/pasdoc/wiki/TrueFalseNilTag .
+* [@note and @warning tags](https://github.com/pasdoc/pasdoc/wiki/NoteAndWarningTags) (Bi0T1N)
+* [@url tag](https://github.com/pasdoc/pasdoc/wiki/UrlTag) (Bi0T1N)
+* [Allow to lowercase output of @nil, @false, @true by --lowercase-keywords](https://github.com/pasdoc/pasdoc/wiki/TrueFalseNilTag) (Bi0T1N)
 * Automatically detect flag like [xxx] at @param description.
-  See https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_flag_parameter.pas
-  for example. (PifPof)
-* Scan implementation section of a unit in addition to default interface section
-  https://github.com/pasdoc/pasdoc/wiki/ImplementationCommentsOption (Fr0sT-Brutal)
-* Parser improvements to correctly handle some special cases: reading chars > $FF,
-  "*.inc" includes, files with Mac-style line endings (Fr0sT-Brutal)
+  [See here for example](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_flag_parameter.pas). (PifPof)
+* [Scan implementation section of a unit in addition to the interface section](https://github.com/pasdoc/pasdoc/wiki/ImplementationCommentsOption) (Fr0sT-Brutal)
+* Parser improvements to correctly handle some special cases: reading chars > $FF, "*.inc" includes, files with Mac-style line endings (Fr0sT-Brutal)
 * Mem leaks fixed (Fr0sT-Brutal)
-* Tag parameters now could be multiline without enclosing parens by means of "line feed"
-  character "\" (Fr0sT-Brutal)
-* Read additional command-line options from file (thanks to Fr0sT-Brutal),
-  see https://github.com/pasdoc/pasdoc/wiki/ConfigFileOption
-* --auto-back-comments command-line option (thanks to Fr0sT-Brutal),
-  see https://github.com/pasdoc/pasdoc/wiki/AutoBackComments
+* Tag parameters now could be multiline without enclosing parens by means of "line feed" character "\" (Fr0sT-Brutal)
+* [Read additional command-line options from file](https://github.com/pasdoc/pasdoc/wiki/ConfigFileOption) (Fr0sT-Brutal)
+* [--auto-back-comments command-line option](https://github.com/pasdoc/pasdoc/wiki/AutoBackComments) (Fr0sT-Brutal)
 * pasdoc_gui opens a file given at command-line, opening WWW browser is optional
-  (thanks to Fr0sT-Brutal)
+  (Fr0sT-Brutal)
 * @longCode without markers fixed (Michalis)
-* Support for namespaces in units in @links (thanks to Fr0sT-Brutal)
-* --ignore-marker option ( https://github.com/pasdoc/pasdoc/wiki/IgnoreMarkerOption )
-  (thanks to Fr0sT-Brutal)
+* Support for namespaces in units in @links (Fr0sT-Brutal)
+* [--ignore-marker option](https://github.com/pasdoc/pasdoc/wiki/IgnoreMarkerOption) (Fr0sT-Brutal)
 * Test suite fixes and better documentation, in particular for Windows users
-* Catalan translation updated (thanks to Xavier Martínez)
-* Delphi Tokyo files, to compile all projects and packages (thanks to Carlos Feitoza Filho)
-* Brazilian Portuguese translation updated (thanks to Carlos Feitoza Filho)
+* Catalan translation updated (Xavier Martínez)
+* Delphi Tokyo files, to compile all projects and packages (Carlos Feitoza Filho)
+* Brazilian Portuguese translation updated (Carlos Feitoza Filho)
 * Parse identifiers declared as &xxx, where "xxx" may be a reserved word.
 * Possibility to specify additional files using -A or --additional
   (just like introduction or conclusion, but you can provide any number
-  of items) (thanks to Alex Merkel)
+  of items) (Alex Merkel)
 * Added de.utf8 (German with UTF-8 encoding)
 * Automatically remove %region and %endregion from comments
 * Show visibility (public, protected, private...) inside records too
@@ -54,15 +46,14 @@
   and the "internal" word has traditionally different meaning
   ("something not supposed to be visible/used from the outside"). (Michalis)
 * The automatic tests are now easier to run and check (see tests/README.md) (Michalis)
-* @raises and @param is now supported at properties as well as methods.
-  (Actually, it's supported everywhere now, but it makes sense only at properties and methods now.)
+* `@raises` and `@param` is now supported at properties as well as methods.
+  Actually, it's supported everywhere now, but it makes sense only at properties and methods now.
   (Michalis)
-* Tipue (client-side search, see https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption )
-  was much improved:
+* [Tipue (client-side search)](https://github.com/pasdoc/pasdoc/wiki/UseTipueSearchOption) improvements:
   - we have upgraded to use Tipue 6.1, which highlights the found terms
   - we strip HTML from Tipue index, which makes the "search results" page correct
 * Fix handling SVN fixed-length $Date::
-* Parsing of $if and $elseif expressions, like "defined(MSWINDOWS) or defined(UNIX)" (Michalis)
+* Parsing of `$if` and `$elseif` expressions, like `defined(MSWINDOWS) or defined(UNIX)` (Michalis)
 
 ## Version 0.15.0 (2018-02-08)
 
