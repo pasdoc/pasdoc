@@ -4,8 +4,9 @@ Some of the files here are copied from Tipue sources (it's Ok to copy,
 MIT license). The tipuesearch.css needed some tiny modifications (see
 "PasDoc" comments inside).
 
-Our results page is called "_tipue_results.html" (we picked a name
-to avoid collisions with user unit name).
+Our results page is called "tipue_results.html".
+We initially used "tipue_results.html" but Jekyll and GitHub pages ignore
+files that start with an underscore.
 
 These files are processed by programs file_to_pascal_string and
 file_to_pascal_data (in ../../tools/)

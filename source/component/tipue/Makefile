@@ -1,14 +1,14 @@
 # Generates all *.inc files from text/binary files in this directory.
 
 ALL_OUTPUT := tipuesearch.css.inc tipuesearch.js.inc \
-  tipuesearch_set.js.inc _tipue_results.html.inc \
+  tipuesearch_set.js.inc tipue_results.html.inc \
   search.png.inc loader.gif.inc jquery.min.js.inc
 
 .PHONY: all clean
 
 all: $(ALL_OUTPUT)
 
-_tipue_results.html.inc: _tipue_results.html
+tipue_results.html.inc: tipue_results.html
 	../../../bin/file_to_pascal_string $< $@
 
 # We use file_to_pascal_data even for text files, to workaround

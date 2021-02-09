@@ -57,14 +57,14 @@ uses Classes, SysUtils;
 function TipueSearchButtonHead: string;
 begin
   { Note that this deliberately doesn't contain various Tipue JavaScript files.
-    They are only needed on Tipue results page, and are included by _tipue_results.html . }
+    They are only needed on Tipue results page, and are included by tipue_results.html . }
   Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding;
 end;
 
 function TipueSearchButton: string;
 begin
   Result :=
-    '<form class="search-form" action="_tipue_results.html">' +
+    '<form class="search-form" action="tipue_results.html">' +
     //'<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
     '<div class="search-input">'+
     '<input type="text" name="q" id="tipue_search_input" pattern=".{3,}" title="At least 3 characters" required>' +
@@ -266,12 +266,12 @@ begin
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery.min.js', JQueryScript);
 
-  TipueResultsPage := {$I _tipue_results.html.inc};
+  TipueResultsPage := {$I tipue_results.html.inc};
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-BEGIN-###', BodyBegin, []);
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-END-###', BodyEnd, []);
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-LANGUAGE-###', LanguageCode, []);
-  StringToFile(OutputPath + '_tipue_results.html', TipueResultsPage);
+  StringToFile(OutputPath + 'tipue_results.html', TipueResultsPage);
 
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.png', TipueSearchImage);
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'loader.gif', TipueLoaderImage);

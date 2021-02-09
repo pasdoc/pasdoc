@@ -1,5 +1,5 @@
 { -*- buffer-read-only: t -*- }
-{ DON'T EDIT -- this file was automatically generated from "_tipue_results.html" }
+{ DON'T EDIT -- this file was automatically generated from "tipue_results.html" }
 '<!DOCTYPE html>' + LineEnding +
 '<html lang="###-PASDOC-LANGUAGE-###">' + LineEnding +
 '<head>' + LineEnding +
