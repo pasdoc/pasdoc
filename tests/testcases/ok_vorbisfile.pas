@@ -1,5 +1,5 @@
 { This is a minimized version of vorbisfile.pas from 
-  http://vrmlengine.sourceforge.net/, just to test pasdoc2 macros/include
+  old Castle Game Engine, just to test pasdoc2 macros/include
   file handling. }
 
 { API of vorbisfile library. Usually libvorbisfile.so under Unixes

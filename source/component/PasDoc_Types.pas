@@ -42,9 +42,12 @@ type
   RawByteString = AnsiString;
 {$ENDIF}
 
-{$IF NOT DECLARED(TStringDynArray)}
-  TStringDynArray = array of string;
+{$IFNDEF PASDOC} // avoid PasDoc from trying to evaluate "NOT DECLARED"
+  {$IF NOT DECLARED(TStringDynArray)}
+    TStringDynArray = array of string;
+  {$ENDIF}
 {$ENDIF}
+
   TStringArray = TStringDynArray;
   { This represents parts of a qualified name of some item.
 

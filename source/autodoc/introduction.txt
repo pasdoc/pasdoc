@@ -2,7 +2,7 @@
 @title(Pasdoc Sources Overview)
 
 This is the documentation of the pasdoc sources, intended for pasdoc developers.
-For user's documentation see [http://pasdoc.sourceforge.net/].
+For user's documentation see [https://pasdoc.github.io/].
 
 Contents:
 @tableOfContents
