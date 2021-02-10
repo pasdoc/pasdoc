@@ -137,8 +137,7 @@ AUTODOC_DIR:=$(OUTPUT_DIR)autodoc/
 upload:
 	rm -Rf $(AUTODOC_DIR)
 	mkdir -p $(AUTODOC_DIR) $(AUTODOC_DIR)latex/
-	cp -Rf html/ $(AUTODOC_DIR)
-	cp -Rf latex/docs.pdf $(AUTODOC_DIR)latex/
-	cp -Rf latex/docs.tex $(AUTODOC_DIR)latex/
+	cp -Rf index.html html/ $(AUTODOC_DIR)
+	cp -Rf latex/docs.pdf latex/docs.tex $(AUTODOC_DIR)latex/
 
 # eof ------------------------------------------------------------
