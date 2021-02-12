@@ -506,6 +506,38 @@ uses
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
   PasDoc_Utils, PasDoc_Hashes;
 
+{ Extend full Pascal declaration of something by NextToken.
+  Makes sure to delimit by space if necessary. }
+function AppendDeclaration(const FullDeclaration, NextToken: String): String;
+const
+  NonSymbol = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
+var
+  LastFullDeclaration, FirstNextToken: Char;
+begin
+  if FullDeclaration <> '' then
+    LastFullDeclaration := FullDeclaration[Length(FullDeclaration)]
+  else
+    LastFullDeclaration := #0;
+
+  if NextToken <> '' then
+    FirstNextToken := NextToken[1]
+  else
+    FirstNextToken := #0;
+
+  if LastFullDeclaration in [':', ';'] then
+    { Put space after ':' to make type declarations like "const Key: String" in FullDeclaration. }
+    Result := FullDeclaration + ' ' + NextToken
+  else
+  if (LastFullDeclaration in NonSymbol) and
+     (FirstNextToken in NonSymbol) then
+    { Separate 2 non-symbols by space.
+      This way e.g. parsing "property MetadataBoolean[const Key: String]" results in FullDeclaration
+      with space between "const" and "Key". }
+    Result := FullDeclaration + ' ' + NextToken
+  else
+    Result := FullDeclaration + NextToken;
+end;
+
 { ---------------------------------------------------------------------------- }
 { TParser }
 { ---------------------------------------------------------------------------- }
@@ -1889,7 +1921,7 @@ begin
         if not (t.MyType in TokenCommentTypes + [TOK_DIRECTIVE]) then
         begin
           p.IndexDecl := p.IndexDecl + t.Data;
-          p.FullDeclaration := p.FullDeclaration + t.Data;
+          p.FullDeclaration := AppendDeclaration(p.FullDeclaration, t.Data);
         end;
         Finished := t.IsSymbol(SYM_RIGHT_BRACKET);
         FreeAndNil(t);
@@ -3321,7 +3353,7 @@ begin
             begin
               t2 := PeekNextToken;
               if t2.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
-              begin      
+              begin
                  t2 := GetNextToken;
                  try
                    ParseCDFP(M, ClassKeyWordString,
