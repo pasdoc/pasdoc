@@ -6,33 +6,13 @@
 \marginparsep 0cm
 \marginparwidth 0cm
 \parindent 0cm
-\setlength{\textwidth}{\paperwidth}
-\addtolength{\textwidth}{-2in}
-
-
-% Conditional define to determine if pdf output is used
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-\pdffalse
-\else
-\pdfoutput=1
-\pdftrue
-\fi
+\textwidth 16.5cm
 
 \ifpdf
   \usepackage[pdftex]{graphicx}
 \else
   \usepackage[dvips]{graphicx}
 \fi
-
-% Write Document information for pdflatex/pdftex
-\ifpdf
-\pdfinfo{
- /Author     (Pasdoc)
- /Title      ()
-}
-\fi
-
 
 % definitons for warning and note tag
 \usepackage[most]{tcolorbox}
@@ -76,31 +56,23 @@
 }
 
 \begin{document}
-\label{toc}\tableofcontents
-\newpage
 % special variable used for calculating some widths.
 \newlength{\tmplength}
-\chapter{Unit ok{\_}property{\_}decl}
-\label{ok_property_decl}
-\index{ok{\_}property{\_}decl}
+\chapter{Unit ok{\_}array{\_}property}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TAbstractNode\end{ttfamily} Class}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
-\ifpdf
-\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
-\else
-\subsection*{TMyClass Class}
-\fi
-\label{ok_property_decl.TMyClass}
-\index{TMyClass}
+\subsection*{TAbstractNode Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
-TMyClass {$>$} TObject
+TAbstractNode {$>$} TObject
 %%%%Description
 \subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MetadataBoolean}\hspace*{\fill}
+
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{MyProperty}}
+\settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -109,19 +81,32 @@ TMyClass {$>$} TObject
 \addtolength{\leftmargin}{\labelsep}
 \setlength{\labelwidth}{\tmplength}
 }
-\label{ok_property_decl.TMyClass-MyProperty}
-\index{MyProperty}
-\item[\textbf{MyProperty}\hfill]
-\ifpdf
 \begin{flushleft}
-\fi
+\item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public property MyProperty[S: string]: Integer read GetMyProperty;\end{ttfamily}
+public property MetadataBoolean[const Key: String]: Boolean read GetMetadataBoolean write SetMetadataBoolean;\end{ttfamily}
 
-\ifpdf
+
 \end{flushleft}
-\fi
+\end{list}
+\paragraph*{MetadataBooleanArray}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property MetadataBooleanArray[const Key: String; const Index: Cardinal]: Boolean read GetMetadataBooleanArray write SetMetadataBooleanArray;\end{ttfamily}
 
 
-\par  \end{list}
+\end{flushleft}
+\end{list}
 \end{document}

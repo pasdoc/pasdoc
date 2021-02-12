@@ -80,27 +80,27 @@
 \newpage
 % special variable used for calculating some widths.
 \newlength{\tmplength}
-\chapter{Unit ok{\_}property{\_}decl}
-\label{ok_property_decl}
-\index{ok{\_}property{\_}decl}
+\chapter{Unit ok{\_}array{\_}property}
+\label{ok_array_property}
+\index{ok{\_}array{\_}property}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TAbstractNode\end{ttfamily} Class}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf
-\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\subsection*{\large{\textbf{TAbstractNode Class}}\normalsize\hspace{1ex}\hrulefill}
 \else
-\subsection*{TMyClass Class}
+\subsection*{TAbstractNode Class}
 \fi
-\label{ok_property_decl.TMyClass}
-\index{TMyClass}
+\label{ok_array_property.TAbstractNode}
+\index{TAbstractNode}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
-TMyClass {$>$} TObject
+TAbstractNode {$>$} TObject
 %%%%Description
 \subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{MyProperty}}
+\settowidth{\tmplength}{\textbf{MetadataBooleanArray}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -109,14 +109,28 @@ TMyClass {$>$} TObject
 \addtolength{\leftmargin}{\labelsep}
 \setlength{\labelwidth}{\tmplength}
 }
-\label{ok_property_decl.TMyClass-MyProperty}
-\index{MyProperty}
-\item[\textbf{MyProperty}\hfill]
+\label{ok_array_property.TAbstractNode-MetadataBoolean}
+\index{MetadataBoolean}
+\item[\textbf{MetadataBoolean}\hfill]
 \ifpdf
 \begin{flushleft}
 \fi
 \begin{ttfamily}
-public property MyProperty[S: string]: Integer read GetMyProperty;\end{ttfamily}
+public property MetadataBoolean[const Key: String]: Boolean read GetMetadataBoolean write SetMetadataBoolean;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_array_property.TAbstractNode-MetadataBooleanArray}
+\index{MetadataBooleanArray}
+\item[\textbf{MetadataBooleanArray}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MetadataBooleanArray[const Key: String; const Index: Cardinal]: Boolean read GetMetadataBooleanArray write SetMetadataBooleanArray;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
