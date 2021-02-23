@@ -188,7 +188,8 @@ implementation
 
 constructor THash.Create;
 begin
-  FeldMaxValue:=7; //irgendein kleiner Wert der Eigenschaft 2**n-1 (English: any small value of the property 2**n-1)
+  //`FeldMaxValue` should be a small value, so FeldMaxValue = 2**(n)-1
+  FeldMaxValue:=7;
   FeldBelegt:=0;
   FMaxCapacity:=-1;
   GetMem(Feld,sizeof(PHashEntry)*Succ(FeldMaxValue));
@@ -231,7 +232,7 @@ begin
   he:=Feld^[h and FeldMaxValue];
   while Assigned(he) do begin
     if he^.Hash=h then
-      if he^.key=_key then begin //gefunden (English: found)
+      if he^.key=_key then begin //found
         Result:=True;
         Exit;
       end;
@@ -263,7 +264,7 @@ var
   he: PHashEntry;
   oe: PPHashEntry;
 begin
-  //zun„chst Speicher reservieren (Enlish?: reserve additional memory)
+  //first, allocate memory
   oldsize:=Succ(FeldMaxValue);
   newsize:=oldsize shl power2;
   if (newsize>MaxCapacity) and (MaxCapacity<>-1) then Exit;
@@ -275,10 +276,10 @@ begin
     ReAllocMem(Feld,newsize*sizeof(PHashEntry));
   {$endif}
 
-  //neu dazureservierten Speicher leeren (English: initialize the newly allocated memory)
+  //void additionally allocated memory
   FillChar(Feld^[oldsize],(newsize-oldsize)*sizeof(PHashEntry),0);
 
-  //dann Daten neu einordnen (English: then rearrange the data)
+  //then repopulate with data
   for i:=0 to oldsize-1 do begin
     oe:=@Feld^[i];
     he:=oe^;
@@ -322,7 +323,7 @@ begin
     he:=he^.next;
   end;
 
-  //nichts gefunden, key muá neu angelegt werden (English?: not found; a new key must be created.)
+  //no `exit` yet means "not found": `key` has to be recreated
   New(he); Inc(FeldBelegt);
   with he^ do begin
     next:=anker;
