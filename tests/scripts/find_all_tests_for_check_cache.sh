@@ -7,6 +7,10 @@ set -eu
 # if --no-macro was not used.
 
 /usr/bin/find . \
-  '(' -iname 'ok_*.pas' ')' \
-  -and -not '(' -iname 'ok_macros_off.pas' ')' \
-  -and -not '(' -iname 'ok_if_expressions.pas' ')'
+  '(' -type d -iname 'todo' -prune ')' -or \
+  '(' -type f \
+      -iname 'ok_*.pas' -and \
+      -not '(' -iname 'ok_macros_off.pas' ')' -and \
+      -not '(' -iname 'ok_if_expressions.pas' ')' -and \
+      -print \
+  ')'
