@@ -2563,22 +2563,31 @@ function THTMLDocGenerator.MakeBodyBegin: string;
   var
     Overview: TCreatedOverviewFile;
     i: Integer;
+    IndexLinkText: String;
   begin
     Result := '';
 
-    if Title <> '' then
+    if (Introduction <> nil) or (Title <> '') then
     begin
-      Result := Result + '<h2>' + LocalMakeLink('index.html', Title) + '</h2>';
-    end
-    else
-    begin
-      if Introduction <> nil then
-      begin
-        if Introduction.ShortTitle = '' then
-          Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Introduction.Title) + '</h2>'
-        else
-          Result := Result + '<h2>' + LocalMakeLink(Introduction.OutputFileName, Introduction.ShortTitle) + '</h2>';
-      end;
+      { Note: We don't make a special link to introduction,
+        LocalMakeLink(Introduction.OutputFileName, ...),
+        because introduction is already copied to "index.html" if Introduction <> nil
+        (by WriteIndex). }
+
+      { Determine the most suitable text for the "index.html" link. }
+      IndexLinkText := '';
+      if (IndexLinkText = '') and (Introduction <> nil) then
+        IndexLinkText := Introduction.ShortTitle;
+      if IndexLinkText = '' then
+        IndexLinkText := Title;
+      if IndexLinkText = '' then
+        IndexLinkText := FLanguage.Translation[trIntroduction];
+      { We need to have some non-empty text,
+        which is why we use Translation[trIntroduction] as a last fallback.
+        Otherwise the link would not be visible and introduction would not be visible. }
+      Assert(IndexLinkText <> '');
+
+      Result := Result + '<h2>' + LocalMakeLink('index.html', IndexLinkText) + '</h2>';
     end;
 
     Result := Result + '<ul>';
