@@ -2483,6 +2483,7 @@ begin
     CIO_PACKEDOBJECT: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trObject];
     CIO_RECORD: Result := FLanguage.Translation[trRecord];
     CIO_PACKEDRECORD: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trRecord];
+    CIO_TYPE: Result := FLanguage.Translation[trType];
   else
     Result := '';
   end;

@@ -1,6 +1,7 @@
 # Output dirs and files
 bin/
 lib/
+backup/
 source/autodoc/html_by_pasdoc_gui/
 source/autodoc/html/
 source/autodoc/latex/

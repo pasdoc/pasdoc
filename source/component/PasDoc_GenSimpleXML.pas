@@ -220,6 +220,7 @@ begin
     CIO_PACKEDOBJECT:result:='packed object';
     CIO_RECORD:result:='record';
     CIO_PACKEDRECORD:result:='packed record';
+    CIO_TYPE: Result:='type helper';
   end;
 end;
 
