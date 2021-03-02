@@ -152,8 +152,17 @@ const
 procedure SkipBOM(const InputStream: TStream);
 {$ENDIF}
 
+{ Read the given FileName contents into a String.
+  Use this only with text files -- it does automatic UTF BOM skipping,
+  so it assumes it is a text file, not a binary file with random contents. }
 function FileToString(const FileName: string): string;
+
+{ Save the String content into a file.
+  Overwrites the FileName, if it already exists. }
 procedure StringToFile(const FileName, S: string);
+
+{ Save the binary Data into a file.
+  Overwrites the FileName, if it already exists. }
 procedure DataToFile(const FileName: string; const Data: array of Byte);
 
 { Returns S with all Chars replaced by ReplacementChar }
