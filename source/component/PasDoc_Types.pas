@@ -66,11 +66,14 @@ type
 
   TCharSet = set of AnsiChar;
 
-{ }
+  { Exception raised in many situations when PasDoc encounters an error. }
   EPasDoc = class(Exception)
   public
+    constructor Create(const AMessageFormat: string;
+      const AArguments: array of const;
+      const AExitCode: Word = 3); overload;
     constructor Create(const AMessage: string;
-      const AArguments: array of const; const AExitCode: Word = 3);
+      const AExitCode: Word = 3); overload;
   end;
 
 
@@ -109,11 +112,17 @@ implementation
 
 { EPasDoc -------------------------------------------------------------------- }
 
-constructor EPasDoc.Create(const AMessage: string; const AArguments: array of
-  const; const AExitCode: Word);
+constructor EPasDoc.Create(const AMessageFormat: string;
+  const AArguments: array of const; const AExitCode: Word);
 begin
   ExitCode := AExitCode;
-  CreateFmt(AMessage, AArguments);
+  inherited CreateFmt(AMessageFormat, AArguments);
+end;
+
+constructor EPasDoc.Create(const AMessage: string; const AExitCode: Word);
+begin
+  ExitCode := AExitCode;
+  inherited Create(AMessage);
 end;
 
 { global routines ------------------------------------------------------------ }

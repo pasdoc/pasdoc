@@ -36,6 +36,7 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
+  Classes,
   SysUtils,
   PasDoc_Types;
 
@@ -140,6 +141,16 @@ const
   (Feature request "direction of parameter": https://github.com/pasdoc/pasdoc/issues/8) }
   FlagStartSigns = ['['];
   FlagEndSigns = [']'];
+
+{$IFNDEF STRING_UNICODE}
+{ Interpret and skip the BOM in the InputStream.
+  Assumes that initial position is at the beginning of the InputStream,
+  and will change the position to the one immediately after BOM
+  (or 0, if no BOM was detected).
+
+  @raises EPasDoc When BOM indicates UTF encoding that we cannot handle (UTF-32, UTF-16 now). }
+procedure SkipBOM(const InputStream: TStream);
+{$ENDIF}
 
 function FileToString(const FileName: string): string;
 procedure StringToFile(const FileName, S: string);
@@ -272,7 +283,7 @@ function SAppendPart(const s, PartSeparator, NextPart: String): String;
 
 implementation
 
-uses Classes, StrUtils, PasDoc_StreamUtils;
+uses StrUtils, PasDoc_StreamUtils;
 
 {---------------------------------------------------------------------------}
 
@@ -423,6 +434,47 @@ begin
   FirstWord := ExtractFirstWord(Rest);
 end;
 
+{$IFNDEF STRING_UNICODE}
+procedure SkipBOM(const InputStream: TStream);
+var
+  A : array [0..3] of Byte;
+begin
+  InputStream.ReadBuffer(A, 4);
+
+  { See also TStreamReader.GetCodePageFromBOM for an implementation
+    that actually uses UTF-x BOM. Here, we only detect BOM to make
+    nice error (in case of UTF-16/32) or skip it (in case of UTF-8). }
+
+  if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then
+  begin
+    raise EPasDoc.Create('Detected UTF-32 (little endian) encoding (right now we cannot read such files)');
+  end else
+  if (A[0] = 0) and (A[1] = 0) and (A[2] = $FE) and (A[3] = $FF) then
+  begin
+    raise EPasDoc.Create('Detected UTF-32 (big endian) encoding (right now we cannot read such files)');
+  end else
+  if (A[0] = $FF) and (A[1] = $FE) then
+  begin
+    raise EPasDoc.Create('Detected UTF-16 (little endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)');
+  end else
+  if (A[0] = $FE) and (A[1] = $FF) then
+  begin
+    raise EPasDoc.Create('Detected UTF-16 (big endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)');
+  end else
+  if (A[0] = $EF) and (A[1] = $BB) and (A[2] = $BF) then
+  begin
+    { Do not log for now, to keep SkipBOM API simple,
+      otherwise it would need to get current verbosity and event to print messages. }
+    // DoMessage(6, pmtInformation, 'Detected UTF-8 BOM, skipping.', []);
+    // Writeln('Detected UTF-8 BOM, skipping.'); // uncomment this to debug
+
+    InputStream.Position := 3;
+  end else
+    { No BOM: get back to the beginning of the steam }
+    InputStream.Position := 0;
+end;
+{$ENDIF}
+
 function FileToString(const FileName: string): string;
 {$IFDEF STRING_UNICODE}
 var Reader: TStreamReader;
@@ -436,8 +488,10 @@ var F: TStream;
 begin
   F := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
   try
-    SetLength(Result, F.Size);
-    F.ReadBuffer(Pointer(Result)^, F.Size);
+    SkipBOM(F);
+    { F.Position may be non-zero in case SkipBOM did something, account for it. }
+    SetLength(Result, F.Size - F.Position);
+    F.ReadBuffer(Pointer(Result)^, Length(Result));
   finally F.Free end;
 {$ENDIF}
 end;

@@ -125,9 +125,6 @@ type
       const FileName: string; out ExternalItem: TExternalItem);
     { Calls @link(HandleStream) for each file name in @link(SourceFileNames). }
     procedure ParseFiles;
-{$IFNDEF STRING_UNICODE}
-    procedure SkipBOM(InputStream: TStream);
-{$ENDIF}
   protected
     { Searches the description of each TPasUnit item in the collection for an
       excluded tag.
@@ -285,42 +282,6 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{$IFNDEF STRING_UNICODE}
-procedure TPasDoc.SkipBOM(InputStream: TStream);
-var
-  A : array [0..3] of Byte;
-begin
-  InputStream.ReadBuffer(A, 4);
-
-  { See also TStreamReader.GetCodePageFromBOM for an implementation
-    that actually uses UTF-x BOM. Here, we only detect BOM to make
-    nice error (in case of UTF-16/32) or skip it (in case of UTF-8). }
-
-  if (A[0] = $FF) and (A[1] = $FE) and (A[2] = 0) and (A[3] = 0) then
-  begin
-    DoError('Detected UTF-32 (little endian) encoding (right now we cannot read such files)', [], 0);
-  end else
-  if (A[0] = 0) and (A[1] = 0) and (A[2] = $FE) and (A[3] = $FF) then
-  begin
-    DoError('Detected UTF-32 (big endian) encoding (right now we cannot read such files)', [], 0);
-  end else
-  if (A[0] = $FF) and (A[1] = $FE) then
-  begin
-    DoError('Detected UTF-16 (little endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)', [], 0);
-  end else
-  if (A[0] = $FE) and (A[1] = $FF) then
-  begin
-    DoError('Detected UTF-16 (big endian) encoding (right now we cannot read such files, unless compiled with Delphi Unicode)', [], 0);
-  end else
-  if (A[0] = $EF) and (A[1] = $BB) and (A[2] = $BF) then
-  begin
-    DoMessage(6, pmtInformation, 'Detected UTF-8 BOM, skipping.', []);
-    InputStream.Position := 3;
-  end else
-    { No BOM: get back to the beginning of the steam }
-    InputStream.Position := 0;
-end;
-{$ENDIF}
 
 procedure TPasDoc.HandleStream(
   const InputStream: TStream;

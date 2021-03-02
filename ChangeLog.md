@@ -1,5 +1,10 @@
 # List of changes
 
+## Upcoming Next Release
+
+* Fixed using introduction @shortTitle
+* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer)
+
 ## Version 0.16.0 (2021-02-07)
 
 * [New website](https://pasdoc.github.io/), using Jekyll, generated from our wiki, see https://github.com/pasdoc/pasdoc.github.io (Michalis)
