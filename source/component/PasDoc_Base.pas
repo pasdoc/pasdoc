@@ -774,6 +774,11 @@ begin
       ChangeFileExt( ExtractFileName(FileName) , ''), [' '], '_');
 
     ExternalItem.RawDescription := FileToString(FileName);
+    { Setting ExternalItem.SourceFileName makes also ExternalItem.BasePath good,
+      and this is useful to resolve relative filenames with respect to
+      the introduction/conclusion files.
+      See https://github.com/pasdoc/pasdoc/issues/122 }
+    ExternalItem.SourceFileName := FileName;
   except
     FreeAndNil(ExternalItem);
     raise;
