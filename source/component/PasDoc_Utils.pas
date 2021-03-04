@@ -166,8 +166,10 @@ procedure StringToFile(const FileName, S: string);
 procedure DataToFile(const FileName: string; const Data: array of Byte);
 
 { Returns S with all Chars replaced by ReplacementChar }
-function SCharsReplace(const S: string; const Chars: TCharSet;
-  ReplacementChar: char): string;
+function SCharsReplace(const S: String; const Chars: TCharSet;
+  const ReplacementChar: Char): string; overload;
+function SCharsReplace(const S: String; const SearchChar: Char;
+  const ReplacementChar: Char): string; overload;
 
 procedure CopyFile(const SourceFileName, DestinationFileName: string);
 
@@ -533,14 +535,25 @@ begin
 end;
 
 function SCharsReplace(const S: string; const Chars: TCharSet;
-  ReplacementChar: Char): string;
+  const ReplacementChar: Char): string;
 var
-  i: Integer;
+  I: Integer;
 begin
   Result := S;
-  for i := 1 to Length(Result) do
-    if IsCharInSet(Result[i], Chars) then
-      Result[i] := ReplacementChar;
+  for I := 1 to Length(Result) do
+    if IsCharInSet(Result[I], Chars) then
+      Result[I] := ReplacementChar;
+end;
+
+function SCharsReplace(const S: String; const SearchChar: Char;
+  const ReplacementChar: Char): string;
+var
+  I: Integer;
+begin
+  Result := S;
+  for I := 1 to Length(Result) do
+    if Result[I] = SearchChar then
+      Result[I] := ReplacementChar;
 end;
 
 procedure CopyFile(const SourceFileName, DestinationFileName: string);
@@ -617,6 +630,12 @@ end;
 
 function CombinePaths(BasePath, RelPath: string): string;
 begin
+  {$ifdef UNIX}
+  { On Unix accept also relative paths with backslash (Windows). }
+  // Commented out, not valid -- on Unix backslash is a valid filename character.
+  // RelPath := SCharsReplace(RelPath, '\', '/');
+  {$endif}
+
   if IsPathAbsolute(RelPath) then
     result := RelPath else
   {$ifdef MSWINDOWS}
