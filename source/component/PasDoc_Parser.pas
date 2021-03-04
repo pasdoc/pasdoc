@@ -1847,8 +1847,9 @@ begin
                     ParseProperty(PropertyParsed);
                     FreeAndNil(PropertyParsed);
                   end;
-                // Stop parsing on "initialization", "finalization"
-                KEY_INITIALIZATION, KEY_FINALIZATION:
+                { Stop parsing on "initialization", "finalization".
+                  The "begin" at this point is equivalent to "initialization". }
+                KEY_BEGIN, KEY_INITIALIZATION, KEY_FINALIZATION:
                   Break;
                 // Stop parsing on "end.". Must come here only on final "end" so
                 // don't care about other cases
