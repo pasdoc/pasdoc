@@ -1,0 +1,4 @@
+﻿@shorttitle(somefile )
+@title(Additional file)
+
+@includeCode(../external/externalcode.pas)

@@ -1,0 +1,16 @@
+<unit name="introduction_relative_paths/pas/main.pas">
+  <type name="SomeType = integer;">
+    <description><detailed>SomeType description.</detailed></description>
+  </type>
+  <structure name="SomeClass" name_with_generic="SomeClass" type="class">
+    <description><detailed>SomeClass description. program test;
+
+begin
+  // file with external code
+end.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="Field: integer;">
+      <description><detailed>Field description.</detailed></description>
+    </variable>
+  </structure>
+</unit>

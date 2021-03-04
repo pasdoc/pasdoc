@@ -266,6 +266,7 @@ all_tests_for_current_format ()
   mk_test ok_warning_note ok_warning_note.pas
   mk_test ok_generic_routines ok_generic_routines.pas
   mk_test ok_array_property ok_array_property.pas
+  mk_test ok_introduction_relative_paths introduction_relative_paths/pas/main.pas --additional=introduction_relative_paths/txt/somefile.txt
 }
 
 # parse params ----------------------------------------
