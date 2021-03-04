@@ -11,3 +11,4 @@ Info[2]:    Expanding descriptions (pass 2) ...
 Info[2]:    ... Descriptions expanded
 Info[2]:    Writing Docs for unit "ok_bom"
 Info[1]:    Done
+The documentation was generated, but some problems during parsing or generation occurred. (Consult the output above for details.) Therefore exiting with non-zero exit status.
