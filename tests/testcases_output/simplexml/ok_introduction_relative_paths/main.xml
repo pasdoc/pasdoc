@@ -7,7 +7,8 @@
 
 begin
   // file with external code
-end.</detailed></description>
+end.
+</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <variable name="Field: integer;">
       <description><detailed>Field description.</detailed></description>
