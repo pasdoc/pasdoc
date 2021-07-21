@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2021 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -54,6 +54,9 @@ implementation
 
 uses Classes, SysUtils;
 
+const
+  MinimumSearchLength = 1;
+
 function TipueSearchButtonHead: string;
 begin
   { Note that this deliberately doesn't contain various Tipue JavaScript files.
@@ -67,7 +70,10 @@ begin
     '<form class="search-form" action="tipue_results.html">' +
     //'<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
     '<div class="search-input">'+
-    '<input type="text" name="q" id="tipue_search_input" pattern=".{3,}" title="At least 3 characters" required>' +
+    Format('<input type="text" name="q" id="tipue_search_input" pattern=".{%d,}" title="At least %d characters" required>', [
+      MinimumSearchLength,
+      MinimumSearchLength
+    ]) +
 
     //<button type="submit" class="tipue_search_button"><div class="tipue_search_icon">&#9906;</div></button>'+
 
@@ -252,19 +258,21 @@ procedure TipueAddFiles(Units: TPasUnits;
 
 const
   TipueSearchCss: {$I tipuesearch.css.inc};
-  TipueSearchScript: {$I tipuesearch.js.inc};
   TipueSearchSetScript:{$I tipuesearch_set.js.inc};
   JQueryScript: {$I jquery.min.js.inc};
   TipueSearchImage: {$I search.png.inc};
   TipueLoaderImage: {$I loader.gif.inc};
 var
-  TipueResultsPage: string;
+  TipueSearchScript, TipueResultsPage: String;
 begin
   CreateDir(OutputPath + 'tipuesearch');
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
-  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
   DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery.min.js', JQueryScript);
+
+  TipueSearchScript := {$I tipuesearch.js.inc};
+  TipueSearchScript := StringReplace(TipueSearchScript, '${TIPUE_MINIMUM_SEARCH_LENGTH}', IntToStr(MinimumSearchLength), [rfReplaceAll]);
+  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
 
   TipueResultsPage := {$I tipue_results.html.inc};
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);

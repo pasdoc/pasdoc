@@ -21,7 +21,7 @@ http://www.tipue.com/search
           'footerPages'            : 3,
           'highlightTerms'         : true,
           'imageZoom'              : true,
-          'minimumLength'          : 3,
+          'minimumLength'          : ${TIPUE_MINIMUM_SEARCH_LENGTH},
           'newWindow'              : false,
           'show'                   : 10,
           'showContext'            : true,
