@@ -2980,7 +2980,8 @@ begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
     if not CreateStream(OverviewFileName) then Exit;
 
-    WriteDirect('DiGraph Classes {', true);
+    // Note: "digraph" is case sensitive since later versions of GraphViz (at least in >= 2.47.2; ignored case in <= 2.40.1)
+    WriteDirect('digraph Classes {', true);
     while Assigned(LNode) do
     begin
       if Assigned(LNode.Parent) and (LNode.Parent.Name <> '') then
@@ -3015,7 +3016,8 @@ begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.dot';
     if not CreateStream(OverviewFileName) then Exit;
 
-    WriteDirect('DiGraph Uses {', true);
+    // Note: "digraph" is case sensitive since later versions of GraphViz (at least in >= 2.47.2; ignored case in <= 2.40.1)
+    WriteDirect('digraph Uses {', true);
     for i := 0 to FUnits.Count-1 do
     begin
       if FUnits.PasItemAt[i] is TPasUnit then
