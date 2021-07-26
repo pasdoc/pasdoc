@@ -4,5 +4,10 @@ TOptions = class(TForm)
 private
   procedure WMSysCmd(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
 ...
-end;</detailed></description>
+end; See https://github.com/pasdoc/pasdoc/issues/123 : 
+Somethins.Name:=1;
+I:=123;
+R:=0.001;
+R:=1E10;
+R:=R*0.99 - 9E-4;</detailed></description>
 </unit>
