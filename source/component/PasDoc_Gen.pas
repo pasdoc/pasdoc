@@ -3241,6 +3241,7 @@ const
   LineEnd = [#10, #13];
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
 
+  NumericStart = ['0'..'9'];
   { We add characters eE-+ to allow floating-point values in scientific notation,
     like 1e10, 9e-4 .
 
@@ -3248,7 +3249,8 @@ const
     approach (scanning number until character outside of
     "NumberOther = HexadecimalDigits + ['.', '+', '-']")
     so maybe it is "good enough" solution.  }
-  Numeric = ['0'..'9','.','e','E','-','+'];
+  NumericOther = NumericStart + ['.','e','E','-','+'];
+
   Hexadec = ['0'..'9', 'a'..'f', 'A'..'F', '$'];
 
   function TestCommentStart: boolean;
@@ -3336,7 +3338,7 @@ begin
             HexBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if IsCharInSet(Line[CharIndex], Numeric) then
+          if IsCharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
@@ -3410,7 +3412,7 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if IsCharInSet(Line[CharIndex], Numeric) then
+          else if IsCharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
@@ -3500,8 +3502,8 @@ begin
         End;
       ctNumeric:
         begin
-          if IsCharInSet(Line[CharIndex], (Separators - Numeric)) or
-              not IsCharInSet(Line[CharIndex], Numeric) then
+          if IsCharInSet(Line[CharIndex], (Separators - NumericOther)) or
+              not IsCharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctEndNumeric;
             NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
@@ -3535,7 +3537,7 @@ begin
           begin
             // do nothing
           end
-          else if IsCharInSet(Line[CharIndex], Numeric) then
+          else if IsCharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
