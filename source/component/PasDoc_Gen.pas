@@ -3240,7 +3240,15 @@ const
     '''', ':', '<', '>', '=', '+', '-', '*', '/', '@', '.'];
   LineEnd = [#10, #13];
   AlphaNumeric = ['0'..'9', 'a'..'z', 'A'..'Z', '_'];
-  Numeric = ['0'..'9','.'];
+
+  { We add characters eE-+ to allow floating-point values in scientific notation,
+    like 1e10, 9e-4 .
+
+    This is a simple way to accept numbers. Our PasDoc_Tokenizer has a similar simple
+    approach (scanning number until character outside of
+    "NumberOther = HexadecimalDigits + ['.', '+', '-']")
+    so maybe it is "good enough" solution.  }
+  Numeric = ['0'..'9','.','e','E','-','+'];
   Hexadec = ['0'..'9', 'a'..'f', 'A'..'F', '$'];
 
   function TestCommentStart: boolean;
@@ -3491,31 +3499,32 @@ begin
           end;
         End;
       ctNumeric:
-        Begin
-          If IsCharInSet(Line[CharIndex], (Separators - ['.'])) Or
-              Not IsCharInSet(Line[CharIndex], Numeric) then
+        begin
+          if IsCharInSet(Line[CharIndex], (Separators - Numeric)) or
+              not IsCharInSet(Line[CharIndex], Numeric) then
           begin
             CodeType := ctEndNumeric;
-            If Pos('.', Copy(Line, NumBeginning, CharIndex - NumBeginning)) > 0 Then
-            Begin
-              NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
+            NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
+            if CharsPos(['.', 'e', 'E'], NumberSubBlock) > 0 then
+            begin
+              // floating-point value in decimal 123.456 notation
               NumberRange := Pos('..', NumberSubBlock);
-              If NumberRange > 0 Then
-              Begin
+              if NumberRange > 0 Then
+              begin
                 result := result + FormatNumeric(
                           Copy(NumberSubBlock, 1, NumberRange - 1));
                 result := result + FormatCode(
                           Copy(NumberSubBlock, NumberRange, Length(NumberSubBlock)));
-              End
-              Else
+              end
+              else
                 result := result + FormatFloat(NumberSubBlock);
-            End
-            Else
-              result := result + FormatNumeric(Copy(Line, NumBeginning,
-                        CharIndex - NumBeginning));
+            end else
+            begin
+              result := result + FormatNumeric(NumberSubBlock);
+            end;
             result := result + FormatCode(Copy(Line, CharIndex, 1));
           end;
-        End;
+        end;
       ctEndHex:
         begin
           if Line[CharIndex] = '#' then

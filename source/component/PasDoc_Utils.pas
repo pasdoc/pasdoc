@@ -292,6 +292,12 @@ function IndexText(const AText: string; const AValues: array of string): Integer
 { If S = '' then returns NextPart, else returns S + PartSeparator + NextPart. }
 function SAppendPart(const s, PartSeparator, NextPart: String): String;
 
+{ Find first occurrence of any character in Chars in string S.
+  This is quite like FirstDelimiter but it takes parameter as TSetOfChars
+  and has more sensible name.
+  Returns 0 if not found. }
+function CharsPos(const Chars: TCharSet; const S: String): Integer;
+
 implementation
 
 uses StrUtils, PasDoc_StreamUtils;
@@ -981,6 +987,14 @@ begin
     Result := NextPart
   else
     Result := S + PartSeparator + NextPart;
+end;
+
+function CharsPos(const Chars: TCharSet; const S: String): Integer;
+begin
+  for Result := 1 to Length(S) do
+    if S[Result] in Chars then
+      Exit;
+  Result := 0;
 end;
 
 end.
