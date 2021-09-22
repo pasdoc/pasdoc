@@ -1,0 +1,43 @@
+.TH PASCAL_PRE_PROC 1 "2021-09-22" "" "User commands"
+.
+.SH NAME
+\fBpascal_pre_proc\fR \- Pascal preprocessor based on the PasDoc parser
+.
+.SH SYNOPSIS
+.SY pascal_pre_proc
+[\fIOPTIONS\fR]
+.I FILE
+.YS
+.
+.SH DESCRIPTION
+.B pascal_pre_proc
+is a Pascal preprocessor based on the parser
+used by the PasDoc documentation generator.
+When run, it will parse \fIFILE\fR, interpreting all
+compiler directives - like \fB{$DEFINE}\fR, \fB{$IDEF}\fR, \fB{$INCLUDE}\fR,
+as well as FPC macros - and print the result on standard output.
+.
+.SH OPTIONS
+.TP
+\fB\-?\fR, \fB\-\-help\fR
+Display a help message and exit.
+.TP
+\fB\-v\fR, \fB\-\-verbosity\fR \fILEVEL\fR
+Set logging verbosity. \fILEVEL\fR must be an integer in the 0-6 range.
+The default is \fB2\fR.
+.TP
+\fB\-D\fR, \fB\-\-define\fR \fISYMBOL\fR
+Assume \fISYMBOL\fR is defined when parsing conditional blocks.
+.TP
+\fB\-d\fR, \fB\-\-conditionals\fR \fICONDFILE\fR
+Similar to \fB\-D\fR. Reads the list of symbols from \fICONDFILE\fR.
+.TP
+\fB\-I\fR, \fB\-\-include\fR \fIPATH\fR
+Search in \fIPATH\fR when evaluating \fB{$INCLUDE}\fR directives.
+.TP
+.B \-\-no\-macro
+Disable support for FPC macros.
+.SH SEE ALSO
+.BR file_to_pascal_data (1),
+.BR file_to_pascal_string (1),
+.BR pasdoc (1)
