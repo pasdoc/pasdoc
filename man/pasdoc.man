@@ -1,0 +1,402 @@
+.TH "PASDOC" 1 "2021-09-22" "" "User commands"
+.
+.
+.SH NAME
+\fBpasdoc\fR \- documentation generator for Pascal code
+.SH SYNOPSIS
+.SY pasdoc
+[\fIOPTIONS...\fR]
+[\fIFILES...\fR]
+.YS
+.
+.
+.SH DESCRIPTION
+PasDoc is a documentation tool for Pascal and Object Pascal source code.
+Documentation is generated from comments found in the source code,
+or from external files.
+.
+.
+.SH OPTIONS
+.TP
+\fB@\fR\fIFILE\fR
+Read options from \fIFILE\fR and insert them at current position.
+\fIFILE\fR must contain one option per line.
+Format is "\fBname\fR[=\fIvalue\fR]", options are named just like
+in the command line but without leading dashes.
+Option values with spaces must \fINOT\fR be quoted.
+.
+.TP
+\fB\-?\fR, \fB\-\-help\fR
+Show a help message and exit.
+.
+.TP
+\fB\-\-abbreviations\fR \fIFILE\fR
+Read list of abbreviations from \fIFILE\fR. Format is "[name] value".
+Values are trimmed. Lines that do not start with '[' are ignored.
+.
+.TP
+\fB-A\fR, \fB\-\-additional\fR \fIFILE\fR
+Specify the name of a text file with addition materials for the project.
+.
+.TP
+.B \-\-auto\-abstract
+Automatically make an abstract description of every item
+from the first sentence of description for that item.
+.
+.TP
+.B \-\-auto\-back\-comments
+Consider //-style comments after an identifier in the same line
+as description of that identifier.
+.
+.TP
+.B \-\-auto\-link
+Automatically create links,
+without the need to explicitly use \fB@link\fR tags.
+.
+.TP
+\fB\-\-auto\-link\-exclude\fR \fIFILE\fR
+Even when \fB\-\-auto\-link\fR is on, never automatically create links
+to identifiers listed in \fIFILE\fR.
+The list should contain one identifier per line.
+.
+.TP
+\fB\-\-cache\-dir\fR \fIDIR\fR
+Specify cache directory for parsed files.
+.
+.TP
+\fB\-\-conclusion\fR \fIFILE\fR
+Specify the name of a text file with concluding materials for the project.
+.
+.TP
+\fB\-\-css\fR \fISTYLESHEET\fR
+Specify CSS file (will be copied into output tree) to use with HTML output.
+.
+.TP
+\fB\-D\fR, \fB\-\-define\fR \fISYMBOL\fR
+Assume \fISYMBOL\fR is defined when parsing conditional blocks.
+.
+.TP
+\fB\-d\fR, \fB\-\-conditionals\fR \fIFILE\fR
+Similar to \fB\-\-define\fR, but reads the list of symbols from \fIFILE\fR.
+.
+.TP
+\fB\-E\fR, \fB\-\-output\fR \fIPATH\fR
+Specify output path.
+.
+.TP
+\fB\-\-external\-class\-hierarchy\fR \fIFILE\fR
+Specify a file defining the hierarchy of classes
+not included in your source code, for more complete class tree diagrams.
+.
+.TP
+\fB\-F\fR, \fB\-\-footer\fR \fIFILE\fR
+Use the contents of \fIFILE\fR as the footer for HTML output.
+.
+.TP
+.B \-\-graphviz\-classes
+Write a \fB"GVClasses.dot"\fR file that can be used for the \fBdot\fR program
+from GraphViz to generate a class hierarchy graph.
+.
+.TP
+.B \-\-graphviz\-uses
+Write a \fB"GVUses.dot"\fR file that can be used for the \fBdot\fR program
+from GraphViz to generate a unit dependency graph.
+.
+.TP
+\fB\-H\fR, \fB\-\-header\fR \fIFILE\fR
+Use the contents of \fIFILE\fR as the header for HTML output.
+.
+.TP
+\fB\-\-html\-body\-begin\fR \fIFILE\fR
+In HTML output, put the contents of \fIFILE\fR
+right after the opening \fB<body>\fR tag.
+.
+.TP
+\fB\-\-html\-body\-end\fR \fIFILE\fR
+In HTML output, put the contents of \fIFILE\fR
+right after the closing \fB</body>\fR tag.
+.
+.TP
+\fB\-\-html\-head\fR \fIFILE\fR
+In HTML output, put the contents of \fIFILE\fR inside the \fB<head>\fR tag.
+.
+.TP
+\fB\-\-html\-help\-contents\fR \fIFILE\fR
+Read contents for HtmlHelp from \fIFILE\fR.
+.
+.TP
+\fB\-\-ignore\-leading\fR \fILIST\fR
+Specify a list of leading characters to be ignored in comments.
+.
+.TP
+\fB\-\-ignore\-marker\fR \fIMARKER\fR
+Skip comments starting with \fIMARKER\fR (that is,
+\fB{MARKER\fR, \fB(*MARKER\fR and \fB//MARKER\fR comments).
+.
+.TP
+\fB\-\-implementation\-comments\fR \fISTRATEGY\fR
+Read implementation section of units and merge info with that
+taken from interface section. \fISTRATEGY\fR determines how info is merged:
+.RS
+.TQ
+.B none
+Do not read implementation comments.
+.TQ
+.B prefer-interface
+Read both interface and implementation comments.
+Use whichever comment is non-empty.
+If they are both non-empty, use the interface comment.
+.TQ
+.B prefer-implementation
+Just like "prefer interface", but if both comments are non-empty,
+use the implementation comment.
+.TQ
+.B join 
+Read both interface and implementation comments and concatenate them.
+If the interface comment is also present at the beginning
+of the implementation comment, it will be ignored (to avoid repetition). 
+.RE
+.
+.TP
+\fB\-\-implicit\-visibility\fR \fIVISIBILITY\fR
+Specify how to handle class members within default class visibility,
+i.e. treat implicit visiblity as \fIVISIBILITY\fR. For a list of
+recognized values, check the \fB\-M\fR option.
+.
+.TP
+\fB\-I\fR, \fB\-\-include\fR \fIPATH\fR
+Search inside \fIPATH\fR when evaluating \fB{$INCLUDE}\fR directives.
+.
+.TP
+.B \-\-include\-creation\-time
+Include a creation timestamp inside the generated files.
+.
+.TP
+\fB\-\-introduction\fR \fIFILE\fR
+Specify the name of a text file with introductory materials for the project.
+.
+.TP
+\fB\-L\fR, \fB\-\-language\fR \fILANG\fR
+Output language. Valid languages are:
+.RS
+.TQ
+.B ba
+Bosnian (Codepage 1250)
+.TQ
+.B bg
+Bulgarian (UTF-8)
+.TQ
+.B br.1252
+Brazilian (Codepage 1252)
+.TQ
+.B br.utf8
+Brazilian (UTF-8)
+.TQ
+.B ct
+Catalan
+.TQ
+.B cz
+Czech (Codepage 1250)
+.TQ
+.B cz.iso-8859-2
+Czech (Codepage ISO-8859-2)
+.TQ
+.B de
+German (Codepage ISO-8859-15)
+.TQ
+.B de.utf8
+German (UTF-8)
+.TQ
+.B dk
+Danish
+.TQ
+.B en
+English
+.TQ
+.B es
+Spanish
+.TQ
+.B fr
+French (Codepage ISO-8859-15)
+.TQ
+.B fr.utf8
+French (UTF-8)
+.TQ
+.B gb2312
+Chinese (Simple, gb2312)
+.TQ
+.B hu.1250
+Hungarian (Codepage 1250)
+.TQ
+.B id
+Indonesian
+.TQ
+.B it
+Italian
+.TQ
+.B jv
+Javanese
+.TQ
+.B mr
+Croatian
+.TQ
+.B nl
+Dutch
+.TQ
+.B pl.cp1250
+Polish (Codepage CP1250)
+.TQ
+.B pl.iso-8859-2
+Polish (Codepage ISO 8859-2)
+.TQ
+.B ru.866
+Russian (Codepage 866)
+.TQ
+.B ru.1251
+Russian (Codepage 1251)
+.TQ
+.B ru.koi8r
+Russian (KOI-8)
+.TQ
+.B ru.utf8
+Russian (UTF-8)
+.TQ
+.B se
+Swedish
+.TQ
+.B sk
+Slovak (Codepage 1250)
+.RE
+.
+.TP
+\fB\-\-latex\-head\fR \fIFILE\fR
+Specify a file that includes lines to be inserted
+into the preamble of the output LaTeX file.
+.
+.TP
+\fB\-\-link\-gv\-classes\fR \fIFORMAT\fR
+Add a link to a \fB"GVClasses.FORMAT"\fR file
+generated by the \fBdot\fR program, where \fIFORMAT\fR is
+any extension that \fBdot\fR can generate (e.g. jpg).
+Currently available only for HTML output.
+.
+.TP
+\fB\-\-link\-gv\-uses\fR \fIFORMAT\fR
+Add a link to a \fB"GVUses.FORMAT"\fR file generated by the \fBdot\fR program,
+where \fIFORMAT\fR is any extension that \fBdot\fR can generate (e.g. jpg).
+Currently available only for HTML output.
+.
+.TP
+\fB\-\-link\-look\fR \fISTYLE\fR
+Controls how links are displayed in documentation. Possible values are:
+.RS
+.TQ
+.B default
+Show the complete link name, as specified by @link.
+.TQ
+.B full
+Show the complete link name, and try to make each part of it a link.
+.TQ
+.B stripped
+Show only last part of the link.
+.RE
+.
+.TP
+.B \-\-lowercase-keywords
+Convert all literal tag keywords to lowercase
+(e.g. \fI@nil\fR, \fI@false\fR, \fI@true\fR).
+.
+.TP
+\fB\-M\fR, \fB\-\-visible\-members\fR \fILIST\fR
+Only include members of given visibility. Recognized visibilities are:
+\fIpulished\fR, \fIpublic\fR, \fIprotected\fR, \fIstrictprotected\fR,
+\fIprivate\fR, \fIstrictprivate\fR, \fIautomated\fR, \fIimplicit\fR.
+.
+.TP
+.B \-\-markdown
+Decode Markdown syntax.
+.
+.TP
+\fB\-\-marker\fR \fIMARKER\fR
+Parse only \fB{MARKER\fR, \fB(*MARKER\fR and \fB//MARKER\fR comments.
+Overrides the \fB\-\-staronly\fR option.
+.
+.TP
+.B \-\-marker\-optional
+Do not require the markers given by the \fB\-\-marker\fR option,
+but remove them from the comment if they exist.
+.
+.TP
+\fB\-N\fR, \fB\-\-name\fR \fINAME\fR
+Specify a name for the documentation.
+.
+.TP
+.B \-\-no\-macro
+Disable support for FPC macros.
+.
+.TP
+.B \-\-numericfilenames
+Make the HTML generator create numeric filenames.
+.
+.TP
+\fB\-O\fR, \fB\-\-format\fR \fIFORMAT\fR
+Specify the output format. Must be one of: \fIhtml\fR, \fIhtmlhelp\fR,
+\fIlatex\fR, \fIlatex2rtf\fR or \fIsimplexml\fR.
+.
+.TP
+\fB\-R\fR, \fB\-\-description\fR \fIFILE\fR
+Read descriptions from \fIFILE\fR.
+.
+.TP
+\fB\-\-sort\fR \fIGROUPLIST\fR
+Specifies which groups of items are sorted (the rest is presented
+in the same order they were declared in source files).
+Recognized groups are: \fIconstants\fR, \fIfunctions\fR, \fImethods\fR,
+\fInon-record-fields\fR, \fIproperties\fR, \fIrecord-fields\fR, \fIstructures\fR,
+\fItypes\fR, \fIvariables\fI.
+.
+.TP
+\fB\-S\fR, \fB\-\-source\fR \fIFILE\fR
+Read the list of source filenames from \fIFILE\fR.
+.
+.TP
+.B \-\-spell\-check
+Enable spell-checking (via Aspell).
+Specify language by using the \fB\-\-language\fR option.
+.
+.TP
+\fB\-\-spell\-check\-ignore\-words\fR \fIFILE\fR
+When spell-checking, ignore the words listed inside \fIFILE\fR.
+The list should contain one word per line.
+.
+.TP
+.B \-\-staronly
+Parse only \fB{**\fR, \fB(***\fR and \fB//**\fR style comments.
+.
+.TP
+\fB\-T\fR, \fB\-\-title\fR \fITITLE\fR
+Specify the title of the documentation.
+.
+.TP
+.B \-\-use\-tipue\-search
+Use the \fBtipue\fR search engine in HTML output.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbosity\fR \fILEVEL\fR
+Set log verbosity. \fILEVEL\fR must be a number in the 0-6 range. Default is 2.
+.
+.TP
+.B \-\-version
+Show version information and exit.
+.
+.TP
+.B \-\-write\-uses\-list
+Add the \fBuses\fR list to the output.
+.
+.TP
+\fB\-X\fR, \fB\-\-exclude\-generator\fR
+Do not include information about PasDoc in the generated files.
+.
+.
+.SH ONLINE DOCUMENTATION
+For the full documentation, visit \fBhttps://pasdoc.github.io/\fR.
