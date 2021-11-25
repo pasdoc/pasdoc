@@ -3,7 +3,7 @@
 ## Upcoming Next Release
 
 * Fixed using introduction @shortTitle
-* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer)
+* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file)
 * Fixed resolving relative paths from introduction/conclusion
 * Fixed parsing unit implementation with "begin" instead of "initialization"
 

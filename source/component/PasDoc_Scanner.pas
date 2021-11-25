@@ -822,6 +822,7 @@ var
   function TryOpen(const Path: string): boolean;
   var
     Name: string;
+    IncludeStream: TStream;
   begin
     Name := Path + N;
     DoMessage(5, pmtInformation, 'Trying to open include file "%s"...', [Name]);
@@ -835,19 +836,20 @@ var
     end;
 
     if Result then
+    begin
       { create new tokenizer with stream }
     {$IFDEF STRING_UNICODE}
-      OpenNewTokenizer(TStreamReader.Create(Name),
-        Name, ExtractFilePath(Name));
+      IncludeStream := TStreamReader.Create(Name);
     {$ELSE}
     {$IFDEF USE_BUFFERED_STREAM}
-      OpenNewTokenizer(TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite),
-        Name, ExtractFilePath(Name));
+      IncludeStream := TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite);
     {$ELSE}
-      OpenNewTokenizer(TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite),
-        Name, ExtractFilePath(Name));
+      IncludeStream := TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
     {$ENDIF}
     {$ENDIF}
+      SkipBOM(IncludeStream);
+      OpenNewTokenizer(IncludeStream, Name, ExtractFilePath(Name));
+    end;
   end;
 
   function TryOpenIncludeFilePaths: boolean;
