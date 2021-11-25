@@ -456,6 +456,14 @@ procedure SkipBOM(const InputStream: TStream);
 var
   A : array [0..3] of Byte;
 begin
+  { Stream too short to contain BOM.
+    This may happen e.g. for (completely empty and valid) .inc files.
+
+    TODO: This is not friendly to streams that don't have determined Size,
+    like pipes, although in practice we don't use SkipBOM on such streams now. }
+
+  if InputStream.Size < 4 then
+    Exit;
   InputStream.ReadBuffer(A, 4);
 
   { See also TStreamReader.GetCodePageFromBOM for an implementation
