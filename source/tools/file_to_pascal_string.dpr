@@ -40,10 +40,15 @@ uses Math, SysUtils;
 
 const
   { String constants are (at max) this long.
+
+    Initially we set this to 1000.
     This avoids http://sourceforge.net/p/pasdoc/bugs/82/ problem
     with Delphi XE compilation like
-    [DCC Fatal Error] jquery-1.7.1.min.js.inc(4): F2069 Line too long (more than 1023 characters) }
-  MaxStringLength = 1000;
+    [DCC Fatal Error] jquery-1.7.1.min.js.inc(4): F2069 Line too long (more than 1023 characters)
+
+    Then we set this to 255. This avoids Delphi 11 problem:
+    [dcc64 Error] bricks_base64.inc(3): E2056 String literals may have at most 255 elements }
+  MaxStringLength = 255;
 var
   Src, Dest: TextFile;
   SrcFileName, DestFileName, S, Next: string;
