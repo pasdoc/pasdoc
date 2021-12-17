@@ -1081,6 +1081,167 @@ var
     until (Result = nil) or (Result.MyType <> TOK_WHITESPACE);
   end;
 
+  function ParseRTLVersion : Boolean;
+  var
+    T: TToken;
+    Conditional : Integer;
+  begin
+
+    T := NextToken;
+
+    if T.IsSymbol(SYM_GREATER_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := RTLVersion > Conditional;
+    end
+    else if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := RTLVersion >= Conditional;
+    end
+    else if T.IsSymbol(SYM_LESS_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := RTLVersion < Conditional;
+    end
+    else if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := RTLVersion <= Conditional;
+    end
+    else if T.IsSymbol(SYM_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := RTLVersion = Conditional;
+    end;
+
+    FreeAndNil(T);
+  end;
+
+  function ParseSizeOf : Boolean;
+  var
+    T        : TToken;
+    SizeType : string;
+  begin
+
+    T := NextToken;
+
+    if not T.IsSymbol(SYM_LEFT_PARENTHESIS) then
+        raise EInvalidIfCondition.CreateFmt('Expected "(", got %s', [T.Description]);
+
+    FreeAndNil(T);
+    T := NextToken;
+
+    SizeType := T.Data;
+
+    FreeAndNil(T);
+    T := NextToken;
+
+    if not T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+      raise EInvalidIfCondition.CreateFmt('Expected ")", got %s', [T.Description]);
+
+    FreeAndNil(T);
+    T := NextToken;
+
+    if not (T.MyType = TOK_SYMBOL) then
+      raise EInvalidIfCondition.CreateFmt('Expected a TOK_SYMBOL, got %s', [T.Description]);
+
+    if T.IsSymbol(SYM_GREATER_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+
+      Result := SizeOf(SizeType) > StrToInt(T.Data);
+    end
+    else if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+
+      Result := SizeOf(SizeType) >= StrToInt(T.Data);
+    end
+    else if T.IsSymbol(SYM_LESS_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+
+      Result := SizeOf(SizeType) < StrToInt(T.Data);
+    end
+    else if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+
+      Result := SizeOf(SizeType) <= StrToInt(T.Data);
+    end
+    else if T.IsSymbol(SYM_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+
+      Result := SizeOf(SizeType) = StrToInt(T.Data);
+    end;
+
+    FreeAndNil(T);
+  end;
+
+  function ParseCompilerVersion : Boolean;
+  var
+    T: TToken;
+    Conditional : Integer;
+  begin
+
+    T := NextToken;
+
+    if T.IsSymbol(SYM_GREATER_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := CompilerVersion > Conditional;
+    end
+    else if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := CompilerVersion >= Conditional;
+    end
+    else if T.IsSymbol(SYM_LESS_THAN) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := CompilerVersion < Conditional;
+    end
+    else if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := CompilerVersion <= Conditional;
+    end
+    else if T.IsSymbol(SYM_EQUAL) then
+    begin
+      FreeAndNil(T);
+      T := NextToken;
+      Conditional := StrToInt(T.Data);
+      Result := CompilerVersion = Conditional;
+    end;
+
+    FreeAndNil(T);
+  end;
+
   (* Consume tokens after "defined.
      We handle two forms:
        {$IF DEFINED(MySym)}
@@ -1195,6 +1356,9 @@ var
     if Identifier = 'defined' then
       Result := ParseDefinedFunctionParameter
     else
+    if Identifier = 'compilerversion' then
+      Result := ParseCompilerVersion
+    else
     if Identifier = 'undefined' then
       // just negate the result defined(xxx) would have
       Result := not ParseDefinedFunctionParameter
@@ -1203,7 +1367,10 @@ var
       Result := IsSwitchDefined(ParseOptionFunctionParameter)
     else
     if Identifier = 'sizeof' then
-      raise EInvalidIfCondition.Create('Evaluating "sizeof" function for $if / $elseif not implemented', [])
+      Result := ParseSizeOf
+    else
+    if Identifier = 'rtlversion' then
+      Result := ParseRTLVersion
     else
     if Identifier = 'declared' then
       raise EInvalidIfCondition.Create('Evaluating "declared" function for $if / $elseif not implemented', [])
