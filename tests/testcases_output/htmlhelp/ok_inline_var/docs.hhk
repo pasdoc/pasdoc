@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="EdgeConsoleLog">
+<param name="Local" value="ok_inline_var.html#EdgeConsoleLog">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_inline_var.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="t0">
+<param name="Local" value="ok_inline_var.html#t0">
+</object>
+</ul>
+</body></html>
