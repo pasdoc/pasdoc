@@ -1598,12 +1598,21 @@ var
       // Check only keywords; skip all keywords inside ASM blocks except "end"
       if (t.MyType = TOK_KEYWORD) and (not AsmBlock or (t.Info.KeyWord = KEY_END)) then
         case t.Info.KeyWord of
-          // nested var/const/type section
+          // nested const/type section
           // KEY_RESOURCESTRING and KEY_THREADVAR are not allowed here but let them remain
           KEY_RESOURCESTRING, KEY_CONST,
           KEY_TYPE,
-          KEY_THREADVAR, KEY_VAR:
+          KEY_THREADVAR:
             begin
+              Scanner.UnGetToken(t);
+              ParseTVCSection(DummyUnit); // ignore section contents
+            end;
+          // nested var section or inline var
+          KEY_VAR:
+            if not InsideMethodBody then
+            begin
+              // special case to handle typeless inline var declaration:
+              // "begin ... var foo := 1; ... end;" - just skip if the clause is inside a method body
               Scanner.UnGetToken(t);
               ParseTVCSection(DummyUnit); // ignore section contents
             end;
