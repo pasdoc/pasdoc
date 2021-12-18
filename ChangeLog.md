@@ -6,6 +6,7 @@
 * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file)
 * Fixed resolving relative paths from introduction/conclusion
 * Fixed parsing unit implementation with "begin" instead of "initialization"
+* Fixed parsing unit implementation inline var (Fr0sT-Brutal)
 
 ## Version 0.16.0 (2021-02-07)
 
