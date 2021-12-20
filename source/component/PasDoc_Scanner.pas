@@ -846,8 +846,8 @@ var
     {$ELSE}
       IncludeStream := TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
     {$ENDIF}
-    {$ENDIF}
       SkipBOM(IncludeStream);
+    {$ENDIF}
       OpenNewTokenizer(IncludeStream, Name, ExtractFilePath(Name));
     end;
   end;
