@@ -2086,6 +2086,7 @@ procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
         KEY_INTERFACE:     Result := CIO_INTERFACE;
         KEY_OBJECT:        Result := CIO_OBJECT;
         KEY_RECORD:        Result := CIO_RECORD;
+        KEY_TYPE:          Result := CIO_TYPE;
         else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
       end
     else
@@ -2190,6 +2191,12 @@ begin
               Exit;
             end;
           end;
+        KEY_TYPE: begin
+            ParseCIO(U, TypeName, TypeNameWithGeneric, KeyWordToCioType(t.Info.KeyWord, False),
+              RawDescriptionInfo, False);
+            FreeAndNil(t);
+            Exit;          //
+        end;
       end;
     if Assigned(t) then begin
       if (t.MyType = TOK_KEYWORD) then begin
@@ -3484,7 +3491,7 @@ begin
         FreeAndNil(t);
         t := GetNextToken;
       end
-      else if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+      else if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
         (t.MyType = TOK_IDENTIFIER) and
         (t.Info.StandardDirective = SD_HELPER) then
       begin
@@ -3605,7 +3612,7 @@ begin
       end;
       t := GetNextToken;
 
-      if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+      if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
           (ACio.ClassDirective = CT_HELPER) then
       begin
         if t.IsKeyWord(KEY_FOR) then

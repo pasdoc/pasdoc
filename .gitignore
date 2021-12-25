@@ -1,10 +1,12 @@
 # Output dirs and files
 bin/
 lib/
+backup/
 source/autodoc/html_by_pasdoc_gui/
 source/autodoc/html/
 source/autodoc/latex/
 source/gui/pasdoc_gui
+source/console/pasdoc
 *.zip
 *.tar.gz
 

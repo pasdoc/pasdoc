@@ -566,7 +566,8 @@ const
     'object',
     'packed object',
     'record',
-    'packed record');
+    'packed record',
+    'type helper');
 
   procedure WriteMethodsSummary;
   begin
