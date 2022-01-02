@@ -23,7 +23,7 @@ end;</detailed></description>
     <param name="A">means sthg about TestRecursiveTag</param>
     <param name="B">also means sthg. <code>Code inside.</code></param>
     <result>You can make tags recursion any level deep : <code>This is a code with a link to TestRecursiveTag</code></result>
-    <description><detailed>This is a test of tags expanded by TPasMethod handlers. Note that all three tags are expanded recursively.     </detailed></description>
+    <description><detailed>This is a test of tags expanded by TPasRoutine handlers. Note that all three tags are expanded recursively.     </detailed></description>
   </routine>
   <routine name="TestRecursiveTag" type="procedure" declaration="procedure TestRecursiveTag;">
     <description><detailed>@code and @returns (and some others) tags are recursive, you can freely put other tags inside. <code>This is link to TestHtmlAndLatexTags.</code> </detailed></description>
