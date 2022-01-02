@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2022 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -139,7 +139,7 @@ type
 
       @item Of TPasEnum: Members, FullDeclararation.
 
-      @item Of TPasMethod: What.
+      @item Of TPasRoutine: What.
 
       @item Of TPasVarConst: FullDeclaration.
 
@@ -199,10 +199,10 @@ type
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
 
-    { Returns @link(TMethodType) value for corresponding @link(TKeyWord) value.
+    { Returns @link(TRoutineType) value for corresponding @link(TKeyWord) value.
       @raises(EInternalParserError
-        If given KeyWord has no corresponding @link(TMethodType) value.) }
-    function KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
+        If given KeyWord has no corresponding @link(TRoutineType) value.) }
+    function KeyWordToRoutineType(KeyWord: TKeyWord): TRoutineType;
 
     procedure DoError(const AMessage: string;
       const AArguments: array of const);
@@ -304,25 +304,25 @@ type
 
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
-      Resulting @link(TPasMethod) item will be returned in M.
+      Resulting @link(TPasRoutine) item will be returned in M.
 
       ClassKeywordString contains the keyword 'class'
       in the exact spelling as it was found in input,
       for class methods. Else it contains ''.
 
-      MethodTypeString contains the keyword 'constructor', 'destructor',
+      RoutineTypeString contains the keyword 'constructor', 'destructor',
       'function' or 'procedure' or standard directive 'operator'
       in the exact spelling as it was found in input.
-      You can specify MethodTypeString = '', this way you avoid including
+      You can specify RoutineTypeString = '', this way you avoid including
       such keyword at the beginning of returned M.FullDeclaration.
 
-      MethodType is used for the What field of the resulting TPasMethod.
-      This should correspond to MethodTypeString.
+      RoutineType is used for the What field of the resulting TPasRoutine.
+      This should correspond to RoutineTypeString.
 
       D may contain a description or nil. }
-    procedure ParseCDFP(out M: TPasMethod;
+    procedure ParseRoutine(out M: TPasRoutine;
       const ClassKeywordString: string;
-      const MethodTypeString: string; MethodType: TMethodType;
+      const RoutineTypeString: string; RoutineType: TRoutineType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const NeedName: boolean; InitItemsForNextBackComment: boolean;
       const IsGeneric: String);
@@ -581,15 +581,15 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.KeyWordToMethodType(KeyWord: TKeyWord): TMethodType;
+function TParser.KeyWordToRoutineType(KeyWord: TKeyWord): TRoutineType;
 begin
   case KeyWord of
-    KEY_CONSTRUCTOR: Result := METHOD_CONSTRUCTOR;
-    KEY_DESTRUCTOR:  Result := METHOD_DESTRUCTOR;
-    KEY_FUNCTION:    Result := METHOD_FUNCTION;
-    KEY_PROCEDURE:   Result := METHOD_PROCEDURE;
+    KEY_CONSTRUCTOR: Result := ROUTINE_CONSTRUCTOR;
+    KEY_DESTRUCTOR:  Result := ROUTINE_DESTRUCTOR;
+    KEY_FUNCTION:    Result := ROUTINE_FUNCTION;
+    KEY_PROCEDURE:   Result := ROUTINE_PROCEDURE;
   else
-    raise EInternalParserError.Create('KeyWordToMethodType: invalid keyword');
+    raise EInternalParserError.Create('KeyWordToRoutineType: invalid keyword');
   end;
 end;
 
@@ -838,9 +838,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCDFP(out M: TPasMethod;
+procedure TParser.ParseRoutine(out M: TPasRoutine;
   const ClassKeywordString: string;
-  const MethodTypeString: string; MethodType: TMethodType;
+  const RoutineTypeString: string; RoutineType: TRoutineType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const NeedName: boolean; InitItemsForNextBackComment: boolean;
   const IsGeneric: String);
@@ -906,27 +906,27 @@ var
 begin
   t := nil;
   WasDeprecatedDirective := false;
-  M := TPasMethod.Create;
+  M := TPasRoutine.Create;
   try
     M.RawDescriptionInfo^ := RawDescriptionInfo;
     M.SetAttributes(CurrentAttributes);
     if InitItemsForNextBackComment then
       ItemsForNextBackComment.ClearAndAdd(M);
 
-    M.What := MethodType;
+    M.What := RoutineType;
 
     if IsGeneric <> '' then
       M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', IsGeneric);
     if ClassKeyWordString <> '' then
       M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', ClassKeyWordString);
-    M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', MethodTypeString);
+    M.FullDeclaration := SAppendPart(M.FullDeclaration, ' ', RoutineTypeString);
 
     { next non-wc token must be the name }
     if NeedName then
     begin
       t := GetNextToken;
 
-      if (MethodType = METHOD_OPERATOR) then
+      if (RoutineType = ROUTINE_OPERATOR) then
       begin
         { In FPC operators "or", "and", "xor" (expressed as keywords) can be
           overloaded, also symbolic operators like "+", "*" etc..
@@ -945,7 +945,7 @@ begin
         Actual only when reading impl section. Resulting name requires additional
         processing (splitting to class and method names).
         Not used for FPC keyword and symbol operators }
-      if (MethodType = METHOD_OPERATOR) and (t.MyType <> TOK_IDENTIFIER) then
+      if (RoutineType = ROUTINE_OPERATOR) and (t.MyType <> TOK_IDENTIFIER) then
         M.Name := t.Data
       else
       begin
@@ -954,7 +954,7 @@ begin
       end;
 
       DoMessage(5, pmtInformation, 'Parsing %s "%s"',
-        [MethodTypeToString(MethodType), M.Name]);
+        [RoutineTypeToString(RoutineType), M.Name]);
       M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
       FreeAndNil(t);
     end;
@@ -1428,7 +1428,7 @@ end;
 
 procedure TParser.ParseInterfaceSection(const U: TPasUnit);
 var
-  M: TPasMethod;
+  M: TPasRoutine;
   t, t2: TToken;
   PropertyParsed: TPasProperty;
 begin
@@ -1444,7 +1444,7 @@ begin
         TOK_IDENTIFIER:
           if t.Info.StandardDirective = SD_OPERATOR then
           begin
-            ParseCDFP(M, '', t.Data, METHOD_OPERATOR,
+            ParseRoutine(M, '', t.Data, ROUTINE_OPERATOR,
               GetLastComment, true, true, '');
             U.FuncsProcs.Add(M);
           end
@@ -1457,7 +1457,7 @@ begin
             begin
               t := GetNextToken;
               try
-                ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                ParseRoutine(M, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
                   GetLastComment, true, true, '');
                 U.FuncsProcs.Add(M)
               finally
@@ -1481,7 +1481,7 @@ begin
                 end;
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin
-                  ParseCDFP(M, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+                  ParseRoutine(M, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
                     GetLastComment, true, true, '');
                   U.FuncsProcs.Add(M);
                 end;
@@ -1533,13 +1533,13 @@ begin
   end;
 end;
 
-{ Merge metadata of Source and Dest method items.
+{ Merge metadata of Source and Dest routines.
   At the stage of parsing impl section these items only have RawDescriptionInfo
   so that's the only data we've to merge.
 
-  NB: this merge is only correct if method items haven't been processed yet so
-  there's no sense in moving it to common util unit or TPasMethod members }
-procedure MergeMethodData(MergeType: TInfoMergeType; Dest: TPasMethod; const SourceData: TRawDescriptionInfo);
+  NB: this merge is only correct if routines haven't been processed yet so
+  there's no sense in moving it to common util unit or TPasRoutine members. }
+procedure MergeRoutineData(MergeType: TInfoMergeType; Dest: TPasRoutine; const SourceData: TRawDescriptionInfo);
 begin
   Dest.RawDescriptionInfo^.Content :=
     MergeStringValues(MergeType, Dest.RawDescriptionInfo^.Content, SourceData.Content);
@@ -1578,7 +1578,7 @@ var
 
   { Here we stand:
       - at the beginning of a routine's (function/procedure/constructor/destructor)
-        valuable (non-comment) inner contents (after ParseCDFP invokation)
+        valuable (non-comment) inner contents (after ParseRoutine invokation)
       or
       - right after function/procedure keyword (lambda assignment/declaration; parameters
         or comment or contents following)
@@ -1588,7 +1588,7 @@ var
     t: TToken;
     EndLevel: Integer;
     InsideMethodBody, AsmBlock: Boolean;
-    M: TPasMethod;
+    M: TPasRoutine;
   begin
     EndLevel := 0; InsideMethodBody := False; AsmBlock := False; t := nil;
     repeat
@@ -1637,7 +1637,7 @@ var
               // otherwise it's a nested subroutine that requires name
               if not InsideMethodBody then
               begin
-                ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord), GetLastComment, True, False, '');
+                ParseRoutine(M, '', '', KeyWordToRoutineType(t.Info.KeyWord), GetLastComment, True, False, '');
                 FreeAndNil(M);
               end
               else
@@ -1707,7 +1707,7 @@ var
         of overload feature. Specifying Index allows to search for a concrete item.
         Of course this will work correctly only if methods were declared in the
         same order as they appear in impl section }
-  function FindExistingMethod(U: TPasUnit; const MethodName: string; Index: Integer): TPasMethod;
+  function FindExistingRoutine(U: TPasUnit; const MethodName: string; Index: Integer): TPasRoutine;
   var
     NameParts: TNameParts;
     i: Integer;
@@ -1720,7 +1720,7 @@ var
     begin
       item := U.FuncsProcs.FindListItem(MethodName, Index);
       if item <> nil then
-        Result := item as TPasMethod;
+        Result := item as TPasRoutine;
     end
     else
     begin
@@ -1744,17 +1744,16 @@ var
       DoMessage(5, pmtInformation, 'No definition of %d-th method "%s" found - probably internal or ignored', [Index, MethodName])
   end;
 
-  { Read proc/func/class method/operator header and merge its description with
-    existing item }
-  procedure HandleMethod(U: TPasUnit; MethodType: TMethodType; IsGeneric: String; MethodCounts: THash = nil;
+  { Read routine header and merge its description with existing item. }
+  procedure HandleRoutine(U: TPasUnit; RoutineType: TRoutineType; IsGeneric: String; MethodCounts: THash = nil;
     const ClassKeyWordString: string = '');
   var
-    M, ExistingMethod: TPasMethod;
+    M, ExistingRoutine: TPasRoutine;
     Count: NativeUInt;
   begin
-    ParseCDFP(M, ClassKeyWordString, MethodTypeToString(MethodType), MethodType,
+    ParseRoutine(M, ClassKeyWordString, RoutineTypeToString(RoutineType), RoutineType,
       GetLastComment, True, True, IsGeneric);
-    // ParseCDFP was called with InitItemsForNextBackComment so it added M to
+    // ParseRoutine was called with InitItemsForNextBackComment so it added M to
     // ItemsForNextBackComment list. We must clear it so that following comments
     // in AutoBackComments mode won't glue to method object which is already disposed
     ItemsForNextBackComment.Clear;
@@ -1770,16 +1769,16 @@ var
     else
       Count := 1;
 
-    ExistingMethod := FindExistingMethod(U, M.Name, Count - 1);
+    ExistingRoutine := FindExistingRoutine(U, M.Name, Count - 1);
     // NB: Currently we don't add methods not declared in intf section
-    if ExistingMethod <> nil then
-      MergeMethodData(FInfoMergeType, ExistingMethod, M.RawDescriptionInfo^);
+    if ExistingRoutine <> nil then
+      MergeRoutineData(FInfoMergeType, ExistingRoutine, M.RawDescriptionInfo^);
     // External and forward methods have no body
     if [SD_FORWARD, SD_EXTERNAL]*M.Directives = [] then
     begin
       SkipMethodBody;
       DoMessage(5, pmtInformation, 'Skipped body of %s "%s"',
-        [MethodTypeToString(MethodType), M.Name]);
+        [RoutineTypeToString(RoutineType), M.Name]);
     end;
     FreeAndNil(M);
   end;
@@ -1811,7 +1810,7 @@ begin
           TOK_IDENTIFIER:
             if t.Info.StandardDirective = SD_OPERATOR then
             begin
-              HandleMethod(U, METHOD_OPERATOR, '');
+              HandleRoutine(U, ROUTINE_OPERATOR, '');
             end
             else if t.IsStandardDirective(SD_GENERIC) then
             begin
@@ -1820,7 +1819,7 @@ begin
               begin
                  t2 := GetNextToken;
                  try
-                   HandleMethod(U, KeyWordToMethodType(t2.Info.KeyWord), t.Data, MethodCounts)
+                   HandleRoutine(U, KeyWordToRoutineType(t2.Info.KeyWord), t.Data, MethodCounts)
                  finally
                    FreeAndNil(t2)
                  end
@@ -1846,7 +1845,7 @@ begin
                   ;
                 KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
                   begin
-                    HandleMethod(U, KeyWordToMethodType(t.Info.KeyWord), '', MethodCounts);
+                    HandleRoutine(U, KeyWordToRoutineType(t.Info.KeyWord), '', MethodCounts);
                   end;
                 // Do not read unit used internally for now - maybe will do in the future
                 KEY_USES:
@@ -2102,7 +2101,7 @@ var
   NormalType: TPasType;
   TypeName: string;
   LCollected, LTemp, TypeNameWithGeneric: string;
-  MethodType: TPasMethod;
+  RoutineType: TPasRoutine;
   EnumType: TPasEnum;
   T: TToken;
 begin
@@ -2195,15 +2194,15 @@ begin
       if (t.MyType = TOK_KEYWORD) then begin
         if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
         begin
-          ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+          ParseRoutine(RoutineType, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
             RawDescriptionInfo, false, true, '');
-          MethodType.Name := TypeName;
-          MethodType.FullDeclaration :=
-            TypeName + ' = ' + MethodType.FullDeclaration;
+          RoutineType.Name := TypeName;
+          RoutineType.FullDeclaration :=
+            TypeName + ' = ' + RoutineType.FullDeclaration;
           if U <> nil then
-            U.AddType(MethodType)
+            U.AddType(RoutineType)
           else
-            FreeAndNil(MethodType);
+            FreeAndNil(RoutineType);
           FreeAndNil(t);
           Exit;
         end;
@@ -2520,7 +2519,7 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
 var
   NewItem: TPasFieldVariable;
   ItemCollector: TPasFieldVariable;
-  m: TPasMethod;
+  m: TPasRoutine;
   t: TToken;
   NewItemNames: TStringList;
   I: Integer;
@@ -2558,16 +2557,16 @@ begin
       if (t.MyType = TOK_KEYWORD) and
          (t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE]) then
       begin
-        { MethodTypeString for ParseCDFP below is '', because we already included
+        { RoutineTypeString for ParseRoutine below is '', because we already included
           t.Data inside ItemCollector.FullDeclaration.
-          If MethodTypeString would be t.Data, then we would incorrectly
+          If RoutineTypeString would be t.Data, then we would incorrectly
           append t.Data twice to ItemCollector.FullDeclaration
           when appending m.FullDeclaration to ItemCollector.FullDeclaration.
 
-          Note that param InitItemsForNextBackComment for ParseCDFP
+          Note that param InitItemsForNextBackComment for ParseRoutine
           below is false. We will free M in the near time, and we don't
           want M to grab back-comment intended for our fields. }
-        ParseCDFP(M, '', '', KeyWordToMethodType(t.Info.KeyWord),
+        ParseRoutine(M, '', '', KeyWordToRoutineType(t.Info.KeyWord),
           EmptyRawDescriptionInfo, false, false, '');
         try
           ItemCollector.FullDeclaration :=
@@ -3181,7 +3180,7 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
 
 var
   ClassKeyWordString: string;
-  M: TPasMethod;
+  M: TPasRoutine;
   ConstantParsed: TPasItem;
   p: TPasProperty;
   StrictVisibility: Boolean;
@@ -3237,8 +3236,8 @@ begin
           KEY_FUNCTION,
           KEY_PROCEDURE:
             begin
-              ParseCDFP(M, ClassKeyWordString,
-                t.Data, KeyWordToMethodType(t.Info.KeyWord),
+              ParseRoutine(M, ClassKeyWordString,
+                t.Data, KeyWordToRoutineType(t.Info.KeyWord),
                 GetLastComment, true, true, '');
 
               ClassKeyWordString := '';
@@ -3291,7 +3290,7 @@ begin
               { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
               KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
               Mode := pmUndefined;
-              ParseCDFP(M, ClassKeyWordString, t.Data, METHOD_OPERATOR,
+              ParseRoutine(M, ClassKeyWordString, t.Data, ROUTINE_OPERATOR,
                 GetLastComment, true, true, '');
               ClassKeyWordString := '';
 
@@ -3366,8 +3365,8 @@ begin
               begin
                  t2 := GetNextToken;
                  try
-                   ParseCDFP(M, ClassKeyWordString,
-                     t2.Data, KeyWordToMethodType(t2.Info.KeyWord),
+                   ParseRoutine(M, ClassKeyWordString,
+                     t2.Data, KeyWordToRoutineType(t2.Info.KeyWord),
                      GetLastComment, true, true, t.Data);
 
                    ClassKeyWordString := '';
@@ -3698,7 +3697,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
     NormalType: TPasType;
     TypeName: string;
     LCollected, LTemp, TypeNameWithGeneric: string;
-    MethodType: TPasMethod;
+    RoutineType: TPasRoutine;
     EnumType: TPasEnum;
     T: TToken;
     IsGeneric: boolean;
@@ -3834,12 +3833,12 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         begin
           if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
           begin
-            ParseCDFP(MethodType, '', t.Data, KeyWordToMethodType(t.Info.KeyWord),
+            ParseRoutine(RoutineType, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
             RawDescriptionInfo, false, true, '');
-            MethodType.Name := TypeName;
-            MethodType.FullDeclaration :=
-              TypeName + ' = ' + MethodType.FullDeclaration;
-            FCioSk.Peek.Cio.Types.Add(MethodType);
+            RoutineType.Name := TypeName;
+            RoutineType.FullDeclaration :=
+              TypeName + ' = ' + RoutineType.FullDeclaration;
+            FCioSk.Peek.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
             FCioSk.Peek.SkipCioDecl := TRUE;
             ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion

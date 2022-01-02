@@ -118,14 +118,14 @@ const
 
 type
   TPasCio = class;
-  TPasMethod = class;
+  TPasRoutine = class;
   TPasProperty = class;
   TPasUnit = class;
   TAnchorItem = class;
 
   TBaseItems = class;
   TPasItems = class;
-  TPasMethods = class;
+  TPasRoutines = class;
   TPasProperties = class;
   TPasNestedCios = class;
   TPasTypes = class;
@@ -513,7 +513,7 @@ type
          @item TPasConstant
          @item TPasFieldVariable (includes type, default values, etc.)
          @item TPasType
-         @item TPasMethod (includes parameter list, procedural directives, etc.)
+         @item TPasRoutine (includes parameter list, procedural directives, etc.)
          @item TPasProperty (includes read/write and storage specifiers, etc.)
          @item(TPasEnum
 
@@ -578,7 +578,7 @@ type
     { Is optional information (that may be empty for
       after parsing unit and expanding tags) specified.
       Currently this checks @link(Params) and @link(Raises) and
-      @link(TPasMethod.Returns). }
+      @link(TPasRoutine.Returns). }
     function HasOptionalInfo: boolean; virtual;
   end;
 
@@ -611,7 +611,7 @@ type
   end;
 
   { @abstract(Pascal type (but not a procedural type --- these are expressed
-    as @link(TPasMethod).)) }
+    as @link(TPasRoutine).)) }
   TPasType = class(TPasItem)
   end;
 
@@ -635,22 +635,20 @@ type
     property Members: TPasItems read FMembers;
   end;
 
-  { Methodtype for @link(TPasMethod) }
-  TMethodType = (METHOD_CONSTRUCTOR, METHOD_DESTRUCTOR,
-    METHOD_FUNCTION, METHOD_PROCEDURE, METHOD_OPERATOR);
+  { Routine type for @link(TPasRoutine.What) }
+  TRoutineType = (ROUTINE_CONSTRUCTOR, ROUTINE_DESTRUCTOR,
+    ROUTINE_FUNCTION, ROUTINE_PROCEDURE, ROUTINE_OPERATOR);
 
   { This represents:
     @orderedList(
       @item global function/procedure,
-      @item method (function/procedure of a class/interface/object),
+      @item method (function/procedure of a structure (TPasCio)),
       @item pointer type to one of the above (in this case Name is the type name).
-    )
-
-    TODO: Rename to TPasRoutine, most general word. }
-  TPasMethod = class(TPasItem)
+    ) }
+  TPasRoutine = class(TPasItem)
   protected
     FReturns: string;
-    FWhat: TMethodType;
+    FWhat: TRoutineType;
     FDirectives: TStandardDirectives;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -666,7 +664,7 @@ type
     procedure RegisterTags(TagManager: TTagManager); override;
 
     { }
-    property What: TMethodType read FWhat write FWhat;
+    property What: TRoutineType read FWhat write FWhat;
 
     { What does the method return.
 
@@ -730,7 +728,7 @@ type
   protected
     FClassDirective: TClassDirective;
     FFields: TPasItems;
-    FMethods: TPasMethods;
+    FMethods: TPasRoutines;
     FProperties: TPasProperties;
     FAncestors: TStringPairVector;
     FOutputFileName: string;
@@ -849,7 +847,7 @@ type
                                           write FHelperTypeIdentifier;
 
     { list of all methods }
-    property Methods: TPasMethods read FMethods;
+    property Methods: TPasRoutines read FMethods;
 
     { list of properties }
     property Properties: TPasProperties read FProperties;
@@ -956,7 +954,7 @@ type
     FVariables: TPasItems;
     FCIOs: TPasItems;
     FConstants: TPasItems;
-    FFuncsProcs: TPasMethods;
+    FFuncsProcs: TPasRoutines;
     FUsesUnits: TStringVector;
     FSourceFilename: string;
     FOutputFileName: string;
@@ -984,7 +982,7 @@ type
     { list of constants defined in this unit }
     property Constants: TPasItems read FConstants;
     { list of functions and procedures defined in this unit }
-    property FuncsProcs: TPasMethods read FFuncsProcs;
+    property FuncsProcs: TPasRoutines read FFuncsProcs;
 
     { The names of all units mentioned in a uses clause in the interface
       section of this unit.
@@ -1141,13 +1139,13 @@ type
   end;
 
   { Collection of methods. }
-  TPasMethods = class(TPasItems)
+  TPasRoutines = class(TPasItems)
     { Find an Index-th item with given name on a list. Index is 0-based.
       There could be multiple items sharing the same name (overloads) while
       method of base class returns only the one most recently added item.
 
       Returns @nil if nothing can be found. }
-    function FindListItem(const AName: string; Index: Integer): TPasMethod; overload;
+    function FindListItem(const AName: string; Index: Integer): TPasRoutine; overload;
   end;
 
   { Collection of properties. }
@@ -1185,7 +1183,7 @@ const
   ( Content: ''; StreamName: ''; BeginPosition: -1; EndPosition: -1; );
 
 { Returns lowercased keyword associated with given method type. }
-function MethodTypeToString(const MethodType: TMethodType): string;
+function RoutineTypeToString(const RoutineType: TRoutineType): string;
 
 { Returns VisibilityStr for each value in Visibilities,
   delimited by commas. }
@@ -1228,11 +1226,11 @@ end;
 
 function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
 var
-  P1: TPasMethod;
-  P2: TPasMethod;
+  P1: TPasRoutine;
+  P2: TPasRoutine;
 begin
-  P1 := TPasMethod(PItem1);
-  P2 := TPasMethod(PItem2);
+  P1 := TPasRoutine(PItem1);
+  P2 := TPasRoutine(PItem2);
   { compare 'method type', order is constructor > destructor > visibility > function, procedure }
   if P1.What = P2.What then begin
     { if 'method type' is equal, compare names }
@@ -2086,9 +2084,9 @@ begin
   end;
 end;
 
-{ TPasMethods ----------------------------------------------------------------- }
+{ TPasRoutines ----------------------------------------------------------------- }
 
-function TPasMethods.FindListItem(const AName: string; Index: Integer): TPasMethod;
+function TPasRoutines.FindListItem(const AName: string; Index: Integer): TPasRoutine;
 var i, Counter: Integer;
 begin
   Counter := -1;
@@ -2098,7 +2096,7 @@ begin
       Inc(Counter);
       if Counter = Index then
       begin
-        Result := PasItemAt[i] as TPasMethod;
+        Result := PasItemAt[i] as TPasRoutine;
         Exit;
       end;
     end;
@@ -2119,7 +2117,7 @@ begin
   inherited;
   FClassDirective := CT_NONE;
   FFields := TPasItems.Create(True);
-  FMethods := TPasMethods.Create(True);
+  FMethods := TPasRoutines.Create(True);
   FProperties := TPasProperties.Create(True);
   FAncestors := TStringPairVector.Create(True);
   FCios := TPasNestedCios.Create;
@@ -2340,7 +2338,7 @@ begin
   FVariables := TPasItems.Create(True);
   FCIOs := TPasItems.Create(True);
   FConstants := TPasItems.Create(True);
-  FFuncsProcs := TPasMethods.Create(True);
+  FFuncsProcs := TPasRoutines.Create(True);
   FUsesUnits := TStringVector.Create;
 end;
 
@@ -2545,19 +2543,19 @@ begin
   Items[AIndex] := Value;
 end;
 
-{ TPasMethod ----------------------------------------------------------------- }
+{ TPasRoutine ----------------------------------------------------------------- }
 
-constructor TPasMethod.Create;
+constructor TPasRoutine.Create;
 begin
   inherited;
 end;
 
-destructor TPasMethod.Destroy;
+destructor TPasRoutine.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TPasMethod.StoreReturnsTag(
+procedure TPasRoutine.StoreReturnsTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
@@ -2567,14 +2565,14 @@ begin
   ReplaceStr := '';
 end;
 
-function TPasMethod.HasOptionalInfo: boolean;
+function TPasRoutine.HasOptionalInfo: boolean;
 begin
   Result :=
     (inherited HasOptionalInfo) or
     (Returns <> '');
 end;
 
-procedure TPasMethod.Deserialize(const ASource: TStream);
+procedure TPasRoutine.Deserialize(const ASource: TStream);
 begin
   inherited;
   ASource.Read(FWhat, SizeOf(FWhat));
@@ -2584,7 +2582,7 @@ begin
   }
 end;
 
-procedure TPasMethod.Serialize(const ADestination: TStream);
+procedure TPasRoutine.Serialize(const ADestination: TStream);
 begin
   inherited;
   ADestination.Write(FWhat, SizeOf(FWhat));
@@ -2594,7 +2592,7 @@ begin
   }
 end;
 
-procedure TPasMethod.RegisterTags(TagManager: TTagManager);
+procedure TPasRoutine.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
   TTopLevelTag.Create(TagManager, 'returns',
@@ -2733,21 +2731,22 @@ end;
 
 { global things ------------------------------------------------------------ }
 
-function MethodTypeToString(const MethodType: TMethodType): string;
+function RoutineTypeToString(const RoutineType: TRoutineType): string;
 const
-  { Maps @link(TMethodType) value to @link(TKeyWord) value.
-    When given TMethodType value doesn't correspond to any keyword,
+  { Maps @link(TRoutineType) value to @link(TKeyWord) value.
+    When given TRoutineType value doesn't correspond to any keyword,
     it maps it to KEY_INVALIDKEYWORD. }
-  MethodTypeToKeyWord: array[TMethodType] of TKeyWord =
+  RoutineTypeToKeyWord: array[TRoutineType] of TKeyWord =
   ( KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
     KEY_FUNCTION,
     KEY_PROCEDURE,
     KEY_INVALIDKEYWORD );
 begin
-  if MethodType = METHOD_OPERATOR then
-    Result := StandardDirectiveArray[SD_OPERATOR] else
-    Result := KeyWordArray[MethodTypeToKeyWord[MethodType]];
+  if RoutineType = ROUTINE_OPERATOR then
+    Result := StandardDirectiveArray[SD_OPERATOR]
+  else
+    Result := KeyWordArray[RoutineTypeToKeyWord[RoutineType]];
   Result := LowerCase(Result);
 end;
 
@@ -2774,7 +2773,7 @@ initialization
   TSerializable.Register(TPasFieldVariable);
   TSerializable.Register(TPasType);
   TSerializable.Register(TPasEnum);
-  TSerializable.Register(TPasMethod);
+  TSerializable.Register(TPasRoutine);
   TSerializable.Register(TPasProperty);
   TSerializable.Register(TPasCio);
   TSerializable.Register(TPasUnit);

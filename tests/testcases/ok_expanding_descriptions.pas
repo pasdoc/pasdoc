@@ -114,7 +114,7 @@ type
 }
 procedure TestRecursiveTag;
 
-{ This is a test of tags expanded by TPasMethod handlers.
+{ This is a test of tags expanded by TPasRoutine handlers.
   Note that all three tags are expanded recursively.
 
   @param(A means sthg about @link(TestRecursiveTag))

@@ -62,7 +62,7 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
-    procedure WriteRoutine(const item:TPasMethod);
+    procedure WriteRoutine(const item:TPasRoutine);
     procedure WriteConstant(const item:TPasItem);
     procedure WriteVariable(const item:TPasItem);
     procedure WriteTypes(const item:TPasItem);
@@ -135,13 +135,13 @@ begin
     Result := '';
 end;
 
-procedure TSimpleXMLDocGenerator.WriteRoutine(const item:TPasMethod);
+procedure TSimpleXMLDocGenerator.WriteRoutine(const item:TPasRoutine);
 var
   I: Integer;
 begin
   WriteDirectLine(space +
       '<routine name="' + ConvertString(item.name) +
-            '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
+            '" type="' + ConvertString(RoutineTypeToString(item.What)) +
      '" declaration="' + ConvertString(item.FullDeclaration) + '">');
     for I := 0 to item.params.count - 1 do
       WriteDirectLine(space +
@@ -237,7 +237,7 @@ begin
        '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
 
   for I := 0 to item.Methods.count-1 do
-    WriteRoutine(item.Methods.PasItemAt[i] as TPasMethod);
+    WriteRoutine(item.Methods.PasItemAt[i] as TPasRoutine);
 
   for I := 0 to item.Fields.count-1 do
     WriteVariable(item.fields.PasItemAt[i]);
@@ -284,7 +284,7 @@ begin
 
   // global functions
   for I := 0 to u.FuncsProcs.count-1 do
-    WriteRoutine(u.FuncsProcs.PasItemAt[i] as TPasMethod);
+    WriteRoutine(u.FuncsProcs.PasItemAt[i] as TPasRoutine);
 
   // global constants
   for I := 0 to u.Constants.count-1 do

@@ -1165,8 +1165,8 @@ begin
     WriteStartOfParagraph;
     WriteParamsOrRaises(AItem, FLanguage.Translation[trParameters],
       AItem.Params, false);
-    if AItem is TPasMethod then
-      WriteReturnDesc(TPasMethod(AItem).Returns);
+    if AItem is TPasRoutine then
+      WriteReturnDesc(TPasRoutine(AItem).Returns);
 
     { In LaTeX generator I use trExceptions, not trExceptionsRaised,
       because trExceptionsRaised is just too long and so everything

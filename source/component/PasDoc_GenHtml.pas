@@ -1172,7 +1172,7 @@ begin
       (AItem.DetailedDescription <> '') or
       (AItem is TPasCio) or
       (not ObjectVectorIsNilOrEmpty(AItem.Attributes)) or
-      (AItem is TPasMethod) or
+      (AItem is TPasRoutine) or
       (not ObjectVectorIsNilOrEmpty(AItem.SeeAlso)) or
       (AItem is TPasEnum)
     );
@@ -1382,8 +1382,8 @@ begin
   WriteAttributes(AItem.Attributes);
 
   WriteParamsOrRaises(AItem, trParameters, AItem.Params, false, 'parameters');
-  if AItem is TPasMethod then
-    WriteReturnDesc(TPasMethod(AItem).Returns);
+  if AItem is TPasRoutine then
+    WriteReturnDesc(TPasRoutine(AItem).Returns);
   WriteParamsOrRaises(AItem, trExceptionsRaised, AItem.Raises, true, 'exceptions_raised');
 
   WriteSeeAlso(AItem.SeeAlso);

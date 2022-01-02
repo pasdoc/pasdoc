@@ -1,5 +1,5 @@
 {
-  Copyright 2021-2021 PasDoc developers.
+  Copyright 2021-2022 PasDoc developers.
 
   This file is part of "PasDoc".
 

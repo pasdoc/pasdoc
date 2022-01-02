@@ -164,9 +164,9 @@ procedure TipueAddFiles(Units: TPasUnits;
         LongDescription := LongDescription +
           ' ' + EscapeIndexEntry(TPasItem(Item).Params.Text(' ', ' ')) +
           ' ' + EscapeIndexEntry(TPasItem(Item).Raises.Text(' ', ' '));
-      if Item is TPasMethod then
+      if Item is TPasRoutine then
         LongDescription := LongDescription +
-          ' ' + EscapeIndexEntry(TPasMethod(Item).Returns);
+          ' ' + EscapeIndexEntry(TPasRoutine(Item).Returns);
       if Item is TPasEnum then
       begin
         for i := 0 to TPasEnum(Item).Members.Count - 1 do
