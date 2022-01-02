@@ -141,6 +141,7 @@ begin
     OutputFileName := 'docs' + GetFileExtension;
 
   if not CreateStream(OutputFileName) then Exit;
+  WriteDirectLine('<?php');
   WriteDirectLine('global $pasdoc;');
   WriteDirectLine('$pasdoc = array(');
   WriteUnits(1);
