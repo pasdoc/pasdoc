@@ -72,29 +72,29 @@
  Definition lists tests: 
 
 <definitionlist>
-<item label="">1st item</item>
-<item label="">2nd item</item>
+<item><label></label>1st item</item>
+<item><label></label>2nd item</item>
 </definitionlist>
 
  
 
 <definitionlist>
-<item label="1st item label">1st item</item>
-<item label="2nd item label">2nd item</item>
+<item><label>1st item label</label>1st item</item>
+<item><label>2nd item label</label>2nd item</item>
 </definitionlist>
 
  
 
 <definitionlist>
-<item label="1st item label"></item>
-<item label="2nd item label"></item>
+<item><label>1st item label</label></item>
+<item><label>2nd item label</label></item>
 </definitionlist>
 
  Item spacing tests: 
 
 <definitionlist>
-<item label="1st item label">1st item</item>
-<item label="2nd item label">2nd item</item>
+<item><label>1st item label</label>1st item</item>
+<item><label>2nd item label</label>2nd item</item>
 </definitionlist>
 
  
