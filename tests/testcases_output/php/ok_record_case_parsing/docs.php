@@ -1,0 +1,25 @@
+<?php
+global $pasdoc;
+$pasdoc = array(
+  'ok_record_case_parsing' => array('html_filename' => 'ok_record_case_parsing.html', 'type' => 'unit'),
+  'TRec1' => array('html_filename' => 'ok_record_case_parsing.TRec1.html', 'type' => 'record'),
+  'TRec1.A' => array('html_filename' => 'ok_record_case_parsing.TRec1.html#A', 'type' => 'variable'),
+  'TRec1.B' => array('html_filename' => 'ok_record_case_parsing.TRec1.html#B', 'type' => 'variable'),
+  'TRec2' => array('html_filename' => 'ok_record_case_parsing.TRec2.html', 'type' => 'record'),
+  'TRec2.Field1' => array('html_filename' => 'ok_record_case_parsing.TRec2.html#Field1', 'type' => 'variable'),
+  'TRec2.A' => array('html_filename' => 'ok_record_case_parsing.TRec2.html#A', 'type' => 'variable'),
+  'TRec2.B' => array('html_filename' => 'ok_record_case_parsing.TRec2.html#B', 'type' => 'variable'),
+  'TRec3' => array('html_filename' => 'ok_record_case_parsing.TRec3.html', 'type' => 'record'),
+  'TRec3.A' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#A', 'type' => 'variable'),
+  'TRec3.B' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#B', 'type' => 'variable'),
+  'TRec3.C' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#C', 'type' => 'variable'),
+  'TRec3.D' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#D', 'type' => 'variable'),
+  'TRec3.E' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#E', 'type' => 'variable'),
+  'TRec3.F' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#F', 'type' => 'variable'),
+  'TRec3.G' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#G', 'type' => 'variable'),
+  'TRec3.H' => array('html_filename' => 'ok_record_case_parsing.TRec3.html#H', 'type' => 'variable'),
+  'TRec4' => array('html_filename' => 'ok_record_case_parsing.TRec4.html', 'type' => 'record'),
+  'TRec4.A' => array('html_filename' => 'ok_record_case_parsing.TRec4.html#A', 'type' => 'variable'),
+  'TRec4.B' => array('html_filename' => 'ok_record_case_parsing.TRec4.html#B', 'type' => 'variable'),
+  'TRec4.C' => array('html_filename' => 'ok_record_case_parsing.TRec4.html#C', 'type' => 'variable'),
+);

@@ -1,0 +1,25 @@
+<?php
+global $pasdoc;
+$pasdoc = array(
+  'ok_sorting' => array('html_filename' => 'ok_sorting.html', 'type' => 'unit'),
+  'AAAProc' => array('html_filename' => 'ok_sorting.html#AAAProc', 'type' => 'procedure'),
+  'ZZZProc' => array('html_filename' => 'ok_sorting.html#ZZZProc', 'type' => 'procedure'),
+  'AAAConst' => array('html_filename' => 'ok_sorting.html#AAAConst', 'type' => 'constant'),
+  'ZZZConst' => array('html_filename' => 'ok_sorting.html#ZZZConst', 'type' => 'constant'),
+  'AAAVar' => array('html_filename' => 'ok_sorting.html#AAAVar', 'type' => 'variable'),
+  'ZZZVar' => array('html_filename' => 'ok_sorting.html#ZZZVar', 'type' => 'variable'),
+  'AAAType' => array('html_filename' => 'ok_sorting.html#AAAType', 'type' => 'type'),
+  'ZZZType' => array('html_filename' => 'ok_sorting.html#ZZZType', 'type' => 'type'),
+  'AAAClass' => array('html_filename' => 'ok_sorting.AAAClass.html', 'type' => 'class'),
+  'TMyClass' => array('html_filename' => 'ok_sorting.TMyClass.html', 'type' => 'class'),
+  'TMyClass.AAAMethod' => array('html_filename' => 'ok_sorting.TMyClass.html#AAAMethod', 'type' => 'procedure'),
+  'TMyClass.ZZZMethod' => array('html_filename' => 'ok_sorting.TMyClass.html#ZZZMethod', 'type' => 'procedure'),
+  'TMyClass.AAAField' => array('html_filename' => 'ok_sorting.TMyClass.html#AAAField', 'type' => 'variable'),
+  'TMyClass.ZZZField' => array('html_filename' => 'ok_sorting.TMyClass.html#ZZZField', 'type' => 'variable'),
+  'TMyClass.AAAProp' => array('html_filename' => 'ok_sorting.TMyClass.html#AAAProp', 'type' => 'property'),
+  'TMyClass.ZZZProp' => array('html_filename' => 'ok_sorting.TMyClass.html#ZZZProp', 'type' => 'property'),
+  'TMyRecord' => array('html_filename' => 'ok_sorting.TMyRecord.html', 'type' => 'record'),
+  'TMyRecord.AAAField' => array('html_filename' => 'ok_sorting.TMyRecord.html#AAAField', 'type' => 'variable'),
+  'TMyRecord.ZZZField' => array('html_filename' => 'ok_sorting.TMyRecord.html#ZZZField', 'type' => 'variable'),
+  'ZZZClass' => array('html_filename' => 'ok_sorting.ZZZClass.html', 'type' => 'class'),
+);
