@@ -40,6 +40,12 @@
     <routine name="Implicit" type="operator" declaration="class operator Implicit(const S: string): TClass;">
       <description><detailed>Assignment operator</detailed></description>
     </routine>
+    <structure name="TInnerClass" name_with_generic="TInnerClass" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="Method" type="procedure" declaration="procedure Method;">
+        <description><detailed>Method of an inner class</detailed></description>
+      </routine>
+    </structure>
   </structure>
   <structure name="TMyType" name_with_generic="TMyType" type="record">
   </structure>

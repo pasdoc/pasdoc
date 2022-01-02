@@ -11,6 +11,8 @@
     - properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
     - separate `<label>` inside `<item>` for definition lists
     - `<function>` -> more general `<routine>`
+    - nested structures (CIOs) and simple types inside other CIOs are now output
+* New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output
 
 ## Version 0.16.0 (2021-02-07)
 

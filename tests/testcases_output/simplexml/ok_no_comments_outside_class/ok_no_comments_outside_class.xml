@@ -16,5 +16,8 @@
   <structure name="TEmptyClWithNested" name_with_generic="TEmptyClWithNested" type="class">
     <description><detailed>Empty class with nested empty class with a comment inside</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
+    <structure name="TNestedEmptyCl" name_with_generic="TNestedEmptyCl" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+    </structure>
   </structure>
 </unit>

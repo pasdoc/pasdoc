@@ -62,12 +62,12 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
-    procedure WriteRoutine(const item:TPasRoutine);
-    procedure WriteConstant(const item:TPasItem);
-    procedure WriteVariable(const item:TPasItem);
-    procedure WriteTypes(const item:TPasItem);
-    procedure WriteStructure(const item:TPasCIO);
-    procedure WriteProperty(const item:TPasProperty);
+    procedure WriteRoutine(const Item: TPasRoutine);
+    procedure WriteConstant(const Item: TPasItem);
+    procedure WriteVariable(const Item: TPasItem);
+    procedure WriteType(const Item: TPasItem);
+    procedure WriteStructure(const Item: TPasCIO);
+    procedure WriteProperty(const Item: TPasProperty);
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -135,7 +135,7 @@ begin
     Result := '';
 end;
 
-procedure TSimpleXMLDocGenerator.WriteRoutine(const item:TPasRoutine);
+procedure TSimpleXMLDocGenerator.WriteRoutine(const Item: TPasRoutine);
 var
   I: Integer;
 begin
@@ -155,7 +155,7 @@ begin
   WriteDirectLine(space + '</routine>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteProperty(const item:TPasProperty);
+procedure TSimpleXMLDocGenerator.WriteProperty(const Item: TPasProperty);
 begin
   WriteDirectLine(space +
     '<property name="' + ConvertString(item.name) +
@@ -172,7 +172,7 @@ begin
   WriteDirectLine(space+'</property>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteConstant(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteConstant(const Item: TPasItem);
 begin
   WriteDirectLine(space +
     '<constant name="' + ConvertString(item.Name) +
@@ -182,7 +182,7 @@ begin
   WriteDirectLine(space+'</constant>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteVariable(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteVariable(const Item: TPasItem);
 begin
   WriteDirectLine(space +
     '<variable name="' + ConvertString(item.Name) +
@@ -192,7 +192,7 @@ begin
   WriteDirectLine(space+'</variable>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteTypes(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
@@ -202,30 +202,14 @@ begin
   WriteDirectLine(space+'</type>');
 end;
 
-procedure TSimpleXMLDocGenerator.WriteStructure(const item: TPasCIO);
-
-function writetype(t:TCIOType):string;
-begin
-  result:='unknown';
-  case t of
-    CIO_CLASS:result:='class';
-    CIO_PACKEDCLASS:result:='packed class';
-    CIO_DISPINTERFACE:result:='dispinterface';
-    CIO_INTERFACE:result:='interface';
-    CIO_OBJECT:result:='object';
-    CIO_PACKEDOBJECT:result:='packed object';
-    CIO_RECORD:result:='record';
-    CIO_PACKEDRECORD:result:='packed record';
-  end;
-end;
-
+procedure TSimpleXMLDocGenerator.WriteStructure(const Item: TPasCIO);
 var
   I: Integer;
 begin
   WriteDirectLine(space +
       '<structure name="' + ConvertString(item.name) +
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
-               '" type="' + ConvertString(writetype(item.MyType)) + '">');
+               '" type="' + ConvertString(CioTypeToString(item.MyType)) + '">');
   space:=space+'  ';
 
   if item.HasDescription then
@@ -244,6 +228,12 @@ begin
 
   for I := 0 to item.Properties.count-1 do
     WriteProperty(item.Properties.PasItemAt[i] as TPasProperty);
+
+  for I := 0 to item.Types.count-1 do
+    WriteType(item.Types.PasItemAt[i]);
+
+  for I := 0 to item.Cios.count-1 do
+    WriteStructure(item.Cios.PasItemAt[i] as TPasCio);
 
   space:=copy(space,0,length(space)-2);
   WriteDirectLine(space+'</structure>');
@@ -296,7 +286,7 @@ begin
 
   // global types
   for I := 0 to u.Types.count-1 do
-    WriteTypes(u.types.PasItemAt[i]);
+    WriteType(u.types.PasItemAt[i]);
 
   // global classes
   for I := 0 to u.CIOs.count-1 do

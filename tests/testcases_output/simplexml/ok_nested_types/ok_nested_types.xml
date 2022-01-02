@@ -15,5 +15,14 @@
     <variable name="OuterConst2" declaration="const OuterConst2 = 'Blah2';">
       <description><detailed>Description of <code>OuterConst2</code></detailed></description>
     </variable>
+    <structure name="TInnerImplicitRecord" name_with_generic="TInnerImplicitRecord" type="record">
+      <description><detailed><code>TInnerImplicitRecord</code> is a nested record</detailed></description>
+      <routine name="InnerPublicRecProc" type="procedure" declaration="procedure InnerPublicRecProc;">
+        <description><detailed>Description of <code>InnerPublicRecProc</code></detailed></description>
+      </routine>
+      <variable name="FInnerPublicRecField" declaration="FInnerPublicRecField: Integer;">
+        <description><detailed>Description of <code>FInnerPublicRecField</code></detailed></description>
+      </variable>
+    </structure>
   </structure>
 </unit>

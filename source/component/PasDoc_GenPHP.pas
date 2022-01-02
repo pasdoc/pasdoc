@@ -35,6 +35,16 @@ type
   private
     { Output a PHP line mapping given Identifier -> to given HtmlFileName, ItemType. }
     procedure WriteMap(const Identifier, HtmlFileName, ItemType: String);
+
+    { Calculate HTML filename of given Item, following HTML generator logic. }
+    function ItemFileName(const Item: TPasItem): String;
+
+    procedure WriteRoutine(const Item: TPasRoutine);
+    procedure WriteConstant(const Item: TPasItem);
+    procedure WriteVariable(const Item: TPasItem);
+    procedure WriteType(const Item: TPasItem);
+    procedure WriteStructure(const Item: TPasCIO);
+    procedure WriteProperty(const Item: TPasProperty);
   protected
     { Overrides of ancestor abstract methods, not really used by PHP generation.
       As we output only a simple map (name->html_filename) for PHP now,
@@ -145,13 +155,100 @@ begin
   ]));
 end;
 
+function TPHPDocGenerator.ItemFileName(const Item: TPasItem): String;
+var
+  CurrentItem: TPasItem;
+begin
+  if Item is TPasCIO then
+    Result := Item.Name + '.html'
+  else
+    Result := 'html#' + Item.Name;
+
+  { now prefix Result with
+    - as many as necessary "OuterClassName."
+    - "UnitName." }
+  CurrentItem := Item;
+  while CurrentItem.MyObject <> nil do
+  begin
+    Result := CurrentItem.MyObject.Name + '.' + Result;
+    CurrentItem := CurrentItem.MyObject;
+  end;
+  Result := CurrentItem.MyUnit.Name + '.' + Result;
+end;
+
+procedure TPHPDocGenerator.WriteRoutine(const Item: TPasRoutine);
+begin
+  WriteMap(Item.Name, ItemFileName(Item), RoutineTypeToString(Item.What));
+end;
+
+procedure TPHPDocGenerator.WriteConstant(const Item: TPasItem);
+begin
+  WriteMap(Item.Name, ItemFileName(Item), 'constant');
+end;
+
+procedure TPHPDocGenerator.WriteVariable(const Item: TPasItem);
+begin
+  WriteMap(Item.Name, ItemFileName(Item), 'variable');
+end;
+
+procedure TPHPDocGenerator.WriteType(const Item: TPasItem);
+begin
+  WriteMap(Item.Name, ItemFileName(Item), 'type');
+end;
+
+procedure TPHPDocGenerator.WriteProperty(const Item: TPasProperty);
+begin
+  WriteMap(Item.Name, ItemFileName(Item), 'property');
+end;
+
+procedure TPHPDocGenerator.WriteStructure(const Item: TPasCIO);
+var
+  I: Integer;
+begin
+  WriteMap(Item.Name, ItemFileName(Item), CioTypeToString(Item.MyType));
+
+  for I := 0 to item.Methods.count-1 do
+    WriteRoutine(item.Methods.PasItemAt[i] as TPasRoutine);
+
+  for I := 0 to item.Fields.count-1 do
+    WriteVariable(item.fields.PasItemAt[i]);
+
+  for I := 0 to item.Properties.count-1 do
+    WriteProperty(item.Properties.PasItemAt[i] as TPasProperty);
+
+  for I := 0 to item.Types.count-1 do
+    WriteType(item.Types.PasItemAt[i]);
+
+  for I := 0 to item.Cios.count-1 do
+    WriteStructure(item.Cios.PasItemAt[i] as TPasCio);
+end;
+
 procedure TPHPDocGenerator.WriteUnit(const HL: integer; const U: TPasUnit);
 var
   I: Integer;
 begin
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
   WriteMap(U.Name, U.Name + '.html', 'unit');
-  // TODO
+
+  // global functions
+  for I := 0 to u.FuncsProcs.count-1 do
+    WriteRoutine(u.FuncsProcs.PasItemAt[i] as TPasRoutine);
+
+  // global constants
+  for I := 0 to u.Constants.count-1 do
+    WriteConstant(u.Constants.PasItemAt[i]);
+
+  // global vars
+  for I := 0 to u.Variables.count-1 do
+    WriteVariable(u.Variables.PasItemAt[i]);
+
+  // global types
+  for I := 0 to u.Types.count-1 do
+    WriteType(u.types.PasItemAt[i]);
+
+  // global classes
+  for I := 0 to u.CIOs.count-1 do
+    WriteStructure(u.CIOs.PasItemAt[i] as TPasCIO);
 end;
 
 end.

@@ -1185,6 +1185,9 @@ const
 { Returns lowercased keyword associated with given method type. }
 function RoutineTypeToString(const RoutineType: TRoutineType): string;
 
+{ Returns lowercased keyword(s) associated with given structure type. }
+function CioTypeToString(const CioType: TCIOType): String;
+
 { Returns VisibilityStr for each value in Visibilities,
   delimited by commas. }
 function VisibilitiesToStr(const Visibilities: TVisibilities): string;
@@ -2748,6 +2751,22 @@ begin
   else
     Result := KeyWordArray[RoutineTypeToKeyWord[RoutineType]];
   Result := LowerCase(Result);
+end;
+
+function CioTypeToString(const CioType: TCIOType): String;
+const
+  Names: array [TCIOType] of String = (
+    'class',
+    'packed class',
+    'dispinterface',
+    'interface',
+    'object',
+    'packed object',
+    'record',
+    'packed record'
+  );
+begin
+  Result := Names[CioType];
 end;
 
 function VisToStr(const Vis: TVisibility): string;
