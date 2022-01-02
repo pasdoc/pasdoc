@@ -3,7 +3,7 @@
     <ancestor name="TObject" declaration="TObject" />
     <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
     </function>
-    <variable name="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;">
     </variable>
     <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
     </property>
@@ -12,7 +12,7 @@
     <ancestor name="TObject" declaration="TObject" />
     <function name="MyMethod" type="procedure" declaration="procedure MyMethod;">
     </function>
-    <variable name="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;">
     </variable>
     <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
     </property>

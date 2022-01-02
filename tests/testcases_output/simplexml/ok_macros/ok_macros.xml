@@ -14,15 +14,15 @@
   </function>
   <function name="ThisShouldBeIncluded2" type="procedure" declaration="procedure ThisShouldBeIncluded2;">
   </function>
-  <constant name="ThisShouldBeTrue = true;">
+  <constant name="ThisShouldBeTrue" declaration="ThisShouldBeTrue = true;">
   </constant>
-  <constant name="FourConst =  (1 + 1) * (1 + 1);">
+  <constant name="FourConst" declaration="FourConst =  (1 + 1) * (1 + 1);">
     <description><detailed>Test of recursive macro expansion.</detailed></description>
   </constant>
-  <constant name="OneAndNotNothing = 1  + 1;">
+  <constant name="OneAndNotNothing" declaration="OneAndNotNothing = 1  + 1;">
     <description><detailed>Test that symbol that is not a macro is something different than a macro that expands to nothing.</detailed></description>
   </constant>
-  <constant name="OnlyOne = 1 ;">
+  <constant name="OnlyOne" declaration="OnlyOne = 1 ;">
   </constant>
   <structure name="TAncestor" name_with_generic="TAncestor" type="class">
     <ancestor name="TObject" declaration="TObject" />

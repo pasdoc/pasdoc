@@ -2,10 +2,10 @@
   <function name="Foo" type="procedure" declaration="procedure Foo;">
     <description><detailed>Test of links. TMyEnum, me1, me2, me3. TMyScopedEnum, TMyScopedEnum.mse1, TMyScopedEnum.mse2, TMyScopedEnum.mse3. TMyScopedEnum, TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: mse1, mse2, mse3.</detailed></description>
   </function>
-  <type name="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>My enumerated type description.</detailed></description>
   </type>
-  <type name="TMyScopedEnum = (...);">
+  <type name="TMyScopedEnum" declaration="TMyScopedEnum = (...);">
     <description><detailed>My enumerated type description.</detailed></description>
   </type>
 </unit>

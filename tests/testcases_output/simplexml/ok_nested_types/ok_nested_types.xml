@@ -1,6 +1,6 @@
 <unit name="ok_nested_types.pas">
   <description><abstract>Test case for Delphi nested types</abstract><detailed>  </detailed></description>
-  <constant name="GlobalConst = 123456;">
+  <constant name="GlobalConst" declaration="GlobalConst = 123456;">
     <description><detailed>Description of <code>GlobalConst</code></detailed></description>
   </constant>
   <structure name="TOuterClass" name_with_generic="TOuterClass" type="class">
@@ -9,10 +9,10 @@
     <function name="OuterPublicProc" type="procedure" declaration="procedure OuterPublicProc;">
       <description><detailed>Description of <code>OuterPublicProc</code></detailed></description>
     </function>
-    <variable name="const OuterConst1 = 'Blah1';">
+    <variable name="OuterConst1" declaration="const OuterConst1 = 'Blah1';">
       <description><detailed>Description of <code>OuterConst1</code></detailed></description>
     </variable>
-    <variable name="const OuterConst2 = 'Blah2';">
+    <variable name="OuterConst2" declaration="const OuterConst2 = 'Blah2';">
       <description><detailed>Description of <code>OuterConst2</code></detailed></description>
     </variable>
   </structure>

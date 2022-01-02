@@ -7,9 +7,9 @@
   <function name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';">
     <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
   </function>
-  <constant name="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';">
+  <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';">
   </constant>
-  <constant name="TestConstDeprecated2 = 1 deprecated;">
+  <constant name="TestConstDeprecated2" declaration="TestConstDeprecated2 = 1 deprecated;">
   </constant>
   <structure name="TTestClass" name_with_generic="TTestClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
@@ -17,9 +17,9 @@
     </function>
     <function name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;">
     </function>
-    <variable name="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';">
+    <variable name="TestFieldDeprecated1" declaration="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';">
     </variable>
-    <variable name="TestFieldDeprecated2: Integer deprecated;">
+    <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;">
     </variable>
     <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
     </property>

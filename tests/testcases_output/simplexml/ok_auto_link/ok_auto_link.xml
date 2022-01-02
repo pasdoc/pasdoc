@@ -1,8 +1,8 @@
 <unit name="ok_auto_link.pas">
   <description><abstract>Auto-link tests.</abstract><detailed> Self name: <code>ok_auto_link</code>, simple identifiers Var1, qualified ident: ok_auto_link.Var1. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me.</detailed></description>
-  <constant name="no_auto_link_to_me = 1;">
+  <constant name="no_auto_link_to_me" declaration="no_auto_link_to_me = 1;">
   </constant>
-  <variable name="Var1: Integer;">
+  <variable name="Var1" declaration="Var1: Integer;">
     <description><detailed>
 
 <definitionlist>
@@ -14,7 +14,7 @@
   </variable>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="Field: Integer;">
+    <variable name="Field" declaration="Field: Integer;">
       <description><detailed>Common word used as identifier must be ignored when auto-linking thanks to auto-link-exclude list: Little brown fox runs over a field</detailed></description>
     </variable>
   </structure>

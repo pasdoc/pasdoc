@@ -8,10 +8,10 @@
   <function name="SwapDoubleBytes" type="procedure" declaration="procedure SwapDoubleBytes(Dest, Source: PDoubleEndianCnvRec);">
     <description><abstract><code>SwapDoubleBytes</code> copies TDoubleEndianCnvRec.Bytes in reverse order from Source^ to Dest^.</abstract><detailed> <code>SwapDoubleBytes</code> is used in ConvertDouble.</detailed></description>
   </function>
-  <type name="BytePos = (...);">
+  <type name="BytePos" declaration="BytePos = (...);">
     <description><detailed>enumeration used in variant record</detailed></description>
   </type>
-  <type name="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
+  <type name="PDoubleEndianCnvRec" declaration="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
     <description><detailed><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</detailed></description>
   </type>
   <structure name="TDoubleEndianCnvRec" name_with_generic="TDoubleEndianCnvRec" type="packed record">
@@ -21,10 +21,10 @@ TDoubleEndianCnvRec = packed record
     EndVal: (EndianVal: double);
     ByteVal: (Bytes: array[0..SizeOf(double) - 1] of byte);
 end;</detailed></description>
-    <variable name="Bytes: array[0..SizeOf(double) - 1] of byte">
+    <variable name="Bytes" declaration="Bytes: array[0..SizeOf(double) - 1] of byte">
       <description><detailed>Overlapping bytes of the double</detailed></description>
     </variable>
-    <variable name="EndianVal: double">
+    <variable name="EndianVal" declaration="EndianVal: double">
       <description><detailed>The value we are trying to convert</detailed></description>
     </variable>
   </structure>

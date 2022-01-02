@@ -3,7 +3,7 @@
   </function>
   <function name="EdgeConsoleLog" type="function" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;">
   </function>
-  <variable name="t0: Byte;">
+  <variable name="t0" declaration="t0: Byte;">
     <description><detailed>intf var</detailed></description>
   </variable>
 </unit>

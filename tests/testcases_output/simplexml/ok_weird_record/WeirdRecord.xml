@@ -1,24 +1,24 @@
 <unit name="ok_weird_record.dpr">
-  <constant name="val1 = 1;">
+  <constant name="val1" declaration="val1 = 1;">
   </constant>
-  <constant name="val2 = 2;">
+  <constant name="val2" declaration="val2 = 2;">
   </constant>
-  <constant name="val4 = 4;">
+  <constant name="val4" declaration="val4 = 4;">
   </constant>
-  <constant name="byRef = 8;">
+  <constant name="byRef" declaration="byRef = 8;">
   </constant>
   <structure name="TWeirdRecord" name_with_generic="TWeirdRecord" type="record">
-    <variable name="bVal: Byte">
+    <variable name="bVal" declaration="bVal: Byte">
     </variable>
-    <variable name="iVal: Smallint">
+    <variable name="iVal" declaration="iVal: Smallint">
     </variable>
-    <variable name="lVal: Longint">
+    <variable name="lVal" declaration="lVal: Longint">
     </variable>
-    <variable name="pbVal: ^Byte">
+    <variable name="pbVal" declaration="pbVal: ^Byte">
     </variable>
-    <variable name="piVal: ^Smallint">
+    <variable name="piVal" declaration="piVal: ^Smallint">
     </variable>
-    <variable name="plVal: ^Longint">
+    <variable name="plVal" declaration="plVal: ^Longint">
     </variable>
   </structure>
 </unit>

@@ -2,11 +2,11 @@
   <description><abstract>Test @deprecated tag.</abstract><detailed> Everything in this unit is deprecated. Even this whole unit itself. </detailed></description>
   <function name="MyProc" type="procedure" declaration="procedure MyProc;">
   </function>
-  <constant name="MyConst = 1;">
+  <constant name="MyConst" declaration="MyConst = 1;">
   </constant>
-  <variable name="MyVar: Integer;">
+  <variable name="MyVar" declaration="MyVar: Integer;">
   </variable>
-  <type name="TMyType = Integer;">
+  <type name="TMyType" declaration="TMyType = Integer;">
     <description><detailed> Normal type deprecated.</detailed></description>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
@@ -14,7 +14,7 @@
     <ancestor name="TObject" declaration="TObject" />
     <function name="MyMethodLibrary" type="procedure" declaration="procedure MyMethodLibrary;">
     </function>
-    <variable name="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Deprecated field. </detailed></description>
     </variable>
     <property name="MyProperty" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">

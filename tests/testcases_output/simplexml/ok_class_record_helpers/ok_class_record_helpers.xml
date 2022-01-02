@@ -2,7 +2,7 @@
   <description><detailed>Test case for Delphi class and record helpers</detailed></description>
   <structure name="TSimpleRecord" name_with_generic="TSimpleRecord" type="record">
     <description><detailed>description of <code>TSimpleRecord</code></detailed></description>
-    <variable name="SimpleField: Integer;">
+    <variable name="SimpleField" declaration="SimpleField: Integer;">
       <description><detailed>description of <code>SimpleField</code></detailed></description>
     </variable>
   </structure>

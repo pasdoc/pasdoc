@@ -4,17 +4,17 @@
   </function>
   <function name="AAAProc" type="procedure" declaration="procedure AAAProc;">
   </function>
-  <constant name="ZZZConst = 1;">
+  <constant name="ZZZConst" declaration="ZZZConst = 1;">
   </constant>
-  <constant name="AAAConst = 2;">
+  <constant name="AAAConst" declaration="AAAConst = 2;">
   </constant>
-  <variable name="ZZZVar: Integer;">
+  <variable name="ZZZVar" declaration="ZZZVar: Integer;">
   </variable>
-  <variable name="AAAVar: Integer;">
+  <variable name="AAAVar" declaration="AAAVar: Integer;">
   </variable>
-  <type name="ZZZType = Integer;">
+  <type name="ZZZType" declaration="ZZZType = Integer;">
   </type>
-  <type name="AAAType = Integer;">
+  <type name="AAAType" declaration="AAAType = Integer;">
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
@@ -22,9 +22,9 @@
     </function>
     <function name="AAAMethod" type="procedure" declaration="procedure AAAMethod;">
     </function>
-    <variable name="ZZZField: Integer;">
+    <variable name="ZZZField" declaration="ZZZField: Integer;">
     </variable>
-    <variable name="AAAField: Integer;">
+    <variable name="AAAField" declaration="AAAField: Integer;">
     </variable>
     <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
     </property>
@@ -32,9 +32,9 @@
     </property>
   </structure>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
-    <variable name="ZZZField: Integer;">
+    <variable name="ZZZField" declaration="ZZZField: Integer;">
     </variable>
-    <variable name="AAAField: Integer;">
+    <variable name="AAAField" declaration="AAAField: Integer;">
     </variable>
   </structure>
   <structure name="ZZZClass" name_with_generic="ZZZClass" type="class">

@@ -3,22 +3,22 @@
   <function name="Foo" type="procedure" declaration="procedure Foo;">
     <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>
   </function>
-  <constant name="MyConst = 2;">
+  <constant name="MyConst" declaration="MyConst = 2;">
     <description><detailed>Description of MyConst</detailed></description>
   </constant>
-  <variable name="V: Integer;">
+  <variable name="V" declaration="V: Integer;">
     <description><detailed>Description of V</detailed></description>
   </variable>
-  <variable name="V1: Integer;">
+  <variable name="V1" declaration="V1: Integer;">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <variable name="V2: Integer;">
+  <variable name="V2" declaration="V2: Integer;">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <type name="TMyType = Integer;">
+  <type name="TMyType" declaration="TMyType = Integer;">
     <description><detailed>Description of TMyType</detailed></description>
   </type>
-  <type name="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Description of TMyEnum</detailed></description>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
@@ -27,7 +27,7 @@
     <function name="MyProc" type="procedure" declaration="procedure MyProc;">
       <description><detailed>Description of MyProc</detailed></description>
     </function>
-    <variable name="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Description of MyField</detailed></description>
     </variable>
     <property name="MyProp" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">

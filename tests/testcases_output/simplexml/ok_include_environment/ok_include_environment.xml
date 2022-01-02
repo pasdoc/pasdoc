@@ -9,33 +9,33 @@
 </unorderedlist>
 
 </detailed></description>
-  <constant name="MacDATE = {$I %DATE%};">
+  <constant name="MacDATE" declaration="MacDATE = {$I %DATE%};">
     <description><detailed>Inserts the current date.</detailed></description>
   </constant>
-  <constant name="MacFPCTARGET = {$I %FPCTARGET%};">
+  <constant name="MacFPCTARGET" declaration="MacFPCTARGET = {$I %FPCTARGET%};">
     <description><detailed>Inserts the target CPU name. (deprecated, use FPCTARGETCPU)</detailed></description>
   </constant>
-  <constant name="MacFPCTARGETCPU = {$I %FPCTARGETCPU%};">
+  <constant name="MacFPCTARGETCPU" declaration="MacFPCTARGETCPU = {$I %FPCTARGETCPU%};">
     <description><detailed>Inserts the target CPU name.</detailed></description>
   </constant>
-  <constant name="MacFPCTARGETOS = {$I %FPCTARGETOS%};">
+  <constant name="MacFPCTARGETOS" declaration="MacFPCTARGETOS = {$I %FPCTARGETOS%};">
     <description><detailed>Inserts the target OS name.</detailed></description>
   </constant>
-  <constant name="MacFPCVERSION = {$I %FPCVERSION%};">
+  <constant name="MacFPCVERSION" declaration="MacFPCVERSION = {$I %FPCVERSION%};">
     <description><detailed>Current compiler version number.</detailed></description>
   </constant>
-  <constant name="MacFILE = {$I %FILE%};">
+  <constant name="MacFILE" declaration="MacFILE = {$I %FILE%};">
     <description><detailed>Filename in which the directive is found.</detailed></description>
   </constant>
-  <constant name="MacLINE = {$I %LINE%};">
+  <constant name="MacLINE" declaration="MacLINE = {$I %LINE%};">
     <description><detailed>Linenumer on which the directive is found.</detailed></description>
   </constant>
-  <constant name="MacTIME = {$I %TIME%};">
+  <constant name="MacTIME" declaration="MacTIME = {$I %TIME%};">
     <description><detailed>Current time.</detailed></description>
   </constant>
-  <constant name="MacUSEREnv = {$I %USER%};">
+  <constant name="MacUSEREnv" declaration="MacUSEREnv = {$I %USER%};">
     <description><detailed>If xxx inside %xxx% is none of the above, then it is assumed to be the name of an environment variable. Its value will be fetched.</detailed></description>
   </constant>
-  <constant name="MacPathEnv = {$I %PATH%};">
+  <constant name="MacPathEnv" declaration="MacPathEnv = {$I %PATH%};">
   </constant>
 </unit>

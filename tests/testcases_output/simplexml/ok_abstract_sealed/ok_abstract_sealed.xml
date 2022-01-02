@@ -6,7 +6,7 @@
     <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </function>
-    <variable name="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>
@@ -16,7 +16,7 @@
     <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </function>
-    <variable name="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>
@@ -26,7 +26,7 @@
     <function name="AProcedure" type="procedure" declaration="procedure AProcedure;">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </function>
-    <variable name="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>

@@ -1,11 +1,11 @@
 <unit name="ok_read_char_code.pas">
   <description><detailed>(Test of reading constants defined by char codes (incl. wide chars)</detailed></description>
-  <constant name="C1 = #200;">
+  <constant name="C1" declaration="C1 = #200;">
   </constant>
-  <constant name="C2 = #2000;">
+  <constant name="C2" declaration="C2 = #2000;">
   </constant>
-  <constant name="C3 = #$AF;">
+  <constant name="C3" declaration="C3 = #$AF;">
   </constant>
-  <constant name="C4 = #$DF65;">
+  <constant name="C4" declaration="C4 = #$DF65;">
   </constant>
 </unit>

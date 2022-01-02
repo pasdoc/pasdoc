@@ -13,9 +13,9 @@
     </function>
     <function name="end" type="function" declaration="class function end: Integer;">
     </function>
-    <variable name="class var begin: Integer;">
+    <variable name="begin" declaration="class var begin: Integer;">
     </variable>
-    <variable name="var: Integer;">
+    <variable name="var" declaration="var: Integer;">
     </variable>
   </structure>
 </unit>

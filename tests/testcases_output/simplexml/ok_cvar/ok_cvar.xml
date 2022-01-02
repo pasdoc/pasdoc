@@ -1,4 +1,4 @@
 <unit name="ok_cvar.pas">
-  <variable name="DummyVar: pointer; cvar; external 'dummy';">
+  <variable name="DummyVar" declaration="DummyVar: pointer; cvar; external 'dummy';">
   </variable>
 </unit>
