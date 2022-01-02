@@ -660,7 +660,7 @@ end;
 
 procedure TTexDocGenerator.WriteDocumentation;
 var
- OutputFileName: string;
+  OutputFileName: string;
 begin
   StartSpellChecking('tex');
   inherited;
