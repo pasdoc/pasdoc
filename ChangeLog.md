@@ -7,6 +7,7 @@
 * Fixed resolving relative paths from introduction/conclusion
 * Fixed parsing unit implementation with "begin" instead of "initialization"
 * Fixed parsing unit implementation inline var (Fr0sT-Brutal)
+* Improved SimpleXML output: properly separate "name" from "declaration" for <variable>, <constant>, <type>; separate <label> into <item> for definition lists
 
 ## Version 0.16.0 (2021-02-07)
 

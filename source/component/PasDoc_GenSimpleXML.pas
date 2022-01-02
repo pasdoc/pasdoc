@@ -182,7 +182,8 @@ end;
 procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
 begin
   WriteDirectLine(space +
-    '<constant name="' + ConvertString(item.FullDeclaration) + '">');
+    '<constant name="' + ConvertString(item.Name) +
+     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -191,7 +192,8 @@ end;
 procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
 begin
   WriteDirectLine(space +
-    '<variable name="' + ConvertString(item.FullDeclaration) + '">');
+    '<variable name="' + ConvertString(item.Name) +
+     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -200,7 +202,8 @@ end;
 procedure TSimpleXMLDocGenerator.writetypes(const item:TPasItem);
 begin
   WriteDirectLine(space +
-    '<type name="' + ConvertString(item.FullDeclaration) + '">');
+        '<type name="' + ConvertString(item.Name) +
+     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</type>');
