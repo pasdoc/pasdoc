@@ -10,6 +10,10 @@ validate_html:
 validate_simplexml:
 	scripts/validate_simplexml.sh
 
+.PHONY: validate_php
+validate_php:
+	scripts/validate_php.sh
+
 .PHONY: clean
 clean:
 	rm -Rf \
