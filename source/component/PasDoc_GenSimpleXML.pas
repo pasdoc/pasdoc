@@ -358,10 +358,10 @@ begin
   for i := 0 to ListData.Count - 1 do
   begin
     ListItem := ListData.Items[i] as TListItemData;
-    Result := Result + '<item';
+    Result := Result + '<item>';
     if ListData.ListType = ltDefinition then
-      Result := Result + ' label="' + ListItem.ItemLabel + '"';
-    Result := Result + '>' + ListItem.Text + '</item>' + LineEnding;
+      Result := Result + '<label>' + ListItem.ItemLabel + '</label>';
+    Result := Result + ListItem.Text + '</item>' + LineEnding;
   end;
 
   Result := Result + Format('</%s>', [ListTag[ListData.ListType]]) +
