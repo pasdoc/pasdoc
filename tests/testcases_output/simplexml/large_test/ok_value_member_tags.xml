@@ -5,11 +5,11 @@
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>  </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <function name="MyMethod" type="function" declaration="function MyMethod(A: Integer): boolean;">
+    <routine name="MyMethod" type="function" declaration="function MyMethod(A: Integer): boolean;">
       <param name="A">Description of param A.</param>
       <result>Some boolean value.</result>
       <description><detailed>Description of MyMethod here, using parenthesis.  </detailed></description>
-    </function>
+    </routine>
     <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Description of MyField here.</detailed></description>
     </variable>

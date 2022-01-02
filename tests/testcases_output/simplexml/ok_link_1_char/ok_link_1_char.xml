@@ -2,12 +2,12 @@
   <structure name="TMeasurementPointItem" name_with_generic="TMeasurementPointItem" type="class">
     <description><abstract><code>TMeasurementPointItem</code> is used to specify the real-world coordinates of a pixel in a bitmap.</abstract></description>
     <ancestor name="TCollectionItem" declaration="TCollectionItem" />
-    <function name="SetX" type="procedure" declaration="procedure SetX(const Value: double);">
+    <routine name="SetX" type="procedure" declaration="procedure SetX(const Value: double);">
       <description><detailed>See X.</detailed></description>
-    </function>
-    <function name="SetY" type="procedure" declaration="procedure SetY(const Value: double);">
+    </routine>
+    <routine name="SetY" type="procedure" declaration="procedure SetY(const Value: double);">
       <description><detailed>See Y.</detailed></description>
-    </function>
+    </routine>
     <variable name="FX" declaration="FX: double;">
       <description><detailed><code>FX</code>: double; See X.</detailed></description>
     </variable>

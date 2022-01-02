@@ -1,8 +1,8 @@
 <unit name="ok_param_raises_at_property.pas">
-  <function name="Foo" type="procedure" declaration="procedure Foo(A: Integer);">
+  <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer);">
     <param name="A">This is some parameter.</param>
     <description><detailed> </detailed></description>
-  </function>
+  </routine>
   <structure name="TMyException" name_with_generic="TMyException" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>

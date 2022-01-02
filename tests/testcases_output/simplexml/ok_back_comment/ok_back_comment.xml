@@ -1,8 +1,8 @@
 <unit name="ok_back_comment.pas">
   <description><detailed>Description of unit ok_back_comment.</detailed></description>
-  <function name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;">
     <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>
-  </function>
+  </routine>
   <constant name="MyConst" declaration="MyConst = 2;">
     <description><detailed>Description of MyConst</detailed></description>
   </constant>
@@ -24,9 +24,9 @@
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>Description of TMyClass</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <function name="MyProc" type="procedure" declaration="procedure MyProc;">
+    <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
       <description><detailed>Description of MyProc</detailed></description>
-    </function>
+    </routine>
     <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Description of MyField</detailed></description>
     </variable>

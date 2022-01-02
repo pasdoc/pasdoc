@@ -1,22 +1,22 @@
 <unit name="ok_deprecated_directive_note.pas">
   <description><abstract>Test deprecated directive with and without note.</abstract></description>
-  <function name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';">
-  </function>
-  <function name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;">
-  </function>
-  <function name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';">
+  <routine name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';">
+  </routine>
+  <routine name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;">
+  </routine>
+  <routine name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';">
     <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
-  </function>
+  </routine>
   <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';">
   </constant>
   <constant name="TestConstDeprecated2" declaration="TestConstDeprecated2 = 1 deprecated;">
   </constant>
   <structure name="TTestClass" name_with_generic="TTestClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';">
-    </function>
-    <function name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;">
-    </function>
+    <routine name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';">
+    </routine>
+    <routine name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;">
+    </routine>
     <variable name="TestFieldDeprecated1" declaration="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';">
     </variable>
     <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;">

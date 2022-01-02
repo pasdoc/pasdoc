@@ -1,45 +1,45 @@
 <unit name="ok_parse_impl.pas">
   <description><detailed>Parse implementation section. Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
-  <function name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;">
     <description><detailed>This is Foo (intf) This is Foo (impl)</detailed></description>
-  </function>
-  <function name="Bar" type="procedure" declaration="procedure Bar;">
+  </routine>
+  <routine name="Bar" type="procedure" declaration="procedure Bar;">
     <description><detailed>This is Bar (impl)</detailed></description>
-  </function>
-  <function name="Laz" type="procedure" declaration="procedure Laz;">
+  </routine>
+  <routine name="Laz" type="procedure" declaration="procedure Laz;">
     <description><detailed>This is Laz And it must not be doubled</detailed></description>
-  </function>
-  <function name="Dex" type="procedure" declaration="procedure Dex;">
+  </routine>
+  <routine name="Dex" type="procedure" declaration="procedure Dex;">
     <description><detailed>This is Dex described inside method body</detailed></description>
-  </function>
-  <function name="NoDescr" type="procedure" declaration="procedure NoDescr;">
-  </function>
-  <function name="Overloaded" type="procedure" declaration="procedure Overloaded; overload;">
+  </routine>
+  <routine name="NoDescr" type="procedure" declaration="procedure NoDescr;">
+  </routine>
+  <routine name="Overloaded" type="procedure" declaration="procedure Overloaded; overload;">
     <description><detailed>This is overloaded proc #1</detailed></description>
-  </function>
-  <function name="Overloaded" type="procedure" declaration="procedure Overloaded(a: Byte); overload;">
+  </routine>
+  <routine name="Overloaded" type="procedure" declaration="procedure Overloaded(a: Byte); overload;">
     <description><detailed>This is overloaded proc #2</detailed></description>
-  </function>
-  <function name=":=" type="operator" declaration="Operator := (C : TMyType) z : TMyType;">
+  </routine>
+  <routine name=":=" type="operator" declaration="Operator := (C : TMyType) z : TMyType;">
     <description><detailed>This is assignment operator</detailed></description>
-  </function>
+  </routine>
   <structure name="TClass" name_with_generic="TClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="Create" type="constructor" declaration="constructor Create; overload;">
+    <routine name="Create" type="constructor" declaration="constructor Create; overload;">
       <description><detailed>Creates instance of TClass</detailed></description>
-    </function>
-    <function name="Create" type="function" declaration="class function Create(const S: string): TClass; overload; static; inline;">
+    </routine>
+    <routine name="Create" type="function" declaration="class function Create(const S: string): TClass; overload; static; inline;">
       <description><detailed>Static factory</detailed></description>
-    </function>
-    <function name="Destroy" type="destructor" declaration="destructor Destroy;">
+    </routine>
+    <routine name="Destroy" type="destructor" declaration="destructor Destroy;">
       <description><detailed>Destroys instance of TClass</detailed></description>
-    </function>
-    <function name="Method" type="procedure" declaration="procedure Method;">
+    </routine>
+    <routine name="Method" type="procedure" declaration="procedure Method;">
       <description><detailed>Does something</detailed></description>
-    </function>
-    <function name="Implicit" type="operator" declaration="class operator Implicit(const S: string): TClass;">
+    </routine>
+    <routine name="Implicit" type="operator" declaration="class operator Implicit(const S: string): TClass;">
       <description><detailed>Assignment operator</detailed></description>
-    </function>
+    </routine>
   </structure>
   <structure name="TMyType" name_with_generic="TMyType" type="record">
   </structure>

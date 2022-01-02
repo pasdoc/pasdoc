@@ -16,18 +16,18 @@
 </unorderedlist>
 
  ... then please send email about this to pasdoc-main mailing list (or directly to me, Michalis Kamburelis, &lt;kambi@users.sourceforge.net&gt;, if your comments about this do not really concern pasdoc). I will be grateful. Contrary to most units in tests/, this unit <italic>is</italic> kept at compileable by Delphi/Kylix and FPC. That's because this unit is also a test whether we really specify here hint directives in the way parseable by Delphi/Kylix.</detailed></description>
-  <function name="TestFuncCombined" type="function" declaration="function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;">
-  </function>
-  <function name="TestFuncDeprecated" type="function" declaration="function TestFuncDeprecated: Integer; deprecated;">
-  </function>
-  <function name="TestFuncPlatform" type="function" declaration="function TestFuncPlatform: Integer; platform;">
-  </function>
-  <function name="TestProcCombined" type="procedure" declaration="procedure TestProcCombined(SomeParams: Integer); deprecated  platform;">
-  </function>
-  <function name="TestProcDeprecated" type="procedure" declaration="procedure TestProcDeprecated; deprecated;">
-  </function>
-  <function name="TestProcPlatform" type="procedure" declaration="procedure TestProcPlatform; platform;">
-  </function>
+  <routine name="TestFuncCombined" type="function" declaration="function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;">
+  </routine>
+  <routine name="TestFuncDeprecated" type="function" declaration="function TestFuncDeprecated: Integer; deprecated;">
+  </routine>
+  <routine name="TestFuncPlatform" type="function" declaration="function TestFuncPlatform: Integer; platform;">
+  </routine>
+  <routine name="TestProcCombined" type="procedure" declaration="procedure TestProcCombined(SomeParams: Integer); deprecated  platform;">
+  </routine>
+  <routine name="TestProcDeprecated" type="procedure" declaration="procedure TestProcDeprecated; deprecated;">
+  </routine>
+  <routine name="TestProcPlatform" type="procedure" declaration="procedure TestProcPlatform; platform;">
+  </routine>
   <constant name="TestConstPlatform" declaration="TestConstPlatform = 1 platform;">
   </constant>
   <constant name="TestConstLibrary" declaration="TestConstLibrary = 2 library;">
@@ -46,14 +46,14 @@
   </variable>
   <structure name="TTestClassDeprecated" name_with_generic="TTestClassDeprecated" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="TestMethodCombined" type="procedure" declaration="procedure TestMethodCombined; library; deprecated; platform;">
-    </function>
-    <function name="TestMethodDeprecated" type="procedure" declaration="procedure TestMethodDeprecated; deprecated;">
-    </function>
-    <function name="TestMethodLibrary" type="procedure" declaration="procedure TestMethodLibrary; library;">
-    </function>
-    <function name="TestMethodPlatform" type="procedure" declaration="procedure TestMethodPlatform; platform;">
-    </function>
+    <routine name="TestMethodCombined" type="procedure" declaration="procedure TestMethodCombined; library; deprecated; platform;">
+    </routine>
+    <routine name="TestMethodDeprecated" type="procedure" declaration="procedure TestMethodDeprecated; deprecated;">
+    </routine>
+    <routine name="TestMethodLibrary" type="procedure" declaration="procedure TestMethodLibrary; library;">
+    </routine>
+    <routine name="TestMethodPlatform" type="procedure" declaration="procedure TestMethodPlatform; platform;">
+    </routine>
     <variable name="TestFieldCombined" declaration="TestFieldCombined: Integer library deprecated platform;">
     </variable>
     <variable name="TestFieldDeprecated" declaration="TestFieldDeprecated: Integer deprecated;">

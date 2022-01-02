@@ -1,6 +1,6 @@
 <unit name="ok_ignore_marker.pas">
-  <function name="P" type="procedure" declaration="procedure P;">
-  </function>
+  <routine name="P" type="procedure" declaration="procedure P;">
+  </routine>
   <constant name="A" declaration="A = 1;">
   </constant>
   <constant name="B" declaration="B = 1;">

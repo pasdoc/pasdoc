@@ -5,8 +5,8 @@
   <structure name="TMyList" name_with_generic="generic TMyList&lt;T&gt;" type="class">
     <description><detailed>FPC generics tests -------------------------------------------------------</detailed></description>
     <ancestor name="TFPSList" declaration="TFPSList" />
-    <function name="Blah" type="function" declaration="function Blah: PT;">
-    </function>
+    <routine name="Blah" type="function" declaration="function Blah: PT;">
+    </routine>
   </structure>
   <structure name="TGeometryAttrib" name_with_generic="TGeometryAttrib" type="class">
     <ancestor name="TObject" declaration="TObject" />
@@ -20,8 +20,8 @@
   <structure name="TGeometryAttribsList" name_with_generic="TGeometryAttribsList" type="class">
     <description><detailed>You can also specialize and make a descendant at the same time.</detailed></description>
     <ancestor name="TMyList" declaration="specialize TMyList&lt;TGeometryAttrib&gt;" />
-    <function name="Find" type="function" declaration="function Find(const Name: string): TGeometryAttrib;">
-    </function>
+    <routine name="Find" type="function" declaration="function Find(const Name: string): TGeometryAttrib;">
+    </routine>
   </structure>
   <structure name="TMyObject" name_with_generic="TMyObject" type="class">
     <description><detailed>A simple Test-Object</detailed></description>
@@ -32,8 +32,8 @@
   </structure>
   <structure name="TMyNewGeneric" name_with_generic="TMyNewGeneric&lt;T1,T2&gt;" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="Blah" type="function" declaration="function Blah: PT;">
-    </function>
+    <routine name="Blah" type="function" declaration="function Blah: PT;">
+    </routine>
   </structure>
   <structure name="TAnotherGenericType" name_with_generic="TAnotherGenericType" type="class">
     <description><detailed>Sample for a generic with more than one type. TPair is a Key-Value-Relation</detailed></description>

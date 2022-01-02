@@ -1,5 +1,5 @@
 <unit name="ok_flag_parameter.pas">
-  <function name="Foo" type="procedure" declaration="procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy2: Integer; const Xxx3: TObject; const Xxx4: TObject);">
+  <routine name="Foo" type="procedure" declaration="procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy2: Integer; const Xxx3: TObject; const Xxx4: TObject);">
     <param name="Xxx [in]">Some input param.</param>
     <param name="Yyy [out]">Some output param.</param>
     <param name="Xxx1 [in]">Some input param.</param>
@@ -9,9 +9,9 @@
     <param name="Xxx4">thisShouldNotBeFlag[out] Some output param.</param>
     <param name="Xxx4">this should not be flag either[out] Some output param.</param>
     <description><detailed>My proc.         This link should work Theme.Items[tiLoading]. This link should work too Blah blah (blah blah Items[Index]).</detailed></description>
-  </function>
-  <function name="Bar" type="procedure" declaration="procedure Bar;">
-  </function>
+  </routine>
+  <routine name="Bar" type="procedure" declaration="procedure Bar;">
+  </routine>
   <structure name="TCastleTheme" name_with_generic="TCastleTheme" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <property name="Items" indexdecl="[constI:Integer]" type="String" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">

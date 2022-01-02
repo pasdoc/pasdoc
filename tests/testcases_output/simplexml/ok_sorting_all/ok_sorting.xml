@@ -1,9 +1,9 @@
 <unit name="ok_sorting.pas">
   <description><detailed>Test unit to test various --sort settings.</detailed></description>
-  <function name="AAAProc" type="procedure" declaration="procedure AAAProc;">
-  </function>
-  <function name="ZZZProc" type="procedure" declaration="procedure ZZZProc;">
-  </function>
+  <routine name="AAAProc" type="procedure" declaration="procedure AAAProc;">
+  </routine>
+  <routine name="ZZZProc" type="procedure" declaration="procedure ZZZProc;">
+  </routine>
   <constant name="AAAConst" declaration="AAAConst = 2;">
   </constant>
   <constant name="ZZZConst" declaration="ZZZConst = 1;">
@@ -21,10 +21,10 @@
   </structure>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="AAAMethod" type="procedure" declaration="procedure AAAMethod;">
-    </function>
-    <function name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;">
-    </function>
+    <routine name="AAAMethod" type="procedure" declaration="procedure AAAMethod;">
+    </routine>
+    <routine name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;">
+    </routine>
     <variable name="AAAField" declaration="AAAField: Integer;">
     </variable>
     <variable name="ZZZField" declaration="ZZZField: Integer;">

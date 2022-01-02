@@ -9,10 +9,10 @@
 </detailed></description>
   <structure name="TTest" name_with_generic="TTest" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <function name="Create" type="constructor" declaration="class constructor Create;">
-    </function>
-    <function name="end" type="function" declaration="class function end: Integer;">
-    </function>
+    <routine name="Create" type="constructor" declaration="class constructor Create;">
+    </routine>
+    <routine name="end" type="function" declaration="class function end: Integer;">
+    </routine>
     <variable name="begin" declaration="class var begin: Integer;">
     </variable>
     <variable name="var" declaration="var: Integer;">

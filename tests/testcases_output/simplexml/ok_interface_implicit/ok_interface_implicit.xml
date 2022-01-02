@@ -1,8 +1,8 @@
 <unit name="ok_interface_implicit.pas">
   <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface">
     <ancestor name="IInterface" declaration="IInterface" />
-    <function name="PublicMethod" type="procedure" declaration="procedure PublicMethod;">
-    </function>
+    <routine name="PublicMethod" type="procedure" declaration="procedure PublicMethod;">
+    </routine>
   </structure>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <variable name="PublicField" declaration="PublicField: Integer;">

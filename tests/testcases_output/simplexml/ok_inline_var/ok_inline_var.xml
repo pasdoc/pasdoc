@@ -1,8 +1,8 @@
 <unit name="ok_inline_var.pas">
-  <function name="Foo" type="procedure" declaration="procedure Foo;">
-  </function>
-  <function name="EdgeConsoleLog" type="function" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;">
-  </function>
+  <routine name="Foo" type="procedure" declaration="procedure Foo;">
+  </routine>
+  <routine name="EdgeConsoleLog" type="function" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;">
+  </routine>
   <variable name="t0" declaration="t0: Byte;">
     <description><detailed>intf var</detailed></description>
   </variable>

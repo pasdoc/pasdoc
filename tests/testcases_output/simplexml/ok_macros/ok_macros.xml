@@ -1,19 +1,19 @@
 <unit name="ok_macros.pas">
   <description><abstract>Test of FPC macros handling.</abstract><detailed> Parts based on [http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213]</detailed></description>
-  <function name="MyProc1" type="procedure" declaration="procedure MyProc1( a:Integer);">
+  <routine name="MyProc1" type="procedure" declaration="procedure MyProc1( a:Integer);">
     <description><detailed>Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</detailed></description>
-  </function>
-  <function name="MyProc2" type="procedure" declaration="procedure MyProc2( b: Integer);">
+  </routine>
+  <routine name="MyProc2" type="procedure" declaration="procedure MyProc2( b: Integer);">
     <description><detailed>This is very stupid way to declare a procedure</detailed></description>
-  </function>
-  <function name="Foo" type="function" declaration="function Foo(c: string): Integer;">
-  </function>
-  <function name="MyProc3" type="procedure" declaration="procedure MyProc3( X: Integer = 1; Y: Integer = 2);">
-  </function>
-  <function name="ThisShouldBeIncluded" type="procedure" declaration="procedure ThisShouldBeIncluded;">
-  </function>
-  <function name="ThisShouldBeIncluded2" type="procedure" declaration="procedure ThisShouldBeIncluded2;">
-  </function>
+  </routine>
+  <routine name="Foo" type="function" declaration="function Foo(c: string): Integer;">
+  </routine>
+  <routine name="MyProc3" type="procedure" declaration="procedure MyProc3( X: Integer = 1; Y: Integer = 2);">
+  </routine>
+  <routine name="ThisShouldBeIncluded" type="procedure" declaration="procedure ThisShouldBeIncluded;">
+  </routine>
+  <routine name="ThisShouldBeIncluded2" type="procedure" declaration="procedure ThisShouldBeIncluded2;">
+  </routine>
   <constant name="ThisShouldBeTrue" declaration="ThisShouldBeTrue = true;">
   </constant>
   <constant name="FourConst" declaration="FourConst =  (1 + 1) * (1 + 1);">
@@ -29,7 +29,7 @@
   </structure>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TAncestor" declaration="TAncestor" />
-    <function name="Init" type="constructor" declaration="Constructor Init; Overload;">
-    </function>
+    <routine name="Init" type="constructor" declaration="Constructor Init; Overload;">
+    </routine>
   </structure>
 </unit>

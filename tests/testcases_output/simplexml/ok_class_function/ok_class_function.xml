@@ -3,11 +3,11 @@
   <structure name="TDummy" name_with_generic="TDummy" type="class">
     <description><abstract>This class is designed to see if PasDoc can parse class functions correctly.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
-    <function name="MyFunction" type="function" declaration="Class Function MyFunction: integer;">
+    <routine name="MyFunction" type="function" declaration="Class Function MyFunction: integer;">
       <description><detailed>Test To see if PasDoc can handle this.</detailed></description>
-    </function>
-    <function name="MyProcedure" type="procedure" declaration="class procedure MyProcedure;">
+    </routine>
+    <routine name="MyProcedure" type="procedure" declaration="class procedure MyProcedure;">
       <description><detailed>Test To see if PasDoc can handle this.</detailed></description>
-    </function>
+    </routine>
   </structure>
 </unit>
