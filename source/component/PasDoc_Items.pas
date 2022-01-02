@@ -644,7 +644,9 @@ type
       @item global function/procedure,
       @item method (function/procedure of a class/interface/object),
       @item pointer type to one of the above (in this case Name is the type name).
-    ) }
+    )
+
+    TODO: Rename to TPasRoutine, most general word. }
   TPasMethod = class(TPasItem)
   protected
     FReturns: string;
@@ -721,7 +723,9 @@ type
   TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
 
   { @abstract(Extends @link(TPasItem) to store all items in
-    a class / an object, e.g. fields.) }
+    a class / an object, e.g. fields.)
+
+    TODO: Rename to TPasStructure, most general term. }
   TPasCio = class(TPasType)
   protected
     FClassDirective: TClassDirective;

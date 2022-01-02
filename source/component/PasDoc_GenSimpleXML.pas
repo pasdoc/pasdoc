@@ -62,12 +62,12 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
-    procedure writefunction(const item:TPasItem);
-    procedure writeconstant(const item:TPasItem);
-    procedure writevariable(const item:TPasItem);
-    procedure writetypes(const item:TPasItem);
-    procedure writeclass(const item:TPasCIO);
-    procedure writeproperty(const item:TPasItem);
+    procedure WriteRoutine(const item:TPasMethod);
+    procedure WriteConstant(const item:TPasItem);
+    procedure WriteVariable(const item:TPasItem);
+    procedure WriteTypes(const item:TPasItem);
+    procedure WriteStructure(const item:TPasCIO);
+    procedure WriteProperty(const item:TPasProperty);
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -135,51 +135,44 @@ begin
     Result := '';
 end;
 
-procedure TSimpleXMLDocGenerator.writefunction(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteRoutine(const item:TPasMethod);
 var
   I: Integer;
-  meth: TPasMethod absolute item;
 begin
-  if item is TPasMethod then
-  begin
-    WriteDirectLine(space +
-      '<function name="' + ConvertString(item.name) +
-              '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
-       '" declaration="' + ConvertString(item.FullDeclaration) + '">');
-      for I := 0 to meth.params.count - 1 do
-        WriteDirectLine(space +
-          '  <param name="' + ConvertString(meth.params[i].name) + '">' +
-            meth.params[i].value +'</param>');
-      if meth.returns <> '' then
-        WriteDirectLine(space +
-          '  <result>' + meth.returns + '</result>');
-    if item.HasDescription then
-      WriteDirectLine(space + '  ' + ItemDescription(Item));
-    WriteDirectLine(space + '</function>');
-  end;
+  WriteDirectLine(space +
+      '<routine name="' + ConvertString(item.name) +
+            '" type="' + ConvertString(MethodTypeToString(TPasMethod(item).What)) +
+     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
+    for I := 0 to item.params.count - 1 do
+      WriteDirectLine(space +
+        '  <param name="' + ConvertString(item.params[i].name) + '">' +
+          item.params[i].value +'</param>');
+    if item.returns <> '' then
+      WriteDirectLine(space +
+        '  <result>' + item.returns + '</result>');
+  if item.HasDescription then
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
+  WriteDirectLine(space + '</routine>');
 end;
 
-procedure TSimpleXMLDocGenerator.writeproperty(const item:TPasItem);
-var
-  prop: TPasProperty absolute item;
+procedure TSimpleXMLDocGenerator.WriteProperty(const item:TPasProperty);
 begin
-  Assert(item is TPasProperty);
   WriteDirectLine(space +
     '<property name="' + ConvertString(item.name) +
-       '" indexdecl="' + ConvertString(prop.indexDecl) +
-            '" type="' + ConvertString(prop.Proptype) +
-          '" reader="' + ConvertString(prop.reader) +
-          '" writer="' + ConvertString(prop.writer) +
-         '" default="' + ConvertString(booltostr(prop.default)) +
-       '" defaultid="' + ConvertString(prop.defaultid) +
-       '" nodefault="' + ConvertString(booltostr(prop.nodefault)) +
-        '" storedid="' + ConvertString(prop.storedid) +'">');
+       '" indexdecl="' + ConvertString(item.indexDecl) +
+            '" type="' + ConvertString(item.Proptype) +
+          '" reader="' + ConvertString(item.reader) +
+          '" writer="' + ConvertString(item.writer) +
+         '" default="' + ConvertString(booltostr(item.default)) +
+       '" defaultid="' + ConvertString(item.defaultid) +
+       '" nodefault="' + ConvertString(booltostr(item.nodefault)) +
+        '" storedid="' + ConvertString(item.storedid) +'">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
 end;
 
-procedure TSimpleXMLDocGenerator.writeconstant(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteConstant(const item:TPasItem);
 begin
   WriteDirectLine(space +
     '<constant name="' + ConvertString(item.Name) +
@@ -189,7 +182,7 @@ begin
   WriteDirectLine(space+'</constant>');
 end;
 
-procedure TSimpleXMLDocGenerator.writevariable(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteVariable(const item:TPasItem);
 begin
   WriteDirectLine(space +
     '<variable name="' + ConvertString(item.Name) +
@@ -199,7 +192,7 @@ begin
   WriteDirectLine(space+'</variable>');
 end;
 
-procedure TSimpleXMLDocGenerator.writetypes(const item:TPasItem);
+procedure TSimpleXMLDocGenerator.WriteTypes(const item:TPasItem);
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
@@ -209,7 +202,7 @@ begin
   WriteDirectLine(space+'</type>');
 end;
 
-procedure TSimpleXMLDocGenerator.writeclass(const item:TPasCIO);
+procedure TSimpleXMLDocGenerator.WriteStructure(const item: TPasCIO);
 
 function writetype(t:TCIOType):string;
 begin
@@ -227,7 +220,7 @@ begin
 end;
 
 var
-  i: Integer;
+  I: Integer;
 begin
   WriteDirectLine(space +
       '<structure name="' + ConvertString(item.name) +
@@ -238,19 +231,20 @@ begin
   if item.HasDescription then
     WriteDirectLine(space + ItemDescription(Item));
 
-    for i:=0 to item.ancestors.count-1 do
-      WriteDirectLine(space +
-        '<ancestor name="' + ConvertString(item.ancestors[i].Name) +
-         '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
+  for I := 0 to item.ancestors.count-1 do
+    WriteDirectLine(space +
+      '<ancestor name="' + ConvertString(item.ancestors[i].Name) +
+       '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
 
-    for i:=0 to item.Methods.count-1 do
-      writefunction(item.Methods.PasItemAt[i]);
+  for I := 0 to item.Methods.count-1 do
+    WriteRoutine(item.Methods.PasItemAt[i] as TPasMethod);
 
-    for i:=0 to item.Fields.count-1 do
-      writevariable(item.fields.PasItemAt[i]);
+  for I := 0 to item.Fields.count-1 do
+    WriteVariable(item.fields.PasItemAt[i]);
 
-    for i:=0 to item.Properties.count-1 do
-      writeproperty(item.Properties.PasItemAt[i]);
+  for I := 0 to item.Properties.count-1 do
+    WriteProperty(item.Properties.PasItemAt[i] as TPasProperty);
+
   space:=copy(space,0,length(space)-2);
   WriteDirectLine(space+'</structure>');
 end;
@@ -281,26 +275,33 @@ begin
   space:='  ';
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));
-  //global uses
-    if WriteUsesClause and not IsEmpty(U.UsesUnits) then
-    for i:=0 to u.UsesUnits.count-1 do
+
+  // used units
+  if WriteUsesClause and not IsEmpty(U.UsesUnits) then
+    for I := 0 to u.UsesUnits.count-1 do
       WriteDirectLine(space +
         '<uses name="' + ConvertString(u.UsesUnits[i]) + '"/>');
-  //global functions
-    for i:=0 to u.FuncsProcs.count-1 do
-      writefunction(u.FuncsProcs.PasItemAt[i]);
-  //global constants
-    for i:=0 to u.Constants.count-1 do
-      writeconstant(u.Constants.PasItemAt[i]);
-  //global vars
-    for i:=0 to u.Variables.count-1 do
-      writevariable(u.Variables.PasItemAt[i]);
-  //global types
-    for i:=0 to u.Types.count-1 do
-      writetypes(u.types.PasItemAt[i]);
-  //global classes
-    for i:=0 to u.CIOs.count-1 do
-      writeclass(TPasCIO(u.CIOs.PasItemAt[i]));
+
+  // global functions
+  for I := 0 to u.FuncsProcs.count-1 do
+    WriteRoutine(u.FuncsProcs.PasItemAt[i] as TPasMethod);
+
+  // global constants
+  for I := 0 to u.Constants.count-1 do
+    WriteConstant(u.Constants.PasItemAt[i]);
+
+  // global vars
+  for I := 0 to u.Variables.count-1 do
+    WriteVariable(u.Variables.PasItemAt[i]);
+
+  // global types
+  for I := 0 to u.Types.count-1 do
+    WriteTypes(u.types.PasItemAt[i]);
+
+  // global classes
+  for I := 0 to u.CIOs.count-1 do
+    WriteStructure(u.CIOs.PasItemAt[i] as TPasCIO);
+
   WriteDirectLine('</unit>');
 end;
 
