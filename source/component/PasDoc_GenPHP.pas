@@ -142,13 +142,15 @@ begin
 
   if not CreateStream(OutputFileName) then Exit;
   WriteDirectLine('global $pasdoc;');
+  WriteDirectLine('$pasdoc = array(');
   WriteUnits(1);
+  WriteDirectLine(');');
   CloseStream;
 end;
 
 procedure TPHPDocGenerator.WriteMap(const Identifier, HtmlFileName, ItemType: String);
 begin
-  WriteDirectLine(Format('$pasdoc[''%s''] = array(''html_filename'' => ''%s'', ''type'' => ''%s'');', [
+  WriteDirectLine(Format('  ''%s'' => array(''html_filename'' => ''%s'', ''type'' => ''%s''),', [
     ConvertString(Identifier),
     ConvertString(HtmlFileName),
     ConvertString(ItemType)
