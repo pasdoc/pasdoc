@@ -2189,13 +2189,12 @@ end;
 
 function TGenericHTMLDocGenerator.ConvertString(const S: String): String;
 const
-  ReplacementArray: array[0..5] of TCharReplacement = (
+  ReplacementArray: array[0..4] of TCharReplacement = (
     (cChar: '<'; sSpec: '&lt;'),
     (cChar: '>'; sSpec: '&gt;'),
     (cChar: '&'; sSpec: '&amp;'),
     (cChar: '"'; sSpec: '&quot;'),
-    (cChar: '^'; sSpec: '&circ;'),
-    (cChar: '~'; sSpec: '&tilde;')
+    (cChar: '^'; sSpec: '&circ;')
   );
 begin
   Result := StringReplaceChars(S, ReplacementArray);
