@@ -1,7 +1,7 @@
 /* -*- mode: groovy -*-
 
-  Confgure how to run our job in Jenkins.
-  See https://github.com/castle-engine/castle-engine/wiki/Cloud-Builds-(Jenkins) .
+  Configure how to run our job in Jenkins.
+  See https://castle-engine.io/cloud_builds_jenkins .
   While PasDoc doesn't use Castle Game Engine,
   but it uses CGE Jenkins infrastructure on https://jenkins.castle-engine.io/ ,
   including a Docker image that contains various versions of FPC.
