@@ -1,4 +1,4 @@
-.TH "PASDOC" 1 "2021-09-22" "" "User commands"
+.TH "PASDOC" 1 "2022-01-05" "" "User commands"
 .
 .
 .SH NAME
@@ -341,7 +341,7 @@ Make the HTML generator create numeric filenames.
 .TP
 \fB\-O\fR, \fB\-\-format\fR \fIFORMAT\fR
 Specify the output format. Must be one of: \fIhtml\fR, \fIhtmlhelp\fR,
-\fIlatex\fR, \fIlatex2rtf\fR or \fIsimplexml\fR.
+\fIlatex\fR, \fIlatex2rtf\fR, \fIphp\fR or \fIsimplexml\fR.
 .
 .TP
 \fB\-R\fR, \fB\-\-description\fR \fIFILE\fR
