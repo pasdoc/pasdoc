@@ -91,10 +91,9 @@ pipeline {
         }
       }
     }
-    /*
     stage('macOS') {
       agent {
-        label 'ios-cge-builder'
+        label 'mac-cge-builder'
       }
       stages {
         stage('Clean macOS') {
@@ -121,7 +120,6 @@ pipeline {
         }
       }
     }
-    */
   }
   post {
     regression {
