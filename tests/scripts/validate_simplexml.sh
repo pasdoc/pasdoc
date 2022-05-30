@@ -8,7 +8,10 @@ set -eu
 # See ../README for comments.
 
 # check if xmllint is available and fail otherwise
-which xmllint > /dev/null
+if ! which xmllint > /dev/null; then
+  echo 'xmllint missing'
+  exit 1
+fi
 
 echo 'Validating simplexml output using xmllint.'
 

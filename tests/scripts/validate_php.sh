@@ -6,7 +6,10 @@ set -eu
 # It's meant to be run using `make validate_php' in parent directory.
 
 # check if php is available and fail otherwise
-which php > /dev/null
+if ! which php > /dev/null; then
+  echo 'php missing'
+  exit 1
+fi
 
 echo 'Validating PHP output using command-line php.'
 

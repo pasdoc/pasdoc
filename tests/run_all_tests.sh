@@ -71,7 +71,7 @@ fi
 # Validate testcases_output/simplexml, requires xmllint installed
 scripts/validate_simplexml.sh
 
-# Validate testcases_output/php, requires xmllint installed
+# Validate testcases_output/php, requires php cli installed
 scripts/validate_php.sh
 
 # cache tests ----------------------------------------------------------------
