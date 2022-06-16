@@ -371,7 +371,19 @@ type
     destructor Destroy; override;
     function HasData: Boolean;
     function GetStreamInfo: string;
-    function GetToken(const NilOnEnd: Boolean = false): TToken;
+    { Get next token from stream.
+
+      @param(NilOnEnd If @true, return @nil once stream ends.
+        Otherwise we make exception about it.)
+
+      @param(NilOnInvalidContent If @true, return @nil on some invalid content,
+        like "!" which is not Pascal token at all.
+        This parameter is independent from NilOnEnd.
+        The "invalid content" affected by this parameter is still something
+        that "we can read to advance our position within the stream".)
+    }
+    function GetToken(const NilOnEnd: Boolean = false;
+      const NilOnInvalidContent: Boolean = false): TToken;
 
     { Makes the token T next to be returned by GetToken.
       Also sets T to @nil, to prevent you from freeing it accidentally.
@@ -736,7 +748,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.GetToken(const NilOnEnd: Boolean = false): TToken;
+function TTokenizer.GetToken(const NilOnEnd, NilOnInvalidContent: Boolean): TToken;
 var
   c: Char;
   MaybeKeyword: TKeyword;
@@ -759,7 +771,7 @@ begin
       if NilOnEnd then
         Exit(nil)
       else
-        DoError('Tokenizer: could not read character', []);
+        DoError('Tokenizer: could not read character, unexpected end of stream', []);
 
     if IsCharInSet(c, Whitespace) then
     begin
@@ -922,7 +934,12 @@ begin
                if not ((GetChar(C) > 0) and
                        IsCharInSet(C, IdentifierStart) and
                        ReadToken(C, IdentifierOther, TOK_IDENTIFIER, Result)) then
-                 DoError('Cannot read valid identifier after "&" prefix', []);
+               begin
+                 if NilOnInvalidContent then
+                   Exit(nil)
+                 else
+                   DoError('Cannot read valid identifier after "&" prefix', []);
+               end;
              end;
       else begin
           for J := 0 to NUM_SINGLE_CHAR_SYMBOLS - 1 do begin
@@ -931,7 +948,10 @@ begin
               exit;
             end;
           end;
-          DoError('Invalid character ("%s", code %d) in Pascal input stream', [C, Ord(C)]);
+          if NilOnInvalidContent then
+            Exit(nil)
+          else
+            DoError('Invalid character ("%s", code %d) in Pascal input stream', [C, Ord(C)]);
         end;
       end;
   finally
@@ -1188,9 +1208,12 @@ begin
   Result := nil;
   repeat
     FreeAndNil(Result);
-    Result := GetToken(true);
-    CheckForDirective(Result);
-    if Result.MyType = TOK_DIRECTIVE then break;
+    Result := GetToken(false, true);
+    if Result <> nil then // above GetToken will return nil on invalid content, like "!"
+    begin
+      CheckForDirective(Result);
+      if Result.MyType = TOK_DIRECTIVE then break;
+    end;
   until false;
 end;
 
