@@ -550,6 +550,11 @@ type
     { Get the closest item that this item inherits from. }
     function InheritedItem: TPasItem; virtual;
 
+    { Traverse the inheritance tree and get the description for the
+      closest inherited item with a description.
+      @param AncestorItem the item whose description is returned. }
+    function GetInheritedFullDescription(out AncestorItem: TPasItem): String;
+
     function BasePath: string; override;
 
     { Parameters of method or property.
@@ -1726,6 +1731,22 @@ begin
     Result := MyObject.FindItemInAncestors(Name)
   else
     Result := nil;
+end;
+
+function TPasItem.GetInheritedFullDescription(out AncestorItem: TPasItem): String;
+begin
+  AncestorItem := Self;
+  Result := '';
+
+  while (Result = '') and (InheritedItem <> nil) do
+  begin
+    AncestorItem := AncestorItem.InheritedItem;
+
+    if Assigned(AncestorItem) and AncestorItem.HasDescription then
+    begin
+      Result := AncestorItem.AbstractDescription + AncestorItem.DetailedDescription;
+    end;
+  end;
 end;
 
 procedure TPasItem.RegisterTags(TagManager: TTagManager);

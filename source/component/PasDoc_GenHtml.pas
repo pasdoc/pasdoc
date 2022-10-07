@@ -1317,8 +1317,8 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   end;
 
 var
-  Ancestor: TBaseItem;
-  AncestorName: string;
+  AncestorItem: TPasItem;
+  InheritedDescription: string;
   EnumMember: TPasItem;
   i: Integer;
 begin
@@ -1360,21 +1360,21 @@ begin
       if OpenCloseParagraph then WriteEndOfParagraph;
     end else
     begin
-      if (AItem is TPasCio) and
-         (TPasCio(AItem).Ancestors.Count <> 0) then
+      if (AItem is TPasItem) then
       begin
-        AncestorName := TPasCio(AItem).Ancestors.FirstName;
-        Ancestor := TPasCio(AItem).FirstAncestor;
-        if Assigned(Ancestor) and (Ancestor is TPasItem) then
+        InheritedDescription := TPasItem(AItem).GetInheritedFullDescription(AncestorItem);
+        if InheritedDescription <> '' then
         begin
           WriteDirect('<div class="nodescription">');
-          WriteConverted(Format(
-            'No description available, ancestor %s description follows', [AncestorName]));
+          WriteDirect('Description inherited from ');
+          WriteLink(AncestorItem.FullLink, AncestorItem.UnitRelativeQualifiedName, 'normal');
+          WriteDirect('.');
           WriteDirect('</div>');
-          WriteItemLongDescription(TPasItem(Ancestor));
+
+          if OpenCloseParagraph then WriteStartOfParagraph;
+          WriteSpellChecked(InheritedDescription);
+          if OpenCloseParagraph then WriteEndOfParagraph;
         end;
-      end else begin
-        WriteDirect('&nbsp;');
       end;
     end;
   end;
