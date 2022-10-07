@@ -1407,20 +1407,20 @@ begin
       ReplaceStr := CodeString(ConvertString(TheObject.FirstAncestorName)) else
       ReplaceStr := MakeItemLink(TheObject.FirstAncestor,
         TheObject.FirstAncestorName, lcNormal);
-  end else
-  if FCurrentItem is TPasItem then
+  end
+  else if FCurrentItem is TPasItem then
   begin
-    if Assigned(TPasItem(FCurrentItem).MyObject) then
+    InheritedItem := TPasItem(FCurrentItem).InheritedItem;
+    if Assigned(InheritedItem) then
     begin
-      InheritedItem := TPasItem(FCurrentItem).MyObject.FindItemInAncestors(
-        FCurrentItem.Name);
-      if InheritedItem = nil then
-        InheritedCannotResolve(Format('Member "%s" not found in ancestors',
-          [FCurrentItem.Name])) else
-        ReplaceStr := MakeItemLink(InheritedItem,
-          InheritedItem.MyObject.Name + '.' + InheritedItem.Name, lcNormal);
-    end else
-      InheritedCannotResolve('This item is not a member of a class/interface/etc.');
+      Assert(Assigned(InheritedItem.MyObject), 'Only items on objects can be inherited');
+
+      ReplaceStr := MakeItemLink(InheritedItem,
+        InheritedItem.MyObject.Name + '.' + InheritedItem.Name, lcNormal);
+    end
+    else
+      InheritedCannotResolve(Format('Member "%s" not found in ancestors',
+        [FCurrentItem.Name]))
   end else
     InheritedCannotResolve('You can''t use @inherited here');
 end;

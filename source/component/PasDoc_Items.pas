@@ -547,6 +547,9 @@ type
     property Attributes: TStringPairVector read FAttributes;
     procedure SetAttributes(var Value: TStringPairVector);
 
+    { Get the closest item that this item inherits from. }
+    function InheritedItem: TPasItem; virtual;
+
     function BasePath: string; override;
 
     { Parameters of method or property.
@@ -679,6 +682,10 @@ type
     property Directives: TStandardDirectives read FDirectives write FDirectives;
 
     function HasOptionalInfo: boolean; override;
+
+    { Get the closest item that this item inherits from.
+      Returns @nil if the routine does not override. }
+    function InheritedItem: TPasItem; override;
   end;
 
   TPasProperty = class(TPasItem)
@@ -710,6 +717,10 @@ type
     property NoDefault: Boolean read FNoDefault write FNoDefault;
     { keeps Stored specifier }
     property StoredId: string read FStoredID write FStoredID;
+
+    { Get the closest item that this item inherits from.
+      Returns @nil if the property does not override. }
+    function InheritedItem: TPasItem; override;
   end;
 
   { enumeration type to determine type of @link(TPasCio) item }
@@ -811,6 +822,10 @@ type
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
     function FirstAncestor: TPasItem;
+
+    { Get the closest item that this item inherits from.
+      Returns the value of @link(FirstAncestor). }
+    function InheritedItem: TPasItem; override;
 
     { This returns the name of first ancestor of this Cio.
 
@@ -1705,6 +1720,14 @@ begin
   ReplaceStr := '';
 end;
 
+function TPasItem.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
+end;
+
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -2332,6 +2355,11 @@ begin
   end;
 end;
 
+function TPasCio.InheritedItem: TPasItem;
+begin
+  Result := FirstAncestor;
+end;
+
 { TPasUnit ------------------------------------------------------------------- }
 
 constructor TPasUnit.Create;
@@ -2595,6 +2623,14 @@ begin
   }
 end;
 
+function TPasRoutine.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) and (SD_OVERRIDE in Directives) then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
+end;
+
 procedure TPasRoutine.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -2634,6 +2670,14 @@ begin
   SaveStringToStream(FWriter, ADestination);
   SaveStringToStream(FPropType, ADestination);
   SaveStringToStream(FReader, ADestination);
+end;
+
+function TPasProperty.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) and (PropType = '') then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
 end;
 
 { TExternalItem ---------------------------------------------------------- }
