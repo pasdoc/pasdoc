@@ -140,28 +140,24 @@ uses SysUtils;
 function COMPILER_NAME: string;
 begin
   COMPILER_NAME :=
+    { FreePascal }
     {$IFDEF FPC}
     'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
     {$define COMPILER_VERSION_DEFINED}
     {$ENDIF}
-
-    {$IFDEF KYLIX_1}   'KYLIX 1';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_2}   'KYLIX 2';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_3}   'KYLIX 3';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_15} 'DELPHI XE';    {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_14} 'DELPHI 2010';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_12} 'DELPHI 2009';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_11} 'DELPHI 2007';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_10} 'DELPHI 2006';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_9}  'DELPHI 2005';  {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_7}  'DELPHI 7';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_6}  'DELPHI 6';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_5}  'DELPHI 5';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF DELPHI_4}  'DELPHI 4';     {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-
+    { Delphi 6+ }
+    {$IF CompilerVersion > 14.0}
+    Format('DELPHI (Compiler Version %2.1f)', [CompilerVersion]);
+    {$define COMPILER_VERSION_DEFINED}
+    {$ENDIF}
+    { Kylix }
+    {$IFDEF KYLIX_1} 'KYLIX 1'; {$define COMPILER_VERSION_DEFINED}{$ENDIF}
+    {$IFDEF KYLIX_2} 'KYLIX 2'; {$define COMPILER_VERSION_DEFINED}{$ENDIF}
+    {$IFDEF KYLIX_3} 'KYLIX 3'; {$define COMPILER_VERSION_DEFINED}{$ENDIF}
+    { Fallback }
     {$IFNDEF COMPILER_VERSION_DEFINED}
-    { As a fallback, use Delphi CompilerVersion. }
-    Format('DELPHI %2.1f', [CompilerVersion]);
+    { Delphi 5 and below }
+    {$IFDEF DELPHI_1_UP}'DELPHI';{$ELSE}'UNKNOWN';{$ENDIF}
     {$ENDIF}
 
   {$undef COMPILER_VERSION_DEFINED} { symbol no longer needed }
