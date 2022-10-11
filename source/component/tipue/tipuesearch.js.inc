@@ -366,7 +366,9 @@
 '                              ' + LineEnding +
 '                              if (set.imageZoom)' + LineEnding +
 '                              {' + LineEnding +
-'                                   out += ''<div id="tipue_search_image_modal"><div class="tipue_search_image_close">&#10005;</div><div class="tipue_search_image_block"><a id="tipue_search_zoom_url"><img id="tipue_search_zoom_img"></a><div id="tipue_search_zoom_text"></div></div></div>'';    ' + LineEnding +
+'                                   out += ''<div id="tipue_search_image_modal"><div class="tipue_search_image_close">&#10005;</div><div class="tipue_search_image_block"><a id="tipue_search_zoom_url"><img id="tipue_search_zoom_img"></a><div id="tipue_search' + 
+'_zoom_text"></div></div></div>'';    ' + 
+LineEnding +
 '                              }' + LineEnding +
 '                              ' + LineEnding +
 '                              for (var i = 0; i < found.length; i++)' + LineEnding +
