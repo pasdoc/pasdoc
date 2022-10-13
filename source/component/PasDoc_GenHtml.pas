@@ -1186,6 +1186,65 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
   end;
 
+  procedure WriteNoDescription(const AItem: TPasItem);
+  var
+    InheritedDescriptions: TStringPairVector;
+    AncestorItem: TPasItem;
+    AncestorCio: TPasCio;
+    I: Integer;
+  begin
+    InheritedDescriptions := AItem.GetInheritedItemDescriptions;
+    try
+      if InheritedDescriptions.Count > 0 then
+      begin
+        WriteDirect('<p class="inheritdescription">This item has no description. ');
+        if InheritedDescriptions.Count = 1 then
+        begin
+          AncestorItem := TObject(InheritedDescriptions[0].Data) as TPasItem;
+          WriteDirect('Showing description inherited from ');
+          WriteDirect(MakeItemLink(
+            AncestorItem,
+            InheritedDescriptions[0].Name,
+            lcNormal));
+          WriteDirect('.</p>');
+
+          WriteStartOfParagraph;
+          WriteSpellChecked(InheritedDescriptions[0].Value);
+          WriteEndOfParagraph;
+        end
+        else begin
+          WriteDirect('Showing descriptions inherited from ancestors.</p>');
+          WriteDirect('<dl class="description">');
+
+          for I := 0 to InheritedDescriptions.Count - 1 do
+          begin
+            AncestorItem := TObject(InheritedDescriptions[I].Data) as TPasItem;
+
+            WriteDirect('<dt>From ');
+            WriteDirect(MakeItemLink(
+              AncestorItem,
+              InheritedDescriptions[I].Name,
+              lcNormal));
+            WriteDirect(':</dt><dd>');
+
+            WriteStartOfParagraph;
+            WriteSpellChecked(InheritedDescriptions[I].Value);
+            WriteEndOfParagraph;
+
+            WriteDirect('</dd>');
+          end;
+
+          WriteDirect('</dl>');
+        end;
+      end
+      else begin
+        WriteDirect('<p class="nodescription">This item has no description.</p>');
+      end;
+    finally
+      FreeAndNil(InheritedDescriptions);
+    end;
+  end;
+
   { writes the parameters or exceptions list }
   procedure WriteParamsOrRaises(ItemToSearchFrom: TPasItem; const Caption: TTranslationID;
     List: TStringPairVector; LinkToParamNames: boolean;
@@ -1317,8 +1376,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   end;
 
 var
-  AncestorItem: TPasItem;
-  InheritedDescription: string;
   EnumMember: TPasItem;
   i: Integer;
 begin
@@ -1350,33 +1407,17 @@ begin
     end;
 
     if OpenCloseParagraph then WriteEndOfParagraph;
-  end else begin
-    if AItem.DetailedDescription <> '' then
-    begin
-      if OpenCloseParagraph then WriteStartOfParagraph;
+  end else if AItem.DetailedDescription <> '' then
+  begin
+    if OpenCloseParagraph then WriteStartOfParagraph;
 
-      WriteSpellChecked(AItem.DetailedDescription);
+    WriteSpellChecked(AItem.DetailedDescription);
 
-      if OpenCloseParagraph then WriteEndOfParagraph;
-    end else
-    begin
-      if (AItem is TPasItem) then
-      begin
-        InheritedDescription := TPasItem(AItem).GetInheritedFullDescription(AncestorItem);
-        if InheritedDescription <> '' then
-        begin
-          WriteDirect('<div class="nodescription">');
-          WriteDirect('Description inherited from ');
-          WriteLink(AncestorItem.FullLink, AncestorItem.UnitRelativeQualifiedName, 'normal');
-          WriteDirect('.');
-          WriteDirect('</div>');
-
-          if OpenCloseParagraph then WriteStartOfParagraph;
-          WriteSpellChecked(InheritedDescription);
-          if OpenCloseParagraph then WriteEndOfParagraph;
-        end;
-      end;
-    end;
+    if OpenCloseParagraph then WriteEndOfParagraph;
+  end else
+  begin
+    if (AItem is TPasItem) then
+      WriteNoDescription(AItem as TPasItem);
   end;
 
   WriteAttributes(AItem.Attributes);
