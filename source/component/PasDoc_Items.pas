@@ -2461,14 +2461,25 @@ function TPasCio.GetInheritedItemDescriptions: TStringPairVector;
   end;
 
 var
-  Ancestor: TBaseItem;
+  Ancestor: TPasItem;
 begin
   Result := TStringPairVector.Create(False);
 
-  Ancestor := FirstAncestor;
+  Ancestor := FirstAncestor as TPasItem;
 
-  if Assigned(Ancestor) and (Ancestor is TPasItem) then
-    AddAncestorDescription(Result, TPasItem(Ancestor));
+  while Assigned(Ancestor) do
+  begin
+    if Ancestor.HasDescription then
+    begin
+      AddAncestorDescription(Result, Ancestor);
+      Ancestor := nil;
+    end
+    else if Ancestor is TPasCio then
+      Ancestor := TPasCio(Ancestor).FirstAncestor
+    else
+      Ancestor := nil;
+  end;
+
 end;
 
 { TPasUnit ------------------------------------------------------------------- }
