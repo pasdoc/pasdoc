@@ -89,7 +89,7 @@ This is a class without ancestor name specified. Inherited is \begin{ttfamily}TO
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public procedure Clear;\end{ttfamily}
+public procedure Clear; virtual;\end{ttfamily}
 
 
 \end{flushleft}
@@ -118,7 +118,7 @@ This is a class with specified ancestor name, but ancestor (TStringList) is not 
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public procedure Clear;\end{ttfamily}
+public procedure Clear; override;\end{ttfamily}
 
 
 \end{flushleft}
@@ -148,7 +148,7 @@ This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public procedure Clear;\end{ttfamily}
+public procedure Clear; override;\end{ttfamily}
 
 
 \end{flushleft}

@@ -1,0 +1,27 @@
+<?php
+global $pasdoc;
+$pasdoc = array(
+  'ok_inherited_descriptions' => array('html_filename' => 'ok_inherited_descriptions.html', 'type' => 'unit'),
+  'TClassA' => array('html_filename' => 'ok_inherited_descriptions.TClassA.html', 'type' => 'class'),
+  'TClassA.Proc' => array('html_filename' => 'ok_inherited_descriptions.TClassA.html#Proc', 'type' => 'procedure'),
+  'TClassA.Prop' => array('html_filename' => 'ok_inherited_descriptions.TClassA.html#Prop', 'type' => 'property'),
+  'IInterfaceB' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceB.html', 'type' => 'interface'),
+  'IInterfaceB.Proc' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceB.html#Proc', 'type' => 'procedure'),
+  'IInterfaceB.Prop' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceB.html#Prop', 'type' => 'property'),
+  'TClassB' => array('html_filename' => 'ok_inherited_descriptions.TClassB.html', 'type' => 'class'),
+  'TClassB.Proc' => array('html_filename' => 'ok_inherited_descriptions.TClassB.html#Proc', 'type' => 'procedure'),
+  'TClassB.Prop' => array('html_filename' => 'ok_inherited_descriptions.TClassB.html#Prop', 'type' => 'property'),
+  'IInterfaceC' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceC.html', 'type' => 'interface'),
+  'IInterfaceC.Proc' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceC.html#Proc', 'type' => 'procedure'),
+  'IInterfaceC.Prop' => array('html_filename' => 'ok_inherited_descriptions.IInterfaceC.html#Prop', 'type' => 'property'),
+  'TClassC' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html', 'type' => 'class'),
+  'TClassC.Proc' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html#Proc', 'type' => 'procedure'),
+  'TClassC.NotInheritedProc' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html#NotInheritedProc', 'type' => 'procedure'),
+  'TClassC.FOtherValue' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html#FOtherValue', 'type' => 'variable'),
+  'TClassC.Prop' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html#Prop', 'type' => 'property'),
+  'TClassC.NotInheritedProp' => array('html_filename' => 'ok_inherited_descriptions.TClassC.html#NotInheritedProp', 'type' => 'property'),
+  'TClassD' => array('html_filename' => 'ok_inherited_descriptions.TClassD.html', 'type' => 'class'),
+  'TClassD.Proc' => array('html_filename' => 'ok_inherited_descriptions.TClassD.html#Proc', 'type' => 'procedure'),
+  'TClassD.NotInheritedProc' => array('html_filename' => 'ok_inherited_descriptions.TClassD.html#NotInheritedProc', 'type' => 'procedure'),
+  'TClassD.NotInheritedProp' => array('html_filename' => 'ok_inherited_descriptions.TClassD.html#NotInheritedProp', 'type' => 'property'),
+);
