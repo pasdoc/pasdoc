@@ -238,6 +238,20 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 9
         OnChange = SomethingChanged
       end
+      object CheckMarkdown: TCheckBox
+        AnchorSideTop.Control = CheckStoreRelativePaths
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 31
+        Hint = 'Check this to support Markdown'
+        Top = 367
+        Width = 185
+        HelpType = htKeyword
+        HelpKeyword = 'MarkdownOption'
+        Caption = 'Support Markdown style'
+        OnChange = SomethingChanged
+        TabOrder = 10
+      end
     end
     object pageSourceFiles: TPage
       Hint = 'Source Files'

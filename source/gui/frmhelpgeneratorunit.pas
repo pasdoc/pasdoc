@@ -67,6 +67,8 @@ type
     CheckStoreRelativePaths: TCheckBox;
     CheckHandleMacros: TCheckBox;
     CheckUseTipueSearch: TCheckBox;
+    // Click @name to support Markdown in comments.
+    CheckMarkdown: TCheckBox;
     // @name controls what members (based on visibility)
     // will be included in generated output.
     CheckListVisibleMembers: TCheckListBox;
@@ -531,6 +533,7 @@ begin
   CheckAutoLink.Checked := false;
   CheckHandleMacros.Checked := true;
   CheckUseTipueSearch.Checked := false;
+  CheckMarkdown.Checked := false;
   CheckOpenHTML.Checked := true;
 
   for SortIndex := Low(TSortSetting) to High(TSortSetting) do
@@ -939,6 +942,8 @@ begin
         LoadFileNameEdit(EditHtmlBodyEnd, '');
       TGenericHTMLDocGenerator(PasDoc1.Generator).UseTipueSearch :=
         CheckUseTipueSearch.Checked;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).Markdown :=
+        CheckMarkdown.Checked;
       TGenericHTMLDocGenerator(PasDoc1.Generator).AspellLanguage := LanguageCode(TLanguageID(comboLanguages.ItemIndex));
       TGenericHTMLDocGenerator(PasDoc1.Generator).CheckSpelling := cbCheckSpelling.Checked;
       if cbCheckSpelling.Checked then
@@ -1282,6 +1287,7 @@ begin
     CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
     CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
     CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
+    CheckMarkdown.Checked := Ini.ReadBool('Main', 'Markdown', false);
     CheckOpenHTML.Checked := Ini.ReadBool('Main', 'OpenHTML', true);
     rgLineBreakQuality.ItemIndex := Ini.ReadInteger('Main', 'LineBreakQuality', 0);
     ReadStrings('HyphenatedWords', memoHyphenatedWords.Lines);
@@ -1404,6 +1410,7 @@ begin
     Ini.WriteBool('Main', 'AutoLink', CheckAutoLink.Checked);
     Ini.WriteBool('Main', 'HandleMacros', CheckHandleMacros.Checked);
     Ini.WriteBool('Main', 'UseTipueSearch', CheckUseTipueSearch.Checked);
+    Ini.WriteBool('Main', 'Markdown', CheckMarkdown.Checked);
     Ini.WriteBool('Main', 'OpenHTML', CheckOpenHTML.Checked);
 
     Ini.WriteInteger('Main', 'LineBreakQuality', rgLineBreakQuality.ItemIndex);
