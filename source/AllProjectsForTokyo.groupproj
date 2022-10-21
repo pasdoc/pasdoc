@@ -9,9 +9,6 @@
         <Projects Include="console\pasdoc_Tokyo.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="delphi_gui\pasdoc_gui_Tokyo.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="tools\file_to_pascal_data_Tokyo.dproj.dproj">
             <Dependencies/>
         </Projects>
@@ -46,15 +43,6 @@
     </Target>
     <Target Name="pasdoc_Tokyo:Make">
         <MSBuild Projects="console\pasdoc_Tokyo.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="pasdoc_gui_Tokyo">
-        <MSBuild Projects="delphi_gui\pasdoc_gui_Tokyo.dproj"/>
-    </Target>
-    <Target Name="pasdoc_gui_Tokyo:Clean">
-        <MSBuild Projects="delphi_gui\pasdoc_gui_Tokyo.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="pasdoc_gui_Tokyo:Make">
-        <MSBuild Projects="delphi_gui\pasdoc_gui_Tokyo.dproj" Targets="Make"/>
     </Target>
     <Target Name="file_to_pascal_data_Tokyo.dproj">
         <MSBuild Projects="tools\file_to_pascal_data_Tokyo.dproj.dproj"/>
