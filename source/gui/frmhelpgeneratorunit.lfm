@@ -244,13 +244,27 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 8
         Height = 31
         Hint = 'Check this to support Markdown'
-        Top = 367
+        Top = 484
         Width = 185
         HelpType = htKeyword
         HelpKeyword = 'MarkdownOption'
         Caption = 'Support Markdown style'
         OnChange = SomethingChanged
         TabOrder = 10
+      end
+      object CheckAutoBackComments: TCheckBox
+        AnchorSideTop.Control = CheckMarkdown
+        AnchorSideTop.Side = asrBottom
+        Left = 7
+        Height = 24
+        Hint = 'Check this to to automatically assign a // comment to the preceding identifier on the same line, as thought it were a //< comment'
+        Top = 508	
+        Width = 430
+        HelpType = htKeyword
+        HelpKeyword = 'AutoBackComments'
+        Caption = 'Automatically interpret // comments as //< "back comments"'
+        OnChange = SomethingChanged
+        TabOrder = 11
       end
     end
     object pageSourceFiles: TPage
