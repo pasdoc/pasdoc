@@ -28,7 +28,7 @@ run_echo ()
   if [ "${CHECK_MEM_LEAK:-false}" = 'true' ]
   then
     STDERR=$( { "$@" > "$OUTPUT_FILENAME"; } 2>&1)
-    MEMLEAKED=$(echo $STDERR | grep -P "(\d{2,}|[^0]) unfreed memory blocks")
+    MEMLEAKED=$(echo $STDERR | grep -G "(\d{2,}|[^0]) unfreed memory blocks")
     if [ -n "$MEMLEAKED" ]
     then
       DIR=$(dirname "$OUTPUT_FILENAME")
