@@ -568,6 +568,10 @@ const
   MarkdownURLOpen = '(';
   MarkdownURLClose = ')';
   PasDocURLTag = 'url';
+  // Defines for markdown internal links
+  // Format is [Description](#SomeItem)
+  MarkdownURLLinkMarker = '#';
+  PasDocLinkTag = 'link';
 
   // Defines for markdown lists
   MarkdownUListMarkers = ['-', '*'];
@@ -804,14 +808,14 @@ begin
 end;
 
 {
-  This checks if Markdown URL starts at Description[Offset].
+  This checks if Markdown URL or link starts at Description[Offset].
   If yes, it returns true and sets
   -- PasDocTagName to name of PasDoc tag corresponding to current Markdown block
   -- Parameters to contents of this block
   -- OffsetEnd to the index of *next* character in Description right
      after this block
 }
-function CheckMarkdownURL(const Description: string; Offset: Integer;
+function CheckMarkdownURLOrLink(const Description: string; Offset: Integer;
   out PasDocTagName: string; out Parameters: string; out OffsetEnd: Integer): Boolean;
 var
   CurrOffset, BlockEndPos, Level: Integer;
@@ -870,8 +874,14 @@ begin
     URL := Copy(Description, CurrOffset, BlockEndPos - CurrOffset);
     Break;
   until False;
-
-  PasDocTagName := PasDocURLTag;
+  // Now check if the tag is URL or link: link starts with #
+  if (Length(URL) > 0) and (URL[1] = MarkdownURLLinkMarker) then
+  begin
+    URL := Copy(URL, 1 + 1 {Length(MarkdownURLLinkMarker)}, MaxInt);
+    PasDocTagName := PasDocLinkTag;
+  end
+  else
+    PasDocTagName := PasDocURLTag;
   OffsetEnd := BlockEndPos + 1;
   Parameters := URL + ' ' + MarkdownUnescape(URLDescr);
   Result := True;
@@ -1368,7 +1378,7 @@ var
       Result := CheckMarkdownList(Description, FOffset, TagName, Parameters, OffsetEnd);
     // Check for markdown URL
     if not Result then
-      Result := CheckMarkdownURL(Description, FOffset, TagName, Parameters, OffsetEnd);
+      Result := CheckMarkdownURLOrLink(Description, FOffset, TagName, Parameters, OffsetEnd);
     // Check for simple markdown block
     if not Result then
       Result := CheckMarkdownBlock(Description, FOffset, TagName, Parameters, OffsetEnd);
