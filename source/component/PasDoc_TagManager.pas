@@ -836,7 +836,7 @@ begin
     // Scan for end of URL i.e. closing bracket. If opening bracket is encountered, skip to next
     // closing bracket as it's part of an URL
     Level := 0; Found := False; BlockEndPos := CurrOffset;
-    while BlockEndPos < Length(Description) do
+    while BlockEndPos <= Length(Description) do
       case Description[BlockEndPos] of
         MarkdownURLOpen:
           begin

@@ -146,11 +146,14 @@ Incorrect lists
   [Some descr] (http://example)
   
   [Some descr](http://example
-   
 }
 unit ok_markdown;
 
 interface
+
+const
+  // [Bug fix: URL at the end of comment](http://example)
+  foo = 1;
 
 implementation
 
