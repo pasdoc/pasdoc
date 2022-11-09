@@ -146,6 +146,9 @@ Incorrect lists
   [Some descr] (http://example)
   
   [Some descr](http://example
+  
+  [Bug fix: URL preceeded by block in square brackets] [descr](http://example)
+
 }
 unit ok_markdown;
 
