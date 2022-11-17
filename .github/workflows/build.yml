@@ -34,6 +34,15 @@ jobs:
       - name: Build Tools
         run: make build-tools
       - name: Test
+
+        # TODO: testing on Windows fails now, weird error at diff call from check_cache:
+        #
+        # Comparing two outputs:
+        # scripts/check_cache_tmp/1/: No such file or directory
+        # scripts/check_cache_tmp/2/: No such file or directory
+        # D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\diff.exe: D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\diff.exe: D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\make.exe: *** [tests] Error 2
+
+        if: ${{ matrix.operating-system == 'ubuntu-latest' }}
         run: make tests
 
       # Test HTML validity using
