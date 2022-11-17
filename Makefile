@@ -418,13 +418,13 @@ endif
 .PHONY: dist-zip
 dist-zip: dist-prepare
 	rm -f $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip
-	cd $(PACKAGEBASEDIR); zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
+	cd $(PACKAGEBASEDIR) && zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
 
 # This target archives distribution into a tar.gz file.
 .PHONY: dist-tar-gz
 dist-tar-gz: dist-prepare
-	cd $(PACKAGEBASEDIR); tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
+	cd $(PACKAGEBASEDIR) && tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
 	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).tar.gz .
 
 .PHONY: dist-go32

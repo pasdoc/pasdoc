@@ -118,13 +118,16 @@ endif
 ifdef TEMP
 PACKAGEBASEDIR := $(TEMP)
 
-# Under Cygwin, make $(PACKAGEBASEDIR) directory in native format
-# (not Cygwin's) because we may use it with some non-Cygwin tools.
-# (But still I use "--mixed", not "--windows" param of cygpath, because make
-# poorly handles "\" (convering \\ to \ is done in so many places that it's
-# hard to handle...)
 ifdef inCygWin
+# Under Cygwin, make $(PACKAGEBASEDIR) directory as native Windows path
+# (not using Cygwin's /cygdrive/... etc.) because we may use it with some non-Cygwin tools.
+#
+# Also, using "--mixed" instead of "--windows", we get path with forward slashes,
+# must easier to use in Makefile due to uncertain how to quote things reliably in Makefile.
 PACKAGEBASEDIR := $(shell cygpath --mixed $(PACKAGEBASEDIR))
+else
+# Convert to forward slashes, to make using these paths on Windows easier.
+PACKAGEBASEDIR := $(subst \,/,$(PACKAGEBASEDIR))
 endif
 
 else
