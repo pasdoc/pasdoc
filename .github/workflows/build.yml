@@ -53,7 +53,7 @@ jobs:
       - name: Archive Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: macos-build
+          name: build ${{ matrix.operating-system }} lazarus ${{ matrix.lazarus-versions }}
           path: |
             *.zip
             *.tar.gz
