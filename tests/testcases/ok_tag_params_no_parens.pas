@@ -42,7 +42,7 @@ type
   @longcode# begin Writeln('Hello world'); end; { This works ! } #
 
   See also @@html and @@latex tags:
-  @html <font style="color: #ff0000">I'm red</font>
+  @html <span style="color: #ff0000">I'm red</span>
   @latex {\bf I'm bold.}
 
   And here is some code: @code begin X := Y + 1; end;
