@@ -16,8 +16,7 @@ jobs:
     # TODO: and Test
     strategy:
       matrix:
-        # operating-system: [windows-latest,ubuntu-latest,macos-latest]
-        operating-system: [windows-latest,ubuntu-latest]
+        operating-system: [windows-latest,ubuntu-latest,macos-latest]
         # Pick a few Lazarus versions to also test compilation with older FPC versions,
         # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
         lazarus-versions: [dist, stable, 2.2.2, 2.0.12]
