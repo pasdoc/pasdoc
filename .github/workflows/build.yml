@@ -1,0 +1,56 @@
+# ----------------------------------------------------------------------------
+# GitHub Actions workflow to build and test PasDoc.
+#
+# Uses GitHub-hosted runners.
+# Uses https://github.com/gcarreno/setup-lazarus to get FPC and Lazarus.
+#
+# See https://docs.github.com/en/actions for docs.
+# ----------------------------------------------------------------------------
+
+name: Build
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    # TODO: and Test
+    strategy:
+      matrix:
+        operating-system: [windows-latest,ubuntu-latest,macos-latest]
+        # Pick a few Lazarus versions to also test compilation with older FPC versions,
+        # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
+        lazarus-versions: [dist, stable, 2.2.2, 2.0.12, 2.0.8]
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+      - name: Checkout PasDoc
+      - uses: actions/checkout@v2
+      - name: Install FPC+Lazarus
+        uses: gcarreno/setup-lazarus@v3.0.16
+        with:
+          lazarus-version: ${{ matrix.lazarus-versions }}
+      - name: Build
+        run: make
+      - name: Build Tools
+        run: make build-tools
+      # - name: Test
+      #   run: make tests
+      - name: Package macOS
+        if: ${{ matrix.operating-system == 'macos-latest' }}
+        run: make dist-darwin-x86_64
+      - name: Package Linux
+        if: ${{ matrix.operating-system == 'ubuntu-latest' }}
+        run: make dist-linux-x86_64
+      - name: Package Windows (64)
+        if: ${{ matrix.operating-system == 'windows-latest' }}
+        run: make dist-win64
+      - name: Package Windows (32)
+        if: ${{ matrix.operating-system == 'windows-latest' }}
+        run: make dist-win32
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-build
+          path: |
+            "*.zip"
+            "*.tar.gz"
+          if-no-files-found: error
