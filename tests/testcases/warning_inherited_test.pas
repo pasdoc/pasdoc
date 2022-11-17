@@ -4,35 +4,35 @@ interface
 
 type
   { This is a class without ancestor name specified.
-    Inherited is @inherited. 
+    Inherited is @inherited.
     Inherited class is @inheritedClass. }
   TMyClass0 = class
-    { Inherited is @inherited. 
+    { Inherited is @inherited.
       Inherited class is @inheritedClass. }
-    procedure Clear;
+    procedure Clear; virtual;
   end;
 
   { This is a class with specified ancestor name, but ancestor (TStringList)
-    is not parsed by PasDoc. 
-    Inherited is @inherited. 
+    is not parsed by PasDoc.
+    Inherited is @inherited.
     Inherited class is @inheritedClass. }
   TMyClass1 = class(TStringList)
-    { Inherited is @inherited. 
+    { Inherited is @inherited.
       Inherited class is @inheritedClass. }
-    procedure Clear;
+    procedure Clear; override;
   end;
 
   { This is a class with specified ancestor name, and ancestor (TMyClass1)
-    is parsed by PasDoc. 
-    Inherited is @inherited. 
+    is parsed by PasDoc.
+    Inherited is @inherited.
     Inherited class is @inheritedClass. }
   TMyClass2 = class(TMyClass1)
-    { Inherited is @inherited. 
+    { Inherited is @inherited.
       Inherited class is @inheritedClass. }
-    procedure Clear;
+    procedure Clear; override;
   end;
 
-{ Inherited is @inherited. 
+{ Inherited is @inherited.
   Inherited class is @inheritedClass. }
 procedure Test;
 

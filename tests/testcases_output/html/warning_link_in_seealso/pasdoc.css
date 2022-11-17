@@ -141,7 +141,16 @@ td.itemname {white-space:nowrap; }
 td.itemunit {white-space:nowrap; }
 td.itemdesc { width:100%; }
 
-div.nodescription { color:red; }
+/* The paragraph "This item has no description." with this CSS class appears
+   on items that have no description, and no ancestor from which
+   to take a description.
+   By default we hide it, you can inhide it to explicitly see where descriptions are missing. */
+p.nodescription {
+  color:red;
+  display: none;
+}
+p.inheritdescription { color:red; }
+dl.description dt { color:red;}
 dl.parameters dt {
   color:blue;
 }

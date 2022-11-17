@@ -91,7 +91,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
       end
       object CheckAutoAbstract: TCheckBox
-        AnchorSideTop.Control = CheckUseTipueSearch
+        AnchorSideTop.Control = CheckStoreRelativePaths
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 31
@@ -179,7 +179,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         TabOrder = 5
       end
       object CheckHandleMacros: TCheckBox
-        AnchorSideTop.Control = CheckAutoAbstract
+        AnchorSideTop.Control = CheckUseTipueSearch
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 31
@@ -239,18 +239,32 @@ object frmHelpGenerator: TfrmHelpGenerator
         OnChange = SomethingChanged
       end
       object CheckMarkdown: TCheckBox
-        AnchorSideTop.Control = CheckStoreRelativePaths
+        AnchorSideTop.Control = CheckAutoAbstract
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 31
         Hint = 'Check this to support Markdown'
-        Top = 367
+        Top = 484
         Width = 185
         HelpType = htKeyword
         HelpKeyword = 'MarkdownOption'
         Caption = 'Support Markdown style'
         OnChange = SomethingChanged
         TabOrder = 10
+      end
+      object CheckAutoBackComments: TCheckBox
+        AnchorSideTop.Control = CheckMarkdown
+        AnchorSideTop.Side = asrBottom
+        Left = 7
+        Height = 24
+        Hint = 'Check this to to automatically assign a // comment to the preceding identifier on the same line, as thought it were a //< comment'
+        Top = 508	
+        Width = 430
+        HelpType = htKeyword
+        HelpKeyword = 'AutoBackComments'
+        Caption = 'Automatically interpret // comments as //< "back comments"'
+        OnChange = SomethingChanged
+        TabOrder = 11
       end
     end
     object pageSourceFiles: TPage

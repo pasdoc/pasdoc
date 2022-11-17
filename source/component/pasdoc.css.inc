@@ -143,7 +143,16 @@
 'td.itemunit {white-space:nowrap; }' + LineEnding +
 'td.itemdesc { width:100%; }' + LineEnding +
 '' + LineEnding +
-'div.nodescription { color:red; }' + LineEnding +
+'/* The paragraph "This item has no description." with this CSS class appears' + LineEnding +
+'   on items that have no description, and no ancestor from which' + LineEnding +
+'   to take a description.' + LineEnding +
+'   By default we hide it, you can inhide it to explicitly see where descriptions are missing. */' + LineEnding +
+'p.nodescription {' + LineEnding +
+'  color:red;' + LineEnding +
+'  display: none;' + LineEnding +
+'}' + LineEnding +
+'p.inheritdescription { color:red; }' + LineEnding +
+'dl.description dt { color:red;}' + LineEnding +
 'dl.parameters dt {' + LineEnding +
 '  color:blue;' + LineEnding +
 '}' + LineEnding +

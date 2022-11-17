@@ -1,0 +1,589 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}inherited{\_}descriptions}
+\label{ok_inherited_descriptions}
+\index{ok{\_}inherited{\_}descriptions}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TClassA\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IInterfaceB\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TClassB\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IInterfaceC\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TClassC\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TClassD\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TClassA Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClassA Class}
+\fi
+\label{ok_inherited_descriptions.TClassA}
+\index{TClassA}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClassA {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This description is only on \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}), \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}), \begin{ttfamily}TClassC\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC}), and \begin{ttfamily}TClassD\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD}).\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Prop}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.TClassA-Prop}
+\index{Prop}
+\item[\textbf{Prop}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Prop: string read FValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This description is only on \begin{ttfamily}TClassA.Prop\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA-Prop}).\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassA-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; virtual;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This description is only on \begin{ttfamily}TClassA.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA-Proc}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{IInterfaceB Interface}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{IInterfaceB Interface}
+\fi
+\label{ok_inherited_descriptions.IInterfaceB}
+\index{IInterfaceB}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+IInterfaceB {$>$} IInterface
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This description is only on \begin{ttfamily}IInterfaceB\end{ttfamily}(\ref{ok_inherited_descriptions.IInterfaceB}).\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Prop}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.IInterfaceB-Prop}
+\index{Prop}
+\item[\textbf{Prop}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Prop read FValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This description is only on \begin{ttfamily}IInterfaceB.Prop\end{ttfamily}(\ref{ok_inherited_descriptions.IInterfaceB-Prop}).\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.IInterfaceB-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; override;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This description is only on \begin{ttfamily}IInterfaceB.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.IInterfaceB-Proc}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TClassB Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClassB Class}
+\fi
+\label{ok_inherited_descriptions.TClassB}
+\index{TClassB}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClassB {$>$} \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+no description available, TClassA description followsThis description is only on \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}), \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}), \begin{ttfamily}TClassC\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC}), and \begin{ttfamily}TClassD\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD}).\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Prop}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.TClassB-Prop}
+\index{Prop}
+\item[\textbf{Prop}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Prop read FValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This description is only on \begin{ttfamily}TClassB.Prop\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB-Prop}), \begin{ttfamily}TClassC.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-Proc}) and \begin{ttfamily}TClassD.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD-Proc}).\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassB-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; override;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This description is only on \begin{ttfamily}TClassB.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB-Proc}), \begin{ttfamily}TClassC.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-Proc}) and \begin{ttfamily}TClassD.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD-Proc}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{IInterfaceC Interface}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{IInterfaceC Interface}
+\fi
+\label{ok_inherited_descriptions.IInterfaceC}
+\index{IInterfaceC}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+IInterfaceC {$>$} IInterface
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Prop}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.IInterfaceC-Prop}
+\index{Prop}
+\item[\textbf{Prop}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Prop read FValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This description is only on \begin{ttfamily}TClassC.Prop\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-Prop}) and \begin{ttfamily}TClassD.Prop\end{ttfamily}.\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.IInterfaceC-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; override;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This description is only on \begin{ttfamily}TClassC.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-Proc}) and \begin{ttfamily}TClassD.Proc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD-Proc}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TClassC Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClassC Class}
+\fi
+\label{ok_inherited_descriptions.TClassC}
+\index{TClassC}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClassC {$>$} \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}) {$>$} \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+no description available, TClassB description followsno description available, TClassA description followsThis description is only on \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}), \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}), \begin{ttfamily}TClassC\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC}), and \begin{ttfamily}TClassD\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD}).\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{NotInheritedProp}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.TClassC-Prop}
+\index{Prop}
+\item[\textbf{Prop}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Prop read FValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_inherited_descriptions.TClassC-NotInheritedProp}
+\index{NotInheritedProp}
+\item[\textbf{NotInheritedProp}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property NotInheritedProp: string read FOtherValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par This description is only on \begin{ttfamily}TClassC.NotInheritedProp\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-NotInheritedProp}).\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{FOtherValue}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.TClassC-FOtherValue}
+\index{FOtherValue}
+\item[\textbf{FOtherValue}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected FOtherValue: string;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassC-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; override;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{NotInheritedProc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassC-NotInheritedProc}
+\index{NotInheritedProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure NotInheritedProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+This description is only on \begin{ttfamily}TClassC.NotInheritedProc\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC-NotInheritedProc}).
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TClassD Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TClassD Class}
+\fi
+\label{ok_inherited_descriptions.TClassD}
+\index{TClassD}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TClassD {$>$} \begin{ttfamily}TClassC\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC}) {$>$} \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}) {$>$} \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+no description available, TClassC description followsno description available, TClassB description followsno description available, TClassA description followsThis description is only on \begin{ttfamily}TClassA\end{ttfamily}(\ref{ok_inherited_descriptions.TClassA}), \begin{ttfamily}TClassB\end{ttfamily}(\ref{ok_inherited_descriptions.TClassB}), \begin{ttfamily}TClassC\end{ttfamily}(\ref{ok_inherited_descriptions.TClassC}), and \begin{ttfamily}TClassD\end{ttfamily}(\ref{ok_inherited_descriptions.TClassD}).\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{NotInheritedProp}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_inherited_descriptions.TClassD-NotInheritedProp}
+\index{NotInheritedProp}
+\item[\textbf{NotInheritedProp}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property NotInheritedProp: string read FOtherValue;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Proc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassD-Proc}
+\index{Proc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure Proc; override;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{NotInheritedProc}\hspace*{\fill}
+
+\label{ok_inherited_descriptions.TClassD-NotInheritedProc}
+\index{NotInheritedProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public procedure NotInheritedProc;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

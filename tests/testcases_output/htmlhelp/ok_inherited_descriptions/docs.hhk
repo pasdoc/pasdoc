@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="IInterfaceB">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceB.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceB.html#Proc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Prop">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceB.html#Prop">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="IInterfaceC">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceC.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceC.html#Proc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Prop">
+<param name="Local" value="ok_inherited_descriptions.IInterfaceC.html#Prop">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassA">
+<param name="Local" value="ok_inherited_descriptions.TClassA.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.TClassA.html#Proc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Prop">
+<param name="Local" value="ok_inherited_descriptions.TClassA.html#Prop">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassB">
+<param name="Local" value="ok_inherited_descriptions.TClassB.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.TClassB.html#Proc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Prop">
+<param name="Local" value="ok_inherited_descriptions.TClassB.html#Prop">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassC">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FOtherValue">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html#FOtherValue">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NotInheritedProc">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html#NotInheritedProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NotInheritedProp">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html#NotInheritedProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html#Proc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Prop">
+<param name="Local" value="ok_inherited_descriptions.TClassC.html#Prop">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassD">
+<param name="Local" value="ok_inherited_descriptions.TClassD.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NotInheritedProc">
+<param name="Local" value="ok_inherited_descriptions.TClassD.html#NotInheritedProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NotInheritedProp">
+<param name="Local" value="ok_inherited_descriptions.TClassD.html#NotInheritedProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Proc">
+<param name="Local" value="ok_inherited_descriptions.TClassD.html#Proc">
+</object>
+</ul>
+</body></html>

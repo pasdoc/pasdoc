@@ -547,6 +547,18 @@ type
     property Attributes: TStringPairVector read FAttributes;
     procedure SetAttributes(var Value: TStringPairVector);
 
+    { Get the closest item that this item inherits from. }
+    function InheritedItem: TPasItem; virtual;
+
+    { Generate a list of descriptions defined on this item in base classes.
+
+      This stops at the first class ancestor to have a description defined for an
+      ancestor of this item. Along the way it will also collect descriptions of this
+      item from any implemented interfaces.
+
+      If there is no description in any ancestor, it will return an empty vector. }
+    function GetInheritedItemDescriptions: TStringPairVector; virtual;
+
     function BasePath: string; override;
 
     { Parameters of method or property.
@@ -580,6 +592,9 @@ type
       Currently this checks @link(Params) and @link(Raises) and
       @link(TPasRoutine.Returns). }
     function HasOptionalInfo: boolean; virtual;
+
+    { Whether this item overrides an item in an ancestor. }
+    function IsOverride: Boolean; virtual;
   end;
 
   { @abstract(Pascal constant.)
@@ -679,6 +694,12 @@ type
     property Directives: TStandardDirectives read FDirectives write FDirectives;
 
     function HasOptionalInfo: boolean; override;
+
+    { Get the closest item that this item inherits from.
+      Returns @nil if the routine does not override. }
+    function InheritedItem: TPasItem; override;
+
+    function IsOverride: Boolean; override;
   end;
 
   TPasProperty = class(TPasItem)
@@ -710,6 +731,12 @@ type
     property NoDefault: Boolean read FNoDefault write FNoDefault;
     { keeps Stored specifier }
     property StoredId: string read FStoredID write FStoredID;
+
+    { Get the closest item that this item inherits from.
+      Returns @nil if the property does not override. }
+    function InheritedItem: TPasItem; override;
+
+    function IsOverride: Boolean; override;
   end;
 
   { enumeration type to determine type of @link(TPasCio) item }
@@ -811,6 +838,12 @@ type
       ancestor of this Cio (or nil if it couldn't be found),
       or nil if Ancestors.Count = 0. }
     function FirstAncestor: TPasItem;
+
+    { Get the closest item that this item inherits from.
+      Returns the value of @link(FirstAncestor). }
+    function InheritedItem: TPasItem; override;
+
+    function GetInheritedItemDescriptions: TStringPairVector; override;
 
     { This returns the name of first ancestor of this Cio.
 
@@ -1705,6 +1738,81 @@ begin
   ReplaceStr := '';
 end;
 
+function TPasItem.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
+end;
+
+function TPasItem.GetInheritedItemDescriptions: TStringPairVector;
+
+  procedure AddAncestorDescription(Vector: TStringPairVector; ThisItemInAncestor: TPasItem);
+  begin
+    Vector.Add(TStringPair.Create(
+      ThisItemInAncestor.UnitRelativeQualifiedName,
+      ThisItemInAncestor.AbstractDescription + ThisItemInAncestor.DetailedDescription,
+      ThisItemInAncestor));
+  end;
+
+var
+  I: Integer;
+  CurrentClassAncestor: TPasCio;
+  InterfaceAncestor: TPasCio;
+  ThisItemInAncestor: TPasItem;
+  OverrideChainEnded: Boolean;
+begin
+  Result := TStringPairVector.Create(False);
+  OverrideChainEnded := not IsOverride;
+
+  if (Assigned(MyObject) and
+     (TPasCio(MyObject).MyType in [CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJECT, CIO_PACKEDOBJECT])) then
+  begin
+    CurrentClassAncestor := MyObject;
+    while Assigned(CurrentClassAncestor) do
+    begin
+      { We want the main ancestor's description above all else, unless the method is not in
+        the inheritance tree of the method anymore. We want to keep traversing past that point
+        because we want to pick up descriptions from any interfaces. }
+      if not OverrideChainEnded then
+      begin
+        ThisItemInAncestor := CurrentClassAncestor.FindItem(Name) as TPasItem;
+
+        { Check if the main ancestor has a description }
+        if Assigned(ThisItemInAncestor) then
+        begin
+          if ThisItemInAncestor.HasDescription then { Any first ancestor with a desc ends the search }
+          begin
+            AddAncestorDescription(Result, ThisItemInAncestor);
+            Break;
+          end
+          else if not ThisItemInAncestor.IsOverride then
+            OverrideChainEnded := True;
+        end;
+      end;
+
+      { Check if any of the interfaces have a description }
+      for I := 1 to CurrentClassAncestor.Ancestors.Count - 1 do
+      begin
+        InterfaceAncestor := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasCio;
+        if Assigned(InterfaceAncestor) then
+        begin
+          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Name) as TPasItem;
+          if Assigned(ThisItemInAncestor) and ThisItemInAncestor.HasDescription then
+            AddAncestorDescription(Result, ThisItemInAncestor);
+        end;
+      end;
+
+      // Ensure that the ancestor is a CIO and not a type alias
+      if not (CurrentClassAncestor.FirstAncestor is TPasCio) then
+        Break;
+
+      CurrentClassAncestor := CurrentClassAncestor.FirstAncestor as TPasCio;
+    end;
+  end;
+end;
+
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -1822,6 +1930,11 @@ begin
     Result := MyUnit.BasePath
   else
     Result := inherited BasePath; //required by D7
+end;
+
+function TPasItem.IsOverride: Boolean;
+begin
+  Result := False;
 end;
 
 { TPasEnum ------------------------------------------------------------------- }
@@ -2332,6 +2445,43 @@ begin
   end;
 end;
 
+function TPasCio.InheritedItem: TPasItem;
+begin
+  Result := FirstAncestor;
+end;
+
+function TPasCio.GetInheritedItemDescriptions: TStringPairVector;
+
+  procedure AddAncestorDescription(Vector: TStringPairVector; ThisItemInAncestor: TPasItem);
+  begin
+    Vector.Add(TStringPair.Create(
+      ThisItemInAncestor.UnitRelativeQualifiedName,
+      ThisItemInAncestor.AbstractDescription + ThisItemInAncestor.DetailedDescription,
+      ThisItemInAncestor));
+  end;
+
+var
+  Ancestor: TPasItem;
+begin
+  Result := TStringPairVector.Create(False);
+
+  Ancestor := FirstAncestor as TPasItem;
+
+  while Assigned(Ancestor) do
+  begin
+    if Ancestor.HasDescription then
+    begin
+      AddAncestorDescription(Result, Ancestor);
+      Ancestor := nil;
+    end
+    else if Ancestor is TPasCio then
+      Ancestor := TPasCio(Ancestor).FirstAncestor
+    else
+      Ancestor := nil;
+  end;
+
+end;
+
 { TPasUnit ------------------------------------------------------------------- }
 
 constructor TPasUnit.Create;
@@ -2579,6 +2729,7 @@ procedure TPasRoutine.Deserialize(const ASource: TStream);
 begin
   inherited;
   ASource.Read(FWhat, SizeOf(FWhat));
+  ASource.Read(FDirectives, SizeOf(FDirectives));
 
   { No need to serialize, because it's not generated by parser:
   FReturns := LoadStringFromStream(ASource);
@@ -2589,10 +2740,19 @@ procedure TPasRoutine.Serialize(const ADestination: TStream);
 begin
   inherited;
   ADestination.Write(FWhat, SizeOf(FWhat));
+  ADestination.Write(FDirectives, SizeOf(FDirectives));
 
   { No need to serialize, because it's not generated by parser:
   SaveStringToStream(FReturns, ADestination);
   }
+end;
+
+function TPasRoutine.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) and (SD_OVERRIDE in Directives) then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
 end;
 
 procedure TPasRoutine.RegisterTags(TagManager: TTagManager);
@@ -2606,6 +2766,11 @@ begin
     nil, {$IFDEF FPC}@{$ENDIF} StoreReturnsTag,
     [toParameterRequired, toRecursiveTags, toAllowOtherTagsInsideByDefault,
      toAllowNormalTextInside]);
+end;
+
+function TPasRoutine.IsOverride: Boolean;
+begin
+  Result := SD_OVERRIDE in Directives;
 end;
 
 { TPasProperty --------------------------------------------------------------- }
@@ -2634,6 +2799,19 @@ begin
   SaveStringToStream(FWriter, ADestination);
   SaveStringToStream(FPropType, ADestination);
   SaveStringToStream(FReader, ADestination);
+end;
+
+function TPasProperty.InheritedItem: TPasItem;
+begin
+  if Assigned(MyObject) and (PropType = '') then
+    Result := MyObject.FindItemInAncestors(Name)
+  else
+    Result := nil;
+end;
+
+function TPasProperty.IsOverride: Boolean;
+begin
+  Result := (PropType = '');
 end;
 
 { TExternalItem ---------------------------------------------------------- }

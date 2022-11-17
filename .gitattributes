@@ -26,6 +26,7 @@ Makefile text eol=auto
 *.hhc text eol=auto
 *.hhk text eol=auto
 *.hhp text eol=auto
+*.php text eol=auto
 PASDOC-OUTPUT text eol=auto
 
 # Test cases checking specific line endings
