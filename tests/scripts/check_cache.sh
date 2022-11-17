@@ -45,6 +45,11 @@ pasdoc_call --output=scripts/check_cache_tmp/1/
 pasdoc_call --output=scripts/check_cache_tmp/2/
 
 echo 'Comparing two outputs:'
+echo 'TODO: temp test of GH Actions'
+pwd
+echo 'ls:'
+ls -FlahR
+echo 'Now compare:'
 diff -u scripts/check_cache_tmp/1/ scripts/check_cache_tmp/2/
 echo 'OK, test passed.'
 
