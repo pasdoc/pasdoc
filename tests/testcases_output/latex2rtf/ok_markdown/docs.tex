@@ -197,4 +197,30 @@ Incorrect URLs:
 [Some descr] (http://example)
 
 [Some descr](http://example
+
+[Bug fix: URL preceeded by block in square brackets] http://example (descr)
+\section{Constants}
+\subsection*{foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+foo = 1;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+http://example (Bug fix: URL at the end of comment)
+
+\end{list}
 \end{document}

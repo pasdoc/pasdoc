@@ -19,6 +19,16 @@
 </object>
 <ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Constants">
+<param name="Local" value="ok_markdown.html#@Constants">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="foo">
+<param name="Local" value="ok_markdown.html#foo">
+</object>
+</ul>
 </ul>
 </ul>
 <li><object type="text/sitemap">

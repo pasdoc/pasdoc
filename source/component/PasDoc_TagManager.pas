@@ -817,26 +817,32 @@ var
   CurrOffset, BlockEndPos, Level: Integer;
   URLDescr, URL: string;
   Found: Boolean;
-const
-  DescrEnd = MarkdownURLDescrClose + MarkdownURLOpen;
 begin
   Result := False;
 
   // Fast check if we have markdown URL descr opening
   if not IsMarkdownSpecialChar(Description, Offset, [MarkdownURLDescrOpen]) then Exit;
+  if (Offset > 1) and not SCharIs(Description, Offset - 1, MarkdownBlockBoundaries) then Exit; // opening block must be preceded by a block delimiter char
 
   // Scan for contents
   CurrOffset := Offset;
   repeat
-    // Scan for end of description and start of URL
-    if not FindMarkdownSpecialSign(Description, CurrOffset, DescrEnd, BlockEndPos) then
+    // Scan for end of description
+    if not FindMarkdownSpecialSign(Description, CurrOffset, MarkdownURLDescrClose, BlockEndPos) then
       Exit; { exit with false }
-    URLDescr := Copy(Description, CurrOffset + 1, BlockEndPos - Offset - 1);
-    CurrOffset := BlockEndPos + Length(DescrEnd);
+    // Check for start of URL
+    if not IsMarkdownSpecialChar(Description, BlockEndPos + 1 {Length(MarkdownURLDescrClose)}, [MarkdownURLOpen]) then
+      Exit; { exit with false }
+
+    URLDescr := Copy(Description,
+      CurrOffset + 1 {Length(MarkdownURLDescrOpen)},
+      BlockEndPos - Offset - 1 {Length(MarkdownURLDescrClose)});
+
+    CurrOffset := BlockEndPos + 1 {Length(MarkdownURLDescrClose)} + 1 {Length(MarkdownURLOpen)};
     // Scan for end of URL i.e. closing bracket. If opening bracket is encountered, skip to next
-    // closing bracket as it's part of an URL
+    // closing bracket as it's part of an URL. No escaping in URL is allowed!
     Level := 0; Found := False; BlockEndPos := CurrOffset;
-    while BlockEndPos < Length(Description) do
+    while BlockEndPos <= Length(Description) do
       case Description[BlockEndPos] of
         MarkdownURLOpen:
           begin
@@ -868,7 +874,6 @@ begin
   PasDocTagName := PasDocURLTag;
   OffsetEnd := BlockEndPos + 1;
   Parameters := URL + ' ' + MarkdownUnescape(URLDescr);
-
   Result := True;
 end;
 

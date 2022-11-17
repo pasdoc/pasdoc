@@ -9,7 +9,7 @@
 <body>
 <h1 class="unit">Unit ok_markdown</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
 <strong>This is a test of Markdown syntax</strong></p>
@@ -204,5 +204,25 @@ program Foo;
 
 <p>[Some descr] (<a href="http://example">http://example</a>)
 
-<p>[Some descr](<a href="http://example">http://example</a></p>
-<span id="PasDoc-Uses"></span></body></html>
+<p>[Some descr](<a href="http://example">http://example</a>
+
+<p>[Bug fix: URL preceeded by block in square brackets] <a href="http://example">descr</a></p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="ok_markdown.html#foo">foo</a></strong> = 1;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="foo"></span><code><strong>foo</strong> = 1;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+<a href="http://example">Bug fix: URL at the end of comment</a></p>
+</td></tr>
+</table>
+</body></html>

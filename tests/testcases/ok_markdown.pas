@@ -146,11 +146,17 @@ Incorrect lists
   [Some descr] (http://example)
   
   [Some descr](http://example
-   
+  
+  [Bug fix: URL preceeded by block in square brackets] [descr](http://example)
+
 }
 unit ok_markdown;
 
 interface
+
+const
+  // [Bug fix: URL at the end of comment](http://example)
+  foo = 1;
 
 implementation
 

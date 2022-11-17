@@ -221,4 +221,40 @@ Incorrect URLs:
 [Some descr] (\href{http://example}{http://example})
 
 [Some descr](\href{http://example}{http://example}
+
+[Bug fix: URL preceeded by block in square brackets] \href{http://example}{descr}
+\section{Constants}
+\ifpdf
+\subsection*{\large{\textbf{foo}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{foo}
+\fi
+\label{ok_markdown-foo}
+\index{foo}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+foo = 1;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+\href{http://example}{Bug fix: URL at the end of comment}
+
+\end{list}
 \end{document}
