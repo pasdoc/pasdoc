@@ -281,8 +281,16 @@ build-tools: make-dirs
 
 .PHONY: build-gui
 build-gui:
-	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
-	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
+	if ! lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk; then \
+	  echo 'lazbuild sometimes fails with Access Violation, retrying' && \
+	  rm -Rf source/packages/lazarus/lib/ && \
+	  lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk; \
+	fi
+	if ! lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi; then \
+	  echo 'lazbuild sometimes fails with Access Violation, retrying' && \
+	  rm -Rf source/gui/lib/ && \
+	  lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi; \
+	fi
 	strip source/gui/pasdoc_gui$(EXE)
 
 .PHONY: tests-fpcunit
