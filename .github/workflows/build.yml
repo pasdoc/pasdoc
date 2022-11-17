@@ -35,6 +35,15 @@ jobs:
         run: make build-tools
       - name: Test
         run: make tests
+      # Test HTML validity using
+      # https://github.com/marketplace/actions/html5-validator
+      # that in turn uses
+      # https://github.com/svenkreiss/html5validator
+      # https://github.com/validator/validator
+      - name: HTML5Validator
+        uses: Cyb3r-Jak3/html5validator-action
+        with:
+          root: tests/testcases_output/html/
       - name: Package macOS
         if: ${{ matrix.operating-system == 'macos-latest' }}
         run: make dist-darwin-x86_64
