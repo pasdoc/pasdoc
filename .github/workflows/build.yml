@@ -51,6 +51,6 @@ jobs:
         with:
           name: macos-build
           path: |
-            "*.zip"
-            "*.tar.gz"
+            *.zip
+            *.tar.gz
           if-no-files-found: error
