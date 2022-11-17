@@ -1,0 +1,10 @@
+# Check that GitHub Actions use latest versions of plugins,
+# following advise from https://github.com/marketplace/actions/html5-validator .
+
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
