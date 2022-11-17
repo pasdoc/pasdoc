@@ -45,7 +45,7 @@ pasdoc_call --output=scripts/check_cache_tmp/1/
 pasdoc_call --output=scripts/check_cache_tmp/2/
 
 echo 'Comparing two outputs:'
-diff -ur ./scripts/check_cache_tmp/1/ ./scripts/check_cache_tmp/2/
+diff -ur scripts/check_cache_tmp/1/ scripts/check_cache_tmp/2/
 echo 'OK, test passed.'
 
 rm -Rf scripts/check_cache_tmp/
