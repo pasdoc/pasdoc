@@ -1190,7 +1190,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
   var
     InheritedDescriptions: TStringPairVector;
     AncestorItem: TPasItem;
-    AncestorCio: TPasCio;
     I: Integer;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
