@@ -14,6 +14,9 @@
     - nested structures (CIOs) and simple types inside other CIOs are now output
 * New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output
 * Manpages for `pasdoc`, `pascal_pre_proc`, `file_to_pascal_data` and `file_to_pascal_string` (Suve)
+* Show ancestor description for a routine or class, when it missed its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
+* Expose in pasdoc GUI options to request Markdown and "automatic back comments" (Ayeseeem)
+* Fixes and improvements to Markdown support (Fr0sT-Brutal)
 
 ## Version 0.16.0 (2021-02-07)
 
