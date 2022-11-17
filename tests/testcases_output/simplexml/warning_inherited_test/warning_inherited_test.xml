@@ -5,21 +5,21 @@
   <structure name="TMyClass0" name_with_generic="TMyClass0" type="class">
     <description><detailed>This is a class without ancestor name specified. Inherited is <code>TObject</code>. Inherited class is <code>TObject</code>.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Clear" type="procedure" declaration="procedure Clear;">
+    <routine name="Clear" type="procedure" declaration="procedure Clear; virtual;">
       <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TObject</code>.</detailed></description>
     </routine>
   </structure>
   <structure name="TMyClass1" name_with_generic="TMyClass1" type="class">
     <description><detailed>This is a class with specified ancestor name, but ancestor (TStringList) is not parsed by PasDoc. Inherited is <code>TStringList</code>. Inherited class is <code>TStringList</code>.</detailed></description>
     <ancestor name="TStringList" declaration="TStringList" />
-    <routine name="Clear" type="procedure" declaration="procedure Clear;">
+    <routine name="Clear" type="procedure" declaration="procedure Clear; override;">
       <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TStringList</code>.</detailed></description>
     </routine>
   </structure>
   <structure name="TMyClass2" name_with_generic="TMyClass2" type="class">
     <description><detailed>This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed by PasDoc. Inherited is TMyClass1. Inherited class is TMyClass1.</detailed></description>
     <ancestor name="TMyClass1" declaration="TMyClass1" />
-    <routine name="Clear" type="procedure" declaration="procedure Clear;">
+    <routine name="Clear" type="procedure" declaration="procedure Clear; override;">
       <description><detailed>Inherited is TMyClass1.Clear. Inherited class is TMyClass1.</detailed></description>
     </routine>
   </structure>

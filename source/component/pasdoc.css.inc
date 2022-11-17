@@ -143,7 +143,9 @@
 'td.itemunit {white-space:nowrap; }' + LineEnding +
 'td.itemdesc { width:100%; }' + LineEnding +
 '' + LineEnding +
-'div.nodescription { color:red; }' + LineEnding +
+'p.nodescription { color:red; }' + LineEnding +
+'p.inheritdescription { color:red; }' + LineEnding +
+'dl.description dt { color:red;}' + LineEnding +
 'dl.parameters dt {' + LineEnding +
 '  color:blue;' + LineEnding +
 '}' + LineEnding +
