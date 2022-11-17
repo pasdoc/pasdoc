@@ -1,0 +1,12 @@
+<unit name="ok_markdown_links.pas">
+  <description><abstract>Test markdown links.</abstract><detailed> Link to proc inside this unit with description: Test Procedure Not links: 
+
+<unorderedlist>
+<item>\[Test Procedure](#MyProc)</item>
+</unorderedlist>
+
+</detailed></description>
+  <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
+    <description><detailed>Link to Self, and a Second one</detailed></description>
+  </routine>
+</unit>

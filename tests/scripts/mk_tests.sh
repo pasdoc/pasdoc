@@ -269,6 +269,7 @@ all_tests_for_current_format ()
   mk_test ok_introduction_relative_paths introduction_relative_paths/pas/main.pas --additional=introduction_relative_paths/txt/somefile.txt
   mk_test ok_inline_var ok_inline_var.pas
   mk_test ok_invalid_tokens_not_scanned ok_invalid_tokens_not_scanned.pas
+  mk_test ok_markdown_links ok_markdown_links.pas --markdown
   mk_test ok_inherited_descriptions ok_inherited_descriptions.pas
 }
 
