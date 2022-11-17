@@ -23,7 +23,7 @@ jobs:
         operating-system: [ubuntu-latest]
         # Pick a few Lazarus versions to also test compilation with older FPC versions,
         # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
-        lazarus-versions: [dist, stable, 2.2.2, 2.0.12, 2.0.8]
+        lazarus-versions: [dist, stable, 2.2.2, 2.0.12]
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
