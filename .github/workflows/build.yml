@@ -44,6 +44,7 @@ jobs:
         if: ${{ matrix.operating-system == 'ubuntu-latest' }}
         run: make dist-linux-x86_64
       - name: Prepare Windows
+        if: ${{ matrix.operating-system == 'windows-latest' }}
         run: choco install zip
       - name: Package Windows (64)
         if: ${{ matrix.operating-system == 'windows-latest' }}
