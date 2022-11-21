@@ -17,6 +17,7 @@
 * Show ancestor description for a routine or class, when it missed its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
 * Expose in pasdoc GUI options to request Markdown and "automatic back comments" (Ayeseeem)
 * Fixes and improvements to Markdown support (Fr0sT-Brutal)
+* Fixed [spellchecking using Aspell](https://pasdoc.github.io/SpellChecking), in previous version we didn't pass language arguments to `aspell` correctly
 
 ## Version 0.16.0 (2021-02-07)
 
