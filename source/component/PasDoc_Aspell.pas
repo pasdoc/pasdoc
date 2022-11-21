@@ -110,9 +110,9 @@ begin
   FProcess.Executable := 'aspell';
   FProcess.Parameters.Add('-a');
   if AspellMode <> '' then
-    FProcess.Parameters.Add(' --mode=' + AspellMode);
+    FProcess.Parameters.Add('--mode=' + AspellMode);
   if AspellLanguage <> '' then
-    FProcess.Parameters.Add(' --lang=' + AspellLanguage);
+    FProcess.Parameters.Add('--lang=' + AspellLanguage);
 
   DoMessage(3, pmtInformation, 'Calling aspell process: "' +
     FProcess.Executable + ' ' +
