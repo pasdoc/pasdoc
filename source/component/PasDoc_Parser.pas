@@ -3848,7 +3848,11 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
         begin
           ParseEnum(EnumType, TypeName, RawDescriptionInfo);
-          FCioSk.Peek.Cio.Types.Add(EnumType);
+          EnumType.Visibility := FCioSk.Peek.CurVisibility;
+          if FCioSk.Peek.CurVisibility in ShowVisibilities then
+            FCioSk.Peek.Cio.Types.Add(EnumType)
+          else
+            FreeAndNil(EnumType);
           FreeAndNil(t);
           FCioSk.Peek.SkipCioDecl := TRUE;
           ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
