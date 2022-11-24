@@ -1,0 +1,10 @@
+<unit name="ok_invisible_nested_enums.pas">
+  <structure name="TOuterObject" name_with_generic="TOuterObject" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <type name="TPublicInnerEnum" declaration="TPublicInnerEnum = (...);">
+    </type>
+    <structure name="TPublicInnerObject" name_with_generic="TPublicInnerObject" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+    </structure>
+  </structure>
+</unit>

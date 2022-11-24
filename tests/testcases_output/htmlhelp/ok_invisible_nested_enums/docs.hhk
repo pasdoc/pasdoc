@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOuterObject">
+<param name="Local" value="ok_invisible_nested_enums.TOuterObject.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TPublicInnerEnum">
+<param name="Local" value="ok_invisible_nested_enums.TOuterObject.html#TPublicInnerEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TPublicInnerObject">
+<param name="Local" value="ok_invisible_nested_enums.TOuterObject.TPublicInnerObject.html">
+</object>
+</ul>
+</body></html>
