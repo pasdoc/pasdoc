@@ -1043,7 +1043,11 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
       ParamName := List[i].Name;
 
       if LinkToParamNames then
-       ParamName := SearchLink(ParamName, ItemToSearchFrom, '', true);
+       ParamName := SearchLink(
+        ParamName,
+        ItemToSearchFrom,
+        '',
+        lnfWarnIfNotInternal);
 
       WriteParameter(ParamName, List[i].Value);
     end;
@@ -1068,7 +1072,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     for i := 0 to SeeAlso.Count - 1 do
     begin
       SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
-        SeeAlso[i].Value, true, SeeAlsoItem);
+        SeeAlso[i].Value, lnfWarn, SeeAlsoItem);
       WriteDirect('\item[');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else

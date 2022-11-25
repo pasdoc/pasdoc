@@ -1276,7 +1276,11 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       ParamName := List[i].Name;
 
       if LinkToParamNames then
-       ParamName := SearchLink(ParamName, ItemToSearchFrom, '', true);
+       ParamName := SearchLink(
+        ParamName,
+        ItemToSearchFrom,
+        '',
+        lnfWarnIfNotInternal);
 
       WriteParameter(ParamName, List[i].Value);
     end;
@@ -1297,7 +1301,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     for i := 0 to SeeAlso.Count - 1 do
     begin
       SeeAlsoLink := SearchLink(SeeAlso[i].Name, AItem,
-        SeeAlso[i].Value, true, SeeAlsoItem);
+        SeeAlso[i].Value, lnfWarn, SeeAlsoItem);
       WriteDirect('  <dt>');
       if SeeAlsoItem <> nil then
         WriteDirect(SeeAlsoLink) else
@@ -1337,7 +1341,12 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         AttributesLink := name;
         AttributesItem := nil;
       end else
-        AttributesLink := SearchLink(name, AItem, name, true, AttributesItem);
+        AttributesLink := SearchLink(
+          name,
+          AItem,
+          name,
+          lnfWarnIfNotInternal,
+          AttributesItem);
       WriteDirect(AttributesLink);
 
       WriteConverted(value);

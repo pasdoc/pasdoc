@@ -118,6 +118,8 @@ const
 type
   TLinkLook = (llDefault, llFull, llStripped);
 
+  TLinkNotFoundAction = (lnfIgnore, lnfWarn, lnfWarnIfNotInternal);
+
   { This is used by @link(TDocGenerator.MakeItemLink) }
   TLinkContext = (
     { This means that link is inside some larger code piece,
@@ -615,14 +617,14 @@ type
       @param(FoundItem is the found item instance or nil if not found.) }
     function SearchLink(s: string; const Item: TBaseItem;
       const LinkDisplay: string;
-      const WarningIfLinkNotFound: boolean;
+      const WarningIfLinkNotFound: TLinkNotFoundAction;
       out FoundItem: TBaseItem): string; overload;
 
     { Just like previous overloaded version, but this doesn't return
       FoundItem (in case you don't need it). }
     function SearchLink(s: string; const Item: TBaseItem;
       const LinkDisplay: string;
-      const WarningIfLinkNotFound: boolean): string; overload;
+      const WarningIfLinkNotFound: TLinkNotFoundAction): string; overload;
 
     procedure StoreDescription(ItemName: string; var t: string);
 
@@ -1432,7 +1434,7 @@ procedure TDocGenerator.HandleLinkTag(
 var LinkTarget, LinkDisplay: string;
 begin
   ExtractFirstWord(TagParameter, LinkTarget, LinkDisplay);
-  ReplaceStr := SearchLink(LinkTarget, FCurrentItem, LinkDisplay, true);
+  ReplaceStr := SearchLink(LinkTarget, FCurrentItem, LinkDisplay, lnfWarn);
 end;
 
 procedure TDocGenerator.HandleUrlTag(
@@ -2601,7 +2603,7 @@ end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string;
-  const WarningIfLinkNotFound: boolean;
+  const WarningIfLinkNotFound: TLinkNotFoundAction;
   out FoundItem: TBaseItem): string;
 var
   NameParts: TNameParts;
@@ -2656,7 +2658,16 @@ begin
       else Assert(false, 'LinkLook = ??');
     end;
   end else
-  if WarningIfLinkNotFound then
+  if (WarningIfLinkNotFound = lnfWarnIfNotInternal) and
+     (FExternalClassHierarchy.IndexOfName(S) <> -1) then begin
+    DoMessage(
+      6,
+      pmtInformation,
+      'Link "%s" resolved as reference to external class hierarchy (from description of "%s")',
+      [S, Item.QualifiedName]);
+    Result := CodeString(ConvertString(S));
+  end
+  else if (WarningIfLinkNotFound <> lnfIgnore) then
   begin
     DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
       [S, Item.QualifiedName]);
@@ -2667,7 +2678,7 @@ end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   const LinkDisplay: string;
-  const WarningIfLinkNotFound: boolean): string;
+  const WarningIfLinkNotFound: TLinkNotFoundAction): string;
 var
   Dummy: TBaseItem;
 begin
