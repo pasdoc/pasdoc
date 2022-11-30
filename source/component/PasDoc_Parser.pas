@@ -900,6 +900,71 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
     until IsSemicolon and (Level = 0);
   end;
 
+  procedure ReadParameters;
+  var
+    T: TToken;
+    Level: Integer;
+    IsSemicolon: Boolean;
+    ParamsInGroup: Integer;
+    NextTokenIsType: Boolean;
+    I: Integer;
+  begin
+    Level := 0;
+    ParamsInGroup := 0;
+    NextTokenIsType := False;
+    repeat
+      T := Scanner.GetToken;
+      try
+        if T.MyType = TOK_WHITESPACE then
+        begin
+          { add exactly *one space* at the end of M.FullDeclaration }
+          if Length(M.FullDeclaration) > 0 then
+          begin
+            if (M.FullDeclaration[Length(M.FullDeclaration)] <> ' ') then
+              M.FullDeclaration := M.FullDeclaration + ' ';
+          end;
+        end else
+        if not (T.MyType in TokenCommentTypes) then
+          M.FullDeclaration := M.FullDeclaration + T.Data;
+
+        if Level > 0 then
+        begin
+          if T.IsSymbol(SYM_COLON) then
+            NextTokenIsType := True
+          else if (T.MyType = TOK_IDENTIFIER) or
+                 ((T.MyType = TOK_KEYWORD) and (AnsiLowerCase(T.Data) = 'string')) then
+          begin
+            if NextTokenIsType then
+            begin
+              for I := 0 to ParamsInGroup - 1 do
+                M.ParamTypes.Add(T.Data);
+              ParamsInGroup := 0;
+              NextTokenIsType := False;
+            end
+            else
+              Inc(ParamsInGroup);
+          end
+          else if T.IsSymbol(SYM_SEMICOLON) then
+          begin
+            for I := 0 to ParamsInGroup - 1 do
+              M.ParamTypes.Add('const');
+            ParamsInGroup := 0;
+            NextTokenIsType := False;
+          end;
+        end;
+
+        if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);
+        if T.IsSymbol(SYM_RIGHT_PARENTHESIS) then Dec(level);
+        IsSemicolon := T.IsSymbol(SYM_SEMICOLON);
+      finally
+        FreeAndNil(T);
+      end;
+    until IsSemicolon and (Level = 0);
+
+    for I := 0 to ParamsInGroup - 1 do
+      M.ParamTypes.Add('const');
+  end;
+
 var
   t: TToken;
   InvalidType, WasDeprecatedDirective: boolean;
@@ -959,7 +1024,7 @@ begin
       FreeAndNil(t);
     end;
 
-    ReadTokensUntilSemicolon;
+    ReadParameters;
 
     { first get non-WC token - if it is not an identifier in SD_SET put it back
       into stream and leave; otherwise copy tokens until semicolon }
