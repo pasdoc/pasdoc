@@ -174,7 +174,7 @@ const
 
   { set of characters, including all characters from @link(IdentifierStart)
     plus the ten decimal digits }
-  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.'];
+  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.', ',', '(', ')'];
 var
   i: Integer;
 begin
