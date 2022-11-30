@@ -337,6 +337,8 @@ type
       Must always end with PathDelim.
       In this class, this simply returns GetCurrentDir (with PathDelim added if needed). }
     function BasePath: string; virtual;
+
+    function Signature: string; virtual;
   end;
 
   THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental);
@@ -1451,6 +1453,11 @@ end;
 procedure TBaseItem.SetAuthors(const Value: TStringVector);
 begin
   FAuthors.Assign(Value);
+end;
+
+function TBaseItem.Signature: string;
+begin
+  Result := Name;
 end;
 
 function TBaseItem.QualifiedName: String;
