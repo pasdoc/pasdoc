@@ -1801,7 +1801,7 @@ begin
         because we want to pick up descriptions from any interfaces. }
       if not OverrideChainEnded then
       begin
-        ThisItemInAncestor := CurrentClassAncestor.FindItem(Name) as TPasItem;
+        ThisItemInAncestor := CurrentClassAncestor.FindItem(Signature) as TPasItem;
 
         { Check if the main ancestor has a description }
         if Assigned(ThisItemInAncestor) then
@@ -1822,7 +1822,7 @@ begin
         InterfaceAncestor := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasCio;
         if Assigned(InterfaceAncestor) then
         begin
-          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Name) as TPasItem;
+          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Signature) as TPasItem;
           if Assigned(ThisItemInAncestor) and ThisItemInAncestor.HasDescription then
             AddAncestorDescription(Result, ThisItemInAncestor);
         end;
