@@ -451,7 +451,7 @@ begin
     if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
     begin
       { it's a method, a field or a property }
-      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
+      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Signature
     end else begin
       if Item is TPasCio then
       begin
@@ -459,7 +459,7 @@ begin
         Result := NewLink(TPasItem(Item).QualifiedName)
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
+        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Signature
       end;
     end;
   end else if Item is TAnchorItem then
@@ -1060,7 +1060,7 @@ begin
   { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
-  if MakeAnchor then WriteAnchor(Item.Name);
+  if MakeAnchor then WriteAnchor(Item.Signature);
 
   WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
 

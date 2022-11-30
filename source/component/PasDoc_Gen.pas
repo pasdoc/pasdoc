@@ -1231,7 +1231,7 @@ end;
 { ---------------------------------------------------------------------------- }
 function TDocGenerator.CreateLink(const Item: TBaseItem): string;
 begin
-  Result := Item.Name;
+  Result := Item.Signature;
 end;
 
 { ---------------------------------------------------------------------------- }
