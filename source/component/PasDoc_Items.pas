@@ -1084,8 +1084,9 @@ type
   TBaseItems = class(TObjectVector)
   private
     FHash: TObjectHash;
-    procedure Serialize(const ADestination: TStream);
-    procedure Deserialize(const ASource: TStream);
+  protected
+    procedure Serialize(const ADestination: TStream); virtual;
+    procedure Deserialize(const ASource: TStream); virtual;
   public
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
@@ -1109,7 +1110,7 @@ type
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem);
+    procedure Add(const AObject: TBaseItem); virtual;
 
     { This is a shortcut for doing @link(Clear) and then
       @link(Add Add(AObject)). Useful when you want the list
@@ -1180,12 +1181,23 @@ type
 
   { Collection of methods. }
   TPasRoutines = class(TPasItems)
+  private
+    FShortNameHash: THash;
+  protected
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
+  public
     { Find an Index-th item with given name on a list. Index is 0-based.
       There could be multiple items sharing the same name (overloads) while
       method of base class returns only the one most recently added item.
 
       Returns @nil if nothing can be found. }
     function FindListItem(const AName: string; Index: Integer): TPasRoutine; overload;
+    function FindListItem(const ANameOrSignature: string): TPasRoutine; overload;
+    procedure Add(const AItem: TBaseItem); override;
+
+    constructor Create(const AOwnsObject: Boolean); override;
+    destructor Destroy; override;
   end;
 
   { Collection of properties. }
@@ -2213,6 +2225,69 @@ begin
 end;
 
 { TPasRoutines ----------------------------------------------------------------- }
+
+procedure TPasRoutines.Serialize(const ADestination: TStream);
+var
+  LCount, I : Integer;
+  Key: string;
+begin
+  inherited;
+  LCount := FShortNameHash.Count;
+  ADestination.Write(LCount, SizeOf(LCount));
+  for I := 0 to LCount -1 do begin
+    Key := FShortNameHash.Keys[I];
+    TSerializable.SaveStringToStream(Key, ADestination);
+    TSerializable.SaveStringToStream(FShortNameHash.GetString(Key), ADestination);
+  end;
+end;
+procedure TPasRoutines.Deserialize(const ASource: TStream);
+var
+  LCount, I: Integer;
+begin
+  inherited;
+  ASource.Read(LCount, SizeOf(LCount));
+  for I := 0 to LCount - 1 do
+    FShortNameHash.SetString(TSerializable.LoadStringFromStream(ASource), TSerializable.LoadStringFromStream(ASource));
+end;
+
+procedure TPasRoutines.Add(const AItem: TBaseItem);
+var
+  Signature: string;
+begin
+  Signature := AItem.Signature;
+  FShortNameHash.SetString(LowerCase(AItem.Name), LowerCase(Signature));
+
+  TObjectVector(Self).Add(AItem);
+  FHash.Items[LowerCase(Signature)] := AItem;
+end;
+
+constructor TPasRoutines.Create(const AOwnsObject: Boolean);
+begin
+  inherited;
+  FShortNameHash := THash.Create;
+end;
+
+destructor TPasRoutines.Destroy;
+begin
+  FreeAndNil(FShortNameHash);
+  inherited;
+end;
+
+function TPasRoutines.FindListItem(const ANameOrSignature: string): TPasRoutine;
+var
+  LowerNameOrSignature: string;
+  Signature: string;
+begin
+  LowerNameOrSignature := LowerCase(ANameOrSignature);
+  Result := TPasRoutine(inherited FindListItem(LowerNameOrSignature));
+
+  if not Assigned(Result) then begin
+    // Replace short names with the full signature
+    Signature := FShortNameHash.GetString(LowerNameOrSignature);
+    if Signature <> '' then
+      Result := TPasRoutine(inherited FindListItem(Signature));
+  end;
+end;
 
 function TPasRoutines.FindListItem(const AName: string; Index: Integer): TPasRoutine;
 var i, Counter: Integer;

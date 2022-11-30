@@ -975,8 +975,6 @@ begin
   try
     M.RawDescriptionInfo^ := RawDescriptionInfo;
     M.SetAttributes(CurrentAttributes);
-    if InitItemsForNextBackComment then
-      ItemsForNextBackComment.ClearAndAdd(M);
 
     M.What := RoutineType;
 
@@ -1025,6 +1023,10 @@ begin
     end;
 
     ReadParameters;
+
+    { This must be after the parameters are read, as TPasRoutine.Signature is generated from the parameters. }
+    if InitItemsForNextBackComment then
+      ItemsForNextBackComment.ClearAndAdd(M);
 
     { first get non-WC token - if it is not an identifier in SD_SET put it back
       into stream and leave; otherwise copy tokens until semicolon }
