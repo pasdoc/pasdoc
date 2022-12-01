@@ -1102,7 +1102,7 @@ type
       are in the same namespace as the enumerated type name.
 
       Returns @nil if nothing can be found. }
-    function FindListItem(const AName: string): TBaseItem;
+    function FindListItem(const ASignature: string): TBaseItem;
 
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
@@ -1130,7 +1130,7 @@ type
     { A comfortable routine that just calls inherited and
       casts result to TPasItem, since every item on this list must
       be always TPasItem. }
-    function FindListItem(const AName: string): TPasItem;
+    function FindListItem(const ASignature: string): TPasItem;
 
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
@@ -2066,22 +2066,22 @@ var
   LObj: TBaseItem;
 begin
   LObj := TBaseItem(Items[AIndex]);
-  FHash.Delete(LowerCase(LObj.Name));
+  FHash.Delete(LowerCase(LObj.Signature));
   inherited Delete(AIndex);
 end;
 
-function TBaseItems.FindListItem(const AName: string): TBaseItem;
+function TBaseItems.FindListItem(const ASignature: string): TBaseItem;
 begin
   Result := nil;
-  if Length(AName) > 0 then begin
-    result := TPasItem(FHash.Items[LowerCase(AName)]);
+  if Length(ASignature) > 0 then begin
+    result := TPasItem(FHash.Items[LowerCase(ASignature)]);
   end;
 end;
 
 procedure TBaseItems.Add(const AObject: TBaseItem);
 begin
   inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Name)] := AObject;
+  FHash.Items[LowerCase(AObject.Signature)] := AObject;
 end;
 
 procedure TBaseItems.InsertItems(const c: TBaseItems);
@@ -2133,9 +2133,9 @@ end;
 
 { TPasItems ------------------------------------------------------------------ }
 
-function TPasItems.FindListItem(const AName: string): TPasItem;
+function TPasItems.FindListItem(const ASignature: string): TPasItem;
 begin
-  Result := TPasItem(inherited FindListItem(AName));
+  Result := TPasItem(inherited FindListItem(ASignature));
 end;
 
 procedure TPasItems.CopyItems(const c: TPasItems);
