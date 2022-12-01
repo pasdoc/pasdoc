@@ -28,16 +28,16 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 </tr>
 <tr class="list">
 <td class="itemname">Packed Record&nbsp;<a class="bold" href="ok_complicated_record.TDoubleEndianCnvRec.html"><code>TDoubleEndianCnvRec</code></a></td>
-<td class="itemdesc"><code>TDoubleEndianCnvRec</code> is used in <a class="normal" href="ok_complicated_record.html#ConvertDouble">ConvertDouble</a> to convert a double to or from the BigEndian format.</td>
+<td class="itemdesc"><code>TDoubleEndianCnvRec</code> is used in <a class="normal" href="ok_complicated_record.html#ConvertDouble(double)">ConvertDouble</a> to convert a double to or from the BigEndian format.</td>
 </tr>
 </table>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="ok_complicated_record.html#ConvertDouble">ConvertDouble</a></strong>(const Value: double): double;</code></td>
+<td class="itemcode"><code>function <strong><a href="ok_complicated_record.html#ConvertDouble(double)">ConvertDouble</a></strong>(const Value: double): double;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>procedure <strong><a href="ok_complicated_record.html#SwapDoubleBytes">SwapDoubleBytes</a></strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="ok_complicated_record.html#SwapDoubleBytes(PDoubleEndianCnvRec,PDoubleEndianCnvRec)">SwapDoubleBytes</a></strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
@@ -53,7 +53,7 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ConvertDouble"></span><code>function <strong>ConvertDouble</strong>(const Value: double): double;</code></td>
+<td class="itemcode"><span id="ConvertDouble(double)"></span><code>function <strong>ConvertDouble</strong>(const Value: double): double;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -70,13 +70,13 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="SwapDoubleBytes"></span><code>procedure <strong>SwapDoubleBytes</strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
+<td class="itemcode"><span id="SwapDoubleBytes(PDoubleEndianCnvRec,PDoubleEndianCnvRec)"></span><code>procedure <strong>SwapDoubleBytes</strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
 <code>SwapDoubleBytes</code> copies <a class="normal" href="ok_complicated_record.TDoubleEndianCnvRec.html#Bytes">TDoubleEndianCnvRec.Bytes</a> in reverse order from Source&circ; to Dest&circ;.</p>
 <p>
- <code>SwapDoubleBytes</code> is used in <a class="normal" href="ok_complicated_record.html#ConvertDouble">ConvertDouble</a>.</p>
+ <code>SwapDoubleBytes</code> is used in <a class="normal" href="ok_complicated_record.html#ConvertDouble(double)">ConvertDouble</a>.</p>
 </td></tr>
 </table>
 <h3 class="detail">Types</h3>

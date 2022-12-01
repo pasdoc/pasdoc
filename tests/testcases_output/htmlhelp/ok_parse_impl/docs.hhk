@@ -5,7 +5,7 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value=":=">
-<param name="Local" value="ok_parse_impl.html#:=">
+<param name="Local" value="ok_parse_impl.html#:=(TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Bar">
@@ -38,7 +38,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="ok_parse_impl Unit">
-<param name="Local" value="ok_parse_impl.html#Overloaded">
+<param name="Local" value="ok_parse_impl.html#Overloaded(Byte)">
 </object>
 </ul>
 <li><object type="text/sitemap">
@@ -56,7 +56,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TClass - ok_parse_impl Unit">
-<param name="Local" value="ok_parse_impl.TClass.html#Create">
+<param name="Local" value="ok_parse_impl.TClass.html#Create(string)">
 </object>
 </ul>
 <li><object type="text/sitemap">
@@ -65,7 +65,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Implicit">
-<param name="Local" value="ok_parse_impl.TClass.html#Implicit">
+<param name="Local" value="ok_parse_impl.TClass.html#Implicit(string)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Method">

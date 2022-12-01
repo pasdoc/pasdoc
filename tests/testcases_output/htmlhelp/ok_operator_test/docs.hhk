@@ -5,55 +5,55 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="*">
-<param name="Local" value="ok_operator_test.html#*">
+<param name="Local" value="ok_operator_test.html#*(TMyType,integer)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="**">
-<param name="Local" value="ok_operator_test.html#**">
+<param name="Local" value="ok_operator_test.html#**(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="+">
-<param name="Local" value="ok_operator_test.html#+">
+<param name="Local" value="ok_operator_test.html#+(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="-">
-<param name="Local" value="ok_operator_test.html#-">
+<param name="Local" value="ok_operator_test.html#-(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="/">
-<param name="Local" value="ok_operator_test.html#/">
+<param name="Local" value="ok_operator_test.html#/(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value=":=">
-<param name="Local" value="ok_operator_test.html#:=">
+<param name="Local" value="ok_operator_test.html#:=(TMyType2)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="<">
-<param name="Local" value="ok_operator_test.html#<">
+<param name="Local" value="ok_operator_test.html#<(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="<=">
-<param name="Local" value="ok_operator_test.html#<=">
+<param name="Local" value="ok_operator_test.html#<=(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="=">
-<param name="Local" value="ok_operator_test.html#=">
+<param name="Local" value="ok_operator_test.html#=(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value=">">
-<param name="Local" value="ok_operator_test.html#>">
+<param name="Local" value="ok_operator_test.html#>(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value=">=">
-<param name="Local" value="ok_operator_test.html#>=">
+<param name="Local" value="ok_operator_test.html#>=(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="and">
-<param name="Local" value="ok_operator_test.html#and">
+<param name="Local" value="ok_operator_test.html#and(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="or">
-<param name="Local" value="ok_operator_test.html#or">
+<param name="Local" value="ok_operator_test.html#or(TMyType,TMyType)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TDelphiRec">
@@ -61,29 +61,29 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Add">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Add">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Add(TDelphiRec,TDelphiRec)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Explicit">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Explicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Explicit(Double)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Implicit">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit(Integer)">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TDelphiRec - ok_operator_test Unit">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit(Integer)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TDelphiRec - ok_operator_test Unit">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Implicit(TDelphiRec)">
 </object>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Subtract">
-<param name="Local" value="ok_operator_test.TDelphiRec.html#Subtract">
+<param name="Local" value="ok_operator_test.TDelphiRec.html#Subtract(TDelphiRec,TDelphiRec)">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyClass">
@@ -103,7 +103,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="xor">
-<param name="Local" value="ok_operator_test.html#xor">
+<param name="Local" value="ok_operator_test.html#xor(TMyType,TMyType)">
 </object>
 </ul>
 </body></html>
