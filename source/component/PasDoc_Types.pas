@@ -174,9 +174,10 @@ const
 
   { set of characters, including all characters from @link(IdentifierStart)
     plus the ten decimal digits }
-  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.', ',', '(', ')'];
+  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.', ','];
 var
   i: Integer;
+  Depth: Integer;
 begin
   Result := False;
 
@@ -193,12 +194,17 @@ begin
   if not CharInSet(s[1], IdentifierStart) then Exit;
 {$ENDIF}
   i := 2;
+  Depth := 0;
   while (i <= Length(s)) do begin
-  {$IFNDEF COMPILER_12_UP}
-    if (not (s[i] in IdentifierOther)) then Exit;
-  {$ELSE}
-    if not CharInSet(s[i], IdentifierOther) then Exit;
-  {$ENDIF}
+    if s[i] = '(' then
+      Inc(Depth)
+    else if s[i] = ')' then
+      Dec(Depth)
+{$IFNDEF COMPILER_12_UP}
+    else if (Depth = 0) and (not (s[i] in IdentifierOther)) then Exit;
+{$ELSE}
+    else if (Depth = 0) and (not CharInSet(s[i], IdentifierOther)) then Exit;
+{$ENDIF}
     Inc(i);
   end;
 

@@ -422,6 +422,7 @@ var
   Len: Integer;
   StartPos: Integer;
   EndPos: Integer;
+  Depth: Integer;
 begin
   StartPos := 1;
   Len := Length(S);
@@ -429,11 +430,21 @@ begin
   while (StartPos <= Len) and IsCharInSet(S[StartPos], WhiteSpace) do
     Inc(StartPos);
 
+  Depth := 0;
+
   if StartPos <= Len then
   begin
     EndPos := StartPos + 1;
-    while (EndPos <= Len) and not IsCharInSet(S[EndPos], WhiteSpace) do
+    while (EndPos <= Len) do begin
+      if S[EndPos] = '(' then
+        Inc(Depth)
+      else if S[EndPos] = ')' then
+        Dec(Depth)
+      else if (Depth = 0) and IsCharInSet(S[EndPos], WhiteSpace) then
+        Break;
+
       Inc(EndPos);
+    end;
     FindFlag(EndPos);
     Result := Copy(S, StartPos, EndPos - StartPos);
     S := Trim(Copy(S, EndPos, Len));
