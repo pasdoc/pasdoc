@@ -54,6 +54,12 @@ var
   SrcFileName, DestFileName, S, Next: string;
   LenProcessed, LenNext: Cardinal;
 begin
+  if ParamCount() <> 2 then
+  begin
+    Writeln(StdErr, 'file_to_pascal_string: Usage: file_to_pascal_string INPUT_FILE OUTPUT_FILE');
+    Writeln(StdErr, 'file_to_pascal_string: Invalid number of arguments: expected 2, got ', ParamCount());
+    Halt(1)
+  end;
   SrcFileName := ParamStr(1);
   DestFileName := ParamStr(2);
 
