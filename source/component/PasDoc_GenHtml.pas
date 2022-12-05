@@ -204,6 +204,8 @@ type
 
     function FormatAnAnchor(const AName, Caption: string): string;
 
+    function SignatureToId(const Signature: string): string;
+
   protected
     { Return common HTML content that goes inside <head>. }
     function MakeHead: string;
@@ -451,7 +453,7 @@ begin
     if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
     begin
       { it's a method, a field or a property }
-      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
+      Result := TPasItem(Item).MyObject.FullLink + '#' + SignatureToId(Item.Signature)
     end else begin
       if Item is TPasCio then
       begin
@@ -459,7 +461,7 @@ begin
         Result := NewLink(TPasItem(Item).QualifiedName)
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
+        Result := TPasItem(Item).MyUnit.FullLink + '#' + SignatureToId(Item.Signature)
       end;
     end;
   end else if Item is TAnchorItem then
@@ -726,7 +728,7 @@ begin
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
 
-  WriteAnchor(CIO.Name);
+  WriteAnchor(SignatureToId(CIO.Signature));
   WriteHeading(HL, 'cio', s);
 
   WriteDirectLine('<div class="sections">');
@@ -1060,7 +1062,7 @@ begin
   { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
-  if MakeAnchor then WriteAnchor(Item.Name);
+  if MakeAnchor then WriteAnchor(SignatureToId(Item.Signature));
 
   WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
 
@@ -1712,6 +1714,17 @@ end;
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
   WriteDirect(FormatAnAnchor(AName, Caption));
+end;
+
+function TGenericHTMLDocGenerator.SignatureToId(const Signature: string): string;
+const
+  ReplacementArray: array[0..2] of TCharReplacement = (
+    (cChar: '('; sSpec: '-'),
+    (cChar: ')'; sSpec: '-'),
+    (cChar: ','; sSpec: '-')
+  );
+begin
+  Result := StringReplaceChars(Signature, ReplacementArray);
 end;
 
 { ---------------------------------------------------------------------------- }

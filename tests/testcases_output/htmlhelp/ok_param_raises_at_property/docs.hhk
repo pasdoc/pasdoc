@@ -5,7 +5,7 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Foo">
-<param name="Local" value="A.html#Foo">
+<param name="Local" value="A.html#Foo-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyClass">

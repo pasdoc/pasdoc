@@ -153,19 +153,19 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TVorbisFileCloseFunc">
-<param name="Local" value="ok_vorbisfile.html#TVorbisFileCloseFunc">
+<param name="Local" value="ok_vorbisfile.html#TVorbisFileCloseFunc-Pointer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TVorbisFileReadFunc">
-<param name="Local" value="ok_vorbisfile.html#TVorbisFileReadFunc">
+<param name="Local" value="ok_vorbisfile.html#TVorbisFileReadFunc-Pointer-TSizeT-TSizeT-Pointer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TVorbisFileSeekFunc">
-<param name="Local" value="ok_vorbisfile.html#TVorbisFileSeekFunc">
+<param name="Local" value="ok_vorbisfile.html#TVorbisFileSeekFunc-Pointer-Int64-CInt-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TVorbisFileTellFunc">
-<param name="Local" value="ok_vorbisfile.html#TVorbisFileTellFunc">
+<param name="Local" value="ok_vorbisfile.html#TVorbisFileTellFunc-Pointer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="VorbisFileInited">
