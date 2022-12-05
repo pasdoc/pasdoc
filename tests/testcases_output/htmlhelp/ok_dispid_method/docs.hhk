@@ -9,7 +9,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Add">
-<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Add(INetFwOpenPort)">
+<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Add-INetFwOpenPort-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Count">
@@ -17,11 +17,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Item">
-<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Item(Integer,NET_FW_IP_PROTOCOL_)">
+<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Item-Integer-NET_FW_IP_PROTOCOL_-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Remove">
-<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Remove(Integer,NET_FW_IP_PROTOCOL_)">
+<param name="Local" value="ok_dispid_method.INetFwOpenPortsDisp.html#Remove-Integer-NET_FW_IP_PROTOCOL_-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="_NewEnum">

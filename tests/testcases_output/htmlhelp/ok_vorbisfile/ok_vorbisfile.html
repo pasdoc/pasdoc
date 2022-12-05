@@ -35,16 +35,16 @@ API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.d
 <td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TSizeT">TSizeT</a></strong> = LongWord;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileReadFunc(Pointer,TSizeT,TSizeT,Pointer)">TVorbisFileReadFunc</a></strong> = function (ptr: Pointer; Size: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
+<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileReadFunc-Pointer-TSizeT-TSizeT-Pointer-">TVorbisFileReadFunc</a></strong> = function (ptr: Pointer; Size: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileSeekFunc(Pointer,Int64,CInt)">TVorbisFileSeekFunc</a></strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
+<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileSeekFunc-Pointer-Int64-CInt-">TVorbisFileSeekFunc</a></strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileCloseFunc(Pointer)">TVorbisFileCloseFunc</a></strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
+<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileCloseFunc-Pointer-">TVorbisFileCloseFunc</a></strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileTellFunc(Pointer)">TVorbisFileTellFunc</a></strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
+<td class="itemcode"><code><strong><a href="ok_vorbisfile.html#TVorbisFileTellFunc-Pointer-">TVorbisFileTellFunc</a></strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="ok_vorbisfile.html#Pov_callbacks">Pov_callbacks</a></strong> = &circ;<a href="ok_vorbisfile.Tov_callbacks.html">Tov_callbacks</a>;</code></td>
@@ -91,28 +91,28 @@ API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.d
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileReadFunc(Pointer,TSizeT,TSizeT,Pointer)"></span><code><strong>TVorbisFileReadFunc</strong> = function (ptr: Pointer; Size: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileReadFunc-Pointer-TSizeT-TSizeT-Pointer-"></span><code><strong>TVorbisFileReadFunc</strong> = function (ptr: Pointer; Size: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; nmemb: <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; DataSource: Pointer): <a href="ok_vorbisfile.html#TSizeT">TSizeT</a>; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileSeekFunc(Pointer,Int64,CInt)"></span><code><strong>TVorbisFileSeekFunc</strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileSeekFunc-Pointer-Int64-CInt-"></span><code><strong>TVorbisFileSeekFunc</strong> = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileCloseFunc(Pointer)"></span><code><strong>TVorbisFileCloseFunc</strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileCloseFunc-Pointer-"></span><code><strong>TVorbisFileCloseFunc</strong> = function (DataSource: Pointer): CInt; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TVorbisFileTellFunc(Pointer)"></span><code><strong>TVorbisFileTellFunc</strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
+<td class="itemcode"><span id="TVorbisFileTellFunc-Pointer-"></span><code><strong>TVorbisFileTellFunc</strong> = function (DataSource: Pointer): CLong; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>

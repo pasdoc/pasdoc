@@ -5,7 +5,7 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Foo">
-<param name="Local" value="ok_macros.html#Foo(string)">
+<param name="Local" value="ok_macros.html#Foo-string-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="FourConst">
@@ -13,15 +13,15 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyProc1">
-<param name="Local" value="ok_macros.html#MyProc1(Integer)">
+<param name="Local" value="ok_macros.html#MyProc1-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyProc2">
-<param name="Local" value="ok_macros.html#MyProc2(Integer)">
+<param name="Local" value="ok_macros.html#MyProc2-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyProc3">
-<param name="Local" value="ok_macros.html#MyProc3(Integer,Integer)">
+<param name="Local" value="ok_macros.html#MyProc3-Integer-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="OneAndNotNothing">

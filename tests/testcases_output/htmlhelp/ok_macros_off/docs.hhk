@@ -5,7 +5,7 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="FOO">
-<param name="Local" value="ok_macros_off.html#FOO(Integer)">
+<param name="Local" value="ok_macros_off.html#FOO-Integer-">
 </object>
 </ul>
 </body></html>

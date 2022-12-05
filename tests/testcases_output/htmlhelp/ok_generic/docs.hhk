@@ -45,7 +45,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Find">
-<param name="Local" value="ok_generic.TGeometryAttribsList.html#Find(string)">
+<param name="Local" value="ok_generic.TGeometryAttribsList.html#Find-string-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TGeometryAttribsList2">

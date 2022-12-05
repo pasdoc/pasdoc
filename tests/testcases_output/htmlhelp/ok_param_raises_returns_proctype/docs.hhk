@@ -9,11 +9,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyMethod">
-<param name="Local" value="ok_param_raises_returns_proctype.html#TMyMethod(integer)">
+<param name="Local" value="ok_param_raises_returns_proctype.html#TMyMethod-integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyProcedure">
-<param name="Local" value="ok_param_raises_returns_proctype.html#TMyProcedure(integer)">
+<param name="Local" value="ok_param_raises_returns_proctype.html#TMyProcedure-integer-">
 </object>
 </ul>
 </body></html>

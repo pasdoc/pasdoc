@@ -9,7 +9,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="Foo">
-<param name="Local" value="ok_flag_parameter.html#Foo(Integer,Integer,Integer,Integer,Integer,Integer,TObject,TObject)">
+<param name="Local" value="ok_flag_parameter.html#Foo-Integer-Integer-Integer-Integer-Integer-Integer-TObject-TObject-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TCastleTheme">
