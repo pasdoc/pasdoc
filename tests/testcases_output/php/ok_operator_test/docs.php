@@ -20,7 +20,7 @@ $pasdoc = array(
   'TDelphiRec.Add' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Add-TDelphiRec-TDelphiRec-', 'type' => 'operator'),
   'TDelphiRec.Subtract' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Subtract-TDelphiRec-TDelphiRec-', 'type' => 'operator'),
   'TDelphiRec.Implicit' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Implicit-Integer-', 'type' => 'operator'),
-  'TDelphiRec.Implicit' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Implicit-TDelphiRec-', 'type' => 'operator'),
+  // Overloaded identifier:   'TDelphiRec.Implicit' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Implicit-TDelphiRec-', 'type' => 'operator'),
   'TDelphiRec.Explicit' => array('html_filename' => 'ok_operator_test.TDelphiRec.html#Explicit-Double-', 'type' => 'operator'),
   'TMyClass' => array('html_filename' => 'ok_operator_test.TMyClass.html', 'type' => 'class'),
   'TMyClass.Operator' => array('html_filename' => 'ok_operator_test.TMyClass.html#Operator', 'type' => 'property'),

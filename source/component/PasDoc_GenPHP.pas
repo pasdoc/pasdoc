@@ -27,12 +27,15 @@ unit PasDoc_GenPHP;
 
 interface
 
-uses PasDoc_Utils, PasDoc_Gen, PasDoc_Items, PasDoc_Types, PasDoc_Languages;
+uses PasDoc_Utils, PasDoc_Gen, PasDoc_Items, PasDoc_Types, PasDoc_Languages,
+  PasDoc_StringVector;
 
 type
   { PHP output generator. }
   TPHPDocGenerator = class(TDocGenerator)
   private
+    AllIdentifiers: TStringVector;
+
     { Output a PHP line mapping given Identifier -> to given HtmlFileName, ItemType. }
     procedure WriteMap(const Identifier, HtmlFileName, ItemType: String);
 
@@ -140,6 +143,8 @@ begin
   else
     OutputFileName := 'docs' + GetFileExtension;
 
+  AllIdentifiers := TStringVector.Create;
+
   if not CreateStream(OutputFileName) then Exit;
   WriteDirectLine('<?php');
   WriteDirectLine('global $pasdoc;');
@@ -147,10 +152,27 @@ begin
   WriteUnits(1);
   WriteDirectLine(');');
   CloseStream;
+
+  FreeAndNil(AllIdentifiers);
 end;
 
 procedure TPHPDocGenerator.WriteMap(const Identifier, HtmlFileName, ItemType: String);
 begin
+  { Track already output identifiers. Comment all except the first overloaded identifier.
+    This allows PHP array to contain only unique keys.
+
+    The practical advantage is that link like "Foo" using PHP map will lead
+    to the *first* "Foo" overload, not last (as it would be the case if PHP map
+    contained duplicate keys, then the later key overrides previous).
+    The this is better, because the first overload likely contains better docs,
+    at least this is the case for CGE.
+  }
+
+  if AllIdentifiers.IndexOf(Identifier) <> -1 then
+    WriteDirect('  // Overloaded identifier: ')
+  else
+    AllIdentifiers.Add(Identifier);
+
   WriteDirectLine(Format('  ''%s'' => array(''html_filename'' => ''%s'', ''type'' => ''%s''),', [
     ConvertString(Identifier),
     ConvertString(HtmlFileName),
