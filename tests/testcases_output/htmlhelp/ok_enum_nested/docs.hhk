@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TGlobalEnum">
+<param name="Local" value="ok_enum_nested.html#TGlobalEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyObject">
+<param name="Local" value="ok_enum_nested.TMyObject.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedObject">
+<param name="Local" value="ok_enum_nested.TMyObject.TNestedObject.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedObjectEnum">
+<param name="Local" value="ok_enum_nested.TMyObject.TNestedObject.html#TNestedObjectEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TObjectEnum">
+<param name="Local" value="ok_enum_nested.TMyObject.html#TObjectEnum">
+</object>
+</ul>
+</body></html>

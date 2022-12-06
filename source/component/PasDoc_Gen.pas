@@ -1125,6 +1125,21 @@ procedure TDocGenerator.BuildLinks;
 var
   U: TPasUnit;
 
+  { Assign MyXxx properties (MyUnit, MyObject, MyEnum) and FullLink
+    for all members of the enumerated types on this list. }
+  procedure EnumsAssignLinks(const ATypes: TPasTypes; const ACio: TPasCio);
+  var
+    Enum: TPasEnum;
+    I: Integer;
+  begin
+    for I := 0 to ATypes.Count - 1 do
+      if ATypes.PasItemAt[I] is TPasEnum then
+      begin
+        Enum := TPasEnum(ATypes.PasItemAt[I]);
+        AssignLinks(U, ACio, Enum, Enum.Members);
+      end;
+  end;
+
   { Assign MyXxx properties (MyUnit, MyObject, MyEnum), FullLink, OutputFileName
     and ansestor links for this Cio (classs / interface / object). }
   procedure CiosAssignLinks(ACios: TPasItems);
@@ -1144,24 +1159,11 @@ var
       AssignLinks(U, ACio, nil, ACio.Properties);
       AssignLinks(U, ACio, nil, ACio.Types);
       AssignLinks(U, ACio, nil, ACio.Cios);
+      if not ObjectVectorIsNilOrEmpty(ACio.Types) then
+        EnumsAssignLinks(ACio.Types, ACio);
       if ACio.Cios.Count > 0 then
         CiosAssignLinks(ACio.Cios);
     end;
-  end;
-
-  { Assign MyXxx properties (MyUnit, MyObject, MyEnum) and FullLink
-    for all members of the enumerated types on this list. }
-  procedure EnumsAssignLinks(ATypes: TPasTypes);
-  var
-    Enum: TPasEnum;
-    I: Integer;
-  begin
-    for I := 0 to ATypes.Count - 1 do
-      if ATypes.PasItemAt[I] is TPasEnum then
-      begin
-        Enum := TPasEnum(ATypes.PasItemAt[I]);
-        AssignLinks(U, nil, Enum, Enum.Members);
-      end;
   end;
 
 var
@@ -1210,7 +1212,7 @@ begin
     AssignLinks(U, nil, nil, U.FuncsProcs);
 
     if not ObjectVectorIsNilOrEmpty(U.Types) then
-      EnumsAssignLinks(U.Types);
+      EnumsAssignLinks(U.Types, nil);
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then
       CiosAssignLinks(U.CIOs);

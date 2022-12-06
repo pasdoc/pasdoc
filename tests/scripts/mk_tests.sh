@@ -272,6 +272,7 @@ all_tests_for_current_format ()
   mk_test ok_markdown_links ok_markdown_links.pas --markdown
   mk_test ok_inherited_descriptions ok_inherited_descriptions.pas
   mk_test ok_invisible_nested_enums ok_invisible_nested_enums.pas
+  mk_test ok_enum_nested ok_enum_nested.pas
 }
 
 # parse params ----------------------------------------

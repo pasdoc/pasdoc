@@ -195,8 +195,18 @@ begin
 end;
 
 procedure TPHPDocGenerator.WriteType(const Namespace: String; const Item: TPasItem);
+var
+  I: Integer;
+  EnumMember: TPasItem;
 begin
   WriteMap(Namespace + Item.Name, ItemFileName(Item), 'type');
+
+  if Item is TPasEnum then
+    for I := 0 to TPasEnum(Item).Members.Count - 1 do
+    begin
+      EnumMember := TPasEnum(Item).Members.PasItemAt[i];
+      WriteMap(Namespace + EnumMember.Name, ItemFileName(EnumMember), 'enum constant');
+    end;
 end;
 
 procedure TPHPDocGenerator.WriteProperty(const Namespace: String; const Item: TPasProperty);

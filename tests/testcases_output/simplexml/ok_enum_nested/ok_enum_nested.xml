@@ -1,0 +1,14 @@
+<unit name="ok_enum_nested.pas">
+  <type name="TGlobalEnum" declaration="TGlobalEnum = (...);">
+  </type>
+  <structure name="TMyObject" name_with_generic="TMyObject" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <type name="TObjectEnum" declaration="TObjectEnum = (...);">
+    </type>
+    <structure name="TNestedObject" name_with_generic="TNestedObject" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <type name="TNestedObjectEnum" declaration="TNestedObjectEnum = (...);">
+      </type>
+    </structure>
+  </structure>
+</unit>
