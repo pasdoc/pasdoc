@@ -2281,10 +2281,12 @@ function TPasRoutines.FindListItem(const ANameOrSignature: string): TPasRoutine;
   begin
     Result := LowerCase(ASignature);
 
-    for I := 1 to Length(Result) - 1 do begin
-      if Result[I] = ' ' then begin
-        Result := Copy(Result, 1, I - 1) + Copy(Result, I + 1, Length(Result) - I);
-      end;
+    I := 1;
+    while I <= Length(Result) do begin
+      if Result[I] = ' ' then
+        Result := Copy(Result, 1, I - 1) + Copy(Result, I + 1, Length(Result) - I)
+      else
+        Inc(I);
     end;
   end;
 
