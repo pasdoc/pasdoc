@@ -71,7 +71,7 @@ type
 implementation
 
 uses
-  PasDoc_ObjectVector, SysUtils;
+  PasDoc_ObjectVector, SysUtils, PasDoc_GenHtml;
 
 { Unused overrides ----------------------------------------------------------- }
 
@@ -165,7 +165,7 @@ begin
   if Item is TPasCIO then
     Result := Item.Name + '.html'
   else
-    Result := 'html#' + Item.Name;
+    Result := 'html#' + SignatureToHtmlId(Item.Signature);
 
   { now prefix Result with
     - as many as necessary "OuterClassName."

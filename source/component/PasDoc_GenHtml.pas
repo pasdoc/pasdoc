@@ -203,9 +203,6 @@ type
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
 
     function FormatAnAnchor(const AName, Caption: string): string;
-
-    function SignatureToId(const Signature: string): string;
-
   protected
     { Return common HTML content that goes inside <head>. }
     function MakeHead: string;
@@ -353,6 +350,8 @@ type
 const
   DefaultPasdocCss = {$I pasdoc.css.inc};
 
+function SignatureToHtmlId(const Signature: string): string;
+
 implementation
 
 uses
@@ -371,6 +370,19 @@ const
   img_public    : {$I public.gif.inc};
   img_published : {$I published.gif.inc};
   img_protected : {$I protected.gif.inc};
+
+function SignatureToHtmlId(const Signature: string): string;
+const
+  ReplacementArray: array[0..2] of TCharReplacement = (
+    (cChar: '('; sSpec: '-'),
+    (cChar: ')'; sSpec: '-'),
+    (cChar: ','; sSpec: '-')
+  );
+begin
+  Result := StringReplaceChars(Signature, ReplacementArray);
+end;
+
+{ TGenericHTMLDocGenerator --------------------------------------------------- }
 
 constructor TGenericHTMLDocGenerator.Create(AOwner: TComponent);
 begin
@@ -453,7 +465,7 @@ begin
     if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
     begin
       { it's a method, a field or a property }
-      Result := TPasItem(Item).MyObject.FullLink + '#' + SignatureToId(Item.Signature)
+      Result := TPasItem(Item).MyObject.FullLink + '#' + SignatureToHtmlId(Item.Signature)
     end else begin
       if Item is TPasCio then
       begin
@@ -461,7 +473,7 @@ begin
         Result := NewLink(TPasItem(Item).QualifiedName)
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '#' + SignatureToId(Item.Signature)
+        Result := TPasItem(Item).MyUnit.FullLink + '#' + SignatureToHtmlId(Item.Signature)
       end;
     end;
   end else if Item is TAnchorItem then
@@ -728,7 +740,7 @@ begin
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
 
-  WriteAnchor(SignatureToId(CIO.Signature));
+  WriteAnchor(SignatureToHtmlId(CIO.Signature));
   WriteHeading(HL, 'cio', s);
 
   WriteDirectLine('<div class="sections">');
@@ -1062,7 +1074,7 @@ begin
   { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
-  if MakeAnchor then WriteAnchor(SignatureToId(Item.Signature));
+  if MakeAnchor then WriteAnchor(SignatureToHtmlId(Item.Signature));
 
   WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
 
@@ -1714,17 +1726,6 @@ end;
 procedure TGenericHTMLDocGenerator.WriteAnchor(const AName, Caption: string);
 begin
   WriteDirect(FormatAnAnchor(AName, Caption));
-end;
-
-function TGenericHTMLDocGenerator.SignatureToId(const Signature: string): string;
-const
-  ReplacementArray: array[0..2] of TCharReplacement = (
-    (cChar: '('; sSpec: '-'),
-    (cChar: ')'; sSpec: '-'),
-    (cChar: ','; sSpec: '-')
-  );
-begin
-  Result := StringReplaceChars(Signature, ReplacementArray);
 end;
 
 { ---------------------------------------------------------------------------- }
