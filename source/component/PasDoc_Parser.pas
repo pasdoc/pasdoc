@@ -907,11 +907,13 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
     IsSemicolon: Boolean;
     ParamsInGroup: Integer;
     NextTokenIsType: Boolean;
+    IgnoreRemainingIdentifiers: Boolean;
     I: Integer;
   begin
     Level := 0;
     ParamsInGroup := 0;
     NextTokenIsType := False;
+    IgnoreRemainingIdentifiers := False;
     repeat
       T := Scanner.GetToken;
       try
@@ -931,8 +933,11 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
         begin
           if T.IsSymbol(SYM_COLON) then
             NextTokenIsType := True
-          else if (T.MyType = TOK_IDENTIFIER) or
-                 ((T.MyType = TOK_KEYWORD) and (AnsiLowerCase(T.Data) = 'string')) then
+          else if T.IsSymbol(SYM_EQUAL) then
+            // Any identifiers after the equals are NOT parameters
+            IgnoreRemainingIdentifiers := True
+          else if not IgnoreRemainingIdentifiers and ((T.MyType = TOK_IDENTIFIER) or
+                 ((T.MyType = TOK_KEYWORD) and (AnsiLowerCase(T.Data) = 'string'))) then
           begin
             if NextTokenIsType then
             begin
@@ -950,6 +955,7 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
               M.ParamTypes.Add('const');
             ParamsInGroup := 0;
             NextTokenIsType := False;
+            IgnoreRemainingIdentifiers := False;
           end;
         end;
 
