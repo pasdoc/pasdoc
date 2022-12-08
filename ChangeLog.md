@@ -2,22 +2,25 @@
 
 ## Upcoming Next Release
 
-* Fixed using introduction @shortTitle
-* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file)
-* Fixed resolving relative paths from introduction/conclusion
-* Fixed parsing unit implementation with "begin" instead of "initialization"
+* Fixed using introduction @shortTitle (Michalis)
+* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
+* Fixed resolving relative paths from introduction/conclusion (Michalis)
+* Fixed parsing unit implementation with "begin" instead of "initialization" (Michalis)
 * Fixed parsing unit implementation inline var (Fr0sT-Brutal)
-* Improved SimpleXML output:
+* Improved SimpleXML output (Michalis):
     - properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
     - separate `<label>` inside `<item>` for definition lists
     - `<function>` -> more general `<routine>`
     - nested structures (CIOs) and simple types inside other CIOs are now output
-* New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output
+* New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output (Michalis)
 * Manpages for `pasdoc`, `pascal_pre_proc`, `file_to_pascal_data` and `file_to_pascal_string` (Suve)
 * Show ancestor description for a routine or class, when it missed its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
 * Expose in pasdoc GUI options to request Markdown and "automatic back comments" (Ayeseeem)
 * Fixes and improvements to Markdown support (Fr0sT-Brutal)
 * Fixed [spellchecking using Aspell](https://pasdoc.github.io/SpellChecking), in previous version we didn't pass language arguments to `aspell` correctly
+* Overloaded methods are now accounted for better (Elliot Hillary):
+    - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
+    - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
 
 ## Version 0.16.0 (2021-02-07)
 
