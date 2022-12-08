@@ -1,0 +1,57 @@
+<unit name="ok_link_tag_overloads.pas">
+  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyStr: string): integer; overload;">
+  </routine>
+  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;">
+  </routine>
+  <structure name="TLinkHolder" name_with_generic="TLinkHolder" type="class">
+    <description><detailed>
+
+<unorderedlist>
+<item>TOverloadedMethods.Foo</item>
+<item>TOverloadedMethods.Foo(Integer,Boolean)</item>
+<item>TOverloadedMethods.Foo(const)</item>
+<item>TOverloadedMethods.Bar</item>
+<item>TOverloadedMethods.Bar(integer, boolean)</item>
+<item>TOverloadedMethods.Bar(String)</item>
+<item>TOverloadedMethods.Bar(const)</item>
+<item>top level func, accepts string</item>
+<item>top level func, accepts int</item>
+</unorderedlist>
+
+</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TOverloadedBase" name_with_generic="TOverloadedBase" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;">
+      <description><detailed><code>TOverloadedBase</code>.<code>Bar</code></detailed></description>
+    </routine>
+  </structure>
+  <structure name="TOverloadedMethods" name_with_generic="TOverloadedMethods" type="class">
+    <description><detailed>TLinkHolder</detailed></description>
+    <ancestor name="TOverloadedBase" declaration="TOverloadedBase" />
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: IntEGEr); overload;">
+    </routine>
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: Integer; MyBool: Boolean); overload;">
+    </routine>
+    <routine name="Foo" type="procedure" declaration="procedure Foo; overload;">
+    </routine>
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyStr: string); overload;">
+    </routine>
+    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr); overload;">
+    </routine>
+    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr, MyOtherStr: STRING); overload;">
+    </routine>
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: IntEGEr); overload;">
+      <description><detailed><code>Bar</code></detailed></description>
+    </routine>
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); overload; override;">
+    </routine>
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyStr: string); overload;">
+    </routine>
+    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr); overload;">
+    </routine>
+    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr, MyOtherStr: STRING); overload;">
+    </routine>
+  </structure>
+</unit>
