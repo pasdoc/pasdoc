@@ -7,4 +7,5 @@ $pasdoc = array(
   'V4' => array('html_filename' => 'warning_back_comment.html#V4', 'type' => 'variable'),
   'T' => array('html_filename' => 'warning_back_comment.html#T', 'type' => 'type'),
   'TMyEnum' => array('html_filename' => 'warning_back_comment.html#TMyEnum', 'type' => 'type'),
+  'meOne' => array('html_filename' => 'warning_back_comment.html#meOne', 'type' => 'enum constant'),
 );

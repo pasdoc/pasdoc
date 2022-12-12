@@ -5,11 +5,11 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="DoSomething">
-<param name="Local" value="ok_generic_routines.html#DoSomething">
+<param name="Local" value="ok_generic_routines.html#DoSomething-String-T-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="DoSomething2">
-<param name="Local" value="ok_generic_routines.html#DoSomething2">
+<param name="Local" value="ok_generic_routines.html#DoSomething2-T-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TTestClass">
@@ -17,11 +17,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="DoSomething">
-<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething-String-T-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="DoSomething2">
-<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething2">
+<param name="Local" value="ok_generic_routines.TTestClass.html#DoSomething2-T-">
 </object>
 </ul>
 </body></html>

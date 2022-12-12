@@ -337,6 +337,8 @@ type
       Must always end with PathDelim.
       In this class, this simply returns GetCurrentDir (with PathDelim added if needed). }
     function BasePath: string; virtual;
+
+    function Signature: string; virtual;
   end;
 
   THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental);
@@ -665,6 +667,7 @@ type
     FReturns: string;
     FWhat: TRoutineType;
     FDirectives: TStandardDirectives;
+    FParamTypes: TStringVector;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure StoreReturnsTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -693,7 +696,11 @@ type
     { Set of method directive flags }
     property Directives: TStandardDirectives read FDirectives write FDirectives;
 
+    property ParamTypes: TStringVector read FParamTypes write FParamTypes;
+
     function HasOptionalInfo: boolean; override;
+
+    function Signature: string; override;
 
     { Get the closest item that this item inherits from.
       Returns @nil if the routine does not override. }
@@ -1077,8 +1084,9 @@ type
   TBaseItems = class(TObjectVector)
   private
     FHash: TObjectHash;
-    procedure Serialize(const ADestination: TStream);
-    procedure Deserialize(const ASource: TStream);
+  protected
+    procedure Serialize(const ADestination: TStream); virtual;
+    procedure Deserialize(const ASource: TStream); virtual;
   public
     constructor Create(const AOwnsObject: Boolean); override;
     destructor Destroy; override;
@@ -1094,7 +1102,7 @@ type
       are in the same namespace as the enumerated type name.
 
       Returns @nil if nothing can be found. }
-    function FindListItem(const AName: string): TBaseItem;
+    function FindListItem(const ASignature: string): TBaseItem;
 
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
@@ -1102,7 +1110,7 @@ type
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem);
+    procedure Add(const AObject: TBaseItem); virtual;
 
     { This is a shortcut for doing @link(Clear) and then
       @link(Add Add(AObject)). Useful when you want the list
@@ -1122,7 +1130,7 @@ type
     { A comfortable routine that just calls inherited and
       casts result to TPasItem, since every item on this list must
       be always TPasItem. }
-    function FindListItem(const AName: string): TPasItem;
+    function FindListItem(const ASignature: string): TPasItem;
 
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
@@ -1173,12 +1181,23 @@ type
 
   { Collection of methods. }
   TPasRoutines = class(TPasItems)
+  private
+    FShortNameHash: THash;
+  protected
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
+  public
     { Find an Index-th item with given name on a list. Index is 0-based.
       There could be multiple items sharing the same name (overloads) while
       method of base class returns only the one most recently added item.
 
       Returns @nil if nothing can be found. }
     function FindListItem(const AName: string; Index: Integer): TPasRoutine; overload;
+    function FindListItem(const ANameOrSignature: string): TPasRoutine; overload;
+    procedure Add(const AItem: TBaseItem); override;
+
+    constructor Create(const AOwnsObject: Boolean); override;
+    destructor Destroy; override;
   end;
 
   { Collection of properties. }
@@ -1451,6 +1470,11 @@ end;
 procedure TBaseItem.SetAuthors(const Value: TStringVector);
 begin
   FAuthors.Assign(Value);
+end;
+
+function TBaseItem.Signature: string;
+begin
+  Result := Name;
 end;
 
 function TBaseItem.QualifiedName: String;
@@ -1777,7 +1801,7 @@ begin
         because we want to pick up descriptions from any interfaces. }
       if not OverrideChainEnded then
       begin
-        ThisItemInAncestor := CurrentClassAncestor.FindItem(Name) as TPasItem;
+        ThisItemInAncestor := CurrentClassAncestor.FindItem(Signature) as TPasItem;
 
         { Check if the main ancestor has a description }
         if Assigned(ThisItemInAncestor) then
@@ -1798,7 +1822,7 @@ begin
         InterfaceAncestor := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasCio;
         if Assigned(InterfaceAncestor) then
         begin
-          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Name) as TPasItem;
+          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Signature) as TPasItem;
           if Assigned(ThisItemInAncestor) and ThisItemInAncestor.HasDescription then
             AddAncestorDescription(Result, ThisItemInAncestor);
         end;
@@ -2042,22 +2066,22 @@ var
   LObj: TBaseItem;
 begin
   LObj := TBaseItem(Items[AIndex]);
-  FHash.Delete(LowerCase(LObj.Name));
+  FHash.Delete(LowerCase(LObj.Signature));
   inherited Delete(AIndex);
 end;
 
-function TBaseItems.FindListItem(const AName: string): TBaseItem;
+function TBaseItems.FindListItem(const ASignature: string): TBaseItem;
 begin
   Result := nil;
-  if Length(AName) > 0 then begin
-    result := TPasItem(FHash.Items[LowerCase(AName)]);
+  if Length(ASignature) > 0 then begin
+    result := TPasItem(FHash.Items[LowerCase(ASignature)]);
   end;
 end;
 
 procedure TBaseItems.Add(const AObject: TBaseItem);
 begin
   inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Name)] := AObject;
+  FHash.Items[LowerCase(AObject.Signature)] := AObject;
 end;
 
 procedure TBaseItems.InsertItems(const c: TBaseItems);
@@ -2109,9 +2133,9 @@ end;
 
 { TPasItems ------------------------------------------------------------------ }
 
-function TPasItems.FindListItem(const AName: string): TPasItem;
+function TPasItems.FindListItem(const ASignature: string): TPasItem;
 begin
-  Result := TPasItem(inherited FindListItem(AName));
+  Result := TPasItem(inherited FindListItem(ASignature));
 end;
 
 procedure TPasItems.CopyItems(const c: TPasItems);
@@ -2201,6 +2225,86 @@ begin
 end;
 
 { TPasRoutines ----------------------------------------------------------------- }
+
+procedure TPasRoutines.Serialize(const ADestination: TStream);
+var
+  LCount, I : Integer;
+  Key: string;
+begin
+  inherited;
+  LCount := FShortNameHash.Count;
+  ADestination.Write(LCount, SizeOf(LCount));
+  for I := 0 to LCount -1 do begin
+    Key := FShortNameHash.Keys[I];
+    TSerializable.SaveStringToStream(Key, ADestination);
+    TSerializable.SaveStringToStream(FShortNameHash.GetString(Key), ADestination);
+  end;
+end;
+procedure TPasRoutines.Deserialize(const ASource: TStream);
+var
+  LCount, I: Integer;
+begin
+  inherited;
+  ASource.Read(LCount, SizeOf(LCount));
+  for I := 0 to LCount - 1 do
+    FShortNameHash.SetString(TSerializable.LoadStringFromStream(ASource), TSerializable.LoadStringFromStream(ASource));
+end;
+
+procedure TPasRoutines.Add(const AItem: TBaseItem);
+var
+  Signature: string;
+begin
+  Signature := AItem.Signature;
+  FShortNameHash.SetString(LowerCase(AItem.Name), LowerCase(Signature));
+
+  TObjectVector(Self).Add(AItem);
+  FHash.Items[LowerCase(Signature)] := AItem;
+end;
+
+constructor TPasRoutines.Create(const AOwnsObject: Boolean);
+begin
+  inherited;
+  FShortNameHash := THash.Create;
+end;
+
+destructor TPasRoutines.Destroy;
+begin
+  FreeAndNil(FShortNameHash);
+  inherited;
+end;
+
+function TPasRoutines.FindListItem(const ANameOrSignature: string): TPasRoutine;
+
+  function NormalizeSignature(const ASignature: string): string;
+  var
+    I: Integer;
+  begin
+    Result := LowerCase(ASignature);
+
+    I := 1;
+    while I <= Length(Result) do begin
+      if Result[I] = ' ' then
+        Result := Copy(Result, 1, I - 1) + Copy(Result, I + 1, Length(Result) - I)
+      else
+        Inc(I);
+    end;
+  end;
+
+var
+  NormalizedNameOrSignature: string;
+  Signature: string;
+begin
+  // Note that NormalizeSignature will only lowercase a short name
+  NormalizedNameOrSignature := NormalizeSignature(ANameOrSignature);
+  Result := TPasRoutine(inherited FindListItem(NormalizedNameOrSignature));
+
+  if not Assigned(Result) then begin
+    // Replace short names with the full signature
+    Signature := FShortNameHash.GetString(NormalizedNameOrSignature);
+    if Signature <> '' then
+      Result := TPasRoutine(inherited FindListItem(Signature));
+  end;
+end;
 
 function TPasRoutines.FindListItem(const AName: string; Index: Integer): TPasRoutine;
 var i, Counter: Integer;
@@ -2701,10 +2805,12 @@ end;
 constructor TPasRoutine.Create;
 begin
   inherited;
+  FParamTypes := TStringVector.Create;
 end;
 
 destructor TPasRoutine.Destroy;
 begin
+  FreeAndNil(FParamTypes);
   inherited Destroy;
 end;
 
@@ -2730,6 +2836,7 @@ begin
   inherited;
   ASource.Read(FWhat, SizeOf(FWhat));
   ASource.Read(FDirectives, SizeOf(FDirectives));
+  FParamTypes.LoadFromBinaryStream(ASource);
 
   { No need to serialize, because it's not generated by parser:
   FReturns := LoadStringFromStream(ASource);
@@ -2741,10 +2848,19 @@ begin
   inherited;
   ADestination.Write(FWhat, SizeOf(FWhat));
   ADestination.Write(FDirectives, SizeOf(FDirectives));
+  FParamTypes.SaveToBinaryStream(ADestination);
 
   { No need to serialize, because it's not generated by parser:
   SaveStringToStream(FReturns, ADestination);
   }
+end;
+
+function TPasRoutine.Signature: string;
+begin
+  if ParamTypes.Count > 0 then
+    Result := Name + '(' + ParamTypes.CommaText + ')'
+  else
+    Result := Name;
 end;
 
 function TPasRoutine.InheritedItem: TPasItem;

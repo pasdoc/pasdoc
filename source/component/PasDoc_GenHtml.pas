@@ -355,6 +355,8 @@ type
 const
   DefaultPasdocCss = {$I pasdoc.css.inc};
 
+function SignatureToHtmlId(const Signature: string): string;
+
 implementation
 
 uses
@@ -373,6 +375,19 @@ const
   img_public    : {$I public.gif.inc};
   img_published : {$I published.gif.inc};
   img_protected : {$I protected.gif.inc};
+
+function SignatureToHtmlId(const Signature: string): string;
+const
+  ReplacementArray: array[0..2] of TCharReplacement = (
+    (cChar: '('; sSpec: '-'),
+    (cChar: ')'; sSpec: '-'),
+    (cChar: ','; sSpec: '-')
+  );
+begin
+  Result := StringReplaceChars(Signature, ReplacementArray);
+end;
+
+{ TGenericHTMLDocGenerator --------------------------------------------------- }
 
 constructor TGenericHTMLDocGenerator.Create(AOwner: TComponent);
 begin
@@ -455,7 +470,7 @@ begin
     if (not (Item is TPasCio)) and Assigned(TPasItem(Item).MyObject) then
     begin
       { it's a method, a field or a property }
-      Result := TPasItem(Item).MyObject.FullLink + '#' + Item.Name;
+      Result := TPasItem(Item).MyObject.FullLink + '#' + SignatureToHtmlId(Item.Signature)
     end else begin
       if Item is TPasCio then
       begin
@@ -463,7 +478,7 @@ begin
         Result := NewLink(TPasItem(Item).QualifiedName)
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
-        Result := TPasItem(Item).MyUnit.FullLink + '#' + Item.Name;
+        Result := TPasItem(Item).MyUnit.FullLink + '#' + SignatureToHtmlId(Item.Signature)
       end;
     end;
   end else if Item is TAnchorItem then
@@ -730,7 +745,7 @@ begin
 
   WriteStartOfDocument(CIO.MyUnit.Name + ': ' + s);
 
-  WriteAnchor(CIO.Name);
+  WriteAnchor(SignatureToHtmlId(CIO.Signature));
   WriteHeading(HL, 'cio', s);
 
   WriteDirectLine('<div class="sections">');
@@ -1064,7 +1079,7 @@ begin
   { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
-  if MakeAnchor then WriteAnchor(Item.Name);
+  if MakeAnchor then WriteAnchor(SignatureToHtmlId(Item.Signature));
 
   WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
 

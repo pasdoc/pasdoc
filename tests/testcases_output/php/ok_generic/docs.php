@@ -10,7 +10,7 @@ $pasdoc = array(
   'TGeometryAttrib.AType' => array('html_filename' => 'ok_generic.TGeometryAttrib.html#AType', 'type' => 'variable'),
   'TGeometryAttrib.Offset' => array('html_filename' => 'ok_generic.TGeometryAttrib.html#Offset', 'type' => 'variable'),
   'TGeometryAttribsList' => array('html_filename' => 'ok_generic.TGeometryAttribsList.html', 'type' => 'class'),
-  'TGeometryAttribsList.Find' => array('html_filename' => 'ok_generic.TGeometryAttribsList.html#Find', 'type' => 'function'),
+  'TGeometryAttribsList.Find' => array('html_filename' => 'ok_generic.TGeometryAttribsList.html#Find-string-', 'type' => 'function'),
   'TMyObject' => array('html_filename' => 'ok_generic.TMyObject.html', 'type' => 'class'),
   'TMyGenericList' => array('html_filename' => 'ok_generic.TMyGenericList.html', 'type' => 'class'),
   'TMyNewGeneric' => array('html_filename' => 'ok_generic.TMyNewGeneric.html', 'type' => 'class'),

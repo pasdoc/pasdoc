@@ -1,0 +1,385 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}link{\_}tag{\_}overloads}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TLinkHolder\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TOverloadedBase\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TOverloadedMethods\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{TopLevelFunc}]
+\item[\texttt{TopLevelFunc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TLinkHolder Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TLinkHolder {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+\begin{itemize}
+\item \begin{ttfamily}TOverloadedMethods.Foo\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Foo})
+\item \begin{ttfamily}TOverloadedMethods.Foo(Integer,Boolean)\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Foo})
+\item \begin{ttfamily}TOverloadedMethods.Foo(const)\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Foo})
+\item \begin{ttfamily}TOverloadedMethods.Bar\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Bar})
+\item \begin{ttfamily}TOverloadedMethods.Bar(integer, boolean)\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Bar})
+\item \begin{ttfamily}TOverloadedMethods.Bar(String)\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Bar})
+\item \begin{ttfamily}TOverloadedMethods.Bar(const)\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedMethods-Bar})
+\item \begin{ttfamily}top level func, accepts string\end{ttfamily}(\ref{ok_link_tag_overloads-TopLevelFunc})
+\item \begin{ttfamily}top level func, accepts int\end{ttfamily}(\ref{ok_link_tag_overloads-TopLevelFunc})
+\end{itemize}\subsection*{TOverloadedBase Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TOverloadedBase {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}TOverloadedBase\end{ttfamily}.\begin{ttfamily}Bar\end{ttfamily}
+
+\end{list}
+\subsection*{TOverloadedMethods Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TOverloadedMethods {$>$} \begin{ttfamily}TOverloadedBase\end{ttfamily}(\ref{ok_link_tag_overloads.TOverloadedBase}) {$>$} 
+TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+\begin{ttfamily}TLinkHolder\end{ttfamily}(\ref{ok_link_tag_overloads.TLinkHolder})\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo(MyInt: IntEGEr); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo(MyInt: Integer; MyBool: Boolean); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo; overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo(MyStr: string); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo(const MyStr); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Foo}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Foo(const MyStr, MyOtherStr: STRING); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(MyInt: IntEGEr); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+\begin{ttfamily}Bar\end{ttfamily}
+
+\end{list}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(MyInt: Integer; MyBool: Boolean); overload; override;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(MyStr: string); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(const MyStr); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Bar}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Bar(const MyStr, MyOtherStr: STRING); overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\section{Functions and Procedures}
+\subsection*{TopLevelFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+function TopLevelFunc(MyStr: string): integer; overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TopLevelFunc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+function TopLevelFunc(MyInt: Integer): Integer; overload;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

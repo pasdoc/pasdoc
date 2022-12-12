@@ -17,11 +17,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="SetX">
-<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetX">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetX-double-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="SetY">
-<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetY">
+<param name="Local" value="ok_link_1_char.TMeasurementPointItem.html#SetY-double-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="X">

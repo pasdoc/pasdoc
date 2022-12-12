@@ -27,7 +27,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="ConvertDouble">
-<param name="Local" value="ok_complicated_record.html#ConvertDouble">
+<param name="Local" value="ok_complicated_record.html#ConvertDouble-double-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="EBar">
@@ -79,7 +79,7 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Foo1">
-<param name="Local" value="ok_directive_as_identifier.html#Foo1">
+<param name="Local" value="ok_directive_as_identifier.html#Foo1-string-TMyClass-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyConst">
@@ -147,11 +147,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="SomeProc">
-<param name="Local" value="ok_tag_params_no_parens.html#SomeProc">
+<param name="Local" value="ok_tag_params_no_parens.html#SomeProc-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="SwapDoubleBytes">
-<param name="Local" value="ok_complicated_record.html#SwapDoubleBytes">
+<param name="Local" value="ok_complicated_record.html#SwapDoubleBytes-PDoubleEndianCnvRec-PDoubleEndianCnvRec-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TAbstractTerminationClass">
@@ -219,7 +219,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TestFuncCombined">
-<param name="Local" value="ok_hint_directives.html#TestFuncCombined">
+<param name="Local" value="ok_hint_directives.html#TestFuncCombined-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TestFuncDeprecated">
@@ -243,11 +243,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TestPasMethodTags">
-<param name="Local" value="ok_expanding_descriptions.html#TestPasMethodTags">
+<param name="Local" value="ok_expanding_descriptions.html#TestPasMethodTags-Integer-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TestProcCombined">
-<param name="Local" value="ok_hint_directives.html#TestProcCombined">
+<param name="Local" value="ok_hint_directives.html#TestProcCombined-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TestProcDeprecated">
@@ -335,7 +335,7 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyMethod">
-<param name="Local" value="ok_value_member_tags.TMyClass.html#MyMethod">
+<param name="Local" value="ok_value_member_tags.TMyClass.html#MyMethod-Integer-">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="MyMethodLibrary">
