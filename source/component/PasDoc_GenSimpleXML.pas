@@ -55,7 +55,7 @@ type
     function FormatBold(const Text: string): string; override;
     function FormatItalic(const Text: string): string; override;
   private
-    space:string;
+    Space: String;
 
     { Returns XML <description> element with Item's AbstractDescription
       and DetailedDescription.
@@ -68,6 +68,12 @@ type
     procedure WriteType(const Item: TPasItem);
     procedure WriteStructure(const Item: TPasCIO);
     procedure WriteProperty(const Item: TPasProperty);
+
+    { Add some indentation to Space. }
+    procedure Indent;
+
+    { Remove indentation from Space, reverting the work of last @link(Indent). }
+    procedure UnIndent;
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -193,13 +199,38 @@ begin
 end;
 
 procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
+
+  procedure WriteEnumMembers(const Item: TPasEnum);
+  var
+    I: Integer;
+  begin
+    for I := 0 to Item.Members.Count - 1 do
+      WriteConstant(Item.Members.PasItemAt[i]);
+  end;
+
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
+  if Item is TPasEnum then
+  begin
+    Indent;
+    WriteEnumMembers(TPasEnum(Item));
+    UnIndent;
+  end;
   WriteDirectLine(space+'</type>');
+end;
+
+procedure TSimpleXMLDocGenerator.Indent;
+begin
+  Space := Space + '  ';
+end;
+
+procedure TSimpleXMLDocGenerator.UnIndent;
+begin
+  Space := Copy(Space, 0, Length(Space) - 2);
 end;
 
 procedure TSimpleXMLDocGenerator.WriteStructure(const Item: TPasCIO);
@@ -210,7 +241,7 @@ begin
       '<structure name="' + ConvertString(item.name) +
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
                '" type="' + ConvertString(CioTypeToString(item.MyType)) + '">');
-  space:=space+'  ';
+  Indent;
 
   if item.HasDescription then
     WriteDirectLine(space + ItemDescription(Item));
@@ -235,7 +266,7 @@ begin
   for I := 0 to item.Cios.count-1 do
     WriteStructure(item.Cios.PasItemAt[i] as TPasCio);
 
-  space:=copy(space,0,length(space)-2);
+  UnIndent;
   WriteDirectLine(space+'</structure>');
 end;
 
