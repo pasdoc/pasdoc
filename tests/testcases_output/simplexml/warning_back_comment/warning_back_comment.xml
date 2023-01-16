@@ -13,5 +13,8 @@
   </type>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Descr of TMyEnum</detailed></description>
+    <constant name="meOne" declaration="meOne">
+      <description><detailed>Descr of meOne</detailed></description>
+    </constant>
   </type>
 </unit>

@@ -1,6 +1,10 @@
 <unit name="ok_no_sort.pas">
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Enum values are not sorted</detailed></description>
+    <constant name="meZZZ" declaration="meZZZ">
+    </constant>
+    <constant name="meAAA" declaration="meAAA">
+    </constant>
   </type>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <description><detailed>Record fields are not sorted</detailed></description>

@@ -9,5 +9,11 @@
     <description><detailed>this is v2, v3</detailed></description>
   </variable>
   <type name="MyEnum" declaration="MyEnum = (...);">
+    <constant name="me1" declaration="me1">
+      <description><detailed>this is me1</detailed></description>
+    </constant>
+    <constant name="me2" declaration="me2">
+      <description><detailed>this is me2</detailed></description>
+    </constant>
   </type>
 </unit>

@@ -1,6 +1,14 @@
 <unit name="ok_value_member_tags.pas">
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed> </detailed></description>
+    <constant name="meOne" declaration="meOne">
+      <description><detailed>Description of meOne follows.</detailed></description>
+    </constant>
+    <constant name="meTwo" declaration="meTwo">
+    </constant>
+    <constant name="meThree" declaration="meThree">
+      <description><detailed>Description of meThree, with some link: TMyClass.MyField.</detailed></description>
+    </constant>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>  </detailed></description>

@@ -10,6 +10,10 @@
   </routine>
   <type name="BytePos" declaration="BytePos = (...);">
     <description><detailed>enumeration used in variant record</detailed></description>
+    <constant name="EndVal" declaration="EndVal">
+    </constant>
+    <constant name="ByteVal" declaration="ByteVal">
+    </constant>
   </type>
   <type name="PDoubleEndianCnvRec" declaration="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
     <description><detailed><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</detailed></description>

@@ -2,6 +2,10 @@
   <structure name="TOuterObject" name_with_generic="TOuterObject" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <type name="TPublicInnerEnum" declaration="TPublicInnerEnum = (...);">
+      <constant name="puePublic" declaration="puePublic">
+      </constant>
+      <constant name="pueSuperPublic" declaration="pueSuperPublic">
+      </constant>
     </type>
     <structure name="TPublicInnerObject" name_with_generic="TPublicInnerObject" type="class">
       <ancestor name="TObject" declaration="TObject" />

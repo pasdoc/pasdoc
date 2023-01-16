@@ -4,8 +4,26 @@
   </routine>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>My enumerated type description.</detailed></description>
+    <constant name="me1" declaration="me1">
+      <description><detailed>My enumerated value 1 description.</detailed></description>
+    </constant>
+    <constant name="me2" declaration="me2">
+      <description><detailed>My enumerated value 2 description.</detailed></description>
+    </constant>
+    <constant name="me3" declaration="me3">
+      <description><detailed>My enumerated value 3 description.</detailed></description>
+    </constant>
   </type>
   <type name="TMyScopedEnum" declaration="TMyScopedEnum = (...);">
     <description><detailed>My enumerated type description.</detailed></description>
+    <constant name="mse1" declaration="mse1">
+      <description><detailed>My enumerated value 1 description.</detailed></description>
+    </constant>
+    <constant name="mse2" declaration="mse2">
+      <description><detailed>My enumerated value 2 description.</detailed></description>
+    </constant>
+    <constant name="mse3" declaration="mse3">
+      <description><detailed>My enumerated value 3 description.</detailed></description>
+    </constant>
   </type>
 </unit>

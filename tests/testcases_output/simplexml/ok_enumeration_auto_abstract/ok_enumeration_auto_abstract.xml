@@ -1,5 +1,23 @@
 <unit name="ok_enumeration_auto_abstract.pas">
   <type name="TEnum" declaration="TEnum = (...);">
     <description><abstract>Enum type.</abstract></description>
+    <constant name="en1" declaration="en1">
+      <description><abstract>Enum value 1</abstract></description>
+    </constant>
+    <constant name="en2" declaration="en2">
+      <description><abstract>Enum value 2.</abstract></description>
+    </constant>
+    <constant name="en3" declaration="en3">
+      <description><abstract>Enum value 3.</abstract><detailed> With longer description</detailed></description>
+    </constant>
+    <constant name="en4" declaration="en4">
+      <description><abstract>Enum value 4.</abstract><detailed> With longer description.</detailed></description>
+    </constant>
+    <constant name="en5" declaration="en5">
+      <description><abstract>Enum value 5.</abstract><detailed> With longer description</detailed></description>
+    </constant>
+    <constant name="en6" declaration="en6">
+      <description><abstract>Enum value 6.</abstract><detailed> With longer description.</detailed></description>
+    </constant>
   </type>
 </unit>

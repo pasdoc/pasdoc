@@ -1,13 +1,31 @@
 <unit name="ok_enum_nested.pas">
   <type name="TGlobalEnum" declaration="TGlobalEnum = (...);">
+    <constant name="geOne" declaration="geOne">
+    </constant>
+    <constant name="geTwo" declaration="geTwo">
+    </constant>
+    <constant name="geThree" declaration="geThree">
+    </constant>
   </type>
   <structure name="TMyObject" name_with_generic="TMyObject" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <type name="TObjectEnum" declaration="TObjectEnum = (...);">
+      <constant name="oeOne" declaration="oeOne">
+      </constant>
+      <constant name="oeTwo" declaration="oeTwo">
+      </constant>
+      <constant name="oeThree" declaration="oeThree">
+      </constant>
     </type>
     <structure name="TNestedObject" name_with_generic="TNestedObject" type="class">
       <ancestor name="TObject" declaration="TObject" />
       <type name="TNestedObjectEnum" declaration="TNestedObjectEnum = (...);">
+        <constant name="noeOne" declaration="noeOne">
+        </constant>
+        <constant name="noeTwo" declaration="noeTwo">
+        </constant>
+        <constant name="noeThree" declaration="noeThree">
+        </constant>
       </type>
     </structure>
   </structure>

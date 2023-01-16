@@ -20,6 +20,15 @@
   </type>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Description of TMyEnum</detailed></description>
+    <constant name="meOne" declaration="meOne">
+      <description><detailed>Description of meOne</detailed></description>
+    </constant>
+    <constant name="meTwo" declaration="meTwo">
+      <description><detailed>Description of meTwo</detailed></description>
+    </constant>
+    <constant name="meThree" declaration="meThree">
+      <description><detailed>Description of meThree</detailed></description>
+    </constant>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>Description of TMyClass</detailed></description>
