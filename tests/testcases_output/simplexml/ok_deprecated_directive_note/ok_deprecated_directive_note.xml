@@ -21,9 +21,9 @@
     </variable>
     <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;">
     </variable>
-    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
   <structure name="TTestClassDeprecated1" name_with_generic="TTestClassDeprecated1" type="class">

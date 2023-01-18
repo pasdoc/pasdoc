@@ -144,8 +144,8 @@ type
       @item Of TPasVarConst: FullDeclaration.
 
       @item(Of TPasProperty: IndexDecl, FullDeclaration.
-        PropType, NoDefault, StoredId, DefaultId, Reader, Writer.
-        TODO: Parsing TPasProperty.Default.)
+        PropType, NoDefault, Stored, DefaultValue, Reader, Writer.
+        TODO: Parsing TPasProperty.DefaultInClass.)
 
       @item(Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
         FuncsProcs.)
@@ -1987,8 +1987,8 @@ procedure TParser.ParseProperty(out p: TPasProperty);
         case CurrentDirective of
           SD_READ: P.Reader := CurrentDirectiveCollected;
           SD_WRITE: P.Writer := CurrentDirectiveCollected;
-          SD_DEFAULT: P.DefaultId := CurrentDirectiveCollected;
-          SD_STORED: P.StoredId := CurrentDirectiveCollected;
+          SD_DEFAULT: P.DefaultValue := CurrentDirectiveCollected;
+          SD_STORED: P.Stored := CurrentDirectiveCollected;
           else raise EInternalParserError.Create('CurrentDirectiveFinished: unexpected CurrentDirective');
         end;
         HasCurrentDirective := false;

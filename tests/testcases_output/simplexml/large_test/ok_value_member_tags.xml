@@ -21,7 +21,7 @@
     <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Description of MyField here.</detailed></description>
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</detailed></description>
     </property>
   </structure>

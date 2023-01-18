@@ -62,10 +62,10 @@
     </variable>
     <variable name="TestFieldPlatform" declaration="TestFieldPlatform: Integer platform;">
     </variable>
-    <property name="TestPropertyCombined" indexdecl="" type="Integer" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="TestPropertyCombined" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>Testing on FPC 2.6.0: Hint directives for properties are allowed Ok. I don't know if this is Delphi-compatible or FPC extension, anyway PasDoc supports it too.</detailed></description>
     </property>
-    <property name="TestPropertyCombined2" indexdecl="" type="Integer" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="TestPropertyCombined2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
   <structure name="TTestRecordDeprecated" name_with_generic="TTestRecordDeprecated" type="record">

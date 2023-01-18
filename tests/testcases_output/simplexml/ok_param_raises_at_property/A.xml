@@ -8,9 +8,9 @@
   </structure>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="Bar" indexdecl="" type="Integer" reader="FBar" writer="SetBar" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="Bar" indexdecl="" type="Integer" reader="FBar" writer="SetBar" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="Items" indexdecl="[constIndex:Integer]" type="string" reader="GetItems" writer="SetItems" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="Items" indexdecl="[constIndex:Integer]" type="string" reader="GetItems" writer="SetItems" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

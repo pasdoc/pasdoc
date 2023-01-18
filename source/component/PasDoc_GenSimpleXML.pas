@@ -169,10 +169,10 @@ begin
             '" type="' + ConvertString(item.Proptype) +
           '" reader="' + ConvertString(item.reader) +
           '" writer="' + ConvertString(item.writer) +
-         '" default="' + ConvertString(BoolToStr(item.default, true)) +
-       '" defaultid="' + ConvertString(item.defaultid) +
-       '" nodefault="' + ConvertString(BoolToStr(item.nodefault, true)) +
-        '" storedid="' + ConvertString(item.storedid) +'">');
+'" default_in_class="' + ConvertString(BoolToStr(item.DefaultInClass, true)) +
+   '" default_value="' + ConvertString(item.DefaultValue) +
+       '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
+        '"   stored="' + ConvertString(item.Stored) +'">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');

@@ -1,9 +1,9 @@
 <unit name="ok_array_property.pas">
   <structure name="TAbstractNode" name_with_generic="TAbstractNode" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="MetadataBoolean" indexdecl="[constKey:String]" type="Boolean" reader="GetMetadataBoolean" writer="SetMetadataBoolean" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MetadataBoolean" indexdecl="[constKey:String]" type="Boolean" reader="GetMetadataBoolean" writer="SetMetadataBoolean" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="MetadataBooleanArray" indexdecl="[constKey:String;constIndex:Cardinal]" type="Boolean" reader="GetMetadataBooleanArray" writer="SetMetadataBooleanArray" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MetadataBooleanArray" indexdecl="[constKey:String;constIndex:Cardinal]" type="Boolean" reader="GetMetadataBooleanArray" writer="SetMetadataBooleanArray" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

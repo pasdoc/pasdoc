@@ -711,11 +711,11 @@ type
 
   TPasProperty = class(TPasItem)
   protected
-    FDefault: Boolean;
+    FDefaultInClass: Boolean;
     FNoDefault: Boolean;
     FIndexDecl: string;
-    FStoredID: string;
-    FDefaultID: string;
+    FStored: string;
+    FDefaultValue: string;
     FWriter: string;
     FPropType: string;
     FReader: string;
@@ -730,14 +730,17 @@ type
     property Reader: string read FReader write FReader;
     { write specifier }
     property Writer: string read FWriter write FWriter;
-    { true if the property is the default property }
-    property Default: Boolean read FDefault write FDefault;
-    { keeps default value specifier }
-    property DefaultID: string read FDefaultID write FDefaultID;
+    { Is it the default property in class.
+      For example "property Items[I: Integer]: String read GetItems; default;". }
+    property DefaultInClass: Boolean read FDefaultInClass write FDefaultInClass;
+    { Default value.
+      For example it will be 123 for declaration like this
+      "property Xxx: Integer default 123;". }
+    property DefaultValue: string read FDefaultValue write FDefaultValue;
     { true if Nodefault property }
     property NoDefault: Boolean read FNoDefault write FNoDefault;
     { keeps Stored specifier }
-    property StoredId: string read FStoredID write FStoredID;
+    property Stored: string read FStored write FStored;
 
     { Get the closest item that this item inherits from.
       Returns @nil if the property does not override. }
@@ -2894,11 +2897,11 @@ end;
 procedure TPasProperty.Deserialize(const ASource: TStream);
 begin
   inherited;
-  ASource.Read(FDefault, SizeOf(FDefault));
+  ASource.Read(FDefaultInClass, SizeOf(FDefaultInClass));
   ASource.Read(FNoDefault, SizeOf(FNoDefault));
   FIndexDecl := LoadStringFromStream(ASource);
-  FStoredID := LoadStringFromStream(ASource);
-  FDefaultID := LoadStringFromStream(ASource);
+  FStored := LoadStringFromStream(ASource);
+  FDefaultValue := LoadStringFromStream(ASource);
   FWriter := LoadStringFromStream(ASource);
   FPropType := LoadStringFromStream(ASource);
   FReader := LoadStringFromStream(ASource);
@@ -2907,11 +2910,11 @@ end;
 procedure TPasProperty.Serialize(const ADestination: TStream);
 begin
   inherited;
-  ADestination.Write(FDefault, SizeOf(FDefault));
+  ADestination.Write(FDefaultInClass, SizeOf(FDefaultInClass));
   ADestination.Write(FNoDefault, SizeOf(FNoDefault));
   SaveStringToStream(FIndexDecl, ADestination);
-  SaveStringToStream(FStoredID, ADestination);
-  SaveStringToStream(FDefaultID, ADestination);
+  SaveStringToStream(FStored, ADestination);
+  SaveStringToStream(FDefaultValue, ADestination);
   SaveStringToStream(FWriter, ADestination);
   SaveStringToStream(FPropType, ADestination);
   SaveStringToStream(FReader, ADestination);

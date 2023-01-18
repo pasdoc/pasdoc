@@ -5,7 +5,7 @@
     </routine>
     <variable name="MyField" declaration="MyField: Integer;">
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
   <structure name="TMyClassInMState" name_with_generic="TMyClassInMState" type="class">
@@ -14,7 +14,7 @@
     </routine>
     <variable name="MyField" declaration="MyField: Integer;">
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

@@ -42,14 +42,14 @@ end;</detailed></description>
   </structure>
   <structure name="TMyClassAncestor" name_with_generic="TMyClassAncestor" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="inheritable" indexdecl="" type="boolean" reader="MyField" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="inheritable" indexdecl="" type="boolean" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><abstract>This comment should be inherited.</abstract></description>
     </property>
   </structure>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>These are some tags that are not allowed to have parameters: name <code>TMyClass</code>, inherited TMyClassAncestor, nil <code>Nil</code>, true <code>True</code>, false <code>False</code>, classname <code>TMyClass</code>. Some of them are valid only within a class, but this is not important for this test. </detailed></description>
     <ancestor name="TMyClassAncestor" declaration="TMyClassAncestor" />
-    <property name="inheritable" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="inheritable" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>This is the detailed description.</detailed></description>
     </property>
   </structure>

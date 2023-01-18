@@ -2,9 +2,9 @@
   <description><detailed>Simple Delphi attributes test, from http://www.malcolmgroves.com/blog/?p=530</detailed></description>
   <structure name="TPerson" name_with_generic="TPerson" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="Name" indexdecl="" type="String" reader="FName" writer="FName" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="Name" indexdecl="" type="String" reader="FName" writer="FName" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="Age" indexdecl="" type="Integer" reader="FAge" writer="FAge" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="Age" indexdecl="" type="Integer" reader="FAge" writer="FAge" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
   <structure name="IUIContainer" name_with_generic="IUIContainer" type="interface">

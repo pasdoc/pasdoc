@@ -14,10 +14,10 @@
     <variable name="FY" declaration="FY: double;">
       <description><detailed><code>FY</code>: double; See Y.</detailed></description>
     </variable>
-    <property name="X" indexdecl="" type="double" reader="FX" writer="SetX" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="X" indexdecl="" type="double" reader="FX" writer="SetX" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed><code>X</code> is the X real-world coordinate.</detailed></description>
     </property>
-    <property name="Y" indexdecl="" type="double" reader="FY" writer="SetY" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="Y" indexdecl="" type="double" reader="FY" writer="SetY" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed><code>Y</code> is the Y real-world coordinate.</detailed></description>
     </property>
   </structure>

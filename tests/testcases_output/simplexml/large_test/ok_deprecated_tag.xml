@@ -17,7 +17,7 @@
     <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Deprecated field. </detailed></description>
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</detailed></description>
     </property>
   </structure>

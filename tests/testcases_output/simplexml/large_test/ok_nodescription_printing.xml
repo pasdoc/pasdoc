@@ -14,7 +14,7 @@
     </routine>
     <variable name="MyField" declaration="MyField: Integer;">
     </variable>
-    <property name="MyProperty" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
+    <property name="MyProperty" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
