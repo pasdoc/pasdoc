@@ -49,7 +49,7 @@
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><abstract>In this case, &quot;Operator&quot; is used as a normal Delphi identifier</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
-    <property name="Operator" indexdecl="" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Operator" indexdecl="" type="string" reader="FOperator" writer="FOperator" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>In this case, &quot;Operator&quot; is used as a normal Delphi identifier, not as an ObjFpc keyword. PasDoc should tolerate this, for compatibility with Delphi and with FPC in $mode delphi.</detailed></description>
     </property>
   </structure>

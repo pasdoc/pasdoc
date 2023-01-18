@@ -39,7 +39,7 @@
     <variable name="MyField" declaration="MyField: Integer;">
       <description><detailed>Description of MyField</detailed></description>
     </variable>
-    <property name="MyProp" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="MyProp" indexdecl="" type="Integer" reader="MyField" writer="MyField" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>Description of MyProp</detailed></description>
     </property>
   </structure>

@@ -5,7 +5,7 @@
     <routine name="Proc" type="procedure" declaration="procedure Proc; virtual;">
       <description><detailed>This description is only on TClassA.Proc.</detailed></description>
     </routine>
-    <property name="Prop" indexdecl="" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Prop" indexdecl="" type="string" reader="FValue" writer="" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>This description is only on TClassA.Prop.</detailed></description>
     </property>
   </structure>
@@ -15,7 +15,7 @@
     <routine name="Proc" type="procedure" declaration="procedure Proc; override;">
       <description><detailed>This description is only on IInterfaceB.Proc.</detailed></description>
     </routine>
-    <property name="Prop" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Prop" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>This description is only on IInterfaceB.Prop.</detailed></description>
     </property>
   </structure>
@@ -25,7 +25,7 @@
     <routine name="Proc" type="procedure" declaration="procedure Proc; override;">
       <description><detailed>This description is only on TClassB.Proc, TClassC.Proc and TClassD.Proc.</detailed></description>
     </routine>
-    <property name="Prop" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Prop" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>This description is only on TClassB.Prop, TClassC.Proc and TClassD.Proc.</detailed></description>
     </property>
   </structure>
@@ -34,7 +34,7 @@
     <routine name="Proc" type="procedure" declaration="procedure Proc; override;">
       <description><detailed>This description is only on TClassC.Proc and TClassD.Proc.</detailed></description>
     </routine>
-    <property name="Prop" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Prop" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>This description is only on TClassC.Prop and <code>TClassD.Prop</code>.</detailed></description>
     </property>
   </structure>
@@ -48,9 +48,9 @@
     </routine>
     <variable name="FOtherValue" declaration="FOtherValue: string;">
     </variable>
-    <property name="Prop" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Prop" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
-    <property name="NotInheritedProp" indexdecl="" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="NotInheritedProp" indexdecl="" type="string" reader="FOtherValue" writer="" default="False" defaultid="" nodefault="False" storedid="">
       <description><detailed>This description is only on TClassC.NotInheritedProp.</detailed></description>
     </property>
   </structure>
@@ -60,7 +60,7 @@
     </routine>
     <routine name="NotInheritedProc" type="procedure" declaration="procedure NotInheritedProc;">
     </routine>
-    <property name="NotInheritedProp" indexdecl="" type="string" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="NotInheritedProp" indexdecl="" type="string" reader="FOtherValue" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
   </structure>
 </unit>

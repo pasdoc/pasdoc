@@ -29,9 +29,9 @@
     </variable>
     <variable name="ZZZField" declaration="ZZZField: Integer;">
     </variable>
-    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
-    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
   </structure>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">

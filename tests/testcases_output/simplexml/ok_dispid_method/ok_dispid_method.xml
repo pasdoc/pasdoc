@@ -8,9 +8,9 @@
     </routine>
     <routine name="Item" type="function" declaration="function Item(portNumber: Integer; ipProtocol: NET_FW_IP_PROTOCOL_): INetFwOpenPort; dispid 4; ">
     </routine>
-    <property name="Count" indexdecl="" type="Integer" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="Count" indexdecl="" type="Integer" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
-    <property name="_NewEnum" indexdecl="" type="IUnknown" reader="" writer="" default="0" defaultid="" nodefault="0" storedid="">
+    <property name="_NewEnum" indexdecl="" type="IUnknown" reader="" writer="" default="False" defaultid="" nodefault="False" storedid="">
     </property>
   </structure>
 </unit>

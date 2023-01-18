@@ -100,7 +100,7 @@ TMyClass {$>$} TObject
 %%%%Description
 \subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{MyProperty}}
+\settowidth{\tmplength}{\textbf{MyPropertyDefaultExpression}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -117,6 +117,104 @@ TMyClass {$>$} TObject
 \fi
 \begin{ttfamily}
 public property MyProperty[S: string]: Integer read GetMyProperty;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-SelLength}
+\index{SelLength}
+\item[\textbf{SelLength}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property SelLength: Integer read GetSelLength write SetSelLength;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par From \href{https://github.com/pasdoc/pasdoc/issues/174}{https://github.com/pasdoc/pasdoc/issues/174}\label{ok_property_decl.TMyClass-SelText}
+\index{SelText}
+\item[\textbf{SelText}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property SelText: string read GetSelText;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-KeyboardType}
+\index{KeyboardType}
+\item[\textbf{KeyboardType}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property KeyboardType: TVirtualKeyboardType read GetKeyboardType write SetKeyboardType default TVirtualKeyboardType.Default;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-MyPropertyNoDefault}
+\index{MyPropertyNoDefault}
+\item[\textbf{MyPropertyNoDefault}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyPropertyNoDefault: Single nodefault;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-MyPropertyDefaultExpression}
+\index{MyPropertyDefaultExpression}
+\item[\textbf{MyPropertyDefaultExpression}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyPropertyDefaultExpression: Integer default 10 + 20;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-MyPropertyStored}
+\index{MyPropertyStored}
+\item[\textbf{MyPropertyStored}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyPropertyStored: Single stored false;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_property_decl.TMyClass-MyPropertyStored2}
+\index{MyPropertyStored2}
+\item[\textbf{MyPropertyStored2}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property MyPropertyStored2: Single stored GetStored;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}

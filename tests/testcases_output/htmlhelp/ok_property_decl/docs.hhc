@@ -32,6 +32,34 @@
 <param name="Name" value="MyProperty">
 <param name="Local" value="ok_property_decl.TMyClass.html#MyProperty">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="SelLength">
+<param name="Local" value="ok_property_decl.TMyClass.html#SelLength">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SelText">
+<param name="Local" value="ok_property_decl.TMyClass.html#SelText">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="KeyboardType">
+<param name="Local" value="ok_property_decl.TMyClass.html#KeyboardType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyNoDefault">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyNoDefault">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyDefaultExpression">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyDefaultExpression">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyStored">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyStored">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyStored2">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyStored2">
+</object>
 </ul>
 </ul>
 </ul>
@@ -57,8 +85,36 @@
 </object>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="KeyboardType">
+<param name="Local" value="ok_property_decl.TMyClass.html#KeyboardType">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="MyProperty">
 <param name="Local" value="ok_property_decl.TMyClass.html#MyProperty">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyDefaultExpression">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyDefaultExpression">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyNoDefault">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyNoDefault">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyStored">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyStored">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyPropertyStored2">
+<param name="Local" value="ok_property_decl.TMyClass.html#MyPropertyStored2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SelLength">
+<param name="Local" value="ok_property_decl.TMyClass.html#SelLength">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SelText">
+<param name="Local" value="ok_property_decl.TMyClass.html#SelText">
 </object>
 </ul>
 </ul>
