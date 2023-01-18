@@ -169,9 +169,9 @@ begin
             '" type="' + ConvertString(item.Proptype) +
           '" reader="' + ConvertString(item.reader) +
           '" writer="' + ConvertString(item.writer) +
-         '" default="' + ConvertString(booltostr(item.default)) +
+         '" default="' + ConvertString(BoolToStr(item.default, true)) +
        '" defaultid="' + ConvertString(item.defaultid) +
-       '" nodefault="' + ConvertString(booltostr(item.nodefault)) +
+       '" nodefault="' + ConvertString(BoolToStr(item.nodefault, true)) +
         '" storedid="' + ConvertString(item.storedid) +'">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));

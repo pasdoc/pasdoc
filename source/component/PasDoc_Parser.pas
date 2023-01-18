@@ -144,10 +144,8 @@ type
       @item Of TPasVarConst: FullDeclaration.
 
       @item(Of TPasProperty: IndexDecl, FullDeclaration.
-        PropType (only if was specified in property declaration).
-        It was intended that parser will also set Default,
-        NoDefault, StoredId, DefaultId, Reader, Writer attributes,
-        but it's still not implemented.)
+        PropType, NoDefault, StoredId, DefaultId, Reader, Writer.
+        TODO: Parsing TPasProperty.Default.)
 
       @item(Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
         FuncsProcs.)
@@ -1964,6 +1962,95 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseProperty(out p: TPasProperty);
+
+  { Parse property information
+      read XXX
+      write XXX
+      default XXX
+      nodefault
+      stored XXX
+
+    Stops on semicolon.
+
+    Also all whitespace and tokens are added to P.FullDeclaration.
+  }
+  procedure ParsePropertyEnding(const P: TPasProperty);
+  var
+    HasCurrentDirective: Boolean;
+    CurrentDirective: TStandardDirective;
+    CurrentDirectiveCollected: String;
+
+    procedure CurrentDirectiveFinished;
+    begin
+      if HasCurrentDirective then
+      begin
+        case CurrentDirective of
+          SD_READ: P.Reader := CurrentDirectiveCollected;
+          SD_WRITE: P.Writer := CurrentDirectiveCollected;
+          SD_DEFAULT: P.DefaultId := CurrentDirectiveCollected;
+          SD_STORED: P.StoredId := CurrentDirectiveCollected;
+          else raise EInternalParserError.Create('CurrentDirectiveFinished: unexpected CurrentDirective');
+        end;
+        HasCurrentDirective := false;
+      end;
+    end;
+
+  var
+    T: TToken;
+    PreviousWasDot: Boolean;
+  begin
+    { HasCurrentDirective, CurrentDirective track are we now collecting
+      tokens that follow a directive like SD_READ, SD_WRITE.
+      We are prepared that each directive may be followed by a series of tokens,
+      which allows to parse e.g. "default TXxx.Yyy" or "default 10 + 20". }
+    HasCurrentDirective := false;
+
+    { We track if previous token is dot, to not treat 2nd "default" as start
+      of default section in code like this: "property Xxx default TSomething.Default". }
+    PreviousWasDot := false;
+
+    repeat
+      T := GetNextToken(P);
+
+      { regardless of the whole logic of capturing current directive (like read, write),
+        we have to add all whitespace and tokens to P.FullDeclaration. }
+      P.FullDeclaration := P.FullDeclaration + T.Data;
+
+      if T.IsStandardDirective(SD_NODEFAULT) then
+      begin
+        T.Free;
+        CurrentDirectiveFinished;
+        PreviousWasDot := false;
+        P.NoDefault := true;
+      end else
+      if (T.MyType = TOK_IDENTIFIER) and
+         (not PreviousWasDot) and
+         (T.Info.StandardDirective in [SD_READ, SD_WRITE, SD_DEFAULT, SD_STORED]) then
+      begin
+        CurrentDirectiveFinished;
+        PreviousWasDot := false;
+        { initialize tracking new CurrentDirective }
+        HasCurrentDirective := true;
+        CurrentDirective := T.Info.StandardDirective;
+        CurrentDirectiveCollected := '';
+        T.Free;
+      end else
+      if T.IsSymbol(SYM_SEMICOLON) then
+      begin
+        T.Free;
+        CurrentDirectiveFinished;
+        // PreviousWasDot := false; // PreviousWasDot value doesn't matter further in this case
+        Break;
+      end else
+      begin
+        if HasCurrentDirective then
+          CurrentDirectiveCollected := SAppendPart(CurrentDirectiveCollected, ' ', T.Data);
+        PreviousWasDot := T.IsSymbol(SYM_PERIOD);
+        T.Free;
+      end;
+    until false; // always exits with Break
+  end;
+
 var
   Finished: Boolean;
   t: TToken;
@@ -2031,8 +2118,7 @@ begin
       FreeAndNil(t);
     end;
 
-    { read the rest of declaration }
-    SkipDeclaration(P, false);
+    ParsePropertyEnding(P);
 
     ParseHintDirectives(P, true, true);
   except
