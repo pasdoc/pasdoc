@@ -501,10 +501,11 @@ type
     { If field @link(CurrentStream) is assigned, it is disposed and set to nil. }
     procedure CloseStream;
 
-    { @abstract(Makes a String look like a coded String,
-      i.e. <CODE>TheString</CODE> in Html.)
-      @param(s is the string to format)
-      @returns(the formatted string) }
+    { Return S formatted to look like code, e.g. <code>xxx</code> in HTML.
+
+      Given S is already in the final output format
+      (with characters converted using @link(ConvertString), @@-tags
+      expanded etc.). }
     function CodeString(const s: string): string; virtual; abstract;
 
     { Converts for each character in S, thus assembling a
