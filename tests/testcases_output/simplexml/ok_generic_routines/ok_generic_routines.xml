@@ -1,17 +1,17 @@
 <unit name="ok_generic_routines.pas">
-  <routine name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;">
+  <routine name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;" visibility="published">
     <description><detailed>Test documentation for function DoSomething implementation</detailed></description>
   </routine>
-  <routine name="DoSomething2" type="procedure" declaration="procedure DoSomething2&lt;T&gt;(const Input: T);">
+  <routine name="DoSomething2" type="procedure" declaration="procedure DoSomething2&lt;T&gt;(const Input: T);" visibility="published">
     <description><detailed>Test documentation for procedure DoSomething2 implementation</detailed></description>
   </routine>
-  <structure name="TTestClass" name_with_generic="TTestClass" type="class">
+  <structure name="TTestClass" name_with_generic="TTestClass" type="class" visibility="published">
     <description><detailed>TTestClass</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="DoSomething" type="function" declaration="generic function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;">
+    <routine name="DoSomething" type="function" declaration="generic function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;" visibility="public">
       <description><detailed>Test documentation for class function DoSomething implementation</detailed></description>
     </routine>
-    <routine name="DoSomething2" type="procedure" declaration="generic procedure DoSomething2&lt;T&gt;(const Input: T);">
+    <routine name="DoSomething2" type="procedure" declaration="generic procedure DoSomething2&lt;T&gt;(const Input: T);" visibility="public">
       <description><detailed>Test documentation for class procedure DoSomething2 implementation</detailed></description>
     </routine>
   </structure>

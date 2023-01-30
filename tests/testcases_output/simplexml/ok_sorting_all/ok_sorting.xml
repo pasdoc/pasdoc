@@ -1,46 +1,46 @@
 <unit name="ok_sorting.pas">
   <description><detailed>Test unit to test various --sort settings.</detailed></description>
-  <routine name="AAAProc" type="procedure" declaration="procedure AAAProc;">
+  <routine name="AAAProc" type="procedure" declaration="procedure AAAProc;" visibility="published">
   </routine>
-  <routine name="ZZZProc" type="procedure" declaration="procedure ZZZProc;">
+  <routine name="ZZZProc" type="procedure" declaration="procedure ZZZProc;" visibility="published">
   </routine>
-  <constant name="AAAConst" declaration="AAAConst = 2;">
+  <constant name="AAAConst" declaration="AAAConst = 2;" visibility="published">
   </constant>
-  <constant name="ZZZConst" declaration="ZZZConst = 1;">
+  <constant name="ZZZConst" declaration="ZZZConst = 1;" visibility="published">
   </constant>
-  <variable name="AAAVar" declaration="AAAVar: Integer;">
+  <variable name="AAAVar" declaration="AAAVar: Integer;" visibility="published">
   </variable>
-  <variable name="ZZZVar" declaration="ZZZVar: Integer;">
+  <variable name="ZZZVar" declaration="ZZZVar: Integer;" visibility="published">
   </variable>
-  <type name="AAAType" declaration="AAAType = Integer;">
+  <type name="AAAType" declaration="AAAType = Integer;" visibility="published">
   </type>
-  <type name="ZZZType" declaration="ZZZType = Integer;">
+  <type name="ZZZType" declaration="ZZZType = Integer;" visibility="published">
   </type>
-  <structure name="AAAClass" name_with_generic="AAAClass" type="class">
+  <structure name="AAAClass" name_with_generic="AAAClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="AAAMethod" type="procedure" declaration="procedure AAAMethod;">
+    <routine name="AAAMethod" type="procedure" declaration="procedure AAAMethod;" visibility="public">
     </routine>
-    <routine name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;">
+    <routine name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;" visibility="public">
     </routine>
-    <variable name="AAAField" declaration="AAAField: Integer;">
+    <variable name="AAAField" declaration="AAAField: Integer;" visibility="public">
     </variable>
-    <variable name="ZZZField" declaration="ZZZField: Integer;">
+    <variable name="ZZZField" declaration="ZZZField: Integer;" visibility="public">
     </variable>
-    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
   </structure>
-  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
-    <variable name="AAAField" declaration="AAAField: Integer;">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
+    <variable name="AAAField" declaration="AAAField: Integer;" visibility="public">
     </variable>
-    <variable name="ZZZField" declaration="ZZZField: Integer;">
+    <variable name="ZZZField" declaration="ZZZField: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="ZZZClass" name_with_generic="ZZZClass" type="class">
+  <structure name="ZZZClass" name_with_generic="ZZZClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
 </unit>

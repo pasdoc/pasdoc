@@ -1,17 +1,17 @@
 <unit name="ok_auto_back_comments.pas">
   <description><detailed>Test auto back comments</detailed></description>
-  <variable name="var1" declaration="var1: Byte;">
+  <variable name="var1" declaration="var1: Byte;" visibility="published">
     <description><detailed>this is var1 (usual comment)</detailed></description>
   </variable>
-  <variable name="var2" declaration="var2: Byte;">
+  <variable name="var2" declaration="var2: Byte;" visibility="published">
     <description><detailed>this is var2 (no whitespace after ident)</detailed></description>
   </variable>
-  <variable name="var3" declaration="var3: Byte;">
+  <variable name="var3" declaration="var3: Byte;" visibility="published">
   </variable>
-  <variable name="var4" declaration="var4: Byte;">
+  <variable name="var4" declaration="var4: Byte;" visibility="published">
     <description><detailed>this is var4 (must not be considered as back-comment)</detailed></description>
   </variable>
-  <variable name="var5" declaration="var5: Byte;">
+  <variable name="var5" declaration="var5: Byte;" visibility="published">
     <description><detailed>this is var5</detailed></description>
   </variable>
 </unit>

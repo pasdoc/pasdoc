@@ -1,22 +1,22 @@
 <unit name="ok_property_decl.pas">
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="MyProperty" indexdecl="[S:string]" type="Integer" reader="GetMyProperty" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="MyProperty" indexdecl="[S:string]" type="Integer" reader="GetMyProperty" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="SelLength" indexdecl="" type="Integer" reader="GetSelLength" writer="SetSelLength" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="SelLength" indexdecl="" type="Integer" reader="GetSelLength" writer="SetSelLength" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
       <description><detailed>From https://github.com/pasdoc/pasdoc/issues/174</detailed></description>
     </property>
-    <property name="SelText" indexdecl="" type="string" reader="GetSelText" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="SelText" indexdecl="" type="string" reader="GetSelText" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="KeyboardType" indexdecl="" type="TVirtualKeyboardType" reader="GetKeyboardType" writer="SetKeyboardType" default_in_class="False" default_value="TVirtualKeyboardType . Default" nodefault="False"   stored="">
+    <property name="KeyboardType" indexdecl="" type="TVirtualKeyboardType" reader="GetKeyboardType" writer="SetKeyboardType" default_in_class="False" default_value="TVirtualKeyboardType . Default" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="MyPropertyNoDefault" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="True"   stored="">
+    <property name="MyPropertyNoDefault" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="True"   stored="" visibility="public">
     </property>
-    <property name="MyPropertyDefaultExpression" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="10 + 20" nodefault="False"   stored="">
+    <property name="MyPropertyDefaultExpression" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="10 + 20" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="MyPropertyStored" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="false">
+    <property name="MyPropertyStored" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="false" visibility="public">
     </property>
-    <property name="MyPropertyStored2" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="GetStored">
+    <property name="MyPropertyStored2" indexdecl="" type="Single" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="GetStored" visibility="public">
     </property>
   </structure>
 </unit>

@@ -1,7 +1,7 @@
 <unit name="ok_static_member.pas">
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="StaticProcedure" type="procedure" declaration="Class Procedure StaticProcedure; static;">
+    <routine name="StaticProcedure" type="procedure" declaration="Class Procedure StaticProcedure; static;" visibility="public">
       <description><detailed>All methods are static unless they are virtual or dynamic. but <code>StaticProcedure</code> is declared static. Even if 'static' did not appear after the declaration, <code>StaticProcedure</code> would still be static. <code>StaticProcedure</code> is also a Class procedure but that is a separate story.</detailed></description>
     </routine>
   </structure>

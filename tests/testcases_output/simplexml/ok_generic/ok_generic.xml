@@ -1,78 +1,78 @@
 <unit name="ok_generic.pas">
   <description><detailed>Tests of generics, both FPC and Delphi style.</detailed></description>
-  <type name="TGeometryAttribsList2" declaration="TGeometryAttribsList2 = specialize TMyList&lt;TALBuffersCache&gt;;">
+  <type name="TGeometryAttribsList2" declaration="TGeometryAttribsList2 = specialize TMyList&lt;TALBuffersCache&gt;;" visibility="published">
   </type>
-  <structure name="TMyList" name_with_generic="generic TMyList&lt;T&gt;" type="class">
+  <structure name="TMyList" name_with_generic="generic TMyList&lt;T&gt;" type="class" visibility="published">
     <description><detailed>FPC generics tests -------------------------------------------------------</detailed></description>
     <ancestor name="TFPSList" declaration="TFPSList" />
-    <routine name="Blah" type="function" declaration="function Blah: PT;">
+    <routine name="Blah" type="function" declaration="function Blah: PT;" visibility="public">
     </routine>
   </structure>
-  <structure name="TGeometryAttrib" name_with_generic="TGeometryAttrib" type="class">
+  <structure name="TGeometryAttrib" name_with_generic="TGeometryAttrib" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="Name" declaration="Name: string;">
+    <variable name="Name" declaration="Name: string;" visibility="public">
     </variable>
-    <variable name="AType" declaration="AType: TGeometryAttribType;">
+    <variable name="AType" declaration="AType: TGeometryAttribType;" visibility="public">
     </variable>
-    <variable name="Offset" declaration="Offset: Integer;">
+    <variable name="Offset" declaration="Offset: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TGeometryAttribsList" name_with_generic="TGeometryAttribsList" type="class">
+  <structure name="TGeometryAttribsList" name_with_generic="TGeometryAttribsList" type="class" visibility="published">
     <description><detailed>You can also specialize and make a descendant at the same time.</detailed></description>
     <ancestor name="TMyList" declaration="specialize TMyList&lt;TGeometryAttrib&gt;" />
-    <routine name="Find" type="function" declaration="function Find(const Name: string): TGeometryAttrib;">
+    <routine name="Find" type="function" declaration="function Find(const Name: string): TGeometryAttrib;" visibility="public">
     </routine>
   </structure>
-  <structure name="TMyObject" name_with_generic="TMyObject" type="class">
+  <structure name="TMyObject" name_with_generic="TMyObject" type="class" visibility="published">
     <description><detailed>A simple Test-Object</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TMyGenericList" name_with_generic="TMyGenericList" type="class">
+  <structure name="TMyGenericList" name_with_generic="TMyGenericList" type="class" visibility="published">
     <ancestor name="TObjectList" declaration="TObjectList&lt;TMyObject&gt;" />
   </structure>
-  <structure name="TMyNewGeneric" name_with_generic="TMyNewGeneric&lt;T1,T2&gt;" type="class">
+  <structure name="TMyNewGeneric" name_with_generic="TMyNewGeneric&lt;T1,T2&gt;" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Blah" type="function" declaration="function Blah: PT;">
+    <routine name="Blah" type="function" declaration="function Blah: PT;" visibility="public">
     </routine>
   </structure>
-  <structure name="TAnotherGenericType" name_with_generic="TAnotherGenericType" type="class">
+  <structure name="TAnotherGenericType" name_with_generic="TAnotherGenericType" type="class" visibility="published">
     <description><detailed>Sample for a generic with more than one type. TPair is a Key-Value-Relation</detailed></description>
     <ancestor name="TDictionary" declaration="TDictionary&lt;TObject,TObject&gt;" />
   </structure>
-  <structure name="TArray" name_with_generic="TArray" type="class">
+  <structure name="TArray" name_with_generic="TArray" type="class" visibility="published">
     <description><detailed>All standard Generics:</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TEnumerator" name_with_generic="TEnumerator&lt;T&gt;" type="class">
+  <structure name="TEnumerator" name_with_generic="TEnumerator&lt;T&gt;" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TEnumerable" name_with_generic="TEnumerable&lt;T&gt;" type="class">
+  <structure name="TEnumerable" name_with_generic="TEnumerable&lt;T&gt;" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TList" name_with_generic="TList&lt;T&gt;" type="class">
+  <structure name="TList" name_with_generic="TList&lt;T&gt;" type="class" visibility="published">
     <ancestor name="TEnumerable" declaration="TEnumerable&lt;T&gt;" />
   </structure>
-  <structure name="TQueue" name_with_generic="TQueue&lt;T&gt;" type="class">
+  <structure name="TQueue" name_with_generic="TQueue&lt;T&gt;" type="class" visibility="published">
     <ancestor name="TEnumerable" declaration="TEnumerable&lt;T&gt;" />
   </structure>
-  <structure name="TStack" name_with_generic="TStack&lt;T&gt;" type="class">
+  <structure name="TStack" name_with_generic="TStack&lt;T&gt;" type="class" visibility="published">
     <ancestor name="TEnumerable" declaration="TEnumerable&lt;T&gt;" />
   </structure>
-  <structure name="TPair" name_with_generic="TPair&lt;TKey,TValue&gt;" type="record">
+  <structure name="TPair" name_with_generic="TPair&lt;TKey,TValue&gt;" type="record" visibility="published">
   </structure>
-  <structure name="TDictionary" name_with_generic="TDictionary&lt;TKey,TValue&gt;" type="class">
+  <structure name="TDictionary" name_with_generic="TDictionary&lt;TKey,TValue&gt;" type="class" visibility="published">
     <ancestor name="TEnumerable" declaration="TEnumerable&lt;TPair&lt;TKey,TValue&gt;&gt;" />
   </structure>
-  <structure name="TObjectList" name_with_generic="TObjectList&lt;T:class&gt;" type="class">
+  <structure name="TObjectList" name_with_generic="TObjectList&lt;T:class&gt;" type="class" visibility="published">
     <ancestor name="TList" declaration="TList&lt;T&gt;" />
   </structure>
-  <structure name="TObjectQueue" name_with_generic="TObjectQueue&lt;T:class&gt;" type="class">
+  <structure name="TObjectQueue" name_with_generic="TObjectQueue&lt;T:class&gt;" type="class" visibility="published">
     <ancestor name="TQueue" declaration="TQueue&lt;T&gt;" />
   </structure>
-  <structure name="TObjectStack" name_with_generic="TObjectStack&lt;T:class&gt;" type="class">
+  <structure name="TObjectStack" name_with_generic="TObjectStack&lt;T:class&gt;" type="class" visibility="published">
     <ancestor name="TStack" declaration="TStack&lt;T&gt;" />
   </structure>
-  <structure name="TObjectDictionary" name_with_generic="TObjectDictionary&lt;TKey,TValue&gt;" type="class">
+  <structure name="TObjectDictionary" name_with_generic="TObjectDictionary&lt;TKey,TValue&gt;" type="class" visibility="published">
     <ancestor name="TDictionary" declaration="TDictionary&lt;TKey,TValue&gt;" />
   </structure>
 </unit>

@@ -1,27 +1,27 @@
 <unit name="ok_caret_character.pas">
   <description><abstract>Test of parsing &quot;^char&quot; constants, see [http://www.freepascal.org/docs-html/ref/refsu7.html].</abstract><detailed> Note that while FPC docs say that only ^A .. ^Z are allowed, actually both FPC 2.0.0 and Kylix 3 accept other characters after the caret, e.g. &quot;^\&quot; is accepted. See also bug report &quot;[ 1358911 ] Invalid character in input stream&quot;.</detailed></description>
-  <constant name="C2" declaration="C2 = ^A;">
+  <constant name="C2" declaration="C2 = ^A;" visibility="published">
   </constant>
-  <constant name="C3" declaration="C3 = ^B;">
+  <constant name="C3" declaration="C3 = ^B;" visibility="published">
   </constant>
-  <constant name="C4" declaration="C4 = ^Z;">
+  <constant name="C4" declaration="C4 = ^Z;" visibility="published">
   </constant>
-  <constant name="SUB" declaration="SUB = ^Z;">
+  <constant name="SUB" declaration="SUB = ^Z;" visibility="published">
     <description><detailed>SUBstitute</detailed></description>
   </constant>
-  <constant name="ESC" declaration="ESC = ^[;">
+  <constant name="ESC" declaration="ESC = ^[;" visibility="published">
     <description><detailed>ESCape</detailed></description>
   </constant>
-  <constant name="FS" declaration="FS  = ^\;">
+  <constant name="FS" declaration="FS  = ^\;" visibility="published">
     <description><detailed>File Separator</detailed></description>
   </constant>
-  <constant name="GS" declaration="GS  = ^];">
+  <constant name="GS" declaration="GS  = ^];" visibility="published">
     <description><detailed>Group Separator</detailed></description>
   </constant>
-  <constant name="RS" declaration="RS  = ^^;">
+  <constant name="RS" declaration="RS  = ^^;" visibility="published">
     <description><detailed>Record Separator</detailed></description>
   </constant>
-  <constant name="US" declaration="US  = ^_;">
+  <constant name="US" declaration="US  = ^_;" visibility="published">
     <description><detailed>Unit Separator</detailed></description>
   </constant>
 </unit>

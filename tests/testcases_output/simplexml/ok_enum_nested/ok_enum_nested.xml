@@ -1,30 +1,30 @@
 <unit name="ok_enum_nested.pas">
-  <type name="TGlobalEnum" declaration="TGlobalEnum = (...);">
-    <constant name="geOne" declaration="geOne">
+  <type name="TGlobalEnum" declaration="TGlobalEnum = (...);" visibility="published">
+    <constant name="geOne" declaration="geOne" visibility="published">
     </constant>
-    <constant name="geTwo" declaration="geTwo">
+    <constant name="geTwo" declaration="geTwo" visibility="published">
     </constant>
-    <constant name="geThree" declaration="geThree">
+    <constant name="geThree" declaration="geThree" visibility="published">
     </constant>
   </type>
-  <structure name="TMyObject" name_with_generic="TMyObject" type="class">
+  <structure name="TMyObject" name_with_generic="TMyObject" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <type name="TObjectEnum" declaration="TObjectEnum = (...);">
-      <constant name="oeOne" declaration="oeOne">
+    <type name="TObjectEnum" declaration="TObjectEnum = (...);" visibility="public">
+      <constant name="oeOne" declaration="oeOne" visibility="published">
       </constant>
-      <constant name="oeTwo" declaration="oeTwo">
+      <constant name="oeTwo" declaration="oeTwo" visibility="published">
       </constant>
-      <constant name="oeThree" declaration="oeThree">
+      <constant name="oeThree" declaration="oeThree" visibility="published">
       </constant>
     </type>
-    <structure name="TNestedObject" name_with_generic="TNestedObject" type="class">
+    <structure name="TNestedObject" name_with_generic="TNestedObject" type="class" visibility="public">
       <ancestor name="TObject" declaration="TObject" />
-      <type name="TNestedObjectEnum" declaration="TNestedObjectEnum = (...);">
-        <constant name="noeOne" declaration="noeOne">
+      <type name="TNestedObjectEnum" declaration="TNestedObjectEnum = (...);" visibility="public">
+        <constant name="noeOne" declaration="noeOne" visibility="published">
         </constant>
-        <constant name="noeTwo" declaration="noeTwo">
+        <constant name="noeTwo" declaration="noeTwo" visibility="published">
         </constant>
-        <constant name="noeThree" declaration="noeThree">
+        <constant name="noeThree" declaration="noeThree" visibility="published">
         </constant>
       </type>
     </structure>

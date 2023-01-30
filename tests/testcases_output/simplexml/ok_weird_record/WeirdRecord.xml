@@ -1,24 +1,24 @@
 <unit name="ok_weird_record.dpr">
-  <constant name="val1" declaration="val1 = 1;">
+  <constant name="val1" declaration="val1 = 1;" visibility="published">
   </constant>
-  <constant name="val2" declaration="val2 = 2;">
+  <constant name="val2" declaration="val2 = 2;" visibility="published">
   </constant>
-  <constant name="val4" declaration="val4 = 4;">
+  <constant name="val4" declaration="val4 = 4;" visibility="published">
   </constant>
-  <constant name="byRef" declaration="byRef = 8;">
+  <constant name="byRef" declaration="byRef = 8;" visibility="published">
   </constant>
-  <structure name="TWeirdRecord" name_with_generic="TWeirdRecord" type="record">
-    <variable name="bVal" declaration="bVal: Byte">
+  <structure name="TWeirdRecord" name_with_generic="TWeirdRecord" type="record" visibility="published">
+    <variable name="bVal" declaration="bVal: Byte" visibility="public">
     </variable>
-    <variable name="iVal" declaration="iVal: Smallint">
+    <variable name="iVal" declaration="iVal: Smallint" visibility="public">
     </variable>
-    <variable name="lVal" declaration="lVal: Longint">
+    <variable name="lVal" declaration="lVal: Longint" visibility="public">
     </variable>
-    <variable name="pbVal" declaration="pbVal: ^Byte">
+    <variable name="pbVal" declaration="pbVal: ^Byte" visibility="public">
     </variable>
-    <variable name="piVal" declaration="piVal: ^Smallint">
+    <variable name="piVal" declaration="piVal: ^Smallint" visibility="public">
     </variable>
-    <variable name="plVal" declaration="plVal: ^Longint">
+    <variable name="plVal" declaration="plVal: ^Longint" visibility="public">
     </variable>
   </structure>
 </unit>

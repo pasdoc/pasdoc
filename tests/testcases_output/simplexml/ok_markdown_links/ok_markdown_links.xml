@@ -6,7 +6,7 @@
 </unorderedlist>
 
 </detailed></description>
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
+  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
     <description><detailed>Link to Self, and a Second one. Link without explicit title [ok_markdown_links]. Not links to \[Self](#MyProc), and a \[Second one](#ok_markdown_links.MyProc). Not a link without explicit title \[ok_markdown_links].</detailed></description>
   </routine>
 </unit>

@@ -1,25 +1,25 @@
 <unit name="ok_class_record_helpers.pas">
   <description><detailed>Test case for Delphi class and record helpers</detailed></description>
-  <structure name="TSimpleRecord" name_with_generic="TSimpleRecord" type="record">
+  <structure name="TSimpleRecord" name_with_generic="TSimpleRecord" type="record" visibility="published">
     <description><detailed>description of <code>TSimpleRecord</code></detailed></description>
-    <variable name="SimpleField" declaration="SimpleField: Integer;">
+    <variable name="SimpleField" declaration="SimpleField: Integer;" visibility="public">
       <description><detailed>description of <code>SimpleField</code></detailed></description>
     </variable>
   </structure>
-  <structure name="TMyRecordHelper" name_with_generic="TMyRecordHelper" type="record">
+  <structure name="TMyRecordHelper" name_with_generic="TMyRecordHelper" type="record" visibility="published">
     <description><detailed>description of <code>TMyRecordHelper</code></detailed></description>
-    <routine name="HelloWorld" type="procedure" declaration="procedure HelloWorld;">
+    <routine name="HelloWorld" type="procedure" declaration="procedure HelloWorld;" visibility="protected">
       <description><detailed>description of <code>HelloWorld</code></detailed></description>
     </routine>
   </structure>
-  <structure name="TAncestorClassHelper" name_with_generic="TAncestorClassHelper" type="class">
+  <structure name="TAncestorClassHelper" name_with_generic="TAncestorClassHelper" type="class" visibility="published">
     <description><detailed>description of <code>TAncestorClassHelper</code></detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TDescendantClassHelper" name_with_generic="TDescendantClassHelper" type="class">
+  <structure name="TDescendantClassHelper" name_with_generic="TDescendantClassHelper" type="class" visibility="published">
     <description><detailed>description of <code>TDescendantClassHelper</code></detailed></description>
     <ancestor name="TAncestorClassHelper" declaration="TAncestorClassHelper" />
-    <routine name="HelloWorld" type="procedure" declaration="procedure HelloWorld;">
+    <routine name="HelloWorld" type="procedure" declaration="procedure HelloWorld;" visibility="public">
       <description><detailed>description of <code>HelloWorld</code></detailed></description>
     </routine>
   </structure>

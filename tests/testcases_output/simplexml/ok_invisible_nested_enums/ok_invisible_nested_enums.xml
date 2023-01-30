@@ -1,13 +1,13 @@
 <unit name="ok_invisible_nested_enums.pas">
-  <structure name="TOuterObject" name_with_generic="TOuterObject" type="class">
+  <structure name="TOuterObject" name_with_generic="TOuterObject" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <type name="TPublicInnerEnum" declaration="TPublicInnerEnum = (...);">
-      <constant name="puePublic" declaration="puePublic">
+    <type name="TPublicInnerEnum" declaration="TPublicInnerEnum = (...);" visibility="public">
+      <constant name="puePublic" declaration="puePublic" visibility="published">
       </constant>
-      <constant name="pueSuperPublic" declaration="pueSuperPublic">
+      <constant name="pueSuperPublic" declaration="pueSuperPublic" visibility="published">
       </constant>
     </type>
-    <structure name="TPublicInnerObject" name_with_generic="TPublicInnerObject" type="class">
+    <structure name="TPublicInnerObject" name_with_generic="TPublicInnerObject" type="class" visibility="public">
       <ancestor name="TObject" declaration="TObject" />
     </structure>
   </structure>

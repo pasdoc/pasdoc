@@ -1,10 +1,10 @@
 <unit name="ok_strict_visibilities.pas">
-  <structure name="TStrictVisibility" name_with_generic="TStrictVisibility" type="class">
+  <structure name="TStrictVisibility" name_with_generic="TStrictVisibility" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="StrictPrivateInteger" declaration="StrictPrivateInteger: integer;">
+    <variable name="StrictPrivateInteger" declaration="StrictPrivateInteger: integer;" visibility="strictprivate">
       <description><detailed>the visibility of <code>StrictPrivateInteger</code> is &quot;strict private.&quot;</detailed></description>
     </variable>
-    <variable name="StrictProtectedInteger" declaration="StrictProtectedInteger: integer;">
+    <variable name="StrictProtectedInteger" declaration="StrictProtectedInteger: integer;" visibility="strictprotected">
       <description><detailed>the visibility of <code>StrictProtectedInteger</code> is &quot;strict protected.&quot;</detailed></description>
     </variable>
   </structure>

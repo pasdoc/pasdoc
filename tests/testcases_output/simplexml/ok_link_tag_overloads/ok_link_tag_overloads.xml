@@ -1,9 +1,9 @@
 <unit name="ok_link_tag_overloads.pas">
-  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyStr: string): integer; overload;">
+  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyStr: string): integer; overload;" visibility="published">
   </routine>
-  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;">
+  <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;" visibility="published">
   </routine>
-  <structure name="TLinkHolder" name_with_generic="TLinkHolder" type="class">
+  <structure name="TLinkHolder" name_with_generic="TLinkHolder" type="class" visibility="published">
     <description><detailed>
 
 <unorderedlist>
@@ -21,37 +21,37 @@
 </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TOverloadedBase" name_with_generic="TOverloadedBase" type="class">
+  <structure name="TOverloadedBase" name_with_generic="TOverloadedBase" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;" visibility="public">
       <description><detailed><code>TOverloadedBase</code>.<code>Bar</code></detailed></description>
     </routine>
   </structure>
-  <structure name="TOverloadedMethods" name_with_generic="TOverloadedMethods" type="class">
+  <structure name="TOverloadedMethods" name_with_generic="TOverloadedMethods" type="class" visibility="published">
     <description><detailed>TLinkHolder</detailed></description>
     <ancestor name="TOverloadedBase" declaration="TOverloadedBase" />
-    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: IntEGEr); overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: IntEGEr); overload;" visibility="public">
     </routine>
-    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: Integer; MyBool: Boolean); overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyInt: Integer; MyBool: Boolean); overload;" visibility="public">
     </routine>
-    <routine name="Foo" type="procedure" declaration="procedure Foo; overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo; overload;" visibility="public">
     </routine>
-    <routine name="Foo" type="procedure" declaration="procedure Foo(MyStr: string); overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo(MyStr: string); overload;" visibility="public">
     </routine>
-    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr); overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr); overload;" visibility="public">
     </routine>
-    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr, MyOtherStr: STRING); overload;">
+    <routine name="Foo" type="procedure" declaration="procedure Foo(const MyStr, MyOtherStr: STRING); overload;" visibility="public">
     </routine>
-    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: IntEGEr); overload;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: IntEGEr); overload;" visibility="public">
       <description><detailed><code>Bar</code></detailed></description>
     </routine>
-    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); overload; override;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); overload; override;" visibility="public">
     </routine>
-    <routine name="Bar" type="procedure" declaration="procedure Bar(MyStr: string); overload;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(MyStr: string); overload;" visibility="public">
     </routine>
-    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr); overload;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr); overload;" visibility="public">
     </routine>
-    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr, MyOtherStr: STRING); overload;">
+    <routine name="Bar" type="procedure" declaration="procedure Bar(const MyStr, MyOtherStr: STRING); overload;" visibility="public">
     </routine>
   </structure>
 </unit>

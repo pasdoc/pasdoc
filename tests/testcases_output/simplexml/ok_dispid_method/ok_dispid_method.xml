@@ -1,16 +1,16 @@
 <unit name="ok_dispid_method.pas">
   <description><detailed>Testcase for bug &quot;[ 1403317 ] Error parsing automatically generated unit&quot;</detailed></description>
-  <structure name="INetFwOpenPortsDisp" name_with_generic="INetFwOpenPortsDisp" type="dispinterface">
+  <structure name="INetFwOpenPortsDisp" name_with_generic="INetFwOpenPortsDisp" type="dispinterface" visibility="published">
     <ancestor name="IDispInterface" declaration="IDispInterface" />
-    <routine name="Add" type="procedure" declaration="procedure Add(const Port: INetFwOpenPort); dispid 2; ">
+    <routine name="Add" type="procedure" declaration="procedure Add(const Port: INetFwOpenPort); dispid 2; " visibility="public">
     </routine>
-    <routine name="Remove" type="procedure" declaration="procedure Remove(portNumber: Integer; ipProtocol: NET_FW_IP_PROTOCOL_); dispid 3; ">
+    <routine name="Remove" type="procedure" declaration="procedure Remove(portNumber: Integer; ipProtocol: NET_FW_IP_PROTOCOL_); dispid 3; " visibility="public">
     </routine>
-    <routine name="Item" type="function" declaration="function Item(portNumber: Integer; ipProtocol: NET_FW_IP_PROTOCOL_): INetFwOpenPort; dispid 4; ">
+    <routine name="Item" type="function" declaration="function Item(portNumber: Integer; ipProtocol: NET_FW_IP_PROTOCOL_): INetFwOpenPort; dispid 4; " visibility="public">
     </routine>
-    <property name="Count" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="Count" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="_NewEnum" indexdecl="" type="IUnknown" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="_NewEnum" indexdecl="" type="IUnknown" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
   </structure>
 </unit>

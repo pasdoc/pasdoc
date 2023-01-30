@@ -1,7 +1,7 @@
 <unit name="test_links_to_dot_names/test_dot.two.dots.pas">
-  <structure name="TClass" name_with_generic="TClass" type="class">
+  <structure name="TClass" name_with_generic="TClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="Field" declaration="Field: byte;">
+    <variable name="Field" declaration="Field: byte;" visibility="public">
     </variable>
   </structure>
 </unit>

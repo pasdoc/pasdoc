@@ -1,9 +1,9 @@
 <unit name="ok_see_also.pas">
   <description><detailed>This is a testing unit for @seealso tag.  </detailed></description>
-  <routine name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
     <description><abstract>Abstract of Foo.</abstract><detailed> Further description of Foo. </detailed></description>
   </routine>
-  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class">
+  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class" visibility="published">
     <description><abstract>Abstract of TSomeClass.</abstract><detailed> Further description of TSomeClass.  </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>

@@ -1,8 +1,8 @@
 <unit name="ok_ignore_leading_hash.pas">
-  <constant name="A" declaration="A = 1;">
+  <constant name="A" declaration="A = 1;" visibility="published">
     <description><detailed>--ignore-leading=#</detailed></description>
   </constant>
-  <constant name="B" declaration="B = 1;">
+  <constant name="B" declaration="B = 1;" visibility="published">
     <description><detailed>--ignore-leading=# (should produce the same result)</detailed></description>
   </constant>
 </unit>

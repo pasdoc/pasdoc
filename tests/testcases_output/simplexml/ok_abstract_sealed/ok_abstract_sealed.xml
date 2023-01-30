@@ -1,32 +1,32 @@
 <unit name="ok_abstract_sealed.pas">
   <description><detailed>description of <code>ok_abstract_sealed</code></detailed></description>
-  <structure name="TOrdinaryClass" name_with_generic="TOrdinaryClass" type="class">
+  <structure name="TOrdinaryClass" name_with_generic="TOrdinaryClass" type="class" visibility="published">
     <description><detailed>description of <code>TOrdinaryClass</code></detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;" visibility="public">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </routine>
-    <variable name="AVariable" declaration="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>
-  <structure name="TAbstractClass" name_with_generic="TAbstractClass" type="class">
+  <structure name="TAbstractClass" name_with_generic="TAbstractClass" type="class" visibility="published">
     <description><detailed>description of <code>TAbstractClass</code></detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;" visibility="public">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </routine>
-    <variable name="AVariable" declaration="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>
-  <structure name="TSealedClass" name_with_generic="TSealedClass" type="class">
+  <structure name="TSealedClass" name_with_generic="TSealedClass" type="class" visibility="published">
     <description><detailed>description of <code>TSealedClass</code></detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;">
+    <routine name="AProcedure" type="procedure" declaration="procedure AProcedure;" visibility="public">
       <description><detailed>description of <code>AProcedure</code></detailed></description>
     </routine>
-    <variable name="AVariable" declaration="var AVariable: integer;">
+    <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
       <description><detailed>description of <code>AVariable</code></detailed></description>
     </variable>
   </structure>
