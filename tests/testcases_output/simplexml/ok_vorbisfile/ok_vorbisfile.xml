@@ -1,92 +1,92 @@
 <unit name="ok_vorbisfile.pas">
   <description><detailed>API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
-  <constant name="NOTOPEN" declaration="NOTOPEN   = 0;">
+  <constant name="NOTOPEN" declaration="NOTOPEN   = 0;" visibility="published">
   </constant>
-  <constant name="PARTOPEN" declaration="PARTOPEN  = 1;">
+  <constant name="PARTOPEN" declaration="PARTOPEN  = 1;" visibility="published">
   </constant>
-  <constant name="OPENED" declaration="OPENED    = 2;">
+  <constant name="OPENED" declaration="OPENED    = 2;" visibility="published">
   </constant>
-  <constant name="STREAMSET" declaration="STREAMSET = 3;">
+  <constant name="STREAMSET" declaration="STREAMSET = 3;" visibility="published">
   </constant>
-  <constant name="INITSET" declaration="INITSET   = 4;">
+  <constant name="INITSET" declaration="INITSET   = 4;" visibility="published">
   </constant>
-  <variable name="ov_clear" declaration="ov_clear: function(Vf: POggVorbis_File): CInt; cdecl;">
+  <variable name="ov_clear" declaration="ov_clear: function(Vf: POggVorbis_File): CInt; cdecl;" visibility="published">
   </variable>
-  <variable name="VorbisFileInited" declaration="VorbisFileInited: boolean;">
+  <variable name="VorbisFileInited" declaration="VorbisFileInited: boolean;" visibility="published">
   </variable>
-  <type name="TSizeT" declaration="TSizeT = LongWord;">
+  <type name="TSizeT" declaration="TSizeT = LongWord;" visibility="published">
   </type>
-  <type name="TVorbisFileReadFunc" declaration="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;">
+  <type name="TVorbisFileReadFunc" declaration="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;" visibility="published">
   </type>
-  <type name="TVorbisFileSeekFunc" declaration="TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;">
+  <type name="TVorbisFileSeekFunc" declaration="TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;" visibility="published">
   </type>
-  <type name="TVorbisFileCloseFunc" declaration="TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;">
+  <type name="TVorbisFileCloseFunc" declaration="TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;" visibility="published">
   </type>
-  <type name="TVorbisFileTellFunc" declaration="TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;">
+  <type name="TVorbisFileTellFunc" declaration="TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;" visibility="published">
   </type>
-  <type name="Pov_callbacks" declaration="Pov_callbacks = ^Tov_callbacks;">
+  <type name="Pov_callbacks" declaration="Pov_callbacks = ^Tov_callbacks;" visibility="published">
   </type>
-  <type name="POggVorbis_File" declaration="POggVorbis_File = ^TOggVorbis_File;">
+  <type name="POggVorbis_File" declaration="POggVorbis_File = ^TOggVorbis_File;" visibility="published">
   </type>
-  <structure name="Tov_callbacks" name_with_generic="Tov_callbacks" type="record">
-    <variable name="read_func" declaration="read_func: TVorbisFileReadFunc;">
+  <structure name="Tov_callbacks" name_with_generic="Tov_callbacks" type="record" visibility="published">
+    <variable name="read_func" declaration="read_func: TVorbisFileReadFunc;" visibility="public">
     </variable>
-    <variable name="seek_func" declaration="seek_func: TVorbisFileSeekFunc;">
+    <variable name="seek_func" declaration="seek_func: TVorbisFileSeekFunc;" visibility="public">
     </variable>
-    <variable name="close_func" declaration="close_func: TVorbisFileCloseFunc;">
+    <variable name="close_func" declaration="close_func: TVorbisFileCloseFunc;" visibility="public">
     </variable>
-    <variable name="tell_func" declaration="tell_func: TVorbisFileTellFunc;">
+    <variable name="tell_func" declaration="tell_func: TVorbisFileTellFunc;" visibility="public">
     </variable>
   </structure>
-  <structure name="TOggVorbis_File" name_with_generic="TOggVorbis_File" type="record">
-    <variable name="datasource" declaration="datasource: Pointer;">
+  <structure name="TOggVorbis_File" name_with_generic="TOggVorbis_File" type="record" visibility="published">
+    <variable name="datasource" declaration="datasource: Pointer;" visibility="public">
     </variable>
-    <variable name="seekable" declaration="seekable: Cint;">
+    <variable name="seekable" declaration="seekable: Cint;" visibility="public">
       <description><detailed>* Pointer to a FILE *, etc. *</detailed></description>
     </variable>
-    <variable name="offset" declaration="offset: Int64;">
+    <variable name="offset" declaration="offset: Int64;" visibility="public">
     </variable>
-    <variable name="_end" declaration="_end: Int64;">
+    <variable name="_end" declaration="_end: Int64;" visibility="public">
     </variable>
-    <variable name="oy" declaration="oy: Togg_sync_state;">
+    <variable name="oy" declaration="oy: Togg_sync_state;" visibility="public">
     </variable>
-    <variable name="links" declaration="links: Cint;">
+    <variable name="links" declaration="links: Cint;" visibility="public">
     </variable>
-    <variable name="offsets" declaration="offsets: PInt64;">
+    <variable name="offsets" declaration="offsets: PInt64;" visibility="public">
     </variable>
-    <variable name="dataoffsets" declaration="dataoffsets: PInt64;">
+    <variable name="dataoffsets" declaration="dataoffsets: PInt64;" visibility="public">
     </variable>
-    <variable name="serialnos" declaration="serialnos: PCLong;">
+    <variable name="serialnos" declaration="serialnos: PCLong;" visibility="public">
     </variable>
-    <variable name="pcmlengths" declaration="pcmlengths: PInt64;">
+    <variable name="pcmlengths" declaration="pcmlengths: PInt64;" visibility="public">
     </variable>
-    <variable name="vi" declaration="vi: Pvorbis_info;">
+    <variable name="vi" declaration="vi: Pvorbis_info;" visibility="public">
       <description><detailed>* overloaded to maintain binary compatability; x2 size, stores both beginning and end values *</detailed></description>
     </variable>
-    <variable name="vc" declaration="vc: Pvorbis_comment;">
+    <variable name="vc" declaration="vc: Pvorbis_comment;" visibility="public">
     </variable>
-    <variable name="pcm_offset" declaration="pcm_offset: Int64;">
+    <variable name="pcm_offset" declaration="pcm_offset: Int64;" visibility="public">
       <description><detailed>* Decoding working state local storage *</detailed></description>
     </variable>
-    <variable name="ready_state" declaration="ready_state: CInt;">
+    <variable name="ready_state" declaration="ready_state: CInt;" visibility="public">
     </variable>
-    <variable name="current_serialno" declaration="current_serialno: Clong;">
+    <variable name="current_serialno" declaration="current_serialno: Clong;" visibility="public">
     </variable>
-    <variable name="current_link" declaration="current_link: CInt;">
+    <variable name="current_link" declaration="current_link: CInt;" visibility="public">
     </variable>
-    <variable name="bittrack" declaration="bittrack: double;">
+    <variable name="bittrack" declaration="bittrack: double;" visibility="public">
     </variable>
-    <variable name="samptrack" declaration="samptrack: double;">
+    <variable name="samptrack" declaration="samptrack: double;" visibility="public">
     </variable>
-    <variable name="os" declaration="os: Togg_stream_state;">
+    <variable name="os" declaration="os: Togg_stream_state;" visibility="public">
     </variable>
-    <variable name="vd" declaration="vd: Tvorbis_dsp_state;">
+    <variable name="vd" declaration="vd: Tvorbis_dsp_state;" visibility="public">
       <description><detailed>* take physical pages, weld into a logical stream of packets *</detailed></description>
     </variable>
-    <variable name="vb" declaration="vb: Tvorbis_block;">
+    <variable name="vb" declaration="vb: Tvorbis_block;" visibility="public">
       <description><detailed>* central working state for the packet-&gt;PCM decoder *</detailed></description>
     </variable>
-    <variable name="callbacks" declaration="callbacks: Tov_callbacks;">
+    <variable name="callbacks" declaration="callbacks: Tov_callbacks;" visibility="public">
       <description><detailed>* local working space for packet-&gt;PCM decode *</detailed></description>
     </variable>
   </structure>

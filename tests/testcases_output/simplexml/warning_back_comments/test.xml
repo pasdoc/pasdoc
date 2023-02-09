@@ -1,18 +1,18 @@
 <unit name="warning_back_comments.pas">
-  <variable name="v1" declaration="v1: integer;">
+  <variable name="v1" declaration="v1: integer;" visibility="published">
     <description><detailed>this is v2, v3</detailed></description>
   </variable>
-  <variable name="v2" declaration="v2: integer;">
+  <variable name="v2" declaration="v2: integer;" visibility="published">
     <description><detailed>this is v2, v3</detailed></description>
   </variable>
-  <variable name="v3" declaration="v3: integer;">
+  <variable name="v3" declaration="v3: integer;" visibility="published">
     <description><detailed>this is v2, v3</detailed></description>
   </variable>
-  <type name="MyEnum" declaration="MyEnum = (...);">
-    <constant name="me1" declaration="me1">
+  <type name="MyEnum" declaration="MyEnum = (...);" visibility="published">
+    <constant name="me1" declaration="me1" visibility="published">
       <description><detailed>this is me1</detailed></description>
     </constant>
-    <constant name="me2" declaration="me2">
+    <constant name="me2" declaration="me2" visibility="published">
       <description><detailed>this is me2</detailed></description>
     </constant>
   </type>

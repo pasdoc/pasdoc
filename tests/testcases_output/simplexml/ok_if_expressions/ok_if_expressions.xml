@@ -1,27 +1,27 @@
 <unit name="ok_if_expressions.pas">
   <description><detailed>Testcase for various conditional directives, primarily $if and $elseif.</detailed></description>
-  <routine name="Windows_IFDEF" type="procedure" declaration="procedure Windows_IFDEF;">
+  <routine name="Windows_IFDEF" type="procedure" declaration="procedure Windows_IFDEF;" visibility="published">
   </routine>
-  <routine name="Windows_IFDEF_ELSE" type="procedure" declaration="procedure Windows_IFDEF_ELSE;">
+  <routine name="Windows_IFDEF_ELSE" type="procedure" declaration="procedure Windows_IFDEF_ELSE;" visibility="published">
   </routine>
-  <routine name="Windows_IF" type="procedure" declaration="procedure Windows_IF;">
+  <routine name="Windows_IF" type="procedure" declaration="procedure Windows_IF;" visibility="published">
   </routine>
-  <routine name="Windows_IF_DEFINED_ALT" type="procedure" declaration="procedure Windows_IF_DEFINED_ALT;">
+  <routine name="Windows_IF_DEFINED_ALT" type="procedure" declaration="procedure Windows_IF_DEFINED_ALT;" visibility="published">
   </routine>
-  <routine name="OptionR_IF" type="procedure" declaration="procedure OptionR_IF;">
+  <routine name="OptionR_IF" type="procedure" declaration="procedure OptionR_IF;" visibility="published">
   </routine>
-  <routine name="True_IF" type="procedure" declaration="procedure True_IF;">
+  <routine name="True_IF" type="procedure" declaration="procedure True_IF;" visibility="published">
   </routine>
-  <routine name="SizeOf_IF" type="procedure" declaration="procedure SizeOf_IF;">
+  <routine name="SizeOf_IF" type="procedure" declaration="procedure SizeOf_IF;" visibility="published">
   </routine>
-  <routine name="Declared_IF" type="procedure" declaration="procedure Declared_IF;">
+  <routine name="Declared_IF" type="procedure" declaration="procedure Declared_IF;" visibility="published">
   </routine>
-  <routine name="WindowsAsUnix_IF_EQUALS" type="procedure" declaration="procedure WindowsAsUnix_IF_EQUALS;">
+  <routine name="WindowsAsUnix_IF_EQUALS" type="procedure" declaration="procedure WindowsAsUnix_IF_EQUALS;" visibility="published">
   </routine>
-  <routine name="POSIXAsUnix_IF_EQUALS" type="procedure" declaration="procedure POSIXAsUnix_IF_EQUALS;">
+  <routine name="POSIXAsUnix_IF_EQUALS" type="procedure" declaration="procedure POSIXAsUnix_IF_EQUALS;" visibility="published">
   </routine>
-  <routine name="FpcAndUnix_IF_2" type="procedure" declaration="procedure FpcAndUnix_IF_2;">
+  <routine name="FpcAndUnix_IF_2" type="procedure" declaration="procedure FpcAndUnix_IF_2;" visibility="published">
   </routine>
-  <routine name="Always" type="procedure" declaration="procedure Always;">
+  <routine name="Always" type="procedure" declaration="procedure Always;" visibility="published">
   </routine>
 </unit>

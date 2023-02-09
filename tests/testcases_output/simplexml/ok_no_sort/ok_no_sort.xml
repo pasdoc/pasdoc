@@ -1,24 +1,24 @@
 <unit name="ok_no_sort.pas">
-  <type name="TMyEnum" declaration="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>Enum values are not sorted</detailed></description>
-    <constant name="meZZZ" declaration="meZZZ">
+    <constant name="meZZZ" declaration="meZZZ" visibility="published">
     </constant>
-    <constant name="meAAA" declaration="meAAA">
+    <constant name="meAAA" declaration="meAAA" visibility="published">
     </constant>
   </type>
-  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
     <description><detailed>Record fields are not sorted</detailed></description>
-    <variable name="ZZZ" declaration="ZZZ: Integer;">
+    <variable name="ZZZ" declaration="ZZZ: Integer;" visibility="public">
     </variable>
-    <variable name="AAA" declaration="AAA: Integer;">
+    <variable name="AAA" declaration="AAA: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>Class fields are sorted</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="AAA" declaration="AAA: Integer;">
+    <variable name="AAA" declaration="AAA: Integer;" visibility="public">
     </variable>
-    <variable name="ZZZ" declaration="ZZZ: Integer;">
+    <variable name="ZZZ" declaration="ZZZ: Integer;" visibility="public">
     </variable>
   </structure>
 </unit>

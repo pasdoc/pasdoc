@@ -1,5 +1,5 @@
 <unit name="ok_parse_impl_back_comments.pas">
   <description><detailed>Parse implementation section. Separate test to check how that backcomments are handled correctly. Must be tested with --implementation-comments=*any* and --auto-back-comments</detailed></description>
-  <variable name="V" declaration="V: Byte;">
+  <variable name="V" declaration="V: Byte;" visibility="published">
   </variable>
 </unit>

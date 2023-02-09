@@ -1,23 +1,23 @@
 <unit name="ok_deprecated_tag.pas">
   <description><abstract>Test @deprecated tag.</abstract><detailed> Everything in this unit is deprecated. Even this whole unit itself. </detailed></description>
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
+  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
   </routine>
-  <constant name="MyConst" declaration="MyConst = 1;">
+  <constant name="MyConst" declaration="MyConst = 1;" visibility="published">
   </constant>
-  <variable name="MyVar" declaration="MyVar: Integer;">
+  <variable name="MyVar" declaration="MyVar: Integer;" visibility="published">
   </variable>
-  <type name="TMyType" declaration="TMyType = Integer;">
+  <type name="TMyType" declaration="TMyType = Integer;" visibility="published">
     <description><detailed> Normal type deprecated.</detailed></description>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed> Deprecated class.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethodLibrary" type="procedure" declaration="procedure MyMethodLibrary;">
+    <routine name="MyMethodLibrary" type="procedure" declaration="procedure MyMethodLibrary;" visibility="public">
     </routine>
-    <variable name="MyField" declaration="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
       <description><detailed>Deprecated field. </detailed></description>
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
       <description><detailed>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</detailed></description>
     </property>
   </structure>

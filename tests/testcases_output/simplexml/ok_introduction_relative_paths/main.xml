@@ -1,8 +1,8 @@
 <unit name="introduction_relative_paths/pas/main.pas">
-  <type name="SomeType" declaration="SomeType = integer;">
+  <type name="SomeType" declaration="SomeType = integer;" visibility="published">
     <description><detailed>SomeType description.</detailed></description>
   </type>
-  <structure name="SomeClass" name_with_generic="SomeClass" type="class">
+  <structure name="SomeClass" name_with_generic="SomeClass" type="class" visibility="published">
     <description><detailed>SomeClass description. program test;
 
 begin
@@ -10,7 +10,7 @@ begin
 end.
 </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="Field" declaration="Field: integer;">
+    <variable name="Field" declaration="Field: integer;" visibility="public">
       <description><detailed>Field description.</detailed></description>
     </variable>
   </structure>

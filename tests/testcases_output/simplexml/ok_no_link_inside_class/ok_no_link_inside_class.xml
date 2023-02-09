@@ -1,14 +1,14 @@
 <unit name="ok_no_link_inside_class.pas">
-  <routine name="MyGlobalProcedure" type="procedure" declaration="procedure MyGlobalProcedure;">
+  <routine name="MyGlobalProcedure" type="procedure" declaration="procedure MyGlobalProcedure;" visibility="published">
     <description><detailed>This should NOT be linked: <code>MyMethod</code>. This should be linked: TMyClass.MyMethod. This should be linked: MyOtherGlobalProcedure.</detailed></description>
   </routine>
-  <routine name="MyOtherGlobalProcedure" type="procedure" declaration="procedure MyOtherGlobalProcedure;">
+  <routine name="MyOtherGlobalProcedure" type="procedure" declaration="procedure MyOtherGlobalProcedure;" visibility="published">
   </routine>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="public">
     </routine>
-    <routine name="MyOtherMethod" type="procedure" declaration="procedure MyOtherMethod;">
+    <routine name="MyOtherMethod" type="procedure" declaration="procedure MyOtherMethod;" visibility="public">
       <description><detailed>This should be linked: MyMethod. This should be linked: TMyClass.MyMethod. This should be linked: MyGlobalProcedure.</detailed></description>
     </routine>
   </structure>

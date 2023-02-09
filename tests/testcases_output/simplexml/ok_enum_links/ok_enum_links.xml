@@ -1,28 +1,28 @@
 <unit name="ok_enum_links.pas">
-  <routine name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
     <description><detailed>Test of links. TMyEnum, me1, me2, me3. TMyScopedEnum, TMyScopedEnum.mse1, TMyScopedEnum.mse2, TMyScopedEnum.mse3. TMyScopedEnum, TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: mse1, mse2, mse3.</detailed></description>
   </routine>
-  <type name="TMyEnum" declaration="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>My enumerated type description.</detailed></description>
-    <constant name="me1" declaration="me1">
+    <constant name="me1" declaration="me1" visibility="published">
       <description><detailed>My enumerated value 1 description.</detailed></description>
     </constant>
-    <constant name="me2" declaration="me2">
+    <constant name="me2" declaration="me2" visibility="published">
       <description><detailed>My enumerated value 2 description.</detailed></description>
     </constant>
-    <constant name="me3" declaration="me3">
+    <constant name="me3" declaration="me3" visibility="published">
       <description><detailed>My enumerated value 3 description.</detailed></description>
     </constant>
   </type>
-  <type name="TMyScopedEnum" declaration="TMyScopedEnum = (...);">
+  <type name="TMyScopedEnum" declaration="TMyScopedEnum = (...);" visibility="published">
     <description><detailed>My enumerated type description.</detailed></description>
-    <constant name="mse1" declaration="mse1">
+    <constant name="mse1" declaration="mse1" visibility="published">
       <description><detailed>My enumerated value 1 description.</detailed></description>
     </constant>
-    <constant name="mse2" declaration="mse2">
+    <constant name="mse2" declaration="mse2" visibility="published">
       <description><detailed>My enumerated value 2 description.</detailed></description>
     </constant>
-    <constant name="mse3" declaration="mse3">
+    <constant name="mse3" declaration="mse3" visibility="published">
       <description><detailed>My enumerated value 3 description.</detailed></description>
     </constant>
   </type>

@@ -1,23 +1,23 @@
 <unit name="ok_link_1_char.pas">
-  <structure name="TMeasurementPointItem" name_with_generic="TMeasurementPointItem" type="class">
+  <structure name="TMeasurementPointItem" name_with_generic="TMeasurementPointItem" type="class" visibility="published">
     <description><abstract><code>TMeasurementPointItem</code> is used to specify the real-world coordinates of a pixel in a bitmap.</abstract></description>
     <ancestor name="TCollectionItem" declaration="TCollectionItem" />
-    <routine name="SetX" type="procedure" declaration="procedure SetX(const Value: double);">
+    <routine name="SetX" type="procedure" declaration="procedure SetX(const Value: double);" visibility="private">
       <description><detailed>See X.</detailed></description>
     </routine>
-    <routine name="SetY" type="procedure" declaration="procedure SetY(const Value: double);">
+    <routine name="SetY" type="procedure" declaration="procedure SetY(const Value: double);" visibility="private">
       <description><detailed>See Y.</detailed></description>
     </routine>
-    <variable name="FX" declaration="FX: double;">
+    <variable name="FX" declaration="FX: double;" visibility="private">
       <description><detailed><code>FX</code>: double; See X.</detailed></description>
     </variable>
-    <variable name="FY" declaration="FY: double;">
+    <variable name="FY" declaration="FY: double;" visibility="private">
       <description><detailed><code>FY</code>: double; See Y.</detailed></description>
     </variable>
-    <property name="X" indexdecl="" type="double" reader="FX" writer="SetX" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="X" indexdecl="" type="double" reader="FX" writer="SetX" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="published">
       <description><detailed><code>X</code> is the X real-world coordinate.</detailed></description>
     </property>
-    <property name="Y" indexdecl="" type="double" reader="FY" writer="SetY" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="Y" indexdecl="" type="double" reader="FY" writer="SetY" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="published">
       <description><detailed><code>Y</code> is the Y real-world coordinate.</detailed></description>
     </property>
   </structure>

@@ -1,10 +1,10 @@
 <unit name="ok_ignore_marker.pas">
-  <routine name="P" type="procedure" declaration="procedure P;">
+  <routine name="P" type="procedure" declaration="procedure P;" visibility="published">
   </routine>
-  <constant name="A" declaration="A = 1;">
+  <constant name="A" declaration="A = 1;" visibility="published">
   </constant>
-  <constant name="B" declaration="B = 1;">
+  <constant name="B" declaration="B = 1;" visibility="published">
   </constant>
-  <type name="T" declaration="T = T;">
+  <type name="T" declaration="T = T;" visibility="published">
   </type>
 </unit>

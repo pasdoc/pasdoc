@@ -148,7 +148,8 @@ begin
   WriteDirectLine(space +
       '<routine name="' + ConvertString(item.name) +
             '" type="' + ConvertString(RoutineTypeToString(item.What)) +
-     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
+     '" declaration="' + ConvertString(item.FullDeclaration) +
+     '" visibility="' + VisToStr(item.visibility) + '">');
     for I := 0 to item.params.count - 1 do
       WriteDirectLine(space +
         '  <param name="' + ConvertString(item.params[i].name) + '">' +
@@ -172,7 +173,8 @@ begin
 '" default_in_class="' + ConvertString(BoolToStr(item.DefaultInClass, true)) +
    '" default_value="' + ConvertString(item.DefaultValue) +
        '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
-        '"   stored="' + ConvertString(item.Stored) +'">');
+        '"   stored="' + ConvertString(item.Stored) +
+      '" visibility="' + VisToStr(item.visibility) +'">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
@@ -182,7 +184,8 @@ procedure TSimpleXMLDocGenerator.WriteConstant(const Item: TPasItem);
 begin
   WriteDirectLine(space +
     '<constant name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
+     '" declaration="' + ConvertString(item.FullDeclaration) +
+      '" visibility="' + VisToStr(item.visibility) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -192,7 +195,8 @@ procedure TSimpleXMLDocGenerator.WriteVariable(const Item: TPasItem);
 begin
   WriteDirectLine(space +
     '<variable name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
+     '" declaration="' + ConvertString(item.FullDeclaration) +
+      '" visibility="' + VisToStr(item.visibility) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -211,7 +215,8 @@ procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) + '">');
+     '" declaration="' + ConvertString(item.FullDeclaration) +
+      '" visibility="' + VisToStr(item.visibility) + '">');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
@@ -240,7 +245,8 @@ begin
   WriteDirectLine(space +
       '<structure name="' + ConvertString(item.name) +
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
-               '" type="' + ConvertString(CioTypeToString(item.MyType)) + '">');
+               '" type="' + ConvertString(CioTypeToString(item.MyType)) +
+         '" visibility="' + VisToStr(item.visibility) + '">');
   Indent;
 
   if item.HasDescription then

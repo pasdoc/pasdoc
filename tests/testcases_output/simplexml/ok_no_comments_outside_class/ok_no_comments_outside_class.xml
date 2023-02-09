@@ -1,22 +1,22 @@
 <unit name="ok_no_comments_outside_class.pas">
   <description><detailed>Test that orthan comments do not break away from the class definition</detailed></description>
-  <type name="TNoDescr1" declaration="TNoDescr1 = byte;">
+  <type name="TNoDescr1" declaration="TNoDescr1 = byte;" visibility="published">
   </type>
-  <type name="TNoDescr2" declaration="TNoDescr2 = byte;">
+  <type name="TNoDescr2" declaration="TNoDescr2 = byte;" visibility="published">
   </type>
-  <type name="TNoDescr3" declaration="TNoDescr3 = byte;">
+  <type name="TNoDescr3" declaration="TNoDescr3 = byte;" visibility="published">
   </type>
-  <structure name="TEmptyCl" name_with_generic="TEmptyCl" type="class">
+  <structure name="TEmptyCl" name_with_generic="TEmptyCl" type="class" visibility="published">
     <description><detailed>Empty class with a comment inside</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TEmptyRec" name_with_generic="TEmptyRec" type="record">
+  <structure name="TEmptyRec" name_with_generic="TEmptyRec" type="record" visibility="published">
     <description><detailed>Empty record with a comment inside</detailed></description>
   </structure>
-  <structure name="TEmptyClWithNested" name_with_generic="TEmptyClWithNested" type="class">
+  <structure name="TEmptyClWithNested" name_with_generic="TEmptyClWithNested" type="class" visibility="published">
     <description><detailed>Empty class with nested empty class with a comment inside</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <structure name="TNestedEmptyCl" name_with_generic="TNestedEmptyCl" type="class">
+    <structure name="TNestedEmptyCl" name_with_generic="TNestedEmptyCl" type="class" visibility="public">
       <ancestor name="TObject" declaration="TObject" />
     </structure>
   </structure>

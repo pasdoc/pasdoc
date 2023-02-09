@@ -1,32 +1,32 @@
 <unit name="ok_value_member_tags.pas">
-  <type name="TMyEnum" declaration="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed> </detailed></description>
-    <constant name="meOne" declaration="meOne">
+    <constant name="meOne" declaration="meOne" visibility="published">
       <description><detailed>Description of meOne follows.</detailed></description>
     </constant>
-    <constant name="meTwo" declaration="meTwo">
+    <constant name="meTwo" declaration="meTwo" visibility="published">
     </constant>
-    <constant name="meThree" declaration="meThree">
+    <constant name="meThree" declaration="meThree" visibility="published">
       <description><detailed>Description of meThree, with some link: TMyClass.MyField.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>  </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="function" declaration="function MyMethod(A: Integer): boolean;">
+    <routine name="MyMethod" type="function" declaration="function MyMethod(A: Integer): boolean;" visibility="public">
       <param name="A">Description of param A.</param>
       <result>Some boolean value.</result>
       <description><detailed>Description of MyMethod here, using parenthesis.  </detailed></description>
     </routine>
-    <variable name="MyField" declaration="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
       <description><detailed>Description of MyField here.</detailed></description>
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
       <description><detailed>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</detailed></description>
     </property>
   </structure>
-  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
-    <variable name="MyField" declaration="MyField: Integer;">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
       <description><detailed>Description of MyField in TMyRecord here.</detailed></description>
     </variable>
   </structure>

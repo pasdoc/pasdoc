@@ -1,12 +1,12 @@
 <unit name="ok_expanding_descriptions.pas">
   <description><abstract>This is a test of tags expanded by TPasItem handlers. Of course with @abstract tag using some recursive tag: See also TestPasMethodTags</abstract><detailed> This whole unit is actually a big test of many things related to pasdoc's @-tags.     See also TMyClass for other test of @cvs tag (with $Date, as an alternative specification of @lastmod)</detailed></description>
-  <routine name="RecursiveTwoAt" type="procedure" declaration="procedure RecursiveTwoAt;">
+  <routine name="RecursiveTwoAt" type="procedure" declaration="procedure RecursiveTwoAt;" visibility="published">
     <description><detailed>aa aaaaa aa aaa <code>SHGetSpecialFolderPath(0, @Path, CSIDL_APPDATA, true)</code> aaaa aaaaaa aaaaaa aaaaaaaaa aaaa At some point, this test caused the bug: final &lt;/code&gt; tag was inserted in converted form (processed with ConvertString) into html output. In effect, there was an opening &lt;code&gt; tag but there was no closing &lt;/code&gt; tag.</detailed></description>
   </routine>
-  <routine name="TestHtmlAndLatexTags" type="procedure" declaration="procedure TestHtmlAndLatexTags;">
+  <routine name="TestHtmlAndLatexTags" type="procedure" declaration="procedure TestHtmlAndLatexTags;" visibility="published">
     <description><detailed>  Note that text inside @html / @latex tags is absolutely not touched by pasdoc. Characters are not escaped (&lt; is *not* changed to &amp;lt; in the html case), @tags are not expanded, @ needs not to be doubled, paragraphs (&lt;p&gt; in the html case) are not inserted.</detailed></description>
   </routine>
-  <routine name="TestLongCode" type="procedure" declaration="procedure TestLongCode;">
+  <routine name="TestLongCode" type="procedure" declaration="procedure TestLongCode;" visibility="published">
     <description><detailed>Note that inside @longcode below I should be able to write singe @ char to get it in the output, no need to double it (like @@). No tags are expanded inside longcode. Also note that paragraphs are not expanded inside longcode (no &lt;p&gt; inside &lt;pre&gt;...&lt;/pre&gt; in html output). Of course html characters are still correctly escaped (&lt; changes to &amp;lt; etc.). 
 
 procedure Foo;
@@ -19,37 +19,37 @@ begin
   CompareMem(@X, @Y);
 end;</detailed></description>
   </routine>
-  <routine name="TestPasMethodTags" type="function" declaration="function TestPasMethodTags(A, B: Integer): string;">
+  <routine name="TestPasMethodTags" type="function" declaration="function TestPasMethodTags(A, B: Integer): string;" visibility="published">
     <param name="A">means sthg about TestRecursiveTag</param>
     <param name="B">also means sthg. <code>Code inside.</code></param>
     <result>You can make tags recursion any level deep : <code>This is a code with a link to TestRecursiveTag</code></result>
     <description><detailed>This is a test of tags expanded by TPasRoutine handlers. Note that all three tags are expanded recursively.     </detailed></description>
   </routine>
-  <routine name="TestRecursiveTag" type="procedure" declaration="procedure TestRecursiveTag;">
+  <routine name="TestRecursiveTag" type="procedure" declaration="procedure TestRecursiveTag;" visibility="published">
     <description><detailed>@code and @returns (and some others) tags are recursive, you can freely put other tags inside. <code>This is link to TestHtmlAndLatexTags.</code> </detailed></description>
   </routine>
-  <routine name="TwoAt" type="procedure" declaration="procedure TwoAt;">
+  <routine name="TwoAt" type="procedure" declaration="procedure TwoAt;" visibility="published">
     <description><detailed>Write two at chars, like this @@, to get one @ in output. E.g. @ link(TSomeClass). E.g. @link(TSomeClass). E.g. @html foobar. E.g. @link .</detailed></description>
   </routine>
-  <structure name="EFoo" name_with_generic="EFoo" type="class">
+  <structure name="EFoo" name_with_generic="EFoo" type="class" visibility="published">
     <ancestor name="Exception" declaration="Exception" />
   </structure>
-  <structure name="EBar" name_with_generic="EBar" type="class">
+  <structure name="EBar" name_with_generic="EBar" type="class" visibility="published">
     <ancestor name="Exception" declaration="Exception" />
   </structure>
-  <structure name="EXyz" name_with_generic="EXyz" type="class">
+  <structure name="EXyz" name_with_generic="EXyz" type="class" visibility="published">
     <ancestor name="Exception" declaration="Exception" />
   </structure>
-  <structure name="TMyClassAncestor" name_with_generic="TMyClassAncestor" type="class">
+  <structure name="TMyClassAncestor" name_with_generic="TMyClassAncestor" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="inheritable" indexdecl="" type="boolean" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="inheritable" indexdecl="" type="boolean" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
       <description><abstract>This comment should be inherited.</abstract></description>
     </property>
   </structure>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>These are some tags that are not allowed to have parameters: name <code>TMyClass</code>, inherited TMyClassAncestor, nil <code>Nil</code>, true <code>True</code>, false <code>False</code>, classname <code>TMyClass</code>. Some of them are valid only within a class, but this is not important for this test. </detailed></description>
     <ancestor name="TMyClassAncestor" declaration="TMyClassAncestor" />
-    <property name="inheritable" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="inheritable" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="published">
       <description><detailed>This is the detailed description.</detailed></description>
     </property>
   </structure>

@@ -1,18 +1,18 @@
 <unit name="ok_enum_explicit_assign.pas">
-  <type name="TEnum1" declaration="TEnum1 = (...);">
-    <constant name="e1One" declaration="e1One">
+  <type name="TEnum1" declaration="TEnum1 = (...);" visibility="published">
+    <constant name="e1One" declaration="e1One" visibility="published">
     </constant>
-    <constant name="e1Two" declaration="e1Two = 12">
+    <constant name="e1Two" declaration="e1Two = 12" visibility="published">
     </constant>
-    <constant name="e1Three" declaration="e1Three">
+    <constant name="e1Three" declaration="e1Three" visibility="published">
     </constant>
-    <constant name="e1Four" declaration="e1Four := 15">
+    <constant name="e1Four" declaration="e1Four := 15" visibility="published">
     </constant>
   </type>
-  <type name="TEnum2" declaration="TEnum2 = (...);">
-    <constant name="e2One" declaration="e2One := 3">
+  <type name="TEnum2" declaration="TEnum2 = (...);" visibility="published">
+    <constant name="e2One" declaration="e2One := 3" visibility="published">
     </constant>
-    <constant name="e2Two" declaration="e2Two := 4">
+    <constant name="e2Two" declaration="e2Two := 4" visibility="published">
     </constant>
   </type>
 </unit>

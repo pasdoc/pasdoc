@@ -7,15 +7,15 @@
 </unorderedlist>
 
 </detailed></description>
-  <structure name="TTest" name_with_generic="TTest" type="class">
+  <structure name="TTest" name_with_generic="TTest" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Create" type="constructor" declaration="class constructor Create;">
+    <routine name="Create" type="constructor" declaration="class constructor Create;" visibility="public">
     </routine>
-    <routine name="end" type="function" declaration="class function end: Integer;">
+    <routine name="end" type="function" declaration="class function end: Integer;" visibility="public">
     </routine>
-    <variable name="begin" declaration="class var begin: Integer;">
+    <variable name="begin" declaration="class var begin: Integer;" visibility="public">
     </variable>
-    <variable name="var" declaration="var: Integer;">
+    <variable name="var" declaration="var: Integer;" visibility="public">
     </variable>
   </structure>
 </unit>

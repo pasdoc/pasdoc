@@ -1,17 +1,17 @@
 <unit name="ok_directive_as_identifier.pas">
   <description><detailed>All calling-convention specifiers must *not* be made links in docs. But &quot;Register&quot; procedure name must be made a link. Yes, the difficulty is here that &quot;register&quot; is once a calling-convention specifier and once a procedure name. This is related to bug submitted to pasdoc-main list [http://sourceforge.net/mailarchive/message.php?msg_id=11397611].</detailed></description>
-  <routine name="Bar" type="procedure" declaration="procedure Bar; cdecl;">
+  <routine name="Bar" type="procedure" declaration="procedure Bar; cdecl;" visibility="published">
   </routine>
-  <routine name="Cdecl" type="procedure" declaration="procedure Cdecl; register;">
+  <routine name="Cdecl" type="procedure" declaration="procedure Cdecl; register;" visibility="published">
   </routine>
-  <routine name="Foo" type="procedure" declaration="procedure Foo; register;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo; register;" visibility="published">
   </routine>
-  <routine name="Foo1" type="procedure" declaration="procedure Foo1(const S: string = 'register'; MyClass: TMyClass);">
+  <routine name="Foo1" type="procedure" declaration="procedure Foo1(const S: string = 'register'; MyClass: TMyClass);" visibility="published">
     <description><detailed>Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it: Note that link to TMyClass should be correctly made. 'register' should be displayed as a string, of course, and not linked.</detailed></description>
   </routine>
-  <routine name="Register" type="procedure" declaration="procedure Register; register;">
+  <routine name="Register" type="procedure" declaration="procedure Register; register;" visibility="published">
   </routine>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
 </unit>

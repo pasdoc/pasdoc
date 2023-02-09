@@ -1,16 +1,16 @@
 <unit name="ok_param_raises_at_property.pas">
-  <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer);">
+  <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer);" visibility="published">
     <param name="A">This is some parameter.</param>
     <description><detailed> </detailed></description>
   </routine>
-  <structure name="TMyException" name_with_generic="TMyException" type="class">
+  <structure name="TMyException" name_with_generic="TMyException" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <property name="Bar" indexdecl="" type="Integer" reader="FBar" writer="SetBar" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="Bar" indexdecl="" type="Integer" reader="FBar" writer="SetBar" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="Items" indexdecl="[constIndex:Integer]" type="string" reader="GetItems" writer="SetItems" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="Items" indexdecl="[constIndex:Integer]" type="string" reader="GetItems" writer="SetItems" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
   </structure>
 </unit>

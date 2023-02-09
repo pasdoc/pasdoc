@@ -1,49 +1,49 @@
 <unit name="ok_record_case_parsing.pas">
-  <structure name="TRec1" name_with_generic="TRec1" type="record">
-    <variable name="A" declaration="A: Integer">
+  <structure name="TRec1" name_with_generic="TRec1" type="record" visibility="published">
+    <variable name="A" declaration="A: Integer" visibility="public">
     </variable>
-    <variable name="B" declaration="B: Integer">
-    </variable>
-  </structure>
-  <structure name="TRec2" name_with_generic="TRec2" type="record">
-    <variable name="Field1" declaration="Field1: boolean">
-    </variable>
-    <variable name="A" declaration="A: Integer">
-    </variable>
-    <variable name="B" declaration="B: Integer;">
+    <variable name="B" declaration="B: Integer" visibility="public">
     </variable>
   </structure>
-  <structure name="TRec3" name_with_generic="TRec3" type="record">
-    <variable name="A" declaration="A: Integer;">
+  <structure name="TRec2" name_with_generic="TRec2" type="record" visibility="published">
+    <variable name="Field1" declaration="Field1: boolean" visibility="published">
+    </variable>
+    <variable name="A" declaration="A: Integer" visibility="public">
+    </variable>
+    <variable name="B" declaration="B: Integer;" visibility="public">
+    </variable>
+  </structure>
+  <structure name="TRec3" name_with_generic="TRec3" type="record" visibility="published">
+    <variable name="A" declaration="A: Integer;" visibility="public">
       <description><detailed>Descr of A</detailed></description>
     </variable>
-    <variable name="B" declaration="B: ShortString;">
+    <variable name="B" declaration="B: ShortString;" visibility="public">
       <description><detailed>Descr of B</detailed></description>
     </variable>
-    <variable name="C" declaration="C: Integer">
+    <variable name="C" declaration="C: Integer" visibility="public">
       <description><detailed>Description of C</detailed></description>
     </variable>
-    <variable name="D" declaration="D: Integer;">
+    <variable name="D" declaration="D: Integer;" visibility="public">
       <description><detailed>Descr of D, E, F</detailed></description>
     </variable>
-    <variable name="E" declaration="E: Integer;">
+    <variable name="E" declaration="E: Integer;" visibility="public">
       <description><detailed>Descr of D, E, F</detailed></description>
     </variable>
-    <variable name="F" declaration="F: Integer;">
+    <variable name="F" declaration="F: Integer;" visibility="public">
       <description><detailed>Descr of D, E, F</detailed></description>
     </variable>
-    <variable name="G" declaration="G: ShortString;">
+    <variable name="G" declaration="G: ShortString;" visibility="public">
     </variable>
-    <variable name="H" declaration="H: Integer">
+    <variable name="H" declaration="H: Integer" visibility="public">
       <description><detailed>Descr of H</detailed></description>
     </variable>
   </structure>
-  <structure name="TRec4" name_with_generic="TRec4" type="record">
-    <variable name="A" declaration="A: Integer">
+  <structure name="TRec4" name_with_generic="TRec4" type="record" visibility="published">
+    <variable name="A" declaration="A: Integer" visibility="public">
     </variable>
-    <variable name="B" declaration="B: Integer">
+    <variable name="B" declaration="B: Integer" visibility="public">
     </variable>
-    <variable name="C" declaration="C: Integer">
+    <variable name="C" declaration="C: Integer" visibility="public">
     </variable>
   </structure>
 </unit>

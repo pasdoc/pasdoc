@@ -1,12 +1,12 @@
 <unit name="ok_enum_field_var.pas">
-  <variable name="ApplicationStatus" declaration="ApplicationStatus: (apInitializing, apReady, apClosing, apDestroying);">
+  <variable name="ApplicationStatus" declaration="ApplicationStatus: (apInitializing, apReady, apClosing, apDestroying);" visibility="published">
   </variable>
-  <structure name="TServerConnController" name_with_generic="TServerConnController" type="class">
+  <structure name="TServerConnController" name_with_generic="TServerConnController" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="AutoConnectAction" declaration="AutoConnectAction: (acNone,
                         acConnectOnDisconnect,
                         acLoginOnDisconnect,
-                        acLoginOnConnect);">
+                        acLoginOnConnect);" visibility="public">
     </variable>
   </structure>
 </unit>

@@ -1,53 +1,53 @@
 <unit name="ok_back_comment.pas">
   <description><detailed>Description of unit ok_back_comment.</detailed></description>
-  <routine name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
     <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>
   </routine>
-  <constant name="MyConst" declaration="MyConst = 2;">
+  <constant name="MyConst" declaration="MyConst = 2;" visibility="published">
     <description><detailed>Description of MyConst</detailed></description>
   </constant>
-  <variable name="V" declaration="V: Integer;">
+  <variable name="V" declaration="V: Integer;" visibility="published">
     <description><detailed>Description of V</detailed></description>
   </variable>
-  <variable name="V1" declaration="V1: Integer;">
+  <variable name="V1" declaration="V1: Integer;" visibility="published">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <variable name="V2" declaration="V2: Integer;">
+  <variable name="V2" declaration="V2: Integer;" visibility="published">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <type name="TMyType" declaration="TMyType = Integer;">
+  <type name="TMyType" declaration="TMyType = Integer;" visibility="published">
     <description><detailed>Description of TMyType</detailed></description>
   </type>
-  <type name="TMyEnum" declaration="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>Description of TMyEnum</detailed></description>
-    <constant name="meOne" declaration="meOne">
+    <constant name="meOne" declaration="meOne" visibility="published">
       <description><detailed>Description of meOne</detailed></description>
     </constant>
-    <constant name="meTwo" declaration="meTwo">
+    <constant name="meTwo" declaration="meTwo" visibility="published">
       <description><detailed>Description of meTwo</detailed></description>
     </constant>
-    <constant name="meThree" declaration="meThree">
+    <constant name="meThree" declaration="meThree" visibility="published">
       <description><detailed>Description of meThree</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>Description of TMyClass</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
+    <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="public">
       <description><detailed>Description of MyProc</detailed></description>
     </routine>
-    <variable name="MyField" declaration="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
       <description><detailed>Description of MyField</detailed></description>
     </variable>
-    <property name="MyProp" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="MyProp" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
       <description><detailed>Description of MyProp</detailed></description>
     </property>
   </structure>
-  <structure name="TMyException1" name_with_generic="TMyException1" type="class">
+  <structure name="TMyException1" name_with_generic="TMyException1" type="class" visibility="published">
     <description><detailed>Description of TMyException1</detailed></description>
     <ancestor name="Exception" declaration="Exception" />
   </structure>
-  <structure name="TMyException2" name_with_generic="TMyException2" type="class">
+  <structure name="TMyException2" name_with_generic="TMyException2" type="class" visibility="published">
     <description><detailed>Description of TMyException2</detailed></description>
     <ancestor name="Exception" declaration="Exception" />
   </structure>

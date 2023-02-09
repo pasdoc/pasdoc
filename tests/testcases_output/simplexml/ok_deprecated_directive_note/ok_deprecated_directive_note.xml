@@ -1,35 +1,35 @@
 <unit name="ok_deprecated_directive_note.pas">
   <description><abstract>Test deprecated directive with and without note.</abstract></description>
-  <routine name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';">
+  <routine name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';" visibility="published">
   </routine>
-  <routine name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;">
+  <routine name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;" visibility="published">
   </routine>
-  <routine name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';">
+  <routine name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';" visibility="published">
     <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
   </routine>
-  <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';">
+  <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';" visibility="published">
   </constant>
-  <constant name="TestConstDeprecated2" declaration="TestConstDeprecated2 = 1 deprecated;">
+  <constant name="TestConstDeprecated2" declaration="TestConstDeprecated2 = 1 deprecated;" visibility="published">
   </constant>
-  <structure name="TTestClass" name_with_generic="TTestClass" type="class">
+  <structure name="TTestClass" name_with_generic="TTestClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';">
+    <routine name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';" visibility="public">
     </routine>
-    <routine name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;">
+    <routine name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;" visibility="public">
     </routine>
-    <variable name="TestFieldDeprecated1" declaration="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';">
+    <variable name="TestFieldDeprecated1" declaration="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';" visibility="public">
     </variable>
-    <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;">
+    <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;" visibility="public">
     </variable>
-    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
-    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
   </structure>
-  <structure name="TTestClassDeprecated1" name_with_generic="TTestClassDeprecated1" type="class">
+  <structure name="TTestClassDeprecated1" name_with_generic="TTestClassDeprecated1" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TTestClassDeprecated2" name_with_generic="TTestClassDeprecated2" type="class">
+  <structure name="TTestClassDeprecated2" name_with_generic="TTestClassDeprecated2" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
 </unit>

@@ -1,20 +1,20 @@
 <unit name="warning_value_member_tags.pas">
-  <type name="TMyEnum" declaration="TMyEnum = (...);">
+  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>    This should cause 3 warnings: meOne has two descriptions, meTwo has two descriptions, and meNotExisting does not exist.</detailed></description>
-    <constant name="meOne" declaration="meOne">
+    <constant name="meOne" declaration="meOne" visibility="published">
       <description><detailed>First description of meOne.</detailed></description>
     </constant>
-    <constant name="meTwo" declaration="meTwo">
+    <constant name="meTwo" declaration="meTwo" visibility="published">
       <description><detailed>Second description of meTwo.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>    This should cause 3 warnings: MyField1 has two descriptions, MyField2 has two descriptions, and NotExistsingMember does not exist.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="MyField1" declaration="MyField1: Integer;">
+    <variable name="MyField1" declaration="MyField1: Integer;" visibility="public">
       <description><abstract>Second description of MyField1.</abstract></description>
     </variable>
-    <variable name="MyField2" declaration="MyField2: Integer;">
+    <variable name="MyField2" declaration="MyField2: Integer;" visibility="public">
       <description><detailed>First description of MyField2.</detailed></description>
     </variable>
   </structure>

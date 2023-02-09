@@ -1,5 +1,5 @@
 <unit name="ok_warning_note.pas">
   <description><detailed><italic>Please open your eyes while reading</italic> <italic>Please check Foo for more details</italic> <italic>For more infos see https://www.bing.com/</italic> <bold>test</bold> <bold>hello <italic>world</italic>!</bold> <bold>Does this work? - <bold>Yes.</bold></bold></detailed></description>
-  <routine name="Foo" type="procedure" declaration="procedure Foo;">
+  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
   </routine>
 </unit>

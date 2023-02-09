@@ -1,29 +1,29 @@
 <unit name="ok_nodescription_printing.pas">
   <description><detailed>pasdoc's LaTeX documentation of this unit omitted many things before revision 1.20 of PasDoc_GenLatex.pas. Html docs were ok. I explained why omitting docs for things that don't have any documentation comment is bad in the letter &quot;Fix for LaTeX genetator omitting some things&quot; [http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&amp;forum_id=4647] Now, all identifiers in this unit should be visible in LaTeX documentation (and in html output too, of course).</detailed></description>
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;">
+  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
   </routine>
-  <constant name="MyConst" declaration="MyConst = 9;">
+  <constant name="MyConst" declaration="MyConst = 9;" visibility="published">
   </constant>
-  <variable name="MyVariable" declaration="MyVariable: Integer;">
+  <variable name="MyVariable" declaration="MyVariable: Integer;" visibility="published">
   </variable>
-  <type name="TMySimpleType" declaration="TMySimpleType = Integer;">
+  <type name="TMySimpleType" declaration="TMySimpleType = Integer;" visibility="published">
   </type>
-  <structure name="TClass1" name_with_generic="TClass1" type="class">
+  <structure name="TClass1" name_with_generic="TClass1" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;">
+    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="public">
     </routine>
-    <variable name="MyField" declaration="MyField: Integer;">
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
     </variable>
-    <property name="MyProperty" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+    <property name="MyProperty" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
   </structure>
-  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
   </structure>
-  <structure name="TMyRecord2" name_with_generic="TMyRecord2" type="record">
+  <structure name="TMyRecord2" name_with_generic="TMyRecord2" type="record" visibility="published">
     <description><detailed>This record has a description, but still LaTeX output will not list it in it's summary list (in the &quot;Overview&quot; section). (i.e. before applying my patch)</detailed></description>
   </structure>
-  <structure name="TMyRecord3" name_with_generic="TMyRecord3" type="record">
-    <variable name="MyRecField" declaration="MyRecField: Integer;">
+  <structure name="TMyRecord3" name_with_generic="TMyRecord3" type="record" visibility="published">
+    <variable name="MyRecField" declaration="MyRecField: Integer;" visibility="public">
     </variable>
   </structure>
 </unit>

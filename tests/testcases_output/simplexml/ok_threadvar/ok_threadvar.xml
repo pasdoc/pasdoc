@@ -1,10 +1,10 @@
 <unit name="ok_threadvar.pas">
   <description><detailed>Check parsing of threadvar sections</detailed></description>
-  <variable name="A" declaration="A: Byte;">
+  <variable name="A" declaration="A: Byte;" visibility="published">
   </variable>
-  <structure name="TClass" name_with_generic="TClass" type="class">
+  <structure name="TClass" name_with_generic="TClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
-    <variable name="fPub" declaration="threadvar fPub: Byte;">
+    <variable name="fPub" declaration="threadvar fPub: Byte;" visibility="public">
     </variable>
   </structure>
 </unit>
