@@ -654,7 +654,9 @@ begin
   PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
   PasDoc.AutoBackComments := OptionAutoBackComments.TurnedOn;
   if OptionInfoMergeMode.Value <> '' then
+    {$ifdef FPC} {$push} {$notes off} {$endif} // do not make a note about IndexText not inlined
     PasDoc.InfoMergeType := TInfoMergeType(IndexText(OptionInfoMergeMode.Value, InfoMergeTypeStr));
+    {$ifdef FPC} {$pop} {$endif}
 end;
 
 { ---------------------------------------------------------------------------- }

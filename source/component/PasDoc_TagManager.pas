@@ -1371,7 +1371,9 @@ var
   begin
     // Check for markdown list
     // If parent tag is list, then it's contents of a single item.
+    {$ifdef FPC} {$push} {$notes off} {$endif} // do not make a note about IndexText not inlined
     if (EnclosingTag <> nil) and (IndexText(EnclosingTag.Name, PasDocListTags) <> -1) then
+    {$ifdef FPC} {$pop} {$endif}
       Result := CheckMarkdownListItem(Description, FOffset, TagName, Parameters, OffsetEnd, Dummy)
     // otherwise check for whole list
     else
