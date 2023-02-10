@@ -1,6 +1,6 @@
 <unit name="ok_attributes.pas">
-  <description><detailed>Simple Delphi attributes test, from http://www.malcolmgroves.com/blog/?p=530</detailed></description>
   <structure name="TPerson" name_with_generic="TPerson" type="class" visibility="published">
+    <description><detailed>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <property name="Name" indexdecl="" type="String" reader="FName" writer="FName" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
@@ -10,5 +10,22 @@
   <structure name="IUIContainer" name_with_generic="IUIContainer" type="interface" visibility="published">
     <description><detailed>Test that GUIDs are handled gracefully</detailed></description>
     <ancestor name="IInterface" declaration="IInterface" />
+  </structure>
+  <structure name="TMyClass1" name_with_generic="TMyClass1" type="class" visibility="published">
+    <description><detailed>Tests from https://github.com/pasdoc/pasdoc/issues/179</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="FLockCount" declaration="FLockCount: Integer;" visibility="public">
+    </variable>
+  </structure>
+  <structure name="TMyClass2" name_with_generic="TMyClass2" type="class" visibility="published">
+    <ancestor name="TObject" declaration="TObject" />
+    <variable name="FLockCount" declaration="var FLockCount: Integer;" visibility="public">
+    </variable>
+  </structure>
+  <structure name="IEnumerator" name_with_generic="IEnumerator&lt;T&gt;" type="interface" visibility="published">
+    <routine name="GetCurrent" type="function" declaration="function GetCurrent: T;" visibility="public">
+    </routine>
+    <property name="Current" indexdecl="" type="T" reader="GetCurrent" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    </property>
   </structure>
 </unit>

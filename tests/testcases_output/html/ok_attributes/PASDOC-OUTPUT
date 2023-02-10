@@ -1,5 +1,6 @@
 Info[1]:    Starting Source File Parsing ...
 Info[2]:    Now parsing file ok_attributes.pas...
+Warning[1]: Class or interface refers to itself as ancestor, ignoring to avoid infinite loops when traversing hierarchy: IEnumerator
 Info[2]:    ... 1 Source File(s) parsed
 Info[2]:    Creating links ...
 Info[2]:    ...  links created
@@ -10,4 +11,8 @@ Info[2]:    Writing Docs for unit "ok_attributes"
 Warning[1]: Could not resolve link "NonEmptyString" (from description of "ok_attributes.TPerson.Name")
 Warning[1]: Could not resolve link "MinimumInteger" (from description of "ok_attributes.TPerson.Age")
 Warning[1]: Could not resolve link "MaximumInteger" (from description of "ok_attributes.TPerson.Age")
+Warning[1]: Could not resolve link "Volatile" (from description of "ok_attributes.TMyClass1")
+Warning[1]: Could not resolve link "Volatile" (from description of "ok_attributes.TMyClass2.FLockCount")
+Warning[1]: Could not resolve link "HPPGEN" (from description of "ok_attributes.IEnumerator.GetCurrent")
+Warning[1]: Could not resolve link "HPPGEN" (from description of "ok_attributes.IEnumerator.Current")
 Info[1]:    Done

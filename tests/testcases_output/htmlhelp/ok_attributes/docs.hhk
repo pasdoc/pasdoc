@@ -4,8 +4,36 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="IEnumerator">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Current">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#Current">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="GetCurrent">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#GetCurrent">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="IUIContainer">
 <param name="Local" value="ok_attributes.IUIContainer.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass1">
+<param name="Local" value="ok_attributes.TMyClass1.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass1.html#FLockCount">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass2">
+<param name="Local" value="ok_attributes.TMyClass2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass2.html#FLockCount">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="TPerson">

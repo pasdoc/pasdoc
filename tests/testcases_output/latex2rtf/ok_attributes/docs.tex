@@ -59,19 +59,20 @@
 % special variable used for calculating some widths.
 \newlength{\tmplength}
 \chapter{Unit ok{\_}attributes}
-\section{Description}
-Simple Delphi attributes test, from http://www.malcolmgroves.com/blog/?p=530
 \section{Overview}
 \begin{description}
 \item[\texttt{\begin{ttfamily}TPerson\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}IUIContainer\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass2\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IEnumerator\end{ttfamily} Interface}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TPerson Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TPerson {$>$} TObject
-%%%%Description
-\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{Name}\hspace*{\fill}
 
 \begin{list}{}{
@@ -116,4 +117,98 @@ public property Age : Integer read FAge write FAge;\end{ttfamily}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 IUIContainer {$>$} IInterface
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-Test that GUIDs are handled gracefully\end{document}
+Test that GUIDs are handled gracefully\subsection*{TMyClass1 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass1 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Tests from https://github.com/pasdoc/pasdoc/issues/179\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{FLockCount}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public FLockCount: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TMyClass2 Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass2 {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{FLockCount}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public var FLockCount: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{IEnumerator Interface}
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Current}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Current: T read GetCurrent;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{GetCurrent}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function GetCurrent: T;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

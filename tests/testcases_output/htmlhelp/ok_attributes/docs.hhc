@@ -44,6 +44,64 @@
 </object>
 <ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass1">
+<param name="Local" value="ok_attributes.TMyClass1.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TMyClass1.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass1.html#FLockCount">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass2">
+<param name="Local" value="ok_attributes.TMyClass2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TMyClass2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass2.html#FLockCount">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="IEnumerator">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Current">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#Current">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="GetCurrent">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#GetCurrent">
+</object>
+</ul>
+</ul>
 </ul>
 </ul>
 </ul>
@@ -57,10 +115,68 @@
 </object>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="IEnumerator">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Current">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#Current">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="GetCurrent">
+<param name="Local" value="ok_attributes.IEnumerator.generic.html#GetCurrent">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="IUIContainer">
 <param name="Local" value="ok_attributes.IUIContainer.html">
 </object>
 <ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass1">
+<param name="Local" value="ok_attributes.TMyClass1.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TMyClass1.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass1.html#FLockCount">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass2">
+<param name="Local" value="ok_attributes.TMyClass2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TMyClass2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLockCount">
+<param name="Local" value="ok_attributes.TMyClass2.html#FLockCount">
+</object>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TPerson">

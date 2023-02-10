@@ -83,12 +83,13 @@
 \chapter{Unit ok{\_}attributes}
 \label{ok_attributes}
 \index{ok{\_}attributes}
-\section{Description}
-Simple Delphi attributes test, from \href{http://www.malcolmgroves.com/blog/?p=530}{http://www.malcolmgroves.com/blog/?p=530}
 \section{Overview}
 \begin{description}
 \item[\texttt{\begin{ttfamily}TPerson\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}IUIContainer\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass2\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IEnumerator\end{ttfamily} Interface}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf
@@ -100,8 +101,8 @@ Simple Delphi attributes test, from \href{http://www.malcolmgroves.com/blog/?p=5
 \index{TPerson}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TPerson {$>$} TObject
-%%%%Description
-\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Delphi attributes test from \href{http://www.malcolmgroves.com/blog/?p=530}{http://www.malcolmgroves.com/blog/?p=530}\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Name}}
 \setlength{\itemindent}{0cm}
@@ -151,4 +152,137 @@ public property Age : Integer read FAge write FAge;\end{ttfamily}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 IUIContainer {$>$} IInterface
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-Test that GUIDs are handled gracefully\end{document}
+Test that GUIDs are handled gracefully\ifpdf
+\subsection*{\large{\textbf{TMyClass1 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass1 Class}
+\fi
+\label{ok_attributes.TMyClass1}
+\index{TMyClass1}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass1 {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Tests from \href{https://github.com/pasdoc/pasdoc/issues/179}{https://github.com/pasdoc/pasdoc/issues/179}\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{FLockCount}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_attributes.TMyClass1-FLockCount}
+\index{FLockCount}
+\item[\textbf{FLockCount}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public FLockCount: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass2 Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass2 Class}
+\fi
+\label{ok_attributes.TMyClass2}
+\index{TMyClass2}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass2 {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{FLockCount}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_attributes.TMyClass2-FLockCount}
+\index{FLockCount}
+\item[\textbf{FLockCount}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public var FLockCount: Integer;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{IEnumerator Interface}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{IEnumerator Interface}
+\fi
+\label{ok_attributes.IEnumerator}
+\index{IEnumerator}
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Current}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_attributes.IEnumerator-Current}
+\index{Current}
+\item[\textbf{Current}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public property Current: T read GetCurrent;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{GetCurrent}\hspace*{\fill}
+
+\label{ok_attributes.IEnumerator-GetCurrent}
+\index{GetCurrent}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public function GetCurrent: T;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}
