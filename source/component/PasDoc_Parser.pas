@@ -3722,7 +3722,35 @@ begin
               ParseGenericTypeIdentifierList(T, AncestorFullDeclaration) else
               Scanner.UnGetToken(t);
 
-            ACio.Ancestors.Add(TStringPair.Create(AncestorName, AncestorFullDeclaration));
+            { This check secures from later problems (possible infinite loops when processing)
+              in case of tricky ancestors, like:
+
+              - "TMyClass = class(TMyClass)" (invalid code) or
+              - "TMyClass<T> = class(TMyClass)" (valid code as far as I know in Delphi,
+                and it's an unrelated error that for now we would consider it a loop at "TMyClass",
+                instead of treating generic and non-generic TMyClass as distinct).
+
+              PasDoc processes ancestors tree in a few places (like
+              TPasCio.FindItemInAncestors ,
+              TPasCio.GetInheritedItemDescriptions ,
+              WriteHierarchy in TGenericHTMLDocGenerator.WriteCIO ) and adding everywhere
+              a test to secure from it (e.g. check for maximum recursion depth)
+              would complicate that code a lot.
+              It is simpler to just avoiding creating an inheritance tree with loops here.
+
+              TODO: This doesn't secure from non-trivial loops, like
+
+                TMyClass2 = class;
+                TMyClass1 = class(TMyClass2);
+                TMyClass2 = class(TMyClass1);
+            }
+            if AncestorName = ACio.Name then
+              DoMessage(1, pmtWarning,
+                'Class or interface refers to itself as ancestor, ignoring to avoid infinite loops when traversing hierarchy: %s', [
+                ACio.Name
+              ])
+            else
+              ACio.Ancestors.Add(TStringPair.Create(AncestorName, AncestorFullDeclaration));
           end
           else begin
             if (t.IsSymbol(SYM_COMMA)) then

@@ -1,0 +1,13 @@
+<unit name="ok_recursive_ancestor.pas">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass&lt;T&gt;" type="class" visibility="published">
+    <description><detailed>Valid Pascal, FPC compiles this (just fix first TMyClass, e.g. to not declare explicit ancestor). Generic and non-generic TMyClass are different types.</detailed></description>
+  </structure>
+  <structure name="TMyInterface" name_with_generic="TMyInterface" type="interface" visibility="published">
+    <description><detailed>Invalid Pascal, such relation is not allowed, FPC correctly reports: Error: Forward declaration of class &quot;TMyInterface&quot; must be resolved here to use the class as ancestor</detailed></description>
+  </structure>
+  <structure name="TMyInterface" name_with_generic="TMyInterface&lt;T&gt;" type="interface" visibility="published">
+    <description><detailed>Valid Pascal, FPC compiles this (just fix first TMyInterface, e.g. to not declare explicit ancestor). Generic and non-generic TMyClass are different types.</detailed></description>
+  </structure>
+</unit>

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_recursive_ancestor.TMyClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_recursive_ancestor Unit">
+<param name="Local" value="ok_recursive_ancestor.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_recursive_ancestor Unit">
+<param name="Local" value="ok_recursive_ancestor.TMyClass.generic.html">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyInterface">
+<param name="Local" value="ok_recursive_ancestor.TMyInterface.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_recursive_ancestor Unit">
+<param name="Local" value="ok_recursive_ancestor.TMyInterface.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ok_recursive_ancestor Unit">
+<param name="Local" value="ok_recursive_ancestor.TMyInterface.generic.html">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyInterface">
+<param name="Local" value="ok_recursive_ancestor.TMyInterface.generic.html">
+</object>
+</ul>
+</body></html>
