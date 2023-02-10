@@ -3789,20 +3789,21 @@ begin
             end;
         end;
       end;
-      t := GetNextToken;
 
       if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
           (ACio.ClassDirective = CT_HELPER) then
       begin
+        t := PeekNextToken;
         if t.IsKeyWord(KEY_FOR) then
         begin
+          Scanner.ConsumeToken;
           FreeAndNil(t);
+
           t := GetNextToken;
           if t.MyType = TOK_IDENTIFIER then
           begin
             ACio.HelperTypeIdentifier := t.Data;
             FreeAndNil(t);
-            t := GetNextToken;
           end
           else
             DoError('Identifier expected but %s found', ['''' + t.Data + '''']);
@@ -3810,26 +3811,6 @@ begin
         else
           DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
       end;
-
-      if (t.IsSymbol(SYM_LEFT_BRACKET)) then
-      begin
-        FreeAndNil(t);
-
-        { for the time being, we throw away the ID itself }
-        t := GetNextToken;
-        if (t.MyType <> TOK_STRING) and (t.MyType <> TOK_IDENTIFIER) then
-          DoError('Literal String or identifier as interface ID expected', [])
-        else begin
-          CurrentAttributes.Add(TStringPair.Create('GUID', '[' + t.Data + ']'));
-        end;
-        FreeAndNil(t);
-
-        t := GetNextToken;
-        CheckToken(T, SYM_RIGHT_BRACKET);
-        FreeAndNil(t);
-      end
-      else
-        Scanner.UnGetToken(t);
 
       if ACio.MyType in [ CIO_CLASS, CIO_PACKEDCLASS ] then
       begin
