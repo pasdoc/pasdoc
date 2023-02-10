@@ -20,17 +20,17 @@
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyList">
-<param name="Local" value="ok_generic.TMyList.html">
+<param name="Local" value="ok_generic.TMyList.generic.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Methods">
-<param name="Local" value="ok_generic.TMyList.html#@Methods">
+<param name="Local" value="ok_generic.TMyList.generic.html#@Methods">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Blah">
-<param name="Local" value="ok_generic.TMyList.html#Blah">
+<param name="Local" value="ok_generic.TMyList.generic.html#Blah">
 </object>
 </ul>
 </ul>
@@ -88,17 +88,17 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyNewGeneric">
-<param name="Local" value="ok_generic.TMyNewGeneric.html">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Methods">
-<param name="Local" value="ok_generic.TMyNewGeneric.html#@Methods">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html#@Methods">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Blah">
-<param name="Local" value="ok_generic.TMyNewGeneric.html#Blah">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html#Blah">
 </object>
 </ul>
 </ul>
@@ -116,67 +116,67 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TEnumerator">
-<param name="Local" value="ok_generic.TEnumerator.html">
+<param name="Local" value="ok_generic.TEnumerator.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TEnumerable">
-<param name="Local" value="ok_generic.TEnumerable.html">
+<param name="Local" value="ok_generic.TEnumerable.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TList">
-<param name="Local" value="ok_generic.TList.html">
+<param name="Local" value="ok_generic.TList.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TQueue">
-<param name="Local" value="ok_generic.TQueue.html">
+<param name="Local" value="ok_generic.TQueue.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TStack">
-<param name="Local" value="ok_generic.TStack.html">
+<param name="Local" value="ok_generic.TStack.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TPair">
-<param name="Local" value="ok_generic.TPair.html">
+<param name="Local" value="ok_generic.TPair.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TDictionary">
-<param name="Local" value="ok_generic.TDictionary.html">
+<param name="Local" value="ok_generic.TDictionary.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectList">
-<param name="Local" value="ok_generic.TObjectList.html">
+<param name="Local" value="ok_generic.TObjectList.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectQueue">
-<param name="Local" value="ok_generic.TObjectQueue.html">
+<param name="Local" value="ok_generic.TObjectQueue.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectStack">
-<param name="Local" value="ok_generic.TObjectStack.html">
+<param name="Local" value="ok_generic.TObjectStack.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectDictionary">
-<param name="Local" value="ok_generic.TObjectDictionary.html">
+<param name="Local" value="ok_generic.TObjectDictionary.generic.html">
 </object>
 <ul>
 </ul>
@@ -216,19 +216,19 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TDictionary">
-<param name="Local" value="ok_generic.TDictionary.html">
+<param name="Local" value="ok_generic.TDictionary.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TEnumerable">
-<param name="Local" value="ok_generic.TEnumerable.html">
+<param name="Local" value="ok_generic.TEnumerable.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TEnumerator">
-<param name="Local" value="ok_generic.TEnumerator.html">
+<param name="Local" value="ok_generic.TEnumerator.generic.html">
 </object>
 <ul>
 </ul>
@@ -274,7 +274,7 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TList">
-<param name="Local" value="ok_generic.TList.html">
+<param name="Local" value="ok_generic.TList.generic.html">
 </object>
 <ul>
 </ul>
@@ -286,33 +286,33 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyList">
-<param name="Local" value="ok_generic.TMyList.html">
+<param name="Local" value="ok_generic.TMyList.generic.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Methods">
-<param name="Local" value="ok_generic.TMyList.html#@Methods">
+<param name="Local" value="ok_generic.TMyList.generic.html#@Methods">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Blah">
-<param name="Local" value="ok_generic.TMyList.html#Blah">
+<param name="Local" value="ok_generic.TMyList.generic.html#Blah">
 </object>
 </ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyNewGeneric">
-<param name="Local" value="ok_generic.TMyNewGeneric.html">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Methods">
-<param name="Local" value="ok_generic.TMyNewGeneric.html#@Methods">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html#@Methods">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Blah">
-<param name="Local" value="ok_generic.TMyNewGeneric.html#Blah">
+<param name="Local" value="ok_generic.TMyNewGeneric.generic.html#Blah">
 </object>
 </ul>
 </ul>
@@ -324,43 +324,43 @@
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectDictionary">
-<param name="Local" value="ok_generic.TObjectDictionary.html">
+<param name="Local" value="ok_generic.TObjectDictionary.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectList">
-<param name="Local" value="ok_generic.TObjectList.html">
+<param name="Local" value="ok_generic.TObjectList.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectQueue">
-<param name="Local" value="ok_generic.TObjectQueue.html">
+<param name="Local" value="ok_generic.TObjectQueue.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TObjectStack">
-<param name="Local" value="ok_generic.TObjectStack.html">
+<param name="Local" value="ok_generic.TObjectStack.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TPair">
-<param name="Local" value="ok_generic.TPair.html">
+<param name="Local" value="ok_generic.TPair.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TQueue">
-<param name="Local" value="ok_generic.TQueue.html">
+<param name="Local" value="ok_generic.TQueue.generic.html">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TStack">
-<param name="Local" value="ok_generic.TStack.html">
+<param name="Local" value="ok_generic.TStack.generic.html">
 </object>
 <ul>
 </ul>

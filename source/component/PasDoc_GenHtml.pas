@@ -455,6 +455,8 @@ function TGenericHTMLDocGenerator.CreateLink(const Item: TBaseItem): string;
     end;
   end;
 
+var
+  CioQualifiedName: String;
 begin
   Result := '';
 
@@ -470,7 +472,22 @@ begin
       if Item is TPasCio then
       begin
         { it's an object / a class }
-        Result := NewLink(TPasItem(Item).QualifiedName)
+        CioQualifiedName := TPasItem(Item).QualifiedName;
+
+         { If Cio is generic, use a special output filename,
+           because in Pascal generic and non-generic classes are distinct
+           and can exist even in same unit. This is valid:
+
+             TMyClass = class
+             end;
+             TMyClass<T> = class
+             end;
+         }
+         if TPasCio(Item).Name <>
+            TPasCio(Item).NameWithGeneric then
+           CioQualifiedName := CioQualifiedName + '.generic';
+
+        Result := NewLink(CioQualifiedName);
       end else begin
         { it's a constant, a variable, a type or a function / procedure }
         Result := TPasItem(Item).MyUnit.FullLink + '#' + SignatureToHtmlId(Item.Signature)
