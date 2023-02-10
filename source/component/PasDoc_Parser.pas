@@ -2695,6 +2695,8 @@ begin
       so we will free them ourselves. }
     NewItems := TPasItems.Create(Items = nil);
 
+    // allow attributes for fields in classes
+    AttributeIsPossible := true;
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
 
     ItemCollector := TPasFieldVariable.Create;
