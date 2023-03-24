@@ -898,20 +898,34 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
     until IsSemicolon and (Level = 0);
   end;
 
+  function IsParameterIdentifier(Token: TToken): Boolean;
+  begin
+    if Token.MyType = TOK_IDENTIFIER then
+      Result := True
+    else if Token.MyType = TOK_KEYWORD then
+    begin
+      Result := Token.Info.KeyWord in [KEY_STRING, KEY_ARRAY, KEY_SET, KEY_OF, KEY_FILE];
+    end
+    else
+      Result := False;
+  end;
+
   procedure ReadParameters;
   var
     T: TToken;
     Level: Integer;
     IsSemicolon: Boolean;
     ParamsInGroup: Integer;
-    NextTokenIsType: Boolean;
-    IgnoreRemainingIdentifiers: Boolean;
+    TypeNamePartStarted: Boolean;
+    TypeNamePartEnded: Boolean;
     I: Integer;
+    TypeName: String;
   begin
     Level := 0;
     ParamsInGroup := 0;
-    NextTokenIsType := False;
-    IgnoreRemainingIdentifiers := False;
+    TypeNamePartStarted := False;
+    TypeNamePartEnded := False;
+    TypeName := '';
     repeat
       T := Scanner.GetToken;
       try
@@ -930,31 +944,33 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
         if Level > 0 then
         begin
           if T.IsSymbol(SYM_COLON) then
-            NextTokenIsType := True
+            TypeNamePartStarted := True
           else if T.IsSymbol(SYM_EQUAL) then
             // Any identifiers after the equals are NOT parameters
-            IgnoreRemainingIdentifiers := True
-          else if not IgnoreRemainingIdentifiers and ((T.MyType = TOK_IDENTIFIER) or
-                 ((T.MyType = TOK_KEYWORD) and (AnsiLowerCase(T.Data) = 'string'))) then
+            TypeNamePartEnded := True
+          else if (not TypeNamePartEnded) and IsParameterIdentifier(T) then
           begin
-            if NextTokenIsType then
-            begin
-              for I := 0 to ParamsInGroup - 1 do
-                M.ParamTypes.Add(T.Data);
-              ParamsInGroup := 0;
-              NextTokenIsType := False;
-            end
+            if TypeNamePartStarted then
+              TypeName := IfThen(TypeName = '', '', TypeName + ' ') + T.Data
             else
               Inc(ParamsInGroup);
           end
-          else if T.IsSymbol(SYM_SEMICOLON) then
-          begin
-            for I := 0 to ParamsInGroup - 1 do
-              M.ParamTypes.Add('const');
-            ParamsInGroup := 0;
-            NextTokenIsType := False;
-            IgnoreRemainingIdentifiers := False;
-          end;
+          else if T.IsSymbol(SYM_SEMICOLON) or T.IsSymbol(SYM_LEFT_PARENTHESIS)
+            or T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+            TypeNamePartEnded := True;
+        end;
+
+        if TypeNamePartEnded then
+        begin
+          if TypeName = '' then TypeName := 'const';
+
+           for I := 0 to ParamsInGroup - 1 do
+            M.ParamTypes.Add(TypeName);
+
+          TypeName := '';
+          TypeNamePartStarted := False;
+          TypeNamePartEnded := False;
+          ParamsInGroup := 0;
         end;
 
         if T.IsSymbol(SYM_LEFT_PARENTHESIS) then Inc(level);

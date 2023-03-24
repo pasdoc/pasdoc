@@ -2301,7 +2301,8 @@ begin
   NormalizedNameOrSignature := NormalizeSignature(ANameOrSignature);
   Result := TPasRoutine(inherited FindListItem(NormalizedNameOrSignature));
 
-  if not Assigned(Result) then begin
+  if not Assigned(Result) then
+  begin
     // Replace short names with the full signature
     Signature := FShortNameHash.GetString(NormalizedNameOrSignature);
     if Signature <> '' then
@@ -2859,11 +2860,24 @@ begin
 end;
 
 function TPasRoutine.Signature: string;
+var
+  I: Integer;
 begin
+  ParamTypes.QuoteChar := #0;
+  ParamTypes.Delimiter := ',';
+
   if ParamTypes.Count > 0 then
-    Result := Name + '(' + ParamTypes.CommaText + ')'
+    Result := Name + '(' + ParamTypes.DelimitedText + ')'
   else
     Result := Name;
+
+  I := 1;
+  while I <= Length(Result) do begin
+    if Result[I] = ' ' then
+      Result := Copy(Result, 1, I - 1) + Copy(Result, I + 1, Length(Result) - I)
+    else
+      Inc(I);
+  end;
 end;
 
 function TPasRoutine.InheritedItem: TPasItem;
