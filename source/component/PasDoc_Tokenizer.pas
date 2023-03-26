@@ -137,7 +137,8 @@ type
     KEY_VAR,
     KEY_WHILE,
     KEY_WITH,
-    KEY_XOR);
+    KEY_XOR,
+    KEY_OUT);
 
   TStandardDirective = (
     SD_INVALIDSTANDARDDIRECTIVE,
@@ -429,7 +430,7 @@ const
     'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
     'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
     'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
-    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
+    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR', 'OUT');
 
   { Object Pascal directives }
   StandardDirectiveArray:
