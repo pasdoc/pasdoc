@@ -2844,18 +2844,14 @@ begin
 end;
 
 function TPasRoutine.Signature: string;
-var
-  I: Integer;
 begin
   ParamTypes.QuoteChar := #0;
   ParamTypes.Delimiter := ',';
 
   if ParamTypes.Count > 0 then
-    Result := Name + '(' + ParamTypes.DelimitedText + ')'
+    Result := Name + '(' + SRemoveChars(ParamTypes.DelimitedText, [' ']) + ')'
   else
     Result := Name;
-
-  Result := SRemoveChars(Result, [' ']);
 end;
 
 function TPasRoutine.InheritedItem: TPasItem;
