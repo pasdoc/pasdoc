@@ -276,6 +276,7 @@ all_tests_for_current_format ()
   mk_test ok_parameter_default_values ok_parameter_default_values.pas
   mk_test ok_link_tag_overloads ok_link_tag_overloads.pas
   mk_test ok_recursive_ancestor ok_recursive_ancestor.pas
+  mk_test ok_array_parameters ok_array_parameters.pas
 }
 
 # parse params ----------------------------------------

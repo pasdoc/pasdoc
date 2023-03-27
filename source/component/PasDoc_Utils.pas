@@ -298,6 +298,9 @@ function SAppendPart(const s, PartSeparator, NextPart: String): String;
   Returns 0 if not found. }
 function CharsPos(const Chars: TCharSet; const S: String): Integer;
 
+{ Remove all instances of a character in Chars from a string. }
+function SRemoveChars(const S: string; const Chars: TCharSet): string;
+
 implementation
 
 uses StrUtils, PasDoc_StreamUtils;
@@ -1014,6 +1017,25 @@ begin
     if S[Result] in Chars then
       Exit;
   Result := 0;
+end;
+
+function SRemoveChars(const S: string; const Chars: TCharSet): string;
+var I: Integer;
+var NextResultChar: Integer;
+begin
+  SetLength(Result, Length(S));
+
+  NextResultChar := 1;
+  for I := 1 to Length(S) do
+  begin
+    if not CharInSet(S[I], Chars) then
+    begin
+      Result[NextResultChar] := S[I];
+      Inc(NextResultChar);
+    end;
+  end;
+
+  SetLength(Result, NextResultChar - 1);
 end;
 
 end.

@@ -2277,31 +2277,16 @@ begin
 end;
 
 function TPasRoutines.FindListItem(const ANameOrSignature: string): TPasRoutine;
-
-  function NormalizeSignature(const ASignature: string): string;
-  var
-    I: Integer;
-  begin
-    Result := LowerCase(ASignature);
-
-    I := 1;
-    while I <= Length(Result) do begin
-      if Result[I] = ' ' then
-        Result := Copy(Result, 1, I - 1) + Copy(Result, I + 1, Length(Result) - I)
-      else
-        Inc(I);
-    end;
-  end;
-
 var
   NormalizedNameOrSignature: string;
   Signature: string;
 begin
   // Note that NormalizeSignature will only lowercase a short name
-  NormalizedNameOrSignature := NormalizeSignature(ANameOrSignature);
+  NormalizedNameOrSignature := SRemoveChars(LowerCase(ANameOrSignature), [' ']);
   Result := TPasRoutine(inherited FindListItem(NormalizedNameOrSignature));
 
-  if not Assigned(Result) then begin
+  if not Assigned(Result) then
+  begin
     // Replace short names with the full signature
     Signature := FShortNameHash.GetString(NormalizedNameOrSignature);
     if Signature <> '' then
@@ -2860,8 +2845,11 @@ end;
 
 function TPasRoutine.Signature: string;
 begin
+  ParamTypes.QuoteChar := #0;
+  ParamTypes.Delimiter := ',';
+
   if ParamTypes.Count > 0 then
-    Result := Name + '(' + ParamTypes.CommaText + ')'
+    Result := Name + '(' + SRemoveChars(ParamTypes.DelimitedText, [' ']) + ')'
   else
     Result := Name;
 end;

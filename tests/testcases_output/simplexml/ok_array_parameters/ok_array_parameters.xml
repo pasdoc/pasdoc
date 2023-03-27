@@ -1,0 +1,7 @@
+<unit name="ok_array_parameters.pas">
+  <routine name="Foo" type="procedure" declaration="procedure Foo(A: array of string; const B: array of Integer = 3; C: file of TObject = 5);" visibility="published">
+  </routine>
+  <routine name="Bar" type="procedure" declaration="procedure Bar;" visibility="published">
+    <description><detailed>Foo(array of string, array of Integer, file of TObject)</detailed></description>
+  </routine>
+</unit>
