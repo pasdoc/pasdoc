@@ -45,6 +45,7 @@ else
   export PASDOC_BIN=`which pasdoc`
 fi
 echo "Detected pasdoc binary as ${PASDOC_BIN}"
+"${PASDOC_BIN}" --version
 
 # run all testcases, compare with correct output ------------------------------
 

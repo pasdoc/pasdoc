@@ -120,7 +120,7 @@ const
   }
   PASDOC_DATE = '2021-02-07';
   { }
-  PASDOC_VERSION = '0.16.0';
+  PASDOC_VERSION = '0.16.0-snapshot';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
