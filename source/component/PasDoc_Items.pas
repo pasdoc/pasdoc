@@ -2844,12 +2844,21 @@ begin
 end;
 
 function TPasRoutine.Signature: string;
-begin
-  ParamTypes.QuoteChar := #0;
-  ParamTypes.Delimiter := ',';
 
+  function GetParamTypesStr: string;
+  var
+    ParamType: string;
+  begin
+    Result := '';
+    for ParamType in ParamTypes do
+      Result := SAppendPart(Result, ',', SRemoveChars(ParamType, [' ']));
+  end;
+
+begin
   if ParamTypes.Count > 0 then
-    Result := Name + '(' + SRemoveChars(ParamTypes.DelimitedText, [' ']) + ')'
+    { Note: We're not using TStringList.DelimitedText because of a bug in FPC 3.2.0 affecting quote chars.
+            See https://gitlab.com/freepascal.org/fpc/source/-/issues/37605 }
+    Result := Format('%s(%s)', [Name, GetParamTypesStr])
   else
     Result := Name;
 end;
