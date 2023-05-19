@@ -918,6 +918,7 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
     ParamsInGroup: Integer;
     TypeNamePartStarted: Boolean;
     TypeNamePartEnded: Boolean;
+    ParamEnded: Boolean;
     I: Integer;
     TypeName: String;
   begin
@@ -925,6 +926,7 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
     ParamsInGroup := 0;
     TypeNamePartStarted := False;
     TypeNamePartEnded := False;
+    ParamEnded := False;
     TypeName := '';
     repeat
       T := Scanner.GetToken;
@@ -957,10 +959,10 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
           end
           else if T.IsSymbol(SYM_SEMICOLON) or T.IsSymbol(SYM_LEFT_PARENTHESIS)
             or T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
-            TypeNamePartEnded := True;
+            ParamEnded := True;
         end;
 
-        if TypeNamePartEnded then
+        if ParamEnded then
         begin
           if TypeName = '' then TypeName := 'const';
 
@@ -970,6 +972,7 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
           TypeName := '';
           TypeNamePartStarted := False;
           TypeNamePartEnded := False;
+          ParamEnded := False;
           ParamsInGroup := 0;
         end;
 
