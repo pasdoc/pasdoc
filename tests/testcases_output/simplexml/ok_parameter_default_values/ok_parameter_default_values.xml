@@ -3,4 +3,6 @@
   </routine>
   <routine name="Bar" type="procedure" declaration="procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');" visibility="published">
   </routine>
+  <routine name="Baz" type="function" declaration="function Baz(A: Boolean = True): string;" visibility="published">
+  </routine>
 </unit>

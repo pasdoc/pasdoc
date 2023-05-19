@@ -87,6 +87,7 @@
 \begin{description}
 \item[\texttt{Foo}]
 \item[\texttt{Bar}]
+\item[\texttt{Baz}]
 \end{description}
 \section{Functions and Procedures}
 \ifpdf
@@ -141,6 +142,35 @@ procedure Foo(A: Integer; B: Integer = 3; C: Integer = 5);\end{ttfamily}
 \fi
 \begin{ttfamily}
 procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{Baz}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Baz}
+\fi
+\label{ok_parameter_default_values-Baz}
+\index{Baz}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+function Baz(A: Boolean = True): string;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
