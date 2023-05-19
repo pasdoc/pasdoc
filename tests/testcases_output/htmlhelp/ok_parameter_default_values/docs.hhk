@@ -8,6 +8,10 @@
 <param name="Local" value="ok_parameter_default_values.html#Bar-Integer-Integer-Integer-string-">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="Baz">
+<param name="Local" value="ok_parameter_default_values.html#Baz-Boolean-">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Foo">
 <param name="Local" value="ok_parameter_default_values.html#Foo-Integer-Integer-Integer-">
 </object>

@@ -32,6 +32,10 @@
 <param name="Name" value="Bar">
 <param name="Local" value="ok_parameter_default_values.html#Bar">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="Baz">
+<param name="Local" value="ok_parameter_default_values.html#Baz">
+</object>
 </ul>
 </ul>
 </ul>

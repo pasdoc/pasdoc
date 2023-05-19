@@ -63,6 +63,7 @@
 \begin{description}
 \item[\texttt{Foo}]
 \item[\texttt{Bar}]
+\item[\texttt{Baz}]
 \end{description}
 \section{Functions and Procedures}
 \subsection*{Foo}
@@ -99,6 +100,25 @@ procedure Foo(A: Integer; B: Integer = 3; C: Integer = 5);\end{ttfamily}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
 procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{Baz}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+function Baz(A: Boolean = True): string;\end{ttfamily}
 
 
 \end{flushleft}
