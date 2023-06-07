@@ -287,7 +287,7 @@ Many internal improvements, like:
 
 Documentation:
   You can find the most complete and up-to-date documentation
-  of pasdoc features in [our wiki](https://github.com/pasdoc/pasdoc/wiki).
+  of pasdoc features on [our website](https://pasdoc.github.io).
   Unfortunately, with pasdoc 0.9.0, offline documentation
   (previously in docs/ directory of released archives) is no longer
   provided, this is intended to be fixed in future releases
