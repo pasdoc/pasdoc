@@ -193,7 +193,7 @@ type
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
-      [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
+      [https://pasdoc.github.io/WhereToPlaceComments]
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
 
@@ -391,7 +391,7 @@ type
       (it will append the same number of items to
       RawDescriptions as it appended to Names).
       The strategy how comments are assigned to item in this case is
-      described on [https://github.com/pasdoc/pasdoc/wiki/WhereToPlaceComments]
+      described on [https://pasdoc.github.io/WhereToPlaceComments]
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
       FinalSymbol: TSymbolType;
@@ -487,11 +487,11 @@ type
       read FShowVisibilities write FShowVisibilities;
 
     { See command-line option @--implicit-visibility documentation at
-      [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption] }
+      [https://pasdoc.github.io/ImplicitVisibilityOption] }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
     { See command-line option @--auto-back-comments documentation at
-      [https://github.com/pasdoc/pasdoc/wiki/AutoBackComments] }
+      [https://pasdoc.github.io/AutoBackComments] }
     property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
     {}{ TODO comment }
     property InfoMergeType: TInfoMergeType read FInfoMergeType write FInfoMergeType;

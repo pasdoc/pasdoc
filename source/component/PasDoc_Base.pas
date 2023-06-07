@@ -202,7 +202,7 @@ type
     property CacheDir: string read FCacheDir write FCacheDir;
 
     { This determines how items inside will be sorted.
-      See [https://github.com/pasdoc/pasdoc/wiki/SortOption]. }
+      See [https://pasdoc.github.io/SortOption]. }
     property SortSettings: TSortSettings
       read FSortSettings write FSortSettings default [];
 
@@ -215,7 +215,7 @@ type
     property AdditionalFilesNames: TStringList read FAdditionalFilesNames;
 
     { See command-line option @--implicit-visibility documentation at
-      [https://github.com/pasdoc/pasdoc/wiki/ImplicitVisibilityOption].
+      [https://pasdoc.github.io/ImplicitVisibilityOption].
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
@@ -224,7 +224,7 @@ type
       read FHandleMacros write FHandleMacros default true;
 
     { This controls auto-linking, see
-      [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
+      [https://pasdoc.github.io/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
     property AutoBackComments: boolean

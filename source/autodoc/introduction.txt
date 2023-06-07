@@ -39,17 +39,12 @@ compared to "normal" parsers that are used e.g. in Pascal compilers.
 
 @orderedList(
   @item(
-    Pasdoc's parser does not read the implementation section of a unit file
-    (although this may change some day, see
-    [https://github.com/pasdoc/pasdoc/wiki/WantedFeaturesParsingImplementation]).)
-
-  @item(
     Pasdoc's parser is "cheating": It does not really understand everything it
     reads. E.g. the parameter section of a procedure declaration is parsed
     "blindly", by simply reading tokens up to a matching closing
     parenthesis. Such cheating obviously simplifies the parser
     implementation, but it also makes pasdoc's parser "dumber",
-    see [https://github.com/pasdoc/pasdoc/wiki/ToDoParser].)
+    see [https://pasdoc.github.io/ToDoParser].)
 
   @item(
     Pasdoc's parser collects the comments before each declaration,

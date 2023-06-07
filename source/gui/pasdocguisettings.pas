@@ -36,12 +36,12 @@ interface
 
 uses
   Classes, SysUtils, IniFiles;
-  
+
 var
   IniFile: TIniFile;
 
 const
-  DefaultWWWHelpServer = 'https://github.com/pasdoc/pasdoc/wiki/';
+  DefaultWWWHelpServer = 'https://pasdoc.github.io/';
 
 var
   WWWHelpServer: string;
@@ -60,14 +60,14 @@ initialization
 
   { initialize IniFile }
   IniFile := TIniFile.Create(ConfigDir + 'prefs.ini');
-  
+
   WWWHelpServer := IniFile.ReadString('Main', 'WWWHelpServer',
     DefaultWWWHelpServer);
 finalization
   if IniFile <> nil then
   begin
     IniFile.WriteString('Main', 'WWWHelpServer', WWWHelpServer);
-    
+
     IniFile.UpdateFile;
     FreeAndNil(IniFile);
   end;

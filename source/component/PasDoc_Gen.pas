@@ -957,7 +957,7 @@ type
         @item(pasdoc's compiler name and version,)
         @item(pasdoc's version and time of compilation)
       )
-      See [https://github.com/pasdoc/pasdoc/wiki/ExcludeGeneratorOption].
+      See [https://pasdoc.github.io/ExcludeGeneratorOption].
       Default value is false (i.e. show them),
       as this information is generally considered useful.
 
@@ -1010,14 +1010,14 @@ type
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
 
     { This controls @link(SearchLink) behavior, as described in
-      [https://github.com/pasdoc/pasdoc/wiki/LinkLookOption]. }
+      [https://pasdoc.github.io/LinkLookOption]. }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
 
     property WriteUsesClause: boolean
       read FWriteUsesClause write FWriteUsesClause default false;
 
     { This controls auto-linking, see
-      [https://github.com/pasdoc/pasdoc/wiki/AutoLinkOption] }
+      [https://pasdoc.github.io/AutoLinkOption] }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
 

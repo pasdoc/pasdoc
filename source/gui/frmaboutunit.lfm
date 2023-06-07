@@ -68,7 +68,7 @@ object frmAbout: TfrmAbout
     AutoSize = True
     BorderSpacing.Bottom = 10
     BorderSpacing.InnerBorder = 2
-    Caption = 'https://github.com/pasdoc/pasdoc/wiki/'
+    Caption = 'https://pasdoc.github.io/'
     OnClick = ButtonPasDocURLClick
     TabOrder = 2
   end
