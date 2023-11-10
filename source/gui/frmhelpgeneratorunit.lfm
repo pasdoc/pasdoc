@@ -1,7 +1,7 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  Left = 535
+  Left = 631
   Height = 606
-  Top = 42
+  Top = 333
   Width = 939
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
@@ -27,7 +27,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Height = 576
     Top = 0
     Width = 761
-    PageIndex = 0
+    PageIndex = 1
     Align = alClient
     TabOrder = 0
     TabStop = True
@@ -305,70 +305,77 @@ object frmHelpGenerator: TfrmHelpGenerator
     end
     object pageSourceFiles: TPage
       Hint = 'Source Files'
-      object Label8: TLabel
-        Left = 8
-        Height = 81
-        Top = 8
-        Width = 822
-        HelpType = htKeyword
-        Align = alCustom
-        Anchors = [akTop, akLeft, akRight]
-        Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
-        FocusControl = memoFiles
-        ParentColor = False
-        WordWrap = True
-      end
       object memoFiles: TMemo
-        AnchorSideTop.Control = btnBrowseSourceFiles
-        AnchorSideTop.Side = asrBottom
-        Left = 7
-        Height = 346
-        Top = 125
-        Width = 720
+        Left = 9
+        Height = 428
+        Top = 139
+        Width = 743
         HelpType = htKeyword
-        Anchors = [akTop, akLeft, akRight, akBottom]
+        Align = alClient
         BorderSpacing.Around = 9
         OnChange = SomethingChanged
         ScrollBars = ssAutoBoth
         TabOrder = 0
         WordWrap = False
       end
-      object btnBrowseSourceFiles: TButton
-        AnchorSideTop.Control = Label8
-        AnchorSideTop.Side = asrBottom
-        Left = 8
-        Height = 47
-        Top = 89
-        Width = 840
-        Align = alCustom
-        Anchors = [akTop, akLeft, akRight]
+      object PanelSourceFilesTop: TPanel
+        Left = 0
+        Height = 130
+        Top = 0
+        Width = 761
+        Align = alTop
         AutoSize = True
-        BorderSpacing.InnerBorder = 3
-        Caption = 'Browse'
-        OnClick = btnBrowseSourceFilesClick
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 130
+        ClientWidth = 761
         TabOrder = 1
+        object Label8: TLabel
+          Left = 10
+          Height = 66
+          Top = 10
+          Width = 741
+          HelpType = htKeyword
+          Align = alTop
+          Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+          FocusControl = memoFiles
+          ParentColor = False
+          WordWrap = True
+        end
+        object btnBrowseSourceFiles: TButton
+          Left = 10
+          Height = 44
+          Top = 76
+          Width = 741
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.InnerBorder = 3
+          Caption = 'Browse'
+          OnClick = btnBrowseSourceFilesClick
+          TabOrder = 0
+        end
       end
     end
     object pageIncludeDirectories: TPage
       Hint = 'Include Directories'
       object PanelIncludeDirectoriesTop: TPanel
         Left = 0
-        Height = 121
+        Height = 108
         Top = 0
-        Width = 860
+        Width = 761
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         BorderWidth = 10
-        ClientHeight = 121
-        ClientWidth = 860
+        ClientHeight = 108
+        ClientWidth = 761
         FullRepaint = False
         TabOrder = 1
         object Label9: TLabel
           Left = 10
-          Height = 54
+          Height = 44
           Top = 10
-          Width = 840
+          Width = 741
           HelpType = htKeyword
           Align = alTop
           Caption = 'The directories where PasDoc can find include files.'#10'(If you use $I, $INCLUDE compiler directives.)'
@@ -378,9 +385,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
         object btnBrowseIncludeDirectory: TButton
           Left = 10
-          Height = 47
-          Top = 64
-          Width = 840
+          Height = 44
+          Top = 54
+          Width = 741
           Align = alTop
           AutoSize = True
           BorderSpacing.InnerBorder = 3
@@ -390,10 +397,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         end
       end
       object memoIncludeDirectories: TMemo
-        Left = 10
-        Height = 432
-        Top = 131
-        Width = 840
+        Left = 9
+        Height = 450
+        Top = 117
+        Width = 743
         HelpType = htKeyword
         HelpKeyword = 'IncludeInSearchPath'
         Align = alClient

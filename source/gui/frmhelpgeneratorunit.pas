@@ -54,6 +54,7 @@ type
     // have include directories.
     btnBrowseIncludeDirectory: TButton;
     BtnBrowseAdditionalFiles: TButton;
+    btnBrowseSourceFiles: TButton;
     // Click @name to generate output
     ButtonGenerateDocs: TButton;
     ButtonAspellURL: TButton;
@@ -96,6 +97,7 @@ type
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
+    Label8: TLabel;
     LabelAdditionalFiles: TLabel;
     LabelAutoLinkExclude: TLabel;
     LabelExternalDescriptions: TLabel;
@@ -156,6 +158,7 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
+    PanelSourceFilesTop: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
@@ -197,8 +200,6 @@ type
     ButtonGenerate: TBitBtn;
     LabelOutputDirectory: TLabel;
     EditOutputDirectory: TDirectoryEdit;
-    Label8: TLabel;
-    btnBrowseSourceFiles: TButton;
     LabelHyphenatedWords: TLabel;
     memoHyphenatedWords: TMemo;
     LabelCommentMarkers: TLabel;
