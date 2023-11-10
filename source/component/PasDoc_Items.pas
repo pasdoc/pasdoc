@@ -96,24 +96,25 @@ const
     [viProtected, viPublic, viPublished, viAutomated];
 
 type
-  { Type of merging intf section and impl section metadata of an item }
+  { Type of merging interface and implementaion comments.
+    See https://pasdoc.github.io/ImplementationCommentsOption . }
   TInfoMergeType = (
-    { impl section is not scanned - default behavior }
+    { Implementation not parsed. }
     imtNone,
-    { data is taken from intf, if it's empty - from impl }
+    { Read both, prefer interface. }
     imtPreferIntf,
-    { data is concatenated }
-    imtJoin,
-    { data is taken from impl, if it's empty - from intf }
-    imtPreferImpl
+    { Read both, prefer implementation. }
+    imtPreferImpl,
+    { Read both, concatenate. }
+    imtJoin
   );
 
 const
   InfoMergeTypeStr: array[TInfoMergeType] of string = (
     'none',
     'prefer-interface',
-    'join',
-    'prefer-implementation'
+    'prefer-implementation',
+    'join'
   );
 
 type

@@ -303,7 +303,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Read both interface and implementation comments, use non-empty, prefer implementation'
           'Read both interface and implementation comments and join them'
         )
-        OnChange = comboLanguagesChange
+        OnChange = ComboImplementationCommentsChange
         Style = csDropDownList
         TabOrder = 12
         Text = 'Only use interface comments'

@@ -493,7 +493,8 @@ type
     { See command-line option @--auto-back-comments documentation at
       [https://pasdoc.github.io/AutoBackComments] }
     property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
-    {}{ TODO comment }
+    { Whether to read comments from the implementation,
+      and how to merge them with the interface comments. }
     property InfoMergeType: TInfoMergeType read FInfoMergeType write FInfoMergeType;
   end;
 
@@ -1599,13 +1600,16 @@ begin
 end;
 
 { Return string value calculated from old and new values according to merge method }
-function MergeStringValues(MergeType: TInfoMergeType; const OldValue, NewValue: string): string;
+function MergeStringValues(const MergeType: TInfoMergeType;
+  const OldValue, NewValue: string): string;
 begin
   case MergeType of
     imtNone:
       Result := OldValue;
     imtPreferIntf:
       Result := IfThen(OldValue <> '', OldValue, NewValue);
+    imtPreferImpl:
+      Result := IfThen(NewValue <> '', NewValue, OldValue);
     // Also process case when OldValue is fully contained in NewValue.
     // This allows specifying short abstract in intf section and full description
     // in impl section.
@@ -1618,8 +1622,7 @@ begin
         Result := OldValue + LineEnding + NewValue
       else
         Result := NewValue;
-    imtPreferImpl:
-      Result := IfThen(NewValue <> '', NewValue, OldValue);
+    else raise EInternalParserError.Create('TInfoMergeType unimplemented');
   end;
 end;
 
@@ -1629,7 +1632,8 @@ end;
 
   NB: this merge is only correct if routines haven't been processed yet so
   there's no sense in moving it to common util unit or TPasRoutine members. }
-procedure MergeRoutineData(MergeType: TInfoMergeType; Dest: TPasRoutine; const SourceData: TRawDescriptionInfo);
+procedure MergeRoutineData(const MergeType: TInfoMergeType;
+  const Dest: TPasRoutine; const SourceData: TRawDescriptionInfo);
 begin
   Dest.RawDescriptionInfo^.Content :=
     MergeStringValues(MergeType, Dest.RawDescriptionInfo^.Content, SourceData.Content);
