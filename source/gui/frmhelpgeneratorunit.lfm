@@ -292,7 +292,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 34
         Top = 378
-        Width = 657
+        Width = 857
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 0
