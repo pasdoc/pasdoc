@@ -50,10 +50,8 @@ type
   { TfrmHelpGenerator }
 
   TfrmHelpGenerator = class(TForm)
-    // Click @name  to select a directory that may
-    // have include directories.
-    btnBrowseIncludeDirectory: TButton;
     BtnBrowseAdditionalFiles: TButton;
+    btnBrowseIncludeDirectory: TButton;
     btnBrowseSourceFiles: TButton;
     // Click @name to generate output
     ButtonGenerateDocs: TButton;
@@ -98,6 +96,7 @@ type
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
     Label8: TLabel;
+    Label9: TLabel;
     LabelAdditionalFiles: TLabel;
     LabelAutoLinkExclude: TLabel;
     LabelExternalDescriptions: TLabel;
@@ -120,7 +119,6 @@ type
     LabelLatexGraphicsPackage: TLabel;
     LabelOutputType: TLabel;
     Label7: TLabel;
-    Label9: TLabel;
     memoCommentMarkers: TMemo;
     memoDefines: TMemo;
     // @name holds the complete paths of all the source files
@@ -158,12 +156,13 @@ type
     pageOptions: TPage;
     pageSourceFiles: TPage;
     pageSpellChecking: TPage;
+    PanelAutoLinkTop: TPanel;
+    PanelIncludeDirectoriesTop: TPanel;
     PanelSourceFilesTop: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
     pnlEditCommentInstructions: TPanel;
     PanelGenerateTop: TPanel;
-    PanelIncludeDirectoriesTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
     // @name is the main workhorse of @classname.  It analyzes the source
     // code and cooperates with @link(HtmlDocGenerator)
