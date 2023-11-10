@@ -46,9 +46,6 @@ type
   // @abstract(TfrmHelpGenerator is the class of the main form of Help
   // Generator.) Its published fields are mainly components that are used to
   // save the project settings.
-
-  { TfrmHelpGenerator }
-
   TfrmHelpGenerator = class(TForm)
     BtnBrowseAdditionalFiles: TButton;
     btnBrowseIncludeDirectory: TButton;
