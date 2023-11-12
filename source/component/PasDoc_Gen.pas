@@ -2610,6 +2610,7 @@ function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
   out FoundItem: TBaseItem): string;
 var
   NameParts: TNameParts;
+  OriginalNamePartsStr: String;
 begin
   FoundItem := nil;
 
@@ -2641,21 +2642,42 @@ begin
       llFull:
         begin
           Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal);
+          OriginalNamePartsStr := GlueNameParts(NameParts);
 
           if Length(NameParts) = 3 then
           begin
             SetLength(NameParts, 2);
             FoundItem := FindGlobal(NameParts);
-            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
-              '.' + Result;
+            if FoundItem <> nil then
+            begin
+              Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
+                '.' + Result;
+            end else
+            begin
+              DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s"), necessary because LinkLook=llFull and original link was to "%s"', [
+                GlueNameParts(NameParts),
+                Item.QualifiedName,
+                OriginalNamePartsStr
+              ]);
+            end;
           end;
 
           if Length(NameParts) = 2 then
           begin
             SetLength(NameParts, 1);
             FoundItem := FindGlobal(NameParts);
-            Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
-              '.' + Result;
+            if FoundItem <> nil then
+            begin
+              Result := MakeItemLink(FoundItem, FoundItem.Name, lcNormal) +
+                '.' + Result;
+            end else
+            begin
+              DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s"), necessary because LinkLook=llFull and original link was to "%s"', [
+                GlueNameParts(NameParts),
+                Item.QualifiedName,
+                OriginalNamePartsStr
+              ]);
+            end;
           end;
         end;
       else Assert(false, 'LinkLook = ??');
