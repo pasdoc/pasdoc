@@ -306,9 +306,6 @@ begin
     SkipBOM(InputStream);
     {$ENDIF}
 
-    if (CommentMarkers.Count > 1) and (not MarkerOptional) then
-      DoMessage(2, pmtWarning, 'Using multiple markers only makes sense when the markers are optional.', []);
-
     { We sort CommentMarkers, since the longer one should be checked first.
       This is important when one is a prefix of another, e.g. * and ** .
       Users don't need to care about it, since we sort. }
