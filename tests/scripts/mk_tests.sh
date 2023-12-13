@@ -278,6 +278,7 @@ all_tests_for_current_format ()
   mk_test ok_recursive_ancestor ok_recursive_ancestor.pas
   mk_test ok_array_parameters ok_array_parameters.pas
   mk_test ok_multiple_markers --marker=foo --marker=bar --marker-optional ok_multiple_markers.pas
+  mk_test ok_multiple_markers_prefix '--marker=*' '--marker=**' --marker-optional ok_multiple_markers_prefix.pas
 }
 
 # parse params ----------------------------------------
