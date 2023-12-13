@@ -754,7 +754,8 @@ type
   TCIOType = (CIO_CLASS, CIO_PACKEDCLASS,
     CIO_DISPINTERFACE, CIO_INTERFACE,
     CIO_OBJECT, CIO_PACKEDOBJECT,
-    CIO_RECORD, CIO_PACKEDRECORD );
+    CIO_RECORD, CIO_PACKEDRECORD,
+    CIO_TYPE {helper only});
 
   TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
 
@@ -3058,7 +3059,8 @@ const
     'object',
     'packed object',
     'record',
-    'packed record'
+    'packed record',
+    'type' {helper only}
   );
 begin
   Result := Names[CioType];

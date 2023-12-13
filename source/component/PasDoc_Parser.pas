@@ -2285,7 +2285,8 @@ var
   LCollected, LTemp, TypeNameWithGeneric: string;
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
-  T: TToken;
+  T, T2: TToken;
+  IsTypeHelper: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2357,6 +2358,18 @@ begin
               RawDescriptionInfo, False);
             FreeAndNil(t);
             Exit;
+          end;
+        KEY_TYPE: begin
+            t2 := GetNextToken(LTemp);
+            IsTypeHelper := (t2.MyType = TOK_IDENTIFIER) and (t2.Info.StandardDirective = SD_HELPER);
+            Scanner.UnGetToken(t2);
+            if IsTypeHelper then
+            begin
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_TYPE,
+                RawDescriptionInfo, False);
+              FreeAndNil(t);
+              exit;
+            end;
           end;
         KEY_PACKED: begin
             FreeAndNil(t);
@@ -3667,7 +3680,7 @@ begin
         FreeAndNil(t);
         t := GetNextToken;
       end
-      else if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+      else if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
         (t.MyType = TOK_IDENTIFIER) and
         (t.Info.StandardDirective = SD_HELPER) then
       begin
@@ -3815,7 +3828,7 @@ begin
         end;
       end;
 
-      if (CIOType in [ CIO_CLASS, CIO_RECORD ]) and
+      if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
           (ACio.ClassDirective = CT_HELPER) then
       begin
         t := PeekNextToken;
