@@ -2360,15 +2360,18 @@ begin
             Exit;
           end;
         KEY_TYPE: begin
-            t2 := GetNextToken(LTemp);
+            t2 := PeekNextToken(LTemp);
             IsTypeHelper := (t2.MyType = TOK_IDENTIFIER) and (t2.Info.StandardDirective = SD_HELPER);
-            Scanner.UnGetToken(t2);
             if IsTypeHelper then
             begin
               ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_TYPE,
                 RawDescriptionInfo, False);
               FreeAndNil(t);
               exit;
+            end else
+            begin
+              LCollected := LCollected + LTemp;
+              FreeAndNil(t);
             end;
           end;
         KEY_PACKED: begin
@@ -2929,6 +2932,7 @@ begin
                   if Assigned(Item) then
                     Item.FullDeclaration := Item.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
                   FreeAndNil(t);
+                  WhitespaceCollectorToAdd := '';
                   t := GetNextTokenNotAttribute(Item);
                   if Assigned(Item) then
                   begin
