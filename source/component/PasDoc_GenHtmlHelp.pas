@@ -1,39 +1,29 @@
 {
   Copyright 1998-2018 PasDoc developers.
-
   This file is part of "PasDoc".
-
   "PasDoc" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
-
   "PasDoc" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
   along with "PasDoc"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
-
   ----------------------------------------------------------------------------
 }
-
 { @abstract(Generate HtmlHelp output.) }
 unit PasDoc_GenHtmlHelp;
-
 {$I pasdoc_defines.inc}
-
 interface
 
 uses PasDoc_GenHtml, PasDoc_Utils, PasDoc_SortSettings;
-
 type
   THTMLHelpDocGenerator = class(TGenericHTMLDocGenerator)
   private
     FContentsFile: string;
-
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
   public
@@ -43,13 +33,83 @@ type
       If empty, create default contents file. }
     property ContentsFile: string read FContentsFile write FContentsFile;
   end;
-
-implementation
-
+ implementation
 uses SysUtils, PasDoc_Types, PasDoc_StringVector, PasDoc_Base, PasDoc_Items,
   PasDoc_Languages, PasDoc_Gen, PasDoc_Versions;
-
 { HtmlHelp Content Generation inspired by Wim van der Vegt <wvd_vegt@knoware.nl> }
+
+type
+  // HTML Help has it own language codes, so the PasDoc codes should be converted.
+  THtmlHelpLangCode = array [TLanguageID] of Word;
+
+const
+  { HTML Help language code conversion table.
+
+    Note that the string representation of the codes in the .hhp file must be
+    hexadecimal with leading 0x, such as 0x409.
+
+    The required format is provided by the GetHtmlHelpLangCode function below. }
+  HtmlHelpLangCode: THtmlHelpLangCode = (
+{$IFDEF STRING_UNICODE}
+    $141a, // lgBosnian,
+    $416,  // lgBrazilian,
+    $402,  // lgBulgarian,
+    $403,  // lgCatalan,
+    $804,  // lgChinese,
+    $41a,  // lgCroatian,
+    $406,  // lgDanish,
+    $413,  // lgDutch,
+    $409,  // lgEnglish,
+    $40c,  // lgFrench,
+    $407,  // lgGerman,
+    $421,  // lgIndonesian,
+    $410,  // lgItalian,
+    $fff,  // lgJavanese,           I haven't found the appropriate code, so the unknown is used.
+    $415,  // lgPolish,
+    $419,  // lgRussian,
+    $41b,  // lgSlovak,
+    $40a,  // lgSpanish,
+    $41d,  // lgSwedish,
+    $40e,  // lgHungarian,
+    $405   // lgCzech
+{$ELSE}
+    $141a, // lgBosnian,
+    $416,  // lgBrazilian_1252,
+    $416,  // lgBrazilian_utf8,
+    $402,  // lgBulgarian,
+    $403,  // lgCatalan,
+    $804,  // lgChinese_gb2312,
+    $41a,  // lgCroatian,
+    $406,  // lgDanish,
+    $413,  // lgDutch,
+    $409,  // lgEnglish,
+    $40c,  // lgFrench_ISO_8859_15,
+    $40c,  // lgFrench_UTF_8,
+    $407,  // lgGerman_ISO_8859_15,
+    $407,  // lgGerman_UTF_8,
+    $421,  // lgIndonesian,         I haven't found the appropriate code, so the unknown is used.
+    $410,  // lgItalian,
+    $fff,  // lgJavanese,
+    $415,  // lgPolish_CP1250,
+    $415,  // lgPolish_ISO_8859_2,
+    $419,  // lgRussian_1251,
+    $419,  // lgRussian_utf8,
+    $419,  // lgRussian_866,
+    $419,  // lgRussian_koi8,
+    $41b,  // lgSlovak,
+    $40a,  // lgSpanish,
+    $41d,  // lgSwedish,
+    $40e,  // lgHungarian_1250,
+    $405,  // lgCzech_CP1250,
+    $405   // lgCzech_ISO_8859_2
+{$ENDIF}
+  );
+
+
+function GetHtmlHelpLangCode(LanguageID: TLanguageID): string;
+begin
+   result := '0x' + IntToHex(HtmlHelpLangCode[LanguageID]);
+end;
 
 function BeforeEqualChar(const s: string): string;
 var
@@ -60,7 +120,6 @@ begin
   if i <> 0 then
     SetLength(Result, i - 1);
 end;
-
 function AfterEqualChar(const s: string): string;
 var
   i: Cardinal;
@@ -72,7 +131,6 @@ begin
   else
     Result := '';
 end;
-
 function GetLevel(var s: string): Integer;
 var
   l: Cardinal;
@@ -88,20 +146,16 @@ begin
   end;
   Delete(s, 1, Result);
 end;
-
 { THTMLHelpDocGenerator ------------------------------------------------------ }
-
 procedure THTMLHelpDocGenerator.WriteDocumentation;
 begin
   inherited;
   WriteHtmlHelpProject;
 end;
-
 procedure THTMLHelpDocGenerator.WriteHtmlHelpProject;
 var
   DefaultContentsWritten: Boolean;
   DefaultTopic: string;
-
   procedure WriteLiObject(const Name, Local: string);
   begin
     WriteDirectLine('<li><object type="text/sitemap">');
@@ -113,9 +167,7 @@ var
     end;
     WriteDirectLine('</object>');
   end;
-
   { ---------- }
-
   procedure WriteItemCollection(const _Filename: string; const c: TPasItems);
   var
     i: Integer;
@@ -130,9 +182,7 @@ var
       WriteDirectLine('</ul>');
     end;
   end;
-
   { ---------- }
-
   procedure WriteItemHeadingCollection(const Title, ParentLink, Anchor: string; const
     c: TPasItems);
   begin
@@ -141,16 +191,13 @@ var
       WriteItemCollection(ParentLink, c);
     end;
   end;
-
   { ---------- }
-
   procedure NestedWriteCIO(const ClassItem: TPasCio);
   var
     I: Integer;
   begin
     WriteLiObject(ClassItem.Name, ClassItem.FullLink);
     WriteDirectLine('<ul>');
-
     if ClassItem.Cios.Count > 0 then
     begin
       WriteLiObject(FLanguage.Translation[trNestedCR], ClassItem.FullLink + '#@NestedCRs');
@@ -164,17 +211,13 @@ var
       end;
       WriteDirectLine('</ul>');
     end;
-
     WriteItemHeadingCollection(fLanguage.Translation[trNestedTypes], ClassItem.FullLink, '@NestedTypes', ClassItem.Types);
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
-
     WriteDirectLine('</ul>');
   end;
-
   { ---------- }
-
   procedure ContentWriteUnits(const Text: string);
   var
     c: TPasItems;
@@ -187,25 +230,20 @@ var
       WriteLiObject(FLanguage.Translation[trUnits], OverviewFilesInfo[ofUnits].BaseFileName +
         GetFileExtension);
     WriteDirectLine('<ul>');
-
     // Iterate all Units
     for j := 0 to Units.Count - 1 do begin
       PU := Units.UnitAt[j];
       WriteLiObject(PU.Name, PU.FullLink);
       WriteDirectLine('<ul>');
-
         // For each unit, write classes (if there are any).
       c := PU.CIOs;
       if Assigned(c) then begin
         WriteLiObject(FLanguage.Translation[trClasses], PU.FullLink + '#@Classes');
         WriteDirectLine('<ul>');
-
         for k := 0 to c.Count - 1 do
           NestedWriteCIO(TPasCio(c.PasItemAt[k]));
-
         WriteDirectLine('</ul>');
       end;
-
         // For each unit, write Functions & Procedures.
       WriteItemHeadingCollection(FLanguage.Translation[trFunctionsAndProcedures],
         PU.FullLink, '@FuncsProcs', PU.FuncsProcs);
@@ -215,14 +253,11 @@ var
         // For each unit, write Constants.
       WriteItemHeadingCollection(FLanguage.Translation[trConstants], PU.FullLink,
         '@Constants', PU.Constants);
-
       WriteDirectLine('</ul>');
     end;
     WriteDirectLine('</ul>');
   end;
-
   { ---------- }
-
   procedure ContentWriteClasses(const Text: string);
   var
     c: TPasItems;
@@ -231,13 +266,11 @@ var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofCios].BaseFileName + GetFileExtension;
-
     // Write Classes to Contents
     if Text <> '' then
       WriteLiObject(Text, FileName) else
       WriteLiObject(FLanguage.Translation[trClasses], FileName);
     WriteDirectLine('<ul>');
-
     c := TPasItems.Create(False);
     // First collect classes
     for j := 0 to Units.Count - 1 do begin
@@ -256,32 +289,25 @@ var
     c.Free;
     WriteDirectLine('</ul>');
   end;
-
   { ---------- }
-
   procedure ContentWriteClassHierarchy(const Text: string);
   var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofClassHierarchy].BaseFileName +
       GetFileExtension;
-
     if Text <> '' then
       WriteLiObject(Text, FileName) else
       WriteLiObject(FLanguage.Translation[trClassHierarchy], FileName);
   end;
-
   { ---------- }
-
   procedure ContentWriteOverview(const Text: string);
-
     procedure WriteParam(Id: TTranslationId);
     begin
       WriteDirect('<param name="Name" value="');
       WriteConverted(FLanguage.Translation[Id]);
       WriteDirectLine('">');
     end;
-
   var
     Overview: TCreatedOverviewFile;
   begin
@@ -301,9 +327,7 @@ var
     end;
     WriteDirectLine('</ul>');
   end;
-
   { ---------- }
-
   procedure ContentWriteLegend(const Text: string);
   var
     FileName: string;
@@ -313,35 +337,27 @@ var
       WriteLiObject(Text, FileName) else
       WriteLiObject(FLanguage.Translation[trLegend], FileName);
   end;
-
   { ---------- }
-
   procedure ContentWriteGVUses();
   var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName +
       '.' + LinkGraphVizUses;
-
     if LinkGraphVizUses <> '' then
       WriteLiObject(FLanguage.Translation[trGvUses], FileName);
   end;
-
   { ---------- }
-
   procedure ContentWriteGVClasses();
   var
     FileName: string;
   begin
     FileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName +
       '.' + LinkGraphVizClasses;
-
     if LinkGraphVizClasses <> '' then
       WriteLiObject(FLanguage.Translation[trGvClasses], FileName);
   end;
-
   { ---------- }
-
   procedure ContentWriteCustom(const Text, Link: string);
   begin
     if CompareText('@Classes', Link) = 0 then begin
@@ -371,9 +387,7 @@ var
             else
               WriteLiObject(Text, Link);
   end;
-
   { ---------- }
-
   Procedure ContentWriteIntroduction;
   begin
     if Introduction <> nil then
@@ -381,9 +395,7 @@ var
       WriteLiObject(Introduction.ShortTitle, Introduction.FullLink);
     end;
   end;
-
   { ---------- }
-
   Procedure ContentWriteConclusion;
   begin
     if Conclusion <> nil then
@@ -391,9 +403,7 @@ var
       WriteLiObject(Conclusion.ShortTitle, Conclusion.FullLink);
     end;
   end;
-
   { ---------- }
-
   Procedure ContentWriteAdditionalFiles;
   var
     i: Integer;
@@ -406,9 +416,7 @@ var
       end;
     end;
   end;
-
   { ---------- }
-
   procedure IndexWriteItem(const Item, PreviousItem, NextItem: TPasItem);
     { Item is guaranteed to be assigned, i.e. not to be nil. }
   begin
@@ -428,9 +436,7 @@ var
         Item.FullLink);
     end;
   end;
-
   { ---------- }
-
   procedure CopyCiosRecursively(ADst: TPasItems; ACios: TPasItems);
     procedure AddRecursive(ACio: TPasCio);
     begin
@@ -448,7 +454,6 @@ var
     for I := 0 to ACios.Count - 1 do
       AddRecursive(TPasCio(ACios.PasItemAt[I]));
   end;
-
   { -------------------------------------------------------------------------- }
 var
   i, j, k, l: Integer;
@@ -464,11 +469,9 @@ begin
   { At this point, at least one unit has been parsed:
     Units is assigned and Units.Count > 0
     No need to test this again. }
-
   if not CreateStream(ProjectName + '.hhc') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Content file "' + ProjectName
     + '"...', []);
-
   // File Header
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
@@ -478,7 +481,6 @@ begin
       PASDOC_NAME_AND_VERSION + '">', true);
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
-
   DefaultContentsWritten := False;
   DefaultTopic := '';
   if ContentsFile <> '' then begin
@@ -490,14 +492,12 @@ begin
         DoMessage(1, pmtError, e.Message +
           '. Writing default HtmlHelp contents.', []);
     end;
-
     CurrentLevel := 0;
     for j := 0 to SL.Count - 1 do begin
       s := SL[j];
       Text := BeforeEqualChar(s);
       Level := GetLevel(Text);
       Link := AfterEqualChar(s);
-
       if Level = CurrentLevel then
         ContentWriteCustom(Text, Link)
       else
@@ -516,7 +516,6 @@ begin
             end;
             ContentWriteCustom(Text, Link)
           end
-
           else begin
             DoMessage(1, pmtError, 'Invalid level ' + IntToStr(Level) +
               'in Content file (line ' + IntToStr(j) + ').', []);
@@ -525,45 +524,37 @@ begin
     end;
     SL.Free;
   end;
-
   if not DefaultContentsWritten then begin
     ContentWriteIntroduction;
     ContentWriteUnits('');
     ContentWriteClassHierarchy(FLanguage.Translation[trClassHierarchy]);
     ContentWriteClasses('');
     ContentWriteOverview('');
-    ContentWriteLegend('');
+    //  ContentWriteLegend('');  NEW 2024-02-04 11:11  Me
     ContentWriteGVClasses();
     ContentWriteGVUses();
     ContentWriteAdditionalFiles;
     ContentWriteConclusion;
   end;
-
   // End of File
   WriteDirectLine('</ul>');
   WriteDirectLine('</body></html>');
   CloseStream;
-
   // Create Keyword Index
   // First collect all Items
   c := TPasItems.Create(False); // Don't free Items when freeing the container
-
   for j := 0 to Units.Count - 1 do begin
     PU := Units.UnitAt[j];
-
     if Assigned(PU.CIOs) then
       CopyCiosRecursively(c, PU.CIOs);
-
     c.CopyItems(PU.Types);
     c.CopyItems(PU.Variables);
     c.CopyItems(PU.Constants);
     c.CopyItems(PU.FuncsProcs);
   end;
-
   if not CreateStream(ProjectName + '.hhk') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Index file "%s"...',
     [ProjectName]);
-
   WriteDirectLine('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">');
   WriteDirectLine('<html>');
   WriteDirectLine('<head>');
@@ -572,18 +563,13 @@ begin
       PASDOC_NAME_AND_VERSION + '">');
   WriteDirectLine('</head><body>');
   WriteDirectLine('<ul>');
-
   // Write all Items to KeyWord Index
-
   c.SortShallow;
-
   if c.Count > 0 then begin
     Item := c.PasItemAt[0];
     j := 1;
-
     while j < c.Count do begin
       NextItem := c.PasItemAt[j];
-
           // Does the next Item have a different name?
       if CompareText(Item.Name, NextItem.Name) <> 0 then begin
         WriteLiObject(Item.Name, Item.FullLink);
@@ -594,49 +580,36 @@ begin
         WriteLiObject(Item.Name, Item.FullLink);
         // Indent by one.
         WriteDirectLine('<ul>');
-
         // No previous Item as we start.
         PreviousItem := nil;
-
         // Keep on writing Items with the same name as subitems.
         repeat
           IndexWriteItem(Item, PreviousItem, NextItem);
-
           PreviousItem := Item;
           Item := NextItem;
           Inc(j);
-
           if j >= c.Count then Break;
           NextItem := c.PasItemAt[j];
-
                 // Break as soon Items' names are different.
         until CompareText(Item.Name, NextItem.Name) <> 0;
-
               // No NextItem as we write the last one of the same Items.
         IndexWriteItem(Item, PreviousItem, nil);
-
         Item := NextItem;
         WriteDirectLine('</ul>');
       end;
-
       Inc(j);
     end;
-
       // Don't forget to write the last item. Can it ever by nil?
     WriteLiObject(Item.Name, Item.FullLink);
   end;
-
   c.Free;
-
   WriteDirectLine('</ul>');
   WriteDirectLine('</body></html>');
   CloseStream;
-
   // Create a HTML Help Project File
   if not CreateStream(ProjectName + '.hhp') then Exit;
   DoMessage(3, pmtInformation, 'Writing Html Help Project file "%s"...',
     [ProjectName]);
-
   WriteDirectLine('[OPTIONS]');
   WriteDirectLine('Binary TOC=Yes');
   WriteDirectLine('Compatibility=1.1 or later');
@@ -648,45 +621,39 @@ begin
   WriteDirectLine('Error log file=' + ProjectName + '.log');
   WriteDirectLine('Full-text search=Yes');
   WriteDirectLine('Index file=' + ProjectName + '.hhk');
+  // If the Language item is not defined, the topic search is not performed.
+  WriteDirectLine('Language=' + GetHtmlHelpLangCode(FLanguage.Language));
   if Title <> '' then
     WriteDirectLine('Title=' + Title)
   else
     WriteDirectLine('Title=' + ProjectName);
-
   WriteDirectLine('');
   WriteDirectLine('[WINDOWS]');
   if Title <> '' then
     WriteDirect('Default="' + Title + '","' + ProjectName +
-      '.hhc","' + ProjectName + '.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0', true)
+                                // Home button should be defined.
+     '.hhc","' + ProjectName + '.hhk",,' + DefaultTopic + ',,,,,0x23520,,0x300e,,,,,,,,0', true)
   else
     WriteDirect('Default="' + ProjectName + '","' +
       ProjectName + '.hhc","' + ProjectName +
       '.hhk",,,,,,,0x23520,,0x300e,,,,,,,,0', true);
-
   WriteDirectLine('');
   WriteDirectLine('[FILES]');
-
   { HHC seems to know about the files by reading the Content and Index.
     So there is no need to specify them in the FILES section. }
-
   WriteDirectLine('Legend.html');
-
   If Introduction <> nil then
   begin
     WriteDirectLine(Introduction.FullLink);
   end;
-
   if (LinkGraphVizClasses <> '') then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' +
       LinkGraphVizClasses);
-
   if LinkGraphVizUses <> '' then
     WriteDirectLine(OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' +
       LinkGraphVizUses);
-
   for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     WriteDirectLine(OverviewFilesInfo[Overview].BaseFileName + '.html');
-
   if Assigned(Units) then
     for k := 0 to units.Count - 1 do
       begin
@@ -701,7 +668,6 @@ begin
               WriteDirectLine(Item2.OutputFilename);
             end;
       end;
-
   If (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
   begin
     for i := 0 to AdditionalFiles.Count - 1 do
@@ -709,21 +675,14 @@ begin
       WriteDirectLine(AdditionalFiles.Get(i).FullLink);
     end;
   end;
-
   If Conclusion <> nil then
   begin
     WriteDirectLine(Conclusion.FullLink);
   end;
-
   WriteDirectLine('');
-
   WriteDirectLine('[INFOTYPES]');
-
   WriteDirectLine('');
-
   WriteDirectLine('[MERGE FILES]');
-
   CloseStream;
 end;
-
 end.
