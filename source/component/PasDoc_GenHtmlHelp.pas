@@ -87,9 +87,9 @@ const
     $40c,  // lgFrench_UTF_8,
     $407,  // lgGerman_ISO_8859_15,
     $407,  // lgGerman_UTF_8,
-    $421,  // lgIndonesian,         I haven't found the appropriate code, so the unknown is used.
+    $421,  // lgIndonesian,         
     $410,  // lgItalian,
-    $fff,  // lgJavanese,
+    $fff,  // lgJavanese,           I haven't found the appropriate code, so the unknown is used. 
     $415,  // lgPolish_CP1250,
     $415,  // lgPolish_ISO_8859_2,
     $419,  // lgRussian_1251,
