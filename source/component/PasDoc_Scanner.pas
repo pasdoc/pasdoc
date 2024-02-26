@@ -75,8 +75,6 @@ type
   { This class scans one unit using one or more @link(TTokenizer) objects
     to scan the unit and all nested include files. }
 
-  { TScanner }
-
   TScanner = class(TObject)
   private
     FCurrentTokenizer: Integer;

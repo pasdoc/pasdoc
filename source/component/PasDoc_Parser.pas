@@ -2286,7 +2286,7 @@ var
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
   T, T2: TToken;
-  IsTypeHelper: boolean;
+  IsStrongAlias: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2360,9 +2360,8 @@ begin
             Exit;
           end;
         KEY_TYPE: begin
-            t2 := PeekNextToken(LTemp);
-            IsTypeHelper := (t2.MyType = TOK_IDENTIFIER) and (t2.Info.StandardDirective = SD_HELPER);
-            if IsTypeHelper then
+            T2 := PeekNextToken(LTemp);
+            if T2.IsStandardDirective(SD_HELPER) then
             begin
               ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_TYPE,
                 RawDescriptionInfo, False);
