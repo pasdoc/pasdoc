@@ -49,7 +49,8 @@ uses
   PasDoc_Tokenizer,
   PasDoc_StringVector,
   PasDoc_StreamUtils,
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  PasDoc_ObjectVector;
 
 const
   { maximum number of streams we can recurse into; first one is the unit
@@ -73,13 +74,14 @@ type
 
   { This class scans one unit using one or more @link(TTokenizer) objects
     to scan the unit and all nested include files. }
+
   TScanner = class(TObject)
   private
     FCurrentTokenizer: Integer;
     FDirectiveLevel: Integer;
     FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
     FSwitchOptions: TSwitchOptions;
-    FBufferedToken: TToken;
+    FBufferedTokens: TObjectVector;
 
     { For each symbol:
         Name is the unique Name,
@@ -373,7 +375,7 @@ begin
   FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
     AStreamName, AStreamPath);
   FCurrentTokenizer := 0;
-  FBufferedToken := nil;
+  FBufferedTokens := TObjectVector.Create(true);
 
   FIncludeFilePaths := TStringVector.Create;
 end;
@@ -390,7 +392,7 @@ begin
     FTokenizers[i].Free;
   end;
 
-  FBufferedToken.Free;
+  FBufferedTokens.Free;
 
   FIncludeFilePaths.Free;
 
@@ -448,8 +450,14 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TScanner.ConsumeToken;
+var
+  LastToken: TObject;
 begin
-  FBufferedToken := nil;
+  if FBufferedTokens.Count > 0 then
+  Begin
+    LastToken := FBufferedTokens.Last;
+    FBufferedTokens.Extract(LastToken);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -602,11 +610,11 @@ var
   Finished: Boolean;
   DirectiveName, DirectiveParamBlack, DirectiveParamWhite: string;
 begin
-  if Assigned(FBufferedToken) then
+  if FBufferedTokens.Count > 0 then
   begin
     { we have a token buffered, we'll return this one }
-    Result := FBufferedToken;
-    FBufferedToken := nil;
+    Result := FBufferedTokens.Last as TToken;
+    FBufferedTokens.Extract(Result);
     Exit;
   end;
 
@@ -897,8 +905,8 @@ end;
 
 function TScanner.PeekToken: TToken;
 begin
-  FBufferedToken := GetToken;
-  Result := FBufferedToken;
+  Result := GetToken;
+  FBufferedTokens.Add(Result);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -978,11 +986,7 @@ end;
 
 procedure TScanner.UnGetToken(var t: TToken);
 begin
-  if Assigned(FBufferedToken) then
-    DoError('%s: Cannot UnGet more than one token in TScanner.',
-      [GetStreamInfo]);
-
-  FBufferedToken := t;
+  FBufferedTokens.Add(t);
   t := nil;
 end;
 
