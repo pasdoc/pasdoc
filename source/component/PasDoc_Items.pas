@@ -755,7 +755,9 @@ type
     CIO_DISPINTERFACE, CIO_INTERFACE,
     CIO_OBJECT, CIO_PACKEDOBJECT,
     CIO_RECORD, CIO_PACKEDRECORD,
-    CIO_TYPE {helper only});
+    { CIO_TYPE is used only when CIO is a type helper,
+      designed by CIO.ClassDirective = CT_HELPER. }
+    CIO_TYPE);
 
   TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
 
