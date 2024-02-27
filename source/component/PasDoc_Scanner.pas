@@ -213,7 +213,7 @@ type
 
 implementation
 
-uses PasDoc_Utils;
+uses PasDoc_Utils, Variants;
 
 const
   DirectiveNames: array[DT_DEFINE..High(TDirectiveType)] of string =
@@ -1173,15 +1173,31 @@ var
     FreeAndNil(T);
   end;
 *)
+  function ParseExpression: Variant; forward;
 
   { Consume tokens constituting a function, like "defined(xxx)".
     See https://freepascal.org/docs-html/current/prog/progsu127.html . }
-  function ParseFunction: Boolean;
+  function ParseFunction: Variant;
   var
     T: TToken;
     Identifier: String;
+    SymbolIndex, ErrorPos: Integer;
+    SymbolInt64: int64;
+    SymbolFloat: Extended;
   begin
     T := NextToken;
+    If T.IsSymbol(SYM_LEFT_PARENTHESIS) then
+    begin
+      FreeAndNil(T);
+      result := ParseExpression;
+      T := NextToken;
+      If not T.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+      begin
+        FreeAndNil(T);
+        raise EInvalidIfCondition.Create('Closing bracket expected but %s found', [T.Description]);
+      end;
+      FreeAndNil(T);
+    end;
     try
       { if it's a number, than anything <> 0 results in true. }
       if T.MyType = TOK_NUMBER then
@@ -1214,12 +1230,39 @@ var
     if Identifier = 'declared' then
       raise EInvalidIfCondition.Create('Evaluating "declared" function for $if / $elseif not implemented', [])
     else
-      raise EInvalidIfCondition.CreateFmt('Unknown function "%s" in $if / $elseif', [Identifier]);
+    begin
+      SymbolIndex := FSymbols.FindName(Identifier);
+      if SymbolIndex <> -1 then
+      begin
+        If FSymbols[SymbolIndex].Value = '' then
+          raise EInvalidIfCondition.CreateFmt('Macro "%s" doesn''t have a value', [Identifier]);
+        Val(FSymbols[SymbolIndex].Value, SymbolInt64, ErrorPos);
+        if ErrorPos = 0 then
+          Result := SymbolInt64
+        else
+        begin
+          Val(FSymbols[SymbolIndex].Value, SymbolFloat, ErrorPos);
+          if ErrorPos = 0 then
+            Result := SymbolFloat
+          else
+            Result := FSymbols[SymbolIndex].Value;
+        end;
+      end
+      else
+        raise EInvalidIfCondition.CreateFmt('Unknown function "%s" in $if / $elseif', [Identifier]);
+    end;
+  end;
+
+  function NeedBoolean(Value: Variant): boolean;
+  begin
+    if VarType(Value) <> vtBoolean then
+      raise EInvalidIfCondition.Create('Boolean value expected but "%s" found', [Value]);
+    result := Value;
   end;
 
   { Consume tokens constituting a function
     or a function with "not" at the beginning, like "not defined(xxx)". }
-  function ParseFunctionNegated: Boolean;
+  function ParseFunctionNegated: Variant;
   var
     T: TToken;
   begin
@@ -1227,7 +1270,7 @@ var
     if T.IsKeyWord(KEY_NOT) then
     begin
       FreeAndNil(T);
-      Result := not ParseFunction;
+      Result := not NeedBoolean(ParseFunction);
     end else
     begin
       Tokenizer.UnGetToken(T);
@@ -1235,11 +1278,31 @@ var
     end;
   end;
 
+  function IsNumber(Value: Variant): boolean;
+  begin
+    result := VarType(Value) in [vtInt64, vtExtended];
+  end;
+
+  procedure CheckComparisonTypes(LeftOperand, RightOperand: Variant);
+  begin
+    If IsNumber(LeftOperand) then
+    begin
+      If not IsNumber(RightOperand) then
+        raise EInvalidIfCondition.Create('Number expected but "%s" found', [RightOperand]);
+    end else
+    If IsNumber(RightOperand) then
+    begin
+      If not IsNumber(LeftOperand) then
+        raise EInvalidIfCondition.Create('Number expected but "%s" found', [LeftOperand]);
+    end;
+  end;
+
   { Consume tokens constituting an expression, like "defined(xxx) or defined(yyy)".
     See https://freepascal.org/docs-html/current/prog/progsu127.html . }
-  function ParseExpression: Boolean;
+  function ParseExpression: Variant;
   var
     T: TToken;
+    RightOperand: Variant;
   begin
     Result := ParseFunctionNegated;
     T := NextToken;
@@ -1247,27 +1310,47 @@ var
     begin
       try
         if T.IsKeyWord(KEY_AND) then
-          Result := Result and ParseExpression
+          Result := NeedBoolean(Result) and NeedBoolean(ParseExpression)
         else
         if T.IsKeyWord(KEY_OR) then
-          Result := Result or ParseExpression
+          Result := NeedBoolean(Result) or NeedBoolean(ParseExpression)
         else
         if T.IsSymbol(SYM_EQUAL) then
-          Result := Result = ParseExpression
+        begin
+          RightOperand := ParseExpression;
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result = RightOperand
+        end
         else
         if T.IsSymbol(SYM_LESS_THAN) then
-          Result := Result < ParseExpression
+        begin
+          RightOperand := ParseExpression;
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result < RightOperand
+        end
         else
         if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
-          Result := Result <= ParseExpression
+        begin
+          RightOperand := ParseExpression;
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result <= RightOperand
+        end
         else
         if T.IsSymbol(SYM_GREATER_THAN) then
-          Result := Result > ParseExpression
+        begin
+          RightOperand := ParseExpression;
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result > RightOperand
+        end
         else
         if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
-          Result := Result >= ParseExpression
+        begin
+          RightOperand := ParseExpression;
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result >= RightOperand
+        end
         else
-          raise EInvalidIfCondition.Create('Cannot handle opertator function "%s" in $if / $elseif', [T.Description]);
+          raise EInvalidIfCondition.Create('Cannot handle operator function "%s" in $if / $elseif', [T.Description]);
       finally FreeAndNil(T) end;
     end;
   end;
@@ -1277,7 +1360,7 @@ begin
     FOnMessage, FVerbosity, '$if / $elseif condition', '');
   try
     try
-      Result := ParseExpression;
+      Result := NeedBoolean(ParseExpression);
     except
       on E: EInvalidIfCondition do
       begin
