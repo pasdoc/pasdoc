@@ -633,6 +633,18 @@ type
   TPasType = class(TPasItem)
   end;
 
+  { @abstract(Alias type) }
+  TPasAliasType = class(TPasType)
+    FIsStrongAlias: boolean;
+    FAliasName: string;
+  public
+    { Whether it is a strong alias, defined with the "type" keyword, for example:
+      StrongAlias = type AliasedType }
+    property IsStrongAlias: boolean read FIsStrongAlias write FIsStrongAlias;
+    { Name of the type it refers to }
+    property AliasName: string read FAliasName write FAliasName;
+  end;
+
   { @abstract(Enumerated type.) }
   TPasEnum = class(TPasType)
   protected

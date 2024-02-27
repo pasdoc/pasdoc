@@ -1218,11 +1218,14 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
   end;
 
+  procedure WriteDescription(AItem: TPasItem); forward;
+
   procedure WriteNoDescription(const AItem: TPasItem);
   var
     InheritedDescriptions: TStringPairVector;
     AncestorItem: TPasItem;
     I: Integer;
+    AliasType: TBaseItem;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
     try
@@ -1269,10 +1272,61 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        WriteDirect('<p class="nodescription">This item has no description.</p>');
+        if AItem is TPasAliasType then
+          AliasType := SearchItem(TPasAliasType(AItem).AliasName, AItem, false)
+        else
+          AliasType := nil;
+        if Assigned(AliasType) and (AliasType is TPasItem) then
+        begin
+          // in case of a weak alias, the description is the same
+          if not TPasAliasType(AItem).IsStrongAlias then
+             WriteDescription(TPasItem(AliasType))
+          else
+          begin
+            // in case of a strong alias, as description would be needed
+            WriteDirect('<p class="inheritdescription">This item has no description. ');
+            WriteDirect('Showing description of aliased type.</p>');
+            WriteDescription(TPasItem(AliasType));
+          end;
+        end
+        else
+          WriteDirect('<p class="nodescription">This item has no description.</p>');
       end;
     finally
       FreeAndNil(InheritedDescriptions);
+    end;
+  end;
+
+  procedure WriteDescription(AItem: TPasItem);
+  begin
+    if AItem.AbstractDescription <> '' then
+    begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+
+      WriteSpellChecked(AItem.AbstractDescription);
+
+      if AItem.DetailedDescription <> '' then
+      begin
+        if not AItem.AbstractDescriptionWasAutomatic then
+        begin
+          WriteEndOfParagraph; { always try to write closing </p>, to be clean }
+          WriteStartOfParagraph;
+        end;
+        WriteSpellChecked(AItem.DetailedDescription);
+      end;
+
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end else if AItem.DetailedDescription <> '' then
+    begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+
+      WriteSpellChecked(AItem.DetailedDescription);
+
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end else
+    begin
+      if (AItem is TPasItem) then
+        WriteNoDescription(AItem as TPasItem);
     end;
   end;
 
@@ -1430,35 +1484,7 @@ begin
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
 
-  if AItem.AbstractDescription <> '' then
-  begin
-    if OpenCloseParagraph then WriteStartOfParagraph;
-
-    WriteSpellChecked(AItem.AbstractDescription);
-
-    if AItem.DetailedDescription <> '' then
-    begin
-      if not AItem.AbstractDescriptionWasAutomatic then
-      begin
-        WriteEndOfParagraph; { always try to write closing </p>, to be clean }
-        WriteStartOfParagraph;
-      end;
-      WriteSpellChecked(AItem.DetailedDescription);
-    end;
-
-    if OpenCloseParagraph then WriteEndOfParagraph;
-  end else if AItem.DetailedDescription <> '' then
-  begin
-    if OpenCloseParagraph then WriteStartOfParagraph;
-
-    WriteSpellChecked(AItem.DetailedDescription);
-
-    if OpenCloseParagraph then WriteEndOfParagraph;
-  end else
-  begin
-    if (AItem is TPasItem) then
-      WriteNoDescription(AItem as TPasItem);
-  end;
+  WriteDescription(AItem);
 
   WriteAttributes(AItem.Attributes);
 

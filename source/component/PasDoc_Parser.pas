@@ -375,6 +375,9 @@ type
       returning is as P. }
     procedure ParseEnum(out p: TPasEnum; const Name: string;
       const RawDescriptionInfo: TRawDescriptionInfo);
+    { Parse an alias type, assuming the "type" token has just been read. }
+    procedure ParseStrongAlias(out P: TPasAliasType; const Name: string;
+      const RawDescriptionInfo: TRawDescriptionInfo);
 
     procedure ParseUses(const U: TPasUnit);
 
@@ -1432,6 +1435,59 @@ begin
   end;
 end;
 
+procedure TParser.ParseStrongAlias(out P: TPasAliasType; const Name: string;
+  const RawDescriptionInfo: TRawDescriptionInfo);
+var
+  AliasName, LTemp: string;
+  T: TToken;
+  i: Integer;
+begin
+  P := TPasAliasType.Create;
+  T := nil;
+  try
+    P.Name := Name;
+    P.RawDescriptionInfo^ := RawDescriptionInfo;
+    P.SetAttributes(CurrentAttributes);
+
+    T := GetNextToken(LTemp);
+    if T.MyType <> TOK_IDENTIFIER then
+      DoError('Unexpected %s', [T.Description]);
+    AliasName := T.Data;
+    FreeAndNil(T);
+    For i := 1 to 2 do
+    begin
+      T := PeekNextToken;
+      If t.IsSymbol(SYM_PERIOD) then
+      begin
+        Scanner.ConsumeToken;
+        FreeAndNil(T);
+
+        T := GetNextToken(LTemp);
+        if T.MyType <> TOK_IDENTIFIER then
+          DoError('Unexpected %s', [T.Description]);
+        AliasName := AliasName + '.' + T.Data;
+        FreeAndNil(T);
+      end;
+    end;
+    P.AliasName:= AliasName;
+    P.IsStrongAlias:= true;
+    P.FullDeclaration := Name + ' = type ' + AliasName;
+
+    T := PeekNextToken;
+    if T.IsSymbol(SYM_SEMICOLON) then
+    begin
+      P.FullDeclaration := P.FullDeclaration + ';';
+      Scanner.ConsumeToken;
+      FreeAndNil(T);
+    end;
+    ParseHintDirectives(P, true, true);
+  except
+    P.Free;
+    T.Free;
+    raise;
+  end;
+end;
+
 procedure TParser.ParseTVCSection(U: TPasUnit);
 var
   Mode: TItemParseMode;
@@ -2278,6 +2334,34 @@ procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
       end;
   end;
 
+  procedure TryPromoteToWeakAlias(var P: TPasType);
+  var
+    MaybeAliasName: String;
+    WeakAliasType: TPasAliasType;
+  begin
+    MaybeAliasName := P.FullDeclaration
+      .SubString(pos('=', P.FullDeclaration)).TrimLeft
+      .TrimRight([';']).TrimRight;
+
+    if IsValidMultipartName(MaybeAliasName) then
+    begin
+      WeakAliasType := TPasAliasType.Create;
+      with WeakAliasType do
+      begin
+        // copy properties
+        Name := P.Name;
+        FullDeclaration:= P.FullDeclaration;
+        DeprecatedNote:= P.DeprecatedNote;
+        HintDirectives:= P.HintDirectives;
+
+        IsStrongAlias:= false;
+        AliasName:= MaybeAliasName;
+      end;
+      P.Free;
+      P := WeakAliasType;
+    end;
+  end;
+
 var
   RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
@@ -2285,8 +2369,8 @@ var
   LCollected, LTemp, TypeNameWithGeneric: string;
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
+  AliasType: TPasAliasType;
   T, T2: TToken;
-  IsStrongAlias: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2369,8 +2453,12 @@ begin
               exit;
             end else
             begin
-              LCollected := LCollected + LTemp;
-              FreeAndNil(t);
+              ParseStrongAlias(AliasType, TypeName, RawDescriptionInfo);
+              if U <> nil then
+                U.AddType(AliasType)
+              else
+                FreeAndNil(AliasType);
+              exit;
             end;
           end;
         KEY_PACKED: begin
@@ -2426,6 +2514,7 @@ begin
       NormalType.FullDeclaration := LCollected;
       SkipDeclaration(NormalType, false);
       NormalType.Name := TypeName;
+      TryPromoteToWeakAlias(NormalType);
       NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
       NormalType.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(NormalType);
