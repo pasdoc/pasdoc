@@ -1220,12 +1220,58 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 
   procedure WriteDescription(AItem: TPasItem); forward;
 
+  function WriteAliasDescription(const AItem: TPasItem): boolean;
+  var
+    AliasType: TPasAliasType;
+    MissingDescription: Boolean;
+    OriginalType: TBaseItem;
+  begin
+    if AItem is TPasAliasType then
+    begin
+      MissingDescription := false;
+      AliasType := TPasAliasType(AItem);
+      while true do
+      begin
+        if AliasType.IsStrongAlias then
+          MissingDescription:= true;
+        OriginalType := SearchItem(AliasType.AliasName, AliasType, false);
+        if Assigned(OriginalType) and (OriginalType is TPasItem) then
+        begin
+          if OriginalType = AItem then
+          begin
+            WriteDirect('<p class="nodescription">Circular reference in alias definition.</p>');
+            exit(true);
+          end else
+          if (OriginalType is TPasItem) and
+             ((TPasItem(OriginalType).AbstractDescription <> '') or
+             (TPasItem(OriginalType).DetailedDescription <> '')) then
+          begin
+            // in case of a strong alias, a description would have be needed
+            if MissingDescription then
+            begin
+              WriteDirect('<p class="inheritdescription">This item has no description. ');
+              WriteDirect('Showing description of aliased type.</p>');
+            end;
+            WriteDescription(TPasItem(OriginalType));
+            exit(true);
+          end else
+          if OriginalType is TPasAliasType then
+          begin
+            AliasType := TPasAliasType(OriginalType);
+            continue;
+          end;
+        end;
+        exit(false); // did not find an original type with a description
+      end;
+    end else
+      exit(false); // not an alias
+  end;
+
   procedure WriteNoDescription(const AItem: TPasItem);
   var
     InheritedDescriptions: TStringPairVector;
     AncestorItem: TPasItem;
     I: Integer;
-    AliasType: TBaseItem;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
     try
@@ -1272,24 +1318,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        if AItem is TPasAliasType then
-          AliasType := SearchItem(TPasAliasType(AItem).AliasName, AItem, false)
-        else
-          AliasType := nil;
-        if Assigned(AliasType) and (AliasType is TPasItem) then
-        begin
-          // in case of a weak alias, the description is the same
-          if not TPasAliasType(AItem).IsStrongAlias then
-             WriteDescription(TPasItem(AliasType))
-          else
-          begin
-            // in case of a strong alias, as description would be needed
-            WriteDirect('<p class="inheritdescription">This item has no description. ');
-            WriteDirect('Showing description of aliased type.</p>');
-            WriteDescription(TPasItem(AliasType));
-          end;
-        end
-        else
+        If not WriteAliasDescription(AItem) then
           WriteDirect('<p class="nodescription">This item has no description.</p>');
       end;
     finally
