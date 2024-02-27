@@ -1239,8 +1239,8 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         begin
           if OriginalType = AItem then
           begin
-            WriteDirect('<p class="nodescription">Circular reference in alias definition.</p>');
-            exit(true);
+            // circular reference in alias definition
+            exit(false);
           end else
           if (OriginalType is TPasItem) and
              ((TPasItem(OriginalType).AbstractDescription <> '') or
