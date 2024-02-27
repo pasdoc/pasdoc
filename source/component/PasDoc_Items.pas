@@ -3102,6 +3102,7 @@ initialization
   TSerializable.Register(TPasConstant);
   TSerializable.Register(TPasFieldVariable);
   TSerializable.Register(TPasType);
+  TSerializable.Register(TPasAliasType);
   TSerializable.Register(TPasEnum);
   TSerializable.Register(TPasRoutine);
   TSerializable.Register(TPasProperty);
