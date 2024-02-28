@@ -1087,6 +1087,11 @@ var
     until (Result = nil) or (Result.MyType <> TOK_WHITESPACE);
   end;
 
+  procedure UndoToken(var T: TToken);
+  begin
+    Tokenizer.UnGetToken(T);
+  end;
+
   (* Consume tokens after "defined.
      We handle two forms:
        {$IF DEFINED(MySym)}
@@ -1173,7 +1178,32 @@ var
     FreeAndNil(T);
   end;
 *)
+
   function ParseExpression: Variant; forward;
+
+  function ParseLitteral(Data: string): Variant;
+  var
+    Int64Value: int64;
+    FloatValue: double;
+    ErrorPos: integer;
+  begin
+    Val(Data, Int64Value, ErrorPos);
+    if ErrorPos = 0 then
+      exit(Int64Value)
+    else
+    begin
+      Val(Data, FloatValue, ErrorPos);
+      if ErrorPos = 0 then
+        exit(FloatValue)
+      else
+        exit(Data); // string
+    end;
+  end;
+
+  function IsNumber(Value: Variant): boolean;
+  begin
+    result := VarType(Value) in [varInt64, varDouble];
+  end;
 
   { Consume tokens constituting a function, like "defined(xxx)".
     See https://freepascal.org/docs-html/current/prog/progsu127.html . }
@@ -1181,9 +1211,7 @@ var
   var
     T: TToken;
     Identifier: String;
-    SymbolIndex, ErrorPos: Integer;
-    SymbolInt64: int64;
-    SymbolFloat: Extended;
+    SymbolIndex: Integer;
   begin
     T := NextToken;
     If T.IsSymbol(SYM_LEFT_PARENTHESIS) then
@@ -1197,11 +1225,16 @@ var
         raise EInvalidIfCondition.Create('Closing bracket expected but %s found', [T.Description]);
       end;
       FreeAndNil(T);
+      exit;
     end;
     try
-      { if it's a number, than anything <> 0 results in true. }
       if T.MyType = TOK_NUMBER then
-        Exit(StrToInt(T.Data) <> 0);
+      begin
+        result := ParseLitteral(T.Data);
+        if Not IsNumber(result) then
+          raise EInvalidIfCondition.CreateFmt('Invalid numeric value "%s"', [T.Data]);
+        exit;
+      end;
 
       if T.MyType <> TOK_IDENTIFIER then
         raise EInvalidIfCondition.CreateFmt('Expected identifier (function name), got %s', [T.Description]);
@@ -1209,20 +1242,20 @@ var
     finally FreeAndNil(T) end;
 
     if Identifier = 'false' then
-      Result := false
+      Result := int64(false)
     else
     if Identifier = 'true' then
-      Result := true
+      Result := int64(true)
     else
     if Identifier = 'defined' then
-      Result := ParseDefinedFunctionParameter
+      Result := int64(ParseDefinedFunctionParameter)
     else
     if Identifier = 'undefined' then
       // just negate the result defined(xxx) would have
-      Result := not ParseDefinedFunctionParameter
+      Result := int64(not ParseDefinedFunctionParameter)
     else
     if Identifier = 'option' then
-      Result := IsSwitchDefined(ParseOptionFunctionParameter)
+      Result := int64(IsSwitchDefined(ParseOptionFunctionParameter))
     else
     if Identifier = 'sizeof' then
       raise EInvalidIfCondition.Create('Evaluating "sizeof" function for $if / $elseif not implemented', [])
@@ -1236,28 +1269,19 @@ var
       begin
         If FSymbols[SymbolIndex].Value = '' then
           raise EInvalidIfCondition.CreateFmt('Macro "%s" doesn''t have a value', [Identifier]);
-        Val(FSymbols[SymbolIndex].Value, SymbolInt64, ErrorPos);
-        if ErrorPos = 0 then
-          Result := SymbolInt64
-        else
-        begin
-          Val(FSymbols[SymbolIndex].Value, SymbolFloat, ErrorPos);
-          if ErrorPos = 0 then
-            Result := SymbolFloat
-          else
-            Result := FSymbols[SymbolIndex].Value;
-        end;
+        Result := ParseLitteral(FSymbols[SymbolIndex].Value);
       end
       else
-        raise EInvalidIfCondition.CreateFmt('Unknown function "%s" in $if / $elseif', [Identifier]);
+        raise EInvalidIfCondition.CreateFmt('Unknown function or macro "%s" in $if / $elseif', [Identifier]);
     end;
   end;
 
-  function NeedBoolean(Value: Variant): boolean;
+  function NeedInt64(Value: Variant): int64;
   begin
-    if VarType(Value) <> vtBoolean then
-      raise EInvalidIfCondition.Create('Boolean value expected but "%s" found', [Value]);
-    result := Value;
+    if VarType(Value) = varInt64 then
+      exit(Value)
+    else
+      raise EInvalidIfCondition.Create('Int64 value expected but "%s" found', [Value]);
   end;
 
   { Consume tokens constituting a function
@@ -1270,17 +1294,62 @@ var
     if T.IsKeyWord(KEY_NOT) then
     begin
       FreeAndNil(T);
-      Result := not NeedBoolean(ParseFunction);
+      // the NOT operator accepts any integer
+      Result := int64(NeedInt64(ParseFunction) = 0);
     end else
     begin
-      Tokenizer.UnGetToken(T);
+      UndoToken(T);
       Result := ParseFunction;
     end;
   end;
 
-  function IsNumber(Value: Variant): boolean;
+  procedure CheckNumberTypes(LeftOperand, RightOperand: Variant);
   begin
-    result := VarType(Value) in [vtInt64, vtExtended];
+    If not IsNumber(LeftOperand) then
+      raise EInvalidIfCondition.Create('Number expected but "%s" found', [LeftOperand]);
+    If not IsNumber(RightOperand) then
+      raise EInvalidIfCondition.Create('Number expected but "%s" found', [RightOperand]);
+  end;
+
+  function ParseMultiplication: Variant;
+  var
+    T: TToken;
+    RightOperand: Variant;
+  begin
+    Result := ParseFunctionNegated;
+    repeat
+      T := NextToken;
+      if not Assigned(T) then break;
+      try
+        if T.IsKeyWord(KEY_AND) then
+          Result := NeedInt64(Result) and NeedInt64(ParseFunctionNegated)
+        else
+        if T.IsKeyWord(KEY_DIV) then
+          Result := NeedInt64(Result) div NeedInt64(ParseFunctionNegated)
+        else
+        if T.IsKeyWord(KEY_MOD) then
+          Result := NeedInt64(Result) mod NeedInt64(ParseFunctionNegated)
+        else
+        if T.IsSymbol(SYM_ASTERISK) then
+        begin
+          RightOperand := ParseFunctionNegated;
+          CheckNumberTypes(Result, RightOperand);
+          Result := Result * RightOperand
+        end
+        else
+        if T.IsSymbol(SYM_SLASH) then
+        begin
+          RightOperand := ParseFunctionNegated;
+          CheckNumberTypes(Result, RightOperand);
+          Result := Result / RightOperand
+        end
+        else
+        begin
+          UndoToken(T);
+          break;
+        end;
+      finally FreeAndNil(T) end;
+    until false;
   end;
 
   procedure CheckComparisonTypes(LeftOperand, RightOperand: Variant);
@@ -1297,6 +1366,42 @@ var
     end;
   end;
 
+  function ParseAddition: Variant;
+  var
+    T: TToken;
+    RightOperand: Variant;
+  begin
+    Result := ParseMultiplication;
+    repeat
+      T := NextToken;
+      if not Assigned(T) then break;
+      try
+        if T.IsKeyWord(KEY_OR) then
+          Result := NeedInt64(Result) or NeedInt64(ParseMultiplication)
+        else
+        if T.IsSymbol(SYM_PLUS) then
+        begin
+          RightOperand := ParseMultiplication;
+          // strings can be concatenated with "+"
+          CheckComparisonTypes(Result, RightOperand);
+          Result := Result + RightOperand
+        end
+        else
+        if T.IsSymbol(SYM_MINUS) then
+        begin
+          RightOperand := ParseMultiplication;
+          CheckNumberTypes(Result, RightOperand);
+          Result := Result - RightOperand
+        end
+        else
+        begin
+          UndoToken(T);
+          break;
+        end;
+      finally FreeAndNil(T) end;
+    until false;
+  end;
+
   { Consume tokens constituting an expression, like "defined(xxx) or defined(yyy)".
     See https://freepascal.org/docs-html/current/prog/progsu127.html . }
   function ParseExpression: Variant;
@@ -1304,54 +1409,75 @@ var
     T: TToken;
     RightOperand: Variant;
   begin
-    Result := ParseFunctionNegated;
-    T := NextToken;
-    if T <> nil then
-    begin
+    Result := ParseAddition;
+    repeat
+      T := NextToken;
+      if not Assigned(T) then break;
       try
-        if T.IsKeyWord(KEY_AND) then
-          Result := NeedBoolean(Result) and NeedBoolean(ParseExpression)
-        else
-        if T.IsKeyWord(KEY_OR) then
-          Result := NeedBoolean(Result) or NeedBoolean(ParseExpression)
-        else
         if T.IsSymbol(SYM_EQUAL) then
         begin
-          RightOperand := ParseExpression;
+          RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := Result = RightOperand
+          Result := int64(Result = RightOperand)
         end
         else
         if T.IsSymbol(SYM_LESS_THAN) then
         begin
-          RightOperand := ParseExpression;
+          RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := Result < RightOperand
+          Result := int64(Result < RightOperand)
         end
         else
         if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
         begin
-          RightOperand := ParseExpression;
+          RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := Result <= RightOperand
+          Result := int64(Result <= RightOperand)
         end
         else
         if T.IsSymbol(SYM_GREATER_THAN) then
         begin
-          RightOperand := ParseExpression;
+          RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := Result > RightOperand
+          Result := int64(Result > RightOperand)
         end
         else
         if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
         begin
-          RightOperand := ParseExpression;
+          RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := Result >= RightOperand
+          Result := int64(Result >= RightOperand)
         end
         else
-          raise EInvalidIfCondition.Create('Cannot handle operator function "%s" in $if / $elseif', [T.Description]);
+        begin
+          UndoToken(T);
+          break;
+        end;
       finally FreeAndNil(T) end;
+    until false;
+  end;
+
+  function NeedBoolean(Value: Variant): boolean;
+  begin
+    // in directives, a boolean is an integer equal to 0 or 1
+    if VarType(Value) = varInt64 then
+    begin
+      if Value = 1 then exit(true);
+      if Value = 0 then exit(false);
+    end;
+    raise EInvalidIfCondition.Create('Boolean value expected but "%s" found', [Value]);
+  end;
+
+  procedure CheckLastToken;
+  var
+    T: TToken;
+  begin
+    T := NextToken;
+    if Assigned(T) then
+    begin
+      DoMessage(2, pmtWarning,
+        'Token "%s" is ignored in $if / $elseif condition', [T.Description]);
+      FreeAndNil(T);
     end;
   end;
 
@@ -1361,6 +1487,7 @@ begin
   try
     try
       Result := NeedBoolean(ParseExpression);
+      CheckLastToken;
     except
       on E: EInvalidIfCondition do
       begin
