@@ -1234,6 +1234,10 @@ var
         if Not IsNumber(result) then
           raise EInvalidIfCondition.CreateFmt('Invalid numeric value "%s"', [T.Data]);
         exit;
+      end else
+      if T.MyType = TOK_STRING then
+      begin
+        exit(T.StringContent);
       end;
 
       if T.MyType <> TOK_IDENTIFIER then
@@ -1289,13 +1293,18 @@ var
   function ParseFunctionNegated: Variant;
   var
     T: TToken;
+    Operand: Int64;
   begin
     T := NextToken;
     if T.IsKeyWord(KEY_NOT) then
     begin
       FreeAndNil(T);
       // the NOT operator accepts any integer
-      Result := int64(NeedInt64(ParseFunction) = 0);
+      Operand := NeedInt64(ParseFunction);
+      If (Operand = 0) or (Operand = 1) then
+        Result := 1 - Operand
+      else
+        Result := not Operand;
     end else
     begin
       UndoToken(T);
@@ -1378,6 +1387,9 @@ var
       try
         if T.IsKeyWord(KEY_OR) then
           Result := NeedInt64(Result) or NeedInt64(ParseMultiplication)
+        else
+        if T.IsKeyWord(KEY_XOR) then
+          Result := NeedInt64(Result) xor NeedInt64(ParseMultiplication)
         else
         if T.IsSymbol(SYM_PLUS) then
         begin
