@@ -458,6 +458,7 @@ type
     procedure ParseProgram(U: TPasUnit);
     procedure ParseProgramOrLibraryUses(U: TPasUnit);
     procedure ParseLibrary(U: TPasUnit);
+    procedure AddDirectives(const Directives: TStringVector);
 
   public
     { Create a parser, initialize the scanner with input stream S.
@@ -556,7 +557,7 @@ begin
 
   Scanner := TScanner.Create(InputStream, OnMessageEvent,
     VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
-  Scanner.AddSymbols(Directives);
+  AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;
   FIgnoreMarkers := TStringlist.Create;
@@ -2513,6 +2514,22 @@ begin
   ParseProgramOrLibraryUses(U);
 end;
 
+procedure TParser.AddDirectives(const Directives: TStringVector);
+var
+  D: string;
+  IndexEqual: SizeInt;
+begin
+  for D in Directives do
+    begin
+      IndexEqual := pos(':=', D);
+      if IndexEqual > 0 then
+      begin
+        Scanner.AddMacro(copy(D, 1, IndexEqual-1), D.Substring(IndexEqual+1));
+      end else
+        Scanner.AddSymbol(D);
+    end;
+end;
+
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseUnitOrProgram(var U: TPasUnit);
@@ -3893,10 +3910,9 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx(const U: TPasUnit;
-  const CioName, CioNameWithGeneric: string;
-  CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
-  const IsInRecordCase: Boolean);
+procedure TParser.ParseCioEx(const U: TPasUnit; const CioName,
+  CioNameWithGeneric: string; CIOType: TCIOType;
+  const RawDescriptionInfo: TRawDescriptionInfo; const IsInRecordCase: boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
     otherwise modifying one of them always needs to be carefully duplicated. }

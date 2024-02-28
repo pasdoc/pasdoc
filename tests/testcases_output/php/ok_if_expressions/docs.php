@@ -10,7 +10,6 @@ $pasdoc = array(
   'True_IF' => array('html_filename' => 'ok_if_expressions.html#True_IF', 'type' => 'procedure'),
   'SizeOf_IF' => array('html_filename' => 'ok_if_expressions.html#SizeOf_IF', 'type' => 'procedure'),
   'Declared_IF' => array('html_filename' => 'ok_if_expressions.html#Declared_IF', 'type' => 'procedure'),
-  'WindowsAsUnix_IF_EQUALS' => array('html_filename' => 'ok_if_expressions.html#WindowsAsUnix_IF_EQUALS', 'type' => 'procedure'),
   'POSIXAsUnix_IF_EQUALS' => array('html_filename' => 'ok_if_expressions.html#POSIXAsUnix_IF_EQUALS', 'type' => 'procedure'),
   'FpcAndUnix_IF_2' => array('html_filename' => 'ok_if_expressions.html#FpcAndUnix_IF_2', 'type' => 'procedure'),
   'Always' => array('html_filename' => 'ok_if_expressions.html#Always', 'type' => 'procedure'),
