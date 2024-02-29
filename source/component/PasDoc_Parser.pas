@@ -1469,7 +1469,7 @@ begin
         FreeAndNil(T);
       end;
     end;
-    P.AliasName:= AliasName;
+    P.AliasedName:= AliasName;
     P.IsStrongAlias:= true;
     P.FullDeclaration := Name + ' = type ' + AliasName;
 
@@ -2355,7 +2355,7 @@ procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
         HintDirectives:= P.HintDirectives;
 
         IsStrongAlias:= false;
-        AliasName:= MaybeAliasName;
+        AliasedName:= MaybeAliasName;
       end;
       P.Free;
       P := WeakAliasType;
