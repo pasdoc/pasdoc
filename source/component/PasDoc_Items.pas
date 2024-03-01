@@ -640,6 +640,9 @@ type
     FIsStrongAlias: boolean;
     FAliasedName: string;
     FAliasedType: TPasType;
+  protected
+    procedure Serialize(const ADestination: TStream); override;
+    procedure Deserialize(const ASource: TStream); override;
   public
     procedure GetAliasedItem(out AliasedItem: TPasItem; out ViaStrongAlias: boolean); override;
 
@@ -2080,6 +2083,20 @@ begin
 end;
 
 { TPasAliasType }
+
+procedure TPasAliasType.Serialize(const ADestination: TStream);
+begin
+  inherited Serialize(ADestination);
+  SaveStringToStream(FAliasedName, ADestination);
+  ADestination.Write(FIsStrongAlias, SizeOf(FIsStrongAlias));
+end;
+
+procedure TPasAliasType.Deserialize(const ASource: TStream);
+begin
+  inherited Deserialize(ASource);
+  FAliasedName := LoadStringFromStream(ASource);
+  ASource.Read(FIsStrongAlias, SizeOf(FIsStrongAlias));
+end;
 
 procedure TPasAliasType.GetAliasedItem(out AliasedItem: TPasItem; out
   ViaStrongAlias: boolean);
