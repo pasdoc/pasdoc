@@ -1136,11 +1136,7 @@ begin
       DoError('Tokenizer: could not read character', []);
     end;
     if c = QuoteChar then begin
-      if not PeekChar(c) then begin
-        FreeAndNil(t);
-        DoError('Tokenizer: could not peek character', [])
-      end;
-      if c = QuoteChar then { escaped single quote within string } begin
+      if PeekChar(c) and (c = QuoteChar) then { escaped single quote within string } begin
         ConsumeChar;
         t.Data := t.Data + QuoteChar;
       end

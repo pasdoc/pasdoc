@@ -57,10 +57,6 @@
 <param name="Local" value="ok_if_expressions.html#Declared_IF">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="WindowsAsUnix_IF_EQUALS">
-<param name="Local" value="ok_if_expressions.html#WindowsAsUnix_IF_EQUALS">
-</object>
-<li><object type="text/sitemap">
 <param name="Name" value="POSIXAsUnix_IF_EQUALS">
 <param name="Local" value="ok_if_expressions.html#POSIXAsUnix_IF_EQUALS">
 </object>
