@@ -283,6 +283,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+function CompareStringsLength(List: TStringList; Item1, Item2: Integer): Integer;
+begin
+  Result := Length(List[Item2]) - Length(List[Item1]);
+end;
+
 procedure TPasDoc.HandleStream(
   const InputStream: TStream;
   const SourceFileName: string);
@@ -300,6 +305,11 @@ begin
     {$IFNDEF STRING_UNICODE}
     SkipBOM(InputStream);
     {$ENDIF}
+
+    { We sort CommentMarkers, since the longer one should be checked first.
+      This is important when one is a prefix of another, e.g. * and ** .
+      Users don't need to care about it, since we sort. }
+    CommentMarkers.CustomSort({$ifdef FPC}@{$endif} CompareStringsLength);
 
     p.ShowVisibilities := ShowVisibilities;
     p.ImplicitVisibility := ImplicitVisibility;
