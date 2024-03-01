@@ -1,0 +1,8 @@
+<unit name="ok_multiple_markers_prefix.pas">
+  <variable name="Marker1" declaration="Marker1: Integer;" visibility="published">
+    <description><detailed>Some comment.</detailed></description>
+  </variable>
+  <variable name="Marker2" declaration="Marker2: Integer;" visibility="published">
+    <description><detailed>Another comment.</detailed></description>
+  </variable>
+</unit>

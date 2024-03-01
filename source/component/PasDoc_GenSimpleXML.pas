@@ -212,23 +212,13 @@ procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
       WriteConstant(Item.Members.PasItemAt[i]);
   end;
 
-var
-  AliasedItem: TPasItem;
-  ViaStrongAlias: boolean;
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
       '" visibility="' + VisToStr(item.visibility) + '">');
   if item.HasDescription then
-    WriteDirectLine(space + '  ' + ItemDescription(Item))
-  else
-  begin
-    // description is the same as the original type if it is a weak alias
-    item.GetAliasedItem(AliasedItem, ViaStrongAlias);
-    if Assigned(AliasedItem) and not ViaStrongAlias then
-      WriteDirectLine(space + '  ' + ItemDescription(AliasedItem));
-  end;
+    WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
   begin
     Indent;

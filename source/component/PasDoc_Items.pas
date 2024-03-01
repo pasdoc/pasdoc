@@ -2103,7 +2103,8 @@ begin
         exit;
       end else
       // does the original type have a description
-      if OriginalType.HasDescription then
+      if (OriginalType.AbstractDescription <> '') or
+         (OriginalType.DetailedDescription <> '') then
       begin
         AliasedItem := OriginalType;
         exit;
