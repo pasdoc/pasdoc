@@ -3910,9 +3910,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx(const U: TPasUnit; const CioName,
-  CioNameWithGeneric: string; CIOType: TCIOType;
-  const RawDescriptionInfo: TRawDescriptionInfo; const IsInRecordCase: boolean);
+procedure TParser.ParseCioEx(const U: TPasUnit;
+  const CioName, CioNameWithGeneric: string;
+  CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: Boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
     otherwise modifying one of them always needs to be carefully duplicated. }
