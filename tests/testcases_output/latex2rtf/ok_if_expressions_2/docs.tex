@@ -58,25 +58,9 @@
 \begin{document}
 % special variable used for calculating some widths.
 \newlength{\tmplength}
-\chapter{Unit ok{\_}if{\_}expressions}
-\section{Description}
-Testcase for various conditional directives, primarily {\$}if and {\$}elseif.
-\section{Overview}
-\begin{description}
-\item[\texttt{Windows{\_}IFDEF}]
-\item[\texttt{Windows{\_}IFDEF{\_}ELSE}]
-\item[\texttt{Windows{\_}IF}]
-\item[\texttt{Windows{\_}IF{\_}DEFINED{\_}ALT}]
-\item[\texttt{OptionR{\_}IF}]
-\item[\texttt{True{\_}IF}]
-\item[\texttt{SizeOf{\_}IF}]
-\item[\texttt{Declared{\_}IF}]
-\item[\texttt{POSIXAsUnix{\_}IF{\_}EQUALS}]
-\item[\texttt{FpcAndUnix{\_}IF{\_}2}]
-\item[\texttt{Always}]
-\end{description}
-\section{Functions and Procedures}
-\subsection*{Windows{\_}IFDEF}
+\chapter{Unit ok{\_}if{\_}expressions{\_}2}
+\section{Constants}
+\subsection*{{\_}TrueXorTrueIsFalse}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -90,12 +74,15 @@ Testcase for various conditional directives, primarily {\$}if and {\$}elseif.
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Windows{\_}IFDEF;\end{ttfamily}
+{\_}TrueXorTrueIsFalse =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Windows{\_}IFDEF{\_}ELSE}
+\subsection*{{\_}3Plus1Is4}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -109,12 +96,15 @@ procedure Windows{\_}IFDEF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Windows{\_}IFDEF{\_}ELSE;\end{ttfamily}
+{\_}3Plus1Is4 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Windows{\_}IF}
+\subsection*{{\_}APlusBIsAB}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -128,12 +118,15 @@ procedure Windows{\_}IFDEF{\_}ELSE;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Windows{\_}IF;\end{ttfamily}
+{\_}APlusBIsAB =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Windows{\_}IF{\_}DEFINED{\_}ALT}
+\subsection*{{\_}3Plus2Times2Is7}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -147,12 +140,15 @@ procedure Windows{\_}IF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Windows{\_}IF{\_}DEFINED{\_}ALT;\end{ttfamily}
+{\_}3Plus2Times2Is7 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{OptionR{\_}IF}
+\subsection*{{\_}3Minus1IsNot4}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -166,12 +162,15 @@ procedure Windows{\_}IF{\_}DEFINED{\_}ALT;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure OptionR{\_}IF;\end{ttfamily}
+{\_}3Minus1IsNot4 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{True{\_}IF}
+\subsection*{{\_}3Minus2IsTrue}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -185,12 +184,15 @@ procedure OptionR{\_}IF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure True{\_}IF;\end{ttfamily}
+{\_}3Minus2IsTrue =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{SizeOf{\_}IF}
+\subsection*{{\_}Not3Plus5IsTrue}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -204,12 +206,93 @@ procedure True{\_}IF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure SizeOf{\_}IF;\end{ttfamily}
+{\_}Not3Plus5IsTrue =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT 3 = {-}4
+
+\end{list}
+\subsection*{{\_}Not1Is0}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}Not1Is0 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT as an exception swaps 0 and 1
+
+\end{list}
+\subsection*{{\_}Not0Is1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}Not0Is1 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT as an exception swaps 0 and 1
+
+\end{list}
+\subsection*{{\_}2Or4Is6}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}2Or4Is6 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Declared{\_}IF}
+\subsection*{{\_}6And4Is4}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -223,12 +306,15 @@ procedure SizeOf{\_}IF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Declared{\_}IF;\end{ttfamily}
+{\_}6And4Is4 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{POSIXAsUnix{\_}IF{\_}EQUALS}
+\subsection*{{\_}2And6Is2}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -242,12 +328,15 @@ procedure Declared{\_}IF;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure POSIXAsUnix{\_}IF{\_}EQUALS;\end{ttfamily}
+{\_}2And6Is2 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{FpcAndUnix{\_}IF{\_}2}
+\subsection*{FPCVersionAtLeast322}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -261,12 +350,15 @@ procedure POSIXAsUnix{\_}IF{\_}EQUALS;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure FpcAndUnix{\_}IF{\_}2;\end{ttfamily}
+FPCVersionAtLeast322 =
+
+true
+;\end{ttfamily}
 
 
 \end{flushleft}
 \end{list}
-\subsection*{Always}
+\subsection*{FPCVersionAtLeast422}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
 \setlength{\itemindent}{0cm}
@@ -280,9 +372,35 @@ procedure FpcAndUnix{\_}IF{\_}2;\end{ttfamily}
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-procedure Always;\end{ttfamily}
+FPCVersionAtLeast422 =
+
+false
+;\end{ttfamily}
 
 
 \end{flushleft}
+\end{list}
+\subsection*{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MyConst = 30202;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Note: This does not compile in FPC. But PasDoc, for now, unifies symbols used in {\$}if expressions with macros used during normal Pascal code parsing, so it actually replaces FPC{\_}FULLVERSION below.
+
 \end{list}
 \end{document}

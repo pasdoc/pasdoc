@@ -9,64 +9,80 @@
 </object>
 <ul>
 <li><object type="text/sitemap">
-<param name="Name" value="ok_if_expressions">
-<param name="Local" value="ok_if_expressions.html">
+<param name="Name" value="ok_if_expressions_2">
+<param name="Local" value="ok_if_expressions_2.html">
 </object>
 <ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Classes">
-<param name="Local" value="ok_if_expressions.html#@Classes">
+<param name="Local" value="ok_if_expressions_2.html#@Classes">
 </object>
 <ul>
 </ul>
 <li><object type="text/sitemap">
-<param name="Name" value="Functions and Procedures">
-<param name="Local" value="ok_if_expressions.html#@FuncsProcs">
+<param name="Name" value="Constants">
+<param name="Local" value="ok_if_expressions_2.html#@Constants">
 </object>
 <ul>
 <li><object type="text/sitemap">
-<param name="Name" value="Windows_IFDEF">
-<param name="Local" value="ok_if_expressions.html#Windows_IFDEF">
+<param name="Name" value="_TrueXorTrueIsFalse">
+<param name="Local" value="ok_if_expressions_2.html#_TrueXorTrueIsFalse">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="Windows_IFDEF_ELSE">
-<param name="Local" value="ok_if_expressions.html#Windows_IFDEF_ELSE">
+<param name="Name" value="_3Plus1Is4">
+<param name="Local" value="ok_if_expressions_2.html#_3Plus1Is4">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="Windows_IF">
-<param name="Local" value="ok_if_expressions.html#Windows_IF">
+<param name="Name" value="_APlusBIsAB">
+<param name="Local" value="ok_if_expressions_2.html#_APlusBIsAB">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="Windows_IF_DEFINED_ALT">
-<param name="Local" value="ok_if_expressions.html#Windows_IF_DEFINED_ALT">
+<param name="Name" value="_3Plus2Times2Is7">
+<param name="Local" value="ok_if_expressions_2.html#_3Plus2Times2Is7">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="OptionR_IF">
-<param name="Local" value="ok_if_expressions.html#OptionR_IF">
+<param name="Name" value="_3Minus1IsNot4">
+<param name="Local" value="ok_if_expressions_2.html#_3Minus1IsNot4">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="True_IF">
-<param name="Local" value="ok_if_expressions.html#True_IF">
+<param name="Name" value="_3Minus2IsTrue">
+<param name="Local" value="ok_if_expressions_2.html#_3Minus2IsTrue">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="SizeOf_IF">
-<param name="Local" value="ok_if_expressions.html#SizeOf_IF">
+<param name="Name" value="_Not3Plus5IsTrue">
+<param name="Local" value="ok_if_expressions_2.html#_Not3Plus5IsTrue">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="Declared_IF">
-<param name="Local" value="ok_if_expressions.html#Declared_IF">
+<param name="Name" value="_Not1Is0">
+<param name="Local" value="ok_if_expressions_2.html#_Not1Is0">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="POSIXAsUnix_IF_EQUALS">
-<param name="Local" value="ok_if_expressions.html#POSIXAsUnix_IF_EQUALS">
+<param name="Name" value="_Not0Is1">
+<param name="Local" value="ok_if_expressions_2.html#_Not0Is1">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="FpcAndUnix_IF_2">
-<param name="Local" value="ok_if_expressions.html#FpcAndUnix_IF_2">
+<param name="Name" value="_2Or4Is6">
+<param name="Local" value="ok_if_expressions_2.html#_2Or4Is6">
 </object>
 <li><object type="text/sitemap">
-<param name="Name" value="Always">
-<param name="Local" value="ok_if_expressions.html#Always">
+<param name="Name" value="_6And4Is4">
+<param name="Local" value="ok_if_expressions_2.html#_6And4Is4">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="_2And6Is2">
+<param name="Local" value="ok_if_expressions_2.html#_2And6Is2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FPCVersionAtLeast322">
+<param name="Local" value="ok_if_expressions_2.html#FPCVersionAtLeast322">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FPCVersionAtLeast422">
+<param name="Local" value="ok_if_expressions_2.html#FPCVersionAtLeast422">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyConst">
+<param name="Local" value="ok_if_expressions_2.html#MyConst">
 </object>
 </ul>
 </ul>

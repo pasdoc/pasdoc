@@ -458,6 +458,7 @@ type
     procedure ParseProgram(U: TPasUnit);
     procedure ParseProgramOrLibraryUses(U: TPasUnit);
     procedure ParseLibrary(U: TPasUnit);
+    procedure AddDirectives(const Directives: TStringVector);
 
   public
     { Create a parser, initialize the scanner with input stream S.
@@ -556,7 +557,7 @@ begin
 
   Scanner := TScanner.Create(InputStream, OnMessageEvent,
     VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
-  Scanner.AddSymbols(Directives);
+  AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;
   FIgnoreMarkers := TStringlist.Create;
@@ -2286,7 +2287,6 @@ var
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
   T, T2: TToken;
-  IsStrongAlias: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2511,6 +2511,25 @@ procedure TParser.ParseLibrary(U: TPasUnit);
 begin
   GetAndCheckNextToken(KEY_LIBRARY);
   ParseProgramOrLibraryUses(U);
+end;
+
+procedure TParser.AddDirectives(const Directives: TStringVector);
+const
+  MacroSeparator = ':=';
+var
+  D: string;
+  IndexMacroSeparator: SizeInt;
+begin
+  for D in Directives do
+  begin
+    IndexMacroSeparator := Pos(MacroSeparator, D);
+    if IndexMacroSeparator > 0 then
+    begin
+      Scanner.AddMacro(Copy(D, 1, IndexMacroSeparator - 1),
+        SEnding(D, IndexMacroSeparator + Length(MacroSeparator)));
+    end else
+      Scanner.AddSymbol(D);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }

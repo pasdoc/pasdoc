@@ -16,8 +16,6 @@
   </routine>
   <routine name="Declared_IF" type="procedure" declaration="procedure Declared_IF;" visibility="published">
   </routine>
-  <routine name="WindowsAsUnix_IF_EQUALS" type="procedure" declaration="procedure WindowsAsUnix_IF_EQUALS;" visibility="published">
-  </routine>
   <routine name="POSIXAsUnix_IF_EQUALS" type="procedure" declaration="procedure POSIXAsUnix_IF_EQUALS;" visibility="published">
   </routine>
   <routine name="FpcAndUnix_IF_2" type="procedure" declaration="procedure FpcAndUnix_IF_2;" visibility="published">
