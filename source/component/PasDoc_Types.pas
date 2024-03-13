@@ -97,6 +97,9 @@ const
   and splitted name is returned as NameParts. }
 function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 
+{ Checks that the string is a valid multipart identifier }
+function IsValidMultipartName(S: string): boolean;
+
 { Simply returns an array with Length = 1 and one item = S. }
 function OneNamePart(const S: string): TNameParts;
 
@@ -210,6 +213,13 @@ begin
 
   NameParts := SplitString(s, '.');
   Result := True;
+end;
+
+function IsValidMultipartName(S: string): boolean;
+var
+  DummyParts: TNameParts;
+begin
+  result := SplitNameParts(S, DummyParts);
 end;
 
 function OneNamePart(const S: string): TNameParts;

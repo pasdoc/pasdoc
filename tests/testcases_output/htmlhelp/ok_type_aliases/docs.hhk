@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType">
+<param name="Local" value="ok_type_aliases.TOriginalType.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TOriginalType.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TOriginalType.html#y">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TStrongAliasType">
+<param name="Local" value="ok_type_aliases.html#TStrongAliasType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeakAliasType">
+<param name="Local" value="ok_type_aliases.html#TWeakAliasType">
+</object>
+</ul>
+</body></html>
