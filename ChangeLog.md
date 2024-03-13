@@ -21,6 +21,9 @@
 * Overloaded methods are now accounted for better (Elliot Hillary):
     - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
     - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
+* Type helpers are now parsed and documented (Johann Elsass aka circular17)
+* Much more complete expression evaluation for $if / $elseif (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
+* Ability to define macros on command-line like "-D FPC_FULLVERSION:=30202" that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
 
 ## Version 0.16.0 (2021-02-07)
 
