@@ -2287,7 +2287,6 @@ var
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
   T, T2: TToken;
-  IsStrongAlias: boolean;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2515,19 +2514,22 @@ begin
 end;
 
 procedure TParser.AddDirectives(const Directives: TStringVector);
+const
+  MacroSeparator = ':=';
 var
   D: string;
-  IndexEqual: SizeInt;
+  IndexMacroSeparator: SizeInt;
 begin
   for D in Directives do
+  begin
+    IndexMacroSeparator := Pos(MacroSeparator, D);
+    if IndexMacroSeparator > 0 then
     begin
-      IndexEqual := pos(':=', D);
-      if IndexEqual > 0 then
-      begin
-        Scanner.AddMacro(copy(D, 1, IndexEqual-1), D.Substring(IndexEqual+1));
-      end else
-        Scanner.AddSymbol(D);
-    end;
+      Scanner.AddMacro(Copy(D, 1, IndexMacroSeparator - 1),
+        SEnding(D, IndexMacroSeparator + Length(MacroSeparator)));
+    end else
+      Scanner.AddSymbol(D);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
