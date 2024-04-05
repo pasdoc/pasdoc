@@ -2604,19 +2604,22 @@ begin
 end;
 
 procedure TParser.AddDirectives(const Directives: TStringVector);
+const
+  MacroSeparator = ':=';
 var
   D: string;
-  IndexEqual: SizeInt;
+  IndexMacroSeparator: SizeInt;
 begin
   for D in Directives do
+  begin
+    IndexMacroSeparator := Pos(MacroSeparator, D);
+    if IndexMacroSeparator > 0 then
     begin
-      IndexEqual := pos(':=', D);
-      if IndexEqual > 0 then
-      begin
-        Scanner.AddMacro(copy(D, 1, IndexEqual-1), D.Substring(IndexEqual+1));
-      end else
-        Scanner.AddSymbol(D);
-    end;
+      Scanner.AddMacro(Copy(D, 1, IndexMacroSeparator - 1),
+        SEnding(D, IndexMacroSeparator + Length(MacroSeparator)));
+    end else
+      Scanner.AddSymbol(D);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -3999,9 +4002,10 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx(const U: TPasUnit; const CioName,
-  CioNameWithGeneric: string; CIOType: TCIOType;
-  const RawDescriptionInfo: TRawDescriptionInfo; const IsInRecordCase: boolean);
+procedure TParser.ParseCioEx(const U: TPasUnit;
+  const CioName, CioNameWithGeneric: string;
+  CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: Boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
     otherwise modifying one of them always needs to be carefully duplicated. }
