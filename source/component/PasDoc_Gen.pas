@@ -3840,6 +3840,7 @@ var
   { ncstart marks what part of Code was already written:
     Code[1..ncstart - 1] is already written to output stream. }
   ncstart: Integer;
+  AncestorMethod: TPasItem;
 begin
   WriteStartOfCode;
   i := 1;
@@ -3892,12 +3893,22 @@ begin
             pl := StandardDirectiveByName(s);
             case pl of
               SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD,
                 SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
                 SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
                 begin
                   WriteConverted(s);
                   SearchForLink := False;
+                end;
+              SD_OVERRIDE:
+                begin
+                  SearchForLink := False;
+                  AncestorMethod := Item.InheritedItem;
+                  if Assigned(AncestorMethod) then
+                  begin
+                    WriteDirect(MakeItemLink(AncestorMethod, s, lcCode));
+                  end else
+                    WriteConverted(s);
                 end;
               SD_EXTERNAL:
                 begin

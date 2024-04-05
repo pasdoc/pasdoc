@@ -2935,7 +2935,7 @@ end;
 function TPasRoutine.InheritedItem: TPasItem;
 begin
   if Assigned(MyObject) and (SD_OVERRIDE in Directives) then
-    Result := MyObject.FindItemInAncestors(Name)
+    Result := MyObject.FindItemInAncestors(Signature)
   else
     Result := nil;
 end;
