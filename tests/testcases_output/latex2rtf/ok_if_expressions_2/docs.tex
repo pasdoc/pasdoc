@@ -1,0 +1,406 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}if{\_}expressions{\_}2}
+\section{Constants}
+\subsection*{{\_}TrueXorTrueIsFalse}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}TrueXorTrueIsFalse =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}3Plus1Is4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}3Plus1Is4 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}APlusBIsAB}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}APlusBIsAB =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}3Plus2Times2Is7}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}3Plus2Times2Is7 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}3Minus1IsNot4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}3Minus1IsNot4 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}3Minus2IsTrue}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}3Minus2IsTrue =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}Not3Plus5IsTrue}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}Not3Plus5IsTrue =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT 3 = {-}4
+
+\end{list}
+\subsection*{{\_}Not1Is0}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}Not1Is0 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT as an exception swaps 0 and 1
+
+\end{list}
+\subsection*{{\_}Not0Is1}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}Not0Is1 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This should be true because NOT as an exception swaps 0 and 1
+
+\end{list}
+\subsection*{{\_}2Or4Is6}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}2Or4Is6 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}6And4Is4}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}6And4Is4 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{{\_}2And6Is2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+{\_}2And6Is2 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{FPCVersionAtLeast322}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+FPCVersionAtLeast322 =
+
+true
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{FPCVersionAtLeast422}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+FPCVersionAtLeast422 =
+
+false
+;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MyConst = 30202;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Note: This does not compile in FPC. But PasDoc, for now, unifies symbols used in {\$}if expressions with macros used during normal Pascal code parsing, so it actually replaces FPC{\_}FULLVERSION below.
+
+\end{list}
+\end{document}

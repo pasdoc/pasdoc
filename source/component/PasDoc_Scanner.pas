@@ -1072,6 +1072,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{ FPC makes a number of notes that variant operators are not inlined. }
+{$ifdef FPC}
+  {$notes off}
+{$endif}
+
 function TScanner.IfCondition(const Condition: String): Boolean;
 var
   Tokenizer: TTokenizer;
@@ -1181,26 +1186,33 @@ var
 
   function ParseExpression: Variant; forward;
 
-  function ParseLitteral(Data: string): Variant;
+  { Convert Boolean to Int64, as expected by expressions in $if.
+    Do not use just Int64(Boolean), to not depend on how compiler
+    casts Boolean to Int64 and to make the intention obvious. }
+  const
+    BoolToInt64: array[Boolean] of Int64 = (0, 1);
+
+  { Read literal Data to Int64, Double or String. }
+  function ParseLiteral(const Data: String): Variant;
   var
-    Int64Value: int64;
-    FloatValue: double;
-    ErrorPos: integer;
+    Int64Value: Int64;
+    FloatValue: Double;
+    ErrorPos: Integer;
   begin
     Val(Data, Int64Value, ErrorPos);
     if ErrorPos = 0 then
-      exit(Int64Value)
+      Exit(Int64Value)
     else
     begin
       Val(Data, FloatValue, ErrorPos);
       if ErrorPos = 0 then
-        exit(FloatValue)
+        Exit(FloatValue)
       else
-        exit(Data); // string
+        Exit(Data); // string
     end;
   end;
 
-  function IsNumber(Value: Variant): boolean;
+  function IsNumber(const Value: Variant): boolean;
   begin
     result := VarType(Value) in [varInt64, varDouble];
   end;
@@ -1230,14 +1242,14 @@ var
     try
       if T.MyType = TOK_NUMBER then
       begin
-        result := ParseLitteral(T.Data);
+        result := ParseLiteral(T.Data);
         if Not IsNumber(result) then
           raise EInvalidIfCondition.CreateFmt('Invalid numeric value "%s"', [T.Data]);
         exit;
       end else
       if T.MyType = TOK_STRING then
       begin
-        exit(T.StringContent);
+        Exit(T.StringContent);
       end;
 
       if T.MyType <> TOK_IDENTIFIER then
@@ -1246,20 +1258,20 @@ var
     finally FreeAndNil(T) end;
 
     if Identifier = 'false' then
-      Result := int64(false)
+      Result := BoolToInt64[false]
     else
     if Identifier = 'true' then
-      Result := int64(true)
+      Result := BoolToInt64[true]
     else
     if Identifier = 'defined' then
-      Result := int64(ParseDefinedFunctionParameter)
+      Result := BoolToInt64[ParseDefinedFunctionParameter]
     else
     if Identifier = 'undefined' then
       // just negate the result defined(xxx) would have
-      Result := int64(not ParseDefinedFunctionParameter)
+      Result := BoolToInt64[not ParseDefinedFunctionParameter]
     else
     if Identifier = 'option' then
-      Result := int64(IsSwitchDefined(ParseOptionFunctionParameter))
+      Result := BoolToInt64[IsSwitchDefined(ParseOptionFunctionParameter)]
     else
     if Identifier = 'sizeof' then
       raise EInvalidIfCondition.Create('Evaluating "sizeof" function for $if / $elseif not implemented', [])
@@ -1273,17 +1285,17 @@ var
       begin
         If FSymbols[SymbolIndex].Value = '' then
           raise EInvalidIfCondition.CreateFmt('Macro "%s" doesn''t have a value', [Identifier]);
-        Result := ParseLitteral(FSymbols[SymbolIndex].Value);
+        Result := ParseLiteral(FSymbols[SymbolIndex].Value);
       end
       else
         raise EInvalidIfCondition.CreateFmt('Unknown function or macro "%s" in $if / $elseif', [Identifier]);
     end;
   end;
 
-  function NeedInt64(Value: Variant): int64;
+  function NeedInt64(const Value: Variant): int64;
   begin
     if VarType(Value) = varInt64 then
-      exit(Value)
+      Exit(Value)
     else
       raise EInvalidIfCondition.Create('Int64 value expected but "%s" found', [Value]);
   end;
@@ -1312,7 +1324,7 @@ var
     end;
   end;
 
-  procedure CheckNumberTypes(LeftOperand, RightOperand: Variant);
+  procedure CheckNumberTypes(const LeftOperand, RightOperand: Variant);
   begin
     If not IsNumber(LeftOperand) then
       raise EInvalidIfCondition.Create('Number expected but "%s" found', [LeftOperand]);
@@ -1361,7 +1373,7 @@ var
     until false;
   end;
 
-  procedure CheckComparisonTypes(LeftOperand, RightOperand: Variant);
+  procedure CheckComparisonTypes(const LeftOperand, RightOperand: Variant);
   begin
     If IsNumber(LeftOperand) then
     begin
@@ -1430,35 +1442,35 @@ var
         begin
           RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := int64(Result = RightOperand)
+          Result := BoolToInt64[Result = RightOperand]
         end
         else
         if T.IsSymbol(SYM_LESS_THAN) then
         begin
           RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := int64(Result < RightOperand)
+          Result := BoolToInt64[Result < RightOperand]
         end
         else
         if T.IsSymbol(SYM_LESS_THAN_EQUAL) then
         begin
           RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := int64(Result <= RightOperand)
+          Result := BoolToInt64[Result <= RightOperand]
         end
         else
         if T.IsSymbol(SYM_GREATER_THAN) then
         begin
           RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := int64(Result > RightOperand)
+          Result := BoolToInt64[Result > RightOperand]
         end
         else
         if T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
         begin
           RightOperand := ParseAddition;
           CheckComparisonTypes(Result, RightOperand);
-          Result := int64(Result >= RightOperand)
+          Result := BoolToInt64[Result >= RightOperand]
         end
         else
         begin
@@ -1469,13 +1481,13 @@ var
     until false;
   end;
 
-  function NeedBoolean(Value: Variant): boolean;
+  function NeedBoolean(const Value: Variant): boolean;
   begin
     // in directives, a boolean is an integer equal to 0 or 1
     if VarType(Value) = varInt64 then
     begin
-      if Value = 1 then exit(true);
-      if Value = 0 then exit(false);
+      if Value = 1 then Exit(true);
+      if Value = 0 then Exit(false);
     end;
     raise EInvalidIfCondition.Create('Boolean value expected but "%s" found', [Value]);
   end;
