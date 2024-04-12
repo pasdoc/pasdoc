@@ -2518,7 +2518,7 @@ const
   MacroSeparator = ':=';
 var
   D: string;
-  IndexMacroSeparator: SizeInt;
+  IndexMacroSeparator: NativeInt;
 begin
   for D in Directives do
   begin
