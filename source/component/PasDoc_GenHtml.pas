@@ -1181,6 +1181,9 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
+var
+  AliasedItem: TPasItem;
+  ViaStrongAlias: boolean;
 begin
   if AItem = nil then Exit;
 
@@ -1190,6 +1193,13 @@ begin
     if AItem.DetailedDescription <> '' then begin
       WriteSpellChecked(AItem.DetailedDescription)
     end else begin
+      // description is the same as the original type if it is a weak alias
+      AItem.GetAliasedItem(AliasedItem, ViaStrongAlias);
+      if Assigned(AliasedItem) and not ViaStrongAlias then
+      begin
+        WriteItemShortDescription(AliasedItem);
+        exit;
+      end;
       WriteDirect('&nbsp;');
     end;
   end;
@@ -1218,11 +1228,14 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
   end;
 
+  procedure WriteDescription(AItem: TPasItem); forward;
+
   procedure WriteNoDescription(const AItem: TPasItem);
   var
     InheritedDescriptions: TStringPairVector;
-    AncestorItem: TPasItem;
+    AncestorItem, AliasedItem: TPasItem;
     I: Integer;
+    ViaStrongAlias: boolean;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
     try
@@ -1269,10 +1282,54 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        WriteDirect('<p class="nodescription">This item has no description.</p>');
+        AItem.GetAliasedItem(AliasedItem, ViaStrongAlias);
+        if Assigned(AliasedItem) then
+        begin
+          // in case of a strong alias, a description would have be needed
+          if ViaStrongAlias then
+          begin
+            WriteDirect('<p class="inheritdescription">This item has no description. ');
+            WriteDirect('Showing description of aliased type.</p>');
+          end;
+          WriteDescription(AliasedItem);
+        end else
+          WriteDirect('<p class="nodescription">This item has no description.</p>');
       end;
     finally
       FreeAndNil(InheritedDescriptions);
+    end;
+  end;
+
+  procedure WriteDescription(AItem: TPasItem);
+  begin
+    if AItem.AbstractDescription <> '' then
+    begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+
+      WriteSpellChecked(AItem.AbstractDescription);
+
+      if AItem.DetailedDescription <> '' then
+      begin
+        if not AItem.AbstractDescriptionWasAutomatic then
+        begin
+          WriteEndOfParagraph; { always try to write closing </p>, to be clean }
+          WriteStartOfParagraph;
+        end;
+        WriteSpellChecked(AItem.DetailedDescription);
+      end;
+
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end else if AItem.DetailedDescription <> '' then
+    begin
+      if OpenCloseParagraph then WriteStartOfParagraph;
+
+      WriteSpellChecked(AItem.DetailedDescription);
+
+      if OpenCloseParagraph then WriteEndOfParagraph;
+    end else
+    begin
+      if (AItem is TPasItem) then
+        WriteNoDescription(AItem as TPasItem);
     end;
   end;
 
@@ -1430,35 +1487,7 @@ begin
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
 
-  if AItem.AbstractDescription <> '' then
-  begin
-    if OpenCloseParagraph then WriteStartOfParagraph;
-
-    WriteSpellChecked(AItem.AbstractDescription);
-
-    if AItem.DetailedDescription <> '' then
-    begin
-      if not AItem.AbstractDescriptionWasAutomatic then
-      begin
-        WriteEndOfParagraph; { always try to write closing </p>, to be clean }
-        WriteStartOfParagraph;
-      end;
-      WriteSpellChecked(AItem.DetailedDescription);
-    end;
-
-    if OpenCloseParagraph then WriteEndOfParagraph;
-  end else if AItem.DetailedDescription <> '' then
-  begin
-    if OpenCloseParagraph then WriteStartOfParagraph;
-
-    WriteSpellChecked(AItem.DetailedDescription);
-
-    if OpenCloseParagraph then WriteEndOfParagraph;
-  end else
-  begin
-    if (AItem is TPasItem) then
-      WriteNoDescription(AItem as TPasItem);
-  end;
+  WriteDescription(AItem);
 
   WriteAttributes(AItem.Attributes);
 

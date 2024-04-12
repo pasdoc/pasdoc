@@ -1141,6 +1141,27 @@ var
       end;
   end;
 
+  procedure AliasAssignLinks(const ATypes: TPasTypes; const ACio: TPasCio);
+  var
+    AliasType: TPasAliasType;
+    BaseItem: TPasItem;
+    I: Integer;
+    AliasedType: TBaseItem;
+  begin
+    for I := 0 to ATypes.Count - 1 do
+      if ATypes.PasItemAt[I] is TPasAliasType then
+      begin
+        AliasType := TPasAliasType(ATypes.PasItemAt[I]);
+        If Assigned(ACio) then
+          BaseItem := ACio
+        else
+          BaseItem := AliasType;
+        AliasedType := SearchItem(AliasType.AliasedName, BaseItem, false);
+        if Assigned(AliasedType) and (AliasedType is TPasType) then
+          AliasType.AliasedType := TPasType(AliasedType);
+      end;
+  end;
+
   { Assign MyXxx properties (MyUnit, MyObject, MyEnum), FullLink, OutputFileName
     and ansestor links for this Cio (classs / interface / object). }
   procedure CiosAssignLinks(ACios: TPasItems);
@@ -1161,7 +1182,10 @@ var
       AssignLinks(U, ACio, nil, ACio.Types);
       AssignLinks(U, ACio, nil, ACio.Cios);
       if not ObjectVectorIsNilOrEmpty(ACio.Types) then
+      begin
         EnumsAssignLinks(ACio.Types, ACio);
+        AliasAssignLinks(ACio.Types, ACio);
+      end;
       if ACio.Cios.Count > 0 then
         CiosAssignLinks(ACio.Cios);
     end;
@@ -1213,7 +1237,10 @@ begin
     AssignLinks(U, nil, nil, U.FuncsProcs);
 
     if not ObjectVectorIsNilOrEmpty(U.Types) then
+    begin
       EnumsAssignLinks(U.Types, nil);
+      AliasAssignLinks(U.Types, nil);
+    end;
 
     if not ObjectVectorIsNilOrEmpty(U.CIOs) then
       CiosAssignLinks(U.CIOs);
@@ -3813,6 +3840,7 @@ var
   { ncstart marks what part of Code was already written:
     Code[1..ncstart - 1] is already written to output stream. }
   ncstart: Integer;
+  AncestorMethod: TPasItem;
 begin
   WriteStartOfCode;
   i := 1;
@@ -3865,12 +3893,22 @@ begin
             pl := StandardDirectiveByName(s);
             case pl of
               SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                SD_FAR, SD_FORWARD, SD_NAME, SD_NEAR, SD_OVERLOAD,
                 SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
                 SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL:
                 begin
                   WriteConverted(s);
                   SearchForLink := False;
+                end;
+              SD_OVERRIDE:
+                begin
+                  SearchForLink := False;
+                  AncestorMethod := Item.InheritedItem;
+                  if Assigned(AncestorMethod) then
+                  begin
+                    WriteDirect(MakeItemLink(AncestorMethod, s, lcCode));
+                  end else
+                    WriteConverted(s);
                 end;
               SD_EXTERNAL:
                 begin

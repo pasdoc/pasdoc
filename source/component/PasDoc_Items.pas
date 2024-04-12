@@ -562,6 +562,8 @@ type
       If there is no description in any ancestor, it will return an empty vector. }
     function GetInheritedItemDescriptions: TStringPairVector; virtual;
 
+    procedure GetAliasedItem(out AliasedItem: TPasItem; out ViaStrongAlias: boolean); virtual;
+
     function BasePath: string; override;
 
     { Parameters of method or property.
@@ -631,6 +633,23 @@ type
   { @abstract(Pascal type (but not a procedural type --- these are expressed
     as @link(TPasRoutine).)) }
   TPasType = class(TPasItem)
+  end;
+
+  { @abstract(Alias type) }
+  TPasAliasType = class(TPasType)
+    FIsStrongAlias: boolean;
+    FAliasedName: string;
+    FAliasedType: TPasType;
+  public
+    procedure GetAliasedItem(out AliasedItem: TPasItem; out ViaStrongAlias: boolean); override;
+
+    { Whether it is a strong alias, defined with the "type" keyword, for example:
+      StrongAlias = type AliasedType }
+    property IsStrongAlias: boolean read FIsStrongAlias write FIsStrongAlias;
+    { Name of the type it refers to }
+    property AliasedName: string read FAliasedName write FAliasedName;
+    { Type it refers to }
+    property AliasedType: TPasType read FAliasedType write FAliasedType;
   end;
 
   { @abstract(Enumerated type.) }
@@ -1844,6 +1863,13 @@ begin
   end;
 end;
 
+procedure TPasItem.GetAliasedItem(out AliasedItem: TPasItem; out
+  ViaStrongAlias: boolean);
+begin
+  AliasedItem := nil;
+  ViaStrongAlias:= false;
+end;
+
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -1890,7 +1916,7 @@ begin
     Result := MyUnit.Name + '.' + Result;
 end;
 
-function TPasItem.UnitRelativeQualifiedName: String;
+function TPasItem.UnitRelativeQualifiedName: string;
 var
   LItem: TPasItem;
 begin
@@ -2051,6 +2077,45 @@ procedure TPasFieldVariable.Serialize(const ADestination: TStream);
 begin
   inherited;
   ADestination.Write(FIsConstant, SizeOf(FIsConstant));
+end;
+
+{ TPasAliasType }
+
+procedure TPasAliasType.GetAliasedItem(out AliasedItem: TPasItem; out
+  ViaStrongAlias: boolean);
+var
+  AliasType: TPasAliasType;
+  OriginalType: TPasType;
+begin
+  AliasedItem := nil;
+  ViaStrongAlias := false;
+  AliasType := self;
+  while true do
+  begin
+    if AliasType.IsStrongAlias then
+      ViaStrongAlias:= true;
+    OriginalType := AliasType.AliasedType;
+    if Assigned(OriginalType) then
+    begin
+      if OriginalType = self then
+      begin
+        // circular reference in alias definition
+        exit;
+      end else
+      // does the original type have a description
+      if OriginalType.HasDescription then
+      begin
+        AliasedItem := OriginalType;
+        exit;
+      end else
+      if OriginalType is TPasAliasType then
+      begin
+        AliasType := TPasAliasType(OriginalType);
+        continue;
+      end;
+    end;
+    exit; // did not find an original type with a description
+  end;
 end;
 
 { TBaseItems ----------------------------------------------------------------- }
@@ -2870,7 +2935,7 @@ end;
 function TPasRoutine.InheritedItem: TPasItem;
 begin
   if Assigned(MyObject) and (SD_OVERRIDE in Directives) then
-    Result := MyObject.FindItemInAncestors(Name)
+    Result := MyObject.FindItemInAncestors(Signature)
   else
     Result := nil;
 end;
@@ -3090,6 +3155,7 @@ initialization
   TSerializable.Register(TPasConstant);
   TSerializable.Register(TPasFieldVariable);
   TSerializable.Register(TPasType);
+  TSerializable.Register(TPasAliasType);
   TSerializable.Register(TPasEnum);
   TSerializable.Register(TPasRoutine);
   TSerializable.Register(TPasProperty);
