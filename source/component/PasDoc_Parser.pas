@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2022 PasDoc developers.
+  Copyright 1998-2024 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -2396,6 +2396,7 @@ begin
           RoutineType.Name := TypeName;
           RoutineType.FullDeclaration :=
             TypeName + ' = ' + RoutineType.FullDeclaration;
+          RoutineType.IsType := true;
           if U <> nil then
             U.AddType(RoutineType)
           else
@@ -4066,6 +4067,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
             RoutineType.Name := TypeName;
             RoutineType.FullDeclaration :=
               TypeName + ' = ' + RoutineType.FullDeclaration;
+            RoutineType.IsType := true;
             FCioSk.Peek.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
             FCioSk.Peek.SkipCioDecl := TRUE;
