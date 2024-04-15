@@ -1,0 +1,11 @@
+<unit name="ok_link_function_type.pas">
+  <routine name="Test" type="procedure" declaration="procedure Test(F: TMyFunction; R: TMyRecord);" visibility="published">
+    <description><detailed>Give TMyFunction and TMyRecord to test it.</detailed></description>
+  </routine>
+  <type name="TMyFunction" declaration="TMyFunction = function(A: Integer): Integer;" visibility="published">
+  </type>
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
+    <variable name="A" declaration="A: Integer;" visibility="public">
+    </variable>
+  </structure>
+</unit>

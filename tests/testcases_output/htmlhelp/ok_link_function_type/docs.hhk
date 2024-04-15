@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Test">
+<param name="Local" value="ok_link_function_type.html#Test-TMyFunction-TMyRecord-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyFunction">
+<param name="Local" value="ok_link_function_type.html#TMyFunction">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyRecord">
+<param name="Local" value="ok_link_function_type.TMyRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_link_function_type.TMyRecord.html#A">
+</object>
+</ul>
+</body></html>
