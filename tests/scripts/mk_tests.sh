@@ -280,6 +280,7 @@ all_tests_for_current_format ()
   mk_test ok_array_parameters ok_array_parameters.pas
   mk_test ok_multiple_markers --marker=foo --marker=bar --marker-optional ok_multiple_markers.pas
   mk_test ok_multiple_markers_prefix '--marker=*' '--marker=**' --marker-optional ok_multiple_markers_prefix.pas
+  mk_test ok_type_aliases ok_type_aliases.pas
 }
 
 # parse params ----------------------------------------
