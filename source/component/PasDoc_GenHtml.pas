@@ -1354,6 +1354,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     name, value: string;
     AttributesItem: TBaseItem;
     AttributesLink: string;
+    ExtendedAttrLink: string;
   begin
     if ObjectVectorIsNilOrEmpty(Attributes) then
       Exit;
@@ -1372,13 +1373,27 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       begin
         AttributesLink := name;
         AttributesItem := nil;
-      end else
+      end
+      else begin
         AttributesLink := SearchLink(
           name,
           AItem,
           name,
-          lnfWarnIfNotInternal,
+          lnfIgnore,
           AttributesItem);
+
+        if not Assigned(AttributesItem) then begin
+          ExtendedAttrLink := SearchLink(
+            name + 'Attribute',
+            AItem,
+            name,
+            lnfIgnore,
+            AttributesItem);
+
+          if Assigned(AttributesItem) then
+            AttributesLink := ExtendedAttrLink;
+        end;
+      end;
       WriteDirect(AttributesLink);
 
       WriteConverted(value);

@@ -2683,23 +2683,23 @@ begin
         end;
       else Assert(false, 'LinkLook = ??');
     end;
-  end else
-  if (WarningIfLinkNotFound = lnfWarnIfNotInternal) and
-     (FExternalClassHierarchy.IndexOfName(S) <> -1) then begin
-    DoMessage(
-      6,
-      pmtInformation,
-      'Link "%s" resolved as reference to external class hierarchy (from description of "%s")',
-      [S, Item.QualifiedName]);
-    Result := CodeString(ConvertString(S));
   end
-  else if (WarningIfLinkNotFound <> lnfIgnore) then
-  begin
-    DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
-      [S, Item.QualifiedName]);
+  else begin
+    if (WarningIfLinkNotFound = lnfWarnIfNotInternal)
+      and (FExternalClassHierarchy.IndexOfName(S) <> -1) then begin
+      DoMessage(
+        6,
+        pmtInformation,
+        'Link "%s" resolved as reference to external class hierarchy (from description of "%s")',
+        [S, Item.QualifiedName]);
+    end
+    else if (WarningIfLinkNotFound <> lnfIgnore) then begin
+      DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
+        [S, Item.QualifiedName]);
+    end;
+
     Result := CodeString(ConvertString(S));
-  end else
-    Result := '';
+  end;
 end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
