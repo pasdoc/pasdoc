@@ -25,6 +25,9 @@ AllConstants.html
 AllFunctions.html
 AllIdentifiers.html
 ok_attributes.html
+ok_attributes.NonEmptyString.html
+ok_attributes.MinimumIntegerAttribute.html
+ok_attributes.MaximumIntegerAttribute.html
 ok_attributes.TPerson.html
 ok_attributes.IUIContainer.html
 ok_attributes.TMyClass1.html

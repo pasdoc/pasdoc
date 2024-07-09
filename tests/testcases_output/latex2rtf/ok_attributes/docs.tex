@@ -61,6 +61,9 @@
 \chapter{Unit ok{\_}attributes}
 \section{Overview}
 \begin{description}
+\item[\texttt{\begin{ttfamily}NonEmptyString\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}MinimumIntegerAttribute\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}MaximumIntegerAttribute\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}TPerson\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}IUIContainer\end{ttfamily} Interface}]
 \item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
@@ -68,11 +71,86 @@
 \item[\texttt{\begin{ttfamily}IEnumerator\end{ttfamily} Interface}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
+\subsection*{NonEmptyString Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+NonEmptyString {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530 Attribute class, without Attribute suffix, PasDoc should link to it\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public constructor Create(const AMessage: String);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MinimumIntegerAttribute Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+MinimumIntegerAttribute {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Attribute class, with Attribute suffix, PasDoc should link to it too\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public constructor Create(const MinInt: Integer; const AMessage: String);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{MaximumIntegerAttribute Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+MaximumIntegerAttribute {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Attribute class, with Attribute suffix, PasDoc should link to it too\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public constructor Create(const MaxInt: Integer; const AMessage: String);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
 \subsection*{TPerson Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TPerson {$>$} TObject
-\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{Name}\hspace*{\fill}
 
 \begin{list}{}{

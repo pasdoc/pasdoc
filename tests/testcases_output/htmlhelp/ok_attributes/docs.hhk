@@ -20,6 +20,30 @@
 <param name="Local" value="ok_attributes.IUIContainer.html">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="MaximumIntegerAttribute">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html#Create-Integer-String-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MinimumIntegerAttribute">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html#Create-Integer-String-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NonEmptyString">
+<param name="Local" value="ok_attributes.NonEmptyString.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.NonEmptyString.html#Create-String-">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TMyClass1">
 <param name="Local" value="ok_attributes.TMyClass1.html">
 </object>
