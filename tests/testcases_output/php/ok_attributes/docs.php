@@ -2,6 +2,12 @@
 global $pasdoc;
 $pasdoc = array(
   'ok_attributes' => array('html_filename' => 'ok_attributes.html', 'type' => 'unit'),
+  'NonEmptyString' => array('html_filename' => 'ok_attributes.NonEmptyString.html', 'type' => 'class'),
+  'NonEmptyString.Create' => array('html_filename' => 'ok_attributes.NonEmptyString.html#Create-String-', 'type' => 'constructor'),
+  'MinimumIntegerAttribute' => array('html_filename' => 'ok_attributes.MinimumIntegerAttribute.html', 'type' => 'class'),
+  'MinimumIntegerAttribute.Create' => array('html_filename' => 'ok_attributes.MinimumIntegerAttribute.html#Create-Integer-String-', 'type' => 'constructor'),
+  'MaximumIntegerAttribute' => array('html_filename' => 'ok_attributes.MaximumIntegerAttribute.html', 'type' => 'class'),
+  'MaximumIntegerAttribute.Create' => array('html_filename' => 'ok_attributes.MaximumIntegerAttribute.html#Create-Integer-String-', 'type' => 'constructor'),
   'TPerson' => array('html_filename' => 'ok_attributes.TPerson.html', 'type' => 'class'),
   'TPerson.Name' => array('html_filename' => 'ok_attributes.TPerson.html#Name', 'type' => 'property'),
   'TPerson.Age' => array('html_filename' => 'ok_attributes.TPerson.html#Age', 'type' => 'property'),

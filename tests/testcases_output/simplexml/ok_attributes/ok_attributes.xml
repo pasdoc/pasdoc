@@ -1,6 +1,23 @@
 <unit name="ok_attributes.pas">
+  <structure name="NonEmptyString" name_with_generic="NonEmptyString" type="class" visibility="published">
+    <description><detailed>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530 Attribute class, without Attribute suffix, PasDoc should link to it</detailed></description>
+    <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
+    <routine name="Create" type="constructor" declaration="constructor Create(const AMessage: String);" visibility="public">
+    </routine>
+  </structure>
+  <structure name="MinimumIntegerAttribute" name_with_generic="MinimumIntegerAttribute" type="class" visibility="published">
+    <description><detailed>Attribute class, with Attribute suffix, PasDoc should link to it too</detailed></description>
+    <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
+    <routine name="Create" type="constructor" declaration="constructor Create(const MinInt: Integer; const AMessage: String);" visibility="public">
+    </routine>
+  </structure>
+  <structure name="MaximumIntegerAttribute" name_with_generic="MaximumIntegerAttribute" type="class" visibility="published">
+    <description><detailed>Attribute class, with Attribute suffix, PasDoc should link to it too</detailed></description>
+    <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
+    <routine name="Create" type="constructor" declaration="constructor Create(const MaxInt: Integer; const AMessage: String);" visibility="public">
+    </routine>
+  </structure>
   <structure name="TPerson" name_with_generic="TPerson" type="class" visibility="published">
-    <description><detailed>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <property name="Name" indexdecl="" type="String" reader="FName" writer="FName" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
     </property>
