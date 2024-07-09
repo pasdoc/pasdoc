@@ -1382,7 +1382,8 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
           lnfIgnore,
           AttributesItem);
 
-        if not Assigned(AttributesItem) then begin
+        if not Assigned(AttributesItem) then
+        begin
           ExtendedAttrLink := SearchLink(
             name + 'Attribute',
             AItem,
