@@ -281,6 +281,7 @@ all_tests_for_current_format ()
   mk_test ok_multiple_markers --marker=foo --marker=bar --marker-optional ok_multiple_markers.pas
   mk_test ok_multiple_markers_prefix '--marker=*' '--marker=**' --marker-optional ok_multiple_markers_prefix.pas
   mk_test ok_link_function_type ok_link_function_type.pas
+  mk_test ok_keyword_function_names ok_keyword_function_names.pas
 }
 
 # parse params ----------------------------------------

@@ -1024,7 +1024,7 @@ begin
                        (t.MyType <> TOK_SYMBOL) and (t.MyType <> TOK_KEYWORD);
       end
       else
-        InvalidType := (t.MyType <> TOK_IDENTIFIER);
+        InvalidType := (t.MyType <> TOK_IDENTIFIER) and (t.MyType <> TOK_KEYWORD);
 
       if InvalidType then
         DoError('Unexpected token %s', [T.Description]);
@@ -1033,7 +1033,7 @@ begin
         Actual only when reading impl section. Resulting name requires additional
         processing (splitting to class and method names).
         Not used for FPC keyword and symbol operators }
-      if (RoutineType = ROUTINE_OPERATOR) and (t.MyType <> TOK_IDENTIFIER) then
+      if (t.MyType <> TOK_IDENTIFIER) then
         M.Name := t.Data
       else
       begin
