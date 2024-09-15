@@ -3090,9 +3090,8 @@ function TParser.PeekNextToken(out WhitespaceCollector: string): TToken;
       Delete(CommentInfo.Content, 1, Length(BackCommentMarker));
     end;
 
-    { Replace leading characters (Nothing to do for single-line (//) comments) }
-    if (IgnoreLeading <> '') and
-       (T.MyType in [TOK_COMMENT_PAS, TOK_COMMENT_EXT]) then
+    { Remove leading characters }
+    if IgnoreLeading <> '' then
     begin
       CurPos := 1;
       repeat

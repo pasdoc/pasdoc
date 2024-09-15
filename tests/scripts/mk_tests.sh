@@ -282,6 +282,7 @@ all_tests_for_current_format ()
   mk_test ok_multiple_markers_prefix '--marker=*' '--marker=**' --marker-optional ok_multiple_markers_prefix.pas
   mk_test ok_link_function_type ok_link_function_type.pas
   mk_test ok_keyword_function_names ok_keyword_function_names.pas
+  mk_test ok_ignore_leading_impl ok_ignore_leading_impl.pas --implementation-comments=join --ignore-leading=-
 }
 
 # parse params ----------------------------------------

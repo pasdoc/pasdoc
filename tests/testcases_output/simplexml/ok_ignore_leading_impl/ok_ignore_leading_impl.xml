@@ -1,0 +1,14 @@
+<unit name="ok_ignore_leading_impl.pas">
+  <routine name="testfnc_only_intf" type="function" declaration="function testfnc_only_intf(arg1: Integer; arg2: String): Boolean;" visibility="published">
+    <param name="arg1">Argument 1</param>
+    <param name="arg2">Argument 2</param>
+    <result><code>True</code> or <code>False</code></result>
+    <description><detailed>Test function.   </detailed></description>
+  </routine>
+  <routine name="testfnc" type="function" declaration="function testfnc(arg1: Integer; arg2: String): Boolean;" visibility="published">
+    <param name="arg1">Argument 1</param>
+    <param name="arg2">Argument 2</param>
+    <result><code>True</code> or <code>False</code></result>
+    <description><detailed>Test function.   </detailed></description>
+  </routine>
+</unit>
