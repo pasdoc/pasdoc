@@ -105,6 +105,57 @@ jobs:
             *.tar.gz
           if-no-files-found: error
 
+  # Build for Raspberry Pi using https://github.com/marketplace/actions/arm-runner .
+  # See https://github.com/michaliskambi/test-arm-runner-for-cge/ .
+  build-rpi:
+    name: Build for Raspberry Pi (Linux/Arm)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [armv7l, aarch64]
+        include:
+        - arch: armv7l
+          cpu: cortex-a7
+          base_image: dietpi:rpi_armv7_bullseye
+        - arch: aarch64
+          cpu: cortex-a53
+          base_image: raspios_lite_arm64:latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pguyot/arm-runner-action@v2
+        with:
+          base_image: ${{ matrix.base_image }}
+          cpu: ${{ matrix.cpu }}
+          shell: /bin/bash -eo pipefail
+          image_additional_mb: 4096
+          # Avoids the need for copy_artifact_path later.
+          bind_mount_repository: true
+          commands: |
+            # Show system info
+            uname -a
+
+            # Install FPC and other Linux dependencies
+            sudo apt-get update
+            sudo apt-get --no-install-recommends -y install libgl-dev fpc lazarus-ide git make sed zip
+
+            # Build and test
+            make
+            make build-tools
+            make tests
+
+            # Make release
+            FPC_CPU=`fpc -iTP`
+            make dist-linux-"${FPC_CPU}"
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build raspberry-pi ${{ matrix.arch }}
+          path: |
+            *.zip
+            *.tar.gz
+          if-no-files-found: error
+
   release:
     name: Release
     runs-on: ubuntu-latest

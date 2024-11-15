@@ -86,6 +86,7 @@ FPC_GO32         := $(FPC_DEFAULT) -Pi386    -Tgo32v2
 FPC_LINUX_X86    := $(FPC_DEFAULT) -Pi386    -Tlinux
 FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px86_64  -Tlinux
 FPC_LINUX_ARM    := $(FPC_DEFAULT) -Parm     -Tlinux
+FPC_LINUX_AARCH64:= $(FPC_DEFAULT) -Paarch64 -Tlinux
 FPC_LINUX_M68K   := $(FPC_DEFAULT) -Pm68k    -Tlinux
 FPC_LINUX_PPC    := $(FPC_DEFAULT) -Ppowerpc -Tlinux
 FPC_AMIGA        := $(FPC_DEFAULT) -Pppc     -Tamiga
@@ -112,11 +113,11 @@ FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 # Delphi configuration
 ############################################################################
 
-# Don't ask me why, but Borland named Delphi/Win32 command-line compiler
+# It seems Borland named Delphi/Win32 command-line compiler
 # dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
-
 DCC_WIN32 := dcc32
 DCC_LINUX := dcc
+
 DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
 DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
 
@@ -219,6 +220,10 @@ build-fpc-linux-x86_64: make-dirs
 .PHONY: build-fpc-linux-arm
 build-fpc-linux-arm: make-dirs
 	$(FPC_LINUX_ARM) $(FPC_RELEASE_FLAGS) $(FILE)
+
+.PHONY: build-fpc-linux-aarch64
+build-fpc-linux-aarch64: make-dirs
+	$(FPC_LINUX_AARCH64) $(FPC_RELEASE_FLAGS) $(FILE)
 
 .PHONY: build-fpc-linux-m68k
 build-fpc-linux-m68k: make-dirs
@@ -331,10 +336,11 @@ help:
 	@echo "      linux-x86_64"
 	@echo "      linux-m68k"
 	@echo "      linux-arm"
+	@echo "      linux-aarch64"
+	@echo "      linux-ppc"
 	@echo "      amiga"
 	@echo "      beos"
 	@echo "      os2"
-	@echo "      linux-ppc"
 	@echo "      freebsd-x86"
 	@echo "      darwin-x86"
 	@echo "      darwin-x86_64"
@@ -493,6 +499,13 @@ dist-linux-arm: clean build-fpc-linux-arm
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-arm \
 	  FPC_DEFAULT='$(FPC_LINUX_ARM)' \
 	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=arm'
+
+.PHONY: dist-linux-aarch64
+dist-linux-aarch64: clean build-fpc-linux-aarch64
+	$(MAKE) --no-print-directory \
+	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-aarch64 \
+	  FPC_DEFAULT='$(FPC_LINUX_AARCH64)' \
+	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=aarch64'
 
 .PHONY: dist-amiga
 dist-amiga: clean build-fpc-amiga
