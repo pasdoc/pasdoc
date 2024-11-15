@@ -136,7 +136,7 @@ jobs:
 
             # Install FPC and other Linux dependencies
             sudo apt-get update
-            sudo apt-get --no-install-recommends -y install libgl-dev fpc lazarus-ide git make sed zip
+            sudo apt-get --no-install-recommends -y install libgl-dev fpc lazarus-ide git make sed zip php-cli
 
             # Build and test
             make
