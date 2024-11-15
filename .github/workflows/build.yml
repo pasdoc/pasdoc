@@ -160,7 +160,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     # Only upload release if all builds succeeded.
-    needs: [build]
+    needs: [build, build-rpi]
     steps:
     - name: Download packaged releases
       uses: actions/download-artifact@v4
