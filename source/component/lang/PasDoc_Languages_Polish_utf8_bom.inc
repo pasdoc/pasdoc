@@ -5,8 +5,8 @@
     {trUnits} 'Moduły',
     {trClassHierarchy} 'Hierarchia klas',
     {trCio} 'Klasy, interfejsy, obiekty i rekordy',
-    {trNestedCR} strToDo, // 'Nested Classes and Records',
-    {trNestedTypes} strToDo, // 'Nested Types',
+    {trNestedCR} 'Klasy i rekordy zagnieżdżone', // 'Nested Classes and Records',
+    {trNestedTypes} 'Typy zagnieżdżone', // 'Nested Types',
     {trIdentifiers} 'Identyfikatory',
     {trGvUses} 'Graf zależności modułów',
     {trGvClasses} 'Graf dziedziczenia klas',
@@ -18,7 +18,7 @@
     {trObjects} 'Obiekty',
       {trObject} 'Obiekt',
       {trRecord} 'Rekord', //'Record',
-      {trPacked} strToDo, //'Packed',
+      {trPacked} 'Upakowany', //'Packed',
         {trHierarchy} 'Hierarchia',
         {trFields} 'Pola',
         {trMethods} 'Metody',
@@ -58,13 +58,13 @@
     {trDeprecated} 'odradza się używania tego identyfikatora',
     {trPlatformSpecific} 'ten identyfikator jest zależny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zależny od biblioteki',
-    {trExperimental} strToDo, //'this symbol is experimental',
+    {trExperimental} 'ten symbol ma charakter eksperymentalny', //'this symbol is experimental',
   //headings
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',
     {trConclusion} 'Podsumowanie',
-    {trAdditionalFile} strToDo, //'additional file',
-    {trEnclosingClass} strToDo, //'Enclosing Class',
+    {trAdditionalFile} 'dodatkowy plik', //'additional file',
+    {trEnclosingClass} 'Klasa otaczająca', //'Enclosing Class',
     {trHeadlineCio} 'Wszystkie klasy, interfejsy, obiekty i rekordy',
     {trHeadlineConstants} 'Wszystkie stałe',
     {trHeadlineFunctionsAndProcedures} 'Wszystkie podprogramy',
@@ -80,8 +80,8 @@
     {trName} 'Nazwa',
     {trValues} 'Wartości',
   //tags with inbuilt heading
-    {trWarningTag} strToDo,
-    {trNoteTag} strToDo,
+    {trWarningTag} 'Ostrzeżenie',
+    {trNoteTag} 'Uwaga',
   //empty
     {trNone} 'Brak',
     {trNoCIOs} 'Moduł nie zawiera żadnych klas, interfejsów, obiektów ani rekordów.',
@@ -98,11 +98,11 @@
     {trWarningOverwrite} 'Uwaga, nie modyfikuj - ten plik został wygenerowany automatycznie i może zostać nadpisany',
     {trWarning} 'Uwaga',
     {trGeneratedBy} 'Wygenerowane przez',
-    {trGeneratedOn} strToDo, //'Generated on'
+    {trGeneratedOn} 'Wygenerowane dnia', //'Generated on'
     {trOnDateTime} ' - ',
     {trSearch} 'Szukaj',
     {trSeeAlso} 'Zobacz także',
-    {trNested} strToDo, //'nested',
-    {trAttributes} strToDo, //'Attributes',
+    {trNested} 'zagnieżdżone', //'nested',
+    {trAttributes} 'Atrybuty', //'Attributes',
     ''  //dummy
   );
