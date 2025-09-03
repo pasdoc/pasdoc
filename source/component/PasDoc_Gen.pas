@@ -53,7 +53,7 @@ uses
   PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
-  Classes,
+  Classes, Contnrs,
   PasDoc_TagManager,
   PasDoc_Aspell,
   PasDoc_StreamUtils,

@@ -43,7 +43,7 @@ interface
 
 uses
   SysUtils,
-  Classes,
+  Classes, Contnrs,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_Gen,

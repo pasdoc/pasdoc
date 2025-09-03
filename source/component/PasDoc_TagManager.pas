@@ -30,7 +30,7 @@ interface
 
 uses
   SysUtils,
-  Classes,
+  Classes, Contnrs,
   PasDoc_Types,
   PasDoc_ObjectVector;
 

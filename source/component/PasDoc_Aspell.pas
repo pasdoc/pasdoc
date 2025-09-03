@@ -27,7 +27,9 @@ unit PasDoc_Aspell;
 
 interface
 
-uses SysUtils, Classes, PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
+uses
+  SysUtils, Classes, Contnrs,
+  PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
 
 type
   TSpellingError = class

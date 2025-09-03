@@ -26,7 +26,7 @@ unit PasDoc_Tipue;
 
 interface
 
-uses PasDoc_Utils, PasDoc_Items;
+uses PasDoc_Utils, PasDoc_Items, Contnrs;
 
 { Put this in <head> of every page with search button. }
 function TipueSearchButtonHead: string;
