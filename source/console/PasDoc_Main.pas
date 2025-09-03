@@ -710,7 +710,13 @@ begin
 {$IFNDEF FPC}
   {$IFDEF CONDITIONALEXPRESSIONS}
     {$IF CompilerVersion > 17}
+      {$IF CompilerVersion >= 20}
+        {$WARN SYMBOL_PLATFORM OFF}
+      {$IFEND}
       ReportMemoryLeaksOnShutdown := DebugHook <> 0;
+      {$IF CompilerVersion >= 20}
+        {$WARN SYMBOL_PLATFORM ON}
+      {$IFEND}
     {$IFEND}
   {$ENDIF}
 {$ENDIF}
