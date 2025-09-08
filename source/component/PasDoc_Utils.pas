@@ -732,7 +732,7 @@ begin
       Assert(Trim(Source[FirstNonEmptyLine]) <> '');
       IndentationPrefix := ''; // should always be changed by loop below
       for I := 1 to Length(Source[FirstNonEmptyLine]) - 1 do
-        if not (Source[FirstNonEmptyLine][I] in WhiteSpace) then
+        if not IsCharInSet(Source[FirstNonEmptyLine][I], WhiteSpace) then
         begin
           IndentationPrefix := Copy(Source[FirstNonEmptyLine], 1, I - 1);
           break;
@@ -1014,7 +1014,7 @@ end;
 function CharsPos(const Chars: TCharSet; const S: String): Integer;
 begin
   for Result := 1 to Length(S) do
-    if S[Result] in Chars then
+    if IsCharInSet(S[Result], Chars) then
       Exit;
   Result := 0;
 end;

@@ -37,7 +37,7 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes;
+  Classes, Contnrs;
 
 type
   { @abstract(generates latex documentation)

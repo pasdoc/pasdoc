@@ -28,7 +28,7 @@ unit PasDoc_StringPairVector;
 interface
 
 uses
-  Classes,
+  Classes, Contnrs,
   PasDoc_ObjectVector;
 
 type

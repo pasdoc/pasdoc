@@ -47,7 +47,7 @@ uses
   PasDoc_StringVector,
   PasDoc_ObjectVector,
   PasDoc_Hashes,
-  Classes,
+  Classes, Contnrs,
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,

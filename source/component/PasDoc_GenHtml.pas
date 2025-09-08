@@ -52,7 +52,7 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes,
+  Classes, Contnrs,
   PasDoc_StringPairVector;
 
 type

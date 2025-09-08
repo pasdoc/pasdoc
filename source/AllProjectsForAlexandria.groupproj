@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DF63FB05-6EC6-4132-AEC9-852F85537353}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="packages\delphi\Alexandria\pasdoc_package_Alexandria.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="console\pasdoc_Alexandria.dproj">
+            <Dependencies>packages\delphi\Alexandria\pasdoc_package_Alexandria.dproj</Dependencies>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="pasdoc_package_Alexandria">
+        <MSBuild Projects="packages\delphi\Alexandria\pasdoc_package_Alexandria.dproj"/>
+    </Target>
+    <Target Name="pasdoc_package_Alexandria:Clean">
+        <MSBuild Projects="packages\delphi\Alexandria\pasdoc_package_Alexandria.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_package_Alexandria:Make">
+        <MSBuild Projects="packages\delphi\Alexandria\pasdoc_package_Alexandria.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pasdoc_Alexandria" DependsOnTargets="pasdoc_package_Alexandria">
+        <MSBuild Projects="console\pasdoc_Alexandria.dproj"/>
+    </Target>
+    <Target Name="pasdoc_Alexandria:Clean" DependsOnTargets="pasdoc_package_Alexandria:Clean">
+        <MSBuild Projects="console\pasdoc_Alexandria.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pasdoc_Alexandria:Make" DependsOnTargets="pasdoc_package_Alexandria:Make">
+        <MSBuild Projects="console\pasdoc_Alexandria.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="pasdoc_package_Alexandria;pasdoc_Alexandria"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="pasdoc_package_Alexandria:Clean;pasdoc_Alexandria:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="pasdoc_package_Alexandria:Make;pasdoc_Alexandria:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

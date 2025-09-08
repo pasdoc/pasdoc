@@ -44,7 +44,7 @@ interface
 
 uses
   SysUtils,
-  Classes,
+  Classes, Contnrs, Types,
   PasDoc_Types,
   PasDoc_Tokenizer,
   PasDoc_StringVector,
