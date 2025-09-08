@@ -21,7 +21,10 @@ jobs:
     name: Build and Test
     strategy:
       matrix:
-        operating-system: [windows-latest,ubuntu-latest,macos-latest]
+        # macOS note: using macos-13, not macos-latest, as working with
+        # gcarreno/setup-lazarus@v3.3.1 (we do the same in Castle Game Engine
+        # GHA setup).
+        operating-system: [windows-latest,ubuntu-latest,macos-13]
         # Pick a few Lazarus versions to also test compilation with older FPC versions,
         # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
         fpc-lazarus-version: [dist, stable, 2.2.2, 2.0.12]
@@ -84,7 +87,7 @@ jobs:
       #     root: tests/testcases_output/html/
 
       - name: Package macOS
-        if: ${{ matrix.operating-system == 'macos-latest' }}
+        if: ${{ matrix.operating-system == 'macos-13' }}
         run: make dist-darwin-x86_64
       - name: Package Linux
         if: ${{ matrix.operating-system == 'ubuntu-latest' }}
