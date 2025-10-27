@@ -26,10 +26,17 @@ jobs:
       - name: Checkout PasDoc
         uses: actions/checkout@v5
 
+      # TODO: Installing without lazarus as:
+      # - it is removed from HomeBrew
+      # - gcarreno/setup-lazarus does not support macos-15-intel
+      # To support building without GUI, we have special dist-darwin-x86_64-nogui
+      # target. We'd like to bring back PasDoc+GUI back to macOS,
+      # once there will be (again) a reliable way to get lazbuild in macOS in GHA.
+
       - name: Install FPC+Lazarus (using HomeBrew)
         if: ${{ matrix.operating-system == 'macos-15-intel' }}
-        run: |
-          brew install fpc lazarus
+        run: brew install fpc
+
       - name: Install FPC+Lazarus (using gcarreno/setup-lazarus)
         if : ${{ matrix.operating-system != 'macos-15-intel' }}
         uses: gcarreno/setup-lazarus@v3.3.1
@@ -88,7 +95,8 @@ jobs:
 
       - name: Package macOS
         if: ${{ matrix.operating-system == 'macos-15-intel' }}
-        run: make dist-darwin-x86_64
+        # TODO: packaging with nogui, due to problems listed higher in this file.
+        run: make dist-darwin-x86_64-nogui
       - name: Package Linux
         if: ${{ matrix.operating-system == 'ubuntu-latest' }}
         run: make dist-linux-x86_64
@@ -100,7 +108,6 @@ jobs:
         run: make dist-win64
       - name: Archive Artifacts
         uses: actions/upload-artifact@v5
-        if: ${{ matrix.fpc-lazarus-version == 'stable' }}
         with:
           name: build ${{ matrix.operating-system }} lazarus
           path: |

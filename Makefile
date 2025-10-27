@@ -249,10 +249,6 @@ build-fpc-linux-ppc: make-dirs
 build-fpc-freebsd-x86: make-dirs
 	$(FPC_FREEBSD_X86) $(FPC_RELEASE_FLAGS) $(FILE)
 
-.PHONY: build-fpc-darwin-x86
-build-fpc-darwin-x86: make-dirs
-	$(FPC_DARWIN_X86) $(FPC_RELEASE_FLAGS) $(FILE)
-
 .PHONY: build-fpc-darwin-x86_64
 build-fpc-darwin-x86_64: make-dirs
 	$(FPC_DARWIN_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
@@ -342,7 +338,6 @@ help:
 	@echo "      beos"
 	@echo "      os2"
 	@echo "      freebsd-x86"
-	@echo "      darwin-x86"
 	@echo "      darwin-x86_64"
 	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
 	@echo "    are available..."
@@ -525,19 +520,18 @@ dist-freebsd-x86: clean build-fpc-freebsd-x86
 	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86 \
 	  FPC_DEFAULT='$(FPC_FREEBSD_X86)'
 
-.PHONY: dist-darwin-x86
-dist-darwin-x86: clean build-fpc-darwin-x86
-	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86 \
-	  FPC_DEFAULT='$(FPC_DARWIN_X86)' \
-	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=i386'
-
 .PHONY: dist-darwin-x86_64
 dist-darwin-x86_64: clean build-fpc-darwin-x86_64
 	$(MAKE) --no-print-directory \
 	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
 	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)' \
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=x86_64 --widgetset=cocoa'
+
+.PHONY: dist-darwin-x86_64-nogui
+dist-darwin-x86_64: clean build-fpc-darwin-x86_64
+	$(MAKE) --no-print-directory \
+	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
+	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)'
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
