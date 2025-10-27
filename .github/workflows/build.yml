@@ -2,7 +2,6 @@
 # GitHub Actions workflow to build and test PasDoc.
 #
 # Uses GitHub-hosted runners.
-# Uses https://github.com/gcarreno/setup-lazarus to get FPC and Lazarus.
 #
 # See https://docs.github.com/en/actions for docs.
 # ----------------------------------------------------------------------------
@@ -21,23 +20,24 @@ jobs:
     name: Build and Test
     strategy:
       matrix:
-        # macOS note: using macos-13, not macos-latest, as working with
-        # gcarreno/setup-lazarus@v3.3.1 (we do the same in Castle Game Engine
-        # GHA setup).
-        operating-system: [windows-latest,ubuntu-latest,macos-13]
-        # Pick a few Lazarus versions to also test compilation with older FPC versions,
-        # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
-        fpc-lazarus-version: [dist, stable, 2.2.2, 2.0.12]
+        operating-system: [windows-latest,ubuntu-latest,macos-15-intel]
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
         uses: actions/checkout@v5
-      - name: Install FPC+Lazarus
+
+      - name: Install FPC+Lazarus (using HomeBrew)
+        if: ${{ matrix.operating-system == 'macos-15-intel' }}
+        run: |
+          brew install fpc lazarus
+      - name: Install FPC+Lazarus (using gcarreno/setup-lazarus)
+        if : ${{ matrix.operating-system != 'macos-15-intel' }}
         uses: gcarreno/setup-lazarus@v3.3.1
         with:
-          lazarus-version: ${{ matrix.fpc-lazarus-version }}
+          lazarus-version: stable
           # Do not use cache, not advised for Windows by https://github.com/gcarreno/setup-lazarus
           with-cache: false
+
       - name: Build
         run: make
       - name: Build Tools
@@ -87,7 +87,7 @@ jobs:
       #     root: tests/testcases_output/html/
 
       - name: Package macOS
-        if: ${{ matrix.operating-system == 'macos-13' }}
+        if: ${{ matrix.operating-system == 'macos-15-intel' }}
         run: make dist-darwin-x86_64
       - name: Package Linux
         if: ${{ matrix.operating-system == 'ubuntu-latest' }}
