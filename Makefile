@@ -528,7 +528,7 @@ dist-darwin-x86_64: clean build-fpc-darwin-x86_64
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=x86_64 --widgetset=cocoa'
 
 .PHONY: dist-darwin-x86_64-nogui
-dist-darwin-x86_64: clean build-fpc-darwin-x86_64
+dist-darwin-x86_64-nogui: clean build-fpc-darwin-x86_64
 	$(MAKE) --no-print-directory \
 	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
 	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)'
