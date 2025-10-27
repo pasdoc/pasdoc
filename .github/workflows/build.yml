@@ -99,7 +99,7 @@ jobs:
         if: ${{ matrix.operating-system == 'windows-latest' }}
         run: make dist-win64
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ matrix.fpc-lazarus-version == 'stable' }}
         with:
           name: build ${{ matrix.operating-system }} lazarus
@@ -151,7 +151,7 @@ jobs:
             make dist-linux-"${FPC_CPU}"
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build raspberry-pi ${{ matrix.arch }}
           path: |
