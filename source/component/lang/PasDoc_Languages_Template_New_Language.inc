@@ -37,6 +37,7 @@ RTransTable = (
   //tables and members
     {trClasses} strToDo, //'Classes',
       {trClass} strToDo, //'Class',
+      {trObjcClass} strToDo, //'ObjcClass',
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} strToDo, //'Interface',
     {trObjects} strToDo, //'Objects',

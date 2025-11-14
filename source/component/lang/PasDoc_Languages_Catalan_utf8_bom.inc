@@ -9,10 +9,11 @@
     {trNestedTypes} 'Tipus anidats', // 'Nested Types',
     {trIdentifiers} 'Identificadors',
     {trGvUses} 'Gràfic de dependències d''unitats', //'Unit dependency graph',
-    {trGvClasses} 'Gràfic de gerarquia de classes', 
+    {trGvClasses} 'Gràfic de gerarquia de classes',
   //tables and members
     {trClasses} 'Classes',
       {trClass} 'Classe',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interface', //'Interface',
     {trObjects} 'Objectes',

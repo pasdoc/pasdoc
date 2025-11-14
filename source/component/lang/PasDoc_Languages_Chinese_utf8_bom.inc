@@ -15,6 +15,7 @@ RTransTable = (
   //tables and members
     {trClasses} '类',
       {trClass} '类',
+      {trObjcClass} strToDo,
       {trDispInterface} '调度接口',
       {trInterface} '接口',
     {trObjects} '对象',

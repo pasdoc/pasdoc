@@ -1,5 +1,5 @@
 RTransTable = (
-    {trNoTrans} '<häh?>', //no ID assigned, so far
+    {trNoTrans} '<hï¿½h?>', //no ID assigned, so far
     {trLanguage} 'German',
   //map
     {trUnits} strKeep, //'Units',
@@ -8,11 +8,12 @@ RTransTable = (
     {trNestedCR} strToDo, //'Nested Classes and Records',
     {trNestedTypes} strToDo, //'Nested Types',
     {trIdentifiers} 'Bezeichner',
-    {trGvUses} 'Graph der Unit-Abhängigkeiten',
+    {trGvUses} 'Graph der Unit-Abhï¿½ngigkeiten',
     {trGvClasses} 'Graph der Klassenhierarchie',
   //tables and members
     {trClasses} 'Klassen',
       {trClass} 'Klasse',
+      {trObjcClass} strToDo,
       {trDispInterface} strKeep, //'DispInterface',
       {trInterface} strKeep, //'Interface', 'Schnittstelle'?
     {trObjects} strKeep, //'Objects',
@@ -36,7 +37,7 @@ RTransTable = (
       {trAuthors} 'Autoren',
         {trAuthor} 'Autor',
       {trCreated} 'Erstellt',
-      {trLastModified} 'Letzte Änderung',
+      {trLastModified} 'Letzte ï¿½nderung',
     {trSubroutine} 'Unterprogramm',
       {trParameters} 'Parameter',
       {trReturns} 'Result',
@@ -57,14 +58,14 @@ RTransTable = (
   //hints
     {trDeprecated} 'Dieses Symbol sollte nicht (mehr) verwendet werden.',
     {trPlatformSpecific} 'Dieses Symbol ist plattformspezifisch.',
-    {trLibrarySpecific} 'Dieses Symbol ist spezifisch für eine bestimmte Bibliothek.',
+    {trLibrarySpecific} 'Dieses Symbol ist spezifisch fï¿½r eine bestimmte Bibliothek.',
     {trExperimental} strToDo, //'this symbol is experimental',
   //headings
-    {trOverview} 'Übersicht',
-    {trIntroduction} 'Einführung',
+    {trOverview} 'ï¿½bersicht',
+    {trIntroduction} 'Einfï¿½hrung',
     {trConclusion} 'Fazit',
     {trAdditionalFile} 'weitere Datei',
-    {trEnclosingClass} 'Einschließende Klasse',
+    {trEnclosingClass} 'Einschlieï¿½ende Klasse',
     {trHeadlineCio} 'Alle Klassen, Schnittstellen, Objekte und Records',
     {trHeadlineConstants} 'Alle Konstanten',
     {trHeadlineFunctionsAndProcedures} 'Alle Funktionen und Prozeduren',
@@ -76,7 +77,7 @@ RTransTable = (
   //column headings
     {trDeclaration} 'Deklaration',
     {trDescription} 'Beschreibung',
-    {trDescriptions} 'Ausführliche Beschreibungen',
+    {trDescriptions} 'Ausfï¿½hrliche Beschreibungen',
     {trName} strKeep, //'Name',
     {trValues} 'Werte',
   //tags with inbuilt heading
@@ -95,7 +96,7 @@ RTransTable = (
     {trHelp} 'Hilfe',
     {trLegend} 'Legende',
     {trMarker} 'Markierung',
-    {trWarningOverwrite} 'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben',
+    {trWarningOverwrite} 'Achtung: Nicht ï¿½ndern - diese Datei wurde automatisch erstellt und wird mï¿½glicherweise ï¿½berschrieben',
     {trWarning} 'Warnung',
     {trGeneratedBy} 'Erstellt mit',
     {trGeneratedOn} strToDo, //'Generated on'

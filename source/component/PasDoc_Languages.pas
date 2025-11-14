@@ -136,6 +136,7 @@ type
   //tables and members
     trClasses,
       trClass,
+      trObjcClass,
       trDispInterface,
       trInterface,
     trObjects,

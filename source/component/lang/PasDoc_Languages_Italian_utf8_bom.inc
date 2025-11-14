@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Classi',
       {trClass} 'Classe',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interfacce',
     {trObjects} 'Oggetti',

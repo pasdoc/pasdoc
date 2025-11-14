@@ -13,6 +13,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Klasser',
       {trClass} 'Klasse',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} strToDo, //'Interface',
     {trObjects} 'Objekter',
@@ -35,7 +36,7 @@ RTransTable = (
       {trVariables} 'Variable',
       {trAuthors} 'Forfatre',
         {trAuthor} 'Forfatter',
-      {trCreated} 'Udført',
+      {trCreated} 'Udfï¿½rt',
       {trLastModified} 'Sidst Modificieret',
     {trSubroutine} strToDo, //'Subroutine',
       {trParameters} strToDo, //'Parameters',
@@ -92,7 +93,7 @@ RTransTable = (
     {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
     {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
   //misc
-    {trHelp} 'Hjælp',
+    {trHelp} 'Hjï¿½lp',
     {trLegend} 'Legende',
     {trMarker} strToDo, //'Marker',
     {trWarningOverwrite} 'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret',

@@ -26,6 +26,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Třídy',
       {trClass} 'Třída',
+      {trObjcClass} strToDo,
       {trDispInterface} 'DispInterface',
       {trInterface} 'Rozhraní',
     {trObjects} 'Objekty',

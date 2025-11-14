@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Klasser',
       {trClass} 'Klass',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} strToDo, //'Interface',
     {trObjects} 'Objekt', //-er ???

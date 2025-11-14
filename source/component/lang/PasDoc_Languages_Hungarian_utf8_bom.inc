@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Osztályok',
       {trClass} 'Osztály',
+      {trObjcClass} strToDo,
       {trDispInterface} 'Képernyő felületek',
       {trInterface} 'Kapcsolódási felület',
     {trObjects} 'Objektumok',

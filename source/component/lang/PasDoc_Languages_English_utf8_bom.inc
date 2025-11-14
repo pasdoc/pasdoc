@@ -13,6 +13,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Classes',
       {trClass} 'Class',
+      {trObjcClass} 'ObjcClass',
       {trDispInterface} 'DispInterface',
       {trInterface} 'Interface',
     {trObjects} 'Objects',

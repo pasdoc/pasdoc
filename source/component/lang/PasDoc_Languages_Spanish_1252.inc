@@ -3,25 +3,26 @@ RTransTable = (
     {trLanguage} 'Spanish',
   //map
     {trUnits} 'Unidades',
-    {trClassHierarchy} 'Jerarquía de clases',
+    {trClassHierarchy} 'Jerarquï¿½a de clases',
     {trCio} 'Clases, interfaces y objetos',
     {trNestedCR} strToDo, // 'Nested Classes and Records',
     {trNestedTypes} strToDo, // 'Nested Types',
     {trIdentifiers} 'Identificadores',
-    {trGvUses} 'Gráfico de dependencias de unidades', //
-    {trGvClasses} 'Gráfico de jerarquía de clases', //
+    {trGvUses} 'Grï¿½fico de dependencias de unidades', //
+    {trGvClasses} 'Grï¿½fico de jerarquï¿½a de clases', //
   //tables and members
     {trClasses} 'Clases',
       {trClass} 'Clase',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interfaz', //'Interface',
     {trObjects} 'Objetos',
       {trObject} 'Objeto',
       {trRecord} 'Registro', //'Record',
       {trPacked} strToDo, //'Packed',
-        {trHierarchy} 'Jerarquía',
+        {trHierarchy} 'Jerarquï¿½a',
         {trFields} 'Campos',
-        {trMethods} 'Métodos',
+        {trMethods} 'Mï¿½todos',
         {trProperties} 'Propiedades',
     {trLibrary} 'Biblioteca',  //'Library',
     {trPackage} 'Paquete',  //'Package',
@@ -36,33 +37,33 @@ RTransTable = (
       {trAuthors} 'Autores',
         {trAuthor} 'Autor',
       {trCreated} 'Creado',
-      {trLastModified} 'Última modificación',
+      {trLastModified} 'ï¿½ltima modificaciï¿½n',
     {trSubroutine} 'Subrutina', //'Subroutine',
-      {trParameters} 'Parámetros',
+      {trParameters} 'Parï¿½metros',
       {trReturns} 'Retorno', //strToDo??? solo uno!
       {trExceptionsRaised} 'Excepciones lanzadas',
     {trExceptions} 'Excepciones',
-      {trException} 'Excepción', //
-    {trEnum} 'Enumeración', //'Enumeration',
+      {trException} 'Excepciï¿½n', //
+    {trEnum} 'Enumeraciï¿½n', //'Enumeration',
   //visibilities
     {trVisibility} 'Visibilidad',
       {trPrivate} 'Privado', //'Private',
       {trStrictPrivate} 'Estrictamente privado', //'Strict Private',
       {trProtected} 'Protegido', //?
       {trStrictProtected} 'Estrictamente protegido', //'Strict Protected',
-      {trPublic} 'Público', //'Public',
-      {trPublished} strToDo, //'Published', I would keep that because "Published" is also "Público" in this context (IDE).
-      {trAutomated} 'Automático', //'Automated',
-      {trImplicit} 'Implícito', //'Implicit',
+      {trPublic} 'Pï¿½blico', //'Public',
+      {trPublished} strToDo, //'Published', I would keep that because "Published" is also "Pï¿½blico" in this context (IDE).
+      {trAutomated} 'Automï¿½tico', //'Automated',
+      {trImplicit} 'Implï¿½cito', //'Implicit',
   //hints
-    {trDeprecated} 'Este símbolo es obsoleto', //
-    {trPlatformSpecific} 'Este símbolo es específico para alguna plataforma',
-    {trLibrarySpecific} 'Este símbolo es específico para alguna biblioteca', //
+    {trDeprecated} 'Este sï¿½mbolo es obsoleto', //
+    {trPlatformSpecific} 'Este sï¿½mbolo es especï¿½fico para alguna plataforma',
+    {trLibrarySpecific} 'Este sï¿½mbolo es especï¿½fico para alguna biblioteca', //
     {trExperimental} strToDo, //'this symbol is experimental',
   //headings
     {trOverview} 'Resumen',
-    {trIntroduction} 'Introducción',
-    {trConclusion} 'Conclusión',
+    {trIntroduction} 'Introducciï¿½n',
+    {trConclusion} 'Conclusiï¿½n',
     {trAdditionalFile} strToDo, //'additional file',
     {trEnclosingClass} strToDo, //'Enclosing Class',
     {trHeadlineCio} 'Todas las clases, interfaces y objetos',
@@ -74,9 +75,9 @@ RTransTable = (
     {trHeadlineVariables} 'Todas las variables',
     {trSummaryCio} 'Lista de clases, interfaces y objetos',
   //column headings
-    {trDeclaration} 'Declaración',
-    {trDescription} 'Descripción',
-    {trDescriptions} 'Descripción detallada', //? 'Descriptions', 'Detailed Descriptions'?
+    {trDeclaration} 'Declaraciï¿½n',
+    {trDescription} 'Descripciï¿½n',
+    {trDescriptions} 'Descripciï¿½n detallada', //? 'Descriptions', 'Detailed Descriptions'?
     {trName} 'Nombre',
     {trValues} 'Valores',
   //tags with inbuilt heading
@@ -95,13 +96,13 @@ RTransTable = (
     {trHelp} 'Ayuda',
     {trLegend} 'Leyenda',
     {trMarker} 'Marcador',
-    {trWarningOverwrite} 'Atención, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito',
-    {trWarning} 'Atención',
+    {trWarningOverwrite} 'Atenciï¿½n, no editar - este fichero ha sido creado automaticamente y puede ser sobrescrito',
+    {trWarning} 'Atenciï¿½n',
     {trGeneratedBy} 'Generado por', //??? strToDo, //'Generador por',
     {trGeneratedOn} strToDo, //'Generated on'
     {trOnDateTime} 'a',
     {trSearch} 'Buscar',
-    {trSeeAlso} 'Ver también', // ?
+    {trSeeAlso} 'Ver tambiï¿½n', // ?
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributos', //'Attributes',
     ''  //dummy

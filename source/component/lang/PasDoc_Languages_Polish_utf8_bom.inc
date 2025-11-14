@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Klasy',
       {trClass} 'Klasa',
+      {trObjcClass} 'ObjcClass',
       {trDispInterface} 'DispInterface', //'DispInterface',
       {trInterface} 'Interfejs',
     {trObjects} 'Obiekty',

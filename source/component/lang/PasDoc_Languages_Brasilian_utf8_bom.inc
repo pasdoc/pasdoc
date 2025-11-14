@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} strKeep,
       {trClass} 'Classe',
+      {trObjcClass} strToDo,
       {trDispInterface} strKeep,
       {trInterface} strKeep,
     {trObjects} 'Objetos',
@@ -100,7 +101,7 @@
     {trGeneratedBy} 'Gerado por',
     {trGeneratedOn} 'Gerado em',
     {trOnDateTime} 'às',
-    {trSearch} 'Pesquisar', 
+    {trSearch} 'Pesquisar',
     {trSeeAlso} 'Veja também',
     {trNested} strKeep,
     {trAttributes} 'Atributos',
