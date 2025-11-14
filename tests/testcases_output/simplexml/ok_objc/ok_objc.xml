@@ -1,0 +1,38 @@
+<unit name="ok_objc.pas">
+  <description><detailed>Objective-C/Objective-Pascal FPC syntax tests. See https://github.com/pasdoc/pasdoc/issues/220 https://wiki.freepascal.org/FPC_PasCocoa</detailed></description>
+  <structure name="TSomeCocoaClassObject" name_with_generic="TSomeCocoaClassObject" type="objcclass" visibility="published">
+    <ancestor name="NSObject" declaration="NSObject" />
+    <routine name="SomeFunction" type="procedure" declaration="procedure SomeFunction(someparameter: SomeType); message 'SomeFunction:';" visibility="public">
+    </routine>
+  </structure>
+  <structure name="NSSomeObject" name_with_generic="NSSomeObject" type="objcclass" visibility="published">
+    <ancestor name="NSObject" declaration="NSObject" />
+    <routine name="method" type="procedure" declaration="procedure method(params: Integer); message 'method:';" visibility="public">
+    </routine>
+    <routine name="classmethod" type="procedure" declaration="class procedure classmethod(para: char); override;" visibility="public">
+    </routine>
+  </structure>
+  <structure name="NSView" name_with_generic="NSView" type="objcclass" visibility="published">
+    <ancestor name="NSResponder" declaration="NSResponder" />
+    <routine name="initWithFrame" type="function" declaration="function initWithFrame(rect : NSRect): id; message 'initWithFrame:';" visibility="public">
+      <description><detailed>private field</detailed></description>
+    </routine>
+    <routine name="addSubview" type="procedure" declaration="procedure addSubview(aview: NSView); message 'addSubview:';" visibility="public">
+    </routine>
+    <routine name="setAutoresizingMask" type="procedure" declaration="procedure setAutoresizingMask(mask: NSUInteger); message 'setAutoresizingMask:';" visibility="public">
+    </routine>
+    <routine name="setAutoresizesSubviews" type="procedure" declaration="procedure setAutoresizesSubviews(flag: LongBool); message 'setAutoresizesSubviews:';" visibility="public">
+    </routine>
+    <routine name="drawRect" type="procedure" declaration="procedure drawRect(dirtyRect: NSRect); message 'drawRect:';" visibility="public">
+    </routine>
+  </structure>
+  <structure name="MyView" name_with_generic="MyView" type="objcclass" visibility="published">
+    <ancestor name="MSView" declaration="MSView" />
+    <routine name="customMessage" type="procedure" declaration="procedure customMessage(dirtyRect: NSRect); message 'customMessage';" visibility="public">
+    </routine>
+    <routine name="drawRect" type="procedure" declaration="procedure drawRect(dirtyRect: NSRect); override;" visibility="public">
+    </routine>
+    <variable name="data" declaration="data: Integer;" visibility="public">
+    </variable>
+  </structure>
+</unit>

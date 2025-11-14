@@ -283,6 +283,7 @@ all_tests_for_current_format ()
   mk_test ok_link_function_type ok_link_function_type.pas
   mk_test ok_keyword_function_names ok_keyword_function_names.pas
   mk_test ok_ignore_leading_impl ok_ignore_leading_impl.pas --implementation-comments=join --ignore-leading=-
+  mk_test ok_objc ok_objc.pas
 }
 
 # parse params ----------------------------------------

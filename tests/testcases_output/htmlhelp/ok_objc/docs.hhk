@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MyView">
+<param name="Local" value="ok_objc.MyView.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="customMessage">
+<param name="Local" value="ok_objc.MyView.html#customMessage-NSRect-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="data">
+<param name="Local" value="ok_objc.MyView.html#data">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="drawRect">
+<param name="Local" value="ok_objc.MyView.html#drawRect-NSRect-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NSSomeObject">
+<param name="Local" value="ok_objc.NSSomeObject.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="classmethod">
+<param name="Local" value="ok_objc.NSSomeObject.html#classmethod-char-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="method">
+<param name="Local" value="ok_objc.NSSomeObject.html#method-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NSView">
+<param name="Local" value="ok_objc.NSView.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="addSubview">
+<param name="Local" value="ok_objc.NSView.html#addSubview-NSView-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="drawRect">
+<param name="Local" value="ok_objc.NSView.html#drawRect-NSRect-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="initWithFrame">
+<param name="Local" value="ok_objc.NSView.html#initWithFrame-NSRect-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="setAutoresizesSubviews">
+<param name="Local" value="ok_objc.NSView.html#setAutoresizesSubviews-LongBool-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="setAutoresizingMask">
+<param name="Local" value="ok_objc.NSView.html#setAutoresizingMask-NSUInteger-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TSomeCocoaClassObject">
+<param name="Local" value="ok_objc.TSomeCocoaClassObject.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SomeFunction">
+<param name="Local" value="ok_objc.TSomeCocoaClassObject.html#SomeFunction-SomeType-">
+</object>
+</ul>
+</body></html>
