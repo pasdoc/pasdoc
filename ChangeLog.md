@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Support for `objcclass` and `objcclass external`  (Michalis)
 * Fixed using introduction @shortTitle (Michalis)
 * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
 * Fixed resolving relative paths from introduction/conclusion (Michalis)
