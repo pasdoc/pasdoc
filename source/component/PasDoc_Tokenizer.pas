@@ -80,6 +80,7 @@ type
     KEY_BEGIN,
     KEY_CASE,
     KEY_CLASS,
+    KEY_OBJCCLASS,
     KEY_CONST,
     KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
@@ -138,7 +139,8 @@ type
     KEY_WHILE,
     KEY_WITH,
     KEY_XOR,
-    KEY_OUT);
+    KEY_OUT
+  );
 
   TStandardDirective = (
     SD_INVALIDSTANDARDDIRECTIVE,
@@ -191,7 +193,8 @@ type
     SD_SAFECALL,
     SD_PLATFORM,
     SD_VARARGS,
-    SD_FINAL);
+    SD_FINAL
+  );
 
   TStandardDirectives = set of TStandardDirective;
 
@@ -421,7 +424,7 @@ const
   { all Object Pascal keywords }
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
-    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
+    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'OBJCCLASS', 'CONST',
     'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',

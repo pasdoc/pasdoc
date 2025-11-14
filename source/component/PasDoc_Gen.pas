@@ -571,11 +571,11 @@ type
     {@name returns ' abstract', or ' sealed' for classes that abstract
      or sealed respectively.  @name is used by @link(TTexDocGenerator) and
      @link(TGenericHTMLDocGenerator) in writing the declaration of the class.}
-    function GetClassDirectiveName(Directive: TClassDirective): string;
+    function GetClassDirectiveName(const Directive: TClassDirective): string;
 
     {@name writes a translation of MyType based on the current language.
      However, 'record' and 'packed record' are not translated.}
-    function GetCIOTypeName(MyType: TCIOType): string;
+    function GetCIOTypeName(const MyType: TCIOType): string;
 
     { Loads descriptions from file N and replaces or fills the corresponding
       comment sections of items. }
@@ -2453,35 +2453,26 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
+function TDocGenerator.GetClassDirectiveName(const Directive: TClassDirective): string;
+const
+  Names: array[TClassDirective] of string = (
+    '',
+    ' abstract',
+    ' sealed',
+    ' helper',
+    ' external'
+  );
 begin
-  case Directive of
-    CT_NONE:
-      begin
-        result := '';
-      end;
-    CT_ABSTRACT:
-      begin
-        result := ' abstract';
-      end;
-    CT_SEALED:
-      begin
-        result := ' sealed';
-      end;
-    CT_HELPER:
-      begin
-        result := ' helper';
-      end;
-  else
-    Assert(False);
-  end;
+  Result := Names[Directive];
 end;
 
-function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
+function TDocGenerator.GetCIOTypeName(const MyType: TCIOType): string;
 begin
   case MyType of
     CIO_CLASS: Result := FLanguage.Translation[trClass];
     CIO_PACKEDCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trClass];
+    CIO_OBJCCLASS: Result := FLanguage.Translation[trObjcClass];
+    CIO_PACKEDOBJCCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trObjcClass];
     CIO_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];

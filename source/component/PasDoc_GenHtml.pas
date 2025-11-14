@@ -592,6 +592,8 @@ const
   CIO_NAMES: TCIONames = (
     'class',
     'packed class',
+    'objcclass',
+    'packed objcclass',
     'dispinterface',
     'interface',
     'object',

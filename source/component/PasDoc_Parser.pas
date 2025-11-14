@@ -538,6 +538,28 @@ begin
     Result := FullDeclaration + NextToken;
 end;
 
+function KeyWordToCioType(const KeyWord: TKeyword; const IsPacked: Boolean): TCIOType;
+begin
+  if not IsPacked then
+    case KeyWord of
+      KEY_CLASS:         Result := CIO_CLASS;
+      KEY_OBJCCLASS:     Result := CIO_OBJCCLASS;
+      KEY_DISPINTERFACE: Result := CIO_DISPINTERFACE;
+      KEY_INTERFACE:     Result := CIO_INTERFACE;
+      KEY_OBJECT:        Result := CIO_OBJECT;
+      KEY_RECORD:        Result := CIO_RECORD;
+      else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
+    end
+  else
+    case KeyWord of
+      KEY_CLASS:         Result := CIO_PACKEDCLASS;
+      KEY_OBJCCLASS:     Result := CIO_PACKEDOBJCCLASS;
+      KEY_OBJECT:        Result := CIO_PACKEDOBJECT;
+      KEY_RECORD:        Result := CIO_PACKEDRECORD;
+      else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
+    end;
+end;
+
 { ---------------------------------------------------------------------------- }
 { TParser }
 { ---------------------------------------------------------------------------- }
@@ -1935,7 +1957,7 @@ begin
                     Scanner.UnGetToken(t);
                     ParseTVCSection(DummyUnit); // parse section but don't add to resulting unit
                   end;
-                KEY_CLASS:
+                KEY_CLASS, KEY_OBJCCLASS:
                   //ClassKeyWordString := t.Data; // not needed after all
                   ;
                 KEY_FUNCTION, KEY_PROCEDURE, KEY_CONSTRUCTOR, KEY_DESTRUCTOR:
@@ -2258,27 +2280,6 @@ begin
 end;
 
 procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
-
-  function KeyWordToCioType(KeyWord: TKeyword; IsPacked: Boolean): TCIOType;
-  begin
-    if not IsPacked then
-      case KeyWord of
-        KEY_CLASS:         Result := CIO_CLASS;
-        KEY_DISPINTERFACE: Result := CIO_DISPINTERFACE;
-        KEY_INTERFACE:     Result := CIO_INTERFACE;
-        KEY_OBJECT:        Result := CIO_OBJECT;
-        KEY_RECORD:        Result := CIO_RECORD;
-        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
-      end
-    else
-      case KeyWord of
-        KEY_CLASS:         Result := CIO_PACKEDCLASS;
-        KEY_OBJECT:        Result := CIO_PACKEDOBJECT;
-        KEY_RECORD:        Result := CIO_PACKEDRECORD;
-        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
-      end;
-  end;
-
 var
   RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
@@ -2287,6 +2288,7 @@ var
   RoutineType: TPasRoutine;
   EnumType: TPasEnum;
   T, T2: TToken;
+  CioType: TCIOType;
 begin
   { Read the type name, preceded by optional "generic" directive.
     Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -2336,7 +2338,9 @@ begin
 
     if (t.MyType = TOK_KEYWORD) then
       case t.Info.KeyWord of
-        KEY_CLASS: begin
+        KEY_CLASS, KEY_OBJCCLASS:
+          begin
+            CioType := KeyWordToCioType(t.Info.KeyWord, False);
             FreeAndNil(t);
             t := GetNextToken(LTemp);
             LCollected := LCollected + LTemp + t.Data;
@@ -2345,7 +2349,7 @@ begin
               { include "identifier = class of something;" as standard type }
             end else begin
               Scanner.UnGetToken(t);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_CLASS,
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -2353,8 +2357,10 @@ begin
         KEY_DISPINTERFACE,
         KEY_INTERFACE,
         KEY_OBJECT,
-        KEY_RECORD: begin
-            ParseCIO(U, TypeName, TypeNameWithGeneric, KeyWordToCioType(t.Info.KeyWord, False),
+        KEY_RECORD:
+          begin
+            CioType := KeyWordToCioType(t.Info.KeyWord, False);
+            ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
               RawDescriptionInfo, False);
             FreeAndNil(t);
             Exit;
@@ -2373,14 +2379,16 @@ begin
               FreeAndNil(t);
             end;
           end;
-        KEY_PACKED: begin
+        KEY_PACKED:
+          begin
             FreeAndNil(t);
             t := GetNextToken(LTemp);
             LCollected := LCollected + LTemp + t.Data;
-            if t.Info.KeyWord in [KEY_RECORD, KEY_OBJECT, KEY_CLASS] then
+            if t.Info.KeyWord in [KEY_RECORD, KEY_OBJECT, KEY_CLASS, KEY_OBJCCLASS] then
             begin
               // for class - no check for "of", no packed classpointers allowed
-              ParseCIO(U, TypeName, TypeNameWithGeneric, KeyWordToCioType(t.Info.KeyWord, True),
+              CioType := KeyWordToCioType(t.Info.KeyWord, True);
+              ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               FreeAndNil(t);
               Exit;
@@ -3449,7 +3457,7 @@ begin
               else
                 ClassKeyWordString := Trim(ClassKeyWordString + ' ' + t.Data);
             end;
-          KEY_CLASS: ClassKeyWordString := t.Data;
+          KEY_CLASS, KEY_OBJCCLASS: ClassKeyWordString := t.Data;
           KEY_CONSTRUCTOR,
           KEY_DESTRUCTOR,
           KEY_FUNCTION,
@@ -3691,20 +3699,19 @@ begin
       ACio.RawDescriptionInfo^ := RawDescriptionInfo;
       ACio.MyType := CIOType;
 
-      if (CIOType in [ CIO_CLASS, CIO_PACKEDCLASS ] ) and
-        (t.MyType = TOK_IDENTIFIER) and
-        (t.Info.StandardDirective in [SD_ABSTRACT, SD_SEALED]) then
+      if t.IsStandardDirective(SD_ABSTRACT) then
       begin
-        if t.Info.StandardDirective = SD_ABSTRACT then
-          ACio.ClassDirective := CT_ABSTRACT
-        else
-          ACio.ClassDirective := CT_SEALED;
+        ACio.ClassDirective := CT_ABSTRACT;
         FreeAndNil(t);
         t := GetNextToken;
-      end
-      else if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
-        (t.MyType = TOK_IDENTIFIER) and
-        (t.Info.StandardDirective = SD_HELPER) then
+      end else
+      if t.IsStandardDirective(SD_SEALED) then
+      begin
+        ACio.ClassDirective := CT_SEALED;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end else
+      if t.IsStandardDirective(SD_HELPER) then
       begin
         { Class or record helpers are declared as:
           identifierName = class|record helper [(ancestor list)] for TypeIdentifierName
@@ -3714,6 +3721,12 @@ begin
           Ancestor list is optional, records cannot have ancestors, accepted nevertheless.
         }
         ACio.ClassDirective := CT_HELPER;
+        FreeAndNil(t);
+        t := GetNextToken;
+      end else
+      if t.IsStandardDirective(SD_EXTERNAL) then
+      begin
+        ACio.ClassDirective := CT_EXTERNAL;
         FreeAndNil(t);
         t := GetNextToken;
       end;
@@ -3832,6 +3845,11 @@ begin
               if not SameText(ACio.Name, 'tobject') then
                 ACio.Ancestors.Add(TStringPair.Create('TObject', 'TObject'));
             end;
+          CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS:
+            begin
+              { No root class for objcclass, see
+                https://wiki.freepascal.org/FPC_PasCocoa/Differences#No_unique_root_class }
+            end;
           CIO_DISPINTERFACE:
             begin
               if not SameText(ACio.Name, 'idispinterface') then
@@ -3872,7 +3890,7 @@ begin
           DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
       end;
 
-      if ACio.MyType in [ CIO_CLASS, CIO_PACKEDCLASS ] then
+      if ACio.MyType in [ CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS ] then
       begin
         { Visibility of members at the beginning of a class declaration
           that don't have a specified visibility is controlled
@@ -3929,6 +3947,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
     EnumType: TPasEnum;
     T: TToken;
     IsGeneric: boolean;
+    CioType: TCIOType;
   begin
     { Read the type name, preceded by optional "generic" directive.
       Calculate TypeName, IsGeneric, TypeNameWithGeneric.
@@ -3981,8 +4000,9 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
       begin
         FCioSk.Peek.SkipCioDecl := FALSE;
         case t.Info.KeyWord of
-          KEY_CLASS:
+          KEY_CLASS, KEY_OBJCCLASS:
             begin
+              CioType := KeyWordToCioType(t.Info.KeyWord, False);
               FreeAndNil(t);
               t := GetNextToken(LTemp);
               LCollected := LCollected + LTemp + t.Data;
@@ -3992,7 +4012,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
               end
               else begin
                 Scanner.UnGetToken(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_CLASS,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -4013,8 +4033,9 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
             end;
           KEY_OBJECT:
             begin
+              CioType := KeyWordToCioType(t.Info.KeyWord, False);
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_OBJECT,
+              ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -4036,19 +4057,21 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
                 ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
                   RawDescriptionInfo, False);
                 exit;
-              end
-              else if t.IsKeyWord(KEY_OBJECT) then
+              end else
+              if t.IsKeyWord(KEY_OBJECT) then
               begin
+                CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDOBJECT,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
-              end
-              else if t.IsKeyWord(KEY_CLASS) then
+              end else
+              if t.IsKeyWord(KEY_CLASS) or t.IsKeyWord(KEY_OBJCCLASS) then
               begin
                 // no check for "of", no packed classpointers allowed
+                CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDCLASS,
+                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;

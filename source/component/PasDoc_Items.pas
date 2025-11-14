@@ -754,16 +754,26 @@ type
     function IsOverride: Boolean; override;
   end;
 
-  { enumeration type to determine type of @link(TPasCio) item }
-  TCIOType = (CIO_CLASS, CIO_PACKEDCLASS,
+  { Determine type of @link(TPasCio) item, like a class or record. }
+  TCIOType = (
+    CIO_CLASS, CIO_PACKEDCLASS,
+    CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS,
     CIO_DISPINTERFACE, CIO_INTERFACE,
     CIO_OBJECT, CIO_PACKEDOBJECT,
     CIO_RECORD, CIO_PACKEDRECORD,
     { CIO_TYPE is used only when CIO is a type helper,
       designed by CIO.ClassDirective = CT_HELPER. }
-    CIO_TYPE);
+    CIO_TYPE
+  );
 
-  TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
+  TClassDirective = (
+    CT_NONE,
+    CT_ABSTRACT,
+    CT_SEALED,
+    CT_HELPER,
+    // external can be used with objcclass (see https://wiki.freepascal.org/FPC_PasCocoa )
+    CT_EXTERNAL
+  );
 
   { @abstract(Extends @link(TPasItem) to store all items in
     a class / an object, e.g. fields.)
@@ -1802,7 +1812,11 @@ begin
   OverrideChainEnded := not IsOverride;
 
   if (Assigned(MyObject) and
-     (TPasCio(MyObject).MyType in [CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJECT, CIO_PACKEDOBJECT])) then
+     (TPasCio(MyObject).MyType in [
+        CIO_CLASS, CIO_PACKEDCLASS,
+        CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS,
+        CIO_OBJECT, CIO_PACKEDOBJECT
+      ])) then
   begin
     CurrentClassAncestor := MyObject;
     while Assigned(CurrentClassAncestor) do
@@ -2168,7 +2182,7 @@ begin
 
   for j := 0 to Count - 1 do
     case TPasCio(GetPasItemAt(j)).MyType of
-      CIO_CLASS, CIO_PACKEDCLASS:
+      CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS:
         Inc(c);
       CIO_INTERFACE:
         Inc(i);
@@ -3097,6 +3111,8 @@ const
   Names: array [TCIOType] of String = (
     'class',
     'packed class',
+    'objcclass',
+    'packed objcclass',
     'dispinterface',
     'interface',
     'object',
