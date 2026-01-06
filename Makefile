@@ -95,6 +95,7 @@ FPC_OS2          := $(FPC_DEFAULT) -Pi386    -Tos2
 FPC_FREEBSD_X86  := $(FPC_DEFAULT) -Pi386    -Tfreebsd
 FPC_DARWIN_X86   := $(FPC_DEFAULT) -Pi386    -Tdarwin
 FPC_DARWIN_X86_64:= $(FPC_DEFAULT) -Px86_64  -Tdarwin
+FPC_DARWIN_AARCH64:= $(FPC_DEFAULT) -Paarch64 -Tdarwin
 
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
@@ -253,6 +254,10 @@ build-fpc-freebsd-x86: make-dirs
 build-fpc-darwin-x86_64: make-dirs
 	$(FPC_DARWIN_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
 
+.PHONY: build-fpc-darwin-aarch64
+build-fpc-darwin-aarch64: make-dirs
+	$(FPC_DARWIN_AARCH64) $(FPC_RELEASE_FLAGS) $(FILE)
+
 # Delphi/Kylix build targets
 
 # Implementation note: this $(subst...) is needed, otherwise under Windows
@@ -339,6 +344,7 @@ help:
 	@echo "      os2"
 	@echo "      freebsd-x86"
 	@echo "      darwin-x86_64"
+	@echo "      darwin-aarch64"
 	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
 	@echo "    are available..."
 	@echo
@@ -527,11 +533,12 @@ dist-darwin-x86_64: clean build-fpc-darwin-x86_64
 	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)' \
 	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=x86_64 --widgetset=cocoa'
 
-.PHONY: dist-darwin-x86_64-nogui
-dist-darwin-x86_64-nogui: clean build-fpc-darwin-x86_64
+.PHONY: dist-darwin-aarch64
+dist-darwin-aarch64: clean build-fpc-darwin-aarch64
 	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
-	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)'
+	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-aarch64 \
+		FPC_DEFAULT='$(FPC_DARWIN_AARCH64)' \
+	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=aarch64 --widgetset=cocoa'
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 

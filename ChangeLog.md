@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Added release (and CI build) on _macOS/Aarch64_ (Michalis)
 * Support for `objcclass` and `objcclass external`  (Michalis)
 * Fixed using introduction @shortTitle (Michalis)
 * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)

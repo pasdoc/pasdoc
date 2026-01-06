@@ -20,30 +20,39 @@ jobs:
     name: Build and Test
     strategy:
       matrix:
-        operating-system: [windows-latest,ubuntu-latest,macos-15-intel]
+        operating-system: [
+          windows-latest,
+          ubuntu-latest,
+          macos-15-intel,
+          macos-latest
+        ]
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
         uses: actions/checkout@v6
 
-      # TODO: Installing without lazarus as:
-      # - it is removed from HomeBrew
-      # - gcarreno/setup-lazarus does not support macos-15-intel
-      # To support building without GUI, we have special dist-darwin-x86_64-nogui
-      # target. We'd like to bring back PasDoc+GUI back to macOS,
-      # once there will be (again) a reliable way to get lazbuild in macOS in GHA.
-
-      - name: Install FPC+Lazarus (using HomeBrew)
-        if: ${{ matrix.operating-system == 'macos-15-intel' }}
-        run: brew install fpc
-
-      - name: Install FPC+Lazarus (using gcarreno/setup-lazarus)
-        if : ${{ matrix.operating-system != 'macos-15-intel' }}
+      - name: "Install FPC+Lazarus (non macOS: using gcarreno/setup-lazarus)"
+        if: ${{ runner.os != 'macOS' }}
         uses: gcarreno/setup-lazarus@v3.4.0
         with:
           lazarus-version: stable
           # Do not use cache, not advised for Windows by https://github.com/gcarreno/setup-lazarus
           with-cache: false
+
+      # We use https://github.com/castle-engine/castle-build-ci/
+      # to get FPC + Lazarus on macOS. This works on latest macOS GH-hosted
+      # runners.
+      # Reasons:
+      # - lazarus is removed from HomeBrew, so 'brew install lazarus' does not work
+      # - gcarreno/setup-lazarus does not support macos-15-intel
+      - name: "Install FPC+Lazarus (macOS: using castle-build-ci)"
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          cd /tmp/ # temporary directory, to be separate from the current project files
+          git clone https://github.com/castle-engine/castle-build-ci.git \
+            --depth=1 --single-branch --branch=master
+          castle-build-ci/install_dependencies
+          castle-build-ci/setup_castle_engine --install-fpc=true --install-lazarus=true --install-castle-engine=false
 
       - name: Build
         run: make
@@ -93,10 +102,12 @@ jobs:
       #   with:
       #     root: tests/testcases_output/html/
 
-      - name: Package macOS
+      - name: "Package macOS (Intel)"
         if: ${{ matrix.operating-system == 'macos-15-intel' }}
-        # TODO: packaging with nogui, due to problems listed higher in this file.
-        run: make dist-darwin-x86_64-nogui
+        run: make dist-darwin-x86_64
+      - name: "Package macOS (Aarch64)"
+        if: ${{ matrix.operating-system == 'macos-latest' }}
+        run: make dist-darwin-aarch64
       - name: Package Linux
         if: ${{ matrix.operating-system == 'ubuntu-latest' }}
         run: make dist-linux-x86_64
