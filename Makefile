@@ -1,4 +1,8 @@
-include Makefile-autodetect
+# Build Pasdoc.
+# Assumptions:
+# You have basic Unix tools.
+# On Windows, we assume you have cygpath from Cygwin / MSys2 etc.,
+# you have mkdir etc.
 
 #######################################################################
 # BASE CONFIGURATION
@@ -21,12 +25,14 @@ INCLUDE_DIRS := ./source/component ./source/component/images
 # Base file to compile
 FILE := ./source/console/pasdoc.dpr
 
-# Base directory where binaries will go
+# Base directory where binaries will go.
+# May be set on make command-line too.
 ifndef BINDIR
 BINDIR := bin
 endif
 
-# Base directory where libs, units, objects files will go
+# Base directory where libs, units, objects files will go.
+# May be set on make command-line too.
 ifndef OUTDIR
 OUTDIR := lib
 endif
@@ -43,6 +49,8 @@ DOCFILES := LICENSE ChangeLog.md README.md
 
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 
+MKDIRPROG := mkdir
+
 ############################################################################
 # Variables below are *not* configurable, i.e. don't change them (unless
 # you know what you're doing and you're able to accordingly change
@@ -50,27 +58,33 @@ PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 # value).
 ############################################################################
 
-PACKAGEDIR := $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGENAME)
+###########################################################################
+# Calculate $(PACKAGEBASEDIR), temporary directory used for preparing archives.
+# Calculate $(PACKAGEDIR), which is a subdirectory of above with pasdoc/ .
+###########################################################################
 
-############################################################################
-# Change the paths to the correct types
-#######################################################################
+ifdef TEMP
+PACKAGEBASEDIR := $(TEMP)
 
-ifdef OUTDIR
-OUTDIR := $(subst /,$(PATHSEP),$(OUTDIR))
+# Assume we have cygpath (from Cygwin, MSys2 etc.) on Windows.
+ifeq ($(OS),Windows_NT)
+# Make $(PACKAGEBASEDIR) directory as native Windows path
+# because we may use it with some non-Cygwin tools.
+#
+# Also, using "--mixed" instead of "--windows", we get path with forward slashes,
+# easier to use in Makefile due to uncertain how to quote things reliably in Makefile.
+PACKAGEBASEDIR := $(shell cygpath --mixed $(PACKAGEBASEDIR))
 endif
-ifdef BINDIR
-BINDIR := $(subst /,$(PATHSEP),$(BINDIR))
+
+else
+# /tmp is a good guess for Unix.
+# Use a subdir in /tmp/, to allow using this from multiple user accounts
+# (especially important since we may not clean after ourselves properly,
+# so with simple /tmp/ other user would not have permissions to remove /tmp/pasdoc)
+PACKAGEBASEDIR := /tmp/pasdoc-$(USER)
 endif
-FILE := $(subst /,$(PATHSEP),$(FILE))
-UNIT_DIRS := $(subst /,$(PATHSEP),$(UNIT_DIRS))
-INCLUDE_DIRS := $(subst /,$(PATHSEP),$(INCLUDE_DIRS))
-ifdef BINFILES
-BINFILES := $(subst /,$(PATHSEP),$(BINFILES))
-endif
-ifdef DOCFILES
-DOCFILES := $(subst /,$(PATHSEP),$(DOCFILES))
-endif
+
+PACKAGEDIR := $(PACKAGEBASEDIR)/$(PACKAGENAME)
 
 ############################################################################
 # FreePascal Configuration
@@ -261,14 +275,11 @@ build-fpc-darwin-aarch64: make-dirs
 # Delphi/Kylix build targets
 
 # Implementation note: this $(subst...) is needed, otherwise under Windows
-# dcc dumbly prints "file not found" when $(FILE) uses "/" (yes, "/" is allowed
-# path separator in all normal Windows programs...) (and $(FILE) uses
-# "/" because this is sensible default value for $(PATHSEP), otherwise we would
-# have to do dirty checks to guess whether we're used under Unix or Win32 in
-# this Makefile).
+# dcc prints "file not found" when $(FILE) uses "/" (even though "/" is allowed
+# path separator in all normal Windows programs).
 .PHONY: build-delphi-win32
 build-delphi-win32: make-dirs
-	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst $(PATHSEP),\\,$(FILE))
+	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst /,\\,$(FILE))
 
 .PHONY: build-delphi-linux-x86
 build-delphi-linux-x86: make-dirs
@@ -407,21 +418,21 @@ dist-prepare:
 	$(MKDIRPROG) -p $(PACKAGEDIR)
 	$(MAKE) build-tools
 ifdef BINFILES
-	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)bin
-	cp $(BINFILES) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
+	$(MKDIRPROG) $(PACKAGEDIR)/bin
+	cp $(BINFILES) $(PACKAGEDIR)/bin/
 endif
 ifdef DOCFILES
-	$(MKDIRPROG) $(PACKAGEDIR)$(PATHSEP)docs
-	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
+	$(MKDIRPROG) $(PACKAGEDIR)/docs
+	cp -R $(DOCFILES) $(PACKAGEDIR)/docs
 endif
 ifdef ADD_PASDOC_GUI
 	$(MAKE) build-gui
 ifdef PASDOC_GUI_BUNDLE
 	rm -Rf source/gui/pasdoc_gui.app/
 	cd source/gui/ && macos/create_bundle.sh $(VERSION)
-	cp -R source/gui/pasdoc_gui.app $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
+	cp -R source/gui/pasdoc_gui.app $(PACKAGEDIR)/bin/
 else
-	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)$(PATHSEP)bin$(PATHSEP)
+	cp source/gui/pasdoc_gui$(EXE) $(PACKAGEDIR)/bin/
 endif
 endif
 
@@ -432,15 +443,15 @@ endif
 # then creating it.
 .PHONY: dist-zip
 dist-zip: dist-prepare
-	rm -f $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip
+	rm -f $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).zip
 	cd $(PACKAGEBASEDIR) && zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
-	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).zip .
+	mv $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).zip .
 
 # This target archives distribution into a tar.gz file.
 .PHONY: dist-tar-gz
 dist-tar-gz: dist-prepare
 	cd $(PACKAGEBASEDIR) && tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
-	mv $(PACKAGEBASEDIR)$(PATHSEP)$(PACKAGE_BASENAME).tar.gz .
+	mv $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).tar.gz .
 
 .PHONY: dist-go32
 dist-go32: clean build-fpc-go32
