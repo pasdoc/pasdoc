@@ -1,5 +1,3 @@
-{ -*- compile-command: "make -C ../../ build-pascal_pre_proc" -*- }
-
 {
   Copyright 1998-2018 PasDoc developers.
 

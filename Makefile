@@ -9,8 +9,8 @@
 #######################################################################
 
 # The version of the package.
-# This must be changed on each version change,
-# as documented at https://github.com/pasdoc/pasdoc/wiki/ReleaseMaking .
+# This must be changed on each version bump,
+# as documented on https://pasdoc.github.io/ReleaseMaking .
 VERSION := 0.17.0.snapshot
 
 # The name of the package / file name
@@ -18,7 +18,7 @@ PACKAGENAME := pasdoc
 
 # Location of units source code.
 UNIT_DIRS := ./source/component ./source/console \
-  ./source/component/tipue
+	./source/component/tipue
 
 INCLUDE_DIRS := ./source/component ./source/component/images
 
@@ -35,6 +35,15 @@ endif
 # May be set on make command-line too.
 ifndef OUTDIR
 OUTDIR := lib
+endif
+
+# OS and CPU (in FPC naming conventions) to build for.
+# May be set on make command-line too (potentially to cause cross-compilation).
+ifndef FPC_OS
+FPC_OS := $(shell fpc -iTO)
+endif
+ifndef FPC_CPU
+FPC_CPU := $(shell fpc -iTP)
 endif
 
 # The following is for creating the final package, comment out
@@ -94,32 +103,16 @@ PACKAGEDIR := $(PACKAGEBASEDIR)/$(PACKAGENAME)
 # calling just fpc binary on the path
 FPC_DEFAULT := fpc
 
-FPC_WIN32        := $(FPC_DEFAULT) -Pi386    -Twin32
-FPC_WIN64        := $(FPC_DEFAULT) -Px86_64  -Twin64
-FPC_GO32         := $(FPC_DEFAULT) -Pi386    -Tgo32v2
-FPC_LINUX_X86    := $(FPC_DEFAULT) -Pi386    -Tlinux
-FPC_LINUX_X86_64 := $(FPC_DEFAULT) -Px86_64  -Tlinux
-FPC_LINUX_ARM    := $(FPC_DEFAULT) -Parm     -Tlinux
-FPC_LINUX_AARCH64:= $(FPC_DEFAULT) -Paarch64 -Tlinux
-FPC_LINUX_M68K   := $(FPC_DEFAULT) -Pm68k    -Tlinux
-FPC_LINUX_PPC    := $(FPC_DEFAULT) -Ppowerpc -Tlinux
-FPC_AMIGA        := $(FPC_DEFAULT) -Pppc     -Tamiga
-FPC_BEOS         := $(FPC_DEFAULT) -Pi386    -Tbeos
-FPC_OS2          := $(FPC_DEFAULT) -Pi386    -Tos2
-FPC_FREEBSD_X86  := $(FPC_DEFAULT) -Pi386    -Tfreebsd
-FPC_DARWIN_X86   := $(FPC_DEFAULT) -Pi386    -Tdarwin
-FPC_DARWIN_X86_64:= $(FPC_DEFAULT) -Px86_64  -Tdarwin
-FPC_DARWIN_AARCH64:= $(FPC_DEFAULT) -Paarch64 -Tdarwin
-
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 
 FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
-  $(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS)
+	$(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS) \
+	-T$(FPC_OS) -P$(FPC_CPU)
 
 FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
 ifdef CHECK_MEM_LEAK
-  FPC_DEBUG_FLAGS := -dCHECK_MEM_LEAK $(FPC_DEBUG_FLAGS)
+	FPC_DEBUG_FLAGS := -dCHECK_MEM_LEAK $(FPC_DEBUG_FLAGS)
 endif
 
 FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
@@ -142,7 +135,7 @@ DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
 # meaningfull error/warning lines. That's why we pass -Q below.
 
 DCC_COMMON_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -Q \
-  -DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
+	-DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
 
 DCC_DEBUG_FLAGS := -$$Q+ -$$R+ $(DCC_COMMON_FLAGS)
 
@@ -154,21 +147,21 @@ DCC_RELEASE_FLAGS := -$$O+ $(DCC_COMMON_FLAGS)
 
 # Default target
 .PHONY: default
-default: build-fpc-default-debug
+default: build-fpc-debug
 
 # Clean up the output files.
 .PHONY: clean
 clean:
 	rm -Rf source/console/pasdoc.compiled \
-	       source/packages/lazarus/lib/ \
-	       source/gui/pasdoc_gui.compiled \
-	       source/gui/pasdoc_gui \
-	       source/gui/pasdoc_gui.exe \
-	       source/gui/pasdoc_gui.app \
-	       source/gui/*.o \
-	       source/gui/*.or \
-	       source/gui/*.ppu \
-	       source/gui/*.res
+				 source/packages/lazarus/lib/ \
+				 source/gui/pasdoc_gui.compiled \
+				 source/gui/pasdoc_gui \
+				 source/gui/pasdoc_gui.exe \
+				 source/gui/pasdoc_gui.app \
+				 source/gui/*.o \
+				 source/gui/*.or \
+				 source/gui/*.ppu \
+				 source/gui/*.res
 	$(MAKE) clean -C tests/
 	$(MAKE) clean -C source/autodoc/
 ifdef OUTDIR
@@ -184,15 +177,11 @@ endif
 # This is executed before executing any `build-xxx' target,
 # to make sure that compilation works "out of the box".
 #
-# Always using special directories for $(BINDIR) and $(OUTDIR) is handy
-# -- reduces clutter, allows us to easily write `clean' target.
+# Always using special directories for $(BINDIR) and $(OUTDIR) is handy.
+# Reduces clutter, allows us to easily write `clean' target.
 #
-# Note that, unless you override $(BINDIR) and $(OUTDIR) at command-line,
-# they don't really help you when you have various compilers, for
-# various os/arch etc. because $(BINDIR) and $(OUTDIR) are always the same
-# anyway, so all compilers reuse the same dirs... In the future various
-# build-<compiler>-<os/arch> targets may be tweaked to use different
-# $(BINDIR) and $(OUTDIR).
+# Note that these BINDIR and OUTDIR are not automatically OS/CPU specific.
+# All OS/CPU builds reuse the same directories, by default.
 .PHONY: make-dirs
 make-dirs:
 ifdef OUTDIR
@@ -203,74 +192,13 @@ ifdef BINDIR
 endif
 
 # fpc- build targets
-
-.PHONY: build-fpc-default-debug
-build-fpc-default-debug: make-dirs
+.PHONY: build-fpc-debug
+build-fpc-debug: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
 
-.PHONY: build-fpc-default
-build-fpc-default: make-dirs
+.PHONY: build-fpc-release
+build-fpc-release: make-dirs
 	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-win32
-build-fpc-win32: make-dirs
-	$(FPC_WIN32) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-win64
-build-fpc-win64: make-dirs
-	$(FPC_WIN64) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-go32
-build-fpc-go32: make-dirs
-	$(FPC_GO32) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-x86
-build-fpc-linux-x86: make-dirs
-	$(FPC_LINUX_X86) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-x86_64
-build-fpc-linux-x86_64: make-dirs
-	$(FPC_LINUX_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-arm
-build-fpc-linux-arm: make-dirs
-	$(FPC_LINUX_ARM) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-aarch64
-build-fpc-linux-aarch64: make-dirs
-	$(FPC_LINUX_AARCH64) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-m68k
-build-fpc-linux-m68k: make-dirs
-	$(FPC_LINUX_M68K) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-amiga
-build-fpc-amiga: make-dirs
-	$(FPC_AMIGA) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-beos
-build-fpc-beos: make-dirs
-	$(FPC_BEOS) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-os2
-build-fpc-os2: make-dirs
-	$(FPC_OS2) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-linux-ppc
-build-fpc-linux-ppc: make-dirs
-	$(FPC_LINUX_PPC) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-freebsd-x86
-build-fpc-freebsd-x86: make-dirs
-	$(FPC_FREEBSD_X86) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-darwin-x86_64
-build-fpc-darwin-x86_64: make-dirs
-	$(FPC_DARWIN_X86_64) $(FPC_RELEASE_FLAGS) $(FILE)
-
-.PHONY: build-fpc-darwin-aarch64
-build-fpc-darwin-aarch64: make-dirs
-	$(FPC_DARWIN_AARCH64) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Delphi/Kylix build targets
 
@@ -285,11 +213,6 @@ build-delphi-win32: make-dirs
 build-delphi-linux-x86: make-dirs
 	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
-# obsolete target
-.PHONY: build-pascal_pre_proc
-build-pascal_pre_proc: make-dirs
-	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
-
 .PHONY: build-tools
 build-tools: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
@@ -299,14 +222,14 @@ build-tools: make-dirs
 .PHONY: build-gui
 build-gui:
 	if ! lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk; then \
-	  echo 'lazbuild sometimes fails with Access Violation, retrying' && \
-	  rm -Rf source/packages/lazarus/lib/ && \
-	  lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk; \
+		echo 'lazbuild sometimes fails with Access Violation, retrying' && \
+		rm -Rf source/packages/lazarus/lib/ && \
+		lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk; \
 	fi
 	if ! lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi; then \
-	  echo 'lazbuild sometimes fails with Access Violation, retrying' && \
-	  rm -Rf source/gui/lib/ && \
-	  lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi; \
+		echo 'lazbuild sometimes fails with Access Violation, retrying' && \
+		rm -Rf source/gui/lib/ && \
+		lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi; \
 	fi
 	strip source/gui/pasdoc_gui$(EXE)
 
@@ -329,40 +252,14 @@ help:
 	@echo
 	@echo "Compiling:"
 	@echo
-	@echo "  default, build-fpc-default-debug:"
+	@echo "  default, build-fpc-debug:"
 	@echo "    Compile debug version with FPC. This is the default target."
 	@echo
-	@echo "  build-fpc-default:"
+	@echo "  build-fpc-release:"
 	@echo "    Compile release version with FPC."
 	@echo
-	@echo "  build-<compiler>-<os/arch>:"
-	@echo "    Compile release version with given compiler for given OS"
-	@echo "    and architecture. Available values for <compiler> are:"
-	@echo "      fpc"
-	@echo "      delphi"
-	@echo "    Available values for <os/arch> are:"
-	@echo "      win32"
-	@echo "      win64"
-	@echo "      go32"
-	@echo "      linux-x86"
-	@echo "      linux-x86_64"
-	@echo "      linux-m68k"
-	@echo "      linux-arm"
-	@echo "      linux-aarch64"
-	@echo "      linux-ppc"
-	@echo "      amiga"
-	@echo "      beos"
-	@echo "      os2"
-	@echo "      freebsd-x86"
-	@echo "      darwin-x86_64"
-	@echo "      darwin-aarch64"
-	@echo "    Of course, not all combinations of <compiler> and <os/arch>"
-	@echo "    are available..."
-	@echo
-	@echo "    Note that in case of FPC, these targets assume that variable"
-	@echo "    FPC_<os/arch> points to a compiler that produces"
-	@echo "    a binary for given <os/arch>. So if you want to cross-compile"
-	@echo "    with FPC, make sure to adjust these variables accordingly."
+	@echo "    You can pass FPC_OS=xxx FPC_CPU=xxx to cause cross-compilation"
+	@echo "    e.g.: 'make build-fpc-release FPC_OS=win64 FPC_CPU=x86_64'"
 	@echo
 	@echo "  build-gui:"
 	@echo "    Compile pasdoc_gui with lazbuild (Lazarus build tool)."
@@ -373,9 +270,7 @@ help:
 	@echo "Archiving a release:"
 	@echo
 	@echo "  dist-<os/arch>:"
-	@echo "    This calls \"clean\", then \"build-<compiler>-<os/arch>\""
-	@echo "    (using the preferred <compiler> for making a release on"
-	@echo "    this <os/arch> -- currently, always FPC)"
+	@echo "    This calls \"clean\", then \"build-fpc-release\","
 	@echo "    and then makes a release archive for given <os/arch>."
 	@echo
 	@echo "  dist-src:"
@@ -396,10 +291,6 @@ tag:
 #
 # Some general targets are present here, and targets
 # that build and archive for particular platform.
-# Note that each dist-<os/arch> target assumes that according build-fpc-<os/arch>
-# target produces a pasdoc binary that works under <os/arch> platform.
-# So if you want to cross-compile to create release archives,
-# make sure that variables FPC_<os/arch> are properly set.
 #
 # Note that dist targets use the most common archive format for given platform.
 # E.g. for Unices this is tar.gz, for Win32/DOS this is zip.
@@ -408,12 +299,18 @@ tag:
 # to use tar.gz under Unices.
 ############################################################################
 
-# This target creates and fills directory $(PACKAGEDIR)
-# (it's *always* the subdirectory $(PACKAGENAME) inside $(PACKAGEBASEDIR)).
-# Use this to prepare file tree before archiving --- the only remaining
-# thing after executing this target is to archive $(PACKAGEDIR).
-.PHONY: dist-prepare
-dist-prepare:
+# Do common distribution steps.
+# - cleanup
+# - build pasdoc
+# - build tools (pascal_pre_proc, file_to_pascal_string, file_to_pascal_data)
+# - build pasdoc_gui (if ADD_PASDOC_GUI is set)
+# - create and fill $(PACKAGEDIR)
+#   (it's *always* the subdirectory $(PACKAGENAME) inside $(PACKAGEBASEDIR)).
+# The only remaining thing after executing this target is to archive $(PACKAGEDIR).
+.PHONY: dist-common
+dist-common:
+	$(MAKE) clean
+	$(MAKE) build-fpc-release
 	rm -rf $(PACKAGEDIR)
 	$(MKDIRPROG) -p $(PACKAGEDIR)
 	$(MAKE) build-tools
@@ -442,114 +339,100 @@ endif
 # if it already exists, so for safety below I'm first `rm -f ...' zip archive,
 # then creating it.
 .PHONY: dist-zip
-dist-zip: dist-prepare
+dist-zip:
+	$(MAKE) dist-common
 	rm -f $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).zip
 	cd $(PACKAGEBASEDIR) && zip -r $(PACKAGE_BASENAME).zip $(PACKAGENAME)/*
 	mv $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).zip .
 
 # This target archives distribution into a tar.gz file.
 .PHONY: dist-tar-gz
-dist-tar-gz: dist-prepare
+dist-tar-gz:
+	$(MAKE) dist-common
 	cd $(PACKAGEBASEDIR) && tar czvf $(PACKAGE_BASENAME).tar.gz $(PACKAGENAME)/
 	mv $(PACKAGEBASEDIR)/$(PACKAGE_BASENAME).tar.gz .
 
-.PHONY: dist-go32
-dist-go32: clean build-fpc-go32
-	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=go32 \
-	  FPC_DEFAULT='$(FPC_GO32)'
+# Targets specific to particular platform (OS/CPU)
 
 .PHONY: dist-win32
-dist-win32: clean build-fpc-win32
-	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 \
-	  FPC_DEFAULT='$(FPC_WIN32)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win32 --cpu=i386'
+dist-win32:
+	$(MAKE) dist-zip \
+		FPC_OS=win32 FPC_CPU=i386 \
+		EXE=.exe PACKAGE_BASENAME_SUFFIX=win32 \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win32 --cpu=i386'
 
 .PHONY: dist-win64
-dist-win64: clean build-fpc-win64
-	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=win64 \
-	  FPC_DEFAULT='$(FPC_WIN64)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win64 --cpu=x86_64'
+dist-win64:
+	$(MAKE) dist-zip \
+		FPC_OS=win64 FPC_CPU=x86_64 \
+		EXE=.exe PACKAGE_BASENAME_SUFFIX=win64 \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=win64 --cpu=x86_64'
 
 .PHONY: dist-os2
-dist-os2: clean build-fpc-os2
-	$(MAKE) --no-print-directory \
-	  dist-zip EXE=.exe PACKAGE_BASENAME_SUFFIX=os2 \
-	  FPC_DEFAULT='$(FPC_OS2)'
+dist-os2:
+	$(MAKE) dist-zip \
+	  FPC_OS=os2 FPC_CPU=i386 \
+		EXE=.exe PACKAGE_BASENAME_SUFFIX=os2
 
 .PHONY: dist-beos
-dist-beos: clean build-fpc-beos
-	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=be-x86 \
-	  FPC_DEFAULT='$(FPC_BEOS)'
+dist-beos:
+	$(MAKE) dist-zip \
+	  FPC_OS=beos FPC_CPU=i386 \
+		PACKAGE_BASENAME_SUFFIX=be-x86
 
 .PHONY: dist-linux-m68k
-dist-linux-m68k: clean build-fpc-linux-m68k
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-m68k \
-	  FPC_DEFAULT='$(FPC_LINUX_M68K)'
+dist-linux-m68k:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=m68k \
+		PACKAGE_BASENAME_SUFFIX=linux-m68k
 
 .PHONY: dist-linux-x86
-dist-linux-x86: clean build-fpc-linux-x86
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86 \
-	  FPC_DEFAULT='$(FPC_LINUX_X86)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=i386'
+dist-linux-x86:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=i386 \
+	  PACKAGE_BASENAME_SUFFIX=linux-x86 \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=i386'
 
 .PHONY: dist-linux-x86_64
-dist-linux-x86_64: clean build-fpc-linux-x86_64
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-x86_64 \
-	  FPC_DEFAULT='$(FPC_LINUX_X86_64)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=x86_64'
+dist-linux-x86_64:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=x86_64 \
+	  PACKAGE_BASENAME_SUFFIX=linux-x86_64 \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=x86_64'
 
 .PHONY: dist-linux-arm
-dist-linux-arm: clean build-fpc-linux-arm
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-arm \
-	  FPC_DEFAULT='$(FPC_LINUX_ARM)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=arm'
+dist-linux-arm:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=arm \
+		PACKAGE_BASENAME_SUFFIX=linux-arm \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=arm'
 
 .PHONY: dist-linux-aarch64
-dist-linux-aarch64: clean build-fpc-linux-aarch64
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-aarch64 \
-	  FPC_DEFAULT='$(FPC_LINUX_AARCH64)' \
-	  ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=aarch64'
-
-.PHONY: dist-amiga
-dist-amiga: clean build-fpc-amiga
-	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=amiga-m68k \
-	  FPC_DEFAULT='$(FPC_AMIGA_M68K)'
+dist-linux-aarch64:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=aarch64 \
+		PACKAGE_BASENAME_SUFFIX=linux-aarch64 \
+		ADD_PASDOC_GUI=t LAZBUILD_OPTIONS='--operating-system=linux --cpu=aarch64'
 
 .PHONY: dist-linux-ppc
-dist-linux-ppc: clean build-fpc-linux-ppc
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=linux-ppc \
-	  FPC_DEFAULT='$(FPC_LINUX_PPC)'
-
-.PHONY: dist-freebsd-x86
-dist-freebsd-x86: clean build-fpc-freebsd-x86
-	$(MAKE) --no-print-directory \
-	  dist-tar-gz PACKAGE_BASENAME_SUFFIX=freebsd-x86 \
-	  FPC_DEFAULT='$(FPC_FREEBSD_X86)'
+dist-linux-ppc:
+	$(MAKE) dist-tar-gz \
+	  FPC_OS=linux FPC_CPU=powerpc \
+	  PACKAGE_BASENAME_SUFFIX=linux-ppc
 
 .PHONY: dist-darwin-x86_64
-dist-darwin-x86_64: clean build-fpc-darwin-x86_64
-	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
-	  FPC_DEFAULT='$(FPC_DARWIN_X86_64)' \
-	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=x86_64 --widgetset=cocoa'
+dist-darwin-x86_64:
+	$(MAKE) dist-zip \
+	  FPC_OS=darwin FPC_CPU=x86_64 \
+		PACKAGE_BASENAME_SUFFIX=darwin-x86_64 \
+		ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=x86_64 --widgetset=cocoa'
 
 .PHONY: dist-darwin-aarch64
-dist-darwin-aarch64: clean build-fpc-darwin-aarch64
-	$(MAKE) --no-print-directory \
-	  dist-zip PACKAGE_BASENAME_SUFFIX=darwin-aarch64 \
-		FPC_DEFAULT='$(FPC_DARWIN_AARCH64)' \
-	  ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=aarch64 --widgetset=cocoa'
+dist-darwin-aarch64:
+	$(MAKE) dist-zip \
+	  FPC_OS=darwin FPC_CPU=aarch64 \
+	  PACKAGE_BASENAME_SUFFIX=darwin-aarch64 \
+		ADD_PASDOC_GUI=t PASDOC_GUI_BUNDLE=t LAZBUILD_OPTIONS='--operating-system=darwin --cpu=aarch64 --widgetset=cocoa'
 
 SOURCE_PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-src
 
@@ -562,12 +445,12 @@ dist-src:
 # Exclude .cge-jenkins-lazarus and .cache that may happen because Jenkins
 # runs this with Docker container with $HOME set to pasdoc dir.
 	cd /tmp/pasdoc-src-temp/ && \
-	  zip -r $(SOURCE_PACKAGE_BASENAME).zip \
-	  --exclude='*/.git/*' \
-	  --exclude='*/.cge-jenkins-lazarus/*' \
-	  --exclude='*/.cache/*' \
-	  --exclude='*.tar.gz' \
-	  --exclude='*.zip' \
-	  --exclude='*~' \
-	  pasdoc
+		zip -r $(SOURCE_PACKAGE_BASENAME).zip \
+		--exclude='*/.git/*' \
+		--exclude='*/.cge-jenkins-lazarus/*' \
+		--exclude='*/.cache/*' \
+		--exclude='*.tar.gz' \
+		--exclude='*.zip' \
+		--exclude='*~' \
+		pasdoc
 	mv /tmp/pasdoc-src-temp/$(SOURCE_PACKAGE_BASENAME).zip .
