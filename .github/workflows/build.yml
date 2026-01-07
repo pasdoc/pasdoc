@@ -15,6 +15,10 @@ env:
   release_tag: snapshot
   #release_tag: vX.Y.Z
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     name: Build and Test
