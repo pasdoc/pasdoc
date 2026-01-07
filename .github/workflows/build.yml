@@ -31,22 +31,17 @@ jobs:
       - name: Checkout PasDoc
         uses: actions/checkout@v6
 
-      - name: "Install FPC+Lazarus (non macOS: using gcarreno/setup-lazarus)"
-        if: ${{ runner.os != 'macOS' }}
-        uses: gcarreno/setup-lazarus@v3.4.0
-        with:
-          lazarus-version: stable
-          # Do not use cache, not advised for Windows by https://github.com/gcarreno/setup-lazarus
-          with-cache: false
-
       # We use https://github.com/castle-engine/castle-build-ci/
-      # to get FPC + Lazarus on macOS. This works on latest macOS GH-hosted
-      # runners.
+      # to get FPC + Lazarus on all platforms.
+      #
       # Reasons:
-      # - lazarus is removed from HomeBrew, so 'brew install lazarus' does not work
-      # - gcarreno/setup-lazarus does not support macos-15-intel
-      - name: "Install FPC+Lazarus (macOS: using castle-build-ci)"
-        if: ${{ runner.os == 'macOS' }}
+      # - Useful on macOS. This works on latest macOS GH-hosted runners.
+      #   Alternatives don't work (lazarus is removed from HomeBrew on latest mac,
+      #   gcarreno/setup-lazarus does not support latest macos-latest or macos-15-intel).
+      # - Does not put ancient cp.exe and other tools from FPC on $PATH for
+      #   execution.
+      # - It is simpler to use the same on all platforms.
+      - name: "Install FPC+Lazarus (using castle-build-ci)"
         run: |
           cd /tmp/ # temporary directory, to be separate from the current project files
           git clone https://github.com/castle-engine/castle-build-ci.git \
