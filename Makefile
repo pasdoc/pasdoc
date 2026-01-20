@@ -200,6 +200,11 @@ build-fpc-debug: make-dirs
 build-fpc-release: make-dirs
 	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
 
+# Deprecated (defined only temporarily for backward compatibility)
+# name for build-fpc-default .
+.PHONY: build-fpc-default
+build-fpc-default: build-fpc-release
+
 # Delphi/Kylix build targets
 
 # Implementation note: this $(subst...) is needed, otherwise under Windows
