@@ -3967,7 +3967,7 @@ begin
     else
       ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
 
-    ItemName := Format('Defined in %s (line %d)', [
+    ItemName := Format('Source: %s (line %d).', [
       ItemFilenameInRoot,
       AItem.SourceLine
     ]); // TODO: allow translating this

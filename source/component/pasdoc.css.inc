@@ -266,4 +266,9 @@
 'table.table_tag td > p:last-child,' + LineEnding +
 'table.table_tag th > p:last-child,' + LineEnding +
 '       td.itemdesc > p:last-child { margin-bottom: 0em; }' + LineEnding +
+'' + LineEnding +
+'.source_position {' + LineEnding +
+'  font-size: 80%;' + LineEnding +
+'  color: gray;' + LineEnding +
+'}' + LineEnding +
 ''
