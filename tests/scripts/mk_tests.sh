@@ -284,6 +284,11 @@ all_tests_for_current_format ()
   mk_test ok_keyword_function_names ok_keyword_function_names.pas
   mk_test ok_ignore_leading_impl ok_ignore_leading_impl.pas --implementation-comments=join --ignore-leading=-
   mk_test ok_objc ok_objc.pas
+  mk_test ok_source_position --show-source-position ok_source_position.pas
+  mk_test ok_source_position_url --show-source-position \
+    '--source-url-pattern=https://github.com/pasdoc/pasdoc/blob/master/{FILE}#L{LINE}' \
+    --source-root=$(realpath ../../) \
+    ok_source_position.pas
 }
 
 # parse params ----------------------------------------

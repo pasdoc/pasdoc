@@ -1,0 +1,265 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}source{\_}position}
+\section{Description}
+Test of {-}{-}show{-}source{-}position and {-}{-}source{-}url{-}pattern features.
+Defined in ok{\_}source{\_}position.pas (line 2)
+
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\end{description}
+\begin{description}
+\item[\texttt{MyProc}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+A simple class.
+Defined in ok{\_}source{\_}position.pas (line 20)
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyProp}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property MyProp: Integer read MyField;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A property.
+Defined in ok{\_}source{\_}position.pas (line 26)
+
+
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyField}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public MyField: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A field.
+Defined in ok{\_}source{\_}position.pas (line 22)
+
+
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{MyMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure MyMethod;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A method.
+Defined in ok{\_}source{\_}position.pas (line 24)
+
+
+\end{list}
+\section{Functions and Procedures}
+\subsection*{MyProc}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure MyProc;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A simple procedure.
+Defined in ok{\_}source{\_}position.pas (line 16)
+
+
+\end{list}
+\section{Types}
+\subsection*{TMyType}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyType = Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A simple type.
+Defined in ok{\_}source{\_}position.pas (line 10)
+
+
+\end{list}
+\section{Constants}
+\subsection*{MyConst}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MyConst = 42;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A simple constant.
+Defined in ok{\_}source{\_}position.pas (line 7)
+
+
+\end{list}
+\section{Variables}
+\subsection*{MyVar}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+MyVar: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A simple variable.
+Defined in ok{\_}source{\_}position.pas (line 13)
+
+
+\end{list}
+\end{document}

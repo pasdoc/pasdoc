@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MyConst">
+<param name="Local" value="ok_source_position.html#MyConst">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProc">
+<param name="Local" value="ok_source_position.html#MyProc">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyVar">
+<param name="Local" value="ok_source_position.html#MyVar">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_source_position.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyField">
+<param name="Local" value="ok_source_position.TMyClass.html#MyField">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyMethod">
+<param name="Local" value="ok_source_position.TMyClass.html#MyMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MyProp">
+<param name="Local" value="ok_source_position.TMyClass.html#MyProp">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyType">
+<param name="Local" value="ok_source_position.html#TMyType">
+</object>
+</ul>
+</body></html>
