@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Implemented `--show-source-position`, `--source-url-pattern`, `--source-root` (https://pasdoc.github.io/SourcePosition) (Michalis)
 * Added release (and CI build) on _macOS/Aarch64_ (Michalis)
 * Support for `objcclass` and `objcclass external`  (Michalis)
 * Fixed using introduction @shortTitle (Michalis)
