@@ -33,16 +33,18 @@ popd
 # Find pasdoc binary, setting PASDOC_BIN to absolute exe path.
 # If not found, fail.
 
+export PASDOC_BIN
 if [ -f ../bin/pasdoc ]; then
-  export PASDOC_BIN=`pwd`/../bin/pasdoc
+  PASDOC_BIN=$(pwd)/../bin/pasdoc
 elif [ -f ../bin/pasdoc.exe ]; then
-  export PASDOC_BIN=`pwd`/../bin/pasdoc.exe
+  PASDOC_BIN=$(pwd)/../bin/pasdoc.exe
 else
   if ! which pasdoc > /dev/null; then
+    # shellcheck disable=SC2016
     echo 'pasdoc binary not found on $PATH'
     exit 1
   fi
-  export PASDOC_BIN=`which pasdoc`
+  PASDOC_BIN=$(which pasdoc)
 fi
 echo "Detected pasdoc binary as ${PASDOC_BIN}"
 "${PASDOC_BIN}" --version
@@ -64,6 +66,7 @@ echo 'Regenerating "testcases_output".'
 rm -Rf testcases_output/
 
 pushd testcases
+# shellcheck disable=SC2086
 ../scripts/mk_tests.sh $ALL_OUTPUT_FORMATS
 popd
 
@@ -91,6 +94,7 @@ scripts/validate_php.sh
 
 cd scripts/
 for OUTPUT_FORMAT in $ALL_OUTPUT_FORMATS; do
+  # shellcheck disable=SC2086
   ./check_cache.sh $OUTPUT_FORMAT
 done
 

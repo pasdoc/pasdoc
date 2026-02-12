@@ -28,13 +28,13 @@ run_echo ()
   if [ "${CHECK_MEM_LEAK:-false}" = 'true' ]
   then
     STDERR=$( { "$@" > "$OUTPUT_FILENAME"; } 2>&1)
-    MEMLEAKED=$(echo $STDERR | grep -G "(\d{2,}|[^0]) unfreed memory blocks")
+    MEMLEAKED=$(echo "${STDERR}" | grep -G "(\d{2,}|[^0]) unfreed memory blocks")
     if [ -n "$MEMLEAKED" ]
     then
       DIR=$(dirname "$OUTPUT_FILENAME")
       DIR=$(basename "$DIR")
-      echo Test $DIR: mem leak found, check .heaptrc file
-      echo $STDERR > "$OUTPUT_FILENAME.heaptrc"
+      echo "Test ${DIR}: mem leak found, check .heaptrc file"
+      echo "${STDERR}" > "$OUTPUT_FILENAME.heaptrc"
     fi
   else
     "$@" > "$OUTPUT_FILENAME"
@@ -67,7 +67,7 @@ mk_test ()
 all_tests_for_current_format ()
 {
   now="$(date +'%H.%M.%S')"
-  echo $now Running tests for format $FORMAT
+  echo "${now} Running tests for format ${FORMAT}"
 
   # Make a test of many units with normal pasdoc command-line.
   #
@@ -287,7 +287,7 @@ all_tests_for_current_format ()
   mk_test ok_source_position --show-source-position ok_source_position.pas
   mk_test ok_source_position_url --show-source-position \
     '--source-url-pattern=https://github.com/pasdoc/pasdoc/blob/master/{FILE}#L{LINE}' \
-    --source-root=$(realpath ../../) \
+    --source-root="$(realpath ../../)" \
     ok_source_position.pas
 }
 
