@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -243,6 +243,8 @@ type
     FEndPosition: Int64;
     FBeginPosition: Int64;
     FStreamName: string;
+    FStreamAbsoluteFileName: string;
+    FLine: Integer;
   public
     { the exact character representation of this token as it was found in the
       input file }
@@ -294,9 +296,17 @@ type
       Starts with lower letter. }
     function Description: string;
 
-    // @name is the name of the TStream from which this @classname was read.
-    // It is currently used to set @link(TRawDescriptionInfo.StreamName).
+    { Informative to user name of the stream from which this token was read.
+      This can be a filename (relative or absolute, however user specified
+      it), but it also can be something arbitrary like "$if / $elseif condition".
+      So don't treat it like a reliable filename.
+
+      It is currently used to set @link(TRawDescriptionInfo.StreamName). }
     property StreamName: string read FStreamName;
+
+    { Filename, always absolute, of the underlying file of this stream.
+      Empty ('') if this is not a file stream. }
+    property StreamAbsoluteFileName: string read FStreamAbsoluteFileName;
 
     // @name is the position in the stream of the start of the token.
     // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
@@ -306,6 +316,9 @@ type
     // after the end of the token.
     // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
     property EndPosition: Int64 read FEndPosition;
+
+    // Line number (1-based) in the stream where this token starts.
+    property Line: Integer read FLine;
   end;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
@@ -326,12 +339,12 @@ type
       the next call to @link(GetChar) or @link(PeekChar) will return this
       character, not the next in the associated stream @link(Stream) }
     IsCharBuffered: Boolean;
-    { current row in stream @link(Stream); useful when giving error messages }
-    Row: Integer;
+    { current line number in stream @link(Stream); useful when giving error messages }
+    Line: Integer;
     { the input stream this tokenizer is working on }
     Stream: TStream;
     FStreamName: string;
-    FStreamPath: string;
+    FStreamAbsoluteFileName: string;
 
     procedure DoError(const AMessage: string; const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -370,7 +383,7 @@ type
       const AStream: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName, AStreamPath: string);
+      const AStreamName, AStreamAbsoluteFileName: string);
     { Releases all dynamically allocated memory. }
     destructor Destroy; override;
     function HasData: Boolean;
@@ -403,21 +416,18 @@ type
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
+
+    { Informative to user name of the stream from which this token was read.
+      This can be a filename (relative or absolute, however user specified
+      it), but it also can be something arbitrary like "$if / $elseif condition".
+
+      So don't treat it like a reliable filename, for this use
+      StreamAbsoluteFileName. }
     property StreamName: string read FStreamName;
 
-    { This is the path where the underlying file of this stream is located.
-
-      It may be an absolute path or a relative path. Relative paths
-      are always resolved vs pasdoc current directory.
-      This way user can give relative paths in command-line
-      when writing Pascal source filenames to parse.
-
-      In particular, this may be '' to indicate current dir.
-
-      It's always specified like it was processed by
-      IncludeTrailingPathDelimiter, so it has trailing PathDelim
-      included (unless it was '', in which case it remains empty). }
-    property StreamPath: string read FStreamPath;
+    { Filename, always absolute, of the underlying file of this stream.
+      Empty ('') if this is not a file stream. }
+    property StreamAbsoluteFileName: string read FStreamAbsoluteFileName;
   end;
 
 const
@@ -570,15 +580,15 @@ constructor TTokenizer.Create(
   const AStream: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName, AStreamPath: string);
+  const AStreamName, AStreamAbsoluteFileName: string);
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
-  Row := 1;
+  Line := 1;
   Stream := AStream;
   FStreamName := AStreamName;
-  FStreamPath := AStreamPath;
+  FStreamAbsoluteFileName := AStreamAbsoluteFileName;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -730,7 +740,7 @@ end;
 
 function TTokenizer.GetStreamInfo: string;
 begin
-  GetStreamInfo := FStreamName + '(' + IntToStr(Row) + ')';
+  GetStreamInfo := FStreamName + '(' + IntToStr(Line) + ')';
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -781,9 +791,9 @@ begin
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
-            internal row counter to be able to state current row on errors.
+            internal line counter to be able to state current line on errors.
             Count both types of possible EOLs and select the max one }
-        Inc(Row, Max(StrCountCharA(Result.Data, #10), StrCountCharA(Result.Data, #13)))
+        Inc(Line, Max(StrCountCharA(Result.Data, #10), StrCountCharA(Result.Data, #13)))
       else
         DoError('Tokenizer: could not read character', []);
     end else
@@ -962,8 +972,10 @@ begin
     if Result <> nil then
     begin
       Result.FStreamName := StreamName;
+      Result.FStreamAbsoluteFileName := StreamAbsoluteFileName;
       Result.FBeginPosition := BeginPosition;
       Result.FEndPosition := StreamPosition;
+      Result.FLine := Line;
     end;
   end;
 end;
@@ -993,17 +1005,18 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-// Check if current char is EOL and increases `Row` counter. `PrevCh` is previously
-// taken char to not increase counter on CR-LF
-procedure HandleEOL(PrevCh, CurrCh: Char; var Row: Integer);
+{ Check if current char is EOL and increases Line counter.
+  PrevCh is previously taken char (used here to not increase counter on
+  the 2nd character in case of CR-LF line ending). }
+procedure HandleEOL(PrevCh, CurrCh: Char; var Line: Integer);
 begin
   case CurrCh of
     #10:
       // handle #13#10 case
       if PrevCh <> #13 then
-        Inc(Row);
+        Inc(Line);
     #13:
-      Inc(Row);
+      Inc(Line);
   end;
 end;
 
@@ -1017,7 +1030,7 @@ begin
     CommentContent := ''; prevC := #0;
     repeat
       if not HasData or (GetChar(c) = 0) then Exit;
-      HandleEOL(prevC, c, Row);
+      HandleEOL(prevC, c, Self.Line);
       prevC := c;
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
@@ -1041,7 +1054,7 @@ begin
     Result.CommentContent := Result.CommentContent + c;
 
     if c <> '*' then begin
-      HandleEOL(prevC, c, Row);
+      HandleEOL(prevC, c, Line);
       prevC := c;
       if not HasData or (GetChar(c) = 0) then Exit;
     end else begin

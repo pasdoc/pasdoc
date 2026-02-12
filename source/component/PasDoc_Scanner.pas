@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -114,7 +114,7 @@ type
       owned by created Tokenizer, and created Tokenizer will be managed
       as part of FTokenizers list. }
     procedure OpenNewTokenizer(Stream: TStream;
-      const StreamName, StreamPath: string);
+      const StreamName, StreamAbsoluteFileName: string);
 
     procedure OpenIncludeFile(n: string);
 
@@ -164,7 +164,7 @@ type
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName, AStreamPath: string;
+      const AStreamName, AStreamAbsoluteFileName: string;
       const AHandleMacros: boolean);
     destructor Destroy; override;
 
@@ -344,7 +344,7 @@ constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName, AStreamPath: string;
+  const AStreamName, AStreamAbsoluteFileName: string;
   const AHandleMacros: boolean);
 var
   c: TUpperCaseLetter;
@@ -373,7 +373,7 @@ begin
   FSymbols := TStringPairVector.Create(true);
 
   FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
-    AStreamName, AStreamPath);
+    AStreamName, AStreamAbsoluteFileName);
   FCurrentTokenizer := 0;
   FBufferedTokens := TObjectVector.Create(true);
 
@@ -524,8 +524,8 @@ function TScanner.GetToken: TToken;
         OpenNewTokenizer(TStringStream.Create(
           FSymbols[SymbolIndex].Value),
           '<' + FSymbols[SymbolIndex].Name + ' macro>',
-          { Expanded macro text inherits current StreamPath }
-          FTokenizers[FCurrentTokenizer].StreamPath);
+          { Expanded macro text inherits current StreamAbsoluteFileName }
+          FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName);
     end;
   end;
 
@@ -788,7 +788,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TScanner.OpenNewTokenizer(Stream: TStream;
-  const StreamName, StreamPath: string);
+  const StreamName, StreamAbsoluteFileName: string);
 var
   Tokenizer: TTokenizer;
 begin
@@ -803,7 +803,7 @@ begin
   end;
 
   Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity,
-    StreamName, StreamPath);
+    StreamName, StreamAbsoluteFileName);
 
   { add new tokenizer }
   Inc(FCurrentTokenizer);
@@ -858,7 +858,7 @@ var
         TStreamReader handles BOM already by itself. }
       SkipBOM(IncludeStream);
       {$ENDIF}
-      OpenNewTokenizer(IncludeStream, Name, ExtractFilePath(Name));
+      OpenNewTokenizer(IncludeStream, Name, ExpandFileName(Name));
     end;
   end;
 
@@ -895,10 +895,15 @@ begin
     may be costly when generating large docs from many files) }
   UseLowerCase := NLowerCase <> N;
 
-  if not TryOpen(FTokenizers[FCurrentTokenizer].StreamPath) then
-    if not TryOpenIncludeFilePaths then
-      if not TryOpen('') then
-        DoError('%s: could not open include file %s', [GetStreamInfo, n]);
+  // try various paths, make error if none works
+  if (FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName <> '') and
+     TryOpen(ExtractFilePath(FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName)) then
+    Exit;
+  if TryOpenIncludeFilePaths then
+    Exit;
+  if TryOpen('') then
+    Exit;
+  DoError('%s: could not open include file %s', [GetStreamInfo, n]);
 end;
 
 { ---------------------------------------------------------------------------- }

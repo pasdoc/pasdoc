@@ -300,7 +300,7 @@ begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
-    SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
+    SourceFileName, ExpandFileName(SourceFileName), HandleMacros);
   try
     {$IFNDEF STRING_UNICODE}
     SkipBOM(InputStream);

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -74,6 +74,10 @@ type
 
     { Remove indentation from Space, reverting the work of last @link(Indent). }
     procedure UnIndent;
+
+    { XML attributes derived from TPasItem.SourceAbsoluteFileName and SourceLine. }
+    function SourcePositionAttributes(const Item: TPasItem): string;
+
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -83,6 +87,21 @@ implementation
 
 uses
   PasDoc_ObjectVector, SysUtils;
+
+function TSimpleXMLDocGenerator.SourcePositionAttributes(
+  const Item: TPasItem): string;
+var
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
+begin
+  if HasSourcePosition(Item, ItemName, ItemFilenameInRoot, ItemUrl) then
+    Result :=
+      ' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
+      ' source-line="' + IntToStr(Item.SourceLine) + '"' +
+      ' source-relative-file-name="' + ConvertString(ItemFilenameInRoot) + '"' +
+      ' source-url="' + ConvertString(ItemUrl) + '"'
+  else
+    Result := '';
+end;
 
 function TSimpleXMLDocGenerator.GetFileExtension:string;
 begin
@@ -149,7 +168,8 @@ begin
       '<routine name="' + ConvertString(item.name) +
             '" type="' + ConvertString(RoutineTypeToString(item.What)) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-     '" visibility="' + VisToStr(item.visibility) + '">');
+     '" visibility="' + VisToStr(item.visibility) + '"' +
+     SourcePositionAttributes(item) + '>');
     for I := 0 to item.params.count - 1 do
       WriteDirectLine(space +
         '  <param name="' + ConvertString(item.params[i].name) + '">' +
@@ -174,7 +194,8 @@ begin
    '" default_value="' + ConvertString(item.DefaultValue) +
        '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
         '"   stored="' + ConvertString(item.Stored) +
-      '" visibility="' + VisToStr(item.visibility) +'">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
@@ -185,7 +206,8 @@ begin
   WriteDirectLine(space +
     '<constant name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -196,7 +218,8 @@ begin
   WriteDirectLine(space +
     '<variable name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -216,7 +239,8 @@ begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
@@ -246,7 +270,8 @@ begin
       '<structure name="' + ConvertString(item.name) +
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
                '" type="' + ConvertString(CioTypeToString(item.MyType)) +
-         '" visibility="' + VisToStr(item.visibility) + '">');
+         '" visibility="' + VisToStr(item.visibility) + '"' +
+         SourcePositionAttributes(item) + '>');
   Indent;
 
   if item.HasDescription then

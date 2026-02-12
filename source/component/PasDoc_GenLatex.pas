@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -1115,6 +1115,7 @@ var
   AncestorName: string;
   EnumMember: TPasItem;
   i: Integer;
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1202,6 +1203,16 @@ begin
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');
+  end;
+
+  if HasSourcePosition(AItem, ItemName, ItemFilenameInRoot, ItemUrl) then
+  begin
+    WriteDirect('', true);
+    if ItemUrl <> '' then
+      WriteDirect(URLLink(ItemUrl, ItemName))
+    else
+      WriteConverted(ItemName);
+    WriteDirect('', true);
   end;
 end;
 

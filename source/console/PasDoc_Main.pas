@@ -91,6 +91,9 @@ type
     OptionMarkdown: TBoolOption;
     OptionAutoBackComments: TBoolOption;
     OptionInfoMergeMode: TStringOption;
+    OptionShowSourcePosition: TBoolOption;
+    OptionSourceUrlPattern: TStringOption;
+    OptionSourceRoot: TStringOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -373,6 +376,21 @@ begin
     OptionInfoMergeMode.Explanation := OptionInfoMergeMode.Explanation + LineEnding +
       '  ' + InfoMergeTypeStr[mt] + ' - ' + InfoMergeTypeExplanation[mt] + LineEnding;
   AddOption(OptionInfoMergeMode);
+
+  OptionShowSourcePosition := TBoolOption.Create(#0, 'show-source-position');
+  OptionShowSourcePosition.Explanation := 'Show source filename and line number in documentation output';
+  AddOption(OptionShowSourcePosition);
+
+  OptionSourceUrlPattern := TStringOption.Create(#0, 'source-url-pattern');
+  OptionSourceUrlPattern.Explanation := 'URL pattern for linking source positions (only used if --show-source-position). ' +
+    'Use {FILE} for filename and {LINE} for line number. ' +
+    'Example: https://github.com/owner/repo/blob/main/{FILE}#L{LINE}';
+  AddOption(OptionSourceUrlPattern);
+
+  OptionSourceRoot := TStringOption.Create(#0, 'source-root');
+  OptionSourceRoot.Explanation := 'Root path for source files (only used if --show-source-position). ' +
+    'Leave empty to make --show-source-position just take the final filename part to show.';
+  AddOption(OptionSourceRoot);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -654,9 +672,15 @@ begin
   PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
   PasDoc.AutoBackComments := OptionAutoBackComments.TurnedOn;
   if OptionInfoMergeMode.Value <> '' then
+  begin
     {$ifdef FPC} {$push} {$notes off} {$endif} // do not make a note about IndexText not inlined
     PasDoc.InfoMergeType := TInfoMergeType(IndexText(OptionInfoMergeMode.Value, InfoMergeTypeStr));
     {$ifdef FPC} {$pop} {$endif}
+  end;
+
+  PasDoc.Generator.ShowSourcePosition := OptionShowSourcePosition.TurnedOn;
+  PasDoc.Generator.SourceUrlPattern := OptionSourceUrlPattern.Value;
+  PasDoc.Generator.SourceRoot := OptionSourceRoot.Value;
 end;
 
 { ---------------------------------------------------------------------------- }

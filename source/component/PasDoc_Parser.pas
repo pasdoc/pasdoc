@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2024 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -162,6 +162,12 @@ type
     FImplicitVisibility: TImplicitVisibility;
 
     FCioSk : TPasCioHelperStack;
+
+    { Set by GetAndCheckNextToken to record filename/line of last consumed token.
+      This allows routines using GetAndCheckNextToken to set
+      TPasItem.SourceAbsoluteFileName and TPasItem.SourceLine. }
+    FLastParsedTokenStreamAbsoluteFileName: string;
+    FLastParsedTokenLine: Integer;
 
     { Last comment found in input.
       This only takes into account normal comments, i.e. not back-comments.
@@ -469,7 +475,7 @@ type
       const IncludeFilePaths: TStringVector;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName, AStreamPath: string;
+      const AStreamName, AStreamAbsoluteFileName: string;
       const AHandleMacros: boolean);
 
     { Release all dynamically allocated memory. }
@@ -570,7 +576,7 @@ constructor TParser.Create(
   const IncludeFilePaths: TStringVector;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName, AStreamPath: string;
+  const AStreamName, AStreamAbsoluteFileName: string;
   const AHandleMacros: boolean);
 begin
   inherited Create;
@@ -578,7 +584,7 @@ begin
   FVerbosity := VerbosityLevel;
 
   Scanner := TScanner.Create(InputStream, OnMessageEvent,
-    VerbosityLevel, AStreamName, AStreamPath, AHandleMacros);
+    VerbosityLevel, AStreamName, AStreamAbsoluteFileName, AHandleMacros);
   AddDirectives(Directives);
   Scanner.IncludeFilePaths := IncludeFilePaths;
   FCommentMarkers := TStringlist.Create;
@@ -802,6 +808,8 @@ begin
   try
     CheckToken(T, ATokenType);
     Result := T.Data;
+    FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
+    FLastParsedTokenLine := T.Line;
   finally
     T.Free;
   end;
@@ -819,6 +827,8 @@ begin
     try
       CheckToken(T, ATokenType);
       Result := Result + T.Data;
+      FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
+      FLastParsedTokenLine := T.Line;
     finally
       T.Free;
     end;
@@ -840,6 +850,8 @@ begin
   try
     CheckToken(T, ASymbolType);
     Result := T.Data;
+    FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
+    FLastParsedTokenLine := T.Line;
   finally
     T.Free;
   end;
@@ -853,6 +865,8 @@ begin
   try
     CheckToken(T, AKeyWord);
     Result := T.Data;
+    FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
+    FLastParsedTokenLine := T.Line;
   finally
     T.Free;
   end;
@@ -1050,6 +1064,9 @@ begin
 
       if InvalidType then
         DoError('Unexpected token %s', [T.Description]);
+
+      M.SourceAbsoluteFileName := t.StreamAbsoluteFileName;
+      M.SourceLine := t.Line;
 
       { Consume all following period-delimited identifiers as a single name.
         Actual only when reading impl section. Resulting name requires additional
@@ -1329,6 +1346,8 @@ begin
 
   try
     Constant.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+    Constant.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+    Constant.SourceLine := FLastParsedTokenLine;
     DoMessage(5, pmtInformation, 'Parsing constant %s', [Constant.Name]);
     Constant.RawDescriptionInfo^ := GetLastComment;
     Constant.FullDeclaration := Constant.Name;
@@ -1394,6 +1413,8 @@ begin
       CheckToken(T, TOK_IDENTIFIER);
       Item := TPasItem.Create;
       Item.Name := T.Data;
+      Item.SourceAbsoluteFileName := T.StreamAbsoluteFileName;
+      Item.SourceLine := T.Line;
       Item.RawDescriptionInfo^ := GetLastComment;
       Item.FullDeclaration := Item.Name;
       p.Members.Add(Item);
@@ -2105,6 +2126,8 @@ begin
   p := TPasProperty.Create;
   try
     p.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+    p.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+    p.SourceLine := FLastParsedTokenLine;
     DoMessage(5, pmtInformation, 'Parsing property %s', [p.Name]);
     p.IndexDecl := '';
     p.Proptype := '';
@@ -2197,6 +2220,8 @@ begin
 
       P := TPasFieldVariable.Create;
       p.Name := t.Data;
+      p.SourceAbsoluteFileName := t.StreamAbsoluteFileName;
+      p.SourceLine := t.Line;
       p.RawDescriptionInfo^ := GetLastComment;
       p.FullDeclaration := p.Name + ': ' + GetAndCheckNextToken(TOK_IDENTIFIER);
       p.SetAttributes(CurrentAttributes);
@@ -2304,6 +2329,8 @@ begin
     CheckToken(T, TOK_IDENTIFIER);
     TypeName := T.Data;
     TypeNameWithGeneric := TypeNameWithGeneric + TypeName;
+    FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
+    FLastParsedTokenLine := T.Line;
   finally FreeAndNil(T) end;
 
   DoMessage(5, pmtInformation, 'Parsing type "%s"', [TypeName]);
@@ -2416,6 +2443,8 @@ begin
       if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
       begin
         ParseEnum(EnumType, TypeName, RawDescriptionInfo);
+        EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+        EnumType.SourceLine := FLastParsedTokenLine;
         if U <> nil then
           U.AddType(EnumType)
         else
@@ -2435,6 +2464,8 @@ begin
       NormalType.FullDeclaration := LCollected;
       SkipDeclaration(NormalType, false);
       NormalType.Name := TypeName;
+      NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+      NormalType.SourceLine := FLastParsedTokenLine;
       NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
       NormalType.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(NormalType);
@@ -2463,6 +2494,8 @@ begin
 
   { get unit name identifier }
   U.Name := GetAndCheckNextToken(TOK_IDENTIFIER, true);
+  U.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+  U.SourceLine := FLastParsedTokenLine;
 
   ItemsForNextBackComment.ClearAndAdd(U);
 
@@ -2493,6 +2526,8 @@ begin
 
   { get program/library name identifier }
   U.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
+  U.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+  U.SourceLine := FLastParsedTokenLine;
 
   ItemsForNextBackComment.ClearAndAdd(U);
 
@@ -2749,6 +2784,8 @@ var
   NewItemNames: TStringList;
   I: Integer;
   RawDescriptions: TRawDescriptionInfoList;
+  SavedStreamAbsoluteFileName: string;
+  SavedLine: Integer;
   NewItems: TPasItems;
 begin
   NewItemNames := nil;
@@ -2764,6 +2801,8 @@ begin
     // allow attributes for fields in classes
     AttributeIsPossible := true;
     ParseCommaSeparatedIdentifiers(NewItemNames, SYM_COLON, RawDescriptions);
+    SavedStreamAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+    SavedLine := FLastParsedTokenLine;
 
     ItemCollector := TPasFieldVariable.Create;
     try
@@ -2863,6 +2902,8 @@ begin
       begin
         NewItem := TPasFieldVariable.Create;
         NewItem.Name := NewItemNames[I];
+        NewItem.SourceAbsoluteFileName := SavedStreamAbsoluteFileName;
+        NewItem.SourceLine := SavedLine;
         NewItem.RawDescriptionInfo^ := RawDescriptions[I];
         NewItem.Visibility := Visibility;
         NewItem.SetAttributes(CurrentAttributes);
@@ -3696,6 +3737,8 @@ begin
     try
       ACio.Name := CioName;
       ACio.NameWithGeneric := CioNameWithGeneric;
+      ACio.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+      ACio.SourceLine := FLastParsedTokenLine;
       ACio.RawDescriptionInfo^ := RawDescriptionInfo;
       ACio.MyType := CIOType;
 
@@ -4100,6 +4143,8 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
         begin
           ParseEnum(EnumType, TypeName, RawDescriptionInfo);
+          EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+          EnumType.SourceLine := FLastParsedTokenLine;
           EnumType.Visibility := FCioSk.Peek.CurVisibility;
           if FCioSk.Peek.CurVisibility in ShowVisibilities then
             FCioSk.Peek.Cio.Types.Add(EnumType)
@@ -4120,6 +4165,8 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         NormalType.FullDeclaration := LCollected;
         SkipDeclaration(NormalType, false);
         NormalType.Name := TypeName;
+        NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+        NormalType.SourceLine := FLastParsedTokenLine;
         NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
         NormalType.Visibility := FCioSk.Peek.CurVisibility;
         ItemsForNextBackComment.ClearAndAdd(NormalType);

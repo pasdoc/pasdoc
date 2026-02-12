@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -1436,6 +1436,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 var
   EnumMember: TPasItem;
   i: Integer;
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1504,6 +1505,17 @@ begin
       WriteDirectLine('</li>');
     end;
     WriteDirectLine('</ul>');
+  end;
+
+  if HasSourcePosition(AItem, ItemName, ItemFilenameInRoot, ItemUrl) then
+  begin
+    WriteDirect('<p class="source_position">');
+    if ItemUrl <> '' then
+      WriteDirect('<a href="' + ConvertString(ItemUrl) + '">');
+    WriteConverted(ItemName);
+    if ItemUrl <> '' then
+      WriteDirect('</a>');
+    WriteDirect('</p>');
   end;
 end;
 

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -258,6 +258,9 @@ type
     FAutoLink: boolean;
     FAutoLinkExclude: TStringList;
     FMarkdown: boolean;
+    FShowSourcePosition: boolean;
+    FSourceRoot: string;
+    FSourceUrlPattern: string;
 
     { Name of the project to create. }
     FProjectName: string;
@@ -494,6 +497,16 @@ type
     procedure WriteCodeWithLinksCommon(const Item: TPasItem;
       const Code: string; WriteItemLink: boolean;
       const NameLinkBegin, NameLinkEnd: string);
+
+    { Utility to process information from @link(TPasItem.SourceAbsoluteFileName)
+      and @link(TPasItem.SourceLine) and decide whether to show it.
+      If @true, then we should show it.
+
+      @param ItemName is the name to show.
+      @param ItemFilenameInRoot is the filename, relative to SourceRoot.
+      @param ItemUrl is the URL to link to, if any (don't make a link if this is ''). }
+    function HasSourcePosition(const AItem: TPasItem;
+      out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
@@ -1029,6 +1042,26 @@ type
 
     property Markdown: boolean
       read FMarkdown write FMarkdown default false;
+
+    { Show source filename and line number in documentation output. }
+    property ShowSourcePosition: boolean
+      read FShowSourcePosition write FShowSourcePosition default false;
+
+    { Root path for source files.
+      Used to make relative paths, shown by
+      @link(ShowSourcePosition) and replaced by @link(SourceUrlPattern).
+      Leave empty to make
+      @link(ShowSourcePosition) and @link(SourceUrlPattern)
+      just take the final filename part to show / replace. }
+    property SourceRoot: string
+      read FSourceRoot write FSourceRoot;
+
+    (*URL pattern for linking source positions.
+      Use @code({FILE}) for filename and @code({LINE}) for line number.
+      When set, source positions in the output become clickable links.
+      Example: @code(https://github.com/owner/repo/blob/main/{FILE}#L{LINE}) *)
+    property SourceUrlPattern: string
+      read FSourceUrlPattern write FSourceUrlPattern;
   end;
 
 implementation
@@ -3913,6 +3946,39 @@ begin
   end;
   WriteConverted(Copy(Code, ncstart, i - ncstart));
   WriteEndOfCode;
+end;
+
+function TDocGenerator.HasSourcePosition(const AItem: TPasItem;
+  out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
+begin
+  ItemName := '';
+  ItemFilenameInRoot := '';
+  ItemUrl := '';
+
+  Result := ShowSourcePosition and
+    (AItem.SourceAbsoluteFileName <> '') and
+    (AItem.SourceLine <> 0);
+
+  if Result then
+  begin
+    if SourceRoot <> '' then
+      ItemFilenameInRoot := ExtractRelativePath(
+        IncludeTrailingPathDelimiter(SourceRoot), AItem.SourceAbsoluteFileName)
+    else
+      ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
+
+    ItemName := Format('Defined in %s (line %d)', [
+      ItemFilenameInRoot,
+      AItem.SourceLine
+    ]); // TODO: allow translating this
+
+    if SourceUrlPattern <> '' then
+    begin
+      ItemUrl := SourceUrlPattern;
+      ItemUrl := StringReplace(ItemUrl, '{FILE}', ItemFilenameInRoot, [rfReplaceAll]);
+      ItemUrl := StringReplace(ItemUrl, '{LINE}', IntToStr(AItem.SourceLine), [rfReplaceAll]);
+    end;
+  end;
 end;
 
 procedure TDocGenerator.WriteExternal(
