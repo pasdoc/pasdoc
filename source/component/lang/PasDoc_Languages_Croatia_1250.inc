@@ -105,5 +105,6 @@ RTransTable = (
     {trSeeAlso} 'Vidi jo�',
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributi', //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
     ''  //dummy
   );

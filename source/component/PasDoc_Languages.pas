@@ -236,6 +236,7 @@ type
     trNested,
   //add more here
     trAttributes,
+    trSourcePosition,
     trDummy
   );
 

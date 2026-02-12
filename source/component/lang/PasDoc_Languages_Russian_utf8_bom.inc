@@ -106,5 +106,6 @@
     {trSeeAlso} 'Материалы по теме',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
     ''  //dummy
   );

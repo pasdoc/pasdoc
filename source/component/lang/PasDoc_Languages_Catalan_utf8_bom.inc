@@ -105,5 +105,6 @@
     {trSeeAlso} 'Veure també', //'See also',
     {trNested} 'Anidat', //'nested',
     {trAttributes} 'Atributs', //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
     ''  //dummy
   );

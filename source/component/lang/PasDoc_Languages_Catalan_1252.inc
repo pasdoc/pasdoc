@@ -105,5 +105,6 @@ RTransTable = (
     {trSeeAlso} 'Veure tamb�',
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributs',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
     ''  //dummy
   );

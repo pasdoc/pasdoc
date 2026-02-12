@@ -105,5 +105,6 @@
     {trSeeAlso} 'Ver también', // ?
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributos', //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
     ''  //dummy
   );

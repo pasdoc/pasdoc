@@ -3967,10 +3967,10 @@ begin
     else
       ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
 
-    ItemName := Format('Source: %s (line %d).', [
+    ItemName := Format(FLanguage.Translation[trSourcePosition], [
       ItemFilenameInRoot,
       AItem.SourceLine
-    ]); // TODO: allow translating this
+    ]);
 
     if SourceUrlPattern <> '' then
     begin
