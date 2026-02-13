@@ -14,13 +14,13 @@
   </type>
   <type name="TEnum" declaration="TEnum = (...);" visibility="published" source-absolute-file-name="/home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_source_position.pas" source-line="30" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>An enumerated type.</detailed></description>
-    <constant name="eOne" declaration="eOne" visibility="published" source-absolute-file-name="/home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_source_position.pas" source-line="32" source-relative-file-name="ok_source_position.pas" source-url="">
+    <constant name="eOne" declaration="eOne" visibility="published">
       <description><detailed>The first value.</detailed></description>
     </constant>
-    <constant name="eTwo" declaration="eTwo" visibility="published" source-absolute-file-name="/home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_source_position.pas" source-line="34" source-relative-file-name="ok_source_position.pas" source-url="">
+    <constant name="eTwo" declaration="eTwo" visibility="published">
       <description><detailed>The second value.</detailed></description>
     </constant>
-    <constant name="eThree" declaration="eThree" visibility="published" source-absolute-file-name="/home/michalis/sources/pasdoc/pasdoc/tests/testcases/ok_source_position.pas" source-line="36" source-relative-file-name="ok_source_position.pas" source-url="">
+    <constant name="eThree" declaration="eThree" visibility="published">
       <description><detailed>The third value.</detailed></description>
     </constant>
   </type>

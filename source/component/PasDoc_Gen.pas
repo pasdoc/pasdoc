@@ -3957,7 +3957,12 @@ begin
 
   Result := ShowSourcePosition and
     (AItem.SourceAbsoluteFileName <> '') and
-    (AItem.SourceLine <> 0);
+    (AItem.SourceLine <> 0) and
+    { Don't show source position for enum members.
+      It works -- but it looks very verbose in doc output to show this for
+      every enum member, and usually is not helpful (since in most cases,
+      enum members are defined right next to the enum type containing them). }
+    (AItem.MyEnum = nil);
 
   if Result then
   begin
