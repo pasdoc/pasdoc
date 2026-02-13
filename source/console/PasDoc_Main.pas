@@ -74,7 +74,8 @@ type
     OptionIgnoreLeading: TStringOption;
     OptionCacheDir: TStringOption;
     OptionFullLink: TBoolOption;
-    OptionCSS: TStringOption; {< Using external CSS file for HTML output }
+    OptionCSS: TStringOption;
+    OptionCSSBasedOnBootstrap: TStringOption;
     OptionAutoAbstract: TBoolOption;
     OptionLinkLook: TStringOption;
     OptionUseTipueSearch: TBoolOption;
@@ -303,10 +304,13 @@ begin
   OptionFullLink.Explanation := 'Obsolete name for --link-look=full';
   AddOption(OptionFullLink);
 
-  { Using external CSS file for HTML output. }
   OptionCSS := TStringOption.Create(#0, 'css');
-  OptionCSS.Explanation := 'CSS file for HTML files (copied into output tree)';
+  OptionCSS.Explanation := 'CSS file for HTML output. The given CSS file is copied into the output tree as pasdoc.css. Bootstrap CSS is not used.';
   AddOption(OptionCSS);
+
+  OptionCSSBasedOnBootstrap := TStringOption.Create(#0, 'css-based-on-bootstrap');
+  OptionCSSBasedOnBootstrap.Explanation := 'Use a custom CSS file in addition to Bootstrap for the HTML output. Cannot be used together with --css. ';
+  AddOption(OptionCSSBasedOnBootstrap);
 
   OptionAutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
   OptionAutoAbstract.Explanation := 'If set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
@@ -434,8 +438,19 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
       Generator.HtmlBodyBegin := FileToString(OptionHtmlBodyBegin.Value);
     if OptionHtmlBodyEnd.WasSpecified then
       Generator.HtmlBodyEnd := FileToString(OptionHtmlBodyEnd.Value);
+
     if OptionCSS.WasSpecified then
+    begin
       Generator.CSS := FileToString(OptionCSS.Value);
+      Generator.Bootstrap := false;
+      if OptionCSSBasedOnBootstrap.WasSpecified then
+        raise EInvalidCommandLine.Create('Cannot use --css and --css-based-on-bootstrap together');
+    end else
+    if OptionCSSBasedOnBootstrap.WasSpecified then
+    begin
+      Generator.CSS := FileToString(OptionCSSBasedOnBootstrap.Value);
+      Generator.Bootstrap := true;
+    end;
 
     Generator.NumericFilenames := OptionNumericFilenames.TurnedOn;
 

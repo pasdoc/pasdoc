@@ -65,8 +65,8 @@ type
     FNumericFilenames: boolean;
     FLinkCount: Integer;
     FHeader, FFooter, FHtmlBodyBegin, FHtmlBodyEnd, FHtmlHead: string;
-    { The content of the CSS file. }
     FCSS: string;
+    FBootstrap: boolean;
     FOddTableRow: boolean;
 
     FImages: TStringList;
@@ -328,8 +328,11 @@ type
     property HtmlBodyBegin: string read FHtmlBodyBegin write FHtmlBodyBegin;
     property HtmlBodyEnd: string read FHtmlBodyEnd write FHtmlBodyEnd;
     property HtmlHead: string read FHtmlHead write FHtmlHead;
-    { the content of the cascading stylesheet }
+    { Contents of the main CSS file (pasdoc.css). }
     property CSS: string read FCSS write FCSS;
+    { If true, add Bootstrap CSS and JS. Definitions in @link(CSS) will be
+      evaluated after Bootstrap's ones. }
+    property Bootstrap: boolean read FBootstrap write FBootstrap default true;
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
@@ -348,6 +351,8 @@ type
   end;
 
 const
+  { Default pasdoc.css contents.
+    @exclude }
   DefaultPasdocCss = {$I pasdoc.css.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
@@ -365,11 +370,9 @@ uses
   PasDoc_Versions;
 
 const
-  img_automated : {$I automated.gif.inc};
-  img_private   : {$I private.gif.inc};
-  img_public    : {$I public.gif.inc};
-  img_published : {$I published.gif.inc};
-  img_protected : {$I protected.gif.inc};
+  { Bootstrap CSS and JS, written to the output directory by WriteBinaryFiles. }
+  DefaultBootstrapCss = {$I bootstrap/bootstrap.min.css.inc};
+  DefaultBootstrapJs = {$I bootstrap/bootstrap.bundle.min.js.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
 const
@@ -389,6 +392,7 @@ begin
   inherited Create(AOwner);
   FLinkCount := 1;
   FCSS := DefaultPasdocCss;
+  FBootstrap := true;
   FImages := TStringList.Create;
 end;
 
@@ -1798,7 +1802,12 @@ begin
   if UseTipueSearch then
     Result := Result + TipueSearchButtonHead + LineEnding;
 
-  // StyleSheet
+  // Bootstrap CSS (must load before pasdoc.css so our styles override)
+  if Bootstrap then
+    Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
+      EscapeURL('bootstrap.min.css') + '">' + LineEnding;
+
+  // PasDoc custom StyleSheet
   Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
     EscapeURL('pasdoc.css') + '">' + LineEnding;
 
@@ -2137,16 +2146,35 @@ begin
 end;
 
 const
-  VisibilityImageName: array[TVisibility] of string =
-  ( 'published.gif',
-    'public.gif',
-    'protected.gif',
-    'protected.gif',
-    'private.gif',
-    'private.gif',
-    'automated.gif',
-    { Implicit visibility uses published visibility image, for now }
-    'published.gif'
+  VisibilityCssClass: array[TVisibility] of string =
+  ( 'vis-published',
+    'vis-public',
+    'vis-protected',
+    'vis-protected',
+    'vis-private',
+    'vis-private',
+    'vis-automated',
+    { Implicit visibility uses published style }
+    'vis-published'
+  );
+  VisibilityBadgeText: array[TVisibility] of string =
+  // ( 'Publish',{ published }
+  //   'Publ',   { public }
+  //   'Prot',   { protected }
+  //   'Prot',   { strict protected }
+  //   'Priv',   { private }
+  //   'Priv',   { strict private }
+  //   'Auto',   { automated }
+  //   'Impl'    { implicit }
+  // );
+  ( 'Published',{ published }
+    'Public',   { public }
+    'Protected',   { protected }
+    'Strict Protected',   { strict protected }
+    'Private',   { private }
+    'Strict Private',   { strict private }
+    'Automated',   { automated }
+    'Implicit'    { implicit }
   );
   VisibilityTranslation: array[TVisibility] of TTranslationID =
   ( trPublished,
@@ -2160,17 +2188,17 @@ const
   );
 
 procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
-
-  procedure WriteVisibilityImage(Vis: TVisibility);
-  begin
-    WriteLink('legend.html', MakeImage(VisibilityImageName[Vis],
-      ConvertString(FLanguage.Translation[
-        VisibilityTranslation[Vis]]), ''), '');
-  end;
-
+var
+  VisText: string;
 begin
   WriteStartOfTableCell('visibility');
-  WriteVisibilityImage(Item.Visibility);
+  VisText := ConvertString(FLanguage.Translation[
+    VisibilityTranslation[Item.Visibility]]);
+  WriteDirect('<a href="' + EscapeURL('legend.html') + '">');
+  WriteDirect('<span class="badge ' +
+    VisibilityCssClass[Item.Visibility] + '" title="' +
+    VisText + '">' + VisibilityBadgeText[Item.Visibility] + '</span>');
+  WriteDirect('</a>');
   WriteEndOfTableCell;
 end;
 
@@ -2184,8 +2212,9 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
     VisTrans := FLanguage.Translation[VisibilityTranslation[Vis]];
     WriteStartOfTableRow('');
     WriteStartOfTableCell('legendmarker');
-    WriteDirect(MakeImage(VisibilityImageName[Vis],
-      ConvertString(VisTrans), ''));
+    WriteDirect('<span class="badge ' +
+      VisibilityCssClass[Vis] + '">' +
+      VisibilityBadgeText[Vis] + '</span>');
     WriteEndOfTableCell;
     WriteStartOfTableCell('legenddesc');
     WriteConverted(VisTrans);
@@ -2278,11 +2307,11 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 begin
-  DataToFile(DestinationDirectory + 'automated.gif', img_automated);
-  DataToFile(DestinationDirectory + 'private.gif'  , img_private  );
-  DataToFile(DestinationDirectory + 'protected.gif', img_protected);
-  DataToFile(DestinationDirectory + 'public.gif'   , img_public   );
-  DataToFile(DestinationDirectory + 'published.gif', img_published);
+  if Bootstrap then
+  begin
+    StringToFile(DestinationDirectory + 'bootstrap.min.css', DefaultBootstrapCss);
+    StringToFile(DestinationDirectory + 'bootstrap.bundle.min.js', DefaultBootstrapJs);
+  end;
   StringToFile(DestinationDirectory + 'pasdoc.css', CSS);
 end;
 
@@ -2655,19 +2684,16 @@ function THTMLDocGenerator.MakeBodyBegin: string;
 
   function MakeNavigation: string;
 
-    function LocalMakeLink(const Filename, Caption: string): string;
+    function LocalMakeNavLink(const Filename, Caption: string): string;
     begin
-      Result := '<a href="' + EscapeURL(Filename) + '">' + ConvertString(Caption) + '</a>';
+      Result := '<li class="nav-item">' +
+        '<a class="nav-link px-2 py-1" href="' + EscapeURL(Filename) + '">' +
+        ConvertString(Caption) + '</a></li>';
     end;
 
-    function LocalMakeListItemLink(const Filename, Caption: string): string; overload;
+    function LocalMakeNavLinkTr(const Filename: string; CaptionId: TTranslationID): string;
     begin
-      Result := '<li>' + LocalMakeLink(Filename, Caption) + '</li>';
-    end;
-
-    function LocalMakeListItemLink(const Filename: string; CaptionId: TTranslationID): string; overload;
-    begin
-      Result := LocalMakeListItemLink(Filename, FLanguage.Translation[CaptionId]);
+      Result := LocalMakeNavLink(Filename, FLanguage.Translation[CaptionId]);
     end;
 
   var
@@ -2697,28 +2723,30 @@ function THTMLDocGenerator.MakeBodyBegin: string;
         Otherwise the link would not be visible and introduction would not be visible. }
       Assert(IndexLinkText <> '');
 
-      Result := Result + '<h2>' + LocalMakeLink('index.html', IndexLinkText) + '</h2>';
+      Result := Result + '<h2><a href="' +
+        EscapeURL('index.html') + '">' + ConvertString(IndexLinkText) +
+        '</a></h2>';
     end;
 
-    Result := Result + '<ul>';
+    Result := Result + '<ul class="nav flex-column px-3">';
 
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
         OverviewFilesInfo[Overview].TranslationId);
     end;
 
     if LinkGraphVizUses <> '' then
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
     end;
 
     if LinkGraphVizClasses <> '' then
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
     end;
@@ -2728,33 +2756,93 @@ function THTMLDocGenerator.MakeBodyBegin: string;
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
         if AdditionalFiles.Get(i).ShortTitle = '' then
-          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
-          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
+          Result := Result + LocalMakeNavLinkTr(
+            AdditionalFiles.Get(i).OutputFileName, trAdditionalFile)
+        else
+          Result := Result + LocalMakeNavLink(
+            AdditionalFiles.Get(i).OutputFileName,
+            AdditionalFiles.Get(i).ShortTitle);
       end;
     end;
 
     if Conclusion <> nil then
     begin
       if Conclusion.ShortTitle = '' then
-        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, trConclusion) else
-        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
+        Result := Result + LocalMakeNavLinkTr(
+          Conclusion.OutputFileName, trConclusion)
+      else
+        Result := Result + LocalMakeNavLink(
+          Conclusion.OutputFileName, Conclusion.ShortTitle);
     end;
 
     if UseTipueSearch then
-      Result := Result + '<li>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</li>';
+      Result := Result + '<li class="nav-item pt-2 px-2">' +
+        Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</li>';
+
+    Result := Result + '</ul>';
   end;
 
+var
+  TitleText: string;
 begin
   Result := inherited;
-  { TODO: get rid of <table> layout, use <div> for navigation instead }
-  Result := Result + '<div class="container"><div class="navigation">' + LineEnding;
+
+  if Title <> '' then
+    TitleText := ConvertString(Title)
+  else
+    TitleText := 'Documentation';
+
+  if Bootstrap then
+  begin
+    { Mobile navbar with toggle button for offcanvas sidebar }
+    Result := Result +
+      '<nav class="navbar navbar-dark bg-dark d-md-none sticky-top">' + LineEnding +
+      '<div class="container-fluid">' + LineEnding +
+      '<a class="navbar-brand" href="' + EscapeURL('index.html') + '">' + TitleText + '</a>' + LineEnding +
+      '<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" ' +
+        'data-bs-target="#sidebarNav" aria-controls="sidebarNav">' + LineEnding +
+      '<span class="navbar-toggler-icon"></span>' + LineEnding +
+      '</button></div></nav>' + LineEnding;
+
+    { Offcanvas sidebar: fixed on md+ screens, slides out on mobile.
+      "navigation" class is for backward compat with old/custom CSS files. }
+    Result := Result +
+      '<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav">' + LineEnding +
+      '<div class="offcanvas-header">' + LineEnding +
+      '<h5 class="offcanvas-title">' + TitleText + '</h5>' + LineEnding +
+      '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" ' +
+        'data-bs-target="#sidebarNav" aria-label="Close"></button>' + LineEnding +
+      '</div>' + LineEnding +
+      '<div class="offcanvas-body py-2">' + LineEnding;
+  end else
+  begin
+    { Without Bootstrap: simple sidebar structure using legacy CSS classes }
+    Result := Result +
+      '<div class="navigation">' + LineEnding;
+  end;
+
   Result := Result + MakeNavigation;
-  Result := Result + '</ul></div><div class="content">' + LineEnding;
+
+  if Bootstrap then
+    Result := Result + '</div></div>' + LineEnding  { close offcanvas-body + offcanvas div }
+  else
+    Result := Result + '</div>' + LineEnding;  { close navigation div }
+
+  { Main content area }
+  Result := Result +
+    '<main class="pasdoc-content content">' + LineEnding +
+    '<div class="container-fluid py-3 px-4">' + LineEnding;
 end;
 
 function THTMLDocGenerator.MakeBodyEnd: string;
 begin
-  Result := '</div></div>'; // end <table class="container">
+  Result := '</div></main>' + LineEnding;
+  if Bootstrap then
+  begin
+    { Bootstrap JS bundle for offcanvas sidebar toggle }
+    Result := Result + '<script src="' + EscapeURL('bootstrap.bundle.min.js') +
+      '"></script>' + LineEnding;
+  end;
   Result := Result + inherited;
 end;
 

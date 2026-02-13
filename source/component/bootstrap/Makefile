@@ -1,14 +1,13 @@
 # Generates all *.inc files from text/binary files in this directory.
 
-ALL_OUTPUT := pasdoc.css.inc external_class_hierarchy.txt.inc
+ALL_OUTPUT := bootstrap.min.css.inc bootstrap.bundle.min.js.inc
 
 .PHONY: all clean
 
 all: $(ALL_OUTPUT)
-	$(MAKE) -C bootstrap
 
 %.inc: %
-	../../bin/file_to_pascal_string $< $@
+	../../../bin/file_to_pascal_string $< $@
 
 clean:
 	rm -f $(ALL_OUTPUT)
