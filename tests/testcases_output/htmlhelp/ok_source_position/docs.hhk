@@ -16,6 +16,10 @@
 <param name="Local" value="ok_source_position.html#MyVar">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TEnum">
+<param name="Local" value="ok_source_position.html#TEnum">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TMyClass">
 <param name="Local" value="ok_source_position.TMyClass.html">
 </object>

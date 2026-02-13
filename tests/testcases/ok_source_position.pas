@@ -26,6 +26,16 @@ type
     property MyProp: Integer read MyField;
   end;
 
+  { An enumerated type. }
+  TEnum = (
+    { The first value. }
+    eOne,
+    { The second value. }
+    eTwo,
+    { The third value. }
+    eThree
+  );
+
 implementation
 
 procedure MyProc;
