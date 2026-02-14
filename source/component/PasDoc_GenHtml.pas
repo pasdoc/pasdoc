@@ -167,7 +167,7 @@ type
 
     { write the legend file for visibility markers }
     procedure WriteVisibilityLegendFile;
-    function MakeImage(const src, alt, CssClass: string): string;
+
     { writes a link
       @param href is the link's reference
       @param caption is the link's caption (must already been converted)
@@ -2136,13 +2136,6 @@ begin
   CloseStream;
 
   WriteCIOs(HL, U.CIOs);
-end;
-
-function TGenericHTMLDocGenerator.MakeImage(const src, alt, CssClass: string): string;
-begin
-  Result := Format('<img %s src="%s" alt="%s" title="%s">',
-    [IfThen(CssClass = '', '', 'class="' + CssClass + '"'),
-     src, alt, alt]);
 end;
 
 const
