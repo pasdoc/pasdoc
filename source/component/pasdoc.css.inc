@@ -183,6 +183,8 @@
 '  font-size: 0.875em;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
+'/* Style applied to Pascal code in documentation' + LineEnding +
+'   (e.g. produced by @longcode tag) } */' + LineEnding +
 '.longcode {' + LineEnding +
 '  font-family: ''SFMono-Regular'', Consolas, ''Liberation Mono'', Menlo, monospace;' + LineEnding +
 '  font-size: 0.875em;' + LineEnding +
@@ -233,12 +235,23 @@
 'ul.hierarchy { list-style-type: none; padding-left: 1.5rem; }' + LineEnding +
 'ul.hierarchylevel { list-style-type: none; padding-left: 1.5rem; }' + LineEnding +
 '' + LineEnding +
+'/* Actually this reduces vertical space between *every* paragraph' + LineEnding +
+'   inside list with @itemSpacing(compact).' + LineEnding +
+'   While we would like to reduce this space only for the' + LineEnding +
+'   top of 1st and bottom of last paragraph within each list item.' + LineEnding +
+'   But, well, user probably will not do any paragraph breaks' + LineEnding +
+'   within a list with @itemSpacing(compact) anyway, so it''s' + LineEnding +
+'   acceptable solution. */' + LineEnding +
 'ul.compact_spacing p { margin-top: 0; margin-bottom: 0; }' + LineEnding +
 'ol.compact_spacing p { margin-top: 0; margin-bottom: 0; }' + LineEnding +
 'dl.compact_spacing p { margin-top: 0; margin-bottom: 0; }' + LineEnding +
 '' + LineEnding +
 '/* === Description elements === */' + LineEnding +
 '' + LineEnding +
+'/* The paragraph "This item has no description." with this CSS class appears' + LineEnding +
+'   on items that have no description, and no ancestor from which' + LineEnding +
+'   to take a description.' + LineEnding +
+'   By default we hide it, you can inhide it to explicitly see where descriptions are missing. */' + LineEnding +
 'p.nodescription {' + LineEnding +
 '  color: var(--pasdoc-muted);' + LineEnding +
 '  display: none;' + LineEnding +
@@ -247,9 +260,18 @@
 'dl.description dt { color: var(--pasdoc-muted); }' + LineEnding +
 'dl.parameters dt { color: var(--pasdoc-accent); font-weight: 500; }' + LineEnding +
 '' + LineEnding +
+'/* Various browsers have various default styles for <h6>,' + LineEnding +
+'   sometimes ugly for our purposes, so it''s best to set things' + LineEnding +
+'   like font-size and font-weight in out pasdoc.css explicitly. */' + LineEnding +
 'h6.description_section {' + LineEnding +
 '  font-size: 1rem;' + LineEnding +
 '  font-weight: 600;' + LineEnding +
+'  /* By default browsers usually have some large margin-bottom and' + LineEnding +
+'     margin-top for <h1-6> tags. In our case, margin-bottom is' + LineEnding +
+'     unnecessary, we want to visually show that description_section' + LineEnding +
+'     is closely related to content below. In this situation' + LineEnding +
+'     (where the font size is just as a normal text), smaller bottom' + LineEnding +
+'     margin seems to look good. */' + LineEnding +
 '  margin-top: 1.25rem;' + LineEnding +
 '  margin-bottom: 0.25rem;' + LineEnding +
 '}' + LineEnding +
@@ -330,6 +352,19 @@
 '' + LineEnding +
 '/* === User-created tables (@table tag) === */' + LineEnding +
 '' + LineEnding +
+'/* Style for table created by @table tags:' + LineEnding +
+'   just some thin border.' + LineEnding +
+'' + LineEnding +
+'   This way we have some borders around the cells' + LineEnding +
+'   (so cells are visibly separated), but the border' + LineEnding +
+'   "blends with the background" so it doesn''t look too ugly.' + LineEnding +
+'   Hopefully it looks satisfactory in most cases and for most' + LineEnding +
+'   people.' + LineEnding +
+'' + LineEnding +
+'   We add padding for cells, otherwise they look too close.' + LineEnding +
+'   This is normal thing to do when border-collapse is set to' + LineEnding +
+'   collapse (because this eliminates spacing between cells).' + LineEnding +
+'*/' + LineEnding +
 'table.table_tag { border-collapse: collapse; }' + LineEnding +
 'table.table_tag td, table.table_tag th {' + LineEnding +
 '  border: 1px solid var(--pasdoc-border-color);' + LineEnding +
@@ -340,7 +375,9 @@
 '  font-weight: 600;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
-'/* Avoid extra vertical space at beginning/end of table cells */' + LineEnding +
+'/* Do not make extra vertical space at the beginning/end of table cells.' + LineEnding +
+'   We need ">" selector, to not change paragraphs inside lists inside' + LineEnding +
+'   table cells. */' + LineEnding +
 'table.table_tag td > p:first-child,' + LineEnding +
 'table.table_tag th > p:first-child,' + LineEnding +
 '       td.itemdesc > p:first-child { margin-top: 0; }' + LineEnding +
