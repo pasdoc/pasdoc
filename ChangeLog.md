@@ -2,21 +2,21 @@
 
 ## Upcoming Next Release
 
-* Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved, see https://github.com/pasdoc/pasdoc/discussions/230 (Michalis)
-* Implemented `--show-source-position`, `--source-url-pattern`, `--source-root` (https://pasdoc.github.io/SourcePosition) (Michalis)
+* [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
+* [New feature to show source code file/line + link in docs: `--show-source-position`, `--source-url-pattern`, `--source-root`](https://pasdoc.github.io/SourcePosition), see also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/229) (Michalis)
 * Added release (and CI build) on _macOS/Aarch64_ (Michalis)
-* Support for `objcclass` and `objcclass external`  (Michalis)
-* Fixed using introduction @shortTitle (Michalis)
+* Support for [`objcclass` and `objcclass external`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_objc.pas) (Michalis)
+* Fixed using introduction `@shortTitle` (Michalis)
 * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
 * Fixed resolving relative paths from introduction/conclusion (Michalis)
-* Fixed parsing unit implementation with "begin" instead of "initialization" (Michalis)
-* Fixed parsing unit implementation inline var (Fr0sT-Brutal)
-* Improved SimpleXML output (Michalis):
+* Fixed parsing unit implementation with `begin` instead of `initialization` (Michalis)
+* Fixed parsing unit implementation inline variable (Fr0sT-Brutal)
+* Improved [SimpleXML output](https://pasdoc.github.io/SimpleXmlOutput) (Michalis):
     - properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
     - separate `<label>` inside `<item>` for definition lists
     - `<function>` -> more general `<routine>`
     - nested structures (CIOs) and simple types inside other CIOs are now output
-* New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output (Michalis)
+* [New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output](https://pasdoc.github.io/PhpOutput) (Michalis)
 * Manpages for `pasdoc`, `pascal_pre_proc`, `file_to_pascal_data` and `file_to_pascal_string` (Suve)
 * Show ancestor description for a routine or class, when it missed its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
 * Expose in pasdoc GUI options to request Markdown and "automatic back comments" (Ayeseeem)
@@ -26,8 +26,8 @@
     - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
     - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
 * Type helpers are now parsed and documented (Johann Elsass aka circular17)
-* Much more complete expression evaluation for $if / $elseif (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
-* Ability to define macros on command-line like "-D FPC_FULLVERSION:=30202" that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
+* Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
+* Ability to define macros on command-line like `-D FPC_FULLVERSION:=30202` that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
 
 ## Version 0.16.0 (2021-02-07)
 
