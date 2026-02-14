@@ -95,7 +95,8 @@ var
 begin
   if HasSourcePosition(Item, ItemName, ItemFilenameInRoot, ItemUrl) then
     Result :=
-      ' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
+      // machine-specific, don't output
+      //' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
       ' source-line="' + IntToStr(Item.SourceLine) + '"' +
       ' source-relative-file-name="' + ConvertString(ItemFilenameInRoot) + '"' +
       ' source-url="' + ConvertString(ItemUrl) + '"'
