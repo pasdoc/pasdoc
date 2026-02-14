@@ -258,7 +258,7 @@ type
     Syntax: string;
     CharSet: string;
     { Name of this language as used by Aspell, see
-      http://aspell.net/man-html/Supported.html .
+      @url(http://aspell.net/man-html/Supported.html Aspell supported languages).
 
       Set this to empty string if it's the same as our Syntax up to a dot.
       So a Syntax = 'pl' or Syntax = 'pl.iso-8859-2' already indicates
@@ -266,7 +266,7 @@ type
 
       TODO: In the future, it would be nice if all language names used by PasDoc
       and Aspell matched. Aspell language naming follows the standard
-      http://en.wikipedia.org/wiki/ISO_639-1 as far as I see,
+      @url(http://en.wikipedia.org/wiki/ISO_639-1 ISO 639-1) as far as I see,
       and we should probably follow it too (currently, we deviate for
       some languages).
 
@@ -352,7 +352,7 @@ uses
 
   This approach is standard (also for translators), and proved in Lazarus,
   Castle Game Engine and other projects.
-  See https://github.com/pasdoc/pasdoc/issues/87 }
+  See @url(https://github.com/pasdoc/pasdoc/issues/87 pasdoc issue 87). }
 
 const
   { Translation markers.

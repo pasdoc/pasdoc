@@ -700,7 +700,7 @@ begin
                   begin
                     (* Then this is FPC's feature, see
                       "$I or $INCLUDE : Include compiler info" on
-                      [http://www.freepascal.org/docs-html/prog/progsu30.html].
+                      @url(http://www.freepascal.org/docs-html/prog/progsu30.html FPC $I compiler info documentation).
 
                       Unlike FPC, PasDoc will not expand the %variable%
                       (for reasoning, see comments in
@@ -1223,7 +1223,7 @@ var
   end;
 
   { Consume tokens constituting a function, like "defined(xxx)".
-    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+    See @url(https://freepascal.org/docs-html/current/prog/progsu127.html FPC $IF expressions). }
   function ParseFunction: Variant;
   var
     T: TToken;
@@ -1432,7 +1432,7 @@ var
   end;
 
   { Consume tokens constituting an expression, like "defined(xxx) or defined(yyy)".
-    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+    See @url(https://freepascal.org/docs-html/current/prog/progsu127.html FPC $IF expressions). }
   function ParseExpression: Variant;
   var
     T: TToken;

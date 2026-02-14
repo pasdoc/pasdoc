@@ -333,7 +333,8 @@ type
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-    { Enable Tipue fulltext search. See [https://pasdoc.github.io/UseTipueSearchOption] }
+    { Enable Tipue fulltext search. See
+      @url(https://pasdoc.github.io/UseTipueSearchOption --use-tipue-search documentation). }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
       default False;
   end;
@@ -2352,7 +2353,7 @@ begin
     Besides the feeling of being "clean", specifying explicit paragraph
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
-    [http://sourceforge.net/mailarchive/message.php?msg_id=11388479].
+    @url(http://sourceforge.net/mailarchive/message.php?msg_id=11388479).
     In order to fix it, WriteItemLongDescription always wraps
     what it writes between <p> ... </p>
 

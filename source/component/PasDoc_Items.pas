@@ -96,8 +96,8 @@ const
     [viProtected, viPublic, viPublished, viAutomated];
 
 type
-  { Type of merging interface and implementaion comments.
-    See https://pasdoc.github.io/ImplementationCommentsOption . }
+  { Type of merging interface and implementation comments.
+    See @url(https://pasdoc.github.io/ImplementationCommentsOption --implementation-comments documentation). }
   TInfoMergeType = (
     { Implementation not parsed. }
     imtNone,
@@ -782,7 +782,7 @@ type
     CT_ABSTRACT,
     CT_SEALED,
     CT_HELPER,
-    // external can be used with objcclass (see https://wiki.freepascal.org/FPC_PasCocoa )
+    // external can be used with objcclass (see @url(https://wiki.freepascal.org/FPC_PasCocoa FPC PasCocoa))
     CT_EXTERNAL
   );
 
@@ -1448,7 +1448,7 @@ begin
     LastMod := TrimRightSet(TagValue, ['#']);
     ReplaceStr := '';
   end else
-  { See http://svnbook.red-bean.com/en/1.7/svn.advanced.props.special.keywords.html
+  { See @url(http://svnbook.red-bean.com/en/1.7/svn.advanced.props.special.keywords.html SVN keyword substitution)
     about fixed date format in SVN. }
   if IsVersionControlTag(TagParameter, 'Author:', TagValue) then
   begin
@@ -2931,7 +2931,7 @@ begin
 
   if (not IsType) and (ParamTypes.Count > 0) then
     { Note: We're not using TStringList.DelimitedText because of a bug in FPC 3.2.0 affecting quote chars.
-      See https://gitlab.com/freepascal.org/fpc/source/-/issues/37605 }
+      See @url(https://gitlab.com/freepascal.org/fpc/source/-/issues/37605 FPC issue 37605). }
     Result := Format('%s(%s)', [Name, GetParamTypesStr])
   else
     Result := Name;

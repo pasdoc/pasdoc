@@ -138,7 +138,7 @@ const
   WhiteSpace = WhiteSpaceNotNL + WhiteSpaceNL;
 
   { Flag Start- and Endsigns for parameters
-  (Feature request "direction of parameter": https://github.com/pasdoc/pasdoc/issues/8) }
+  (Feature request "direction of parameter": @url(https://github.com/pasdoc/pasdoc/issues/8 pasdoc issue 8)) }
   FlagStartSigns = ['['];
   FlagEndSigns = [']'];
 
@@ -195,7 +195,7 @@ function RemovePrefix(const Prefix, S: string): string;
 {$ifdef DELPHI_5}
 { BoolToStr for Delphi 5 compat.
   According to
-  [https://sourceforge.net/tracker/?func=detail&atid=104213&aid=1595890&group_id=4213]
+  @url(https://sourceforge.net/tracker/?func=detail&atid=104213&aid=1595890&group_id=4213)
   Delphi 5 RTL doesn't have this implemented. }
 function BoolToStr(Value: Boolean): string;
 {$endif DELPHI_5}
@@ -401,7 +401,7 @@ function ExtractFirstWord(var S: String): String;
     If flag is found, this increases CurrentPos to point to flag end
     (to the index right after final ']'),
     otherwise CurrentPos remains unchanged.
-    See https://github.com/pasdoc/pasdoc/issues/8 . }
+    See @url(https://github.com/pasdoc/pasdoc/issues/8 pasdoc issue 8). }
   procedure FindFlag(var CurrentPos: Integer);
   var
     P: Integer;

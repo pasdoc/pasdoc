@@ -50,12 +50,7 @@ type
     After calling Readln or Eof you should STOP directly using underlying
     Stream (but you CAN use Stream right after creating
     TTextReader.Create(Stream) and before any Readln or Eof
-    operations on this TTextReader).
-
-    Original version of this class comes from Michalis Kamburelis
-    code library, see [http://www.camelot.homedns.org/~michalis/],
-    unit base/KambiClassUtils.pas. }
-
+    operations on this TTextReader). }
   TTextReader = class
   private
     Stream: TStream;
