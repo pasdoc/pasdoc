@@ -1,0 +1,29 @@
+<unit name="ok_longcode_2dots.pas">
+  <description><detailed>Testcase for https://github.com/pasdoc/pasdoc/issues/228 . 
+procedure TMyScanner.GetSymbol;
+begin
+  case Self.Character of
+  '+', '-', '*', '/':
+    begin
+      fSymbolId := tokOperator;
+      fSymbol := Self.Character;
+      Self.NextChar
+    end;
+  '0'..'9':
+    begin
+      fSymbolId := tokNumber;
+      fSymbol := Self.GetNumber
+    end;
+  'a'..'z', 'A'..'Z':
+    begin
+      fSymbolId := tokIdentifier;
+      Self.GetIdentifierOrKeyword
+    end;
+  else
+    Self.RaiseExceptionFmt (
+      'Illegal character &quot;%s&quot; ($%.2x)',
+      [Self.Character, Ord(Self.Character)]
+    );
+  end
+end;</detailed></description>
+</unit>

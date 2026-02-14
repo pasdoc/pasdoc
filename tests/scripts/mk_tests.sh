@@ -289,6 +289,7 @@ all_tests_for_current_format ()
     '--source-url-pattern=https://github.com/pasdoc/pasdoc/blob/master/{FILE}#L{LINE}' \
     --source-root="$(realpath ../../)" \
     ok_source_position.pas
+  mk_test ok_longcode_2dots ok_longcode_2dots.pas
 }
 
 # parse params ----------------------------------------
