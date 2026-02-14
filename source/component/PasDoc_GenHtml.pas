@@ -165,9 +165,6 @@ type
     { output the index.html file }
     procedure WriteIndex;
 
-    { write the legend file for visibility markers }
-    procedure WriteVisibilityLegendFile;
-
     { writes a link
       @param href is the link's reference
       @param caption is the link's caption (must already been converted)
@@ -998,7 +995,6 @@ begin
   WriteUnits(1);
   WriteBinaryFiles;
   WriteOverviewFiles;
-  WriteVisibilityLegendFile;
   WriteIntroduction;
   WriteConclusion;
   WriteAdditionalFiles;
@@ -2187,66 +2183,10 @@ begin
   WriteStartOfTableCell('visibility');
   VisText := ConvertString(FLanguage.Translation[
     VisibilityTranslation[Item.Visibility]]);
-  WriteDirect('<a href="' + EscapeURL('legend.html') + '">');
   WriteDirect('<span class="badge ' +
     VisibilityCssClass[Item.Visibility] + '" title="' +
     VisText + '">' + VisibilityBadgeText[Item.Visibility] + '</span>');
-  WriteDirect('</a>');
   WriteEndOfTableCell;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
-
-  procedure WriteLegendEntry(Vis: TVisibility);
-  var VisTrans: string;
-  begin
-    VisTrans := FLanguage.Translation[VisibilityTranslation[Vis]];
-    WriteStartOfTableRow('');
-    WriteStartOfTableCell('legendmarker');
-    WriteDirect('<span class="badge ' +
-      VisibilityCssClass[Vis] + '">' +
-      VisibilityBadgeText[Vis] + '</span>');
-    WriteEndOfTableCell;
-    WriteStartOfTableCell('legenddesc');
-    WriteConverted(VisTrans);
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-
-const
-  Filename = 'legend';
-begin
-  if not CreateStream(Filename + GetFileextension) then
-    Abort;
-
-  try
-    WriteStartOfDocument(FLanguage.Translation[trLegend]);
-
-    WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
-
-    WriteStartOfTable2Columns('markerlegend',
-      FLanguage.Translation[trMarker],
-      FLanguage.Translation[trVisibility]);
-
-    { Order of entries below is important (because it is shown to the user),
-      so we don't just write all TVisibility values in the order they
-      were declared in TVisibility type. }
-    WriteLegendEntry(viStrictPrivate);
-    WriteLegendEntry(viPrivate);
-    WriteLegendEntry(viStrictProtected);
-    WriteLegendEntry(viProtected);
-    WriteLegendEntry(viPublic);
-    WriteLegendEntry(viPublished);
-    WriteLegendEntry(viAutomated);
-    WriteLegendEntry(viImplicit);
-    WriteEndOfTable;
-
-    WriteFooter;
-    WriteAppInfo;
-    WriteEndOfDocument;
-  finally CloseStream; end;
 end;
 
 { ---------------------------------------------------------------------------- }
