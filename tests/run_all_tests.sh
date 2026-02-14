@@ -51,7 +51,7 @@ echo "Detected pasdoc binary as ${PASDOC_BIN}"
 
 # run all testcases, compare with correct output ------------------------------
 
-ALL_OUTPUT_FORMATS='html htmlhelp latex latex2rtf simplexml php'
+ALL_OUTPUT_FORMATS='html htmlhelp latex latex2rtf simplexml php markdown'
 
 # Set environment variable USE_DIFF_TO_COMPARE to compare using plain `diff`.
 # Otherwise we will assume we are inside a code repository,

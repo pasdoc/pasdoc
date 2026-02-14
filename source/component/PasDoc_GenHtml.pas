@@ -68,41 +68,9 @@ type
 
     FImages: TStringList;
 
-    { Makes a link.
-      @param href is the link's reference
-      @param caption is the link's text
-      @param CssClass is the link's CSS class }
-    function MakeLink(const href, caption, CssClass: string): string;
-
-    { Used by WriteItemsSummary and WriteItemsDetailed. }
-    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
-      WriteItemLink: boolean; MakeAnchor: boolean);
-
-    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean;
-      HeadingLevel: Integer;
-      const SectionAnchor: string; SectionName: TTranslationId);
-
-    procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
-      HeadingLevel: Integer; SectionName: TTranslationId);
-
-    { Writes information on doc generator to current output stream,
-      including link to pasdoc homepage. }
-    procedure WriteAppInfo;
     { Writes authors to output, at heading level HL. Will not write anything
       if collection of authors is not assigned or empty. }
     procedure WriteAuthors(HL: integer; Authors: TStringVector);
-    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
-      WriteItemLink: boolean);
-    procedure WriteEndOfDocument;
-    { Finishes an HTML paragraph element by writing a closing P tag. }
-    procedure WriteEndOfParagraph;
-    { Finishes an HTML table cell by writing a closing TD tag. }
-    procedure WriteEndOfTableCell;
-    { Finishes an HTML table by writing a closing TABLE tag. }
-    procedure WriteEndOfTable;
-    { Finishes an HTML table row by writing a closing TR tag. }
-    procedure WriteEndOfTableRow;
-    procedure WriteFooter;
 
     { Writes the Item's AbstractDescription. Only if AbstractDescription
       is not available, uses DetailedDescription. }
@@ -130,32 +98,6 @@ type
     procedure WriteItemLongDescription(const AItem: TPasItem;
       OpenCloseParagraph: boolean = true);
 
-    { Does WriteItemLongDescription writes anything.
-      When @false, you can avoid calling WriteItemLongDescription altogether. }
-    function HasItemLongDescription(const AItem: TPasItem): boolean;
-
-    procedure WriteOverviewFiles;
-
-    procedure WriteStartOfDocument(AName: string);
-
-    { Starts an HTML paragraph element by writing an opening P tag. }
-    procedure WriteStartOfParagraph; overload;
-    procedure WriteStartOfParagraph(const CssClass: string); overload;
-
-    { Starts an HTML table with a css class }
-    procedure WriteStartOfTable(const CssClass: string);
-
-    procedure WriteStartOfTableCell; overload;
-    procedure WriteStartOfTableCell(const CssClass: string); overload;
-
-    procedure WriteStartOfTable1Column(const CssClass: string);
-    procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
-    procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
-    procedure WriteStartOfTableRow(const CssClass: string);
-
-    { Writes a cell into a table row with the Item's visibility image. }
-    procedure WriteVisibilityCell(const Item: TPasItem);
-
     { output all the necessary images }
     procedure WriteBinaryFiles;
 
@@ -168,8 +110,6 @@ type
       @param CssClass is the link's CSS class }
     procedure WriteLink(const href, caption, CssClass: string);
 
-    procedure WriteSpellChecked(const AString: string);
-
     { Writes a single class, interface or object CIO to output, at heading
       level HL. }
     procedure WriteCIO(HL: integer; const CIO: TPasCio);
@@ -180,13 +120,6 @@ type
 
     procedure WriteCIOSummary(HL: integer; c: TPasItems);
 
-    { Writes heading S to output, at heading level I.
-      For HTML, only levels 1 to 6 are valid, so that values smaller
-      than 1 will be set to 1 and arguments larger than 6 are set to 6.
-      The String S will then be enclosed in an element from H1 to H6,
-      according to the level. }
-    procedure WriteHeading(HL: integer; const CssClass: string; const s: string);
-
     { Returns HTML heading tag. You can also make the anchor
       at this heading by passing AnchorName <> ''. }
     function FormatHeading(HL: integer; const CssClass: string;
@@ -196,8 +129,80 @@ type
       (if at least one the two has a value assigned). }
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
 
-    function FormatAnAnchor(const AName, Caption: string): string;
   protected
+    function MakeLink(const href, caption, CssClass: string): string; virtual;
+
+    function FormatAnAnchor(const AName, Caption: string): string; virtual;
+
+    { Writes information on doc generator to current output stream,
+      including link to pasdoc homepage. }
+    procedure WriteAppInfo; virtual;
+
+    procedure WriteCodeWithLinks(const p: TPasItem; const Code: string;
+      WriteItemLink: boolean); virtual;
+
+    { Finishes an HTML paragraph element by writing a closing P tag. }
+    procedure WriteEndOfParagraph;
+    procedure WriteEndOfDocument; virtual;
+    procedure WriteFooter; virtual;
+
+    { Writes heading S to output, at heading level I.
+      For HTML, only levels 1 to 6 are valid, so that values smaller
+      than 1 will be set to 1 and arguments larger than 6 are set to 6.
+      The String S will then be enclosed in an element from H1 to H6,
+      according to the level. }
+    procedure WriteHeading(HL: integer; const CssClass: string;
+      const s: string); virtual;
+
+    procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
+      HeadingLevel: Integer; SectionName: TTranslationId); virtual;
+
+    procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean;
+      HeadingLevel: Integer;
+      const SectionAnchor: string; SectionName: TTranslationId); virtual;
+
+    { Used by WriteItemsSummary and WriteItemsDetailed. }
+    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
+      WriteItemLink: boolean; MakeAnchor: boolean);
+
+    procedure WriteOverviewFiles; virtual;
+
+    procedure WriteSpellChecked(const AString: string);
+
+    procedure WriteStartOfDocument(AName: string); virtual;
+    { Starts an HTML paragraph element by writing an opening P tag. }
+    procedure WriteStartOfParagraph; overload;
+    procedure WriteStartOfParagraph(const CssClass: string); overload;
+
+    { Writes a cell into a table row with the Item's visibility image. }
+    procedure WriteVisibilityCell(const Item: TPasItem); virtual;
+
+    { Does WriteItemLongDescription writes anything.
+      When @false, you can avoid calling WriteItemLongDescription altogether. }
+    function HasItemLongDescription(const AItem: TPasItem): boolean;
+
+    { Makes a link.
+      @param href is the link's reference
+      @param caption is the link's text
+      @param CssClass is the link's CSS class }
+    { Starts an HTML table with a css class }
+    procedure WriteStartOfTable(const CssClass: string); virtual;
+
+    procedure WriteStartOfTableCell; overload;
+    procedure WriteStartOfTableCell(const CssClass: string); overload; virtual;
+
+    procedure WriteStartOfTable1Column(const CssClass: string='');
+    procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
+    procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
+    procedure WriteStartOfTableRow(const CssClass: string); virtual;
+
+    { Finishes an HTML table cell by writing a closing TD tag. }
+    procedure WriteEndOfTableCell; virtual;
+    { Finishes an HTML table by writing a closing TABLE tag. }
+    procedure WriteEndOfTable;
+    { Finishes an HTML table row by writing a closing TR tag. }
+    procedure WriteEndOfTableRow;
+
     { Return common HTML content that goes inside <head>. }
     function MakeHead: string;
     { Return common HTML content that goes right after <body>. }
@@ -2227,8 +2232,9 @@ begin
     (introduction or AllUnits) to index.html, instead of copying it? }
   if Introduction <> nil then
     IndexSourceFileName := Introduction.OutputFileName else
-    IndexSourceFileName := 'AllUnits.html';
-  CopyFile(DestinationDirectory + IndexSourceFileName, DestinationDirectory + 'index.html');
+    IndexSourceFileName := 'AllUnits' + GetFileExtension;
+  CopyFile(DestinationDirectory + IndexSourceFileName, DestinationDirectory +
+    'index' + GetFileExtension);
 end;
 
 function TGenericHTMLDocGenerator.ConvertString(const S: String): String;

@@ -27,6 +27,7 @@ uses
   PasDoc_GenLatex,
   PasDoc_GenHtmlHelp,
   PasDoc_GenPHP,
+  PasDoc_GenMarkdown,
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_OptionParser,
@@ -203,7 +204,7 @@ begin
   AddOption(OptionTitle);
 
   OptionFormat := TStringOption.Create('O', 'format');
-  OptionFormat.Explanation := 'Output format: html, simplexml, latex, latex2rtf, htmlhelp, php';
+  OptionFormat.Explanation := 'Output format: html, simplexml, latex, latex2rtf, htmlhelp, php, markdown';
   OptionFormat.Value := 'html';
   AddOption(OptionFormat);
 
@@ -474,6 +475,11 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
     Result := Generator;
   end;
 
+  function SetMarkdownOptions(Generator: TMarkdownDocGenerator): TDocGenerator;
+  begin
+    Result := Generator;
+  end;
+
   { Sets HTML-help specific options and returns its parameter as TDocGenerator }
   function SetHtmlHelpOptions(Generator: THTMLHelpDocGenerator): TDocGenerator;
   begin
@@ -541,6 +547,10 @@ begin
   if OptionFormat.Value = 'php' then
   begin
     PasDoc.Generator := SetPHPOptions(TPHPDocGenerator.Create(PasDoc));
+  end else
+  if OptionFormat.Value = 'markdown' then
+  begin
+    PasDoc.Generator := SetMarkdownOptions(TMarkdownDocGenerator.Create(PasDoc));
   end else
   begin
     raise EInvalidCommandLine.CreateFmt(

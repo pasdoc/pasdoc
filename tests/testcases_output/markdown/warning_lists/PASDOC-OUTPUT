@@ -1,0 +1,24 @@
+Info[1]:    Starting Source File Parsing ...
+Info[2]:    Now parsing file warning_lists.pas...
+Info[2]:    ... 1 Source File(s) parsed
+Info[2]:    Creating links ...
+Info[2]:    ...  links created
+Info[2]:    Expanding descriptions (pass 1) ...
+Info[2]:    Expanding descriptions (pass 2) ...
+Warning[1]: Such content, "@@", is not allowed directly within the tag @orderedlist (in description of "warning_lists")
+Warning[1]: Such content, "@-", is not allowed directly within the tag @unorderedlist (in description of "warning_lists")
+Warning[1]: Such content, "--", is not allowed directly within the tag @orderedlist (in description of "warning_lists")
+Warning[1]: Such content, "---", is not allowed directly within the tag @unorderedlist (in description of "warning_lists")
+Warning[1]: Such content, "foo", is not allowed directly within the tag @orderedlist (in description of "warning_lists")
+Warning[1]: Such content, "bar", is not allowed directly within the tag @orderedlist (in description of "warning_lists")
+Warning[1]: Such content, "http://pasdoc.sf.net/", is not allowed directly within the tag @orderedlist (in description of "warning_lists")
+Warning[1]: The tag "@author" cannot be used inside parameter of tag "@orderedlist" (in description of "warning_lists")
+Warning[1]: The tag "@code" cannot be used inside parameter of tag "@unorderedlist" (in description of "warning_lists")
+Warning[1]: The tag "@item" cannot be used at the top level of description, it must be used within some other @-tag (in description of "warning_lists")
+Warning[1]: The tag "@item" cannot be used inside parameter of tag "@code" (in description of "warning_lists")
+Warning[1]: The tag "@itemlabel" cannot be used inside parameter of tag "@orderedlist" (in description of "warning_lists")
+Warning[1]: The tag "@itemspacing" cannot be used at the top level of description, it must be used within some other @-tag (in description of "warning_lists")
+Warning[1]: Invalid parameter for @itemSpacing tag: "ThisIsInvalid" (in description of "warning_lists")
+Info[2]:    ... Descriptions expanded
+Info[2]:    Writing Docs for unit "warning_lists"
+Info[1]:    Done
