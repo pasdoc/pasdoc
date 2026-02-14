@@ -3966,7 +3966,10 @@ begin
   begin
     if SourceRoot <> '' then
       ItemFilenameInRoot := ExtractRelativePath(
-        IncludeTrailingPathDelimiter(SourceRoot), AItem.SourceAbsoluteFileName)
+        // Use ExpandFileName(SourceRoot) since user may provide SourceRoot
+        // as relative, like "."
+        IncludeTrailingPathDelimiter(ExpandFileName(SourceRoot)),
+        AItem.SourceAbsoluteFileName)
     else
       ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
 
