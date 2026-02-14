@@ -2134,6 +2134,7 @@ begin
   WriteCIOs(HL, U.CIOs);
 end;
 
+procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
 const
   VisibilityCssClass: array[TVisibility] of string =
   ( 'vis-published',
@@ -2146,25 +2147,7 @@ const
     { Implicit visibility uses published style }
     'vis-published'
   );
-  VisibilityBadgeText: array[TVisibility] of string =
-  // ( 'Publish',{ published }
-  //   'Publ',   { public }
-  //   'Prot',   { protected }
-  //   'Prot',   { strict protected }
-  //   'Priv',   { private }
-  //   'Priv',   { strict private }
-  //   'Auto',   { automated }
-  //   'Impl'    { implicit }
-  // );
-  ( 'Published',{ published }
-    'Public',   { public }
-    'Protected',   { protected }
-    'Strict Protected',   { strict protected }
-    'Private',   { private }
-    'Strict Private',   { strict private }
-    'Automated',   { automated }
-    'Implicit'    { implicit }
-  );
+
   VisibilityTranslation: array[TVisibility] of TTranslationID =
   ( trPublished,
     trPublic,
@@ -2175,17 +2158,11 @@ const
     trAutomated,
     trImplicit
   );
-
-procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
-var
-  VisText: string;
 begin
   WriteStartOfTableCell('visibility');
-  VisText := ConvertString(FLanguage.Translation[
-    VisibilityTranslation[Item.Visibility]]);
-  WriteDirect('<span class="badge ' +
-    VisibilityCssClass[Item.Visibility] + '" title="' +
-    VisText + '">' + VisibilityBadgeText[Item.Visibility] + '</span>');
+  WriteDirect('<span class="badge ' + VisibilityCssClass[Item.Visibility] + '">' +
+    ConvertString(FLanguage.Translation[VisibilityTranslation[Item.Visibility]]) +
+    '</span>');
   WriteEndOfTableCell;
 end;
 
