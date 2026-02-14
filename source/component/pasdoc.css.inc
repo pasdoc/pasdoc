@@ -305,8 +305,10 @@
 '' + LineEnding +
 'acronym.mispelling { background-color: #f00; }' + LineEnding +
 '' + LineEnding +
+'/*' + LineEnding +
 'input#search_text { }' + LineEnding +
 'input#search_submit_button { }' + LineEnding +
+'*/' + LineEnding +
 '' + LineEnding +
 '.source_position {' + LineEnding +
 '  font-size: 80%;' + LineEnding +

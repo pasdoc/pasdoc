@@ -303,8 +303,10 @@ img { border: 0; }
 
 acronym.mispelling { background-color: #f00; }
 
+/*
 input#search_text { }
 input#search_submit_button { }
+*/
 
 .source_position {
   font-size: 80%;
