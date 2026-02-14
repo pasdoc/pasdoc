@@ -2797,26 +2797,28 @@ begin
     { Mobile navbar with toggle button for offcanvas sidebar }
     Result := Result +
       '<nav class="navbar navbar-dark bg-dark d-md-none sticky-top">' + LineEnding +
-      '<div class="container-fluid">' + LineEnding +
-      '<a class="navbar-brand" href="' + EscapeURL('index.html') + '">' + TitleText + '</a>' + LineEnding +
-      '<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" ' +
-        'data-bs-target="#sidebarNav" aria-controls="sidebarNav">' + LineEnding +
-      '<span class="navbar-toggler-icon"></span>' + LineEnding +
-      '</button></div></nav>' + LineEnding;
+      '  <div class="container-fluid">' + LineEnding +
+      '    <a class="navbar-brand" href="' + EscapeURL('index.html') + '">' + TitleText + '</a>' + LineEnding +
+      '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">' + LineEnding +
+      '      <span class="navbar-toggler-icon"></span>' + LineEnding +
+      '    </button>' + LineEnding +
+      '  </div>' + LineEnding +
+      '</nav>' + LineEnding;
 
     { Offcanvas sidebar: fixed on md+ screens, slides out on mobile.
       "navigation" class is for backward compat with old/custom CSS files. }
     Result := Result +
       '<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav">' + LineEnding +
-      '<div class="offcanvas-header">' + LineEnding +
-      '<h5 class="offcanvas-title">' + TitleText + '</h5>' + LineEnding +
-      '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" ' +
-        'data-bs-target="#sidebarNav" aria-label="Close"></button>' + LineEnding +
-      '</div>' + LineEnding +
-      '<div class="offcanvas-body py-2">' + LineEnding;
+      '  <div class="offcanvas-header">' + LineEnding +
+      '    <h5 class="offcanvas-title">' + TitleText + '</h5>' + LineEnding +
+      '    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>' + LineEnding +
+      '  </div>' + LineEnding +
+      '  <div class="offcanvas-body py-2">' + LineEnding;
   end else
   begin
-    { Without Bootstrap: simple sidebar structure using legacy CSS classes }
+    { Without Bootstrap: simple sidebar structure,
+      use .navigation that is relied on by old CSS like
+      alternative_css/pasdoc-up-to-0.16.0.css  }
     Result := Result +
       '<div class="navigation">' + LineEnding;
   end;
@@ -2824,9 +2826,11 @@ begin
   Result := Result + MakeNavigation;
 
   if Bootstrap then
-    Result := Result + '</div></div>' + LineEnding  { close offcanvas-body + offcanvas div }
+    { close <div>s with classes "offcanvas-body" and "offcanvas-start" }
+    Result := Result + '</div></div>' + LineEnding
   else
-    Result := Result + '</div>' + LineEnding;  { close navigation div }
+    { close <div> with class "navigation" }
+    Result := Result + '</div>' + LineEnding;
 
   { Main content area }
   Result := Result +
