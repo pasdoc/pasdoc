@@ -54,7 +54,13 @@
 '' + LineEnding +
 '/* === Sidebar navigation styling (with Bootstrap) === */' + LineEnding +
 '' + LineEnding +
-'.navigation h2 {' + LineEnding +
+'.offcanvas-body {' + LineEnding +
+'  /* Override Bootstrap default flex making row, which would put' + LineEnding +
+'     <h2> from --title on the left of the menu. */' + LineEnding +
+'  flex-direction: column;' + LineEnding +
+'}' + LineEnding +
+'' + LineEnding +
+'.offcanvas-body h2 {' + LineEnding +
 '  font-size: 1.1rem;' + LineEnding +
 '  padding: 0.5rem 0.75rem;' + LineEnding +
 '  margin: 0.5rem 0;' + LineEnding +
@@ -68,17 +74,6 @@
 '.offcanvas-body .nav-link:hover {' + LineEnding +
 '  color: var(--pasdoc-accent);' + LineEnding +
 '  background-color: var(--pasdoc-accent-light);' + LineEnding +
-'}' + LineEnding +
-'' + LineEnding +
-'/* Backward-compat: .navigation and .content are used by old/custom CSS.' + LineEnding +
-'   Our pasdoc.css neutralizes them so Bootstrap layout takes precedence.' + LineEnding +
-'   When a custom CSS is used (--css), it can restyle these freely. */' + LineEnding +
-'.navigation ul {' + LineEnding +
-'  margin: 0;' + LineEnding +
-'  padding: 0;' + LineEnding +
-'}' + LineEnding +
-'.navigation li {' + LineEnding +
-'  list-style-type: none;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
 '/* === Section tabs === */' + LineEnding +
