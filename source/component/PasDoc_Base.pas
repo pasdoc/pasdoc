@@ -200,7 +200,7 @@ type
     property CacheDir: string read FCacheDir write FCacheDir;
 
     { This determines how items inside will be sorted.
-      See [https://pasdoc.github.io/SortOption]. }
+      See @url(https://pasdoc.github.io/SortOption --sort documentation). }
     property SortSettings: TSortSettings
       read FSortSettings write FSortSettings default [];
 
@@ -213,7 +213,7 @@ type
     property AdditionalFilesNames: TStringList read FAdditionalFilesNames;
 
     { See command-line option @--implicit-visibility documentation at
-      [https://pasdoc.github.io/ImplicitVisibilityOption].
+      @url(https://pasdoc.github.io/ImplicitVisibilityOption --implicit-visibility documentation).
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
@@ -222,7 +222,7 @@ type
       read FHandleMacros write FHandleMacros default true;
 
     { This controls auto-linking, see
-      [https://pasdoc.github.io/AutoLinkOption] }
+      @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
     property AutoBackComments: boolean
@@ -785,7 +785,7 @@ begin
     { Setting ExternalItem.SourceFileName makes also ExternalItem.BasePath good,
       and this is useful to resolve relative filenames with respect to
       the introduction/conclusion files.
-      See https://github.com/pasdoc/pasdoc/issues/122 }
+      See @url(https://github.com/pasdoc/pasdoc/issues/122 pasdoc issue 122). }
     ExternalItem.SourceFileName := FileName;
   except
     FreeAndNil(ExternalItem);

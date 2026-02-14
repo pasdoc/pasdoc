@@ -199,7 +199,7 @@ type
 
     { These are the items that the next "back-comment"
       (the comment starting with "<", see
-      [https://pasdoc.github.io/WhereToPlaceComments]
+      @url(https://pasdoc.github.io/WhereToPlaceComments WhereToPlaceComments)
       section "Placing comments after the item") will apply to. }
     ItemsForNextBackComment: TPasItems;
 
@@ -229,7 +229,7 @@ type
     procedure ExpandHelpInsightDescriptions(var DescriptionInfo: TRawDescriptionInfo);
 
     { Remove Lazarus %region declarations from a description,
-      see http://wiki.freepascal.org/IDE_Window:_Editor_Options_Code_Folding#About_.7B.25Region.7D }
+      see @url(http://wiki.freepascal.org/IDE_Window:_Editor_Options_Code_Folding#About_.7B.25Region.7D Lazarus region documentation). }
     procedure RemoveRegionDeclarations(var DescriptionInfo: TRawDescriptionInfo);
 
     { If not IsLastComment, then returns @link(EmptyRawDescriptionInfo)
@@ -397,7 +397,7 @@ type
       (it will append the same number of items to
       RawDescriptions as it appended to Names).
       The strategy how comments are assigned to item in this case is
-      described on [https://pasdoc.github.io/WhereToPlaceComments]
+      described on @url(https://pasdoc.github.io/WhereToPlaceComments WhereToPlaceComments)
       (see section "Multiple fields/variables in one declaration"). }
     procedure ParseCommaSeparatedIdentifiers(Names: TStrings;
       FinalSymbol: TSymbolType;
@@ -494,11 +494,11 @@ type
       read FShowVisibilities write FShowVisibilities;
 
     { See command-line option @--implicit-visibility documentation at
-      [https://pasdoc.github.io/ImplicitVisibilityOption] }
+      @url(https://pasdoc.github.io/ImplicitVisibilityOption --implicit-visibility documentation). }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility;
     { See command-line option @--auto-back-comments documentation at
-      [https://pasdoc.github.io/AutoBackComments] }
+      @url(https://pasdoc.github.io/AutoBackComments --auto-back-comments documentation). }
     property AutoBackComments: boolean read FAutoBackComments write FAutoBackComments;
     { Whether to read comments from the implementation,
       and how to merge them with the interface comments. }
@@ -2721,7 +2721,7 @@ procedure TParser.ParseFieldsVariables(Items: TPasItems;
   const ClassKeyWordString: string = '');
 
   // Parse variable/field modifiers in FPC.
-  // See: http://www.freepascal.org/docs-html/ref/refse19.html for variable
+  // See: @url(http://www.freepascal.org/docs-html/ref/refse19.html FPC variable modifiers) for variable
   // modifiers.
   // This consumes some tokens and appends them to ItemCollector.FullDeclaration.
   procedure ParseModifiers(ItemCollector: TPasFieldVariable);
@@ -3275,7 +3275,7 @@ begin
 
           for i := 0 to ItemsForNextBackComment.Count - 1 do
           begin
-            // use Trim(), see https://sourceforge.net/p/pasdoc/bugs/89/
+            // use Trim(), see @url(https://sourceforge.net/p/pasdoc/bugs/89/ pasdoc bug 89)
             if Trim(ItemsForNextBackComment.PasItemAt[i].RawDescription) <> '' then
               DoMessage(1, pmtWarning,
                 '%s: Item %s already has one description, now it''s ' +
@@ -3891,7 +3891,7 @@ begin
           CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS:
             begin
               { No root class for objcclass, see
-                https://wiki.freepascal.org/FPC_PasCocoa/Differences#No_unique_root_class }
+                @url(https://wiki.freepascal.org/FPC_PasCocoa/Differences#No_unique_root_class FPC PasCocoa differences). }
             end;
           CIO_DISPINTERFACE:
             begin

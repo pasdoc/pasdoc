@@ -78,7 +78,7 @@ begin
 
     { TODO: Add a value="Search" to <input type="button" ...>
       and hide it visually by one of the CSS tricks on
-      http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only }
+      @url(http://stackoverflow.com/questions/12723937/remove-value-attribute-of-input-element-using-css-only) }
     '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
     '</div></form>' + LineEnding +
     '<div style="clear: both"></div>' + LineEnding;
@@ -98,7 +98,7 @@ procedure TipueAddFiles(Units: TPasUnits;
     i: Integer;
 
     { Write one line of index data.
-      See http://www.tipue.com/help/search/data/.
+      See @url(http://www.tipue.com/help/search/data/ Tipue search data format).
       Note: we try hard to *not* place a comma on the final newline,
       as google suggests that IE may have problems with it.
 

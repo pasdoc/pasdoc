@@ -369,7 +369,7 @@ type
 
     { This will be inserted on each whitespace sequence (but not on
       paragraph break). This is consistent with
-      [https://pasdoc.github.io/WritingDocumentation]
+      @url(https://pasdoc.github.io/WritingDocumentation WritingDocumentation)
       that clearly says that "amount of whitespace does not matter".
 
       Although in some pasdoc output formats amount of whitespace also

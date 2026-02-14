@@ -110,7 +110,7 @@ const
     Same for Low(TCreatedOverviewFile).
 
     This is submitted as FPC bug 4140,
-    [http://www.freepascal.org/bugs/showrec.php3?ID=4140].
+    @url(http://www.freepascal.org/bugs/showrec.php3?ID=4140 FPC bug 4140).
     Fixed in FPC 2.0.1 and FPC 2.1.1. }
   LowCreatedOverviewFile = Low(TCreatedOverviewFile);
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
@@ -968,7 +968,7 @@ type
         @item(pasdoc's compiler name and version,)
         @item(pasdoc's version and time of compilation)
       )
-      See [https://pasdoc.github.io/ExcludeGeneratorOption].
+      See @url(https://pasdoc.github.io/ExcludeGeneratorOption --exclude-generator documentation).
       Default value is false (i.e. show them),
       as this information is generally considered useful.
 
@@ -1021,14 +1021,14 @@ type
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
 
     { This controls @link(SearchLink) behavior, as described in
-      [https://pasdoc.github.io/LinkLookOption]. }
+      @url(https://pasdoc.github.io/LinkLookOption --link-look documentation). }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
 
     property WriteUsesClause: boolean
       read FWriteUsesClause write FWriteUsesClause default false;
 
     { This controls auto-linking, see
-      [https://pasdoc.github.io/AutoLinkOption] }
+      @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
 
