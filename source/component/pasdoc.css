@@ -52,7 +52,13 @@
 
 /* === Sidebar navigation styling (with Bootstrap) === */
 
-.navigation h2 {
+.offcanvas-body {
+  /* Override Bootstrap default flex making row, which would put
+     <h2> from --title on the left of the menu. */
+  flex-direction: column;
+}
+
+.offcanvas-body h2 {
   font-size: 1.1rem;
   padding: 0.5rem 0.75rem;
   margin: 0.5rem 0;
@@ -66,17 +72,6 @@
 .offcanvas-body .nav-link:hover {
   color: var(--pasdoc-accent);
   background-color: var(--pasdoc-accent-light);
-}
-
-/* Backward-compat: .navigation and .content are used by old/custom CSS.
-   Our pasdoc.css neutralizes them so Bootstrap layout takes precedence.
-   When a custom CSS is used (--css), it can restyle these freely. */
-.navigation ul {
-  margin: 0;
-  padding: 0;
-}
-.navigation li {
-  list-style-type: none;
 }
 
 /* === Section tabs === */
