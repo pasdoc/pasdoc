@@ -32,13 +32,17 @@ uses
   PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
 
 type
+  { Single misspelling found by @link(TAspellProcess.CheckString).
+    One instance is created per misspelled word. }
   TSpellingError = class
   public
-    { the mis-spelled word }
+    { The misspelled word exactly as it appeared in the checked text. }
     Word: string;
-    { offset inside the checked string }
+    { Offset of the misspelled word within the
+      string that was passed to @link(TAspellProcess.CheckString). }
     Offset: Integer;
-    { comma-separated list of suggestions }
+    { Comma-separated list of replacement suggestions from Aspell,
+      or empty string if Aspell offered none (the '#' response). }
     Suggestions: string;
   end;
 
@@ -64,10 +68,18 @@ type
       AOnMessage: TPasDocMessageEvent);
     destructor Destroy; override;
 
+    { Aspell input mode (passed to aspell @--mode command-line option)
+      passed at construction.
+      Empty string means the Aspell default. }
     property AspellMode: string read FAspellMode;
 
+    { Language code for aspell (passed to aspell @--lang command-line option)
+      passed at construction.
+      Empty string means the Aspell default. }
     property AspellLanguage: string read FAspellLanguage;
 
+    { Tell Aspell to ignore all words in Value for subsequent
+      @link(CheckString) calls. }
     procedure SetIgnoreWords(Value: TStringList);
 
     { Spellchecks AString and returns result.
@@ -76,6 +88,7 @@ type
       Offsets of TSpellingErrors will be relative to AString. }
     procedure CheckString(const AString: string; const AErrors: TObjectVector);
 
+    { Callback for diagnostic messages. }
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   end;
 
