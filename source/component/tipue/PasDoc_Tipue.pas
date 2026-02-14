@@ -20,8 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Helper unit for integrating tipue [http://www.tipue.com/]
-  with pasdoc HTML output.) }
+{ @abstract(Integrate Tipue search.) }
 unit PasDoc_Tipue;
 
 interface

@@ -20,11 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Provides Latex document generator object.)
-
-  Implements an object to generate latex documentation, overriding many of
-  @link(TDocGenerator)'s virtual methods. }
-
+{ @abstract(LaTeX documentation generator @link(TTexDocGenerator).) }
 unit PasDoc_GenLatex;
 
 {$I pasdoc_defines.inc}
@@ -40,7 +36,7 @@ uses
   Classes, Contnrs;
 
 type
-  { @abstract(generates latex documentation)
+  { @abstract(LaTeX documentation generator.)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)

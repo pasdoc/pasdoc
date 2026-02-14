@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Sorting settings types and names.)}
+{ @abstract(Sorting settings types and names.) }
 unit PasDoc_SortSettings;
 
 {$I pasdoc_defines.inc}

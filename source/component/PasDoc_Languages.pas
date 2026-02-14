@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(PasDoc language definitions and translations.)
+{ @abstract(Language definitions and translations.)
   @author(Johannes Berg <johannes AT sipsolutions.de>)
   @author(Ralf Junker <delphi AT zeitungsjunge.de>)
   @author(Andrew Andreev <andrew AT alteragate.net> (Bulgarian translation))
@@ -294,10 +294,10 @@ type
     procedure SetLanguage(const Value: TLanguageID);
   protected
     FCharSet: string;
-    { @abstract(gets a translation token) }
+    { Translation for given ATranslationID. }
     function GetTranslation(ATranslationID: TTranslationID): string;
   public
-    { Charset for current language }
+    { Charset for current language. }
     property CharSet: string read FCharSet;
   {$IFDEF STRING_UNICODE}
     property CodePage: LongWord read FCodePage;

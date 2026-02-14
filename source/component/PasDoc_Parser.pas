@@ -20,14 +20,14 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Parse ObjectPascal code.)
+{ @abstract(Parse Pascal code.)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
 
-  Contains the @link(TParser) object, which can parse an ObjectPascal
+  Contains the @link(TParser) object, which can parse a Pascal
   code, and put the collected information into the TPasUnit instance. }
 
 unit PasDoc_Parser;

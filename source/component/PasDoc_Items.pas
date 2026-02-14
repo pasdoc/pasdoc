@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(defines all items that can appear within a Pascal unit's interface)
+{ @abstract(All items that can appear within Pascal source code.)
   @created(11 Mar 1999)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))

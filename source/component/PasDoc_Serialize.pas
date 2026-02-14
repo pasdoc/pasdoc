@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Serializing/deserializing cached information.)
+{ @abstract(Serializing / deserializing cached information.)
   @author(Arno Garrels <first name.name@nospamgmx.de>) }
 unit PasDoc_Serialize;
 

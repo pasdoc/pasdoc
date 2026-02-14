@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Provides HTML document generator object.)
+{ @abstract(HTML documentation generator in @link(TGenericHTMLDocGenerator).)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Alexander Lisnevsky (alisnevsky@yandex.ru))
@@ -34,10 +34,7 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
-  @author(Arno Garrels <first name.name@nospamgmx.de>)
-
-  Implements an object to generate HTML documentation, overriding many of
-  @link(TDocGenerator)'s virtual methods. }
+  @author(Arno Garrels <first name.name@nospamgmx.de>) }
 
 unit PasDoc_GenHtml;
 
@@ -56,9 +53,9 @@ uses
   PasDoc_StringPairVector;
 
 type
-  { @abstract(generates HTML documentation)
+  { @abstract(HTML documentation generator.)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in HTML (HyperText Markup Language) format. }
+    output in HTML format. }
   TGenericHTMLDocGenerator = class(TDocGenerator)
   private
     FUseTipueSearch: boolean;

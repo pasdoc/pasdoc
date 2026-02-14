@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(SimpleXML output generator.) }
+{ @abstract(SimpleXML documentation generator @link(TSimpleXMLDocGenerator).) }
 unit PasDoc_GenSimpleXML;
 
 {$I pasdoc_defines.inc}

@@ -20,22 +20,13 @@
   ----------------------------------------------------------------------------
 }
 
-{
+{ @abstract(Scanner for Pascal, producing tokens and interpreting conditionals.)
+
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
-  @author(Arno Garrels <first name.name@nospamgmx.de>)
-
-  @abstract(Simple Pascal scanner.)
-
-  The scanner object @link(TScanner) returns tokens from a Pascal language
-  character input stream. It uses the @link(PasDoc_Tokenizer) unit to get tokens,
-  regarding conditional directives that might lead to including another files
-  or will add or delete conditional symbols. Also handles FPC macros
-  (when HandleMacros is true). So, this scanner is a combined
-  tokenizer and pre-processor. }
-
+  @author(Arno Garrels <first name.name@nospamgmx.de>) }
 unit PasDoc_Scanner;
 
 {$I pasdoc_defines.inc}
@@ -72,9 +63,23 @@ type
     DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2,
     DT_IF, DT_ELSEIF, DT_IFEND);
 
-  { This class scans one unit using one or more @link(TTokenizer) objects
-    to scan the unit and all nested include files. }
+  { Scanner for Pascal, producing tokens and interpreting conditionals
 
+    Returns tokens from a Pascal language source code input stream.
+    Uses the @link(PasDoc_Tokenizer) unit to get tokens,
+    processes directives that might lead to
+
+    @unorderedList(
+      @item(including other files)
+      @item(define / undefine symbols)
+      @item(processes conditional directives)
+      @item(handles FPC macros (when HandleMacros is true).)
+    )
+
+    Effectively this is a combined tokenizer and pre-processor.
+
+    Single TScanner instance scans one unit using one or more @link(TTokenizer)
+    instances (to scan the unit and all nested include files). }
   TScanner = class(TObject)
   private
     FCurrentTokenizer: Integer;

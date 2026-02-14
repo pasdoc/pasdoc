@@ -20,7 +20,8 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Contains the main TPasDoc component.)
+{ @abstract(Manages parsing and documentation generation: @link(TPasDoc).)
+
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
@@ -31,7 +32,7 @@
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(24 Sep 1999)
 
-  Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
+  Note: Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
   to not conflict with the name of base program name @code(pasdoc.dpr).
 }
 
@@ -66,10 +67,7 @@ const
   DEFAULT_VERBOSITY_LEVEL = 2;
 
 type
-  { The main object in the pasdoc application; first scans parameters, then
-    parses files.
-    All parsed units are then given to documentation generator,
-    which creates one or more documentation output files. }
+  { Manages parsing and documentation generation. }
   TPasDoc = class(TComponent)
   private
     FDescriptionFileNames: TStringVector;

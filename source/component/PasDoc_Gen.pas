@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(basic doc generator object)
+{ @abstract(Base generator class @link(TDocGenerator), to be specialized for specific output formats.)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Ivan Montes Velencoso (senbei@teleline.es))
@@ -226,7 +226,7 @@ type
     property MinCellCount: Cardinal read FMinCellCount;
   end;
 
-  { @abstract(basic documentation generator object)
+  { Base generator class, to be specialized for specific output formats.
     This abstract object will do the complete process of writing
     documentation files.
     It will be given the collection of units that was the result of the
@@ -756,8 +756,7 @@ type
       class returns '@-@--'. }
     function EmDash: string; virtual;
 
-    { S is guaranteed (guaranteed by the user) to be correct html content,
-      this is taken directly from parameters of @html tag.
+    { Process HTML content, like provided by the @@html tag.
       Override this function to decide what to put in output on such thing.
 
       Note that S is not processed in any way, even with ConvertString.
@@ -769,14 +768,14 @@ type
       HTML can override this with simple "Result := S". }
     function HtmlString(const S: string): string; virtual;
 
-    { This is equivalent of @link(HtmlString) for @@latex tag.
+    { Process LaTeX content, like provided by the @@latex tag.
 
       The default implementation is this class simply discards it,
       i.e. returns always ''. Generators that know what to do with raw
       LaTeX markup can override this with simple "Result := S". }
     function LatexString(const S: string): string; virtual;
 
-    { @abstract(This returns markup that forces line break in given
+    { @abstract(Markup that forces line break in given
       output format (e.g. '<br>' in html or '\\' in LaTeX).)
 
       It is used on @br tag (but may also be used on other
@@ -787,7 +786,7 @@ type
       can't be expressed in given output format. }
     function LineBreak: string; virtual;
 
-    { This should return markup upon finding URL in description.
+    { Markup to display URL in a description.
       E.g. HTML generator will want to wrap this in
       <a href="...">...</a>.
 
@@ -801,14 +800,13 @@ type
       anything like URL links. }
     function URLLink(const URL: string): string; overload; virtual;
 
-    { This returns the Text which will be shown for an URL tag.
+    { Text which will be shown for an URL tag.
 
       URL is a link to a website or e-mail address.
       LinkDisplay is an optional parameter which will be used as the display name of the URL. }
     function URLLink(const URL, LinkDisplay: string): string; overload; virtual;
 
-    {@name is used to write the introduction and conclusion
-     of the project.}
+    { Write the introduction and conclusion of the project.}
     procedure WriteExternal(const ExternalItem: TExternalItem;
       const Id: TTranslationID);
 
@@ -823,26 +821,26 @@ type
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); virtual; abstract;
 
-    {@name writes a conclusion for the project.
-     See @link(WriteExternal).}
+    { Writes a conclusion for the project.
+      See @link(WriteExternal).}
     procedure WriteConclusion;
 
-    {@name writes an introduction for the project.
-     See @link(WriteExternal).}
+    { Writes an introduction for the project.
+      See @link(WriteExternal).}
     procedure WriteIntroduction;
 
-    {@name writes the other files for the project.
-     See @link(WriteExternal).}
+    { Writes the other files for the project.
+      See @link(WriteExternal).}
     procedure WriteAdditionalFiles;
 
-    // @name writes a section heading and a link-anchor;
+    // Writes a section heading and a link-anchor.
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; virtual; abstract;
 
-    // @name writes a link-anchor;
+    // Writes a link-anchor.
     function FormatAnchor(const Anchor: string): string; virtual; abstract;
 
-    { This returns Text formatted using bold font.
+    { Return Text formatted using bold font.
 
       Given Text is already in the final output format
       (with characters converted using @link(ConvertString), @@-tags
@@ -855,17 +853,17 @@ type
       @seealso(FormatItalic) }
     function FormatBold(const Text: string): string; virtual;
 
-    { This returns Text formatted using italic font.
+    { Return Text formatted using italic font.
       Analogous to @link(FormatBold). }
     function FormatItalic(const Text: string): string; virtual;
 
-    { This returns Text using bold font by calling FormatBold(Text). }
+    { Return Text using bold font by calling FormatBold(Text). }
     function FormatWarning(const Text: string): string; virtual;
 
-    { This returns Text using italic font by calling FormatItalic(Text). }
+    { Return Text using italic font by calling FormatItalic(Text). }
     function FormatNote(const Text: string): string; virtual;
 
-    { This returns Text preserving spaces and line breaks.
+    { Return Text preserving spaces and line breaks.
       Note that Text passed here is not yet converted with ConvertString.
       The implementation of this method in this class just returns
       ConvertString(Text). }
@@ -888,7 +886,7 @@ type
     { Format a list from given ListData. }
     function FormatList(ListData: TListData): string; virtual; abstract;
 
-    { This should return appropriate content for given Table.
+    { Return appropriate content for given Table.
       It's guaranteed that the Table passed here will have
       at least one row and in each row there will be at least
       one cell, so you don't have to check it within descendants. }

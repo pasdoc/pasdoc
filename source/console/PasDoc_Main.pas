@@ -1,4 +1,4 @@
-{ @abstract(Provides the Main procedure.) }
+{ Main procedure, that does the complete job of the command-line PasDoc. }
 unit PasDoc_Main;
 
 { Define this to see the backtrace of crashes (when compiled with FPC).
@@ -7,7 +7,12 @@ unit PasDoc_Main;
 
 interface
 
-{ This is the main procedure of PasDoc, it does everything. }
+{ Does the complete job of the command-line PasDoc.
+  @unorderedList(
+    @item(Process command-line options.)
+    @item(Create TPasDoc, set it up, run @link(TPasDoc.Execute) on it.)
+  )
+}
 procedure Main;
 
 implementation

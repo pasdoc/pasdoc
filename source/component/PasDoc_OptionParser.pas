@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(The @name unit --- easing command line parsing)
+{ @abstract(Command line option parsing.)
   @author(Johannes Berg <johannes@sipsolutions.de>)
 
   To use this unit, create an object of @link(TOptionParser) and add options to
@@ -58,7 +58,7 @@ const
 
 type
   TOptionParser = class;
-  { @abstract(abstract base class for options)
+  { @abstract(Base class for options.)
     This class implements all the basic functionality and provides
     abstract methods for the @link(TOptionParser) class to call, which are
     overridden by descendants.
@@ -114,9 +114,11 @@ type
 {$ENDIF}
   end;
 
-  { @abstract(simple boolean option)
-    turned off when not specified,
-    turned on when specified. Cannot handle @--option=false et al. }
+  { @abstract(Boolean option, "on" if was specified.)
+
+    Note: This cannot handle something like @--option=false .
+    Whether the option is @link(TurnedOn) simply depends on whether it was
+    specified. }
   TBoolOption = class(TOption)
   protected
     function ParseOption(const AWords: TStrings): boolean; override;
@@ -128,8 +130,8 @@ type
     property TurnedOn: boolean read FWasSpecified;
   end;
 
-  { @abstract(base class for all options that values)
-    base class for all options that take one or more values
+  { @abstract(Base class for all options that have values.)
+    These options that take one or more values
     of the form @--option=value or @--option value etc }
   TValueOption = class(TOption)
   protected
@@ -137,8 +139,7 @@ type
     function ParseOption(const AWords: TStrings): boolean; override;
   end;
 
-  { @abstract(Integer option)
-    accepts only integers }
+  { @abstract(Option that accepts additional Integer as a value.) }
   TIntegerOption = class(TValueOption)
   protected
     FValue: Integer;
@@ -151,8 +152,7 @@ type
     property Value: Integer read FValue write FValue;
   end;
 
-  { @abstract(String option)
-    accepts a single string }
+  { @abstract(Option that accepts additional string as a value.) }
   TStringOption = class(TValueOption)
   protected
     FValue: String;
