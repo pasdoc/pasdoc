@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved, see https://github.com/pasdoc/pasdoc/discussions/230 (Michalis)
 * Implemented `--show-source-position`, `--source-url-pattern`, `--source-root` (https://pasdoc.github.io/SourcePosition) (Michalis)
 * Added release (and CI build) on _macOS/Aarch64_ (Michalis)
 * Support for `objcclass` and `objcclass external`  (Michalis)
