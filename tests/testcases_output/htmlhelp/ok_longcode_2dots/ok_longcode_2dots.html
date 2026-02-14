@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_longcode_2dots</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="unit">Unit ok_longcode_2dots</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+Testcase for <a href="https://github.com/pasdoc/pasdoc/issues/228">https://github.com/pasdoc/pasdoc/issues/228</a> . </p>
+
+<pre class="longcode">
+<span class="pascal_keyword">procedure</span> TMyScanner.GetSymbol;
+<span class="pascal_keyword">begin</span>
+  <span class="pascal_keyword">case</span> Self.Character <span class="pascal_keyword">of</span>
+  <span class="pascal_string">'+'</span>, <span class="pascal_string">'-'</span>, <span class="pascal_string">'*'</span>, <span class="pascal_string">'/'</span>:
+    <span class="pascal_keyword">begin</span>
+      fSymbolId := tokOperator;
+      fSymbol := Self.Character;
+      Self.NextChar
+    <span class="pascal_keyword">end</span>;
+  <span class="pascal_string">'0'</span>..<span class="pascal_string">'9'</span>:
+    <span class="pascal_keyword">begin</span>
+      fSymbolId := tokNumber;
+      fSymbol := Self.GetNumber
+    <span class="pascal_keyword">end</span>;
+  <span class="pascal_string">'a'</span>..<span class="pascal_string">'z'</span>, <span class="pascal_string">'A'</span>..<span class="pascal_string">'Z'</span>:
+    <span class="pascal_keyword">begin</span>
+      fSymbolId := tokIdentifier;
+      Self.GetIdentifierOrKeyword
+    <span class="pascal_keyword">end</span>;
+  <span class="pascal_keyword">else</span>
+    Self.RaiseExceptionFmt (
+      <span class="pascal_string">'Illegal character &quot;%s&quot; ($%.2x)'</span>,
+      [Self.Character, Ord(Self.Character)]
+    );
+  <span class="pascal_keyword">end</span>
+<span class="pascal_keyword">end</span>;</pre>
+
+<p></p>
+<span id="PasDoc-Uses"></span></body></html>

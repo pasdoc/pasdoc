@@ -1,0 +1,91 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}longcode{\_}2dots}
+\section{Description}
+Testcase for https://github.com/pasdoc/pasdoc/issues/228 . \texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~TMyScanner.GetSymbol;\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~}\textbf{case}\texttt{~Self.Character~}\textbf{of}\texttt{\\\nopagebreak[3]
+~~'+',~'-',~'*',~'/':\\\nopagebreak[3]
+~~~~}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~~~~~fSymbolId~:=~tokOperator;\\\nopagebreak[3]
+~~~~~~fSymbol~:=~Self.Character;\\\nopagebreak[3]
+~~~~~~Self.NextChar\\\nopagebreak[3]
+~~~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+~~'0'..'9':\\\nopagebreak[3]
+~~~~}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~~~~~fSymbolId~:=~tokNumber;\\\nopagebreak[3]
+~~~~~~fSymbol~:=~Self.GetNumber\\\nopagebreak[3]
+~~~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+~~'a'..'z',~'A'..'Z':\\\nopagebreak[3]
+~~~~}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~~~~~fSymbolId~:=~tokIdentifier;\\\nopagebreak[3]
+~~~~~~Self.GetIdentifierOrKeyword\\\nopagebreak[3]
+~~~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+~~}\textbf{else}\texttt{\\\nopagebreak[3]
+~~~~Self.RaiseExceptionFmt~(\\\nopagebreak[3]
+~~~~~~'Illegal~character~"{\%}s"~({\$}{\%}.2x)',\\\nopagebreak[3]
+~~~~~~[Self.Character,~Ord(Self.Character)]\\\nopagebreak[3]
+~~~~);\\\nopagebreak[3]
+~~}\textbf{end}\texttt{\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+\end{document}
