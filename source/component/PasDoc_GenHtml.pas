@@ -766,20 +766,15 @@ begin
 
   WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
-    begin
-      { Most classes don't contain nested types so exclude this stuff
-        if not available in order to keep it simple. }
-      if (not (Section in SectionsAvailable)) and
-        (Section in [dsEnclosingClass..dsNestedTypes]) then
-        Continue;
+  begin
+    { Don't show sections that don't exist in content. }
+    if not (Section in SectionsAvailable) then
+      Continue;
 
-      WriteDirect('<div class="one_section">');
-      if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
-      else
-        WriteConverted(SectionHeads[Section]);
-      WriteDirect('</div>');
-    end;
+    WriteDirect('<div class="one_section">');
+    WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section');
+    WriteDirect('</div>');
+  end;
   WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
@@ -2078,14 +2073,15 @@ begin
 
   WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
-    begin
-      WriteDirect('<div class="one_section">');
-      if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
-      else
-        WriteConverted(SectionHeads[Section]);
-      WriteDirect('</div>');
-    end;
+  begin
+    { Don't show sections that don't exist in content. }
+    if not (Section in SectionsAvailable) then
+      Continue;
+
+    WriteDirect('<div class="one_section">');
+    WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section');
+    WriteDirect('</div>');
+  end;
   WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
