@@ -39,7 +39,7 @@
     <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
 "/>
     <Version Minor="16"/>
-    <Files Count="29">
+    <Files Count="30">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
         <AddToUsesPkgSection Value="False"/>
@@ -161,6 +161,10 @@
         <Filename Value="../../component/PasDoc_GenPHP.pas"/>
         <UnitName Value="PasDoc_GenPHP"/>
       </Item29>
+      <Item30>
+        <Filename Value="../../component/PasDoc_GenMarkdown.pas"/>
+        <UnitName Value="PasDoc_GenMarkdown"/>
+      </Item30>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

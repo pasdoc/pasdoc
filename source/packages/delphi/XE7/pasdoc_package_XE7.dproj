@@ -177,6 +177,7 @@
         <DCCReference Include="..\..\..\..\component\PasDoc_Gen.pas"/>
         <DCCReference Include="..\..\..\..\component\PasDoc_GenHtml.pas"/>
         <DCCReference Include="..\..\..\..\component\PasDoc_GenLatex.pas"/>
+        <DCCReference Include="..\..\..\..\component\PasDoc_GenMarkdown.pas"/>
         <DCCReference Include="..\..\..\..\component\PasDoc_HierarchyTree.pas"/>
         <DCCReference Include="..\..\..\..\component\PasDoc_Items.pas"/>
         <DCCReference Include="..\..\..\..\component\PasDoc_Languages.pas"/>

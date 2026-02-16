@@ -917,7 +917,7 @@ type
       and item's DetailedDescription, AbstractDescription,
       AbstractDescriptionWasAutomatic (and many others, set by @@-tags
       handlers) properties are calculated. }
-    procedure ExpandDescriptions;
+    procedure ExpandDescriptions; virtual;
 
     { Abstract function that provides file extension for documentation format.
       Must be overwritten by descendants. }

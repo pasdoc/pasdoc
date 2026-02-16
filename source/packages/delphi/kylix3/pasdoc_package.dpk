@@ -35,6 +35,7 @@ contains
   PasDoc_Gen in '../../../../component/PasDoc_Gen.pas',
   PasDoc_GenHtml in '../../../../component/PasDoc_GenHtml.pas',
   PasDoc_GenLatex in '../../../../component/PasDoc_GenLatex.pas',
+  PasDoc_GenMarkdown in '..\..\..\..\component\PasDoc_GenMarkdown.pas',
   PasDoc_HierarchyTree in '../../../../component/PasDoc_HierarchyTree.pas',
   PasDoc_Items in '../../../../component/PasDoc_Items.pas',
   PasDoc_Languages in '../../../../component/PasDoc_Languages.pas',
