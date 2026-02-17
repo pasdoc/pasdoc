@@ -2700,7 +2700,8 @@ begin
   begin
     { Mobile navbar with toggle button for offcanvas sidebar }
     Result := Result +
-      '<nav class="navbar navbar-dark bg-dark d-md-none sticky-top">' + LineEnding +
+      // to make navbar in dark mode: "navbar-dark bg-dark" instead of "bg-body-tertiary"
+      '<nav class="navbar d-md-none sticky-top bg-body-tertiary">' + LineEnding +
       '  <div class="container-fluid">' + LineEnding +
       '    <a class="navbar-brand" href="' + EscapeURL('index.html') + '">' + TitleText + '</a>' + LineEnding +
       '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">' + LineEnding +
