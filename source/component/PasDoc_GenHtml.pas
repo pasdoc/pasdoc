@@ -2713,7 +2713,24 @@ begin
     { Offcanvas sidebar: fixed on md+ screens, slides out on mobile.
       "navigation" class is for backward compat with old/custom CSS files. }
     Result := Result +
-      '<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav">' + LineEnding +
+      { data-bs-scroll="true" is necessary to avoid <button class="navbar-toggler"...>
+        from moving down when the offcanvas opens.
+
+        Explanation (Claude -- don't trust blindly, though experiments confirm):
+        When Bootstrap's offcanvas opens (on mobile < 768px),
+        it sets overflow: hidden on the <body> to prevent background scrolling.
+        This breaks position: sticky on the navbar (sticky needs a scrollable ancestor),
+        and Bootstrap also adds padding-right to compensate for the disappearing
+        scrollbar, which can cause the navbar content to reflow and the button
+        to shift down.
+
+        Adding data-bs-scroll="true" to the offcanvas div tells Bootstrap
+        to leave body scrolling alone when the offcanvas is
+        open. This prevents the overflow: hidden and padding-right changes
+        that cause the layout shift. The background remains
+        scrollable while the sidebar is open, which is actually reasonable
+        UX for a sidebar navigation. }
+      '<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav" data-bs-scroll="true">' + LineEnding +
       '  <div class="offcanvas-header">' + LineEnding +
       '    <h5 class="offcanvas-title">' + TitleText + '</h5>' + LineEnding +
       '    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>' + LineEnding +
