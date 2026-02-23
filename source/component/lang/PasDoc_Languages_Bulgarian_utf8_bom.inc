@@ -60,6 +60,7 @@
     {trPlatformSpecific} 'Този идентификатор е платформено зависим',
     {trLibrarySpecific} 'Този идентификатор зависи от специфични библиотеки',
     {trExperimental} 'Този идентификатор е експериментален. Използвайте го внимателно',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
 (*
     {trUnimplemented} 'Тази процедура/функция все още не е реализирана',
 *)

@@ -184,6 +184,7 @@ type
     trPlatformSpecific,
     trLibrarySpecific,
     trExperimental,
+    trUnimplemented,
 
   //headings
     trOverview,

@@ -60,6 +60,7 @@
     {trPlatformSpecific} 'ten identyfikator jest zależny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zależny od biblioteki',
     {trExperimental} 'ten symbol ma charakter eksperymentalny', //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',

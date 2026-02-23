@@ -342,7 +342,7 @@ type
     function Signature: string; virtual;
   end;
 
-  THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental);
+  THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental, hdUnimplemented);
   THintDirectives = set of THintDirective;
 
   { This is a @link(TBaseItem) descendant that is always declared inside
@@ -481,7 +481,7 @@ type
     property Visibility: TVisibility read FVisibility write FVisibility;
 
     { Hint directives specify is this item deprecated, platform-specific,
-      library-specific, or experimental. }
+      library-specific, experimental, or unimplemented. }
     property HintDirectives: THintDirectives read FHintDirectives write FHintDirectives;
 
     { Deprecation note, specified as a string after "deprecated" directive.

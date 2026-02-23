@@ -60,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'this symbol is specific to some platform',
     {trLibrarySpecific} 'this symbol is specific to some library',
     {trExperimental} 'this symbol is experimental',
+    {trUnimplemented} 'this symbol is unimplemented',
   //headings
     {trOverview} 'Overview',
     {trIntroduction} 'Introduction',

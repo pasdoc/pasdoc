@@ -60,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'ten identyfikator jest zależny od platformy',
     {trLibrarySpecific} 'ten identyfikator jest zależny od biblioteki',
     {trExperimental} 'ten symbol jest eksperymentalny', //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Przegląd',
     {trIntroduction} 'Wstęp',

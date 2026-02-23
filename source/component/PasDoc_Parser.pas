@@ -1143,7 +1143,8 @@ begin
                     SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
                     SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
                     SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
-                    SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL:
+                    SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL,
+                    SD_UNIMPLEMENTED:
                       begin
                         M.Directives := M.Directives + [t.Info.StandardDirective];
                         Scanner.UnGetToken(t);
@@ -1173,6 +1174,13 @@ begin
             begin
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               M.HintDirectives := M.HintDirectives + [hdExperimental];
+              FreeAndNil(t);
+              t := GetNextToken;
+            end;
+          SD_UNIMPLEMENTED:
+            begin
+              M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
+              M.HintDirectives := M.HintDirectives + [hdUnimplemented];
               FreeAndNil(t);
               t := GetNextToken;
             end;
@@ -1299,6 +1307,8 @@ var
               Constant.HintDirectives := Constant.HintDirectives + [hdPlatform];
             SD_EXPERIMENTAL:
               Constant.HintDirectives := Constant.HintDirectives + [hdExperimental];
+            SD_UNIMPLEMENTED:
+              Constant.HintDirectives := Constant.HintDirectives + [hdUnimplemented];
             SD_DEPRECATED:
               begin
                 Constant.HintDirectives := Constant.HintDirectives + [hdDeprecated];
@@ -2990,6 +3000,9 @@ begin
             SD_EXPERIMENTAL:
               if Assigned(Item) then
                 Item.HintDirectives := Item.HintDirectives + [hdExperimental];
+            SD_UNIMPLEMENTED:
+              if Assigned(Item) then
+                Item.HintDirectives := Item.HintDirectives + [hdUnimplemented];
             SD_DEPRECATED:
               begin
                 if Assigned(Item) then
@@ -3361,6 +3374,9 @@ begin
     else
     if T.IsStandardDirective(SD_EXPERIMENTAL) then
       Item.HintDirectives := Item.HintDirectives + [hdExperimental]
+    else
+    if T.IsStandardDirective(SD_UNIMPLEMENTED) then
+      Item.HintDirectives := Item.HintDirectives + [hdUnimplemented]
     else
     if T.IsStandardDirective(SD_DEPRECATED) then
     begin

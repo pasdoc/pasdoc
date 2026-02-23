@@ -60,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'Este s�mbolo es espec�fico para alguna plataforma',
     {trLibrarySpecific} 'Este s�mbolo es espec�fico para alguna biblioteca', //
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducci�n',

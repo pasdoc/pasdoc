@@ -73,6 +73,7 @@ RTransTable = (
     {trPlatformSpecific} 'tato konstrukce je z�visl� na platform�',
     {trLibrarySpecific} 'tato konstrukce je z�visl� na konkr�tn� knihovn�',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'P�ehled',
     {trIntroduction} '�vod',

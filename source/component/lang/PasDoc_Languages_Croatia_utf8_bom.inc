@@ -60,6 +60,7 @@
     {trPlatformSpecific} 'Ovaj simbol je specifičan za neke platforme',
     {trLibrarySpecific} 'Ovaj simbol je specifičan za neke biblioteke',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Pregled',
     {trIntroduction} strToDo, //'Introduction',

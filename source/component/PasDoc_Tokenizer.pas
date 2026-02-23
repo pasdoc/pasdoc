@@ -193,7 +193,8 @@ type
     SD_SAFECALL,
     SD_PLATFORM,
     SD_VARARGS,
-    SD_FINAL
+    SD_FINAL,
+    SD_UNIMPLEMENTED
   );
 
   TStandardDirectives = set of TStandardDirective;
@@ -456,7 +457,8 @@ const
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REFERENCE', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'SPECIALIZE', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS', 'FINAL');
+    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS', 'FINAL',
+    'UNIMPLEMENTED');
 
 { Checks is Name (case ignored) some Pascal keyword.
   Returns SD_INVALIDSTANDARDDIRECTIVE if not. }

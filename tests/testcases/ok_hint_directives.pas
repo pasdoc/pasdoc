@@ -72,6 +72,10 @@ procedure TestProcPlatform; platform;
 { }
 procedure TestProcDeprecated; deprecated;
 
+procedure TestProcExperimental; experimental;
+
+procedure TestProcUnimplemented; unimplemented;
+
 { }
 procedure TestProcCombined(SomeParams: Integer);
   {library } deprecated platform;
@@ -98,6 +102,9 @@ type
 
   { }
   TTestClassDeprecated = class
+  private
+    Field: Integer;
+  public
     TestFieldPlatform: Integer platform;
     TestFieldLibrary: Integer library;
     TestFieldDeprecated: Integer deprecated;
@@ -116,8 +123,8 @@ type
       Hint directives for properties are allowed Ok.
       I don't know if this is Delphi-compatible or FPC extension,
       anyway PasDoc supports it too. }
-    property TestPropertyCombined: Integer; library deprecated platform;
-    property TestPropertyCombined2: Integer; library; deprecated; platform;
+    property TestPropertyCombined: Integer read Field; library deprecated platform;
+    property TestPropertyCombined2: Integer read Field; library; deprecated; platform;
 
     { }
     procedure TestMethodLibrary; library;
@@ -153,6 +160,14 @@ begin
 end;
 
 procedure TestProcDeprecated;
+begin
+end;
+
+procedure TestProcExperimental;
+begin
+end;
+
+procedure TestProcUnimplemented;
 begin
 end;
 

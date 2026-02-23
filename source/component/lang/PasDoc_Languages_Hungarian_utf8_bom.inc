@@ -60,6 +60,7 @@
     {trPlatformSpecific} 'ez az azonosító szükséges némely platform számára',
     {trLibrarySpecific} 'ez az azonosító szükséges némely library számára',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezető',

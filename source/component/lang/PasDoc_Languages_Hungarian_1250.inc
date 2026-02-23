@@ -60,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'ez az azonos�t� sz�ks�ges n�mely platform sz�m�ra',
     {trLibrarySpecific} 'ez az azonos�t� sz�ks�ges n�mely library sz�m�ra',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} '�ttekint�s',
     {trIntroduction} 'Bevezet�',

@@ -429,8 +429,16 @@
 <param name="Local" value="ok_hint_directives.html#TestProcDeprecated">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TestProcExperimental">
+<param name="Local" value="ok_hint_directives.html#TestProcExperimental">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TestProcPlatform">
 <param name="Local" value="ok_hint_directives.html#TestProcPlatform">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TestProcUnimplemented">
+<param name="Local" value="ok_hint_directives.html#TestProcUnimplemented">
 </object>
 </ul>
 <li><object type="text/sitemap">

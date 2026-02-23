@@ -62,6 +62,7 @@ RTransTable = (
     {trPlatformSpecific} '这个符号仅用于特定的平台',
     {trLibrarySpecific} '这个符号仅用于特定的库',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} '综述',
     {trIntroduction} '前言',

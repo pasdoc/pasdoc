@@ -60,6 +60,7 @@
     {trPlatformSpecific} 'aquest símbol és específic per alguna plataforma', //'this symbol is specific to some platform',
     {trLibrarySpecific} 'aquest símbol és específic per alguna biblioteca', //'this symbol is specific to some library',
     {trExperimental} 'aquest símbol és experimental', //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Resum',
     {trIntroduction} 'Introdicció', //'Introduction',

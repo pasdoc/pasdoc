@@ -1441,6 +1441,8 @@ begin
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
+  if hdUnimplemented in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trUnimplemented]);
 
   if AItem.AbstractDescription <> '' then
   begin
