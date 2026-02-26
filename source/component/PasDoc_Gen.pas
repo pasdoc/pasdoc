@@ -1219,8 +1219,8 @@ begin
   begin
     for i := 0 to AdditionalFiles.Count - 1 do
     begin
-      AdditionalFiles.Get(i).FullLink := CreateLink(AdditionalFiles.Get(i));
-      AdditionalFiles.Get(i).OutputFileName := AdditionalFiles.Get(i).FullLink;
+      AdditionalFiles[i].FullLink := CreateLink(AdditionalFiles[i]);
+      AdditionalFiles[i].OutputFileName := AdditionalFiles[i].FullLink;
     end;
   end;
 
@@ -2231,7 +2231,7 @@ procedure TDocGenerator.ExpandDescriptions;
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        ExpandExternalItem(PreExpand, AdditionalFiles.Get(i));
+        ExpandExternalItem(PreExpand, AdditionalFiles[i]);
       end;
     end;
 
@@ -2418,12 +2418,12 @@ begin
         begin
           for i := 0 to AdditionalFiles.Count - 1 do
           begin
-            if  SameText(AdditionalFiles.Get(i).Name, NewNameParts[0]) then
+            if  SameText(AdditionalFiles[i].Name, NewNameParts[0]) then
             begin
-              Result := AdditionalFiles.Get(i);
+              Result := AdditionalFiles[i];
               Exit;
             end;
-            Result := AdditionalFiles.Get(i).FindItem(NewNameParts[0]);
+            Result := AdditionalFiles[i].FindItem(NewNameParts[0]);
             if Result <> nil then Exit;
           end;
         end;
@@ -3253,8 +3253,8 @@ begin
       begin
         for i := 0 to AdditionalFiles.Count - 1 do
         begin
-          WordsToIgnore.Add(AdditionalFiles.Get(i).Name);
-          AddSubItems(AdditionalFiles.Get(i).Anchors);
+          WordsToIgnore.Add(AdditionalFiles[i].Name);
+          AddSubItems(AdditionalFiles[i].Anchors);
         end;
       end;
       AddSubItems(Units);
@@ -4029,7 +4029,7 @@ var
 begin
   for i := 0 to AdditionalFiles.Count - 1 do
   begin
-    WriteExternal(AdditionalFiles.Get(i), trAdditionalFile);
+    WriteExternal(AdditionalFiles[i], trAdditionalFile);
   end;
 end;
 

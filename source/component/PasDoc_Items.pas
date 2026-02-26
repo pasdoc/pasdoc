@@ -986,11 +986,7 @@ type
     function BasePath: string; override;
   end;
 
-  { @name extends @link(TObjectVector) to store non-nil instances of @link(TExternalItem)}
-  TExternalItemList = class(TObjectVector)
-  public
-    function Get(Index: Integer): TExternalItem;
-  end;
+  TExternalItemList = {$ifdef FPC}specialize{$endif} TObjectList<TExternalItem>;
 
   TAnchorItem = class(TBaseItem)
   private
@@ -3113,13 +3109,6 @@ end;
 function TExternalItem.BasePath: string;
 begin
   Result := ExtractFilePath(ExpandFileName(SourceFileName));
-end;
-
-{ TExternalItemList ---------------------------------------------------------- }
-
-function TExternalItemList.Get(Index: Integer): TExternalItem;
-begin
-  Result := inherited Items[Index] as TExternalItem;
 end;
 
 { global things ------------------------------------------------------------ }

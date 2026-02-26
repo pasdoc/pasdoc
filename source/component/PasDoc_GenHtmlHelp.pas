@@ -402,7 +402,7 @@ var
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        WriteLiObject(AdditionalFiles.Get(i).ShortTitle, AdditionalFiles.Get(i).FullLink);
+        WriteLiObject(AdditionalFiles[i].ShortTitle, AdditionalFiles[i].FullLink);
       end;
     end;
   end;
@@ -706,7 +706,7 @@ begin
   begin
     for i := 0 to AdditionalFiles.Count - 1 do
     begin
-      WriteDirectLine(AdditionalFiles.Get(i).FullLink);
+      WriteDirectLine(AdditionalFiles[i].FullLink);
     end;
   end;
 

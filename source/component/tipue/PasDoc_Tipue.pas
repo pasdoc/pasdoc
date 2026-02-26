@@ -246,7 +246,7 @@ procedure TipueAddFiles(Units: TPasUnits;
       begin
         for i := 0 to AdditionalFiles.Count - 1 do
         begin
-          WriteItemIndexData(AdditionalFiles.Get(i));
+          WriteItemIndexData(AdditionalFiles[i]);
         end;
       end;
       WriteUnitsIndexData(Units);

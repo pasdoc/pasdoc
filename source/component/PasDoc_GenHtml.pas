@@ -2658,13 +2658,13 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        if AdditionalFiles.Get(i).ShortTitle = '' then
+        if AdditionalFiles[i].ShortTitle = '' then
           Result := Result + LocalMakeNavLinkTr(
-            AdditionalFiles.Get(i).OutputFileName, trAdditionalFile)
+            AdditionalFiles[i].OutputFileName, trAdditionalFile)
         else
           Result := Result + LocalMakeNavLink(
-            AdditionalFiles.Get(i).OutputFileName,
-            AdditionalFiles.Get(i).ShortTitle);
+            AdditionalFiles[i].OutputFileName,
+            AdditionalFiles[i].ShortTitle);
       end;
     end;
 
