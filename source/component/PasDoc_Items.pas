@@ -490,56 +490,54 @@ type
     property DeprecatedNote: string
       read FDeprecatedNote write FDeprecatedNote;
 
-    { This recursively sorts all items inside this item,
-      and all items inside these items, etc.
-      E.g. in case of TPasUnit, this method sorts all variables,
-      consts, CIOs etc. inside (honouring SortSettings),
-      and also recursively calls Sort(SortSettings) for every CIO.
+    { Sort items inside (recursively, so it sorts within the items too).
+      E.g. in case of TPasUnit, we can sort variables,
+      constants, CIOs in the unit,
+      and then we call @code(Sort(SortSettings)) for every CIO.
 
-      Note that this does not guarantee that absolutely everything
-      inside will be really sorted. Some items may be deliberately
-      left unsorted, e.g. Members of TPasEnum are never sorted
-      (their declared order always matters,
-      so we shouldn't sort them when displaying their documentation
-      --- reader of such documentation would be seriously misleaded).
-      Sorting of other things depends on SortSettings ---
-      e.g. without ssMethods, CIOs methods will not be sorted.
+      Only the thigns listed in SortSettings will be sorted,
+      the rest will be left unsorted.
 
-      So actually this method @italic(makes sure that all things that should
-      be sorted are really sorted). }
+      Note that some things are never sorted, e.g. members of TPasEnum are never
+      sorted (since their order affects the code logic, so we should
+      not misrepresent it in the output doc). }
     procedure Sort(const SortSettings: TSortSettings); virtual;
 
-     { Full declaration of the item.
-       This is full parsed declaration of the given item.
+    { Full declaration of the item, similar to how it appears in the Pascal source code.
 
-       Note that that this is not used for some descendants.
-       Right now it's used only with
-       @unorderedList(
-         @item TPasConstant
-         @item TPasFieldVariable (includes type, default values, etc.)
-         @item TPasType
-         @item TPasRoutine (includes parameter list, procedural directives, etc.)
-         @item TPasProperty (includes read/write and storage specifiers, etc.)
-         @item(TPasEnum
+      Note that that this is not used for some descendants.
+      Right now it's used only with
 
-           But in this special case, '...' is used instead of listing individual
-           members, e.g. 'TEnumName = (...)'. You can get list of Members using
-           TPasEnum.Members. Eventual specifics of each member should be also
-           specified somewhere inside Members items, e.g.
-             @longcode# TMyEnum = (meOne, meTwo = 3); #
-           and
-             @longcode# TMyEnum = (meOne, meTwo); #
-           will both result in TPasEnum with equal FullDeclaration
-           (just @code('TMyEnum = (...)')) but this @code('= 3') should be
-           marked somewhere inside Members[1] properties.)
+      @unorderedList(
+        @item TPasConstant
+        @item TPasFieldVariable (includes type, default values, etc.)
+        @item TPasType
+        @item TPasRoutine (includes parameter list, procedural directives, etc.)
+        @item TPasProperty (includes read/write and storage specifiers, etc.)
+        @item(TPasEnum
 
-         @item TPasItem when it's a CIO's field.
-       )
+          But in this special case, '...' is used instead of listing individual
+          members, e.g. 'TEnumName = (...)'. You can get list of Members using
+          TPasEnum.Members. Eventual specifics of each member should be also
+          specified somewhere inside Members items, e.g.
 
-       The intention is that in the future all TPasItem descendants
-       will always have approprtate FullDeclaration set.
-       It all requires adjusting appropriate places in PasDoc_Parser to
-       generate appropriate FullDeclaration. }
+          @longcode# TMyEnum = (meOne, meTwo = 3); #
+
+          and
+
+          @longcode# TMyEnum = (meOne, meTwo); #
+
+          will both result in TPasEnum with equal FullDeclaration
+          (just @code('TMyEnum = (...)')) but this @code('= 3') should be
+          marked somewhere inside Members[1] properties.)
+
+        @item TPasItem when it's a CIO's field.
+      )
+
+      The intention is that in the future all TPasItem descendants
+      will always have appropriate FullDeclaration set.
+      It all requires adjusting appropriate places in PasDoc_Parser to
+      generate appropriate FullDeclaration. }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
 
     { Items here are collected from @@seealso tags.
@@ -615,10 +613,10 @@ type
 
     Precise definition of "constant" for pasdoc purposes is
     "a name associated with a value".
-    Optionally, constant type may also be specified in declararion.
+    Optionally, constant type may also be specified in declaration.
     Well, Pascal constant always has some type, but pasdoc is too weak
-    to determine the implicit type of a constant, i.e. to unserstand that
-    constand @code(const A = 1) is of type Integer. }
+    to determine the implicit type of a constant, i.e. to understand that
+    constant @code(const A = 1) is of type Integer. }
   TPasConstant = class(TPasItem)
   end;
 
