@@ -1712,17 +1712,14 @@ const
   ( 'itemize', 'enumerate', 'description' );
 var
   ListItem: TListItemData;
-  i: Integer;
 begin
   { LaTeX doesn't allow empty lists }
   if ListData.Count <> 0 then
   begin
     Result := Format('\begin{%s}',
       [ListEnvironment[ListData.ListType]]) + LineEnding;
-    for i := 0 to ListData.Count - 1 do
+    for ListItem in ListData do
     begin
-      ListItem := ListData.Items[i] as TListItemData;
-
       if ListData.ListType = ltDefinition then
       begin
         Result := Result +

@@ -2468,7 +2468,6 @@ const
   ListClass: array[TListItemSpacing]of string =
   ( 'compact_spacing', 'paragraph_spacing' );
 var
-  i: Integer;
   ListItem: TListItemData;
   Attributes: string;
 begin
@@ -2484,10 +2483,8 @@ begin
     Result := Result + Format('<%s class="%s">',
       [ListTag[ListData.ListType], ListClass[ListData.ItemSpacing]]) + LineEnding;
 
-    for i := 0 to ListData.Count - 1 do
+    for ListItem in ListData do
     begin
-      ListItem := ListData.Items[i] as TListItemData;
-
       if ListData.ListType = ltDefinition then
       begin
         { Note: We're not writing <p> .. </p> inside <dt>, because

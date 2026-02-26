@@ -47,13 +47,13 @@ unit PasDoc_Gen;
 interface
 
 uses
+  Classes, Contnrs, Generics.Collections,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
-  Classes, Contnrs,
   PasDoc_TagManager,
   PasDoc_Aspell,
   PasDoc_StreamUtils,
@@ -173,9 +173,8 @@ type
   end;
 
   { Collected information about @@xxxList content. Passed to
-    @link(TDocGenerator.FormatList). Every item of this list
-    should be non-nil instance of @link(TListItemData). }
-  TListData = class(TObjectVector)
+    @link(TDocGenerator.FormatList). }
+  TListData = class({$ifdef FPC}specialize{$endif} TObjectList<TListItemData>)
   private
     { This is used inside list tags' handlers
       to calculate TListItemData.Index fields. }
@@ -192,7 +191,7 @@ type
   public
     property ItemSpacing: TListItemSpacing read FItemSpacing;
     property ListType: TListType read FListType;
-    constructor Create(const AOwnsObject: boolean); override;
+    constructor Create(const AOwnsObject: boolean);
   end;
 
   { Collected information about @@row (or @@rowHead). }
@@ -1084,7 +1083,7 @@ end;
 
 constructor TListData.Create(const AOwnsObject: boolean);
 begin
-  inherited;
+  inherited Create(AOwnsObject);
   FItemSpacing := lisParagraph;
   NextItemIndex := 1;
 end;
