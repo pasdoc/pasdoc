@@ -1340,6 +1340,10 @@ begin
     FPC versions. }
 
   Result := CompareText(P1.Signature, P2.Signature);
+
+  // debug: ok, this warning doesn't occur in our tests.
+  // if (Result = 0) and (P1 <> P2) then
+  //   Writeln('Warning: ComparePasMethods: two different methods are undefined order in relation to each other: ' + P1.FullDeclaration + ' and ' + P2.FullDeclaration);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
