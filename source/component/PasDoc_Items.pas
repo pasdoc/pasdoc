@@ -42,12 +42,11 @@ unit PasDoc_Items;
 interface
 
 uses
-  SysUtils,
+  SysUtils, Classes, Contnrs, Generics.Collections, Generics.Defaults,
   PasDoc_Types,
   PasDoc_StringVector,
   PasDoc_ObjectVector,
   PasDoc_Hashes,
-  Classes, Contnrs,
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
@@ -1111,14 +1110,14 @@ type
   end;
 
   { Container class to store a list of @link(TBaseItem)s. }
-  TBaseItems = class(TObjectVector)
+  TBaseItems = class({$ifdef FPC}specialize{$endif} TObjectList<TBaseItem>)
   private
     FHash: TObjectHash;
   protected
     procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
   public
-    constructor Create(const AOwnsObject: Boolean); override;
+    constructor Create(const AOwnsObject: Boolean); virtual; reintroduce;
     destructor Destroy; override;
 
     { Find a given item name on a list.
@@ -1140,7 +1139,7 @@ type
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem); virtual;
+    procedure Add(const AObject: TBaseItem); virtual; reintroduce;
 
     { This is a shortcut for doing @link(Clear) and then
       @link(Add Add(AObject)). Useful when you want the list
@@ -1148,7 +1147,7 @@ type
     procedure ClearAndAdd(const AObject: TBaseItem);
 
     procedure Delete(const AIndex: Integer);
-    procedure Clear; override;
+    procedure Clear; virtual; reintroduce;
   end;
 
   { Container class to store a list of @link(TPasItem)s. }
@@ -1276,12 +1275,23 @@ function VisibilitiesToStr(const Visibilities: TVisibilities): string;
 
 function VisToStr(const Vis: TVisibility): string;
 
+{ Is List nil or empty.
+  Cross-unit overload with PasDoc_ObjectVector.ObjectVectorIsNilOrEmpty. }
+function ObjectVectorIsNilOrEmpty(const List: TBaseItems): boolean; overload;
+
 implementation
 
 uses StrUtils,
   PasDoc_Utils;
 
-function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
+type
+  TBaseItemComparer = {$ifdef FPC}specialize{$endif} TComparer<TBaseItem>;
+
+{ Compare 2 TPasItem instances.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasItemsByName(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
 var
   P1, P2: TPasItem;
 begin
@@ -1309,7 +1319,11 @@ begin
       P2.DetailedDescription);
 end;
 
-function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
+{ Compare 2 TPasRoutine instances.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasMethods(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
 var
   P1: TPasRoutine;
   P2: TPasRoutine;
@@ -2097,7 +2111,7 @@ end;
 
 constructor TBaseItems.Create(const AOwnsObject: Boolean);
 begin
-  inherited;
+  inherited Create(AOwnsObject);
   FHash := TObjectHash.Create;
 end;
 
@@ -2242,7 +2256,7 @@ end;
 
 procedure TPasItems.SortShallow;
 begin
-  Sort( {$IFDEF FPC}@{$ENDIF} ComparePasItemsByName);
+  Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasItemsByName));
 end;
 
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -2305,7 +2319,7 @@ begin
   Signature := AItem.Signature;
   FShortNameHash.SetString(LowerCase(AItem.Name), LowerCase(Signature));
 
-  TObjectVector(Self).Add(AItem);
+  inherited Add(AItem);
   FHash.Items[LowerCase(Signature)] := AItem;
 end;
 
@@ -2486,7 +2500,7 @@ begin
   end;
 
   if (Methods <> nil) and (ssMethods in SortSettings) then
-    Methods.Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
+    Methods.Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasMethods));
 
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
@@ -3163,6 +3177,11 @@ begin
       if Result <> '' then Result := Result + ',';
       Result := Result + VisToStr(Vis);
     end;
+end;
+
+function ObjectVectorIsNilOrEmpty(const List: TBaseItems): boolean;
+begin
+  Result := (List = nil) or (List.Count = 0);
 end;
 
 initialization

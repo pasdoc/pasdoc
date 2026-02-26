@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -23,16 +23,15 @@
 {
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
-  a simple object vector
+  List of objects, trivial extension of standard non-generic TObjectList.
 }
 unit PasDoc_ObjectVector;
 
 {$I pasdoc_defines.inc}
 
 interface
-uses
-  Contnrs,
-  Classes;
+
+uses Contnrs, Classes;
 
 type
   TObjectVector = class(TObjectList)
@@ -46,7 +45,9 @@ type
 {$ENDIF}
   end;
 
-function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean;
+
+{ Is AOV nil or empty. }
+function ObjectVectorIsNilOrEmpty(const AOV: TObjectVector): boolean; overload;
 
 implementation
 

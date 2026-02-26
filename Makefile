@@ -106,9 +106,23 @@ FPC_DEFAULT := fpc
 FPC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-Fu$(units))
 FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 
+# Using below -vm5071 to avoid this:
+#
+#   generics.collections.pas(144,52) Note: Private type "TCustomPointersEnumerator$2<PASDOC_ITEMS.TBaseItem,PASDOC_ITEMS.TCustomList$1$crc30104935.PT>.T" never used
+#
+# Submitted as https://gitlab.com/freepascal.org/fpc/source/-/issues/40222 .
+# Solved now in FPC 3.3.1, so this is only needed with FPC 3.2.x .
+# Note that we cannot disable it using {$warn 5071 off} from pasdoc_defines.inc,
+# since it's a note not a warning.
+#
+# Using below -vm6058 to avoid this:
+#
+#   generics.collections.pas(1186,20) Note: Call to subroutine "function TEnumerable<PasDoc_Items.TBaseItem>.GetEnumerator:TEnumerator$1<PASDOC_ITEMS.TBaseItem>;" marked as inline is not inlined
+
 FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
 	$(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS) \
-	-T$(FPC_OS) -P$(FPC_CPU)
+	-T$(FPC_OS) -P$(FPC_CPU) \
+	-vm5071 -vm6058
 
 FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
 ifdef CHECK_MEM_LEAK
