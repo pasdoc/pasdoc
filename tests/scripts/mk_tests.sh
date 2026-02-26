@@ -297,6 +297,12 @@ all_tests_for_current_format ()
 # Assume pasdoc is on $PATH, if PASDOC_BIN not set.
 PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
 
+# clear error when no format specified
+if [[ "$#" -eq 0 ]]; then
+  echo 'No output format specified, exiting.'
+  exit 1
+fi
+
 for FORMAT; do
   all_tests_for_current_format
 done
