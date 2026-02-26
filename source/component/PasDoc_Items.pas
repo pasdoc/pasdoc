@@ -74,7 +74,7 @@ type
     { implicit visibility, marks the implicit members if user
       used @--implicit-visibility=implicit command-line option. }
     viImplicit
-    );
+  );
 
   TVisibilities = set of TVisibility;
 
@@ -1316,25 +1316,30 @@ var
 begin
   P1 := TPasRoutine(PItem1);
   P2 := TPasRoutine(PItem2);
-  { compare 'method type', order is constructor > destructor > visibility > function, procedure }
-  if P1.What = P2.What then begin
-    { if 'method type' is equal, compare names }
-    if P1.Visibility = P2.Visibility then begin
-      Result := CompareText(P1.Name, P2.Name)
-    end else begin
-      if P1.Visibility < P2.Visibility then begin
-        Result := -1
-      end else begin
-        Result := 1;
-      end;
-    end;
-  end else begin
-    if P1.What < P2.What then begin
-      Result := -1
-    end else begin
-      Result := 1;
-    end;
-  end;
+
+  // first compare by method type (so that constructors are before destructors, and so on)
+  Result := Ord(P1.What) - Ord(P2.What);
+  if Result <> 0 then Exit;
+
+  // then compare by visibility (so that public methods are before private, and so on)
+  Result := Ord(P1.Visibility) - Ord(P2.Visibility);
+  if Result <> 0 then Exit;
+
+  // then compare by name
+  Result := CompareText(P1.Name, P2.Name);
+  if Result <> 0 then Exit;
+
+  { If still equal, compare the signature, i.e. overloaded routines parameters.
+
+    Note: We try hard to always have some non-zero result for different items,
+    since otherwise the resulting order is undefined, as TList.Sort doesn't
+    guarantee stability, and in fact the results differ between
+    FPC 3.2.2 and FPC 3.3.1. So if some order is undefined, we may get
+    different output from FPC 3.2.2 vs FPC 3.3.1, making also our "make tests"
+    (comparing generated output with expected output) fail when switching
+    FPC versions. }
+
+  Result := CompareText(P1.Signature, P2.Signature);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -2201,6 +2206,7 @@ begin
         Inc(i);
       CIO_OBJECT, CIO_PACKEDOBJECT:
         Inc(o);
+      else ;
     end;
 end;
 
