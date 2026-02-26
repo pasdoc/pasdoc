@@ -28,8 +28,9 @@ unit PasDoc_Aspell;
 interface
 
 uses
-  SysUtils, Classes, Contnrs,
-  PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
+  SysUtils, Classes, Contnrs, Generics.Collections,
+  PasDoc_ProcessLineTalk,
+  PasDoc_Types;
 
 type
   { Single misspelling found by @link(TAspellProcess.CheckString).
@@ -45,6 +46,8 @@ type
       or empty string if Aspell offered none (the '#' response). }
     Suggestions: string;
   end;
+
+  TSpellingErrorList = {$ifdef FPC}specialize{$endif} TObjectList<TSpellingError>;
 
   { This is a class to interface with aspell through pipe.
     It uses underlying @link(TProcessLineTalk) to execute and
@@ -86,7 +89,7 @@ type
       Will create an array of TSpellingError objects,
       one entry for each misspelled word.
       Offsets of TSpellingErrors will be relative to AString. }
-    procedure CheckString(const AString: string; const AErrors: TObjectVector);
+    procedure CheckString(const AString: string; const AErrors: TSpellingErrorList);
 
     { Callback for diagnostic messages. }
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
@@ -162,7 +165,7 @@ begin
 end;
 
 procedure TAspellProcess.CheckString(const AString: string;
-  const AErrors: TObjectVector);
+  const AErrors: TSpellingErrorList);
 var
   s: string;
   p, p2: Integer;

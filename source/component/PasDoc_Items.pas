@@ -45,7 +45,6 @@ uses
   SysUtils, Classes, Contnrs, Generics.Collections, Generics.Defaults,
   PasDoc_Types,
   PasDoc_StringVector,
-  PasDoc_ObjectVector,
   PasDoc_Hashes,
   PasDoc_TagManager,
   PasDoc_Serialize,
@@ -1271,8 +1270,7 @@ function VisibilitiesToStr(const Visibilities: TVisibilities): string;
 
 function VisToStr(const Vis: TVisibility): string;
 
-{ Is List nil or empty.
-  Cross-unit overload with PasDoc_ObjectVector.ObjectVectorIsNilOrEmpty. }
+{ Is List nil or empty. }
 function ObjectVectorIsNilOrEmpty(const List: TBaseItems): boolean; overload;
 
 implementation
@@ -1920,8 +1918,8 @@ end;
 function TPasItem.HasOptionalInfo: boolean;
 begin
   Result :=
-    (not ObjectVectorIsNilOrEmpty(Params)) or
-    (not ObjectVectorIsNilOrEmpty(Raises));
+    (not StringPairIsNilOrEmpty(Params)) or
+    (not StringPairIsNilOrEmpty(Raises));
 end;
 
 procedure TPasItem.Sort(const SortSettings: TSortSettings);

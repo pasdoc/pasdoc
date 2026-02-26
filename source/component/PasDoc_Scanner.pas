@@ -40,8 +40,7 @@ uses
   PasDoc_Tokenizer,
   PasDoc_StringVector,
   PasDoc_StreamUtils,
-  PasDoc_StringPairVector,
-  PasDoc_ObjectVector;
+  PasDoc_StringPairVector;
 
 const
   { maximum number of streams we can recurse into; first one is the unit
@@ -86,7 +85,7 @@ type
     FDirectiveLevel: Integer;
     FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
     FSwitchOptions: TSwitchOptions;
-    FBufferedTokens: TObjectVector;
+    FBufferedTokens: TTokenList;
 
     { For each symbol:
         Name is the unique Name,
@@ -380,7 +379,7 @@ begin
   FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
     AStreamName, AStreamAbsoluteFileName);
   FCurrentTokenizer := 0;
-  FBufferedTokens := TObjectVector.Create(true);
+  FBufferedTokens := TTokenList.Create(true);
 
   FIncludeFilePaths := TStringVector.Create;
 end;
@@ -456,7 +455,7 @@ end;
 
 procedure TScanner.ConsumeToken;
 var
-  LastToken: TObject;
+  LastToken: TToken;
 begin
   if FBufferedTokens.Count > 0 then
   Begin
@@ -618,7 +617,7 @@ begin
   if FBufferedTokens.Count > 0 then
   begin
     { we have a token buffered, we'll return this one }
-    Result := FBufferedTokens.Last as TToken;
+    Result := FBufferedTokens.Last;
     FBufferedTokens.Extract(Result);
     Exit;
   end;

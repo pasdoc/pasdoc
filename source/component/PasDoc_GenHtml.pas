@@ -358,7 +358,6 @@ uses
   SysUtils,
   StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
   PasDoc_Base,
-  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_Aspell,
@@ -1198,9 +1197,9 @@ begin
       (AItem.AbstractDescription <> '') or
       (AItem.DetailedDescription <> '') or
       (AItem is TPasCio) or
-      (not ObjectVectorIsNilOrEmpty(AItem.Attributes)) or
+      (not StringPairIsNilOrEmpty(AItem.Attributes)) or
       (AItem is TPasRoutine) or
-      (not ObjectVectorIsNilOrEmpty(AItem.SeeAlso)) or
+      (not StringPairIsNilOrEmpty(AItem.SeeAlso)) or
       (AItem is TPasEnum)
     );
 end;
@@ -1293,7 +1292,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     i: integer;
     ParamName: string;
   begin
-    if ObjectVectorIsNilOrEmpty(List) then
+    if StringPairIsNilOrEmpty(List) then
       Exit;
 
     WriteDescriptionSectionHeading(Caption);
@@ -1320,7 +1319,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if StringPairIsNilOrEmpty(SeeAlso) then
       Exit;
 
     WriteDescriptionSectionHeading(trSeeAlso);
@@ -1351,7 +1350,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     AttributesLink: string;
     ExtendedAttrLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(Attributes) then
+    if StringPairIsNilOrEmpty(Attributes) then
       Exit;
 
     WriteDescriptionSectionHeading(trAttributes);
@@ -2180,11 +2179,12 @@ procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
   This doesn't really matter. }
 
 var
-  LErrors: TObjectVector;
+  LErrors: TSpellingErrorList;
   i, temp: Integer;
   LString, s: string;
+  Err: TSpellingError;
 begin
-  LErrors := TObjectVector.Create(True);
+  LErrors := TSpellingErrorList.Create(True);
   CheckString(AString, LErrors);
   if LErrors.Count = 0 then begin
     WriteDirect(AString);
@@ -2194,16 +2194,17 @@ begin
     LString := AString;
     for i := LErrors.Count-1 downto 0 do
     begin
+      Err := LErrors.Items[i];
       // everything after the offending word
-      temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
-      s := ( '">' + TSpellingError(LErrors.Items[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
-      if Length(TSpellingError(LErrors.Items[i]).Suggestions) > 0 then begin
-        s := 'suggestions: '+TSpellingError(LErrors.Items[i]).Suggestions + s;
+      temp := Err.Offset+Length(Err.Word) + 1;
+      s := ( '">' + Err.Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
+      if Length(Err.Suggestions) > 0 then begin
+        s := 'suggestions: '+Err.Suggestions + s;
       end else begin
         s := 'no suggestions' + s;
       end;
       s := '<acronym class="mispelling" title="' + s;
-      SetLength(LString, TSpellingError(LErrors.Items[i]).Offset);
+      SetLength(LString, Err.Offset);
     end;
     WriteDirect(LString);
     WriteDirect(s);

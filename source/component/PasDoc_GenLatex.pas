@@ -266,11 +266,11 @@ implementation
 uses
   SysUtils,
   PasDoc_Base,
-  PasDoc_ObjectVector,
   PasDoc_Utils,
   PasDoc_StringPairVector,
   StrUtils,
-  PasDoc_Versions;
+  PasDoc_Versions,
+  PasDoc_Aspell;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -1024,7 +1024,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     i: integer;
     ParamName: string;
   begin
-    if objectVectorIsNilOrEmpty(List) then
+    if StringPairIsNilOrEmpty(List) then
       Exit;
 
     WriteDirect('\item[\textbf{'+Caption+'}]',true);
@@ -1056,7 +1056,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if StringPairIsNilOrEmpty(SeeAlso) then
       Exit;
 
     if not AlreadyWithinAList then
@@ -1508,9 +1508,9 @@ end;
 
 procedure TTexDocGenerator.WriteSpellChecked(const AString: string);
 var
-  LErrors: TObjectVector;
+  LErrors: TSpellingErrorList;
 begin
-  LErrors := TObjectVector.Create(True);
+  LErrors := TSpellingErrorList.Create(True);
   try
     CheckString(AString, LErrors);
     WriteDirect(AString);

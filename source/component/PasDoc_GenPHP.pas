@@ -74,7 +74,7 @@ type
 implementation
 
 uses
-  PasDoc_ObjectVector, SysUtils, PasDoc_GenHtml;
+  SysUtils, PasDoc_GenHtml;
 
 { Unused overrides ----------------------------------------------------------- }
 

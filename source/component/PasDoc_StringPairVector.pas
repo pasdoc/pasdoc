@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -28,8 +28,7 @@ unit PasDoc_StringPairVector;
 interface
 
 uses
-  Classes, Contnrs,
-  PasDoc_ObjectVector;
+  Classes, Contnrs, Generics.Collections;
 
 type
   TStringPair = class
@@ -45,20 +44,14 @@ type
   end;
 
   { List of string pairs.
-    This class contains only non-nil objects of class TStringPair.
 
     Using this class instead of TStringList (with it's Name and Value
     properties) is often better, because this allows both Name and Value
     of each pair to safely contain any special characters (including '='
     and newline markers). It's also faster, since it doesn't try to
     encode Name and Value into one string. }
-  TStringPairVector = class(TObjectVector)
-  private
-    function GetItems(i: Integer): TStringPair;
-    procedure SetItems(i: Integer; Item: TStringPair);
+  TStringPairVector = class({$ifdef FPC}specialize {$endif} TObjectList<TStringPair>)
   public
-    property Items[i: Integer]: TStringPair read GetItems write SetItems; default;
-
     { Returns all items Names and Values glued together.
       For every item, string Name + NameValueSepapator + Value is
       constructed. Then all such strings for every items all
@@ -93,6 +86,8 @@ type
     function FirstName: string;
   end;
 
+function StringPairIsNilOrEmpty(const StringPairList: TStringPairVector): Boolean;
+
 implementation
 
 uses
@@ -123,16 +118,6 @@ begin
 end;
 
 { TStringPairVector ---------------------------------------------------------- }
-
-function TStringPairVector.GetItems(i: Integer): TStringPair;
-begin
-  Result := TStringPair(inherited Items[i]);
-end;
-
-procedure TStringPairVector.SetItems(i: Integer; Item: TStringPair);
-begin
-  inherited Items[i] := Item;
-end;
 
 function TStringPairVector.Text(
   const NameValueSepapator, ItemSeparator: string): string;
@@ -214,6 +199,13 @@ begin
   if Count > 0 then
     Result := Items[0].Name else
     Result := '';
+end;
+
+{ routines ------------------------------------------------------------------- }
+
+function StringPairIsNilOrEmpty(const StringPairList: TStringPairVector): Boolean;
+begin
+  Result := (StringPairList = nil) or (StringPairList.Count = 0);
 end;
 
 end.

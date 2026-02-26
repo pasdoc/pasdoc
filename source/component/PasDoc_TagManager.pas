@@ -29,10 +29,8 @@ unit PasDoc_TagManager;
 interface
 
 uses
-  SysUtils,
-  Classes, Contnrs,
-  PasDoc_Types,
-  PasDoc_ObjectVector;
+  SysUtils, Classes, Contnrs, Generics.Collections,
+  PasDoc_Types;
 
 type
   TTagManager = class;
@@ -298,8 +296,8 @@ type
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
-  { All Items of this list must be non-nil TTag objects. }
-  TTagVector = class(TObjectVector)
+  { Lost of TTag objects (only non-nil). }
+  TTagVector = class({$ifdef FPC}specialize {$endif} TObjectList<TTag>)
     { Case of Name does @italic(not) matter (so don't bother converting it to
       lowercase or something like that before using this method).
       Returns nil if not found.

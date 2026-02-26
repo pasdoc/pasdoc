@@ -51,7 +51,6 @@ uses
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
-  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
   PasDoc_TagManager,
@@ -690,7 +689,7 @@ type
 
       Otherwise this just clears AErrors, which means that no errors
       were found. }
-    procedure CheckString(const AString: string; const AErrors: TObjectVector);
+    procedure CheckString(const AString: string; const AErrors: TSpellingErrorList);
 
     { closes the spellchecker }
     procedure EndSpellChecking;
@@ -3137,7 +3136,7 @@ begin
 end;
 
 procedure TDocGenerator.CheckString(const AString: string;
-  const AErrors: TObjectVector);
+  const AErrors: TSpellingErrorList);
 var i: Integer;
 begin
   if FCheckSpelling and (FAspellProcess <> nil) then
@@ -3145,7 +3144,7 @@ begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
       DoMessage(2, pmtWarning, 'Word misspelled "%s"',
-        [TSpellingError(AErrors[i]).Word]);
+        [AErrors[i].Word]);
   end else
     AErrors.Clear;
 end;

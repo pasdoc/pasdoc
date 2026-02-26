@@ -85,8 +85,7 @@ type
 
 implementation
 
-uses
-  PasDoc_ObjectVector, SysUtils;
+uses SysUtils;
 
 function TSimpleXMLDocGenerator.SourcePositionAttributes(
   const Item: TPasItem): string;

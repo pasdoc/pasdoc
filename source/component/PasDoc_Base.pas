@@ -235,7 +235,6 @@ implementation
 
 uses
   PasDoc_Parser,
-  PasDoc_ObjectVector,
   PasDoc_Utils,
   PasDoc_Serialize;
 

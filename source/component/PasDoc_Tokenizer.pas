@@ -42,10 +42,7 @@ unit PasDoc_Tokenizer;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-  Classes,
+  Classes, Generics.Collections,
   PasDoc_Utils,
   PasDoc_Types,
   PasDoc_StreamUtils;
@@ -321,6 +318,8 @@ type
     // Line number (1-based) in the stream where this token starts.
     property Line: Integer read FLine;
   end;
+
+  TTokenList = {$ifdef FPC}specialize{$endif} TObjectList<TToken>;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
