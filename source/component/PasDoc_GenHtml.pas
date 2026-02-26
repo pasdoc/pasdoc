@@ -2536,7 +2536,7 @@ begin
   NormalRowOdd := true;
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
 
     if Row.Head then
       RowClass := 'head' else

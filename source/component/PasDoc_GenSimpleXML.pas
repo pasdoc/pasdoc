@@ -390,7 +390,7 @@ begin
 
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
     Result := Result + '  <' + RowElement[Row.Head] + '>' + LineEnding;
     for ColNum := 0 to Row.Cells.Count - 1 do
       Result := Result +

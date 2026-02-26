@@ -210,9 +210,8 @@ type
   end;
 
   { Collected information about @@table. Passed to
-    @link(TDocGenerator.FormatTable). Every item of this list
-    should be non-nil instance of @link(TRowData). }
-  TTableData = class(TObjectVector)
+    @link(TDocGenerator.FormatTable). }
+  TTableData = class({$ifdef FPC}specialize{$endif} TObjectList<TRowData>)
   private
     FMaxCellCount: Cardinal;
     FMinCellCount: Cardinal;
@@ -1748,13 +1747,16 @@ procedure TDocGenerator.HandleSomeRowTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
+var
+  RowData: TRowData;
 begin
   ReplaceStr := '';
 
-  (ThisTagData as TRowData).Head := ThisTag = RowHeadTag;
-  (EnclosingTagData as TTableData).Add(ThisTagData);
+  RowData := ThisTagData as TRowData;
+  RowData.Head := ThisTag = RowHeadTag;
+  (EnclosingTagData as TTableData).Add(RowData);
 
-  { Since we just added ThisTagData to EnclosingTagData,
+  { Since we just added RowData to EnclosingTagData,
     it should no longer be freed by DestroyOccurenceData.
     It will be freed when EnclosingTagData will be freed. }
   ThisTagData := nil;

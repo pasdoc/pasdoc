@@ -1767,7 +1767,7 @@ begin
     '\hline' + LineEnding;
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
 
     for ColNum := 0 to Row.Cells.Count - 2 do
       Result := Result + CellContent(Row, ColNum) + ' & ';
