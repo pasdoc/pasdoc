@@ -1830,6 +1830,7 @@ function TPasItem.GetInheritedItemDescriptions: TStringPairVector;
 var
   I: Integer;
   CurrentClassAncestor: TPasCio;
+  InterfaceAncestorItem: TPasItem;
   InterfaceAncestor: TPasCio;
   ThisItemInAncestor: TPasItem;
   OverrideChainEnded: Boolean;
@@ -1870,7 +1871,15 @@ begin
       { Check if any of the interfaces have a description }
       for I := 1 to CurrentClassAncestor.Ancestors.Count - 1 do
       begin
-        InterfaceAncestor := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasCio;
+        InterfaceAncestorItem := TObject(CurrentClassAncestor.Ancestors.Items[I]) as TPasItem;
+
+        { Usually InterfaceAncestorItem should be TPasCio.
+          But in edge-cases, it may be not, see tests/testcases/ok_ancestor_not_cio.pas .
+          In this case, don't use it for resolving further ancestors. }
+        if not (InterfaceAncestorItem is TPasCio) then
+          Continue;
+
+        InterfaceAncestor := TPasCio(InterfaceAncestorItem);
         if Assigned(InterfaceAncestor) then
         begin
           ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Signature) as TPasItem;
