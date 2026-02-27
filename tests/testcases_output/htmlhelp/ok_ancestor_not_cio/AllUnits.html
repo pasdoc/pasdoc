@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>All Units</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<h1 class="allitems">All Units</h1>
+<table class="unitstable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="ok_ancestor_not_cio.html">ok_ancestor_not_cio</a></td>
+<td class="itemdesc"><p>Testcase was causing a bug before this fix: <a href="https://github.com/pasdoc/pasdoc/commit/00c4e66ae1962398ff4f2ed76fbb2facbfaf84c0">https://github.com/pasdoc/pasdoc/commit/00c4e66ae1962398ff4f2ed76fbb2facbfaf84c0</a> In this case, class has an ancestor, but for PasDoc the ancestor type is not &quot;CIO&quot;, as it's an alias (and potentially, PasDoc doesn't even know the unit with it, so it really cannot determine it's CIO).</p></td>
+</tr>
+</table>
+</body></html>

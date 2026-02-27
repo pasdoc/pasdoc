@@ -290,6 +290,7 @@ all_tests_for_current_format ()
     --source-root="$(realpath ../../)" \
     ok_source_position.pas
   mk_test ok_longcode_2dots ok_longcode_2dots.pas
+  mk_test ok_ancestor_not_cio ok_ancestor_not_cio.pas
 }
 
 # parse params ----------------------------------------
