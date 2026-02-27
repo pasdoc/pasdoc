@@ -186,7 +186,7 @@ jobs:
       - name: Checkout PasDoc
         uses: actions/checkout@v6
       - name: Build Using Delphi
-        run: build-delphi-win32
+        run: make build-delphi-win32
       - name: Test Using Delphi
         run: make tests
 
