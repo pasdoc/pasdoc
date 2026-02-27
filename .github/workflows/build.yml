@@ -195,7 +195,10 @@ jobs:
         run: |
           call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
           msbuild source/console/pasdoc.dproj
-          ls -Flah bin/
+      # The above command will not fail with non-zero exit code if Delphi
+      # compilation just fails, so check that the expected output file is created.
+      - name: Check Delphi Build OK
+        run: if [[ -x "source/console/pasdoc.exe" ]]; then echo "Delphi build OK"; else echo "Delphi build failed"; exit 1; fi
       - name: Test Using Delphi
         run: make tests
 
