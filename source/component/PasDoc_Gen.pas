@@ -1129,7 +1129,23 @@ procedure TDocGenerator.BuildLinks;
     i: Integer;
   begin
     for i := 0 to Cio.Ancestors.Count - 1 do
+    begin
       Cio.Ancestors[i].Data := SearchItem(Cio.Ancestors[i].Name, Cio, true);
+
+      { Reject ancestors that are not TPasCio.
+        This makes later code, assuming that all ancestors are TPasCio
+        (like in TPasItem.GetInheritedItemDescriptions) correct. }
+      if (Cio.Ancestors[i].Data <> nil) and
+         (not (TObject(Cio.Ancestors[i].Data) is TPasCio)) then
+      begin
+        DoMessage(2, pmtWarning, 'Found supposed ancestor "%s" of "%s" in unit "%s". But this ancestor is not a class, interface or object, ignoring.', [
+          Cio.Ancestors[i].Name,
+          Cio.Name,
+          Cio.MyUnit.Name
+        ]);
+        Cio.Ancestors[i].Data := nil;
+      end;
+    end;
   end;
 
   { Assign MyXxx properties (MyUnit, MyObject, MyEnum) and FullLink
