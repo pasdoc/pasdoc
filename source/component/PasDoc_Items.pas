@@ -1871,7 +1871,7 @@ begin
       { Check if any of the interfaces have a description }
       for I := 1 to CurrentClassAncestor.Ancestors.Count - 1 do
       begin
-        InterfaceAncestorItem := TObject(CurrentClassAncestor.Ancestors.Items[I]) as TPasItem;
+        InterfaceAncestorItem := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasItem;
 
         { Usually InterfaceAncestorItem should be TPasCio.
           But in edge-cases, it may be not, see tests/testcases/ok_ancestor_not_cio.pas .
