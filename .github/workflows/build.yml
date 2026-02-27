@@ -176,11 +176,25 @@ jobs:
             *.tar.gz
           if-no-files-found: error
 
+  delphi-test:
+    name: Test Building and Running with Delphi
+    strategy:
+      matrix:
+        delphi-version: [delphi_10, delphi_12]
+    runs-on: ${{ matrix.delphi-version }}
+    steps:
+      - name: Checkout PasDoc
+        uses: actions/checkout@v6
+      - name: Build Using Delphi
+        run: build-delphi-win32
+      - name: Test Using Delphi
+        run: make tests
+
   release:
     name: Release
     runs-on: ubuntu-latest
     # Only upload release if all builds succeeded.
-    needs: [build, build-rpi]
+    needs: [build, build-rpi, delphi-test]
     steps:
     - name: Download packaged releases
       uses: actions/download-artifact@v7
