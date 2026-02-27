@@ -470,6 +470,9 @@ function KeyWordByName(const Name: string): TKeyword;
 implementation
 
 uses
+  {$if defined(STRING_UNICODE) and defined(MSWINDOWS)}
+  Windows, // for MultiByteToWideChar
+  {$endif}
   SysUtils, Math;
 
 function KeyWordByName(const Name: string): TKeyword;
