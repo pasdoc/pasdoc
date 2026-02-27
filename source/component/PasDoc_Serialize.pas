@@ -151,7 +151,6 @@ var
   LF: TStream;
   CacheFormatVersionFromFile: string;
 begin
-  Result := nil; // makes the Delphi compiler happy
 {$IFDEF USE_BUFFERED_STREAM}
   LF := TBufferedStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
 {$ELSE}
