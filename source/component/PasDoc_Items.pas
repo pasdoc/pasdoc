@@ -1112,7 +1112,7 @@ type
     procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
   public
-    constructor Create(const AOwnsObject: Boolean); virtual; reintroduce;
+    constructor Create(const AOwnsObject: Boolean); reintroduce; virtual;
     destructor Destroy; override;
 
     { Find a given item name on a list.
@@ -1134,7 +1134,7 @@ type
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem); virtual; reintroduce;
+    procedure Add(const AObject: TBaseItem); reintroduce; virtual;
 
     { This is a shortcut for doing @link(Clear) and then
       @link(Add Add(AObject)). Useful when you want the list
@@ -1142,7 +1142,7 @@ type
     procedure ClearAndAdd(const AObject: TBaseItem);
 
     procedure Delete(const AIndex: Integer);
-    procedure Clear; virtual; reintroduce;
+    procedure Clear; reintroduce; virtual;
   end;
 
   { Container class to store a list of @link(TPasItem)s. }

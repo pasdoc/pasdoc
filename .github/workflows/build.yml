@@ -192,13 +192,11 @@ jobs:
         uses: actions/checkout@v6
       - name: Build Using Delphi
         shell: cmd
+        # Note: It seems that only the last command in the "run" section
+        # is considered for error code with cmd shell. So keep it always msbuild.
         run: |
           call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
           msbuild source/console/pasdoc.dproj
-      # The above command will not fail with non-zero exit code if Delphi
-      # compilation just fails, so check that the expected output file is created.
-      - name: Check Delphi Build OK
-        run: if [[ -x "source/console/pasdoc.exe" ]]; then echo "Delphi build OK"; else echo "Delphi build failed"; exit 1; fi
       - name: Test Using Delphi
         run: make tests
 
