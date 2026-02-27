@@ -34,7 +34,6 @@ source/packages/lazarus/pasdoc_package.pas
 # Deployment Manager configuration file for your project. Added in Delphi XE2.
 # Uncomment this if it is not mobile development and you do not use remote debug feature.
 *.deployproj
-*.dproj
 
 # Delphi compiler-generated binaries (safe to delete)
 *.exe

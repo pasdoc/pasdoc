@@ -132,30 +132,6 @@ endif
 FPC_RELEASE_FLAGS := -dRELEASE $(FPC_COMMON_FLAGS)
 
 ############################################################################
-# Delphi configuration
-############################################################################
-
-# It seems Borland named Delphi/Win32 command-line compiler
-# dcc32 and Delphi/Linux (aka Kylix) as dcc (without 32).
-DCC_WIN32 := dcc32
-DCC_LINUX := dcc
-
-DCC_UNIT_DIRS := $(foreach units,$(UNIT_DIRS),-U$(units))
-DCC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-I$(units))
-
-# Command-line dcc prints non-errorlines while it works,
-# I guess that it was meant to somehow indicate
-# compilation progress, although it's rather confusing and hides
-# meaningfull error/warning lines. That's why we pass -Q below.
-
-DCC_COMMON_FLAGS := -E$(BINDIR) -N$(OUTDIR) -L$(OUTDIR) -M -H -W -Q \
-	-DCPU86 -DENDIAN_LITTLE $(DCC_UNIT_DIRS) $(DCC_INCLUDE_DIRS)
-
-DCC_DEBUG_FLAGS := -$$Q+ -$$R+ $(DCC_COMMON_FLAGS)
-
-DCC_RELEASE_FLAGS := -$$O+ $(DCC_COMMON_FLAGS)
-
-############################################################################
 # Building (and cleaning after building)
 ############################################################################
 
@@ -218,19 +194,6 @@ build-fpc-release: make-dirs
 # name for build-fpc-default .
 .PHONY: build-fpc-default
 build-fpc-default: build-fpc-release
-
-# Delphi/Kylix build targets
-
-# Implementation note: this $(subst...) is needed, otherwise under Windows
-# dcc prints "file not found" when $(FILE) uses "/" (even though "/" is allowed
-# path separator in all normal Windows programs).
-.PHONY: build-delphi-win32
-build-delphi-win32: make-dirs
-	$(DCC_WIN32) $(DCC_RELEASE_FLAGS) $(subst /,\\,$(FILE))
-
-.PHONY: build-delphi-linux-x86
-build-delphi-linux-x86: make-dirs
-	$(DCC_LINUX) $(DCC_RELEASE_FLAGS) $(FILE)
 
 .PHONY: build-tools
 build-tools: make-dirs

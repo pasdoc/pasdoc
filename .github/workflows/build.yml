@@ -180,13 +180,21 @@ jobs:
     name: Test Building and Running with Delphi
     strategy:
       matrix:
-        delphi-version: [delphi_10, delphi_12]
-    runs-on: ${{ matrix.delphi-version }}
+        delphi_runner_version: [delphi_10, delphi_12]
+        include:
+        - delphi_runner_version: delphi_10
+          delphi_directory: "C:/Program Files (x86)/Embarcadero/Studio/19.0/"
+        - delphi_runner_version: delphi_12
+          delphi_directory: "C:/Program Files (x86)/Embarcadero/Studio/23.0/"
+    runs-on: ${{ matrix.delphi_runner_version }}
     steps:
       - name: Checkout PasDoc
         uses: actions/checkout@v6
       - name: Build Using Delphi
-        run: make build-delphi-win32
+        run: |
+          call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
+          msbuild source/console/pasdoc.dproj
+          ls -Flah bin/
       - name: Test Using Delphi
         run: make tests
 
