@@ -191,6 +191,7 @@ jobs:
       - name: Checkout PasDoc
         uses: actions/checkout@v6
       - name: Build Using Delphi
+        shell: cmd
         run: |
           call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
           msbuild source/console/pasdoc.dproj
