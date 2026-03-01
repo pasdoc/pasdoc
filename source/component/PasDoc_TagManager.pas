@@ -296,7 +296,7 @@ type
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
-  { Lost of TTag objects (only non-nil). }
+  { List of TTag objects (only non-nil). }
   TTagVector = class({$ifdef FPC}specialize {$endif} TObjectList<TTag>)
     { Case of Name does @italic(not) matter (so don't bother converting it to
       lowercase or something like that before using this method).
