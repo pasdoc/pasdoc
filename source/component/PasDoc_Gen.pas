@@ -2549,29 +2549,45 @@ begin
 
     try
       {$IFDEF STRING_UNICODE}
-      while f.ReadLine(S) do begin
+      while not f.EndOfStream do
+      begin
+        S := f.ReadLine + LineEnding;
       {$ELSE}
-      while f.Position < f.Size do begin
+      while f.Position < f.Size do
+      begin
         s := StreamReadLine(f);
       {$ENDIF}
-        if s[1] = '#' then begin
+        if SCharIs(S, 1, '#') then
+        begin
+          // skip whitespace after #
           i := 2;
-          while IsCharInSet(s[i], [' ', #9]) do Inc(i);
-          { Make sure we read a valid name - the user might have used # in his
-            description. }
-          if IsCharInSet(s[i], IdentChars) then begin
+          while SCharIs(s, i, [' ', #9]) do Inc(i);
+
+          { Read item name.
+            If does not start with IdentChars, we assume this line is a normal
+            Description line, not a new item name. }
+          if SCharIs(s, i, IdentChars) then
+          begin
+            // store last ItemName and Description (if any)
             if ItemName <> '' then StoreDescription(ItemName, Description);
-            { Read item name and beginning of the description }
+
+            { Read next item name and beginning of the description }
             ItemName := '';
+            Description := '';
             repeat
               ItemName := ItemName + s[i];
               Inc(i);
-            until not IsCharInSet(s[i], IdentChars);
-            while IsCharInSet(s[i], [' ', #9]) do Inc(i);
-            Description := Copy(s, i, MaxInt);
-            Continue;
+            until not SCharIs(s, i, IdentChars);
+
+            // skip whitespace after item name
+            while SCharIs(s, i, [' ', #9]) do Inc(i);
+
+            // change S to be the beginning of the description
+            S := Copy(S, i, MaxInt);
           end;
         end;
+
+        // regular line -> just add to Description
         Description := Description + s;
       end;
 
