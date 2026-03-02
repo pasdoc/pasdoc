@@ -3795,15 +3795,9 @@ begin
       }
       ItemsForNextBackComment.ClearAndAdd(ACio);
 
-      { get all ancestors; remember, this could look like
-        TNewClass = class ( Classes.TClass, MyClasses.TFunkyClass, MoreClasses.YAC) ... end;
-        All class ancestors are supposed to be included in the docs!
-      }
-      { TODO -otwm :
-        That's not quite true since multiple inheritance is not supported by
-         Delphi/Kylix or FPC. Every entry but the first must be an interface. }
+      { If we have "(" then get all ancestors to ACio.Ancestors.
+        First one is a class ancestor, then implemented interfaces. }
       if t.IsSymbol(SYM_LEFT_PARENTHESIS) then begin
-          { optional ancestor introduced by ( }
         FreeAndNil(t);
         Finished := False;
         { outer repeat loop: one ancestor per pass }
