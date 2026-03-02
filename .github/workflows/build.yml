@@ -30,6 +30,15 @@ jobs:
           macos-15-intel,
           macos-latest
         ]
+        include:
+        - operating-system: windows-latest
+          pasdoc_make_target: win64
+        - operating-system: ubuntu-latest
+          pasdoc_make_target: linux-x86_64
+        - operating-system: macos-15-intel
+          pasdoc_make_target: darwin-x86_64
+        - operating-system: macos-latest
+          pasdoc_make_target: darwin-aarch64
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
@@ -52,6 +61,10 @@ jobs:
             --depth=1 --single-branch --branch=master
           castle-build-ci/install_dependencies
           castle-build-ci/setup_castle_engine --install-fpc=true --install-lazarus=true --install-castle-engine=false
+
+      - name: Install Windows Prerequisites
+        if: ${{ matrix.operating-system == 'windows-latest' }}
+        run: choco install zip php
 
       - name: Build
         run: make
@@ -92,21 +105,9 @@ jobs:
       #   with:
       #     root: tests/testcases_output/html/
 
-      - name: "Package macOS (Intel)"
-        if: ${{ matrix.operating-system == 'macos-15-intel' }}
-        run: make dist-darwin-x86_64
-      - name: "Package macOS (Aarch64)"
-        if: ${{ matrix.operating-system == 'macos-latest' }}
-        run: make dist-darwin-aarch64
-      - name: Package Linux
-        if: ${{ matrix.operating-system == 'ubuntu-latest' }}
-        run: make dist-linux-x86_64
-      - name: Prepare Windows
-        if: ${{ matrix.operating-system == 'windows-latest' }}
-        run: choco install zip
-      - name: Package Windows (64)
-        if: ${{ matrix.operating-system == 'windows-latest' }}
-        run: make dist-win64
+      - name: "Package"
+        run: make dist-${{ matrix.pasdoc_make_target }}
+
       - name: Archive Artifacts
         uses: actions/upload-artifact@v6
         with:
@@ -188,6 +189,8 @@ jobs:
         run: |
           call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
           msbuild source/console/pasdoc.dproj
+      - name: Install Windows Prerequisites
+        run: choco install php
       - name: Test Using Delphi
         run: make tests
 
