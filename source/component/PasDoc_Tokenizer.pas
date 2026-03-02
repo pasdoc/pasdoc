@@ -682,7 +682,7 @@ begin
     end else
     if Stream is TStringStream then
     begin
-      CodePage := CP_UTF16;
+      CodePage := TStringStream(Stream).Encoding.CodePage;
       LeadBytes := [];
     end else
       raise EPasDoc.Create('Tokenizer: Unsupported stream for Unicode input: %s', [
