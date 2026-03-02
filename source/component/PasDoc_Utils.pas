@@ -520,7 +520,7 @@ var Reader: TStreamReader;
 begin
   Reader := TStreamReader.Create(FileName, TRUE);
   try
-    Reader.ReadToEnd(Result);
+    Result := Reader.ReadToEnd;
   finally Reader.Free; end;
 {$ELSE}
 var F: TStream;
@@ -539,7 +539,7 @@ procedure StringToFile(const FileName, S: string);
 {$IFDEF STRING_UNICODE}
 var Writer: TStreamWriter;
 begin
-  Writer := TStreamWriter.Create(FileName, FALSE, FALSE);
+  Writer := TStreamWriter.Create(FileName, false);
   try
     Writer.Write(S);
   finally Writer.Free; end;

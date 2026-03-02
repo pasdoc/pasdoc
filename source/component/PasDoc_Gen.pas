@@ -1271,22 +1271,22 @@ end;
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
+  Encoding: TEncoding;
 begin
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := false;
   S := DestinationDirectory + AName;
   try
-    FCurrentStream :=
-      {$IFDEF STRING_UNICODE}
-      TStreamWriter.Create(S, false, false, FLanguage.CodePage);
-      {$ELSE}
-        {$IFDEF USE_BUFFERED_STREAM}
-        TBufferedStream.Create(S, fmCreate);
-        {$ELSE}
-        TFileStream.Create(S, fmCreate);
-        {$ENDIF}
-      {$ENDIF}
+    {$if defined(STRING_UNICODE)}
+    Encoding := TEncoding.GetEncoding(FLanguage.CodePage); // TODO: leak?
+    FCurrentStream := TStreamWriter.Create(S, false, Encoding);
+    {$elseif defined(USE_BUFFERED_STREAM)}
+    FCurrentStream := TBufferedStream.Create(S, fmCreate);
+    {$else}
+    FCurrentStream := TFileStream.Create(S, fmCreate);
+    {$endif}
+
     Result := true;
   except
     on E: Exception do

@@ -341,8 +341,14 @@ type
     IsCharBuffered: Boolean;
     { current line number in stream @link(Stream); useful when giving error messages }
     Line: Integer;
-    { the input stream this tokenizer is working on }
+    { Input stream this tokenizer is working on.
+      In case of STRING_UNICODE, all reads should go through the TStreamReader API,
+      so underlying TStream is not exposed as a field even. }
+    {$ifdef STRING_UNICODE}
+    StreamReader: TStreamReader;
+    {$else}
     Stream: TStream;
+    {$endif}
     FStreamName: string;
     FStreamAbsoluteFileName: string;
 
@@ -358,15 +364,10 @@ type
 
     { Uses default symbol representation, from SymbolNames[st] }
     function CreateSymbolToken(const st: TSymbolType): TToken; overload;
-{$IFDEF STRING_UNICODE}
-    { Returns source codepoint size in bytes on success or 0 on failure. }
-    { Supports ANSI, UTF-8, UCS2 and UCS2 big endian sources.            }
-    { Note that only Unicode codepoints from the BMP are supported.      }
-    function GetChar(out c: WideChar): Integer;
-{$ELSE}
-    { Returns 1 on success or 0 on failure }
-    function GetChar(out c: AnsiChar): Integer;
-{$ENDIF}
+
+    { Read next character (WideChar in case of STRING_UNICODE).
+      Returns how many bytes this character takes, or 0 if cannot read. }
+    function GetChar(out c: {$IFDEF STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
@@ -469,11 +470,7 @@ function KeyWordByName(const Name: string): TKeyword;
 
 implementation
 
-uses
-  {$if defined(STRING_UNICODE) and defined(MSWINDOWS)}
-  Windows, // for MultiByteToWideChar
-  {$endif}
-  SysUtils, Math;
+uses SysUtils, Math;
 
 function KeyWordByName(const Name: string): TKeyword;
 var
@@ -592,7 +589,12 @@ begin
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
   Line := 1;
+  {$ifdef STRING_UNICODE}
+  StreamReader := TStreamReader.Create(AStream);
+  StreamReader.OwnStream;
+  {$else}
   Stream := AStream;
+  {$endif}
   FStreamName := AStreamName;
   FStreamAbsoluteFileName := AStreamAbsoluteFileName;
 end;
@@ -601,7 +603,11 @@ end;
 
 destructor TTokenizer.Destroy;
 begin
-  Stream.Free;
+  {$ifdef STRING_UNICODE}
+  FreeAndNil(StreamReader);
+  {$else}
+  FreeAndNil(Stream);
+  {$endif}
   FBufferedToken.Free;
   inherited;
 end;
@@ -656,15 +662,10 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{$IFDEF STRING_UNICODE}
-function TTokenizer.GetChar(out c: WideChar): Integer;
-const
-  LDefaultFailChar = '?';
+
+function TTokenizer.GetChar(out c: {$IFDEF STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
 var
-  Buf : array [0..7] of Byte;
-  LInt: Integer;
-  CodePage: LongWord;
-  LeadBytes: TCharSet;
+  CharArray: TCharArray;
 begin
   if IsCharBuffered then
   begin
@@ -672,93 +673,18 @@ begin
     IsCharBuffered := False;
     Result := FBufferedCharSize;
   end else
-
   begin
-    // Actually only UCS2 and UCS2Be
-    if Stream is TStreamReader then
-    begin
-      CodePage := TStreamReader(Stream).CurrentCodePage;
-      LeadBytes := TStreamReader(Stream).LeadBytes;
-    end else
-    if Stream is TStringStream then
-    begin
-      CodePage := TStringStream(Stream).Encoding.CodePage;
-      LeadBytes := [];
-    end else
-      raise EPasDoc.Create('Tokenizer: Unsupported stream for Unicode input: %s', [
-        Stream.ClassName
-      ], 2);
-
-    case CodePage of
-        CP_UTF16    :
-          begin
-            Result := Stream.Read(c, 2);
-            Exit;
-          end;
-        CP_UTF16BE  :
-          begin
-            Result := Stream.Read(c, 2);
-            Swap16Buf(@c, @c, 1);
-            Exit;
-          end;
-    end; // case
-
-    { MBCS text }
-    Result := 0;
-    Buf[0] := 0;
-
-    Result := Stream.Read(Buf[Result], 1);
-    if Result = 0 then
-      Exit;
-    if CodePage = CP_UTF8 then
-    begin
-      LInt := Utf8Size(Buf[0]); // Read number of bytes
-      if LInt > 1 then
-      begin
-        Inc(Result, Stream.Read(Buf[Result], LInt -1));
-        if Result <> LInt then
-        begin
-          c := LDefaultFailChar;    // return the default fail char.
-          Exit;
-        end;
-      end;
-    end
-    else begin
-      { Only DBCS have constant LeadBytes so we actually do not support }
-      { some rarely used MBCS, such as euc-jp or UTF-7, with a maximum  }
-      { codepoint size > 2 bytes.                                 }{ AG }
-      if AnsiChar(Buf[0]) in LeadBytes then
-      begin
-        if Stream.Read(Buf[Result], 1) = 1 then
-          Inc(Result)
-        else begin
-          Result := 0;
-          Exit;
-        end;
-      end
-    end;
-    if (Result = 1) and (Buf[0] < 128) then
-      c := WideChar(Buf[0]) // Plain ASCII, no need to call MbToWc (speed)
-    else
-    if MultiByteToWideChar(CodePage, 0, @Buf[0], Result, @c, 1) <> 1 then
-      c := LDefaultFailChar; // return the default fail char.
+    {$IFDEF STRING_UNICODE}
+    SetLength(CharArray, 1);
+    Result := StreamReader.Read(CharArray, 0, 1) * SizeOf(WideChar);
+    if Result <> 0 then
+      C := CharArray[0];
+    {$else}
+    Result := Stream.Read(c, 1);
+    {$endif}
   end;
 end;
 
-{$ELSE}
-
-function TTokenizer.GetChar(out c: AnsiChar): Integer;
-begin
-  if IsCharBuffered then
-  begin
-    c := BufferedChar;
-    IsCharBuffered := False;
-    Result := FBufferedCharSize;
-  end
-  else
-    Result := Stream.Read(c, 1);
-end;
-{$ENDIF}
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.GetStreamInfo: string;
@@ -770,13 +696,26 @@ end;
 
 function TTokenizer.HasData: Boolean;
 begin
-  HasData := IsCharBuffered or (Stream.Position < Stream.Size);
+  HasData := IsCharBuffered or
+    {$ifdef STRING_UNICODE}
+    (not StreamReader.EndOfStream)
+    {$else}
+    (Stream.Position < Stream.Size)
+    {$endif};
 end;
 
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.StreamPosition: Int64;
+{$ifdef STRING_UNICODE}
+var
+  Stream: TStream;
+{$endif}
 begin
+  {$ifdef STRING_UNICODE}
+  Stream := StreamReader.BaseStream;
+  {$endif}
+
   if IsCharBuffered then
     Result := Stream.Position - FBufferedCharSize
   else
@@ -1166,7 +1105,7 @@ begin
   t.Data := '''';
 
   repeat
-    if not (Stream.Position < Stream.Size) then begin
+    if not HasData then begin
       FreeAndNil(t);
       DoError('Tokenizer: unexpected end of stream', []);
     end;

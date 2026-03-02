@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -448,14 +448,10 @@ begin
   begin
     p := FSourceFileNames[i];
     try
-    {$IFDEF STRING_UNICODE}
-      InputStream := TStreamReader.Create(p);
-    {$ELSE}
     {$IFDEF USE_BUFFERED_STREAM}
       InputStream := TBufferedStream.Create(p, fmOpenRead or fmShareDenyWrite);
     {$ELSE}
       InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
-    {$ENDIF}
     {$ENDIF}
     except
       on E: Exception do
