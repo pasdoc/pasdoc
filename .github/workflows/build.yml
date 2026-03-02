@@ -109,7 +109,7 @@ jobs:
         run: make dist-${{ matrix.pasdoc_make_target }}
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build ${{ matrix.operating-system }} lazarus
           path: |
@@ -160,7 +160,7 @@ jobs:
             make dist-linux-"${FPC_CPU}"
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build raspberry-pi ${{ matrix.arch }}
           path: |
