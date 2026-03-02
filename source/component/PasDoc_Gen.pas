@@ -500,7 +500,8 @@ type
       If @true, then we should show it.
 
       @param ItemName is the name to show.
-      @param ItemFilenameInRoot is the filename, relative to SourceRoot.
+      @param(ItemFilenameInRoot is the filename, relative to SourceRoot,
+        using always / on any system (even on Windows.)
       @param ItemUrl is the URL to link to, if any (don't make a link if this is ''). }
     function HasSourcePosition(const AItem: TPasItem;
       out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
@@ -3965,12 +3966,18 @@ begin
   if Result then
   begin
     if SourceRoot <> '' then
+    begin
       ItemFilenameInRoot := ExtractRelativePath(
         // Use ExpandFileName(SourceRoot) since user may provide SourceRoot
         // as relative, like "."
         IncludeTrailingPathDelimiter(ExpandFileName(SourceRoot)),
-        AItem.SourceAbsoluteFileName)
-    else
+        AItem.SourceAbsoluteFileName);
+      { Make sure ItemFilenameInRoot uses /, as it will be used for URL and ItemName,
+        as we want output to be consistent across platforms. }
+      {$ifdef MSWINDOWS}
+      ItemFilenameInRoot := StringReplace(ItemFilenameInRoot, '\', '/', [rfReplaceAll]);
+      {$endif}
+    end else
       ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
 
     ItemName := Format(FLanguage.Translation[trSourcePosition], [

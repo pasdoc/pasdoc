@@ -69,6 +69,14 @@ all_tests_for_current_format ()
   now="$(date +'%H.%M.%S')"
   echo "${now} Running tests for format ${FORMAT}"
 
+  # calculate $SOURCE_ROOT as realpath of ../.. expressed as native path.
+  # This will be used in --source-root test.
+  local SOURCE_ROOT
+  SOURCE_ROOT="$(realpath ../..)"
+  if command -v cygpath > /dev/null 2>&1; then
+    SOURCE_ROOT="$(cygpath -m "$SOURCE_ROOT")"
+  fi
+
   # Make a test of many units with normal pasdoc command-line.
   #
   # Note: most new tests should not be added here.
@@ -287,7 +295,7 @@ all_tests_for_current_format ()
   mk_test ok_source_position --show-source-position ok_source_position.pas
   mk_test ok_source_position_url --show-source-position \
     '--source-url-pattern=https://github.com/pasdoc/pasdoc/blob/master/{FILE}#L{LINE}' \
-    --source-root="$(realpath ../../)" \
+    --source-root="${SOURCE_ROOT}" \
     ok_source_position.pas
   mk_test ok_longcode_2dots ok_longcode_2dots.pas
   mk_test ok_ancestor_not_cio ok_ancestor_not_cio.pas
