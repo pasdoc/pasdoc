@@ -189,6 +189,9 @@ jobs:
         run: |
           call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
           msbuild source/console/pasdoc.dproj
+      # Note: This runs on self-hosted runners with limited permissions,
+      # "choco install ..." will just fail if package is not already installed.
+      # Still it's useful to run -- to make sure it is installed.
       - name: Install Windows Prerequisites
         run: choco install php
       - name: Test Using Delphi
