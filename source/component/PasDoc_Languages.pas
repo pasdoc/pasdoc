@@ -501,7 +501,7 @@ begin
 {$IFNDEF STRING_UNICODE}
   FCharSet  := LANGUAGE_ARRAY[Value].Charset;
 {$ELSE} // String is UTF-16 so get rid of this ANSI stuff.
-  FCharSet  := 'UTF-8';
+  FCharSet  := 'utf-8';
   FCodePage := 65001;
 {$ENDIF}
 end;
