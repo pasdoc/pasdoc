@@ -36,3 +36,6 @@ PASDOC-OUTPUT text eol=auto
 # Test cases checking specific line endings
 tests/testcases/error_line_number_2.pas text eol=lf
 tests/testcases/error_line_number_4.pas text eol=cr
+
+# treated as binary files here, even if (parts of) look like text
+*.eps binary
