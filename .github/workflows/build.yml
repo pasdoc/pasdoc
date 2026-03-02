@@ -63,8 +63,11 @@ jobs:
           castle-build-ci/setup_castle_engine --install-fpc=true --install-lazarus=true --install-castle-engine=false
 
       - name: Install Windows Prerequisites
-        if: ${{ matrix.operating-system == 'windows-latest' }}
+        if: ${{ runner.os == 'Windows' }}
         run: choco install zip php
+      - name: Install macOS Prerequisites
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install php
 
       - name: Build
         run: make
