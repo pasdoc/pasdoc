@@ -443,7 +443,6 @@ begin
   DoMessage(1, pmtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
-  InputStream := nil;
   Count := 0;
   for i := 0 to FSourceFileNames.Count - 1 do
   begin
