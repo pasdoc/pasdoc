@@ -8,13 +8,15 @@ set -eu
 # See ../README for comments.
 
 # check if xmllint is available and fail otherwise
-if ! which xmllint > /dev/null; then
+if ! command -v xmllint > /dev/null 2>&1; then
   echo 'xmllint missing'
   exit 1
 fi
 
 echo 'Validating simplexml output using xmllint.'
 
-find testcases_output/simplexml/ -iname '*.xml' \
-  -exec sh -c 'echo ---- Validating {}' ';' \
-  -exec xmllint --noout '{}' ';'
+find testcases_output/simplexml/ -iname '*.xml' -print0  \
+    | while read -rd $'\0' FILE; do
+  echo "---- Validating ${FILE}"
+  xmllint --noout "${FILE}"
+done
