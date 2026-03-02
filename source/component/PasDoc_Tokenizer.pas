@@ -505,6 +505,12 @@ begin
   end;
 end;
 
+type
+  TSingleCharSymbol = record
+    c: Char;
+    s: TSymbolType;
+  end;
+
 const
   Whitespace = [#9, #10, #13, ' '];
   Letters = ['A'..'Z', 'a'..'z'];
@@ -517,11 +523,7 @@ const
   NumberOther = HexadecimalDigits + ['.', '+', '-'];
   QuoteChar = '''';
   NUM_SINGLE_CHAR_SYMBOLS = 10;
-  SingleCharSymbols: array[0..NUM_SINGLE_CHAR_SYMBOLS - 1] of
-  record
-    c: Char;
-    s: TSymbolType;
-  end =
+  SingleCharSymbols: array[0..NUM_SINGLE_CHAR_SYMBOLS - 1] of TSingleCharSymbol =
   ((c: ';'; s: SYM_SEMICOLON),
     (c: ','; s: SYM_COMMA),
     (c: '['; s: SYM_LEFT_BRACKET),
@@ -661,15 +663,33 @@ const
 var
   Buf : array [0..7] of Byte;
   LInt: Integer;
+  CodePage: LongWord;
+  LeadBytes: TCharSet;
 begin
   if IsCharBuffered then
   begin
     c := BufferedChar;
     IsCharBuffered := False;
     Result := FBufferedCharSize;
-  end
-  else begin // Actually only UCS2 and UCS2Be
-    case TStreamReader(Stream).CurrentCodePage of
+  end else
+
+  begin
+    // Actually only UCS2 and UCS2Be
+    if Stream is TStreamReader then
+    begin
+      CodePage := TStreamReader(Stream).CurrentCodePage;
+      LeadBytes := TStreamReader(Stream).LeadBytes;
+    end else
+    if Stream is TStringStream then
+    begin
+      CodePage := CP_UTF16;
+      LeadBytes := [];
+    end else
+      raise EPasDoc.Create('Tokenizer: Unsupported stream for Unicode input: %s', [
+        Stream.ClassName
+      ], 2);
+
+    case CodePage of
         CP_UTF16    :
           begin
             Result := Stream.Read(c, 2);
@@ -690,7 +710,7 @@ begin
     Result := Stream.Read(Buf[Result], 1);
     if Result = 0 then
       Exit;
-    if TStreamReader(Stream).CurrentCodePage = CP_UTF8 then
+    if CodePage = CP_UTF8 then
     begin
       LInt := Utf8Size(Buf[0]); // Read number of bytes
       if LInt > 1 then
@@ -707,7 +727,7 @@ begin
       { Only DBCS have constant LeadBytes so we actually do not support }
       { some rarely used MBCS, such as euc-jp or UTF-7, with a maximum  }
       { codepoint size > 2 bytes.                                 }{ AG }
-      if AnsiChar(Buf[0]) in TStreamReader(Stream).LeadBytes then
+      if AnsiChar(Buf[0]) in LeadBytes then
       begin
         if Stream.Read(Buf[Result], 1) = 1 then
           Inc(Result)
@@ -720,9 +740,8 @@ begin
     if (Result = 1) and (Buf[0] < 128) then
       c := WideChar(Buf[0]) // Plain ASCII, no need to call MbToWc (speed)
     else
-    if MultiByteToWideChar(TStreamReader(Stream).CurrentCodePage,
-                           0, @Buf[0], Result, @c, 1) <> 1 then
-        c := LDefaultFailChar; // return the default fail char.
+    if MultiByteToWideChar(CodePage, 0, @Buf[0], Result, @c, 1) <> 1 then
+      c := LDefaultFailChar; // return the default fail char.
   end;
 end;
 
