@@ -220,9 +220,15 @@ tests-fpcunit: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./tests/fpcunit/test_pasdoc.lpr
 	bin/test_pasdoc -a
 
+# Build PasDoc and FpcUnit test application, and run all tests
 .PHONY: tests
 tests:
 	cd tests/ && ./run_all_tests.sh
+
+# Run all tests, assuming PasDoc is already build
+.PHONY: tests-no-build
+tests-no-build:
+	cd tests/ && ./run_all_tests_no_build.sh
 
 ############################################################################
 # Help targets

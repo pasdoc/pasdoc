@@ -71,7 +71,7 @@ jobs:
       - name: Build Tools
         run: make build-tools
       - name: Test
-        run: make tests
+        run: make tests-no-build
 
       # Test HTML validity using
       # https://github.com/marketplace/actions/html5-validator
@@ -153,7 +153,7 @@ jobs:
             # Build and test
             make
             make build-tools
-            make tests
+            make tests-no-build
 
             # Make release
             FPC_CPU=`fpc -iTP`
@@ -195,7 +195,7 @@ jobs:
       - name: Install Windows Prerequisites
         run: choco install php
       - name: Test Using Delphi
-        run: make tests
+        run: make tests-no-build
 
   release:
     name: Release
