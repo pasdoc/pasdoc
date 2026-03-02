@@ -145,7 +145,6 @@ type
     { Starts an HTML table with a css class }
     procedure WriteStartOfTable(const CssClass: string);
 
-    procedure WriteStartOfTableCell; overload;
     procedure WriteStartOfTableCell(const CssClass: string); overload;
 
     procedure WriteStartOfTable1Column(const CssClass: string);
@@ -1900,11 +1899,6 @@ begin
   else
     s := '<td';
   WriteDirect(s+'>');
-end;
-
-procedure TGenericHTMLDocGenerator.WriteStartOfTableCell;
-begin
-  WriteStartOfTableCell('');
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
