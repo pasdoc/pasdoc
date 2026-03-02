@@ -1281,41 +1281,9 @@ uses StrUtils,
 type
   TBaseItemComparer = {$ifdef FPC}specialize{$endif} TComparer<TBaseItem>;
 
-{ Compare 2 TPasItem instances.
-  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
-function ComparePasItemsByName(
-  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
-  PItem1, PItem2: TBaseItem): Integer;
-var
-  P1, P2: TPasItem;
-begin
-  P1 := TPasItem(PItem1);
-  P2 := TPasItem(PItem2);
-  Result := CompareText(
-    P1.UnitRelativeQualifiedName,
-    P2.UnitRelativeQualifiedName);
-  // Sort duplicate names by unit name if available.
-  if Result = 0 then
-    Result := CompareText(
-      P1.MyUnitName,
-      P2.MyUnitName);
-  { If both name and unit are equal (so it's an overloaded routine),
-    sort by description. The goal is to make output of AllIdentifiers.html
-    and similar lists "stable", guaranteed regardless of sorting algorithm
-    used by a particular compiler version, OS etc.
-
-    In case descriptions are equal, the order is still undefined,
-    but it will not matter (since everything generated for AllIdentifiers.html
-    will be equal). }
-  if Result = 0 then
-    Result := CompareText(
-      P1.DetailedDescription,
-      P2.DetailedDescription);
-end;
-
 { Compare 2 TPasRoutine instances.
   Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
-function ComparePasMethods(
+function ComparePasRoutines(
   {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
   PItem1, PItem2: TBaseItem): Integer;
 var
@@ -1351,7 +1319,47 @@ begin
 
   // debug: ok, this warning doesn't occur in our tests.
   // if (Result = 0) and (P1 <> P2) then
-  //   Writeln('Warning: ComparePasMethods: two different methods are undefined order in relation to each other: ' + P1.FullDeclaration + ' and ' + P2.FullDeclaration);
+  //   Writeln('Warning: ComparePasRoutines: two different methods are undefined order in relation to each other: ' + P1.FullDeclaration + ' and ' + P2.FullDeclaration);
+end;
+
+{ Compare 2 TPasItem instances.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasItemsByName(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
+var
+  P1, P2: TPasItem;
+begin
+  P1 := TPasItem(PItem1);
+  P2 := TPasItem(PItem2);
+
+  // sort by name (in unit) first
+  Result := CompareText(
+    P1.UnitRelativeQualifiedName,
+    P2.UnitRelativeQualifiedName);
+  if Result <> 0 then Exit;
+
+  // Sort duplicate names by unit name if available.
+  Result := CompareText(
+    P1.MyUnitName,
+    P2.MyUnitName);
+  if Result <> 0 then Exit;
+
+  { If both UnitRelativeQualifiedName and MyUnitName are equal,
+    we have an overloaded routine.
+    Sort by ComparePasRoutines then.
+
+    The goal is to make output of AllIdentifiers.html, AllFunctions.html
+    and similar lists "stable", guaranteed regardless of sorting algorithm
+    used by a particular compiler version, OS etc. }
+  if (P1 is TPasRoutine) and (P2 is TPasRoutine) then
+    Result := ComparePasRoutines(P1, P2)
+  else
+    { Fallback to compare description for anything else -- should not be
+      necessary in practice now. }
+    Result := CompareText(
+      P1.DetailedDescription,
+      P2.DetailedDescription);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -2503,7 +2511,7 @@ begin
   end;
 
   if (Methods <> nil) and (ssMethods in SortSettings) then
-    Methods.Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasMethods));
+    Methods.Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasRoutines));
 
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
