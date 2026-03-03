@@ -530,12 +530,12 @@ begin
   else
     FirstNextToken := #0;
 
-  if IsCharInSet(LastFullDeclaration, [':', ';']) then
+  if CharInSet(LastFullDeclaration, [':', ';']) then
     { Put space after ':' to make type declarations like "const Key: String" in FullDeclaration. }
     Result := FullDeclaration + ' ' + NextToken
   else
-  if IsCharInSet(LastFullDeclaration, NonSymbol) and
-     IsCharInSet(FirstNextToken, NonSymbol) then
+  if CharInSet(LastFullDeclaration, NonSymbol) and
+     CharInSet(FirstNextToken, NonSymbol) then
     { Separate 2 non-symbols by space.
       This way e.g. parsing "property MetadataBoolean[const Key: String]" results in FullDeclaration
       with space between "const" and "Key". }

@@ -1058,10 +1058,10 @@ begin
     if l < 3 then Exit;
 
     c := p^;
-    if IsCharInSet(c, ['a'..'z']) then
+    if CharInSet(c, ['a'..'z']) then
       Dec(c, 32);
 
-    if not IsCharInSet(c, ['A'..'Z']) or not IsCharInSet(p[1], ['-', '+']) then
+    if not CharInSet(c, ['A'..'Z']) or not CharInSet(p[1], ['-', '+']) then
       Exit;
 
     FSwitchOptions[c] := p[1] = '+';

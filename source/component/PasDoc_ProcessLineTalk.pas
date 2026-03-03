@@ -177,7 +177,7 @@ begin
    Delete(ReadBuf, 1, 1);
    LastNewLineChar := #0;
   end else
-  if IsCharInSet(ReadBuf[i], [#10, #13]) then
+  if CharInSet(ReadBuf[i], [#10, #13]) then
   begin
    Result := Copy(ReadBuf, 1, i-1);
    LastNewLineChar := ReadBuf[i];

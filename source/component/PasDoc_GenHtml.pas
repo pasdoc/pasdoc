@@ -2265,7 +2265,7 @@ begin
 
     if AString[i] = '&' then
       Result := Result + '&amp;' else
-    if IsCharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
+    if CharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
       Result := Result + AString[i] else
       Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
   end;

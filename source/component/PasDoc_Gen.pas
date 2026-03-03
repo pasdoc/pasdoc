@@ -2279,19 +2279,19 @@ begin
   if (atPos < 2) or (atPos > Length(s) - 3) then Exit;
   { assemble address left of @ }
   i := atPos - 1;
-  while (i >= 1) and IsCharInSet(s[i], ALLOWED_CHARS) do
+  while (i >= 1) and CharInSet(s[i], ALLOWED_CHARS) do
     Dec(i);
   EmailAddress := System.Copy(s, i + 1, atPos - i - 1) + '@';
   S1 := '';
   if (i > 1) then S1 := System.Copy(s, 1, i);
   { assemble address right of @ }
   i := atPos + 1;
-  while (i <= Length(s)) and IsCharInSet(s[i], ALLOWED_CHARS) do
+  while (i <= Length(s)) and CharInSet(s[i], ALLOWED_CHARS) do
     Inc(i);
   EmailAddress := EmailAddress + System.Copy(s, atPos + 1, i - atPos - 1);
   if (Length(EmailAddress) < 6) or
-    (not IsCharInSet(EmailAddress[Length(EmailAddress)], Letters)) or
-  (not IsCharInSet(EmailAddress[Length(EmailAddress) - 1], Letters)) then Exit;
+    (not CharInSet(EmailAddress[Length(EmailAddress)], Letters)) or
+  (not CharInSet(EmailAddress[Length(EmailAddress) - 1], Letters)) then Exit;
   S2 := '';
   if (i <= Length(s)) then S2 := System.Copy(s, i, Length(s) - i + 1);
   Result := True;
@@ -2326,7 +2326,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p + 7, 255);
     p := 1;
-    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and CharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -2340,7 +2340,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p, 255);
     p := 1;
-    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and CharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -3423,13 +3423,13 @@ begin
             HexBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if IsCharInSet(Line[CharIndex], NumericStart) then
+          if CharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3470,7 +3470,7 @@ begin
           begin
             EndOfCode := True;
           end
-          else if not IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if not CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             EndOfCode := True;
             CodeType := ctWhiteSpace;
@@ -3497,12 +3497,12 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if IsCharInSet(Line[CharIndex], NumericStart) then
+          else if CharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3523,7 +3523,7 @@ begin
           begin
             // do nothing
           end
-          else if IsCharInSet(Line[CharIndex], Separators) then
+          else if CharInSet(Line[CharIndex], Separators) then
           begin
             result := result + FormatString(Copy(Line, StringBeginning,
               CharIndex - StringBeginning));
@@ -3566,7 +3566,7 @@ begin
         end;
       ctSlashComment:
         begin
-          if IsCharInSet(Line[CharIndex], LineEnd) then
+          if CharInSet(Line[CharIndex], LineEnd) then
           begin
             CodeType := ctWhiteSpace;
             result := result + FormatComment(Copy(Line, CommentBegining,
@@ -3576,8 +3576,8 @@ begin
         end;
       ctHex:
         Begin
-          If IsCharInSet(Line[CharIndex], Separators) Or
-              Not IsCharInSet(Line[CharIndex], Hexadec) then
+          If CharInSet(Line[CharIndex], Separators) Or
+              Not CharInSet(Line[CharIndex], Hexadec) then
           begin
             CodeType := ctEndHex;
             result := result + FormatHex(Copy(Line, HexBeginning,
@@ -3587,8 +3587,8 @@ begin
         End;
       ctNumeric:
         begin
-          if IsCharInSet(Line[CharIndex], (Separators - NumericOther)) or
-              not IsCharInSet(Line[CharIndex], NumericOther) then
+          if CharInSet(Line[CharIndex], (Separators - NumericOther)) or
+              not CharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctEndNumeric;
             NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
@@ -3622,12 +3622,12 @@ begin
           begin
             // do nothing
           end
-          else if IsCharInSet(Line[CharIndex], NumericOther) then
+          else if CharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3653,7 +3653,7 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3878,7 +3878,7 @@ begin
           repeat
             Inc(i);
           until (i > l) or
-            (not IsCharInSet(Code[i], ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
+            (not CharInSet(Code[i], ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
           if not NameFound and (s = Item.Name) then

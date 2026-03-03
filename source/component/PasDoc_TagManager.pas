@@ -1280,7 +1280,7 @@ var
     i := FOffset + 1;
 
     while (i <= Length(Description)) and
-          IsCharInSet(Description[i], ['A'..'Z', 'a'..'z']) do
+          CharInSet(Description[i], ['A'..'Z', 'a'..'z']) do
       Inc(i);
 
     if i = FOffset + 1 then Exit; { exit with false }
@@ -1340,7 +1340,7 @@ var
         prefixed with "line feed" char \ (just like shell scripts, C lang etc.) }
       while (i <= Length(Description)) do
       begin
-        if IsCharInSet(Description[i], WhiteSpaceNL) then
+        if CharInSet(Description[i], WhiteSpaceNL) then
           if Description[i - 1] = '\' then
           begin
             // Copy currently consumed line and start reading from found NL
@@ -1434,7 +1434,7 @@ var
     i := i + Length(URLMiddle);
     while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
     Dec(i);
-    while IsCharInSet(Description[i], HalfLinkChars) do Dec(i);
+    while CharInSet(Description[i], HalfLinkChars) do Dec(i);
     Inc(i);
     OffsetEnd := i;
 
@@ -1463,7 +1463,7 @@ var
   begin
     Result :=
       ( (FOffset = 1) or
-        not IsCharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
+        not CharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
       SCharIs(Description, FOffset, FirstIdentChar);
 
     if Result then

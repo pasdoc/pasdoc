@@ -81,7 +81,7 @@ begin
   Result := 0;
   p := Pointer(s);
   l := Length(s);
-  while (l > 0) and IsCharInSet(p^, [' ', #9]) do begin
+  while (l > 0) and CharInSet(p^, [' ', #9]) do begin
     Inc(Result);
     Inc(p);
     Dec(l);

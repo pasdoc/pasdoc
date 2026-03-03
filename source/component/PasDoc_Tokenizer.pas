@@ -758,7 +758,7 @@ begin
       else
         DoError('Tokenizer: could not read character, unexpected end of stream', []);
 
-    if IsCharInSet(c, Whitespace) then
+    if CharInSet(c, Whitespace) then
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
@@ -768,7 +768,7 @@ begin
       else
         DoError('Tokenizer: could not read character', []);
     end else
-    if IsCharInSet(c, IdentifierStart) then
+    if CharInSet(c, IdentifierStart) then
     begin
       if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
       begin
@@ -786,7 +786,7 @@ begin
         end;
       end;
     end else
-    if IsCharInSet(c, NumberStart) then
+    if CharInSet(c, NumberStart) then
       ReadToken(c, NumberOther, TOK_NUMBER, Result)
     else
       case c of
@@ -917,7 +917,7 @@ begin
         '%': Result := ReadAttAssemblerRegister;
         '&': begin
                if not ((GetChar(C) > 0) and
-                       IsCharInSet(C, IdentifierStart) and
+                       CharInSet(C, IdentifierStart) and
                        ReadToken(C, IdentifierOther, TOK_IDENTIFIER, Result)) then
                begin
                  if NilOnInvalidContent then
@@ -1092,7 +1092,7 @@ begin
   Result.Data := '%';
   repeat
     if (not HasData) or (not PeekChar(C)) then Exit;
-    if IsCharInSet(C, ['a'..'z', 'A'..'Z', '0'..'9']) then
+    if CharInSet(C, ['a'..'z', 'A'..'Z', '0'..'9']) then
     begin
       GetChar(C);
       Result.Data := Result.Data + C;
@@ -1172,7 +1172,7 @@ begin
       end;
       break;
     end;
-    if IsCharInSet(c, s) then begin
+    if CharInSet(c, s) then begin
       t.Data := t.Data + c;
       ConsumeChar;
     end else begin

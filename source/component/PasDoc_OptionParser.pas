@@ -305,10 +305,10 @@ begin
 
   for i := 1 to Length(Line) do
   begin
-    if IsCharInSet(Line[i], WordBreaks) then
+    if CharInSet(Line[i], WordBreaks) then
       WBPos := i
     else
-    if IsCharInSet(Line[i], LineBreaks) then // leave line breaks that are already there
+    if CharInSet(Line[i], LineBreaks) then // leave line breaks that are already there
     begin
       NextMaxPos := i + MaxCol;
       Continue;

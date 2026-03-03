@@ -203,10 +203,6 @@ function DeleteFileExt(const FileName: string): string;
 function RemoveIndentation(const Code: string): string;
 
 procedure Swap16Buf(Src, Dst: PWord; WordCount: Integer);
-function IsCharInSet(C: AnsiChar; const CharSet: TCharSet): Boolean;
-  overload; {$IFDEF USE_INLINE} inline; {$ENDIF}
-function IsCharInSet(C: WideChar; const CharSet: TCharSet): Boolean; overload;
-  {$IFDEF USE_INLINE} inline; {$ENDIF}
 function IsUtf8LeadByte(const B: Byte): Boolean; {$IFDEF USE_INLINE} inline; {$ENDIF}
 function IsUtf8TrailByte(const B: Byte): Boolean; {$IFDEF USE_INLINE} inline; {$ENDIF}
 function Utf8Size(const LeadByte: Byte): Integer; {$IFDEF USE_INLINE} inline; {$ENDIF}
@@ -327,7 +323,7 @@ end;
 function SCharIs(const S: string; Index: integer;
   const Chars: TCharSet): boolean; overload;
 begin
-  Result := (Index <= Length(S)) and IsCharInSet(S[Index], Chars);
+  Result := (Index <= Length(S)) and CharInSet(S[Index], Chars);
 end;
 
 function ExtractFirstWord(var S: String): String;
@@ -366,7 +362,7 @@ begin
   StartPos := 1;
   Len := Length(S);
 
-  while (StartPos <= Len) and IsCharInSet(S[StartPos], WhiteSpace) do
+  while (StartPos <= Len) and CharInSet(S[StartPos], WhiteSpace) do
     Inc(StartPos);
 
   Depth := 0;
@@ -379,7 +375,7 @@ begin
         Inc(Depth)
       else if S[EndPos] = ')' then
         Dec(Depth)
-      else if (Depth = 0) and IsCharInSet(S[EndPos], WhiteSpace) then
+      else if (Depth = 0) and CharInSet(S[EndPos], WhiteSpace) then
         Break;
 
       Inc(EndPos);
@@ -505,7 +501,7 @@ var
 begin
   Result := S;
   for I := 1 to Length(Result) do
-    if IsCharInSet(Result[I], Chars) then
+    if CharInSet(Result[I], Chars) then
       Result[I] := ReplacementChar;
 end;
 
@@ -537,7 +533,7 @@ function ExtractFilePath(const FileName: string): string;
 var i: longint;
 begin
   i := Length(FileName);
-  while (i > 0) and not IsCharInSet(FileName[i], ['/', '\', ':']) do Dec(i);
+  while (i > 0) and not CharInSet(FileName[i], ['/', '\', ':']) do Dec(i);
   if I > 0 then
     Result := Copy(FileName, 1, i)
   else
@@ -548,7 +544,7 @@ function ExtractFileName(const FileName: string): string;
 var i: longint;
 begin
   I := Length(FileName);
-  while (I > 0) and not IsCharInSet(FileName[I], ['/', '\', ':']) do Dec(I);
+  while (I > 0) and not CharInSet(FileName[I], ['/', '\', ':']) do Dec(I);
   Result := Copy(FileName, I + 1, 255);
 end;
 {$endif}
@@ -659,7 +655,7 @@ begin
       Assert(Trim(Source[FirstNonEmptyLine]) <> '');
       IndentationPrefix := ''; // should always be changed by loop below
       for I := 1 to Length(Source[FirstNonEmptyLine]) - 1 do
-        if not IsCharInSet(Source[FirstNonEmptyLine][I], WhiteSpace) then
+        if not CharInSet(Source[FirstNonEmptyLine][I], WhiteSpace) then
         begin
           IndentationPrefix := Copy(Source[FirstNonEmptyLine], 1, I - 1);
           break;
@@ -747,21 +743,6 @@ begin
     Result := (Ch >= #$D800) and (Ch <= #$DFFF);
 end;
 {$ENDIF}
-
-
-{---------------------------------------------------------------------------}
-function IsCharInSet(C: AnsiChar; const CharSet: TCharSet): Boolean;
-begin
-  Result := C in CharSet;
-end;
-
-
-{---------------------------------------------------------------------------}
-function IsCharInSet(C: WideChar; const CharSet: TCharSet): Boolean;
-begin
-  Result := (C < #$0100) and (AnsiChar(C) in CharSet);
-end;
-
 
 {---------------------------------------------------------------------------}
 {$IFDEF MSWINDOWS}
@@ -941,7 +922,7 @@ end;
 function CharsPos(const Chars: TCharSet; const S: String): Integer;
 begin
   for Result := 1 to Length(S) do
-    if IsCharInSet(S[Result], Chars) then
+    if CharInSet(S[Result], Chars) then
       Exit;
   Result := 0;
 end;
