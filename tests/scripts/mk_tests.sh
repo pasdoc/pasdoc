@@ -226,7 +226,14 @@ all_tests_for_current_format ()
   mk_test ok_external_class_hierarchy ok_external_class_hierarchy.pas --external-class-hierarchy=ok_external_class_hierarchy.txt
   mk_test ok_anonymous_methods ok_anonymous_methods.pas
   mk_test ok_class_record_helpers ok_class_record_helpers.pas
-  mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas error_bom_utf32_be.pas
+
+  # Results of this would be different between STRING_UNICODE and non-STRING_UNICODE builds.
+  # PasDoc build with STRING_UNICODE can parse UTF-16 files.
+  #mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas error_bom_utf32_be.pas
+
+  # Test simpler version of it now, with only UTF-8 BOM that can be handled by any build.
+  mk_test utf_bom_test ok_bom.pas
+
   mk_test ok_cvar ok_cvar.pas
   mk_test ok_nested_types ok_nested_types.pas
   mk_test ok_generic ok_generic.pas
