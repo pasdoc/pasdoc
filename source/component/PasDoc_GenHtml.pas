@@ -355,7 +355,7 @@ implementation
 
 uses
   SysUtils,
-  StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
+  StrUtils,
   PasDoc_Base,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
@@ -364,8 +364,8 @@ uses
 
 const
   { Bootstrap CSS and JS, written to the output directory by WriteBinaryFiles. }
-  DefaultBootstrapCss = {$I bootstrap/bootstrap.min.css.inc};
-  DefaultBootstrapJs = {$I bootstrap/bootstrap.bundle.min.js.inc};
+  DefaultBootstrapCss: {$I bootstrap/bootstrap.min.css.inc};
+  DefaultBootstrapJs: {$I bootstrap/bootstrap.bundle.min.js.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
 const
@@ -2210,8 +2210,8 @@ procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 begin
   if Bootstrap then
   begin
-    StringToFile(DestinationDirectory + 'bootstrap.min.css', DefaultBootstrapCss);
-    StringToFile(DestinationDirectory + 'bootstrap.bundle.min.js', DefaultBootstrapJs);
+    DataToFile(DestinationDirectory + 'bootstrap.min.css', DefaultBootstrapCss);
+    DataToFile(DestinationDirectory + 'bootstrap.bundle.min.js', DefaultBootstrapJs);
   end;
   StringToFile(DestinationDirectory + 'pasdoc.css', CSS);
 end;

@@ -39,3 +39,6 @@ tests/testcases/error_line_number_4.pas text eol=cr
 
 # treated as binary files here, even if (parts of) look like text
 *.eps binary
+# treated as binary files, see source/component/bootstrap/Makefile for comments
+bootstrap.min.css binary
+bootstrap.bundle.min.js binary

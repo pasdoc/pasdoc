@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -55,7 +55,7 @@ begin
   SrcFileName := ParamStr(1);
   DestFileName := ParamStr(2);
 
-  Src := TFileStream.Create(SrcFileName, fmOpenRead);
+  Src := TFileStream.Create(SrcFileName, fmOpenRead or fmShareDenyWrite);
   try
     Assign(Dest, DestFileName);
     Rewrite(Dest);
