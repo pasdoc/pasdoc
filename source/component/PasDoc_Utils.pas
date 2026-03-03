@@ -40,29 +40,6 @@ uses
   SysUtils,
   PasDoc_Types;
 
-{ TMethod is not defined for FPC 1.0.x and Delphi < 6, so we have to define
-  it here. }
-
-{$define GOT_TMETHOD}
-{$ifdef VER1_0} {$undef GOT_TMETHOD} {$endif}
-{$ifndef FPC} {$ifndef DELPHI_6_UP} {$undef GOT_TMETHOD} {$endif} {$endif}
-
-{$ifndef GOT_TMETHOD}
-type
-  TMethod = record
-    code, data: Pointer;
-  end;
-{$endif}
-
-{$ifndef DELPHI_6_UP}
-{$ifndef FPC}
-{$ifndef LINUX}
-const
-  PathDelim = '\';
-{$endif}
-{$endif}
-{$endif}
-
 { string empty means it contains only whitespace }
 function IsStrEmptyA(const AString: string): boolean;
 { count occurences of AChar in AString }
@@ -72,19 +49,9 @@ function StrPosIA(const ASub, AString: string): Integer;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
-{$ifndef DELPHI_6_UP}
-{$ifndef KYLIX}
-{$ifndef FPC}
-function IncludeTrailingPathDelimiter(const S: string): string;
-function ExcludeTrailingPathDelimiter(const S: string): string;
-{$endif}
-{$endif}
-{$endif}
-
 {$ifndef FPC}
 const
-  LineEnding = {$ifdef LINUX} #10 {$endif}
-               {$ifdef MSWINDOWS} #13#10 {$endif};
+  LineEnding = SLineBreak;
 {$endif}
 
 type
@@ -191,14 +158,6 @@ function IsPrefix(const Prefix, S: string): boolean;
 
 { If IsPrefix(Prefix, S), then remove the prefix, otherwise return unmodifed S. }
 function RemovePrefix(const Prefix, S: string): string;
-
-{$ifdef DELPHI_5}
-{ BoolToStr for Delphi 5 compat.
-  According to
-  @url(https://sourceforge.net/tracker/?func=detail&atid=104213&aid=1595890&group_id=4213)
-  Delphi 5 RTL doesn't have this implemented. }
-function BoolToStr(Value: Boolean): string;
-{$endif DELPHI_5}
 
 { SEnding returns S contents starting from position P.
   Returns '' if P > length(S).
@@ -332,29 +291,6 @@ begin
   Result.Code := AMethod;
   Result.Data := AObject;
 end;
-
-{$ifndef DELPHI_6_UP}
-{$ifndef KYLIX}
-{$ifndef FPC}
-function IncludeTrailingPathDelimiter(const S: string): string;
-begin
-  Result := S;
-  if Length(S)>0 then begin
-    if S[Length(S)] <> PathDelim then begin
-      Result := S + PathDelim;
-    end;
-  end;
-end;
-
-function ExcludeTrailingPathDelimiter(const S: string): string;
-begin
-  Result := S;
-  if (S <> '') and (S[Length(S)] in ['/', '\']) then
-    SetLength(Result, Length(Result) - 1);
-end;
-{$endif}
-{$endif}
-{$endif}
 
 function StringReplaceChars(const S: string;
   const ReplacementArray: array of TCharReplacement): string;
@@ -629,15 +565,6 @@ begin
   else
     Result := S;
 end;
-
-{$ifdef DELPHI_5}
-function BoolToStr(Value: Boolean): string;
-begin
-  if Value then
-    Result := 'TRUE' else
-    Result := 'FALSE';
-end;
-{$endif}
 
 function SEnding(const S: string; P: integer): string;
 begin
