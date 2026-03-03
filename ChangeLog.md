@@ -2,6 +2,13 @@
 
 ## Upcoming Next Release
 
+* Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
+    * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader.
+    * Use generic containers from `Generics.Collections`, they rock with both FPC and Delphi, and make code both simpler (no need for some custom container code) and safer (no need to typecasts, types checked at compile-time). See https://github.com/pasdoc/pasdoc/discussions/231
+    * Fixed compilation and working with Delphi, Delphi 10 and 12, using GitHub Actions, just like we do for CGE (see https://castle-engine.io/supported_compilers ).
+    * Use standard TBufferedFileStream from both FPC and Delphi.
+    * Removed a ton of unused old code from `PasDoc_Utils`, `PasDoc_StreamUtils`. We now rely on standard FPC and Delphi API for streams and Unicode handling.
+    * Dropped compatibility with some ancient compiler versions. We require now compilers with `Generics.Collections` support, which means FPC >= 3.2.0 and Delphi >= 2009.
 * Fixed when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
 * Parsing "unimplemented" directive (Michalis)
 * [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
