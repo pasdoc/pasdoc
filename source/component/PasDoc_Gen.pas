@@ -47,7 +47,7 @@ unit PasDoc_Gen;
 interface
 
 uses
-  Classes, Contnrs, Generics.Collections,
+  SysUtils, Classes, Contnrs, Generics.Collections,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
@@ -273,6 +273,10 @@ type
     FUseLowercaseKeywords: boolean;
 
     FCurrentStream: {$IFDEF STRING_UNICODE} TStreamWriter {$ELSE} TStream {$ENDIF};
+
+    {$ifdef STRING_UNICODE}
+    FCurrentStreamEncoding: TEncoding;
+    {$endif}
 
     { Title of documentation. }
     FTitle: string;
@@ -1057,7 +1061,6 @@ type
 implementation
 
 uses
-  SysUtils,
   StrUtils,
   PasDoc_Utils,
   PasDoc_Tokenizer;
@@ -1248,10 +1251,10 @@ end;
 
 procedure TDocGenerator.CloseStream;
 begin
-  if Assigned(FCurrentStream) then begin
-    FCurrentStream.Free;
-    FCurrentStream := nil;
-  end;
+  FreeAndNil(FCurrentStream);
+  {$ifdef STRING_UNICODE}
+  FreeAndNil(FCurrentStreamEncoding);
+  {$endif}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1265,26 +1268,24 @@ end;
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
-  {$ifdef STRING_UNICODE}
-  Encoding: TEncoding;
-  {$endif}
 begin
   CloseStream;
+
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := false;
   S := DestinationDirectory + AName;
   try
     {$if defined(STRING_UNICODE)}
-    Encoding := TEncoding.GetEncoding(FLanguage.CodePage); // TODO: leak?
+    FCurrentStreamEncoding := TEncoding.GetEncoding(FLanguage.CodePage);
     { Don't generate UTF-8 BOM, because that's we do without STRING_UNICODE
       and most of our output is just pure ASCII.
       TODO: This should be configurable, not hardcoded here. }
-    if Encoding is TUTF8Encoding then
+    if FCurrentStreamEncoding is TUTF8Encoding then
     begin
-      FreeAndNil(Encoding);
-      Encoding := TUTF8Encoding.Create(false);
+      FreeAndNil(FCurrentStreamEncoding);
+      FCurrentStreamEncoding := TUTF8Encoding.Create(false);
     end;
-    FCurrentStream := TStreamWriter.Create(S, false, Encoding);
+    FCurrentStream := TStreamWriter.Create(S, false, FCurrentStreamEncoding);
     {$elseif defined(USE_BUFFERED_STREAM)}
     FCurrentStream := TBufferedStream.Create(S, fmCreate);
     {$else}
@@ -2893,7 +2894,7 @@ begin
   FLanguage.Free;
   FClassHierarchy.Free;
   FAbbreviations.Free;
-  FCurrentStream.Free;
+  CloseStream;
   inherited;
 end;
 
