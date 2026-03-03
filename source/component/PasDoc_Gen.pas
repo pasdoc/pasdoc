@@ -1265,6 +1265,23 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$ifdef STRING_UNICODE}
+type
+  { Encoding without BOM.
+    In Delphi 12, this can be achieved simpler, just TUTF8Encoding.Create(false).
+    But for Delphi 10, we need this.
+    See https://stackoverflow.com/questions/77179326/remove-utf-8-bom-from-tstream-output }
+  TUTF8EncodingNoBOM = class(TUTF8Encoding)
+  public
+    function GetPreamble: TBytes; override;
+  end;
+
+function TUTF8EncodingNoBOM.GetPreamble: TBytes;
+begin
+  Result := nil;
+end;
+{$endif}
+
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
@@ -1277,13 +1294,13 @@ begin
   try
     {$if defined(STRING_UNICODE)}
     FCurrentStreamEncoding := TEncoding.GetEncoding(FLanguage.CodePage);
-    { Don't generate UTF-8 BOM, because that's we do without STRING_UNICODE
+    { Don't generate UTF-8 BOM, because that's what we do without STRING_UNICODE
       and most of our output is just pure ASCII.
       TODO: This should be configurable, not hardcoded here. }
     if FCurrentStreamEncoding is TUTF8Encoding then
     begin
       FreeAndNil(FCurrentStreamEncoding);
-      FCurrentStreamEncoding := TUTF8Encoding.Create(false);
+      FCurrentStreamEncoding := TUTF8EncodingNoBOM.Create;
     end;
     FCurrentStream := TStreamWriter.Create(S, false, FCurrentStreamEncoding);
     {$else}
