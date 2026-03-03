@@ -677,6 +677,13 @@ begin
   end else
   begin
     {$ifdef STRING_UNICODE}
+    { Do not call StreamReader.Read when EndOfStream,
+      otherwise (for TStringStream) the StreamReader.Read at the end of string
+      would return 1 character with code 0.
+      This would trip our tokenizer, 0 is invalid character in input. }
+    if StreamReader.EndOfStream then
+      Exit(0);
+
     SetLength(CharArray, 1);
     Result := StreamReader.Read(CharArray, 0, 1) * SizeOf(WideChar);
     if Result <> 0 then
