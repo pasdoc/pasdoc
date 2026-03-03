@@ -101,10 +101,10 @@ type
   Line ending is included in the result. }
 function StreamReadLine(const AStream: TStream): AnsiString;
 
-{ Write AString contents, then LineEnding to AStream }
+{ Write AString contents, then LineEnding to AStream. }
 procedure StreamWriteLine(const AStream: TStream; const AString: AnsiString);
 
-{ Just write AString contents to AStream }
+{ Just write AString contents to AStream. }
 procedure StreamWriteString(const AStream: TStream; const AString: AnsiString);
 {$endif}
 

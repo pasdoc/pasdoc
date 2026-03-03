@@ -367,7 +367,7 @@ type
 
     { Read next character (WideChar in case of STRING_UNICODE).
       Returns how many bytes this character takes, or 0 if cannot read. }
-    function GetChar(out c: {$IFDEF STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
+    function GetChar(out c: {$ifdef STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
@@ -663,9 +663,11 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.GetChar(out c: {$IFDEF STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
+function TTokenizer.GetChar(out c: {$ifdef STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
+{$ifdef STRING_UNICODE}
 var
   CharArray: TCharArray;
+{$endif}
 begin
   if IsCharBuffered then
   begin
@@ -674,7 +676,7 @@ begin
     Result := FBufferedCharSize;
   end else
   begin
-    {$IFDEF STRING_UNICODE}
+    {$ifdef STRING_UNICODE}
     SetLength(CharArray, 1);
     Result := StreamReader.Read(CharArray, 0, 1) * SizeOf(WideChar);
     if Result <> 0 then

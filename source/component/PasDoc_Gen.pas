@@ -272,14 +272,8 @@ type
       default is false }
     FUseLowercaseKeywords: boolean;
 
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
-  {$IFDEF STRING_UNICODE}
-    FCurrentStream: TStreamWriter;
-  {$ELSE}
-    FCurrentStream: TStream;
-  {$ENDIF}
+    FCurrentStream: {$IFDEF STRING_UNICODE} TStreamWriter {$ELSE} TStream {$ENDIF};
+
     { Title of documentation. }
     FTitle: string;
     { destination directory for documentation; must include terminating
@@ -464,11 +458,11 @@ type
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
-  {$IFDEF STRING_UNICODE}
-    property CurrentStream: TStreamWriter read FCurrentStream;
-  {$ELSE}
-    property CurrentStream: TStream read FCurrentStream;
-  {$ENDIF}
+
+    { Output stream that is currently written to; depending on the
+      output format, more than one output stream may be necessary to
+      store all documentation. }
+    property CurrentStream: {$IFDEF STRING_UNICODE} TStreamWriter {$ELSE} TStream {$ENDIF} read FCurrentStream;
 
     procedure CreateClassHierarchy;
 
@@ -2545,12 +2539,13 @@ begin
     f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
   {$ENDIF}
   {$ENDIF}
-    // Assert(Assigned(f)); useless here
-
     try
       {$IFDEF STRING_UNICODE}
       while not f.EndOfStream do
       begin
+        { We add LineEnding, as logic of multi-line Description handling
+          relies on these newlines. The StreamReadLine, used when not
+          STRING_UNICODE, also adds them by itself. }
         S := f.ReadLine + LineEnding;
       {$ELSE}
       while f.Position < f.Size do
