@@ -75,9 +75,8 @@ type
     { Frees all items including their CIOs and clears the stack }
     procedure Clear;
     function Push(AHelper: TPasCioHelper): TPasCioHelper;
-      {$IFDEF USE_INLINE} inline; {$ENDIF}
-    function Pop: TPasCioHelper; {$IFDEF USE_INLINE} inline; {$ENDIF}
-    function Peek: TPasCioHelper; {$IFDEF USE_INLINE} inline; {$ENDIF}
+    function Pop: TPasCioHelper;
+    function Peek: TPasCioHelper;
   end;
 
   // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).

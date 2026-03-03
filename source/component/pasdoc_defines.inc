@@ -22,18 +22,18 @@
 
 {$I pasdoc_versions.inc}
 
+{ Use TBufferedFileStream , both in FPC and Delphi:
+  https://docwiki.embarcadero.com/Libraries/Sydney/en/System.Classes.TBufferedFileStream
+  https://www.freepascal.org/docs-html/fcl/bufstream/tbufferedfilestream.html . }
+{$DEFINE USE_BUFFERED_STREAM}
+
 {$IFDEF COMPILER_7_UP}
   {$WARN UNSAFE_CAST OFF}
   {$WARN UNSAFE_CODE OFF}
   {$WARN UNSAFE_TYPE OFF}
   (* Disables .NET warnings for Delphi 7 and later. *)
 
-  { USE_BUFFERED_STREAM MUST be defined if STRING_UNICODE is defined as well. }
-  {$DEFINE USE_BUFFERED_STREAM}
-
   {$IFDEF COMPILER_10_UP}
-    {$DEFINE USE_INLINE}
-
     {$IFDEF COMPILER_12_UP}
       {$DEFINE STRING_UNICODE}
 
@@ -45,17 +45,6 @@
     {$ENDIF}
   {$ENDIF}
 {$ENDIF} // Delphi
-
-{$ifdef FPC}
-  { Turn macro on to get FPC_VERSION, FPC_RELEASE, FPC_PATCH macros,
-    used in PasDoc.pas. Also to change "out" to "var" for FPC 1.0.x. }
-  {$macro on}
-
-  {$IFDEF VER2}
-    {$DEFINE USE_INLINE}
-    {$DEFINE USE_BUFFERED_STREAM}
-  {$ENDIF}
-{$endif}
 
 { Detect regular expressions unit. }
 {$ifdef FPC}

@@ -108,6 +108,9 @@ implementation
 
 uses SysUtils;
 
+// Enable FPC_VERSION etc. macros below
+{$ifdef FPC} {$macro on} {$endif}
+
 function COMPILER_NAME: string;
 begin
   COMPILER_NAME :=

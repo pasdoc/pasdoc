@@ -850,16 +850,12 @@ var
     if Result then
     begin
       { create new tokenizer with stream }
-      {$IFDEF USE_BUFFERED_STREAM}
-      IncludeStream := TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite);
-      {$ELSE}
-      IncludeStream := TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
-      {$ENDIF}
+      IncludeStream := TBufferedFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
       {$ifndef STRING_UNICODE}
       { SkipBOM is only used when we don't use TStreamReader.
         TStreamReader handles BOM already by itself. }
       SkipBOM(IncludeStream);
-      {$ENDIF}
+      {$endif}
       OpenNewTokenizer(IncludeStream, Name, ExpandFileName(Name));
     end;
   end;

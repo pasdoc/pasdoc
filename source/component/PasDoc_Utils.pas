@@ -199,10 +199,7 @@ function DeleteFileExt(const FileName: string): string;
 { Remove common indentation (whitespace prefix) from a multiline string. }
 function RemoveIndentation(const Code: string): string;
 
-{$IFDEF COMPILER_10_UP}
 function CheckGetFileDate(const AFileName: string): TDateTime;
-  {$IFDEF USE_INLINE} inline; {$ENDIF}
-{$ENDIF}
 
 { Strip HTML elements from the string.
 
@@ -675,13 +672,15 @@ end;
 
 {---------------------------------------------------------------------------}
 
-{$IFDEF COMPILER_10_UP}
 function CheckGetFileDate(const AFileName: string): TDateTime;
 begin
+  {$IFDEF COMPILER_10_UP}
   if not FileAge(AFileName, Result) then
     raise Exception.Create('Error on getting the file date :"' + AFileName + '"');
+  {$ELSE}
+  Result := FileDateToDateTime(FileAge(AFileName));
+  {$ENDIF}
 end;
-{$ENDIF}
 
 function StripHtml(const S: string): string;
 var

@@ -1286,10 +1286,8 @@ begin
       FCurrentStreamEncoding := TUTF8Encoding.Create(false);
     end;
     FCurrentStream := TStreamWriter.Create(S, false, FCurrentStreamEncoding);
-    {$elseif defined(USE_BUFFERED_STREAM)}
-    FCurrentStream := TBufferedStream.Create(S, fmCreate);
     {$else}
-    FCurrentStream := TFileStream.Create(S, fmCreate);
+    FCurrentStream := TBufferedFileStream.Create(S, fmCreate);
     {$endif}
 
     Result := true;
@@ -2544,11 +2542,7 @@ begin
   {$IFDEF STRING_UNICODE}
     f := TStreamReader.Create(n);
   {$ELSE}
-  {$IFDEF USE_BUFFERED_STREAM}
-    f := TBufferedStream.Create(n, fmOpenRead or fmShareDenyWrite);
-  {$ELSE}
-    f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
-  {$ENDIF}
+    f := TBufferedFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
   {$ENDIF}
     try
       {$IFDEF STRING_UNICODE}

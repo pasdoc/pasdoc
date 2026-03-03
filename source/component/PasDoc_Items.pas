@@ -2750,13 +2750,8 @@ end;
 
 function TPasUnit.FileNewerThanCache(const FileName: string): boolean;
 begin
-{$IFDEF COMPILER_10_UP}
   Result := WasDeserialized and FileExists(FileName) and
     (CacheDateTime < CheckGetFileDate(FileName));
-{$ELSE}
-  Result := WasDeserialized and FileExists(FileName) and
-    (CacheDateTime < FileDateToDateTime(FileAge(FileName)));
-{$ENDIF}
 end;
 
 procedure TPasUnit.Sort(const SortSettings: TSortSettings);

@@ -52,15 +52,7 @@ uses
   PasDoc_StringVector,
   PasDoc_SortSettings,
   PasDoc_StreamUtils,
-  PasDoc_TagManager
-{$IFNDEF FPC}
-{$IFDEF WIN32}
-{$IFNDEF DELPHI_6_UP}
-  ,FileCtrl
-{$ENDIF}
-{$ENDIF}
-{$ENDIF}
-  ;
+  PasDoc_TagManager;
 
 const
   { }
@@ -326,13 +318,8 @@ begin
       DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       try
         U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
-        {$IFDEF COMPILER_10_UP}
         U.CacheDateTime := CheckGetFileDate(LCacheFileName);
         if U.CacheDateTime < CheckGetFileDate(SourceFileName) then
-        {$ELSE}
-        U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
-        if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
-        {$ENDIF}
         begin
           DoMessage(2, pmtInformation, 'Cache file for %s is outdated.',
             [SourceFileName]);
@@ -367,11 +354,7 @@ begin
     end else
     begin
       U.SourceFileName := SourceFileName;
-    {$IFDEF COMPILER_10_UP}
       U.SourceFileDateTime := CheckGetFileDate(SourceFileName);
-    {$ELSE}
-      U.SourceFileDateTime := FileDateToDateTime(FileAge(SourceFileName));
-    {$ENDIF}
       FUnits.Add(U);
 
       { Now we know that unit was 100% successfully parsed.
@@ -448,11 +431,7 @@ begin
   begin
     p := FSourceFileNames[i];
     try
-    {$IFDEF USE_BUFFERED_STREAM}
-      InputStream := TBufferedStream.Create(p, fmOpenRead or fmShareDenyWrite);
-    {$ELSE}
-      InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
-    {$ENDIF}
+      InputStream := TBufferedFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
     except
       on E: Exception do
       begin
