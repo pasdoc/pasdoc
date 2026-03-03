@@ -197,9 +197,8 @@ jobs:
       # Still it's useful to run -- to make sure it is installed.
       - name: Install Windows Prerequisites
         run: choco install php xsltproc
-      # TODO: fix Delphi on our auto-tests, we have known issues now.
-      # - name: Test Using Delphi
-      #   run: make tests-no-build
+      - name: Test Using Delphi
+        run: make tests-no-build
 
   release:
     name: Release
