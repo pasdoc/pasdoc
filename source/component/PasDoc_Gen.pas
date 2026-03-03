@@ -1276,6 +1276,14 @@ begin
   try
     {$if defined(STRING_UNICODE)}
     Encoding := TEncoding.GetEncoding(FLanguage.CodePage); // TODO: leak?
+    { Don't generate UTF-8 BOM, because that's we do without STRING_UNICODE
+      and most of our output is just pure ASCII.
+      TODO: This should be configurable, not hardcoded here. }
+    if Encoding is TUTF8Encoding then
+    begin
+      FreeAndNil(Encoding);
+      Encoding := TUTF8Encoding.Create(false);
+    end;
     FCurrentStream := TStreamWriter.Create(S, false, Encoding);
     {$elseif defined(USE_BUFFERED_STREAM)}
     FCurrentStream := TBufferedStream.Create(S, fmCreate);
