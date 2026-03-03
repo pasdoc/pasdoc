@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,9 +20,13 @@
   ----------------------------------------------------------------------------
 }
 
-{ ---------------------------------------------------------------------------- }
-{ Compiler Version Information                                                 }
-{ ---------------------------------------------------------------------------- }
+{ Delphi version detection.
+
+  TODO: We'd like to remove this include file at some point and just use
+  CompilerVersion, like "$if CompilerVersion >= 32", checks throughout
+  the codebase.
+  For this reason, don't bother extending this file for newer Delphi versions.
+}
 
 {$IFDEF WIN32}
 
@@ -330,9 +334,3 @@
 
 {$ENDIF} // WIN32
 
-{$IFNDEF FPC}
-{$IFDEF LINUX}
-{$I pasdoc_kylixversions.inc}
-{$ENDIF}
-{$ELSE}
-{$ENDIF}

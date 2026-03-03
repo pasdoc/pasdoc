@@ -878,18 +878,10 @@ end;
 
 { TPathListOption }
 
-{$IFNDEF DELPHI_6_UP}
 {$IFDEF FPC}
 const
   sLineBreak = LineEnding;
   PathSep    = PathSeparator;
-{$ELSE}
-{$IFNDEF KYLIX}
-const
-  sLineBreak = #13#10;
-  PathSep    = ';';
-{$ENDIF}
-{$ENDIF}
 {$ENDIF}
 
 function TPathListOption.CheckValue(const AString: String): Boolean;

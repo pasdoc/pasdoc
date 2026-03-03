@@ -829,8 +829,7 @@ var
 
     Check both N and NLowerCase
     (on case-sensitive system, filename may be written in exact
-    case (like for Kylix) or lowercase (like for FPC 1.0.x),
-    FPC >= 2.x accepts both). }
+    case or lowercase). }
   function TryOpen(const Path: string): boolean;
   var
     Name: string;

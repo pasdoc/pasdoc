@@ -119,10 +119,6 @@ begin
     {$define COMPILER_VERSION_DEFINED}
     {$ENDIF}
 
-    {$IFDEF KYLIX_1}   'KYLIX 1';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_2}   'KYLIX 2';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_3}   'KYLIX 3';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-
     {$IFDEF DELPHI_6_UP}
     Format('DELPHI (Compiler Version %2.1f)', [CompilerVersion]);
     {$define COMPILER_VERSION_DEFINED}

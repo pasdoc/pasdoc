@@ -2,8 +2,6 @@ Here you can find packages to install PasDoc components
 in Lazarus and Delphi IDE.
 
 For Delphi, we provide separate packages for specific Delphi versions.
-The Kylix (discontinued "Delphi for Linux" project from Borland) packages
-are inside the delphi/kylix3/ subdirectory.
 
 For Lazarus, we just provide one package for the latest version of Lazarus.
 Lazarus is free and you can always upgrade it, so this simple approach

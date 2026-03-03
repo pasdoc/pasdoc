@@ -91,7 +91,7 @@ function StringPairIsNilOrEmpty(const StringPairList: TStringPairVector): Boolea
 implementation
 
 uses
-  SysUtils { For LowerCase under Kylix 3 },
+  SysUtils,
   PasDoc_Utils, PasDoc_Serialize;
 
 { TStringPair ---------------------------------------------------------------- }

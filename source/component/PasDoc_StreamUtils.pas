@@ -61,7 +61,7 @@ procedure StreamWriteString(const AStream: TStream; const AString: AnsiString);
 
 implementation
 
-uses PasDoc_Utils; // for LineEnding in Kylix/Delphi
+uses PasDoc_Utils; // for LineEnding in Delphi
 
 {$ifndef STRING_UNICODE}
 
