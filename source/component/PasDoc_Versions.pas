@@ -141,8 +141,12 @@ end;
 function PASDOC_FULL_INFO: string;
 begin
   PASDOC_FULL_INFO :=
-    PASDOC_NAME_AND_VERSION + ' [' + PASDOC_DATE + '|' +
-      COMPILER_NAME + '|' + COMPILER_OS + '|' + COMPILER_BITS + ']';
+    PASDOC_NAME_AND_VERSION + ' [' +
+      PASDOC_DATE + '|' +
+      COMPILER_NAME + '|' +
+      {$IFDEF STRING_UNICODE} 'UnicodeString(can parse UTF-16)|' + {$ENDIF}
+      COMPILER_OS + '|' +
+      COMPILER_BITS + ']';
 end;
 
 end.
