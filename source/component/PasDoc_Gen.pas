@@ -1265,7 +1265,9 @@ end;
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
+  {$ifdef STRING_UNICODE}
   Encoding: TEncoding;
+  {$endif}
 begin
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
