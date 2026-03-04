@@ -1,4 +1,4 @@
-<unit name="ok_enumeration_auto_abstract.pas">
+<unit name="ok_enumeration_auto_abstract">
   <type name="TEnum" declaration="TEnum = (...);" visibility="published">
     <description><abstract>Enum type.</abstract></description>
     <constant name="en1" declaration="en1" visibility="published">

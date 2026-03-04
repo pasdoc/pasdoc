@@ -1,4 +1,4 @@
-<unit name="ok_flag_parameter.pas">
+<unit name="ok_flag_parameter">
   <routine name="Foo" type="procedure" declaration="procedure Foo(const Xxx: Integer; out Yyy: Integer; const Xxx2: Integer; out Yyy2: Integer; const Xxx3: TObject; const Xxx4: TObject);" visibility="published">
     <param name="Xxx [in]">Some input param.</param>
     <param name="Yyy [out]">Some output param.</param>

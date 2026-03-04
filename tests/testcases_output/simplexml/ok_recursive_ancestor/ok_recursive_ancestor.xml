@@ -1,4 +1,4 @@
-<unit name="ok_recursive_ancestor.pas">
+<unit name="ok_recursive_ancestor">
   <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
   </structure>
   <structure name="TMyClass" name_with_generic="TMyClass&lt;T&gt;" type="class" visibility="published">

@@ -1,4 +1,4 @@
-<unit name="test_links_to_dot_names/test_dot.three.dots.pas">
+<unit name="test_dot.three.dots">
   <structure name="TClass" name_with_generic="TClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="Field" declaration="Field: byte;" visibility="public">

@@ -1,4 +1,4 @@
-<unit name="ok_attributes.pas">
+<unit name="ok_attributes">
   <structure name="NonEmptyString" name_with_generic="NonEmptyString" type="class" visibility="published">
     <description><detailed>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530 Attribute class, without Attribute suffix, PasDoc should link to it</detailed></description>
     <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />

@@ -1,4 +1,4 @@
-<unit name="ok_enum_explicit_values.pas">
+<unit name="ok_enum_explicit_values">
   <description><detailed>PasDoc fails to parse this. Bug spotted by Michalis on 2005-12-04 when trying `make htmldocs' on fpc compiler sources, in file cgbase.pas. Fixed.</detailed></description>
   <type name="TRegister" declaration="TRegister = (...);" visibility="published">
     <constant name="TRegisterLowEnum" declaration="TRegisterLowEnum := Low(longint)" visibility="published">

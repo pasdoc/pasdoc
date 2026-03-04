@@ -1,4 +1,4 @@
-<unit name="ok_expanding_descriptions.pas">
+<unit name="ok_expanding_descriptions">
   <description><abstract>This is a test of tags expanded by TPasItem handlers. Of course with @abstract tag using some recursive tag: See also TestPasMethodTags</abstract><detailed> This whole unit is actually a big test of many things related to pasdoc's @-tags.     See also TMyClass for other test of @cvs tag (with $Date, as an alternative specification of @lastmod)</detailed></description>
   <routine name="RecursiveTwoAt" type="procedure" declaration="procedure RecursiveTwoAt;" visibility="published">
     <description><detailed>aa aaaaa aa aaa <code>SHGetSpecialFolderPath(0, @Path, CSIDL_APPDATA, true)</code> aaaa aaaaaa aaaaaa aaaaaaaaa aaaa At some point, this test caused the bug: final &lt;/code&gt; tag was inserted in converted form (processed with ConvertString) into html output. In effect, there was an opening &lt;code&gt; tag but there was no closing &lt;/code&gt; tag.</detailed></description>

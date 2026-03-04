@@ -1,4 +1,4 @@
-<unit name="ok_link_class_unit_level.pas">
+<unit name="ok_link_class_unit_level">
   <description><detailed>This is a link from unit's description to an identifier inside the same unit: some procedure Foo, some class TBar.</detailed></description>
   <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
   </routine>

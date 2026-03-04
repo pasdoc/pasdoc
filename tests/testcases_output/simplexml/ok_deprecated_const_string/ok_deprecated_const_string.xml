@@ -1,4 +1,4 @@
-<unit name="ok_deprecated_const_string.pas">
-  <routine name="Foo" type="procedure" declaration="procedure Foo; deprecated 'Since D2010 a const string may follow';" visibility="published">
+<unit name="ok_deprecated_const_string">
+  <routine name="Foo" type="procedure" declaration="procedure Foo; deprecated 'Since D2010 a const string may follow';" visibility="published" deprecated_note="Since D2010 a const string may follow" deprecated="true">
   </routine>
 </unit>

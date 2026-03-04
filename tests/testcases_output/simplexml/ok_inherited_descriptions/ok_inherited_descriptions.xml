@@ -1,4 +1,4 @@
-<unit name="ok_inherited_descriptions.pas">
+<unit name="ok_inherited_descriptions">
   <structure name="TClassA" name_with_generic="TClassA" type="class" visibility="published">
     <description><detailed>This description is only on TClassA, TClassB, TClassC, and TClassD.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />

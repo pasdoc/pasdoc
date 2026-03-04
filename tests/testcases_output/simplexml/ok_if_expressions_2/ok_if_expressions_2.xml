@@ -1,4 +1,4 @@
-<unit name="ok_if_expressions_2.pas">
+<unit name="ok_if_expressions_2">
   <constant name="_TrueXorTrueIsFalse" declaration="_TrueXorTrueIsFalse =
 
 true

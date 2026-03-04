@@ -1,4 +1,4 @@
-<unit name="ok_table.pas">
+<unit name="ok_table">
   <description><abstract>Test of @table-related features.</abstract><detailed> Example from @table doc page in wiki: 
 
 <table>

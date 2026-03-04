@@ -1,4 +1,4 @@
-<unit name="ok_ignore_leading.pas">
+<unit name="ok_ignore_leading">
   <constant name="A" declaration="A = 1;" visibility="published">
     <description><detailed>Test</detailed></description>
   </constant>

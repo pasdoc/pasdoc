@@ -1,4 +1,4 @@
-<unit name="ok_ignore_leading_impl.pas">
+<unit name="ok_ignore_leading_impl">
   <routine name="testfnc_only_intf" type="function" declaration="function testfnc_only_intf(arg1: Integer; arg2: String): Boolean;" visibility="published">
     <param name="arg1">Argument 1</param>
     <param name="arg2">Argument 2</param>

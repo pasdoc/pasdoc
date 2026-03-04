@@ -1,4 +1,4 @@
-<unit name="warning_value_member_tags.pas">
+<unit name="warning_value_member_tags">
   <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>    This should cause 3 warnings: meOne has two descriptions, meTwo has two descriptions, and meNotExisting does not exist.</detailed></description>
     <constant name="meOne" declaration="meOne" visibility="published">

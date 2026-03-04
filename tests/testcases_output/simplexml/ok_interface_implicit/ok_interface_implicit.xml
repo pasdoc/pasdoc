@@ -1,4 +1,4 @@
-<unit name="ok_interface_implicit.pas">
+<unit name="ok_interface_implicit">
   <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface" visibility="published">
     <ancestor name="IInterface" declaration="IInterface" />
     <routine name="PublicMethod" type="procedure" declaration="procedure PublicMethod;" visibility="public">

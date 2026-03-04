@@ -1,4 +1,4 @@
-<unit name="ok_multiple_markers_prefix.pas">
+<unit name="ok_multiple_markers_prefix">
   <variable name="Marker1" declaration="Marker1: Integer;" visibility="published">
     <description><detailed>Some comment.</detailed></description>
   </variable>

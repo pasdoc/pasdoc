@@ -1,4 +1,4 @@
-<unit name="ok_no_comments_outside_class.pas">
+<unit name="ok_no_comments_outside_class">
   <description><detailed>Test that orthan comments do not break away from the class definition</detailed></description>
   <type name="TNoDescr1" declaration="TNoDescr1 = byte;" visibility="published">
   </type>

@@ -1,4 +1,4 @@
-<unit name="ok_param_raises_returns_proctype.pas">
+<unit name="ok_param_raises_returns_proctype">
   <type name="TMyProcedure" declaration="TMyProcedure = procedure(A: integer);" visibility="published">
     <description><detailed> </detailed></description>
   </type>

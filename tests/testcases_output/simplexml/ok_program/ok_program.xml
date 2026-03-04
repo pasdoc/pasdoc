@@ -1,4 +1,4 @@
-<unit name="ok_program.pas">
+<unit name="ok_program">
   <uses name="foo"/>
   <uses name="bar"/>
 </unit>

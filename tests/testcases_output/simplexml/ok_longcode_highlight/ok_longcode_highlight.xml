@@ -1,4 +1,4 @@
-<unit name="ok_longcode_highlight.pas">
+<unit name="ok_longcode_highlight">
   <description><abstract>Test of highlighting in @longCode some things.</abstract><detailed> See [https://sourceforge.net/tracker/?func=detail&amp;atid=354213&amp;aid=1422011&amp;group_id=4213] 
 TOptions = class(TForm)
 private

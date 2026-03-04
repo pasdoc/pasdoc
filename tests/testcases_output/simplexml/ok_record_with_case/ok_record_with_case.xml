@@ -1,4 +1,4 @@
-<unit name="ok_record_with_case.pas">
+<unit name="ok_record_with_case">
   <description><abstract>Testing of parsing and making docs for records with case parts.</abstract><detailed> It does not pass properly yet: 
 
 <orderedlist>

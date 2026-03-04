@@ -1,4 +1,4 @@
-<unit name="ok_class_function.pas">
+<unit name="ok_class_function">
   <description><detailed>Test for handling class functions in PasDoc</detailed></description>
   <structure name="TDummy" name_with_generic="TDummy" type="class" visibility="published">
     <description><abstract>This class is designed to see if PasDoc can parse class functions correctly.</abstract></description>

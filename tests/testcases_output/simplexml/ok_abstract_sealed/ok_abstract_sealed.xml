@@ -1,4 +1,4 @@
-<unit name="ok_abstract_sealed.pas">
+<unit name="ok_abstract_sealed">
   <description><detailed>description of <code>ok_abstract_sealed</code></detailed></description>
   <structure name="TOrdinaryClass" name_with_generic="TOrdinaryClass" type="class" visibility="published">
     <description><detailed>description of <code>TOrdinaryClass</code></detailed></description>

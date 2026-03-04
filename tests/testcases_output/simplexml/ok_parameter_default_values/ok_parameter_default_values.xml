@@ -1,4 +1,4 @@
-<unit name="ok_parameter_default_values.pas">
+<unit name="ok_parameter_default_values">
   <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer; B: Integer = 3; C: Integer = 5);" visibility="published">
   </routine>
   <routine name="Bar" type="procedure" declaration="procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');" visibility="published">

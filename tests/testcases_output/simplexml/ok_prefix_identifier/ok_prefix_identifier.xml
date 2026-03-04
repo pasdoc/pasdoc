@@ -1,4 +1,4 @@
-<unit name="ok_prefix_identifier.pas">
+<unit name="ok_prefix_identifier">
   <description><detailed>Test parsing identifiers declared as &amp;xxx, where &quot;xxx&quot; may be a reserved word. See 
 
 <unorderedlist>

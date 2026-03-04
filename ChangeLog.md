@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* SimpleXML output contains now deprecated / platform / etc. information, and proper unit name (Michalis)
 * Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
     * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader.
     * Use generic containers from `Generics.Collections`, they rock with both FPC and Delphi, and make code both simpler (no need for some custom container code) and safer (no need to typecasts, types checked at compile-time). See https://github.com/pasdoc/pasdoc/discussions/231

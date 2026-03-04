@@ -1,4 +1,4 @@
-<unit name="ok_see_also.pas">
+<unit name="ok_see_also">
   <description><detailed>This is a testing unit for @seealso tag.  </detailed></description>
   <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
     <description><abstract>Abstract of Foo.</abstract><detailed> Further description of Foo. </detailed></description>

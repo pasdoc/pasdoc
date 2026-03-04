@@ -1,4 +1,4 @@
-<unit name="warning_link_in_seealso.pas">
+<unit name="warning_link_in_seealso">
   <constant name="rsSetValueOfEnclosedElements" declaration="rsSetValueOfEnclosedElements = 'Set values of enclosed elements';" visibility="published">
     <description><detailed>) This should cause a warning (but not a crash).</detailed></description>
   </constant>

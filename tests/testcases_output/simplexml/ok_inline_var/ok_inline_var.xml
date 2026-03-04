@@ -1,4 +1,4 @@
-<unit name="ok_inline_var.pas">
+<unit name="ok_inline_var">
   <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
   </routine>
   <routine name="EdgeConsoleLog" type="function" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;" visibility="published">

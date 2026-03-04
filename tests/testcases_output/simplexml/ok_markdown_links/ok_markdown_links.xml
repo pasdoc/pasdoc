@@ -1,4 +1,4 @@
-<unit name="ok_markdown_links.pas">
+<unit name="ok_markdown_links">
   <description><abstract>Test markdown links.</abstract><detailed> Link to proc inside this unit with description: Test Procedure Not links: 
 
 <unorderedlist>

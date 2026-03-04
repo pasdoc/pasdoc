@@ -1,4 +1,4 @@
-<unit name="ok_no_sort.pas">
+<unit name="ok_no_sort">
   <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed>Enum values are not sorted</detailed></description>
     <constant name="meZZZ" declaration="meZZZ" visibility="published">

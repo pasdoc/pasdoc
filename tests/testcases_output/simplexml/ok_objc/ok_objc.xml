@@ -1,4 +1,4 @@
-<unit name="ok_objc.pas">
+<unit name="ok_objc">
   <description><detailed>Objective-C/Objective-Pascal FPC syntax tests. See https://github.com/pasdoc/pasdoc/issues/220 https://wiki.freepascal.org/FPC_PasCocoa</detailed></description>
   <structure name="TSomeCocoaClassObject" name_with_generic="TSomeCocoaClassObject" type="objcclass" visibility="published">
     <ancestor name="NSObject" declaration="NSObject" />

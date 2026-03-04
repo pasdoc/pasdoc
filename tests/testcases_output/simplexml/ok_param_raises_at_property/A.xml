@@ -1,4 +1,4 @@
-<unit name="ok_param_raises_at_property.pas">
+<unit name="A">
   <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer);" visibility="published">
     <param name="A">This is some parameter.</param>
     <description><detailed> </detailed></description>

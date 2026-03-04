@@ -1,4 +1,4 @@
-<unit name="ok_link_function_type.pas">
+<unit name="ok_link_function_type">
   <routine name="Test" type="procedure" declaration="procedure Test(F: TMyFunction; R: TMyRecord);" visibility="published">
     <description><detailed>Give TMyFunction and TMyRecord to test it.</detailed></description>
   </routine>

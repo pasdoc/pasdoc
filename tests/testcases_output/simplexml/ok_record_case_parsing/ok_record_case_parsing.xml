@@ -1,4 +1,4 @@
-<unit name="ok_record_case_parsing.pas">
+<unit name="ok_record_case_parsing">
   <structure name="TRec1" name_with_generic="TRec1" type="record" visibility="published">
     <variable name="A" declaration="A: Integer" visibility="public">
     </variable>

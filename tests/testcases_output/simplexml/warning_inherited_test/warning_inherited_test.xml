@@ -1,4 +1,4 @@
-<unit name="warning_inherited_test.pas">
+<unit name="warning_inherited_test">
   <routine name="Test" type="procedure" declaration="procedure Test;" visibility="published">
     <description><detailed>Inherited is <code>Test</code>. Inherited class is <code>Test</code>.</detailed></description>
   </routine>

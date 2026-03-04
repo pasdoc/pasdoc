@@ -1,4 +1,4 @@
-<unit name="ok_sorting.pas">
+<unit name="ok_sorting">
   <description><detailed>Test unit to test various --sort settings.</detailed></description>
   <routine name="AAAProc" type="procedure" declaration="procedure AAAProc;" visibility="published">
   </routine>

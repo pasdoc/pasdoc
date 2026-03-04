@@ -76,7 +76,10 @@ type
     procedure UnIndent;
 
     { XML attributes derived from TPasItem.SourceAbsoluteFileName and SourceLine. }
-    function SourcePositionAttributes(const Item: TPasItem): string;
+    function SourcePositionAttributes(const Item: TPasItem): String;
+
+    { XML attributes derived from TPasItem.HintDirectives and TPasItem.DeprecatedNote. }
+    function HintDirectivesToString(const Item: TPasItem): String;
 
   public
     procedure WriteDocumentation; override;
@@ -101,6 +104,26 @@ begin
       ' source-url="' + ConvertString(ItemUrl) + '"'
   else
     Result := '';
+end;
+
+function TSimpleXMLDocGenerator.HintDirectivesToString(const Item: TPasItem): String;
+const
+  HintDirectiveXmlAttribute: array[THintDirective] of string = (
+    'deprecated',
+    'platform',
+    'library',
+    'experimental',
+    'unimplemented'
+  );
+var
+  Directive: THintDirective;
+begin
+  Result := '';
+  if Item.DeprecatedNote <> '' then
+    Result := Result + ' deprecated_note="' + ConvertString(Item.DeprecatedNote) + '"';
+  for Directive in THintDirective do
+    if Directive in Item.HintDirectives then
+      Result := Result + ' ' + HintDirectiveXmlAttribute[Directive] + '="true"';
 end;
 
 function TSimpleXMLDocGenerator.GetFileExtension:string;
@@ -169,7 +192,8 @@ begin
             '" type="' + ConvertString(RoutineTypeToString(item.What)) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
      '" visibility="' + VisToStr(item.visibility) + '"' +
-     SourcePositionAttributes(item) + '>');
+     SourcePositionAttributes(item) +
+     HintDirectivesToString(item) + '>');
     for I := 0 to item.params.count - 1 do
       WriteDirectLine(space +
         '  <param name="' + ConvertString(item.params[i].name) + '">' +
@@ -195,7 +219,8 @@ begin
        '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
         '"   stored="' + ConvertString(item.Stored) +
       '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) + '>');
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
@@ -207,7 +232,8 @@ begin
     '<constant name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
       '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) + '>');
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -219,7 +245,8 @@ begin
     '<variable name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
       '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) + '>');
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -240,7 +267,8 @@ begin
         '<type name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
       '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) + '>');
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
@@ -271,7 +299,8 @@ begin
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
                '" type="' + ConvertString(CioTypeToString(item.MyType)) +
          '" visibility="' + VisToStr(item.visibility) + '"' +
-         SourcePositionAttributes(item) + '>');
+         SourcePositionAttributes(item) +
+         HintDirectivesToString(item) + '>');
   Indent;
 
   if item.HasDescription then
@@ -307,7 +336,7 @@ var
 begin
   U.OutputFileName:=U.OutputFileName+'.xml';
   if not Assigned(U) then begin
-    DoMessage(1, pmtError, 'TGenericXMLDocGenerator.WriteUnit: ' +
+    DoMessage(1, pmtError, 'TSimpleXMLDocGenerator.WriteUnit: ' +
       'Unit variable has not been initialized.', []);
     Exit;
   end;
@@ -323,7 +352,9 @@ begin
   if not CreateStream(U.OutputFileName) then Exit;
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteDirectLine('<unit name="' + ConvertString(U.SourceFileName) + '">');
+  WriteDirectLine('<unit name="' + ConvertString(U.Name) + '"' +
+    SourcePositionAttributes(U) +
+    HintDirectivesToString(U) +'>');
   space:='  ';
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));

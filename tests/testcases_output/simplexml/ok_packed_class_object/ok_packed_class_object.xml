@@ -1,4 +1,4 @@
-<unit name="ok_packed_class_object.pas">
+<unit name="ok_packed_class_object">
   <structure name="TMyPackedClass" name_with_generic="TMyPackedClass" type="packed class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="Blah" declaration="Blah: Integer;" visibility="public">

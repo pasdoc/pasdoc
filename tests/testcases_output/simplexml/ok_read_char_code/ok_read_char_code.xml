@@ -1,4 +1,4 @@
-<unit name="ok_read_char_code.pas">
+<unit name="ok_read_char_code">
   <description><detailed>(Test of reading constants defined by char codes (incl. wide chars)</detailed></description>
   <constant name="C1" declaration="C1 = #200;" visibility="published">
   </constant>

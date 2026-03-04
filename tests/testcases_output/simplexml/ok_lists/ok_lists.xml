@@ -1,4 +1,4 @@
-<unit name="ok_lists.pas">
+<unit name="ok_lists">
   <description><abstract>Test of lists tags.</abstract><detailed> Normal lists: 
 
 <orderedlist>

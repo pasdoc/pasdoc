@@ -1,4 +1,4 @@
-<unit name="ok_link_1_char.pas">
+<unit name="ok_link_1_char">
   <structure name="TMeasurementPointItem" name_with_generic="TMeasurementPointItem" type="class" visibility="published">
     <description><abstract><code>TMeasurementPointItem</code> is used to specify the real-world coordinates of a pixel in a bitmap.</abstract></description>
     <ancestor name="TCollectionItem" declaration="TCollectionItem" />

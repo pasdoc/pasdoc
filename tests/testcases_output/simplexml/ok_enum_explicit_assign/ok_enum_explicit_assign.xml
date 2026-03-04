@@ -1,4 +1,4 @@
-<unit name="ok_enum_explicit_assign.pas">
+<unit name="ok_enum_explicit_assign">
   <type name="TEnum1" declaration="TEnum1 = (...);" visibility="published">
     <constant name="e1One" declaration="e1One" visibility="published">
     </constant>

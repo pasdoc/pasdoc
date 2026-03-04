@@ -1,4 +1,4 @@
-<unit name="warning_back_comment.pas">
+<unit name="warning_back_comment">
   <description><detailed>Descr of unit warning_back_comment</detailed></description>
   <variable name="V1" declaration="V1: Integer;" visibility="published">
     <description><detailed>descr of V1 and V2</detailed></description>

@@ -1,4 +1,4 @@
-<unit name="ok_const_1st_comment_missing.pas">
+<unit name="ok_const_1st_comment_missing">
   <description><detailed>See bug [ 1198381 ] &quot;Comment on 1st const does'nt work&quot;</detailed></description>
   <constant name="ec_COPY" declaration="ec_COPY           = 600;" visibility="published">
     <description><detailed>bla bla copy.</detailed></description>

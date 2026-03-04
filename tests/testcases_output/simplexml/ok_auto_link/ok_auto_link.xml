@@ -1,4 +1,4 @@
-<unit name="ok_auto_link.pas">
+<unit name="ok_auto_link">
   <description><abstract>Auto-link tests.</abstract><detailed> Self name: <code>ok_auto_link</code>, simple identifiers Var1, qualified ident: ok_auto_link.Var1. Ident that can't be auto-linked: no_auto_link_to_me. Explicit link to ident that can't be auto-linked: no_auto_link_to_me.</detailed></description>
   <constant name="no_auto_link_to_me" declaration="no_auto_link_to_me = 1;" visibility="published">
   </constant>

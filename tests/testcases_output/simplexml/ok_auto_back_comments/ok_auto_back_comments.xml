@@ -1,4 +1,4 @@
-<unit name="ok_auto_back_comments.pas">
+<unit name="ok_auto_back_comments">
   <description><detailed>Test auto back comments</detailed></description>
   <variable name="var1" declaration="var1: Byte;" visibility="published">
     <description><detailed>this is var1 (usual comment)</detailed></description>

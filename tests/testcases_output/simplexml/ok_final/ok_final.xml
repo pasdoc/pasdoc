@@ -1,4 +1,4 @@
-<unit name="ok_final.pas">
+<unit name="ok_final">
   <structure name="TMyObject" name_with_generic="TMyObject" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyFinalMethod" type="procedure" declaration="procedure MyFinalMethod; virtual; final;" visibility="public">

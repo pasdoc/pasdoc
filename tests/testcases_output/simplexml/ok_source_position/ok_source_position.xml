@@ -1,4 +1,4 @@
-<unit name="ok_source_position.pas">
+<unit name="ok_source_position" source-line="2" source-relative-file-name="ok_source_position.pas" source-url="">
   <description><abstract>Test of --show-source-position and --source-url-pattern features.</abstract></description>
   <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>A simple procedure.</detailed></description>

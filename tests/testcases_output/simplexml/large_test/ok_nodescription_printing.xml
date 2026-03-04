@@ -1,4 +1,4 @@
-<unit name="ok_nodescription_printing.pas">
+<unit name="ok_nodescription_printing">
   <description><detailed>pasdoc's LaTeX documentation of this unit omitted many things before revision 1.20 of PasDoc_GenLatex.pas. Html docs were ok. I explained why omitting docs for things that don't have any documentation comment is bad in the letter &quot;Fix for LaTeX genetator omitting some things&quot; [http://sourceforge.net/mailarchive/forum.php?thread_id=6948809&amp;forum_id=4647] Now, all identifiers in this unit should be visible in LaTeX documentation (and in html output too, of course).</detailed></description>
   <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
   </routine>
