@@ -121,7 +121,7 @@ begin
   Result := '';
   if Item.DeprecatedNote <> '' then
     Result := Result + ' deprecated_note="' + ConvertString(Item.DeprecatedNote) + '"';
-  for Directive in THintDirective do
+  for Directive := Low(THintDirective) to High(THintDirective) do
     if Directive in Item.HintDirectives then
       Result := Result + ' ' + HintDirectiveXmlAttribute[Directive] + '="true"';
 end;
