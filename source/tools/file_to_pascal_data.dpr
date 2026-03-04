@@ -48,8 +48,8 @@ var
 begin
   if ParamCount() <> 2 then
   begin
-    Writeln(StdErr, 'file_to_pascal_data: Usage: file_to_pascal_data INPUT_FILE OUTPUT_FILE');
-    Writeln(StdErr, 'file_to_pascal_data: Invalid number of arguments: expected 2, got ', ParamCount());
+    Writeln(ErrOutput, 'file_to_pascal_data: Usage: file_to_pascal_data INPUT_FILE OUTPUT_FILE');
+    Writeln(ErrOutput, 'file_to_pascal_data: Invalid number of arguments: expected 2, got ', ParamCount());
     Halt(1)
   end;
   SrcFileName := ParamStr(1);
