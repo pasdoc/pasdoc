@@ -17,10 +17,10 @@ type
   IMyInterface2 = interface
   end;
 
-  TDerivedClassWithMyInterface = class(TBaseClass, IIMyInterface)
+  TDerivedClassWithMyInterface = class(TBaseClass, IMyInterface)
   end;
 
-  TDerivedClassWithMoreInterfaces = class(TBaseClass, IIMyInterface)
+  TDerivedClassWithMoreInterfaces = class(TBaseClass, IMyInterface, IMyInterface2)
   end;
 
 implementation

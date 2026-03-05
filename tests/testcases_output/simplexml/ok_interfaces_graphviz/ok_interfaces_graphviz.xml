@@ -17,10 +17,11 @@
   </structure>
   <structure name="TDerivedClassWithMyInterface" name_with_generic="TDerivedClassWithMyInterface" type="class" visibility="published">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
-    <ancestor name="IIMyInterface" declaration="IIMyInterface" />
+    <ancestor name="IMyInterface" declaration="IMyInterface" />
   </structure>
   <structure name="TDerivedClassWithMoreInterfaces" name_with_generic="TDerivedClassWithMoreInterfaces" type="class" visibility="published">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
-    <ancestor name="IIMyInterface" declaration="IIMyInterface" />
+    <ancestor name="IMyInterface" declaration="IMyInterface" />
+    <ancestor name="IMyInterface2" declaration="IMyInterface2" />
   </structure>
 </unit>

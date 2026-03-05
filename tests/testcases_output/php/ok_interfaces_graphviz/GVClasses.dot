@@ -12,8 +12,9 @@ digraph Classes {
   "TDerivedClassWithInterface" -> "IInterface" [style=dashed]
   "TDerivedClassWithMoreInterfaces" -> "TBaseClass"
   "TDerivedClassWithMoreInterfaces" [href="TDerivedClassWithMoreInterfaces"]
-  "TDerivedClassWithMoreInterfaces" -> "IIMyInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface2" [style=dashed]
   "TDerivedClassWithMyInterface" -> "TBaseClass"
   "TDerivedClassWithMyInterface" [href="TDerivedClassWithMyInterface"]
-  "TDerivedClassWithMyInterface" -> "IIMyInterface" [style=dashed]
+  "TDerivedClassWithMyInterface" -> "IMyInterface" [style=dashed]
 }
