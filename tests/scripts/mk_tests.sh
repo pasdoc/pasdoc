@@ -306,6 +306,16 @@ all_tests_for_current_format ()
     ok_source_position.pas
   mk_test ok_longcode_2dots ok_longcode_2dots.pas
   mk_test ok_ancestor_not_cio ok_ancestor_not_cio.pas
+
+  mk_test ok_interfaces_graphviz ok_interfaces_graphviz.pas \
+    --link-gv-uses png --link-gv-classes png --graphviz-uses --graphviz-classes
+  # Useful to check that graphviz output is generated and parsable.
+  # But don't commit it to testcases_output, to avoid seeing ignorable
+  # differences in it (e.g. due to different graphviz versions).
+  # pushd ../testcases_output/"$FORMAT"/ok_interfaces_graphviz/ > /dev/null
+  # dot -Grankdir=LR -T png GVUses.dot > GVUses.png
+  # dot -Grankdir=LR -T png GVClasses.dot > GVClasses.png
+  # popd > /dev/null
 }
 
 # parse params ----------------------------------------

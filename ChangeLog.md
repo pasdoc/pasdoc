@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
 * SimpleXML output contains now deprecated / platform / etc. information, and proper unit name (Michalis)
 * Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
     * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader.

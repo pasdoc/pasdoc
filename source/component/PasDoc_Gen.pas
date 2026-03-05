@@ -3068,6 +3068,8 @@ procedure TDocGenerator.WriteGVClasses;
 var
   LNode: TPasItemNode;
   OverviewFileName: string;
+  LCio: TPasCio;
+  I: Integer;
 begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
@@ -3089,8 +3091,14 @@ begin
 
       if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
       begin
+        LCio := TPasCio(LNode.Item);
         WriteDirectLine('  "' + LNode.Name +
-          '" [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
+          '" [href="' + LCio.OutputFileName + '"]');
+
+        { Add edges for implemented interfaces (ancestors at index 1+) }
+        for I := 1 to LCio.Ancestors.Count - 1 do
+          WriteDirectLine('  "' + LNode.Name + '" -> "' +
+            LCio.Ancestors.Items[I].Name + '" [style=dashed]');
       end;
 
       LNode := FClassHierarchy.NextItem(LNode);

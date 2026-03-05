@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="IMyInterface">
+<param name="Local" value="ok_interfaces_graphviz.IMyInterface.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="IMyInterface2">
+<param name="Local" value="ok_interfaces_graphviz.IMyInterface2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TBaseClass">
+<param name="Local" value="ok_interfaces_graphviz.TBaseClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDerivedClass">
+<param name="Local" value="ok_interfaces_graphviz.TDerivedClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDerivedClassWithInterface">
+<param name="Local" value="ok_interfaces_graphviz.TDerivedClassWithInterface.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDerivedClassWithMoreInterfaces">
+<param name="Local" value="ok_interfaces_graphviz.TDerivedClassWithMoreInterfaces.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TDerivedClassWithMyInterface">
+<param name="Local" value="ok_interfaces_graphviz.TDerivedClassWithMyInterface.html">
+</object>
+</ul>
+</body></html>

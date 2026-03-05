@@ -1,0 +1,105 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}interfaces{\_}graphviz}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TBaseClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TDerivedClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TDerivedClassWithInterface\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}IMyInterface\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}IMyInterface2\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TDerivedClassWithMyInterface\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TDerivedClassWithMoreInterfaces\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TBaseClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TBaseClass {$>$} TObject
+%%%%Description
+\subsection*{TDerivedClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDerivedClass {$>$} \begin{ttfamily}TBaseClass\end{ttfamily}(\ref{ok_interfaces_graphviz.TBaseClass}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TDerivedClassWithInterface Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDerivedClassWithInterface {$>$} \begin{ttfamily}TBaseClass\end{ttfamily}(\ref{ok_interfaces_graphviz.TBaseClass}) {$>$} 
+TObject
+%%%%Description
+\subsection*{IMyInterface Interface}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+IMyInterface {$>$} IInterface
+%%%%Description
+\subsection*{IMyInterface2 Interface}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+IMyInterface2 {$>$} IInterface
+%%%%Description
+\subsection*{TDerivedClassWithMyInterface Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDerivedClassWithMyInterface {$>$} \begin{ttfamily}TBaseClass\end{ttfamily}(\ref{ok_interfaces_graphviz.TBaseClass}) {$>$} 
+TObject
+%%%%Description
+\subsection*{TDerivedClassWithMoreInterfaces Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDerivedClassWithMoreInterfaces {$>$} \begin{ttfamily}TBaseClass\end{ttfamily}(\ref{ok_interfaces_graphviz.TBaseClass}) {$>$} 
+TObject
+%%%%Description
+\end{document}

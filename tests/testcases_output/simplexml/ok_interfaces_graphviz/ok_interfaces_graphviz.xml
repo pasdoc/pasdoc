@@ -1,0 +1,26 @@
+<unit name="ok_interfaces_graphviz">
+  <structure name="TBaseClass" name_with_generic="TBaseClass" type="class" visibility="published">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TDerivedClass" name_with_generic="TDerivedClass" type="class" visibility="published">
+    <ancestor name="TBaseClass" declaration="TBaseClass" />
+  </structure>
+  <structure name="TDerivedClassWithInterface" name_with_generic="TDerivedClassWithInterface" type="class" visibility="published">
+    <ancestor name="TBaseClass" declaration="TBaseClass" />
+    <ancestor name="IInterface" declaration="IInterface" />
+  </structure>
+  <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface" visibility="published">
+    <ancestor name="IInterface" declaration="IInterface" />
+  </structure>
+  <structure name="IMyInterface2" name_with_generic="IMyInterface2" type="interface" visibility="published">
+    <ancestor name="IInterface" declaration="IInterface" />
+  </structure>
+  <structure name="TDerivedClassWithMyInterface" name_with_generic="TDerivedClassWithMyInterface" type="class" visibility="published">
+    <ancestor name="TBaseClass" declaration="TBaseClass" />
+    <ancestor name="IIMyInterface" declaration="IIMyInterface" />
+  </structure>
+  <structure name="TDerivedClassWithMoreInterfaces" name_with_generic="TDerivedClassWithMoreInterfaces" type="class" visibility="published">
+    <ancestor name="TBaseClass" declaration="TBaseClass" />
+    <ancestor name="IIMyInterface" declaration="IIMyInterface" />
+  </structure>
+</unit>
