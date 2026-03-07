@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi (Michalis)
 * GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
 * SimpleXML output contains now deprecated / platform / etc. information, and proper unit name (Michalis)
 * Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
