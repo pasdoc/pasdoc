@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -110,6 +110,8 @@ type
 
 implementation
 
+uses PasDoc_Tokenizer;
+
 { EPasDoc -------------------------------------------------------------------- }
 
 constructor EPasDoc.Create(const AMessageFormat: string;
@@ -165,16 +167,7 @@ begin
 end;
 {$ENDIF}
 
-function SplitNameParts(S: string;
-  out NameParts: TNameParts): Boolean;
-
-const
-  { set of characters, including all letters and the underscore }
-  IdentifierStart : TCharSet = ['A'..'Z', 'a'..'z', '_'];
-
-  { set of characters, including all characters from @link(IdentifierStart)
-    plus the ten decimal digits }
-  IdentifierOther : TCharSet = ['A'..'Z', 'a'..'z', '_', '0'..'9', '.', ','];
+function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 var
   i: Integer;
   Depth: Integer;
@@ -188,23 +181,20 @@ begin
   { Check that S starts with IdentifierStart and
     then only IdentifierOther chars follow }
   if S = '' then Exit;
-{$IFNDEF COMPILER_12_UP}
-  if (not (s[1] in IdentifierStart)) then Exit;
-{$ELSE}
-  if not CharInSet(s[1], IdentifierStart) then Exit;
-{$ENDIF}
+  if not IsIdentifierStartChar(s[1]) then Exit;
   i := 2;
   Depth := 0;
   while (i <= Length(s)) do begin
     if s[i] = '(' then
       Inc(Depth)
-    else if s[i] = ')' then
+    else
+    if s[i] = ')' then
       Dec(Depth)
-{$IFNDEF COMPILER_12_UP}
-    else if (Depth = 0) and (not (s[i] in IdentifierOther)) then Exit;
-{$ELSE}
-    else if (Depth = 0) and (not CharInSet(s[i], IdentifierOther)) then Exit;
-{$ENDIF}
+    else
+    if (Depth = 0) and
+       (not IsIdentifierOtherChar(s[i])) and
+       (s[i] <> '.') then
+      Exit;
     Inc(i);
   end;
 

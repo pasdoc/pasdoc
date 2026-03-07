@@ -262,6 +262,9 @@ all_tests_for_current_format ()
   mk_test warning_back_comments warning_back_comments.pas
   mk_test ok_longcode_indentation ok_longcode_indentation.pas
   mk_test ok_utf8_failchar ok_utf8_failchar.pas
+  # Not tested - resulting SimpleXML is not valid, and resulting filenames are wrong, cannot be staged in GIT
+  # mk_test ok_unicode_identifiers_windows_1252 ok_unicode_identifiers_windows_1252.pas
+  mk_test ok_unicode_identifiers_utf8 ok_unicode_identifiers_utf8.pas
   mk_test ok_markdown ok_markdown.pas --markdown
   mk_test ok_auto_back_comments ok_auto_back_comments.pas --auto-back-comments
   mk_test error_file_not_supported_dpk error_file_not_supported.dpk

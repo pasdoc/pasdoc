@@ -374,9 +374,22 @@ type
     function ReadCommentType3: TToken;
     function ReadAttAssemblerRegister: TToken;
     function ReadLiteralString(var t: TToken): Boolean;
-    function ReadToken(c: Char; const s: TCharSet; const TT: TTokenType; var
-      t: TToken): Boolean;
 
+    { Read the rest of token of type TokenType,
+      knowing the 1st character of this token is StartChar,
+      and subsequent characters of this token are in set AllowedChars.
+
+      Returns @true and sets T if we successfully read such token,
+      returns @false (and sets T to @nil) otherwise.
+      The @false result means we encountered an error reading the next character
+      from stream (we are not at end of stream, but TTokenizer.GetChar returned 0). }
+    function ReadToken(const StartChar: Char; const AllowedChars: TCharSet;
+      const TokenType: TTokenType; out T: TToken): Boolean;
+
+    { Like ReadToken, but for identifiers. The set of valid subsequent characters
+      is defined by IsIdentifierOtherChar function, and the token type is
+      always TOK_IDENTIFIER. }
+    function ReadIdentifierToken(const StartChar: Char; out T: TToken): Boolean;
   public
     { Creates a TTokenizer and associates it with given input TStream.
       Note that AStream will be freed when this object will be freed. }
@@ -468,6 +481,16 @@ function StandardDirectiveByName(const Name: string): TStandardDirective;
   Returns KEY_INVALIDKEYWORD if not. }
 function KeyWordByName(const Name: string): TKeyword;
 
+{ Returns true if c is a valid first character of a Pascal identifier:
+  underscore, ASCII letter, or non-ASCII character (Unicode letter).
+  Following https://docwiki.embarcadero.com/RADStudio/Athens/en/Identifiers ,
+  Delphi allows Unicode letters as identifier start characters. }
+function IsIdentifierStartChar(const C: Char): Boolean;
+
+{ Returns true if c is a valid continuation character of a Pascal identifier:
+  underscore, ASCII letter, ASCII digit, or non-ASCII character (Unicode letter/digit). }
+function IsIdentifierOtherChar(const C: Char): Boolean;
+
 implementation
 
 uses SysUtils, Math;
@@ -531,6 +554,16 @@ const
     (c: '='; s: SYM_EQUAL),
     (c: '^'; s: SYM_DEREFERENCE),
     (c: '@'; s: SYM_AT));
+
+function IsIdentifierStartChar(const C: Char): Boolean;
+begin
+  Result := CharInSet(C, IdentifierStart) or (Ord(C) > 127);
+end;
+
+function IsIdentifierOtherChar(const C: Char): Boolean;
+begin
+  Result := CharInSet(C, IdentifierOther) or (Ord(C) > 127);
+end;
 
 { ---------------------------------------------------------------------------- }
 { TToken }
@@ -768,9 +801,9 @@ begin
       else
         DoError('Tokenizer: could not read character', []);
     end else
-    if CharInSet(c, IdentifierStart) then
+    if IsIdentifierStartChar(c) then
     begin
-      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
+      if ReadIdentifierToken(c, Result) then
       begin
         s := Result.Data;
         { check if identifier is a keyword }
@@ -917,8 +950,8 @@ begin
         '%': Result := ReadAttAssemblerRegister;
         '&': begin
                if not ((GetChar(C) > 0) and
-                       CharInSet(C, IdentifierStart) and
-                       ReadToken(C, IdentifierOther, TOK_IDENTIFIER, Result)) then
+                       IsIdentifierStartChar(C) and
+                       ReadIdentifierToken(C, Result)) then
                begin
                  if NilOnInvalidContent then
                    Exit(nil)
@@ -1154,37 +1187,67 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.ReadToken(c: Char; const s: TCharSet; const TT:
-  TTokenType; var t: TToken): Boolean;
+function TTokenizer.ReadToken(const StartChar: Char; const AllowedChars: TCharSet;
+  const TokenType: TTokenType; out T: TToken): Boolean;
+var
+  PeekedChar: Char;
 begin
-  Assert(t=nil);
-  Result := False;
+  Result := true;
+  T := TToken.Create(TokenType);
+  T.Data := StartChar;
 
-  t := TToken.Create(TT);
-  t.Data := c;
   repeat
-    if not PeekChar(c) then begin
-      if EOS then
-        Result := True
-      else begin
-        t.Free;
-        t := nil;
+    if not PeekChar(PeekedChar) then
+    begin
+      if not EOS then
+      begin
+        FreeAndNil(T);
+        Exit(false);
       end;
       break;
     end;
-    if CharInSet(c, s) then begin
-      t.Data := t.Data + c;
+
+    if CharInSet(PeekedChar, AllowedChars) then
+    begin
+      T.Data := T.Data + PeekedChar;
       ConsumeChar;
-    end else begin
-      Result := True;
+    end else
+      break;
+  until false;
+
+  Assert(Result);
+  Assert(Assigned(T));
+end;
+
+function TTokenizer.ReadIdentifierToken(const StartChar: Char; out T: TToken): Boolean;
+var
+  PeekedChar: Char;
+begin
+  Result := true;
+  T := TToken.Create(TOK_IDENTIFIER);
+  T.Data := StartChar;
+
+  repeat
+    if not PeekChar(PeekedChar) then
+    begin
+      if not EOS then
+      begin
+        FreeAndNil(T);
+        Exit(false);
+      end;
       break;
     end;
-  until False;
-  if Result then begin
-    Assert(Assigned(t));
-  end else begin
-    Assert(not Assigned(t));
-  end;
+
+    if IsIdentifierOtherChar(PeekedChar) then
+    begin
+      T.Data := T.Data + PeekedChar;
+      ConsumeChar;
+    end else
+      break;
+  until false;
+
+  Assert(Result);
+  Assert(Assigned(T));
 end;
 
 function TTokenizer.SkipUntilCompilerDirective: TToken;
@@ -1201,13 +1264,13 @@ begin
   until false;
 end;
 
-procedure TTokenizer.UnGetToken(var t: TToken);
+procedure TTokenizer.UnGetToken(var T: TToken);
 begin
   if Assigned(FBufferedToken) then
     DoError('Cannot UnGet more than one token in TTokenizer', []);
 
-  FBufferedToken := t;
-  t := nil;
+  FBufferedToken := T;
+  T := nil;
 end;
 
 end.
