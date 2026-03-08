@@ -79,17 +79,10 @@ type
 
 const
   MaxNameParts = 3;
-  { Windows Unicode code page ID }
-  CP_UTF16      = 1200;
-  CP_UTF16Be    = 1201;
-  CP_UTF32      = 12000;
-  CP_UTF32Be    = 12001;
 
-{$IFNDEF FPC}
-{$IFDEF MSWINDOWS}
-  LineEnding    = #13#10;
-{$ENDIF}
-{$ENDIF}
+  {$ifndef FPC}
+  LineEnding = SLineBreak;
+  {$endif}
 
 { Splits S, which can be made of any number of parts, separated by dots
   (Delphi namespaces, like PasDoc.Output.HTML.TWriter.Write).

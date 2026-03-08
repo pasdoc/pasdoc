@@ -46,11 +46,6 @@ function StrPosIA(const ASub, AString: string): Integer;
 { creates a "method pointer" }
 function MakeMethod(const AObject: Pointer; AMethod: Pointer): TMethod;
 
-{$ifndef FPC}
-const
-  LineEnding = SLineBreak;
-{$endif}
-
 type
   TCharReplacement =
   record
