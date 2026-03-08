@@ -871,6 +871,8 @@ end;
 procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
 
   procedure LocalWriteCio(const HL: Integer; const ACio: TPasCio);
+  var
+    CioFileNameFinal: String;
   begin
     if (ACio.MyUnit <> nil) and
        ACio.MyUnit.FileNewerThanCache(DestinationDirectory + ACio.OutputFileName) then
@@ -881,7 +883,24 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
       Exit;
     end;
 
-    if not CreateStream(ACio.OutputFileName) then Exit;
+    CioFileNameFinal := ACio.OutputFileName;
+
+    {$ifndef STRING_UNICODE}
+    { If input is in UTF-8, convert using UTF8Encode to get correct file name
+      in OS-specific encoding (this is likely UTF-8 on Linux,
+      but something else on Windows.)
+      This fixes FPC with ok_unicode_identifiers_utf8.pas working on Windows:
+      it has to write a filename with German umlaults, in Ansi encoding,
+      since class name contains them.
+
+      Note that we don't do this when setting ACio.OutputFileName,
+      as that value is also placed in HtmlHelp HHP, let it remain in
+      encoding equal to source code (input encoding, which is UTF-8. }
+    if SameText(FLanguage.CharSet, 'utf-8') then
+      CioFileNameFinal := AnsiString(UTF8Decode(CioFileNameFinal));
+    {$endif}
+
+    if not CreateStream(CioFileNameFinal) then Exit;
     DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
     WriteCIO(HL, ACio);
   end;
