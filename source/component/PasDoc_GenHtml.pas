@@ -885,10 +885,11 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
 
     CioFileNameFinal := ACio.OutputFileName;
 
-    {$ifndef STRING_UNICODE}
+    {$if (not defined(STRING_UNICODE)) and defined(MSWINDOWS)}
     { If input is in UTF-8, convert using UTF8Encode to get correct file name
-      in OS-specific encoding (this is likely UTF-8 on Linux,
-      but something else on Windows.)
+      in OS-specific encoding (this is likely already UTF-8 on Linux,
+      and in fact doing UTF8Decode breaks the tests (TODO: why?),
+      but something else on Windows, like local ANSI encoding.)
       This fixes FPC with ok_unicode_identifiers_utf8.pas working on Windows:
       it has to write a filename with German umlaults, in Ansi encoding,
       since class name contains them.
