@@ -2247,28 +2247,86 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
-var
-  i: Integer;
+
+  { Escape URL from input in UnicodeString -> to String
+    (which is UnicodeString in STRING_UNICODE case and AnsiString otherwise).
+
+    Using UnicodeString makes sense for both STRING_UNICODE and non-STRING_UNICODE cases.
+    This way we cab deconstruct into Unicode characters, and write out correct %xx
+    for Unicode characters.
+    Testcase: tests/testcases/ok_unicode_identifiers_utf8.pas
+    which must produce equal result with both FPC and Delphi. }
+  function EscapeUrlUnicode(const UString: UnicodeString): String;
+  var
+    C: WideChar;
+  begin
+    for C in UString do
+    begin
+      { Michalis old note, reason for special & check:
+        It's obvious that we must escape '&'.
+        I don't know why, but escaping it using '%26' does not work
+        (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
+        and finally even IE, so it's certainly not a bug of some browser).
+        But escaping it using '&amp;' works OK.
+
+        On the other hand, escaping '~' using '&tilde;' does not work.
+        (So EscapeURL function still *must* be something different than
+        ConvertString.) }
+
+      if C = '&' then
+        Result := Result + '&amp;'
+      else
+      if CharInSet(C, [AnsiChar($21)..AnsiChar($7E)]) then
+        Result := Result + {$ifndef STRING_UNICODE} AnsiChar {$endif} (C)
+      else
+        Result := Result + '%' + IntToHex(Ord(C), 2);
+    end;
+  end;
+
+  {$ifndef STRING_UNICODE}
+  { Escape URL from input in AnsiString -> to String
+    (which is UnicodeString in STRING_UNICODE case and AnsiString otherwise). }
+  function EscapeUrlAnsi(const AString: AnsiString): String;
+  var
+    C: AnsiChar;
+  begin
+    for C in AString do
+    begin
+      { Michalis old note, reason for special & check:
+        It's obvious that we must escape '&'.
+        I don't know why, but escaping it using '%26' does not work
+        (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
+        and finally even IE, so it's certainly not a bug of some browser).
+        But escaping it using '&amp;' works OK.
+
+        On the other hand, escaping '~' using '&tilde;' does not work.
+        (So EscapeURL function still *must* be something different than
+        ConvertString.) }
+
+      if C = '&' then
+        Result := Result + '&amp;'
+      else
+      if CharInSet(C, [AnsiChar($21)..AnsiChar($7E)]) then
+        Result := Result + C
+      else
+        Result := Result + '%' + IntToHex(Ord(C), 2);
+    end;
+  end;
+  {$endif}
+
 begin
   Result := '';
-  for i := 1 to Length(AString) do
-  begin
-    { Kambi: It's obvious that we must escape '&'.
-      I don't know why, but escaping it using '%26' does not work
-      (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
-      and finally even IE, so it's certainly not a bug of some browser).
-      But escaping it using '&amp;' works OK.
 
-      On the other hand, escaping '~' using '&tilde;' does not work.
-      (So EscapeURL function still *must* be something different than
-      ConvertString.) }
-
-    if AString[i] = '&' then
-      Result := Result + '&amp;' else
-    if CharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
-      Result := Result + AString[i] else
-      Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
-  end;
+  {$ifdef STRING_UNICODE}
+  // With STRING_UNICODE, we assume input is UTF-8
+  Result := EscapeUrlUnicode(AString);
+  {$else}
+  // Without STRING_UNICODE, we assume input is in FLanguage.CharSet encoding
+  if SameText(FLanguage.CharSet, 'utf-8') then
+    Result := EscapeUrlUnicode(UTF8Decode(AString))
+  else
+    Result := EscapeUrlAnsi(AString);
+  {$endif}
 end;
 
 function TGenericHTMLDocGenerator.FormatPascalCode(const Line: string): string;
