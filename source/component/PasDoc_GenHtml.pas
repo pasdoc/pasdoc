@@ -2260,6 +2260,7 @@ function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
   var
     C: WideChar;
   begin
+    Result := '';
     for C in UString do
     begin
       { Michalis old note, reason for special & check:
@@ -2290,6 +2291,7 @@ function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
   var
     C: AnsiChar;
   begin
+    Result := '';
     for C in AString do
     begin
       { Michalis old note, reason for special & check:
