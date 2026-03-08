@@ -1180,6 +1180,16 @@ var
       ACio.MyUnit := U;
       ACio.FullLink := CreateLink(ACio);
       ACio.OutputFileName := ACio.FullLink;
+      {$ifndef STRING_UNICODE}
+      { If input is in UTF-8, convert using UTF8Encode to get correct file name
+        in OS-specific encoding (this is likely UTF-8 on Linux,
+        but something else on Windows.)
+        This fixes FPC with ok_unicode_identifiers_utf8.pas working on Windows:
+        it has to write a filename with German umlaults, in Ansi encoding,
+        since class name contains them. }
+      if SameText(FLanguage.CharSet, 'utf-8') then
+        ACio.OutputFileName := AnsiString(UTF8Decode(ACio.OutputFileName));
+      {$endif}
       AssignCioAncestorLinks(ACio);
       AssignLinks(U, ACio, nil, ACio.Fields);
       AssignLinks(U, ACio, nil, ACio.Methods);
