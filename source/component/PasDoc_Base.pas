@@ -650,11 +650,7 @@ begin
   FGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
-{$IFDEF FPC}
-    FGenerator.OnMessage := @GenMessage;
-{$ELSE}
-    FGenerator.OnMessage := GenMessage;
-{$ENDIF}
+    FGenerator.OnMessage := {$IFDEF FPC}@{$endif} GenMessage;
   end;
 end;
 
