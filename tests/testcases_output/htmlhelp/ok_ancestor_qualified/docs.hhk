@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TCastleObjectStack">
+<param name="Local" value="ok_ancestor_qualified.TCastleObjectStack.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Capacity">
+<param name="Local" value="ok_ancestor_qualified.TCastleObjectStack.html#Capacity">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TSomethingElse">
+<param name="Local" value="ok_ancestor_qualified.TSomethingElse.html">
+</object>
+</ul>
+</body></html>

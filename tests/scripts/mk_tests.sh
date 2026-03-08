@@ -319,6 +319,8 @@ all_tests_for_current_format ()
   # dot -Grankdir=LR -T png GVUses.dot > GVUses.png
   # dot -Grankdir=LR -T png GVClasses.dot > GVClasses.png
   # popd > /dev/null
+
+  mk_test ok_ancestor_qualified ok_ancestor_qualified.pas
 }
 
 # parse params ----------------------------------------
