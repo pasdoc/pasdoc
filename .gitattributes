@@ -32,6 +32,7 @@ PASDOC-OUTPUT text eol=auto
 # after "make tests" on Windows, since we generate bootstrap..js files
 # with native line endings.
 *.js text eol=auto
+*.dot text eol=auto
 
 # Test cases checking specific line endings
 tests/testcases/error_line_number_2.pas text eol=lf
