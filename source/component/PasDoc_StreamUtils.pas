@@ -23,7 +23,7 @@
 {
   @abstract(A few stream utility functions.)
   @author(Johannes Berg <johannes@sipsolutions.de>)
-  @author(Arno Garrels <first name.name@nospamgmx.de> (TBufferedStream and more))
+  @author(Arno Garrels <first name.name@nospamgmx.de>)
   @author(Michalis Kamburelis)
 }
 unit PasDoc_StreamUtils;
