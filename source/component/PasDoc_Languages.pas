@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2025 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -339,12 +339,8 @@ function LanguageCode(const Language: TLanguageID): string;
 
 implementation
 
-{$IFDEF fpc}
-{$ELSE}
-//Delphi
-uses
-  SysUtils;
-{$ENDIF}
+// Needed by Delphi for LowerCase
+uses SysUtils;
 
 { TODO: This whole approach to translations should be simplified to
 
