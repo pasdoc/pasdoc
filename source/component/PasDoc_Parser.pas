@@ -49,32 +49,39 @@ type
     pasdoc) occurs. }
   EInternalParserError = class(Exception);
 
-  TItemParseMode = (pmUndefined, pmConst, pmVar, pmType);
+  { Are we currently inside a const, var, type section? }
+  TParsingSection = (psNone, psConst, psVar, psType);
 
-  { @name stores a CIO reference and current state. }
-  TPasCioHelper = class(TObject)
+  { State of parsing a structure (called "CIO" throughout PasDoc codebase). }
+  TCioState = class(TObject)
   private
     FCio: TPasCio;
-    FCurVisibility: TVisibility;
-    FMode: TItemParseMode;
+    FVisibility: TVisibility;
+    FSection: TParsingSection;
   public
-    { Frees included objects and calls its own destructor. Objects are not
-      owned by default. }
-    procedure FreeAll;
+    { Structure (CIO) that is currently being parsed. }
     property Cio: TPasCio read FCio write FCio;
-    property CurVisibility: TVisibility read FCurVisibility write FCurVisibility;
-    property Mode: TItemParseMode read FMode write FMode;
+
+    { Current visibility (like public, private...) for members of this CIO. }
+    property Visibility: TVisibility read FVisibility write FVisibility;
+
+    { Are we inside a const, var, type section (nested in a class)? }
+    property Section: TParsingSection read FSection write FSection;
+
+    { Frees included objects and calls its own destructor.
+      Objects are not owned by default. }
+    procedure FreeAll;
   end;
 
-  { A stack of @link(TPasCioHelper) objects currently used to parse nested
-    classes and records }
-  TPasCioHelperStack = class(TObjectStack)
+  { A stack of @link(TCioState) objects currently used to parse nested
+    classes and records. }
+  TCioStateStack = class(TObjectStack)
   public
     { Frees all items including their CIOs and clears the stack }
     procedure Clear;
-    function Push(AHelper: TPasCioHelper): TPasCioHelper;
-    function Pop: TPasCioHelper;
-    function Peek: TPasCioHelper;
+    function Push(const Item: TCioState): TCioState;
+    function Pop: TCioState;
+    function Peek: TCioState;
   end;
 
   // @name stores a series of @link(TRawDescriptionInfo TRawDescriptionInfos).
@@ -158,7 +165,7 @@ type
   private
     FImplicitVisibility: TImplicitVisibility;
 
-    FCioStack: TPasCioHelperStack;
+    FCioStack: TCioStateStack;
 
     { Set by GetAndCheckNextToken to record filename/line of last consumed token.
       This allows routines using GetAndCheckNextToken to set
@@ -364,12 +371,12 @@ type
       LCio. It should no longer be on top of FCioStack. }
     procedure ParseCio_Continue(const U: TPasUnit;
       LCio: TPasCio;
-      LMode: TItemParseMode;
+      LSection: TParsingSection;
       LVisibility: TVisibility;
       const IsInRecordCase: Boolean);
 
     { Parse members inside CIO, should be used after ParseCioTypeDecl. }
-    function ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
+    function ParseCioMembers(const ACio: TPasCio; var Section: TParsingSection;
       const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
 
     { Assume that T is "<" symbol, and parse everything up to a matching ">".
@@ -626,7 +633,7 @@ begin
   FCommentMarkers := TStringlist.Create;
   FIgnoreMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
-  FCioStack := TPasCioHelperStack.Create;
+  FCioStack := TCioStateStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
 end;
 
@@ -1524,11 +1531,11 @@ end;
 
 procedure TParser.ParseTVCSection(U: TPasUnit);
 var
-  Mode: TItemParseMode;
+  Section: TParsingSection;
   t, t2: TToken;
   ConstantParsed: TPasItem;
 begin
-  Mode := pmUndefined;
+  Section := psNone;
 
   repeat
     t := GetNextToken;
@@ -1542,8 +1549,8 @@ begin
               Break;
             end;
 
-            case Mode of
-              pmConst:
+            case Section of
+              psConst:
                 begin
                   Scanner.UnGetToken(t);
                   ParseConstant(otUnit, ConstantParsed);
@@ -1552,7 +1559,7 @@ begin
                   else
                     FreeAndNil(ConstantParsed);
                 end;
-              pmType:
+              psType:
                 begin
                   //In latest FPC version it is posible to define generic functions and procedures
                   if t.IsStandardDirective(SD_GENERIC) then
@@ -1570,7 +1577,7 @@ begin
                   end;
                   AttributeIsPossible := True;
                 end;
-              pmVar:
+              psVar:
                 begin
                   Scanner.UnGetToken(t);
                   ParseVariables(U);
@@ -1585,12 +1592,12 @@ begin
             ItemsForNextBackComment.Clear;
             case t.Info.KeyWord of
               KEY_RESOURCESTRING, KEY_CONST:
-                Mode := pmConst;
+                Section := psConst;
               KEY_THREADVAR, KEY_VAR:
-                Mode := pmVar;
+                Section := psVar;
               KEY_TYPE:
                 begin
-                  Mode := pmType;
+                  Section := psType;
                   AttributeIsPossible := True;
                 end;
               else
@@ -3458,7 +3465,7 @@ end;
 
 { ------------------------------------------------------------ }
 
-function TParser.ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
+function TParser.ParseCioMembers(const ACio: TPasCio; var Section: TParsingSection;
   const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
 
   { Parse fields clause, i.e. something like
@@ -3529,7 +3536,7 @@ begin
       end
       else if (t.MyType = TOK_KEYWORD) then
       begin
-        Mode := pmUndefined;
+        Section := psNone;
         if StrictVisibility then
           DoError('"strict" found in an unexpected location', []);
 
@@ -3539,7 +3546,7 @@ begin
             begin
               if ClassKeyWordString = '' then
               begin
-                Mode := pmVar;
+                Section := psVar;
                 ClassKeyWordString := t.Data;
                 ParseFields(Visibility in ShowVisibilities, Visibility,
                   ClassKeyWordString);
@@ -3587,13 +3594,13 @@ begin
             ParseRecordCase(ACio, False);
           KEY_TYPE:
             begin
-              Mode := pmType;
+              Section := psType;
               FreeAndNil(t);
               Exit;
             end;
           KEY_CONST:
             begin
-              Mode := pmConst;
+              Section := psConst;
               FreeAndNil(t);
               ParseConstant(otCio, ConstantParsed);
               AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
@@ -3609,7 +3616,7 @@ begin
             begin
               { Same code as for KEY_CONSTRUCTOR, KEY_DESTRUCTOR,
               KEY_FUNCTION, KEY_PROCEDURE above, something to be optimized. }
-              Mode := pmUndefined;
+              Section := psNone;
               ParseRoutine(M, ClassKeyWordString, t.Data, ROUTINE_OPERATOR,
                 GetLastComment, true, true, '');
               ClassKeyWordString := '';
@@ -3636,7 +3643,7 @@ begin
                 DoError('"strict" found in an unexpected location', []);
 
               Visibility := viPublic;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_PUBLISHED:
             begin
@@ -3644,7 +3651,7 @@ begin
                 DoError('"strict" found in an unexpected location', []);
 
               Visibility := viPublished;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_PRIVATE:
             begin
@@ -3655,7 +3662,7 @@ begin
               end
               else
                 Visibility := viPrivate;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_PROTECTED:
             begin
@@ -3666,17 +3673,17 @@ begin
               end
               else
                 Visibility := viProtected;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_AUTOMATED:
             begin
               Visibility := viAutomated;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_STRICT:
             begin
               StrictVisibility := True;
-              Mode := pmUndefined;
+              Section := psNone;
             end;
           SD_GENERIC:
             begin
@@ -3700,9 +3707,9 @@ begin
             end
           else // case
             Scanner.UnGetToken(T);
-            if Mode = pmType then
+            if Section = psType then
               Exit;
-            if Mode = pmConst then
+            if Section = psConst then
             begin
               ParseConstant(otCio, ConstantParsed);
               AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
@@ -4042,7 +4049,7 @@ begin
     Exit;
   end;
 
-  ParseCio_Continue(U, LCio, pmUndefined, LVisibility, IsInRecordCase);
+  ParseCio_Continue(U, LCio, psNone, LVisibility, IsInRecordCase);
 end;
 
 procedure TParser.ParseCio_SkipDeclaration(const U: TPasUnit;
@@ -4050,29 +4057,35 @@ procedure TParser.ParseCio_SkipDeclaration(const U: TPasUnit;
   const IsInRecordCase: Boolean);
 var
   LCio: TPasCio;
-  LMode: TItemParseMode;
-  LVisibility: TVisibility;
+  InitialSection: TParsingSection;
+  InitialVisibility: TVisibility;
 begin
   // continue parsing the CIO, the one on top of stack
   Assert(FCioStack.Count > 0);
 
   LCio  := FCioStack.Peek.Cio;
-  LMode := FCioStack.Peek.Mode;
-  LVisibility := FCioStack.Peek.CurVisibility;
+  InitialSection := FCioStack.Peek.Section;
+  InitialVisibility := FCioStack.Peek.Visibility;
   FCioStack.Pop.Free;
 
-  ParseCio_Continue(U, LCio, LMode, LVisibility, IsInRecordCase);
+  ParseCio_Continue(U, LCio, InitialSection, InitialVisibility, IsInRecordCase);
 end;
 
 procedure TParser.ParseCio_Continue(const U: TPasUnit;
   LCio: TPasCio;
-  LMode: TItemParseMode;
+  LSection: TParsingSection;
   LVisibility: TVisibility;
   const IsInRecordCase: Boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
-    otherwise modifying one of them always needs to be carefully duplicated. }
-  procedure ParseNestedType;
+    otherwise modifying one of them always needs to be carefully duplicated.
+
+    Note: Do not change here LSection and LVisibility parameters,
+    as we could lose this information, since we call ParseCio_Continue
+    many times for the same CIO.
+    Instead, change CioState.Section and CioState.Visibility if needed.
+    At the moment this is called, you know that CioState = FCioStack.Peek. }
+  procedure ParseNestedType(const CioState: TCioState);
   var
     RawDescriptionInfo: TRawDescriptionInfo;
     NormalType: TPasType;
@@ -4084,6 +4097,8 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
     IsGeneric: boolean;
     CioType: TCIOType;
   begin
+    Assert(CioState.Cio = LCio);
+
     { Read the type name, preceded by optional "generic" directive.
       Calculate TypeName, IsGeneric, TypeNameWithGeneric.
       FPC requires "generic" directive, but Delphi doesn't,
@@ -4224,7 +4239,7 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
             RoutineType.FullDeclaration :=
               TypeName + ' = ' + RoutineType.FullDeclaration;
             RoutineType.IsType := true;
-            FCioStack.Peek.Cio.Types.Add(RoutineType);
+            CioState.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
             ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
             Exit;
@@ -4235,9 +4250,9 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
           ParseEnum(EnumType, TypeName, RawDescriptionInfo);
           EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
           EnumType.SourceLine := FLastParsedTokenLine;
-          EnumType.Visibility := FCioStack.Peek.CurVisibility;
-          if FCioStack.Peek.CurVisibility in ShowVisibilities then
-            FCioStack.Peek.Cio.Types.Add(EnumType)
+          EnumType.Visibility := CioState.Visibility;
+          if CioState.Visibility in ShowVisibilities then
+            CioState.Cio.Types.Add(EnumType)
           else
             FreeAndNil(EnumType);
           FreeAndNil(t);
@@ -4257,10 +4272,10 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
         NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
         NormalType.SourceLine := FLastParsedTokenLine;
         NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
-        NormalType.Visibility := FCioStack.Peek.CurVisibility;
+        NormalType.Visibility := CioState.Visibility;
         ItemsForNextBackComment.ClearAndAdd(NormalType);
-        if FCioStack.Peek.CurVisibility in ShowVisibilities then
-          FCioStack.Peek.Cio.Types.Add(NormalType)
+        if CioState.Visibility in ShowVisibilities then
+          CioState.Cio.Types.Add(NormalType)
         else
           NormalType.Free;
       except
@@ -4276,60 +4291,48 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
   end;
 
 var
-  LHlp: TPasCioHelper;
+  CioState: TCioState;
 begin
-  LHlp := nil;
+  Assert(Assigned(LCio));
 
-  try
-    Assert(Assigned(LCio));
-
-    while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
-    begin // A Cio completed, nested or outer CIO
-      { Clear any orphan comments - do not let them break away from the CIO }
-      IsLastComment := false;
-      ItemsForNextBackComment.ClearAndAdd(LCio);
-      if (FCioStack.Count > 0) then
+  while ParseCioMembers(LCio, LSection, IsInRecordCase, LVisibility) do
+  begin // A Cio completed, nested or outer CIO
+    { Clear any orphan comments - do not let them break away from the CIO }
+    IsLastComment := false;
+    ItemsForNextBackComment.ClearAndAdd(LCio);
+    if (FCioStack.Count > 0) then
+    begin
+      LVisibility := FCioStack.Peek.Visibility;
+      if LVisibility in ShowVisibilities then
       begin
-        LVisibility := FCioStack.Peek.CurVisibility;
-        if LVisibility in ShowVisibilities then
-        begin
-          LCio.Visibility := LVisibility;
-          FCioStack.Peek.Cio.Cios.Add(LCio);
-        end
-        else
-          FreeAndNil(LCio);
-        LCio  := FCioStack.Peek.Cio;
-        LMode := FCioStack.Peek.Mode;
-        FCioStack.Pop.Free;
+        LCio.Visibility := LVisibility;
+        FCioStack.Peek.Cio.Cios.Add(LCio);
+      end
+      else
+        FreeAndNil(LCio);
+      LCio := FCioStack.Peek.Cio;
+      LSection := FCioStack.Peek.Section;
+      FCioStack.Pop.Free;
+    end else
+    begin
+      if Assigned(U) then
+      begin
+        ItemsForNextBackComment.ClearAndAdd(LCio);
+        U.AddCIO(LCio);
+        LCio := nil;
       end else
-      begin
-        if Assigned(U) then
-        begin
-          ItemsForNextBackComment.ClearAndAdd(LCio);
-          U.AddCIO(LCio);
-          LCio := nil;
-        end else
-          FreeAndNil(LCio);
-        Exit; // Finished
-      end;
+        FreeAndNil(LCio);
+      Exit; // Finished
     end;
-
-    LHlp := TPasCioHelper.Create;
-    LHlp.Mode := LMode;
-    LHlp.CurVisibility := LVisibility;
-    LHlp.Cio := LCio;
-    FCioStack.Push(LHlp);
-    LHlp := nil;
-    LCio := nil;
-
-    ParseNestedType;
-
-  except
-    LCio.Free;
-    LHlp.Free;
-    FCioStack.Clear;
-    raise;
   end;
+
+  CioState := TCioState.Create;
+  CioState.Section := LSection;
+  CioState.Visibility := LVisibility;
+  CioState.Cio := LCio;
+  FCioStack.Push(CioState);
+
+  ParseNestedType(CioState);
 end;
 
 { TRawDescriptionInfoList ---------------------------------------------------- }
@@ -4370,32 +4373,32 @@ begin
   FCount := 0;
 end;
 
-{ TPasCioHelperStack }
+{ TCioStateStack }
 
-procedure TPasCioHelperStack.Clear;
+procedure TCioStateStack.Clear;
 begin
   while Count > 0 do
     Pop.FreeAll;
 end;
 
-function TPasCioHelperStack.Peek: TPasCioHelper;
+function TCioStateStack.Peek: TCioState;
 begin
-  Result := TPasCioHelper(inherited Peek);
+  Result := TCioState(inherited Peek);
 end;
 
-function TPasCioHelperStack.Pop: TPasCioHelper;
+function TCioStateStack.Pop: TCioState;
 begin
-  Result := TPasCioHelper(inherited Pop);
+  Result := TCioState(inherited Pop);
 end;
 
-function TPasCioHelperStack.Push(AHelper: TPasCioHelper): TPasCioHelper;
+function TCioStateStack.Push(const Item: TCioState): TCioState;
 begin
-  Result := TPasCioHelper(inherited Push(AHelper));
+  Result := TCioState(inherited Push(Item));
 end;
 
-{ TPasCioHelper }
+{ TCioState }
 
-procedure TPasCioHelper.FreeAll;
+procedure TCioState.FreeAll;
 begin
   FCio.Free;
   Destroy;
