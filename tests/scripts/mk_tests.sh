@@ -321,6 +321,7 @@ all_tests_for_current_format ()
   # popd > /dev/null
 
   mk_test ok_ancestor_qualified ok_ancestor_qualified.pas
+  mk_test ok_nested_with_exclude ok_nested_with_exclude.pas
 }
 
 # parse params ----------------------------------------

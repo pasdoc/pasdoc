@@ -472,7 +472,8 @@ var
 begin
   if c = nil then Exit;
   i := 0;
-  while (i < c.Count) do begin
+  while (i < c.Count) do
+  begin
     p := c.PasItemAt[i];
 
     { TODO -- code below checks for @exclude tag too trivially,
@@ -485,23 +486,25 @@ begin
     begin
       DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
-    end
-    else begin
-          { P has no excluded tag; but if it is a class, interface, object or
-            unit, one of its parts may be excluded }
-      if p.ClassType = TPasCio then begin
+    end else
+    begin
+      { P is not excluded itself, so process it recursively to exclude its parts.  }
+      if P is TPasCio then
+      begin
         RemoveExcludedItems(TPasCio(p).Fields);
-        RemoveExcludedItems(TPasItems(TPasCio(p).Properties));
-        RemoveExcludedItems(TPasItems(TPasCio(p).Methods));
-      end
-      else
-        if p.ClassType = TPasUnit then begin
-          RemoveExcludedItems(TPasUnit(p).CIOs);
-          RemoveExcludedItems(TPasUnit(p).Constants);
-          RemoveExcludedItems(TPasItems(TPasUnit(p).FuncsProcs));
-          RemoveExcludedItems(TPasUnit(p).Types);
-          RemoveExcludedItems(TPasUnit(p).Variables);
-        end;
+        RemoveExcludedItems(TPasCio(p).Properties);
+        RemoveExcludedItems(TPasCio(p).Methods);
+        RemoveExcludedItems(TPasCio(p).Cios);
+        RemoveExcludedItems(TPasCio(p).Types);
+      end else
+      if P is TPasUnit then
+      begin
+        RemoveExcludedItems(TPasUnit(p).CIOs);
+        RemoveExcludedItems(TPasUnit(p).Constants);
+        RemoveExcludedItems(TPasUnit(p).FuncsProcs);
+        RemoveExcludedItems(TPasUnit(p).Types);
+        RemoveExcludedItems(TPasUnit(p).Variables);
+      end;
       Inc(i);
     end;
   end;
