@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_nested_2: Class TCastleProfiler</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<nav class="navbar d-md-none sticky-top bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Documentation</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
+<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav" data-bs-scroll="true">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body py-2">
+<ul class="nav flex-column px-3"><li class="nav-item"><a class="nav-link px-2 py-1" href="AllUnits.html">Units</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="ClassHierarchy.html">Class Hierarchy</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllTypes.html">Types</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllVariables.html">Variables</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllConstants.html">Constants</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllFunctions.html">Functions and Procedures</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllIdentifiers.html">Identifiers</a></li></ul></div></div>
+<main class="pasdoc-content content">
+<div class="container-fluid py-3 px-4">
+<span id="TCastleProfiler"></span><h1 class="cio">Class TCastleProfiler</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-NestedCRs">Nested Classes and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-NestedTypes">Nested Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="ok_nested_2.html">ok_nested_2</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TCastleProfiler = class(TObject)</code></p>
+<h2 class="description">Description</h2>
+<p class="nodescription">This item has no description.</p><span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TObject</li>
+<li class="thisitem">TCastleProfiler</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-NestedCRs"></span><h3 class="summary">Nested Classes and Records</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.TTime.html">TTime</a></strong> = class(TObject)</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.TTimes.html">TTimes</a></strong> = class(<a href="ok_nested_2.TCastleProfiler.html#TTimeList">TTimeList</a>)</code></td>
+</tr>
+</table>
+<span id="PasDoc-NestedTypes"></span><h3 class="summary">Nested Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.html#TTimeList">TTimeList</a></strong> =  TObjectList&lt;<a href="ok_nested_2.TCastleProfiler.TTime.html">TTime</a>&gt;;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>var <strong><a href="ok_nested_2.TCastleProfiler.html#FEnabled">FEnabled</a></strong>: boolean;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.html#FFloatPrecision">FFloatPrecision</a></strong>: Cardinal;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.html#Times">Times</a></strong>: <a href="ok_nested_2.TCastleProfiler.TTimes.html">TTimes</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_2.TCastleProfiler.html#CurrentStack">CurrentStack</a></strong>: <a href="ok_nested_2.TCastleProfiler.html#TTimeList">TTimeList</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>nested const <strong><a href="ok_nested_2.TCastleProfiler.html#DefaultFloatPrecision">DefaultFloatPrecision</a></strong> = 2;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>constructor <strong><a href="ok_nested_2.TCastleProfiler.html#Create">Create</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>destructor <strong><a href="ok_nested_2.TCastleProfiler.html#Destroy">Destroy</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>function <strong><a href="ok_nested_2.TCastleProfiler.html#Summary">Summary</a></strong>: string;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>procedure <strong><a href="ok_nested_2.TCastleProfiler.html#Clear">Clear</a></strong>; deprecated 'This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.';</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>function <strong><a href="ok_nested_2.TCastleProfiler.html#Start-String-">Start</a></strong>(const Description: String): TCastleProfilerTime;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>procedure <strong><a href="ok_nested_2.TCastleProfiler.html#Stop-TCastleProfilerTime-Boolean-Boolean-">Stop</a></strong>(const TimeStart: TCastleProfilerTime; const LogSummary: Boolean = false; const LogSummaryOnlyIfNonTrivial: Boolean = false);</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>property <strong><a href="ok_nested_2.TCastleProfiler.html#Enabled">Enabled</a></strong>: boolean read <a href="ok_nested_2.TCastleProfiler.html#FEnabled">FEnabled</a> write <a href="ok_nested_2.TCastleProfiler.html#FEnabled">FEnabled</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Nested Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="TTimeList"></span><code><strong>TTimeList</strong> =  TObjectList&lt;<a href="ok_nested_2.TCastleProfiler.TTime.html">TTime</a>&gt;;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="FEnabled"></span><code>var <strong>FEnabled</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="FFloatPrecision"></span><code><strong>FFloatPrecision</strong>: Cardinal;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Times"></span><code><strong>Times</strong>: <a href="ok_nested_2.TCastleProfiler.TTimes.html">TTimes</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Collected times tree.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="CurrentStack"></span><code><strong>CurrentStack</strong>: <a href="ok_nested_2.TCastleProfiler.html#TTimeList">TTimeList</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+The currently started (but not stopped) TTime structures.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="DefaultFloatPrecision"></span><code>nested const <strong>DefaultFloatPrecision</strong> = 2;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Destroy"></span><code>destructor <strong>Destroy</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Summary"></span><code>function <strong>Summary</strong>: string;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Summary of the gathered speed measurements.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Clear"></span><code>procedure <strong>Clear</strong>; deprecated 'This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.';</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="hint_directive">Warning: this symbol is deprecated: This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.</p><p>
+Clear currently gathered times.
+
+<p>Do not call this when some time measure is started but not yet stopped Currently, this will cause such time measure to be rejected, and stopping it will cause a one-time warning, but don't depend on this exact behavior in the future. We will always gracefully accept this case (not crash).</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Start-String-"></span><code>function <strong>Start</strong>(const Description: String): TCastleProfilerTime;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Start a task which execution time will be measured. You <em>must</em> later call <a class="normal" href="ok_nested_2.TCastleProfiler.html#Stop-TCastleProfilerTime-Boolean-Boolean-">Stop</a> with the returned TCastleProfilerTime value.
+
+<p>Typical usage looks like this:
+
+<p></p>
+
+<pre class="longcode">
+<span class="pascal_keyword">procedure</span> TMyClass.LoadSomething;
+<span class="pascal_keyword">var</span>
+  TimeStart: TCastleProfilerTime;
+<span class="pascal_keyword">begin</span>
+  TimeStart := Profiler.Start(<span class="pascal_string">'Loading something (TMyClass)'</span>);
+  <span class="pascal_keyword">try</span>
+    <span class="pascal_comment">// do the time-consuming loading now...</span>
+  <span class="pascal_keyword">finally</span>
+    Profiler.Stop(TimeStart);
+  <span class="pascal_keyword">end</span>;
+<span class="pascal_keyword">end</span>;</pre>
+
+<p>
+
+<p>If you don't use the &quot;finally&quot; clause to <em>always</em> call the matching <a class="normal" href="ok_nested_2.TCastleProfiler.html#Stop-TCastleProfilerTime-Boolean-Boolean-">Stop</a>, and an exception may occur in LoadSomething, then you will have an unmatched Start / Stop calls. The profiler output is undefined in this case. (However, we guarantee that the profiler will not crash or otherwise cause problems in the application.) So, you do not really have to wrap this in &quot;try ... finally ... end&quot; clause, if it's acceptable that the profiler output is useless in exceptional situations.
+
+<p></p>
+<h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="ok_nested_2.TCastleProfiler.html#Stop-TCastleProfilerTime-Boolean-Boolean-">Stop</a></dt>
+  <dd></dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Stop-TCastleProfilerTime-Boolean-Boolean-"></span><code>procedure <strong>Stop</strong>(const TimeStart: TCastleProfilerTime; const LogSummary: Boolean = false; const LogSummaryOnlyIfNonTrivial: Boolean = false);</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Stop a task. This call must match earlier <a class="normal" href="ok_nested_2.TCastleProfiler.html#Start-String-">Start</a> call.
+
+<p>If LogSummary, and profiling is <a class="normal" href="ok_nested_2.TCastleProfiler.html#Enabled">Enabled</a>, we will output (to CastleLog) a summary of things that happened within this particular TCastleProfilerTime instance (between it's start and stop). This is useful when you are interested not only in adding this TCastleProfilerTime to the profiler tree, but also in immediately viewing the times in this TCastleProfilerTime subtree.
+
+<p>If LogSummary and LogSummaryOnlyIfNonTrivial, then the summary will be output only if it's larger than some ignorable amount of time (right now: 1 milisecond). This is useful to output only things that take non-trivial amount of time.
+
+<p></p>
+<h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="ok_nested_2.TCastleProfiler.html#Start-String-">Start</a></dt>
+  <dd></dd>
+</dl>
+</td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Enabled"></span><code>property <strong>Enabled</strong>: boolean read <a href="ok_nested_2.TCastleProfiler.html#FEnabled">FEnabled</a> write <a href="ok_nested_2.TCastleProfiler.html#FEnabled">FEnabled</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Whether to gather speed measurements. When not enabled, the <a class="normal" href="ok_nested_2.TCastleProfiler.html#Start-String-">Start</a> and <a class="normal" href="ok_nested_2.TCastleProfiler.html#Stop-TCastleProfilerTime-Boolean-Boolean-">Stop</a> methods do as little as possible to not waste time.</p>
+</td></tr>
+</table>
+</div></main>
+<script src="bootstrap.bundle.min.js"></script>
+</body></html>

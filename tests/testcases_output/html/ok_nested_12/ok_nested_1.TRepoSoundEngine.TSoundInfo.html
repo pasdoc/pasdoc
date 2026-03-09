@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ok_nested_1: Class TRepoSoundEngine.TSoundInfo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<nav class="navbar d-md-none sticky-top bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Documentation</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
+<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav" data-bs-scroll="true">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body py-2">
+<ul class="nav flex-column px-3"><li class="nav-item"><a class="nav-link px-2 py-1" href="AllUnits.html">Units</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="ClassHierarchy.html">Class Hierarchy</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllTypes.html">Types</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllVariables.html">Variables</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllConstants.html">Constants</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllFunctions.html">Functions and Procedures</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllIdentifiers.html">Identifiers</a></li></ul></div></div>
+<main class="pasdoc-content content">
+<div class="container-fluid py-3 px-4">
+<span id="TSoundInfo"></span><h1 class="cio">Class TRepoSoundEngine.TSoundInfo</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-EnclosingClass">Enclosing Class</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="ok_nested_1.html">ok_nested_1</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TSoundInfo = class(TObject)</code></p>
+<h2 class="description">Description</h2>
+<p>
+Sound that can be played &ndash; actual sound with buffer, or an alias to it.</p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TObject</li>
+<li class="thisitem">TRepoSoundEngine.TSoundInfo</li></ul><span id="PasDoc-EnclosingClass"></span><h2 class="hierarchy">Enclosing Class</h2>
+<ul class="hierarchy"><li class="thisitem"><a class="ancestor" href="ok_nested_1.TRepoSoundEngine.html">TRepoSoundEngine</a></li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-private">Strict Private</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#FOwningSoundEngine">FOwningSoundEngine</a></strong>: TSoundEngine;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#Name">Name</a></strong>: String;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#ShortName">ShortName</a></strong>: String;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code><strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#ParentGroup">ParentGroup</a></strong>: TSoundGroup;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>procedure <strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#ReadElement-TDOMElement-TSoundGroup-String-TRepoSoundEngine-">ReadElement</a></strong>(const Element: TDOMElement; const AParentGroup: TSoundGroup; const BaseUrl: String; const ASoundEngine: <a href="ok_nested_1.TRepoSoundEngine.html">TRepoSoundEngine</a>); virtual;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>procedure <strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#ResolveNames-TSoundInfoList-">ResolveNames</a></strong>(const AllSounds: TSoundInfoList); virtual;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><code>function <strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#FinalSound-Cardinal-">FinalSound</a></strong>(const RecursionDepth: Cardinal): TSoundInfoBuffer; virtual; abstract;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-protected">Strict Protected</span></td>
+<td class="itemcode"><code>property <strong><a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#OwningSoundEngine">OwningSoundEngine</a></strong>: TSoundEngine read <a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#FOwningSoundEngine">FOwningSoundEngine</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-private">Strict Private</span></td>
+<td class="itemcode"><span id="FOwningSoundEngine"></span><code><strong>FOwningSoundEngine</strong>: TSoundEngine;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Although we only support one instance of TSoundEngine, in <code>SoundEngine</code>, but it seems more future-proof to store in TSoundInfo own reference to TSoundEngine. Automatically assigned in ReadElement.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="Name"></span><code><strong>Name</strong>: String;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Unique sound name (including parent group names). Empty for the special sound stNone = nil.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="ShortName"></span><code><strong>ShortName</strong>: String;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Like Name, but without parent group names. Unique within the ParentGroup (not necessarily unique among all sounds).</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="ParentGroup"></span><code><strong>ParentGroup</strong>: TSoundGroup;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+A group (one among FSoundGroups, or <code>Nil</code> if not in any group).</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="ReadElement-TDOMElement-TSoundGroup-String-TRepoSoundEngine-"></span><code>procedure <strong>ReadElement</strong>(const Element: TDOMElement; const AParentGroup: TSoundGroup; const BaseUrl: String; const ASoundEngine: <a href="ok_nested_1.TRepoSoundEngine.html">TRepoSoundEngine</a>); virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Read a sound from XML element &lt;sound&gt; or &lt;alias&gt;.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="ResolveNames-TSoundInfoList-"></span><code>procedure <strong>ResolveNames</strong>(const AllSounds: TSoundInfoList); virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Do some finalization once all sounds are known, and their names are known.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-public">Public</span></td>
+<td class="itemcode"><span id="FinalSound-Cardinal-"></span><code>function <strong>FinalSound</strong>(const RecursionDepth: Cardinal): TSoundInfoBuffer; virtual; abstract;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Get the final TSoundInfoBuffer, resolving aliases.</p>
+</td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><span class="badge vis-protected">Strict Protected</span></td>
+<td class="itemcode"><span id="OwningSoundEngine"></span><code>property <strong>OwningSoundEngine</strong>: TSoundEngine read <a href="ok_nested_1.TRepoSoundEngine.TSoundInfo.html#FOwningSoundEngine">FOwningSoundEngine</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+</div></main>
+<script src="bootstrap.bundle.min.js"></script>
+</body></html>

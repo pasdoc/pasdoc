@@ -1,0 +1,76 @@
+<unit name="ok_nested_2">
+  <description><detailed>Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine.</detailed></description>
+  <structure name="TCastleProfiler" name_with_generic="TCastleProfiler" type="class" visibility="published">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="Create" type="constructor" declaration="constructor Create;" visibility="public">
+    </routine>
+    <routine name="Destroy" type="destructor" declaration="destructor Destroy; override;" visibility="public">
+    </routine>
+    <routine name="Summary" type="function" declaration="function Summary: string;" visibility="public">
+      <description><detailed>Summary of the gathered speed measurements.</detailed></description>
+    </routine>
+    <routine name="Clear" type="procedure" declaration="procedure Clear; deprecated 'This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.';" visibility="public" deprecated_note="This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true." deprecated="true">
+      <description><detailed>Clear currently gathered times. Do not call this when some time measure is started but not yet stopped Currently, this will cause such time measure to be rejected, and stopping it will cause a one-time warning, but don't depend on this exact behavior in the future. We will always gracefully accept this case (not crash).</detailed></description>
+    </routine>
+    <routine name="Start" type="function" declaration="function Start(const Description: String): TCastleProfilerTime;" visibility="public">
+      <description><detailed>Start a task which execution time will be measured. You <italic>must</italic> later call Stop with the returned TCastleProfilerTime value. Typical usage looks like this: 
+procedure TMyClass.LoadSomething;
+var
+  TimeStart: TCastleProfilerTime;
+begin
+  TimeStart := Profiler.Start('Loading something (TMyClass)');
+  try
+    // do the time-consuming loading now...
+  finally
+    Profiler.Stop(TimeStart);
+  end;
+end; If you don't use the &quot;finally&quot; clause to <italic>always</italic> call the matching Stop, and an exception may occur in LoadSomething, then you will have an unmatched Start / Stop calls. The profiler output is undefined in this case. (However, we guarantee that the profiler will not crash or otherwise cause problems in the application.) So, you do not really have to wrap this in &quot;try ... finally ... end&quot; clause, if it's acceptable that the profiler output is useless in exceptional situations. </detailed></description>
+    </routine>
+    <routine name="Stop" type="procedure" declaration="procedure Stop(const TimeStart: TCastleProfilerTime; const LogSummary: Boolean = false; const LogSummaryOnlyIfNonTrivial: Boolean = false);" visibility="public">
+      <description><detailed>Stop a task. This call must match earlier Start call. If LogSummary, and profiling is Enabled, we will output (to CastleLog) a summary of things that happened within this particular TCastleProfilerTime instance (between it's start and stop). This is useful when you are interested not only in adding this TCastleProfilerTime to the profiler tree, but also in immediately viewing the times in this TCastleProfilerTime subtree. If LogSummary and LogSummaryOnlyIfNonTrivial, then the summary will be output only if it's larger than some ignorable amount of time (right now: 1 milisecond). This is useful to output only things that take non-trivial amount of time. </detailed></description>
+    </routine>
+    <variable name="FEnabled" declaration="var FEnabled: boolean;" visibility="public">
+    </variable>
+    <variable name="FFloatPrecision" declaration="FFloatPrecision: Cardinal;" visibility="public">
+    </variable>
+    <variable name="Times" declaration="Times: TTimes;" visibility="public">
+      <description><detailed>Collected times tree.</detailed></description>
+    </variable>
+    <variable name="CurrentStack" declaration="CurrentStack: TTimeList;" visibility="public">
+      <description><detailed>The currently started (but not stopped) TTime structures.</detailed></description>
+    </variable>
+    <variable name="DefaultFloatPrecision" declaration="const DefaultFloatPrecision = 2;" visibility="public">
+    </variable>
+    <property name="Enabled" indexdecl="" type="boolean" reader="FEnabled" writer="FEnabled" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+      <description><detailed>Whether to gather speed measurements. When not enabled, the Start and Stop methods do as little as possible to not waste time.</detailed></description>
+    </property>
+    <type name="TTimeList" declaration="TTimeList =  TObjectList&lt;TTime&gt;;" visibility="public">
+    </type>
+    <structure name="TTime" name_with_generic="TTime" type="class" visibility="public">
+      <description><detailed>forward declaration, just to make testcase harder (this was causing bugs)</detailed></description>
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="Destroy" type="destructor" declaration="destructor Destroy; override;" visibility="public">
+        <description><detailed>nil if empty; always TTimes, but declaring it as such confuses C++ Builder</detailed></description>
+      </routine>
+      <routine name="Summary" type="function" declaration="function Summary(const Indent: String; const AFloatPrecision: Cardinal): String;" visibility="public">
+      </routine>
+      <variable name="Description" declaration="Description: String;" visibility="public">
+      </variable>
+      <variable name="Time" declaration="Time: TFloatTime;" visibility="public">
+      </variable>
+      <variable name="ProcessTime" declaration="ProcessTime: TFloatTime;" visibility="public">
+      </variable>
+      <variable name="Finished" declaration="Finished: Boolean;" visibility="public">
+      </variable>
+      <variable name="Children" declaration="Children: TObject;" visibility="public">
+      </variable>
+    </structure>
+    <structure name="TTimes" name_with_generic="TTimes" type="class" visibility="public">
+      <ancestor name="TTimeList" declaration="TTimeList" />
+      <routine name="Sort" type="procedure" declaration="procedure Sort;" visibility="public">
+      </routine>
+      <routine name="Summary" type="function" declaration="function Summary(const Indent: String; const AFloatPrecision: Cardinal): String;" visibility="public">
+      </routine>
+    </structure>
+  </structure>
+</unit>

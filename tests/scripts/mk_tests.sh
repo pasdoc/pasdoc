@@ -322,7 +322,7 @@ all_tests_for_current_format ()
 
   mk_test ok_ancestor_qualified ok_ancestor_qualified.pas
   mk_test ok_nested_with_exclude ok_nested_with_exclude.pas
-  mk_test ok_nested_12 ok_nested_1.pas ok_nested_2.pas
+  mk_test ok_nested_12 ok_nested_1.pas ok_nested_2.pas --visible-members='private,strictprivate,protected,strictprotected,public,published'
 }
 
 # parse params ----------------------------------------
