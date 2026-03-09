@@ -1234,7 +1234,8 @@ type
     constructor Create; reintroduce;
   end;
 
-  { Collection of types. }
+  { List of types. Note that it may contain not only TPasType but also TPasRoutine
+    (which we use for a procedural type / callback). }
   TPasTypes = class(TPasItems)
     function FindListItem(const AName: string): TPasItem;
   end;

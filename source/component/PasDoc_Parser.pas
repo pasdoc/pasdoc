@@ -356,8 +356,8 @@ type
       or nested CIO (when FCioStack already contains parents).
       It will start with ParseCioTypeDecl call to actually create TPasCio. }
     procedure ParseCio_StartDeclaration(const U: TPasUnit;
-      const CioName, CioNameWithGeneric: string;
-      const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+      const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
+      const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: Boolean);
 
     { Continue parsing a structure (class, interface, more) that is now on top of FCioStack.
@@ -417,7 +417,10 @@ type
     procedure ParseInterfaceSection(const U: TPasUnit);
     procedure ParseImplementationSection(const U: TPasUnit);
     procedure ParseProperty(out p: TPasProperty);
-    procedure ParseType(const U: TPasUnit);
+
+    { Parse global type (when CioState = nil) or type within a CIO
+      (when CioState <> nil). }
+    procedure ParseType(const U: TPasUnit; const CioState: TCioState = nil);
 
     { This assumes that you just read left parenthesis starting
       an enumerated type. It finishes parsing of TPasEnum,
@@ -2365,7 +2368,40 @@ begin
   end;
 end;
 
-procedure TParser.ParseType(const U: TPasUnit);
+procedure TParser.ParseType(const U: TPasUnit; const CioState: TCioState);
+
+  { Call either ParseCio_StartDeclaration or ParseCio according to whether
+    we are parsing a CIO member (type nested in CIO) or not (global type). }
+  procedure DoCioParse(const U: TPasUnit;
+    const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
+    const RawDescriptionInfo: TRawDescriptionInfo;
+    const IsInRecordCase: Boolean);
+  begin
+    if CioState <> nil then
+      ParseCio_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo, IsInRecordCase)
+    else
+      ParseCio(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo, IsInRecordCase);
+  end;
+
+  { Add type to either unit or CIO, depending on CioState.
+    Note that this may free T, so don't use it afterwards. }
+  procedure DoAddType(var T: TPasItem);
+  begin
+    if CioState <> nil then
+    begin
+      if CioState.Visibility in ShowVisibilities then
+      begin
+        T.Visibility := CioState.Visibility;
+        CioState.Cio.Types.Add(T);
+      end else
+        FreeAndNil(T);
+    end else
+    if U <> nil then
+      U.AddType(T)
+    else
+      FreeAndNil(T);
+  end;
+
 var
   RawDescriptionInfo: TRawDescriptionInfo;
   NormalType: TPasType;
@@ -2444,7 +2480,7 @@ begin
               { include "identifier = class of something;" as standard type }
             end else begin
               Scanner.UnGetToken(t);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
+              DoCioParse(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -2455,7 +2491,7 @@ begin
         KEY_RECORD:
           begin
             CioType := KeyWordToCioType(t.Info.KeyWord, False);
-            ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
+            DoCioParse(U, TypeName, TypeNameWithGeneric, CioType,
               RawDescriptionInfo, False);
             FreeAndNil(t);
             Exit;
@@ -2464,7 +2500,7 @@ begin
             T2 := PeekNextToken(LTemp);
             if T2.IsStandardDirective(SD_HELPER) then
             begin
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CIO_TYPE,
+              DoCioParse(U, TypeName, TypeNameWithGeneric, CIO_TYPE,
                 RawDescriptionInfo, False);
               FreeAndNil(t);
               exit;
@@ -2483,15 +2519,17 @@ begin
             begin
               // for class - no check for "of", no packed classpointers allowed
               CioType := KeyWordToCioType(t.Info.KeyWord, True);
-              ParseCIO(U, TypeName, TypeNameWithGeneric, CioType,
+              DoCioParse(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               FreeAndNil(t);
               Exit;
             end;
           end;
       end;
-    if Assigned(t) then begin
-      if (t.MyType = TOK_KEYWORD) then begin
+    if Assigned(t) then
+    begin
+      if (t.MyType = TOK_KEYWORD) then
+      begin
         if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
         begin
           ParseRoutine(RoutineType, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
@@ -2500,11 +2538,10 @@ begin
           RoutineType.FullDeclaration :=
             TypeName + ' = ' + RoutineType.FullDeclaration;
           RoutineType.IsType := true;
-          if U <> nil then
-            U.AddType(RoutineType)
-          else
-            FreeAndNil(RoutineType);
+          DoAddType(TPasItem(RoutineType));
           FreeAndNil(t);
+          if CioState <> nil then
+            ParseCio_SkipDeclaration(U, RawDescriptionInfo, False);
           Exit;
         end;
       end;
@@ -2513,11 +2550,10 @@ begin
         ParseEnum(EnumType, TypeName, RawDescriptionInfo);
         EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
         EnumType.SourceLine := FLastParsedTokenLine;
-        if U <> nil then
-          U.AddType(EnumType)
-        else
-          FreeAndNil(EnumType);
+        DoAddType(TPasItem(EnumType));
         FreeAndNil(t);
+        if CioState <> nil then
+          ParseCio_SkipDeclaration(U, RawDescriptionInfo, False);
         Exit;
       end;
       SetLength(LCollected, Length(LCollected)-Length(t.Data));
@@ -2528,25 +2564,18 @@ begin
     AttributeIsPossible := True;
 
     NormalType := TPasType.Create;
-    try
-      NormalType.FullDeclaration := LCollected;
-      SkipDeclaration(NormalType, false);
-      NormalType.Name := TypeName;
-      NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
-      NormalType.SourceLine := FLastParsedTokenLine;
-      NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
-      NormalType.SetAttributes(CurrentAttributes);
-      ItemsForNextBackComment.ClearAndAdd(NormalType);
-      if U <> nil then
-        U.AddType(NormalType)  { This is the last line here since "U" owns the
-                                 objects, bad luck if adding the item raised an
-                                 exception. }
-      else
-        FreeAndNil(NormalType);
-    except
-      FreeAndNil(NormalType);
-      raise;
-    end;
+    NormalType.FullDeclaration := LCollected;
+    SkipDeclaration(NormalType, false);
+    NormalType.Name := TypeName;
+    NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
+    NormalType.SourceLine := FLastParsedTokenLine;
+    NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
+    NormalType.SetAttributes(CurrentAttributes);
+    ItemsForNextBackComment.ClearAndAdd(NormalType);
+    DoAddType(TPasItem(NormalType));
+
+    if CioState <> nil then
+      ParseCio_SkipDeclaration(U, RawDescriptionInfo, False);
   except
     FreeAndNil(t);
     raise;
@@ -4091,220 +4120,6 @@ procedure TParser.ParseCio_Continue(const U: TPasUnit;
   LSection: TParsingSection;
   LVisibility: TVisibility;
   const IsInRecordCase: Boolean);
-
-  { TODO: this is mostly a copy&paste of ParseType! Should be merged,
-    otherwise modifying one of them always needs to be carefully duplicated.
-
-    Note: Do not change here LSection and LVisibility parameters,
-    as we could lose this information, since we call ParseCio_Continue
-    many times for the same CIO.
-    Instead, change CioState.Section and CioState.Visibility if needed.
-    At the moment this is called, you know that CioState = FCioStack.Peek. }
-  procedure ParseNestedType(const CioState: TCioState);
-  var
-    RawDescriptionInfo: TRawDescriptionInfo;
-    NormalType: TPasType;
-    TypeName: string;
-    LCollected, LTemp, TypeNameWithGeneric: string;
-    RoutineType: TPasRoutine;
-    EnumType: TPasEnum;
-    T: TToken;
-    IsGeneric: boolean;
-    CioType: TCIOType;
-  begin
-    Assert(CioState.Cio = LCio);
-
-    { Read the type name, preceded by optional "generic" directive.
-      Calculate TypeName, IsGeneric, TypeNameWithGeneric.
-      FPC requires "generic" directive, but Delphi doesn't,
-      so it's just optional for us (serves for some checks later). }
-    T := GetNextToken;
-    try
-      TypeNameWithGeneric := '';
-      IsGeneric := T.IsStandardDirective(SD_GENERIC);
-      if IsGeneric then
-      begin
-        TypeNameWithGeneric := T.Data + ' ';
-        TypeName := GetAndCheckNextToken(TOK_IDENTIFIER);
-      end else
-      begin
-        CheckToken(T, TOK_IDENTIFIER);
-        TypeName := T.Data;
-      end;
-      TypeNameWithGeneric := TypeNameWithGeneric + TypeName;
-    finally FreeAndNil(T) end;
-
-    RawDescriptionInfo := GetLastComment;
-    t := GetNextToken(LCollected);
-    try
-      if T.IsSymbol(SYM_LESS_THAN) then
-      begin
-        ParseGenericTypeIdentifierList(T, TypeNameWithGeneric);
-        T := GetNextToken(LCollected);
-      end;
-
-      if T.IsSymbol(SYM_SEMICOLON) then
-      begin
-        FreeAndNil(T);
-        Exit;
-      end else
-      if T.IsSymbol(SYM_EQUAL) then
-      begin
-        LCollected := TypeNameWithGeneric + LCollected + T.Data;
-        FreeAndNil(T);
-      end else
-      begin
-        FreeAndNil(T);
-        DoError('Symbol "=" expected', []);
-      end;
-
-      t := GetNextToken(LTemp);
-      LCollected := LCollected + LTemp + t.Data;
-
-      if (t.MyType = TOK_KEYWORD) then
-      begin
-        case t.Info.KeyWord of
-          KEY_CLASS, KEY_OBJCCLASS:
-            begin
-              CioType := KeyWordToCioType(t.Info.KeyWord, False);
-              FreeAndNil(t);
-              t := GetNextToken(LTemp);
-              LCollected := LCollected + LTemp + t.Data;
-              if t.IsKeyWord(KEY_OF) then
-              begin
-                { include "identifier = class of something;" as standard type }
-              end
-              else begin
-                Scanner.UnGetToken(t);
-                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
-                  RawDescriptionInfo, False);
-                Exit;
-              end;
-            end;
-          KEY_DISPINTERFACE:
-            begin
-              FreeAndNil(t);
-              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
-                RawDescriptionInfo, False);
-              Exit;
-            end;
-          KEY_INTERFACE:
-            begin
-              FreeAndNil(t);
-              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
-                RawDescriptionInfo, False);
-              Exit;
-            end;
-          KEY_OBJECT:
-            begin
-              CioType := KeyWordToCioType(t.Info.KeyWord, False);
-              FreeAndNil(t);
-              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
-                RawDescriptionInfo, False);
-              Exit;
-            end;
-          KEY_RECORD:
-            begin
-              FreeAndNil(t);
-              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
-                RawDescriptionInfo, False);
-              Exit;
-            end;
-          KEY_PACKED:
-            begin
-              FreeAndNil(t);
-              t := GetNextToken(LTemp);
-              LCollected := LCollected + LTemp + t.Data;
-              if t.IsKeyWord(KEY_RECORD) then
-              begin
-                FreeAndNil(t);
-                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
-                  RawDescriptionInfo, False);
-                exit;
-              end else
-              if t.IsKeyWord(KEY_OBJECT) then
-              begin
-                CioType := KeyWordToCioType(t.Info.KeyWord, True);
-                FreeAndNil(t);
-                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
-                  RawDescriptionInfo, False);
-                Exit;
-              end else
-              if t.IsKeyWord(KEY_CLASS) or t.IsKeyWord(KEY_OBJCCLASS) then
-              begin
-                // no check for "of", no packed classpointers allowed
-                CioType := KeyWordToCioType(t.Info.KeyWord, True);
-                FreeAndNil(t);
-                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
-                  RawDescriptionInfo, False);
-                Exit;
-              end;
-            end;
-        end;
-      end;
-      if Assigned(t) then
-      begin
-        if (t.MyType = TOK_KEYWORD) then
-        begin
-          if t.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
-          begin
-            ParseRoutine(RoutineType, '', t.Data, KeyWordToRoutineType(t.Info.KeyWord),
-            RawDescriptionInfo, false, true, '');
-            RoutineType.Name := TypeName;
-            RoutineType.FullDeclaration :=
-              TypeName + ' = ' + RoutineType.FullDeclaration;
-            RoutineType.IsType := true;
-            CioState.Cio.Types.Add(RoutineType);
-            FreeAndNil(t);
-            ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
-            Exit;
-          end;
-        end;
-        if t.IsSymbol(SYM_LEFT_PARENTHESIS) then
-        begin
-          ParseEnum(EnumType, TypeName, RawDescriptionInfo);
-          EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
-          EnumType.SourceLine := FLastParsedTokenLine;
-          EnumType.Visibility := CioState.Visibility;
-          if CioState.Visibility in ShowVisibilities then
-            CioState.Cio.Types.Add(EnumType)
-          else
-            FreeAndNil(EnumType);
-          FreeAndNil(t);
-          ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
-          Exit;
-        end;
-        SetLength(LCollected, Length(LCollected)-Length(t.Data));
-        Scanner.UnGetToken(t);
-      end;
-      FreeAndNil(t);
-
-      NormalType := TPasType.Create;
-      try
-        NormalType.FullDeclaration := LCollected;
-        SkipDeclaration(NormalType, false);
-        NormalType.Name := TypeName;
-        NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
-        NormalType.SourceLine := FLastParsedTokenLine;
-        NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
-        NormalType.Visibility := CioState.Visibility;
-        ItemsForNextBackComment.ClearAndAdd(NormalType);
-        if CioState.Visibility in ShowVisibilities then
-          CioState.Cio.Types.Add(NormalType)
-        else
-          NormalType.Free;
-      except
-        NormalType.Free;
-        raise;
-      end;
-
-      ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
-    except
-      FreeAndNil(t);
-      raise;
-    end;
-  end;
-
 var
   CioState: TCioState;
 begin
@@ -4347,7 +4162,7 @@ begin
   CioState.Cio := LCio;
   FCioStack.Push(CioState);
 
-  ParseNestedType(CioState);
+  ParseType(U, CioState);
 end;
 
 { TRawDescriptionInfoList ---------------------------------------------------- }
