@@ -348,7 +348,7 @@ type
       This starts parsing a new top-level CIO (when FCioStack empty)
       or nested CIO (when FCioStack already contains parents).
       It will start with ParseCioTypeDecl call to actually create TPasCio. }
-    procedure ParseCioEx_StartDeclaration(const U: TPasUnit;
+    procedure ParseCio_StartDeclaration(const U: TPasUnit;
       const CioName, CioNameWithGeneric: string;
       const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: Boolean);
@@ -356,13 +356,13 @@ type
     { Continue parsing a structure (class, interface, more) that is now on top of FCioStack.
       When calling this, FCioStack cannot be empty,
       we will continue parsing using FCioStack top item. }
-    procedure ParseCioEx_SkipDeclaration(const U: TPasUnit;
+    procedure ParseCio_SkipDeclaration(const U: TPasUnit;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: Boolean);
 
     { Continue parsing a structure (class, interface, more) given as parameter
       LCio. It should no longer be on top of FCioStack. }
-    procedure ParseCioEx_Continue(const U: TPasUnit;
+    procedure ParseCio_Continue(const U: TPasUnit;
       LCio: TPasCio;
       LMode: TItemParseMode;
       LVisibility: TVisibility;
@@ -1292,7 +1292,7 @@ procedure TParser.ParseCIO(const U: TPasUnit;
   const IsInRecordCase: boolean);
 begin
   try
-    ParseCioEx_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
+    ParseCio_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
       IsInRecordCase);
   finally
     FCioStack.Clear;
@@ -4020,7 +4020,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx_StartDeclaration(const U: TPasUnit;
+procedure TParser.ParseCio_StartDeclaration(const U: TPasUnit;
   const CioName, CioNameWithGeneric: string;
   const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: Boolean);
@@ -4037,15 +4037,15 @@ begin
     begin
       { Forward declaration within a nested type section.
         Continue parsing the parent CIO. }
-      ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, IsInRecordCase);
+      ParseCio_SkipDeclaration(U, RawDescriptionInfo, IsInRecordCase);
     end;
     Exit;
   end;
 
-  ParseCioEx_Continue(U, LCio, pmUndefined, LVisibility, IsInRecordCase);
+  ParseCio_Continue(U, LCio, pmUndefined, LVisibility, IsInRecordCase);
 end;
 
-procedure TParser.ParseCioEx_SkipDeclaration(const U: TPasUnit;
+procedure TParser.ParseCio_SkipDeclaration(const U: TPasUnit;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: Boolean);
 var
@@ -4061,10 +4061,10 @@ begin
   LVisibility := FCioStack.Peek.CurVisibility;
   FCioStack.Pop.Free;
 
-  ParseCioEx_Continue(U, LCio, LMode, LVisibility, IsInRecordCase);
+  ParseCio_Continue(U, LCio, LMode, LVisibility, IsInRecordCase);
 end;
 
-procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
+procedure TParser.ParseCio_Continue(const U: TPasUnit;
   LCio: TPasCio;
   LMode: TItemParseMode;
   LVisibility: TVisibility;
@@ -4146,7 +4146,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
               end
               else begin
                 Scanner.UnGetToken(t);
-                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -4154,14 +4154,14 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
           KEY_DISPINTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
+              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_INTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
+              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -4169,14 +4169,14 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
             begin
               CioType := KeyWordToCioType(t.Info.KeyWord, False);
               FreeAndNil(t);
-              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
+              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_RECORD:
             begin
               FreeAndNil(t);
-              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
+              ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -4188,7 +4188,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
               if t.IsKeyWord(KEY_RECORD) then
               begin
                 FreeAndNil(t);
-                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
+                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
                   RawDescriptionInfo, False);
                 exit;
               end else
@@ -4196,7 +4196,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
               begin
                 CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end else
@@ -4205,7 +4205,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
                 // no check for "of", no packed classpointers allowed
                 CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCio_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -4226,7 +4226,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
             RoutineType.IsType := true;
             FCioStack.Peek.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
-            ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
+            ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
             Exit;
           end;
         end;
@@ -4241,7 +4241,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
           else
             FreeAndNil(EnumType);
           FreeAndNil(t);
-          ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
+          ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
           Exit;
         end;
         SetLength(LCollected, Length(LCollected)-Length(t.Data));
@@ -4268,7 +4268,7 @@ procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
         raise;
       end;
 
-      ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
+      ParseCio_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
     except
       FreeAndNil(t);
       raise;
