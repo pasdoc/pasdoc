@@ -345,6 +345,7 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
+    { Parse members inside CIO, should be used after ParseCioTypeDecl. }
     function ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
       const IsInRecordCase: Boolean; var Visibility: TVisibility): Boolean;
 
@@ -353,6 +354,11 @@ type
       At the end, T is freed and nil. }
     procedure ParseGenericTypeIdentifierList(var T: TToken; var Content: string);
 
+    { Parse CIO type declaration, which is like
+      "class|interface|object (ancestor1,ancestor2,...) =".
+      Return the resulting TPasCio in ACio. This is used both for
+      top-level CIOs and for nested CIOs.
+      Sets ACio to @nil if that was merely a forward declaration. }
     procedure ParseCioTypeDecl(out ACio: TPasCio;
       const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
@@ -3736,6 +3742,7 @@ var
 begin
   DoMessage(5, pmtInformation, 'Parsing class/interface/object "%s"', [CioNameWithGeneric]);
   t := nil;
+  ACio := nil;
   try
     AttributeIsPossible := True;
     t := GetNextToken;
@@ -4234,7 +4241,18 @@ begin
         RawDescriptionInfo, LVisibility);
 
     if not Assigned(LCio) then
+    begin
+      // This was a forward declaration.
+      if FCioSk.Count > 0 then
+      begin
+        { Forward declaration within a nested type section.
+          Continue parsing the parent CIO. }
+        FCioSk.Peek.SkipCioDecl := TRUE;
+        ParseCioEx(U, CioName, CioNameWithGeneric, CIOType,
+          RawDescriptionInfo, IsInRecordCase);
+      end;
       Exit;
+    end;
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
     begin // A Cio completed, nested or outer CIO
