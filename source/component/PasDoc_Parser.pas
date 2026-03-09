@@ -160,7 +160,7 @@ type
   private
     FImplicitVisibility: TImplicitVisibility;
 
-    FCioSk : TPasCioHelperStack;
+    FCioStack: TPasCioHelperStack;
 
     { Set by GetAndCheckNextToken to record filename/line of last consumed token.
       This allows routines using GetAndCheckNextToken to set
@@ -330,16 +330,22 @@ type
       const NeedName: boolean; InitItemsForNextBackComment: boolean;
       const IsGeneric: String);
 
-    { Parses a class, an interface or an object.
-      U is the unit this item will be added to on success.
-      N is the name of this item.
-      CIOType describes if item is class, interface or object.
-      D may contain a description or nil. }
+    { Parse a structure (class, interface, more).
+      This is used to parse top-level structures only, after it exits
+      the FCioStack is always clear.
+
+      @param U Unit containing this item.
+      @param CioName Name of the structure, like "TMyClass".
+      @param(CioNameWithGeneric Name of the structure with potential "generic"
+        prefix, like "generic TMyClass", used in FPC.)
+      @param(CIOType Type of structure, see TCIOType.) }
     procedure ParseCIO(const U: TPasUnit;
       const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
+    { Parse a structure (class, interface, more).
+      Like @link(ParseCIO) but it can also be used for nested structures. }
     procedure ParseCioEx(const U: TPasUnit;
       const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
@@ -595,7 +601,7 @@ begin
   FCommentMarkers := TStringlist.Create;
   FIgnoreMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
-  FCioSk := TPasCioHelperStack.Create;
+  FCioStack := TPasCioHelperStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
 end;
 
@@ -608,7 +614,7 @@ begin
   FIgnoreMarkers.Free;
   Scanner.Free;
   ItemsForNextBackComment.Free;
-  FCioSk.Free;
+  FCioStack.Free;
   inherited;
 end;
 
@@ -1264,7 +1270,7 @@ begin
     ParseCioEx(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
       IsInRecordCase);
   finally
-    FCioSk.Clear;
+    FCioStack.Clear;
   end;
 end;
 
@@ -4057,7 +4063,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
 
       if (t.MyType = TOK_KEYWORD) then
       begin
-        FCioSk.Peek.SkipCioDecl := FALSE;
+        FCioStack.Peek.SkipCioDecl := FALSE;
         case t.Info.KeyWord of
           KEY_CLASS, KEY_OBJCCLASS:
             begin
@@ -4149,9 +4155,9 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
             RoutineType.FullDeclaration :=
               TypeName + ' = ' + RoutineType.FullDeclaration;
             RoutineType.IsType := true;
-            FCioSk.Peek.Cio.Types.Add(RoutineType);
+            FCioStack.Peek.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
-            FCioSk.Peek.SkipCioDecl := TRUE;
+            FCioStack.Peek.SkipCioDecl := TRUE;
             ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
             Exit;
           end;
@@ -4161,13 +4167,13 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
           ParseEnum(EnumType, TypeName, RawDescriptionInfo);
           EnumType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
           EnumType.SourceLine := FLastParsedTokenLine;
-          EnumType.Visibility := FCioSk.Peek.CurVisibility;
-          if FCioSk.Peek.CurVisibility in ShowVisibilities then
-            FCioSk.Peek.Cio.Types.Add(EnumType)
+          EnumType.Visibility := FCioStack.Peek.CurVisibility;
+          if FCioStack.Peek.CurVisibility in ShowVisibilities then
+            FCioStack.Peek.Cio.Types.Add(EnumType)
           else
             FreeAndNil(EnumType);
           FreeAndNil(t);
-          FCioSk.Peek.SkipCioDecl := TRUE;
+          FCioStack.Peek.SkipCioDecl := TRUE;
           ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
           Exit;
         end;
@@ -4184,10 +4190,10 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         NormalType.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
         NormalType.SourceLine := FLastParsedTokenLine;
         NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
-        NormalType.Visibility := FCioSk.Peek.CurVisibility;
+        NormalType.Visibility := FCioStack.Peek.CurVisibility;
         ItemsForNextBackComment.ClearAndAdd(NormalType);
-        if FCioSk.Peek.CurVisibility in ShowVisibilities then
-          FCioSk.Peek.Cio.Types.Add(NormalType)
+        if FCioStack.Peek.CurVisibility in ShowVisibilities then
+          FCioStack.Peek.Cio.Types.Add(NormalType)
         else
           NormalType.Free;
       except
@@ -4195,7 +4201,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         raise;
       end;
 
-      FCioSk.Peek.SkipCioDecl := TRUE;
+      FCioStack.Peek.SkipCioDecl := TRUE;
       ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
     except
       FreeAndNil(t);
@@ -4220,20 +4226,20 @@ begin
   LHlp := nil;
 
   try
-    if FCioSk.Count > 0 then
+    if FCioStack.Count > 0 then
     begin
-      if FCioSk.Peek.SkipCioDecl then
+      if FCioStack.Peek.SkipCioDecl then
       begin
-        LCio  := FCioSk.Peek.Cio;
-        LMode := FCioSk.Peek.Mode;
-        LVisibility := FCioSk.Peek.CurVisibility;
-        FCioSk.Pop.Free;
-      end
-      else begin
+        // continue parsing the CIO
+        LCio  := FCioStack.Peek.Cio;
+        LMode := FCioStack.Peek.Mode;
+        LVisibility := FCioStack.Peek.CurVisibility;
+        FCioStack.Pop.Free;
+      end else
+        // start parsing a new nested CIO
         LMode := pmUndefined;
-      end;
-    end
-    else
+    end else
+      // start parsing a new top-level CIO
       LMode := pmUndefined;
 
     if not Assigned(LCio) then
@@ -4243,11 +4249,11 @@ begin
     if not Assigned(LCio) then
     begin
       // This was a forward declaration.
-      if FCioSk.Count > 0 then
+      if FCioStack.Count > 0 then
       begin
         { Forward declaration within a nested type section.
           Continue parsing the parent CIO. }
-        FCioSk.Peek.SkipCioDecl := TRUE;
+        FCioStack.Peek.SkipCioDecl := TRUE;
         ParseCioEx(U, CioName, CioNameWithGeneric, CIOType,
           RawDescriptionInfo, IsInRecordCase);
       end;
@@ -4256,32 +4262,31 @@ begin
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
     begin // A Cio completed, nested or outer CIO
-      { Clear any orthan comments - do not let them break away from the CIO }
+      { Clear any orphan comments - do not let them break away from the CIO }
       IsLastComment := false;
       ItemsForNextBackComment.ClearAndAdd(LCio);
-      if (FCioSk.Count > 0) then
+      if (FCioStack.Count > 0) then
       begin
-        LVisibility := FCioSk.Peek.CurVisibility;
+        LVisibility := FCioStack.Peek.CurVisibility;
         if LVisibility in ShowVisibilities then
         begin
           LCio.Visibility := LVisibility;
-          FCioSk.Peek.Cio.Cios.Add(LCio);
+          FCioStack.Peek.Cio.Cios.Add(LCio);
         end
         else
           FreeAndNil(LCio);
-        LCio  := FCioSk.Peek.Cio;
-        LMode := FCioSk.Peek.Mode;
-        FCioSk.Pop.Free;
-      end
-      else begin
+        LCio  := FCioStack.Peek.Cio;
+        LMode := FCioStack.Peek.Mode;
+        FCioStack.Pop.Free;
+      end else
+      begin
         if Assigned(U) then
         begin
           ItemsForNextBackComment.ClearAndAdd(LCio);
           U.AddCIO(LCio);
           LCio := nil;
-        end
-        else
-          LCio.Free;
+        end else
+          FreeAndNil(LCio);
         Exit; // Finished
       end;
     end;
@@ -4290,7 +4295,7 @@ begin
     LHlp.Mode := LMode;
     LHlp.CurVisibility := LVisibility;
     LHlp.Cio := LCio;
-    FCioSk.Push(LHlp);
+    FCioStack.Push(LHlp);
     LHlp := nil;
     LCio := nil;
 
@@ -4299,7 +4304,7 @@ begin
   except
     LCio.Free;
     LHlp.Free;
-    FCioSk.Clear;
+    FCioStack.Clear;
     raise;
   end;
 end;
