@@ -57,7 +57,6 @@ type
     FCio: TPasCio;
     FCurVisibility: TVisibility;
     FMode: TItemParseMode;
-    FSkipCioDecl: Boolean;
   public
     { Frees included objects and calls its own destructor. Objects are not
       owned by default. }
@@ -65,7 +64,6 @@ type
     property Cio: TPasCio read FCio write FCio;
     property CurVisibility: TVisibility read FCurVisibility write FCurVisibility;
     property Mode: TItemParseMode read FMode write FMode;
-    property SkipCioDecl: Boolean read FSkipCioDecl write FSkipCioDecl;
   end;
 
   { A stack of @link(TPasCioHelper) objects currently used to parse nested
@@ -345,11 +343,30 @@ type
       const IsInRecordCase: boolean);
 
     { Parse a structure (class, interface, more).
-      Like @link(ParseCIO) but it can also be used for nested structures. }
-    procedure ParseCioEx(const U: TPasUnit;
-      const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
+      Like @link(ParseCIO) but it can also be used for nested structures.
+
+      This starts parsing a new top-level CIO (when FCioStack empty)
+      or nested CIO (when FCioStack already contains parents).
+      It will start with ParseCioTypeDecl call to actually create TPasCio. }
+    procedure ParseCioEx_StartDeclaration(const U: TPasUnit;
+      const CioName, CioNameWithGeneric: string;
+      const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+      const IsInRecordCase: Boolean);
+
+    { Continue parsing a structure (class, interface, more) that is now on top of FCioStack.
+      When calling this, FCioStack cannot be empty,
+      we will continue parsing using FCioStack top item. }
+    procedure ParseCioEx_SkipDeclaration(const U: TPasUnit;
       const RawDescriptionInfo: TRawDescriptionInfo;
-      const IsInRecordCase: boolean);
+      const IsInRecordCase: Boolean);
+
+    { Continue parsing a structure (class, interface, more) given as parameter
+      LCio. It should no longer be on top of FCioStack. }
+    procedure ParseCioEx_Continue(const U: TPasUnit;
+      LCio: TPasCio;
+      LMode: TItemParseMode;
+      LVisibility: TVisibility;
+      const IsInRecordCase: Boolean);
 
     { Parse members inside CIO, should be used after ParseCioTypeDecl. }
     function ParseCioMembers(const ACio: TPasCio; var Mode: TItemParseMode;
@@ -1275,7 +1292,7 @@ procedure TParser.ParseCIO(const U: TPasUnit;
   const IsInRecordCase: boolean);
 begin
   try
-    ParseCioEx(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
+    ParseCioEx_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
       IsInRecordCase);
   finally
     FCioStack.Clear;
@@ -4003,9 +4020,54 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure TParser.ParseCioEx(const U: TPasUnit;
+procedure TParser.ParseCioEx_StartDeclaration(const U: TPasUnit;
   const CioName, CioNameWithGeneric: string;
   const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: Boolean);
+var
+  LCio: TPasCio;
+  LVisibility: TVisibility;
+begin
+  ParseCioTypeDecl(LCio, CioName, CioNameWithGeneric, CioType,
+    RawDescriptionInfo, LVisibility);
+
+  if not Assigned(LCio) then // This is a forward declaration
+  begin
+    if FCioStack.Count > 0 then
+    begin
+      { Forward declaration within a nested type section.
+        Continue parsing the parent CIO. }
+      ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, IsInRecordCase);
+    end;
+    Exit;
+  end;
+
+  ParseCioEx_Continue(U, LCio, pmUndefined, LVisibility, IsInRecordCase);
+end;
+
+procedure TParser.ParseCioEx_SkipDeclaration(const U: TPasUnit;
+  const RawDescriptionInfo: TRawDescriptionInfo;
+  const IsInRecordCase: Boolean);
+var
+  LCio: TPasCio;
+  LMode: TItemParseMode;
+  LVisibility: TVisibility;
+begin
+  // continue parsing the CIO, the one on top of stack
+  Assert(FCioStack.Count > 0);
+
+  LCio  := FCioStack.Peek.Cio;
+  LMode := FCioStack.Peek.Mode;
+  LVisibility := FCioStack.Peek.CurVisibility;
+  FCioStack.Pop.Free;
+
+  ParseCioEx_Continue(U, LCio, LMode, LVisibility, IsInRecordCase);
+end;
+
+procedure TParser.ParseCioEx_Continue(const U: TPasUnit;
+  LCio: TPasCio;
+  LMode: TItemParseMode;
+  LVisibility: TVisibility;
   const IsInRecordCase: Boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
@@ -4071,7 +4133,6 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
 
       if (t.MyType = TOK_KEYWORD) then
       begin
-        FCioStack.Peek.SkipCioDecl := FALSE;
         case t.Info.KeyWord of
           KEY_CLASS, KEY_OBJCCLASS:
             begin
@@ -4085,7 +4146,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
               end
               else begin
                 Scanner.UnGetToken(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -4093,14 +4154,14 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
           KEY_DISPINTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
+              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_DISPINTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_INTERFACE:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
+              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_INTERFACE,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -4108,14 +4169,14 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
             begin
               CioType := KeyWordToCioType(t.Info.KeyWord, False);
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
+              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                 RawDescriptionInfo, False);
               Exit;
             end;
           KEY_RECORD:
             begin
               FreeAndNil(t);
-              ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
+              ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_RECORD,
                 RawDescriptionInfo, False);
               Exit;
             end;
@@ -4127,7 +4188,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
               if t.IsKeyWord(KEY_RECORD) then
               begin
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
+                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CIO_PACKEDRECORD,
                   RawDescriptionInfo, False);
                 exit;
               end else
@@ -4135,7 +4196,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
               begin
                 CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end else
@@ -4144,7 +4205,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
                 // no check for "of", no packed classpointers allowed
                 CioType := KeyWordToCioType(t.Info.KeyWord, True);
                 FreeAndNil(t);
-                ParseCioEx(U, TypeName, TypeNameWithGeneric, CioType,
+                ParseCioEx_StartDeclaration(U, TypeName, TypeNameWithGeneric, CioType,
                   RawDescriptionInfo, False);
                 Exit;
               end;
@@ -4165,8 +4226,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
             RoutineType.IsType := true;
             FCioStack.Peek.Cio.Types.Add(RoutineType);
             FreeAndNil(t);
-            FCioStack.Peek.SkipCioDecl := TRUE;
-            ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
+            ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
             Exit;
           end;
         end;
@@ -4181,8 +4241,7 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
           else
             FreeAndNil(EnumType);
           FreeAndNil(t);
-          FCioStack.Peek.SkipCioDecl := TRUE;
-          ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
+          ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
           Exit;
         end;
         SetLength(LCollected, Length(LCollected)-Length(t.Data));
@@ -4209,64 +4268,20 @@ procedure TParser.ParseCioEx(const U: TPasUnit;
         raise;
       end;
 
-      FCioStack.Peek.SkipCioDecl := TRUE;
-      ParseCioEx(U, TypeName, TypeNameWithGeneric, CIOType, RawDescriptionInfo, False); //recursion
+      ParseCioEx_SkipDeclaration(U, RawDescriptionInfo, False); //recursion
     except
       FreeAndNil(t);
       raise;
     end;
   end;
 
-{ - - - - - - }
-
-{ This is the attempt to change as less as possible and to reuse as much code
-  as possible to support nested types. A design change as DoDi suggested in
-  PasDoc2 should be considered sooner or later. }
-
 var
-  LCio         : TPasCio;
-  LHlp         : TPasCioHelper;
-  LMode        : TItemParseMode;
-  LVisibility  : TVisibility;
-
+  LHlp: TPasCioHelper;
 begin
-  LCio := nil;
   LHlp := nil;
 
   try
-    if FCioStack.Count > 0 then
-    begin
-      if FCioStack.Peek.SkipCioDecl then
-      begin
-        // continue parsing the CIO
-        LCio  := FCioStack.Peek.Cio;
-        LMode := FCioStack.Peek.Mode;
-        LVisibility := FCioStack.Peek.CurVisibility;
-        FCioStack.Pop.Free;
-      end else
-        // start parsing a new nested CIO
-        LMode := pmUndefined;
-    end else
-      // start parsing a new top-level CIO
-      LMode := pmUndefined;
-
-    if not Assigned(LCio) then
-      ParseCioTypeDecl(LCio, CioName, CioNameWithGeneric, CioType,
-        RawDescriptionInfo, LVisibility);
-
-    if not Assigned(LCio) then
-    begin
-      // This was a forward declaration.
-      if FCioStack.Count > 0 then
-      begin
-        { Forward declaration within a nested type section.
-          Continue parsing the parent CIO. }
-        FCioStack.Peek.SkipCioDecl := TRUE;
-        ParseCioEx(U, CioName, CioNameWithGeneric, CIOType,
-          RawDescriptionInfo, IsInRecordCase);
-      end;
-      Exit;
-    end;
+    Assert(Assigned(LCio));
 
     while ParseCioMembers(LCio, LMode, IsInRecordCase, LVisibility) do
     begin // A Cio completed, nested or outer CIO
