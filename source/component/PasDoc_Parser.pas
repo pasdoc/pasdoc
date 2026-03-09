@@ -340,14 +340,14 @@ type
         prefix, like "generic TMyClass", used in FPC.)
       @param(CIOType Type of structure, see TCIOType.) }
     procedure ParseCIO(const U: TPasUnit;
-      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
+      const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
     { Parse a structure (class, interface, more).
       Like @link(ParseCIO) but it can also be used for nested structures. }
     procedure ParseCioEx(const U: TPasUnit;
-      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
+      const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo;
       const IsInRecordCase: boolean);
 
@@ -360,13 +360,21 @@ type
       At the end, T is freed and nil. }
     procedure ParseGenericTypeIdentifierList(var T: TToken; var Content: string);
 
-    { Parse CIO type declaration, which is like
-      "class|interface|object (ancestor1,ancestor2,...) =".
-      Return the resulting TPasCio in ACio. This is used both for
-      top-level CIOs and for nested CIOs.
-      Sets ACio to @nil if that was merely a forward declaration. }
+    { Parse CIO type declaration. Call this after reading
+      "TMyClass = class|interface|object|record" .
+
+      Creates a TPasCio instance in ACio.
+      Sets ACio to @nil if that was merely a forward declaration,
+      so we found semicolon as our next token.
+
+      This parses
+      - ancestors list (if any), i.e. "(ancestor1,ancestor2,...)"
+      - sealed, abstract etc.
+
+
+      This is used both for top-level CIOs and for nested CIOs. }
     procedure ParseCioTypeDecl(out ACio: TPasCio;
-      const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
+      const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
       const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
@@ -1262,7 +1270,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCIO(const U: TPasUnit;
-  const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
+  const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: boolean);
 begin
@@ -3739,7 +3747,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TParser.ParseCioTypeDecl(out ACio: TPasCio;
-  const CioName, CioNameWithGeneric: string; CIOType: TCIOType;
+  const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
   const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 var
   Finished: Boolean;
@@ -3997,7 +4005,7 @@ end;
 
 procedure TParser.ParseCioEx(const U: TPasUnit;
   const CioName, CioNameWithGeneric: string;
-  CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
+  const CIOType: TCIOType; const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: Boolean);
 
   { TODO: this is mostly a copy&paste of ParseType! Should be merged,
