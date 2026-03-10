@@ -13,6 +13,7 @@
     * Use standard TBufferedFileStream from both FPC and Delphi.
     * Removed a ton of unused old code from `PasDoc_Utils`, `PasDoc_StreamUtils`. We now rely on standard FPC and Delphi API for streams and Unicode handling.
     * Dropped compatibility with some ancient compiler versions. We require now compilers with `Generics.Collections` support, which means FPC >= 3.2.0 and Delphi >= 2009.
+    * Nested classes parsing cleaned up (types nested in classes unified with global types, which solves a few accidental differences)
 * Fixed when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
 * Parsing "unimplemented" directive (Michalis)
 * [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
