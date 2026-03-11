@@ -93,21 +93,15 @@ begin
 end;
 
 procedure StreamWriteLine(const AStream: TStream; const AString: AnsiString);
-var
- LineTerminator: AnsiString;
 begin
-  if length(AString) > 0 then begin
-    AStream.WriteBuffer(AString[1], Length(AString));
-  end;
-  LineTerminator := LineEnding;
-  AStream.Write(LineTerminator[1], Length(LineTerminator));
+  StreamWriteString(AStream, AString);
+  StreamWriteString(AStream, LineEnding);
 end;
 
 procedure StreamWriteString(const AStream: TStream; const AString: AnsiString);
 begin
-  if length(AString) > 0 then begin
+  if Length(AString) > 0 then
     AStream.WriteBuffer(AString[1], Length(AString));
-  end;
 end;
 
 {$endif}

@@ -2829,7 +2829,7 @@ begin
 {$IFDEF STRING_UNICODE}
   CurrentStream.Write(t);
 {$ELSE}
-  StreamWriteString(CurrentStream, AnsiString(t));
+  StreamWriteString(CurrentStream, t);
 {$ENDIF}
 end;
 
@@ -2838,7 +2838,7 @@ begin
 {$IFDEF STRING_UNICODE}
   CurrentStream.WriteLine(t);
 {$ELSE}
-  StreamWriteLine(CurrentStream, AnsiString(t));
+  StreamWriteLine(CurrentStream, t);
 {$ENDIF}
 end;
 
