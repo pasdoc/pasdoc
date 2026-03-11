@@ -1205,12 +1205,12 @@ begin
 
   if HasSourcePosition(AItem, ItemName, ItemFilenameInRoot, ItemUrl) then
   begin
-    WriteDirect('', true);
+    // Note that simply outputting a newline here doesn't guarantee a paragraph, we would need to make 2 newlines
+    WriteDirect('\par', true);
     if ItemUrl <> '' then
       WriteDirect(URLLink(ItemUrl, ItemName))
     else
       WriteConverted(ItemName);
-    WriteDirect('', true);
   end;
 end;
 
