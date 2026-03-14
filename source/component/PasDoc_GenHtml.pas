@@ -150,7 +150,9 @@ type
     procedure WriteStartOfTable1Column(const CssClass: string);
     procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
     procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
-    procedure WriteStartOfTableRow(const CssClass: string);
+
+    procedure WriteStartOfTableRow(const CssClass: string); overload;
+    procedure WriteStartOfTableRow(const CssClass, ExtraClass: string); overload;
 
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
@@ -361,6 +363,22 @@ uses
   PasDoc_Tipue,
   PasDoc_Aspell,
   PasDoc_Versions;
+
+function VisibilityTranslationId(const Vis: TVisibility): TTranslationID;
+const
+  VisibilityTranslation: array[TVisibility] of TTranslationID =
+  ( trPublished,
+    trPublic,
+    trProtected,
+    trStrictProtected,
+    trPrivate,
+    trStrictPrivate,
+    trAutomated,
+    trImplicit
+  );
+begin
+  Result := VisibilityTranslation[Vis];
+end;
 
 const
   { Bootstrap CSS and JS, written to the output directory by WriteBinaryFiles. }
@@ -714,6 +732,7 @@ var
   Section: TSections;
   AnyItem: boolean;
   Fv: TPasFieldVariable;
+  Vis: TVisibility;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -847,6 +866,30 @@ begin
     and "Description" when there are no items. }
   if AnyItem then
   begin
+    { Write toggle checkboxes for toggleable visibilities }
+    if ToggleVisibilities <> [] then
+    begin
+      WriteDirectLine('<div class="visibility-toggles">');
+      WriteDirectLine('<span class="visibility-toggles-label">' +
+        ConvertString(FLanguage.Translation[trVisibility]) + ':</span>');
+      for Vis := Low(TVisibility) to High(TVisibility) do
+        if Vis in ToggleVisibilities then
+          WriteDirectLine(
+            { autocomplete="off" below is necessary to prevent checkboxes
+              from being selected (on) after reloading the page (Ctrl+R, F5 etc.).
+              Browsers remember state of checkboxes by default, but we want them
+              to be always toggled off on page reload, since we always hide the
+              relevant items on page reload. }
+            '<label><input type="checkbox" autocomplete="off"' +
+            ' onchange="pasdocToggleVisibility(''visibility-' +
+            VisToStr(Vis) +
+            ''', this)"> ' +
+            ConvertString(FLanguage.Translation[
+              VisibilityTranslationId(Vis)]) +
+            '</label>');
+      WriteDirectLine('</div>');
+    end;
+
     WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
     WriteNestedCioSummary;
     WriteNestedTypesSummary;
@@ -1098,11 +1141,10 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean;
   WriteItemLink: boolean; MakeAnchor: boolean);
 begin
-  WriteStartOfTableRow('');
+  WriteStartOfTableRow('', 'visibility-' + VisToStr(Item.Visibility));
 
   if ShowVisibility then
     WriteVisibilityCell(Item);
-  { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
   if MakeAnchor then WriteAnchor(SignatureToHtmlId(Item.Signature));
@@ -1153,7 +1195,7 @@ begin
     ColumnsCount := 1;
     if ShowVisibility then Inc(ColumnsCount);
 
-    WriteStartOfTable('detail');
+    WriteStartOfTable('detail visibility-' + VisToStr(Item.Visibility));
     WriteItemTableRow(Item, ShowVisibility, false, true);
 
     { Using colspan="0" below would be easier, but Konqueror and IE
@@ -1799,6 +1841,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TGenericHTMLDocGenerator.MakeHead: string;
+var
+  Vis: TVisibility;
 begin
   Result := '<meta name="viewport" content="width=device-width, initial-scale=1">' + LineEnding;
 
@@ -1819,6 +1863,29 @@ begin
   // PasDoc custom StyleSheet
   Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
     EscapeURL('pasdoc.css') + '">' + LineEnding;
+
+  // CSS and JavaScript for toggleable visibility
+  if ToggleVisibilities <> [] then
+  begin
+    Result := Result + '<style>' + LineEnding;
+    for Vis := Low(TVisibility) to High(TVisibility) do
+      if Vis in ToggleVisibilities then
+        Result := Result + '.visibility-' + VisToStr(Vis) +
+          ' { display: none; }' + LineEnding;
+    Result := Result +
+      '</style>' + LineEnding;
+    Result := Result +
+      '<script>' + LineEnding +
+      'function pasdocToggleVisibility(className, checkbox) {' + LineEnding +
+      '  var elements = document.getElementsByClassName(className);' + LineEnding +
+      '  var show = checkbox.checked;' + LineEnding +
+      '  for (var i = 0; i < elements.length; i++) {' + LineEnding +
+      // We use "revert" instead of nothing, to override "display: none" in CSS.
+      '    elements[i].style.display = show ? "revert" : "none";' + LineEnding +
+      '  }' + LineEnding +
+      '}' + LineEnding +
+      '</script>' + LineEnding;
+  end;
 
   Result := Result + FHtmlHead;
 end;
@@ -1922,17 +1989,28 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
+begin
+  WriteStartOfTableRow(CssClass, '');
+end;
+
+procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(
+  const CssClass, ExtraClass: string);
 var
   s: string;
 begin
   if CssClass <> '' then begin
-    s := Format('<tr class="%s"', [CssClass])
+    s := Format('<tr class="%s', [CssClass]);
+    if ExtraClass <> '' then
+      s := s + ' ' + ExtraClass;
+    s := s + '"';
   end else begin
     s := '<tr class="list';
     if FOddTableRow then begin
       s := s + '2';
     end;
     FOddTableRow := not FOddTableRow;
+    if ExtraClass <> '' then
+      s := s + ' ' + ExtraClass;
     s := s + '"';
   end;
   WriteDirectLine(s + '>');
@@ -2156,21 +2234,10 @@ const
     { Implicit visibility uses published style }
     'vis-published'
   );
-
-  VisibilityTranslation: array[TVisibility] of TTranslationID =
-  ( trPublished,
-    trPublic,
-    trProtected,
-    trStrictProtected,
-    trPrivate,
-    trStrictPrivate,
-    trAutomated,
-    trImplicit
-  );
 begin
   WriteStartOfTableCell('visibility');
   WriteDirect('<span class="badge ' + VisibilityCssClass[Item.Visibility] + '">' +
-    ConvertString(FLanguage.Translation[VisibilityTranslation[Item.Visibility]]) +
+    ConvertString(FLanguage.Translation[VisibilityTranslationId(Item.Visibility)]) +
     '</span>');
   WriteEndOfTableCell;
 end;

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -34,10 +34,7 @@ unit PasDoc_OptionParser;
 
 interface
 uses
-  Classes
-{$IFDEF USE_VARIANTS},
-  Variants
-{$ENDIF};
+  Classes;
 
 const
   { default short option character used }
@@ -74,10 +71,6 @@ type
     FWasSpecified: boolean;
     FParser: TOptionParser;
     function ParseOption(const AWords: TStrings): boolean; virtual; abstract;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; virtual; abstract;
-    procedure SetValue(const AValue: Variant); virtual; abstract;
-{$ENDIF}
   public
     { Create a new Option.
       Set AShort to #0 in order to have no short option.
@@ -108,10 +101,6 @@ type
     property WasSpecified: boolean read FWasSpecified;
     { explanation for the option, see also @link(WriteExplanation) }
     property Explanation: string read FExplanation write FExplanation;
-{$IFDEF USE_VARIANTS}
-    { Value as Variant --- for easier access through the @link(TOptionParser.ByName) property }
-    property Value: Variant read GetValue write SetValue;
-{$ENDIF}
   end;
 
   { @abstract(Boolean option, "on" if was specified.)
@@ -122,10 +111,6 @@ type
   TBoolOption = class(TOption)
   protected
     function ParseOption(const AWords: TStrings): boolean; override;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; override;
-    procedure SetValue(const AValue: Variant); override;
-{$ENDIF}
   public
     property TurnedOn: boolean read FWasSpecified;
   end;
@@ -144,10 +129,6 @@ type
   protected
     FValue: Integer;
     function CheckValue(const AString: String): boolean; override;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; override;
-    procedure SetValue(const AValue: Variant); override;
-{$ENDIF}
   public
     property Value: Integer read FValue write FValue;
   end;
@@ -157,10 +138,6 @@ type
   protected
     FValue: String;
     function CheckValue(const AString: String): boolean; override;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; override;
-    procedure SetValue(const AValue: Variant); override;
-{$ENDIF}
   public
     property Value: String read FValue write FValue;
   end;
@@ -172,10 +149,6 @@ type
   protected
     FValues: TStringList;
     function CheckValue(const AString: String): Boolean; override;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; override;
-    procedure SetValue(const AValue: Variant); override;
-{$ENDIF}
   public
     property Values: TStringList read FValues;
     constructor CreateEx(const AShort: Char; const ALong: String;
@@ -192,22 +165,22 @@ type
     function CheckValue(const AString: String): Boolean; override;
   end;
 
-  { @abstract(useful for making a choice of things)
-    Values must not
-    have a + or - sign as the last character as that can be used
-    to add/remove items from the default set, specifying items without
-    +/- at the end clears the default and uses only specified items }
+  { Option that allows to define a set.
+
+    Names for the set elements are defined by @link(PossibleValues),
+    which must be a comma-separated list of possible values.
+
+    Set @link(Values) to be the default set.
+    After parsing, @link(Values) contains what the user has provided.
+
+    Set elements in @link(Values) may optionally be specified with a ? suffix.
+    This is useful for toggleable visibility members for --visible-members option. }
   TSetOption = class(TValueOption)
   protected
-    FPossibleValues,
-    FValues: TStringList;
+    FPossibleValues, FValues: TStringList;
     function GetPossibleValues: string;
     procedure SetPossibleValues(const Value: string);
     function CheckValue(const AString: String): Boolean; override;
-{$IFDEF USE_VARIANTS}
-    function GetValue: Variant; override;
-    procedure SetValue(const AValue: Variant); override;
-{$ENDIF}
     function GetValues: string;
     procedure SetValues(const Value: string);
   public
@@ -216,7 +189,14 @@ type
       const AShortCaseSensitive, ALongCaseSensitive: Boolean); override;
     destructor Destroy; override;
 
+    { Was given value specified (with or without ? suffix). }
     function HasValue(const AValue: string): boolean;
+
+    { Returns true if the value was specified with a ? suffix.
+      Example use-case is "--visible-members=protected?,public" which means that
+      protected members should be included but hidden by default.
+      When this is @true, then HasValue(AValue) always returns @true as well. }
+    function HasToggleValue(const AValue: string): boolean;
 
     property Values: string read GetValues write SetValues;
   end;
@@ -564,13 +544,6 @@ end;
 
 { TBoolOption }
 
-{$IFDEF USE_VARIANTS}
-function TBoolOption.GetValue: Variant;
-begin
-  Result := WasSpecified;
-end;
-{$ENDIF}
-
 function TBoolOption.ParseOption(const AWords: TStrings): boolean;
 begin
   Result := False;
@@ -602,13 +575,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF USE_VARIANTS}
-procedure TBoolOption.SetValue(const AValue: Variant);
-begin
-// do nothing, this option can either be specified or not
-end;
-{$ENDIF}
 
 { TValueOption }
 
@@ -679,20 +645,6 @@ begin
   if Result then FValue := LValue;
 end;
 
-{$IFDEF USE_VARIANTS}
-function TIntegerOption.GetValue: Variant;
-begin
-  Result := FValue;
-end;
-{$ENDIF}
-
-{$IFDEF USE_VARIANTS}
-procedure TIntegerOption.SetValue(const AValue: Variant);
-begin
-  FValue := AValue;
-end;
-{$ENDIF}
-
 { TStringOption }
 
 function TStringOption.CheckValue(const AString: String): boolean;
@@ -700,18 +652,6 @@ begin
   FValue := AString;
   Result := True;
 end;
-
-{$IFDEF USE_VARIANTS}
-function TStringOption.GetValue: Variant;
-begin
-  Result := FValue;
-end;
-
-procedure TStringOption.SetValue(const AValue: Variant);
-begin
-  FValue := AValue;
-end;
-{$ENDIF}
 
 { TStringOptionList }
 
@@ -735,86 +675,27 @@ begin
   inherited;
 end;
 
-{$IFDEF USE_VARIANTS}
-function TStringOptionList.GetValue: Variant;
-begin
-  Result := FValues.Text;
-end;
-
-procedure TStringOptionList.SetValue(const AValue: Variant);
-begin
-  FValues.Text := AValue;
-end;
-{$ENDIF}
-
 { TSetOption }
 
 function TSetOption.CheckValue(const AString: String): Boolean;
 var
-  LList,
-  LResult: TStringList;
-  i: Integer;
-  s: string;
-  si: Integer;
-  LCleared: boolean;
+  NewValues: TStringList;
+  S, ValueName: string;
 begin
-  Result := True;
-  LCleared := false;
-  LList := TStringList.Create;
-  LResult := TStringList.Create;
+  NewValues := TStringList.Create;
   try
-    LList.Duplicates := dupIgnore;
-    LList.CommaText := AString;
-    LList.Sorted := True;
-    LResult.Assign(FValues); // default values
-    LResult.Duplicates := dupIgnore;
-    LResult.Sorted := True;
-    i := 0;
-    while i < LList.Count do begin
-      s := LList[i];
-      if Length(s) = 0 then continue;
-      case s[length(s)] of
-        '-': begin
-               SetLength(s, Length(s)-1);
-               if FPossibleValues.IndexOf(s) >= 0 then begin
-                 si := LResult.IndexOf(s);
-                 if si>=0 then begin
-                   LResult.Delete(si);
-                 end;
-               end else begin
-                 Result := false;
-                 break;
-               end;
-             end;
-        '+': begin
-               SetLength(s, Length(s)-1);
-               if FPossibleValues.IndexOf(s) >= 0 then begin
-                 LResult.Add(s);
-               end else begin
-                 Result := false;
-                 break;
-               end;
-             end;
-        else begin
-               if FPossibleValues.IndexOf(s) >= 0 then begin
-                 LResult.Add(s);
-               end else begin
-                 Result := false;
-                 break;
-               end;
-               if not LCleared then begin
-                 LCleared := True;
-                 LResult.Clear;
-                 i := -1; // restart from beginning
-               end;
-             end;
-      end;
-      Inc(i);
+    NewValues.CommaText := AString;
+    for S in NewValues do
+    begin
+      ValueName := RemoveSuffix('?', S);
+      if FPossibleValues.IndexOf(ValueName) < 0 then
+        Exit(false);
     end;
+
+    FValues.CommaText := AString;
+    Result := true;
   finally
-    LList.Free;
-    FValues.Assign(LResult);
-    LResult.Free;
+    FreeAndNil(NewValues);
   end;
 end;
 
@@ -842,13 +723,6 @@ begin
   Result := FPossibleValues.CommaText;
 end;
 
-{$IFDEF USE_VARIANTS}
-function TSetOption.GetValue: Variant;
-begin
-  Result := FValues.CommaText;
-end;
-{$ENDIF}
-
 function TSetOption.GetValues: string;
 begin
   Result := FValues.CommaText;
@@ -856,20 +730,23 @@ end;
 
 function TSetOption.HasValue(const AValue: string): boolean;
 begin
-  Result := FValues.IndexOf(AValue)>=0;
+  Assert(not IsSuffix('?', AValue), 'checked AValue should not have ? suffix');
+  Result :=
+    (FValues.IndexOf(AValue) >=0) or
+    (FValues.IndexOf(AValue + '?') >=0);
+end;
+
+function TSetOption.HasToggleValue(const AValue: string): boolean;
+begin
+  Assert(not IsSuffix('?', AValue), 'checked AValue should not have ? suffix');
+  Result :=
+    (FValues.IndexOf(AValue + '?') >=0);
 end;
 
 procedure TSetOption.SetPossibleValues(const Value: string);
 begin
   FPossibleValues.CommaText := Value;
 end;
-
-{$IFDEF USE_VARIANTS}
-procedure TSetOption.SetValue(const AValue: Variant);
-begin
-  FValues.CommaText := AValue;
-end;
-{$ENDIF}
 
 procedure TSetOption.SetValues(const Value: string);
 begin

@@ -145,11 +145,17 @@ function ExtractFilePath(const FileName: string): string;
 function ExtractFileName(const FileName: string): string;
 {$endif}
 
-{ Checks is Prefix a prefix of S. Not case-sensitive. }
+{ Is given Prefix a prefix of S. Not case-sensitive. }
 function IsPrefix(const Prefix, S: string): boolean;
 
 { If IsPrefix(Prefix, S), then remove the prefix, otherwise return unmodifed S. }
 function RemovePrefix(const Prefix, S: string): string;
+
+{ Is given Suffix a suffix of S. Not case-sensitive. }
+function IsSuffix(const Suffix, S: string): boolean;
+
+{ If IsSuffix(Suffix, S), then remove the suffix, otherwise return unmodifed S. }
+function RemoveSuffix(const Suffix, S: string): string;
 
 { SEnding returns S contents starting from position P.
   Returns '' if P > length(S).
@@ -527,6 +533,19 @@ function RemovePrefix(const Prefix, S: string): string;
 begin
   if IsPrefix(Prefix, S) then
     Result := SEnding(S, Length(Prefix) + 1)
+  else
+    Result := S;
+end;
+
+function IsSuffix(const Suffix, S: string): boolean;
+begin
+  Result := AnsiSameText(Copy(S, Length(S) - Length(Suffix) + 1, Length(Suffix)), Suffix);
+end;
+
+function RemoveSuffix(const Suffix, S: string): string;
+begin
+  if IsSuffix(Suffix, S) then
+    Result := Copy(S, 1, Length(S) - Length(Suffix))
   else
     Result := S;
 end;

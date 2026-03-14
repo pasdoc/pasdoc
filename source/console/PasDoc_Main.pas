@@ -604,9 +604,17 @@ begin
   PasDoc.AddSourceFileNames(LeftList);
 
   PasDoc.ShowVisibilities := [];
+  PasDoc.ToggleVisibilities := [];
   for Vis := Low(Vis) to High(Vis) do
+  begin
+    if OptionVisibleMembers.HasToggleValue(VisToStr(Vis)) then
+    begin
+      PasDoc.ShowVisibilities := PasDoc.ShowVisibilities + [Vis];
+      PasDoc.ToggleVisibilities := PasDoc.ToggleVisibilities + [Vis];
+    end else
     if OptionVisibleMembers.HasValue(VisToStr(Vis)) then
-      PasDoc.ShowVisibilities :=  PasDoc.ShowVisibilities + [Vis];
+      PasDoc.ShowVisibilities := PasDoc.ShowVisibilities + [Vis];
+  end;
 
   PasDoc.Generator.OutputGraphVizUses := OptionWriteGVUses.TurnedOn;
   PasDoc.Generator.OutputGraphVizClassHierarchy := OptionWriteGVClasses.TurnedOn;

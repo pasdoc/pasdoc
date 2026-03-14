@@ -294,6 +294,7 @@ type
       TableTag, RowTag, RowHeadTag: TTag;
 
     FExternalClassHierarchy: TStrings;
+    FToggleVisibilities: TVisibilities;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -497,10 +498,10 @@ type
       and @link(TPasItem.SourceLine) and decide whether to show it.
       If @true, then we should show it.
 
-      @param ItemName is the name to show.
+      @param(ItemName is the name to show.)
       @param(ItemFilenameInRoot is the filename, relative to SourceRoot,
-        using always / on any system (even on Windows.)
-      @param ItemUrl is the URL to link to, if any (don't make a link if this is ''). }
+        using always / on any system (even on Windows).)
+      @param(ItemUrl is the URL to link to, if any (don't make a link if this is '').) }
     function HasSourcePosition(const AItem: TPasItem;
       out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
   protected
@@ -1056,6 +1057,11 @@ type
       Example: @code(https://github.com/owner/repo/blob/main/{FILE}#L{LINE}) *)
     property SourceUrlPattern: string
       read FSourceUrlPattern write FSourceUrlPattern;
+
+    { Visibilities that should be included in output but hidden by default
+      in HTML, with checkboxes to toggle their display. }
+    property ToggleVisibilities: TVisibilities
+      read FToggleVisibilities write FToggleVisibilities;
   end;
 
 implementation

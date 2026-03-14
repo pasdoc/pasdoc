@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. (Michalis)
 * Fix @exclude on nested types (Michalis)
 * Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi. See also [announcement](https://github.com/pasdoc/pasdoc/discussions/235) (Michalis)
 * GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
@@ -14,6 +15,7 @@
     * Removed a ton of unused old code from `PasDoc_Utils`, `PasDoc_StreamUtils`. We now rely on standard FPC and Delphi API for streams and Unicode handling.
     * Dropped compatibility with some ancient compiler versions. We require now compilers with `Generics.Collections` support, which means FPC >= 3.2.0 and Delphi >= 2009.
     * Nested classes parsing cleaned up (types nested in classes unified with global types, which solves a few accidental differences)
+    * Dropped the undocumented and (as far as we know) unused possibility to _modify the default set_ (instead of replacing it) of `--visible-members` and `--sort`. Previous PasDoc versions supported set elements with `-` and `+` suffixes, and if all items had such suffix, then we merely modified the default set. This was undocumented, also somewhat confusing to use (it only made sense if all elements had -/+ suffix, or none of them), and making code complicated.
 * Fixed when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
 * Parsing "unimplemented" directive (Michalis)
 * [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)

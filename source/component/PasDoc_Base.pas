@@ -81,6 +81,7 @@ type
     FIgnoreMarkers: TStringList;
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
+    FToggleVisibilities: TVisibilities;
     FMarkerOptional: boolean;
     FIgnoreLeading: string;
     FCacheDir: string;
@@ -189,6 +190,9 @@ type
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
+    { Visibilities that should be included in HTML output but hidden by default,
+      with checkboxes to toggle their display. }
+    property ToggleVisibilities: TVisibilities read FToggleVisibilities write FToggleVisibilities;
     property CacheDir: string read FCacheDir write FCacheDir;
 
     { This determines how items inside will be sorted.
@@ -572,6 +576,7 @@ begin
   end;
 
   Generator.Title := Title;
+  Generator.ToggleVisibilities := ToggleVisibilities;
   Generator.Units := FUnits;
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
