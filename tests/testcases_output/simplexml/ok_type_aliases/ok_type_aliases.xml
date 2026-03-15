@@ -18,8 +18,10 @@
     <description><abstract>Special strong alias abstract.</abstract><detailed> More and more description.</detailed></description>
   </type>
   <type name="TWeakAliasTypeVeryNested" declaration="TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+    <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
   <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+    <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="published">
     <description><abstract>TOriginalType abstract description</abstract></description>
