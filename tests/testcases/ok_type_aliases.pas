@@ -1,6 +1,6 @@
 unit ok_type_aliases;
 
-interface 
+interface
 
 type
   { @abstract(My original type description) }
@@ -9,5 +9,5 @@ type
   TStrongAliasType = type TOriginalType;
 
 implementation
- 
+
 end.
