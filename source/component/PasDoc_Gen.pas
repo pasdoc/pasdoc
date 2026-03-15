@@ -899,7 +899,13 @@ type
   public
 
     { Creates anchors and links for all items in all units. }
-    procedure BuildLinks; virtual;
+    procedure BuildLinks;
+
+    { For type aliases with empty RawDescription,
+      copy the RawDescription from the aliased type.
+      Do this only after @link(BuildLinks) to be able to follow
+      type aliases. }
+    procedure ResolveTypeAliasesDescriptions;
 
     { Expands description for each item in each unit of @link(Units).
       "Expands description" means that TTagManager.Execute is called,
@@ -1250,6 +1256,75 @@ begin
       CiosAssignLinks(U.CIOs);
   end;
   DoMessage(2, pmtInformation, '... ' + ' links created', []);
+end;
+
+procedure TDocGenerator.ResolveTypeAliasesDescriptions;
+var
+  TypeAliasesCopied: Integer;
+
+  procedure DoResolveType(const AType: TPasAliasType);
+  var
+    AliasedTypeWithRawDescription: TPasType;
+  begin
+    if not AType.HasRawDescription then
+    begin
+      AliasedTypeWithRawDescription := AType.AliasedTypeWithRawDescription;
+      if AliasedTypeWithRawDescription <> nil then
+      begin
+        { Note that we copy RawDescription, not
+          - AbstractDescription
+          - DetailedDescription
+          - AbstractDescriptionWasAutomatic
+          ....because descriptions are not expanded yet. }
+        AType.RawDescription := AliasedTypeWithRawDescription.RawDescription;
+        Inc(TypeAliasesCopied);
+      end;
+    end;
+  end;
+
+  procedure DoResolveTypes(const ATypes: TPasTypes);
+  var
+    I: Integer;
+  begin
+    for I := 0 to ATypes.Count - 1 do
+      if ATypes.PasItemAt[I] is TPasAliasType then
+        DoResolveType(TPasAliasType(ATypes.PasItemAt[I]));
+  end;
+
+  procedure DoResolveTypesInsideCios(const ACios: TPasItems);
+  var
+    ACio : TPasCio;
+    I : Integer;
+  begin
+    for I := 0 to ACios.Count -1 do
+    begin
+      ACio := TPasCio(ACios.PasItemAt[I]);
+      DoResolveTypesInsideCios(ACio.CIOs);
+      DoResolveTypes(ACio.CIOs);
+      DoResolveTypes(ACio.Types);
+    end;
+  end;
+
+var
+  I: Integer;
+  U: TPasUnit;
+begin
+  if ObjectVectorIsNilOrEmpty(Units) then Exit;
+
+  TypeAliasesCopied := 0;
+
+  for I := 0 to Units.Count - 1 do
+  begin
+    U := Units.UnitAt[I];
+    DoResolveTypesInsideCios(U.CIOs);
+    DoResolveTypes(U.CIOs);
+    DoResolveTypes(U.Types);
+  end;
+
+  if TypeAliasesCopied <> 0 then
+    DoMessage(2, pmtInformation, 'Copied %d type aliases'' descriptions from aliased types.', [
+      TypeAliasesCopied
+    ]);
 end;
 
 { ---------------------------------------------------------------------------- }

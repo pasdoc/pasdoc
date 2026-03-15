@@ -462,6 +462,9 @@ type
       available. }
     function HasDescription: Boolean;
 
+    { Is @link(RawDescription) not empty. }
+    function HasRawDescription: Boolean;
+
     function QualifiedName: String; override;
     function UnitRelativeQualifiedName: string; virtual;
 
@@ -562,8 +565,6 @@ type
       If there is no description in any ancestor, it will return an empty vector. }
     function GetInheritedItemDescriptions: TStringPairVector; virtual;
 
-    procedure GetAliasedItem(out AliasedItem: TPasItem); virtual;
-
     function BasePath: string; override;
 
     { Parameters of method or property.
@@ -644,7 +645,11 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
-    procedure GetAliasedItem(out AliasedItem: TPasItem); override;
+    { Look for a description of given type: within Self, within AliasedType,
+      then maybe AliasedType.AliasedType, until we find a type that has
+      a useful description.
+      If no type with useful description is found, returns @nil. }
+    function AliasedTypeWithRawDescription: TPasType;
 
     { Whether it is a strong alias, defined with the "type" keyword, for example:
       StrongAlias = type AliasedType }
@@ -1021,7 +1026,7 @@ type
   protected
     FTypes: TPasTypes;
     FVariables: TPasItems;
-    FCIOs: TPasItems;
+    FCIOs: TPasTypes;
     FConstants: TPasItems;
     FFuncsProcs: TPasRoutines;
     FUsesUnits: TStringVector;
@@ -1047,7 +1052,7 @@ type
     procedure Sort(const SortSettings: TSortSettings); override;
   public
     { list of classes, interfaces, objects, and records defined in this unit }
-    property CIOs: TPasItems read FCIOs;
+    property CIOs: TPasTypes read FCIOs;
     { list of constants defined in this unit }
     property Constants: TPasItems read FConstants;
     { list of functions and procedures defined in this unit }
@@ -1233,15 +1238,15 @@ type
   TPasProperties = class(TPasItems)
   end;
 
-  { Collection of classes / records / interfaces. }
-  TPasNestedCios = class(TPasItems)
-  public
-    constructor Create; reintroduce;
-  end;
-
   { Collection of types. }
   TPasTypes = class(TPasItems)
     function FindListItem(const AName: string): TPasItem;
+  end;
+
+  { Collection of classes / records / interfaces. }
+  TPasNestedCios = class(TPasTypes)
+  public
+    constructor Create; reintroduce;
   end;
 
   { Collection of units. }
@@ -1866,11 +1871,6 @@ begin
   end;
 end;
 
-procedure TPasItem.GetAliasedItem(out AliasedItem: TPasItem);
-begin
-  AliasedItem := nil;
-end;
-
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
 begin
   inherited;
@@ -1896,6 +1896,11 @@ end;
 function TPasItem.HasDescription: Boolean;
 begin
   HasDescription := (AbstractDescription <> '') or (DetailedDescription <> '');
+end;
+
+function TPasItem.HasRawDescription: Boolean;
+begin
+  Result := Trim(RawDescription) <> '';
 end;
 
 function TPasItem.HasOptionalInfo: boolean;
@@ -2096,37 +2101,26 @@ begin
   ASource.Read(FIsStrongAlias, SizeOf(FIsStrongAlias));
 end;
 
-procedure TPasAliasType.GetAliasedItem(out AliasedItem: TPasItem);
+function TPasAliasType.AliasedTypeWithRawDescription: TPasType;
 var
-  AliasType: TPasAliasType;
-  OriginalType: TPasType;
+  PossibleResult: TPasType;
 begin
-  AliasedItem := nil;
-  AliasType := self;
-  while true do
-  begin
-    OriginalType := AliasType.AliasedType;
-    if Assigned(OriginalType) then
-    begin
-      if OriginalType = self then
-      begin
-        // circular reference in alias definition
-        exit;
-      end else
-      // does the original type have a description
-      if OriginalType.HasDescription then
-      begin
-        AliasedItem := OriginalType;
-        exit;
-      end else
-      if OriginalType is TPasAliasType then
-      begin
-        AliasType := TPasAliasType(OriginalType);
-        continue;
-      end;
-    end;
-    exit; // did not find an original type with a description
-  end;
+  Result := nil;
+  PossibleResult := Self;
+
+  repeat
+    if (PossibleResult <> nil) and PossibleResult.HasRawDescription then
+      Exit(PossibleResult);
+
+    // otherwise, travel up the alias chain
+    if not (PossibleResult is TPasAliasType) then
+      Exit(nil); // not an alias type, so we can't go further up
+
+    PossibleResult := TPasAliasType(PossibleResult).AliasedType;
+
+    if PossibleResult = Self then
+      Exit(nil); // circular reference in alias definition, abort
+  until false;
 end;
 
 { TBaseItems ----------------------------------------------------------------- }
@@ -2661,7 +2655,7 @@ begin
   inherited Create;
   FTypes := TPasTypes.Create(True);
   FVariables := TPasItems.Create(True);
-  FCIOs := TPasItems.Create(True);
+  FCIOs := TPasTypes.Create(True);
   FConstants := TPasItems.Create(True);
   FFuncsProcs := TPasRoutines.Create(True);
   FUsesUnits := TStringVector.Create;

@@ -604,6 +604,7 @@ begin
   Generator.AdditionalFiles := FAdditionalFiles;
   Generator.AutoLink := AutoLink;
   Generator.BuildLinks;
+  Generator.ResolveTypeAliasesDescriptions;
 
   FUnits.SortDeep(SortSettings);
 

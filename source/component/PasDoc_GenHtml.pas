@@ -1181,8 +1181,6 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
-var
-  AliasedItem: TPasItem;
 begin
   if AItem = nil then Exit;
 
@@ -1192,12 +1190,7 @@ begin
     if AItem.DetailedDescription <> '' then begin
       WriteSpellChecked(AItem.DetailedDescription)
     end else begin
-      // description is the same as the original type if it is a weak alias
-      AItem.GetAliasedItem(AliasedItem);
-      if Assigned(AliasedItem) then
-        WriteItemShortDescription(AliasedItem)
-      else
-        WriteDirect('&nbsp;');
+      WriteDirect('&nbsp;');
     end;
   end;
 end;
@@ -1225,12 +1218,10 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteHeading(6, 'description_section', FLanguage.Translation[Caption]);
   end;
 
-  procedure WriteDescription(AItem: TPasItem); forward;
-
   procedure WriteNoDescription(const AItem: TPasItem);
   var
     InheritedDescriptions: TStringPairVector;
-    AncestorItem, AliasedItem: TPasItem;
+    AncestorItem: TPasItem;
     I: Integer;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
@@ -1278,48 +1269,10 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        AItem.GetAliasedItem(AliasedItem);
-        if Assigned(AliasedItem) then
-        begin
-          WriteDescription(AliasedItem);
-        end else
-          WriteDirect('<p class="nodescription">This item has no description.</p>');
+        WriteDirect('<p class="nodescription">This item has no description.</p>');
       end;
     finally
       FreeAndNil(InheritedDescriptions);
-    end;
-  end;
-
-  procedure WriteDescription(AItem: TPasItem);
-  begin
-    if AItem.AbstractDescription <> '' then
-    begin
-      if OpenCloseParagraph then WriteStartOfParagraph;
-
-      WriteSpellChecked(AItem.AbstractDescription);
-
-      if AItem.DetailedDescription <> '' then
-      begin
-        if not AItem.AbstractDescriptionWasAutomatic then
-        begin
-          WriteEndOfParagraph; { always try to write closing </p>, to be clean }
-          WriteStartOfParagraph;
-        end;
-        WriteSpellChecked(AItem.DetailedDescription);
-      end;
-
-      if OpenCloseParagraph then WriteEndOfParagraph;
-    end else if AItem.DetailedDescription <> '' then
-    begin
-      if OpenCloseParagraph then WriteStartOfParagraph;
-
-      WriteSpellChecked(AItem.DetailedDescription);
-
-      if OpenCloseParagraph then WriteEndOfParagraph;
-    end else
-    begin
-      if (AItem is TPasItem) then
-        WriteNoDescription(AItem as TPasItem);
     end;
   end;
 
@@ -1477,7 +1430,35 @@ begin
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
 
-  WriteDescription(AItem);
+  if AItem.AbstractDescription <> '' then
+  begin
+    if OpenCloseParagraph then WriteStartOfParagraph;
+
+    WriteSpellChecked(AItem.AbstractDescription);
+
+    if AItem.DetailedDescription <> '' then
+    begin
+      if not AItem.AbstractDescriptionWasAutomatic then
+      begin
+        WriteEndOfParagraph; { always try to write closing </p>, to be clean }
+        WriteStartOfParagraph;
+      end;
+      WriteSpellChecked(AItem.DetailedDescription);
+    end;
+
+    if OpenCloseParagraph then WriteEndOfParagraph;
+  end else if AItem.DetailedDescription <> '' then
+  begin
+    if OpenCloseParagraph then WriteStartOfParagraph;
+
+    WriteSpellChecked(AItem.DetailedDescription);
+
+    if OpenCloseParagraph then WriteEndOfParagraph;
+  end else
+  begin
+    if (AItem is TPasItem) then
+      WriteNoDescription(AItem as TPasItem);
+  end;
 
   WriteAttributes(AItem.Attributes);
 
