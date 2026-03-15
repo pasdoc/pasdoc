@@ -1062,7 +1062,8 @@ type
     procedure AddType(const i: TPasItem);
     procedure AddVariable(const i: TPasItem);
     { Find item inside a class. Looks first for class named NameParts[0].
-      Guarantee we have Length(NameParts) >= 2. }
+      Does nothing if NameParts has only 1 part, this is useful only
+      with Length(NameParts) >= 2 (1st class name, then stuff inside class). }
     function FindInsideSomeClass(const NameParts: TNameParts): TPasItem;
     function FindInsideSomeEnum(const EnumName, EnumMember: string): TPasItem;
     function FindItem(const NameParts: TNameParts): TBaseItem; override;
@@ -2789,6 +2790,7 @@ var
 begin
   Result := nil;
   if CIOs = nil then Exit;
+  if Length(NameParts) < 2 then Exit;
 
   po := TPasCio(CIOs.FindListItem(NameParts[0]));
   if Assigned(po) then
