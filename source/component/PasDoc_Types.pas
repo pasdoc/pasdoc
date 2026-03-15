@@ -44,26 +44,36 @@ type
 
 {$IFNDEF PASDOC} // avoid PasDoc from trying to evaluate "NOT DECLARED"
   {$IF NOT DECLARED(TStringDynArray)}
+    { Dynamic array of String, for compatibility with compilers that don't define this. }
     TStringDynArray = array of string;
   {$ENDIF}
 {$ENDIF}
 
+  { Dynamic array of String. }
   TStringArray = TStringDynArray;
-  { This represents parts of a qualified name of some item.
+
+  { Qualified name of some item.
 
     User supplies such name by separating each part with dot,
     e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
     converts it to TNameParts like
     ['UnitName', 'ClassName', 'ProcedureName'].
-    Length must be @italic(always) between 1 and @link(MaxNameParts). }
+
+    This must @italic(always have at least one part).
+
+    There is no limit on the maximum length of TNameParts, since we can have
+    arbitrary number of parts with nested classes, like
+    "MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType". }
   TNameParts = TStringArray;
 
-  { }
+  { Message type to send with @link(TPasDocMessageEvent). }
   TPasDocMessageType = (pmtPlainText, pmtInformation, pmtWarning, pmtError);
-  { }
+
+  { Callback to send a message from one class and react to it in another. }
   TPasDocMessageEvent = procedure(const MessageType: TPasDocMessageType; const
     AMessage: string; const AVerbosity: Cardinal) of object;
 
+  { Set of AnsiChars. }
   TCharSet = set of AnsiChar;
 
   { Exception raised in many situations when PasDoc encounters an error. }
@@ -76,13 +86,10 @@ type
       const AExitCode: Word = 3); overload;
   end;
 
-
+{$ifndef FPC}
 const
-  MaxNameParts = 3;
-
-  {$ifndef FPC}
   LineEnding = SLineBreak;
-  {$endif}
+{$endif}
 
 { Splits S, which can be made of any number of parts, separated by dots
   (Delphi namespaces, like PasDoc.Output.HTML.TWriter.Write).
@@ -90,10 +97,19 @@ const
   and splitted name is returned as NameParts. }
 function SplitNameParts(S: string; out NameParts: TNameParts): Boolean;
 
+{ Strip one name part. Only call when we have at least 2 parts. }
+function StripNamePart(const NameParts: TNameParts): TNameParts;
+
 { Checks that the string is a valid multipart identifier }
 function IsValidMultipartName(S: string): boolean;
 
-{ Simply returns an array with Length = 1 and one item = S. }
+{ Simply returns an array with Length = 1 and one item = S.
+
+  TODO: This function, and all its usage, should be removed.
+  Reason: all identifiers across Pascal code are potentially qualified.
+  Using this function right now means e.g. that using ancestor names with
+  qualified identifiers, like "TMyClass = class(OtherUnit.TAncestor)",
+  is not resolved fully (they are not linked everywhere they should be). }
 function OneNamePart(const S: string): TNameParts;
 
 { Simply concatenates all NameParts with dot. }
@@ -170,12 +186,11 @@ var
 begin
   Result := False;
 
-  SetLength(NameParts, 3);
-
   S := Trim(S);
 
-  { Check that S starts with IdentifierStart and
-    then only IdentifierOther chars follow }
+  { Check that S starts with IsIdentifierStartChar and
+    then only IsIdentifierOtherChar and dot chars follow.
+    TODO: Document why we also allow arbitrary stuff in parentheses. }
   if S = '' then Exit;
   if not IsIdentifierStartChar(s[1]) then Exit;
   i := 2;
@@ -196,6 +211,12 @@ begin
 
   NameParts := SplitString(s, '.');
   Result := True;
+end;
+
+function StripNamePart(const NameParts: TNameParts): TNameParts;
+begin
+  Assert(Length(NameParts) >= 2);
+  Result := Copy(NameParts, 2, Length(NameParts) - 1);
 end;
 
 function IsValidMultipartName(S: string): boolean;

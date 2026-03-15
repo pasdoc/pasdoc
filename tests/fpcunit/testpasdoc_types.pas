@@ -1,5 +1,5 @@
 {
-  Copyright 2016-2016 PasDoc developers.
+  Copyright 2026-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,23 +20,38 @@
   ----------------------------------------------------------------------------
 }
 
-{ Automatic test runner. }
+{ Test PasDoc_Types. }
+unit TestPasdoc_Types;
+
+interface
 
 uses
-  SysUtils, ConsoleTestRunner,
-  { specify TestXxx units below. }
-  TestPasDoc_Utils,
-  TestPasDoc_Types,
-  TestPasdoc_GenHtml;
+  Classes, SysUtils, FpcUnit, TestUtils, TestRegistry;
 
+type
+  TTestPasDocTypes = class(TTestCase)
+  published
+    procedure TestSplitNameParts;
+  end;
+
+implementation
+
+uses PasDoc_Types;
+
+procedure TTestPasDocTypes.TestSplitNameParts;
 var
-  Application: TTestRunner;
+  NameParts: TNameParts;
 begin
-  Application := TTestRunner.Create(nil);
-  try
-    Application.Title := 'PasDoc - Test runner (using fpcunit)';
-    DefaultFormat := fPlain;
-    Application.Initialize;
-    Application.Run;
-  finally FreeAndNil(Application) end;
+  AssertTrue(SplitNameParts(
+    'MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType', NameParts));
+  AssertEquals(5, Length(NameParts));
+  AssertEquals('MyUnit', NameParts[0]);
+  AssertEquals('TMyClass', NameParts[1]);
+  AssertEquals('TMyNestedClass', NameParts[2]);
+  AssertEquals('TAnotherNestedClass', NameParts[3]);
+  AssertEquals('TOriginalType', NameParts[4]);
+end;
+
+initialization
+  RegisterTest(TTestPasDocTypes);
 end.
