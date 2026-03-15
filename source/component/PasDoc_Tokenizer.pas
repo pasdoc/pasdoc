@@ -48,24 +48,33 @@ uses
   PasDoc_StreamUtils;
 
 type
-  { enumeration type that provides all types of tokens; each token's name
-    starts with TOK_.
-
-    TOK_DIRECTIVE is a compiler directive (like $ifdef, $define).
+  { All types of tokens.
 
     Note that tokenizer is not able to tell whether you used
     standard directive (e.g. 'Register') as an identifier
     (e.g. you're declaring procedure named 'Register')
     or as a real standard directive (e.g. a calling specifier 'register').
-    So there is @italic(no) value like TOK_STANDARD_DIRECTIVE here,
+    So there is @italic(no) token like TOK_STANDARD_DIRECTIVE here,
     standard directives are always reported as TOK_IDENTIFIER.
     You can check TToken.Info.StandardDirective to know whether
     this identifier is @italic(maybe) used as real standard directive. }
-  TTokenType = (TOK_WHITESPACE, TOK_COMMENT_PAS, TOK_COMMENT_EXT,
-                TOK_COMMENT_HELPINSIGHT,
-                TOK_COMMENT_CSTYLE, TOK_IDENTIFIER, TOK_NUMBER,
-                TOK_STRING, TOK_SYMBOL, TOK_DIRECTIVE, TOK_KEYWORD,
-                TOK_ATT_ASSEMBLER_REGISTER);
+  TTokenType = (
+    TOK_WHITESPACE,
+    TOK_COMMENT_PAS,
+    TOK_COMMENT_EXT,
+    TOK_COMMENT_HELPINSIGHT,
+    TOK_COMMENT_CSTYLE,
+    TOK_IDENTIFIER,
+    TOK_NUMBER,
+    TOK_STRING,
+    TOK_SYMBOL,
+    // Compiler directive, like $ifdef
+    TOK_DIRECTIVE,
+    TOK_KEYWORD,
+    TOK_ATT_ASSEMBLER_REGISTER,
+    // Possible in assembler blocks, see ../../tests/ok_asm.pas
+    TOK_DOUBLE_QUOTED_STRING
+  );
 
 type
   TKeyword = (
@@ -204,7 +213,7 @@ const
   ( 'whitespace', 'comment ((**)-style)', 'comment ({}-style)',
     'comment (///-style)',
     'comment (//-style)', 'identifier', 'number', 'string', 'symbol',
-    'directive', 'reserved word', 'AT&T assembler register name');
+    'directive', 'reserved word', 'AT&T assembler register name', 'double-quoted string');
 
   TokenCommentTypes: set of TTokenType =
   [ TOK_COMMENT_PAS, TOK_COMMENT_EXT,
@@ -222,7 +231,9 @@ type
     SYM_DOLLAR, SYM_ASSIGN, SYM_RANGE, SYM_POWER,
     { SYM_BACKSLASH may occur when writing char constant "^\",
       see ../../tests/ok_caret_character.pas }
-    SYM_BACKSLASH);
+    SYM_BACKSLASH,
+    // May occur in assembler blocks, see ../../tests/ok_asm.pas
+    SYM_DOUBLE_QUOTE);
 
 const
   { Symbols as strings. They can be useful to have some mapping
@@ -232,7 +243,7 @@ const
     be written as ".)". }
   SymbolNames: array[TSymbolType] of string =
   ( '+', '-', '*', '/', '=', '<', '<=', '>', '>=', '[', ']', ',',
-    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\' );
+    '(', ')', ':', ';', '^', '.', '@', '$', ':=', '..', '**', '\', '"' );
 
 type
   { Stores the exact type and additional information on one token. }
@@ -373,7 +384,8 @@ type
     function ReadCommentType2: TToken;
     function ReadCommentType3: TToken;
     function ReadAttAssemblerRegister: TToken;
-    function ReadLiteralString(var t: TToken): Boolean;
+    function ReadLiteralString: TToken;
+    function ReadDoubleQuotedString: TToken;
 
     { Read the rest of token of type TokenType,
       knowing the 1st character of this token is StartChar,
@@ -823,8 +835,7 @@ begin
       ReadToken(c, NumberOther, TOK_NUMBER, Result)
     else
       case c of
-        QuoteChar:
-          ReadLiteralString(Result);
+        QuoteChar:Result := ReadLiteralString;
         '#':
           if ReadToken(c, CharOther, TOK_STRING, Result) then
           begin
@@ -948,6 +959,7 @@ begin
           end;
         '\': Result := CreateSymbolToken(SYM_BACKSLASH);
         '%': Result := ReadAttAssemblerRegister;
+        '"': Result := ReadDoubleQuotedString;
         '&': begin
                if not ((GetChar(C) > 0) and
                        IsIdentifierStartChar(C) and
@@ -1136,53 +1148,83 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.ReadLiteralString(var t: TToken): Boolean;
+function TTokenizer.ReadDoubleQuotedString: TToken;
+var
+  C: char;
+begin
+  Result := TToken.Create(TOK_DOUBLE_QUOTED_STRING);
+  Result.Data := '"';
+  repeat
+    if not HasData then
+    begin
+      FreeAndNil(Result);
+      DoError('Tokenizer: unexpected end of stream inside double-quoted string', []);
+    end;
+
+    if GetChar(c) = 0 then
+    begin
+      FreeAndNil(Result);
+      DoError('Tokenizer: could not read character inside double-quoted string', []);
+    end;
+
+    if CharInSet(C, [#10, #13]) then
+    begin
+      FreeAndNil(Result);
+      DoError('Newline inside a double-quoted string is not allowed', []);
+    end;
+
+    Result.Data := Result.Data + C;
+  until C = '"';
+end;
+
+{ ---------------------------------------------------------------------------- }
+
+function TTokenizer.ReadLiteralString: TToken;
 var
   c: Char;
   Finished: Boolean;
 begin
   Finished := False;
 
-  t := TToken.Create(TOK_STRING);
-  t.Data := '''';
+  Result := TToken.Create(TOK_STRING);
+  Result.Data := '''';
 
   repeat
     if not HasData then begin
-      FreeAndNil(t);
+      FreeAndNil(Result);
       DoError('Tokenizer: unexpected end of stream', []);
     end;
     if GetChar(c) = 0 then begin
-      FreeAndNil(t);
+      FreeAndNil(Result);
       DoError('Tokenizer: could not read character', []);
     end;
     if c = QuoteChar then begin
       if PeekChar(c) and (c = QuoteChar) then { escaped single quote within string } begin
         ConsumeChar;
-        t.Data := t.Data + QuoteChar;
+        Result.Data := Result.Data + QuoteChar;
       end
       else { end of string } begin
         Finished := True;
       end;
-      t.Data := t.Data + QuoteChar;
+      Result.Data := Result.Data + QuoteChar;
     end
     else
     if CharInSet(c, [#10, #13]) then
     begin
-      FreeAndNil(t);
+      FreeAndNil(Result);
       { Note: Do not show here exact code (#13 or #10) to make auto tests succeed,
         regardless of line endings in cloned repo (Windows or Linux). }
       DoError('Newline inside a literal string is not allowed', []);
     end
     else begin
-      t.Data := t.Data + c;
+      Result.Data := Result.Data + c;
     end;
     { Note that, because of logic above, this will append only ONE apostrophe
       when reading two apostrophes in source code.
       Checking Finished prevents adding the ending apostrophe. }
     if not Finished then
-      T.StringContent := T.StringContent + c;
+      Result.StringContent := Result.StringContent + c;
   until Finished;
-  Result := True;
 end;
 
 { ---------------------------------------------------------------------------- }
