@@ -2177,7 +2177,6 @@ function TPasAliasType.AliasedTypeWithRawDescription: TPasType;
 var
   PossibleResult: TPasType;
 begin
-  Result := nil;
   PossibleResult := Self;
 
   repeat
