@@ -1,4 +1,4 @@
-<unit name="ok_type_aliases.pas">
+<unit name="ok_type_aliases">
   <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;" visibility="published">
     <description><abstract>My original type abstract description</abstract></description>
   </type>
