@@ -375,8 +375,15 @@ type
       returning is as P. }
     procedure ParseEnum(out p: TPasEnum; const Name: string;
       const RawDescriptionInfo: TRawDescriptionInfo);
-    { Parse an alias type, assuming the "type" token has just been read. }
-    procedure ParseStrongAlias(out P: TPasAliasType; const Name: string;
+
+    { Parse a strong type alias (with the "type" keyword),
+      assuming the "type" token has just been read.
+
+      Note: We call the type aliases like @code(TNewType = type TOldType;)
+      a "strong" type aliases, as opposed to "weak" type aliases like
+      @code(TNewType = TOldType;). This follows terminology from
+      https://blog.marcocantu.com/blog/2023-october-nativeint-weak-alias.html . }
+    procedure ParseStrongTypeAlias(out P: TPasAliasType; const Name: string;
       const RawDescriptionInfo: TRawDescriptionInfo);
 
     procedure ParseUses(const U: TPasUnit);
@@ -1436,7 +1443,7 @@ begin
   end;
 end;
 
-procedure TParser.ParseStrongAlias(out P: TPasAliasType; const Name: string;
+procedure TParser.ParseStrongTypeAlias(out P: TPasAliasType; const Name: string;
   const RawDescriptionInfo: TRawDescriptionInfo);
 var
   AliasName, LTemp: string;
@@ -2335,14 +2342,18 @@ procedure TParser.ParseType(const U: TPasUnit; IsGeneric: String);
       end;
   end;
 
-  procedure TryPromoteToWeakAlias(var P: TPasType);
+  procedure TryPromoteToWeakTypeAlias(var P: TPasType);
   var
     MaybeAliasName: String;
     WeakAliasType: TPasAliasType;
+    EqualPos: Integer;
   begin
-    MaybeAliasName := P.FullDeclaration
-      .SubString(pos('=', P.FullDeclaration)).TrimLeft
-      .TrimRight([';']).TrimRight;
+    EqualPos := Pos('=', P.FullDeclaration);
+    if EqualPos = 0 then Exit;
+
+    MaybeAliasName := SEnding(P.FullDeclaration, EqualPos + 1);
+    MaybeAliasName := TrimLeft(MaybeAliasName);
+    MaybeAliasName := TrimRightSet(MaybeAliasName, WhiteSpace + [';']);
 
     if IsValidMultipartName(MaybeAliasName) then
     begin
@@ -2454,7 +2465,7 @@ begin
               exit;
             end else
             begin
-              ParseStrongAlias(AliasType, TypeName, RawDescriptionInfo);
+              ParseStrongTypeAlias(AliasType, TypeName, RawDescriptionInfo);
               if U <> nil then
                 U.AddType(AliasType)
               else
@@ -2515,7 +2526,7 @@ begin
       NormalType.FullDeclaration := LCollected;
       SkipDeclaration(NormalType, false);
       NormalType.Name := TypeName;
-      TryPromoteToWeakAlias(NormalType);
+      TryPromoteToWeakTypeAlias(NormalType);
       NormalType.RawDescriptionInfo^ := RawDescriptionInfo;
       NormalType.SetAttributes(CurrentAttributes);
       ItemsForNextBackComment.ClearAndAdd(NormalType);
