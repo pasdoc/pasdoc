@@ -1,4 +1,21 @@
 <unit name="ok_type_aliases">
+  <routine name="Test" type="procedure" declaration="procedure Test;" visibility="published">
+    <description><detailed>Also linking using @tags to arbitrary qualified type identifiers should work: 
+
+<unorderedlist>
+<item>TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType</item>
+<item>ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType</item>
+<item>TMyClass.TMyNestedClass.TAnotherNestedClass</item>
+<item>ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass</item>
+<item>TMyClass.TMyNestedClass</item>
+<item>ok_type_aliases.TMyClass.TMyNestedClass</item>
+<item>TMyClass</item>
+<item>ok_type_aliases.TMyClass</item>
+<item>ok_type_aliases</item>
+</unorderedlist>
+
+</detailed></description>
+  </routine>
   <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;" visibility="published">
     <description><abstract>TOriginalType abstract description</abstract></description>
   </type>

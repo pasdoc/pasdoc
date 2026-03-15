@@ -90,6 +90,9 @@
 \item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
 \end{description}
+\begin{description}
+\item[\texttt{Test}]
+\end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf
 \subsection*{\large{\textbf{TOriginalType Record}}\normalsize\hspace{1ex}\hrulefill}
@@ -249,6 +252,52 @@ public y: integer \end{ttfamily}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TMyClass {$>$} TObject
 %%%%Description
+\section{Functions and Procedures}
+\ifpdf
+\subsection*{\large{\textbf{Test}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{Test}
+\fi
+\label{ok_type_aliases-Test}
+\index{Test}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure Test;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Also linking using @tags to arbitrary qualified type identifiers should work:
+
+\begin{itemize}
+\item \begin{ttfamily}TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass-TOriginalType})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass-TOriginalType})
+\item \begin{ttfamily}TMyClass.TMyNestedClass.TAnotherNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass.TAnotherNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass})
+\item \begin{ttfamily}TMyClass.TMyNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass})
+\item \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases\end{ttfamily}(\ref{ok_type_aliases})
+\end{itemize}
+
+\end{list}
 \section{Types}
 \ifpdf
 \subsection*{\large{\textbf{TWeakAliasType}}\normalsize\hspace{1ex}\hrulefill}

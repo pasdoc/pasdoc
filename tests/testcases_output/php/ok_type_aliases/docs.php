@@ -2,6 +2,7 @@
 global $pasdoc;
 $pasdoc = array(
   'ok_type_aliases' => array('html_filename' => 'ok_type_aliases.html', 'type' => 'unit'),
+  'Test' => array('html_filename' => 'ok_type_aliases.html#Test', 'type' => 'procedure'),
   'TWeakAliasType' => array('html_filename' => 'ok_type_aliases.html#TWeakAliasType', 'type' => 'type'),
   'TStrongAliasType' => array('html_filename' => 'ok_type_aliases.html#TStrongAliasType', 'type' => 'type'),
   'TWeakAliasType2' => array('html_filename' => 'ok_type_aliases.html#TWeakAliasType2', 'type' => 'type'),

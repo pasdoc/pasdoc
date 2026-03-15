@@ -35,6 +35,22 @@ type
   TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;
   TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;
 
+{ Also linking using @@tags to arbitrary qualified type identifiers should work:
+
+  @unorderedList(
+    @item(@link(TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType))
+    @item(@link(ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType))
+    @item(@link(TMyClass.TMyNestedClass.TAnotherNestedClass))
+    @item(@link(ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass))
+    @item(@link(TMyClass.TMyNestedClass))
+    @item(@link(ok_type_aliases.TMyClass.TMyNestedClass))
+    @item(@link(TMyClass))
+    @item(@link(ok_type_aliases.TMyClass))
+    @item(@link(ok_type_aliases))
+  )
+}
+procedure Test;
+
 implementation
 
 end.

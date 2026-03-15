@@ -2,7 +2,7 @@
 
 ## Upcoming Next Release
 
-* Better support for linking arbitrary qualified type identiers, like `TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` and `MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` (Michalis)
+* Support for linking to arbitrary qualified type identiers, like `TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` and `MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` (Michalis)
 * If the type alias doesn't have a special description, we show the description from the type it aliases. Also parsing _strong_ type aliases (with the `type` keyword) implemented. (Johann Elsass aka circular17, Michalis)
 * Fix default visibility members (as documented, we hide `private`, `strict private` and `implicit`, and show the rest, see https://pasdoc.github.io/VisibleMembers ) (Michalis)
 * You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See https://pasdoc.github.io/VisibleMembers and https://github.com/pasdoc/pasdoc/discussions/238 (Michalis)

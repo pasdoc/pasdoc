@@ -136,6 +136,16 @@
 </ul>
 </ul>
 <li><object type="text/sitemap">
+<param name="Name" value="Functions and Procedures">
+<param name="Local" value="ok_type_aliases.html#@FuncsProcs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Test">
+<param name="Local" value="ok_type_aliases.html#Test">
+</object>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="Types">
 <param name="Local" value="ok_type_aliases.html#@Types">
 </object>
