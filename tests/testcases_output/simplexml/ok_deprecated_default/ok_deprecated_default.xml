@@ -1,0 +1,12 @@
+<unit name="ok_deprecated_default">
+  <description><detailed>Test parsing property with deprecated directive and default specifier. See https://github.com/pasdoc/pasdoc/issues/138</detailed></description>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="GetItems" type="function" declaration="function GetItems(const Index: Integer): Byte;" visibility="public">
+    </routine>
+    <routine name="SetItems" type="procedure" declaration="procedure SetItems(const Index: Integer; const Value: Byte);" visibility="public">
+    </routine>
+    <property name="Items" indexdecl="[constIndex:Integer]" type="Byte" reader="GetItems" writer="SetItems" default_in_class="True" default_value="" nodefault="False"   stored="" visibility="public" deprecated_note="use instead X, Y fields" deprecated="true">
+    </property>
+  </structure>
+</unit>

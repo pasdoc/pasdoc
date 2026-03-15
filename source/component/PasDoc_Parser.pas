@@ -149,7 +149,7 @@ type
 
       @item(Of TPasProperty: IndexDecl, FullDeclaration.
         PropType, NoDefault, Stored, DefaultValue, Reader, Writer.
-        TODO: Parsing TPasProperty.DefaultInClass.)
+        DefaultInClass.)
 
       @item(Of TPasUnit; UsesUnits, Types, Variables, CIOs, Constants,
         FuncsProcs.)
@@ -2307,6 +2307,24 @@ begin
     end;
 
     ParsePropertyEnding(P);
+
+    { Handle "default;" directive for default array properties.
+      This is separate from "default <value>" (handled inside ParsePropertyEnding)
+      and appears after the semicolon, e.g.:
+        property Items[Index: Integer]: Byte read GetItems write SetItems; default;
+    }
+    t := PeekNextToken;
+    if t.IsStandardDirective(SD_DEFAULT) then
+    begin
+      t := GetNextToken(P);
+      P.FullDeclaration := P.FullDeclaration + ' ' + t.Data;
+      FreeAndNil(t);
+      P.DefaultInClass := true;
+      t := GetNextToken(P);
+      if t.IsSymbol(SYM_SEMICOLON) then
+        P.FullDeclaration := P.FullDeclaration + t.Data;
+      FreeAndNil(t);
+    end;
 
     ParseHintDirectives(P, true, true);
   except

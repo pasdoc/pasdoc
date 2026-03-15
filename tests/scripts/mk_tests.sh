@@ -242,6 +242,7 @@ all_tests_for_current_format ()
   mk_test ok_final ok_final.pas
   mk_test ok_at_character_in_verbatim ok_at_character_in_verbatim.pas
   mk_test ok_deprecated_directive_note ok_deprecated_directive_note.pas
+  mk_test ok_deprecated_default ok_deprecated_default.pas
   mk_test ok_enum_links ok_enum_links.pas
   mk_test ok_no_link_inside_class ok_no_link_inside_class.pas
   mk_test ok_param_raises_at_property ok_param_raises_at_property.pas

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_deprecated_default.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="GetItems">
+<param name="Local" value="ok_deprecated_default.TMyClass.html#GetItems-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Items">
+<param name="Local" value="ok_deprecated_default.TMyClass.html#Items">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="SetItems">
+<param name="Local" value="ok_deprecated_default.TMyClass.html#SetItems-Integer-Byte-">
+</object>
+</ul>
+</body></html>
