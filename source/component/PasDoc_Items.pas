@@ -660,8 +660,12 @@ type
       If no type with useful description is found, returns @nil. }
     function AliasedTypeWithRawDescription: TPasType;
 
-    { Whether it is a strong alias, defined with the "type" keyword, for example:
-      StrongAlias = type AliasedType }
+    { "Strong" alias is defined with the "type" keyword.
+
+      We call the type aliases like @code(TNewType = type TOldType;)
+      a "strong" type aliases, as opposed to "weak" type aliases like
+      @code(TNewType = TOldType;). This follows terminology from
+      https://blog.marcocantu.com/blog/2023-october-nativeint-weak-alias.html . }
     property IsStrongAlias: boolean read FIsStrongAlias write FIsStrongAlias;
     { Name of the type it refers to }
     property AliasedName: string read FAliasedName write FAliasedName;
@@ -1255,18 +1259,6 @@ type
 
   { Collection of properties. }
   TPasProperties = class(TPasItems)
-  end;
-
-  { List of types. Note that it may contain not only TPasType but also TPasRoutine
-    (which we use for a procedural type / callback). }
-  TPasTypes = class(TPasItems)
-    function FindListItem(const AName: string): TPasItem;
-  end;
-
-  { Collection of classes / records / interfaces. }
-  TPasNestedCios = class(TPasTypes)
-  public
-    constructor Create; reintroduce;
   end;
 
   { List of types. Note that it may contain not only TPasType but also TPasRoutine

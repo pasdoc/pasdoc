@@ -430,11 +430,7 @@ type
 
     { Parse a strong type alias (with the "type" keyword),
       assuming the "type" token has just been read.
-
-      Note: We call the type aliases like @code(TNewType = type TOldType;)
-      a "strong" type aliases, as opposed to "weak" type aliases like
-      @code(TNewType = TOldType;). This follows terminology from
-      https://blog.marcocantu.com/blog/2023-october-nativeint-weak-alias.html . }
+      See @link(TPasAliasType.IsStrongAlias) for what is a strong type alias. }
     procedure ParseStrongTypeAlias(out P: TPasAliasType; const Name: string;
       const RawDescriptionInfo: TRawDescriptionInfo);
 
@@ -2440,22 +2436,29 @@ procedure TParser.ParseType(const U: TPasUnit; const CioState: TCioState);
     const RawDescriptionInfo: TRawDescriptionInfo;
     const IsInRecordCase: Boolean);
   begin
-    if not IsPacked then
-      case KeyWord of
-        KEY_CLASS:         Result := CIO_CLASS;
-        KEY_DISPINTERFACE: Result := CIO_DISPINTERFACE;
-        KEY_INTERFACE:     Result := CIO_INTERFACE;
-        KEY_OBJECT:        Result := CIO_OBJECT;
-        KEY_RECORD:        Result := CIO_RECORD;
-        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
-      end
+    if CioState <> nil then
+      ParseCio_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo, IsInRecordCase)
     else
-      case KeyWord of
-        KEY_CLASS:         Result := CIO_PACKEDCLASS;
-        KEY_OBJECT:        Result := CIO_PACKEDOBJECT;
-        KEY_RECORD:        Result := CIO_PACKEDRECORD;
-        else               raise EInternalParserError.Create('KeyWordToCioType: invalid keyword');
-      end;
+      ParseCio(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo, IsInRecordCase);
+  end;
+
+  { Add type to either unit or CIO, depending on CioState.
+    Note that this may free T, so don't use it afterwards. }
+  procedure DoAddType(var T: TPasItem);
+  begin
+    if CioState <> nil then
+    begin
+      if CioState.Visibility in ShowVisibilities then
+      begin
+        T.Visibility := CioState.Visibility;
+        CioState.Cio.Types.Add(T);
+      end else
+        FreeAndNil(T);
+    end else
+    if U <> nil then
+      U.AddType(T)
+    else
+      FreeAndNil(T);
   end;
 
   procedure TryPromoteToWeakTypeAlias(var P: TPasType);
@@ -2595,11 +2598,9 @@ begin
               exit;
             end else
             begin
+              FreeAndNil(t);
               ParseStrongTypeAlias(AliasType, TypeName, RawDescriptionInfo);
-              if U <> nil then
-                U.AddType(AliasType)
-              else
-                FreeAndNil(AliasType);
+              DoAddType(TPasItem(AliasType));
               exit;
             end;
           end;
