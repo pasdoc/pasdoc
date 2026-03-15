@@ -2462,6 +2462,21 @@ procedure TParser.ParseType(const U: TPasUnit; const CioState: TCioState);
   end;
 
   procedure TryPromoteToWeakTypeAlias(var P: TPasType);
+
+    {$ifndef FPC}
+    { Trim from the right side of S all characters from CharSet.
+      Delphi doesn't have this in standard library. }
+    function TrimRightSet(const S: string; const CharSet: TSysCharSet): string;
+    var
+      L: Integer;
+    begin
+      L := Length(S);
+      while (L > 0) and (S[L] in CharSet) do
+        Dec(L);
+      Result := Copy(S, 1, L);
+    end;
+    {$endif}
+
   var
     MaybeAliasName: String;
     WeakAliasType: TPasAliasType;
