@@ -90,8 +90,10 @@ const
   );
 
   AllVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)];
-  DefaultVisibilities: TVisibilities =
-    [viProtected, viPublic, viPublished, viAutomated];
+
+  { Default visibility, as documented on https://pasdoc.github.io/VisibleMembers }
+  DefaultVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)] -
+    [viPrivate, viStrictPrivate, viImplicit];
 
 type
   { Type of merging interface and implementation comments.

@@ -2,7 +2,8 @@
 
 ## Upcoming Next Release
 
-* You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See https://github.com/pasdoc/pasdoc/discussions/238 (Michalis)
+* Fix default visibility members (as documented, we hide `private`, `strict private` and `implicit`, and show the rest, see https://pasdoc.github.io/VisibleMembers ) (Michalis)
+* You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See https://pasdoc.github.io/VisibleMembers and https://github.com/pasdoc/pasdoc/discussions/238 (Michalis)
 * Fix @exclude on nested types (Michalis)
 * Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi. See also [announcement](https://github.com/pasdoc/pasdoc/discussions/235) (Michalis)
 * GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
