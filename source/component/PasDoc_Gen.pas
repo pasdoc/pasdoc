@@ -1141,6 +1141,10 @@ var
       end;
   end;
 
+  { Resolve all TPasAliasType on the list ATypes.
+    "Resolve" means we try to assign their AliasedType .
+    If ACio is not nil, we search for aliased type starting within ACio
+    namespace. }
   procedure AliasAssignLinks(const ATypes: TPasTypes; const ACio: TPasCio);
   var
     AliasType: TPasAliasType;
@@ -1157,8 +1161,8 @@ var
         else
           BaseItem := AliasType;
         AliasedType := SearchItem(AliasType.AliasedName, BaseItem, false);
-        if Assigned(AliasedType) and (AliasedType is TPasType) then
-          AliasType.AliasedType := TPasType(AliasedType);
+        if AliasedType is TPasType then // also checks AliasedType <> nil
+          AliasType.AliasedType := AliasedType as TPasType;
       end;
   end;
 
