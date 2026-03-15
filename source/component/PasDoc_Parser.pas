@@ -212,8 +212,11 @@ type
         If given KeyWord has no corresponding @link(TRoutineType) value.) }
     function KeyWordToRoutineType(KeyWord: TKeyWord): TRoutineType;
 
+    { Raise EPasDoc exception with given message. }
     procedure DoError(const AMessage: string;
       const AArguments: array of const);
+
+    { Generate a message, using OnMessage event. }
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
       TPasDocMessageType; const AMessage: string; const AArguments: array of const);
 
@@ -240,7 +243,9 @@ type
       otherwise returns LastCommentInfo and sets IsLastComment to false. }
     function GetLastComment: TRawDescriptionInfo;
 
-    { Reads tokens and throws them away as long as they are either whitespace
+    { Returns next token that was found (omitting whitespace and comments)
+      without advancing the scanner to the next token.
+      This reads tokens and throws them away as long as they are either whitespace
       or comments.
 
       Sets WhitespaceCollector to all the whitespace that was skipped.
@@ -257,7 +262,6 @@ type
       Comments are collected to [Is]LastCommentXxx properties, so that you can
       use GetLastComment.
 
-      Returns non-white token that was found.
       This token is equal to @code(Scanner.PeekToken).
       Note that this token was @italic(peeked)
       from the stream, i.e. the caller is still responsible for doing
@@ -265,38 +269,48 @@ type
       Calling this method twice in a row will return the same thing.
 
       Always returns something non-nil (will raise exception in case
-      of problems, e.g. when stream ended). }
+      of problems, e.g. when stream ended).
+
+      Called should not free the resulting TToken instance @italic(unless
+      it executes Scanner.ConsumeToken), in which case it should free this. }
     function PeekNextToken(out WhitespaceCollector: string): TToken; overload;
     function PeekNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
 
-    { Same thing as PeekNextToken(Dummy) }
+    { Peek next token. See @link(PeekNextToken(String)) for more details.
+      This just discards the collected whitespace. }
     function PeekNextToken: TToken; overload;
 
-    { Just like @link(PeekNextToken), but returned token is already consumed.
-      Next call to @name will return next token. }
+    { Returns next token that was found (omitting whitespace and comments),
+      advancing to the next token.
+      This collects whitespace just like @link(PeekNextToken).
+
+      Caller should always free the resulting TToken instance. }
     function GetNextToken(out WhitespaceCollector: string): TToken; overload;
 
-    { Just like @link(PeekNextToken), but returned token is already consumed.
+    { Returns next token that was found (omitting whitespace and comments),
+      advancing to the next token.
+      This collects whitespace just like @link(PeekNextToken)
+      and appends them to WhitespaceCollectorItem.FullDeclaration
+      (if WhitespaceCollectorItem is not @nil)
 
-      Moreover, whitespace collected is appended to
-      WhitespaceCollectorItem.FullDeclaration
-      (does not delete previous WhitespaceCollectorItem.FullDeclaration value,
-      it only appends to it).
-      Unless WhitespaceCollectorItem is @nil. }
+      Caller should always free the resulting TToken instance. }
     function GetNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
 
+    { Returns next token that was found (omitting whitespace and comments),
+      advancing to the next token.
+
+      Similar to other GetNextToken overloads, this just ignores collected
+      whitespace. }
     function GetNextToken: TToken; overload;
+
     function GetNextTokenNotAttribute(const WhitespaceCollectorItem: TPasItem): TToken; overload;
 
-    { This does @link(GetNextToken), then checks is it a ATokenType
-      (using @link(CheckToken)), then frees the token.
-      Returns token Data.
-      Just a comfortable routine. }
-    function GetAndCheckNextToken(ATokenType: TTokenType): string; overload;
-    { This is an overload for parsing a unit name that may contain one or
-      more dots ('.')
-      @param AIsUnitName is a dummy parameter to allow overloading that is assumed to be true }
-    function GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string; overload;
+    { Returns next token that was found (omitting whitespace and comments),
+      advancing to the next token,
+      and checks is it ATokenType.
+
+      Returns the token @link(TToken.Data). }
+    function GetAndCheckNextToken(const ATokenType: TTokenType): string; overload;
 
     { This does @link(GetNextToken), then checks is it a symbol with
       ASymbolType (using @link(CheckToken)), then frees the token.
@@ -309,6 +323,13 @@ type
       Returns token Data.
       Just a comfortable routine. }
     function GetAndCheckNextToken(AKeyWord: TKeyWord): string; overload;
+
+    { Parse qualified identifier, which is a series of identifiers separated by dots.
+      May be used for dotted unit names ("System.SysUtils.TStringList")
+      or really any other place where we can have qualified identifiers
+      (like "MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType").
+      Returns the whole qualified identifier as a string. }
+    function ParseQualifiedIdentifier: String;
 
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
@@ -852,7 +873,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TParser.GetAndCheckNextToken(ATokenType: TTokenType): string;
+function TParser.GetAndCheckNextToken(const ATokenType: TTokenType): string;
 var
   T: TToken;
 begin
@@ -867,30 +888,23 @@ begin
   end;
 end;
 
-function TParser.GetAndCheckNextToken(ATokenType: TTokenType; AIsUnitname: boolean): string;
+function TParser.ParseQualifiedIdentifier: String;
 var
+  S: string;
   T: TToken;
-  s: string;
 begin
-  // note: the Value of AIsUnitName is ignored, assume it is true
   Result := '';
-  while true do begin
-    T := GetNextToken;
-    try
-      CheckToken(T, ATokenType);
-      Result := Result + T.Data;
-      FLastParsedTokenStreamAbsoluteFileName := T.StreamAbsoluteFileName;
-      FLastParsedTokenLine := T.Line;
-    finally
-      T.Free;
-    end;
-    t := PeekNextToken(s);
-    if (s = '') and t.IsSymbol(SYM_PERIOD) then begin
+  while true do
+  begin
+    Result := Result + GetAndCheckNextToken(TOK_IDENTIFIER);
+    T := PeekNextToken(s);
+    if (s = '') and T.IsSymbol(SYM_PERIOD) then
+    begin
       Result := Result + '.';
       Scanner.ConsumeToken;
-      t.Free;
+      T.Free;
     end else
-      exit;
+      Exit;
   end;
 end;
 
@@ -1541,9 +1555,7 @@ end;
 procedure TParser.ParseStrongTypeAlias(out P: TPasAliasType; const Name: string;
   const RawDescriptionInfo: TRawDescriptionInfo);
 var
-  AliasName, LTemp: string;
   T: TToken;
-  i: Integer;
 begin
   P := TPasAliasType.Create;
   T := nil;
@@ -1551,30 +1563,9 @@ begin
     P.Name := Name;
     P.RawDescriptionInfo^ := RawDescriptionInfo;
     P.SetAttributes(CurrentAttributes);
-
-    T := GetNextToken(LTemp);
-    if T.MyType <> TOK_IDENTIFIER then
-      DoError('Unexpected %s', [T.Description]);
-    AliasName := T.Data;
-    FreeAndNil(T);
-    For i := 1 to 2 do
-    begin
-      T := PeekNextToken;
-      If t.IsSymbol(SYM_PERIOD) then
-      begin
-        Scanner.ConsumeToken;
-        FreeAndNil(T);
-
-        T := GetNextToken(LTemp);
-        if T.MyType <> TOK_IDENTIFIER then
-          DoError('Unexpected %s', [T.Description]);
-        AliasName := AliasName + '.' + T.Data;
-        FreeAndNil(T);
-      end;
-    end;
-    P.AliasedName:= AliasName;
+    P.AliasedName:= ParseQualifiedIdentifier;
     P.IsStrongAlias:= true;
-    P.FullDeclaration := Name + ' = type ' + AliasName;
+    P.FullDeclaration := Name + ' = type ' + P.AliasedName;
 
     T := PeekNextToken;
     if T.IsSymbol(SYM_SEMICOLON) then
@@ -2702,7 +2693,7 @@ begin
   U.RawDescriptionInfo^ := GetLastComment;
 
   { get unit name identifier }
-  U.Name := GetAndCheckNextToken(TOK_IDENTIFIER, true);
+  U.Name := ParseQualifiedIdentifier;
   U.SourceAbsoluteFileName := FLastParsedTokenStreamAbsoluteFileName;
   U.SourceLine := FLastParsedTokenLine;
 
@@ -2838,7 +2829,7 @@ begin
   ItemsForNextBackComment.Clear;
 
   repeat
-    UsedUnit := GetAndCheckNextToken(TOK_IDENTIFIER, true);
+    UsedUnit := ParseQualifiedIdentifier;
     if U <> nil then
       U.UsesUnits.Append(UsedUnit);
 

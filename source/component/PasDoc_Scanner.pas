@@ -198,6 +198,10 @@ type
       it causes Assign(Value) call, not a real reference copy. }
     property IncludeFilePaths: TStringVector read FIncludeFilePaths
       write SetIncludeFilePaths;
+
+    { Look at next token, but don't advance to the next token.
+      Do not free the returned TToken instance, @italic(unless you
+      call ConsumeToken), in which case you should free this. }
     function PeekToken: TToken;
 
     { Place T in the buffer. Next time you will call GetToken you will
