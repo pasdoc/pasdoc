@@ -214,7 +214,6 @@ procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
 
 var
   AliasedItem: TPasItem;
-  ViaStrongAlias: boolean;
 begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
@@ -225,8 +224,8 @@ begin
   else
   begin
     // description is the same as the original type if it is a weak alias
-    item.GetAliasedItem(AliasedItem, ViaStrongAlias);
-    if Assigned(AliasedItem) and not ViaStrongAlias then
+    item.GetAliasedItem(AliasedItem);
+    if Assigned(AliasedItem) then
       WriteDirectLine(space + '  ' + ItemDescription(AliasedItem));
   end;
   if Item is TPasEnum then

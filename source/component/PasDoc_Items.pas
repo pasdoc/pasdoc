@@ -562,7 +562,7 @@ type
       If there is no description in any ancestor, it will return an empty vector. }
     function GetInheritedItemDescriptions: TStringPairVector; virtual;
 
-    procedure GetAliasedItem(out AliasedItem: TPasItem; out ViaStrongAlias: boolean); virtual;
+    procedure GetAliasedItem(out AliasedItem: TPasItem); virtual;
 
     function BasePath: string; override;
 
@@ -644,7 +644,7 @@ type
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
-    procedure GetAliasedItem(out AliasedItem: TPasItem; out ViaStrongAlias: boolean); override;
+    procedure GetAliasedItem(out AliasedItem: TPasItem); override;
 
     { Whether it is a strong alias, defined with the "type" keyword, for example:
       StrongAlias = type AliasedType }
@@ -1866,11 +1866,9 @@ begin
   end;
 end;
 
-procedure TPasItem.GetAliasedItem(out AliasedItem: TPasItem; out
-  ViaStrongAlias: boolean);
+procedure TPasItem.GetAliasedItem(out AliasedItem: TPasItem);
 begin
   AliasedItem := nil;
-  ViaStrongAlias:= false;
 end;
 
 procedure TPasItem.RegisterTags(TagManager: TTagManager);
@@ -2098,19 +2096,15 @@ begin
   ASource.Read(FIsStrongAlias, SizeOf(FIsStrongAlias));
 end;
 
-procedure TPasAliasType.GetAliasedItem(out AliasedItem: TPasItem; out
-  ViaStrongAlias: boolean);
+procedure TPasAliasType.GetAliasedItem(out AliasedItem: TPasItem);
 var
   AliasType: TPasAliasType;
   OriginalType: TPasType;
 begin
   AliasedItem := nil;
-  ViaStrongAlias := false;
   AliasType := self;
   while true do
   begin
-    if AliasType.IsStrongAlias then
-      ViaStrongAlias:= true;
     OriginalType := AliasType.AliasedType;
     if Assigned(OriginalType) then
     begin

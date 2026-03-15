@@ -1183,7 +1183,6 @@ end;
 procedure TGenericHTMLDocGenerator.WriteItemShortDescription(const AItem: TPasItem);
 var
   AliasedItem: TPasItem;
-  ViaStrongAlias: boolean;
 begin
   if AItem = nil then Exit;
 
@@ -1194,13 +1193,11 @@ begin
       WriteSpellChecked(AItem.DetailedDescription)
     end else begin
       // description is the same as the original type if it is a weak alias
-      AItem.GetAliasedItem(AliasedItem, ViaStrongAlias);
-      if Assigned(AliasedItem) and not ViaStrongAlias then
-      begin
-        WriteItemShortDescription(AliasedItem);
-        exit;
-      end;
-      WriteDirect('&nbsp;');
+      AItem.GetAliasedItem(AliasedItem);
+      if Assigned(AliasedItem) then
+        WriteItemShortDescription(AliasedItem)
+      else
+        WriteDirect('&nbsp;');
     end;
   end;
 end;
@@ -1235,7 +1232,6 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     InheritedDescriptions: TStringPairVector;
     AncestorItem, AliasedItem: TPasItem;
     I: Integer;
-    ViaStrongAlias: boolean;
   begin
     InheritedDescriptions := AItem.GetInheritedItemDescriptions;
     try
@@ -1282,15 +1278,9 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        AItem.GetAliasedItem(AliasedItem, ViaStrongAlias);
+        AItem.GetAliasedItem(AliasedItem);
         if Assigned(AliasedItem) then
         begin
-          // in case of a strong alias, a description would have be needed
-          if ViaStrongAlias then
-          begin
-            WriteDirect('<p class="inheritdescription">This item has no description. ');
-            WriteDirect('Showing description of aliased type.</p>');
-          end;
           WriteDescription(AliasedItem);
         end else
           WriteDirect('<p class="nodescription">This item has no description.</p>');
