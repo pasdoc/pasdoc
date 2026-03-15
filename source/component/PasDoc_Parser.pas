@@ -2601,6 +2601,8 @@ begin
               FreeAndNil(t);
               ParseStrongTypeAlias(AliasType, TypeName, RawDescriptionInfo);
               DoAddType(TPasItem(AliasType));
+              if CioState <> nil then
+                ParseCio_SkipDeclaration(U, RawDescriptionInfo, False);
               exit;
             end;
           end;
